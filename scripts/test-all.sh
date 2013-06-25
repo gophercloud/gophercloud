@@ -10,12 +10,23 @@ SCRIPTS=$(cd $SCRIPTS; pwd)
 # Locate the acceptance test / examples directory.
 ACCEPTANCE=$(cd $SCRIPTS/../acceptance; pwd)
 
+# Go workspace path
+WS=$(cd $SCRIPTS/..; pwd)
+
+# In order to run Go code interactively, we need the GOPATH environment
+# to be set.
+if [ "x$GOPATH" == "x" ]; then
+  export GOPATH=$WS
+  echo "WARNING: You didn't have your GOPATH environment variable set."
+  echo "         I'm assuming $GOPATH as its value."
+fi
+
 # Run all acceptance tests sequentially.
 # If any test fails, we fail fast.
-for T in $(ls -1 $ACCEPTANCE); do
-  if [ -x $ACCEPTANCE/$T ]; then
-    echo "$ACCEPTANCE/$T -quiet ..."
-    if ! $ACCEPTANCE/$T -quiet ; then
+for T in $(ls -1 $ACCEPTANCE/[0-9][0-9]*.go); do
+  if ! [ -x $T ]; then
+    echo "go run $T -quiet ..."
+    if ! go run $T -quiet ; then
       echo "- FAILED.  Try re-running w/out the -quiet option to see output."
       exit 1
     fi
