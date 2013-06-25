@@ -10,20 +10,30 @@ To contribute to gophercloud, you'll need some passing familiarity with Go, and 
 [^1]: A common problem found often in newcomers to the Go community is preconceptions instilled through years of working with other languages or environments.  If you find something about Go or its workflow that irks you to the point of kvetching, I humbly ask that you be patient with yourself, keep any discussion of the matter informed and civil, and please do not use gophercloud's issue-tracking system as a soapbox unless it *really* impacts the usability of the gophercloud package by other Go developers.  Be respectful of other Go users who might disagree with you.
 
 ### Installing gophercloud in a Workspace
+
 <span style="font-size: 300%; font-weight: bold; text-align:center; color:red">STOP!</span>
 
 **Please** do not just clone this repository expecting it to work like any other Python, Ruby, Java, or C/C++ repo.  Go packages don't work that way!  (You *did* read Effective Go, right?)
 
+#### Temporary: gophercloud is a Private Repository!  How do I install?
+
+***Please note that these instructions are here temporarily until we make this repository public.***
+
+1. Navigate to the scripts/create-environment.sh file in the GitHub user interface
+2. Click on 'Raw'
+3. Copy and paste into a file locally
+4. Supposing that file is named `/tmp/gcsetup.sh`, you can invoke it as follows:
+
+	`source /tmp/gcsetup.sh`
+
 #### Installing for POSIX (Linux, BSD, MacOS X, et. al.)
+
+***Please note that this set of installation instructions will work as soon the repoistory is public***
+
 You can execute the following command to create a brand new Go workspace that is minimally configured for use with gophercloud.  This should work for any reasonable POSIX-compatible environment.
 
 	source <(curl "https://raw.github.com/rackspace/gophercloud/master/scripts/create-env.sh")
 
-#### gophercloud is a Private Repository!  What do I do?
-
-Navigate to the scripts/create-environment.sh file in the GitHub user interface, click on Raw, and copy and paste into a file locally.  Supposing that file is named `/tmp/gcsetup.sh`, you can invoke it as follows:
-
-	source /tmp/gcsetup.sh
 
 ### Contributing Features or Bug-Fixes
 After installing gophercloud and after running `env.sh` (only needed once per shell session), you will find the source files in the `$GOPHERCLOUD` directory.  Feel free to open your favorite editor inside that directory and poke around.
