@@ -4,19 +4,35 @@ import (
 	"github.com/racker/perigee"
 )
 
+// AuthOptions lets anyone calling Authenticate() supply the required access credentials.
+// At present, only Identity V2 API support exists; therefore, only Username, Password,
+// and optionally, TenantId are provided.  If future Identity API versions become available,
+// alternative fields unique to those versions may appear here.
 type AuthOptions struct {
-	Username, Password, TenantId string
+	// Username and Password are required if using Identity V2 API.
+	// Consult with your provider's control panel to discover your
+	// account's username and password.
+	Username, Password string
+
+	// The TenantId field is optional for the Identity V2 API.
+	TenantId string
 }
 
+// AuthContainer provides a JSON encoding wrapper for passing credentials to the Identity
+// service.  You will not work with this structure directly.
 type AuthContainer struct {
 	Auth Auth `json:"auth"`
 }
 
+// Auth provides a JSON encoding wrapper for passing credentials to the Identity
+// service.  You will not work with this structure directly.
 type Auth struct {
 	PasswordCredentials PasswordCredentials `json:"passwordCredentials"`
 	TenantId            string              `json:"tenantId,omitempty"`
 }
 
+// PasswordCredentials provides a JSON encoding wrapper for passing credentials to the Identity
+// service.  You will not work with this structure directly.
 type PasswordCredentials struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -71,6 +87,18 @@ type EntryEndpoint struct {
 	VersionId, VersionInfo, VersionList string
 }
 
+// Authenticate() grants access to the OpenStack-compatible provider API.
+//
+// Providers are identified through a unique key string.
+// See the RegisterProvider() method for more details.
+//
+// The supplied AuthOptions instance allows the client to specify only those credentials
+// relevant for the authentication request.  At present, support exists for OpenStack
+// Identity V2 API only; support for V3 will become available as soon as documentation for it
+// becomes readily available.
+//
+// For Identity V2 API requirements, you must provide at least the Username and Password
+// options.  The TenantId field is optional, and defaults to "".
 func (c *Context) Authenticate(provider string, options AuthOptions) (*Access, error) {
 	var access *Access
 
@@ -93,7 +121,7 @@ func (c *Context) Authenticate(provider string, options AuthOptions) (*Access, e
 				TenantId: options.TenantId,
 			},
 		},
-		Results: &struct{
+		Results: &struct {
 			Access **Access `json:"access"`
 		}{
 			&access,

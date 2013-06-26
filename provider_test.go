@@ -13,13 +13,13 @@ func TestProviderRegistry(t *testing.T) {
 		return
 	}
 
-	err = c.RegisterProvider("aProvider", &Provider{})
+	err = c.RegisterProvider("aProvider", Provider{})
 	if err != ErrConfiguration {
 		t.Error("Unexpected error/nil when registering a provider w/out an auth endpoint\n  %s", err)
 		return
 	}
 
-	_ = c.RegisterProvider("aProvider", &Provider{AuthEndpoint: "http://localhost/auth"})
+	_ = c.RegisterProvider("aProvider", Provider{AuthEndpoint: "http://localhost/auth"})
 	_, err = c.ProviderByName("aProvider")
 	if err != nil {
 		t.Error(err)

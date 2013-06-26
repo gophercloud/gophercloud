@@ -148,7 +148,7 @@ func TestAuthProvider(t *testing.T) {
 		return
 	}
 
-	err = c.RegisterProvider("provider", &Provider{AuthEndpoint: "/"})
+	err = c.RegisterProvider("provider", Provider{AuthEndpoint: "/"})
 	if err != nil {
 		t.Error(err)
 		return
@@ -170,7 +170,7 @@ func TestTenantIdEncoding(t *testing.T) {
 	c.UseCustomClient(&http.Client{
 		Transport: tt,
 	})
-	c.RegisterProvider("provider", &Provider{AuthEndpoint: "/"})
+	c.RegisterProvider("provider", Provider{AuthEndpoint: "/"})
 
 	tt.expectTenantId = false
 	_, err := c.Authenticate("provider", AuthOptions{
@@ -205,7 +205,7 @@ func TestTenantIdEncoding(t *testing.T) {
 func TestUserNameAndPassword(t *testing.T) {
 	c := TestContext()
 	c.UseCustomClient(&http.Client{Transport: &testTransport{}})
-	c.RegisterProvider("provider", &Provider{AuthEndpoint: "http://localhost/"})
+	c.RegisterProvider("provider", Provider{AuthEndpoint: "http://localhost/"})
 
 	credentials := []AuthOptions{
 		AuthOptions{},
@@ -232,7 +232,7 @@ func TestTokenAcquisition(t *testing.T) {
 	tt := &testTransport{}
 	tt.response = SUCCESSFUL_RESPONSE
 	c.UseCustomClient(&http.Client{Transport: tt})
-	c.RegisterProvider("provider", &Provider{AuthEndpoint: "http://localhost"})
+	c.RegisterProvider("provider", Provider{AuthEndpoint: "http://localhost"})
 
 	acc, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
 	if err != nil {
@@ -252,7 +252,7 @@ func TestServiceCatalogAcquisition(t *testing.T) {
 	tt := &testTransport{}
 	tt.response = SUCCESSFUL_RESPONSE
 	c.UseCustomClient(&http.Client{Transport: tt})
-	c.RegisterProvider("provider", &Provider{AuthEndpoint: "http://localhost"})
+	c.RegisterProvider("provider", Provider{AuthEndpoint: "http://localhost"})
 
 	acc, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
 	if err != nil {
@@ -266,8 +266,8 @@ func TestServiceCatalogAcquisition(t *testing.T) {
 		return
 	}
 
-	types := map[string]bool {
-		"compute": true,
+	types := map[string]bool{
+		"compute":      true,
 		"rax:database": true,
 	}
 	for _, entry := range svcs {
@@ -283,7 +283,7 @@ func TestUserAcquisition(t *testing.T) {
 	tt := &testTransport{}
 	tt.response = SUCCESSFUL_RESPONSE
 	c.UseCustomClient(&http.Client{Transport: tt})
-	c.RegisterProvider("provider", &Provider{AuthEndpoint: "http://localhost"})
+	c.RegisterProvider("provider", Provider{AuthEndpoint: "http://localhost"})
 
 	acc, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
 	if err != nil {
