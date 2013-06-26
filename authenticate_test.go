@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"io/ioutil"
 	"strings"
+	"encoding/json"
+
+	_ "fmt"
+	_ "os"
 )
 
 
@@ -34,6 +38,51 @@ func (t *testTransport) RoundTrip(req *http.Request) (rsp *http.Response, err er
 		Close: true,
 		Trailer: nil,
 		Request: req,
+	}
+	return
+}
+
+type tenantIdCheckTransport struct {
+	expectTenantId bool
+	tenantIdFound bool
+}
+
+func (t *tenantIdCheckTransport) RoundTrip(req *http.Request) (rsp *http.Response, err error) {
+	var authContainer *AuthContainer
+
+	headers := make(http.Header)
+	headers.Add("Content-Type", "application/xml; charset=UTF-8")
+
+	body := ioutil.NopCloser(strings.NewReader("t.response"))
+
+	rsp = &http.Response{
+		Status: "200 OK",
+		StatusCode: 200,
+		Proto: "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header: headers,
+		Body: body,
+		ContentLength: -1,
+		TransferEncoding: nil,
+		Close: true,
+		Trailer: nil,
+		Request: req,
+	}
+
+	bytes, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(bytes, &authContainer)
+	if err != nil {
+		return nil, err
+	}
+	t.tenantIdFound = (authContainer.Auth.TenantId != "")
+
+	if t.tenantIdFound != t.expectTenantId {
+		rsp.Status = "500 Internal Server Error"
+		rsp.StatusCode = 500
 	}
 	return
 }
@@ -72,16 +121,55 @@ func TestAuthProvider(t *testing.T) {
 	}
 }
 
-func TestUserNameAndPassword(t *testing.T) {
+func TestTenantIdEncoding(t *testing.T) {
 	c := TestContext()
+	tt := &tenantIdCheckTransport{}
+	c.UseCustomClient(&http.Client{
+		Transport: tt,
+	})
 	c.RegisterProvider("provider", &Provider{AuthEndpoint: "/"})
 
-	auths := []AuthOptions{
+	tt.expectTenantId = false
+	_, err := c.Authenticate("provider", AuthOptions{
+		Username: "u",
+		Password: "p",
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if tt.tenantIdFound {
+		t.Error("Tenant ID should not have been encoded")
+		return
+	}
+
+	tt.expectTenantId = true
+	_, err = c.Authenticate("provider", AuthOptions{
+		Username: "u",
+		Password: "p",
+		TenantId: "t",
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if !tt.tenantIdFound {
+		t.Error("Tenant ID should have been encoded")
+		return
+	}
+}
+
+func TestUserNameAndPassword(t *testing.T) {
+	c := TestContext()
+	c.UseCustomClient(&http.Client{Transport: &testTransport{}})
+	c.RegisterProvider("provider", &Provider{AuthEndpoint: "http://localhost/"})
+
+	credentials := []AuthOptions{
 		AuthOptions{},
 		AuthOptions{Username: "u"},
 		AuthOptions{Password: "p"},
 	}
-	for i, auth := range auths {
+	for i, auth := range credentials {
 		_, err := c.Authenticate("provider", auth)
 		if err == nil {
 			t.Error("Expected error from missing credentials (%d)", i)

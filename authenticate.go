@@ -47,7 +47,7 @@ func (c *Context) Authenticate(provider string, options AuthOptions) (ProviderAc
 			},
 		},
 	})
-	return nil, nil
+	return nil, err
 
 	// if err != nil {
 	// 	return err
