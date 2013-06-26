@@ -14,7 +14,7 @@ type AuthContainer struct {
 
 type Auth struct {
 	PasswordCredentials PasswordCredentials `json:"passwordCredentials"`
-	TenantId string `json:"tenantId,omitempty"`
+	TenantId            string              `json:"tenantId,omitempty"`
 }
 
 type PasswordCredentials struct {
@@ -37,7 +37,7 @@ func (c *Context) Authenticate(provider string, options AuthOptions) (ProviderAc
 
 	err = perigee.Post(p.AuthEndpoint, perigee.Options{
 		CustomClient: c.httpClient,
-		ReqBody:      &AuthContainer{
+		ReqBody: &AuthContainer{
 			Auth: Auth{
 				PasswordCredentials: PasswordCredentials{
 					Username: options.Username,

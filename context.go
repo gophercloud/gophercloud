@@ -15,10 +15,10 @@ type Context struct {
 func TestContext() *Context {
 	return &Context{
 		providerMap: make(map[string]*Provider),
-		httpClient: &http.Client{},
+		httpClient:  &http.Client{},
 	}
 }
 
 func (c *Context) UseCustomClient(hc *http.Client) {
-	c.httpClient = hc;
+	c.httpClient = hc
 }

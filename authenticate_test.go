@@ -1,21 +1,20 @@
 package gophercloud
 
 import (
-	"testing"
-	"net/http"
-	"io/ioutil"
-	"strings"
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"strings"
+	"testing"
 )
 
-
 type testTransport struct {
-	called int
+	called   int
 	response string
 }
 
 func (t *testTransport) RoundTrip(req *http.Request) (rsp *http.Response, err error) {
-	t.called++;
+	t.called++
 
 	headers := make(http.Header)
 	headers.Add("Content-Type", "application/xml; charset=UTF-8")
@@ -23,25 +22,25 @@ func (t *testTransport) RoundTrip(req *http.Request) (rsp *http.Response, err er
 	body := ioutil.NopCloser(strings.NewReader(t.response))
 
 	rsp = &http.Response{
-		Status: "200 OK",
-		StatusCode: 200,
-		Proto: "HTTP/1.1",
-		ProtoMajor: 1,
-		ProtoMinor: 1,
-		Header: headers,
-		Body: body,
-		ContentLength: -1,
+		Status:           "200 OK",
+		StatusCode:       200,
+		Proto:            "HTTP/1.1",
+		ProtoMajor:       1,
+		ProtoMinor:       1,
+		Header:           headers,
+		Body:             body,
+		ContentLength:    -1,
 		TransferEncoding: nil,
-		Close: true,
-		Trailer: nil,
-		Request: req,
+		Close:            true,
+		Trailer:          nil,
+		Request:          req,
 	}
 	return
 }
 
 type tenantIdCheckTransport struct {
 	expectTenantId bool
-	tenantIdFound bool
+	tenantIdFound  bool
 }
 
 func (t *tenantIdCheckTransport) RoundTrip(req *http.Request) (rsp *http.Response, err error) {
@@ -53,18 +52,18 @@ func (t *tenantIdCheckTransport) RoundTrip(req *http.Request) (rsp *http.Respons
 	body := ioutil.NopCloser(strings.NewReader("t.response"))
 
 	rsp = &http.Response{
-		Status: "200 OK",
-		StatusCode: 200,
-		Proto: "HTTP/1.1",
-		ProtoMajor: 1,
-		ProtoMinor: 1,
-		Header: headers,
-		Body: body,
-		ContentLength: -1,
+		Status:           "200 OK",
+		StatusCode:       200,
+		Proto:            "HTTP/1.1",
+		ProtoMajor:       1,
+		ProtoMinor:       1,
+		Header:           headers,
+		Body:             body,
+		ContentLength:    -1,
 		TransferEncoding: nil,
-		Close: true,
-		Trailer: nil,
-		Request: req,
+		Close:            true,
+		Trailer:          nil,
+		Request:          req,
 	}
 
 	bytes, err := ioutil.ReadAll(req.Body)
