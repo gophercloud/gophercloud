@@ -4,12 +4,16 @@ import (
 )
 
 type Provider struct {
-	// empty.
+	AuthEndpoint string
 }
 
 var providerMap = make(map[string]*Provider)
 
 func (c *Context) RegisterProvider(name string, p *Provider) error {
+	if p.AuthEndpoint == "" {
+		return ErrConfiguration
+	}
+
 	c.providerMap[name] = p
 	return nil
 }
