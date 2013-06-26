@@ -8,6 +8,53 @@ import (
 	"testing"
 )
 
+const SUCCESSFUL_RESPONSE = `{
+	"access": {
+		"serviceCatalog": [{
+			"endpoints": [{
+				"publicURL": "https://ord.servers.api.rackspacecloud.com/v2/12345",
+				"region": "ORD",
+				"tenantId": "12345",
+				"versionId": "2",
+				"versionInfo": "https://ord.servers.api.rackspacecloud.com/v2",
+				"versionList": "https://ord.servers.api.rackspacecloud.com/"
+			},{
+				"publicURL": "https://dfw.servers.api.rackspacecloud.com/v2/12345",
+				"region": "DFW",
+				"tenantId": "12345",
+				"versionId": "2",
+				"versionInfo": "https://dfw.servers.api.rackspacecloud.com/v2",
+				"versionList": "https://dfw.servers.api.rackspacecloud.com/"
+			}],
+			"name": "cloudServersOpenStack",
+			"type": "compute"
+		},{
+			"endpoints": [{
+				"publicURL": "https://ord.databases.api.rackspacecloud.com/v1.0/12345",
+				"region": "ORD",
+				"tenantId": "12345"
+			}],
+			"name": "cloudDatabases",
+			"type": "rax:database"
+		}],
+		"token": {
+			"expires": "2012-04-13T13:15:00.000-05:00",
+			"id": "aaaaa-bbbbb-ccccc-dddd"
+		},
+		"user": {
+			"RAX-AUTH:defaultRegion": "DFW",
+			"id": "161418",
+			"name": "demoauthor",
+			"roles": [{
+				"description": "User Admin Role.",
+				"id": "3",
+				"name": "identity:user-admin"
+			}]
+		}
+	}
+}
+`
+
 type testTransport struct {
 	called   int
 	response string
@@ -176,6 +223,77 @@ func TestUserNameAndPassword(t *testing.T) {
 	_, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
 	if err != nil {
 		t.Error(err)
+		return
+	}
+}
+
+func TestTokenAcquisition(t *testing.T) {
+	c := TestContext()
+	tt := &testTransport{}
+	tt.response = SUCCESSFUL_RESPONSE
+	c.UseCustomClient(&http.Client{Transport: tt})
+	c.RegisterProvider("provider", &Provider{AuthEndpoint: "http://localhost"})
+
+	acc, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	tok := acc.Token
+	if (tok.Id == "") || (tok.Expires == "") {
+		t.Error("Expected a valid token for successful login; got %s, %s", tok.Id, tok.Expires)
+		return
+	}
+}
+
+func TestServiceCatalogAcquisition(t *testing.T) {
+	c := TestContext()
+	tt := &testTransport{}
+	tt.response = SUCCESSFUL_RESPONSE
+	c.UseCustomClient(&http.Client{Transport: tt})
+	c.RegisterProvider("provider", &Provider{AuthEndpoint: "http://localhost"})
+
+	acc, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	svcs := acc.ServiceCatalog
+	if len(svcs) < 2 {
+		t.Error("Expected 2 service catalog entries; got %d", len(svcs))
+		return
+	}
+
+	types := map[string]bool {
+		"compute": true,
+		"rax:database": true,
+	}
+	for _, entry := range svcs {
+		if !types[entry.Type] {
+			t.Error("Expected to find type %s.", entry.Type)
+			return
+		}
+	}
+}
+
+func TestUserAcquisition(t *testing.T) {
+	c := TestContext()
+	tt := &testTransport{}
+	tt.response = SUCCESSFUL_RESPONSE
+	c.UseCustomClient(&http.Client{Transport: tt})
+	c.RegisterProvider("provider", &Provider{AuthEndpoint: "http://localhost"})
+
+	acc, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	u := acc.User
+	if u.Id != "161418" {
+		t.Error("Expected user ID of 16148; got", u.Id)
 		return
 	}
 }
