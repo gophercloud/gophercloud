@@ -6,9 +6,6 @@ import (
 	"io/ioutil"
 	"strings"
 	"encoding/json"
-
-	_ "fmt"
-	_ "os"
 )
 
 

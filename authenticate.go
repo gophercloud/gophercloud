@@ -48,14 +48,4 @@ func (c *Context) Authenticate(provider string, options AuthOptions) (ProviderAc
 		},
 	})
 	return nil, err
-
-	// if err != nil {
-	// 	return err
-	// }
-
-	// c.isAuthenticated = true
-	// c.token = id.access.Access.Token.Id
-	// c.expires = id.access.Access.Token.Expires
-	// c.tenantId = id.access.Access.Token.Tenant.Id
-	// c.tenantName = id.access.Access.Token.Tenant.Name
 }

@@ -1,8 +1,5 @@
 package gophercloud
 
-import (
-)
-
 type Provider struct {
 	AuthEndpoint string
 }
