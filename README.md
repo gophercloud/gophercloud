@@ -1,21 +1,33 @@
-# gophercloud &mdash; V0.0.0
-The Go ecosystem seems to lack a comprehensive cloud services API (at the time this README was first written). As both Go and cloud services are trending in many businesses, and with Go used increasingly in infrastructure, it seems like an odd omission. To fill this gap, gorax provides a Go binding to the Rackspace cloud APIs. Rackspace offers many APIs that are compatible with OpenStack, and thus provides an ideal springboard for wider OpenStack technology adoption in the Go community.
+# Gophercloud &mdash; V0.0.0
+The Go ecosystem seems to lack a comprehensive cloud services API (at the time this README was first written). As both Go and cloud services are trending in many businesses, and with Go used increasingly in infrastructure, it seems like an odd omission. To fill this gap, Gophercloud provides a Go binding to the Rackspace cloud APIs. Rackspace offers many APIs that are compatible with OpenStack, and thus provides an ideal springboard for wider OpenStack technology adoption in the Go community.
 
 **This library is still in the very early stages of development. Unless you want to contribute, it probably isn't what you want.**
 
-## How to Contribute
+## Getting Started
+### Install the Go Programming Language
+Gophercloud provides an Openstack-compatible SDK binding to the Go community.
+As such, to either use it or contribute code, you'll need to have Go installed.  Please [refer to the Go installation instructions](http://golang.org/doc/install) for detailed steps to install the latest stable release of Go.
+
 ### Familiarize Yourself with Go
-To contribute to gophercloud, you'll need some passing familiarity with Go, and how it uses certain concepts.  If you've never worked with Go before, I *strongly* encourage the interested reader to [install the latest version of Go](http://golang.org/), and follow through the excellent online book titled [Effective Go](http://golang.org/doc/effective_go.html).[^1]
+To use or contribute to Gophercloud, you'll need some passing familiarity with Go, and how it uses certain concepts.  If you've never worked with Go before, I *strongly* encourage the interested reader to follow through the excellent online book titled [Effective Go](http://golang.org/doc/effective_go.html).
 
-[^1]: A common problem found often in newcomers to the Go community is preconceptions instilled through years of working with other languages or environments.  If you find something about Go or its workflow that irks you to the point of kvetching, I humbly ask that you be patient with yourself, keep any discussion of the matter informed and civil, and please do not use gophercloud's issue-tracking system as a soapbox unless it *really* impacts the usability of the gophercloud package by other Go developers.  Be respectful of other Go users who might disagree with you.
+### Installing Gophercloud in a Workspace
 
-### Installing gophercloud in a Workspace
-
-<span style="font-size: 300%; font-weight: bold; text-align:center; color:red">STOP!</span>
+***STOP!  STOP!  STOP!***
 
 **Please** do not just clone this repository expecting it to work like any other Python, Ruby, Java, or C/C++ repo.  Go packages don't work that way!  (You *did* read Effective Go, right?)
 
-#### Temporary: gophercloud is a Private Repository!  How do I install?
+#### Installing Into an Existing Project
+Assuming you have a project underway already and its `$GOPATH` environment variable holds the correct path, you can include the Gophercloud package in the usual manner using `go get`:
+
+    go get github.com/rackspace/gophercloud
+
+The remainder of this document, and supporting materials, assumes a correct `$GOPATH` configuration, but further assumes that an environment variable `$GOPHERCLOUD` points to the Gophercloud installation directory as well.  E.g.,
+
+    export GOPHERCLOUD=$GOPATH/src/github.com/rackspace/gophercloud
+
+#### Creating a New Gophercloud Project
+If you're just starting out with Go, a convenience script exists which lets you create a new Go workspace preconfigured with Gophercloud for you.
 
 ***Please note that these instructions are here temporarily until we make this repository public.***
 
@@ -26,19 +38,40 @@ To contribute to gophercloud, you'll need some passing familiarity with Go, and 
 
 	`source /tmp/gcsetup.sh`
 
-#### Installing for POSIX (Linux, BSD, MacOS X, et. al.)
-
 ***Please note that this set of installation instructions will work as soon the repoistory is public***
 
-You can execute the following command to create a brand new Go workspace that is minimally configured for use with gophercloud.  This should work for any reasonable POSIX-compatible environment.
+You can execute the following command to create a brand new Go workspace that is minimally configured for use with Gophercloud.  This should work for any reasonable POSIX-compatible environment.
 
-	source <(curl "https://raw.github.com/rackspace/gophercloud/master/scripts/create-env.sh")
+	source <(curl "https://raw.github.com/rackspace/Gophercloud/master/scripts/create-env.sh")
 
+This script will not only install the software, but also create a shell script `env.sh` which, when executed, restores both `$GOPATH` and `$GOPHERCLOUD` to their correct values.  The project will be installed in `$HOME/go/gophercloud`.
+
+### Make Sure Gophercloud Works For You
+You should follow these steps to make sure your local installation works as expected.
+
+|Execute...|Notes...|
+|-|-|
+|`export SDK_USERNAME=jack_frost`|Use your cloud provider's API user name.|
+|`export SDK_PROVIDER=santa-telecom`|Use your provider's unique Gophercloud identifier.  This is how Gophercloud will know which API endpoints to use.|
+|`SDK_PASSWORD=c0ldnbr33zy $GOPHERCLOUD/scripts/test-all.sh`|Do not export your password unless you don't care that it may reside in memory after the tests have all run.  You might want to remove it from your shell's history file afterwards too.|
+
+If everything goes well, you should only see output indicating the Go commands for each of the acceptance tests being run.  Errors can be caused by several factors:
+
+1. Your provider diverges from established Openstack standards.
+2. Gophercloud incorrectly implements the relevant Openstack standards.
+3. Mistake in setting up the `SDK_*` environment variables above.
+
+If a problem occurs, [we'd love to hear about it in the issue tracker!](https://github.com/rackspace/gophercloud/issues)
+
+### Using Gophercloud
+Simply list Gophercloud in the import section of relevant source listings, and you will be able to issue cloud requests through Gophercloud.  For examples, either refer to the detailed SDK documentation, or [take a look at the acceptance-level tests in the `acceptance` subdirectory.](https://github.com/rackspace/gophercloud/tree/master/acceptance)
 
 ### Contributing Features or Bug-Fixes
-After installing gophercloud and after running `env.sh` (only needed once per shell session), you will find the source files in the `$GOPHERCLOUD` directory.  Feel free to open your favorite editor inside that directory and poke around.
+After using Gophercloud for a while, you might find that it lacks some useful feature, or that existing behavior seems buggy.  We welcome contributions from our users for both missing functionality as well as for bug fixes.
 
-Features and bug-fixes **must** appear on their own *feature branches*.  The name of the branch should be fairly descriptive, but try to avoid verbosity for verbosity's sake.  Examples of good feature branch names include:
+After installing Gophercloud and after running its `env.sh` script (only needed once per shell session), you will find the source files in the `$GOPHERCLOUD` directory.  Feel free to open your favorite editor inside that directory and poke around.
+
+Features and bug-fixes **must** appear on their own *feature branches*, even if you fork the Gophercloud repository.  The name of the branch should be fairly descriptive, but try to avoid verbosity for verbosity's sake.  Examples of good feature branch names include:
 
 * script-environment-setup
 * server-creation
@@ -50,7 +83,7 @@ Some examples of not-so-good branch names include:
 * tk
 * anything/with/slashes
 
-The former is lengthy without delivering much value, the second is too short to be useful to anyone other than the submitter, and the last tries to work around Git usability issues, where some commands separate origins from branch names using slashes, and thus could be considered ambiguous to a human operator.
+The former is lengthy without delivering much value, the second is too short to be useful to anyone other than the submitter, and the last tries to work around Git usability issues, where some commands separate origins from branch names using slashes, and thus proves error-prone for some `git` sub-commands.
 
 For example, if you're looking to fix a memory leak that is documented in, just to pick a number, issue 42, you might follow a sequence of commands such as the following:
 
@@ -94,10 +127,10 @@ Obviously, please use common sense!  In situations where these questions do not 
 
 |NOTES|
 |-----|
-|All bug-fix PRs **MUST** reference at least one open issue.  New feature PRs **SHOULD** reference at least one open issue.  This convention helps track *why* certain code is written the way it is, and maintains historical context.|
-|You may elide answers to the questions above if the answers already appear in the referenced PR(s).  We care that the answers exist and may be easily found, not so much about *where* the answers may be found.|
+|All bug-fix PRs **MUST** reference at least one open issue.  New feature PRs **SHOULD** reference at least one open issue.  This convention helps track *why* certain code is written the way it is, and maintains historical context.  Lengthy design discussions should be moved to the `gophercloud-dev` mailing list if they occur; links to appropriate discussions should be made in the issue, again to maintain context.|
+|You may elide answers to the questions above if the answers already appear in the referenced PR(s), issues, or mailing list discussions.  We care that the answers exist and may be easily found, not so much about *where* the answers may be found.|
 
-### Master versus Working Branch
+### Master Branch vs. Working Branch
 
 Many projects will happily let you create a feature branch off the master branch.  However, Go environments place special significance on master branches of packages.  Because the `go get` command *is not* intended to perform complete package management tasks, but merely serve as a convenience for establishing your Go work environment, it will always fetch from the master branch of any repository you specify.  **Therefore, the master branch MUST always represent a customer-installable package.**  Not only that, but interface changes **must** be backward compatible at all times.
 
