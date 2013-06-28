@@ -139,9 +139,9 @@ to solve the problem in my test cases.  See included tests.
 
 Obviously, please use common sense!  In situations where these questions do not apply, please don't make up filler information.
 
-NOTE: All bug-fix PRs **MUST** reference at least one open issue.  New feature PRs **SHOULD** reference at least one open issue.  This convention helps track *why* certain code is written the way it is, and maintains historical context.  Lengthy design discussions should be moved to the `gophercloud-dev` mailing list if they occur; links to appropriate discussions should be made in the issue, again to maintain context.
+NOTE: All bug-fix PRs **MUST** reference at least one open issue.  New feature PRs **SHOULD** reference at least one open issue.  This convention helps track *why* certain code is written the way it is, and maintains historical context.  Lengthy design discussions should be moved to the https://groups.google.com/forum/#!forum/gophercloud-dev[gophercloud-dev mailing list] if they occur; links to appropriate discussions should be made in the issue, again to maintain context.
 
-APPROVED: You may elide answers to the questions above if the answers already appear in the referenced PR(s), issues, or mailing list discussions.  We care that the answers exist and may be easily found, not so much about *where* the answers may be found.
+INFO: You may elide answers to the questions above if the answers already appear in the referenced PR(s), issues, or mailing list discussions.  We care that the answers exist and may be easily found, not so much about *where* the answers may be found.
 
 ==== Master Branch vs. Working Branch
 
