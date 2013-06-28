@@ -39,7 +39,7 @@ If you're just starting out with Go, a convenience script exists which lets you 
 -----------------------------------------------------------------------------------------------------
 
 [WARNING]
-.*Please note that this set of installation instructions will work as soon the repoistory is public.*  We'll remove these admonitions at that time as well*
+.*Please note that this set of installation instructions will work as soon the repoistory is public.*  We'll remove these admonitions at that time as well.
 -----------------------------------------------------------------------------------------------------
 You can execute the following command to create a brand new Go workspace that is minimally configured for use with Gophercloud.  This should work for any reasonable POSIX-compatible environment.
 
