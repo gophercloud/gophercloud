@@ -51,12 +51,14 @@ This script will not only install the software, but also create a shell script `
 ==== Make Sure Gophercloud Works For You
 You should follow these steps to make sure your local installation works as expected.
 
-[cols="<,<"]
-|==================
-|`export SDK_USERNAME=jack_frost`|Use your cloud provider's API user name.
-|`export SDK_PROVIDER=santa-telecom`|Use your provider's unique Gophercloud identifier.  This is how Gophercloud will know which API endpoints to use.
-|`SDK_PASSWORD=c0ldnbr33zy $GOPHERCLOUD/scripts/test-all.sh`|Do not export your password unless you don't care that it may reside in memory after the tests have all run.  You might want to remove it from your shell's history file afterwards too.
-|===================
+-----
+export SDK_USERNAME=jack_frost  <1>
+export SDK_PROVIDER=santa-telecom  <2>
+SDK_PASSWORD=c0ldnbr33zy $GOPHERCLOUD/scripts/test-all.sh  <3>
+-----
+<1> Use your cloud provider's API user name.
+<2> Use your provider's unique Gophercloud identifier.  This is how Gophercloud will know which API endpoints to use.
+<3> Do not export your password unless you don't care that it may reside in memory after the tests have all run.  You might want to remove it from your shell's history file afterwards too.
 
 If everything goes well, you should only see output indicating the Go commands for each of the acceptance tests being run.  Errors can be caused by several factors:
 
