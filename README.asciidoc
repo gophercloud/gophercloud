@@ -52,8 +52,8 @@ This script will not only install the software, but also create a shell script `
 You should follow these steps to make sure your local installation works as expected.
 
 -----
-export SDK_USERNAME=jack_frost  <1>
-export SDK_PROVIDER=santa-telecom  <2>
+export SDK_USERNAME=jack_frost                             <1>
+export SDK_PROVIDER=santa-telecom                          <2>
 SDK_PASSWORD=c0ldnbr33zy $GOPHERCLOUD/scripts/test-all.sh  <3>
 -----
 <1> Use your cloud provider's API user name.
