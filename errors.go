@@ -25,3 +25,8 @@ var ErrCredentials = fmt.Errorf("Missing or incomplete credentials")
 // for authentication; if this endpoint isn't specified, you may receive
 // this error when attempting to register it against a context.
 var ErrConfiguration = fmt.Errorf("Missing or incomplete configuration")
+
+// ErrEndpoint errors happen when no endpoint with the desired characteristics
+// exists in the service catalog.  This can also happen if your tenant lacks
+// adequate permissions to access a given endpoint.
+var ErrEndpoint = fmt.Errorf("Missing endpoint, or insufficient privileges to access endpoint")

@@ -31,7 +31,7 @@ func TestContext() *Context {
 
 // UseCustomClient configures the context to use a customized HTTP client
 // instance.  By default, TestContext() will return a Context which uses
-// the net/http package's default client instance.  
+// the net/http package's default client instance.
 func (c *Context) UseCustomClient(hc *http.Client) {
 	c.httpClient = hc
 }
