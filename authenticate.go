@@ -39,9 +39,7 @@ type PasswordCredentials struct {
 }
 
 // Access encapsulates the API token and its relevant fields, as well as the
-// services catalog that Identity API returns once authenticated.  You'll probably
-// rarely use this record directly, unless you intend on marshalling or unmarshalling
-// Identity API JSON records yourself.
+// services catalog that Identity API returns once authenticated.
 type Access struct {
 	Token          Token
 	ServiceCatalog []CatalogEntry
@@ -128,4 +126,11 @@ func (c *Context) Authenticate(provider string, options AuthOptions) (*Access, e
 		},
 	})
 	return access, err
+}
+
+// See AccessProvider interface definition for details.
+func (a *Access) FirstEndpointUrlByCriteria(ac ApiCriteria) string {
+	ep := FindFirstEndpointByCriteria(a.ServiceCatalog, ac)
+	urls := []string{ep.PublicURL, ep.InternalURL}
+	return urls[ac.UrlChoice]
 }
