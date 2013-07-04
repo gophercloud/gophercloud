@@ -1,10 +1,7 @@
 package gophercloud
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"net/http"
-	"strings"
 	"testing"
 )
 
@@ -55,85 +52,9 @@ const SUCCESSFUL_RESPONSE = `{
 }
 `
 
-type testTransport struct {
-	called   int
-	response string
-}
-
-func (t *testTransport) RoundTrip(req *http.Request) (rsp *http.Response, err error) {
-	t.called++
-
-	headers := make(http.Header)
-	headers.Add("Content-Type", "application/xml; charset=UTF-8")
-
-	body := ioutil.NopCloser(strings.NewReader(t.response))
-
-	rsp = &http.Response{
-		Status:           "200 OK",
-		StatusCode:       200,
-		Proto:            "HTTP/1.1",
-		ProtoMajor:       1,
-		ProtoMinor:       1,
-		Header:           headers,
-		Body:             body,
-		ContentLength:    -1,
-		TransferEncoding: nil,
-		Close:            true,
-		Trailer:          nil,
-		Request:          req,
-	}
-	return
-}
-
-type tenantIdCheckTransport struct {
-	expectTenantId bool
-	tenantIdFound  bool
-}
-
-func (t *tenantIdCheckTransport) RoundTrip(req *http.Request) (rsp *http.Response, err error) {
-	var authContainer *AuthContainer
-
-	headers := make(http.Header)
-	headers.Add("Content-Type", "application/xml; charset=UTF-8")
-
-	body := ioutil.NopCloser(strings.NewReader("t.response"))
-
-	rsp = &http.Response{
-		Status:           "200 OK",
-		StatusCode:       200,
-		Proto:            "HTTP/1.1",
-		ProtoMajor:       1,
-		ProtoMinor:       1,
-		Header:           headers,
-		Body:             body,
-		ContentLength:    -1,
-		TransferEncoding: nil,
-		Close:            true,
-		Trailer:          nil,
-		Request:          req,
-	}
-
-	bytes, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		return nil, err
-	}
-	err = json.Unmarshal(bytes, &authContainer)
-	if err != nil {
-		return nil, err
-	}
-	t.tenantIdFound = (authContainer.Auth.TenantId != "")
-
-	if t.tenantIdFound != t.expectTenantId {
-		rsp.Status = "500 Internal Server Error"
-		rsp.StatusCode = 500
-	}
-	return
-}
-
 func TestAuthProvider(t *testing.T) {
-	c := TestContext()
-	tt := &testTransport{}
-	c.UseCustomClient(&http.Client{
+	tt := newTransport()
+	c := TestContext().UseCustomClient(&http.Client{
 		Transport: tt,
 	})
 
@@ -165,14 +86,14 @@ func TestAuthProvider(t *testing.T) {
 }
 
 func TestTenantIdEncoding(t *testing.T) {
-	c := TestContext()
-	tt := &tenantIdCheckTransport{}
-	c.UseCustomClient(&http.Client{
+	tt := newTransport()
+	c := TestContext().
+		UseCustomClient(&http.Client{
 		Transport: tt,
-	})
-	c.RegisterProvider("provider", Provider{AuthEndpoint: "/"})
+	}).
+		WithProvider("provider", Provider{AuthEndpoint: "/"})
 
-	tt.expectTenantId = false
+	tt.IgnoreTenantId()
 	_, err := c.Authenticate("provider", AuthOptions{
 		Username: "u",
 		Password: "p",
@@ -186,7 +107,7 @@ func TestTenantIdEncoding(t *testing.T) {
 		return
 	}
 
-	tt.expectTenantId = true
+	tt.ExpectTenantId()
 	_, err = c.Authenticate("provider", AuthOptions{
 		Username: "u",
 		Password: "p",
@@ -203,9 +124,9 @@ func TestTenantIdEncoding(t *testing.T) {
 }
 
 func TestUserNameAndPassword(t *testing.T) {
-	c := TestContext()
-	c.UseCustomClient(&http.Client{Transport: &testTransport{}})
-	c.RegisterProvider("provider", Provider{AuthEndpoint: "http://localhost/"})
+	c := TestContext().
+		WithProvider("provider", Provider{AuthEndpoint: "http://localhost/"}).
+		UseCustomClient(&http.Client{Transport: newTransport()})
 
 	credentials := []AuthOptions{
 		AuthOptions{},
@@ -228,11 +149,9 @@ func TestUserNameAndPassword(t *testing.T) {
 }
 
 func TestTokenAcquisition(t *testing.T) {
-	c := TestContext()
-	tt := &testTransport{}
-	tt.response = SUCCESSFUL_RESPONSE
-	c.UseCustomClient(&http.Client{Transport: tt})
-	c.RegisterProvider("provider", Provider{AuthEndpoint: "http://localhost"})
+	c := TestContext().
+		UseCustomClient(&http.Client{Transport: newTransport().WithResponse(SUCCESSFUL_RESPONSE)}).
+		WithProvider("provider", Provider{AuthEndpoint: "http://localhost/"})
 
 	acc, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
 	if err != nil {
@@ -248,11 +167,9 @@ func TestTokenAcquisition(t *testing.T) {
 }
 
 func TestServiceCatalogAcquisition(t *testing.T) {
-	c := TestContext()
-	tt := &testTransport{}
-	tt.response = SUCCESSFUL_RESPONSE
-	c.UseCustomClient(&http.Client{Transport: tt})
-	c.RegisterProvider("provider", Provider{AuthEndpoint: "http://localhost"})
+	c := TestContext().
+		UseCustomClient(&http.Client{Transport: newTransport().WithResponse(SUCCESSFUL_RESPONSE)}).
+		WithProvider("provider", Provider{AuthEndpoint: "http://localhost/"})
 
 	acc, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
 	if err != nil {
@@ -279,11 +196,9 @@ func TestServiceCatalogAcquisition(t *testing.T) {
 }
 
 func TestUserAcquisition(t *testing.T) {
-	c := TestContext()
-	tt := &testTransport{}
-	tt.response = SUCCESSFUL_RESPONSE
-	c.UseCustomClient(&http.Client{Transport: tt})
-	c.RegisterProvider("provider", Provider{AuthEndpoint: "http://localhost"})
+	c := TestContext().
+		UseCustomClient(&http.Client{Transport: newTransport().WithResponse(SUCCESSFUL_RESPONSE)}).
+		WithProvider("provider", Provider{AuthEndpoint: "http://localhost/"})
 
 	acc, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
 	if err != nil {
