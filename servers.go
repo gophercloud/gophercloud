@@ -7,9 +7,9 @@ import (
 	"github.com/racker/perigee"
 )
 
-// genericCloudProvider structures provide the implementation for generic OpenStack-compatible
-// ComputeProvider interfaces.
-type genericCloudProvider struct {
+// genericServersProvider structures provide the implementation for generic OpenStack-compatible
+// CloudServersProvider interfaces.
+type genericServersProvider struct {
 	// endpoint refers to the provider's API endpoint base URL.  This will be used to construct
 	// and issue queries.
 	endpoint string
@@ -22,8 +22,8 @@ type genericCloudProvider struct {
 	access AccessProvider
 }
 
-// See the ComputeProvider interface for details.
-func (gcp *genericCloudProvider) ListServers() ([]Server, error) {
+// See the CloudServersProvider interface for details.
+func (gcp *genericServersProvider) ListServers() ([]Server, error) {
 	var ss []Server
 
 	url := gcp.endpoint + "/servers"

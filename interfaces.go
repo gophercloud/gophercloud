@@ -15,8 +15,8 @@ type AccessProvider interface {
 	AuthToken() string
 }
 
-// ComputeProvider instances encapsulate a Cloud Servers API, should one exist in the service catalog
+// CloudServersProvider instances encapsulate a Cloud Servers API, should one exist in the service catalog
 // for your provider.
-type ComputeProvider interface {
+type CloudServersProvider interface {
 	ListServers() ([]Server, error)
 }

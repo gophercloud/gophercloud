@@ -43,6 +43,6 @@ func Authenticate(provider string, options AuthOptions) (*Access, error) {
 }
 
 // Instantiates a Cloud Servers object for the provider given.
-func ComputeApi(acc AccessProvider, criteria ApiCriteria) (ComputeProvider, error) {
-	return globalContext.ComputeApi(acc, criteria)
+func ServersApi(acc AccessProvider, criteria ApiCriteria) (CloudServersProvider, error) {
+	return globalContext.ServersApi(acc, criteria)
 }

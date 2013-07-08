@@ -28,7 +28,7 @@ func TestGetServersApi(t *testing.T) {
 		internal: "http://localhost:8086",
 	}
 
-	_, err := c.ComputeApi(acc, ApiCriteria{
+	_, err := c.ServersApi(acc, ApiCriteria{
 		Name:      "cloudComputeOpenStack",
 		Region:    "dfw",
 		VersionId: "2",
