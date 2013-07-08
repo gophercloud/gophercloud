@@ -134,3 +134,8 @@ func (a *Access) FirstEndpointUrlByCriteria(ac ApiCriteria) string {
 	urls := []string{ep.PublicURL, ep.InternalURL}
 	return urls[ac.UrlChoice]
 }
+
+// See AccessProvider interface definition for details.
+func (a *Access) AuthToken() string {
+	return a.Token.Id
+}

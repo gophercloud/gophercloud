@@ -87,6 +87,7 @@ func (c *Context) ComputeApi(acc AccessProvider, criteria ApiCriteria) (ComputeP
 	gcp := &genericCloudProvider{
 		endpoint: url,
 		context:  c,
+		access:   acc,
 	}
 
 	return gcp, nil
