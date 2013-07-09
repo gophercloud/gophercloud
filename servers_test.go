@@ -16,6 +16,10 @@ func (ta *testAccess) FirstEndpointUrlByCriteria(ac ApiCriteria) string {
 	return urls[ac.UrlChoice]
 }
 
+func (ta *testAccess) AuthToken() string {
+	return ""
+}
+
 func TestGetServersApi(t *testing.T) {
 	c := TestContext().UseCustomClient(&http.Client{Transport: newTransport().WithResponse("Hello")})
 

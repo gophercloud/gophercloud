@@ -8,6 +8,11 @@ type AccessProvider interface {
 	// endpoint, depending on both its existence and the setting of the ApiCriteria.UrlChoice
 	// field.
 	FirstEndpointUrlByCriteria(ApiCriteria) string
+
+	// TODO(sfalvo): get Token() to automatically renew the authentication token if it's near expiry.
+
+	// AuthToken provides a copy of the current authentication token for the user's credentials.
+	AuthToken() string
 }
 
 // ComputeProvider instances encapsulate a Cloud Servers API, should one exist in the service catalog
