@@ -77,14 +77,14 @@ func (c *Context) ProviderByName(name string) (p Provider, err error) {
 	return Provider{}, ErrProvider
 }
 
-// Instantiates a Cloud Servers object for the provider given.
-func (c *Context) ComputeApi(acc AccessProvider, criteria ApiCriteria) (ComputeProvider, error) {
+// Instantiates a Cloud Servers API for the provider given.
+func (c *Context) ServersApi(acc AccessProvider, criteria ApiCriteria) (CloudServersProvider, error) {
 	url := acc.FirstEndpointUrlByCriteria(criteria)
 	if url == "" {
 		return nil, ErrEndpoint
 	}
 
-	gcp := &genericCloudProvider{
+	gcp := &genericServersProvider{
 		endpoint: url,
 		context:  c,
 		access:   acc,

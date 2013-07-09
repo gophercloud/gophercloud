@@ -30,7 +30,7 @@ func main() {
 		panic(err)
 	}
 
-	api, err := gophercloud.ComputeApi(acc, gophercloud.ApiCriteria{
+	api, err := gophercloud.ServersApi(acc, gophercloud.ApiCriteria{
 		Name:      "cloudServersOpenStack",
 		Region:    "DFW",
 		VersionId: "2",
