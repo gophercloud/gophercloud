@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"flag"
 	"github.com/rackspace/gophercloud"
-	"os"
 )
 
 var id = flag.String("i", "", "Server ID to get info on.  Defaults to first server in your account if unspecified.")
@@ -12,18 +11,7 @@ var rgn = flag.String("r", "DFW", "Datacenter region")
 var quiet = flag.Bool("quiet", false, "Run quietly, for acceptance testing.  $? non-zero if issue.")
 
 func main() {
-	provider := os.Getenv("SDK_PROVIDER")
-	username := os.Getenv("SDK_USERNAME")
-	password := os.Getenv("SDK_PASSWORD")
-
-	if (provider == "") || (username == "") || (password == "") {
-		fmt.Fprintf(os.Stderr, "One or more of the following environment variables aren't set:\n")
-		fmt.Fprintf(os.Stderr, "	SDK_PROVIDER=\"%s\"\n", provider)
-		fmt.Fprintf(os.Stderr, "	SDK_USERNAME=\"%s\"\n", username)
-		fmt.Fprintf(os.Stderr, "	SDK_PASSWORD=\"%s\"\n", password)
-		os.Exit(1)
-	}
-
+	provider, username, password := getCredentials()
 	flag.Parse()
 
 	auth, err := gophercloud.Authenticate(

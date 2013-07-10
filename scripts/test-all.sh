@@ -23,10 +23,12 @@ fi
 
 # Run all acceptance tests sequentially.
 # If any test fails, we fail fast.
+LIBS=$(ls $ACCEPTANCE/lib*.go)
 for T in $(ls -1 $ACCEPTANCE/[0-9][0-9]*.go); do
   if ! [ -x $T ]; then
-    echo "go run $T -quiet ..."
-    if ! go run $T -quiet ; then
+    CMD="go run $T $LIBS -quiet"
+    echo "$CMD ..."
+    if ! $CMD ; then
       echo "- FAILED.  Try re-running w/out the -quiet option to see output."
       exit 1
     fi
