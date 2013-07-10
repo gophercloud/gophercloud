@@ -19,4 +19,5 @@ type AccessProvider interface {
 // for your provider.
 type CloudServersProvider interface {
 	ListServers() ([]Server, error)
+	ServerById(id string) (*Server, error)
 }

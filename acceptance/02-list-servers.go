@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"github.com/rackspace/gophercloud"
 	"os"
+	"flag"
 )
+
+var quiet = flag.Bool("quiet", false, "Quiet mode, for acceptance testing.  $? still indicates errors though.")
 
 func main() {
 	provider := os.Getenv("SDK_PROVIDER")
@@ -18,6 +21,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "	SDK_PASSWORD=\"%s\"\n", password)
 		os.Exit(1)
 	}
+
+	flag.Parse()
 
 	acc, err := gophercloud.Authenticate(
 		provider,
@@ -45,9 +50,9 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Server ID")
-	fmt.Println("----------------------------------------")
-	for _, s := range servers {
-		fmt.Printf("	%s\n", s.Id)
+	if !*quiet {
+		for _, s := range servers {
+			fmt.Printf("%s\n", s.Id)
+		}
 	}
 }

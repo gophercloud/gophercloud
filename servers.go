@@ -37,6 +37,20 @@ func (gcp *genericServersProvider) ListServers() ([]Server, error) {
 	return ss, err
 }
 
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) ServerById(id string) (*Server, error) {
+	var s *Server
+
+	url := gsp.endpoint + "/servers/" + id
+	err := perigee.Get(url, perigee.Options{
+		Results: &struct{ Server **Server }{&s},
+		MoreHeaders: map[string]string{
+			"X-Auth-Token": gsp.access.AuthToken(),
+		},
+	})
+	return s, err
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`
