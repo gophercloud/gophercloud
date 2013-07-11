@@ -51,6 +51,24 @@ func (gsp *genericServersProvider) ServerById(id string) (*Server, error) {
 	return s, err
 }
 
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) CreateServer(ns NewServer) (*NewServer, error) {
+	var s *NewServer
+
+	ep := gsp.endpoint + "/servers"
+	err := perigee.Post(ep, perigee.Options{
+		ReqBody: &struct {
+			Server *NewServer `json:"server"`
+		}{&ns},
+		Results: &struct{ Server **NewServer }{&s},
+		MoreHeaders: map[string]string{
+			"X-Auth-Token": gsp.access.AuthToken(),
+		},
+		OkCodes: []int{202},
+	})
+	return s, err
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`
@@ -174,4 +192,62 @@ type Server struct {
 	OsExtStsPowerState int            `json:"OS-EXT-STS:power_state"`
 	OsExtStsTaskState  string         `json:"OS-EXT-STS:task_state"`
 	OsExtStsVmState    string         `json:"OS-EXT-STS:vm_state"`
+}
+
+// NewServer structures are used for both requests and responses.
+// The fields discussed below are relevent for server-creation purposes.
+//
+// The Name field contains the desired name of the server.
+// Note that (at present) Rackspace permits more than one server with the same name;
+// however, software should not depend on this.
+// Not only will Rackspace support thank you, so will your own devops engineers.
+// A name is required.
+//
+// The ImageRef field contains the ID of the desired software image to place on the server.
+// This ID must be found in the image slice returned by the Images() function.
+// This field is required.
+//
+// The FlavorRef field contains the ID of the server configuration desired for deployment.
+// This ID must be found in the flavor slice returned by the Flavors() function.
+// This field is required.
+//
+// For OsDcfDiskConfig, refer to the Image or Server structure documentation.
+// This field defaults to "AUTO" if not explicitly provided.
+//
+// Metadata contains a small key/value association of arbitrary data.
+// Neither Rackspace nor OpenStack places significance on this field in any way.
+// This field defaults to an empty map if not provided.
+//
+// Personality specifies the contents of certain files in the server's filesystem.
+// The files and their contents are mapped through a slice of FileConfig structures.
+// If not provided, all filesystem entities retain their image-specific configuration.
+//
+// Networks specifies an affinity for the server's various networks and interfaces.
+// Networks are identified through UUIDs; see NetworkConfig structure documentation for more details.
+// If not provided, network affinity is determined automatically.
+//
+// The AdminPass field may be used to provide a root- or administrator-password
+// during the server provisioning process.
+// If not provided, a random password will be automatically generated and returned in this field.
+//
+// The following fields are intended to be used to communicate certain results about the server being provisioned.
+// When attempting to create a new server, these fields MUST not be provided.
+// They'll be filled in by the response received from the Rackspace APIs.
+//
+// The Id field contains the server's unique identifier.
+// The identifier's scope is best assumed to be bound by the user's account, unless other arrangements have been made with Rackspace.
+//
+// Any Links provided are used to refer to the server specifically by URL.
+// These links are useful for making additional REST calls not explicitly supported by Gorax.
+type NewServer struct {
+	Name            string          `json:"name",omitempty`
+	ImageRef        string          `json:"imageRef,omitempty"`
+	FlavorRef       string          `json:"flavorRef,omitempty"`
+	Metadata        interface{}     `json:"metadata,omitempty"`
+	Personality     []FileConfig    `json:"personality,omitempty"`
+	Networks        []NetworkConfig `json:"networks,omitempty"`
+	AdminPass       string          `json:"adminPass,omitempty"`
+	Id              string          `json:"id,omitempty"`
+	Links           []Link          `json:"links,omitempty"`
+	OsDcfDiskConfig string          `json:"OS-DCF:diskConfig,omitempty"`
 }
