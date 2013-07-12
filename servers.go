@@ -69,6 +69,18 @@ func (gsp *genericServersProvider) CreateServer(ns NewServer) (*NewServer, error
 	return s, err
 }
 
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) DeleteServerById(id string) error {
+	url := gsp.endpoint + "/servers/" + id
+	err := perigee.Delete(url, perigee.Options{
+		MoreHeaders: map[string]string{
+			"X-Auth-Token": gsp.access.AuthToken(),
+		},
+		OkCodes: []int{204},
+	})
+	return err
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`

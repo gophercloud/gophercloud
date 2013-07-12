@@ -29,12 +29,12 @@ func getCredentials() (provider, username, password string) {
 // All content will be within the ASCII graphic character set.
 // (Implementation from Even Shaw's contribution on
 // http://stackoverflow.com/questions/12771930/what-is-the-fastest-way-to-generate-a-long-random-string-in-go).
-func randomString(n int) string {
+func randomString(prefix string, n int) string {
     const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     var bytes = make([]byte, n)
     rand.Read(bytes)
     for i, b := range bytes {
         bytes[i] = alphanum[b % byte(len(alphanum))]
     }
-    return string(bytes)
+    return prefix + string(bytes)
 }
