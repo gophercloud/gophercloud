@@ -15,7 +15,7 @@ var quiet = flag.Bool("quiet", false, "Quiet mode for acceptance tests.  $? non-
 func configure() {
 	provider, username, password = getCredentials()
 	region = flag.String("r", "DFW", "Rackspace region in which to create the server")
-	serverName = flag.String("n", randomString(16), "Server name (what you see in the control panel)")
+	serverName = flag.String("n", randomString("ACPTTEST--", 16), "Server name (what you see in the control panel)")
 	imageRef = flag.String("i", "", "ID of image to deploy onto the server")
 	flavorRef = flag.String("f", "", "Flavor of server to deploy image upon")
 
