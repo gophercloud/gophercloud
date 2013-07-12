@@ -26,5 +26,9 @@ type CloudServersProvider interface {
   // Images
 
   ListImages() ([]Image, error)
+
+  // Flavors
+
+  ListFlavors() ([]Flavor, error)
 }
 
