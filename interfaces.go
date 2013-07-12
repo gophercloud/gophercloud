@@ -22,6 +22,7 @@ type CloudServersProvider interface {
 
 	ListServers() ([]Server, error)
 	ServerById(id string) (*Server, error)
+	CreateServer(ns NewServer) (*NewServer, error)
 
   // Images
 
