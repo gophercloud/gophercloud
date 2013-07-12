@@ -18,7 +18,14 @@ type AccessProvider interface {
 // CloudServersProvider instances encapsulate a Cloud Servers API, should one exist in the service catalog
 // for your provider.
 type CloudServersProvider interface {
+  // Servers
+
 	ListServers() ([]Server, error)
 	ServerById(id string) (*Server, error)
 	CreateServer(ns NewServer) (*NewServer, error)
+
+  // Images
+
+  ListImages() ([]Image, error)
 }
+
