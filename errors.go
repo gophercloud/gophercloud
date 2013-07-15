@@ -30,3 +30,8 @@ var ErrConfiguration = fmt.Errorf("Missing or incomplete configuration")
 // exists in the service catalog.  This can also happen if your tenant lacks
 // adequate permissions to access a given endpoint.
 var ErrEndpoint = fmt.Errorf("Missing endpoint, or insufficient privileges to access endpoint")
+
+// ErrError errors happen when you attempt to discover the response code
+// responsible for a previous request bombing with an error, but pass in an
+// error interface which doesn't belong to the web client.
+var ErrError = fmt.Errorf("Attempt to solicit actual HTTP response code from error entity which doesn't know")

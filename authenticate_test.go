@@ -212,3 +212,28 @@ func TestUserAcquisition(t *testing.T) {
 		return
 	}
 }
+
+func TestAuthenticationNeverReauths(t *testing.T) {
+	tt := newTransport().WithError(401)
+	c := TestContext().
+		UseCustomClient(&http.Client{Transport: tt}).
+		WithProvider("provider", Provider{AuthEndpoint: "http://localhost"})
+
+	_, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
+	if err == nil {
+		t.Error("Expected an error from a 401 Unauthorized response")
+		return
+	}
+
+	rc, _ := ActualResponseCode(err)
+	if rc != 401 {
+		t.Error("Expected a 401 error code")
+		return
+	}
+
+	err = tt.VerifyCalls(t, 1)
+	if err != nil {
+		// Test object already flagged.
+		return
+	}
+}
