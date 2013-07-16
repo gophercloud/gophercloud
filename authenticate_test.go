@@ -53,7 +53,7 @@ const SUCCESSFUL_RESPONSE = `{
 `
 
 func TestAuthProvider(t *testing.T) {
-	tt := newTransport()
+	tt := newTransport().WithResponse(SUCCESSFUL_RESPONSE)
 	c := TestContext().UseCustomClient(&http.Client{
 		Transport: tt,
 	})
@@ -86,7 +86,7 @@ func TestAuthProvider(t *testing.T) {
 }
 
 func TestTenantIdEncoding(t *testing.T) {
-	tt := newTransport()
+	tt := newTransport().WithResponse(SUCCESSFUL_RESPONSE)
 	c := TestContext().
 		UseCustomClient(&http.Client{
 		Transport: tt,
@@ -126,7 +126,7 @@ func TestTenantIdEncoding(t *testing.T) {
 func TestUserNameAndPassword(t *testing.T) {
 	c := TestContext().
 		WithProvider("provider", Provider{AuthEndpoint: "http://localhost/"}).
-		UseCustomClient(&http.Client{Transport: newTransport()})
+		UseCustomClient(&http.Client{Transport: newTransport().WithResponse(SUCCESSFUL_RESPONSE)})
 
 	credentials := []AuthOptions{
 		AuthOptions{},

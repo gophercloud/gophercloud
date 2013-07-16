@@ -107,6 +107,9 @@ func (my *MyAccess) FirstEndpointUrlByCriteria(ApiCriteria) string {
 func (my *MyAccess) AuthToken() string {
 	return ""
 }
+func (my *MyAccess) Revoke(string) error {
+	return nil
+}
 
 func TestReauthHandlerUsesSameAccessProvider(t *testing.T) {
 	fakeAccess := &MyAccess{}

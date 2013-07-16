@@ -44,6 +44,7 @@ type Access struct {
 	Token          Token
 	ServiceCatalog []CatalogEntry
 	User           User
+	provider       Provider `json:"-"`
 }
 
 // Token encapsulates an authentication token and when it expires.  It also includes
@@ -125,6 +126,9 @@ func (c *Context) Authenticate(provider string, options AuthOptions) (*Access, e
 			&access,
 		},
 	})
+	if err == nil {
+		access.provider = p
+	}
 	return access, err
 }
 
@@ -142,5 +146,12 @@ func (a *Access) AuthToken() string {
 
 // See AccessProvider interface definition for details.
 func (a *Access) Revoke(tok string) error {
-	return nil
+	url := a.provider.AuthEndpoint + "/" + tok
+	err := perigee.Delete(url, perigee.Options{
+		MoreHeaders: map[string]string{
+			"X-Auth-Token": a.AuthToken(),
+		},
+		OkCodes: []int{204},
+	})
+	return err
 }
