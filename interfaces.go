@@ -9,10 +9,12 @@ type AccessProvider interface {
 	// field.
 	FirstEndpointUrlByCriteria(ApiCriteria) string
 
-	// TODO(sfalvo): get Token() to automatically renew the authentication token if it's near expiry.
-
 	// AuthToken provides a copy of the current authentication token for the user's credentials.
+	// Note that AuthToken() will not automatically refresh an expired token.
 	AuthToken() string
+
+	// Revoke allows you to terminate any program's access to the OpenStack API by token ID.
+	Revoke(string) error
 }
 
 // CloudServersProvider instances encapsulate a Cloud Servers API, should one exist in the service catalog

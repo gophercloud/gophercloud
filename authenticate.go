@@ -139,3 +139,8 @@ func (a *Access) FirstEndpointUrlByCriteria(ac ApiCriteria) string {
 func (a *Access) AuthToken() string {
 	return a.Token.Id
 }
+
+// See AccessProvider interface definition for details.
+func (a *Access) Revoke(tok string) error {
+	return nil
+}
