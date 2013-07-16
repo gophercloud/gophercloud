@@ -6,7 +6,7 @@ import (
 )
 
 // This reauth-handler does nothing, and returns no error.
-func doNothing() error {
+func doNothing(_ AccessProvider) error {
 	return nil
 }
 
@@ -14,18 +14,14 @@ func TestOtherErrorsPropegate(t *testing.T) {
 	calls := 0
 	c := TestContext().WithReauthHandler(doNothing)
 
-	myObj, err := c.WithReauth(func() (interface{}, error) {
+	err := c.WithReauth(nil, func() error {
 		calls++
-		return nil, &perigee.UnexpectedResponseCodeError{
+		return &perigee.UnexpectedResponseCodeError{
 			Expected: []int{204},
 			Actual: 404,
 		}
 	})
 
-	if myObj != nil {
-		t.Errorf("Returned nil myObj; got %#v", myObj)
-		return
-	}
 	if err == nil {
 		t.Error("Expected MyError to be returned; got nil instead.")
 		return
@@ -44,18 +40,14 @@ func Test401ErrorCausesBodyInvokation2ndTime(t *testing.T) {
 	calls := 0
 	c := TestContext().WithReauthHandler(doNothing)
 
-	myObj, err := c.WithReauth(func() (interface{}, error) {
+	err := c.WithReauth(nil, func() error {
 		calls++
-		return nil, &perigee.UnexpectedResponseCodeError{
+		return &perigee.UnexpectedResponseCodeError{
 			Expected: []int{204},
 			Actual: 401,
 		}
 	})
 
-	if myObj != nil {
-		t.Errorf("Returned nil myObj; got %#v", myObj)
-		return
-	}
 	if err == nil {
 		t.Error("Expected MyError to be returned; got nil instead.")
 		return
@@ -68,12 +60,12 @@ func Test401ErrorCausesBodyInvokation2ndTime(t *testing.T) {
 
 func TestReauthAttemptShouldHappen(t *testing.T) {
 	calls := 0
-	c := TestContext().WithReauthHandler(func() error {
+	c := TestContext().WithReauthHandler(func(_ AccessProvider) error {
 		calls++
 		return nil
 	})
-	c.WithReauth(func() (interface{}, error) {
-		return nil, &perigee.UnexpectedResponseCodeError{
+	c.WithReauth(nil, func() error {
+		return &perigee.UnexpectedResponseCodeError{
 			Expected: []int{204},
 			Actual: 401,
 		}
@@ -91,12 +83,12 @@ func (*MyError) Error() string {
 }
 
 func TestReauthErrorShouldPropegate(t *testing.T) {
-	c := TestContext().WithReauthHandler(func() error {
+	c := TestContext().WithReauthHandler(func(_ AccessProvider) error {
 		return &MyError{}
 	})
 
-	_, err := c.WithReauth(func() (interface{}, error) {
-		return nil, &perigee.UnexpectedResponseCodeError{
+	err := c.WithReauth(nil, func() error {
+		return &perigee.UnexpectedResponseCodeError{
 			Expected: []int{204},
 			Actual: 401,
 		}
@@ -106,4 +98,28 @@ func TestReauthErrorShouldPropegate(t *testing.T) {
 		t.Errorf("Expected a MyError; got %#v", err)
 		return
 	}
+}
+
+type MyAccess struct {}
+func (my *MyAccess) FirstEndpointUrlByCriteria(ApiCriteria) string {
+	return ""
+}
+func (my *MyAccess) AuthToken() string {
+	return ""
+}
+
+func TestReauthHandlerUsesSameAccessProvider(t *testing.T) {
+	fakeAccess := &MyAccess{}
+	c := TestContext().WithReauthHandler(func(acc AccessProvider) error {
+		if acc != fakeAccess {
+			t.Errorf("Expected acc = fakeAccess")
+		}
+		return nil
+	})
+	c.WithReauth(fakeAccess, func() error {
+		return &perigee.UnexpectedResponseCodeError{
+			Expected: []int{204},
+			Actual: 401,
+		}
+	})
 }

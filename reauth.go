@@ -10,14 +10,14 @@ import (
 // Do not confuse this function with WithReauth()!  Although they work together to support reauthentication,
 // WithReauth() actually contains the decision-making logic to determine when to perform a reauth,
 // while WithReauthHandler() is used to configure what a reauth actually entails.
-func (c *Context) WithReauth(f func() (interface{}, error)) (interface{}, error) {
-	result, err := f()
+func (c *Context) WithReauth(ap AccessProvider, f func() error) error {
+	err := f()
 	cause, ok := err.(*perigee.UnexpectedResponseCodeError)
 	if ok && cause.Actual == 401 {
-		err = c.reauthHandler()
+		err = c.reauthHandler(ap)
 		if err == nil {
-			result, err = f()
+			err = f()
 		}
 	}
-	return result, err
+	return err
 }

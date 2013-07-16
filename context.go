@@ -14,7 +14,7 @@ type Provider struct {
 
 // ReauthHandlerFunc functions are responsible for somehow performing the task of
 // reauthentication.
-type ReauthHandlerFunc func() error
+type ReauthHandlerFunc func(AccessProvider) error
 
 // Context structures encapsulate Gophercloud-global state in a manner which
 // facilitates easier unit testing.  As a user of this SDK, you'll never
