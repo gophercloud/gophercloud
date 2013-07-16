@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"flag"
 	"github.com/rackspace/gophercloud"
+	"time"
 )
 
 var quiet = flag.Bool("quiet", false, "Quiet mode for acceptance testing.  $? non-zero on error though.")
@@ -19,6 +20,7 @@ func main() {
 		gophercloud.AuthOptions{
 			Username: username,
 			Password: password,
+			AllowReauth: true,		// This enables reauthentication.
 		},
 	)
 	if err != nil {
@@ -47,6 +49,10 @@ func main() {
 
 	// Revoke our current authentication token.
 	auth.Revoke(auth.AuthToken())
+	time.Sleep(15 * time.Second)
+
+	auth.Reauthenticate()
+	fmt.Println("OLD: ", token1, "\nNEW: ", auth.AuthToken())
 
 	// Attempt to list images again.  This should _succeed_, because we enabled re-authentication.
 	_, err = servers.ListImages()

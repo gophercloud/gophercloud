@@ -15,6 +15,10 @@ type AccessProvider interface {
 
 	// Revoke allows you to terminate any program's access to the OpenStack API by token ID.
 	Revoke(string) error
+
+	// Reauthenticate attempts to acquire a new authentication token, if the feature is enabled by
+	// AuthOptions.AllowReauth.
+	Reauthenticate() error
 }
 
 // CloudServersProvider instances encapsulate a Cloud Servers API, should one exist in the service catalog

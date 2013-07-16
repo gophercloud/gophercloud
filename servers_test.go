@@ -24,6 +24,10 @@ func (ta *testAccess) Revoke(string) error {
 	return nil
 }
 
+func (ta *testAccess) Reauthenticate() error {
+	return nil
+}
+
 func TestGetServersApi(t *testing.T) {
 	c := TestContext().UseCustomClient(&http.Client{Transport: newTransport().WithResponse("Hello")})
 

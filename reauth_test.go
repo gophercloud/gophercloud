@@ -110,6 +110,9 @@ func (my *MyAccess) AuthToken() string {
 func (my *MyAccess) Revoke(string) error {
 	return nil
 }
+func (my *MyAccess) Reauthenticate() error {
+	return nil
+}
 
 func TestReauthHandlerUsesSameAccessProvider(t *testing.T) {
 	fakeAccess := &MyAccess{}

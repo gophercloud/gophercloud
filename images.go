@@ -7,13 +7,15 @@ import (
 // See the CloudImagesProvider interface for details.
 func (gsp *genericServersProvider) ListImages() ([]Image, error) {
 	var is []Image
-	url := gsp.endpoint + "/images"
-	err := perigee.Get(url, perigee.Options{
-		CustomClient: gsp.context.httpClient,
-		Results:      &struct{ Images *[]Image }{&is},
-		MoreHeaders: map[string]string{
-			"X-Auth-Token": gsp.access.AuthToken(),
-		},
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		url := gsp.endpoint + "/images"
+		return perigee.Get(url, perigee.Options{
+			CustomClient: gsp.context.httpClient,
+			Results:      &struct{ Images *[]Image }{&is},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+		})
 	})
 	return is, err
 }

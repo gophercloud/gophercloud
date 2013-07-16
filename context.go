@@ -49,6 +49,9 @@ func TestContext() *Context {
 	return &Context{
 		providerMap: make(map[string]Provider),
 		httpClient:  &http.Client{},
+		reauthHandler: func(acc AccessProvider) error {
+			return acc.Reauthenticate()
+		},
 	}
 }
 
