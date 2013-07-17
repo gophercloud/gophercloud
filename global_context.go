@@ -1,5 +1,9 @@
 package gophercloud
 
+import (
+	"github.com/racker/perigee"
+)
+
 // globalContext is the, well, "global context."
 // Most of this SDK is written in a manner to facilitate easier testing,
 // which doesn't require all the configuration a real-world application would require.
@@ -45,4 +49,14 @@ func Authenticate(provider string, options AuthOptions) (*Access, error) {
 // Instantiates a Cloud Servers object for the provider given.
 func ServersApi(acc AccessProvider, criteria ApiCriteria) (CloudServersProvider, error) {
 	return globalContext.ServersApi(acc, criteria)
+}
+
+// ActualResponseCode inspects a returned error, and discovers the actual response actual
+// response code that caused the error to be raised.
+func ActualResponseCode(e error) (int, error) {
+	err, ok := e.(*perigee.UnexpectedResponseCodeError)
+	if !ok {
+		return 0, ErrError
+	}
+	return err.Actual, nil
 }

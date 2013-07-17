@@ -53,7 +53,7 @@ const SUCCESSFUL_RESPONSE = `{
 `
 
 func TestAuthProvider(t *testing.T) {
-	tt := newTransport()
+	tt := newTransport().WithResponse(SUCCESSFUL_RESPONSE)
 	c := TestContext().UseCustomClient(&http.Client{
 		Transport: tt,
 	})
@@ -86,7 +86,7 @@ func TestAuthProvider(t *testing.T) {
 }
 
 func TestTenantIdEncoding(t *testing.T) {
-	tt := newTransport()
+	tt := newTransport().WithResponse(SUCCESSFUL_RESPONSE)
 	c := TestContext().
 		UseCustomClient(&http.Client{
 		Transport: tt,
@@ -126,7 +126,7 @@ func TestTenantIdEncoding(t *testing.T) {
 func TestUserNameAndPassword(t *testing.T) {
 	c := TestContext().
 		WithProvider("provider", Provider{AuthEndpoint: "http://localhost/"}).
-		UseCustomClient(&http.Client{Transport: newTransport()})
+		UseCustomClient(&http.Client{Transport: newTransport().WithResponse(SUCCESSFUL_RESPONSE)})
 
 	credentials := []AuthOptions{
 		AuthOptions{},
@@ -209,6 +209,31 @@ func TestUserAcquisition(t *testing.T) {
 	u := acc.User
 	if u.Id != "161418" {
 		t.Error("Expected user ID of 16148; got", u.Id)
+		return
+	}
+}
+
+func TestAuthenticationNeverReauths(t *testing.T) {
+	tt := newTransport().WithError(401)
+	c := TestContext().
+		UseCustomClient(&http.Client{Transport: tt}).
+		WithProvider("provider", Provider{AuthEndpoint: "http://localhost"})
+
+	_, err := c.Authenticate("provider", AuthOptions{Username: "u", Password: "p"})
+	if err == nil {
+		t.Error("Expected an error from a 401 Unauthorized response")
+		return
+	}
+
+	rc, _ := ActualResponseCode(err)
+	if rc != 401 {
+		t.Error("Expected a 401 error code")
+		return
+	}
+
+	err = tt.VerifyCalls(t, 1)
+	if err != nil {
+		// Test object already flagged.
 		return
 	}
 }

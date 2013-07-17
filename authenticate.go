@@ -16,6 +16,13 @@ type AuthOptions struct {
 
 	// The TenantId field is optional for the Identity V2 API.
 	TenantId string
+
+	// AllowReauth should be set to true if you grant permission for Gophercloud to cache
+	// your credentials in memory, and to allow Gophercloud to attempt to re-authenticate
+	// automatically if/when your token expires.  If you set it to false, it will not cache
+	// these settings, but re-authentication will not be possible.  This setting defaults
+	// to false.
+	AllowReauth bool
 }
 
 // AuthContainer provides a JSON encoding wrapper for passing credentials to the Identity
@@ -44,6 +51,9 @@ type Access struct {
 	Token          Token
 	ServiceCatalog []CatalogEntry
 	User           User
+	provider       Provider `json:"-"`
+	options        AuthOptions `json:"-"`
+	context        *Context `json:"-"`
 }
 
 // Token encapsulates an authentication token and when it expires.  It also includes
@@ -85,30 +95,18 @@ type EntryEndpoint struct {
 	VersionId, VersionInfo, VersionList string
 }
 
-// Authenticate() grants access to the OpenStack-compatible provider API.
-//
-// Providers are identified through a unique key string.
-// See the RegisterProvider() method for more details.
-//
-// The supplied AuthOptions instance allows the client to specify only those credentials
-// relevant for the authentication request.  At present, support exists for OpenStack
-// Identity V2 API only; support for V3 will become available as soon as documentation for it
-// becomes readily available.
-//
-// For Identity V2 API requirements, you must provide at least the Username and Password
-// options.  The TenantId field is optional, and defaults to "".
-func (c *Context) Authenticate(provider string, options AuthOptions) (*Access, error) {
+// papersPlease contains the common logic between authentication and re-authentication.
+// The name, obviously a joke on the process of authentication, was chosen because
+// of how many other entities exist in the program containing the word Auth or Authorization.
+// I didn't need another one.
+func (c *Context) papersPlease(p Provider, options AuthOptions) (*Access, error) {
 	var access *Access
 
-	p, err := c.ProviderByName(provider)
-	if err != nil {
-		return nil, err
-	}
 	if (options.Username == "") || (options.Password == "") {
 		return nil, ErrCredentials
 	}
 
-	err = perigee.Post(p.AuthEndpoint, perigee.Options{
+	err := perigee.Post(p.AuthEndpoint, perigee.Options{
 		CustomClient: c.httpClient,
 		ReqBody: &AuthContainer{
 			Auth: Auth{
@@ -125,7 +123,48 @@ func (c *Context) Authenticate(provider string, options AuthOptions) (*Access, e
 			&access,
 		},
 	})
+	if err == nil {
+		access.options = options
+		access.provider = p
+		access.context = c
+	}
 	return access, err
+}
+
+// Authenticate() grants access to the OpenStack-compatible provider API.
+//
+// Providers are identified through a unique key string.
+// See the RegisterProvider() method for more details.
+//
+// The supplied AuthOptions instance allows the client to specify only those credentials
+// relevant for the authentication request.  At present, support exists for OpenStack
+// Identity V2 API only; support for V3 will become available as soon as documentation for it
+// becomes readily available.
+//
+// For Identity V2 API requirements, you must provide at least the Username and Password
+// options.  The TenantId field is optional, and defaults to "".
+func (c *Context) Authenticate(provider string, options AuthOptions) (*Access, error) {
+	p, err := c.ProviderByName(provider)
+	if err != nil {
+		return nil, err
+	}
+	return c.papersPlease(p, options)
+}
+
+// Reauthenticate attempts to reauthenticate using the configured access credentials, if
+// allowed.  This method takes no action unless your AuthOptions has the AllowReauth flag
+// set to true.
+func (a *Access) Reauthenticate() error {
+	var other *Access
+	var err error
+
+	if a.options.AllowReauth {
+		other, err = a.context.papersPlease(a.provider, a.options)
+		if err == nil {
+			*a = *other
+		}
+	}
+	return err
 }
 
 // See AccessProvider interface definition for details.
@@ -138,4 +177,16 @@ func (a *Access) FirstEndpointUrlByCriteria(ac ApiCriteria) string {
 // See AccessProvider interface definition for details.
 func (a *Access) AuthToken() string {
 	return a.Token.Id
+}
+
+// See AccessProvider interface definition for details.
+func (a *Access) Revoke(tok string) error {
+	url := a.provider.AuthEndpoint + "/" + tok
+	err := perigee.Delete(url, perigee.Options{
+		MoreHeaders: map[string]string{
+			"X-Auth-Token": a.AuthToken(),
+		},
+		OkCodes: []int{204},
+	})
+	return err
 }

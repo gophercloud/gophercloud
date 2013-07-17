@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"fmt"
+	"testing"
 )
 
 type transport struct {
@@ -12,6 +14,7 @@ type transport struct {
 	response       string
 	expectTenantId bool
 	tenantIdFound  bool
+	status int
 }
 
 func (t *transport) RoundTrip(req *http.Request) (rsp *http.Response, err error) {
@@ -24,9 +27,17 @@ func (t *transport) RoundTrip(req *http.Request) (rsp *http.Response, err error)
 
 	body := ioutil.NopCloser(strings.NewReader(t.response))
 
+	if t.status == 0 {
+		t.status = 200
+	}
+	statusMsg := "OK"
+	if (t.status < 200) || (299 < t.status) {
+		statusMsg = "Error"
+	}
+
 	rsp = &http.Response{
-		Status:           "200 OK",
-		StatusCode:       200,
+		Status:           fmt.Sprintf("%d %s", t.status, statusMsg),
+		StatusCode:       t.status,
 		Proto:            "HTTP/1.1",
 		ProtoMajor:       1,
 		ProtoMinor:       1,
@@ -72,5 +83,21 @@ func (t *transport) ExpectTenantId() *transport {
 
 func (t *transport) WithResponse(r string) *transport {
 	t.response = r
+	t.status = 200
 	return t
+}
+
+func (t *transport) WithError(code int) *transport {
+	t.response = fmt.Sprintf("Error %d", code)
+	t.status = code
+	return t
+}
+
+func (t *transport) VerifyCalls(test *testing.T, n int) error {
+	if t.called != n {
+		err := fmt.Errorf("Expected Transport to be called %d times; found %d instead", n, t.called)
+		test.Error(err)
+		return err
+	}
+	return nil
 }

@@ -12,6 +12,10 @@ type Provider struct {
 	AuthEndpoint string
 }
 
+// ReauthHandlerFunc functions are responsible for somehow performing the task of
+// reauthentication.
+type ReauthHandlerFunc func(AccessProvider) error
+
 // Context structures encapsulate Gophercloud-global state in a manner which
 // facilitates easier unit testing.  As a user of this SDK, you'll never
 // have to use this structure, except when contributing new code to the SDK.
@@ -21,6 +25,17 @@ type Context struct {
 
 	// httpClient refers to the current HTTP client interface to use.
 	httpClient *http.Client
+
+	// reauthHandler provides the functionality needed to re-authenticate
+	// if that feature is enabled.  Note: in order to allow for automatic
+	// re-authentication, the Context object will need to remember your
+	// username, password, and tenant ID as provided in the initial call
+	// to Authenticate().  If you do not desire this, you'll need to handle
+	// reauthentication yourself through other means.  Two methods exist:
+	// the first approach is to just handle errors yourself at the application
+	// layer, and the other is through a custom reauthentication handler
+	// set through the WithReauthHandler() method.
+	reauthHandler ReauthHandlerFunc
 }
 
 // TestContext yields a new Context instance, pre-initialized with a barren
@@ -34,6 +49,9 @@ func TestContext() *Context {
 	return &Context{
 		providerMap: make(map[string]Provider),
 		httpClient:  &http.Client{},
+		reauthHandler: func(acc AccessProvider) error {
+			return acc.Reauthenticate()
+		},
 	}
 }
 
@@ -91,4 +109,16 @@ func (c *Context) ServersApi(acc AccessProvider, criteria ApiCriteria) (CloudSer
 	}
 
 	return gcp, nil
+}
+
+// WithReauthHandler configures the context to handle reauthentication attempts using the supplied
+// funtion.  By default, reauthentication happens by invoking Authenticate(), which is unlikely to be
+// useful in a unit test.
+//
+// Do not confuse this function with WithReauth()!  Although they work together to support reauthentication,
+// WithReauth() actually contains the decision-making logic to determine when to perform a reauth,
+// while WithReauthHandler() is used to configure what a reauth actually entails.
+func (c *Context) WithReauthHandler(f ReauthHandlerFunc) *Context {
+	c.reauthHandler = f
+	return c
 }
