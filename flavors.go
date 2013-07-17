@@ -8,13 +8,15 @@ import (
 func (gsp *genericServersProvider) ListFlavors() ([]Flavor, error) {
 	var fs []Flavor
 
-	url := gsp.endpoint + "/flavors"
-	err := perigee.Get(url, perigee.Options{
-		CustomClient: gsp.context.httpClient,
-		Results:      &struct{ Flavors *[]Flavor }{&fs},
-		MoreHeaders: map[string]string{
-			"X-Auth-Token": gsp.access.AuthToken(),
-		},
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		url := gsp.endpoint + "/flavors"
+		 return perigee.Get(url, perigee.Options{
+			CustomClient: gsp.context.httpClient,
+			Results:      &struct{ Flavors *[]Flavor }{&fs},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+		})
 	})
 	return fs, err
 }
