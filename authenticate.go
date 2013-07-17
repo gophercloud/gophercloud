@@ -2,7 +2,6 @@ package gophercloud
 
 import (
 	"github.com/racker/perigee"
-	"fmt"
 )
 
 // AuthOptions lets anyone calling Authenticate() supply the required access credentials.
@@ -159,11 +158,9 @@ func (a *Access) Reauthenticate() error {
 	var other *Access
 	var err error
 
-	fmt.Printf("**\n  %#v\n", a.options)
 	if a.options.AllowReauth {
 		other, err = a.context.papersPlease(a.provider, a.options)
-		if err != nil {
-			fmt.Println("NEW NEW: ", other.AuthToken())
+		if err == nil {
 			*a = *other
 		}
 	}
