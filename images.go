@@ -7,6 +7,7 @@ import (
 // See the CloudImagesProvider interface for details.
 func (gsp *genericServersProvider) ListImages() ([]Image, error) {
 	var is []Image
+
 	err := gsp.context.WithReauth(gsp.access, func() error {
 		url := gsp.endpoint + "/images"
 		return perigee.Get(url, perigee.Options{

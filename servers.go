@@ -26,13 +26,15 @@ type genericServersProvider struct {
 func (gcp *genericServersProvider) ListServers() ([]Server, error) {
 	var ss []Server
 
-	url := gcp.endpoint + "/servers"
-	err := perigee.Get(url, perigee.Options{
-		CustomClient: gcp.context.httpClient,
-		Results:      &struct{ Servers *[]Server }{&ss},
-		MoreHeaders: map[string]string{
-			"X-Auth-Token": gcp.access.AuthToken(),
-		},
+	err := gcp.context.WithReauth(gcp.access, func() error {
+		url := gcp.endpoint + "/servers"
+		return perigee.Get(url, perigee.Options{
+			CustomClient: gcp.context.httpClient,
+			Results:      &struct{ Servers *[]Server }{&ss},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gcp.access.AuthToken(),
+			},
+		})
 	})
 	return ss, err
 }
@@ -41,12 +43,14 @@ func (gcp *genericServersProvider) ListServers() ([]Server, error) {
 func (gsp *genericServersProvider) ServerById(id string) (*Server, error) {
 	var s *Server
 
-	url := gsp.endpoint + "/servers/" + id
-	err := perigee.Get(url, perigee.Options{
-		Results: &struct{ Server **Server }{&s},
-		MoreHeaders: map[string]string{
-			"X-Auth-Token": gsp.access.AuthToken(),
-		},
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		url := gsp.endpoint + "/servers/" + id
+		return perigee.Get(url, perigee.Options{
+			Results: &struct{ Server **Server }{&s},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+		})
 	})
 	return s, err
 }
@@ -55,28 +59,33 @@ func (gsp *genericServersProvider) ServerById(id string) (*Server, error) {
 func (gsp *genericServersProvider) CreateServer(ns NewServer) (*NewServer, error) {
 	var s *NewServer
 
-	ep := gsp.endpoint + "/servers"
-	err := perigee.Post(ep, perigee.Options{
-		ReqBody: &struct {
-			Server *NewServer `json:"server"`
-		}{&ns},
-		Results: &struct{ Server **NewServer }{&s},
-		MoreHeaders: map[string]string{
-			"X-Auth-Token": gsp.access.AuthToken(),
-		},
-		OkCodes: []int{202},
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := gsp.endpoint + "/servers"
+		return perigee.Post(ep, perigee.Options{
+			ReqBody: &struct {
+				Server *NewServer `json:"server"`
+			}{&ns},
+			Results: &struct{ Server **NewServer }{&s},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{202},
+		})
 	})
+
 	return s, err
 }
 
 // See the CloudServersProvider interface for details.
 func (gsp *genericServersProvider) DeleteServerById(id string) error {
-	url := gsp.endpoint + "/servers/" + id
-	err := perigee.Delete(url, perigee.Options{
-		MoreHeaders: map[string]string{
-			"X-Auth-Token": gsp.access.AuthToken(),
-		},
-		OkCodes: []int{204},
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		url := gsp.endpoint + "/servers/" + id
+		return perigee.Delete(url, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{204},
+		})
 	})
 	return err
 }
