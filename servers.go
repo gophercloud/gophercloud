@@ -23,7 +23,7 @@ type genericServersProvider struct {
 }
 
 // See the CloudServersProvider interface for details.
-func (gcp *genericServersProvider) ListServers() ([]Server, error) {
+func (gcp *genericServersProvider) ListServersLinksOnly() ([]Server, error) {
 	var ss []Server
 
 	url := gcp.endpoint + "/servers"
@@ -33,6 +33,23 @@ func (gcp *genericServersProvider) ListServers() ([]Server, error) {
 		MoreHeaders: map[string]string{
 			"X-Auth-Token": gcp.access.AuthToken(),
 		},
+	})
+	return ss, err
+}
+
+// See the CloudServersProvider interface for details.
+func (gcp *genericServersProvider) ListServers() ([]Server, error) {
+	var ss []Server
+
+	err := gcp.context.WithReauth(gcp.access, func() error {
+		url := gcp.endpoint + "/servers/detail"
+		return perigee.Get(url, perigee.Options{
+			CustomClient: gcp.context.httpClient,
+			Results:      &struct{ Servers *[]Server }{&ss},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gcp.access.AuthToken(),
+			},
+		})
 	})
 	return ss, err
 }

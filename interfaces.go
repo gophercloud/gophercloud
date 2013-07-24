@@ -27,6 +27,7 @@ type CloudServersProvider interface {
   // Servers
 
 	ListServers() ([]Server, error)
+  ListServersLinksOnly() ([]Server, error)
 	ServerById(id string) (*Server, error)
 	CreateServer(ns NewServer) (*NewServer, error)
 	DeleteServerById(id string) error
