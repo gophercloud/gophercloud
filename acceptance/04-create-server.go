@@ -46,7 +46,7 @@ func main() {
 		panic(err)
 	}
 
-	err = createServer(servers, *imageRef, *flavorRef, *serverName, *adminPass)
+	_, err = createServer(servers, *imageRef, *flavorRef, *serverName, *adminPass)
 	if err != nil {
 		panic(err)
 	}

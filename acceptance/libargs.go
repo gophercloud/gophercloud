@@ -92,7 +92,7 @@ func aSuitableFlavor(api gophercloud.CloudServersProvider) string {
 // A blank admin password will cause a password to be automatically generated; however,
 // at present no means of recovering this password exists, as no acceptance tests yet require
 // this data.
-func createServer(servers gophercloud.CloudServersProvider, imageRef, flavorRef, name, adminPass string) error {
+func createServer(servers gophercloud.CloudServersProvider, imageRef, flavorRef, name, adminPass string) (string, error) {
 	if imageRef == "" {
 		imageRef = aSuitableImage(servers)
 	}
@@ -109,12 +109,16 @@ func createServer(servers gophercloud.CloudServersProvider, imageRef, flavorRef,
 		name = fmt.Sprintf("ACPTTEST--%s", name)
 	}
 
-	_, err := servers.CreateServer(gophercloud.NewServer{
+	newServer, err := servers.CreateServer(gophercloud.NewServer{
 		Name:      name,
 		ImageRef:  imageRef,
 		FlavorRef: flavorRef,
 		AdminPass: adminPass,
 	})
 
-	return err
+	if err != nil {
+		return "", err
+	}
+
+	return newServer.Id, nil
 }

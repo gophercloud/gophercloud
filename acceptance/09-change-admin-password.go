@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/rackspace/gophercloud"
+	"time"
 )
 
 var quiet = flag.Bool("quiet", false, "Quiet mode, for acceptance testing.  $? still indicates errors though.")
@@ -13,14 +14,6 @@ var newPass = flag.String("p", "", "New password for the server.")
 func main() {
 	provider, username, password := getCredentials()
 	flag.Parse()
-
-	if *serverId == "" {
-		panic("Server ID expected [use -i option]")
-	}
-
-	if *newPass == "" {
-		panic("Password expected [use -p option]")
-	}
 
 	acc, err := gophercloud.Authenticate(
 		provider,
@@ -41,6 +34,32 @@ func main() {
 	})
 	if err != nil {
 		panic(err)
+	}
+
+	// If user doesn't explicitly provide a server ID, create one dynamically.
+	if *serverId == "" {
+		var err error
+		*serverId, err = createServer(api, "", "", "", "")
+		if err != nil {
+			panic(err)
+		}
+
+		// Wait for server to finish provisioning.
+		for {
+			s, err := api.ServerById(*serverId)
+			if err != nil {
+				panic(err)
+			}
+			if s.Status == "ACTIVE" {
+				break
+			}
+			time.Sleep(10 * time.Second)
+		}
+	}
+
+	// If no password is provided, create one dynamically.
+	if *newPass == "" {
+		*newPass = randomString("", 16)
 	}
 
 	err = api.SetAdminPassword(*serverId, *newPass)
