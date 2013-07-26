@@ -5,6 +5,7 @@ package gophercloud
 
 import (
 	"github.com/racker/perigee"
+	"fmt"
 )
 
 // genericServersProvider structures provide the implementation for generic OpenStack-compatible
@@ -102,6 +103,29 @@ func (gsp *genericServersProvider) DeleteServerById(id string) error {
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
 			OkCodes: []int{204},
+		})
+	})
+	return err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) SetAdminPassword(id, pw string) error {
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Post(url, perigee.Options{
+			ReqBody: &struct {
+				ChangePassword struct {
+					AdminPass string `json:"adminPass"`
+				} `json:"changePassword"`
+			}{
+				struct {
+					AdminPass string `json:"adminPass"`
+				}{pw},
+			},
+			OkCodes: []int{202},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
 		})
 	})
 	return err
