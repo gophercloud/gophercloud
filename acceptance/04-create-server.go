@@ -22,46 +22,6 @@ func configure() {
 	flag.Parse()
 }
 
-func aSuitableImage(api gophercloud.CloudServersProvider) string {
-	images, err := api.ListImages()
-	if err != nil {
-		panic(err)
-	}
-
-	// TODO(sfalvo):
-	// Works for Rackspace, might not work for your provider!
-	// Need to figure out why ListImages() provides 0 values for
-	// Ram and Disk fields.
-	//
-	// Until then, just return Ubuntu 12.04 LTS.
-	for i := 0; i < len(images); i++ {
-		if images[i].Id == "6a668bb8-fb5d-407a-9a89-6f957bced767" {
-			return images[i].Id
-		}
-	}
-	panic("Image 6a668bb8-fb5d-407a-9a89-6f957bced767 (Ubuntu 12.04 LTS) not found.")
-}
-
-func aSuitableFlavor(api gophercloud.CloudServersProvider) string {
-	flavors, err := api.ListFlavors()
-	if err != nil {
-		panic(err)
-	}
-
-	// TODO(sfalvo):
-	// Works for Rackspace, might not work for your provider!
-	// Need to figure out why ListFlavors() provides 0 values for
-	// Ram and Disk fields.
-	//
-	// Until then, just return Ubuntu 12.04 LTS.
-	for i := 0; i < len(flavors); i++ {
-		if flavors[i].Id == "2" {
-			return flavors[i].Id
-		}
-	}
-	panic("Flavor 2 (512MB 1-core 20GB machine) not found.")
-}
-
 func main() {
 	configure()
 
@@ -86,20 +46,7 @@ func main() {
 		panic(err)
 	}
 
-	if *imageRef == "" {
-		*imageRef = aSuitableImage(servers)
-	}
-
-	if *flavorRef == "" {
-		*flavorRef = aSuitableFlavor(servers)
-	}
-
-	_, err = servers.CreateServer(gophercloud.NewServer{
-		Name:      *serverName,
-		ImageRef:  *imageRef,
-		FlavorRef: *flavorRef,
-		AdminPass: *adminPass,
-	})
+	err = createServer(servers, *imageRef, *flavorRef, *serverName, *adminPass)
 	if err != nil {
 		panic(err)
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"crypto/rand"
+	"github.com/rackspace/gophercloud"
 )
 
 // getCredentials will verify existence of needed credential information
@@ -37,4 +38,83 @@ func randomString(prefix string, n int) string {
         bytes[i] = alphanum[b % byte(len(alphanum))]
     }
     return prefix + string(bytes)
+}
+
+// aSuitableImage finds a minimal image for use in dynamically creating servers.
+// If none can be found, this function will panic.
+func aSuitableImage(api gophercloud.CloudServersProvider) string {
+	images, err := api.ListImages()
+	if err != nil {
+		panic(err)
+	}
+
+	// TODO(sfalvo):
+	// Works for Rackspace, might not work for your provider!
+	// Need to figure out why ListImages() provides 0 values for
+	// Ram and Disk fields.
+	//
+	// Until then, just return Ubuntu 12.04 LTS.
+	for i := 0; i < len(images); i++ {
+		if images[i].Id == "23b564c9-c3e6-49f9-bc68-86c7a9ab5018" {
+			return images[i].Id
+		}
+	}
+	panic("Image 23b564c9-c3e6-49f9-bc68-86c7a9ab5018 (Ubuntu 12.04 LTS) not found.")
+}
+
+// aSuitableFlavor finds the minimum flavor capable of running the test image
+// chosen by aSuitableImage.  If none can be found, this function will panic.
+func aSuitableFlavor(api gophercloud.CloudServersProvider) string {
+	flavors, err := api.ListFlavors()
+	if err != nil {
+		panic(err)
+	}
+
+	// TODO(sfalvo):
+	// Works for Rackspace, might not work for your provider!
+	// Need to figure out why ListFlavors() provides 0 values for
+	// Ram and Disk fields.
+	//
+	// Until then, just return Ubuntu 12.04 LTS.
+	for i := 0; i < len(flavors); i++ {
+		if flavors[i].Id == "2" {
+			return flavors[i].Id
+		}
+	}
+	panic("Flavor 2 (512MB 1-core 20GB machine) not found.")
+}
+
+// createServer creates a new server in a manner compatible with acceptance testing.
+// In particular, it ensures that the name of the server always starts with "ACPTTEST--",
+// which the delete servers acceptance test relies on to identify servers to delete.
+// Passing in empty image and flavor references will force the use of reasonable defaults.
+// An empty name string will result in a dynamically created name prefixed with "ACPTTEST--".
+// A blank admin password will cause a password to be automatically generated; however,
+// at present no means of recovering this password exists, as no acceptance tests yet require
+// this data.
+func createServer(servers gophercloud.CloudServersProvider, imageRef, flavorRef, name, adminPass string) error {
+	if imageRef == "" {
+		imageRef = aSuitableImage(servers)
+	}
+
+	if flavorRef == "" {
+		flavorRef = aSuitableFlavor(servers)
+	}
+
+	if len(name) < 1 {
+		name = randomString("ACPTTEST", 16)
+	}
+
+	if (len(name) < 8) || (name[0:8] != "ACPTTEST") {
+		name = fmt.Sprintf("ACPTTEST--%s", name)
+	}
+
+	_, err := servers.CreateServer(gophercloud.NewServer{
+		Name:      name,
+		ImageRef:  imageRef,
+		FlavorRef: flavorRef,
+		AdminPass: adminPass,
+	})
+
+	return err
 }
