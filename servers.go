@@ -131,6 +131,62 @@ func (gsp *genericServersProvider) SetAdminPassword(id, pw string) error {
 	return err
 }
 
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) ResizeServer(id, newName, newFlavor, newDiskConfig string) error {
+	err := gsp.context.WithReauth(gsp.access, func() error {
+        url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+        rr := ResizeRequest{
+                Name:       newName,
+                FlavorRef:  newFlavor,
+                DiskConfig: newDiskConfig,
+        }
+        return perigee.Post(url, perigee.Options{
+                ReqBody: &struct {
+                        Resize ResizeRequest `json:"resize"`
+                }{rr},
+                OkCodes: []int{202},
+                MoreHeaders: map[string]string{
+                        "X-Auth-Token": gsp.access.AuthToken(),
+                },
+        })
+	})
+	return err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) RevertResize(id string) error {
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Post(url, perigee.Options{
+			ReqBody: &struct {
+				RevertResize *int `json:"revertResize"`
+			}{nil},
+			OkCodes: []int{202},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+		})
+	})
+	return err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) ConfirmResize(id string) error {
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Post(url, perigee.Options{
+			ReqBody: &struct {
+				ConfirmResize *int `json:"confirmResize"`
+			}{nil},
+			OkCodes: []int{204},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+		})
+	})
+	return err
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`
@@ -312,4 +368,13 @@ type NewServer struct {
 	Id              string          `json:"id,omitempty"`
 	Links           []Link          `json:"links,omitempty"`
 	OsDcfDiskConfig string          `json:"OS-DCF:diskConfig,omitempty"`
+}
+
+// ResizeRequest structures are used internally to encode to JSON the parameters required to resize a server instance.
+// Client applications will not use this structure (no API accepts an instance of this structure).
+// See the Region method ResizeServer() for more details on how to resize a server.
+type ResizeRequest struct {
+        Name       string `json:"name,omitempty"`
+        FlavorRef  string `json:"flavorRef"`
+        DiskConfig string `json:"OS-DCF:diskConfig,omitempty"`
 }

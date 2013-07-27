@@ -32,6 +32,9 @@ type CloudServersProvider interface {
 	CreateServer(ns NewServer) (*NewServer, error)
 	DeleteServerById(id string) error
 	SetAdminPassword(id string, pw string) error
+	ResizeServer(id, newName, newFlavor, newDiskConfig string) error
+	RevertResize(id string) error
+	ConfirmResize(id string) error
 
   // Images
 
