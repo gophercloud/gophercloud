@@ -122,3 +122,9 @@ func createServer(servers gophercloud.CloudServersProvider, imageRef, flavorRef,
 
 	return newServer.Id, nil
 }
+
+// findAlternativeFlavor locates a flavor to resize a server to.  It is guaranteed to be different
+// than what aSuitableFlavor() returns.  If none could be found, this function will panic.
+func findAlternativeFlavor() string {
+	return "3"  // 1GB image, up from 512MB image
+}
