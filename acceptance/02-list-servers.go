@@ -9,32 +9,14 @@ import (
 var quiet = flag.Bool("quiet", false, "Quiet mode, for acceptance testing.  $? still indicates errors though.")
 
 func main() {
-	provider, username, password := getCredentials()
 	flag.Parse()
 
-	acc, err := gophercloud.Authenticate(
-		provider,
-		gophercloud.AuthOptions{
-			Username: username,
-			Password: password,
-		},
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	api, err := gophercloud.ServersApi(acc, gophercloud.ApiCriteria{
-		Name:      "cloudServersOpenStack",
-		Region:    "DFW",
-		VersionId: "2",
-		UrlChoice: gophercloud.PublicURL,
+	withIdentity(func(acc gophercloud.AccessProvider) {
+		withServerApi(acc, func(api gophercloud.CloudServersProvider) {
+			tryFullDetails(api)
+			tryLinksOnly(api)
+		})
 	})
-	if err != nil {
-		panic(err)
-	}
-
-  tryFullDetails(api)
-  tryLinksOnly(api)
 }
 
 func tryLinksOnly(api gophercloud.CloudServersProvider) {
