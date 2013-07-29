@@ -128,3 +128,36 @@ func createServer(servers gophercloud.CloudServersProvider, imageRef, flavorRef,
 func findAlternativeFlavor() string {
 	return "3"  // 1GB image, up from 512MB image
 }
+
+// withIdentity authenticates the user against the provider's identity service, and provides an
+// accessor for additional services.
+func withIdentity(f func(gophercloud.AccessProvider)) {
+	provider, username, password := getCredentials()
+	acc, err := gophercloud.Authenticate(
+		provider,
+		gophercloud.AuthOptions{
+			Username: username,
+			Password: password,
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	f(acc)
+}
+
+// withServerApi acquires the cloud servers API.
+func withServerApi(acc gophercloud.AccessProvider, f func(gophercloud.CloudServersProvider)) {
+	api, err := gophercloud.ServersApi(acc, gophercloud.ApiCriteria{
+		Name:      "cloudServersOpenStack",
+		Region:    "DFW",
+		VersionId: "2",
+		UrlChoice: gophercloud.PublicURL,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	f(api)
+}
