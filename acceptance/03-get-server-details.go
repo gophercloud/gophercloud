@@ -15,20 +15,26 @@ func main() {
 
 	withIdentity(func(auth gophercloud.AccessProvider) {
 		withServerApi(auth, func(servers gophercloud.CloudServersProvider) {
-			serverId := ""
+			var (
+				err error
+				serverId string
+				deleteAfterwards bool
+			)
+
+			// Figure out which server to provide server details for.
 			if *id == "" {
-				ss, err := servers.ListServers()
+				deleteAfterwards, serverId, err = locateAServer(servers)
 				if err != nil {
 					panic(err)
 				}
-				// We could just cheat and dump the server details from ss[0].
-				// But, that tests ListServers(), and not ServerById().  So, we
-				// elect not to cheat.
-				serverId = ss[0].Id
+				if deleteAfterwards {
+					defer servers.DeleteServerById(serverId)
+				}
 			} else {
 				serverId = *id
 			}
 
+			// Grab server details by ID, and provide a report.
 			s, err := servers.ServerById(serverId)
 			if err != nil {
 				panic(err)
@@ -74,4 +80,31 @@ func main() {
 			}
 		})
 	})
+}
+
+// locateAServer queries the set of servers owned by the user.  If at least one
+// exists, the first found is picked, and its ID is returned.  Otherwise, a new
+// server will be created, and its ID returned.
+//
+// deleteAfter will be true if the caller should schedule a call to DeleteServerById()
+// to clean up.
+func locateAServer(servers gophercloud.CloudServersProvider) (deleteAfter bool, id string, err error) {
+	ss, err := servers.ListServers()
+	if err != nil {
+		return false, "", err	
+	}
+
+	if len(ss) > 0 {
+		// We could just cheat and dump the server details from ss[0].
+		// But, that tests ListServers(), and not ServerById().  So, we
+		// elect not to cheat.
+		return false, ss[0].Id, nil
+	}
+
+	serverId, err := createServer(servers, "", "", "", "")
+	if err != nil {
+		return false, "", err
+	}
+	err = waitForServerState(servers, serverId, "ACTIVE")
+	return true, serverId, err
 }

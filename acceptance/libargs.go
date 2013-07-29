@@ -5,6 +5,7 @@ import (
 	"os"
 	"crypto/rand"
 	"github.com/rackspace/gophercloud"
+	"time"
 )
 
 // getCredentials will verify existence of needed credential information
@@ -160,4 +161,21 @@ func withServerApi(acc gophercloud.AccessProvider, f func(gophercloud.CloudServe
 	}
 
 	f(api)
+}
+
+// waitForServerState polls, every 10 seconds, for a given server to appear in the indicated state.
+// This call will block forever if it never appears in the desired state, so if a timeout is required,
+// make sure to call this function in a goroutine.
+func waitForServerState(api gophercloud.CloudServersProvider, id, state string) error {
+	for {
+		s, err := api.ServerById(id)
+		if err != nil {
+			return err
+		}
+		if s.Status == state {
+			return nil
+		}
+		time.Sleep(10 * time.Second)
+	}
+	panic("Impossible")
 }
