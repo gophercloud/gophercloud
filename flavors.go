@@ -9,7 +9,7 @@ func (gsp *genericServersProvider) ListFlavors() ([]Flavor, error) {
 	var fs []Flavor
 
 	err := gsp.context.WithReauth(gsp.access, func() error {
-		url := gsp.endpoint + "/flavors"
+		url := gsp.endpoint + "/flavors/detail"
 		 return perigee.Get(url, perigee.Options{
 			CustomClient: gsp.context.httpClient,
 			Results:      &struct{ Flavors *[]Flavor }{&fs},
