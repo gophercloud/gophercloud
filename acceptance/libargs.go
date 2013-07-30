@@ -132,13 +132,14 @@ func findAlternativeFlavor() string {
 
 // withIdentity authenticates the user against the provider's identity service, and provides an
 // accessor for additional services.
-func withIdentity(f func(gophercloud.AccessProvider)) {
+func withIdentity(ar bool, f func(gophercloud.AccessProvider)) {
 	provider, username, password := getCredentials()
 	acc, err := gophercloud.Authenticate(
 		provider,
 		gophercloud.AuthOptions{
 			Username: username,
 			Password: password,
+			AllowReauth: ar,
 		},
 	)
 	if err != nil {

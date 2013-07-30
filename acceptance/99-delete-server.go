@@ -10,47 +10,37 @@ var quiet = flag.Bool("quiet", false, "Quiet operation for acceptance tests.  $?
 var region = flag.String("r", "DFW", "Datacenter region")
 
 func main() {
-	provider, username, password := getCredentials()
 	flag.Parse()
 
-	auth, err := gophercloud.Authenticate(provider, gophercloud.AuthOptions{
-		Username: username,
-		Password: password,
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	servers, err := gophercloud.ServersApi(auth, gophercloud.ApiCriteria{
-		Name:      "cloudServersOpenStack",
-		Region:    *region,
-		VersionId: "2",
-		UrlChoice: gophercloud.PublicURL,
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	ss, err := servers.ListServers()
-	if err != nil {
-		panic(err)
-	}
-
-	n := 0
-	for _, s := range ss {
-		if len(s.Name) < 10 {
-			continue
-		}
-		if s.Name[0:10] == "ACPTTEST--" {
-			err := servers.DeleteServerById(s.Id)
+	withIdentity(false, func(auth gophercloud.AccessProvider) {
+		withServerApi(auth, func(servers gophercloud.CloudServersProvider) {
+			// Grab a listing of all servers.
+			ss, err := servers.ListServers()
 			if err != nil {
 				panic(err)
 			}
-			n++
-		}
-	}
 
-	if !*quiet {
-		fmt.Printf("%d servers removed.\n", n)
-	}
+			// And for each one that starts with the ACPTTEST prefix, delete it.
+			// These are likely left-overs from previously running acceptance tests.
+			// Note that 04-create-servers.go is intended to leak servers by intention,
+			// so as to test this code.  :)
+			n := 0
+			for _, s := range ss {
+				if len(s.Name) < 8 {
+					continue
+				}
+				if s.Name[0:8] == "ACPTTEST" {
+					err := servers.DeleteServerById(s.Id)
+					if err != nil {
+						panic(err)
+					}
+					n++
+				}
+			}
+
+			if !*quiet {
+				fmt.Printf("%d servers removed.\n", n)
+			}
+		})
+	})	
 }
