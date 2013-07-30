@@ -35,6 +35,7 @@ type CloudServersProvider interface {
 	ResizeServer(id, newName, newFlavor, newDiskConfig string) error
 	RevertResize(id string) error
 	ConfirmResize(id string) error
+	RebootServer(id string, hard bool) error
 
   // Images
 
