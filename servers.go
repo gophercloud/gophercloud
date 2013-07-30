@@ -187,6 +187,29 @@ func (gsp *genericServersProvider) ConfirmResize(id string) error {
 	return err
 }
 
+// See the CloudServersProvider interface for details
+func (gsp *genericServersProvider) RebootServer(id string, hard bool) error {
+	return gsp.context.WithReauth(gsp.access, func() error {
+		url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		types := map[bool]string{false: "SOFT", true: "HARD"}
+		return perigee.Post(url, perigee.Options{
+			ReqBody: &struct{
+				Reboot struct {
+					Type string `json:"type"`
+				} `json:"reboot"`
+			}{
+				struct {
+					Type string `json:"type"`
+				}{types[hard]},
+			},
+			OkCodes: []int{202},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+		})
+	})
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`
