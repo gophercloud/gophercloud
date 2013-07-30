@@ -22,7 +22,7 @@ func main() {
 			if !*quiet {
 				fmt.Println("ID,Name,MinRam,MinDisk")
 				for _, image := range images {
-					fmt.Printf("%s,\"%s\",%d,%d\n", image.Id, image.Name, image.MinRam, image.MinRam)
+					fmt.Printf("%s,\"%s\",%d,%d\n", image.Id, image.Name, image.MinRam, image.MinDisk)
 				}
 			}
 		})

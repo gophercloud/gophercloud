@@ -9,7 +9,7 @@ func (gsp *genericServersProvider) ListImages() ([]Image, error) {
 	var is []Image
 
 	err := gsp.context.WithReauth(gsp.access, func() error {
-		url := gsp.endpoint + "/images"
+		url := gsp.endpoint + "/images/detail"
 		return perigee.Get(url, perigee.Options{
 			CustomClient: gsp.context.httpClient,
 			Results:      &struct{ Images *[]Image }{&is},
