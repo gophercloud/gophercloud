@@ -210,6 +210,43 @@ func (gsp *genericServersProvider) RebootServer(id string, hard bool) error {
 	})
 }
 
+// See the CloudServersProvider interface for details
+func (gsp *genericServersProvider) RescueServer(id string) (string, error) {
+	var pw *string
+
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Post(url, perigee.Options{
+			ReqBody: &struct{
+				Rescue string `json:"rescue"`
+			}{"none"},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct{
+				AdminPass **string `json:"adminPass"`
+			}{&pw},
+		})
+	})
+	return *pw, err
+}
+
+// See the CloudServersProvider interface for details
+func (gsp *genericServersProvider) UnrescueServer(id string) error {
+	return gsp.context.WithReauth(gsp.access, func() error {
+		url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Post(url, perigee.Options{
+			ReqBody: &struct{
+				Unrescue *int `json:"unrescue"`
+			}{nil},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{202},
+		})
+	})
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`
