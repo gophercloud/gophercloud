@@ -36,6 +36,8 @@ type CloudServersProvider interface {
 	RevertResize(id string) error
 	ConfirmResize(id string) error
 	RebootServer(id string, hard bool) error
+	RescueServer(id string) (string, error)
+	UnrescueServer(id string) error
 
   // Images
 
