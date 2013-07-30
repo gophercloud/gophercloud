@@ -11,7 +11,7 @@ var quiet = flag.Bool("quiet", false, "Quiet mode, for acceptance testing.  $? s
 func main() {
 	flag.Parse()
 
-	withIdentity(func(acc gophercloud.AccessProvider) {
+	withIdentity(false, func(acc gophercloud.AccessProvider) {
 		withServerApi(acc, func(api gophercloud.CloudServersProvider) {
 			tryFullDetails(api)
 			tryLinksOnly(api)

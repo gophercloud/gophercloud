@@ -13,7 +13,7 @@ var quiet = flag.Bool("quiet", false, "Run quietly, for acceptance testing.  $? 
 func main() {
 	flag.Parse()
 
-	withIdentity(func(auth gophercloud.AccessProvider) {
+	withIdentity(false, func(auth gophercloud.AccessProvider) {
 		withServerApi(auth, func(servers gophercloud.CloudServersProvider) {
 			var (
 				err error
