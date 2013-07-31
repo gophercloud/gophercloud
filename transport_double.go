@@ -2,10 +2,10 @@ package gophercloud
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"fmt"
 	"testing"
 )
 
@@ -14,7 +14,7 @@ type transport struct {
 	response       string
 	expectTenantId bool
 	tenantIdFound  bool
-	status int
+	status         int
 }
 
 func (t *transport) RoundTrip(req *http.Request) (rsp *http.Response, err error) {

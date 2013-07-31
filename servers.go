@@ -4,8 +4,8 @@
 package gophercloud
 
 import (
-	"github.com/racker/perigee"
 	"fmt"
+	"github.com/racker/perigee"
 )
 
 // genericServersProvider structures provide the implementation for generic OpenStack-compatible
@@ -134,21 +134,21 @@ func (gsp *genericServersProvider) SetAdminPassword(id, pw string) error {
 // See the CloudServersProvider interface for details.
 func (gsp *genericServersProvider) ResizeServer(id, newName, newFlavor, newDiskConfig string) error {
 	err := gsp.context.WithReauth(gsp.access, func() error {
-        url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
-        rr := ResizeRequest{
-                Name:       newName,
-                FlavorRef:  newFlavor,
-                DiskConfig: newDiskConfig,
-        }
-        return perigee.Post(url, perigee.Options{
-                ReqBody: &struct {
-                        Resize ResizeRequest `json:"resize"`
-                }{rr},
-                OkCodes: []int{202},
-                MoreHeaders: map[string]string{
-                        "X-Auth-Token": gsp.access.AuthToken(),
-                },
-        })
+		url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		rr := ResizeRequest{
+			Name:       newName,
+			FlavorRef:  newFlavor,
+			DiskConfig: newDiskConfig,
+		}
+		return perigee.Post(url, perigee.Options{
+			ReqBody: &struct {
+				Resize ResizeRequest `json:"resize"`
+			}{rr},
+			OkCodes: []int{202},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+		})
 	})
 	return err
 }
@@ -193,7 +193,7 @@ func (gsp *genericServersProvider) RebootServer(id string, hard bool) error {
 		url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
 		types := map[bool]string{false: "SOFT", true: "HARD"}
 		return perigee.Post(url, perigee.Options{
-			ReqBody: &struct{
+			ReqBody: &struct {
 				Reboot struct {
 					Type string `json:"type"`
 				} `json:"reboot"`
@@ -217,13 +217,13 @@ func (gsp *genericServersProvider) RescueServer(id string) (string, error) {
 	err := gsp.context.WithReauth(gsp.access, func() error {
 		url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
 		return perigee.Post(url, perigee.Options{
-			ReqBody: &struct{
+			ReqBody: &struct {
 				Rescue string `json:"rescue"`
 			}{"none"},
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
-			Results: &struct{
+			Results: &struct {
 				AdminPass **string `json:"adminPass"`
 			}{&pw},
 		})
@@ -236,7 +236,7 @@ func (gsp *genericServersProvider) UnrescueServer(id string) error {
 	return gsp.context.WithReauth(gsp.access, func() error {
 		url := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
 		return perigee.Post(url, perigee.Options{
-			ReqBody: &struct{
+			ReqBody: &struct {
 				Unrescue *int `json:"unrescue"`
 			}{nil},
 			MoreHeaders: map[string]string{
@@ -253,13 +253,13 @@ func (gsp *genericServersProvider) UpdateServer(id string, changes NewServerSett
 	err := gsp.context.WithReauth(gsp.access, func() error {
 		url := fmt.Sprintf("%s/servers/%s", gsp.endpoint, id)
 		return perigee.Put(url, perigee.Options{
-			ReqBody: &struct{
+			ReqBody: &struct {
 				Server NewServerSettings `json:"server"`
 			}{changes},
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
-			Results: &struct{
+			Results: &struct {
 				Server **Server `json:"server"`
 			}{&svr},
 		})
@@ -395,7 +395,7 @@ type Server struct {
 // NewServerSettings structures record those fields of the Server structure to change
 // when updating a server (see UpdateServer method).
 type NewServerSettings struct {
-	Name string `json:"name,omitempty"`
+	Name       string `json:"name,omitempty"`
 	AccessIPv4 string `json:"accessIPv4,omitempty"`
 	AccessIPv6 string `json:"accessIPv6,omitempty"`
 }
@@ -462,7 +462,7 @@ type NewServer struct {
 // Client applications will not use this structure (no API accepts an instance of this structure).
 // See the Region method ResizeServer() for more details on how to resize a server.
 type ResizeRequest struct {
-        Name       string `json:"name,omitempty"`
-        FlavorRef  string `json:"flavorRef"`
-        DiskConfig string `json:"OS-DCF:diskConfig,omitempty"`
+	Name       string `json:"name,omitempty"`
+	FlavorRef  string `json:"flavorRef"`
+	DiskConfig string `json:"OS-DCF:diskConfig,omitempty"`
 }

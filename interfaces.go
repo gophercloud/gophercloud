@@ -129,4 +129,3 @@ type CloudServersProvider interface {
 	// returns full details for each flavor, if available.
 	ListFlavors() ([]Flavor, error)
 }
-
