@@ -38,6 +38,7 @@ type CloudServersProvider interface {
 	RebootServer(id string, hard bool) error
 	RescueServer(id string) (string, error)
 	UnrescueServer(id string) error
+	UpdateServer(id string, newValues NewServerSettings) (*Server, error)
 
   // Images
 

@@ -247,6 +247,26 @@ func (gsp *genericServersProvider) UnrescueServer(id string) error {
 	})
 }
 
+// See the CloudServersProvider interface for details
+func (gsp *genericServersProvider) UpdateServer(id string, changes NewServerSettings) (*Server, error) {
+	var svr *Server
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		url := fmt.Sprintf("%s/servers/%s", gsp.endpoint, id)
+		return perigee.Put(url, perigee.Options{
+			ReqBody: &struct{
+				Server NewServerSettings `json:"server"`
+			}{changes},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct{
+				Server **Server `json:"server"`
+			}{&svr},
+		})
+	})
+	return svr, err
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`
@@ -370,6 +390,14 @@ type Server struct {
 	OsExtStsPowerState int            `json:"OS-EXT-STS:power_state"`
 	OsExtStsTaskState  string         `json:"OS-EXT-STS:task_state"`
 	OsExtStsVmState    string         `json:"OS-EXT-STS:vm_state"`
+}
+
+// NewServerSettings structures record those fields of the Server structure to change
+// when updating a server (see UpdateServer method).
+type NewServerSettings struct {
+	Name string `json:"name,omitempty"`
+	AccessIPv4 string `json:"accessIPv4,omitempty"`
+	AccessIPv6 string `json:"accessIPv6,omitempty"`
 }
 
 // NewServer structures are used for both requests and responses.
