@@ -74,4 +74,3 @@ type Image struct {
 	Updated         string `json:"updated"`
 	OsDcfDiskConfig string `json:"OS-DCF:diskConfig"`
 }
-

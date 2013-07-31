@@ -13,7 +13,7 @@ var newPass = flag.String("p", "", "New password for the server.")
 func main() {
 	flag.Parse()
 
-	withIdentity(func(acc gophercloud.AccessProvider) {
+	withIdentity(false, func(acc gophercloud.AccessProvider) {
 		withServerApi(acc, func(api gophercloud.CloudServersProvider) {
 			// If user doesn't explicitly provide a server ID, create one dynamically.
 			if *serverId == "" {

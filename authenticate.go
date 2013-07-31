@@ -51,9 +51,9 @@ type Access struct {
 	Token          Token
 	ServiceCatalog []CatalogEntry
 	User           User
-	provider       Provider `json:"-"`
+	provider       Provider    `json:"-"`
 	options        AuthOptions `json:"-"`
-	context        *Context `json:"-"`
+	context        *Context    `json:"-"`
 }
 
 // Token encapsulates an authentication token and when it expires.  It also includes

@@ -1,8 +1,8 @@
 package gophercloud
 
 import (
-	"testing"
 	"github.com/racker/perigee"
+	"testing"
 )
 
 // This reauth-handler does nothing, and returns no error.
@@ -18,7 +18,7 @@ func TestOtherErrorsPropegate(t *testing.T) {
 		calls++
 		return &perigee.UnexpectedResponseCodeError{
 			Expected: []int{204},
-			Actual: 404,
+			Actual:   404,
 		}
 	})
 
@@ -44,7 +44,7 @@ func Test401ErrorCausesBodyInvokation2ndTime(t *testing.T) {
 		calls++
 		return &perigee.UnexpectedResponseCodeError{
 			Expected: []int{204},
-			Actual: 401,
+			Actual:   401,
 		}
 	})
 
@@ -67,7 +67,7 @@ func TestReauthAttemptShouldHappen(t *testing.T) {
 	c.WithReauth(nil, func() error {
 		return &perigee.UnexpectedResponseCodeError{
 			Expected: []int{204},
-			Actual: 401,
+			Actual:   401,
 		}
 	})
 
@@ -77,7 +77,8 @@ func TestReauthAttemptShouldHappen(t *testing.T) {
 	}
 }
 
-type MyError struct {}
+type MyError struct{}
+
 func (*MyError) Error() string {
 	return "MyError instance"
 }
@@ -90,7 +91,7 @@ func TestReauthErrorShouldPropegate(t *testing.T) {
 	err := c.WithReauth(nil, func() error {
 		return &perigee.UnexpectedResponseCodeError{
 			Expected: []int{204},
-			Actual: 401,
+			Actual:   401,
 		}
 	})
 
@@ -100,7 +101,8 @@ func TestReauthErrorShouldPropegate(t *testing.T) {
 	}
 }
 
-type MyAccess struct {}
+type MyAccess struct{}
+
 func (my *MyAccess) FirstEndpointUrlByCriteria(ApiCriteria) string {
 	return ""
 }
@@ -125,7 +127,7 @@ func TestReauthHandlerUsesSameAccessProvider(t *testing.T) {
 	c.WithReauth(fakeAccess, func() error {
 		return &perigee.UnexpectedResponseCodeError{
 			Expected: []int{204},
-			Actual: 401,
+			Actual:   401,
 		}
 	})
 }
