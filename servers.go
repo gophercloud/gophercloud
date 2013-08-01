@@ -267,6 +267,27 @@ func (gsp *genericServersProvider) UpdateServer(id string, changes NewServerSett
 	return svr, err
 }
 
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) RebuildServer (id string, ns NewServer) (*Server, error) {
+	var s *Server
+
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Post(ep, perigee.Options{
+			ReqBody: &struct {
+				Rebuild *NewServer `json:"rebuild"`
+			}{&ns},
+			Results: &struct{ Server **Server }{&s},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{202},
+		})
+	})
+
+	return s, err
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`
