@@ -117,6 +117,17 @@ type CloudServersProvider interface {
 	// This function returns the new set of server details if successful.
 	UpdateServer(id string, newValues NewServerSettings) (*Server, error)
 
+	// RebuildServer reprovisions a server to the specifications given by the
+	// NewServer structure.  The following fields are guaranteed to be recognized:
+	//
+	//		Name (required)				AccessIPv4
+	//		imageRef (required)			AccessIPv6
+	//		AdminPass (required)		Metadata
+	//		Personality
+	//
+	// Other providers may reserve the right to act on additional fields.
+	RebuildServer(id string, ns NewServer) (*Server, error)
+
 	// Images
 
 	// ListImages yields the list of available operating system images.  This function

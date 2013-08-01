@@ -130,6 +130,12 @@ func findAlternativeFlavor() string {
 	return "3"  // 1GB image, up from 512MB image
 }
 
+// findAlternativeImage locates an image to resize or rebuild a server with.  It is guaranteed to be
+// different than what aSuitableImage() returns.  If none could be found, this function will panic.
+func findAlternativeImage() string {
+	return "c6f9c411-e708-4952-91e5-62ded5ea4d3e"
+}
+
 // withIdentity authenticates the user against the provider's identity service, and provides an
 // accessor for additional services.
 func withIdentity(ar bool, f func(gophercloud.AccessProvider)) {
