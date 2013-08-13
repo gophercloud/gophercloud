@@ -27,19 +27,6 @@ The remainder of this document, and supporting materials, assumes a correct `$GO
 ===== Creating a New Gophercloud Project
 If you're just starting out with Go, a convenience script exists which lets you create a new Go workspace preconfigured with Gophercloud for you.
 
-[NOTE]
-.*Please note that these instructions are here temporarily until we make this repository public.*
------------------------------------------------------------------------------------------------------
-1. Navigate to the scripts/create-environment.sh file in the GitHub user interface
-2. Click on 'Raw'
-3. Copy and paste into a file locally
-4. Supposing that file is named `/tmp/gcsetup.sh`, you can invoke it as follows:
-
-	source /tmp/gcsetup.sh
------------------------------------------------------------------------------------------------------
-
-[WARNING]
-.*Please note that this set of installation instructions will work as soon the repoistory is public.*  We'll remove these admonitions at that time as well.
 -----------------------------------------------------------------------------------------------------
 You can execute the following command to create a brand new Go workspace that is minimally configured for use with Gophercloud.  This should work for any reasonable POSIX-compatible environment.
 
