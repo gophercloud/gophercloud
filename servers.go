@@ -268,7 +268,7 @@ func (gsp *genericServersProvider) UpdateServer(id string, changes NewServerSett
 }
 
 // See the CloudServersProvider interface for details.
-func (gsp *genericServersProvider) RebuildServer (id string, ns NewServer) (*Server, error) {
+func (gsp *genericServersProvider) RebuildServer(id string, ns NewServer) (*Server, error) {
 	var s *Server
 
 	err := gsp.context.WithReauth(gsp.access, func() error {
@@ -300,7 +300,7 @@ func (gsp *genericServersProvider) ListAddresses(id string) (AddressSet, error) 
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
-			OkCodes: []int{200, 203},
+			OkCodes:    []int{200, 203},
 			StatusCode: &statusCode,
 		})
 	})
