@@ -128,6 +128,14 @@ type CloudServersProvider interface {
 	// Other providers may reserve the right to act on additional fields.
 	RebuildServer(id string, ns NewServer) (*Server, error)
 
+	// Addresses
+
+	// ListAddresses yields the list of available addresses for the server.
+	// This information is also returned by ServerById() in the Server.Addresses
+	// field.  However, if you have a lot of servers and all you need are addresses,
+	// this function might be more efficient.
+	ListAddresses(id string) (AddressSet, error)
+
 	// Images
 
 	// ListImages yields the list of available operating system images.  This function
