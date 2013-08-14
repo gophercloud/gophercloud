@@ -35,3 +35,10 @@ var ErrEndpoint = fmt.Errorf("Missing endpoint, or insufficient privileges to ac
 // responsible for a previous request bombing with an error, but pass in an
 // error interface which doesn't belong to the web client.
 var ErrError = fmt.Errorf("Attempt to solicit actual HTTP response code from error entity which doesn't know")
+
+// WarnUnauthoritative warnings happen when a service believes its response
+// to be correct, but is not in a position of knowing for sure at the moment.
+// For example, the service could be responding with cached data that has
+// exceeded its time-to-live setting, but which has not yet received an official
+// update from an authoritative source.
+var WarnUnauthoritative = fmt.Errorf("Unauthoritative data")
