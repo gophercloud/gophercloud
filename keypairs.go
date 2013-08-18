@@ -86,6 +86,7 @@ func (gsp *genericServersProvider) ShowKeyPair(name string) (KeyPair, error) {
 type KeyPair struct {
 	FingerPrint string `json:"fingerprint"`
 	Name        string `json:"name"`
+	PrivateKey  string `json:"private_key,omitempty"`
 	PublicKey   string `json:"public_key"`
 	UserID      string `json:"user_id,omitempty"`
 }
