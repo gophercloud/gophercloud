@@ -147,4 +147,18 @@ type CloudServersProvider interface {
 	// ListFlavors yields the list of available system flavors.  This function
 	// returns full details for each flavor, if available.
 	ListFlavors() ([]Flavor, error)
+
+	// KeyPairs
+
+	// ListKeyPairs yields the list of available keypairs.
+	ListKeyPairs() ([]KeyPair, error)
+
+	// CreateKeyPairs will create or generate a new keypair.
+	CreateKeyPair(nkp NewKeyPair) (KeyPair, error)
+
+	// DeleteKeyPair wil delete a keypair.
+	DeleteKeyPair(name string) error
+
+	// ShowKeyPair will yield the named keypair.
+	ShowKeyPair(name string) (KeyPair, error)
 }
