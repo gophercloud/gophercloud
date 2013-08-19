@@ -493,7 +493,7 @@ type NewServerSettings struct {
 // Any Links provided are used to refer to the server specifically by URL.
 // These links are useful for making additional REST calls not explicitly supported by Gorax.
 type NewServer struct {
-	Name            string          `json:"name",omitempty`
+	Name            string          `json:"name,omitempty"`
 	ImageRef        string          `json:"imageRef,omitempty"`
 	FlavorRef       string          `json:"flavorRef,omitempty"`
 	Metadata        interface{}     `json:"metadata,omitempty"`
