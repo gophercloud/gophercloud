@@ -30,7 +30,7 @@ If you're just starting out with Go, a convenience script exists which lets you 
 -----------------------------------------------------------------------------------------------------
 You can execute the following command to create a brand new Go workspace that is minimally configured for use with Gophercloud.  This should work for any reasonable POSIX-compatible environment.
 
-	source <(curl "https://raw.github.com/rackspace/Gophercloud/master/scripts/create-env.sh")
+	source <(curl "https://raw.github.com/rackspace/Gophercloud/master/scripts/create-environment.sh")
 -----------------------------------------------------------------------------------------------------
 
 This script will not only install the software, but also create a shell script `env.sh` which, when executed, restores both `$GOPATH` and `$GOPHERCLOUD` to their correct values.  The project will be installed in `$HOME/go/gophercloud`.
