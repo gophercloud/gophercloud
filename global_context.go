@@ -12,10 +12,10 @@ var globalContext *Context
 
 // providers is the set of supported providers.
 var providers = map[string]Provider{
-	"rackspace-us": Provider{
+	"rackspace-us": {
 		AuthEndpoint: "https://identity.api.rackspacecloud.com/v2.0/tokens",
 	},
-	"rackspace-uk": Provider{
+	"rackspace-uk": {
 		AuthEndpoint: "https://lon.identity.api.rackspacecloud.com/v2.0/tokens",
 	},
 }

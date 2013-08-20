@@ -13,7 +13,7 @@ func TestFindFirstEndpointByCriteria(t *testing.T) {
 
 	endpoint = FindFirstEndpointByCriteria(
 		[]CatalogEntry{
-			CatalogEntry{Name: "test"},
+			{Name: "test"},
 		},
 		ApiCriteria{Name: "test"},
 	)
@@ -88,10 +88,10 @@ func TestFindFirstEndpointByCriteria(t *testing.T) {
 
 func catalog(name, url, region, version string) []CatalogEntry {
 	return []CatalogEntry{
-		CatalogEntry{
+		{
 			Name: name,
 			Endpoints: []EntryEndpoint{
-				EntryEndpoint{
+				{
 					PublicURL: url,
 					Region:    region,
 					VersionId: version,

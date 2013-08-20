@@ -129,9 +129,9 @@ func TestUserNameAndPassword(t *testing.T) {
 		UseCustomClient(&http.Client{Transport: newTransport().WithResponse(SUCCESSFUL_RESPONSE)})
 
 	credentials := []AuthOptions{
-		AuthOptions{},
-		AuthOptions{Username: "u"},
-		AuthOptions{Password: "p"},
+		{},
+		{Username: "u"},
+		{Password: "p"},
 	}
 	for i, auth := range credentials {
 		_, err := c.Authenticate("provider", auth)
