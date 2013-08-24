@@ -355,7 +355,7 @@ type AddressSet struct {
 // The HostId field represents the host your server runs on and
 // can be used to determine this scenario if it is relevant to your application.
 // Note that HostId is unique only per account; it is not globally unique.
-// 
+//
 // Id provides the server's unique identifier.
 // This field must be treated opaquely.
 //
@@ -500,6 +500,7 @@ type NewServer struct {
 	Personality     []FileConfig    `json:"personality,omitempty"`
 	Networks        []NetworkConfig `json:"networks,omitempty"`
 	AdminPass       string          `json:"adminPass,omitempty"`
+	KeyPairName     string          `json:"key_name,omitempty"`
 	Id              string          `json:"id,omitempty"`
 	Links           []Link          `json:"links,omitempty"`
 	OsDcfDiskConfig string          `json:"OS-DCF:diskConfig,omitempty"`
