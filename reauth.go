@@ -21,3 +21,16 @@ func (c *Context) WithReauth(ap AccessProvider, f func() error) error {
 	}
 	return err
 }
+
+// This is like WithReauth above but returns a perigee Response object
+func (c *Context) ResponseWithReauth(ap AccessProvider, f func() (*perigee.Response, error)) (*perigee.Response, error) {
+	response, err := f()
+	cause, ok := err.(*perigee.UnexpectedResponseCodeError)
+	if ok && cause.Actual == 401 {
+		err = c.reauthHandler(ap)
+		if err == nil {
+			response, err = f()
+		}
+	}
+	return response, err
+}
