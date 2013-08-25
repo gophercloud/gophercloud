@@ -6,6 +6,7 @@ package gophercloud
 import (
 	"fmt"
 	"github.com/racker/perigee"
+	"strings"
 )
 
 // genericServersProvider structures provide the implementation for generic OpenStack-compatible
@@ -314,6 +315,35 @@ func (gsp *genericServersProvider) ListAddresses(id string) (AddressSet, error) 
 	return *pas, err
 }
 
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) CreateImage(id string, ci CreateImage) (string, error) {
+	response, err := gsp.context.ResponseWithReauth(gsp.access, func() (*perigee.Response, error) {
+		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Request("POST", ep, perigee.Options{
+			ReqBody: &struct {
+				CreateImage *CreateImage `json:"createImage"`
+			}{&ci},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes:     []int{200, 202},
+			DumpReqJson: true,
+		})
+	})
+
+	if err != nil {
+		return "", err
+	}
+	location, err := response.HttpResponse.Location()
+	if err != nil {
+		return "", err
+	}
+
+	// Return the last element of the location which is the image id
+	locationArr := strings.Split(location.Path, "/")
+	return locationArr[len(locationArr)-1], err
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`
@@ -513,4 +543,9 @@ type ResizeRequest struct {
 	Name       string `json:"name,omitempty"`
 	FlavorRef  string `json:"flavorRef"`
 	DiskConfig string `json:"OS-DCF:diskConfig,omitempty"`
+}
+
+type CreateImage struct {
+	Name     string            `json:"name"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
