@@ -186,3 +186,20 @@ func waitForServerState(api gophercloud.CloudServersProvider, id, state string) 
 	}
 	panic("Impossible")
 }
+
+// waitForImageState polls, every 10 seconds, for a given image to appear in the indicated state.
+// This call will block forever if it never appears in the desired state, so if a timeout is required,
+// make sure to call this function in a goroutine.
+func waitForImageState(api gophercloud.CloudServersProvider, id, state string) error {
+	for {
+		s, err := api.ImageById(id)
+		if err != nil {
+			return err
+		}
+		if s.Status == state {
+			return nil
+		}
+		time.Sleep(10 * time.Second)
+	}
+	panic("Impossible")
+}
