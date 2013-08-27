@@ -6,6 +6,7 @@ package gophercloud
 import (
 	"fmt"
 	"github.com/racker/perigee"
+	"strings"
 )
 
 // genericServersProvider structures provide the implementation for generic OpenStack-compatible
@@ -314,6 +315,35 @@ func (gsp *genericServersProvider) ListAddresses(id string) (AddressSet, error) 
 	return *pas, err
 }
 
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) CreateImage(id string, ci CreateImage) (string, error) {
+	response, err := gsp.context.ResponseWithReauth(gsp.access, func() (*perigee.Response, error) {
+		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Request("POST", ep, perigee.Options{
+			ReqBody: &struct {
+				CreateImage *CreateImage `json:"createImage"`
+			}{&ci},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes:     []int{200, 202},
+			DumpReqJson: true,
+		})
+	})
+
+	if err != nil {
+		return "", err
+	}
+	location, err := response.HttpResponse.Location()
+	if err != nil {
+		return "", err
+	}
+
+	// Return the last element of the location which is the image id
+	locationArr := strings.Split(location.Path, "/")
+	return locationArr[len(locationArr)-1], err
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`
@@ -355,7 +385,7 @@ type AddressSet struct {
 // The HostId field represents the host your server runs on and
 // can be used to determine this scenario if it is relevant to your application.
 // Note that HostId is unique only per account; it is not globally unique.
-// 
+//
 // Id provides the server's unique identifier.
 // This field must be treated opaquely.
 //
@@ -416,27 +446,27 @@ type AddressSet struct {
 // http://docs.rackspace.com/servers/api/v2/cs-devguide/content/ch_extensions.html#ext_status
 // for more details.  It's too lengthy to include here.
 type Server struct {
-	AccessIPv4         string         `json:"accessIPv4"`
-	AccessIPv6         string         `json:"accessIPv6"`
-	Addresses          AddressSet     `json:"addresses"`
-	Created            string         `json:"created"`
-	Flavor             FlavorLink     `json:"flavor"`
-	HostId             string         `json:"hostId"`
-	Id                 string         `json:"id"`
-	Image              ImageLink      `json:"image"`
-	Links              []Link         `json:"links"`
-	Metadata           interface{}    `json:"metadata"`
-	Name               string         `json:"name"`
-	Progress           int            `json:"progress"`
-	Status             string         `json:"status"`
-	TenantId           string         `json:"tenant_id"`
-	Updated            string         `json:"updated"`
-	UserId             string         `json:"user_id"`
-	OsDcfDiskConfig    string         `json:"OS-DCF:diskConfig"`
-	RaxBandwidth       []RaxBandwidth `json:"rax-bandwidth:bandwidth"`
-	OsExtStsPowerState int            `json:"OS-EXT-STS:power_state"`
-	OsExtStsTaskState  string         `json:"OS-EXT-STS:task_state"`
-	OsExtStsVmState    string         `json:"OS-EXT-STS:vm_state"`
+	AccessIPv4         string            `json:"accessIPv4"`
+	AccessIPv6         string            `json:"accessIPv6"`
+	Addresses          AddressSet        `json:"addresses"`
+	Created            string            `json:"created"`
+	Flavor             FlavorLink        `json:"flavor"`
+	HostId             string            `json:"hostId"`
+	Id                 string            `json:"id"`
+	Image              ImageLink         `json:"image"`
+	Links              []Link            `json:"links"`
+	Metadata           map[string]string `json:"metadata"`
+	Name               string            `json:"name"`
+	Progress           int               `json:"progress"`
+	Status             string            `json:"status"`
+	TenantId           string            `json:"tenant_id"`
+	Updated            string            `json:"updated"`
+	UserId             string            `json:"user_id"`
+	OsDcfDiskConfig    string            `json:"OS-DCF:diskConfig"`
+	RaxBandwidth       []RaxBandwidth    `json:"rax-bandwidth:bandwidth"`
+	OsExtStsPowerState int               `json:"OS-EXT-STS:power_state"`
+	OsExtStsTaskState  string            `json:"OS-EXT-STS:task_state"`
+	OsExtStsVmState    string            `json:"OS-EXT-STS:vm_state"`
 }
 
 // NewServerSettings structures record those fields of the Server structure to change
@@ -493,16 +523,17 @@ type NewServerSettings struct {
 // Any Links provided are used to refer to the server specifically by URL.
 // These links are useful for making additional REST calls not explicitly supported by Gorax.
 type NewServer struct {
-	Name            string          `json:"name,omitempty"`
-	ImageRef        string          `json:"imageRef,omitempty"`
-	FlavorRef       string          `json:"flavorRef,omitempty"`
-	Metadata        interface{}     `json:"metadata,omitempty"`
-	Personality     []FileConfig    `json:"personality,omitempty"`
-	Networks        []NetworkConfig `json:"networks,omitempty"`
-	AdminPass       string          `json:"adminPass,omitempty"`
-	Id              string          `json:"id,omitempty"`
-	Links           []Link          `json:"links,omitempty"`
-	OsDcfDiskConfig string          `json:"OS-DCF:diskConfig,omitempty"`
+	Name            string            `json:"name,omitempty"`
+	ImageRef        string            `json:"imageRef,omitempty"`
+	FlavorRef       string            `json:"flavorRef,omitempty"`
+	Metadata        map[string]string `json:"metadata,omitempty"`
+	Personality     []FileConfig      `json:"personality,omitempty"`
+	Networks        []NetworkConfig   `json:"networks,omitempty"`
+	AdminPass       string            `json:"adminPass,omitempty"`
+	KeyPairName     string            `json:"key_name,omitempty"`
+	Id              string            `json:"id,omitempty"`
+	Links           []Link            `json:"links,omitempty"`
+	OsDcfDiskConfig string            `json:"OS-DCF:diskConfig,omitempty"`
 }
 
 // ResizeRequest structures are used internally to encode to JSON the parameters required to resize a server instance.
@@ -512,4 +543,9 @@ type ResizeRequest struct {
 	Name       string `json:"name,omitempty"`
 	FlavorRef  string `json:"flavorRef"`
 	DiskConfig string `json:"OS-DCF:diskConfig,omitempty"`
+}
+
+type CreateImage struct {
+	Name     string            `json:"name"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
