@@ -326,8 +326,7 @@ func (gsp *genericServersProvider) CreateImage(id string, ci CreateImage) (strin
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
-			OkCodes:     []int{200, 202},
-			DumpReqJson: true,
+			OkCodes: []int{200, 202},
 		})
 	})
 

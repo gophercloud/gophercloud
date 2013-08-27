@@ -148,6 +148,9 @@ type CloudServersProvider interface {
 	// ImageById yields details about a specific image.
 	ImageById(id string) (*Image, error)
 
+	// DeleteImageById will delete the specific image.
+	DeleteImageById(id string) error
+
 	// Flavors
 
 	// ListFlavors yields the list of available system flavors.  This function
