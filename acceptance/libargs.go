@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"crypto/rand"
+	"fmt"
 	"github.com/rackspace/gophercloud"
+	"os"
 	"time"
 )
 
@@ -32,13 +32,13 @@ func getCredentials() (provider, username, password string) {
 // (Implementation from Even Shaw's contribution on
 // http://stackoverflow.com/questions/12771930/what-is-the-fastest-way-to-generate-a-long-random-string-in-go).
 func randomString(prefix string, n int) string {
-    const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    var bytes = make([]byte, n)
-    rand.Read(bytes)
-    for i, b := range bytes {
-        bytes[i] = alphanum[b % byte(len(alphanum))]
-    }
-    return prefix + string(bytes)
+	const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	var bytes = make([]byte, n)
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = alphanum[b%byte(len(alphanum))]
+	}
+	return prefix + string(bytes)
 }
 
 // aSuitableImage finds a minimal image for use in dynamically creating servers.
@@ -127,7 +127,7 @@ func createServer(servers gophercloud.CloudServersProvider, imageRef, flavorRef,
 // findAlternativeFlavor locates a flavor to resize a server to.  It is guaranteed to be different
 // than what aSuitableFlavor() returns.  If none could be found, this function will panic.
 func findAlternativeFlavor() string {
-	return "3"  // 1GB image, up from 512MB image
+	return "3" // 1GB image, up from 512MB image
 }
 
 // findAlternativeImage locates an image to resize or rebuild a server with.  It is guaranteed to be
@@ -143,8 +143,8 @@ func withIdentity(ar bool, f func(gophercloud.AccessProvider)) {
 	acc, err := gophercloud.Authenticate(
 		provider,
 		gophercloud.AuthOptions{
-			Username: username,
-			Password: password,
+			Username:    username,
+			Password:    password,
 			AllowReauth: ar,
 		},
 	)
