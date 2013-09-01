@@ -2,6 +2,7 @@ package gophercloud
 
 import (
 	"net/http"
+	"strings"
 )
 
 // Provider structures exist for each tangible provider of OpenStack service.
@@ -91,6 +92,12 @@ func (c *Context) ProviderByName(name string) (p Provider, err error) {
 		if name == provider {
 			return descriptor, nil
 		}
+	}
+	if strings.Contains(name, "://") {
+		p = Provider {
+			AuthEndpoint: name,
+		}
+		return p, nil
 	}
 	return Provider{}, ErrProvider
 }
