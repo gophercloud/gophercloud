@@ -17,6 +17,9 @@ type AuthOptions struct {
 	// The TenantId field is optional for the Identity V2 API.
 	TenantId string
 
+	// The TenantName can be specified instead of the TenantId
+	TenantName string
+
 	// AllowReauth should be set to true if you grant permission for Gophercloud to cache
 	// your credentials in memory, and to allow Gophercloud to attempt to re-authenticate
 	// automatically if/when your token expires.  If you set it to false, it will not cache
@@ -36,6 +39,7 @@ type AuthContainer struct {
 type Auth struct {
 	PasswordCredentials PasswordCredentials `json:"passwordCredentials"`
 	TenantId            string              `json:"tenantId,omitempty"`
+	TenantName          string              `json:"tenantName,omitempty"`
 }
 
 // PasswordCredentials provides a JSON encoding wrapper for passing credentials to the Identity
@@ -114,7 +118,8 @@ func (c *Context) papersPlease(p Provider, options AuthOptions) (*Access, error)
 					Username: options.Username,
 					Password: options.Password,
 				},
-				TenantId: options.TenantId,
+				TenantId:   options.TenantId,
+				TenantName: options.TenantName,
 			},
 		},
 		Results: &struct {
