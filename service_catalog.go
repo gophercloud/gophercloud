@@ -11,6 +11,9 @@ type ApiCriteria struct {
 	// Name specifies the desired service catalog entry name.
 	Name string
 
+	// Type specifies the desired service catalog entry type.
+	Type string
+
 	// Region specifies the desired endpoint region.
 	Region string
 
@@ -42,6 +45,10 @@ func FindFirstEndpointByCriteria(entries []CatalogEntry, ac ApiCriteria) EntryEn
 
 	for _, entry := range entries {
 		if (ac.Name != "") && (ac.Name != entry.Name) {
+			continue
+		}
+
+		if (ac.Type != "") && (ac.Type != entry.Type) {
 			continue
 		}
 
