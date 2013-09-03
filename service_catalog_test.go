@@ -23,7 +23,7 @@ func TestFindFirstEndpointByCriteria(t *testing.T) {
 	}
 
 	endpoint = FindFirstEndpointByCriteria(
-		catalog("test", "http://localhost", "", ""),
+		catalog("test", "compute", "http://localhost", "", ""),
 		ApiCriteria{Name: "test"},
 	)
 	if endpoint.PublicURL != "http://localhost" {
@@ -32,7 +32,25 @@ func TestFindFirstEndpointByCriteria(t *testing.T) {
 	}
 
 	endpoint = FindFirstEndpointByCriteria(
-		catalog("test", "http://localhost", "", ""),
+		catalog("test", "compute", "http://localhost", "", ""),
+		ApiCriteria{Type: "compute"},
+	)
+	if endpoint.PublicURL != "http://localhost" {
+		t.Error("Looking for an endpoint by type but without region or version ID should match first entry endpoint.")
+		return
+	}
+
+	endpoint = FindFirstEndpointByCriteria(
+		catalog("test", "compute", "http://localhost", "", ""),
+		ApiCriteria{Type: "identity"},
+	)
+	if endpoint.PublicURL != "" {
+		t.Error("Returned mismatched type.")
+		return
+	}
+
+	endpoint = FindFirstEndpointByCriteria(
+		catalog("test", "compute", "http://localhost", "", ""),
 		ApiCriteria{Name: "test", Region: "RGN"},
 	)
 	if endpoint.PublicURL != "" {
@@ -41,7 +59,7 @@ func TestFindFirstEndpointByCriteria(t *testing.T) {
 	}
 
 	endpoint = FindFirstEndpointByCriteria(
-		catalog("test", "http://localhost", "rgn", ""),
+		catalog("test", "compute", "http://localhost", "rgn", ""),
 		ApiCriteria{Name: "test", Region: "RGN"},
 	)
 	if endpoint.PublicURL != "http://localhost" {
@@ -50,7 +68,7 @@ func TestFindFirstEndpointByCriteria(t *testing.T) {
 	}
 
 	endpoint = FindFirstEndpointByCriteria(
-		catalog("test", "http://localhost", "rgn", ""),
+		catalog("test", "compute", "http://localhost", "rgn", ""),
 		ApiCriteria{Name: "test", Region: "RGN", VersionId: "2"},
 	)
 	if endpoint.PublicURL != "" {
@@ -59,7 +77,7 @@ func TestFindFirstEndpointByCriteria(t *testing.T) {
 	}
 
 	endpoint = FindFirstEndpointByCriteria(
-		catalog("test", "http://localhost", "rgn", "3"),
+		catalog("test", "compute", "http://localhost", "rgn", "3"),
 		ApiCriteria{Name: "test", Region: "RGN", VersionId: "2"},
 	)
 	if endpoint.PublicURL != "" {
@@ -68,7 +86,7 @@ func TestFindFirstEndpointByCriteria(t *testing.T) {
 	}
 
 	endpoint = FindFirstEndpointByCriteria(
-		catalog("test", "http://localhost", "rgn", "2"),
+		catalog("test", "compute", "http://localhost", "rgn", "2"),
 		ApiCriteria{Name: "test", Region: "RGN", VersionId: "2"},
 	)
 	if endpoint.PublicURL != "http://localhost" {
@@ -77,7 +95,7 @@ func TestFindFirstEndpointByCriteria(t *testing.T) {
 	}
 
 	endpoint = FindFirstEndpointByCriteria(
-		catalog("test", "http://localhost", "ord", "2"),
+		catalog("test", "compute", "http://localhost", "ord", "2"),
 		ApiCriteria{Name: "test", VersionId: "2"},
 	)
 	if endpoint.PublicURL != "http://localhost" {
@@ -86,10 +104,11 @@ func TestFindFirstEndpointByCriteria(t *testing.T) {
 	}
 }
 
-func catalog(name, url, region, version string) []CatalogEntry {
+func catalog(name, entry_type, url, region, version string) []CatalogEntry {
 	return []CatalogEntry{
 		{
 			Name: name,
+			Type: entry_type,
 			Endpoints: []EntryEndpoint{
 				{
 					PublicURL: url,
