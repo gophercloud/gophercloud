@@ -7,7 +7,7 @@ import (
 )
 
 var id = flag.String("i", "", "Server ID to get info on.  Defaults to first server in your account if unspecified.")
-var rgn = flag.String("r", "DFW", "Datacenter region")
+var rgn = flag.String("r", "", "Datacenter region.  Leave blank for default region.")
 var quiet = flag.Bool("quiet", false, "Run quietly, for acceptance testing.  $? non-zero if issue.")
 
 func main() {

@@ -159,7 +159,6 @@ func withIdentity(ar bool, f func(gophercloud.AccessProvider)) {
 func withServerApi(acc gophercloud.AccessProvider, f func(gophercloud.CloudServersProvider)) {
 	api, err := gophercloud.ServersApi(acc, gophercloud.ApiCriteria{
 		Name:      "cloudServersOpenStack",
-		Region:    "DFW",
 		VersionId: "2",
 		UrlChoice: gophercloud.PublicURL,
 	})
