@@ -7,7 +7,7 @@ import (
 )
 
 var quiet = flag.Bool("quiet", false, "Quiet operation for acceptance tests.  $? non-zero if problem.")
-var region = flag.String("r", "DFW", "Datacenter region")
+var region = flag.String("r", "", "Datacenter region.  Leave blank for provider-default region.")
 
 func main() {
 	flag.Parse()
