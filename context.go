@@ -87,6 +87,10 @@ func (c *Context) WithProvider(name string, p Provider) *Context {
 
 // ProviderByName will locate a provider amongst those previously registered, if it exists.
 // If the named provider has not been registered, an ErrProvider error will result.
+//
+// You may also specify a custom Identity API URL.
+// Any provider name that contains the characters "://", in that order, will be treated as a custom Identity API URL.
+// Custom URLs, important for private cloud deployments, overrides all provider configurations.
 func (c *Context) ProviderByName(name string) (p Provider, err error) {
 	for provider, descriptor := range c.providerMap {
 		if name == provider {

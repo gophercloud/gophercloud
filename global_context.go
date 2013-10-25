@@ -34,6 +34,9 @@ func init() {
 //
 // Providers are identified through a unique key string.
 // Specifying an unsupported provider will result in an ErrProvider error.
+// However, you may also specify a custom Identity API URL.
+// Any provider name that contains the characters "://", in that order, will be treated as a custom Identity API URL.
+// Custom URLs, important for private cloud deployments, overrides all provider configurations.
 //
 // The supplied AuthOptions instance allows the client to specify only those credentials
 // relevant for the authentication request.  At present, support exists for OpenStack
