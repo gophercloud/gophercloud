@@ -317,7 +317,7 @@ func (gsp *genericServersProvider) ListAddresses(id string) (AddressSet, error) 
 
 // See the CloudServersProvider interface for details.
 func (gsp *genericServersProvider) ListAddressesByNetwork(id, networkLabel string) (NetworkAddress, error){
-	var pas NetworkAddress
+	pas := make(NetworkAddress)
 	var statusCode int
 
 	err := gsp.context.WithReauth(gsp.access, func() error {
