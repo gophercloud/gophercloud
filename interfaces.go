@@ -139,6 +139,10 @@ type CloudServersProvider interface {
 	// this function might be more efficient.
 	ListAddresses(id string) (AddressSet, error)
 
+	// ListAddressesByNetwork yields the list of available addresses for a given server id and networkLabel.
+	// Example: ListAddressesByNetwork("234-4353-4jfrj-43j2s", "private")
+	ListAddressesByNetwork(id, networkLabel string) (NetworkAddress, error)
+
 	// Images
 
 	// ListImages yields the list of available operating system images.  This function
