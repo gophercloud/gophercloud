@@ -195,3 +195,12 @@ func (a *Access) Revoke(tok string) error {
 	})
 	return err
 }
+
+// See ServiceCatalogerForIdentityV2 interface definition for details.
+// Note that the raw slice is returend; be careful not to alter the fields of any members,
+// for other components of Gophercloud may depend upon them.
+// If this becomes a problem in the future,
+// a future revision may return a deep-copy of the service catalog instead.
+func (a *Access) V2ServiceCatalog() []CatalogEntry {
+	return a.ServiceCatalog
+}
