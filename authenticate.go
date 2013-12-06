@@ -14,6 +14,9 @@ type AuthOptions struct {
 	// account's username and password.
 	Username, Password string
 
+	// ApiKey used for providers that support Api Key authentication
+	ApiKey string
+
 	// The TenantId field is optional for the Identity V2 API.
 	TenantId string
 
@@ -37,7 +40,8 @@ type AuthContainer struct {
 // Auth provides a JSON encoding wrapper for passing credentials to the Identity
 // service.  You will not work with this structure directly.
 type Auth struct {
-	PasswordCredentials PasswordCredentials `json:"passwordCredentials"`
+	PasswordCredentials *PasswordCredentials `json:"passwordCredentials,omitempty"`
+	ApiKeyCredentials   *ApiKeyCredentials   `json:"RAX-KSKEY:apiKeyCredentials,omitempty"`
 	TenantId            string              `json:"tenantId,omitempty"`
 	TenantName          string              `json:"tenantName,omitempty"`
 }
@@ -47,6 +51,12 @@ type Auth struct {
 type PasswordCredentials struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+
+type ApiKeyCredentials struct {
+	Username string `json:"username"`
+	ApiKey string `json:"apiKey"`
 }
 
 // Access encapsulates the API token and its relevant fields, as well as the
@@ -99,6 +109,30 @@ type EntryEndpoint struct {
 	VersionId, VersionInfo, VersionList string
 }
 
+
+//
+func getAuthCredentials(options AuthOptions) Auth {
+	if (options.ApiKey == "") {
+		return Auth{
+			PasswordCredentials: &PasswordCredentials{
+				Username: options.Username,
+				Password: options.Password,
+			},
+			TenantId:   options.TenantId,
+			TenantName: options.TenantName,
+		};
+	} else {
+		return Auth{
+			ApiKeyCredentials: &ApiKeyCredentials{
+				Username: options.Username,
+				ApiKey: options.ApiKey,
+			},
+			TenantId:   options.TenantId,
+			TenantName: options.TenantName,
+		};
+	}
+}
+
 // papersPlease contains the common logic between authentication and re-authentication.
 // The name, obviously a joke on the process of authentication, was chosen because
 // of how many other entities exist in the program containing the word Auth or Authorization.
@@ -106,21 +140,14 @@ type EntryEndpoint struct {
 func (c *Context) papersPlease(p Provider, options AuthOptions) (*Access, error) {
 	var access *Access
 
-	if (options.Username == "") || (options.Password == "") {
+	if (options.Username == "") || (options.Password == "" && options.ApiKey == "") {
 		return nil, ErrCredentials
 	}
 
 	err := perigee.Post(p.AuthEndpoint, perigee.Options{
 		CustomClient: c.httpClient,
 		ReqBody: &AuthContainer{
-			Auth: Auth{
-				PasswordCredentials: PasswordCredentials{
-					Username: options.Username,
-					Password: options.Password,
-				},
-				TenantId:   options.TenantId,
-				TenantName: options.TenantName,
-			},
+			Auth: getAuthCredentials(options),
 		},
 		Results: &struct {
 			Access **Access `json:"access"`
