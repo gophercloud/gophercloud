@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	provider, username, password := getCredentials()
+	provider, username, password, _ := getCredentials()
 
 	_, err := gophercloud.Authenticate(
 		provider,
