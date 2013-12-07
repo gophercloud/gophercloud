@@ -316,7 +316,7 @@ func (gsp *genericServersProvider) ListAddresses(id string) (AddressSet, error) 
 }
 
 // See the CloudServersProvider interface for details.
-func (gsp *genericServersProvider) ListAddressesByNetwork(id, networkLabel string) (NetworkAddress, error){
+func (gsp *genericServersProvider) ListAddressesByNetwork(id, networkLabel string) (NetworkAddress, error) {
 	pas := make(NetworkAddress)
 	var statusCode int
 
@@ -327,7 +327,7 @@ func (gsp *genericServersProvider) ListAddressesByNetwork(id, networkLabel strin
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
-			OkCodes: []int{200, 203},
+			OkCodes:    []int{200, 203},
 			StatusCode: &statusCode,
 		})
 	})
