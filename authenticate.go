@@ -42,8 +42,8 @@ type AuthContainer struct {
 type Auth struct {
 	PasswordCredentials *PasswordCredentials `json:"passwordCredentials,omitempty"`
 	ApiKeyCredentials   *ApiKeyCredentials   `json:"RAX-KSKEY:apiKeyCredentials,omitempty"`
-	TenantId            string              `json:"tenantId,omitempty"`
-	TenantName          string              `json:"tenantName,omitempty"`
+	TenantId            string               `json:"tenantId,omitempty"`
+	TenantName          string               `json:"tenantName,omitempty"`
 }
 
 // PasswordCredentials provides a JSON encoding wrapper for passing credentials to the Identity
@@ -53,10 +53,9 @@ type PasswordCredentials struct {
 	Password string `json:"password"`
 }
 
-
 type ApiKeyCredentials struct {
 	Username string `json:"username"`
-	ApiKey string `json:"apiKey"`
+	ApiKey   string `json:"apiKey"`
 }
 
 // Access encapsulates the API token and its relevant fields, as well as the
@@ -109,10 +108,9 @@ type EntryEndpoint struct {
 	VersionId, VersionInfo, VersionList string
 }
 
-
 //
 func getAuthCredentials(options AuthOptions) Auth {
-	if (options.ApiKey == "") {
+	if options.ApiKey == "" {
 		return Auth{
 			PasswordCredentials: &PasswordCredentials{
 				Username: options.Username,
@@ -120,16 +118,16 @@ func getAuthCredentials(options AuthOptions) Auth {
 			},
 			TenantId:   options.TenantId,
 			TenantName: options.TenantName,
-		};
+		}
 	} else {
 		return Auth{
 			ApiKeyCredentials: &ApiKeyCredentials{
 				Username: options.Username,
-				ApiKey: options.ApiKey,
+				ApiKey:   options.ApiKey,
 			},
 			TenantId:   options.TenantId,
 			TenantName: options.TenantName,
-		};
+		}
 	}
 }
 

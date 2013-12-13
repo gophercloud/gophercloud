@@ -15,7 +15,7 @@ func getCredentials() (provider, username, password, apiKey string) {
 	provider = os.Getenv("SDK_PROVIDER")
 	username = os.Getenv("SDK_USERNAME")
 	password = os.Getenv("SDK_PASSWORD")
-	apiKey   = os.Getenv("SDK_API_KEY")
+	apiKey = os.Getenv("SDK_API_KEY")
 
 	if (provider == "") || (username == "") || (password == "") {
 		fmt.Fprintf(os.Stderr, "One or more of the following environment variables aren't set:\n")
