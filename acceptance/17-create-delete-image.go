@@ -44,7 +44,7 @@ func main() {
 }
 
 func log(s string) {
-        if !*quiet {
-                fmt.Println(s)
-        }
+	if !*quiet {
+		fmt.Println(s)
+	}
 }

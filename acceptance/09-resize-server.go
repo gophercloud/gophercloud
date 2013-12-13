@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 	"github.com/rackspace/gophercloud"
 	"time"
 )
@@ -19,8 +19,8 @@ func main() {
 			done := make(chan bool)
 			go resizeRejectTest(api, done)
 			go resizeAcceptTest(api, done)
-			_ = <- done
-			_ = <- done
+			_ = <-done
+			_ = <-done
 
 			if !*quiet {
 				fmt.Println("Done.")

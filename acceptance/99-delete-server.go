@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 	"github.com/rackspace/gophercloud"
 )
 
@@ -42,5 +42,5 @@ func main() {
 				fmt.Printf("%d servers removed.\n", n)
 			}
 		})
-	})	
+	})
 }
