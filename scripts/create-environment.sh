@@ -8,8 +8,8 @@ export GOPATH=$HOME/go/gophercloud
 mkdir -p $GOPATH
 
 # Download gophercloud into that environment
-go get github.com/maxlinc/gophercloud
-cd $GOPATH/src/github.com/maxlinc/gophercloud
+go get github.com/rackspace/gophercloud
+cd $GOPATH/src/github.com/rackspace/gophercloud
 git checkout master
 
 # Write out the env.sh convenience file.
@@ -17,7 +17,7 @@ cd $GOPATH
 cat <<EOF >env.sh
 #!/bin/bash
 export GOPATH=$(pwd)
-export GOPHERCLOUD=$GOPATH/src/github.com/maxlinc/gophercloud
+export GOPHERCLOUD=$GOPATH/src/github.com/rackspace/gophercloud
 EOF
 chmod a+x env.sh
 

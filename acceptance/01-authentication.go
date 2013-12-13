@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/maxlinc/gophercloud"
+	"github.com/rackspace/gophercloud"
 )
 
 func main() {
