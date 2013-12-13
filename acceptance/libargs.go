@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/rackspace/gophercloud"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -57,11 +58,11 @@ func aSuitableImage(api gophercloud.CloudServersProvider) string {
 	//
 	// Until then, just return Ubuntu 12.04 LTS.
 	for i := 0; i < len(images); i++ {
-		if images[i].Id == "23b564c9-c3e6-49f9-bc68-86c7a9ab5018" {
+		if strings.Contains(images[i].Name, "Ubuntu 12.04 LTS") {
 			return images[i].Id
 		}
 	}
-	panic("Image 23b564c9-c3e6-49f9-bc68-86c7a9ab5018 (Ubuntu 12.04 LTS) not found.")
+	panic("Image for Ubuntu 12.04 LTS not found.")
 }
 
 // aSuitableFlavor finds the minimum flavor capable of running the test image
