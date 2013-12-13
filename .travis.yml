@@ -6,13 +6,10 @@ go:
   - 1.1
   - 1.2
   - tip
-env:
-  global:
-    secure: DSYbtEf4ln9TklBfxXEpb+2wAFuNJXnc6T0cYHX+4uD4ZQ9U+CZLZSYsPwv110rdQbgqiD/bT9m1gU4dAAS/U+pd8AduVByNskLY0ztfyj7xoFjhY5b/Ynz95mYHDSDrmINtrvNWSLoJi283NotXgJL5kanXGBp97UHgV6NtFqY=
 after_success:
   - go get code.google.com/p/go.tools/cmd/cover
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - export PATH=$PATH:$HOME/gopath/bin/
-  - goveralls $TRAVIS_TOKEN
+  - goveralls ywf0TpEcUc19k8FsI6oVSrzdPCkYh2JqI
 
