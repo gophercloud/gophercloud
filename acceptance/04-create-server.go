@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/rackspace/gophercloud"
+	"github.com/maxlinc/gophercloud"
 )
 
 var region, serverName, imageRef, flavorRef *string

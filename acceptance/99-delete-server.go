@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"flag"
-	"github.com/rackspace/gophercloud"
+	"github.com/maxlinc/gophercloud"
 )
 
 var quiet = flag.Bool("quiet", false, "Quiet operation for acceptance tests.  $? non-zero if problem.")
