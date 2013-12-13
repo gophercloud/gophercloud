@@ -148,6 +148,31 @@ func TestUserNameAndPassword(t *testing.T) {
 	}
 }
 
+func TestUserNameAndApiKey(t *testing.T) {
+	c := TestContext().
+		WithProvider("provider", Provider{AuthEndpoint: "http://localhost/"}).
+		UseCustomClient(&http.Client{Transport: newTransport().WithResponse(SUCCESSFUL_RESPONSE)})
+
+	credentials := []AuthOptions{
+		{},
+		{Username: "u"},
+		{ApiKey: "a"},
+	}
+	for i, auth := range credentials {
+		_, err := c.Authenticate("provider", auth)
+		if err == nil {
+			t.Error("Expected error from missing credentials (%d)", i)
+			return
+		}
+	}
+
+	_, err := c.Authenticate("provider", AuthOptions{Username: "u", ApiKey: "a"})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
 func TestTokenAcquisition(t *testing.T) {
 	c := TestContext().
 		UseCustomClient(&http.Client{Transport: newTransport().WithResponse(SUCCESSFUL_RESPONSE)}).
