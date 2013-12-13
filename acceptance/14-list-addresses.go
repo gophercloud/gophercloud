@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 	"github.com/rackspace/gophercloud"
 )
 
@@ -19,9 +19,8 @@ func main() {
 			}
 			waitForServerState(api, id, "ACTIVE")
 			defer api.DeleteServerById(id)
-			
+
 			tryAllAddresses(id, api)
-			tryAddressesByNetwork("public", id, api)
 			tryAddressesByNetwork("private", id, api)
 
 			log("Done")
@@ -32,32 +31,33 @@ func main() {
 func tryAllAddresses(id string, api gophercloud.CloudServersProvider) {
 	log("Getting list of all addresses...")
 	addresses, err := api.ListAddresses(id)
-        if (err != nil) && (err != gophercloud.WarnUnauthoritative) {
-        	panic(err)
-        }
-        if err == gophercloud.WarnUnauthoritative {
-	        log("Uh oh -- got a response back, but it's not authoritative for some reason.")
-        }
-        for _, addr := range addresses.Public {
-        	log("Address:", addr.Addr, "  IPv", addr.Version)
-        }
+	if (err != nil) && (err != gophercloud.WarnUnauthoritative) {
+		panic(err)
+	}
+	if err == gophercloud.WarnUnauthoritative {
+		log("Uh oh -- got a response back, but it's not authoritative for some reason.")
+	}
+	if !*quiet {
+		fmt.Println("Addresses:")
+		fmt.Printf("%+v\n", addresses)
+	}
 }
 
 func tryAddressesByNetwork(networkLabel string, id string, api gophercloud.CloudServersProvider) {
 	log("Getting list of addresses on", networkLabel, "network...")
-        network, err := api.ListAddressesByNetwork(id, networkLabel)
-        if (err != nil) && (err != gophercloud.WarnUnauthoritative) {
-	        panic(err) 
-        }       
-        if err == gophercloud.WarnUnauthoritative {
-                log("Uh oh -- got a response back, but it's not authoritative for some reason.")
-        }
-	for _, addr := range network[networkLabel]{
+	network, err := api.ListAddressesByNetwork(id, networkLabel)
+	if (err != nil) && (err != gophercloud.WarnUnauthoritative) {
+		panic(err)
+	}
+	if err == gophercloud.WarnUnauthoritative {
+		log("Uh oh -- got a response back, but it's not authoritative for some reason.")
+	}
+	for _, addr := range network[networkLabel] {
 		log("Address:", addr.Addr, "  IPv", addr.Version)
 	}
 }
 
-func log(s... interface{}) {
+func log(s ...interface{}) {
 	if !*quiet {
 		fmt.Println(s...)
 	}
