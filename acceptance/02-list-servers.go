@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/rackspace/gophercloud"
+	"github.com/maxlinc/gophercloud"
 	"flag"
 )
 

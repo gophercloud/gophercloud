@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"flag"
-	"github.com/rackspace/gophercloud"
+	"github.com/maxlinc/gophercloud"
 	"time"
 )
 

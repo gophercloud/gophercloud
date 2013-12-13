@@ -3,7 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"fmt"
-	"github.com/rackspace/gophercloud"
+	"github.com/maxlinc/gophercloud"
 	"os"
 	"time"
 )
