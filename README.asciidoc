@@ -18,11 +18,11 @@ IMPORTANT: *Please* do not just clone this repository expecting it to work like 
 ===== Installing Into an Existing Project
 Assuming you have a project underway already and its `$GOPATH` environment variable holds the correct path, you can include the Gophercloud package in the usual manner using `go get`:
 
-    go get github.com/maxlinc/gophercloud
+    go get github.com/rackspace/gophercloud
 
 The remainder of this document, and supporting materials, assumes a correct `$GOPATH` configuration, but further assumes that an environment variable `$GOPHERCLOUD` points to the Gophercloud installation directory as well.  E.g.,
 
-    export GOPHERCLOUD=$GOPATH/src/github.com/maxlinc/gophercloud
+    export GOPHERCLOUD=$GOPATH/src/github.com/rackspace/gophercloud
 
 ===== Creating a New Gophercloud Project
 If you're just starting out with Go, a convenience script exists which lets you create a new Go workspace preconfigured with Gophercloud for you.
@@ -30,7 +30,7 @@ If you're just starting out with Go, a convenience script exists which lets you 
 -----------------------------------------------------------------------------------------------------
 You can execute the following command to create a brand new Go workspace that is minimally configured for use with Gophercloud.  This should work for any reasonable POSIX-compatible environment.
 
-	source <(curl "https://raw.github.com/maxlinc/Gophercloud/master/scripts/create-environment.sh")
+	source <(curl "https://raw.github.com/rackspace/Gophercloud/master/scripts/create-environment.sh")
 -----------------------------------------------------------------------------------------------------
 
 This script will not only install the software, but also create a shell script `env.sh` which, when executed, restores both `$GOPATH` and `$GOPHERCLOUD` to their correct values.  The project will be installed in `$HOME/go/gophercloud`.
@@ -53,10 +53,10 @@ If everything goes well, you should only see output indicating the Go commands f
 2. Gophercloud incorrectly implements the relevant Openstack standards.
 3. Mistake in setting up the `SDK_*` environment variables above.
 
-If a problem occurs, https://github.com/maxlinc/gophercloud/issues[we'd love to hear about it in the issue tracker!]
+If a problem occurs, https://github.com/rackspace/gophercloud/issues[we'd love to hear about it in the issue tracker!]
 
 ==== Using Gophercloud
-Simply list Gophercloud in the import section of relevant source listings, and you will be able to issue cloud requests through Gophercloud.  For examples, either refer to the detailed SDK documentation, or https://github.com/maxlinc/gophercloud/tree/master/acceptance[take a look at the acceptance-level tests in the `acceptance` subdirectory.]
+Simply list Gophercloud in the import section of relevant source listings, and you will be able to issue cloud requests through Gophercloud.  For examples, either refer to the detailed SDK documentation, or https://github.com/rackspace/gophercloud/tree/master/acceptance[take a look at the acceptance-level tests in the `acceptance` subdirectory.]
 
 ==== Contributing Features or Bug-Fixes
 After using Gophercloud for a while, you might find that it lacks some useful feature, or that existing behavior seems buggy.  We welcome contributions from our users for both missing functionality as well as for bug fixes.

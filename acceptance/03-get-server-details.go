@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"flag"
-	"github.com/maxlinc/gophercloud"
+	"github.com/rackspace/gophercloud"
 )
 
 var id = flag.String("i", "", "Server ID to get info on.  Defaults to first server in your account if unspecified.")
