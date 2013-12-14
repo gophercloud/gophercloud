@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 	"github.com/rackspace/gophercloud"
 )
 
@@ -22,8 +22,8 @@ func main() {
 
 			log("Rebuilding server")
 			newDetails, err := servers.RebuildServer(id, gophercloud.NewServer{
-				Name: randomString("ACPTTEST", 32),
-				ImageRef: findAlternativeImage(),
+				Name:      randomString("ACPTTEST", 32),
+				ImageRef:  findAlternativeImage(),
 				FlavorRef: findAlternativeFlavor(),
 				AdminPass: randomString("", 16),
 			})

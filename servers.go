@@ -316,6 +316,32 @@ func (gsp *genericServersProvider) ListAddresses(id string) (AddressSet, error) 
 }
 
 // See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) ListAddressesByNetwork(id, networkLabel string) (NetworkAddress, error) {
+	pas := make(NetworkAddress)
+	var statusCode int
+
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/servers/%s/ips/%s", gsp.endpoint, id, networkLabel)
+		return perigee.Get(ep, perigee.Options{
+			Results: &pas,
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes:    []int{200, 203},
+			StatusCode: &statusCode,
+		})
+	})
+
+	if err != nil {
+		if statusCode == 203 {
+			err = WarnUnauthoritative
+		}
+	}
+
+	return pas, err
+}
+
+// See the CloudServersProvider interface for details.
 func (gsp *genericServersProvider) CreateImage(id string, ci CreateImage) (string, error) {
 	response, err := gsp.context.ResponseWithReauth(gsp.access, func() (*perigee.Response, error) {
 		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
@@ -365,6 +391,8 @@ type AddressSet struct {
 	Public  []VersionedAddress `json:"public"`
 	Private []VersionedAddress `json:"private"`
 }
+
+type NetworkAddress map[string][]VersionedAddress
 
 // Server records represent (virtual) hardware instances (not configurations) accessible by the user.
 //

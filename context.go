@@ -98,7 +98,7 @@ func (c *Context) ProviderByName(name string) (p Provider, err error) {
 		}
 	}
 	if strings.Contains(name, "://") {
-		p = Provider {
+		p = Provider{
 			AuthEndpoint: name,
 		}
 		return p, nil
