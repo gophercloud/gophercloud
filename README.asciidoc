@@ -1,4 +1,4 @@
-== Gophercloud -- V0.0.0
+== Gophercloud -- V0.0.0 image:https://secure.travis-ci.org/rackspace/gophercloud.png?branch=master["build status",link="https://travis-ci.org/rackspace/gophercloud"]
 The Go ecosystem seems to lack a comprehensive cloud services API (at the time this README was first written). As both Go and cloud services are trending in many businesses, and with Go used increasingly in infrastructure, it seems like an odd omission. To fill this gap, Gophercloud provides a Go binding to OpenStack cloud APIs.  Many providers offer many APIs that are compatible with OpenStack; thus, building your infrastructure automation projects around Openstack is a natural way to avoid vendor lock-in.
 
 WARNING: This library is still in the very early stages of development. Unless you want to contribute, it probably isn't what you want.
