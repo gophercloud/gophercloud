@@ -10,7 +10,7 @@ var (
 	nilOptions = gophercloud.AuthOptions{}
 
 	// ErrNoAuthUrl errors occur when the value of the OS_AUTH_URL environment variable cannot be determined.
-	ErrNoAuthUrl  = fmt.Errorf("Environment variable OS_AUTH_URL needs to be set.")
+	ErrNoAuthUrl = fmt.Errorf("Environment variable OS_AUTH_URL needs to be set.")
 
 	// ErrNoUsername errors occur when the value of the OS_USERNAME environment variable cannot be determined.
 	ErrNoUsername = fmt.Errorf("Environment variable OS_USERNAME needs to be set.")

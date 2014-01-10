@@ -7,4 +7,3 @@ import "os"
 func Region() string {
 	return os.Getenv("OS_REGION_NAME")
 }
-
