@@ -1,32 +1,36 @@
 package gophercloud
 
 import (
+	"os"
 	"strings"
 )
 
 // ApiCriteria provides one or more criteria for the SDK to look for appropriate endpoints.
 // Fields left unspecified or otherwise set to their zero-values are assumed to not be
 // relevant, and do not participate in the endpoint search.
+//
+// Name specifies the desired service catalog entry name.
+// Type specifies the desired service catalog entry type.
+// Region specifies the desired endpoint region.
+// If unset, Gophercloud will try to use the region set in the
+// OS_REGION_NAME environment variable.  If that's not set,
+// region comparison will not occur.  If OS_REGION_NAME is set
+// and IgnoreEnvVars is also set, OS_REGION_NAME will be ignored.
+// VersionId specifies the desired version of the endpoint.
+// Note that this field is matched exactly, and is (at present)
+// opaque to Gophercloud.  Thus, requesting a version 2
+// endpoint will _not_ match a version 3 endpoint.
+// The UrlChoice field inidicates whether or not gophercloud
+// should use the public or internal endpoint URL if a
+// candidate endpoint is found.
+// IgnoreEnvVars instructs Gophercloud to ignore helpful environment variables.
 type ApiCriteria struct {
-	// Name specifies the desired service catalog entry name.
-	Name string
-
-	// Type specifies the desired service catalog entry type.
-	Type string
-
-	// Region specifies the desired endpoint region.
-	Region string
-
-	// VersionId specifies the desired version of the endpoint.
-	// Note that this field is matched exactly, and is (at present)
-	// opaque to Gophercloud.  Thus, requesting a version 2
-	// endpoint will _not_ match a version 3 endpoint.
-	VersionId string
-
-	// The UrlChoice field inidicates whether or not gophercloud
-	// should use the public or internal endpoint URL if a
-	// candidate endpoint is found.
-	UrlChoice int
+	Name          string
+	Type          string
+	Region        string
+	VersionId     string
+	UrlChoice     int
+	IgnoreEnvVars bool
 }
 
 // The choices available for UrlChoice.  See the ApiCriteria structure for details.
@@ -42,6 +46,9 @@ const (
 // set to "").
 func FindFirstEndpointByCriteria(entries []CatalogEntry, ac ApiCriteria) EntryEndpoint {
 	rgn := strings.ToUpper(ac.Region)
+	if (rgn == "") && !ac.IgnoreEnvVars {
+		rgn = os.Getenv("OS_REGION_NAME")
+	}
 
 	for _, entry := range entries {
 		if (ac.Name != "") && (ac.Name != entry.Name) {
@@ -53,7 +60,7 @@ func FindFirstEndpointByCriteria(entries []CatalogEntry, ac ApiCriteria) EntryEn
 		}
 
 		for _, endpoint := range entry.Endpoints {
-			if (ac.Region != "") && (rgn != strings.ToUpper(endpoint.Region)) {
+			if (rgn != "") && (rgn != strings.ToUpper(endpoint.Region)) {
 				continue
 			}
 
