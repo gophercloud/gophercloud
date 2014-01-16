@@ -150,6 +150,18 @@ type CloudServersProvider interface {
 	// Example: ListAddressesByNetwork("234-4353-4jfrj-43j2s", "private")
 	ListAddressesByNetwork(id, networkLabel string) (NetworkAddress, error)
 
+	// ListFloatingIps yields the list of all floating IP addresses allocated to the current project.
+	ListFloatingIps() ([]FloatingIp, error)
+
+	// CreateFloatingIp allocates a new IP from the named pool to the current project.
+	CreateFloatingIp(pool string) (FloatingIp, error)
+
+	// DeleteFloatingIp returns the specified IP from the current project to the pool.
+	DeleteFloatingIp(ip FloatingIp) error
+
+	// AssociateFloatingIp associates the given floating IP to the given server id.
+	AssociateFloatingIp(serverId string, ip FloatingIp) error
+
 	// Images
 
 	// ListImages yields the list of available operating system images.  This function
