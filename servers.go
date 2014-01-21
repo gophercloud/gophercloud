@@ -66,7 +66,7 @@ func (gcp *genericServersProvider) ListServers() ([]Server, error) {
 	}
 
 	for _, s := range ss {
-		err = mapstructure.Decode(s.rawAddresses, &s.Addresses)
+		err = mapstructure.Decode(s.RawAddresses, &s.Addresses)
 		if err != nil {
 			return ss, err
 		}
@@ -97,7 +97,7 @@ func (gsp *genericServersProvider) ServerById(id string) (*Server, error) {
 		return s, err
 	}
 
-	err = mapstructure.Decode(s.rawAddresses, &s.Addresses)
+	err = mapstructure.Decode(s.RawAddresses, &s.Addresses)
 
 	return s, err
 }
@@ -525,26 +525,23 @@ type Server struct {
 	OsExtStsTaskState  string            `json:"OS-EXT-STS:task_state"`
 	OsExtStsVmState    string            `json:"OS-EXT-STS:vm_state"`
 
-	rawAddresses map[string]interface{} `json:"addresses"`
+	RawAddresses map[string]interface{} `json:"addresses"`
 }
 
 // AllAddressPools returns a complete set of address pools available on the server.
 // The name of each pool supported keys the map.
 // The value of the map contains the addresses provided in the corresponding pool.
 func (s *Server) AllAddressPools() (map[string][]VersionedAddress, error) {
-	fmt.Printf("-- %#v\n", s.rawAddresses)
-	m := make(map[string][]VersionedAddress, 0)
-	for pool, subtree := range s.rawAddresses {
-		fmt.Println("POOL: ", pool)
-		fmt.Printf("  %#v\n", subtree)
-		v := make([]VersionedAddress, 0)
-		err := mapstructure.Decode(subtree, &v)
+	pools := make(map[string][]VersionedAddress, 0)
+	for pool, subtree := range s.RawAddresses {
+		addresses := make([]VersionedAddress, 0)
+		err := mapstructure.Decode(subtree, &addresses)
 		if err != nil {
 			return nil, err
 		}
-		m[pool] = v
+		pools[pool] = addresses
 	}
-	return m, nil
+	return pools, nil
 }
 
 // NewServerSettings structures record those fields of the Server structure to change
