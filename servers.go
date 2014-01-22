@@ -547,20 +547,23 @@ type NewServerSettings struct {
 // The Id field contains the server's unique identifier.
 // The identifier's scope is best assumed to be bound by the user's account, unless other arrangements have been made with Rackspace.
 //
+// The SecurityGroup field allows the user to specify a security group at launch.
+//
 // Any Links provided are used to refer to the server specifically by URL.
 // These links are useful for making additional REST calls not explicitly supported by Gorax.
 type NewServer struct {
-	Name            string            `json:"name,omitempty"`
-	ImageRef        string            `json:"imageRef,omitempty"`
-	FlavorRef       string            `json:"flavorRef,omitempty"`
-	Metadata        map[string]string `json:"metadata,omitempty"`
-	Personality     []FileConfig      `json:"personality,omitempty"`
-	Networks        []NetworkConfig   `json:"networks,omitempty"`
-	AdminPass       string            `json:"adminPass,omitempty"`
-	KeyPairName     string            `json:"key_name,omitempty"`
-	Id              string            `json:"id,omitempty"`
-	Links           []Link            `json:"links,omitempty"`
-	OsDcfDiskConfig string            `json:"OS-DCF:diskConfig,omitempty"`
+	Name            string                   `json:"name,omitempty"`
+	ImageRef        string                   `json:"imageRef,omitempty"`
+	FlavorRef       string                   `json:"flavorRef,omitempty"`
+	Metadata        map[string]string        `json:"metadata,omitempty"`
+	Personality     []FileConfig             `json:"personality,omitempty"`
+	Networks        []NetworkConfig          `json:"networks,omitempty"`
+	AdminPass       string                   `json:"adminPass,omitempty"`
+	KeyPairName     string                   `json:"key_name,omitempty"`
+	Id              string                   `json:"id,omitempty"`
+	Links           []Link                   `json:"links,omitempty"`
+	OsDcfDiskConfig string                   `json:"OS-DCF:diskConfig,omitempty"`
+	SecurityGroup   []map[string]interface{} `json:"security_groups,omitempty"`
 }
 
 // ResizeRequest structures are used internally to encode to JSON the parameters required to resize a server instance.
