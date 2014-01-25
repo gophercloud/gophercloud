@@ -49,7 +49,7 @@ func main() {
 
 	dr, err := np.Delete("ajkhdlkajhdflkajshdf")
 	if err != nil {
-		panic(err)
+		fmt.Printf("%#v\n", err)
 	}
 	fmt.Printf("%#v\n", dr)
 }
