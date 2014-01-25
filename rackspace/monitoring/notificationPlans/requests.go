@@ -2,8 +2,8 @@ package notificationPlans
 
 import (
 	"fmt"
-	"github.com/rackspace/gophercloud/rackspace/monitoring"
 	"github.com/racker/perigee"
+	"github.com/rackspace/gophercloud/rackspace/monitoring"
 )
 
 var ErrNotImplemented = fmt.Errorf("notificationPlans feature not yet implemented")
