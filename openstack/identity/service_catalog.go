@@ -7,17 +7,17 @@ type ServiceCatalogDesc struct {
 }
 
 type CatalogEntry struct {
-	Name string
-	Type string
+	Name      string
+	Type      string
 	Endpoints []Endpoint
 }
 
 type Endpoint struct {
-	TenantId string
-	PublicURL string
+	TenantId    string
+	PublicURL   string
 	InternalURL string
-	Region string
-	VersionId string
+	Region      string
+	VersionId   string
 	VersionInfo string
 	VersionList string
 }
@@ -45,8 +45,8 @@ func (sc *ServiceCatalogDesc) CatalogEntries() ([]CatalogEntry, error) {
 			return ces, err
 		}
 		ces[i] = CatalogEntry{
-			Name: d["name"].(string),
-			Type: d["type"].(string),
+			Name:      d["name"].(string),
+			Type:      d["type"].(string),
 			Endpoints: eps,
 		}
 	}

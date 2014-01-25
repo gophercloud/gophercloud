@@ -1,8 +1,8 @@
 package identity
 
 import (
-	"testing"
 	"encoding/json"
+	"testing"
 )
 
 func TestServiceCatalog(t *testing.T) {
