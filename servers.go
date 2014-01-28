@@ -5,6 +5,7 @@ package gophercloud
 
 import (
 	"fmt"
+	"github.com/mitchellh/mapstructure"
 	"github.com/racker/perigee"
 	"strings"
 )
@@ -55,6 +56,22 @@ func (gcp *genericServersProvider) ListServers() ([]Server, error) {
 			},
 		})
 	})
+
+	// Compatibility with v0.0.x -- we "map" our public and private
+	// addresses into a legacy structure field for the benefit of
+	// earlier software.
+
+	if err != nil {
+		return ss, err
+	}
+
+	for _, s := range ss {
+		err = mapstructure.Decode(s.RawAddresses, &s.Addresses)
+		if err != nil {
+			return ss, err
+		}
+	}
+
 	return ss, err
 }
 
@@ -71,6 +88,17 @@ func (gsp *genericServersProvider) ServerById(id string) (*Server, error) {
 			},
 		})
 	})
+
+	// Compatibility with v0.0.x -- we "map" our public and private
+	// addresses into a legacy structure field for the benefit of
+	// earlier software.
+
+	if err != nil {
+		return s, err
+	}
+
+	err = mapstructure.Decode(s.RawAddresses, &s.Addresses)
+
 	return s, err
 }
 
@@ -400,6 +428,8 @@ type NetworkAddress map[string][]VersionedAddress
 //
 // Addresses provides addresses for any attached isolated networks.
 // The version field indicates whether the IP address is version 4 or 6.
+// Note: only public and private pools appear here.
+// To get the complete set, use the AllAddressPools() method instead.
 //
 // Created tells when the server entity was created.
 //
@@ -473,9 +503,9 @@ type NetworkAddress map[string][]VersionedAddress
 // http://docs.rackspace.com/servers/api/v2/cs-devguide/content/ch_extensions.html#ext_status
 // for more details.  It's too lengthy to include here.
 type Server struct {
-	AccessIPv4         string            `json:"accessIPv4"`
-	AccessIPv6         string            `json:"accessIPv6"`
-	Addresses          AddressSet        `json:"addresses"`
+	AccessIPv4         string `json:"accessIPv4"`
+	AccessIPv6         string `json:"accessIPv6"`
+	Addresses          AddressSet
 	Created            string            `json:"created"`
 	Flavor             FlavorLink        `json:"flavor"`
 	HostId             string            `json:"hostId"`
@@ -494,6 +524,24 @@ type Server struct {
 	OsExtStsPowerState int               `json:"OS-EXT-STS:power_state"`
 	OsExtStsTaskState  string            `json:"OS-EXT-STS:task_state"`
 	OsExtStsVmState    string            `json:"OS-EXT-STS:vm_state"`
+
+	RawAddresses map[string]interface{} `json:"addresses"`
+}
+
+// AllAddressPools returns a complete set of address pools available on the server.
+// The name of each pool supported keys the map.
+// The value of the map contains the addresses provided in the corresponding pool.
+func (s *Server) AllAddressPools() (map[string][]VersionedAddress, error) {
+	pools := make(map[string][]VersionedAddress, 0)
+	for pool, subtree := range s.RawAddresses {
+		addresses := make([]VersionedAddress, 0)
+		err := mapstructure.Decode(subtree, &addresses)
+		if err != nil {
+			return nil, err
+		}
+		pools[pool] = addresses
+	}
+	return pools, nil
 }
 
 // NewServerSettings structures record those fields of the Server structure to change
