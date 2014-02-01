@@ -44,7 +44,7 @@ func AuthOptions() (string, gophercloud.AuthOptions, error) {
 		return "", nilOptions, ErrNoUsername
 	}
 
-	if password == "" && apiKey == "" {
+	if password == "" {
 		return "", nilOptions, ErrNoPassword
 	}
 
