@@ -193,4 +193,25 @@ type CloudServersProvider interface {
 
 	// ShowKeyPair will yield the named keypair.
 	ShowKeyPair(name string) (KeyPair, error)
+
+	// ListSecurityGroups provides a listing of security groups for the tenant.
+	// This method works only if the provider supports the os-security-groups extension.
+	ListSecurityGroups() ([]SecurityGroup, error)
+
+	// CreateSecurityGroup lets a tenant create a new security group.
+	// Only the SecurityGroup fields which are specified will be marshalled to the API.
+	// This method works only if the provider supports the os-security-groups extension.
+	CreateSecurityGroup(desired SecurityGroup) (*SecurityGroup, error)
+
+	// ListSecurityGroupsByServerId provides a list of security groups which apply to the indicated server.
+	// This method works only if the provider supports the os-security-groups extension.
+	ListSecurityGroupsByServerId(id string) ([]SecurityGroup, error)
+
+	// SecurityGroupById returns a security group corresponding to the provided ID number.
+	// This method works only if the provider supports the os-security-groups extension.
+	SecurityGroupById(id int) (*SecurityGroup, error)
+
+	// DeleteSecurityGroupById disposes of a security group corresponding to the provided ID number.
+	// This method works only if the provider supports the os-security-groups extension.
+	DeleteSecurityGroupById(id int) error
 }
