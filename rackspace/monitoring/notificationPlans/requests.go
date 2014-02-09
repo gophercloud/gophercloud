@@ -24,7 +24,7 @@ func NewClient(mo monitoring.Options) *Client {
 func (c *Client) Delete(id string) (DeleteResults, error) {
 	var dr DeleteResults
 
-	tok, err := identity.Token(c.options.Authentication)
+	tok, err := identity.GetToken(c.options.Authentication)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (c *Client) Delete(id string) (DeleteResults, error) {
 		Results: &dr,
 		OkCodes: []int{204},
 		MoreHeaders: map[string]string{
-			"X-Auth-Token": tok.Id(),
+			"X-Auth-Token": tok.Id,
 		},
 	})
 	return dr, err

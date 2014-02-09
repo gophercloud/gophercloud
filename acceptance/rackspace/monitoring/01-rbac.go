@@ -22,7 +22,7 @@ func main() {
 
 	// Find the cloud monitoring API
 
-	sc, err := identity.ServiceCatalog(r)
+	sc, err := identity.GetServiceCatalog(r)
 	if err != nil {
 		panic(err)
 	}
