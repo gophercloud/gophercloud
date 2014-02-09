@@ -1,3 +1,4 @@
+// This package contains utilities which eases working with Gophercloud's OpenStack APIs.
 package utils
 
 import (
@@ -6,16 +7,13 @@ import (
 	"os"
 )
 
+var nilOptions = identity.AuthOptions{}
+
+// ErrNoAuthUrl, ErrNoUsername, and ErrNoPassword errors indicate of the required OS_AUTH_URL, OS_USERNAME, or OS_PASSWORD
+// environment variables, respectively, remain undefined.  See the AuthOptions() function for more details.
 var (
-	nilOptions = identity.AuthOptions{}
-
-	// ErrNoAuthUrl errors occur when the value of the OS_AUTH_URL environment variable cannot be determined.
-	ErrNoAuthUrl = fmt.Errorf("Environment variable OS_AUTH_URL needs to be set.")
-
-	// ErrNoUsername errors occur when the value of the OS_USERNAME environment variable cannot be determined.
+	ErrNoAuthUrl  = fmt.Errorf("Environment variable OS_AUTH_URL needs to be set.")
 	ErrNoUsername = fmt.Errorf("Environment variable OS_USERNAME needs to be set.")
-
-	// ErrNoPassword errors occur when the value of the OS_PASSWORD environment variable cannot be determined.
 	ErrNoPassword = fmt.Errorf("Environment variable OS_PASSWORD needs to be set.")
 )
 
@@ -23,12 +21,6 @@ var (
 // OS_* environment variables.  The following variables provide sources of truth: OS_AUTH_URL, OS_USERNAME,
 // OS_PASSWORD, OS_TENANT_ID, and OS_TENANT_NAME.  Of these, OS_USERNAME, OS_PASSWORD, and OS_AUTH_URL must
 // have settings, or an error will result.  OS_TENANT_ID and OS_TENANT_NAME are optional.
-//
-// The value of OS_AUTH_URL will be returned directly to the caller, for subsequent use in
-// gophercloud.Authenticate()'s Provider parameter.  This function will not interpret the value of OS_AUTH_URL,
-// so as a convenient extention, you may set OS_AUTH_URL to, e.g., "rackspace-uk", or any other Gophercloud-recognized
-// provider shortcuts.  For broad compatibility, especially with local installations, you should probably
-// avoid the temptation to do this.
 func AuthOptions() (identity.AuthOptions, error) {
 	authUrl := os.Getenv("OS_AUTH_URL")
 	username := os.Getenv("OS_USERNAME")
