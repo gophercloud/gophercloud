@@ -88,3 +88,87 @@ const authResultsOK = `{
         ]
     }
 }`
+
+// Taken from: http://docs.openstack.org/api/openstack-identity-service/2.0/content/GET_listExtensions_v2.0_extensions_.html#GET_listExtensions_v2.0_extensions_-Request
+const queryResults = `{
+    "extensions":[{
+            "name": "Reset Password Extension",
+            "namespace": "http://docs.rackspacecloud.com/identity/api/ext/rpe/v2.0",
+            "alias": "RS-RPE",
+            "updated": "2011-01-22T13:25:27-06:00",
+            "description": "Adds the capability to reset a user's password. The user is emailed when the password has been reset.",
+            "links":[{
+                    "rel": "describedby",
+                    "type": "application/pdf",
+                    "href": "http://docs.rackspacecloud.com/identity/api/ext/identity-rpe-20111111.pdf"
+                },
+                {
+                    "rel": "describedby",
+                    "type": "application/vnd.sun.wadl+xml",
+                    "href": "http://docs.rackspacecloud.com/identity/api/ext/identity-rpe.wadl"
+                }
+            ]
+        },
+        {
+            "name": "User Metadata Extension",
+            "namespace": "http://docs.rackspacecloud.com/identity/api/ext/meta/v2.0",
+            "alias": "RS-META",
+            "updated": "2011-01-12T11:22:33-06:00",
+            "description": "Allows associating arbritrary metadata with a user.",
+            "links":[{
+                    "rel": "describedby",
+                    "type": "application/pdf",
+                    "href": "http://docs.rackspacecloud.com/identity/api/ext/identity-meta-20111201.pdf"
+                },
+                {
+                    "rel": "describedby",
+                    "type": "application/vnd.sun.wadl+xml",
+                    "href": "http://docs.rackspacecloud.com/identity/api/ext/identity-meta.wadl"
+                }
+            ]
+        }
+    ],
+    "extensions_links":[]
+}`
+
+// Same as queryResults above, but with a bogus JSON envelop.
+const bogusExtensionsResults = `{
+    "explosions":[{
+            "name": "Reset Password Extension",
+            "namespace": "http://docs.rackspacecloud.com/identity/api/ext/rpe/v2.0",
+            "alias": "RS-RPE",
+            "updated": "2011-01-22T13:25:27-06:00",
+            "description": "Adds the capability to reset a user's password. The user is emailed when the password has been reset.",
+            "links":[{
+                    "rel": "describedby",
+                    "type": "application/pdf",
+                    "href": "http://docs.rackspacecloud.com/identity/api/ext/identity-rpe-20111111.pdf"
+                },
+                {
+                    "rel": "describedby",
+                    "type": "application/vnd.sun.wadl+xml",
+                    "href": "http://docs.rackspacecloud.com/identity/api/ext/identity-rpe.wadl"
+                }
+            ]
+        },
+        {
+            "name": "User Metadata Extension",
+            "namespace": "http://docs.rackspacecloud.com/identity/api/ext/meta/v2.0",
+            "alias": "RS-META",
+            "updated": "2011-01-12T11:22:33-06:00",
+            "description": "Allows associating arbritrary metadata with a user.",
+            "links":[{
+                    "rel": "describedby",
+                    "type": "application/pdf",
+                    "href": "http://docs.rackspacecloud.com/identity/api/ext/identity-meta-20111201.pdf"
+                },
+                {
+                    "rel": "describedby",
+                    "type": "application/vnd.sun.wadl+xml",
+                    "href": "http://docs.rackspacecloud.com/identity/api/ext/identity-meta.wadl"
+                }
+            ]
+        }
+    ],
+    "extensions_links":[]
+}`

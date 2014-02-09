@@ -6,7 +6,7 @@ import (
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
-type extractor func(*identity.TokenDesc) string
+type extractor func(*identity.Token) string
 
 func main() {
 	// Create an initialized set of authentication options based on available OS_*
@@ -23,7 +23,7 @@ func main() {
 	}
 
 	// We're authenticated; now let's grab our authentication token.
-	t, err := identity.Token(r)
+	t, err := identity.GetToken(r)
 	if err != nil {
 		panic(err)
 	}
@@ -31,8 +31,8 @@ func main() {
 	// Authentication tokens have a variety of fields which might be of some interest.
 	// Let's print a few of them out.
 	table := map[string]extractor{
-		"ID":      func(t *identity.TokenDesc) string { return t.Id() },
-		"Expires": func(t *identity.TokenDesc) string { return t.Expires() },
+		"ID":      func(t *identity.Token) string { return t.Id },
+		"Expires": func(t *identity.Token) string { return t.Expires },
 	}
 
 	for attr, fn := range table {
@@ -42,7 +42,7 @@ func main() {
 	// With each authentication, you receive a master directory of all the services
 	// your account can access.  This "service catalog", as OpenStack calls it,
 	// provides you the means to exploit other OpenStack services.
-	sc, err := identity.ServiceCatalog(r)
+	sc, err := identity.GetServiceCatalog(r)
 	if err != nil {
 		panic(err)
 	}
@@ -67,4 +67,3 @@ func main() {
 		}
 	}
 }
-

@@ -13,13 +13,13 @@ func TestAccessToken(t *testing.T) {
 		return
 	}
 
-	tok, err := Token(authResults)
+	tok, err := GetToken(authResults)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if tok.Id() != "ab48a9efdfedb23ty3494" {
-		t.Errorf("Expected token \"ab48a9efdfedb23ty3494\"; got \"%s\" instead", tok.Id())
+	if tok.Id != "ab48a9efdfedb23ty3494" {
+		t.Errorf("Expected token \"ab48a9efdfedb23ty3494\"; got \"%s\" instead", tok.Id)
 		return
 	}
 }

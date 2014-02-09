@@ -13,7 +13,7 @@ func TestServiceCatalog(t *testing.T) {
 		return
 	}
 
-	sc, err := ServiceCatalog(authResults)
+	sc, err := GetServiceCatalog(authResults)
 	if err != nil {
 		panic(err)
 	}
