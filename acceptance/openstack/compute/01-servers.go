@@ -30,11 +30,17 @@ func main() {
 		panic(err)
 	}
 
+	region := os.Getenv("OS_REGION_NAME")
+
 	n := 0
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 2, 8, 2, ' ', 0)
 	fmt.Fprintln(w, "ID\tName\tRegion\tIPv4\tIPv6\t")
 	for _, ep := range eps {
+		if (region != "") && (region != ep.Region) {
+			continue
+		}
+
 		client := servers.NewClient(ep.PublicURL, a, ao)
 
 		listResults, err := servers.List(client)
