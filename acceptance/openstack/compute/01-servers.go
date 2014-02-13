@@ -23,44 +23,58 @@ func main() {
 		panic(err)
 	}
 
-	ep, err := findAnyComputeEndpoint(sc)
+	eps, err := findAllComputeEndpoints(sc)
 	if err != nil {
 		panic(err)
 	}
 
-	client := servers.NewClient(ep, a, ao)
-
-	listResults, err := servers.List(client)
-	if err != nil {
-		panic(err)
+	clients := make([]*servers.Client, len(eps))
+	for i, ep := range eps {
+		clients[i] = servers.NewClient(ep, a, ao)
 	}
 
-	svrs, err := servers.GetServers(listResults)
-	if err != nil {
-		panic(err)
-	}
+	n := 0
+	for _, client := range clients {
+		listResults, err := servers.List(client)
+		if err != nil {
+			panic(err)
+		}
 
-	for _, s := range svrs {
-		fmt.Printf("ID(%s)\n", s.Id)
-		fmt.Printf("    Name(%s)\n", s.Name)
-		fmt.Printf("    IPv4(%s)\n    IPv6(%s)\n", s.AccessIPv4, s.AccessIPv6)
+		svrs, err := servers.GetServers(listResults)
+		if err != nil {
+			panic(err)
+		}
+
+		n = n + len(svrs)
+
+		for _, s := range svrs {
+			fmt.Printf("ID(%s)\n", s.Id)
+			fmt.Printf("    Name(%s)\n", s.Name)
+			fmt.Printf("    IPv4(%s)\n    IPv6(%s)\n", s.AccessIPv4, s.AccessIPv6)
+		}
 	}
-	fmt.Printf("--------\n%d servers listed.\n", len(svrs))
+	fmt.Printf("--------\n%d servers listed.\n", n)
 }
 
 
-func findAnyComputeEndpoint(sc *identity.ServiceCatalog) (string, error) {
+func findAllComputeEndpoints(sc *identity.ServiceCatalog) ([]string, error) {
+	var eps []string
+
 	ces, err := sc.CatalogEntries()
 	if err != nil {
-		return "", err
+		return eps, err
 	}
 
 	for _, ce := range ces {
 		if ce.Type == "compute" {
-			return ce.Endpoints[0].PublicURL, nil
+			eps := make([]string, len(ce.Endpoints))
+			for i, endpoint := range ce.Endpoints {
+				eps[i] = endpoint.PublicURL
+			}
+			return eps, nil
 		}
 	}
 
-	return "", fmt.Errorf("Compute endpoint not found.")
+	return eps, fmt.Errorf("Compute endpoint not found.")
 }
 
