@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"text/tabwriter"
 	"github.com/rackspace/gophercloud/openstack/compute/servers"
 	"github.com/rackspace/gophercloud/openstack/identity"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"os"
+	"text/tabwriter"
 )
 
 func main() {
@@ -30,12 +30,12 @@ func main() {
 		panic(err)
 	}
 
-	region := os.Getenv("OS_REGION_NAME")
-
-	n := 0
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 2, 8, 2, ' ', 0)
-	fmt.Fprintln(w, "ID\tName\tRegion\tIPv4\tIPv6\t")
+	fmt.Fprintln(w, "ID\tRegion\tName\tIPv4\tIPv6\t")
+
+	region := os.Getenv("OS_REGION_NAME")
+	n := 0
 	for _, ep := range eps {
 		if (region != "") && (region != ep.Region) {
 			continue
@@ -63,7 +63,6 @@ func main() {
 	fmt.Printf("--------\n%d servers listed.\n", n)
 }
 
-
 func findAllComputeEndpoints(sc *identity.ServiceCatalog) ([]identity.Endpoint, error) {
 	ces, err := sc.CatalogEntries()
 	if err != nil {
@@ -78,4 +77,3 @@ func findAllComputeEndpoints(sc *identity.ServiceCatalog) ([]identity.Endpoint, 
 
 	return nil, fmt.Errorf("Compute endpoint not found.")
 }
-

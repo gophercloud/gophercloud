@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"github.com/rackspace/gophercloud/openstack/compute/images"
 	"github.com/rackspace/gophercloud/openstack/identity"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"os"
 	"text/tabwriter"
 )
 
@@ -37,11 +37,11 @@ func main() {
 	region := os.Getenv("OS_REGION_NAME")
 	n := 0
 	for _, ep := range eps {
-		client := images.NewClient(ep.PublicURL, a, ao)
-
 		if (region != "") && (region != ep.Region) {
 			continue
 		}
+
+		client := images.NewClient(ep.PublicURL, a, ao)
 
 		listResults, err := images.List(client)
 		if err != nil {
@@ -63,7 +63,6 @@ func main() {
 	fmt.Printf("--------\n%d images listed.\n", n)
 }
 
-
 func findAllComputeEndpoints(sc *identity.ServiceCatalog) ([]identity.Endpoint, error) {
 	ces, err := sc.CatalogEntries()
 	if err != nil {
@@ -78,4 +77,3 @@ func findAllComputeEndpoints(sc *identity.ServiceCatalog) ([]identity.Endpoint, 
 
 	return nil, fmt.Errorf("Compute endpoint not found.")
 }
-
