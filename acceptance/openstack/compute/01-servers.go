@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"text/tabwriter"
 	"github.com/rackspace/gophercloud/openstack/compute/servers"
 	"github.com/rackspace/gophercloud/openstack/identity"
 	"github.com/rackspace/gophercloud/openstack/utils"
@@ -28,13 +30,13 @@ func main() {
 		panic(err)
 	}
 
-	clients := make([]*servers.Client, len(eps))
-	for i, ep := range eps {
-		clients[i] = servers.NewClient(ep, a, ao)
-	}
-
 	n := 0
-	for _, client := range clients {
+	w := new(tabwriter.Writer)
+	w.Init(os.Stdout, 2, 8, 2, ' ', 0)
+	fmt.Fprintln(w, "ID\tName\tRegion\tIPv4\tIPv6\t")
+	for _, ep := range eps {
+		client := servers.NewClient(ep.PublicURL, a, ao)
+
 		listResults, err := servers.List(client)
 		if err != nil {
 			panic(err)
@@ -48,33 +50,26 @@ func main() {
 		n = n + len(svrs)
 
 		for _, s := range svrs {
-			fmt.Printf("ID(%s)\n", s.Id)
-			fmt.Printf("    Name(%s)\n", s.Name)
-			fmt.Printf("    IPv4(%s)\n    IPv6(%s)\n", s.AccessIPv4, s.AccessIPv6)
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t\n", s.Id, s.Name, ep.Region, s.AccessIPv4, s.AccessIPv6)
 		}
 	}
+	w.Flush()
 	fmt.Printf("--------\n%d servers listed.\n", n)
 }
 
 
-func findAllComputeEndpoints(sc *identity.ServiceCatalog) ([]string, error) {
-	var eps []string
-
+func findAllComputeEndpoints(sc *identity.ServiceCatalog) ([]identity.Endpoint, error) {
 	ces, err := sc.CatalogEntries()
 	if err != nil {
-		return eps, err
+		return nil, err
 	}
 
 	for _, ce := range ces {
 		if ce.Type == "compute" {
-			eps := make([]string, len(ce.Endpoints))
-			for i, endpoint := range ce.Endpoints {
-				eps[i] = endpoint.PublicURL
-			}
-			return eps, nil
+			return ce.Endpoints, nil
 		}
 	}
 
-	return eps, fmt.Errorf("Compute endpoint not found.")
+	return nil, fmt.Errorf("Compute endpoint not found.")
 }
 
