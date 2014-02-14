@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/rackspace/gophercloud/openstack/compute/servers"
 	"github.com/rackspace/gophercloud/openstack/compute/images"
+	"github.com/rackspace/gophercloud/openstack/compute/flavors"
 	"github.com/rackspace/gophercloud/openstack/identity"
 	"github.com/rackspace/gophercloud/openstack/utils"
 	"os"
@@ -137,7 +138,7 @@ func TestListFlavors(t *testing.T) {
 		return
 	}
 
-	fmt.Fprintln(ts.w, "ID\tRegion\tName\tStatus\tCreated\t")
+	fmt.Fprintln(ts.w, "ID\tRegion\tName\tRAM\tDisk\tVCPUs\t")
 
 	region := os.Getenv("OS_REGION_NAME")
 	n := 0
@@ -163,7 +164,7 @@ func TestListFlavors(t *testing.T) {
 		n = n + len(flavs)
 
 		for _, f := range flavs {
-			fmt.Fprintf(ts.w, "%s\t%s\t%s\t%s\t%s\t\n", f.Id, ep.Region, f.Name, f.Status, f.Created)
+			fmt.Fprintf(ts.w, "%s\t%s\t%s\t%d\t%d\t%d\t\n", f.Id, ep.Region, f.Name, f.Ram, f.Disk, f.VCpus)
 		}
 	}
 	ts.w.Flush()
