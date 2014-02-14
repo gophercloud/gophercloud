@@ -75,3 +75,15 @@ func GetServers(lr ListResult) ([]Server, error) {
 	return servers, nil
 }
 
+// GetServer interprets the result of a call expected to return data on a single server.
+func GetServer(sr ServerResult) (*Server, error) {
+	so, ok := sr["server"]
+	if !ok {
+		return nil, ErrNotImplemented
+	}
+	serverObj := so.(map[string]interface{})
+	s := new(Server)
+	err := mapstructure.Decode(serverObj, s)
+	return s, err
+}
+

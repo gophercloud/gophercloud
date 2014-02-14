@@ -10,6 +10,8 @@ import (
 // provided through separate, type-safe accessors or methods. 
 type ListResult map[string]interface{}
 
+type ServerResult map[string]interface{}
+
 // List makes a request against the API to list servers accessible to you.
 func List(c *Client) (ListResult, error) {
 	var lr ListResult
@@ -24,5 +26,55 @@ func List(c *Client) (ListResult, error) {
 		MoreHeaders: h,
 	})
 	return lr, err
+}
+
+// Create requests a server to be provisioned to the user in the current tenant.
+func Create(c *Client, opts map[string]interface{}) (ServerResult, error) {
+	var sr ServerResult
+
+	h, err := c.getCreateHeaders()
+	if err != nil {
+		return nil, err
+	}
+
+	err = perigee.Post(c.getCreateUrl(), perigee.Options{
+		Results: &sr,
+		ReqBody: map[string]interface{} {
+			"server": opts,
+		},
+		MoreHeaders: h,
+		OkCodes: []int{202},
+	})
+	return sr, err
+}
+
+// Delete requests that a server previously provisioned be removed from your account.
+func Delete(c *Client, id string) error {
+	h, err := c.getDeleteHeaders()
+	if err != nil {
+		return err
+	}
+
+	err = perigee.Delete(c.getDeleteUrl(id), perigee.Options{
+		MoreHeaders: h,
+		OkCodes: []int{204},
+	})
+	return err
+}
+
+// GetDetail requests details on a single server, by ID.
+func GetDetail(c *Client, id string) (ServerResult, error) {
+	var sr ServerResult
+
+	h, err := c.getDetailHeaders()
+	if err != nil {
+		return nil, err
+	}
+
+	err = perigee.Get(c.getDetailUrl(id), perigee.Options{
+		Results: &sr,
+		MoreHeaders: h,
+	})
+	return sr, err
 }
 

@@ -26,6 +26,18 @@ func (c *Client) getListUrl() string {
 	return fmt.Sprintf("%s/servers/detail", c.endpoint)
 }
 
+func (c *Client) getCreateUrl() string {
+	return fmt.Sprintf("%s/servers", c.endpoint)
+}
+
+func (c *Client) getDeleteUrl(id string) string {
+	return fmt.Sprintf("%s/servers/%s", c.endpoint, id)
+}
+
+func (c *Client) getDetailUrl(id string) string {
+	return c.getDeleteUrl(id)
+}
+
 func (c *Client) getListHeaders() (map[string]string, error) {
 	t, err := c.getAuthToken()
 	if err != nil {
@@ -35,6 +47,18 @@ func (c *Client) getListHeaders() (map[string]string, error) {
 	return map[string]string{
 		"X-Auth-Token": t,
 	}, nil
+}
+
+func (c *Client) getCreateHeaders() (map[string]string, error) {
+	return c.getListHeaders()
+}
+
+func (c *Client) getDeleteHeaders() (map[string]string, error) {
+	return c.getListHeaders()
+}
+
+func (c *Client) getDetailHeaders() (map[string]string, error) {
+	return c.getListHeaders()
 }
 
 func (c *Client) getAuthToken() (string, error) {

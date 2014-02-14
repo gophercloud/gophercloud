@@ -10,6 +10,8 @@ import (
 	"github.com/rackspace/gophercloud/openstack/utils"
 	"os"
 	"text/tabwriter"
+	"time"
+	"crypto/rand"
 )
 
 type testState struct {
@@ -20,7 +22,7 @@ type testState struct {
 	w	*tabwriter.Writer
 }
 
-func prepForTest() (*testState, error) {
+func setupForList() (*testState, error) {
 	var err error
 
 	ts := new(testState)
@@ -52,13 +54,13 @@ func prepForTest() (*testState, error) {
 }
 
 func TestListServers(t *testing.T) {
-	ts, err := prepForTest()
+	ts, err := setupForList()
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	fmt.Fprintln(ts.w, "ID\tRegion\tName\tIPv4\tIPv6\t")
+	fmt.Fprintln(ts.w, "ID\tRegion\tName\tStatus\tIPv4\tIPv6\t")
 
 	region := os.Getenv("OS_REGION_NAME")
 	n := 0
@@ -84,7 +86,7 @@ func TestListServers(t *testing.T) {
 		n = n + len(svrs)
 
 		for _, s := range svrs {
-			fmt.Fprintf(ts.w, "%s\t%s\t%s\t%s\t%s\t\n", s.Id, s.Name, ep.Region, s.AccessIPv4, s.AccessIPv6)
+			fmt.Fprintf(ts.w, "%s\t%s\t%s\t%s\t%s\t%s\t\n", s.Id, s.Name, ep.Region, s.Status, s.AccessIPv4, s.AccessIPv6)
 		}
 	}
 	ts.w.Flush()
@@ -92,7 +94,7 @@ func TestListServers(t *testing.T) {
 }
 
 func TestListImages(t *testing.T) {
-	ts, err := prepForTest()
+	ts, err := setupForList()
 	if err != nil {
 		t.Error(err)
 		return
@@ -132,7 +134,7 @@ func TestListImages(t *testing.T) {
 }
 
 func TestListFlavors(t *testing.T) {
-	ts, err := prepForTest()
+	ts, err := setupForList()
 	if err != nil {
 		t.Error(err)
 		return
@@ -184,5 +186,112 @@ func findAllComputeEndpoints(sc *identity.ServiceCatalog) ([]identity.Endpoint, 
 	}
 
 	return nil, fmt.Errorf("Compute endpoint not found.")
+}
+
+func findEndpointForRegion(eps []identity.Endpoint, r string) (string, error) {
+	for _, ep := range eps {
+		if ep.Region == r {
+			return ep.PublicURL, nil
+		}
+	}
+	return "", fmt.Errorf("Unknown region %s", r)
+}
+
+func TestCreateDestroyServer(t *testing.T) {
+	ts, err := setupForList()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	imageId := os.Getenv("OS_IMAGE_ID")
+	if imageId == "" {
+		t.Error("Expected OS_IMAGE_ID environment variable to be set")
+		return
+	}
+
+	flavorId := os.Getenv("OS_FLAVOR_ID")
+	if flavorId == "" {
+		t.Error("Expected OS_FLAVOR_ID environment variable to be set")
+		return
+	}
+
+	region := os.Getenv("OS_REGION_NAME")
+	if region == "" {
+		region = ts.eps[0].Region
+	}
+
+	ep, err := findEndpointForRegion(ts.eps, region)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	serverName := randomString("ACPTTEST", 16)
+	fmt.Printf("Attempting to create server: %s\n", serverName)
+
+	client := servers.NewClient(ep, ts.a, ts.o)
+
+	cr, err := servers.Create(client, map[string]interface{}{
+		"flavorRef": flavorId,
+		"imageRef": imageId,
+		"name": serverName,
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	createdServer, err := servers.GetServer(cr)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer func() {
+		servers.Delete(client, createdServer.Id)
+	}()
+
+	timeout := 300
+	for ; timeout > 0; timeout-- {
+		gr, err := servers.GetDetail(client, createdServer.Id)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		gottenServer, err := servers.GetServer(gr)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		if gottenServer.Id != createdServer.Id {
+			t.Error("Created server ID (%s) != gotten server ID (%s)", createdServer.Id, gottenServer.Id)
+			return
+		}
+
+		if gottenServer.Status == "ACTIVE" {
+			fmt.Printf("Server created after %d seconds (approximately)\n", 300-timeout)
+			break
+		}
+		time.Sleep(1*time.Second)
+	}
+	if timeout < 1 {
+		fmt.Printf("I'm not waiting around.\n")
+	}
+}
+
+// randomString generates a string of given length, but random content.
+// All content will be within the ASCII graphic character set.
+// (Implementation from Even Shaw's contribution on
+// http://stackoverflow.com/questions/12771930/what-is-the-fastest-way-to-generate-a-long-random-string-in-go).
+func randomString(prefix string, n int) string {
+	const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	var bytes = make([]byte, n)
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = alphanum[b%byte(len(alphanum))]
+	}
+	return prefix + string(bytes)
 }
 
