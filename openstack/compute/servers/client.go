@@ -38,6 +38,10 @@ func (c *Client) getDetailUrl(id string) string {
 	return c.getDeleteUrl(id)
 }
 
+func (c *Client) getUpdateUrl(id string) string {
+	return c.getDeleteUrl(id)
+}
+
 func (c *Client) getListHeaders() (map[string]string, error) {
 	t, err := c.getAuthToken()
 	if err != nil {
@@ -58,6 +62,10 @@ func (c *Client) getDeleteHeaders() (map[string]string, error) {
 }
 
 func (c *Client) getDetailHeaders() (map[string]string, error) {
+	return c.getListHeaders()
+}
+
+func (c *Client) getUpdateHeaders() (map[string]string, error) {
 	return c.getListHeaders()
 }
 

@@ -78,3 +78,22 @@ func GetDetail(c *Client, id string) (ServerResult, error) {
 	return sr, err
 }
 
+// Update requests that various attributes of the indicated server be changed.
+func Update(c *Client, id string, opts map[string]interface{}) (ServerResult, error) {
+	var sr ServerResult
+
+	h, err := c.getUpdateHeaders()
+	if err != nil {
+		return nil, err
+	}
+
+	err = perigee.Put(c.getUpdateUrl(id), perigee.Options{
+		Results: &sr,
+		ReqBody: map[string]interface{}{
+			"server": opts,
+		},
+		MoreHeaders: h,
+	})
+	return sr, err
+}
+

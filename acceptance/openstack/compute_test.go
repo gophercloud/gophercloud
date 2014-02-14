@@ -281,6 +281,145 @@ func TestCreateDestroyServer(t *testing.T) {
 	}
 }
 
+func TestUpdateServer(t *testing.T) {
+	ts, err := setupForList()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	imageId := os.Getenv("OS_IMAGE_ID")
+	if imageId == "" {
+		t.Error("Expected OS_IMAGE_ID environment variable to be set")
+		return
+	}
+
+	flavorId := os.Getenv("OS_FLAVOR_ID")
+	if flavorId == "" {
+		t.Error("Expected OS_FLAVOR_ID environment variable to be set")
+		return
+	}
+
+	region := os.Getenv("OS_REGION_NAME")
+	if region == "" {
+		region = ts.eps[0].Region
+	}
+
+	ep, err := findEndpointForRegion(ts.eps, region)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	serverName := randomString("ACPTTEST", 16)
+	fmt.Printf("Attempting to create server: %s\n", serverName)
+
+	client := servers.NewClient(ep, ts.a, ts.o)
+
+	cr, err := servers.Create(client, map[string]interface{}{
+		"flavorRef": flavorId,
+		"imageRef": imageId,
+		"name": serverName,
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	createdServer, err := servers.GetServer(cr)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer func() {
+		servers.Delete(client, createdServer.Id)
+	}()
+
+	timeout := 300
+	for ; timeout > 0; timeout-- {
+		gr, err := servers.GetDetail(client, createdServer.Id)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		gottenServer, err := servers.GetServer(gr)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		if gottenServer.Id != createdServer.Id {
+			t.Error("Created server ID (%s) != gotten server ID (%s)", createdServer.Id, gottenServer.Id)
+			return
+		}
+
+		if gottenServer.Status == "ACTIVE" {
+			fmt.Printf("Server created after %d seconds (approximately)\n", 300-timeout)
+			break
+		}
+		time.Sleep(1*time.Second)
+	}
+	if timeout < 1 {
+		fmt.Printf("I'm not waiting around.\n")
+	}
+
+	alternateName := randomString("ACPTTEST", 16)
+	for alternateName == serverName {
+		alternateName = randomString("ACPTTEST", 16)
+	}
+
+	fmt.Println("Attempting to change server name")
+
+	ur, err := servers.Update(client, createdServer.Id, map[string]interface{}{
+		"name": alternateName,
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	updatedServer, err := servers.GetServer(ur)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if updatedServer.Id != createdServer.Id {
+		t.Error("Expected updated and created server to share the same ID")
+		return
+	}
+
+	timeout = 300
+	for ; timeout > 0; timeout-- {
+		gr, err := servers.GetDetail(client, createdServer.Id)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		gottenServer, err := servers.GetServer(gr)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		if gottenServer.Id != updatedServer.Id {
+			t.Error("Updated server ID (%s) != gotten server ID (%s)", updatedServer.Id, gottenServer.Id)
+			return
+		}
+
+		if gottenServer.Name == alternateName {
+			fmt.Printf("Server updated after %d seconds (approximately)\n", 300-timeout)
+			break
+		}
+		time.Sleep(1*time.Second)
+	}
+	if timeout < 1 {
+		fmt.Printf("I'm not waiting around.\n")
+	}
+}
+
 // randomString generates a string of given length, but random content.
 // All content will be within the ASCII graphic character set.
 // (Implementation from Even Shaw's contribution on
