@@ -7,7 +7,7 @@ import (
 // ListResult abstracts the raw results of making a List() request against the
 // API.  As OpenStack extensions may freely alter the response bodies of
 // structures returned to the client, you may only safely access the data
-// provided through separate, type-safe accessors or methods. 
+// provided through separate, type-safe accessors or methods.
 type ListResult map[string]interface{}
 
 type ServerResult map[string]interface{}
@@ -22,7 +22,7 @@ func List(c *Client) (ListResult, error) {
 	}
 
 	err = perigee.Get(c.getListUrl(), perigee.Options{
-		Results: &lr,
+		Results:     &lr,
 		MoreHeaders: h,
 	})
 	return lr, err
@@ -39,11 +39,11 @@ func Create(c *Client, opts map[string]interface{}) (ServerResult, error) {
 
 	err = perigee.Post(c.getCreateUrl(), perigee.Options{
 		Results: &sr,
-		ReqBody: map[string]interface{} {
+		ReqBody: map[string]interface{}{
 			"server": opts,
 		},
 		MoreHeaders: h,
-		OkCodes: []int{202},
+		OkCodes:     []int{202},
 	})
 	return sr, err
 }
@@ -57,7 +57,7 @@ func Delete(c *Client, id string) error {
 
 	err = perigee.Delete(c.getDeleteUrl(id), perigee.Options{
 		MoreHeaders: h,
-		OkCodes: []int{204},
+		OkCodes:     []int{204},
 	})
 	return err
 }
@@ -72,7 +72,7 @@ func GetDetail(c *Client, id string) (ServerResult, error) {
 	}
 
 	err = perigee.Get(c.getDetailUrl(id), perigee.Options{
-		Results: &sr,
+		Results:     &sr,
 		MoreHeaders: h,
 	})
 	return sr, err
@@ -96,4 +96,3 @@ func Update(c *Client, id string, opts map[string]interface{}) (ServerResult, er
 	})
 	return sr, err
 }
-

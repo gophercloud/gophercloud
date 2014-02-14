@@ -7,18 +7,18 @@ import (
 
 // Client abstracts the connection information needed to make API requests for OpenStack compute endpoints.
 type Client struct {
-	endpoint	string
-	authority	identity.AuthResults
-	options		identity.AuthOptions
-	token		*identity.Token
+	endpoint  string
+	authority identity.AuthResults
+	options   identity.AuthOptions
+	token     *identity.Token
 }
 
 // NewClient creates a new Client structure to use when issuing requests to the server.
 func NewClient(e string, a identity.AuthResults, o identity.AuthOptions) *Client {
 	return &Client{
-		endpoint:	e,
-		authority:	a,
-		options:	o,
+		endpoint:  e,
+		authority: a,
+		options:   o,
 	}
 }
 
@@ -81,4 +81,3 @@ func (c *Client) getAuthToken() (string, error) {
 
 	return c.token.Id, err
 }
-

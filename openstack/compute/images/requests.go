@@ -5,7 +5,6 @@ import (
 	"github.com/racker/perigee"
 )
 
-
 var ErrNotImplemented = fmt.Errorf("Images functionality not implemented.")
 
 type ListResults map[string]interface{}
@@ -19,9 +18,8 @@ func List(c *Client) (ListResults, error) {
 	}
 
 	err = perigee.Get(c.getListUrl(), perigee.Options{
-		Results: &lr,
+		Results:     &lr,
 		MoreHeaders: h,
 	})
 	return lr, err
 }
-

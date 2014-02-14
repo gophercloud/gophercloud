@@ -1,6 +1,7 @@
 package openstack
 
 import (
+	"crypto/rand"
 	"fmt"
 	"github.com/rackspace/gophercloud/openstack/compute/servers"
 	"github.com/rackspace/gophercloud/openstack/identity"
@@ -8,26 +9,25 @@ import (
 	"os"
 	"text/tabwriter"
 	"time"
-	"crypto/rand"
 )
 
 var errTimeout = fmt.Errorf("Timeout.")
 
 type testState struct {
-	o	identity.AuthOptions
-	a	identity.AuthResults
-	sc	*identity.ServiceCatalog
-	eps	[]identity.Endpoint
-	w	*tabwriter.Writer
-	imageId	string
-	flavorId string
-	region string
-	ep string
-	client *servers.Client
+	o             identity.AuthOptions
+	a             identity.AuthResults
+	sc            *identity.ServiceCatalog
+	eps           []identity.Endpoint
+	w             *tabwriter.Writer
+	imageId       string
+	flavorId      string
+	region        string
+	ep            string
+	client        *servers.Client
 	createdServer *servers.Server
-	gottenServer *servers.Server
+	gottenServer  *servers.Server
 	updatedServer *servers.Server
-	serverName string
+	serverName    string
 	alternateName string
 }
 
@@ -143,8 +143,8 @@ func createServer(ts *testState) error {
 
 	cr, err := servers.Create(ts.client, map[string]interface{}{
 		"flavorRef": ts.flavorId,
-		"imageRef": ts.imageId,
-		"name": ts.serverName,
+		"imageRef":  ts.imageId,
+		"name":      ts.serverName,
 	})
 	if err != nil {
 		return err
@@ -157,11 +157,11 @@ func createServer(ts *testState) error {
 func waitForStatus(ts *testState, s string) error {
 	var (
 		inProgress bool
-		timeout int
-		err error
+		timeout    int
+		err        error
 	)
 
-	for inProgress, timeout, err = countDown(ts, 300) ; inProgress ; inProgress, timeout, err = countDown(ts, timeout) {
+	for inProgress, timeout, err = countDown(ts, 300); inProgress; inProgress, timeout, err = countDown(ts, timeout) {
 		if ts.gottenServer.Id != ts.createdServer.Id {
 			return fmt.Errorf("created server id (%s) != gotten server id (%s)", ts.createdServer.Id, ts.gottenServer.Id)
 		}
@@ -183,7 +183,7 @@ func waitForStatus(ts *testState, s string) error {
 func changeServerName(ts *testState) error {
 	var (
 		inProgress bool
-		timeout int
+		timeout    int
 	)
 
 	ts.alternateName = randomString("ACPTTEST", 16)
@@ -208,7 +208,7 @@ func changeServerName(ts *testState) error {
 		return fmt.Errorf("Expected updated and created server to share the same ID")
 	}
 
-	for inProgress, timeout, err = countDown(ts, 300) ; inProgress ; inProgress, timeout, err = countDown(ts, timeout) {
+	for inProgress, timeout, err = countDown(ts, 300); inProgress; inProgress, timeout, err = countDown(ts, timeout) {
 		if ts.gottenServer.Id != ts.updatedServer.Id {
 			return fmt.Errorf("Updated server ID (%s) != gotten server ID (%s)", ts.updatedServer.Id, ts.gottenServer.Id)
 		}
@@ -240,4 +240,3 @@ func randomString(prefix string, n int) string {
 	}
 	return prefix + string(bytes)
 }
-

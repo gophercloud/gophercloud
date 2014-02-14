@@ -5,7 +5,6 @@ import (
 	"reflect"
 )
 
-
 // Flavor records represent (virtual) hardware configurations for server resources in a region.
 //
 // The Id field contains the flavor's unique identifier.
@@ -20,13 +19,13 @@ import (
 //
 // VCpus indicates how many (virtual) CPUs are available for this flavor.
 type Flavor struct {
-	Disk          int
-	Id            string
-	Name          string
-	Ram           int
-	RxTxFactor    float64	`mapstructure:"rxtx_factor"`
-	Swap          int
-	VCpus         int
+	Disk       int
+	Id         string
+	Name       string
+	Ram        int
+	RxTxFactor float64 `mapstructure:"rxtx_factor"`
+	Swap       int
+	VCpus      int
 }
 
 func defaulter(from, to reflect.Kind, v interface{}) (interface{}, error) {
@@ -48,7 +47,7 @@ func GetFlavors(lr ListResults) ([]Flavor, error) {
 		flavorObj := fm.(map[string]interface{})
 		cfg := &mapstructure.DecoderConfig{
 			DecodeHook: defaulter,
-			Result: &flavors[i],
+			Result:     &flavors[i],
 		}
 		decoder, err := mapstructure.NewDecoder(cfg)
 		if err != nil {
@@ -61,4 +60,3 @@ func GetFlavors(lr ListResults) ([]Flavor, error) {
 	}
 	return flavors, nil
 }
-

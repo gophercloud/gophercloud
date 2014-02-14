@@ -1,11 +1,11 @@
 package openstack
 
 import (
-	"testing"
 	"fmt"
-	"os"
 	"github.com/rackspace/gophercloud/openstack/identity"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"os"
+	"testing"
 	"text/tabwriter"
 )
 
@@ -106,4 +106,3 @@ func TestExtensions(t *testing.T) {
 		fmt.Printf("  %s\n", alias)
 	}
 }
-

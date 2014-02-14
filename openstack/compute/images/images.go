@@ -17,14 +17,14 @@ import "github.com/mitchellh/mapstructure"
 //
 // The Updated field indicates the last time this image was changed.
 type Image struct {
-	Created         string
-	Id              string
-	MinDisk         int
-	MinRam          int
-	Name            string
-	Progress        int
-	Status          string
-	Updated         string
+	Created  string
+	Id       string
+	MinDisk  int
+	MinRam   int
+	Name     string
+	Progress int
+	Status   string
+	Updated  string
 }
 
 func GetImages(lr ListResults) ([]Image, error) {
@@ -44,4 +44,3 @@ func GetImages(lr ListResults) ([]Image, error) {
 	}
 	return images, nil
 }
-

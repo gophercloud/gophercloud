@@ -1,12 +1,12 @@
 package openstack
 
 import (
-	"testing"
 	"fmt"
-	"github.com/rackspace/gophercloud/openstack/compute/servers"
-	"github.com/rackspace/gophercloud/openstack/compute/images"
 	"github.com/rackspace/gophercloud/openstack/compute/flavors"
+	"github.com/rackspace/gophercloud/openstack/compute/images"
+	"github.com/rackspace/gophercloud/openstack/compute/servers"
 	"os"
+	"testing"
 )
 
 func TestListServers(t *testing.T) {
@@ -182,4 +182,3 @@ func TestUpdateServer(t *testing.T) {
 		return
 	}
 }
-

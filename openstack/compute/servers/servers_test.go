@@ -1,8 +1,8 @@
 package servers
 
 import (
-	"testing"
 	"encoding/json"
+	"testing"
 )
 
 // Taken from: http://docs.openstack.org/api/openstack-compute/2/content/List_Servers-d1e2078.html
@@ -186,4 +186,3 @@ func TestGetServer(t *testing.T) {
 		return
 	}
 }
-

@@ -1,8 +1,8 @@
 package servers
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"fmt"
+	"github.com/mitchellh/mapstructure"
 )
 
 // ErrNotImplemented indicates a failure to discover a feature of the response from the API.
@@ -37,22 +37,22 @@ var ErrNotImplemented = fmt.Errorf("Compute Servers feature not implemented.")
 //
 // Links includes HTTP references to the itself, useful for passing along to other APIs that might want a server reference.
 type Server struct {
-	Id string
-	TenantId string `mapstructure:tenant_id`
-	UserId string `mapstructure:user_id`
-	Name string
-	Updated string
-	Created string
-	HostId string
-	Status string
-	Progress int
+	Id         string
+	TenantId   string `mapstructure:tenant_id`
+	UserId     string `mapstructure:user_id`
+	Name       string
+	Updated    string
+	Created    string
+	HostId     string
+	Status     string
+	Progress   int
 	AccessIPv4 string
 	AccessIPv6 string
-	Image map[string]interface{}
-	Flavor map[string]interface{}
-	Addresses map[string]interface{}
-	Metadata map[string]interface{}
-	Links []interface{}
+	Image      map[string]interface{}
+	Flavor     map[string]interface{}
+	Addresses  map[string]interface{}
+	Metadata   map[string]interface{}
+	Links      []interface{}
 }
 
 // GetServers interprets the result of a List() call, producing a slice of Server entities.
@@ -86,4 +86,3 @@ func GetServer(sr ServerResult) (*Server, error) {
 	err := mapstructure.Decode(serverObj, s)
 	return s, err
 }
-

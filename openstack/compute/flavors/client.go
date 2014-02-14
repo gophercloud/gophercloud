@@ -5,16 +5,16 @@ import (
 )
 
 type Client struct {
-	endpoint string
+	endpoint  string
 	authority identity.AuthResults
-	options identity.AuthOptions
+	options   identity.AuthOptions
 }
 
 func NewClient(e string, a identity.AuthResults, ao identity.AuthOptions) *Client {
 	return &Client{
-		endpoint: e,
+		endpoint:  e,
 		authority: a,
-		options: ao,
+		options:   ao,
 	}
 }
 
@@ -32,4 +32,3 @@ func (c *Client) getListHeaders() (map[string]string, error) {
 		"X-Auth-Token": t.Id,
 	}, nil
 }
-
