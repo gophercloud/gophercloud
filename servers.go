@@ -526,7 +526,7 @@ func (gsp *genericServersProvider) GetSGRule(id string) (*SGRule, error) {
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
-			Results: &struct{Security_group_default_rule **SGRule}{&sgr}
+			Results: &struct{Security_group_default_rule **SGRule}{&sgr},
 		})
 	})
 	return sgr, err
