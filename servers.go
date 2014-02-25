@@ -397,6 +397,114 @@ func (gsp *genericServersProvider) CreateImage(id string, ci CreateImage) (strin
 	return locationArr[len(locationArr)-1], err
 }
 
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) ListSecurityGroups() ([]SecurityGroup, error) {
+	var sgs []SecurityGroup
+
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/os-security-groups", gsp.endpoint)
+		return perigee.Get(ep, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct {
+				SecurityGroups *[]SecurityGroup `json:"security_groups"`
+			}{&sgs},
+		})
+	})
+	return sgs, err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) CreateSecurityGroup(desired SecurityGroup) (*SecurityGroup, error) {
+	var actual *SecurityGroup
+
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/os-security-groups", gsp.endpoint)
+		return perigee.Post(ep, perigee.Options{
+			ReqBody: struct {
+				AddSecurityGroup SecurityGroup `json:"security_group"`
+			}{desired},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct {
+				SecurityGroup **SecurityGroup `json:"security_group"`
+			}{&actual},
+		})
+	})
+	return actual, err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) ListSecurityGroupsByServerId(id string) ([]SecurityGroup, error) {
+	var sgs []SecurityGroup
+
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/servers/%s/os-security-groups", gsp.endpoint, id)
+		return perigee.Get(ep, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct {
+				SecurityGroups *[]SecurityGroup `json:"security_groups"`
+			}{&sgs},
+		})
+	})
+	return sgs, err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) SecurityGroupById(id int) (*SecurityGroup, error) {
+	var actual *SecurityGroup
+
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/os-security-groups/%d", gsp.endpoint, id)
+		return perigee.Get(ep, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct {
+				SecurityGroup **SecurityGroup `json:"security_group"`
+			}{&actual},
+		})
+	})
+	return actual, err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) DeleteSecurityGroupById(id int) error {
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/os-security-groups/%d", gsp.endpoint, id)
+		return perigee.Delete(ep, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{202},
+		})
+	})
+	return err
+}
+
+// SecurityGroup provides a description of a security group, including all its rules.
+type SecurityGroup struct {
+	Description string   `json:"description,omitempty"`
+	Id          int      `json:"id,omitempty"`
+	Name        string   `json:"name,omitempty"`
+	Rules       []SGRule `json:"rules,omitempty"`
+	TenantId    string   `json:"tenant_id,omitempty"`
+}
+
+// SGRule encapsulates a single rule which applies to a security group.
+// This definition is just a guess, based on the documentation found in another extension here: http://docs.openstack.org/api/openstack-compute/2/content/GET_os-security-group-default-rules-v2_listSecGroupDefaultRules_v2__tenant_id__os-security-group-rules_ext-os-security-group-default-rules.html
+type SGRule struct {
+	FromPort   int                    `json:"from_port,omitempty"`
+	Id         int                    `json:"id,omitempty"`
+	IpProtocol string                 `json:"ip_protocol,omitempty"`
+	IpRange    map[string]interface{} `json:"ip_range,omitempty"`
+	ToPort     int                    `json:"to_port,omitempty"`
+}
+
 // RaxBandwidth provides measurement of server bandwidth consumed over a given audit interval.
 type RaxBandwidth struct {
 	AuditPeriodEnd    string `json:"audit_period_end"`
