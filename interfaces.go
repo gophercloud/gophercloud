@@ -214,4 +214,16 @@ type CloudServersProvider interface {
 	// DeleteSecurityGroupById disposes of a security group corresponding to the provided ID number.
 	// This method works only if the provider supports the os-security-groups extension.
 	DeleteSecurityGroupById(id int) error
+
+	// ListDefaultSGRules lists default security group rules.
+	// This method only works if the provider supports the os-security-groups-default-rules extension.
+	ListDefaultSGRules() ([]SGRule, error)
+
+	// CreateDefaultSGRule creates a default security group rule.
+	// This method only works if the provider supports the os-security-groups-default-rules extension.
+	CreateDefaultSGRule(SGRule) error
+
+	// GetSGRule obtains information for a specified security group rule.
+	// This method only works if the provider supports the os-security-groups-default-rules extension.
+	GetSGRule(string) (*SGRule, error)
 }
