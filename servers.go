@@ -423,7 +423,7 @@ func (gsp *genericServersProvider) CreateSecurityGroup(desired SecurityGroup) (*
 		ep := fmt.Sprintf("%s/os-security-groups", gsp.endpoint)
 		return perigee.Post(ep, perigee.Options{
 			ReqBody: struct {
-				AddSecurityGroup SecurityGroup `json:"addSecurityGroup"`
+				AddSecurityGroup SecurityGroup `json:"security_group"`
 			}{desired},
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
@@ -441,7 +441,7 @@ func (gsp *genericServersProvider) ListSecurityGroupsByServerId(id string) ([]Se
 	var sgs []SecurityGroup
 
 	err := gsp.context.WithReauth(gsp.access, func() error {
-		ep := fmt.Sprintf("%s/os-security-groups/servers/%s/os-security-groups", gsp.endpoint, id)
+		ep := fmt.Sprintf("%s/servers/%s/os-security-groups", gsp.endpoint, id)
 		return perigee.Get(ep, perigee.Options{
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
