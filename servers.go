@@ -502,7 +502,7 @@ func (gsp *genericServersProvider) ListDefaultSGRules() ([]SGRule, error) {
 }
 
 // See the CloudServersProvider interface for details.
-func (gsp *genericServersProvider) CreateDefaultSGRule(r SGRule) error {
+func (gsp *genericServersProvider) CreateDefaultSGRule(r SGRule) (*SGRule, error) {
 	var sgr *SGRule
 	err := gsp.context.WithReauth(gsp.access, func() error {
 		ep := fmt.Sprintf("%s/os-security-group-rules", gsp.endpoint)

@@ -221,7 +221,7 @@ type CloudServersProvider interface {
 
 	// CreateDefaultSGRule creates a default security group rule.
 	// This method only works if the provider supports the os-security-groups-default-rules extension.
-	CreateDefaultSGRule(SGRule) error
+	CreateDefaultSGRule(SGRule) (*SGRule, error)
 
 	// GetSGRule obtains information for a specified security group rule.
 	// This method only works if the provider supports the os-security-groups-default-rules extension.
