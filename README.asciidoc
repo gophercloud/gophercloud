@@ -3,6 +3,8 @@ The Go ecosystem seems to lack a comprehensive cloud services API (at the time t
 
 WARNING: This library is still in the very early stages of development. Unless you want to contribute, it probably isn't what you want.
 
+The documentation below is obsolete, and will be updated with something shorter and more reasonable soon.  In the meantime, the most up to date documentation can be found at link:http://godoc.org/github.com/rackspace/gophercloud["our Godoc.org documentation"].
+
 === Getting Started
 ==== Install the Go Programming Language
 Gophercloud provides an Openstack-compatible SDK binding to the Go community.
