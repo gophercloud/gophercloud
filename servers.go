@@ -490,7 +490,7 @@ func (gsp *genericServersProvider) DeleteSecurityGroupById(id int) error {
 func (gsp *genericServersProvider) ListDefaultSGRules() ([]SGRule, error) {
 	var sgrs []SGRule
 	err := gsp.context.WithReauth(gsp.access, func() error {
-		ep := fmt.Sprintf("%s/os-security-group-rules", gsp.endpoint)
+		ep := fmt.Sprintf("%s/os-security-group-default-rules", gsp.endpoint)
 		return perigee.Get(ep, perigee.Options{
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
@@ -505,7 +505,7 @@ func (gsp *genericServersProvider) ListDefaultSGRules() ([]SGRule, error) {
 func (gsp *genericServersProvider) CreateDefaultSGRule(r SGRule) (*SGRule, error) {
 	var sgr *SGRule
 	err := gsp.context.WithReauth(gsp.access, func() error {
-		ep := fmt.Sprintf("%s/os-security-group-rules", gsp.endpoint)
+		ep := fmt.Sprintf("%s/os-security-group-default-rules", gsp.endpoint)
 		return perigee.Post(ep, perigee.Options{
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
@@ -521,7 +521,7 @@ func (gsp *genericServersProvider) CreateDefaultSGRule(r SGRule) (*SGRule, error
 func (gsp *genericServersProvider) GetSGRule(id string) (*SGRule, error) {
 	var sgr *SGRule
 	err := gsp.context.WithReauth(gsp.access, func() error {
-		ep := fmt.Sprintf("%s/os-security-group-rules/%s", gsp.endpoint, id)
+		ep := fmt.Sprintf("%s/os-security-group-default-rules/%s", gsp.endpoint, id)
 		return perigee.Get(ep, perigee.Options{
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
