@@ -486,6 +486,52 @@ func (gsp *genericServersProvider) DeleteSecurityGroupById(id int) error {
 	return err
 }
 
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) ListDefaultSGRules() ([]SGRule, error) {
+	var sgrs []SGRule
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/os-security-group-default-rules", gsp.endpoint)
+		return perigee.Get(ep, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct{Security_group_default_rules *[]SGRule}{&sgrs},
+		})
+	})
+	return sgrs, err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) CreateDefaultSGRule(r SGRule) (*SGRule, error) {
+	var sgr *SGRule
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/os-security-group-default-rules", gsp.endpoint)
+		return perigee.Post(ep, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct{Security_group_default_rule **SGRule}{&sgr},
+			ReqBody: struct{Security_group_default_rule SGRule `json:"security_group_default_rule"`}{r},
+		})
+	})
+	return sgr, err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) GetSGRule(id string) (*SGRule, error) {
+	var sgr *SGRule
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/os-security-group-default-rules/%s", gsp.endpoint, id)
+		return perigee.Get(ep, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct{Security_group_default_rule **SGRule}{&sgr},
+		})
+	})
+	return sgr, err
+}
+
 // SecurityGroup provides a description of a security group, including all its rules.
 type SecurityGroup struct {
 	Description string   `json:"description,omitempty"`
