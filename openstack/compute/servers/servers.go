@@ -36,6 +36,9 @@ var ErrNotImplemented = fmt.Errorf("Compute Servers feature not implemented.")
 // Metadata includes a list of all user-specified key-value pairs attached to the server.
 //
 // Links includes HTTP references to the itself, useful for passing along to other APIs that might want a server reference.
+//
+// AdminPass will generally be empty ("").  However, it will contain the administrative password chosen when provisioning a new server without a set AdminPass setting in the first place.
+// Note that this is the ONLY time this field will be valid.
 type Server struct {
 	Id         string
 	TenantId   string `mapstructure:tenant_id`
@@ -53,6 +56,7 @@ type Server struct {
 	Addresses  map[string]interface{}
 	Metadata   map[string]interface{}
 	Links      []interface{}
+	AdminPass  string `mapstructure:adminPass`
 }
 
 // GetServers interprets the result of a List() call, producing a slice of Server entities.

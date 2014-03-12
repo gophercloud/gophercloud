@@ -96,3 +96,21 @@ func Update(c *Client, id string, opts map[string]interface{}) (ServerResult, er
 	})
 	return sr, err
 }
+
+// ChangeAdminPassword alters the administrator or root password for a specified
+// server.
+func ChangeAdminPassword(c *Client, id, newPassword string) error {
+	h, err := c.getActionHeaders()
+	if err != nil {
+		return err
+	}
+
+	err = perigee.Post(c.getActionUrl(id), perigee.Options{
+		ReqBody: struct{C map[string]string `json:"changePassword"`}{
+			map[string]string{"adminPass": newPassword},
+		},
+		MoreHeaders: h,
+		OkCodes: []int{202},
+	})
+	return err
+}

@@ -169,13 +169,13 @@ func waitForStatus(ts *testState, s string) error {
 		}
 
 		if ts.gottenServer.Status == s {
-			fmt.Printf("Server created after %d seconds (approximately)\n", 300-timeout)
+			fmt.Printf("Server reached state %s after %d seconds (approximately)\n", s, 300-timeout)
 			break
 		}
 	}
 
 	if err == errTimeout {
-		fmt.Printf("I'm not waiting around.\n")
+		fmt.Printf("Time out -- I'm not waiting around.\n")
 		err = nil
 	}
 
@@ -227,6 +227,27 @@ func changeServerName(ts *testState) error {
 	}
 
 	return err
+}
+
+func changeAdminPassword(ts *testState) error {
+	fmt.Println("Current password: "+ts.createdServer.AdminPass)
+	randomPassword := randomString("", 16)
+	for randomPassword == ts.createdServer.AdminPass {
+		randomPassword = randomString("", 16)
+	}
+	fmt.Println("    New password: "+randomPassword)
+	
+	err := servers.ChangeAdminPassword(ts.client, ts.createdServer.Id, randomPassword)
+	if err != nil {
+		return err
+	}
+	
+	err = waitForStatus(ts, "PASSWORD")
+	if err != nil {
+		return err
+	}
+	
+	return waitForStatus(ts, "ACTIVE")
 }
 
 // randomString generates a string of given length, but random content.

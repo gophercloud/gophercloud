@@ -184,3 +184,30 @@ func TestUpdateServer(t *testing.T) {
 		return
 	}
 }
+
+func TestServerAction(t *testing.T) {
+	ts, err := setupForCRUD()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = createServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func(){
+		servers.Delete(ts.client, ts.createdServer.Id)
+	}()
+
+	err = waitForStatus(ts, "ACTIVE")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = changeAdminPassword(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+

@@ -42,6 +42,10 @@ func (c *Client) getUpdateUrl(id string) string {
 	return c.getDeleteUrl(id)
 }
 
+func (c *Client) getActionUrl(id string) string {
+	return fmt.Sprintf("%s/servers/%s/action", c.endpoint, id)
+}
+
 func (c *Client) getListHeaders() (map[string]string, error) {
 	t, err := c.getAuthToken()
 	if err != nil {
@@ -66,6 +70,10 @@ func (c *Client) getDetailHeaders() (map[string]string, error) {
 }
 
 func (c *Client) getUpdateHeaders() (map[string]string, error) {
+	return c.getListHeaders()
+}
+
+func (c *Client) getActionHeaders() (map[string]string, error) {
 	return c.getListHeaders()
 }
 
