@@ -209,5 +209,15 @@ func TestServerAction(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	err = servers.Reboot(ts.client, ts.createdServer.Id, "aldhjflaskhjf")
+	if err == nil {
+		t.Fatal("Expected the SDK to provide an ArgumentError here")
+	}
+
+	err = rebootServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 

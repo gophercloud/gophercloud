@@ -250,6 +250,21 @@ func changeAdminPassword(ts *testState) error {
 	return waitForStatus(ts, "ACTIVE")
 }
 
+func rebootServer(ts *testState) error {
+	fmt.Println("Attempting reboot of server "+ts.createdServer.Id)
+	err := servers.Reboot(ts.client, ts.createdServer.Id, servers.OSReboot)
+	if err != nil {
+		return err
+	}
+	
+	err = waitForStatus(ts, "REBOOT")
+	if err != nil {
+		return err
+	}
+	
+	return waitForStatus(ts, "ACTIVE")
+}
+
 // randomString generates a string of given length, but random content.
 // All content will be within the ASCII graphic character set.
 // (Implementation from Even Shaw's contribution on
