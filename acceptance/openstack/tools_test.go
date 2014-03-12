@@ -33,7 +33,7 @@ type testState struct {
 	alternateName string
 }
 
-func setupForList() (*testState, error) {
+func setupForList(service string) (*testState, error) {
 	var err error
 
 	ts := new(testState)
@@ -53,7 +53,7 @@ func setupForList() (*testState, error) {
 		return ts, err
 	}
 
-	ts.eps, err = findAllComputeEndpoints(ts.sc)
+	ts.eps, err = findAllEndpoints(ts.sc, service)
 	if err != nil {
 		return ts, err
 	}
@@ -65,7 +65,7 @@ func setupForList() (*testState, error) {
 }
 
 func setupForCRUD() (*testState, error) {
-	ts, err := setupForList()
+	ts, err := setupForList("compute")
 	if err != nil {
 		return ts, err
 	}
@@ -93,19 +93,19 @@ func setupForCRUD() (*testState, error) {
 	return ts, err
 }
 
-func findAllComputeEndpoints(sc *identity.ServiceCatalog) ([]identity.Endpoint, error) {
+func findAllEndpoints(sc *identity.ServiceCatalog, service string) ([]identity.Endpoint, error) {
 	ces, err := sc.CatalogEntries()
 	if err != nil {
 		return nil, err
 	}
 
 	for _, ce := range ces {
-		if ce.Type == "compute" {
+		if ce.Type == service {
 			return ce.Endpoints, nil
 		}
 	}
 
-	return nil, fmt.Errorf("Compute endpoint not found.")
+	return nil, fmt.Errorf(service + " endpoint not found.")
 }
 
 func findEndpointForRegion(eps []identity.Endpoint, r string) (string, error) {

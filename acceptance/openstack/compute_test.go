@@ -11,8 +11,10 @@ import (
 	"testing"
 )
 
+var service = "compute"
+
 func TestListServers(t *testing.T) {
-	ts, err := setupForList()
+	ts, err := setupForList(service)
 	if err != nil {
 		t.Error(err)
 		return
@@ -52,7 +54,7 @@ func TestListServers(t *testing.T) {
 }
 
 func TestListImages(t *testing.T) {
-	ts, err := setupForList()
+	ts, err := setupForList(service)
 	if err != nil {
 		t.Error(err)
 		return
@@ -92,7 +94,7 @@ func TestListImages(t *testing.T) {
 }
 
 func TestListFlavors(t *testing.T) {
-	ts, err := setupForList()
+	ts, err := setupForList(service)
 	if err != nil {
 		t.Error(err)
 		return
