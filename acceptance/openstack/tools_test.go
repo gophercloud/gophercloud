@@ -31,6 +31,7 @@ type testState struct {
 	updatedServer *servers.Server
 	serverName    string
 	alternateName string
+	flavorIdResize string
 }
 
 func setupForList() (*testState, error) {
@@ -78,6 +79,15 @@ func setupForCRUD() (*testState, error) {
 	ts.flavorId = os.Getenv("OS_FLAVOR_ID")
 	if ts.flavorId == "" {
 		return ts, fmt.Errorf("Expected OS_FLAVOR_ID environment variable to be set")
+	}
+
+	ts.flavorIdResize = os.Getenv("OS_FLAVOR_ID_RESIZE")
+	if ts.flavorIdResize == "" {
+		return ts, fmt.Errorf("Expected OS_FLAVOR_ID_RESIZE environment variable to be set")
+	}
+
+	if ts.flavorIdResize == ts.flavorId {
+		return ts, fmt.Errorf("OS_FLAVOR_ID and OS_FLAVOR_ID_RESIZE cannot be the same")
 	}
 
 	ts.region = os.Getenv("OS_REGION_NAME")
@@ -229,13 +239,18 @@ func changeServerName(ts *testState) error {
 	return err
 }
 
-func changeAdminPassword(ts *testState) error {
-	fmt.Println("Current password: "+ts.createdServer.AdminPass)
+func makeNewPassword(oldPass string) string {
+	fmt.Println("Current password: "+oldPass)
 	randomPassword := randomString("", 16)
-	for randomPassword == ts.createdServer.AdminPass {
+	for randomPassword == oldPass {
 		randomPassword = randomString("", 16)
 	}
 	fmt.Println("    New password: "+randomPassword)
+	return randomPassword
+}
+
+func changeAdminPassword(ts *testState) error {
+	randomPassword := makeNewPassword(ts.createdServer.AdminPass)
 	
 	err := servers.ChangeAdminPassword(ts.client, ts.createdServer.Id, randomPassword)
 	if err != nil {
@@ -262,6 +277,75 @@ func rebootServer(ts *testState) error {
 		return err
 	}
 	
+	return waitForStatus(ts, "ACTIVE")
+}
+
+func rebuildServer(ts *testState) error {
+	fmt.Println("Attempting to rebuild server "+ts.createdServer.Id)
+
+	newPassword := makeNewPassword(ts.createdServer.AdminPass)
+	newName := randomString("ACPTTEST", 16)
+	sr, err := servers.Rebuild(ts.client, ts.createdServer.Id, newName, newPassword, ts.imageId, nil)
+	if err != nil {
+		return err
+	}
+	
+	s, err := servers.GetServer(sr)
+	if err != nil {
+		return err
+	}
+	if s.Id != ts.createdServer.Id {
+		return fmt.Errorf("Expected rebuilt server ID of %s; got %s", ts.createdServer.Id, s.Id)
+	}
+
+	err = waitForStatus(ts, "REBUILD")
+	if err != nil {
+		return err
+	}
+	
+	return waitForStatus(ts, "ACTIVE")
+}
+
+func resizeServer(ts *testState) error {
+	fmt.Println("Attempting to resize server "+ts.createdServer.Id)
+
+	err := servers.Resize(ts.client, ts.createdServer.Id, ts.flavorIdResize)
+	if err != nil {
+		return err
+	}
+
+	err = waitForStatus(ts, "RESIZE")
+	if err != nil {
+		return err
+	}
+
+	return waitForStatus(ts, "VERIFY_RESIZE")
+}
+
+func confirmResize(ts *testState) error {
+	fmt.Println("Attempting to confirm resize for server "+ts.createdServer.Id)
+	
+	err := servers.ConfirmResize(ts.client, ts.createdServer.Id)
+	if err != nil {
+		return err
+	}
+	
+	return waitForStatus(ts, "ACTIVE")
+}
+
+func revertResize(ts *testState) error {
+	fmt.Println("Attempting to revert resize for server "+ts.createdServer.Id)
+	
+	err := servers.RevertResize(ts.client, ts.createdServer.Id)
+	if err != nil {
+		return err
+	}
+
+	err = waitForStatus(ts, "REVERT_RESIZE")
+	if err != nil {
+		return err
+	}
+
 	return waitForStatus(ts, "ACTIVE")
 }
 

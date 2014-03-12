@@ -8,6 +8,7 @@ import (
 var ErrNotImplemented = fmt.Errorf("Images functionality not implemented.")
 
 type ListResults map[string]interface{}
+type ImageResults map[string]interface{}
 
 func List(c *Client) (ListResults, error) {
 	var lr ListResults

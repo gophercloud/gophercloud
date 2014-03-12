@@ -44,3 +44,9 @@ func GetImages(lr ListResults) ([]Image, error) {
 	}
 	return images, nil
 }
+
+func GetImage(ir ImageResults) (Image, error) {
+	image := Image{}
+	err := mapstructure.Decode(ir, &image)
+	return image, err
+}

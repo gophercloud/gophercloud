@@ -122,7 +122,7 @@ func ChangeAdminPassword(c *Client, id, newPassword string) error {
 	return err
 }
 
-// ArgumentError errors occur when an argument supplied to a package function
+// ErrArgument errors occur when an argument supplied to a package function
 // fails to fall within acceptable values.  For example, the Reboot() function
 // expects the "how" parameter to be one of HardReboot or SoftReboot.  These
 // constants are (currently) strings, leading someone to wonder if they can pass
@@ -134,17 +134,17 @@ func ChangeAdminPassword(c *Client, id, newPassword string) error {
 // Argument identifies which formal argument was responsible for producing the
 // error.
 // Value provides the value as it was passed into the function.
-type ArgumentError struct {
+type ErrArgument struct {
 	Function, Argument string
 	Value interface{}
 }
 
 // Error yields a useful diagnostic for debugging purposes.
-func (e *ArgumentError) Error() string {
+func (e *ErrArgument) Error() string {
 	return fmt.Sprintf("Bad argument in call to %s, formal parameter %s, value %#v", e.Function, e.Argument, e.Value)
 }
 
-func (e *ArgumentError) String() string {
+func (e *ErrArgument) String() string {
 	return e.Error()
 }
 
@@ -171,7 +171,7 @@ const (
 // machine.
 func Reboot(c *Client, id, how string) error {
 	if (how != SoftReboot) && (how != HardReboot) {
-		return &ArgumentError{
+		return &ErrArgument{
 			Function: "Reboot",
 			Argument: "how",
 			Value: how,
@@ -187,6 +187,131 @@ func Reboot(c *Client, id, how string) error {
 		ReqBody: struct{C map[string]string `json:"reboot"`}{
 			map[string]string{"type": how},
 		},
+		MoreHeaders: h,
+		OkCodes: []int{202},
+	})
+	return err
+}
+
+// Rebuild requests that the Openstack provider reprovision the
+// server.  The rebuild will need to know the server's name and
+// new image reference or ID.  In addition, and unlike building
+// a server with Create(), you must provide an administrator
+// password.
+//
+// Additional options may be specified with the additional map.
+// This function treats a nil map the same as an empty map.
+//
+// Rebuild returns a server result as though you had called
+// GetDetail() on the server's ID.  The information, however,
+// refers to the new server, not the old.
+func Rebuild(c *Client, id, name, password, imageRef string, additional map[string]interface{}) (ServerResult, error) {
+	var sr ServerResult
+
+	if id == "" {
+		return sr, &ErrArgument{
+			Function: "Rebuild",
+			Argument: "id",
+			Value: "",
+		}
+	}
+
+	if name == "" {
+		return sr, &ErrArgument{
+			Function: "Rebuild",
+			Argument: "name",
+			Value: "",
+		}
+	}
+
+	if password == "" {
+		return sr, &ErrArgument{
+			Function: "Rebuild",
+			Argument: "password",
+			Value: "",
+		}
+	}
+
+	if imageRef == "" {
+		return sr, &ErrArgument{
+			Function: "Rebuild",
+			Argument: "imageRef",
+			Value: "",
+		}
+	}
+
+	if additional == nil {
+		additional = make(map[string]interface{}, 0)
+	}
+
+	additional["name"] = name
+	additional["imageRef"] = imageRef
+	additional["adminPass"] = password
+
+	h, err := c.getActionHeaders()
+	if err != nil {
+		return sr, err
+	}
+
+	err = perigee.Post(c.getActionUrl(id), perigee.Options{
+		ReqBody: struct{R map[string]interface{} `json:"rebuild"`}{
+			additional,
+		},
+		Results: &sr,
+		MoreHeaders: h,
+		OkCodes: []int{202},
+	})
+	return sr, err
+}
+
+// Resize instructs the provider to change the flavor of the server.
+// Note that this implies rebuilding it.  Unfortunately, one cannot pass rebuild parameters to the resize function.
+// When the resize completes, the server will be in RESIZE_VERIFY state.
+// While in this state, you can explore the use of the new server's configuration.
+// If you like it, call ConfirmResize() to commit the resize permanently.
+// Otherwise, call RevertResize() to restore the old configuration.
+func Resize(c *Client, id, flavorRef string) error {
+	h, err := c.getActionHeaders()
+	if err != nil {
+		return err
+	}
+
+	err = perigee.Post(c.getActionUrl(id), perigee.Options{
+		ReqBody: struct{R map[string]interface{} `json:"resize"`}{
+			map[string]interface{}{"flavorRef": flavorRef},
+		},
+		MoreHeaders: h,
+		OkCodes: []int{202},
+	})
+	return err
+}
+
+// ConfirmResize confirms a previous resize operation on a server.
+// See Resize() for more details.
+func ConfirmResize(c *Client, id string) error {
+	h, err := c.getActionHeaders()
+	if err != nil {
+		return err
+	}
+
+	err = perigee.Post(c.getActionUrl(id), perigee.Options{
+		ReqBody: map[string]interface{}{"confirmResize": nil},
+		MoreHeaders: h,
+		OkCodes: []int{204},
+	})
+	return err
+}
+
+// RevertResize cancels a previous resize operation on a server.
+// See Resize() for more details.
+func RevertResize(c *Client, id string) error {
+	h, err := c.getActionHeaders()
+	if err != nil {
+		return err
+	}
+
+	err = perigee.Post(c.getActionUrl(id), perigee.Options{
+		ReqBody: map[string]interface{}{"revertResize": nil},
 		MoreHeaders: h,
 		OkCodes: []int{202},
 	})
