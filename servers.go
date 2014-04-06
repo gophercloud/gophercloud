@@ -766,6 +766,8 @@ type NewServer struct {
 	Links           []Link                   `json:"links,omitempty"`
 	OsDcfDiskConfig string                   `json:"OS-DCF:diskConfig,omitempty"`
 	SecurityGroup   []map[string]interface{} `json:"security_groups,omitempty"`
+	ConfigDrive     bool                     `json:"config_drive"`
+	UserData        string                   `json:"user_data"`
 }
 
 // ResizeRequest structures are used internally to encode to JSON the parameters required to resize a server instance.
