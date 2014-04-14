@@ -186,3 +186,158 @@ func TestUpdateServer(t *testing.T) {
 		return
 	}
 }
+
+func TestActionChangeAdminPassword(t *testing.T) {
+	t.Parallel()
+
+	ts, err := setupForCRUD()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = createServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func(){
+		servers.Delete(ts.client, ts.createdServer.Id)
+	}()
+
+	err = waitForStatus(ts, "ACTIVE")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = changeAdminPassword(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestActionReboot(t *testing.T) {
+	t.Parallel()
+
+	ts, err := setupForCRUD()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = createServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func(){
+		servers.Delete(ts.client, ts.createdServer.Id)
+	}()
+
+	err = waitForStatus(ts, "ACTIVE")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = servers.Reboot(ts.client, ts.createdServer.Id, "aldhjflaskhjf")
+	if err == nil {
+		t.Fatal("Expected the SDK to provide an ArgumentError here")
+	}
+
+	err = rebootServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestActionRebuild(t *testing.T) {
+	t.Parallel()
+
+	ts, err := setupForCRUD()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = createServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func(){
+		servers.Delete(ts.client, ts.createdServer.Id)
+	}()
+
+	err = waitForStatus(ts, "ACTIVE")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = rebuildServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestActionResizeConfirm(t *testing.T) {
+	t.Parallel()
+	
+	ts, err := setupForCRUD()
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	err = createServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	defer func(){
+		servers.Delete(ts.client, ts.createdServer.Id)
+	}()
+	
+	err = waitForStatus(ts, "ACTIVE")
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	err = resizeServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	err = confirmResize(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestActionResizeRevert(t *testing.T) {
+	t.Parallel()
+	
+	ts, err := setupForCRUD()
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	err = createServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	defer func(){
+		servers.Delete(ts.client, ts.createdServer.Id)
+	}()
+	
+	err = waitForStatus(ts, "ACTIVE")
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	err = resizeServer(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	err = revertResize(ts)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
