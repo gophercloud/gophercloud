@@ -1,8 +1,8 @@
 package images
 
 import (
-	"testing"
 	"encoding/json"
+	"testing"
 )
 
 const (
@@ -27,17 +27,17 @@ func TestGetImage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	image, err := GetImage(simpleImageMap)
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	if image.Id != "52415800-8b69-11e0-9b19-734f6f006e54" {
-		t.Fatal("I expected an image ID of 52415800-8b69-11e0-9b19-734f6f006e54; got "+image.Id)
+		t.Fatal("I expected an image ID of 52415800-8b69-11e0-9b19-734f6f006e54; got " + image.Id)
 	}
-	
+
 	if image.Name != "CentOS 5.2" {
-		t.Fatal("I expected an image name of CentOS 5.2; got "+image.Name)
+		t.Fatal("I expected an image name of CentOS 5.2; got " + image.Name)
 	}
 }
