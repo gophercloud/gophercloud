@@ -4,10 +4,10 @@ package openstack
 
 import (
 	"bytes"
-	"github.com/rackspace/gophercloud/openstack/storage"
-	"github.com/rackspace/gophercloud/openstack/storage/accounts"
-	"github.com/rackspace/gophercloud/openstack/storage/containers"
-	"github.com/rackspace/gophercloud/openstack/storage/objects"
+	storage "github.com/rackspace/gophercloud/openstack/storage/v1"
+	"github.com/rackspace/gophercloud/openstack/storage/v1/accounts"
+	"github.com/rackspace/gophercloud/openstack/storage/v1/containers"
+	"github.com/rackspace/gophercloud/openstack/storage/v1/objects"
 	"os"
 	"strings"
 	"testing"

@@ -2,7 +2,7 @@ package accounts
 
 import (
 	"github.com/racker/perigee"
-	"github.com/rackspace/gophercloud/openstack/storage"
+	storage "github.com/rackspace/gophercloud/openstack/storage/v1"
 )
 
 type GetResult *perigee.Response

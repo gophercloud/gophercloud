@@ -1,4 +1,4 @@
-package storage
+package v1
 
 import (
 	"fmt"
