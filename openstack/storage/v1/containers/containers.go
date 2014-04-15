@@ -5,11 +5,7 @@ import (
 	"strings"
 )
 
-type Container struct {
-	Bytes int
-	Count int
-	Name  string
-}
+type Container map[string]interface{}
 
 type ListOpts struct {
 	Full   bool

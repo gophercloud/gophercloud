@@ -37,12 +37,12 @@ func List(c *storage.Client, opts ListOpts) (ListResult, error) {
 }
 
 // Create is a function that creates a new container.
-func Create(c *storage.Client, opts CreateOpts) (*Container, error) {
-	var ci *Container
+func Create(c *storage.Client, opts CreateOpts) (Container, error) {
+	var ci Container
 
 	h, err := c.GetHeaders()
 	if err != nil {
-		return new(Container), err
+		return Container{}, err
 	}
 
 	for k, v := range opts.Headers {
@@ -59,8 +59,8 @@ func Create(c *storage.Client, opts CreateOpts) (*Container, error) {
 		OkCodes:     []int{201, 204},
 	})
 	if err == nil {
-		ci = &Container{
-			Name: opts.Name,
+		ci = Container{
+			"name": opts.Name,
 		}
 	}
 	return ci, err

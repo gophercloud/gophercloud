@@ -6,13 +6,7 @@ import (
 	"strings"
 )
 
-type Object struct {
-	Name          string
-	Hash          string
-	Bytes         int
-	Content_type  string
-	Last_modified string
-}
+type Object map[string]interface{}
 
 type ListOpts struct {
 	Container string
