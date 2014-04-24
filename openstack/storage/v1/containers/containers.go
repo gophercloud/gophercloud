@@ -2,6 +2,7 @@ package containers
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"strings"
 )
 
@@ -34,28 +35,39 @@ type GetOpts struct {
 	Metadata map[string]string
 }
 
-// GetInfo is a function that takes a ListResult (of type *perigee.Response)
+// ExtractInfo is a function that takes a ListResult (of type *http.Response)
 // and returns the containers' information.
-func GetInfo(lr ListResult) ([]Container, error) {
+func ExtractInfo(lr ListResult) ([]Container, error) {
 	var ci []Container
-	err := json.Unmarshal(lr.JsonResult, &ci)
+	defer lr.Body.Close()
+	body, err := ioutil.ReadAll(lr.Body)
+	if err != nil {
+		return ci, err
+	}
+	err = json.Unmarshal(body, &ci)
 	return ci, err
 }
 
-// GetNames is a function that takes a ListResult (of type *perigee.Response)
+// ExtractNames is a function that takes a ListResult (of type *http.Response)
 // and returns the containers' names.
-func GetNames(lr ListResult) ([]string, error) {
-	jr := string(lr.JsonResult)
-	cns := strings.Split(jr, "\n")
+func ExtractNames(lr ListResult) ([]string, error) {
+	var cns []string
+	defer lr.Body.Close()
+	body, err := ioutil.ReadAll(lr.Body)
+	if err != nil {
+		return cns, err
+	}
+	jr := string(body)
+	cns = strings.Split(jr, "\n")
 	cns = cns[:len(cns)-1]
 	return cns, nil
 }
 
-// GetMetadata is a function that takes a GetResult (of type *perigee.Response)
+// ExtractMetadata is a function that takes a GetResult (of type *http.Response)
 // and returns the custom metadata associated with the container.
-func GetMetadata(gr GetResult) map[string]string {
+func ExtractMetadata(gr GetResult) map[string]string {
 	metadata := make(map[string]string)
-	for k, v := range gr.HttpResponse.Header {
+	for k, v := range gr.Header {
 		if strings.HasPrefix(k, "X-Container-Meta-") {
 			key := strings.TrimPrefix(k, "X-Container-Meta-")
 			metadata[key] = v[0]

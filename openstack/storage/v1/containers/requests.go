@@ -4,14 +4,15 @@ import (
 	"github.com/racker/perigee"
 	storage "github.com/rackspace/gophercloud/openstack/storage/v1"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"net/http"
 )
 
-type ListResult *perigee.Response
-type GetResult *perigee.Response
+type ListResult *http.Response
+type GetResult *http.Response
 
 // List is a function that retrieves all objects in a container. It also returns the details
 // for the account. To extract just the container information or names, pass the ListResult
-// response to the GetInfo or GetNames function, respectively.
+// response to the ExtractInfo or ExtractNames function, respectively.
 func List(c *storage.Client, opts ListOpts) (ListResult, error) {
 	contentType := ""
 
@@ -28,12 +29,11 @@ func List(c *storage.Client, opts ListOpts) (ListResult, error) {
 
 	url := c.GetAccountURL() + query
 	resp, err := perigee.Request("GET", url, perigee.Options{
-		Results:     true,
 		MoreHeaders: h,
 		OkCodes:     []int{200, 204},
 		Accept:      contentType,
 	})
-	return resp, err
+	return &resp.HttpResponse, err
 }
 
 // Create is a function that creates a new container.
@@ -107,7 +107,7 @@ func Update(c *storage.Client, opts UpdateOpts) error {
 }
 
 // Get is a function that retrieves the metadata of a container. To extract just the custom
-// metadata, pass the GetResult response to the GetMetadata function.
+// metadata, pass the GetResult response to the ExtractMetadata function.
 func Get(c *storage.Client, opts GetOpts) (GetResult, error) {
 	h, err := c.GetHeaders()
 	if err != nil {
@@ -123,5 +123,5 @@ func Get(c *storage.Client, opts GetOpts) (GetResult, error) {
 		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
-	return resp, err
+	return &resp.HttpResponse, err
 }

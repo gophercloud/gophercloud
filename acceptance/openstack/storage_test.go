@@ -59,7 +59,7 @@ func TestAccount(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		am := accounts.GetMetadata(gr)
+		am := accounts.ExtractMetadata(gr)
 		for k := range metadata {
 			if am[k] != metadata[strings.Title(k)] {
 				t.Errorf("Expected custom metadata with key: %s", k)
@@ -117,7 +117,7 @@ func TestContainers(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		cns, err := containers.GetNames(lr)
+		cns, err := containers.ExtractNames(lr)
 		if err != nil {
 			t.Error(err)
 			return
@@ -134,7 +134,7 @@ func TestContainers(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		cis, err := containers.GetInfo(lr)
+		cis, err := containers.ExtractInfo(lr)
 		if err != nil {
 			t.Error(err)
 			return
@@ -172,7 +172,7 @@ func TestContainers(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		cm := containers.GetMetadata(gr)
+		cm := containers.ExtractMetadata(gr)
 		for k := range metadata {
 			if cm[k] != metadata[strings.Title(k)] {
 				t.Errorf("Expected custom metadata with key: %s", k)
@@ -251,7 +251,11 @@ func TestObjects(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		ons := objects.GetNames(lr)
+		ons, err := objects.ExtractNames(lr)
+		if err != nil {
+			t.Error(err)
+			return
+		}
 		if len(ons) != len(oNames) {
 			t.Errorf("Expected %d names and got %d", len(oNames), len(ons))
 			return
@@ -265,7 +269,7 @@ func TestObjects(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		ois, err := objects.GetInfo(lr)
+		ois, err := objects.ExtractInfo(lr)
 		if err != nil {
 			t.Error(err)
 			return
@@ -294,8 +298,10 @@ func TestObjects(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		o2Content := objects.GetContent(dr)
-
+		o2Content, err := objects.ExtractContent(dr)
+		if err != nil {
+			t.Error(err)
+		}
 		dr, err = objects.Download(client, objects.DownloadOpts{
 			Container: cName,
 			Name:      oNames[0],
@@ -304,8 +310,11 @@ func TestObjects(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		o1Content := objects.GetContent(dr)
-
+		o1Content, err := objects.ExtractContent(dr)
+		if err != nil {
+			t.Error(err)
+			return
+		}
 		if string(o2Content) != string(o1Content) {
 			t.Errorf("Copy failed. Expected\n%s\nand got\n%s", string(o1Content), string(o2Content))
 			return
@@ -341,7 +350,7 @@ func TestObjects(t *testing.T) {
 			t.Error(err)
 			return
 		}
-		om := objects.GetMetadata(gr)
+		om := objects.ExtractMetadata(gr)
 		for k := range metadata {
 			if om[k] != metadata[strings.Title(k)] {
 				t.Errorf("Expected custom metadata with key: %s", k)

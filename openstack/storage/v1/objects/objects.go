@@ -3,6 +3,7 @@ package objects
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"strings"
 )
 
@@ -59,34 +60,48 @@ type UpdateOpts struct {
 	Headers   map[string]string
 }
 
-// GetInfo is a function that takes a ListResult (of type *perigee.Response)
+// ExtractInfo is a function that takes a ListResult (of type *http.Response)
 // and returns the objects' information.
-func GetInfo(lr ListResult) ([]Object, error) {
+func ExtractInfo(lr ListResult) ([]Object, error) {
 	var oi []Object
-	err := json.Unmarshal(lr.JsonResult, &oi)
+	defer lr.Body.Close()
+	body, err := ioutil.ReadAll(lr.Body)
+	if err != nil {
+		return oi, err
+	}
+	err = json.Unmarshal(body, &oi)
 	return oi, err
 }
 
-// GetNames is a function that takes a ListResult (of type *perigee.Response)
+// ExtractNames is a function that takes a ListResult (of type *http.Response)
 // and returns the objects' names.
-func GetNames(lr ListResult) []string {
-	jr := string(lr.JsonResult)
-	ons := strings.Split(jr, "\n")
+func ExtractNames(lr ListResult) ([]string, error) {
+	var ons []string
+	defer lr.Body.Close()
+	body, err := ioutil.ReadAll(lr.Body)
+	if err != nil {
+		return ons, err
+	}
+	jr := string(body)
+	ons = strings.Split(jr, "\n")
 	ons = ons[:len(ons)-1]
-	return ons
+	return ons, nil
 }
 
-// GetContent is a function that takes a DownloadResult (of type *perigee.Response)
+// ExtractContent is a function that takes a DownloadResult (of type *http.Response)
 // and returns the object's content.
-func GetContent(dr DownloadResult) []byte {
-	return dr.JsonResult
+func ExtractContent(dr DownloadResult) ([]byte, error) {
+	var body []byte
+	defer dr.Body.Close()
+	body, err := ioutil.ReadAll(dr.Body)
+	return body, err
 }
 
-// GetMetadata is a function that takes a GetResult (of type *perifee.Response)
+// ExtractMetadata is a function that takes a GetResult (of type *http.Response)
 // and returns the custom metadata associated with the object.
-func GetMetadata(gr GetResult) map[string]string {
+func ExtractMetadata(gr GetResult) map[string]string {
 	metadata := make(map[string]string)
-	for k, v := range gr.HttpResponse.Header {
+	for k, v := range gr.Header {
 		if strings.HasPrefix(k, "X-Object-Meta-") {
 			key := strings.TrimPrefix(k, "X-Object-Meta-")
 			metadata[key] = v[0]

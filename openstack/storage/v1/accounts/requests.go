@@ -3,9 +3,10 @@ package accounts
 import (
 	"github.com/racker/perigee"
 	storage "github.com/rackspace/gophercloud/openstack/storage/v1"
+	"net/http"
 )
 
-type GetResult *perigee.Response
+type GetResult *http.Response
 
 // Update is a function that creates, updates, or deletes an account's metadata.
 func Update(c *storage.Client, opts UpdateOpts) error {
@@ -30,7 +31,7 @@ func Update(c *storage.Client, opts UpdateOpts) error {
 }
 
 // Get is a function that retrieves an account's metadata. To extract just the custom
-// metadata, pass the GetResult response to the GetMetadata function.
+// metadata, pass the GetResult response to the ExtractMetadata function.
 func Get(c *storage.Client, opts GetOpts) (GetResult, error) {
 	h, err := c.GetHeaders()
 	if err != nil {
@@ -46,5 +47,5 @@ func Get(c *storage.Client, opts GetOpts) (GetResult, error) {
 		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
-	return resp, err
+	return &resp.HttpResponse, err
 }

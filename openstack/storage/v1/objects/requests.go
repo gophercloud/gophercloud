@@ -2,19 +2,19 @@ package objects
 
 import (
 	"fmt"
-
 	"github.com/racker/perigee"
 	storage "github.com/rackspace/gophercloud/openstack/storage/v1"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"net/http"
 )
 
-type ListResult *perigee.Response
-type DownloadResult *perigee.Response
-type GetResult *perigee.Response
+type ListResult *http.Response
+type DownloadResult *http.Response
+type GetResult *http.Response
 
 // List is a function that retrieves all objects in a container. It also returns the details
 // for the container. To extract only the object information or names, pass the ListResult
-// response to the GetInfo or GetNames function, respectively.
+// response to the ExtractInfo or ExtractNames function, respectively.
 func List(c *storage.Client, opts ListOpts) (ListResult, error) {
 	contentType := ""
 
@@ -31,16 +31,15 @@ func List(c *storage.Client, opts ListOpts) (ListResult, error) {
 
 	url := c.GetContainerURL(opts.Container) + query
 	resp, err := perigee.Request("GET", url, perigee.Options{
-		Results:     true,
 		MoreHeaders: h,
 		OkCodes:     []int{200, 204},
 		Accept:      contentType,
 	})
-	return resp, err
+	return &resp.HttpResponse, err
 }
 
 // Download is a function that retrieves the content and metadata for an object.
-// To extract just the content, pass the DownloadResult response to the GetContent
+// To extract just the content, pass the DownloadResult response to the ExtractContent
 // function.
 func Download(c *storage.Client, opts DownloadOpts) (DownloadResult, error) {
 	h, err := c.GetHeaders()
@@ -56,11 +55,10 @@ func Download(c *storage.Client, opts DownloadOpts) (DownloadResult, error) {
 
 	url := c.GetObjectURL(opts.Container, opts.Name) + query
 	resp, err := perigee.Request("GET", url, perigee.Options{
-		Results:     true,
 		MoreHeaders: h,
 		OkCodes:     []int{200},
 	})
-	return resp, err
+	return &resp.HttpResponse, err
 }
 
 // Create is a function that creates a new object or replaces an existing object.
@@ -139,7 +137,7 @@ func Delete(c *storage.Client, opts DeleteOpts) error {
 }
 
 // Get is a function that retrieves the metadata of an object. To extract just the custom
-// metadata, pass the GetResult response to the GetMetadata function.
+// metadata, pass the GetResult response to the ExtractMetadata function.
 func Get(c *storage.Client, opts GetOpts) (GetResult, error) {
 	h, err := c.GetHeaders()
 	if err != nil {
@@ -155,7 +153,7 @@ func Get(c *storage.Client, opts GetOpts) (GetResult, error) {
 		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
-	return resp, err
+	return &resp.HttpResponse, err
 }
 
 // Update is a function that creates, updates, or deletes an object's metadata.
