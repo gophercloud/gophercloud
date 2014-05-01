@@ -1,7 +1,9 @@
 package volumes
 
 type Volume map[string]interface{}
+type CreateOpts map[string]interface{}
 
+/*
 type CreateOpts struct {
 	Availability_zone   string            `json:"size"`
 	Source_volid        string            `json:"source_volid"`
@@ -14,3 +16,4 @@ type CreateOpts struct {
 	Bootable            bool              `json:"bootable"`
 	Metadata            map[string]string `json:"metadata"`
 }
+*/

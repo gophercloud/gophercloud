@@ -61,10 +61,12 @@ func TestVolumes(t *testing.T) {
 		return
 	}
 	v, err := volumes.Create(client, volumes.CreateOpts{
-		Size: 1,
+		"size":         1,
+		"display_name": "test-volume",
 	})
 	if err != nil {
 		t.Error(err)
 		return
 	}
+	fmt.Printf("%+v\n", v)
 }

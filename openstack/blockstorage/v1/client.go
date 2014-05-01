@@ -22,8 +22,12 @@ func NewClient(e string, a identity.AuthResults, o identity.AuthOptions) *Client
 	}
 }
 
-func (c *Client) GetVolumeURL() string {
+func (c *Client) GetVolumesURL() string {
 	return fmt.Sprintf("%s/volumes", c.endpoint)
+}
+
+func (c *Client) GetVolumeURL(id string) string {
+	return fmt.Sprintf("%s/volumes/%s", c.endpoint, id)
 }
 
 func (c *Client) GetHeaders() (map[string]string, error) {

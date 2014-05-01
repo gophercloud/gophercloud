@@ -11,7 +11,7 @@ func Create(c *blockstorage.Client, opts CreateOpts) (Volume, error) {
 	if err != nil {
 		return v, err
 	}
-	url := c.GetVolumeURL()
+	url := c.GetVolumesURL()
 	_, err = perigee.Request("POST", url, perigee.Options{
 		Results: &v,
 		ReqBody: map[string]interface{}{
