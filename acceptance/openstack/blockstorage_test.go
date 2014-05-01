@@ -68,5 +68,10 @@ func TestVolumes(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	defer func() {
+		err = volumes.Delete(client, volumes.DeleteOpts{
+			"id": v.Id,
+		})
+	}()
 	fmt.Printf("%+v\n", v)
 }

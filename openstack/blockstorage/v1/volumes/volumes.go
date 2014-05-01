@@ -1,19 +1,19 @@
 package volumes
 
-type Volume map[string]interface{}
-type CreateOpts map[string]interface{}
-
-/*
-type CreateOpts struct {
-	Availability_zone   string            `json:"size"`
-	Source_volid        string            `json:"source_volid"`
-	Display_description string            `json:"display_description"`
-	Snapshot_id         string            `json:"snapshot_id"`
-	Size                int               `json:"size"`
-	Display_name        string            `json:"display_name"`
-	ImageRef            string            `json:"imageRef"`
-	Volume_type         string            `json:"volume_type"`
-	Bootable            bool              `json:"bootable"`
-	Metadata            map[string]string `json:"metadata"`
+type Volume struct {
+	Status              string
+	Display_name        string
+	Attachments         []string
+	Availability_zone   string
+	Bootable            bool
+	Created_at          string
+	Display_description string
+	Volume_type         string
+	Snapshot_id         string
+	Source_volid        string
+	Metadata            map[string]string
+	Id                  string
+	Size                int
 }
-*/
+type CreateOpts map[string]interface{}
+type DeleteOpts map[string]string
