@@ -60,7 +60,7 @@ func TestVolumes(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	v, err := volumes.Create(client, volumes.CreateOpts{
+	nv, err := volumes.Create(client, volumes.CreateOpts{
 		"size":         1,
 		"display_name": "test-volume",
 	})
@@ -68,10 +68,19 @@ func TestVolumes(t *testing.T) {
 		t.Error(err)
 		return
 	}
+
 	defer func() {
 		err = volumes.Delete(client, volumes.DeleteOpts{
-			"id": v.Id,
+			"id": nv.Id,
 		})
 	}()
-	fmt.Printf("%+v\n", v)
+
+	gv, err := volumes.Get(client, volumes.GetOpts{
+		"id": nv.Id,
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Printf("%+v\n", gv)
 }
