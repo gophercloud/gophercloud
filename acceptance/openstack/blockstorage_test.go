@@ -3,14 +3,17 @@
 package openstack
 
 import (
-	"fmt"
 	blockstorage "github.com/rackspace/gophercloud/openstack/blockstorage/v1"
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes"
 	"github.com/rackspace/gophercloud/openstack/identity"
 	"github.com/rackspace/gophercloud/openstack/utils"
 	"os"
+	"strconv"
 	"testing"
+	"time"
 )
+
+var numVols = 2
 
 func getClient() (*blockstorage.Client, error) {
 	ao, err := utils.AuthOptions()
@@ -60,27 +63,59 @@ func TestVolumes(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	nv, err := volumes.Create(client, volumes.CreateOpts{
-		"size":         1,
-		"display_name": "test-volume",
-	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
 
-	defer func() {
-		err = volumes.Delete(client, volumes.DeleteOpts{
-			"id": nv.Id,
+	var cv volumes.Volume
+	for i := 0; i < numVols; i++ {
+		cv, err := volumes.Create(client, volumes.CreateOpts{
+			"size":         1,
+			"display_name": "test-volume" + strconv.Itoa(i),
 		})
-	}()
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		defer func() {
+			time.Sleep(10000 * time.Millisecond)
+			err = volumes.Delete(client, volumes.DeleteOpts{
+				"id": cv.Id,
+			})
+			if err != nil {
+				t.Error(err)
+				return
+			}
+		}()
+	}
 
-	gv, err := volumes.Get(client, volumes.GetOpts{
-		"id": nv.Id,
+	vols, err := volumes.List(client, volumes.ListOpts{
+		"full": true,
 	})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	fmt.Printf("%+v\n", gv)
+	if len(vols) != numVols {
+		t.Errorf("Expected %d volumes, got %d", numVols, len(vols))
+		return
+	}
+
+	vols, err = volumes.List(client, volumes.ListOpts{
+		"full": false,
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if len(vols) != numVols {
+		t.Errorf("Expected %d volumes, got %d", numVols, len(vols))
+		return
+	}
+
+	_, err = volumes.Get(client, volumes.GetOpts{
+		"id": cv.Id,
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 }

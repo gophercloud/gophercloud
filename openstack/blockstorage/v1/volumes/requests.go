@@ -24,6 +24,27 @@ func Create(c *blockstorage.Client, opts CreateOpts) (Volume, error) {
 	return v, err
 }
 
+func List(c *blockstorage.Client, opts ListOpts) ([]Volume, error) {
+	var v []Volume
+	var url string
+	h, err := c.GetHeaders()
+	if err != nil {
+		return v, err
+	}
+	if full := opts["full"]; full {
+		url = c.GetVolumesURL()
+	} else {
+		url = c.GetVolumeURL("detail")
+	}
+	_, err = perigee.Request("GET", url, perigee.Options{
+		Results: &struct {
+			Volume *[]Volume `json:"volumes"`
+		}{&v},
+		MoreHeaders: h,
+	})
+	return v, err
+}
+
 func Get(c *blockstorage.Client, opts GetOpts) (Volume, error) {
 	var v Volume
 	h, err := c.GetHeaders()

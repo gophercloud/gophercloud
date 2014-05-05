@@ -16,5 +16,6 @@ type Volume struct {
 	Size                int
 }
 type CreateOpts map[string]interface{}
+type ListOpts map[string]bool
 type GetOpts map[string]string
 type DeleteOpts map[string]string
