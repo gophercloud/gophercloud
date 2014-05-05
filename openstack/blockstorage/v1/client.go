@@ -30,6 +30,10 @@ func (c *Client) GetVolumeURL(id string) string {
 	return fmt.Sprintf("%s/volumes/%s", c.endpoint, id)
 }
 
+func (c *Client) GetSnapshotsURL() string {
+	return fmt.Sprintf("%s/snapshots", c.endpoint)
+}
+
 func (c *Client) GetHeaders() (map[string]string, error) {
 	t, err := c.getAuthToken()
 	if err != nil {

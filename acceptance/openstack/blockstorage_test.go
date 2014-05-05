@@ -3,7 +3,9 @@
 package openstack
 
 import (
+	"fmt"
 	blockstorage "github.com/rackspace/gophercloud/openstack/blockstorage/v1"
+	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/snapshots"
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes"
 	"github.com/rackspace/gophercloud/openstack/identity"
 	"github.com/rackspace/gophercloud/openstack/utils"
@@ -118,4 +120,54 @@ func TestVolumes(t *testing.T) {
 		return
 	}
 
+}
+
+func TestSnapshots(t *testing.T) {
+	client, err := getClient()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	cv, err := volumes.Create(client, volumes.CreateOpts{
+		"size":         1,
+		"display_name": "test-volume",
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer func() {
+		err = volumes.Delete(client, volumes.DeleteOpts{
+			"id": cv.Id,
+		})
+		if err != nil {
+			t.Error(err)
+			return
+		}
+	}()
+
+	for i := 0; i < 60; i++ {
+		gv, err := volumes.Get(client, volumes.GetOpts{
+			"id": cv.Id,
+		})
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		if gv.Status == "available" {
+			break
+		}
+		time.Sleep(2000 * time.Millisecond)
+	}
+
+	var css snapshots.Snapshot
+	css, err = snapshots.Create(client, snapshots.CreateOpts{
+		"volume_id": cv.Id,
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Printf("%+v\n", css)
 }
