@@ -12,4 +12,5 @@ type Snapshot struct {
 }
 
 type CreateOpts map[string]interface{}
+type GetOpts map[string]string
 type DeleteOpts map[string]string

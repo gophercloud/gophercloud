@@ -3,7 +3,7 @@
 package openstack
 
 import (
-	"fmt"
+	//"fmt"
 	blockstorage "github.com/rackspace/gophercloud/openstack/blockstorage/v1"
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/snapshots"
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes"
@@ -129,6 +129,8 @@ func TestSnapshots(t *testing.T) {
 		return
 	}
 
+	var css snapshots.Snapshot
+
 	cv, err := volumes.Create(client, volumes.CreateOpts{
 		"size":         1,
 		"display_name": "test-volume",
@@ -138,12 +140,21 @@ func TestSnapshots(t *testing.T) {
 		return
 	}
 	defer func() {
-		err = volumes.Delete(client, volumes.DeleteOpts{
-			"id": cv.Id,
-		})
-		if err != nil {
-			t.Error(err)
-			return
+		for i := 0; i < 60; i++ {
+			gss, _ := snapshots.Get(client, snapshots.GetOpts{
+				"id": css.Id,
+			})
+			if gss.Status == "" {
+				err = volumes.Delete(client, volumes.DeleteOpts{
+					"id": cv.Id,
+				})
+				if err != nil {
+					t.Error(err)
+					return
+				}
+				break
+			}
+			time.Sleep(5000 * time.Millisecond)
 		}
 	}()
 
@@ -161,7 +172,6 @@ func TestSnapshots(t *testing.T) {
 		time.Sleep(2000 * time.Millisecond)
 	}
 
-	var css snapshots.Snapshot
 	css, err = snapshots.Create(client, snapshots.CreateOpts{
 		"volume_id":    cv.Id,
 		"display_name": "test-snapshot",
@@ -170,15 +180,26 @@ func TestSnapshots(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	time.Sleep(20000 * time.Millisecond)
 	defer func() {
-		err = snapshots.Delete(client, snapshots.DeleteOpts{
-			"id": cv.Id,
-		})
-		if err != nil {
-			t.Error(err)
-			return
+		for i := 0; i < 60; i++ {
+			gss, err := snapshots.Get(client, snapshots.GetOpts{
+				"id": css.Id,
+			})
+			if err != nil {
+				t.Error(err)
+				return
+			}
+			if gss.Status == "available" {
+				err = snapshots.Delete(client, snapshots.DeleteOpts{
+					"id": css.Id,
+				})
+				if err != nil {
+					t.Error(err)
+					return
+				}
+				break
+			}
+			time.Sleep(2000 * time.Millisecond)
 		}
 	}()
-	fmt.Printf("%+v\n", css)
 }
