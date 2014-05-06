@@ -12,3 +12,4 @@ type Snapshot struct {
 }
 
 type CreateOpts map[string]interface{}
+type DeleteOpts map[string]string

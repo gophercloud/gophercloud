@@ -163,11 +163,22 @@ func TestSnapshots(t *testing.T) {
 
 	var css snapshots.Snapshot
 	css, err = snapshots.Create(client, snapshots.CreateOpts{
-		"volume_id": cv.Id,
+		"volume_id":    cv.Id,
+		"display_name": "test-snapshot",
 	})
 	if err != nil {
 		t.Error(err)
 		return
 	}
+	time.Sleep(20000 * time.Millisecond)
+	defer func() {
+		err = snapshots.Delete(client, snapshots.DeleteOpts{
+			"id": cv.Id,
+		})
+		if err != nil {
+			t.Error(err)
+			return
+		}
+	}()
 	fmt.Printf("%+v\n", css)
 }

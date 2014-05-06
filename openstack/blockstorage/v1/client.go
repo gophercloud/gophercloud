@@ -34,6 +34,10 @@ func (c *Client) GetSnapshotsURL() string {
 	return fmt.Sprintf("%s/snapshots", c.endpoint)
 }
 
+func (c *Client) GetSnapshotURL(id string) string {
+	return fmt.Sprintf("%s/snapshots/%s", c.endpoint, id)
+}
+
 func (c *Client) GetHeaders() (map[string]string, error) {
 	t, err := c.getAuthToken()
 	if err != nil {
