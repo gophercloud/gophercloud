@@ -35,6 +35,7 @@ func defaulter(from, to reflect.Kind, v interface{}) (interface{}, error) {
 	return v, nil
 }
 
+// GetFlavors provides access to the list of flavors returned by the List function.
 func GetFlavors(lr ListResults) ([]Flavor, error) {
 	fa, ok := lr["flavors"]
 	if !ok {
@@ -59,4 +60,24 @@ func GetFlavors(lr ListResults) ([]Flavor, error) {
 		}
 	}
 	return flavors, nil
+}
+
+// GetFlavor provides access to the individual flavor returned by the Get function.
+func GetFlavor(gr GetResults) (*Flavor, error) {
+	f, ok := gr["flavor"]
+	if !ok {
+		return nil, ErrNotImplemented
+	}
+
+	flav := new(Flavor)
+	cfg := &mapstructure.DecoderConfig{
+		DecodeHook: defaulter,
+		Result: flav,
+	}
+	decoder, err := mapstructure.NewDecoder(cfg)
+	if err != nil {
+		return flav, err
+	}
+	err = decoder.Decode(f)
+	return flav, err
 }

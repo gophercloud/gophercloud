@@ -109,7 +109,7 @@ func TestListFlavors(t *testing.T) {
 
 		client := flavors.NewClient(ep.PublicURL, ts.a, ts.o)
 
-		listResults, err := flavors.List(client)
+		listResults, err := flavors.List(client, flavors.ListFilterOptions{})
 		if err != nil {
 			t.Error(err)
 			return
@@ -128,7 +128,32 @@ func TestListFlavors(t *testing.T) {
 		}
 	}
 	ts.w.Flush()
-	fmt.Printf("--------\n%d images listed.\n", n)
+	fmt.Printf("--------\n%d flavors listed.\n", n)
+}
+
+func TestGetFlavor(t *testing.T) {
+	ts, err := setupForCRUD()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	region := os.Getenv("OS_REGION_NAME")
+	for _, ep := range ts.eps {
+		if (region != "") && (region != ep.Region) {
+			continue
+		}
+		client := flavors.NewClient(ep.PublicURL, ts.a, ts.o)
+
+		getResults, err := flavors.Get(client, ts.flavorId)
+		if err != nil {
+			t.Fatal(err)
+		}
+		flav, err := flavors.GetFlavor(getResults)
+		if err != nil {
+			t.Fatal(err)
+		}
+		fmt.Printf("%#v\n", flav)
+	}
 }
 
 func TestCreateDestroyServer(t *testing.T) {
