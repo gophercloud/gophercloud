@@ -8,8 +8,13 @@ import (
 	"net/http"
 )
 
+// ListResult is a *http.Response that is returned from a call to the List function.
 type ListResult *http.Response
+
+// DownloadResult is a *http.Response that is returned from a call to the Download function.
 type DownloadResult *http.Response
+
+// GetResult is a *http.Response that is returned from a call to the Get function.
 type GetResult *http.Response
 
 // List is a function that retrieves all objects in a container. It also returns the details
@@ -32,7 +37,6 @@ func List(c *storage.Client, opts ListOpts) (ListResult, error) {
 	url := c.GetContainerURL(opts.Container) + query
 	resp, err := perigee.Request("GET", url, perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{200, 204},
 		Accept:      contentType,
 	})
 	return &resp.HttpResponse, err
@@ -56,7 +60,6 @@ func Download(c *storage.Client, opts DownloadOpts) (DownloadResult, error) {
 	url := c.GetObjectURL(opts.Container, opts.Name) + query
 	resp, err := perigee.Request("GET", url, perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{200},
 	})
 	return &resp.HttpResponse, err
 }
@@ -93,7 +96,6 @@ func Create(c *storage.Client, opts CreateOpts) error {
 	_, err = perigee.Request("PUT", url, perigee.Options{
 		ReqBody:     reqBody,
 		MoreHeaders: h,
-		OkCodes:     []int{201},
 	})
 	return err
 }
@@ -114,7 +116,6 @@ func Copy(c *storage.Client, opts CopyOpts) error {
 	url := c.GetObjectURL(opts.Container, opts.Name)
 	_, err = perigee.Request("COPY", url, perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{201},
 	})
 	return err
 }
@@ -131,7 +132,6 @@ func Delete(c *storage.Client, opts DeleteOpts) error {
 	url := c.GetObjectURL(opts.Container, opts.Name) + query
 	_, err = perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{204},
 	})
 	return err
 }
@@ -151,7 +151,6 @@ func Get(c *storage.Client, opts GetOpts) (GetResult, error) {
 	url := c.GetObjectURL(opts.Container, opts.Name)
 	resp, err := perigee.Request("HEAD", url, perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{204},
 	})
 	return &resp.HttpResponse, err
 }
@@ -174,7 +173,6 @@ func Update(c *storage.Client, opts UpdateOpts) error {
 	url := c.GetObjectURL(opts.Container, opts.Name)
 	_, err = perigee.Request("POST", url, perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{202, 204},
 	})
 	return err
 }

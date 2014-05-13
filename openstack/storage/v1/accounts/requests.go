@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// GetResult is a *http.Response that is returned from a call to the Get function.
 type GetResult *http.Response
 
 // Update is a function that creates, updates, or deletes an account's metadata.
@@ -25,7 +26,6 @@ func Update(c *storage.Client, opts UpdateOpts) error {
 	url := c.GetAccountURL()
 	_, err = perigee.Request("POST", url, perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{204},
 	})
 	return err
 }
@@ -45,7 +45,6 @@ func Get(c *storage.Client, opts GetOpts) (GetResult, error) {
 	url := c.GetAccountURL()
 	resp, err := perigee.Request("HEAD", url, perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{204},
 	})
 	return &resp.HttpResponse, err
 }

@@ -6,30 +6,37 @@ import (
 	"strings"
 )
 
+// Container is a structure that holds information related to a storage container.
 type Container map[string]interface{}
 
+// ListOpts is a structure that holds parameters for listing containers.
 type ListOpts struct {
 	Full   bool
 	Params map[string]string
 }
 
+// CreateOpts is a structure that holds parameters for creating a container.
 type CreateOpts struct {
 	Name     string
 	Metadata map[string]string
 	Headers  map[string]string
 }
 
+// DeleteOpts is a structure that holds parameters for deleting a container.
 type DeleteOpts struct {
 	Name   string
 	Params map[string]string
 }
 
+// UpdateOpts is a structure that holds parameters for updating, creating, or deleting a
+// container's metadata.
 type UpdateOpts struct {
 	Name     string
 	Metadata map[string]string
 	Headers  map[string]string
 }
 
+// GetOpts is a structure that holds parameters for getting a container's metadata.
 type GetOpts struct {
 	Name     string
 	Metadata map[string]string

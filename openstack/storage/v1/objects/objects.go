@@ -7,14 +7,17 @@ import (
 	"strings"
 )
 
+// Object is a structure that holds information related to a storage object.
 type Object map[string]interface{}
 
+// ListOpts is a structure that holds parameters for listing objects.
 type ListOpts struct {
 	Container string
 	Full      bool
 	Params    map[string]string
 }
 
+// DownloadOpts is a structure that holds parameters for downloading an object.
 type DownloadOpts struct {
 	Container string
 	Name      string
@@ -22,6 +25,7 @@ type DownloadOpts struct {
 	Params    map[string]string
 }
 
+// CreateOpts is a structure that holds parameters for creating an object.
 type CreateOpts struct {
 	Container string
 	Name      string
@@ -31,6 +35,7 @@ type CreateOpts struct {
 	Params    map[string]string
 }
 
+// CopyOpts is a structure that holds parameters for copying one object to another.
 type CopyOpts struct {
 	Container    string
 	Name         string
@@ -40,12 +45,14 @@ type CopyOpts struct {
 	Headers      map[string]string
 }
 
+// DeleteOpts is a structure that holds parameters for deleting an object.
 type DeleteOpts struct {
 	Container string
 	Name      string
 	Params    map[string]string
 }
 
+// GetOpts is a structure that holds parameters for getting an object's metadata.
 type GetOpts struct {
 	Container string
 	Name      string
@@ -53,6 +60,8 @@ type GetOpts struct {
 	Params    map[string]string
 }
 
+// UpdateOpts is a structure that holds parameters for updating, creating, or deleting an
+// object's metadata.
 type UpdateOpts struct {
 	Container string
 	Name      string

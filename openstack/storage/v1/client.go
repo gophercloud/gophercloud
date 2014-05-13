@@ -13,6 +13,7 @@ type Client struct {
 	token     *identity.Token
 }
 
+// NewClient creates and returns a *Client.
 func NewClient(e string, a identity.AuthResults, o identity.AuthOptions) *Client {
 	return &Client{
 		endpoint:  e,
@@ -21,19 +22,26 @@ func NewClient(e string, a identity.AuthResults, o identity.AuthOptions) *Client
 	}
 }
 
+// GetAccountURL returns the URI for making Account requests. This function is exported to allow
+// the 'Accounts' subpackage to use it. It is not meant for public consumption.
 func (c *Client) GetAccountURL() string {
 	return fmt.Sprintf("%s", c.endpoint)
 }
 
+// GetContainerURL returns the URI for making Container requests. This function is exported to allow
+// the 'Containers' subpackage to use it. It is not meant for public consumption.
 func (c *Client) GetContainerURL(container string) string {
 	return fmt.Sprintf("%s/%s", c.endpoint, container)
 }
 
+// GetObjectURL returns the URI for making Object requests. This function is exported to allow
+// the 'Objects' subpackage to use it. It is not meant for public consumption.
 func (c *Client) GetObjectURL(container, object string) string {
 	return fmt.Sprintf("%s/%s/%s", c.endpoint, container, object)
 }
 
-// GetHeaders is a function that sets the header for token authentication against a client's endpoint.
+// GetHeaders is a function that gets the header for token authentication against a client's endpoint.
+// This function is exported to allow the subpackages to use it. It is not meant for public consumption.
 func (c *Client) GetHeaders() (map[string]string, error) {
 	t, err := c.getAuthToken()
 	if err != nil {
