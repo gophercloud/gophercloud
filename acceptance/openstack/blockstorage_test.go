@@ -3,11 +3,11 @@
 package openstack
 
 import (
-	//"fmt"
+	"fmt"
 	blockstorage "github.com/rackspace/gophercloud/openstack/blockstorage/v1"
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/snapshots"
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes"
-	"github.com/rackspace/gophercloud/openstack/identity"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	"github.com/rackspace/gophercloud/openstack/utils"
 	"os"
 	"strconv"
@@ -202,4 +202,12 @@ func TestSnapshots(t *testing.T) {
 			time.Sleep(2000 * time.Millisecond)
 		}
 	}()
+
+	lss, err := snapshots.List(client, snapshots.ListOpts{
+		Full: true,
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
 }

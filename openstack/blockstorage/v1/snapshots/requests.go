@@ -24,6 +24,27 @@ func Create(c *blockstorage.Client, opts CreateOpts) (Snapshot, error) {
 	return ss, err
 }
 
+func List(c *blockstorage.Client, opts ListOpts) ([]Snapshot, error) {
+	var ss []Snapshot
+	var url string
+	h, err := c.GetHeaders()
+	if err != nil {
+		return ss, err
+	}
+	if full := opts.Full; full {
+		url = c.GetSnapshotsURL()
+	} else {
+		url = c.GetSnapshotURL("detail")
+	}
+	_, err = perigee.Request("GET", url, perigee.Options{
+		Results: &struct {
+			Snapshot *[]Snapshot `json:"snapshots"`
+		}{&ss},
+		MoreHeaders: h,
+	})
+	return ss, err
+}
+
 func Get(c *blockstorage.Client, opts GetOpts) (Snapshot, error) {
 	var ss Snapshot
 	h, err := c.GetHeaders()

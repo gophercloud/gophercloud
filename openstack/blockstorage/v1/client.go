@@ -1,11 +1,11 @@
-package blockstorage
+package v1
 
 import (
 	"fmt"
-	"github.com/rackspace/gophercloud/openstack/identity"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 )
 
-// Client abstracts the connection information needed to make API requests for OpenStack compute endpoints.
+// Client abstracts the connection information needed to make API requests for OpenStack block storage endpoints.
 type Client struct {
 	endpoint  string
 	authority identity.AuthResults
