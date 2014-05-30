@@ -50,3 +50,12 @@ func AuthOptions() (identity.AuthOptions, error) {
 
 	return ao, nil
 }
+
+func BuildQuery(params map[string]string) string {
+	query := "?"
+	for k, v := range params {
+		query += k + "=" + v + "&"
+	}
+	query = query[:len(query)-1]
+	return query
+}

@@ -1,8 +1,8 @@
 package servers
 
 import (
-	"github.com/racker/perigee"
 	"fmt"
+	"github.com/racker/perigee"
 )
 
 // ListResult abstracts the raw results of making a List() request against the
@@ -113,11 +113,13 @@ func ChangeAdminPassword(c *Client, id, newPassword string) error {
 	}
 
 	err = perigee.Post(c.getActionUrl(id), perigee.Options{
-		ReqBody: struct{C map[string]string `json:"changePassword"`}{
+		ReqBody: struct {
+			C map[string]string `json:"changePassword"`
+		}{
 			map[string]string{"adminPass": newPassword},
 		},
 		MoreHeaders: h,
-		OkCodes: []int{202},
+		OkCodes:     []int{202},
 	})
 	return err
 }
@@ -136,7 +138,7 @@ func ChangeAdminPassword(c *Client, id, newPassword string) error {
 // Value provides the value as it was passed into the function.
 type ErrArgument struct {
 	Function, Argument string
-	Value interface{}
+	Value              interface{}
 }
 
 // Error yields a useful diagnostic for debugging purposes.
@@ -153,7 +155,7 @@ func (e *ErrArgument) String() string {
 const (
 	SoftReboot = "SOFT"
 	HardReboot = "HARD"
-	OSReboot = SoftReboot
+	OSReboot   = SoftReboot
 	PowerCycle = HardReboot
 )
 
@@ -174,21 +176,23 @@ func Reboot(c *Client, id, how string) error {
 		return &ErrArgument{
 			Function: "Reboot",
 			Argument: "how",
-			Value: how,
+			Value:    how,
 		}
 	}
-	
+
 	h, err := c.getActionHeaders()
 	if err != nil {
 		return err
 	}
 
 	err = perigee.Post(c.getActionUrl(id), perigee.Options{
-		ReqBody: struct{C map[string]string `json:"reboot"`}{
+		ReqBody: struct {
+			C map[string]string `json:"reboot"`
+		}{
 			map[string]string{"type": how},
 		},
 		MoreHeaders: h,
-		OkCodes: []int{202},
+		OkCodes:     []int{202},
 	})
 	return err
 }
@@ -212,7 +216,7 @@ func Rebuild(c *Client, id, name, password, imageRef string, additional map[stri
 		return sr, &ErrArgument{
 			Function: "Rebuild",
 			Argument: "id",
-			Value: "",
+			Value:    "",
 		}
 	}
 
@@ -220,7 +224,7 @@ func Rebuild(c *Client, id, name, password, imageRef string, additional map[stri
 		return sr, &ErrArgument{
 			Function: "Rebuild",
 			Argument: "name",
-			Value: "",
+			Value:    "",
 		}
 	}
 
@@ -228,7 +232,7 @@ func Rebuild(c *Client, id, name, password, imageRef string, additional map[stri
 		return sr, &ErrArgument{
 			Function: "Rebuild",
 			Argument: "password",
-			Value: "",
+			Value:    "",
 		}
 	}
 
@@ -236,7 +240,7 @@ func Rebuild(c *Client, id, name, password, imageRef string, additional map[stri
 		return sr, &ErrArgument{
 			Function: "Rebuild",
 			Argument: "imageRef",
-			Value: "",
+			Value:    "",
 		}
 	}
 
@@ -254,12 +258,14 @@ func Rebuild(c *Client, id, name, password, imageRef string, additional map[stri
 	}
 
 	err = perigee.Post(c.getActionUrl(id), perigee.Options{
-		ReqBody: struct{R map[string]interface{} `json:"rebuild"`}{
+		ReqBody: struct {
+			R map[string]interface{} `json:"rebuild"`
+		}{
 			additional,
 		},
-		Results: &sr,
+		Results:     &sr,
 		MoreHeaders: h,
-		OkCodes: []int{202},
+		OkCodes:     []int{202},
 	})
 	return sr, err
 }
@@ -277,11 +283,13 @@ func Resize(c *Client, id, flavorRef string) error {
 	}
 
 	err = perigee.Post(c.getActionUrl(id), perigee.Options{
-		ReqBody: struct{R map[string]interface{} `json:"resize"`}{
+		ReqBody: struct {
+			R map[string]interface{} `json:"resize"`
+		}{
 			map[string]interface{}{"flavorRef": flavorRef},
 		},
 		MoreHeaders: h,
-		OkCodes: []int{202},
+		OkCodes:     []int{202},
 	})
 	return err
 }
@@ -295,9 +303,9 @@ func ConfirmResize(c *Client, id string) error {
 	}
 
 	err = perigee.Post(c.getActionUrl(id), perigee.Options{
-		ReqBody: map[string]interface{}{"confirmResize": nil},
+		ReqBody:     map[string]interface{}{"confirmResize": nil},
 		MoreHeaders: h,
-		OkCodes: []int{204},
+		OkCodes:     []int{204},
 	})
 	return err
 }
@@ -311,9 +319,9 @@ func RevertResize(c *Client, id string) error {
 	}
 
 	err = perigee.Post(c.getActionUrl(id), perigee.Options{
-		ReqBody: map[string]interface{}{"revertResize": nil},
+		ReqBody:     map[string]interface{}{"revertResize": nil},
 		MoreHeaders: h,
-		OkCodes: []int{202},
+		OkCodes:     []int{202},
 	})
 	return err
 }
