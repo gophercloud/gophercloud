@@ -137,6 +137,7 @@ func getAuthCredentials(options AuthOptions) Auth {
 // I didn't need another one.
 func (c *Context) papersPlease(p Provider, options AuthOptions) (*Access, error) {
 	var access *Access
+	access = new(Access)
 
 	if (options.Username == "") || (options.Password == "" && options.ApiKey == "") {
 		return nil, ErrCredentials
