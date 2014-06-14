@@ -57,9 +57,11 @@ func ServersApi(acc AccessProvider, criteria ApiCriteria) (CloudServersProvider,
 // ActualResponseCode inspects a returned error, and discovers the actual response actual
 // response code that caused the error to be raised.
 func ActualResponseCode(e error) (int, error) {
-	err, ok := e.(*perigee.UnexpectedResponseCodeError)
-	if !ok {
-		return 0, ErrError
+	if err, typeOk := e.(*perigee.UnexpectedResponseCodeError); typeOk {
+		return err.Actual, nil
+	} else if err, typeOk := e.(*AuthError); typeOk{
+		return err.StatusCode, nil
 	}
-	return err.Actual, nil
+
+	return 0, ErrError
 }
