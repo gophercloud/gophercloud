@@ -69,6 +69,7 @@ func (gsp *genericServersProvider) ServerById(id string) (*Server, error) {
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
+			OkCodes: []int{200},
 		})
 	})
 	return s, err
@@ -458,6 +459,52 @@ func (gsp *genericServersProvider) DeleteSecurityGroupById(id int) error {
 	return err
 }
 
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) ListDefaultSGRules() ([]SGRule, error) {
+	var sgrs []SGRule
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/os-security-group-default-rules", gsp.endpoint)
+		return perigee.Get(ep, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct{Security_group_default_rules *[]SGRule}{&sgrs},
+		})
+	})
+	return sgrs, err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) CreateDefaultSGRule(r SGRule) (*SGRule, error) {
+	var sgr *SGRule
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/os-security-group-default-rules", gsp.endpoint)
+		return perigee.Post(ep, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct{Security_group_default_rule **SGRule}{&sgr},
+			ReqBody: struct{Security_group_default_rule SGRule `json:"security_group_default_rule"`}{r},
+		})
+	})
+	return sgr, err
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) GetSGRule(id string) (*SGRule, error) {
+	var sgr *SGRule
+	err := gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/os-security-group-default-rules/%s", gsp.endpoint, id)
+		return perigee.Get(ep, perigee.Options{
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			Results: &struct{Security_group_default_rule **SGRule}{&sgr},
+		})
+	})
+	return sgr, err
+}
+
 // SecurityGroup provides a description of a security group, including all its rules.
 type SecurityGroup struct {
 	Description string   `json:"description,omitempty"`
@@ -658,17 +705,20 @@ type NewServerSettings struct {
 // Any Links provided are used to refer to the server specifically by URL.
 // These links are useful for making additional REST calls not explicitly supported by Gorax.
 type NewServer struct {
-	Name            string            `json:"name,omitempty"`
-	ImageRef        string            `json:"imageRef,omitempty"`
-	FlavorRef       string            `json:"flavorRef,omitempty"`
-	Metadata        map[string]string `json:"metadata,omitempty"`
-	Personality     []FileConfig      `json:"personality,omitempty"`
-	Networks        []NetworkConfig   `json:"networks,omitempty"`
-	AdminPass       string            `json:"adminPass,omitempty"`
-	KeyPairName     string            `json:"key_name,omitempty"`
-	Id              string            `json:"id,omitempty"`
-	Links           []Link            `json:"links,omitempty"`
-	OsDcfDiskConfig string            `json:"OS-DCF:diskConfig,omitempty"`
+	Name            string                   `json:"name,omitempty"`
+	ImageRef        string                   `json:"imageRef,omitempty"`
+	FlavorRef       string                   `json:"flavorRef,omitempty"`
+	Metadata        map[string]string        `json:"metadata,omitempty"`
+	Personality     []FileConfig             `json:"personality,omitempty"`
+	Networks        []NetworkConfig          `json:"networks,omitempty"`
+	AdminPass       string                   `json:"adminPass,omitempty"`
+	KeyPairName     string                   `json:"key_name,omitempty"`
+	Id              string                   `json:"id,omitempty"`
+	Links           []Link                   `json:"links,omitempty"`
+	OsDcfDiskConfig string                   `json:"OS-DCF:diskConfig,omitempty"`
+	SecurityGroup   []map[string]interface{} `json:"security_groups,omitempty"`
+	ConfigDrive     bool                     `json:"config_drive"`
+	UserData        string                   `json:"user_data"`
 }
 
 // ResizeRequest structures are used internally to encode to JSON the parameters required to resize a server instance.

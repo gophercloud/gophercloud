@@ -6,6 +6,7 @@ import (
 
 //The default generic openstack api
 var OpenstackApi = map[string]interface{}{
+        "Name":      "nova",
 	"UrlChoice": PublicURL,
 }
 

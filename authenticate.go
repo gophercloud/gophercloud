@@ -1,6 +1,7 @@
 package gophercloud
 
 import (
+	"fmt"
 	"github.com/racker/perigee"
 )
 
@@ -108,6 +109,20 @@ type EntryEndpoint struct {
 	VersionId, VersionInfo, VersionList string
 }
 
+type AuthError struct {
+	StatusCode int
+}
+
+func (ae *AuthError) Error() string {
+	switch ae.StatusCode {
+	case 401:
+		return "Auth failed. Bad credentials."
+
+	default:
+		return fmt.Sprintf("Auth failed. Status code is: %s.", ae.StatusCode)
+	}
+}
+
 //
 func getAuthCredentials(options AuthOptions) Auth {
 	if options.ApiKey == "" {
@@ -137,12 +152,13 @@ func getAuthCredentials(options AuthOptions) Auth {
 // I didn't need another one.
 func (c *Context) papersPlease(p Provider, options AuthOptions) (*Access, error) {
 	var access *Access
+	access = new(Access)
 
 	if (options.Username == "") || (options.Password == "" && options.ApiKey == "") {
 		return nil, ErrCredentials
 	}
 
-	err := perigee.Post(p.AuthEndpoint, perigee.Options{
+	resp, err := perigee.Request("POST", p.AuthEndpoint, perigee.Options{
 		CustomClient: c.httpClient,
 		ReqBody: &AuthContainer{
 			Auth: getAuthCredentials(options),
@@ -153,11 +169,21 @@ func (c *Context) papersPlease(p Provider, options AuthOptions) (*Access, error)
 			&access,
 		},
 	})
+
 	if err == nil {
-		access.options = options
-		access.provider = p
-		access.context = c
+		switch resp.StatusCode {
+		case 200:
+			access.options = options
+			access.provider = p
+			access.context = c
+
+		default:
+			err = &AuthError {
+				StatusCode: resp.StatusCode,
+			}
+		}
 	}
+
 	return access, err
 }
 
