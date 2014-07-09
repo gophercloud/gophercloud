@@ -5,9 +5,11 @@ package gophercloud
 
 import (
 	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/mitchellh/mapstructure"
 	"github.com/racker/perigee"
-	"strings"
 )
 
 // genericServersProvider structures provide the implementation for generic OpenStack-compatible
@@ -23,6 +25,23 @@ type genericServersProvider struct {
 	// access associates this API provider with a set of credentials,
 	// which may be automatically renewed if they near expiration.
 	access AccessProvider
+}
+
+// See the CloudServersProvider interface for details.
+func (gcp *genericServersProvider) ListServersByFilter(filter url.Values) ([]Server, error) {
+	var ss []Server
+
+	err := gcp.context.WithReauth(gcp.access, func() error {
+		url := gcp.endpoint + "/servers/detail?" + filter.Encode()
+		return perigee.Get(url, perigee.Options{
+			CustomClient: gcp.context.httpClient,
+			Results:      &struct{ Servers *[]Server }{&ss},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gcp.access.AuthToken(),
+			},
+		})
+	})
+	return ss, err
 }
 
 // See the CloudServersProvider interface for details.
@@ -496,7 +515,7 @@ func (gsp *genericServersProvider) ListDefaultSGRules() ([]SGRule, error) {
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
-			Results: &struct{Security_group_default_rules *[]SGRule}{&sgrs},
+			Results: &struct{ Security_group_default_rules *[]SGRule }{&sgrs},
 		})
 	})
 	return sgrs, err
@@ -511,8 +530,10 @@ func (gsp *genericServersProvider) CreateDefaultSGRule(r SGRule) (*SGRule, error
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
-			Results: &struct{Security_group_default_rule **SGRule}{&sgr},
-			ReqBody: struct{Security_group_default_rule SGRule `json:"security_group_default_rule"`}{r},
+			Results: &struct{ Security_group_default_rule **SGRule }{&sgr},
+			ReqBody: struct {
+				Security_group_default_rule SGRule `json:"security_group_default_rule"`
+			}{r},
 		})
 	})
 	return sgr, err
@@ -527,7 +548,7 @@ func (gsp *genericServersProvider) GetSGRule(id string) (*SGRule, error) {
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
-			Results: &struct{Security_group_default_rule **SGRule}{&sgr},
+			Results: &struct{ Security_group_default_rule **SGRule }{&sgr},
 		})
 	})
 	return sgr, err
