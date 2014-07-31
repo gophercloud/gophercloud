@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"github.com/rackspace/gophercloud/acceptance/tools"
 )
 
 var objectStorage = "object-store"
@@ -19,19 +20,19 @@ var numContainers = 2
 var numObjects = 2
 
 func TestAccount(t *testing.T) {
-	ts, err := setupForList(objectStorage)
+	ts, err := tools.SetupForList(objectStorage)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	region := os.Getenv("OS_REGION_NAME")
-	for _, ep := range ts.eps {
+	for _, ep := range ts.EPs {
 		if (region != "") && (region != ep.Region) {
 			continue
 		}
 
-		client := storage.NewClient(ep.PublicURL, ts.a, ts.o)
+		client := storage.NewClient(ep.PublicURL, ts.A, ts.O)
 
 		err := accounts.Update(client, accounts.UpdateOpts{
 			Metadata: metadata,
@@ -70,23 +71,23 @@ func TestAccount(t *testing.T) {
 }
 
 func TestContainers(t *testing.T) {
-	ts, err := setupForList(objectStorage)
+	ts, err := tools.SetupForList(objectStorage)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	region := os.Getenv("OS_REGION_NAME")
-	for _, ep := range ts.eps {
+	for _, ep := range ts.EPs {
 		if (region != "") && (region != ep.Region) {
 			continue
 		}
 
-		client := storage.NewClient(ep.PublicURL, ts.a, ts.o)
+		client := storage.NewClient(ep.PublicURL, ts.A, ts.O)
 
 		cNames := make([]string, numContainers)
 		for i := 0; i < numContainers; i++ {
-			cNames[i] = randomString("test-container-", 8)
+			cNames[i] = tools.RandomString("test-container-", 8)
 		}
 
 		for i := 0; i < len(cNames); i++ {
@@ -183,7 +184,7 @@ func TestContainers(t *testing.T) {
 }
 
 func TestObjects(t *testing.T) {
-	ts, err := setupForList(objectStorage)
+	ts, err := tools.SetupForList(objectStorage)
 	if err != nil {
 		t.Error(err)
 		return
@@ -191,19 +192,19 @@ func TestObjects(t *testing.T) {
 
 	region := os.Getenv("OS_REGION_NAME")
 
-	for _, ep := range ts.eps {
+	for _, ep := range ts.EPs {
 		if (region != "") && (region != ep.Region) {
 			continue
 		}
 
-		client := storage.NewClient(ep.PublicURL, ts.a, ts.o)
+		client := storage.NewClient(ep.PublicURL, ts.A, ts.O)
 
 		oNames := make([]string, numObjects)
 		for i := 0; i < len(oNames); i++ {
-			oNames[i] = randomString("test-object-", 8)
+			oNames[i] = tools.RandomString("test-object-", 8)
 		}
 
-		cName := randomString("test-container-", 8)
+		cName := tools.RandomString("test-container-", 8)
 		_, err := containers.Create(client, containers.CreateOpts{
 			Name: cName,
 		})
@@ -223,7 +224,7 @@ func TestObjects(t *testing.T) {
 
 		oContents := make([]*bytes.Buffer, numObjects)
 		for i := 0; i < numObjects; i++ {
-			oContents[i] = bytes.NewBuffer([]byte(randomString("", 10)))
+			oContents[i] = bytes.NewBuffer([]byte(tools.RandomString("", 10)))
 			err = objects.Create(client, objects.CreateOpts{
 				Container: cName,
 				Name:      oNames[i],
