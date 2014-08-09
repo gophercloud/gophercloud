@@ -1,6 +1,7 @@
 package identity
 
 import (
+	"fmt"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -63,11 +64,21 @@ func extensionIndexByAlias(records []interface{}, alias string) (int, error) {
 }
 
 func extensions(er ExtensionsResult) ([]interface{}, error) {
-	e, ok := er["extensions"]
+	ei, ok := er["extensions"]
+	fmt.Printf("%+v\n\n", ei)
 	if !ok {
 		return nil, ErrNotImplemented
 	}
-	return e.([]interface{}), nil
+	e := ei.(map[string]interface{})
+	//e := ei.([]interface{})
+	vi, ok := e["values"]
+	fmt.Printf("%+v\n\n", e)
+	if !ok {
+		return nil, ErrNotImplemented
+	}
+	v := vi.([]interface{})
+	return v, nil
+	//return e, nil
 }
 
 // Aliases returns the set of extension handles, or "aliases" as OpenStack calls them.
