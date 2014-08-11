@@ -15,7 +15,7 @@ func TestIsExtensionAvailable(t *testing.T) {
 	}
 
 	e := ExtensionsResult(getExtensionsResults)
-	for _, alias := range []string{"RS-RPE", "RS-META"} {
+	for _, alias := range []string{"OS-KSADM", "OS-FEDERATION"} {
 		if !e.IsExtensionAvailable(alias) {
 			t.Errorf("Expected extension %s present.", alias)
 			return
@@ -37,7 +37,7 @@ func TestGetExtensionDetails(t *testing.T) {
 	}
 
 	e := ExtensionsResult(getExtensionsResults)
-	ed, err := e.ExtensionDetailsByAlias("RS-META")
+	ed, err := e.ExtensionDetailsByAlias("OS-KSADM")
 	if err != nil {
 		t.Error(err)
 		return
@@ -51,10 +51,10 @@ func TestGetExtensionDetails(t *testing.T) {
 	}
 
 	expecteds := map[string]string{
-		"name":        "User Metadata Extension",
-		"namespace":   "http://docs.rackspacecloud.com/identity/api/ext/meta/v2.0",
-		"updated":     "2011-01-12T11:22:33-06:00",
-		"description": "Allows associating arbritrary metadata with a user.",
+		"name":        "OpenStack Keystone Admin",
+		"namespace":   "http://docs.openstack.org/identity/api/ext/OS-KSADM/v1.0",
+		"updated":     "2013-07-11T17:14:00-00:00",
+		"description": "OpenStack extensions to Keystone v2.0 API enabling Administrative Operations.",
 	}
 
 	for k, v := range expecteds {
@@ -74,7 +74,7 @@ func TestMalformedResponses(t *testing.T) {
 	}
 	e := ExtensionsResult(getExtensionsResults)
 
-	_, err = e.ExtensionDetailsByAlias("RS-META")
+	_, err = e.ExtensionDetailsByAlias("OS-KSADM")
 	if err == nil {
 		t.Error("Expected ErrNotImplemented at least")
 		return
@@ -104,7 +104,8 @@ func TestAliases(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	if len(aliases) != len(e) {
+	extensions := (((e["extensions"]).(map[string]interface{}))["values"]).([]interface{})
+	if len(aliases) != len(extensions) {
 		t.Error("Expected one alias name per extension")
 		return
 	}
