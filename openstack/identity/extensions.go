@@ -63,11 +63,17 @@ func extensionIndexByAlias(records []interface{}, alias string) (int, error) {
 }
 
 func extensions(er ExtensionsResult) ([]interface{}, error) {
-	e, ok := er["extensions"]
+	ei, ok := er["extensions"]
 	if !ok {
 		return nil, ErrNotImplemented
 	}
-	return e.([]interface{}), nil
+	e := ei.(map[string]interface{})
+	vi, ok := e["values"]
+	if !ok {
+		return nil, ErrNotImplemented
+	}
+	v := vi.([]interface{})
+	return v, nil
 }
 
 // Aliases returns the set of extension handles, or "aliases" as OpenStack calls them.
