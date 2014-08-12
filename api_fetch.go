@@ -1,6 +1,7 @@
 package gophercloud
 
 import(
+ "fmt"
  "github.com/mitchellh/mapstructure"
 )
 
@@ -33,6 +34,11 @@ func PopulateApi(variant string) (ApiCriteria, error){
 
 	case "rackspace": 
 		variantMap = RackspaceApi
+
+	default:
+		var err = fmt.Errorf(
+			"PopulateApi: Unknown variant %# v; legal values: \"openstack\", \"rackspace\"", variant)
+		return Api, err
 	}
 
 	err := mapstructure.Decode(variantMap,&Api)
