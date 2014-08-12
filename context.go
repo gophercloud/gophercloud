@@ -3,6 +3,7 @@ package gophercloud
 import (
 	"net/http"
 	"strings"
+	"fmt"
 )
 
 // Provider structures exist for each tangible provider of OpenStack service.
@@ -110,7 +111,10 @@ func (c *Context) ProviderByName(name string) (p Provider, err error) {
 func (c *Context) ServersApi(acc AccessProvider, criteria ApiCriteria) (CloudServersProvider, error) {
 	url := acc.FirstEndpointUrlByCriteria(criteria)
 	if url == "" {
-		return nil, ErrEndpoint
+		var err = fmt.Errorf(
+			"Missing endpoint, or insufficient privileges to access endpoint; criteria = %# v",
+			criteria)
+		return nil, err
 	}
 
 	gcp := &genericServersProvider{
