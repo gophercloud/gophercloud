@@ -47,6 +47,7 @@ func (gsp *genericServersProvider) CreateKeyPair(nkp NewKeyPair) (KeyPair, error
 			MoreHeaders: map[string]string{
 				"X-Auth-Token": gsp.access.AuthToken(),
 			},
+			OkCodes: []int{200},
 		})
 	})
 	return kp, err
