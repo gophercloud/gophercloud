@@ -29,7 +29,9 @@ If you're interested in tracking progress, note that features for version 0.2.0 
 
 === How can I Contribute?
 
-After using Gophercloud for a while, you might find that it lacks some useful feature, or that existing behavior seems buggy.  We welcome contributions from our users for both missing functionality as well as for bug fixes.  We encourage contributors to collaborate with the link:http://gophercloud.io/community.html[Gophercloud community.]
+After using Gophercloud for a while, you might find that it lacks some useful feature, or that existing behavior seems buggy.  We welcome contributions
+from our users for both missing functionality as well as for bug fixes.  We encourage contributors to collaborate with the
+link:http://gophercloud.io/community.html[Gophercloud community.]
 
 Finally, Gophercloud maintains its own link:http://gophercloud.io[announcements and updates blog.]
 Feel free to check back now and again to see what's new.
