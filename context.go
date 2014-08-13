@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 	"fmt"
+	"github.com/tonnerre/golang-pretty"
 )
 
 // Provider structures exist for each tangible provider of OpenStack service.
@@ -107,20 +108,30 @@ func (c *Context) ProviderByName(name string) (p Provider, err error) {
 	return Provider{}, ErrProvider
 }
 
+func getServiceCatalogFromAccessProvider(provider AccessProvider) ([]CatalogEntry) {
+	access, found := provider.(*Access)
+	if found {
+		return access.ServiceCatalog
+	} else {
+		return nil
+	}
+}
+
 // Instantiates a Cloud Servers API for the provider given.
-func (c *Context) ServersApi(acc AccessProvider, criteria ApiCriteria) (CloudServersProvider, error) {
-	url := acc.FirstEndpointUrlByCriteria(criteria)
+func (c *Context) ServersApi(provider AccessProvider, criteria ApiCriteria) (CloudServersProvider, error) {
+	url := provider.FirstEndpointUrlByCriteria(criteria)
 	if url == "" {
 		var err = fmt.Errorf(
-			"Missing endpoint, or insufficient privileges to access endpoint; criteria = %# v",
-			criteria)
+			"Missing endpoint, or insufficient privileges to access endpoint; criteria = %# v; serviceCatalog = %# v",
+			pretty.Formatter(criteria),
+			pretty.Formatter(getServiceCatalogFromAccessProvider(provider)))
 		return nil, err
 	}
 
 	gcp := &genericServersProvider{
 		endpoint: url,
 		context:  c,
-		access:   acc,
+		access:   provider,
 	}
 
 	return gcp, nil
