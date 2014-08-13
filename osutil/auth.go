@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/rackspace/gophercloud"
 	"os"
+	"strings"
 )
 
 var (
@@ -53,6 +54,10 @@ func AuthOptions() (string, gophercloud.AuthOptions, error) {
 		Password:   password,
 		TenantId:   tenantId,
 		TenantName: tenantName,
+	}
+
+	if !strings.HasSuffix(provider, "/tokens") {
+		provider += "/tokens"
 	}
 
 	return provider, ao, nil
