@@ -1,8 +1,8 @@
 package objects
 
 import (
-	"bytes"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"strings"
 )
@@ -29,7 +29,7 @@ type DownloadOpts struct {
 type CreateOpts struct {
 	Container string
 	Name      string
-	Content   *bytes.Buffer
+	Content   io.Reader
 	Metadata  map[string]string
 	Headers   map[string]string
 	Params    map[string]string
