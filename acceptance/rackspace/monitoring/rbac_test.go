@@ -4,11 +4,11 @@ package monitoring
 
 import (
 	"fmt"
-	"github.com/rackspace/gophercloud/openstack/identity"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/rackspace/monitoring"
 	"github.com/rackspace/gophercloud/rackspace/monitoring/notificationPlans"
-  "testing"
+	"testing"
 )
 
 func TestRBACPermissions(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"github.com/rackspace/gophercloud/openstack/compute/servers"
-	"github.com/rackspace/gophercloud/openstack/identity"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	"github.com/rackspace/gophercloud/openstack/utils"
 	"os"
 	"text/tabwriter"
@@ -16,21 +16,21 @@ import (
 var errTimeout = fmt.Errorf("Timeout.")
 
 type testState struct {
-	o             identity.AuthOptions
-	a             identity.AuthResults
-	sc            *identity.ServiceCatalog
-	eps           []identity.Endpoint
-	w             *tabwriter.Writer
-	imageId       string
-	flavorId      string
-	region        string
-	ep            string
-	client        *servers.Client
-	createdServer *servers.Server
-	gottenServer  *servers.Server
-	updatedServer *servers.Server
-	serverName    string
-	alternateName string
+	o              identity.AuthOptions
+	a              identity.AuthResults
+	sc             *identity.ServiceCatalog
+	eps            []identity.Endpoint
+	w              *tabwriter.Writer
+	imageId        string
+	flavorId       string
+	region         string
+	ep             string
+	client         *servers.Client
+	createdServer  *servers.Server
+	gottenServer   *servers.Server
+	updatedServer  *servers.Server
+	serverName     string
+	alternateName  string
 	flavorIdResize string
 }
 
@@ -240,48 +240,48 @@ func ChangeServerName(ts *testState) error {
 }
 
 func MakeNewPassword(oldPass string) string {
-	fmt.Println("Current password: "+oldPass)
+	fmt.Println("Current password: " + oldPass)
 	randomPassword := RandomString("", 16)
 	for randomPassword == oldPass {
 		randomPassword = RandomString("", 16)
 	}
-	fmt.Println("    New password: "+randomPassword)
+	fmt.Println("    New password: " + randomPassword)
 	return randomPassword
 }
 
 func ChangeAdminPassword(ts *testState) error {
 	randomPassword := MakeNewPassword(ts.createdServer.AdminPass)
-	
+
 	err := servers.ChangeAdminPassword(ts.client, ts.createdServer.Id, randomPassword)
 	if err != nil {
 		return err
 	}
-	
+
 	err = WaitForStatus(ts, "PASSWORD")
 	if err != nil {
 		return err
 	}
-	
+
 	return WaitForStatus(ts, "ACTIVE")
 }
 
 func RebootServer(ts *testState) error {
-	fmt.Println("Attempting reboot of server "+ts.createdServer.Id)
+	fmt.Println("Attempting reboot of server " + ts.createdServer.Id)
 	err := servers.Reboot(ts.client, ts.createdServer.Id, servers.OSReboot)
 	if err != nil {
 		return err
 	}
-	
+
 	err = WaitForStatus(ts, "REBOOT")
 	if err != nil {
 		return err
 	}
-	
+
 	return WaitForStatus(ts, "ACTIVE")
 }
 
 func RebuildServer(ts *testState) error {
-	fmt.Println("Attempting to rebuild server "+ts.createdServer.Id)
+	fmt.Println("Attempting to rebuild server " + ts.createdServer.Id)
 
 	newPassword := MakeNewPassword(ts.createdServer.AdminPass)
 	newName := RandomString("ACPTTEST", 16)
@@ -289,7 +289,7 @@ func RebuildServer(ts *testState) error {
 	if err != nil {
 		return err
 	}
-	
+
 	s, err := servers.GetServer(sr)
 	if err != nil {
 		return err
@@ -302,12 +302,12 @@ func RebuildServer(ts *testState) error {
 	if err != nil {
 		return err
 	}
-	
+
 	return WaitForStatus(ts, "ACTIVE")
 }
 
 func ResizeServer(ts *testState) error {
-	fmt.Println("Attempting to resize server "+ts.createdServer.Id)
+	fmt.Println("Attempting to resize server " + ts.createdServer.Id)
 
 	err := servers.Resize(ts.client, ts.createdServer.Id, ts.flavorIdResize)
 	if err != nil {
@@ -323,19 +323,19 @@ func ResizeServer(ts *testState) error {
 }
 
 func ConfirmResize(ts *testState) error {
-	fmt.Println("Attempting to confirm resize for server "+ts.createdServer.Id)
-	
+	fmt.Println("Attempting to confirm resize for server " + ts.createdServer.Id)
+
 	err := servers.ConfirmResize(ts.client, ts.createdServer.Id)
 	if err != nil {
 		return err
 	}
-	
+
 	return WaitForStatus(ts, "ACTIVE")
 }
 
 func RevertResize(ts *testState) error {
-	fmt.Println("Attempting to revert resize for server "+ts.createdServer.Id)
-	
+	fmt.Println("Attempting to revert resize for server " + ts.createdServer.Id)
+
 	err := servers.RevertResize(ts.client, ts.createdServer.Id)
 	if err != nil {
 		return err

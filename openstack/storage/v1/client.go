@@ -2,7 +2,7 @@ package v1
 
 import (
 	"fmt"
-	"github.com/rackspace/gophercloud/openstack/identity"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 )
 
 // Client is a structure that contains information for communicating with a provider.

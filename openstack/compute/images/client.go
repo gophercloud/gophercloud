@@ -1,7 +1,7 @@
 package images
 
 import (
-	"github.com/rackspace/gophercloud/openstack/identity"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 )
 
 type Client struct {

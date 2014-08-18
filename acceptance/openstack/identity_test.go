@@ -4,7 +4,7 @@ package openstack
 
 import (
 	"fmt"
-	"github.com/rackspace/gophercloud/openstack/identity"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	"github.com/rackspace/gophercloud/openstack/utils"
 	"os"
 	"testing"
