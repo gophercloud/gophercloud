@@ -25,7 +25,7 @@ func newClient() (*storage.Client, error) {
 		return nil, err
 	}
 
-	client, err := ao.NewClient(identity.ClientOpts{
+	client, err := ao.NewClient(identity.EndpointOpts{
 		Type: "object-store",
 	})
 	if err != nil {

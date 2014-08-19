@@ -14,8 +14,8 @@ type Client struct {
 	Options AuthOptions
 }
 
-// ClientOpts contains options for creating a generic Openstack Client.
-type ClientOpts struct {
+// EndpointOpts contains options for finding an endpoint for an Openstack Client.
+type EndpointOpts struct {
 	// Type is the service type for the client (e.g., "compute", "object-store").
 	// Type is a required field.
 	Type string
@@ -36,12 +36,12 @@ type ClientOpts struct {
 // to create a client for the various Openstack services.
 // Example (error checking omitted for brevity):
 //		ao, err := utils.AuthOptions()
-//		c, err := ao.NewClient(identity.ClientOpts{
+//		c, err := ao.NewClient(identity.EndpointOpts{
 //			Type: "compute",
 //			Name: "nova",
 //		})
 //		serversClient := servers.NewClient(c.Endpoint, c.Authority, c.Options)
-func (ao AuthOptions) NewClient(opts ClientOpts) (Client, error) {
+func (ao AuthOptions) NewClient(opts EndpointOpts) (Client, error) {
 	client := Client{
 		Options: ao,
 	}
