@@ -1,9 +1,5 @@
 package identity
 
-import (
-	"os"
-)
-
 // Client contains information that defines a generic Openstack Client.
 type Client struct {
 	// Endpoint is the URL against which to authenticate.
@@ -24,8 +20,6 @@ type EndpointOpts struct {
 	// same Type but different Name, which is one example of when both Type and Name are needed.
 	Name string
 	// Region is the region in which the service resides.
-	// Region is not a required field. If Region is not set, then the OS_REGION_NAME enviroment
-	// variable is used.
 	Region string
 	// URLType is they type of endpoint to be returned (e.g., "public", "private").
 	// URLType is not required, and defaults to "public".
@@ -79,14 +73,9 @@ func (ao AuthOptions) NewClient(opts EndpointOpts) (Client, error) {
 		}
 	}
 
-	region := os.Getenv("OS_REGION_NAME")
-	if opts.Region != "" {
-		region = opts.Region
-	}
-
 	var rep string
 	for _, ep := range eps {
-		if ep.Region == region {
+		if ep.Region == opts.Region {
 			switch opts.URLType {
 			case "public":
 				rep = ep.PublicURL

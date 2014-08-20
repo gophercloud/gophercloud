@@ -11,6 +11,7 @@ import (
 	"github.com/rackspace/gophercloud/openstack/storage/v1/containers"
 	"github.com/rackspace/gophercloud/openstack/storage/v1/objects"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"os"
 	"strings"
 	"testing"
 )
@@ -26,7 +27,8 @@ func newClient() (*storage.Client, error) {
 	}
 
 	client, err := ao.NewClient(identity.EndpointOpts{
-		Type: "object-store",
+		Region: os.Getenv("OS_REGION_NAME"),
+		Type:   "object-store",
 	})
 	if err != nil {
 		return nil, err
