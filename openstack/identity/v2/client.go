@@ -1,5 +1,9 @@
 package identity
 
+import (
+	"fmt"
+)
+
 // Client contains information that defines a generic Openstack Client.
 type Client struct {
 	// Endpoint is the URL against which to authenticate.
@@ -87,7 +91,11 @@ func (ao AuthOptions) NewClient(opts EndpointOpts) (Client, error) {
 		}
 	}
 
-	client.Endpoint = rep
+	if rep != "" {
+		client.Endpoint = rep
+	} else {
+		return client, fmt.Errorf("No endpoint for given service type (%s) name (%s) and region (%s)", opts.Type, opts.Name, opts.Region)
+	}
 
 	return client, nil
 }
