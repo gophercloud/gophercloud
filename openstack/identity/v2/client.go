@@ -34,12 +34,12 @@ type EndpointOpts struct {
 // to create a client for the various Openstack services.
 // Example (error checking omitted for brevity):
 //		ao, err := utils.AuthOptions()
-//		c, err := ao.NewClient(identity.EndpointOpts{
+//		c, err := identity.NewClient(ao, identity.EndpointOpts{
 //			Type: "compute",
 //			Name: "nova",
 //		})
 //		serversClient := servers.NewClient(c.Endpoint, c.Authority, c.Options)
-func (ao AuthOptions) NewClient(opts EndpointOpts) (Client, error) {
+func NewClient(ao AuthOptions, eo EndpointOpts) (Client, error) {
 	client := Client{
 		Options: ao,
 	}
@@ -63,15 +63,15 @@ func (ao AuthOptions) NewClient(opts EndpointOpts) (Client, error) {
 
 	var eps []Endpoint
 
-	if opts.Name != "" {
+	if eo.Name != "" {
 		for _, ce := range ces {
-			if ce.Type == opts.Type && ce.Name == opts.Name {
+			if ce.Type == eo.Type && ce.Name == eo.Name {
 				eps = ce.Endpoints
 			}
 		}
 	} else {
 		for _, ce := range ces {
-			if ce.Type == opts.Type {
+			if ce.Type == eo.Type {
 				eps = ce.Endpoints
 			}
 		}
@@ -79,8 +79,8 @@ func (ao AuthOptions) NewClient(opts EndpointOpts) (Client, error) {
 
 	var rep string
 	for _, ep := range eps {
-		if ep.Region == opts.Region {
-			switch opts.URLType {
+		if ep.Region == eo.Region {
+			switch eo.URLType {
 			case "public":
 				rep = ep.PublicURL
 			case "private":
@@ -94,7 +94,7 @@ func (ao AuthOptions) NewClient(opts EndpointOpts) (Client, error) {
 	if rep != "" {
 		client.Endpoint = rep
 	} else {
-		return client, fmt.Errorf("No endpoint for given service type (%s) name (%s) and region (%s)", opts.Type, opts.Name, opts.Region)
+		return client, fmt.Errorf("No endpoint for given service type (%s) name (%s) and region (%s)", eo.Type, eo.Name, eo.Region)
 	}
 
 	return client, nil
