@@ -5,7 +5,6 @@ package openstack
 import (
 	"bytes"
 	"github.com/rackspace/gophercloud/acceptance/tools"
-	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	storage "github.com/rackspace/gophercloud/openstack/storage/v1"
 	"github.com/rackspace/gophercloud/openstack/storage/v1/accounts"
 	"github.com/rackspace/gophercloud/openstack/storage/v1/containers"
@@ -26,7 +25,7 @@ func newClient() (*storage.Client, error) {
 		return nil, err
 	}
 
-	client, err := ao.NewClient(identity.EndpointOpts{
+	client, err := utils.NewClient(ao, utils.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 		Type:   "object-store",
 	})
