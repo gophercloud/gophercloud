@@ -85,7 +85,7 @@ func Create(c *storage.Client, opts CreateOpts) error {
 
 	content := opts.Content
 	if content != nil {
-		reqBody = make([]byte, content.Len())
+		reqBody = make([]byte, 0)
 		_, err = content.Read(reqBody)
 		if err != nil {
 			return err
