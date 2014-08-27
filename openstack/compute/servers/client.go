@@ -2,7 +2,7 @@ package servers
 
 import (
 	"fmt"
-	"github.com/rackspace/gophercloud/openstack/identity"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 )
 
 // Client abstracts the connection information needed to make API requests for OpenStack compute endpoints.

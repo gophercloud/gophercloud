@@ -3,7 +3,7 @@ package utils
 
 import (
 	"fmt"
-	"github.com/rackspace/gophercloud/openstack/identity"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	"os"
 )
 

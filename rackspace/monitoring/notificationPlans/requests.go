@@ -3,7 +3,7 @@ package notificationPlans
 import (
 	"fmt"
 	"github.com/racker/perigee"
-	"github.com/rackspace/gophercloud/openstack/identity"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	"github.com/rackspace/gophercloud/rackspace/monitoring"
 )
 

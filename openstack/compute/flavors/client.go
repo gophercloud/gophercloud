@@ -2,8 +2,8 @@ package flavors
 
 import (
 	"fmt"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	"net/url"
-	"github.com/rackspace/gophercloud/openstack/identity"
 	"strconv"
 )
 
