@@ -7,5 +7,5 @@ package gophercloud
 type AuthResults interface {
 
 	// Retrieve the authentication token's value from the authentication response.
-	GetTokenID() (string, error)
+	TokenID() (string, error)
 }
