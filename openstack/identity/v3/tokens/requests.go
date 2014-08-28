@@ -30,7 +30,7 @@ func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults
 		ID       *string    `json:"id,omitempty"`
 		Name     *string    `json:"name,omitempty"`
 		Password string     `json:"password"`
-		Domain   *domainReq `json:"domain"`
+		Domain   *domainReq `json:"domain,omitempty"`
 	}
 
 	type passwordReq struct {
@@ -43,7 +43,7 @@ func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults
 
 	type identityReq struct {
 		Methods  []string     `json:"methods"`
-		Password *passwordReq `json:"token,omitempty"`
+		Password *passwordReq `json:"password,omitempty"`
 		Token    *tokenReq    `json:"token,omitempty"`
 	}
 
@@ -54,7 +54,7 @@ func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults
 
 	type authReq struct {
 		Identity identityReq `json:"identity"`
-		Scope    *scopeReq   `json:"scope"`
+		Scope    *scopeReq   `json:"scope,omitempty"`
 	}
 
 	type request struct {
@@ -162,7 +162,7 @@ func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults
 
 			// Configure the request for UserID and Password authentication.
 			req.Auth.Identity.Password = &passwordReq{
-				User: userReq{ID: &ao.UserID},
+				User: userReq{ID: &ao.UserID, Password: ao.Password},
 			}
 		}
 	}
