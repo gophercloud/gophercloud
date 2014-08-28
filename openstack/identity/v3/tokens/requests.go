@@ -3,7 +3,6 @@ package tokens
 import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	identity "github.com/rackspace/gophercloud/openstack/identity/v3"
 )
 
 // Scope allows a created token to be limited to a specific domain or project.
@@ -14,8 +13,8 @@ type Scope struct {
 	DomainName  string
 }
 
-// Create authenticates and generates a new token.
-func Create(c *identity.Client, ao gophercloud.AuthOptions, scope *Scope) (gophercloud.AuthResults, error) {
+// Create authenticates and either generates a new token, or changes the Scope of an existing token.
+func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults, error) {
 	type domainReq struct {
 		ID   *string `json:"id,omitempty"`
 		Name *string `json:"id,omitempty"`
@@ -61,6 +60,8 @@ func Create(c *identity.Client, ao gophercloud.AuthOptions, scope *Scope) (gophe
 	type request struct {
 		Auth authReq `json:"auth"`
 	}
+
+	ao := c.Options
 
 	// Populate the request structure based on the provided arguments. Create and return an error
 	// if insufficient or incompatible information is present.

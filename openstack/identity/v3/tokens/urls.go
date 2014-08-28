@@ -1,7 +1,7 @@
 package tokens
 
-import identity "github.com/rackspace/gophercloud/openstack/identity/v3"
+import "github.com/rackspace/gophercloud"
 
-func getTokenURL(c *identity.Client) string {
+func getTokenURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("auth", "tokens")
 }
