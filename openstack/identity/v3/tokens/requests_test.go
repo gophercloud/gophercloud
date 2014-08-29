@@ -9,38 +9,63 @@ import (
 	"github.com/rackspace/gophercloud/testhelper"
 )
 
-func TestCreateUserIDAndPassword(t *testing.T) {
+// authTokenPost verifies that providing certain AuthOptions and Scope results in an expected JSON structure.
+func authTokenPost(t *testing.T, options gophercloud.AuthOptions, scope *Scope, requestJSON string) {
 	setup()
 	defer teardown()
 
 	client := gophercloud.ServiceClient{
 		Endpoint: endpoint(),
-		Options:  gophercloud.AuthOptions{UserID: "me", Password: "squirrel!"},
+		Options:  options,
 	}
 
 	mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "POST")
 		testhelper.TestHeader(t, r, "Content-Type", "application/json")
 		testhelper.TestHeader(t, r, "Accept", "application/json")
-
-		testhelper.TestJSONRequest(t, r, `
-			{
-				"auth": {
-					"identity": {
-						"methods": ["password"],
-						"password": {
-							"user": { "id": "me", "password": "squirrel!" }
-						}
-					}
-				}
-			}
-		`)
+		testhelper.TestJSONRequest(t, r, requestJSON)
 
 		fmt.Fprintf(w, `{}`)
 	})
 
-	_, err := Create(&client, nil)
+	_, err := Create(&client, scope)
 	if err != nil {
 		t.Errorf("Create returned an error: %v", err)
 	}
+}
+
+func TestCreateUserIDAndPassword(t *testing.T) {
+	authTokenPost(t, gophercloud.AuthOptions{UserID: "me", Password: "squirrel!"}, nil, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["password"],
+					"password": {
+						"user": { "id": "me", "password": "squirrel!" }
+					}
+				}
+			}
+		}
+	`)
+}
+
+func TestCreateUsernameDomainIDPassword(t *testing.T) {
+	authTokenPost(t, gophercloud.AuthOptions{Username: "fakey", Password: "notpassword", DomainID: "abc123"}, nil, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["password"],
+					"password": {
+						"user": {
+							"domain": {
+								"id": "abc123"
+							},
+							"name": "fakey",
+							"password": "notpassword"
+						}
+					}
+				}
+			}
+		}
+	`)
 }

@@ -17,7 +17,7 @@ type Scope struct {
 func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults, error) {
 	type domainReq struct {
 		ID   *string `json:"id,omitempty"`
-		Name *string `json:"id,omitempty"`
+		Name *string `json:"name,omitempty"`
 	}
 
 	type projectReq struct {
