@@ -106,3 +106,109 @@ func TestCreateTokenID(t *testing.T) {
 		}
 	`)
 }
+
+func TestCreateProjectIDScope(t *testing.T) {
+	options := gophercloud.AuthOptions{UserID: "fenris", Password: "g0t0h311"}
+	scope := &Scope{ProjectID: "123456"}
+	authTokenPost(t, options, scope, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["password"],
+					"password": {
+						"user": {
+							"id": "fenris",
+							"password": "g0t0h311"
+						}
+					}
+				},
+				"scope": {
+					"project": {
+						"id": "123456"
+					}
+				}
+			}
+		}
+	`)
+}
+
+func TestCreateDomainIDScope(t *testing.T) {
+	options := gophercloud.AuthOptions{UserID: "fenris", Password: "g0t0h311"}
+	scope := &Scope{DomainID: "1000"}
+	authTokenPost(t, options, scope, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["password"],
+					"password": {
+						"user": {
+							"id": "fenris",
+							"password": "g0t0h311"
+						}
+					}
+				},
+				"scope": {
+					"domain": {
+						"id": "1000"
+					}
+				}
+			}
+		}
+	`)
+}
+
+func TestCreateProjectNameAndDomainIDScope(t *testing.T) {
+	options := gophercloud.AuthOptions{UserID: "fenris", Password: "g0t0h311"}
+	scope := &Scope{ProjectName: "world-domination", DomainID: "1000"}
+	authTokenPost(t, options, scope, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["password"],
+					"password": {
+						"user": {
+							"id": "fenris",
+							"password": "g0t0h311"
+						}
+					}
+				},
+				"scope": {
+					"project": {
+						"domain": {
+							"id": "1000"
+						},
+						"name": "world-domination"
+					}
+				}
+			}
+		}
+	`)
+}
+
+func TestCreateProjectNameAndDomainNameScope(t *testing.T) {
+	options := gophercloud.AuthOptions{UserID: "fenris", Password: "g0t0h311"}
+	scope := &Scope{ProjectName: "world-domination", DomainName: "evil-plans"}
+	authTokenPost(t, options, scope, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["password"],
+					"password": {
+						"user": {
+							"id": "fenris",
+							"password": "g0t0h311"
+						}
+					}
+				},
+				"scope": {
+					"project": {
+						"domain": {
+							"name": "evil-plans"
+						},
+						"name": "world-domination"
+					}
+				}
+			}
+		}
+	`)
+}
