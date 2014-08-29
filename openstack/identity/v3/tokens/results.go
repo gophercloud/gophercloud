@@ -1,5 +1,14 @@
 package tokens
 
+import (
+	"time"
+
+	"github.com/mitchellh/mapstructure"
+)
+
+// RFC3339Milli describes the time format used by identity API responses.
+const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
+
 // TokenCreateResult contains the document structure returned from a Create call.
 type TokenCreateResult struct {
 	response map[string]interface{}

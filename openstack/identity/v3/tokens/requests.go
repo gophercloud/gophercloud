@@ -13,6 +13,12 @@ type Scope struct {
 	DomainName  string
 }
 
+func subjectTokenHeaders(c *gophercloud.ServiceClient, subjectToken string) map[string]string {
+	h := c.AuthenticatedHeaders()
+	h["X-Subject-Token"] = subjectToken
+	return h
+}
+
 // Create authenticates and either generates a new token, or changes the Scope of an existing token.
 func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults, error) {
 	type domainReq struct {
@@ -242,4 +248,46 @@ func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults
 	result.tokenID = response.HttpResponse.Header.Get("X-Subject-Token")
 
 	return &result, nil
+}
+
+// Info validates and retrieves information about another token.
+func Info(c *gophercloud.ServiceClient, token string) (*TokenCreateResult, error) {
+	var result TokenCreateResult
+
+	response, err := perigee.Request("GET", getTokenURL(c), perigee.Options{
+		MoreHeaders: subjectTokenHeaders(c, token),
+		Results:     &result.response,
+		OkCodes:     []int{200, 203},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract the token ID from the response, if present.
+	result.tokenID = response.HttpResponse.Header.Get("X-Subject-Token")
+
+	return &result, nil
+}
+
+// Validate determines if a specified token is valid or not.
+func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
+	response, err := perigee.Request("HEAD", getTokenURL(c), perigee.Options{
+		MoreHeaders: subjectTokenHeaders(c, token),
+		OkCodes:     []int{204, 404},
+	})
+	if err != nil {
+		return false, err
+	}
+
+	return response.StatusCode == 204, nil
+}
+
+// Revoke immediately makes specified token invalid.
+func Revoke(c *gophercloud.ServiceClient, token string) error {
+	_, err := perigee.Request("DELETE", getTokenURL(c), perigee.Options{
+		MoreHeaders: subjectTokenHeaders(c, token),
+		OkCodes:     []int{204},
+	})
+	return err
 }

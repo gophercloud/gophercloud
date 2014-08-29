@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/testhelper"
@@ -384,4 +385,124 @@ func TestCreateFailureEmptyScope(t *testing.T) {
 	options := gophercloud.AuthOptions{UserID: "myself", Password: "swordfish"}
 	scope := &Scope{}
 	authTokenPostErr(t, options, scope, false, ErrScopeEmpty)
+}
+
+func TestInfoRequest(t *testing.T) {
+	setup()
+	defer teardown()
+
+	client := gophercloud.ServiceClient{
+		Endpoint: endpoint(),
+		TokenID:  "12345abcdef",
+	}
+
+	mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "Content-Type", "application/json")
+		testhelper.TestHeader(t, r, "Accept", "application/json")
+		testhelper.TestHeader(t, r, "X-Auth-Token", "12345abcdef")
+		testhelper.TestHeader(t, r, "X-Subject-Token", "abcdef12345")
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+			{ "token": { "expires_at": "2014-08-29T13:10:01.000000Z" } }
+		`)
+	})
+
+	result, err := Info(&client, "abcdef12345")
+	if err != nil {
+		t.Errorf("Info returned an error: %v", err)
+	}
+
+	expires, err := result.ExpiresAt()
+	if err != nil {
+		t.Errorf("Error extracting token expiration time: %v", err)
+	}
+
+	expected, _ := time.Parse(time.UnixDate, "Fri Aug 29 13:10:01 UTC 2014")
+	if expires != expected {
+		t.Errorf("Expected expiration time %s, but was %s", expected.Format(time.UnixDate), expires.Format(time.UnixDate))
+	}
+}
+
+func prepareAuthTokenHandler(t *testing.T, expectedMethod string, status int) gophercloud.ServiceClient {
+	client := gophercloud.ServiceClient{
+		Endpoint: endpoint(),
+		TokenID:  "12345abcdef",
+	}
+
+	mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, expectedMethod)
+		testhelper.TestHeader(t, r, "Content-Type", "application/json")
+		testhelper.TestHeader(t, r, "Accept", "application/json")
+		testhelper.TestHeader(t, r, "X-Auth-Token", "12345abcdef")
+		testhelper.TestHeader(t, r, "X-Subject-Token", "abcdef12345")
+
+		w.WriteHeader(status)
+	})
+
+	return client
+}
+
+func TestValidateRequestSuccessful(t *testing.T) {
+	setup()
+	defer teardown()
+	client := prepareAuthTokenHandler(t, "HEAD", http.StatusNoContent)
+
+	ok, err := Validate(&client, "abcdef12345")
+	if err != nil {
+		t.Errorf("Unexpected error from Validate: %v", err)
+	}
+
+	if !ok {
+		t.Errorf("Validate returned false for a valid token")
+	}
+}
+
+func TestValidateRequestFailure(t *testing.T) {
+	setup()
+	defer teardown()
+	client := prepareAuthTokenHandler(t, "HEAD", http.StatusNotFound)
+
+	ok, err := Validate(&client, "abcdef12345")
+	if err != nil {
+		t.Errorf("Unexpected error from Validate: %v", err)
+	}
+
+	if ok {
+		t.Errorf("Validate returned true for an invalid token")
+	}
+}
+
+func TestValidateRequestError(t *testing.T) {
+	setup()
+	defer teardown()
+	client := prepareAuthTokenHandler(t, "HEAD", http.StatusUnauthorized)
+
+	_, err := Validate(&client, "abcdef12345")
+	if err == nil {
+		t.Errorf("Missing expected error from Validate")
+	}
+}
+
+func TestRevokeRequestSuccessful(t *testing.T) {
+	setup()
+	defer teardown()
+	client := prepareAuthTokenHandler(t, "DELETE", http.StatusNoContent)
+
+	err := Revoke(&client, "abcdef12345")
+	if err != nil {
+		t.Errorf("Unexpected error from Revoke: %v", err)
+	}
+}
+
+func TestRevokeRequestError(t *testing.T) {
+	setup()
+	defer teardown()
+	client := prepareAuthTokenHandler(t, "DELETE", http.StatusNotFound)
+
+	err := Revoke(&client, "abcdef12345")
+	if err == nil {
+		t.Errorf("Missing expected error from Revoke")
+	}
 }
