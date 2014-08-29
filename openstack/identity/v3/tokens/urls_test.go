@@ -4,15 +4,16 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/testhelper"
 )
 
 func TestTokenURL(t *testing.T) {
-	setup()
-	defer teardown()
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
 
-	client := gophercloud.ServiceClient{Endpoint: endpoint()}
+	client := gophercloud.ServiceClient{Endpoint: testhelper.Endpoint()}
 
-	expected := endpoint() + "auth/tokens"
+	expected := testhelper.Endpoint() + "auth/tokens"
 	actual := getTokenURL(&client)
 	if actual != expected {
 		t.Errorf("Expected URL %s, but was %s", expected, actual)

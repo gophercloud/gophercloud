@@ -4,10 +4,35 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"reflect"
 	"testing"
 )
+
+var (
+	// Mux is a multiplexer that can be used to register handlers.
+	Mux *http.ServeMux
+
+	// Server is an in-memory HTTP server for testing.
+	Server *httptest.Server
+)
+
+// SetupHTTP prepares the Mux and Server.
+func SetupHTTP() {
+	Mux = http.NewServeMux()
+	Server = httptest.NewServer(Mux)
+}
+
+// TeardownHTTP releases HTTP-related resources.
+func TeardownHTTP() {
+	Server.Close()
+}
+
+// Endpoint returns a fake endpoint that will actually target the Mux.
+func Endpoint() string {
+	return Server.URL + "/"
+}
 
 // TestFormValues ensures that all the URL parameters given to the http.Request are the same as values.
 func TestFormValues(t *testing.T, r *http.Request, values map[string]string) {
