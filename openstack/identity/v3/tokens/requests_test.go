@@ -17,6 +17,7 @@ func authTokenPost(t *testing.T, options gophercloud.AuthOptions, scope *Scope, 
 	client := gophercloud.ServiceClient{
 		Endpoint: endpoint(),
 		Options:  options,
+		TokenID:  "12345abcdef",
 	}
 
 	mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
@@ -84,6 +85,21 @@ func TestCreateUsernameDomainNamePassword(t *testing.T) {
 							"name": "frank",
 							"password": "swordfish"
 						}
+					}
+				}
+			}
+		}
+	`)
+}
+
+func TestCreateTokenID(t *testing.T) {
+	authTokenPost(t, gophercloud.AuthOptions{}, nil, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["token"],
+					"token": {
+						"id": "12345abcdef"
 					}
 				}
 			}
