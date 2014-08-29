@@ -1,7 +1,5 @@
 package gophercloud
 
-import "strings"
-
 // ProviderClient stores details that are required to interact with any services within a specific provider's API.
 //
 // Generally, you acquire a ProviderClient by calling the `NewClient()` method in the appropriate provider's child package,
@@ -13,16 +11,11 @@ type ProviderClient struct {
 	// Options remembers the original authentication parameters, if reauthentication is enabled.
 	Options AuthOptions
 
-	// Endpoint is the base URL of the relevant API.
-	Endpoint string
+	// IdentityEndpoint is the base URL of the provider's identity endpoint.
+	IdentityEndpoint string
 
 	// TokenID is the most recently valid token issued.
 	TokenID string
-}
-
-// ServiceURL constructs a URL for a resource belonging to this client.
-func (client *ProviderClient) ServiceURL(parts ...string) string {
-	return client.Endpoint + strings.Join(parts, "/")
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all authenticated service

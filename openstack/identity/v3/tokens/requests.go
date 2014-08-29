@@ -13,14 +13,14 @@ type Scope struct {
 	DomainName  string
 }
 
-func subjectTokenHeaders(c *gophercloud.ProviderClient, subjectToken string) map[string]string {
+func subjectTokenHeaders(c *gophercloud.ServiceClient, subjectToken string) map[string]string {
 	h := c.AuthenticatedHeaders()
 	h["X-Subject-Token"] = subjectToken
 	return h
 }
 
 // Create authenticates and either generates a new token, or changes the Scope of an existing token.
-func Create(c *gophercloud.ProviderClient, scope *Scope) (gophercloud.AuthResults, error) {
+func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults, error) {
 	type domainReq struct {
 		ID   *string `json:"id,omitempty"`
 		Name *string `json:"name,omitempty"`
@@ -251,7 +251,7 @@ func Create(c *gophercloud.ProviderClient, scope *Scope) (gophercloud.AuthResult
 }
 
 // Info validates and retrieves information about another token.
-func Info(c *gophercloud.ProviderClient, token string) (*TokenCreateResult, error) {
+func Info(c *gophercloud.ServiceClient, token string) (*TokenCreateResult, error) {
 	var result TokenCreateResult
 
 	response, err := perigee.Request("GET", getTokenURL(c), perigee.Options{
@@ -271,7 +271,7 @@ func Info(c *gophercloud.ProviderClient, token string) (*TokenCreateResult, erro
 }
 
 // Validate determines if a specified token is valid or not.
-func Validate(c *gophercloud.ProviderClient, token string) (bool, error) {
+func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
 	response, err := perigee.Request("HEAD", getTokenURL(c), perigee.Options{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		OkCodes:     []int{204, 404},
@@ -284,7 +284,7 @@ func Validate(c *gophercloud.ProviderClient, token string) (bool, error) {
 }
 
 // Revoke immediately makes specified token invalid.
-func Revoke(c *gophercloud.ProviderClient, token string) error {
+func Revoke(c *gophercloud.ServiceClient, token string) error {
 	_, err := perigee.Request("DELETE", getTokenURL(c), perigee.Options{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		OkCodes:     []int{204},

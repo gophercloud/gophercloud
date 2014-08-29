@@ -6,7 +6,7 @@ import (
 )
 
 // Client provides access to service clients for this OpenStack cloud.
-type Client gophercloud.ServiceClient
+type Client gophercloud.ProviderClient
 
 // NewClient authenticates to an OpenStack cloud with the provided credentials.
 // It first queries the root identity endpoint to determine which versions of the identity service are supported, then chooses

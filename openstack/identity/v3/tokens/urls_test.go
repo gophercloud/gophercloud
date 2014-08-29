@@ -11,7 +11,7 @@ func TestTokenURL(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
-	client := gophercloud.ProviderClient{Endpoint: testhelper.Endpoint()}
+	client := gophercloud.ServiceClient{Endpoint: testhelper.Endpoint()}
 
 	expected := testhelper.Endpoint() + "auth/tokens"
 	actual := getTokenURL(&client)
