@@ -69,3 +69,24 @@ func TestCreateUsernameDomainIDPassword(t *testing.T) {
 		}
 	`)
 }
+
+func TestCreateUsernameDomainNamePassword(t *testing.T) {
+	authTokenPost(t, gophercloud.AuthOptions{Username: "frank", Password: "swordfish", DomainName: "spork.net"}, nil, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["password"],
+					"password": {
+						"user": {
+							"domain": {
+								"name": "spork.net"
+							},
+							"name": "frank",
+							"password": "swordfish"
+						}
+					}
+				}
+			}
+		}
+	`)
+}
