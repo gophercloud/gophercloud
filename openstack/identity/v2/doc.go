@@ -1,5 +1,5 @@
 /*
-Package v2 provides convenient OpenStack Identity V2 API client access.
+Package identity provides convenient OpenStack Identity V2 API client access.
 This package currently doesn't support the administrative access endpoints, but may appear in the future based on demand.
 
 Authentication
@@ -117,4 +117,4 @@ Once you have an alias to an extension, everything else about it may be queried 
 		}
 	}
 */
-package v2
+package identity
