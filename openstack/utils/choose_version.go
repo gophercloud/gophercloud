@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/racker/perigee"
 )
@@ -10,6 +11,12 @@ import (
 type Version struct {
 	ID       string
 	Priority int
+}
+
+var goodStatus = map[string]bool{
+	"current":   true,
+	"supported": true,
+	"stable":    true,
 }
 
 // ChooseVersion queries the base endpoint of a API to choose the most recent non-experimental alternative from a service's
@@ -54,7 +61,7 @@ func ChooseVersion(baseEndpoint string, recognized []*Version) (*Version, string
 	var endpoint string
 
 	for _, value := range resp.Versions.Values {
-		if matching, ok := byID[value.ID]; ok {
+		if matching, ok := byID[value.ID]; ok && goodStatus[strings.ToLower(value.Status)] {
 			if highest == nil || matching.Priority > highest.Priority {
 				highest = matching
 
