@@ -15,7 +15,7 @@ func authTokenPost(t *testing.T, options gophercloud.AuthOptions, scope *Scope, 
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
-	client := gophercloud.ServiceClient{
+	client := gophercloud.ProviderClient{
 		Endpoint: testhelper.Endpoint(),
 		Options:  options,
 		TokenID:  "12345abcdef",
@@ -41,7 +41,7 @@ func authTokenPostErr(t *testing.T, options gophercloud.AuthOptions, scope *Scop
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
-	client := gophercloud.ServiceClient{
+	client := gophercloud.ProviderClient{
 		Endpoint: testhelper.Endpoint(),
 		Options:  options,
 	}
@@ -240,7 +240,7 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
-	client := gophercloud.ServiceClient{
+	client := gophercloud.ProviderClient{
 		Endpoint: testhelper.Endpoint(),
 		Options:  gophercloud.AuthOptions{UserID: "me", Password: "shhh"},
 	}
@@ -391,7 +391,7 @@ func TestInfoRequest(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
-	client := gophercloud.ServiceClient{
+	client := gophercloud.ProviderClient{
 		Endpoint: testhelper.Endpoint(),
 		TokenID:  "12345abcdef",
 	}
@@ -425,8 +425,8 @@ func TestInfoRequest(t *testing.T) {
 	}
 }
 
-func prepareAuthTokenHandler(t *testing.T, expectedMethod string, status int) gophercloud.ServiceClient {
-	client := gophercloud.ServiceClient{
+func prepareAuthTokenHandler(t *testing.T, expectedMethod string, status int) gophercloud.ProviderClient {
+	client := gophercloud.ProviderClient{
 		Endpoint: testhelper.Endpoint(),
 		TokenID:  "12345abcdef",
 	}
