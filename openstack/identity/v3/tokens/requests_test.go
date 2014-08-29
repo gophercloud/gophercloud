@@ -35,6 +35,27 @@ func authTokenPost(t *testing.T, options gophercloud.AuthOptions, scope *Scope, 
 	}
 }
 
+func authTokenPostErr(t *testing.T, options gophercloud.AuthOptions, scope *Scope, includeToken bool, expectedErr error) {
+	setup()
+	defer teardown()
+
+	client := gophercloud.ServiceClient{
+		Endpoint: endpoint(),
+		Options:  options,
+	}
+	if includeToken {
+		client.TokenID = "abcdef123456"
+	}
+
+	_, err := Create(&client, scope)
+	if err == nil {
+		t.Errorf("Create did NOT return an error")
+	}
+	if err != expectedErr {
+		t.Errorf("Create returned an unexpected error: wanted %v, got %v", expectedErr, err)
+	}
+}
+
 func TestCreateUserIDAndPassword(t *testing.T) {
 	authTokenPost(t, gophercloud.AuthOptions{UserID: "me", Password: "squirrel!"}, nil, `
 		{
@@ -211,4 +232,36 @@ func TestCreateProjectNameAndDomainNameScope(t *testing.T) {
 			}
 		}
 	`)
+}
+
+func TestCreateFailureEmptyAuth(t *testing.T) {
+	authTokenPostErr(t, gophercloud.AuthOptions{}, nil, false, ErrMissingPassword)
+}
+
+func TestCreateFailureAPIKey(t *testing.T) {
+	authTokenPostErr(t, gophercloud.AuthOptions{APIKey: "something"}, nil, false, ErrAPIKeyProvided)
+}
+
+func TestCreateFailureTenantID(t *testing.T) {
+	authTokenPostErr(t, gophercloud.AuthOptions{TenantID: "something"}, nil, false, ErrTenantIDProvided)
+}
+
+func TestCreateFailureTenantName(t *testing.T) {
+	authTokenPostErr(t, gophercloud.AuthOptions{TenantName: "something"}, nil, false, ErrTenantNameProvided)
+}
+
+func TestCreateFailureTokenIDUsername(t *testing.T) {
+	authTokenPostErr(t, gophercloud.AuthOptions{Username: "something"}, nil, true, ErrUsernameWithToken)
+}
+
+func TestCreateFailureTokenIDUserID(t *testing.T) {
+	authTokenPostErr(t, gophercloud.AuthOptions{UserID: "something"}, nil, true, ErrUserIDWithToken)
+}
+
+func TestCreateFailureTokenIDDomainID(t *testing.T) {
+	authTokenPostErr(t, gophercloud.AuthOptions{DomainID: "something"}, nil, true, ErrDomainIDWithToken)
+}
+
+func TestCreateFailureTokenIDDomainName(t *testing.T) {
+	authTokenPostErr(t, gophercloud.AuthOptions{DomainName: "something"}, nil, true, ErrDomainNameWithToken)
 }
