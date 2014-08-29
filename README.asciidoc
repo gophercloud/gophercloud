@@ -1,7 +1,7 @@
-== Gophercloud -- V0.1.0 image:https://secure.travis-ci.org/rackspace/gophercloud.png?branch=master["build status",link="https://travis-ci.org/rackspace/gophercloud"]
+== Gophercloud -- V0.2.0 image:https://secure.travis-ci.org/rackspace/gophercloud.png?branch=master["build status",link="https://travis-ci.org/rackspace/gophercloud"]
 
-Gophercloud currently lets you authenticate with OpenStack providers to create and manage servers.
-We are working on extending the API to further include cloud files, block storage, DNS, databases, security groups, and other features.
+Gophercloud currently lets you authenticate with OpenStack providers to create and manage servers (compute service) and objects (object-storage service).
+We are working on extending the API to further include block storage, DNS, databases, security groups, and other features.
 
 WARNING: This library is still in the very early stages of development. Unless you want to contribute, it probably isn't what you want.  Yet.
 
@@ -9,8 +9,7 @@ WARNING: This library is still in the very early stages of development. Unless y
 
 1.  Apache 2.0 License, making Gophercloud friendly to commercial and open-source enterprises alike.
 2.  Gophercloud is one of the most actively maintained Go SDKs for OpenStack.
-3.  Gophercloud supports Identity V2 and Nova V2 APIs.  More coming soon!
-4.  The up-coming Gophercloud 0.2.0 release supports API extensions, and makes writing support for new extensions easy.
+3.  Gophercloud supports Identity V2, Nova V2, and Object Storage V1 APIs.  More coming soon!
 5.  Gophercloud supports automatic reauthentication upon auth token timeout, if enabled by your software.
 6.  Gophercloud is the only SDK implementation with actual acceptance-level integration tests.
 
