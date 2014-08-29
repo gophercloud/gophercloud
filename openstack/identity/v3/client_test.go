@@ -16,7 +16,7 @@ func TestNewClient(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 
 	provider := &gophercloud.ProviderClient{
-		IdentityEndpoint: testhelper.Endpoint(),
+		IdentityEndpoint: testhelper.Endpoint() + "v3/",
 	}
 	client := NewClient(provider)
 
@@ -39,7 +39,7 @@ func TestAuthentication(t *testing.T) {
 	})
 
 	provider := &gophercloud.ProviderClient{
-		IdentityEndpoint: testhelper.Endpoint(),
+		IdentityEndpoint: testhelper.Endpoint() + "v3/",
 	}
 	client := NewClient(provider)
 

@@ -24,7 +24,7 @@ func NewClient(provider *gophercloud.ProviderClient) *Client {
 	return &Client{
 		ServiceClient: gophercloud.ServiceClient{
 			ProviderClient: *provider,
-			Endpoint:       provider.IdentityEndpoint + "v3/",
+			Endpoint:       provider.IdentityEndpoint,
 		},
 	}
 }
