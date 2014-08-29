@@ -200,9 +200,6 @@ func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults
 			}
 		} else if scope.ProjectID != "" {
 			// ProjectID provided. ProjectName, DomainID, and DomainName may not be provided.
-			if scope.ProjectName != "" {
-				return nil, ErrScopeProjectIDOrProjectName
-			}
 			if scope.DomainID != "" {
 				return nil, ErrScopeProjectIDAlone
 			}
