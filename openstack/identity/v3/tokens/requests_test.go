@@ -26,6 +26,7 @@ func authTokenPost(t *testing.T, options gophercloud.AuthOptions, scope *Scope, 
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		testhelper.TestJSONRequest(t, r, requestJSON)
 
+		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, `{}`)
 	})
 
@@ -232,6 +233,33 @@ func TestCreateProjectNameAndDomainNameScope(t *testing.T) {
 			}
 		}
 	`)
+}
+
+func TestCreateExtractsTokenFromResponse(t *testing.T) {
+	setup()
+	defer teardown()
+
+	client := gophercloud.ServiceClient{
+		Endpoint: endpoint(),
+		Options:  gophercloud.AuthOptions{UserID: "me", Password: "shhh"},
+	}
+
+	mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("X-Subject-Token", "aaa111")
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, `{}`)
+	})
+
+	result, err := Create(&client, nil)
+	if err != nil {
+		t.Errorf("Create returned an error: %v", err)
+	}
+
+	token, _ := result.TokenID()
+	if token != "aaa111" {
+		t.Errorf("Expected token to be aaa111, but was %s", token)
+	}
 }
 
 func TestCreateFailureEmptyAuth(t *testing.T) {

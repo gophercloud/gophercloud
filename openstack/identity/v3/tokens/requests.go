@@ -228,11 +228,18 @@ func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults
 		}
 	}
 
-	var resp TokenCreateResult
-	perigee.Post(getTokenURL(c), perigee.Options{
+	var result TokenCreateResult
+	response, err := perigee.Request("POST", getTokenURL(c), perigee.Options{
 		ReqBody: &req,
-		Results: &resp,
+		Results: &result.response,
 		OkCodes: []int{201},
 	})
-	return &resp, nil
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract the token ID from the response, if present.
+	result.tokenID = response.HttpResponse.Header.Get("X-Subject-Token")
+
+	return &result, nil
 }
