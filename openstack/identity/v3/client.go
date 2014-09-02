@@ -20,17 +20,17 @@ type Token struct {
 }
 
 // NewClient creates a new client associated with the v3 identity service of a provider.
-func NewClient(provider *gophercloud.ProviderClient) *Client {
+func NewClient(provider *gophercloud.ProviderClient, endpoint string) *Client {
 	return &Client{
 		ServiceClient: gophercloud.ServiceClient{
 			ProviderClient: *provider,
-			Endpoint:       provider.IdentityEndpoint,
+			Endpoint:       endpoint,
 		},
 	}
 }
 
-// Authenticate provides the supplied credentials to an identity v3 endpoint and attempts to acquire a token.
-func (c *Client) Authenticate(authOptions gophercloud.AuthOptions) (*Token, error) {
+// GetToken provides the supplied credentials to an identity v3 endpoint and attempts to acquire a token.
+func (c *Client) GetToken(authOptions gophercloud.AuthOptions) (*Token, error) {
 	c.ServiceClient.ProviderClient.Options = authOptions
 
 	result, err := tokens.Create(&c.ServiceClient, nil)
@@ -48,8 +48,5 @@ func (c *Client) Authenticate(authOptions gophercloud.AuthOptions) (*Token, erro
 		return nil, err
 	}
 
-	return &Token{
-		ID:        tokenID,
-		ExpiresAt: expiresAt,
-	}, nil
+	return &Token{ID: tokenID, ExpiresAt: expiresAt}, nil
 }

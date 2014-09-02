@@ -26,7 +26,7 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
-func TestAuthentication(t *testing.T) {
+func TestGetToken(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 	const ID = "aaaa1111"
@@ -43,7 +43,7 @@ func TestAuthentication(t *testing.T) {
 	}
 	client := NewClient(provider)
 
-	token, err := client.Authenticate(gophercloud.AuthOptions{UserID: "me", Password: "swordfish"})
+	token, err := client.GetToken(gophercloud.AuthOptions{UserID: "me", Password: "swordfish"})
 	if err != nil {
 		t.Errorf("Unexpected error from authentication: %v", err)
 	}
