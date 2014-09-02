@@ -52,7 +52,7 @@ func TestNewClientV3(t *testing.T) {
 		Password:         "secret",
 		IdentityEndpoint: testhelper.Endpoint(),
 	}
-	client, err := NewClient(options)
+	client, err := AuthenticatedClient(options)
 
 	if err != nil {
 		t.Fatalf("Unexpected error from NewClient: %s", err)

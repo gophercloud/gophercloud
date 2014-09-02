@@ -15,10 +15,8 @@ func TestNewClient(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
-	provider := &gophercloud.ProviderClient{
-		IdentityEndpoint: testhelper.Endpoint() + "v3/",
-	}
-	client := NewClient(provider)
+	provider := &gophercloud.ProviderClient{}
+	client := NewClient(provider, testhelper.Endpoint()+"v3/")
 
 	expected := testhelper.Endpoint() + "v3/"
 	if client.Endpoint != expected {
@@ -38,10 +36,8 @@ func TestGetToken(t *testing.T) {
 		fmt.Fprintf(w, `{ "token": { "expires_at": "2013-02-02T18:30:59.000000Z" } }`)
 	})
 
-	provider := &gophercloud.ProviderClient{
-		IdentityEndpoint: testhelper.Endpoint() + "v3/",
-	}
-	client := NewClient(provider)
+	provider := &gophercloud.ProviderClient{}
+	client := NewClient(provider, testhelper.Endpoint()+"v3/")
 
 	token, err := client.GetToken(gophercloud.AuthOptions{UserID: "me", Password: "swordfish"})
 	if err != nil {
