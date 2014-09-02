@@ -57,7 +57,7 @@ func NewClient(authOptions gophercloud.AuthOptions) (*Client, error) {
 	return &client, nil
 }
 
-// IdentityV3 explicitly accesses the v3 identity service.
-func (client *Client) IdentityV3() (*identity3.Client, error) {
-	return nil, nil
+// NewIdentityV3 explicitly accesses the v3 identity service.
+func (client *Client) NewIdentityV3() (*identity3.Client, error) {
+	return identity3.NewClient(&client.ProviderClient), nil
 }
