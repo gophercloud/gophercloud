@@ -45,7 +45,7 @@ func ChooseVersion(baseEndpoint string, recognized []*Version) (*Version, string
 	var resp response
 	_, err := perigee.Request("GET", baseEndpoint, perigee.Options{
 		Results: &resp,
-		OkCodes: []int{200},
+		OkCodes: []int{200, 300},
 	})
 
 	if err != nil {
