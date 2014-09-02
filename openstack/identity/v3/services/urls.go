@@ -7,5 +7,5 @@ func getListURL(client *gophercloud.ServiceClient) string {
 }
 
 func getServiceURL(client *gophercloud.ServiceClient, serviceID string) string {
-	return ""
+	return client.ServiceURL("services", serviceID)
 }
