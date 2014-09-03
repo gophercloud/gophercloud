@@ -185,10 +185,29 @@ func TestUpdateSuccessful(t *testing.T) {
 
 	result, err := Update(client, "12345", "lasermagic")
 	if err != nil {
-		t.Fatalf("Unable to update service")
+		t.Fatalf("Unable to update service: %v", err)
 	}
 
 	if result.ID != "12345" {
 
+	}
+}
+
+func TestDeleteSuccessful(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+
+	testhelper.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "DELETE")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	client := serviceClient()
+
+	err := Delete(client, "12345")
+	if err != nil {
+		t.Fatalf("Unable to delete service: %v", err)
 	}
 }
