@@ -17,9 +17,8 @@ func authTokenPost(t *testing.T, options gophercloud.AuthOptions, scope *Scope, 
 
 	client := gophercloud.ServiceClient{
 		ProviderClient: gophercloud.ProviderClient{
-			IdentityEndpoint: testhelper.Endpoint(),
-			Options:          options,
-			TokenID:          "12345abcdef",
+			Options: options,
+			TokenID: "12345abcdef",
 		},
 		Endpoint: testhelper.Endpoint(),
 	}

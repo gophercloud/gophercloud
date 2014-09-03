@@ -5,14 +5,9 @@ package gophercloud
 // Generally, you acquire a ProviderClient by calling the `NewClient()` method in the appropriate provider's child package,
 // providing whatever authentication credentials are required.
 type ProviderClient struct {
-	// Authority caches results of the most recent authentication.
-	Authority AuthResults
 
 	// Options remembers the original authentication parameters, if reauthentication is enabled.
 	Options AuthOptions
-
-	// IdentityEndpoint is the base URL of the provider's identity endpoint.
-	IdentityEndpoint string
 
 	// TokenID is the most recently valid token issued.
 	TokenID string
