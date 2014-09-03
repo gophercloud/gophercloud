@@ -31,7 +31,7 @@ func TestCreateSuccessful(t *testing.T) {
 	})
 
 	client := gophercloud.ServiceClient{
-		ProviderClient: gophercloud.ProviderClient{
+		Provider: &gophercloud.ProviderClient{
 			TokenID: "1111",
 		},
 		Endpoint: testhelper.Endpoint(),

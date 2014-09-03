@@ -14,13 +14,13 @@ type Scope struct {
 }
 
 func subjectTokenHeaders(c *gophercloud.ServiceClient, subjectToken string) map[string]string {
-	h := c.AuthenticatedHeaders()
+	h := c.Provider.AuthenticatedHeaders()
 	h["X-Subject-Token"] = subjectToken
 	return h
 }
 
 // Create authenticates and either generates a new token, or changes the Scope of an existing token.
-func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults, error) {
+func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope *Scope) (gophercloud.AuthResults, error) {
 	type domainReq struct {
 		ID   *string `json:"id,omitempty"`
 		Name *string `json:"name,omitempty"`
@@ -67,44 +67,42 @@ func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults
 		Auth authReq `json:"auth"`
 	}
 
-	ao := c.Options
-
 	// Populate the request structure based on the provided arguments. Create and return an error
 	// if insufficient or incompatible information is present.
 	var req request
 
 	// Test first for unrecognized arguments.
-	if ao.APIKey != "" {
+	if options.APIKey != "" {
 		return nil, ErrAPIKeyProvided
 	}
-	if ao.TenantID != "" {
+	if options.TenantID != "" {
 		return nil, ErrTenantIDProvided
 	}
-	if ao.TenantName != "" {
+	if options.TenantName != "" {
 		return nil, ErrTenantNameProvided
 	}
 
-	if ao.Password == "" {
-		if c.TokenID != "" {
+	if options.Password == "" {
+		if c.Provider.TokenID != "" {
 			// Because we aren't using password authentication, it's an error to also provide any of the user-based authentication
 			// parameters.
-			if ao.Username != "" {
+			if options.Username != "" {
 				return nil, ErrUsernameWithToken
 			}
-			if ao.UserID != "" {
+			if options.UserID != "" {
 				return nil, ErrUserIDWithToken
 			}
-			if ao.DomainID != "" {
+			if options.DomainID != "" {
 				return nil, ErrDomainIDWithToken
 			}
-			if ao.DomainName != "" {
+			if options.DomainName != "" {
 				return nil, ErrDomainNameWithToken
 			}
 
 			// Configure the request for Token authentication.
 			req.Auth.Identity.Methods = []string{"token"}
 			req.Auth.Identity.Token = &tokenReq{
-				ID: c.TokenID,
+				ID: c.Provider.TokenID,
 			}
 		} else {
 			// If no password or token ID are available, authentication can't continue.
@@ -115,60 +113,60 @@ func Create(c *gophercloud.ServiceClient, scope *Scope) (gophercloud.AuthResults
 		req.Auth.Identity.Methods = []string{"password"}
 
 		// At least one of Username and UserID must be specified.
-		if ao.Username == "" && ao.UserID == "" {
+		if options.Username == "" && options.UserID == "" {
 			return nil, ErrUsernameOrUserID
 		}
 
-		if ao.Username != "" {
+		if options.Username != "" {
 			// If Username is provided, UserID may not be provided.
-			if ao.UserID != "" {
+			if options.UserID != "" {
 				return nil, ErrUsernameOrUserID
 			}
 
 			// Either DomainID or DomainName must also be specified.
-			if ao.DomainID == "" && ao.DomainName == "" {
+			if options.DomainID == "" && options.DomainName == "" {
 				return nil, ErrDomainIDOrDomainName
 			}
 
-			if ao.DomainID != "" {
-				if ao.DomainName != "" {
+			if options.DomainID != "" {
+				if options.DomainName != "" {
 					return nil, ErrDomainIDOrDomainName
 				}
 
 				// Configure the request for Username and Password authentication with a DomainID.
 				req.Auth.Identity.Password = &passwordReq{
 					User: userReq{
-						Name:     &ao.Username,
-						Password: ao.Password,
-						Domain:   &domainReq{ID: &ao.DomainID},
+						Name:     &options.Username,
+						Password: options.Password,
+						Domain:   &domainReq{ID: &options.DomainID},
 					},
 				}
 			}
 
-			if ao.DomainName != "" {
+			if options.DomainName != "" {
 				// Configure the request for Username and Password authentication with a DomainName.
 				req.Auth.Identity.Password = &passwordReq{
 					User: userReq{
-						Name:     &ao.Username,
-						Password: ao.Password,
-						Domain:   &domainReq{Name: &ao.DomainName},
+						Name:     &options.Username,
+						Password: options.Password,
+						Domain:   &domainReq{Name: &options.DomainName},
 					},
 				}
 			}
 		}
 
-		if ao.UserID != "" {
+		if options.UserID != "" {
 			// If UserID is specified, neither DomainID nor DomainName may be.
-			if ao.DomainID != "" {
+			if options.DomainID != "" {
 				return nil, ErrDomainIDWithUserID
 			}
-			if ao.DomainName != "" {
+			if options.DomainName != "" {
 				return nil, ErrDomainNameWithUserID
 			}
 
 			// Configure the request for UserID and Password authentication.
 			req.Auth.Identity.Password = &passwordReq{
-				User: userReq{ID: &ao.UserID, Password: ao.Password},
+				User: userReq{ID: &options.UserID, Password: options.Password},
 			}
 		}
 	}

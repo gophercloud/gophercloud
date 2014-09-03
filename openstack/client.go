@@ -2,100 +2,110 @@ package openstack
 
 import (
 	"errors"
+	"fmt"
+	"net/url"
 
 	"github.com/rackspace/gophercloud"
-	identity3 "github.com/rackspace/gophercloud/openstack/identity/v3"
+	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
-
-// Client provides access to service clients for this OpenStack cloud.
-type Client struct {
-	gophercloud.ProviderClient
-}
 
 const (
 	v20 = "v2.0"
 	v30 = "v3.0"
 )
 
-// AuthenticatedClient logs in to an OpenStack cloud found at the identity endpoint specified by authOptions, acquires a token, and
+// NewClient prepares an unauthenticated ProviderClient instance.
+// Most users will probably prefer using the AuthenticatedClient function instead.
+// This is useful if you wish to explicitly control the version of the identity service that's used for authentication explicitly,
+// for example.
+func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
+	// Normalize the identity endpoint that's provided by trimming any path, query or fragment from the URL.
+	u, err := url.Parse(endpoint)
+	if err != nil {
+		return nil, err
+	}
+	u.Path, u.RawQuery, u.Fragment = "", "", ""
+	normalized := u.String()
+
+	return &gophercloud.ProviderClient{
+		IdentityEndpoint: normalized,
+		Reauthenticate: func() error {
+			return errors.New("Unable to reauthenticate before authenticating the first time.")
+		},
+	}, nil
+}
+
+// AuthenticatedClient logs in to an OpenStack cloud found at the identity endpoint specified by options, acquires a token, and
 // returns a Client instance that's ready to operate.
 // It first queries the root identity endpoint to determine which versions of the identity service are supported, then chooses
 // the most recent identity service available to proceed.
-func AuthenticatedClient(authOptions gophercloud.AuthOptions) (*Client, error) {
-	client := NewClient(authOptions)
-	err := client.Authenticate()
+func AuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
+	client, err := NewClient(options.IdentityEndpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	err = Authenticate(client, options)
 	if err != nil {
 		return nil, err
 	}
 	return client, nil
 }
 
-// NewClient prepares an unauthenticated Client instance.
-// Most users will probably prefer using the AuthenticatedClient function instead.
-// This is useful if you wish to explicitly control the version of the identity service that's used for authentication explicitly,
-// for example.
-func NewClient(authOptions gophercloud.AuthOptions) *Client {
-	return &Client{
-		ProviderClient: gophercloud.ProviderClient{
-			Options: authOptions,
-		},
-	}
-}
-
 // Authenticate or re-authenticate against the most recent identity service supported at the provided endpoint.
-func (client *Client) Authenticate() error {
+func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
 	versions := []*utils.Version{
 		&utils.Version{ID: v20, Priority: 20},
 		&utils.Version{ID: v30, Priority: 30},
 	}
 
-	chosen, endpoint, err := utils.ChooseVersion(client.ProviderClient.Options.IdentityEndpoint, versions)
+	chosen, endpoint, err := utils.ChooseVersion(client.IdentityEndpoint, versions)
 	if err != nil {
 		return err
 	}
 
 	switch chosen.ID {
 	case v20:
-		return client.authenticateV2(endpoint)
+		return errors.New("Not implemented yet.")
 	case v30:
-		return client.authenticateV3(endpoint)
+		// Override the generated service endpoint with the one returned by the version endpoint.
+		v3Client := NewIdentityV3(client)
+		v3Client.Endpoint = endpoint
+
+		result, err := tokens3.Create(v3Client, options, nil)
+		if err != nil {
+			return err
+		}
+
+		client.TokenID, err = result.TokenID()
+		if err != nil {
+			return err
+		}
+
+		return nil
 	default:
 		// The switch statement must be out of date from the versions list.
-		return errors.New("Wat")
+		return fmt.Errorf("Unrecognized identity version: %s", chosen.ID)
 	}
 }
 
-// AuthenticateV2 acquires a token explicitly from the v2.0 identity API.
-func (client *Client) AuthenticateV2() error {
-	endpoint := client.ProviderClient.Options.IdentityEndpoint + "/v2.0"
-	return client.authenticateV2(endpoint)
-}
+// NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.
+func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
+	v2Endpoint := client.IdentityEndpoint + "/v2.0"
 
-func (client *Client) authenticateV2(endpoint string) error {
-	return errors.New("Not implemented yet.")
-}
-
-// AuthenticateV3 acquires a token explicitly from the v3.0 identity API.
-func (client *Client) AuthenticateV3() error {
-	endpoint := client.ProviderClient.Options.IdentityEndpoint + "/v3"
-	return client.authenticateV3(endpoint)
-}
-
-func (client *Client) authenticateV3(endpoint string) error {
-	identityClient := identity3.NewClient(&client.ProviderClient, endpoint)
-	token, err := identityClient.GetToken(client.ProviderClient.Options)
-	if err != nil {
-		return err
+	return &gophercloud.ServiceClient{
+		Provider: client,
+		Endpoint: v2Endpoint,
 	}
-
-	client.ProviderClient.TokenID = token.ID
-
-	return nil
 }
 
-// NewIdentityV3 explicitly accesses the v3 identity service.
-func (client *Client) NewIdentityV3() (*identity3.Client, error) {
-	endpoint := client.ProviderClient.Options.IdentityEndpoint + "/v3"
-	return identity3.NewClient(&client.ProviderClient, endpoint), nil
+// NewIdentityV3 creates a ServiceClient that may be used to access the v3 identity service.
+func NewIdentityV3(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
+	v3Endpoint := client.IdentityEndpoint + "/v3"
+
+	return &gophercloud.ServiceClient{
+		Provider: client,
+		Endpoint: v3Endpoint,
+	}
 }
