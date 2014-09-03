@@ -16,6 +16,9 @@ func TestAuthenticatedClient(t *testing.T) {
 		t.Fatalf("Unable to acquire credentials: %v", err)
 	}
 
+	// Trim out unused fields.
+	ao.TenantID, ao.TenantName = "", ""
+
 	client, err := openstack.AuthenticatedClient(ao)
 	if err != nil {
 		t.Fatalf("Unable to authenticate: %v", err)

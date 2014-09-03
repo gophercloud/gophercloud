@@ -5,8 +5,8 @@ package v3
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud"
-	identity3 "github.com/rackspace/gophercloud/openstack/identity/v3"
+	"github.com/rackspace/gophercloud/openstack"
+	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
@@ -17,15 +17,28 @@ func TestGetToken(t *testing.T) {
 		t.Fatalf("Unable to acquire credentials: %v", err)
 	}
 
-	client := identity3.NewClient(&gophercloud.ProviderClient{
-		Options: ao,
-	}, ao.IdentityEndpoint+"/v3/")
+	// Trim out unused fields.
+	ao.TenantID, ao.TenantName = "", ""
 
-	// Attempt to acquire a token.
-	token, err := client.GetToken(ao)
+	// Create an unauthenticated client.
+	provider, err := openstack.NewClient(ao.IdentityEndpoint)
+	if err != nil {
+		t.Fatalf("Unable to instantiate client: %v", err)
+	}
+
+	// Create a service client.
+	service := openstack.NewIdentityV3(provider)
+
+	// Use the service to create a token.
+	result, err := tokens3.Create(service, ao, nil)
 	if err != nil {
 		t.Fatalf("Unable to get token: %v", err)
 	}
 
-	t.Logf("Acquired token: %s", token.ID)
+	token, err := result.TokenID()
+	if err != nil {
+		t.Fatalf("Unable to extract token from response: %v", err)
+	}
+
+	t.Logf("Acquired token: %s", token)
 }
