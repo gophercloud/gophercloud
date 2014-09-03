@@ -113,7 +113,54 @@ func TestListSinglePage(t *testing.T) {
 	if result.Services[0].ID != "1234" {
 		t.Errorf("Unexpected service: %#v", result.Services[0])
 	}
-	if result.Services[0].ID == "9876" {
+	if result.Services[1].ID != "9876" {
 		t.Errorf("Unexpected service: %#v", result.Services[1])
+	}
+}
+
+func TestInfoSuccessful(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+
+	testhelper.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "X-Auth-Token", "1111")
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `
+			{
+				"service": {
+						"description": "Service One",
+						"id": "1234",
+						"name": "service-one",
+						"type": "identity"
+				}
+			}
+		`)
+	})
+
+	client := gophercloud.ServiceClient{
+		Provider: &gophercloud.ProviderClient{
+			TokenID: "1111",
+		},
+		Endpoint: testhelper.Endpoint(),
+	}
+
+	result, err := Info(&client, "12345")
+	if err != nil {
+		t.Fatalf("Error fetching service information: %v", err)
+	}
+
+	if result.ID != "1234" {
+		t.Errorf("Unexpected service ID: %s", result.ID)
+	}
+	if *result.Description != "Service One" {
+		t.Errorf("Unexpected service description: [%s]", *result.Description)
+	}
+	if result.Name != "service-one" {
+		t.Errorf("Unexpected service name: [%s]", result.Name)
+	}
+	if result.Type != "identity" {
+		t.Errorf("Unexpected service type: [%s]", result.Type)
 	}
 }

@@ -67,3 +67,21 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*ServiceListResult,
 
 	return &resp, nil
 }
+
+// Info returns additional information about a service, given its ID.
+func Info(client *gophercloud.ServiceClient, serviceID string) (*ServiceResult, error) {
+	type response struct {
+		Service ServiceResult `json:"service"`
+	}
+
+	var resp response
+	_, err := perigee.Request("GET", getServiceURL(client, serviceID), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		Results:     &resp,
+		OkCodes:     []int{200},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &resp.Service, nil
+}
