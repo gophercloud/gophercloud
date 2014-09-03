@@ -9,13 +9,24 @@ import (
 	"github.com/rackspace/gophercloud/testhelper"
 )
 
+const tokenID = "111111"
+
+func serviceClient() *gophercloud.ServiceClient {
+	return &gophercloud.ServiceClient{
+		Provider: &gophercloud.ProviderClient{
+			TokenID: tokenID,
+		},
+		Endpoint: testhelper.Endpoint(),
+	}
+}
+
 func TestCreateSuccessful(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
 	testhelper.Mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", "1111")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
 		testhelper.TestJSONRequest(t, r, `{ "type": "compute" }`)
 
 		w.Header().Add("Content-Type", "application/json")
@@ -30,14 +41,9 @@ func TestCreateSuccessful(t *testing.T) {
     }`)
 	})
 
-	client := gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{
-			TokenID: "1111",
-		},
-		Endpoint: testhelper.Endpoint(),
-	}
+	client := serviceClient()
 
-	result, err := Create(&client, "compute")
+	result, err := Create(client, "compute")
 	if err != nil {
 		t.Fatalf("Unexpected error from Create: %v", err)
 	}
@@ -62,7 +68,7 @@ func TestListSinglePage(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", "1111")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
@@ -89,14 +95,9 @@ func TestListSinglePage(t *testing.T) {
 		`)
 	})
 
-	client := gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{
-			TokenID: "1111",
-		},
-		Endpoint: testhelper.Endpoint(),
-	}
+	client := serviceClient()
 
-	result, err := List(&client, ListOpts{})
+	result, err := List(client, ListOpts{})
 	if err != nil {
 		t.Fatalf("Error listing services: %v", err)
 	}
@@ -124,14 +125,14 @@ func TestInfoSuccessful(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", "1111")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
 			{
 				"service": {
 						"description": "Service One",
-						"id": "1234",
+						"id": "12345",
 						"name": "service-one",
 						"type": "identity"
 				}
@@ -139,19 +140,14 @@ func TestInfoSuccessful(t *testing.T) {
 		`)
 	})
 
-	client := gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{
-			TokenID: "1111",
-		},
-		Endpoint: testhelper.Endpoint(),
-	}
+	client := serviceClient()
 
-	result, err := Info(&client, "12345")
+	result, err := Info(client, "12345")
 	if err != nil {
 		t.Fatalf("Error fetching service information: %v", err)
 	}
 
-	if result.ID != "1234" {
+	if result.ID != "12345" {
 		t.Errorf("Unexpected service ID: %s", result.ID)
 	}
 	if *result.Description != "Service One" {
@@ -162,5 +158,37 @@ func TestInfoSuccessful(t *testing.T) {
 	}
 	if result.Type != "identity" {
 		t.Errorf("Unexpected service type: [%s]", result.Type)
+	}
+}
+
+func TestUpdateSuccessful(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+
+	testhelper.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "PATCH")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestJSONRequest(t, r, `{ "type": "lasermagic" }`)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `
+			{
+				"service": {
+						"id": "12345",
+						"type": "lasermagic"
+				}
+			}
+		`)
+	})
+
+	client := serviceClient()
+
+	result, err := Update(client, "12345", "lasermagic")
+	if err != nil {
+		t.Fatalf("Unable to update service")
+	}
+
+	if result.ID != "12345" {
+
 	}
 }

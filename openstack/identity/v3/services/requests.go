@@ -8,14 +8,14 @@ import (
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
+type response struct {
+	Service ServiceResult `json:"service"`
+}
+
 // Create adds a new service of the requested type to the catalog.
 func Create(client *gophercloud.ServiceClient, serviceType string) (*ServiceResult, error) {
 	type request struct {
 		Type string `json:"type"`
-	}
-
-	type response struct {
-		Service ServiceResult `json:"service"`
 	}
 
 	req := request{Type: serviceType}
@@ -70,10 +70,6 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*ServiceListResult,
 
 // Info returns additional information about a service, given its ID.
 func Info(client *gophercloud.ServiceClient, serviceID string) (*ServiceResult, error) {
-	type response struct {
-		Service ServiceResult `json:"service"`
-	}
-
 	var resp response
 	_, err := perigee.Request("GET", getServiceURL(client, serviceID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
@@ -83,5 +79,27 @@ func Info(client *gophercloud.ServiceClient, serviceID string) (*ServiceResult, 
 	if err != nil {
 		return nil, err
 	}
+	return &resp.Service, nil
+}
+
+// Update changes the service type of an existing service.s
+func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) (*ServiceResult, error) {
+	type request struct {
+		Type string `json:"type"`
+	}
+
+	req := request{Type: serviceType}
+
+	var resp response
+	_, err := perigee.Request("PATCH", getServiceURL(client, serviceID), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		ReqBody:     &req,
+		Results:     &resp,
+		OkCodes:     []int{200},
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return &resp.Service, nil
 }
