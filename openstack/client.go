@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/rackspace/gophercloud"
 	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
@@ -65,6 +66,10 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 		return err
 	}
 
+	if !strings.HasSuffix(endpoint, "/") {
+		endpoint = endpoint + "/"
+	}
+
 	switch chosen.ID {
 	case v20:
 		return errors.New("Not implemented yet.")
@@ -92,7 +97,7 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.
 func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
-	v2Endpoint := client.IdentityEndpoint + "/v2.0"
+	v2Endpoint := client.IdentityEndpoint + "/v2.0/"
 
 	return &gophercloud.ServiceClient{
 		Provider: client,
@@ -102,7 +107,7 @@ func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClien
 
 // NewIdentityV3 creates a ServiceClient that may be used to access the v3 identity service.
 func NewIdentityV3(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
-	v3Endpoint := client.IdentityEndpoint + "/v3"
+	v3Endpoint := client.IdentityEndpoint + "/v3/"
 
 	return &gophercloud.ServiceClient{
 		Provider: client,

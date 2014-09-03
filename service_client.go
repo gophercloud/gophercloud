@@ -9,11 +9,11 @@ type ServiceClient struct {
 	Provider *ProviderClient
 
 	// Endpoint is the base URL of the service's API, acquired from a service catalog.
-	// It should NOT end with a /.
+	// It MUST end with a /.
 	Endpoint string
 }
 
 // ServiceURL constructs a URL for a resource belonging to this provider.
 func (client *ServiceClient) ServiceURL(parts ...string) string {
-	return client.Endpoint + "/" + strings.Join(parts, "/")
+	return client.Endpoint + strings.Join(parts, "/")
 }
