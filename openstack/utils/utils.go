@@ -60,6 +60,10 @@ func AuthOptions() (gophercloud.AuthOptions, error) {
 
 // BuildQuery constructs the query section of a URI from a map.
 func BuildQuery(params map[string]string) string {
+	if len(params) == 0 {
+		return ""
+	}
+
 	query := "?"
 	for k, v := range params {
 		query += k + "=" + v + "&"
