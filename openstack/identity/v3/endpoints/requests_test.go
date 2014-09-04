@@ -157,7 +157,7 @@ func TestUpdateEndpoint(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 
 	testhelper.Mux.HandleFunc("/endpoints/12", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestMethod(t, r, "PATCH")
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
 		testhelper.TestJSONRequest(t, r, `
 		{
@@ -194,7 +194,7 @@ func TestUpdateEndpoint(t *testing.T) {
 		t.Fatalf("Unexpected error from Update: %v", err)
 	}
 
-	expected := Endpoint{
+	expected := &Endpoint{
 		ID:        "12",
 		Interface: InterfacePublic,
 		Name:      "renamed",

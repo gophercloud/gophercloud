@@ -23,6 +23,14 @@ const (
 	InterfaceInternal Interface = "internal"
 )
 
+// maybeString returns nil for empty strings and nil for empty.
+func maybeString(original string) *string {
+	if original != "" {
+		return &original
+	}
+	return nil
+}
+
 // EndpointOpts contains the subset of Endpoint attributes that should be used to create or update an Endpoint.
 type EndpointOpts struct {
 	Interface Interface
@@ -75,10 +83,7 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, er
 			ServiceID: opts.ServiceID,
 		},
 	}
-
-	if opts.Region != "" {
-		reqBody.Endpoint.Region = &opts.Region
-	}
+	reqBody.Endpoint.Region = maybeString(opts.Region)
 
 	var respBody response
 	_, err := perigee.Request("POST", getListURL(client), perigee.Options{
@@ -135,8 +140,43 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*EndpointList, erro
 }
 
 // Update changes an existing endpoint with new data.
+// All fields are optional in the provided EndpointOpts.
 func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointOpts) (*Endpoint, error) {
-	return nil, errors.New("Not implemented")
+	type endpoint struct {
+		Interface *string `json:"interface,omitempty"`
+		Name      *string `json:"name,omitempty"`
+		Region    *string `json:"region,omitempty"`
+		URL       *string `json:"url,omitempty"`
+		ServiceID *string `json:"service_id,omitempty"`
+	}
+
+	type request struct {
+		Endpoint endpoint `json:"endpoint"`
+	}
+
+	type response struct {
+		Endpoint Endpoint `json:"endpoint"`
+	}
+
+	reqBody := request{Endpoint: endpoint{}}
+	reqBody.Endpoint.Interface = maybeString(string(opts.Interface))
+	reqBody.Endpoint.Name = maybeString(opts.Name)
+	reqBody.Endpoint.Region = maybeString(opts.Region)
+	reqBody.Endpoint.URL = maybeString(opts.URL)
+	reqBody.Endpoint.ServiceID = maybeString(opts.ServiceID)
+
+	var respBody response
+	_, err := perigee.Request("PATCH", getEndpointURL(client, endpointID), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &respBody,
+		OkCodes:     []int{200},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &respBody.Endpoint, nil
 }
 
 // Delete removes an endpoint from the service catalog.
