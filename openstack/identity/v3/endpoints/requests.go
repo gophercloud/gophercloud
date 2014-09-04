@@ -1,7 +1,6 @@
 package endpoints
 
 import (
-	"errors"
 	"strconv"
 
 	"github.com/racker/perigee"
@@ -181,5 +180,9 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 
 // Delete removes an endpoint from the service catalog.
 func Delete(client *gophercloud.ServiceClient, endpointID string) error {
-	return errors.New("Not implemented")
+	_, err := perigee.Request("DELETE", getEndpointURL(client, endpointID), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{204},
+	})
+	return err
 }
