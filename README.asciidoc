@@ -15,7 +15,7 @@ WARNING: This library is still in the very early stages of development. Unless y
 
 === Dependencies
 * Go 1.*  (For information on installing Go and setting up your environment, go link:https://golang.org/doc/install[here])
-* git (optional, for contributing)
+* git
 
 === Getting the code
 
