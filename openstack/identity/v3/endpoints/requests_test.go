@@ -126,22 +126,24 @@ func TestListEndpoints(t *testing.T) {
 		t.Fatalf("Unexpected error listing endpoints: %v", err)
 	}
 
-	expected := []Endpoint{
-		Endpoint{
-			ID:        "12",
-			Interface: InterfacePublic,
-			Name:      "the-endiest-of-points",
-			Region:    "underground",
-			ServiceID: "asdfasdfasdfasdf",
-			URL:       "https://1.2.3.4:9000/",
-		},
-		Endpoint{
-			ID:        "13",
-			Interface: InterfaceInternal,
-			Name:      "shhhh",
-			Region:    "underground",
-			ServiceID: "asdfasdfasdfasdf",
-			URL:       "https://1.2.3.4:9001/",
+	expected := &EndpointList{
+		Endpoints: []Endpoint{
+			Endpoint{
+				ID:        "12",
+				Interface: InterfacePublic,
+				Name:      "the-endiest-of-points",
+				Region:    "underground",
+				ServiceID: "asdfasdfasdfasdf",
+				URL:       "https://1.2.3.4:9000/",
+			},
+			Endpoint{
+				ID:        "13",
+				Interface: InterfaceInternal,
+				Name:      "shhhh",
+				Region:    "underground",
+				ServiceID: "asdfasdfasdfasdf",
+				URL:       "https://1.2.3.4:9001/",
+			},
 		},
 	}
 
