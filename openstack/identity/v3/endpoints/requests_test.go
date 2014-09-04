@@ -38,6 +38,7 @@ func TestCreateSuccessful(t *testing.T) {
       }
     `)
 
+		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, `
       {
         "endpoint": {
@@ -68,7 +69,7 @@ func TestCreateSuccessful(t *testing.T) {
 		t.Fatalf("Unable to create an endpoint: %v", err)
 	}
 
-	expected := Endpoint{
+	expected := &Endpoint{
 		ID:        "12",
 		Interface: InterfacePublic,
 		Name:      "the-endiest-of-points",
