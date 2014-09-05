@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
@@ -102,20 +103,28 @@ func TestListSinglePage(t *testing.T) {
 		t.Fatalf("Error listing services: %v", err)
 	}
 
-	if result.Pagination.Next != nil {
-		t.Errorf("Unexpected next link: %s", result.Pagination.Next)
+	collection, err := gophercloud.AllPages(result)
+	actual := AsServices(collection)
+
+	desc0 := "Service One"
+	desc1 := "Service Two"
+	expected := []Service{
+		Service{
+			Description: &desc0,
+			ID:          "1234",
+			Name:        "service-one",
+			Type:        "identity",
+		},
+		Service{
+			Description: &desc1,
+			ID:          "9876",
+			Name:        "service-two",
+			Type:        "compute",
+		},
 	}
-	if result.Pagination.Previous != nil {
-		t.Errorf("Unexpected previous link: %s", result.Pagination.Previous)
-	}
-	if len(result.Services) != 2 {
-		t.Errorf("Unexpected number of services: %s", len(result.Services))
-	}
-	if result.Services[0].ID != "1234" {
-		t.Errorf("Unexpected service: %#v", result.Services[0])
-	}
-	if result.Services[1].ID != "9876" {
-		t.Errorf("Unexpected service: %#v", result.Services[1])
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %#v, got %#v", expected, actual)
 	}
 }
 

@@ -9,11 +9,11 @@ import (
 )
 
 type response struct {
-	Service ServiceResult `json:"service"`
+	Service Service `json:"service"`
 }
 
 // Create adds a new service of the requested type to the catalog.
-func Create(client *gophercloud.ServiceClient, serviceType string) (*ServiceResult, error) {
+func Create(client *gophercloud.ServiceClient, serviceType string) (*Service, error) {
 	type request struct {
 		Type string `json:"type"`
 	}
@@ -42,7 +42,7 @@ type ListOpts struct {
 }
 
 // List enumerates the services available to a specific user.
-func List(client *gophercloud.ServiceClient, opts ListOpts) (*ServiceListResult, error) {
+func List(client *gophercloud.ServiceClient, opts ListOpts) (*ServiceList, error) {
 	q := make(map[string]string)
 	if opts.ServiceType != "" {
 		q["type"] = opts.ServiceType
@@ -55,7 +55,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*ServiceListResult,
 	}
 	u := getListURL(client) + utils.BuildQuery(q)
 
-	var resp ServiceListResult
+	var resp ServiceList
 	_, err := perigee.Request("GET", u, perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		Results:     &resp,
@@ -69,7 +69,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*ServiceListResult,
 }
 
 // Info returns additional information about a service, given its ID.
-func Info(client *gophercloud.ServiceClient, serviceID string) (*ServiceResult, error) {
+func Info(client *gophercloud.ServiceClient, serviceID string) (*Service, error) {
 	var resp response
 	_, err := perigee.Request("GET", getServiceURL(client, serviceID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
@@ -83,7 +83,7 @@ func Info(client *gophercloud.ServiceClient, serviceID string) (*ServiceResult, 
 }
 
 // Update changes the service type of an existing service.s
-func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) (*ServiceResult, error) {
+func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) (*Service, error) {
 	type request struct {
 		Type string `json:"type"`
 	}
