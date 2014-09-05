@@ -5,29 +5,13 @@ package v3
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/openstack"
+	"github.com/rackspace/gophercloud"
 	services3 "github.com/rackspace/gophercloud/openstack/identity/v3/services"
-	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
 func TestListServices(t *testing.T) {
-	// Obtain credentials from the environment.
-	ao, err := utils.AuthOptions()
-	if err != nil {
-		t.Fatalf("Unable to acquire credentials: %v", err)
-	}
-
-	// Trim out unused fields.
-	ao.TenantID, ao.TenantName = "", ""
-
-	// Create an authenticated client.
-	providerClient, err := openstack.AuthenticatedClient(ao)
-	if err != nil {
-		t.Fatalf("Unable to instantiate client: %v", err)
-	}
-
 	// Create a service client.
-	serviceClient := openstack.NewIdentityV3(providerClient)
+	serviceClient := createAuthenticatedClient(t)
 
 	// Use the service to create a token.
 	results, err := services3.List(serviceClient, services3.ListOpts{})
@@ -35,7 +19,14 @@ func TestListServices(t *testing.T) {
 		t.Fatalf("Unable to get token: %v", err)
 	}
 
-	for _, service := range results.Services {
-		t.Logf("Service: %32s %15s %10s %s", service.ID, service.Type, service.Name, *service.Description)
+	err = gophercloud.EachPage(results, func(page gophercloud.Collection) bool {
+		t.Logf("--- Page ---")
+		for _, service := range services3.AsServices(page) {
+			t.Logf("Service: %32s %15s %10s %s", service.ID, service.Type, service.Name, *service.Description)
+		}
+		return true
+	})
+	if err != nil {
+		t.Errorf("Unexpected error traversing pages: %v", err)
 	}
 }

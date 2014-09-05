@@ -18,7 +18,7 @@ func TestGetToken(t *testing.T) {
 	}
 
 	// Trim out unused fields.
-	ao.TenantID, ao.TenantName = "", ""
+	ao.Username, ao.TenantID, ao.TenantName = "", "", ""
 
 	// Create an unauthenticated client.
 	provider, err := openstack.NewClient(ao.IdentityEndpoint)
