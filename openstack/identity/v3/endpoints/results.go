@@ -14,6 +14,6 @@ type Endpoint struct {
 
 // EndpointList contains a page of Endpoint results.
 type EndpointList struct {
-	gophercloud.Pagination
+	service   *gophercloud.ServiceClient
 	Endpoints []Endpoint
 }
