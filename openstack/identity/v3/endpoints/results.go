@@ -54,3 +54,9 @@ func (list EndpointList) Interpret(json interface{}) (gophercloud.LinkCollection
 	}
 	return result, nil
 }
+
+// AsEndpoints extracts an Endpoint slice from a Collection.
+// Panics if `list` was not returned from a List call.
+func AsEndpoints(list gophercloud.Collection) []Endpoint {
+	return list.(*EndpointList).Endpoints
+}
