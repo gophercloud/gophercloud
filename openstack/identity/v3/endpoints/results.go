@@ -1,6 +1,11 @@
 package endpoints
 
-import "github.com/rackspace/gophercloud"
+import (
+	"fmt"
+
+	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
+)
 
 // Endpoint describes the entry point for another service's API.
 type Endpoint struct {
@@ -16,6 +21,36 @@ type Endpoint struct {
 type EndpointList struct {
 	gophercloud.PaginationLinks `json:"links"`
 
-	service   *gophercloud.ServiceClient
+	client    *gophercloud.ServiceClient
 	Endpoints []Endpoint `json:"endpoints"`
+}
+
+// Pager marks EndpointList as paged by links.
+func (list EndpointList) Pager() gophercloud.Pager {
+	return gophercloud.NewLinkPager(list)
+}
+
+// Service returns the ServiceClient used to acquire this list.
+func (list EndpointList) Service() *gophercloud.ServiceClient {
+	return list.client
+}
+
+// Links accesses pagination information for the current page.
+func (list EndpointList) Links() gophercloud.PaginationLinks {
+	return list.PaginationLinks
+}
+
+// Interpret parses a follow-on JSON response as an additional page.
+func (list EndpointList) Interpret(json interface{}) (gophercloud.LinkCollection, error) {
+	mapped, ok := json.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("Unexpected JSON response: %#v", json)
+	}
+
+	var result EndpointList
+	err := mapstructure.Decode(mapped, &result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
