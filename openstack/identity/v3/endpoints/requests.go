@@ -125,7 +125,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*EndpointList, erro
 
 	u := getListURL(client) + utils.BuildQuery(q)
 
-	var respBody []Endpoint
+	var respBody EndpointList
 	_, err := perigee.Request("GET", u, perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		Results:     &respBody,
@@ -135,7 +135,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*EndpointList, erro
 		return nil, err
 	}
 
-	return &EndpointList{Endpoints: respBody}, nil
+	return &respBody, nil
 }
 
 // Update changes an existing endpoint with new data.

@@ -92,30 +92,36 @@ func TestListEndpoints(t *testing.T) {
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
 
 		fmt.Fprintf(w, `
-			[
-				{
-					"id": "12",
-					"interface": "public",
-					"links": {
-						"self": "https://localhost:5000/v3/endpoints/12"
+			{
+				"endpoints": [
+					{
+						"id": "12",
+						"interface": "public",
+						"links": {
+							"self": "https://localhost:5000/v3/endpoints/12"
+						},
+						"name": "the-endiest-of-points",
+						"region": "underground",
+						"service_id": "asdfasdfasdfasdf",
+						"url": "https://1.2.3.4:9000/"
 					},
-					"name": "the-endiest-of-points",
-					"region": "underground",
-					"service_id": "asdfasdfasdfasdf",
-					"url": "https://1.2.3.4:9000/"
-				},
-				{
-					"id": "13",
-					"interface": "internal",
-					"links": {
-						"self": "https://localhost:5000/v3/endpoints/13"
-					},
-					"name": "shhhh",
-					"region": "underground",
-					"service_id": "asdfasdfasdfasdf",
-					"url": "https://1.2.3.4:9001/"
+					{
+						"id": "13",
+						"interface": "internal",
+						"links": {
+							"self": "https://localhost:5000/v3/endpoints/13"
+						},
+						"name": "shhhh",
+						"region": "underground",
+						"service_id": "asdfasdfasdfasdf",
+						"url": "https://1.2.3.4:9001/"
+					}
+				],
+				"links": {
+					"next": null,
+					"previous": null
 				}
-			]
+			}
 		`)
 	})
 
