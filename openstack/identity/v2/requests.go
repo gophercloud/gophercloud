@@ -15,7 +15,7 @@ type AuthResults map[string]interface{}
 // Authenticate passes the supplied credentials to the OpenStack provider for authentication.
 // If successful, the caller may use Token() to retrieve the authentication token,
 // and ServiceCatalog() to retrieve the set of services available to the API user.
-func Authenticate(service gophercloud.ServiceClient, options gophercloud.AuthOptions) (AuthResults, error) {
+func Authenticate(options gophercloud.AuthOptions) (AuthResults, error) {
 	type AuthContainer struct {
 		Auth auth `json:"auth"`
 	}

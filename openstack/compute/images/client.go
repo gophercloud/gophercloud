@@ -1,16 +1,17 @@
 package images
 
 import (
+	"github.com/rackspace/gophercloud"
 	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 )
 
 type Client struct {
 	endpoint  string
 	authority identity.AuthResults
-	options   identity.AuthOptions
+	options   gophercloud.AuthOptions
 }
 
-func NewClient(e string, a identity.AuthResults, ao identity.AuthOptions) *Client {
+func NewClient(e string, a identity.AuthResults, ao gophercloud.AuthOptions) *Client {
 	return &Client{
 		endpoint:  e,
 		authority: a,
@@ -29,6 +30,6 @@ func (c *Client) getListHeaders() (map[string]string, error) {
 	}
 
 	return map[string]string{
-		"X-Auth-Token": t.Id,
+		"X-Auth-Token": t.ID,
 	}, nil
 }
