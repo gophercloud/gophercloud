@@ -93,9 +93,7 @@ type PaginationLinks struct {
 
 // LinkCollection must be satisfied by a Page that uses a LinkPager.
 type LinkCollection interface {
-
-	// Pager is specified here so every LinkCollection will also be a valid Page.
-	Pager() Pager
+	Collection
 
 	// Service returns the client used to make further requests.
 	Service() *ServiceClient
