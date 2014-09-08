@@ -15,14 +15,14 @@ type AuthResults map[string]interface{}
 // Authenticate passes the supplied credentials to the OpenStack provider for authentication.
 // If successful, the caller may use Token() to retrieve the authentication token,
 // and ServiceCatalog() to retrieve the set of services available to the API user.
-func Authenticate(options gophercloud.AuthOptions) (AuthResults, error) {
+func Authenticate(c *gophercloud.ServiceClient, options gophercloud.AuthOptions) (AuthResults, error) {
 	type AuthContainer struct {
 		Auth auth `json:"auth"`
 	}
 
 	var ar AuthResults
 
-	if options.IdentityEndpoint == "" {
+	if c.Endpoint == "" {
 		return nil, ErrEndpoint
 	}
 
@@ -30,7 +30,7 @@ func Authenticate(options gophercloud.AuthOptions) (AuthResults, error) {
 		return nil, ErrCredentials
 	}
 
-	url := options.IdentityEndpoint + "/tokens"
+	url := c.Endpoint + "/tokens"
 	err := perigee.Post(url, perigee.Options{
 		ReqBody: &AuthContainer{
 			Auth: getAuthCredentials(options),
@@ -75,10 +75,10 @@ type auth struct {
 }
 
 // GetExtensions returns the OpenStack extensions available from this service.
-func GetExtensions(options gophercloud.AuthOptions) (ExtensionsResult, error) {
+func GetExtensions(c *gophercloud.ServiceClient, options gophercloud.AuthOptions) (ExtensionsResult, error) {
 	var exts ExtensionsResult
 
-	url := options.IdentityEndpoint + "/extensions"
+	url := c.Endpoint + "/extensions"
 	err := perigee.Get(url, perigee.Options{
 		Results: &exts,
 	})

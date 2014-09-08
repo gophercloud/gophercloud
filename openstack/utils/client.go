@@ -47,7 +47,8 @@ func NewClient(ao gophercloud.AuthOptions, eo EndpointOpts) (Client, error) {
 		Options: ao,
 	}
 
-	ar, err := identity.Authenticate(ao)
+	c := &gophercloud.ServiceClient{Endpoint: ao.IdentityEndpoint}
+	ar, err := identity.Authenticate(c, ao)
 	if err != nil {
 		return client, err
 	}
