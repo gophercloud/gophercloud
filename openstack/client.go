@@ -1,7 +1,6 @@
 package openstack
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -32,12 +31,7 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 	u.Path, u.RawQuery, u.Fragment = "", "", ""
 	normalized := u.String()
 
-	return &gophercloud.ProviderClient{
-		IdentityEndpoint: normalized,
-		Reauthenticate: func() error {
-			return errors.New("Unable to reauthenticate before authenticating the first time.")
-		},
-	}, nil
+	return &gophercloud.ProviderClient{IdentityEndpoint: normalized}, nil
 }
 
 // AuthenticatedClient logs in to an OpenStack cloud found at the identity endpoint specified by options, acquires a token, and

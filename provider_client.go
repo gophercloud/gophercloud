@@ -11,9 +11,6 @@ type ProviderClient struct {
 	// It should be the *root* resource of the identity service, not of a specific identity version.
 	IdentityEndpoint string
 
-	// Reauthenticate is a callback that will be invoked to reauthenticate this client, if reauthentication is enabled.
-	Reauthenticate func() error
-
 	// TokenID is the most recently valid token issued.
 	TokenID string
 
