@@ -2,6 +2,7 @@ package identity
 
 import (
 	"github.com/racker/perigee"
+	"github.com/rackspace/gophercloud"
 )
 
 // AuthResults encapsulates the raw results from an authentication request.
@@ -11,60 +12,25 @@ import (
 // such as ServiceCatalog() and Token().
 type AuthResults map[string]interface{}
 
-// AuthOptions lets anyone calling Authenticate() supply the required access
-// credentials.  At present, only Identity V2 API support exists; therefore,
-// only Username, Password, and optionally, TenantId are provided.  If future
-// Identity API versions become available, alternative fields unique to those
-// versions may appear here.
-//
-// Endpoint specifies the HTTP endpoint offering the Identity V2 API.
-// Required.
-//
-// Username is required if using Identity V2 API.  Consult with your provider's
-// control panel to discover your account's username.
-//
-// At most one of Password or ApiKey is required if using Identity V2 API.
-// Consult with your provider's control panel to discover your account's
-// preferred method of authentication.
-//
-// The TenantId and TenantName fields are optional for the Identity V2 API.
-// Some providers allow you to specify a TenantName instead of the TenantId.
-// Some require both.  Your provider's authentication policies will determine
-// how these fields influence authentication.
-//
-// AllowReauth should be set to true if you grant permission for Gophercloud to
-// cache your credentials in memory, and to allow Gophercloud to attempt to
-// re-authenticate automatically if/when your token expires.  If you set it to
-// false, it will not cache these settings, but re-authentication will not be
-// possible.  This setting defaults to false.
-type AuthOptions struct {
-	Endpoint         string
-	Username         string
-	Password, ApiKey string
-	TenantId         string
-	TenantName       string
-	AllowReauth      bool
-}
-
 // Authenticate passes the supplied credentials to the OpenStack provider for authentication.
 // If successful, the caller may use Token() to retrieve the authentication token,
 // and ServiceCatalog() to retrieve the set of services available to the API user.
-func Authenticate(options AuthOptions) (AuthResults, error) {
+func Authenticate(service gophercloud.ServiceClient, options gophercloud.AuthOptions) (AuthResults, error) {
 	type AuthContainer struct {
 		Auth auth `json:"auth"`
 	}
 
 	var ar AuthResults
 
-	if options.Endpoint == "" {
+	if options.IdentityEndpoint == "" {
 		return nil, ErrEndpoint
 	}
 
-	if (options.Username == "") || (options.Password == "" && options.ApiKey == "") {
+	if (options.Username == "") || (options.Password == "" && options.APIKey == "") {
 		return nil, ErrCredentials
 	}
 
-	url := options.Endpoint + "/tokens"
+	url := options.IdentityEndpoint + "/tokens"
 	err := perigee.Post(url, perigee.Options{
 		ReqBody: &AuthContainer{
 			Auth: getAuthCredentials(options),
@@ -74,8 +40,8 @@ func Authenticate(options AuthOptions) (AuthResults, error) {
 	return ar, err
 }
 
-func getAuthCredentials(options AuthOptions) auth {
-	if options.ApiKey == "" {
+func getAuthCredentials(options gophercloud.AuthOptions) auth {
+	if options.APIKey == "" {
 		return auth{
 			PasswordCredentials: &struct {
 				Username string `json:"username"`
@@ -84,35 +50,35 @@ func getAuthCredentials(options AuthOptions) auth {
 				Username: options.Username,
 				Password: options.Password,
 			},
-			TenantId:   options.TenantId,
+			TenantID:   options.TenantID,
 			TenantName: options.TenantName,
 		}
-	} else {
-		return auth{
-			ApiKeyCredentials: &struct {
-				Username string `json:"username"`
-				ApiKey   string `json:"apiKey"`
-			}{
-				Username: options.Username,
-				ApiKey:   options.ApiKey,
-			},
-			TenantId:   options.TenantId,
-			TenantName: options.TenantName,
-		}
+	}
+	return auth{
+		APIKeyCredentials: &struct {
+			Username string `json:"username"`
+			APIKey   string `json:"apiKey"`
+		}{
+			Username: options.Username,
+			APIKey:   options.APIKey,
+		},
+		TenantID:   options.TenantID,
+		TenantName: options.TenantName,
 	}
 }
 
 type auth struct {
 	PasswordCredentials interface{} `json:"passwordCredentials,omitempty"`
-	ApiKeyCredentials   interface{} `json:"RAX-KSKEY:apiKeyCredentials,omitempty"`
-	TenantId            string      `json:"tenantId,omitempty"`
+	APIKeyCredentials   interface{} `json:"RAX-KSKEY:apiKeyCredentials,omitempty"`
+	TenantID            string      `json:"tenantId,omitempty"`
 	TenantName          string      `json:"tenantName,omitempty"`
 }
 
-func GetExtensions(options AuthOptions) (ExtensionsResult, error) {
+// GetExtensions returns the OpenStack extensions available from this service.
+func GetExtensions(options gophercloud.AuthOptions) (ExtensionsResult, error) {
 	var exts ExtensionsResult
 
-	url := options.Endpoint + "/extensions"
+	url := options.IdentityEndpoint + "/extensions"
 	err := perigee.Get(url, perigee.Options{
 		Results: &exts,
 	})

@@ -45,8 +45,8 @@ func TestServiceCatalog(t *testing.T) {
 		return
 	}
 	for _, ep := range eps {
-		if strNotInStrList(ep.VersionId, "1", "1.1", "1.1") {
-			t.Errorf("Expected versionId field of compute resource to be one of 1 or 1.1")
+		if strNotInStrList(ep.VersionID, "1", "1.1", "1.1") {
+			t.Errorf("Expected versionID field of compute resource to be one of 1 or 1.1")
 			return
 		}
 	}
@@ -57,7 +57,7 @@ func TestServiceCatalog(t *testing.T) {
 		return
 	}
 	for _, ep := range eps {
-		if ep.VersionId != "1" {
+		if ep.VersionID != "1" {
 			t.Errorf("Expected only version 1 object store API version")
 			return
 		}
@@ -68,7 +68,7 @@ func TestServiceCatalog(t *testing.T) {
 		t.Errorf("Expected 1 endpoint for DNS-as-a-Service service")
 		return
 	}
-	if eps[0].VersionId != "2.0" {
+	if eps[0].VersionID != "2.0" {
 		t.Errorf("Expected version 2.0 of DNS-as-a-Service service")
 		return
 	}

@@ -40,11 +40,11 @@ type CatalogEntry struct {
 //
 // In all cases, fields which aren't supported by the provider and service combined will assume a zero-value ("").
 type Endpoint struct {
-	TenantId    string
+	TenantID    string
 	PublicURL   string
 	InternalURL string
 	Region      string
-	VersionId   string
+	VersionID   string
 	VersionInfo string
 	VersionList string
 }
