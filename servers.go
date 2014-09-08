@@ -421,7 +421,7 @@ func (gsp *genericServersProvider) CreateImage(id string, ci CreateImage) (strin
 func (gsp *genericServersProvider) Pause(id string) error {
 	return gsp.context.WithReauth(gsp.access, func() error {
 		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
-		return perigee.Request("POST", ep, perigee.Options{
+		return perigee.Post(ep, perigee.Options{
 			ReqBody: &struct {
 				Pause *int `json:"pause"`
 			}{nil},
@@ -437,7 +437,7 @@ func (gsp *genericServersProvider) Pause(id string) error {
 func (gsp *genericServersProvider) Unpause(id string) error {
 	return gsp.context.WithReauth(gsp.access, func() error {
 		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
-		return perigee.Request("POST", ep, perigee.Options{
+		return perigee.Post(ep, perigee.Options{
 			ReqBody: &struct {
 				Unpause *int `json:"unpause"`
 			}{nil},
