@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/rackspace/gophercloud"
+	identity2 "github.com/rackspace/gophercloud/openstack/identity/v2"
 	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
@@ -72,7 +73,22 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 
 	switch chosen.ID {
 	case v20:
-		return errors.New("Not implemented yet.")
+		v2Client := NewIdentityV2(client)
+		v2Client.Endpoint = endpoint
+		fmt.Printf("Endpoint is: %s\n", endpoint)
+
+		result, err := identity2.Authenticate(v2Client, options)
+		if err != nil {
+			return err
+		}
+
+		token, err := identity2.GetToken(result)
+		if err != nil {
+			return err
+		}
+		client.TokenID = token.ID
+
+		return nil
 	case v30:
 		// Override the generated service endpoint with the one returned by the version endpoint.
 		v3Client := NewIdentityV3(client)

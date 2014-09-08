@@ -30,7 +30,7 @@ func Authenticate(c *gophercloud.ServiceClient, options gophercloud.AuthOptions)
 		return nil, ErrCredentials
 	}
 
-	url := c.Endpoint + "/tokens"
+	url := c.Endpoint + "tokens"
 	err := perigee.Post(url, perigee.Options{
 		ReqBody: &AuthContainer{
 			Auth: getAuthCredentials(options),
@@ -78,7 +78,7 @@ type auth struct {
 func GetExtensions(c *gophercloud.ServiceClient, options gophercloud.AuthOptions) (ExtensionsResult, error) {
 	var exts ExtensionsResult
 
-	url := c.Endpoint + "/extensions"
+	url := c.Endpoint + "extensions"
 	err := perigee.Get(url, perigee.Options{
 		Results: &exts,
 	})
