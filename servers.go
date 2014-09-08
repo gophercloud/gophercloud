@@ -453,7 +453,7 @@ func (gsp *genericServersProvider) Unpause(id string) error {
 func (gsp *genericServersProvider) Suspend(id string) error {
 	return gsp.context.WithReauth(gsp.access, func() error {
 		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
-		return perigee.Request("POST", ep, perigee.Options{
+		return perigee.Post(ep, perigee.Options{
 			ReqBody: &struct {
 				Suspend *int `json:"suspend"`
 			}{nil},
@@ -469,7 +469,7 @@ func (gsp *genericServersProvider) Suspend(id string) error {
 func (gsp *genericServersProvider) Resume(id string) error {
 	return gsp.context.WithReauth(gsp.access, func() error {
 		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
-		return perigee.Request("POST", ep, perigee.Options{
+		return perigee.Post(ep, perigee.Options{
 			ReqBody: &struct {
 				Resume *int `json:"resume"`
 			}{nil},
@@ -486,7 +486,7 @@ func (gsp *genericServersProvider) Resume(id string) error {
 func (gsp *genericServersProvider) Start(id string) error {
 	return gsp.context.WithReauth(gsp.access, func() error {
 		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
-		return perigee.Request("POST", ep, perigee.Options{
+		return perigee.Post(ep, perigee.Options{
 			ReqBody: &struct {
 				Start *int `json:"start"`
 			}{nil},
@@ -503,7 +503,7 @@ func (gsp *genericServersProvider) Start(id string) error {
 func (gsp *genericServersProvider) Stop(id string) error {
 	return gsp.context.WithReauth(gsp.access, func() error {
 		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
-		return perigee.Request("POST", ep, perigee.Options{
+		return perigee.Post(ep, perigee.Options{
 			ReqBody: &struct {
 				Stop *int `json:"stop"`
 			}{nil},
