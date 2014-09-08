@@ -1,4 +1,4 @@
-package identity
+package v2
 
 // Taken from: http://docs.openstack.org/api/openstack-identity-service/2.0/content/POST_authenticate_v2.0_tokens_.html
 const authResultsOK = `{
@@ -160,20 +160,20 @@ const queryResults = `{
 					}
 				],
 				"namespace": "http://docs.openstack.org/identity/api/ext/OS-SIMPLE-CERT/v1.0",
-				"alias": "OS-SIMPLE-CERT",															
-				"description": "OpenStack simple certificate retrieval extension"	
-			},																
+				"alias": "OS-SIMPLE-CERT",
+				"description": "OpenStack simple certificate retrieval extension"
+			},
 			{
-				"updated": "2013-07-07T12:00:0-00:00",	
+				"updated": "2013-07-07T12:00:0-00:00",
 				"name": "OpenStack EC2 API",
 				"links": [
 					{
-						"href": "https://github.com/openstack/identity-api",	
-						"type": "text/html",				
-						"rel": "describedby"				
-					}	
+						"href": "https://github.com/openstack/identity-api",
+						"type": "text/html",
+						"rel": "describedby"
+					}
 				],
-				"namespace": "http://docs.openstack.org/identity/api/ext/OS-EC2/v1.0",	
+				"namespace": "http://docs.openstack.org/identity/api/ext/OS-EC2/v1.0",
 				"alias": "OS-EC2",
 				"description": "OpenStack EC2 Credentials backend."
 			}
