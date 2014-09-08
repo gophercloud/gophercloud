@@ -16,6 +16,9 @@ type ProviderClient struct {
 
 	// TokenID is the most recently valid token issued.
 	TokenID string
+
+	// EndpointLocator describes how this provider discovers the endpoints for its constituent services.
+	EndpointLocator EndpointLocator
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all authenticated service requests.

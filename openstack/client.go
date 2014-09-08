@@ -8,6 +8,8 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	identity2 "github.com/rackspace/gophercloud/openstack/identity/v2"
+	endpoints3 "github.com/rackspace/gophercloud/openstack/identity/v3/endpoints"
+	services3 "github.com/rackspace/gophercloud/openstack/identity/v3/services"
 	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
@@ -75,7 +77,6 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 	case v20:
 		v2Client := NewIdentityV2(client)
 		v2Client.Endpoint = endpoint
-		fmt.Printf("Endpoint is: %s\n", endpoint)
 
 		result, err := identity2.Authenticate(v2Client, options)
 		if err != nil {
@@ -86,7 +87,11 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 		if err != nil {
 			return err
 		}
+
 		client.TokenID = token.ID
+		client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
+			return v2endpointLocator(v2Client, opts)
+		}
 
 		return nil
 	case v30:
@@ -103,12 +108,102 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 		if err != nil {
 			return err
 		}
+		client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
+			return v3endpointLocator(v3Client, opts)
+		}
 
 		return nil
 	default:
 		// The switch statement must be out of date from the versions list.
 		return fmt.Errorf("Unrecognized identity version: %s", chosen.ID)
 	}
+}
+
+func v2endpointLocator(v2Client *gophercloud.ServiceClient, opts gophercloud.EndpointOpts) (string, error) {
+	return "", gophercloud.ErrEndpointNotFound
+}
+
+func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.EndpointOpts) (string, error) {
+	// Transform URLType into an Interface.
+	var endpointInterface = endpoints3.InterfacePublic
+	switch opts.URLType {
+	case "", "public":
+		endpointInterface = endpoints3.InterfacePublic
+	case "internal":
+		endpointInterface = endpoints3.InterfaceInternal
+	case "admin":
+		endpointInterface = endpoints3.InterfaceAdmin
+	default:
+		return "", fmt.Errorf("Unrecognized URLType: %s", opts.URLType)
+	}
+
+	// Discover the service we're interested in.
+	computeResults, err := services3.List(v3Client, services3.ListOpts{ServiceType: opts.Type})
+	if err != nil {
+		return "", err
+	}
+
+	serviceResults, err := gophercloud.AllPages(computeResults)
+	if err != nil {
+		return "", err
+	}
+	allServices := services3.AsServices(serviceResults)
+
+	if opts.Name != "" {
+		filtered := make([]services3.Service, 1)
+		for _, service := range allServices {
+			if service.Name == opts.Name {
+				filtered = append(filtered, service)
+			}
+		}
+		allServices = filtered
+	}
+
+	if len(allServices) == 0 {
+		return "", gophercloud.ErrEndpointNotFound
+	}
+	if len(allServices) > 1 {
+		return "", fmt.Errorf("Discovered %d matching services: %#v", len(allServices), allServices)
+	}
+
+	service := allServices[0]
+
+	// Enumerate the endpoints available for this service.
+	endpointResults, err := endpoints3.List(v3Client, endpoints3.ListOpts{
+		Interface: endpointInterface,
+		ServiceID: service.ID,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	allEndpoints, err := gophercloud.AllPages(endpointResults)
+	if err != nil {
+		return "", err
+	}
+
+	endpoints := endpoints3.AsEndpoints(allEndpoints)
+
+	if opts.Name != "" {
+		filtered := make([]endpoints3.Endpoint, 1)
+		for _, endpoint := range endpoints {
+			if endpoint.Region == opts.Region {
+				filtered = append(filtered, endpoint)
+			}
+		}
+		endpoints = filtered
+	}
+
+	if len(endpoints) == 0 {
+		return "", gophercloud.ErrEndpointNotFound
+	}
+	if len(endpoints) > 1 {
+		return "", fmt.Errorf("Discovered %d matching endpoints: %#v", len(endpoints), endpoints)
+	}
+
+	endpoint := endpoints[0]
+
+	return endpoint.URL, nil
 }
 
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.
