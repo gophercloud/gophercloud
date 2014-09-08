@@ -21,6 +21,10 @@ type Collection interface {
 	// Pager returns one of the concrete Pager implementations from this package, or a custom one.
 	// The style of Pager returned determines how the collection is paged.
 	Pager() Pager
+
+	// Concat the contents of another collection on to the end of this one.
+	// Return a new collection that contains elements from both.
+	Concat(Collection) Collection
 }
 
 // EachPage iterates through a Collection one page at a time.
@@ -50,7 +54,19 @@ func EachPage(first Collection, handler func(Collection) bool) error {
 // AllPages consolidates all pages reachable from a provided starting point into a single mega-Page.
 // Use this only when you know that the full set will always fit within memory.
 func AllPages(first Collection) (Collection, error) {
-	return first, nil
+	megaPage := first
+	isFirst := true
+
+	err := EachPage(first, func(page Collection) bool {
+		if isFirst {
+			isFirst = false
+		} else {
+			megaPage = megaPage.Concat(page)
+		}
+		return true
+	})
+
+	return megaPage, err
 }
 
 // Pager describes a specific paging idiom for a Page resource.

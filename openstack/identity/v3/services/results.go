@@ -19,13 +19,21 @@ type Service struct {
 type ServiceList struct {
 	gophercloud.PaginationLinks `json:"links"`
 
-	client *gophercloud.ServiceClient
-	Page   []Service `json:"services"`
+	client   *gophercloud.ServiceClient
+	Services []Service `json:"services"`
 }
 
 // Pager indicates that the ServiceList is paginated by next and previous links.
 func (list ServiceList) Pager() gophercloud.Pager {
 	return gophercloud.NewLinkPager(list)
+}
+
+// Concat returns a new collection that's the result of appending a new collection at the end of this one.
+func (list ServiceList) Concat(other gophercloud.Collection) gophercloud.Collection {
+	return ServiceList{
+		client:   list.client,
+		Services: append(list.Services, AsServices(other)...),
+	}
 }
 
 // Service returns the ServiceClient used to acquire this list.
@@ -56,5 +64,5 @@ func (list ServiceList) Interpret(json interface{}) (gophercloud.LinkCollection,
 // AsServices extracts a slice of Services from a Collection acquired from List.
 // It panics if the Collection does not actually contain Services.
 func AsServices(results gophercloud.Collection) []Service {
-	return results.(*ServiceList).Page
+	return results.(*ServiceList).Services
 }

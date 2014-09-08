@@ -20,6 +20,10 @@ func (c SinglePageCollection) Pager() Pager {
 	return SinglePager{}
 }
 
+func (c SinglePageCollection) Concat(other Collection) Collection {
+	panic("Concat should never be called on a single-paged collection.")
+}
+
 func AsSingleInts(c Collection) []int {
 	return c.(SinglePageCollection).results
 }
@@ -68,6 +72,17 @@ type LinkedCollection struct {
 	results []int
 }
 
+func (c LinkedCollection) Pager() Pager {
+	return NewLinkPager(c)
+}
+
+func (c LinkedCollection) Concat(other Collection) Collection {
+	return LinkedCollection{
+		service: c.service,
+		results: append(c.results, AsLinkedInts(other)...),
+	}
+}
+
 func (c LinkedCollection) Links() PaginationLinks {
 	return c.PaginationLinks
 }
@@ -77,7 +92,6 @@ func (c LinkedCollection) Service() *ServiceClient {
 }
 
 func (c LinkedCollection) Interpret(response interface{}) (LinkCollection, error) {
-	fmt.Printf("Interpreting result: %#v\n", response)
 	casted, ok := response.([]interface{})
 	if ok {
 		asInts := make([]int, len(casted))
@@ -102,18 +116,9 @@ func (c LinkedCollection) Interpret(response interface{}) (LinkCollection, error
 			service:         c.service,
 			results:         asInts,
 		}
-		if nextURL != nil {
-			fmt.Printf("Returning result: %s\n", *nextURL)
-		} else {
-			fmt.Printf("No next link")
-		}
 		return result, nil
 	}
 	return nil, errors.New("Wat")
-}
-
-func (c LinkedCollection) Pager() Pager {
-	return NewLinkPager(c)
 }
 
 func AsLinkedInts(results Collection) []int {
@@ -194,5 +199,30 @@ func TestEnumerateLinked(t *testing.T) {
 
 	if callCount != 3 {
 		t.Errorf("Expected 3 calls, but was %d", callCount)
+	}
+}
+
+func TestAllLinked(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+
+	setupLinkedResponses(t)
+	lc := createLinked()
+
+	all, err := AllPages(lc)
+	if err != nil {
+		t.Fatalf("Unexpected error collection all linked pages: %v", err)
+	}
+
+	actual := AsLinkedInts(all)
+	expected := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %v, but was %v", expected, actual)
+	}
+
+	original := []int{1, 2, 3}
+	if !reflect.DeepEqual(AsLinkedInts(lc), original) {
+		t.Errorf("AllPages modified the original page, and now it contains: %v", lc)
 	}
 }

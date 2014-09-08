@@ -30,6 +30,14 @@ func (list EndpointList) Pager() gophercloud.Pager {
 	return gophercloud.NewLinkPager(list)
 }
 
+// Concat adds the contents of another Collection to this one.
+func (list EndpointList) Concat(other gophercloud.Collection) gophercloud.Collection {
+	return EndpointList{
+		client:    list.client,
+		Endpoints: append(list.Endpoints, AsEndpoints(other)...),
+	}
+}
+
 // Service returns the ServiceClient used to acquire this list.
 func (list EndpointList) Service() *gophercloud.ServiceClient {
 	return list.client
