@@ -418,6 +418,104 @@ func (gsp *genericServersProvider) CreateImage(id string, ci CreateImage) (strin
 }
 
 // See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) Pause(id string) error {
+	return gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Request("POST", ep, perigee.Options{
+			ReqBody: &struct {
+				Pause *int `json:"pause"`
+			}{nil},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{202},
+		})
+	})
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) Unpause(id string) error {
+	return gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Request("POST", ep, perigee.Options{
+			ReqBody: &struct {
+				Unpause *int `json:"unpause"`
+			}{nil},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{202},
+		})
+	})
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) Suspend(id string) error {
+	return gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Request("POST", ep, perigee.Options{
+			ReqBody: &struct {
+				Suspend *int `json:"suspend"`
+			}{nil},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{202},
+		})
+	})
+}
+
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) Resume(id string) error {
+	return gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Request("POST", ep, perigee.Options{
+			ReqBody: &struct {
+				Resume *int `json:"resume"`
+			}{nil},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{202},
+		})
+	})
+}
+
+// WARNING: This function remains undocumented on the OpenStack API reference website, http://developer.openstack.org/api-ref-compute-v2-ext.html .
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) Start(id string) error {
+	return gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Request("POST", ep, perigee.Options{
+			ReqBody: &struct {
+				Start *int `json:"start"`
+			}{nil},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{202},
+		})
+	})
+}
+
+// WARNING: This function remains undocumented on the OpenStack API reference website, http://developer.openstack.org/api-ref-compute-v2-ext.html .
+// See the CloudServersProvider interface for details.
+func (gsp *genericServersProvider) Stop(id string) error {
+	return gsp.context.WithReauth(gsp.access, func() error {
+		ep := fmt.Sprintf("%s/servers/%s/action", gsp.endpoint, id)
+		return perigee.Request("POST", ep, perigee.Options{
+			ReqBody: &struct {
+				Stop *int `json:"stop"`
+			}{nil},
+			MoreHeaders: map[string]string{
+				"X-Auth-Token": gsp.access.AuthToken(),
+			},
+			OkCodes: []int{202},
+		})
+	})
+}
+
+// See the CloudServersProvider interface for details.
 func (gsp *genericServersProvider) ListSecurityGroups() ([]SecurityGroup, error) {
 	var sgs []SecurityGroup
 

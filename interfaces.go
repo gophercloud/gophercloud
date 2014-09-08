@@ -244,4 +244,29 @@ type CloudServersProvider interface {
 	// GetSGRule obtains information for a specified security group rule.
 	// This method only works if the provider supports the os-security-groups-default-rules extension.
 	GetSGRule(string) (*SGRule, error)
+
+	// Pause stores the state of the server in RAM.  A paused instance continues to run in a frozen state.
+	Pause(id string) error
+
+	// Unpause restores normal behavior of a previously paused server.
+	Unpause(id string) error
+
+	// Suspend stores the state of the server on disk or other non-volatile medium.
+	// Administrative users might suspend an infrequently used instance or suspend an instance to perform system maintenance.
+	// Suspending an instance is similar to placing a device in hibernation;
+	// memory and vCPUs become available to create other instances.
+	Suspend(id string) error
+
+	// Resume restores normal behavior of a previously suspended server.
+	Resume(id string) error
+
+	// Start restores a previously stopped server to normal operation.
+	// WARNING: This function depends on a Nova action which remains undocumented on the OpenStack API Reference website,
+	// and may be deprecated in favor of Pause/Unpause, or Suspend/Resume.
+	Start(id string) error
+
+	// Stop stops a server.
+	// WARNING: This function depends on a Nova action which remains undocumented on the OpenStack API Reference website,
+	// and may be deprecated in favor of Pause/Unpause, or Suspend/Resume.
+	Stop(id string) error
 }
