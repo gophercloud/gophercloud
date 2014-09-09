@@ -69,6 +69,13 @@ func ChooseVersion(identityEndpoint string, recognized []*Version) (*Version, st
 	var highest *Version
 	var endpoint string
 
+	normalize := func(endpoint string) string {
+		if !strings.HasSuffix(endpoint, "/") {
+			return endpoint + "/"
+		}
+		return endpoint
+	}
+
 	for _, value := range resp.Versions.Values {
 		href := ""
 		for _, link := range value.Links {
@@ -79,7 +86,7 @@ func ChooseVersion(identityEndpoint string, recognized []*Version) (*Version, st
 
 		if matching, ok := byID[value.ID]; ok {
 			// Prefer a version that exactly matches the provided endpoint.
-			if href == identityEndpoint {
+			if normalize(href) == normalize(identityEndpoint) {
 				if href == "" {
 					return nil, "", fmt.Errorf("Endpoint missing in version %s response from %s", value.ID, normalized)
 				}

@@ -18,7 +18,7 @@ func TestAuthenticatedClient(t *testing.T) {
 	}
 
 	// Trim out unused fields.
-	ao.TenantID, ao.TenantName, ao.Username = "", "", ""
+	ao.TenantID, ao.TenantName = "", ""
 
 	client, err := openstack.AuthenticatedClient(ao)
 	if err != nil {

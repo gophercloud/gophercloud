@@ -67,7 +67,7 @@ func TestChooseVersionOpinionatedLink(t *testing.T) {
 	v2 := &Version{ID: "v2.0", Priority: 2}
 	v3 := &Version{ID: "v3.0", Priority: 3}
 
-	v, endpoint, err := ChooseVersion(testhelper.Endpoint()+"v2.0", []*Version{v2, v3})
+	v, endpoint, err := ChooseVersion(testhelper.Endpoint()+"v2.0/", []*Version{v2, v3})
 	if err != nil {
 		t.Fatalf("Unexpected error from ChooseVersion: %v", err)
 	}
