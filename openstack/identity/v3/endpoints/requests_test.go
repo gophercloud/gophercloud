@@ -59,7 +59,7 @@ func TestCreateSuccessful(t *testing.T) {
 	client := serviceClient()
 
 	result, err := Create(client, EndpointOpts{
-		Interface: InterfacePublic,
+		Interface: gophercloud.InterfacePublic,
 		Name:      "the-endiest-of-points",
 		Region:    "underground",
 		URL:       "https://1.2.3.4:9000/",
@@ -71,7 +71,7 @@ func TestCreateSuccessful(t *testing.T) {
 
 	expected := &Endpoint{
 		ID:        "12",
-		Interface: InterfacePublic,
+		Interface: gophercloud.InterfacePublic,
 		Name:      "the-endiest-of-points",
 		Region:    "underground",
 		ServiceID: "asdfasdfasdfasdf",
@@ -136,7 +136,7 @@ func TestListEndpoints(t *testing.T) {
 		Endpoints: []Endpoint{
 			Endpoint{
 				ID:        "12",
-				Interface: InterfacePublic,
+				Interface: gophercloud.InterfacePublic,
 				Name:      "the-endiest-of-points",
 				Region:    "underground",
 				ServiceID: "asdfasdfasdfasdf",
@@ -144,7 +144,7 @@ func TestListEndpoints(t *testing.T) {
 			},
 			Endpoint{
 				ID:        "13",
-				Interface: InterfaceInternal,
+				Interface: gophercloud.InterfaceInternal,
 				Name:      "shhhh",
 				Region:    "underground",
 				ServiceID: "asdfasdfasdfasdf",
@@ -202,7 +202,7 @@ func TestUpdateEndpoint(t *testing.T) {
 
 	expected := &Endpoint{
 		ID:        "12",
-		Interface: InterfacePublic,
+		Interface: gophercloud.InterfacePublic,
 		Name:      "renamed",
 		Region:    "somewhere-else",
 		ServiceID: "asdfasdfasdfasdf",

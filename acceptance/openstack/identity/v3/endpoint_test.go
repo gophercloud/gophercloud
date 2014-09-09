@@ -66,7 +66,7 @@ func TestNavigateCatalog(t *testing.T) {
 
 	// Enumerate the endpoints available for this service.
 	endpointResults, err := endpoints3.List(client, endpoints3.ListOpts{
-		Interface: endpoints3.InterfacePublic,
+		Interface: gophercloud.InterfacePublic,
 		ServiceID: computeService.ID,
 	})
 

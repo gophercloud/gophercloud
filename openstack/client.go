@@ -153,13 +153,13 @@ func v2endpointLocator(authResults identity2.AuthResults, opts gophercloud.Endpo
 
 	// Extract the appropriate URL from the matching Endpoint.
 	for _, endpoint := range endpoints {
-		switch opts.URLType {
-		case "public", "":
+		switch opts.Interface {
+		case gophercloud.InterfacePublic:
 			return endpoint.PublicURL, nil
-		case "private":
+		case gophercloud.InterfaceInternal:
 			return endpoint.InternalURL, nil
 		default:
-			return "", fmt.Errorf("Unexpected URLType in endpoint query: %s", opts.URLType)
+			return "", fmt.Errorf("Unexpected interface in endpoint query: %s", opts.Interface)
 		}
 	}
 
@@ -195,17 +195,9 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 }
 
 func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.EndpointOpts) (string, error) {
-	// Transform URLType into an Interface.
-	var endpointInterface = endpoints3.InterfacePublic
-	switch opts.URLType {
-	case "", "public":
-		endpointInterface = endpoints3.InterfacePublic
-	case "internal":
-		endpointInterface = endpoints3.InterfaceInternal
-	case "admin":
-		endpointInterface = endpoints3.InterfaceAdmin
-	default:
-		return "", fmt.Errorf("Unrecognized URLType: %s", opts.URLType)
+	// Default Interface to InterfacePublic, if it isn't provided.
+	if opts.Interface == "" {
+		opts.Interface = gophercloud.InterfacePublic
 	}
 
 	// Discover the service we're interested in.
@@ -241,7 +233,7 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 
 	// Enumerate the endpoints available for this service.
 	endpointResults, err := endpoints3.List(v3Client, endpoints3.ListOpts{
-		Interface: endpointInterface,
+		Interface: opts.Interface,
 		ServiceID: service.ID,
 	})
 	if err != nil {

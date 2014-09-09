@@ -8,20 +8,6 @@ import (
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
-// Interface describes the availability of a specific service endpoint.
-type Interface string
-
-const (
-	// InterfaceAdmin makes an endpoint only available to administrators.
-	InterfaceAdmin Interface = "admin"
-
-	// InterfacePublic makes an endpoint available to everyone.
-	InterfacePublic Interface = "public"
-
-	// InterfaceInternal makes an endpoint only available within the cluster.
-	InterfaceInternal Interface = "internal"
-)
-
 // maybeString returns nil for empty strings and nil for empty.
 func maybeString(original string) *string {
 	if original != "" {
@@ -32,7 +18,7 @@ func maybeString(original string) *string {
 
 // EndpointOpts contains the subset of Endpoint attributes that should be used to create or update an Endpoint.
 type EndpointOpts struct {
-	Interface Interface
+	Interface gophercloud.Interface
 	Name      string
 	Region    string
 	URL       string
@@ -101,7 +87,7 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, er
 // ListOpts allows finer control over the the endpoints returned by a List call.
 // All fields are optional.
 type ListOpts struct {
-	Interface Interface
+	Interface gophercloud.Interface
 	ServiceID string
 	Page      int
 	PerPage   int

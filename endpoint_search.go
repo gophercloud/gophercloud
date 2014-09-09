@@ -10,6 +10,20 @@ var (
 	ErrEndpointNotFound = errors.New("No suitable endpoint could be found in the service catalog.")
 )
 
+// Interface describes the accessibility of a specific service endpoint.
+type Interface string
+
+const (
+	// InterfaceAdmin makes an endpoint only available to administrators.
+	InterfaceAdmin Interface = "admin"
+
+	// InterfacePublic makes an endpoint available to everyone.
+	InterfacePublic Interface = "public"
+
+	// InterfaceInternal makes an endpoint only available within the cluster.
+	InterfaceInternal Interface = "internal"
+)
+
 // EndpointOpts contains options for finding an endpoint for an Openstack client.
 type EndpointOpts struct {
 
@@ -25,9 +39,10 @@ type EndpointOpts struct {
 	// Region is the region in which the service resides.
 	Region string
 
-	// URLType is they type of endpoint to be returned (e.g., "public", "private").
-	// URLType is not required, and defaults to "public".
-	URLType string
+	// Interface is they type of endpoint to be returned: InterfacePublic, InterfaceInternal, or InterfaceAdmin
+	// Interface is not required, and defaults to InterfacePublic.
+	// Not all interface types are accepted by all providers or identity services.
+	Interface Interface
 }
 
 // EndpointLocator is a function that describes how to locate a single endpoint from a service catalog for a specific ProviderClient.
