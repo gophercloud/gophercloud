@@ -184,19 +184,19 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 	}
 
 	// Discover the service we're interested in.
-	computeResults, err := services3.List(v3Client, services3.ListOpts{ServiceType: opts.Type})
+	serviceResults, err := services3.List(v3Client, services3.ListOpts{ServiceType: opts.Type})
 	if err != nil {
 		return "", err
 	}
 
-	serviceResults, err := gophercloud.AllPages(computeResults)
+	allServiceResults, err := gophercloud.AllPages(serviceResults)
 	if err != nil {
 		return "", err
 	}
-	allServices := services3.AsServices(serviceResults)
+	allServices := services3.AsServices(allServiceResults)
 
 	if opts.Name != "" {
-		filtered := make([]services3.Service, 1)
+		filtered := make([]services3.Service, 0, 1)
 		for _, service := range allServices {
 			if service.Name == opts.Name {
 				filtered = append(filtered, service)
@@ -206,7 +206,7 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 	}
 
 	if len(allServices) == 0 {
-		return "", gophercloud.ErrEndpointNotFound
+		return "", gophercloud.ErrServiceNotFound
 	}
 	if len(allServices) > 1 {
 		return "", fmt.Errorf("Discovered %d matching services: %#v", len(allServices), allServices)
@@ -222,18 +222,16 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 	if err != nil {
 		return "", err
 	}
-
 	allEndpoints, err := gophercloud.AllPages(endpointResults)
 	if err != nil {
 		return "", err
 	}
-
 	endpoints := endpoints3.AsEndpoints(allEndpoints)
 
 	if opts.Name != "" {
-		filtered := make([]endpoints3.Endpoint, 1)
+		filtered := make([]endpoints3.Endpoint, 0, 1)
 		for _, endpoint := range endpoints {
-			if endpoint.Region == opts.Region {
+			if opts.Region == "" || endpoint.Region == opts.Region {
 				filtered = append(filtered, endpoint)
 			}
 		}
@@ -270,4 +268,13 @@ func NewIdentityV3(client *gophercloud.ProviderClient) *gophercloud.ServiceClien
 		Provider: client,
 		Endpoint: v3Endpoint,
 	}
+}
+
+// NewStorageV1 creates a ServiceClient that may be used with the v1 object storage package.
+func NewStorageV1(client *gophercloud.ProviderClient, region string) (*gophercloud.ServiceClient, error) {
+	url, err := client.EndpointLocator(gophercloud.EndpointOpts{Type: "object-store", Name: "swift"})
+	if err != nil {
+		return nil, err
+	}
+	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
 }

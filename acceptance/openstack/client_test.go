@@ -3,6 +3,7 @@
 package openstack
 
 import (
+	"os"
 	"testing"
 
 	"github.com/rackspace/gophercloud/openstack"
@@ -17,7 +18,7 @@ func TestAuthenticatedClient(t *testing.T) {
 	}
 
 	// Trim out unused fields.
-	ao.TenantID, ao.TenantName = "", ""
+	ao.TenantID, ao.TenantName, ao.Username = "", "", ""
 
 	client, err := openstack.AuthenticatedClient(ao)
 	if err != nil {
@@ -29,4 +30,12 @@ func TestAuthenticatedClient(t *testing.T) {
 	}
 
 	t.Logf("Client successfully acquired a token: %v", client.TokenID)
+
+	// Find the storage service in the service catalog.
+	storage, err := openstack.NewStorageV1(client, os.Getenv("OS_REGION_NAME"))
+	if err != nil {
+		t.Errorf("Unable to locate a storage service: %v", err)
+	} else {
+		t.Logf("Located a storage service at endpoint: [%s]", storage.Endpoint)
+	}
 }

@@ -3,6 +3,9 @@ package gophercloud
 import "errors"
 
 var (
+	// ErrServiceNotFound is returned when no service matches the EndpointOpts.
+	ErrServiceNotFound = errors.New("No suitable service could be found in the service catalog.")
+
 	// ErrEndpointNotFound is returned when no available endpoints match the provided EndpointOpts.
 	ErrEndpointNotFound = errors.New("No suitable endpoint could be found in the service catalog.")
 )
