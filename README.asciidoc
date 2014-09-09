@@ -39,7 +39,7 @@ To run the acceptance tests, run
 ```
 go test -v -tags acceptance github.com/rackspace/gophercloud
 ```
-*Note: Running the acceptance tests briefly creates (and deletes) real resources. You may incur costsfrom your provider by running these.*
+*Note: Running the acceptance tests briefly creates (and deletes) real resources. You may incur costs from your provider by running these.*
 
 To run specific tests, use a regular expression with the `run` flag. For example, to just run the authentication test (named TestAuthentication), run
 ```
