@@ -13,6 +13,9 @@ import (
 func TestListEndpoints(t *testing.T) {
 	// Create a service client.
 	serviceClient := createAuthenticatedClient(t)
+	if serviceClient == nil {
+		return
+	}
 
 	// Use the service to list all available endpoints.
 	results, err := endpoints3.List(serviceClient, endpoints3.ListOpts{})

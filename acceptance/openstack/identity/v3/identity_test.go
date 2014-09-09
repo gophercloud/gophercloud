@@ -18,10 +18,20 @@ func createAuthenticatedClient(t *testing.T) *gophercloud.ServiceClient {
 	// Trim out unused fields.
 	ao.Username, ao.TenantID, ao.TenantName = "", "", ""
 
-	// Create an authenticated client.
-	providerClient, err := openstack.AuthenticatedClient(ao)
+	if ao.UserID == "" {
+		t.Logf("Skipping identity v3 tests because no OS_USERID is present.")
+		return nil
+	}
+
+	// Create a client and manually authenticate against v3.
+	providerClient, err := openstack.NewClient(ao.IdentityEndpoint)
 	if err != nil {
 		t.Fatalf("Unable to instantiate client: %v", err)
+	}
+
+	err = openstack.AuthenticateV3(providerClient, ao)
+	if err != nil {
+		t.Fatalf("Unable to authenticate against identity v3: %v", err)
 	}
 
 	// Create a service client.

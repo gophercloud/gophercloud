@@ -17,8 +17,12 @@ func TestGetToken(t *testing.T) {
 		t.Fatalf("Unable to acquire credentials: %v", err)
 	}
 
-	// Trim out unused fields.
+	// Trim out unused fields. Skip if we don't have a UserID.
 	ao.Username, ao.TenantID, ao.TenantName = "", "", ""
+	if ao.UserID == "" {
+		t.Logf("Skipping identity v3 tests because no OS_USERID is present.")
+		return
+	}
 
 	// Create an unauthenticated client.
 	provider, err := openstack.NewClient(ao.IdentityEndpoint)

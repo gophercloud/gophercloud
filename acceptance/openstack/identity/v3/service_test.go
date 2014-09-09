@@ -12,6 +12,9 @@ import (
 func TestListServices(t *testing.T) {
 	// Create a service client.
 	serviceClient := createAuthenticatedClient(t)
+	if serviceClient == nil {
+		return
+	}
 
 	// Use the service to create a token.
 	results, err := services3.List(serviceClient, services3.ListOpts{})
