@@ -2,7 +2,6 @@ package openstack
 
 import (
 	"fmt"
-	"net/url"
 	"strings"
 
 	"github.com/rackspace/gophercloud"
@@ -23,15 +22,7 @@ const (
 // This is useful if you wish to explicitly control the version of the identity service that's used for authentication explicitly,
 // for example.
 func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
-	// Normalize the identity endpoint that's provided by trimming any path, query or fragment from the URL.
-	u, err := url.Parse(endpoint)
-	if err != nil {
-		return nil, err
-	}
-	u.Path, u.RawQuery, u.Fragment = "", "", ""
-	normalized := u.String()
-
-	return &gophercloud.ProviderClient{IdentityEndpoint: normalized}, nil
+	return &gophercloud.ProviderClient{IdentityEndpoint: endpoint}, nil
 }
 
 // AuthenticatedClient logs in to an OpenStack cloud found at the identity endpoint specified by options, acquires a token, and
