@@ -53,7 +53,7 @@ func TestChooseVersion(t *testing.T) {
 		t.Errorf("Expected %#v to win, but %#v did instead", v3, v)
 	}
 
-	expected := testhelper.Endpoint() + "v3.0"
+	expected := testhelper.Endpoint() + "v3.0/"
 	if endpoint != expected {
 		t.Errorf("Expected endpoint [%s], but was [%s] instead", expected, endpoint)
 	}
@@ -76,7 +76,7 @@ func TestChooseVersionOpinionatedLink(t *testing.T) {
 		t.Errorf("Expected %#v to win, but %#v did instead", v2, v)
 	}
 
-	expected := testhelper.Endpoint() + "v2.0"
+	expected := testhelper.Endpoint() + "v2.0/"
 	if endpoint != expected {
 		t.Errorf("Expected endpoint [%s], but was [%s] instead", expected, endpoint)
 	}

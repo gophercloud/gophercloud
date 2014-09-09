@@ -22,6 +22,10 @@ const (
 // This is useful if you wish to explicitly control the version of the identity service that's used for authentication explicitly,
 // for example.
 func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
+	if !strings.HasSuffix(endpoint, "/") {
+		endpoint = endpoint + "/"
+	}
+
 	return &gophercloud.ProviderClient{IdentityEndpoint: endpoint}, nil
 }
 
@@ -52,10 +56,6 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 	chosen, endpoint, err := utils.ChooseVersion(client.IdentityEndpoint, versions)
 	if err != nil {
 		return err
-	}
-
-	if !strings.HasSuffix(endpoint, "/") {
-		endpoint = endpoint + "/"
 	}
 
 	switch chosen.ID {
@@ -116,19 +116,9 @@ func v2endpointLocator(authResults identity2.AuthResults, opts gophercloud.Endpo
 	}
 
 	// Extract Endpoints from the catalog entries that match the requested Type, Name if provided, and Region if provided.
-	var endpoints = make([]identity2.Endpoint, 0, 6)
+	var endpoints = make([]identity2.Endpoint, 0, 1)
 	for _, entry := range entries {
-		matched := true
-
-		if entry.Type != opts.Type {
-			matched = false
-		}
-
-		if opts.Name != "" && entry.Name != opts.Name {
-			matched = false
-		}
-
-		if matched {
+		if (entry.Type == opts.Type) && (opts.Name == "" || entry.Name == opts.Name) {
 			for _, endpoint := range entry.Endpoints {
 				if opts.Region == "" || endpoint.Region == opts.Region {
 					endpoints = append(endpoints, endpoint)
@@ -243,7 +233,7 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.
 func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
-	v2Endpoint := client.IdentityEndpoint + "/v2.0/"
+	v2Endpoint := client.IdentityEndpoint + "v2.0/"
 
 	return &gophercloud.ServiceClient{
 		Provider: client,
@@ -253,7 +243,7 @@ func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClien
 
 // NewIdentityV3 creates a ServiceClient that may be used to access the v3 identity service.
 func NewIdentityV3(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
-	v3Endpoint := client.IdentityEndpoint + "/v3/"
+	v3Endpoint := client.IdentityEndpoint + "v3/"
 
 	return &gophercloud.ServiceClient{
 		Provider: client,

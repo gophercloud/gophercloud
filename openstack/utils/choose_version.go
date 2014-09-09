@@ -75,18 +75,19 @@ func ChooseVersion(identityEndpoint string, recognized []*Version) (*Version, st
 		}
 		return endpoint
 	}
+	normalizedGiven := normalize(identityEndpoint)
 
 	for _, value := range resp.Versions.Values {
 		href := ""
 		for _, link := range value.Links {
 			if link.Rel == "self" {
-				href = link.Href
+				href = normalize(link.Href)
 			}
 		}
 
 		if matching, ok := byID[value.ID]; ok {
 			// Prefer a version that exactly matches the provided endpoint.
-			if normalize(href) == normalize(identityEndpoint) {
+			if href == normalizedGiven {
 				if href == "" {
 					return nil, "", fmt.Errorf("Endpoint missing in version %s response from %s", value.ID, normalized)
 				}
