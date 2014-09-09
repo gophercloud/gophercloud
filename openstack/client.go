@@ -2,6 +2,7 @@ package openstack
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/rackspace/gophercloud"
@@ -22,11 +23,32 @@ const (
 // This is useful if you wish to explicitly control the version of the identity service that's used for authentication explicitly,
 // for example.
 func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
+	u, err := url.Parse(endpoint)
+	if err != nil {
+		return nil, err
+	}
+	hadPath := u.Path != ""
+	u.Path, u.RawQuery, u.Fragment = "", "", ""
+	base := u.String()
+
 	if !strings.HasSuffix(endpoint, "/") {
 		endpoint = endpoint + "/"
 	}
+	if !strings.HasSuffix(base, "/") {
+		base = base + "/"
+	}
 
-	return &gophercloud.ProviderClient{IdentityEndpoint: endpoint}, nil
+	if hadPath {
+		return &gophercloud.ProviderClient{
+			IdentityBase:     base,
+			IdentityEndpoint: endpoint,
+		}, nil
+	}
+
+	return &gophercloud.ProviderClient{
+		IdentityBase:     base,
+		IdentityEndpoint: "",
+	}, nil
 }
 
 // AuthenticatedClient logs in to an OpenStack cloud found at the identity endpoint specified by options, acquires a token, and
@@ -49,59 +71,53 @@ func AuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.Provider
 // Authenticate or re-authenticate against the most recent identity service supported at the provided endpoint.
 func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
 	versions := []*utils.Version{
-		&utils.Version{ID: v20, Priority: 20},
-		&utils.Version{ID: v30, Priority: 30},
+		&utils.Version{ID: v20, Priority: 20, Suffix: "/v2.0/"},
+		&utils.Version{ID: v30, Priority: 30, Suffix: "/v3/"},
 	}
 
-	chosen, endpoint, err := utils.ChooseVersion(client.IdentityEndpoint, versions)
+	chosen, endpoint, err := utils.ChooseVersion(client.IdentityBase, client.IdentityEndpoint, versions)
 	if err != nil {
 		return err
 	}
 
 	switch chosen.ID {
 	case v20:
-		v2Client := NewIdentityV2(client)
-		v2Client.Endpoint = endpoint
-
-		result, err := identity2.Authenticate(v2Client, options)
-		if err != nil {
-			return err
-		}
-
-		token, err := identity2.GetToken(result)
-		if err != nil {
-			return err
-		}
-
-		client.TokenID = token.ID
-		client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
-			return v2endpointLocator(result, opts)
-		}
-
-		return nil
+		return v2auth(client, endpoint, options)
 	case v30:
-		// Override the generated service endpoint with the one returned by the version endpoint.
-		v3Client := NewIdentityV3(client)
-		v3Client.Endpoint = endpoint
-
-		result, err := tokens3.Create(v3Client, options, nil)
-		if err != nil {
-			return err
-		}
-
-		client.TokenID, err = result.TokenID()
-		if err != nil {
-			return err
-		}
-		client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
-			return v3endpointLocator(v3Client, opts)
-		}
-
-		return nil
+		return v3auth(client, endpoint, options)
 	default:
 		// The switch statement must be out of date from the versions list.
 		return fmt.Errorf("Unrecognized identity version: %s", chosen.ID)
 	}
+}
+
+// AuthenticateV2 explicitly authenticates against the identity v2 endpoint.
+func AuthenticateV2(client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
+	return v2auth(client, "", options)
+}
+
+func v2auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions) error {
+	v2Client := NewIdentityV2(client)
+	if endpoint != "" {
+		v2Client.Endpoint = endpoint
+	}
+
+	result, err := identity2.Authenticate(v2Client, options)
+	if err != nil {
+		return err
+	}
+
+	token, err := identity2.GetToken(result)
+	if err != nil {
+		return err
+	}
+
+	client.TokenID = token.ID
+	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
+		return v2endpointLocator(result, opts)
+	}
+
+	return nil
 }
 
 func v2endpointLocator(authResults identity2.AuthResults, opts gophercloud.EndpointOpts) (string, error) {
@@ -148,6 +164,34 @@ func v2endpointLocator(authResults identity2.AuthResults, opts gophercloud.Endpo
 	}
 
 	return "", gophercloud.ErrEndpointNotFound
+}
+
+// AuthenticateV3 explicitly authenticates against the identity v3 service.
+func AuthenticateV3(client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
+	return v3auth(client, "", options)
+}
+
+func v3auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions) error {
+	// Override the generated service endpoint with the one returned by the version endpoint.
+	v3Client := NewIdentityV3(client)
+	if endpoint != "" {
+		v3Client.Endpoint = endpoint
+	}
+
+	result, err := tokens3.Create(v3Client, options, nil)
+	if err != nil {
+		return err
+	}
+
+	client.TokenID, err = result.TokenID()
+	if err != nil {
+		return err
+	}
+	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
+		return v3endpointLocator(v3Client, opts)
+	}
+
+	return nil
 }
 
 func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.EndpointOpts) (string, error) {
@@ -233,7 +277,7 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.
 func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
-	v2Endpoint := client.IdentityEndpoint + "v2.0/"
+	v2Endpoint := client.IdentityBase + "v2.0/"
 
 	return &gophercloud.ServiceClient{
 		Provider: client,
@@ -243,7 +287,7 @@ func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClien
 
 // NewIdentityV3 creates a ServiceClient that may be used to access the v3 identity service.
 func NewIdentityV3(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
-	v3Endpoint := client.IdentityEndpoint + "v3/"
+	v3Endpoint := client.IdentityBase + "v3/"
 
 	return &gophercloud.ServiceClient{
 		Provider: client,

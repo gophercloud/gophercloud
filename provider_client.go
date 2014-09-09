@@ -6,9 +6,14 @@ package gophercloud
 // providing whatever authentication credentials are required.
 type ProviderClient struct {
 
-	// IdentityEndpoint is the front door to an openstack provider.
+	// IdentityBase is the front door to an openstack provider.
 	// Generally this will be populated when you authenticate.
 	// It should be the *root* resource of the identity service, not of a specific identity version.
+	IdentityBase string
+
+	// IdentityEndpoint is the originally requested identity endpoint.
+	// This may be a specific version of the identity service, in which case that endpoint is used rather than querying the
+	// version-negotiation endpoint.
 	IdentityEndpoint string
 
 	// TokenID is the most recently valid token issued.

@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"net/url"
 	"strings"
 
 	"github.com/racker/perigee"
@@ -11,6 +10,7 @@ import (
 // Version is a supported API version, corresponding to a vN package within the appropriate service.
 type Version struct {
 	ID       string
+	Suffix   string
 	Priority int
 }
 
@@ -23,7 +23,7 @@ var goodStatus = map[string]bool{
 // ChooseVersion queries the base endpoint of a API to choose the most recent non-experimental alternative from a service's
 // published versions.
 // It returns the highest-Priority Version among the alternatives that are provided, as well as its corresponding endpoint.
-func ChooseVersion(identityEndpoint string, recognized []*Version) (*Version, string, error) {
+func ChooseVersion(identityBase string, identityEndpoint string, recognized []*Version) (*Version, string, error) {
 	type linkResp struct {
 		Href string `json:"href"`
 		Rel  string `json:"rel"`
@@ -43,16 +43,23 @@ func ChooseVersion(identityEndpoint string, recognized []*Version) (*Version, st
 		Versions versionsResp `json:"versions"`
 	}
 
-	// Normalize the identity endpoint that's provided by trimming any path, query or fragment from the URL.
-	u, err := url.Parse(identityEndpoint)
-	if err != nil {
-		return nil, "", err
+	normalize := func(endpoint string) string {
+		if !strings.HasSuffix(endpoint, "/") {
+			return endpoint + "/"
+		}
+		return endpoint
 	}
-	u.Path, u.RawQuery, u.Fragment = "", "", ""
-	normalized := u.String()
+	identityEndpoint = normalize(identityEndpoint)
+
+	// If a full endpoint is specified, check version suffixes for a match first.
+	for _, v := range recognized {
+		if strings.HasSuffix(identityEndpoint, v.Suffix) {
+			return v, identityEndpoint, nil
+		}
+	}
 
 	var resp response
-	_, err = perigee.Request("GET", normalized, perigee.Options{
+	_, err := perigee.Request("GET", identityBase, perigee.Options{
 		Results: &resp,
 		OkCodes: []int{200, 300},
 	})
@@ -69,14 +76,6 @@ func ChooseVersion(identityEndpoint string, recognized []*Version) (*Version, st
 	var highest *Version
 	var endpoint string
 
-	normalize := func(endpoint string) string {
-		if !strings.HasSuffix(endpoint, "/") {
-			return endpoint + "/"
-		}
-		return endpoint
-	}
-	normalizedGiven := normalize(identityEndpoint)
-
 	for _, value := range resp.Versions.Values {
 		href := ""
 		for _, link := range value.Links {
@@ -87,9 +86,9 @@ func ChooseVersion(identityEndpoint string, recognized []*Version) (*Version, st
 
 		if matching, ok := byID[value.ID]; ok {
 			// Prefer a version that exactly matches the provided endpoint.
-			if href == normalizedGiven {
+			if href == identityEndpoint {
 				if href == "" {
-					return nil, "", fmt.Errorf("Endpoint missing in version %s response from %s", value.ID, normalized)
+					return nil, "", fmt.Errorf("Endpoint missing in version %s response from %s", value.ID, identityBase)
 				}
 				return matching, href, nil
 			}
@@ -105,10 +104,10 @@ func ChooseVersion(identityEndpoint string, recognized []*Version) (*Version, st
 	}
 
 	if highest == nil {
-		return nil, "", fmt.Errorf("No supported version available from endpoint %s", normalized)
+		return nil, "", fmt.Errorf("No supported version available from endpoint %s", identityBase)
 	}
 	if endpoint == "" {
-		return nil, "", fmt.Errorf("Endpoint missing in version %s response from %s", highest.ID, normalized)
+		return nil, "", fmt.Errorf("Endpoint missing in version %s response from %s", highest.ID, identityBase)
 	}
 
 	return highest, endpoint, nil
