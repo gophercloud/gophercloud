@@ -128,7 +128,7 @@ func TestListSinglePage(t *testing.T) {
 	}
 }
 
-func TestInfoSuccessful(t *testing.T) {
+func TestGetSuccessful(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
@@ -151,7 +151,7 @@ func TestInfoSuccessful(t *testing.T) {
 
 	client := serviceClient()
 
-	result, err := Info(client, "12345")
+	result, err := Get(client, "12345")
 	if err != nil {
 		t.Fatalf("Error fetching service information: %v", err)
 	}

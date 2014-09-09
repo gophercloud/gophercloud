@@ -389,7 +389,7 @@ func TestCreateFailureEmptyScope(t *testing.T) {
 	authTokenPostErr(t, options, scope, false, ErrScopeEmpty)
 }
 
-func TestInfoRequest(t *testing.T) {
+func TestGetRequest(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
@@ -413,7 +413,7 @@ func TestInfoRequest(t *testing.T) {
 		`)
 	})
 
-	result, err := Info(&client, "abcdef12345")
+	result, err := Get(&client, "abcdef12345")
 	if err != nil {
 		t.Errorf("Info returned an error: %v", err)
 	}

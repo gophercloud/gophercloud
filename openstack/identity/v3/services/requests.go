@@ -68,8 +68,8 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*ServiceList, error
 	return &resp, nil
 }
 
-// Info returns additional information about a service, given its ID.
-func Info(client *gophercloud.ServiceClient, serviceID string) (*Service, error) {
+// Get returns additional information about a service, given its ID.
+func Get(client *gophercloud.ServiceClient, serviceID string) (*Service, error) {
 	var resp response
 	_, err := perigee.Request("GET", getServiceURL(client, serviceID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),

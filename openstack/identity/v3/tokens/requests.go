@@ -248,8 +248,8 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 	return &result, nil
 }
 
-// Info validates and retrieves information about another token.
-func Info(c *gophercloud.ServiceClient, token string) (*TokenCreateResult, error) {
+// Get validates and retrieves information about another token.
+func Get(c *gophercloud.ServiceClient, token string) (*TokenCreateResult, error) {
 	var result TokenCreateResult
 
 	response, err := perigee.Request("GET", getTokenURL(c), perigee.Options{
