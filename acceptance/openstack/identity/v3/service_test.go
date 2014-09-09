@@ -16,10 +16,10 @@ func TestListServices(t *testing.T) {
 		return
 	}
 
-	// Use the service to create a token.
+	// Use the client to list all available services.
 	results, err := services3.List(serviceClient, services3.ListOpts{})
 	if err != nil {
-		t.Fatalf("Unable to get token: %v", err)
+		t.Fatalf("Unable to list services: %v", err)
 	}
 
 	err = gophercloud.EachPage(results, func(page gophercloud.Collection) bool {
