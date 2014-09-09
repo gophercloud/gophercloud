@@ -37,14 +37,15 @@ type EndpointOpts struct {
 	Name string
 
 	// Region is the region in which the service resides.
+	// Region must be specified for services that span multiple regions.
 	Region string
 
-	// Interface is they type of endpoint to be returned: InterfacePublic, InterfaceInternal, or InterfaceAdmin
+	// Interface is the visibility of the endpoint to be returned: InterfacePublic, InterfaceInternal, or InterfaceAdmin
 	// Interface is not required, and defaults to InterfacePublic.
 	// Not all interface types are accepted by all providers or identity services.
 	Interface Interface
 }
 
 // EndpointLocator is a function that describes how to locate a single endpoint from a service catalog for a specific ProviderClient.
-// It should be set during ProviderClient initialization and used to discover related ServiceClients.
+// It should be set during ProviderClient authentication and used to discover related ServiceClients.
 type EndpointLocator func(EndpointOpts) (string, error)
