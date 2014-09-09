@@ -84,7 +84,7 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 
 		client.TokenID = token.ID
 		client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
-			return v2endpointLocator(v2Client, opts)
+			return v2endpointLocator(result, opts)
 		}
 
 		return nil
@@ -113,7 +113,59 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 	}
 }
 
-func v2endpointLocator(v2Client *gophercloud.ServiceClient, opts gophercloud.EndpointOpts) (string, error) {
+func v2endpointLocator(authResults identity2.AuthResults, opts gophercloud.EndpointOpts) (string, error) {
+	catalog, err := identity2.GetServiceCatalog(authResults)
+	if err != nil {
+		return "", err
+	}
+
+	entries, err := catalog.CatalogEntries()
+	if err != nil {
+		return "", err
+	}
+
+	// Extract Endpoints from the catalog entries that match the requested Type, Name if provided, and Region if provided.
+	var endpoints = make([]identity2.Endpoint, 0, 6)
+	for _, entry := range entries {
+		matched := true
+
+		if entry.Type != opts.Type {
+			matched = false
+		}
+
+		if opts.Name != "" && entry.Name != opts.Name {
+			matched = false
+		}
+
+		if matched {
+			for _, endpoint := range entry.Endpoints {
+				if opts.Region == "" || endpoint.Region == opts.Region {
+					endpoints = append(endpoints, endpoint)
+				}
+			}
+		}
+	}
+
+	// Report an error if the options were ambiguous.
+	if len(endpoints) == 0 {
+		return "", gophercloud.ErrEndpointNotFound
+	}
+	if len(endpoints) > 1 {
+		return "", fmt.Errorf("Discovered %d matching endpoints: %#v", len(endpoints), endpoints)
+	}
+
+	// Extract the appropriate URL from the matching Endpoint.
+	for _, endpoint := range endpoints {
+		switch opts.URLType {
+		case "public", "":
+			return endpoint.PublicURL, nil
+		case "private":
+			return endpoint.InternalURL, nil
+		default:
+			return "", fmt.Errorf("Unexpected URLType in endpoint query: %s", opts.URLType)
+		}
+	}
+
 	return "", gophercloud.ErrEndpointNotFound
 }
 
