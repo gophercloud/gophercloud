@@ -4,11 +4,13 @@ package openstack
 
 import (
 	"fmt"
-	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"os"
 	"testing"
 	"text/tabwriter"
+
+	"github.com/rackspace/gophercloud"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
+	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
 type extractor func(*identity.Token) string
@@ -23,7 +25,8 @@ func TestAuthentication(t *testing.T) {
 	}
 
 	// Attempt to authenticate with them.
-	r, err := identity.Authenticate(ao)
+	client := &gophercloud.ServiceClient{Endpoint: ao.IdentityEndpoint + "/"}
+	r, err := identity.Authenticate(client, ao)
 	if err != nil {
 		t.Error(err)
 		return
@@ -39,7 +42,7 @@ func TestAuthentication(t *testing.T) {
 	// Authentication tokens have a variety of fields which might be of some interest.
 	// Let's print a few of them out.
 	table := map[string]extractor{
-		"ID":      func(t *identity.Token) string { return tok.Id },
+		"ID":      func(t *identity.Token) string { return tok.ID },
 		"Expires": func(t *identity.Token) string { return tok.Expires },
 	}
 
@@ -75,7 +78,7 @@ func TestAuthentication(t *testing.T) {
 		fmt.Printf("Endpoints for %s/%s\n", ce.Name, ce.Type)
 		fmt.Fprintln(w, "Version\tRegion\tTenant\tPublic URL\tInternal URL\t")
 		for _, ep := range ce.Endpoints {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t\n", ep.VersionId, ep.Region, ep.TenantId, ep.PublicURL, ep.InternalURL)
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t\n", ep.VersionID, ep.Region, ep.TenantID, ep.PublicURL, ep.InternalURL)
 		}
 		w.Flush()
 	}
@@ -91,7 +94,8 @@ func TestExtensions(t *testing.T) {
 	}
 
 	// Attempt to query extensions.
-	exts, err := identity.GetExtensions(ao)
+	client := &gophercloud.ServiceClient{Endpoint: ao.IdentityEndpoint + "/"}
+	exts, err := identity.GetExtensions(client, ao)
 	if err != nil {
 		t.Error(err)
 		return
