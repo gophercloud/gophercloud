@@ -69,10 +69,10 @@ func AllPages(first Collection) (Collection, error) {
 	return megaPage, err
 }
 
-// Pager describes a specific paging idiom for a Page resource.
-// Generally, to use a Pager, the Page must also implement a more specialized interface than Page.
+// Pager describes a specific paging idiom for a Collection resource.
+// Generally, to use a Pager, the Collection must also implement a more specialized interface than Collection.
 // Clients should not generally interact with Pagers directly.
-// Instead, use the more convenient collection traversal methods: All and EachPage.
+// Instead, use the more convenient collection traversal methods: AllPages and EachPage.
 type Pager interface {
 
 	// HasNextPage returns true if a call to NextPage will return an additional Page of results.
