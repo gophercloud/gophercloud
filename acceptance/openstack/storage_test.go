@@ -4,36 +4,35 @@ package openstack
 
 import (
 	"bytes"
+	"os"
+	"strings"
+	"testing"
+
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/acceptance/tools"
-	storage "github.com/rackspace/gophercloud/openstack/storage/v1"
+	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/openstack/storage/v1/accounts"
 	"github.com/rackspace/gophercloud/openstack/storage/v1/containers"
 	"github.com/rackspace/gophercloud/openstack/storage/v1/objects"
 	"github.com/rackspace/gophercloud/openstack/utils"
-	"os"
-	"strings"
-	"testing"
 )
 
 var metadata = map[string]string{"gopher": "cloud"}
 var numContainers = 2
 var numObjects = 2
 
-func newClient() (*storage.Client, error) {
+func newClient() (*gophercloud.ServiceClient, error) {
 	ao, err := utils.AuthOptions()
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := utils.NewClient(ao, utils.EndpointOpts{
-		Region: os.Getenv("OS_REGION_NAME"),
-		Type:   "object-store",
-	})
+	client, err := openstack.AuthenticatedClient(ao)
 	if err != nil {
 		return nil, err
 	}
 
-	return storage.NewClient(client.Endpoint, client.Authority, client.Options), nil
+	return openstack.NewStorageV1(client, os.Getenv("OS_REGION_NAME"))
 }
 
 func TestAccount(t *testing.T) {
