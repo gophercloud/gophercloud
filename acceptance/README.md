@@ -5,8 +5,10 @@ the requirements of a contract - to consumers, other parts of the library, and
 to a remote API.
 
 > **Note:** Because every test will be run against a real API endpoint, you
-> will incur bandwidth and service charges for all the resource usage. Please
-> ensure you delete these resources when you're finished!
+> may incur bandwidth and service charges for all the resource usage. These
+> tests *should* remove their remote products automatically. However, there may
+> be certain cases where this does not happen; always double-check to make sure
+> you have no stragglers left behind.
 
 ### Step 1. Set environment variables
 
@@ -36,7 +38,7 @@ to a remote API.
 
 ### 2. Run the test suite
 
-From your `$GOPATH` directory, run:
+From any directory, run:
 
 ```
 go test -v -tags acceptance github.com/rackspace/gophercloud/...
