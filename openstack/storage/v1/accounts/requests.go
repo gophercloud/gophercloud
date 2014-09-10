@@ -1,20 +1,19 @@
 package accounts
 
 import (
-	"github.com/racker/perigee"
-	storage "github.com/rackspace/gophercloud/openstack/storage/v1"
 	"net/http"
+
+	"github.com/racker/perigee"
+	"github.com/rackspace/gophercloud"
 )
 
 // GetResult is a *http.Response that is returned from a call to the Get function.
 type GetResult *http.Response
 
 // Update is a function that creates, updates, or deletes an account's metadata.
-func Update(c *storage.Client, opts UpdateOpts) error {
-	h, err := c.GetHeaders()
-	if err != nil {
-		return err
-	}
+func Update(c *gophercloud.ServiceClient, opts UpdateOpts) error {
+	h := c.Provider.AuthenticatedHeaders()
+
 	for k, v := range opts.Headers {
 		h[k] = v
 	}
@@ -32,11 +31,8 @@ func Update(c *storage.Client, opts UpdateOpts) error {
 
 // Get is a function that retrieves an account's metadata. To extract just the custom
 // metadata, pass the GetResult response to the ExtractMetadata function.
-func Get(c *storage.Client, opts GetOpts) (GetResult, error) {
-	h, err := c.GetHeaders()
-	if err != nil {
-		return nil, err
-	}
+func Get(c *gophercloud.ServiceClient, opts GetOpts) (GetResult, error) {
+	h := c.Provider.AuthenticatedHeaders()
 
 	for k, v := range opts.Headers {
 		h[k] = v
