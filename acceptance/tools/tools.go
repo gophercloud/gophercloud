@@ -5,18 +5,20 @@ package tools
 import (
 	"crypto/rand"
 	"fmt"
-	"github.com/rackspace/gophercloud/openstack/compute/servers"
-	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"os"
 	"text/tabwriter"
 	"time"
+
+	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/compute/servers"
+	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
+	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
 var errTimeout = fmt.Errorf("Timeout.")
 
 type testState struct {
-	O              identity.AuthOptions
+	O              gophercloud.AuthOptions
 	A              identity.AuthResults
 	SC             *identity.ServiceCatalog
 	EPs            []identity.Endpoint
@@ -44,7 +46,8 @@ func SetupForList(service string) (*testState, error) {
 		return ts, err
 	}
 
-	ts.A, err = identity.Authenticate(ts.O)
+	client := &gophercloud.ServiceClient{Endpoint: ts.O.IdentityEndpoint + "/"}
+	ts.A, err = identity.Authenticate(client, ts.O)
 	if err != nil {
 		return ts, err
 	}

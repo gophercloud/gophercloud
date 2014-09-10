@@ -1,4 +1,4 @@
-package identity
+package v2
 
 import (
 	"encoding/json"

@@ -1,4 +1,4 @@
-package identity
+package v2
 
 import (
 	"encoding/json"
@@ -18,8 +18,8 @@ func TestAccessToken(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	if tok.Id != "ab48a9efdfedb23ty3494" {
-		t.Errorf("Expected token \"ab48a9efdfedb23ty3494\"; got \"%s\" instead", tok.Id)
+	if tok.ID != "ab48a9efdfedb23ty3494" {
+		t.Errorf("Expected token \"ab48a9efdfedb23ty3494\"; got \"%s\" instead", tok.ID)
 		return
 	}
 }

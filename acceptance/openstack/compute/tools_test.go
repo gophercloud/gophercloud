@@ -9,6 +9,7 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
 	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	"github.com/rackspace/gophercloud/openstack/utils"
@@ -17,7 +18,7 @@ import (
 var errTimeout = fmt.Errorf("Timeout.")
 
 type testState struct {
-	o              identity.AuthOptions
+	o              gophercloud.AuthOptions
 	a              identity.AuthResults
 	sc             *identity.ServiceCatalog
 	eps            []identity.Endpoint
@@ -45,7 +46,8 @@ func SetupForList(service string) (*testState, error) {
 		return ts, err
 	}
 
-	ts.a, err = identity.Authenticate(ts.o)
+	client := &gophercloud.ServiceClient{Endpoint: ts.o.IdentityEndpoint}
+	ts.a, err = identity.Authenticate(client, ts.o)
 	if err != nil {
 		return ts, err
 	}

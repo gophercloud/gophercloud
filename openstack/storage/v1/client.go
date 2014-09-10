@@ -2,6 +2,8 @@ package v1
 
 import (
 	"fmt"
+
+	"github.com/rackspace/gophercloud"
 	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 )
 
@@ -9,12 +11,12 @@ import (
 type Client struct {
 	endpoint  string
 	authority identity.AuthResults
-	options   identity.AuthOptions
+	options   gophercloud.AuthOptions
 	token     *identity.Token
 }
 
 // NewClient creates and returns a *Client.
-func NewClient(e string, a identity.AuthResults, o identity.AuthOptions) *Client {
+func NewClient(e string, a identity.AuthResults, o gophercloud.AuthOptions) *Client {
 	return &Client{
 		endpoint:  e,
 		authority: a,
@@ -64,5 +66,5 @@ func (c *Client) getAuthToken() (string, error) {
 		}
 	}
 
-	return c.token.Id, err
+	return c.token.ID, err
 }

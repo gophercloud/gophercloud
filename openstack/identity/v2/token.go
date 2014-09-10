@@ -1,4 +1,4 @@
-package identity
+package v2
 
 import (
 	"github.com/mitchellh/mapstructure"
@@ -21,21 +21,21 @@ import (
 //
 // TenantName provides a human-readable tenant name corresponding to the TenantId.
 type Token struct {
-	Id, Expires          string
-	TenantId, TenantName string
+	ID, Expires          string
+	TenantID, TenantName string
 }
 
-// GetToken, if successful, yields an unpacked collection of fields related to the user's access credentials, called a "token."
+// GetToken yields an unpacked collection of fields related to the user's access credentials, called a "token", if successful.
 // See the Token structure for more details.
 func GetToken(m AuthResults) (*Token, error) {
 	type (
 		Tenant struct {
-			Id   string
+			ID   string
 			Name string
 		}
 
 		TokenDesc struct {
-			Id      string `mapstructure:"id"`
+			ID      string `mapstructure:"id"`
 			Expires string `mapstructure:"expires"`
 			Tenant
 		}
@@ -55,9 +55,9 @@ func GetToken(m AuthResults) (*Token, error) {
 		return nil, err
 	}
 	td := &Token{
-		Id:         t.Id,
+		ID:         t.ID,
 		Expires:    t.Expires,
-		TenantId:   t.Tenant.Id,
+		TenantID:   t.Tenant.ID,
 		TenantName: t.Tenant.Name,
 	}
 	return td, nil

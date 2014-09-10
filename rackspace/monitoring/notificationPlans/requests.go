@@ -2,6 +2,7 @@ package notificationPlans
 
 import (
 	"fmt"
+
 	"github.com/racker/perigee"
 	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	"github.com/rackspace/gophercloud/rackspace/monitoring"
@@ -33,7 +34,7 @@ func (c *Client) Delete(id string) (DeleteResults, error) {
 		Results: &dr,
 		OkCodes: []int{204},
 		MoreHeaders: map[string]string{
-			"X-Auth-Token": tok.Id,
+			"X-Auth-Token": tok.ID,
 		},
 	})
 	return dr, err

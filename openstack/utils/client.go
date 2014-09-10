@@ -2,6 +2,8 @@ package utils
 
 import (
 	"fmt"
+
+	"github.com/rackspace/gophercloud"
 	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 )
 
@@ -12,7 +14,7 @@ type Client struct {
 	// Authority holds the results of authenticating against the Endpoint.
 	Authority identity.AuthResults
 	// Options holds the authentication options. Useful for auto-reauthentication.
-	Options identity.AuthOptions
+	Options gophercloud.AuthOptions
 }
 
 // EndpointOpts contains options for finding an endpoint for an Openstack Client.
@@ -40,12 +42,13 @@ type EndpointOpts struct {
 //			Name: "nova",
 //		})
 //		serversClient := servers.NewClient(c.Endpoint, c.Authority, c.Options)
-func NewClient(ao identity.AuthOptions, eo EndpointOpts) (Client, error) {
+func NewClient(ao gophercloud.AuthOptions, eo EndpointOpts) (Client, error) {
 	client := Client{
 		Options: ao,
 	}
 
-	ar, err := identity.Authenticate(ao)
+	c := &gophercloud.ServiceClient{Endpoint: ao.IdentityEndpoint + "/"}
+	ar, err := identity.Authenticate(c, ao)
 	if err != nil {
 		return client, err
 	}
