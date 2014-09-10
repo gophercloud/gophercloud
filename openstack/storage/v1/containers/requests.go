@@ -28,10 +28,11 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) (ListResult, error) {
 		contentType = "text/plain"
 	}
 
-	url := c.GetAccountURL() + query
+	url := getAccountURL(c) + query
 	resp, err := perigee.Request("GET", url, perigee.Options{
 		MoreHeaders: h,
 		Accept:      contentType,
+		OkCodes:     []int{200, 204},
 	})
 	return &resp.HttpResponse, err
 }
@@ -50,9 +51,10 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (Container, error) {
 		h["X-Container-Meta-"+k] = v
 	}
 
-	url := c.GetContainerURL(opts.Name)
-	_, err = perigee.Request("PUT", url, perigee.Options{
+	url := getContainerURL(c, opts.Name)
+	_, err := perigee.Request("PUT", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{201, 204},
 	})
 	if err == nil {
 		ci = Container{
@@ -88,9 +90,10 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOpts) error {
 		h["X-Container-Meta-"+k] = v
 	}
 
-	url := c.GetContainerURL(opts.Name)
-	_, err = perigee.Request("POST", url, perigee.Options{
+	url := getContainerURL(c, opts.Name)
+	_, err := perigee.Request("POST", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{204},
 	})
 	return err
 }
@@ -104,9 +107,10 @@ func Get(c *gophercloud.ServiceClient, opts GetOpts) (GetResult, error) {
 		h["X-Container-Meta-"+k] = v
 	}
 
-	url := c.GetContainerURL(opts.Name)
+	url := getContainerURL(c, opts.Name)
 	resp, err := perigee.Request("HEAD", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{204},
 	})
 	return &resp.HttpResponse, err
 }

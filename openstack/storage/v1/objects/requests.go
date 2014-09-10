@@ -32,10 +32,11 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) (ListResult, error) {
 		contentType = "text/plain"
 	}
 
-	url := c.GetContainerURL(opts.Container) + query
+	url := getContainerURL(c, opts.Container) + query
 	resp, err := perigee.Request("GET", url, perigee.Options{
 		MoreHeaders: h,
 		Accept:      contentType,
+		OkCodes:     []int{200, 204},
 	})
 	return &resp.HttpResponse, err
 }
@@ -52,9 +53,10 @@ func Download(c *gophercloud.ServiceClient, opts DownloadOpts) (DownloadResult, 
 
 	query := utils.BuildQuery(opts.Params)
 
-	url := c.GetObjectURL(opts.Container, opts.Name) + query
+	url := getObjectURL(c, opts.Container, opts.Name) + query
 	resp, err := perigee.Request("GET", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{200},
 	})
 	return &resp.HttpResponse, err
 }
@@ -84,10 +86,11 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) error {
 		}
 	}
 
-	url := c.GetObjectURL(opts.Container, opts.Name) + query
-	_, err = perigee.Request("PUT", url, perigee.Options{
+	url := getObjectURL(c, opts.Container, opts.Name) + query
+	_, err := perigee.Request("PUT", url, perigee.Options{
 		ReqBody:     reqBody,
 		MoreHeaders: h,
+		OkCodes:     []int{201},
 	})
 	return err
 }
@@ -102,9 +105,10 @@ func Copy(c *gophercloud.ServiceClient, opts CopyOpts) error {
 
 	h["Destination"] = fmt.Sprintf("/%s/%s", opts.NewContainer, opts.NewName)
 
-	url := c.GetObjectURL(opts.Container, opts.Name)
-	_, err = perigee.Request("COPY", url, perigee.Options{
+	url := getObjectURL(c, opts.Container, opts.Name)
+	_, err := perigee.Request("COPY", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{201},
 	})
 	return err
 }
@@ -115,9 +119,10 @@ func Delete(c *gophercloud.ServiceClient, opts DeleteOpts) error {
 
 	query := utils.BuildQuery(opts.Params)
 
-	url := c.GetObjectURL(opts.Container, opts.Name) + query
-	_, err = perigee.Request("DELETE", url, perigee.Options{
+	url := getObjectURL(c, opts.Container, opts.Name) + query
+	_, err := perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{204},
 	})
 	return err
 }
@@ -151,9 +156,10 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOpts) error {
 		h["X-Object-Meta-"+k] = v
 	}
 
-	url := c.GetObjectURL(opts.Container, opts.Name)
-	_, err = perigee.Request("POST", url, perigee.Options{
+	url := getObjectURL(c, opts.Container, opts.Name)
+	_, err := perigee.Request("POST", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{202},
 	})
 	return err
 }

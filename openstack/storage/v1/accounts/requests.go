@@ -22,9 +22,9 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOpts) error {
 		h["X-Account-Meta-"+k] = v
 	}
 
-	url := c.GetAccountURL()
-	_, err = perigee.Request("POST", url, perigee.Options{
+	_, err := perigee.Request("POST", getAccountURL(c), perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{204},
 	})
 	return err
 }
@@ -38,9 +38,9 @@ func Get(c *gophercloud.ServiceClient, opts GetOpts) (GetResult, error) {
 		h[k] = v
 	}
 
-	url := c.GetAccountURL()
-	resp, err := perigee.Request("HEAD", url, perigee.Options{
+	resp, err := perigee.Request("HEAD", getAccountURL(c), perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{204},
 	})
 	return &resp.HttpResponse, err
 }
