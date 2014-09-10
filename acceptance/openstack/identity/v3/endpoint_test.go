@@ -29,7 +29,7 @@ func TestListEndpoints(t *testing.T) {
 		for _, endpoint := range endpoints3.AsEndpoints(page) {
 			t.Logf("Endpoint: %8s %10s %9s %s",
 				endpoint.ID,
-				endpoint.Interface,
+				endpoint.Availability,
 				endpoint.Name,
 				endpoint.URL)
 		}
@@ -66,8 +66,8 @@ func TestNavigateCatalog(t *testing.T) {
 
 	// Enumerate the endpoints available for this service.
 	endpointResults, err := endpoints3.List(client, endpoints3.ListOpts{
-		Interface: gophercloud.InterfacePublic,
-		ServiceID: computeService.ID,
+		Availability: gophercloud.AvailabilityPublic,
+		ServiceID:    computeService.ID,
 	})
 
 	allEndpoints, err := gophercloud.AllPages(endpointResults)

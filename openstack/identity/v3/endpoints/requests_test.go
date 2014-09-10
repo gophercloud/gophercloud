@@ -59,23 +59,23 @@ func TestCreateSuccessful(t *testing.T) {
 	client := serviceClient()
 
 	result, err := Create(client, EndpointOpts{
-		Interface: gophercloud.InterfacePublic,
-		Name:      "the-endiest-of-points",
-		Region:    "underground",
-		URL:       "https://1.2.3.4:9000/",
-		ServiceID: "asdfasdfasdfasdf",
+		Availability: gophercloud.AvailabilityPublic,
+		Name:         "the-endiest-of-points",
+		Region:       "underground",
+		URL:          "https://1.2.3.4:9000/",
+		ServiceID:    "asdfasdfasdfasdf",
 	})
 	if err != nil {
 		t.Fatalf("Unable to create an endpoint: %v", err)
 	}
 
 	expected := &Endpoint{
-		ID:        "12",
-		Interface: gophercloud.InterfacePublic,
-		Name:      "the-endiest-of-points",
-		Region:    "underground",
-		ServiceID: "asdfasdfasdfasdf",
-		URL:       "https://1.2.3.4:9000/",
+		ID:           "12",
+		Availability: gophercloud.AvailabilityPublic,
+		Name:         "the-endiest-of-points",
+		Region:       "underground",
+		ServiceID:    "asdfasdfasdfasdf",
+		URL:          "https://1.2.3.4:9000/",
 	}
 
 	if !reflect.DeepEqual(result, expected) {
@@ -135,20 +135,20 @@ func TestListEndpoints(t *testing.T) {
 	expected := &EndpointList{
 		Endpoints: []Endpoint{
 			Endpoint{
-				ID:        "12",
-				Interface: gophercloud.InterfacePublic,
-				Name:      "the-endiest-of-points",
-				Region:    "underground",
-				ServiceID: "asdfasdfasdfasdf",
-				URL:       "https://1.2.3.4:9000/",
+				ID:           "12",
+				Availability: gophercloud.AvailabilityPublic,
+				Name:         "the-endiest-of-points",
+				Region:       "underground",
+				ServiceID:    "asdfasdfasdfasdf",
+				URL:          "https://1.2.3.4:9000/",
 			},
 			Endpoint{
-				ID:        "13",
-				Interface: gophercloud.InterfaceInternal,
-				Name:      "shhhh",
-				Region:    "underground",
-				ServiceID: "asdfasdfasdfasdf",
-				URL:       "https://1.2.3.4:9001/",
+				ID:           "13",
+				Availability: gophercloud.AvailabilityInternal,
+				Name:         "shhhh",
+				Region:       "underground",
+				ServiceID:    "asdfasdfasdfasdf",
+				URL:          "https://1.2.3.4:9001/",
 			},
 		},
 	}
@@ -201,12 +201,12 @@ func TestUpdateEndpoint(t *testing.T) {
 	}
 
 	expected := &Endpoint{
-		ID:        "12",
-		Interface: gophercloud.InterfacePublic,
-		Name:      "renamed",
-		Region:    "somewhere-else",
-		ServiceID: "asdfasdfasdfasdf",
-		URL:       "https://1.2.3.4:9000/",
+		ID:           "12",
+		Availability: gophercloud.AvailabilityPublic,
+		Name:         "renamed",
+		Region:       "somewhere-else",
+		ServiceID:    "asdfasdfasdfasdf",
+		URL:          "https://1.2.3.4:9000/",
 	}
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected %#v, was %#v", expected, actual)
