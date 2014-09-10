@@ -43,7 +43,7 @@ type EndpointOpts struct {
 	Region string
 
 	// Availability is the visibility of the endpoint to be returned: AvailabilityPublic, AvailabilityInternal, or AvailabilityAdmin.
-	// Availability is not required, and defaults to InterfacePublic.
+	// Availability is not required, and defaults to AvailabilityPublic.
 	// Not all providers or services offer all Availability options.
 	Availability Availability
 }
