@@ -11,6 +11,8 @@ var (
 )
 
 // Availability describes the accessibility of a specific service endpoint.
+// Identity v2 lists these as different kinds of URLs ("adminURL", "internalURL", and "publicURL"), while
+// v3 lists them as "Interfaces".
 type Availability string
 
 const (
