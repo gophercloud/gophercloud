@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
@@ -29,7 +30,9 @@ func TestAuthenticatedClient(t *testing.T) {
 	t.Logf("Client successfully acquired a token: %v", client.TokenID)
 
 	// Find the storage service in the service catalog.
-	storage, err := openstack.NewStorageV1(client, os.Getenv("OS_REGION_NAME"))
+	storage, err := openstack.NewStorageV1(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
 	if err != nil {
 		t.Errorf("Unable to locate a storage service: %v", err)
 	} else {
