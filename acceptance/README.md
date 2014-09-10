@@ -12,6 +12,13 @@ to a remote API.
 
 ### Step 1. Set environment variables
 
+A lot of tests rely on environment variables for configuration - so you will need 
+to set them before running the suite. If you're testing against pure OpenStack APIs,
+you can download a file that contains all of these variables for you: just visit 
+the `project/access_and_security` page in your control panel and click the "Download 
+OpenStack RC File" button at the top right. For all other providers, you will need 
+to set them manually.
+
 #### Authentication
 
 |Name|Description|
