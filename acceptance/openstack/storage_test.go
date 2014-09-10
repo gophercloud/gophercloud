@@ -32,7 +32,9 @@ func newClient() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	return openstack.NewStorageV1(client, os.Getenv("OS_REGION_NAME"))
+	return openstack.NewStorageV1(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
 }
 
 func TestAccount(t *testing.T) {
