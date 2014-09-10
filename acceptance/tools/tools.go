@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/compute/servers"
+	servers "github.com/rackspace/gophercloud/openstack/compute/v2/servers"
 	identity "github.com/rackspace/gophercloud/openstack/identity/v2"
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
