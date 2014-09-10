@@ -4,12 +4,13 @@ package compute
 
 import (
 	"fmt"
-	"github.com/rackspace/gophercloud/openstack/compute/flavors"
-	"github.com/rackspace/gophercloud/openstack/compute/images"
-	"github.com/rackspace/gophercloud/openstack/compute/servers"
 	"os"
 	"testing"
+
 	"github.com/rackspace/gophercloud/acceptance/tools"
+	"github.com/rackspace/gophercloud/openstack/compute/v2/flavors"
+	"github.com/rackspace/gophercloud/openstack/compute/v2/images"
+	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
 )
 
 var service = "compute"
@@ -226,7 +227,7 @@ func TestActionChangeAdminPassword(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer func(){
+	defer func() {
 		servers.Delete(ts.Client, ts.CreatedServer.Id)
 	}()
 
@@ -254,7 +255,7 @@ func TestActionReboot(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer func(){
+	defer func() {
 		servers.Delete(ts.Client, ts.CreatedServer.Id)
 	}()
 
@@ -287,7 +288,7 @@ func TestActionRebuild(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer func(){
+	defer func() {
 		servers.Delete(ts.Client, ts.CreatedServer.Id)
 	}()
 
@@ -304,31 +305,31 @@ func TestActionRebuild(t *testing.T) {
 
 func TestActionResizeConfirm(t *testing.T) {
 	t.Parallel()
-	
+
 	ts, err := tools.SetupForCRUD()
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	err = tools.CreateServer(ts)
 	if err != nil {
 		t.Fatal(err)
 	}
-	
-	defer func(){
+
+	defer func() {
 		servers.Delete(ts.Client, ts.CreatedServer.Id)
 	}()
-	
+
 	err = tools.WaitForStatus(ts, "ACTIVE")
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	err = tools.ResizeServer(ts)
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	err = tools.ConfirmResize(ts)
 	if err != nil {
 		t.Fatal(err)
@@ -337,31 +338,31 @@ func TestActionResizeConfirm(t *testing.T) {
 
 func TestActionResizeRevert(t *testing.T) {
 	t.Parallel()
-	
+
 	ts, err := tools.SetupForCRUD()
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	err = tools.CreateServer(ts)
 	if err != nil {
 		t.Fatal(err)
 	}
-	
-	defer func(){
+
+	defer func() {
 		servers.Delete(ts.Client, ts.CreatedServer.Id)
 	}()
-	
+
 	err = tools.WaitForStatus(ts, "ACTIVE")
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	err = tools.ResizeServer(ts)
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	err = tools.RevertResize(ts)
 	if err != nil {
 		t.Fatal(err)
