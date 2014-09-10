@@ -31,12 +31,8 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 	u.Path, u.RawQuery, u.Fragment = "", "", ""
 	base := u.String()
 
-	if !strings.HasSuffix(endpoint, "/") {
-		endpoint = endpoint + "/"
-	}
-	if !strings.HasSuffix(base, "/") {
-		base = base + "/"
-	}
+	endpoint = normalizeURL(endpoint)
+	base = normalizeURL(base)
 
 	if hadPath {
 		return &gophercloud.ProviderClient{
@@ -155,9 +151,9 @@ func v2endpointLocator(authResults identity2.AuthResults, opts gophercloud.Endpo
 	for _, endpoint := range endpoints {
 		switch opts.Availability {
 		case gophercloud.AvailabilityPublic:
-			return endpoint.PublicURL, nil
+			return normalizeURL(endpoint.PublicURL), nil
 		case gophercloud.AvailabilityInternal:
-			return endpoint.InternalURL, nil
+			return normalizeURL(endpoint.InternalURL), nil
 		default:
 			return "", fmt.Errorf("Unexpected availability in endpoint query: %s", opts.Availability)
 		}
@@ -195,11 +191,6 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 }
 
 func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.EndpointOpts) (string, error) {
-	// Default Availability to InterfacePublic, if it isn't provided.
-	if opts.Availability == "" {
-		opts.Availability = gophercloud.AvailabilityPublic
-	}
-
 	// Discover the service we're interested in.
 	serviceResults, err := services3.List(v3Client, services3.ListOpts{ServiceType: opts.Type})
 	if err != nil {
@@ -264,7 +255,15 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 
 	endpoint := endpoints[0]
 
-	return endpoint.URL, nil
+	return normalizeURL(endpoint.URL), nil
+}
+
+// normalizeURL ensures that each endpoint URL has a closing `/`, as expected by ServiceClient.
+func normalizeURL(url string) string {
+	if !strings.HasSuffix(url, "/") {
+		return url + "/"
+	}
+	return url
 }
 
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.

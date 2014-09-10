@@ -1,10 +1,11 @@
 package containers
 
 import (
-	"github.com/racker/perigee"
-	storage "github.com/rackspace/gophercloud/openstack/storage/v1"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"net/http"
+
+	"github.com/racker/perigee"
+	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
 // ListResult is a *http.Response that is returned from a call to the List function.
@@ -16,13 +17,10 @@ type GetResult *http.Response
 // List is a function that retrieves all objects in a container. It also returns the details
 // for the account. To extract just the container information or names, pass the ListResult
 // response to the ExtractInfo or ExtractNames function, respectively.
-func List(c *storage.Client, opts ListOpts) (ListResult, error) {
+func List(c *gophercloud.ServiceClient, opts ListOpts) (ListResult, error) {
 	contentType := ""
 
-	h, err := c.GetHeaders()
-	if err != nil {
-		return nil, err
-	}
+	h := c.Provider.AuthenticatedHeaders()
 
 	query := utils.BuildQuery(opts.Params)
 
@@ -30,22 +28,20 @@ func List(c *storage.Client, opts ListOpts) (ListResult, error) {
 		contentType = "text/plain"
 	}
 
-	url := c.GetAccountURL() + query
+	url := getAccountURL(c) + query
 	resp, err := perigee.Request("GET", url, perigee.Options{
 		MoreHeaders: h,
 		Accept:      contentType,
+		OkCodes:     []int{200, 204},
 	})
 	return &resp.HttpResponse, err
 }
 
 // Create is a function that creates a new container.
-func Create(c *storage.Client, opts CreateOpts) (Container, error) {
+func Create(c *gophercloud.ServiceClient, opts CreateOpts) (Container, error) {
 	var ci Container
 
-	h, err := c.GetHeaders()
-	if err != nil {
-		return Container{}, err
-	}
+	h := c.Provider.AuthenticatedHeaders()
 
 	for k, v := range opts.Headers {
 		h[k] = v
@@ -55,9 +51,10 @@ func Create(c *storage.Client, opts CreateOpts) (Container, error) {
 		h["X-Container-Meta-"+k] = v
 	}
 
-	url := c.GetContainerURL(opts.Name)
-	_, err = perigee.Request("PUT", url, perigee.Options{
+	url := getContainerURL(c, opts.Name)
+	_, err := perigee.Request("PUT", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{201, 204},
 	})
 	if err == nil {
 		ci = Container{
@@ -68,27 +65,22 @@ func Create(c *storage.Client, opts CreateOpts) (Container, error) {
 }
 
 // Delete is a function that deletes a container.
-func Delete(c *storage.Client, opts DeleteOpts) error {
-	h, err := c.GetHeaders()
-	if err != nil {
-		return err
-	}
+func Delete(c *gophercloud.ServiceClient, opts DeleteOpts) error {
+	h := c.Provider.AuthenticatedHeaders()
 
 	query := utils.BuildQuery(opts.Params)
 
-	url := c.GetContainerURL(opts.Name) + query
-	_, err = perigee.Request("DELETE", url, perigee.Options{
+	url := getContainerURL(c, opts.Name) + query
+	_, err := perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{204},
 	})
 	return err
 }
 
 // Update is a function that creates, updates, or deletes a container's metadata.
-func Update(c *storage.Client, opts UpdateOpts) error {
-	h, err := c.GetHeaders()
-	if err != nil {
-		return err
-	}
+func Update(c *gophercloud.ServiceClient, opts UpdateOpts) error {
+	h := c.Provider.AuthenticatedHeaders()
 
 	for k, v := range opts.Headers {
 		h[k] = v
@@ -98,28 +90,27 @@ func Update(c *storage.Client, opts UpdateOpts) error {
 		h["X-Container-Meta-"+k] = v
 	}
 
-	url := c.GetContainerURL(opts.Name)
-	_, err = perigee.Request("POST", url, perigee.Options{
+	url := getContainerURL(c, opts.Name)
+	_, err := perigee.Request("POST", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{204},
 	})
 	return err
 }
 
 // Get is a function that retrieves the metadata of a container. To extract just the custom
 // metadata, pass the GetResult response to the ExtractMetadata function.
-func Get(c *storage.Client, opts GetOpts) (GetResult, error) {
-	h, err := c.GetHeaders()
-	if err != nil {
-		return nil, err
-	}
+func Get(c *gophercloud.ServiceClient, opts GetOpts) (GetResult, error) {
+	h := c.Provider.AuthenticatedHeaders()
 
 	for k, v := range opts.Metadata {
 		h["X-Container-Meta-"+k] = v
 	}
 
-	url := c.GetContainerURL(opts.Name)
+	url := getContainerURL(c, opts.Name)
 	resp, err := perigee.Request("HEAD", url, perigee.Options{
 		MoreHeaders: h,
+		OkCodes:     []int{204},
 	})
 	return &resp.HttpResponse, err
 }
