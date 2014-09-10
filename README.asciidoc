@@ -1,4 +1,4 @@
-== Gophercloud -- V0.2.0 image:https://secure.travis-ci.org/rackspace/gophercloud.png?branch=master["build status",link="https://travis-ci.org/rackspace/gophercloud"]
+== Gophercloud -- V0.2.0 image:https://secure.travis-ci.org/rackspace/gophercloud.png?branch=v0.2.0["build status",link="https://travis-ci.org/rackspace/gophercloud"]
 
 Gophercloud currently lets you authenticate with OpenStack providers to create and manage servers (compute service) and objects (object-storage service).
 We are working on extending the API to further include block storage, DNS, databases, security groups, and other features.
@@ -12,6 +12,39 @@ WARNING: This library is still in the very early stages of development. Unless y
 3.  Gophercloud supports Identity V2, Nova V2, and Object Storage V1 APIs.  More coming soon!
 5.  Gophercloud supports automatic reauthentication upon auth token timeout, if enabled by your software.
 6.  Gophercloud is the only SDK implementation with actual acceptance-level integration tests.
+
+=== Dependencies
+* Go 1.*  (For information on installing Go and setting up your environment, go link:https://golang.org/doc/install[here])
+* git
+
+=== Getting the code
+
+To download Gophercloud, simpy run
+```
+go get github.com/rackspace/gophercloud
+```
+It will automatically retrieve all dependencies. Goperhcloud and its dependencies will be located within your $GOPATH.
+
+=== Running the tests
+
+Gophercloud has both unit tests and acceptance (integration) tests.
+
+To run the unit tests, run
+```
+go test -v github.com/rackspace/gophercloud
+```
+from the Gophercloud root directory.
+
+To run the acceptance tests, run
+```
+go test -v -tags acceptance github.com/rackspace/gophercloud
+```
+*Note: Running the acceptance tests briefly creates (and deletes) real resources. You may incur costs from your provider by running these.*
+
+To run specific tests, use a regular expression with the `run` flag. For example, to just run the authentication test (named TestAuthentication), run
+```
+go test -v -run "Authentication" -tags acceptance github.com/rackspace/gophercloud
+```
 
 === What Does it Look Like?
 
