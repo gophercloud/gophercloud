@@ -153,13 +153,13 @@ func v2endpointLocator(authResults identity2.AuthResults, opts gophercloud.Endpo
 
 	// Extract the appropriate URL from the matching Endpoint.
 	for _, endpoint := range endpoints {
-		switch opts.Interface {
-		case gophercloud.InterfacePublic:
+		switch opts.Availability {
+		case gophercloud.AvailabilityPublic:
 			return endpoint.PublicURL, nil
-		case gophercloud.InterfaceInternal:
+		case gophercloud.AvailabilityInternal:
 			return endpoint.InternalURL, nil
 		default:
-			return "", fmt.Errorf("Unexpected interface in endpoint query: %s", opts.Interface)
+			return "", fmt.Errorf("Unexpected availability in endpoint query: %s", opts.Availability)
 		}
 	}
 
@@ -195,9 +195,9 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 }
 
 func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.EndpointOpts) (string, error) {
-	// Default Interface to InterfacePublic, if it isn't provided.
-	if opts.Interface == "" {
-		opts.Interface = gophercloud.InterfacePublic
+	// Default Availability to InterfacePublic, if it isn't provided.
+	if opts.Availability == "" {
+		opts.Availability = gophercloud.AvailabilityPublic
 	}
 
 	// Discover the service we're interested in.
@@ -233,8 +233,8 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 
 	// Enumerate the endpoints available for this service.
 	endpointResults, err := endpoints3.List(v3Client, endpoints3.ListOpts{
-		Interface: opts.Interface,
-		ServiceID: service.ID,
+		Availability: opts.Availability,
+		ServiceID:    service.ID,
 	})
 	if err != nil {
 		return "", err

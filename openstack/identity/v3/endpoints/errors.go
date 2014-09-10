@@ -7,8 +7,8 @@ func requiredAttribute(attribute string) error {
 }
 
 var (
-	// ErrInterfaceRequired is reported if an Endpoint is created without an Interface.
-	ErrInterfaceRequired = requiredAttribute("an interface")
+	// ErrAvailabilityRequired is reported if an Endpoint is created without an Availability.
+	ErrAvailabilityRequired = requiredAttribute("an availability")
 
 	// ErrNameRequired is reported if an Endpoint is created without a Name.
 	ErrNameRequired = requiredAttribute("a name")

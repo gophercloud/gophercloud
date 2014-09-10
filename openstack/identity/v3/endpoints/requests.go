@@ -18,11 +18,11 @@ func maybeString(original string) *string {
 
 // EndpointOpts contains the subset of Endpoint attributes that should be used to create or update an Endpoint.
 type EndpointOpts struct {
-	Interface gophercloud.Interface
-	Name      string
-	Region    string
-	URL       string
-	ServiceID string
+	Availability gophercloud.Availability
+	Name         string
+	Region       string
+	URL          string
+	ServiceID    string
 }
 
 // Create inserts a new Endpoint into the service catalog.
@@ -46,8 +46,8 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, er
 	}
 
 	// Ensure that EndpointOpts is fully populated.
-	if opts.Interface == "" {
-		return nil, ErrInterfaceRequired
+	if opts.Availability == "" {
+		return nil, ErrAvailabilityRequired
 	}
 	if opts.Name == "" {
 		return nil, ErrNameRequired
@@ -62,7 +62,7 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, er
 	// Populate the request body.
 	reqBody := request{
 		Endpoint: endpoint{
-			Interface: string(opts.Interface),
+			Interface: string(opts.Availability),
 			Name:      opts.Name,
 			URL:       opts.URL,
 			ServiceID: opts.ServiceID,
@@ -87,17 +87,17 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, er
 // ListOpts allows finer control over the the endpoints returned by a List call.
 // All fields are optional.
 type ListOpts struct {
-	Interface gophercloud.Interface
-	ServiceID string
-	Page      int
-	PerPage   int
+	Availability gophercloud.Availability
+	ServiceID    string
+	Page         int
+	PerPage      int
 }
 
 // List enumerates endpoints in a paginated collection, optionally filtered by ListOpts criteria.
 func List(client *gophercloud.ServiceClient, opts ListOpts) (*EndpointList, error) {
 	q := make(map[string]string)
-	if opts.Interface != "" {
-		q["interface"] = string(opts.Interface)
+	if opts.Availability != "" {
+		q["interface"] = string(opts.Availability)
 	}
 	if opts.ServiceID != "" {
 		q["service_id"] = opts.ServiceID
@@ -144,7 +144,7 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 	}
 
 	reqBody := request{Endpoint: endpoint{}}
-	reqBody.Endpoint.Interface = maybeString(string(opts.Interface))
+	reqBody.Endpoint.Interface = maybeString(string(opts.Availability))
 	reqBody.Endpoint.Name = maybeString(opts.Name)
 	reqBody.Endpoint.Region = maybeString(opts.Region)
 	reqBody.Endpoint.URL = maybeString(opts.URL)
