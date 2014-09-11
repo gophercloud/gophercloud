@@ -56,10 +56,13 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 		return p
 	}
 
-	url := getAccountURL(c) + query
-	pager := pagination.NewPager(c, url, createPage)
-	pager.Headers = headers
-	return pager
+	url := accountURL(c) + query
+	resp, err := perigee.Request("GET", url, perigee.Options{
+		MoreHeaders: h,
+		Accept:      contentType,
+		OkCodes:     []int{200, 204},
+	})
+	return &resp.HttpResponse, err
 }
 
 // Create is a function that creates a new container.
@@ -76,7 +79,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (Container, error) {
 		h["X-Container-Meta-"+k] = v
 	}
 
-	url := getContainerURL(c, opts.Name)
+	url := containerURL(c, opts.Name)
 	_, err := perigee.Request("PUT", url, perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 204},
@@ -95,7 +98,7 @@ func Delete(c *gophercloud.ServiceClient, opts DeleteOpts) error {
 
 	query := utils.BuildQuery(opts.Params)
 
-	url := getContainerURL(c, opts.Name) + query
+	url := containerURL(c, opts.Name) + query
 	_, err := perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{204},
@@ -115,7 +118,7 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOpts) error {
 		h["X-Container-Meta-"+k] = v
 	}
 
-	url := getContainerURL(c, opts.Name)
+	url := containerURL(c, opts.Name)
 	_, err := perigee.Request("POST", url, perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{204},
@@ -132,7 +135,7 @@ func Get(c *gophercloud.ServiceClient, opts GetOpts) (GetResult, error) {
 		h["X-Container-Meta-"+k] = v
 	}
 
-	url := getContainerURL(c, opts.Name)
+	url := containerURL(c, opts.Name)
 	resp, err := perigee.Request("HEAD", url, perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{204},
