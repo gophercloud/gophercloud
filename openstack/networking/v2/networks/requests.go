@@ -22,10 +22,22 @@ type NetworkOpts struct {
 }
 
 func APIVersions(c *gophercloud.ServiceClient) (*APIVersionsList, error) {
-	url := APIVersionsURL(c)
-
 	var resp APIVersionsList
-	_, err := perigee.Request("GET", url, perigee.Options{
+	_, err := perigee.Request("GET", APIVersionsURL(c), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		Results:     &resp,
+		OkCodes:     []int{200},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+func APIInfo(c *gophercloud.ServiceClient, v string) (*APIInfoList, error) {
+	var resp APIInfoList
+	_, err := perigee.Request("GET", APIInfoURL(c, v), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		Results:     &resp,
 		OkCodes:     []int{200},

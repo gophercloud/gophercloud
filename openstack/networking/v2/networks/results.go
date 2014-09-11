@@ -80,3 +80,51 @@ func (list APIVersionsList) Interpret(json interface{}) (gophercloud.LinkCollect
 func ToAPIVersions(results gophercloud.Collection) []APIVersion {
 	return results.(*APIVersionsList).APIVersions
 }
+
+type APIResource struct {
+	Name       string
+	Collection string
+}
+
+type APIInfoList struct {
+	gophercloud.PaginationLinks `json:"links"`
+	Client                      *gophercloud.ServiceClient
+	APIResources                []APIResource `json:"resources"`
+}
+
+func (list APIInfoList) Pager() gophercloud.Pager {
+	return gophercloud.NewLinkPager(list)
+}
+
+func (list APIInfoList) Concat(other gophercloud.Collection) gophercloud.Collection {
+	return APIInfoList{
+		Client:       list.Client,
+		APIResources: append(list.APIResources, ToAPIResource(other)...),
+	}
+}
+
+func (list APIInfoList) Service() *gophercloud.ServiceClient {
+	return list.Client
+}
+
+func (list APIInfoList) Links() gophercloud.PaginationLinks {
+	return list.PaginationLinks
+}
+
+func (list APIInfoList) Interpret(json interface{}) (gophercloud.LinkCollection, error) {
+	mapped, ok := json.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("Unexpected JSON response: %#v", json)
+	}
+
+	var result APIInfoList
+	err := mapstructure.Decode(mapped, &result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func ToAPIResource(results gophercloud.Collection) []APIResource {
+	return results.(*APIInfoList).APIResources
+}

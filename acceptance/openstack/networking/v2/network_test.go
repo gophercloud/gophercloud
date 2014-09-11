@@ -50,7 +50,7 @@ func TestListAPIVersions(t *testing.T) {
 
 	res, err := networks.APIVersions(Client)
 	if err != nil {
-		t.Fatalf("Failed to list API versions")
+		t.Fatalf("Failed to list API versions: %v", err)
 	}
 
 	err = gophercloud.EachPage(res, func(page gophercloud.Collection) bool {
@@ -61,12 +61,29 @@ func TestListAPIVersions(t *testing.T) {
 		return true
 	})
 	if err != nil {
-		t.Fatalf("Unexpected error while iterating API versions")
+		t.Fatalf("Unexpected error while iterating API versions: %v", err)
 	}
 }
 
 func TestGetApiInfo(t *testing.T) {
-	//networks.ApiInfo()
+	Setup(t)
+	defer Teardown()
+
+	res, err := networks.APIInfo(Client, "v2.0")
+	if err != nil {
+		t.Fatalf("Failed to list API info for v2: %v", err)
+	}
+
+	err = gophercloud.EachPage(res, func(page gophercloud.Collection) bool {
+		t.Logf("--- Page ---")
+		for _, r := range networks.ToAPIResource(page) {
+			t.Logf("API resource: Name [%s] Collection [%s]", r.Name, r.Collection)
+		}
+		return true
+	})
+	if err != nil {
+		t.Fatalf("Unexpected error while iteratoring API resources: %v", err)
+	}
 }
 
 func TestListExts(t *testing.T) {
