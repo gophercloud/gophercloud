@@ -1,7 +1,8 @@
+// +build acceptance networking
+
 package v2
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -24,24 +25,16 @@ func NewClient() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	eo := gophercloud.EndpointOpts{
-		Type:   "network",
+	return openstack.NewNetworkV2(provider, gophercloud.EndpointOpts{
 		Name:   "neutron",
 		Region: os.Getenv("OS_REGION_NAME"),
-	}
-	url, err := provider.EndpointLocator(eo)
-	if err != nil {
-		return nil, err
-	}
-
-	return &gophercloud.ServiceClient{Provider: provider, Endpoint: url}, nil
+	})
 }
 
-func Setup() {
+func Setup(t *testing.T) {
 	client, err := NewClient()
 	if err != nil {
-		fmt.Println("Client failed to load")
-		return
+		t.Fatalf("Error creating client: %s", err)
 	}
 
 	Client = client
@@ -52,7 +45,7 @@ func Teardown() {
 }
 
 func TestListAPIVersions(t *testing.T) {
-	Setup()
+	Setup(t)
 	defer Teardown()
 
 	res, err := networks.APIVersions(Client)
