@@ -1,10 +1,9 @@
 // +build acceptance networking
 
-package networking
+package v2
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	networking "github.com/rackspace/gophercloud/openstack/networking/v2"
@@ -15,49 +14,14 @@ import (
 var Client *networking.Client
 
 func NewClient() (*networking.Client, error) {
-	opts, err := utils.AuthOptions()
+	provider := gophercloud.AuthenticatedClient(utils.AuthOptions())
+
+	url, err := provider.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := identity.Authenticate(opts)
-	if err != nil {
-		return nil, err
-	}
-
-	catalog, err := identity.GetServiceCatalog(res)
-	if err != nil {
-		return nil, err
-	}
-
-	entries, err := catalog.CatalogEntries()
-	if err != nil {
-		return nil, err
-	}
-
-	var endpoints []identity.Endpoint
-	for _, entry := range entries {
-		if entry.Type == "network" {
-			endpoints = entry.Endpoints
-		}
-	}
-
-	region := os.Getenv("OS_REGION_NAME")
-
-	url := ""
-	for _, endpoint := range endpoints {
-		if endpoint.Region == "region" {
-			url = endpoint.PublicURL
-		}
-	}
-
-	client := networking.NewClient(url, res, opts)
-	return client, nil
-}
-
-type SuiteTester struct {
-	suite.Suite
-	Client *networking.Client
+	return &gophercloud.ServiceClient{Provider: provider, Endpoint: url}, nil
 }
 
 func Setup() {
@@ -74,8 +38,25 @@ func Teardown() {
 	Client = nil
 }
 
-func TestListApiVersions(t *testing.T) {
-	networks.ApiVersions()
+func TestListAPIVersions(t *testing.T) {
+	Setup()
+	defer Teardown()
+
+	res, err := networks.APIVersions(Client)
+	if err != nil {
+		t.Fatalf("Failed to list API versions")
+	}
+
+	err = gophercloud.EachPage(res, func(page gophercloud.Collection) bool {
+		t.Logf("--- Page ---")
+		for _, v := range networks.ToAPIVersions(page) {
+			t.Logf("API version: ID [%s] Status [%s]", v.ID, v.Status)
+		}
+		return true
+	})
+	if err != nil {
+		t.Fatalf("Unexpected error while iterating API versions")
+	}
 }
 
 func TestGetApiInfo(t *testing.T) {
