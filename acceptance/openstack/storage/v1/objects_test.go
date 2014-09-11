@@ -1,194 +1,19 @@
 // +build acceptance
 
-package openstack
+package v1
 
 import (
 	"bytes"
-	"os"
 	"strings"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/acceptance/tools"
-	"github.com/rackspace/gophercloud/openstack"
-	"github.com/rackspace/gophercloud/openstack/storage/v1/accounts"
 	"github.com/rackspace/gophercloud/openstack/storage/v1/containers"
 	"github.com/rackspace/gophercloud/openstack/storage/v1/objects"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-var metadata = map[string]string{"gopher": "cloud"}
-var numContainers = 2
 var numObjects = 2
-
-func newClient() (*gophercloud.ServiceClient, error) {
-	ao, err := utils.AuthOptions()
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := openstack.AuthenticatedClient(ao)
-	if err != nil {
-		return nil, err
-	}
-
-	return openstack.NewStorageV1(client, gophercloud.EndpointOpts{
-		Region: os.Getenv("OS_REGION_NAME"),
-	})
-}
-
-func TestAccount(t *testing.T) {
-	client, err := newClient()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	err = accounts.Update(client, accounts.UpdateOpts{
-		Metadata: metadata,
-	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	defer func() {
-		tempMap := make(map[string]string)
-		for k := range metadata {
-			tempMap[k] = ""
-		}
-		err = accounts.Update(client, accounts.UpdateOpts{
-			Metadata: tempMap,
-		})
-		if err != nil {
-			t.Error(err)
-			return
-		}
-	}()
-
-	gr, err := accounts.Get(client, accounts.GetOpts{})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	am := accounts.ExtractMetadata(gr)
-	for k := range metadata {
-		if am[k] != metadata[strings.Title(k)] {
-			t.Errorf("Expected custom metadata with key: %s", k)
-			return
-		}
-	}
-}
-
-func TestContainers(t *testing.T) {
-	client, err := newClient()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	cNames := make([]string, numContainers)
-	for i := 0; i < numContainers; i++ {
-		cNames[i] = tools.RandomString("test-container-", 8)
-	}
-
-	for i := 0; i < len(cNames); i++ {
-		_, err := containers.Create(client, containers.CreateOpts{
-			Name: cNames[i],
-		})
-		if err != nil {
-			t.Error(err)
-			return
-		}
-	}
-	defer func() {
-		for i := 0; i < len(cNames); i++ {
-			err = containers.Delete(client, containers.DeleteOpts{
-				Name: cNames[i],
-			})
-			if err != nil {
-				t.Error(err)
-				return
-			}
-		}
-	}()
-
-	cns := make([]string, 0, numContainers)
-	pager := containers.List(client, containers.ListOpts{Full: false})
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
-		names, err := containers.ExtractNames(page)
-		if err != nil {
-			return false, err
-		}
-
-		cns = append(cns, names...)
-
-		return true, nil
-	})
-	if err != nil {
-		t.Fatal(err)
-		return
-	}
-
-	if len(cns) != len(cNames) {
-		t.Errorf("Expected %d names and got %d", len(cNames), len(cns))
-		return
-	}
-
-	cis := make([]containers.Container, 0, numContainers)
-	pager = containers.List(client, containers.ListOpts{Full: true})
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
-		cisPage, err := containers.ExtractInfo(page)
-		if err != nil {
-			return false, err
-		}
-
-		cis = append(cis, cisPage...)
-
-		return true, nil
-	})
-
-	if len(cis) != len(cNames) {
-		t.Errorf("Expected %d containers and got %d", len(cNames), len(cis))
-		return
-	}
-
-	err = containers.Update(client, containers.UpdateOpts{
-		Name:     cNames[0],
-		Metadata: metadata,
-	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	defer func() {
-		tempMap := make(map[string]string)
-		for k := range metadata {
-			tempMap[k] = ""
-		}
-		err = containers.Update(client, containers.UpdateOpts{
-			Name:     cNames[0],
-			Metadata: tempMap,
-		})
-		if err != nil {
-			t.Error(err)
-			return
-		}
-	}()
-
-	gr, err := containers.Get(client, containers.GetOpts{})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	cm := containers.ExtractMetadata(gr)
-	for k := range metadata {
-		if cm[k] != metadata[strings.Title(k)] {
-			t.Errorf("Expected custom metadata with key: %s", k)
-			return
-		}
-	}
-}
 
 func TestObjects(t *testing.T) {
 	client, err := newClient()
