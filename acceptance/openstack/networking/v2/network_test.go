@@ -1,21 +1,34 @@
-// +build acceptance networking
-
 package v2
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
-	networking "github.com/rackspace/gophercloud/openstack/networking/v2"
+	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
-var Client *networking.Client
+var Client *gophercloud.ServiceClient
 
-func NewClient() (*networking.Client, error) {
-	provider := gophercloud.AuthenticatedClient(utils.AuthOptions())
+func NewClient() (*gophercloud.ServiceClient, error) {
+	opts, err := utils.AuthOptions()
+	if err != nil {
+		return nil, err
+	}
 
+	provider, err := openstack.AuthenticatedClient(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	eo := gophercloud.EndpointOpts{
+		Type:   "network",
+		Name:   "neutron",
+		Region: os.Getenv("OS_REGION_NAME"),
+	}
 	url, err := provider.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
@@ -25,7 +38,7 @@ func NewClient() (*networking.Client, error) {
 }
 
 func Setup() {
-	client, err = NewClient()
+	client, err := NewClient()
 	if err != nil {
 		fmt.Println("Client failed to load")
 		return
@@ -60,37 +73,37 @@ func TestListAPIVersions(t *testing.T) {
 }
 
 func TestGetApiInfo(t *testing.T) {
-	networks.ApiInfo()
+	//networks.ApiInfo()
 }
 
 func TestListExts(t *testing.T) {
-	networks.Extensions()
+	//networks.Extensions()
 }
 
 func TestGetExt(t *testing.T) {
-	networks.Extension()
+	//networks.Extension()
 }
 
 func TestListNetworks(t *testing.T) {
-	networks.List()
+	//networks.List()
 }
 
 func TestGetNetwork(t *testing.T) {
-	networks.Get()
+	//networks.Get()
 }
 
 func TestCreateNetwork(t *testing.T) {
-	networks.Create()
+	//networks.Create()
 }
 
 func TestCreateMultipleNetworks(t *testing.T) {
-	networks.CreateMany()
+	//networks.CreateMany()
 }
 
 func TestUpdateNetwork(t *testing.T) {
-	networks.Update()
+	//networks.Update()
 }
 
 func TestDeleteNetwork(t *testing.T) {
-	networks.Delete()
+	//networks.Delete()
 }

@@ -1,5 +1,10 @@
 package networks
 
+import (
+	"github.com/racker/perigee"
+	"github.com/rackspace/gophercloud"
+)
+
 // User-defined options sent to the API when creating or updating a network.
 type NetworkOpts struct {
 	// The administrative state of the network, which is up (true) or down (false).
@@ -14,4 +19,20 @@ type NetworkOpts struct {
 	// However, only administrative users can specify a tenant ID other than their
 	// own. You cannot change this value through authorization policies.
 	TenantID string `json:"tenant_id"`
+}
+
+func APIVersions(c *gophercloud.ServiceClient) (*APIVersionsList, error) {
+	url := APIVersionsURL(c)
+
+	var resp APIVersionsList
+	_, err := perigee.Request("GET", url, perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		Results:     &resp,
+		OkCodes:     []int{200},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
 }

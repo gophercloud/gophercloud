@@ -1,5 +1,12 @@
 package networks
 
+import (
+	"fmt"
+
+	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
+)
+
 // A Network represents a a virtual layer-2 broadcast domain.
 type Network struct {
 	// Id is the unique identifier for the network.
@@ -24,4 +31,52 @@ type Network struct {
 	ProviderNetworkType string `json:"provider:network_type"`
 	// ProviderSegmentationId is the provider network identifier (such as the vlan id).
 	ProviderSegmentationId string `json:"provider:segmentation_id"`
+}
+
+type APIVersion struct {
+	Status string
+	ID     string
+}
+
+type APIVersionsList struct {
+	gophercloud.PaginationLinks `json:"links"`
+	Client                      *gophercloud.ServiceClient
+	APIVersions                 []APIVersion `json:"versions"`
+}
+
+func (list APIVersionsList) Pager() gophercloud.Pager {
+	return gophercloud.NewLinkPager(list)
+}
+
+func (list APIVersionsList) Concat(other gophercloud.Collection) gophercloud.Collection {
+	return APIVersionsList{
+		Client:      list.Client,
+		APIVersions: append(list.APIVersions, ToAPIVersions(other)...),
+	}
+}
+
+func (list APIVersionsList) Service() *gophercloud.ServiceClient {
+	return list.Client
+}
+
+func (list APIVersionsList) Links() gophercloud.PaginationLinks {
+	return list.PaginationLinks
+}
+
+func (list APIVersionsList) Interpret(json interface{}) (gophercloud.LinkCollection, error) {
+	mapped, ok := json.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("Unexpected JSON response: %#v", json)
+	}
+
+	var result APIVersionsList
+	err := mapstructure.Decode(mapped, &result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func ToAPIVersions(results gophercloud.Collection) []APIVersion {
+	return results.(*APIVersionsList).APIVersions
 }
