@@ -1,45 +1,63 @@
 package gophercloud
 
 import (
-	"fmt"
+	"bytes"
+	"errors"
+	"io"
 	"net/http"
 	"reflect"
 	"testing"
 
-	"github.com/rackspace/gophercloud/testhelper"
+	"github.com/mitchellh/mapstructure"
 )
+
+type nopCloser struct {
+	io.Reader
+}
+
+func (nopCloser) Close() error { return nil }
+
+func responseWithBody(body string) (http.Response, error) {
+	return http.Response{
+		Body: nopCloser{bytes.NewReader([]byte(body))},
+	}, nil
+}
 
 // SinglePage sample and test cases.
 
-type SinglePageCollection struct {
-	results []int
+type SingleIntList struct {
+	SinglePage
 }
 
-func (c SinglePageCollection) NextPageURL() string {
-	panic("NextPageURL should never be called on a single-paged collection.")
-}
+func ExtractSingleInts(page Page) ([]int, error) {
+	var response struct {
+		Ints []int `mapstructure:"ints"`
+	}
 
-func (c SinglePageCollection) Concat(other Collection) Collection {
-	panic("Concat should never be called on a single-paged collection.")
-}
+	err := mapstructure.Decode(page.(SingleIntList).Body, &response)
+	if err != nil {
+		return nil, err
+	}
 
-func ExtractSingleInts(c Collection) []int {
-	return c.(SinglePageCollection).results
+	return response.Ints, nil
 }
 
 func setupSinglePaged() Pager {
-	return NewSinglePager(func() (Collection, error) {
-		return SinglePageCollection{results: []int{1, 2, 3}}, nil
+	return NewSinglePager(func() (http.Response, error) {
+		return responseWithBody(`{ "ints": [1, 2, 3] }`)
 	})
 }
 
 func TestEnumerateSinglePaged(t *testing.T) {
 	callCount := 0
-	err := setupSinglePaged().EachPage(func(page Collection) bool {
+	err := setupSinglePaged().EachPage(func(page Page) bool {
 		callCount++
 
 		expected := []int{1, 2, 3}
-		actual := AsSingleInts(page)
+		actual, err := ExtractSingleInts(page)
+		if err != nil {
+			t.Fatalf("Unexpected error extracting ints: %v", err)
+		}
 		if !reflect.DeepEqual(expected, actual) {
 			t.Errorf("Expected %v, but was %v", expected, actual)
 		}
@@ -54,90 +72,52 @@ func TestEnumerateSinglePaged(t *testing.T) {
 	}
 }
 
-func TestAllSinglePaged(t *testing.T) {
-	r, err := setupSinglePaged().AllPages()
-	if err != nil {
-		t.Fatalf("Unexpected error when iterating pages: %v", err)
-	}
-
-	expected := []int{1, 2, 3}
-	actual := ExtractSingleInts(r)
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("Expected %v, but was %v", expected, actual)
-	}
-}
-
 // LinkedPager sample and test cases.
 
-type LinkedCollection struct {
-	PaginationLinks
-
-	results []int
+type LinkedIntPage struct {
+	PaginatedLinksPage
 }
 
-func (page LinkedCollection) NextPageURL() string {
-	n := page.PaginationLinks.Next
-	if n == nil {
-		return ""
+func ExtractLinkedInts(page Page) ([]int, error) {
+	var response struct {
+		Ints []int `mapstructure:"ints"`
 	}
-	return *n
-}
 
-func (page LinkedCollection) Concat(other Collection) Collection {
-	return LinkedCollection{
-		service: page.service,
-		results: append(c.results, AsLinkedInts(other)...),
+	err := mapstructure.Decode(page.(LinkedIntPage).Body, &response)
+	if err != nil {
+		return nil, err
 	}
+
+	return response.Ints, nil
 }
 
-func AsLinkedInts(results Collection) []int {
-	return results.(LinkedCollection).results
-}
-
-func createLinked() Pager {
-	nextURL := testhelper.Server.URL + "/foo?page=2&perPage=3"
-	return CreatePager(func(url) Collection {
-		LinkedCollection{
-			PaginationLinks: PaginationLinks{Next: &nextURL},
-			results:         []int{1, 2, 3},
-		}
-	})
-}
-
-func setupLinkedResponses(t *testing.T) {
-	testhelper.Mux.HandleFunc("/foo", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", "1234")
-		w.Header().Add("Content-Type", "application/json")
-
-		r.ParseForm()
-
-		pages := r.Form["page"]
-		if len(pages) != 1 {
-			t.Errorf("Endpoint called with unexpected page: %#v", r.Form)
-		}
-
-		switch pages[0] {
-		case "2":
-			fmt.Fprintf(w, `[4, 5, 6]`)
-		case "3":
-			fmt.Fprintf(w, `[7, 8, 9]`)
+func createLinked(t *testing.T) Pager {
+	return NewLinkedPager("page1", func(url string) (http.Response, error) {
+		switch url {
+		case "page1":
+			return responseWithBody(`{ "ints": [1, 2, 3], "links": { "next": "page2" } }`)
+		case "page2":
+			return responseWithBody(`{ "ints": [4, 5, 6], "links": { "next": "page3" } }`)
+		case "page3":
+			return responseWithBody(`{ "ints": [7, 8, 9], "links": { "next": null } }`)
 		default:
-			t.Errorf("Endpoint called with unexpected page: %s", pages[0])
+			t.Fatalf("LinkedPager called with unexpected URL: %v", url)
+			return http.Response{}, errors.New("Wat")
 		}
 	})
 }
 
 func TestEnumerateLinked(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
-
-	setupLinkedResponses(t)
-	lc := createLinked()
+	pager := createLinked(t)
 
 	callCount := 0
-	err := EachPage(lc, func(page Collection) bool {
-		actual := AsLinkedInts(page)
+	err := pager.EachPage(func(page Page) bool {
+		actual, err := ExtractLinkedInts(page)
+		if err != nil {
+			t.Errorf("Unable to extract ints from page: %v", err)
+			return false
+		}
+
 		t.Logf("Handler invoked with %v", actual)
 
 		var expected []int
@@ -166,30 +146,5 @@ func TestEnumerateLinked(t *testing.T) {
 
 	if callCount != 3 {
 		t.Errorf("Expected 3 calls, but was %d", callCount)
-	}
-}
-
-func TestAllLinked(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
-
-	setupLinkedResponses(t)
-	lc := createLinked()
-
-	all, err := AllPages(lc)
-	if err != nil {
-		t.Fatalf("Unexpected error collection all linked pages: %v", err)
-	}
-
-	actual := AsLinkedInts(all)
-	expected := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("Expected %v, but was %v", expected, actual)
-	}
-
-	original := []int{1, 2, 3}
-	if !reflect.DeepEqual(AsLinkedInts(lc), original) {
-		t.Errorf("AllPages modified the original page, and now it contains: %v", lc)
 	}
 }
