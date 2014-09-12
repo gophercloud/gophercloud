@@ -1,6 +1,7 @@
 package services
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/racker/perigee"
@@ -42,7 +43,7 @@ type ListOpts struct {
 }
 
 // List enumerates the services available to a specific user.
-func List(client *gophercloud.ServiceClient, opts ListOpts) (*ServiceList, error) {
+func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
 	q := make(map[string]string)
 	if opts.ServiceType != "" {
 		q["type"] = opts.ServiceType
@@ -55,17 +56,16 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*ServiceList, error
 	}
 	u := getListURL(client) + utils.BuildQuery(q)
 
-	var resp ServiceList
-	_, err := perigee.Request("GET", u, perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		Results:     &resp,
-		OkCodes:     []int{200},
+	return gophercloud.NewLinkedPager(u, func(next string) (http.Response, error) {
+		resp, err := perigee.Request("GET", u, perigee.Options{
+			MoreHeaders: client.Provider.AuthenticatedHeaders(),
+			OkCodes:     []int{200},
+		})
+		if err != nil {
+			return http.Response{}, err
+		}
+		return resp.HttpResponse, nil
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &resp, nil
 }
 
 // Get returns additional information about a service, given its ID.

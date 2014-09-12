@@ -98,33 +98,40 @@ func TestListSinglePage(t *testing.T) {
 
 	client := serviceClient()
 
-	result, err := List(client, ListOpts{})
-	if err != nil {
-		t.Fatalf("Error listing services: %v", err)
-	}
+	count := 0
+	List(client, ListOpts{}).EachPage(func(page gophercloud.Page) bool {
+		count++
+		actual, err := ExtractServices(page)
+		if err != nil {
+			t.Errorf("Unexpected error extracting services: %v", err)
+			return false
+		}
 
-	collection, err := gophercloud.AllPages(result)
-	actual := AsServices(collection)
+		desc0 := "Service One"
+		desc1 := "Service Two"
+		expected := []Service{
+			Service{
+				Description: &desc0,
+				ID:          "1234",
+				Name:        "service-one",
+				Type:        "identity",
+			},
+			Service{
+				Description: &desc1,
+				ID:          "9876",
+				Name:        "service-two",
+				Type:        "compute",
+			},
+		}
 
-	desc0 := "Service One"
-	desc1 := "Service Two"
-	expected := []Service{
-		Service{
-			Description: &desc0,
-			ID:          "1234",
-			Name:        "service-one",
-			Type:        "identity",
-		},
-		Service{
-			Description: &desc1,
-			ID:          "9876",
-			Name:        "service-two",
-			Type:        "compute",
-		},
-	}
+		if !reflect.DeepEqual(expected, actual) {
+			t.Errorf("Expected %#v, got %#v", expected, actual)
+		}
 
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("Expected %#v, got %#v", expected, actual)
+		return true
+	})
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
 
