@@ -41,7 +41,7 @@ func NewPager(initialURL string, advance func(string) (Page, error)) Pager {
 
 // EachPage iterates over each page returned by a Pager, yielding one at a time to a handler function.
 // Return "false" from the handler to prematurely stop iterating.
-func (p Pager) EachPage(handler func(Page) bool) error {
+func (p Pager) EachPage(handler func(Page) (bool, error)) error {
 	currentURL := p.initialURL
 	for {
 		currentPage, err := p.advance(currentURL)
@@ -49,7 +49,11 @@ func (p Pager) EachPage(handler func(Page) bool) error {
 			return err
 		}
 
-		if !handler(currentPage) {
+		ok, err := handler(currentPage)
+		if err != nil {
+			return err
+		}
+		if !ok {
 			return nil
 		}
 

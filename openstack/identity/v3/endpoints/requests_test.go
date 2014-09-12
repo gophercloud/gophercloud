@@ -128,12 +128,12 @@ func TestListEndpoints(t *testing.T) {
 	client := serviceClient()
 
 	count := 0
-	List(client, ListOpts{}).EachPage(func(page gophercloud.Page) bool {
+	List(client, ListOpts{}).EachPage(func(page gophercloud.Page) (bool, error) {
 		count++
 		actual, err := ExtractEndpoints(page)
 		if err != nil {
 			t.Errorf("Failed to extract endpoints: %v", err)
-			return false
+			return false, err
 		}
 
 		expected := []Endpoint{
@@ -159,7 +159,7 @@ func TestListEndpoints(t *testing.T) {
 			t.Errorf("Expected %#v, got %#v", expected, actual)
 		}
 
-		return true
+		return true, nil
 	})
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)

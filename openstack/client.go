@@ -193,11 +193,11 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.EndpointOpts) (string, error) {
 	// Discover the service we're interested in.
 	var services = make([]services3.Service, 0, 1)
-	var err error
-	services3.List(v3Client, services3.ListOpts{ServiceType: opts.Type}).EachPage(func(page gophercloud.Page) bool {
+	servicePager := services3.List(v3Client, services3.ListOpts{ServiceType: opts.Type})
+	err := servicePager.EachPage(func(page gophercloud.Page) (bool, error) {
 		part, err := services3.ExtractServices(page)
 		if err != nil {
-			return false
+			return false, err
 		}
 
 		for _, service := range part {
@@ -206,7 +206,7 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 			}
 		}
 
-		return true
+		return true, nil
 	})
 	if err != nil {
 		return "", err
@@ -222,13 +222,14 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 
 	// Enumerate the endpoints available for this service.
 	var endpoints []endpoints3.Endpoint
-	endpoints3.List(v3Client, endpoints3.ListOpts{
+	endpointPager := endpoints3.List(v3Client, endpoints3.ListOpts{
 		Availability: opts.Availability,
 		ServiceID:    service.ID,
-	}).EachPage(func(page gophercloud.Page) bool {
+	})
+	err = endpointPager.EachPage(func(page gophercloud.Page) (bool, error) {
 		part, err := endpoints3.ExtractEndpoints(page)
 		if err != nil {
-			return false
+			return false, err
 		}
 
 		for _, endpoint := range part {
@@ -237,7 +238,7 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 			}
 		}
 
-		return true
+		return true, nil
 	})
 	if err != nil {
 		return "", err

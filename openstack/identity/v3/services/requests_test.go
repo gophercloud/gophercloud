@@ -99,12 +99,11 @@ func TestListSinglePage(t *testing.T) {
 	client := serviceClient()
 
 	count := 0
-	List(client, ListOpts{}).EachPage(func(page gophercloud.Page) bool {
+	err := List(client, ListOpts{}).EachPage(func(page gophercloud.Page) (bool, error) {
 		count++
 		actual, err := ExtractServices(page)
 		if err != nil {
-			t.Errorf("Unexpected error extracting services: %v", err)
-			return false
+			return false, err
 		}
 
 		desc0 := "Service One"
@@ -128,8 +127,11 @@ func TestListSinglePage(t *testing.T) {
 			t.Errorf("Expected %#v, got %#v", expected, actual)
 		}
 
-		return true
+		return true, nil
 	})
+	if err != nil {
+		t.Errorf("Unexpected error while paging: %v", err)
+	}
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
 	}

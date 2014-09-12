@@ -46,18 +46,18 @@ func setupSinglePaged() Pager {
 
 func TestEnumerateSinglePaged(t *testing.T) {
 	callCount := 0
-	err := setupSinglePaged().EachPage(func(page Page) bool {
+	err := setupSinglePaged().EachPage(func(page Page) (bool, error) {
 		callCount++
 
 		expected := []int{1, 2, 3}
 		actual, err := ExtractSingleInts(page)
 		if err != nil {
-			t.Fatalf("Unexpected error extracting ints: %v", err)
+			return false, err
 		}
 		if !reflect.DeepEqual(expected, actual) {
 			t.Errorf("Expected %v, but was %v", expected, actual)
 		}
-		return true
+		return true, nil
 	})
 	if err != nil {
 		t.Fatalf("Unexpected error calling EachPage: %v", err)
@@ -103,11 +103,10 @@ func TestEnumerateLinked(t *testing.T) {
 	pager := createLinked(t)
 
 	callCount := 0
-	err := pager.EachPage(func(page Page) bool {
+	err := pager.EachPage(func(page Page) (bool, error) {
 		actual, err := ExtractLinkedInts(page)
 		if err != nil {
-			t.Errorf("Unable to extract ints from page: %v", err)
-			return false
+			return false, err
 		}
 
 		t.Logf("Handler invoked with %v", actual)
@@ -122,7 +121,7 @@ func TestEnumerateLinked(t *testing.T) {
 			expected = []int{7, 8, 9}
 		default:
 			t.Fatalf("Unexpected call count: %d", callCount)
-			return false
+			return false, nil
 		}
 
 		if !reflect.DeepEqual(expected, actual) {
@@ -130,7 +129,7 @@ func TestEnumerateLinked(t *testing.T) {
 		}
 
 		callCount++
-		return true
+		return true, nil
 	})
 	if err != nil {
 		t.Errorf("Unexpected error for page iteration: %v", err)
