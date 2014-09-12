@@ -75,7 +75,7 @@ func ExtractLinkedInts(page Page) ([]int, error) {
 		Ints []int `mapstructure:"ints"`
 	}
 
-	err := mapstructure.Decode(page.(PaginatedLinksPage).Body, &response)
+	err := mapstructure.Decode(page.(LinkedPage).Body, &response)
 	if err != nil {
 		return nil, err
 	}

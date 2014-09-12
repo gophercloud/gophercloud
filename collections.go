@@ -121,11 +121,11 @@ func NewSinglePager(only func() (http.Response, error)) Pager {
 	}
 }
 
-// PaginatedLinksPage is a page in a collection that provides navigational "Next" and "Previous" links within its result.
-type PaginatedLinksPage ConcretePage
+// LinkedPage is a page in a collection that provides navigational "Next" and "Previous" links within its result.
+type LinkedPage ConcretePage
 
 // NextPageURL extracts the pagination structure from a JSON response and returns the "next" link, if one is present.
-func (current PaginatedLinksPage) NextPageURL() string {
+func (current LinkedPage) NextPageURL() (string, error) {
 	type response struct {
 		Links struct {
 			Next *string `mapstructure:"next,omitempty"`
@@ -158,7 +158,7 @@ func NewLinkedPager(initialURL string, request func(string) (http.Response, erro
 			return nil, err
 		}
 
-		return PaginatedLinksPage(cp), nil
+		return LinkedPage(cp), nil
 	}
 
 	return Pager{
