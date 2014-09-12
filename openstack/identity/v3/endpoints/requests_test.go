@@ -127,13 +127,16 @@ func TestListEndpoints(t *testing.T) {
 
 	client := serviceClient()
 
-	actual, err := List(client, ListOpts{})
-	if err != nil {
-		t.Fatalf("Unexpected error listing endpoints: %v", err)
-	}
+	count := 0
+	List(client, ListOpts{}).EachPage(func(page gophercloud.Page) bool {
+		count++
+		actual, err := ExtractEndpoints(page)
+		if err != nil {
+			t.Errorf("Failed to extract endpoints: %v", err)
+			return false
+		}
 
-	expected := &EndpointList{
-		Endpoints: []Endpoint{
+		expected := []Endpoint{
 			Endpoint{
 				ID:           "12",
 				Availability: gophercloud.AvailabilityPublic,
@@ -150,11 +153,16 @@ func TestListEndpoints(t *testing.T) {
 				ServiceID:    "asdfasdfasdfasdf",
 				URL:          "https://1.2.3.4:9001/",
 			},
-		},
-	}
+		}
 
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("Expected %#v, got %#v", expected, actual)
+		if !reflect.DeepEqual(expected, actual) {
+			t.Errorf("Expected %#v, got %#v", expected, actual)
+		}
+
+		return true
+	})
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
 

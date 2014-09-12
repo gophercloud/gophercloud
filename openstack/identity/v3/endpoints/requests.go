@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/racker/perigee"
@@ -94,7 +95,7 @@ type ListOpts struct {
 }
 
 // List enumerates endpoints in a paginated collection, optionally filtered by ListOpts criteria.
-func List(client *gophercloud.ServiceClient, opts ListOpts) (*EndpointList, error) {
+func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
 	q := make(map[string]string)
 	if opts.Availability != "" {
 		q["interface"] = string(opts.Availability)
@@ -110,18 +111,16 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*EndpointList, erro
 	}
 
 	u := getListURL(client) + utils.BuildQuery(q)
-
-	var respBody EndpointList
-	_, err := perigee.Request("GET", u, perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		Results:     &respBody,
-		OkCodes:     []int{200},
+	return gophercloud.NewLinkedPager(u, func(next string) (http.Response, error) {
+		r, err := perigee.Request("GET", u, perigee.Options{
+			MoreHeaders: client.Provider.AuthenticatedHeaders(),
+			OkCodes:     []int{200},
+		})
+		if err != nil {
+			return http.Response{}, err
+		}
+		return r.HttpResponse, nil
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &respBody, nil
 }
 
 // Update changes an existing endpoint with new data.
