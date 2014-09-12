@@ -1,7 +1,6 @@
 package gophercloud
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -16,25 +15,27 @@ type SinglePageCollection struct {
 	results []int
 }
 
-func (c SinglePageCollection) Pager() Pager {
-	return SinglePager{}
+func (c SinglePageCollection) NextPageURL() string {
+	panic("NextPageURL should never be called on a single-paged collection.")
 }
 
 func (c SinglePageCollection) Concat(other Collection) Collection {
 	panic("Concat should never be called on a single-paged collection.")
 }
 
-func AsSingleInts(c Collection) []int {
+func ExtractSingleInts(c Collection) []int {
 	return c.(SinglePageCollection).results
 }
 
-var single = SinglePageCollection{
-	results: []int{1, 2, 3},
+func setupSinglePaged() Pager {
+	return NewSinglePager(func() (Collection, error) {
+		return SinglePageCollection{results: []int{1, 2, 3}}, nil
+	})
 }
 
 func TestEnumerateSinglePaged(t *testing.T) {
 	callCount := 0
-	EachPage(single, func(page Collection) bool {
+	err := setupSinglePaged().EachPage(func(page Collection) bool {
 		callCount++
 
 		expected := []int{1, 2, 3}
@@ -44,6 +45,9 @@ func TestEnumerateSinglePaged(t *testing.T) {
 		}
 		return true
 	})
+	if err != nil {
+		t.Fatalf("Unexpected error calling EachPage: %v", err)
+	}
 
 	if callCount != 1 {
 		t.Errorf("Callback was invoked %d times", callCount)
@@ -51,13 +55,13 @@ func TestEnumerateSinglePaged(t *testing.T) {
 }
 
 func TestAllSinglePaged(t *testing.T) {
-	r, err := AllPages(single)
+	r, err := setupSinglePaged().AllPages()
 	if err != nil {
 		t.Fatalf("Unexpected error when iterating pages: %v", err)
 	}
 
 	expected := []int{1, 2, 3}
-	actual := AsSingleInts(r)
+	actual := ExtractSingleInts(r)
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected %v, but was %v", expected, actual)
 	}
@@ -68,73 +72,36 @@ func TestAllSinglePaged(t *testing.T) {
 type LinkedCollection struct {
 	PaginationLinks
 
-	service *ServiceClient
 	results []int
 }
 
-func (c LinkedCollection) Pager() Pager {
-	return NewLinkPager(c)
+func (page LinkedCollection) NextPageURL() string {
+	n := page.PaginationLinks.Next
+	if n == nil {
+		return ""
+	}
+	return *n
 }
 
-func (c LinkedCollection) Concat(other Collection) Collection {
+func (page LinkedCollection) Concat(other Collection) Collection {
 	return LinkedCollection{
-		service: c.service,
+		service: page.service,
 		results: append(c.results, AsLinkedInts(other)...),
 	}
-}
-
-func (c LinkedCollection) Links() PaginationLinks {
-	return c.PaginationLinks
-}
-
-func (c LinkedCollection) Service() *ServiceClient {
-	return c.service
-}
-
-func (c LinkedCollection) Interpret(response interface{}) (LinkCollection, error) {
-	casted, ok := response.([]interface{})
-	if ok {
-		asInts := make([]int, len(casted))
-		for index, item := range casted {
-			f := item.(float64)
-			asInts[index] = int(f)
-		}
-
-		var nextURL *string
-		switch asInts[0] {
-		case 4:
-			u := testhelper.Server.URL + "/foo?page=3&perPage=3"
-			nextURL = &u
-		case 7:
-			// Leave nextURL as nil.
-		default:
-			return nil, fmt.Errorf("Unexpected resultset: %#v", asInts)
-		}
-
-		result := LinkedCollection{
-			PaginationLinks: PaginationLinks{Next: nextURL},
-			service:         c.service,
-			results:         asInts,
-		}
-		return result, nil
-	}
-	return nil, errors.New("Wat")
 }
 
 func AsLinkedInts(results Collection) []int {
 	return results.(LinkedCollection).results
 }
 
-func createLinked() LinkedCollection {
+func createLinked() Pager {
 	nextURL := testhelper.Server.URL + "/foo?page=2&perPage=3"
-	return LinkedCollection{
-		PaginationLinks: PaginationLinks{Next: &nextURL},
-		service: &ServiceClient{
-			Provider: &ProviderClient{TokenID: "1234"},
-			Endpoint: testhelper.Endpoint(),
-		},
-		results: []int{1, 2, 3},
-	}
+	return CreatePager(func(url) Collection {
+		LinkedCollection{
+			PaginationLinks: PaginationLinks{Next: &nextURL},
+			results:         []int{1, 2, 3},
+		}
+	})
 }
 
 func setupLinkedResponses(t *testing.T) {
