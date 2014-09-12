@@ -192,58 +192,55 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 
 func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.EndpointOpts) (string, error) {
 	// Discover the service we're interested in.
-	serviceResults, err := services3.List(v3Client, services3.ListOpts{ServiceType: opts.Type})
-	if err != nil {
-		return "", err
-	}
+	var services = make([]services3.Service, 0, 1)
+	var err error
+	services3.List(v3Client, services3.ListOpts{ServiceType: opts.Type}).EachPage(func(page gophercloud.Page) bool {
+		part, err := services3.ExtractServices(page)
+		if err != nil {
+			return false
+		}
 
-	allServiceResults, err := gophercloud.AllPages(serviceResults)
-	if err != nil {
-		return "", err
-	}
-	allServices := services3.AsServices(allServiceResults)
-
-	if opts.Name != "" {
-		filtered := make([]services3.Service, 0, 1)
-		for _, service := range allServices {
+		for _, service := range part {
 			if service.Name == opts.Name {
-				filtered = append(filtered, service)
+				services = append(services, service)
 			}
 		}
-		allServices = filtered
-	}
 
-	if len(allServices) == 0 {
-		return "", gophercloud.ErrServiceNotFound
-	}
-	if len(allServices) > 1 {
-		return "", fmt.Errorf("Discovered %d matching services: %#v", len(allServices), allServices)
-	}
-
-	service := allServices[0]
-
-	// Enumerate the endpoints available for this service.
-	endpointResults, err := endpoints3.List(v3Client, endpoints3.ListOpts{
-		Availability: opts.Availability,
-		ServiceID:    service.ID,
+		return true
 	})
 	if err != nil {
 		return "", err
 	}
-	allEndpoints, err := gophercloud.AllPages(endpointResults)
-	if err != nil {
-		return "", err
-	}
-	endpoints := endpoints3.AsEndpoints(allEndpoints)
 
-	if opts.Name != "" {
-		filtered := make([]endpoints3.Endpoint, 0, 1)
-		for _, endpoint := range endpoints {
+	if len(services) == 0 {
+		return "", gophercloud.ErrServiceNotFound
+	}
+	if len(services) > 1 {
+		return "", fmt.Errorf("Discovered %d matching services: %#v", len(services), services)
+	}
+	service := services[0]
+
+	// Enumerate the endpoints available for this service.
+	var endpoints []endpoints3.Endpoint
+	endpoints3.List(v3Client, endpoints3.ListOpts{
+		Availability: opts.Availability,
+		ServiceID:    service.ID,
+	}).EachPage(func(page gophercloud.Page) bool {
+		part, err := endpoints3.ExtractEndpoints(page)
+		if err != nil {
+			return false
+		}
+
+		for _, endpoint := range part {
 			if opts.Region == "" || endpoint.Region == opts.Region {
-				filtered = append(filtered, endpoint)
+				endpoints = append(endpoints, endpoint)
 			}
 		}
-		endpoints = filtered
+
+		return true
+	})
+	if err != nil {
+		return "", err
 	}
 
 	if len(endpoints) == 0 {
@@ -252,7 +249,6 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 	if len(endpoints) > 1 {
 		return "", fmt.Errorf("Discovered %d matching endpoints: %#v", len(endpoints), endpoints)
 	}
-
 	endpoint := endpoints[0]
 
 	return normalizeURL(endpoint.URL), nil
