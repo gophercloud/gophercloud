@@ -25,16 +25,12 @@ func responseWithBody(body string) (http.Response, error) {
 
 // SinglePage sample and test cases.
 
-type SingleIntList struct {
-	SinglePage
-}
-
 func ExtractSingleInts(page Page) ([]int, error) {
 	var response struct {
 		Ints []int `mapstructure:"ints"`
 	}
 
-	err := mapstructure.Decode(page.(SingleIntList).Body, &response)
+	err := mapstructure.Decode(page.(SinglePage).Body, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -74,16 +70,12 @@ func TestEnumerateSinglePaged(t *testing.T) {
 
 // LinkedPager sample and test cases.
 
-type LinkedIntPage struct {
-	PaginatedLinksPage
-}
-
 func ExtractLinkedInts(page Page) ([]int, error) {
 	var response struct {
 		Ints []int `mapstructure:"ints"`
 	}
 
-	err := mapstructure.Decode(page.(LinkedIntPage).Body, &response)
+	err := mapstructure.Decode(page.(PaginatedLinksPage).Body, &response)
 	if err != nil {
 		return nil, err
 	}
