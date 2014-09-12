@@ -20,7 +20,7 @@ type Page interface {
 
 	// NextPageURL generates the URL for the page of data that follows this collection.
 	// Return "" if no such page exists.
-	NextPageURL() string
+	NextPageURL() (string, error)
 }
 
 // Pager knows how to advance through a specific resource collection, one page at a time.
@@ -53,16 +53,14 @@ func (p Pager) EachPage(handler func(Page) bool) error {
 			return nil
 		}
 
-		currentURL = currentPage.NextPageURL()
+		currentURL, err = currentPage.NextPageURL()
+		if err != nil {
+			return err
+		}
 		if currentURL == "" {
 			return nil
 		}
 	}
-}
-
-// AllPages accumulates every page reachable from a Pager into a single Page, for convenience.
-func (p Pager) AllPages() (Page, error) {
-	return nil, errors.New("Wat")
 }
 
 // ConcretePage stores generic information derived from an HTTP response.
@@ -92,8 +90,8 @@ func NewConcretePage(resp http.Response) (ConcretePage, error) {
 type SinglePage ConcretePage
 
 // NextPageURL always returns "" to indicate that there are no more pages to return.
-func (current SinglePage) NextPageURL() string {
-	return ""
+func (current SinglePage) NextPageURL() (string, error) {
+	return "", nil
 }
 
 // NewSinglePager constructs a Pager that "iterates" over a single Page.
@@ -137,15 +135,14 @@ func (current PaginatedLinksPage) NextPageURL() string {
 	var r response
 	err := mapstructure.Decode(current.Body, &r)
 	if err != nil {
-		// FIXME NextPageURL should be able to fail
-		panic(err)
+		return "", err
 	}
 
 	if r.Links.Next == nil {
-		return ""
+		return "", nil
 	}
 
-	return *r.Links.Next
+	return *r.Links.Next, nil
 }
 
 // NewLinkedPager creates a Pager that uses a "links" element in the JSON response to locate the next page.
