@@ -109,7 +109,7 @@ type MarkerPage struct {
 	LastHTTPResponse
 
 	// lastMark is a captured function that returns the final entry on a given page.
-	lastMark func(MarkerPage) (string, error)
+	lastMark func(Page) (string, error)
 }
 
 // NextPageURL generates the URL for the page of results after this one.
@@ -133,20 +133,23 @@ type Pager struct {
 	initialURL string
 
 	fetchNextPage func(string) (Page, error)
+
+	countPage func(Page) (int, error)
 }
 
 // NewPager constructs a manually-configured pager.
-// Supply the URL for the first page and a function that requests a specific page given a URL.
-func NewPager(initialURL string, fetchNextPage func(string) (Page, error)) Pager {
+// Supply the URL for the first page, a function that requests a specific page given a URL, and a function that counts a page.
+func NewPager(initialURL string, fetchNextPage func(string) (Page, error), countPage func(Page) (int, error)) Pager {
 	return Pager{
 		initialURL:    initialURL,
 		fetchNextPage: fetchNextPage,
+		countPage:     countPage,
 	}
 }
 
 // NewSinglePager constructs a Pager that "iterates" over a single Page.
 // Supply the URL to request.
-func NewSinglePager(client *ServiceClient, onlyURL string) Pager {
+func NewSinglePager(client *ServiceClient, onlyURL string, countPage func(Page) (int, error)) Pager {
 	consumed := false
 	single := func(_ string) (Page, error) {
 		if !consumed {
@@ -168,11 +171,12 @@ func NewSinglePager(client *ServiceClient, onlyURL string) Pager {
 	return Pager{
 		initialURL:    "",
 		fetchNextPage: single,
+		countPage:     countPage,
 	}
 }
 
 // NewLinkedPager creates a Pager that uses a "links" element in the JSON response to locate the next page.
-func NewLinkedPager(client *ServiceClient, initialURL string) Pager {
+func NewLinkedPager(client *ServiceClient, initialURL string, countPage func(Page) (int, error)) Pager {
 	fetchNextPage := func(url string) (Page, error) {
 		resp, err := request(client, url)
 		if err != nil {
@@ -190,12 +194,15 @@ func NewLinkedPager(client *ServiceClient, initialURL string) Pager {
 	return Pager{
 		initialURL:    initialURL,
 		fetchNextPage: fetchNextPage,
+		countPage:     countPage,
 	}
 }
 
 // NewMarkerPager creates a Pager that iterates over successive pages by issuing requests with a "marker" parameter set to the
 // final element of the previous Page.
-func NewMarkerPager(client *ServiceClient, initialURL string, lastMark func(MarkerPage) (string, error)) Pager {
+func NewMarkerPager(client *ServiceClient, initialURL string,
+	lastMark func(Page) (string, error), countPage func(Page) (int, error)) Pager {
+
 	fetchNextPage := func(currentURL string) (Page, error) {
 		resp, err := request(client, currentURL)
 		if err != nil {
@@ -213,6 +220,7 @@ func NewMarkerPager(client *ServiceClient, initialURL string, lastMark func(Mark
 	return Pager{
 		initialURL:    initialURL,
 		fetchNextPage: fetchNextPage,
+		countPage:     countPage,
 	}
 }
 
@@ -224,6 +232,14 @@ func (p Pager) EachPage(handler func(Page) (bool, error)) error {
 		currentPage, err := p.fetchNextPage(currentURL)
 		if err != nil {
 			return err
+		}
+
+		count, err := p.countPage(currentPage)
+		if err != nil {
+			return err
+		}
+		if count == 0 {
+			return nil
 		}
 
 		ok, err := handler(currentPage)

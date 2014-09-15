@@ -42,7 +42,15 @@ func setupSinglePaged() Pager {
 		fmt.Fprintf(w, `{ "ints": [1, 2, 3] }`)
 	})
 
-	return NewSinglePager(client, testhelper.Server.URL+"/only")
+	countPage := func(p Page) (int, error) {
+		is, err := ExtractSingleInts(p)
+		if err != nil {
+			return 0, err
+		}
+		return len(is), nil
+	}
+
+	return NewSinglePager(client, testhelper.Server.URL+"/only", countPage)
 }
 
 func TestEnumerateSinglePaged(t *testing.T) {
@@ -107,7 +115,15 @@ func createLinked(t *testing.T) Pager {
 
 	client := createClient()
 
-	return NewLinkedPager(client, testhelper.Server.URL+"/page1")
+	countPage := func(p Page) (int, error) {
+		is, err := ExtractLinkedInts(p)
+		if err != nil {
+			return 0, err
+		}
+		return len(is), nil
+	}
+
+	return NewLinkedPager(client, testhelper.Server.URL+"/page1", countPage)
 }
 
 func TestEnumerateLinked(t *testing.T) {
@@ -174,18 +190,36 @@ func createMarkerPaged(t *testing.T) Pager {
 
 	client := createClient()
 
-	return NewMarkerPager(client, testhelper.Server.URL+"/page", func(p MarkerPage) (string, error) {
+	lastMark := func(p Page) (string, error) {
 		items, err := ExtractMarkerStrings(p)
 		if err != nil {
 			return "", err
 		}
 		return items[len(items)-1], nil
-	})
+	}
+
+	countPage := func(p Page) (int, error) {
+		items, err := ExtractMarkerStrings(p)
+		if err != nil {
+			return 0, err
+		}
+		fmt.Printf("Counting items [%#v] = [%d]\n", items, len(items))
+		return len(items), nil
+	}
+
+	return NewMarkerPager(client, testhelper.Server.URL+"/page", lastMark, countPage)
 }
 
 func ExtractMarkerStrings(page Page) ([]string, error) {
 	content := page.(MarkerPage).Body.([]uint8)
-	return strings.Split(string(content), "\n"), nil
+	parts := strings.Split(string(content), "\n")
+	results := make([]string, 0, len(parts))
+	for _, part := range parts {
+		if len(part) > 0 {
+			results = append(results, part)
+		}
+	}
+	return results, nil
 }
 
 func TestEnumerateMarker(t *testing.T) {
