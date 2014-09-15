@@ -17,17 +17,18 @@ func TestListServices(t *testing.T) {
 	}
 
 	// Use the client to list all available services.
-	results, err := services3.List(serviceClient, services3.ListOpts{})
-	if err != nil {
-		t.Fatalf("Unable to list services: %v", err)
-	}
+	pager := services3.List(serviceClient, services3.ListOpts{})
+	err := pager.EachPage(func(page gophercloud.Page) (bool, error) {
+		parts, err := services3.ExtractServices(page)
+		if err != nil {
+			return false, err
+		}
 
-	err = gophercloud.EachPage(results, func(page gophercloud.Collection) bool {
 		t.Logf("--- Page ---")
-		for _, service := range services3.AsServices(page) {
+		for _, service := range parts {
 			t.Logf("Service: %32s %15s %10s %s", service.ID, service.Type, service.Name, *service.Description)
 		}
-		return true
+		return true, nil
 	})
 	if err != nil {
 		t.Errorf("Unexpected error traversing pages: %v", err)

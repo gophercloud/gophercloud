@@ -94,7 +94,7 @@ type ListOpts struct {
 }
 
 // List enumerates endpoints in a paginated collection, optionally filtered by ListOpts criteria.
-func List(client *gophercloud.ServiceClient, opts ListOpts) (*EndpointList, error) {
+func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
 	q := make(map[string]string)
 	if opts.Availability != "" {
 		q["interface"] = string(opts.Availability)
@@ -110,18 +110,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) (*EndpointList, erro
 	}
 
 	u := getListURL(client) + utils.BuildQuery(q)
-
-	var respBody EndpointList
-	_, err := perigee.Request("GET", u, perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		Results:     &respBody,
-		OkCodes:     []int{200},
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &respBody, nil
+	return gophercloud.NewLinkedPager(client, u)
 }
 
 // Update changes an existing endpoint with new data.
