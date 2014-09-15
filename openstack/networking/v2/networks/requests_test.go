@@ -262,3 +262,105 @@ func TestGettingNetwork(t *testing.T) {
 	Equals(t, n.Shared, true)
 	Equals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
+
+func TestCreateNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "network": {
+        "name": "sample_network",
+        "admin_state_up": true
+    }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, `
+{
+    "network": {
+        "status": "ACTIVE",
+        "subnets": [],
+        "name": "net1",
+        "admin_state_up": true,
+        "tenant_id": "9bacb3c5d39d41a79512987f338cf177",
+        "segments": [
+            {
+                "provider:segmentation_id": 2,
+                "provider:physical_network": "8bab8453-1bc9-45af-8c70-f83aa9b50453",
+                "provider:network_type": "vlan"
+            },
+            {
+                "provider:segmentation_id": null,
+                "provider:physical_network": "8bab8453-1bc9-45af-8c70-f83aa9b50453",
+                "provider:network_type": "stt"
+            }
+        ],
+        "shared": false,
+        "port_security_enabled": true,
+        "id": "4e8e5957-649f-477b-9e5b-f1f75b21c03c"
+    }
+}
+		`)
+	})
+
+	options := NetworkOpts{Name: "sample_network", AdminStateUp: true}
+
+	n, err := Create(ServiceClient(), options)
+	if err != nil {
+		t.Fatalf("Unexpected error: %#v", err)
+	}
+
+	Equals(t, n.Status, "ACTIVE")
+	DeepEquals(t, n.Subnets, []interface{}{})
+	Equals(t, n.Name, "net1")
+	Equals(t, n.AdminStateUp, true)
+	Equals(t, n.TenantID, "9bacb3c5d39d41a79512987f338cf177")
+	DeepEquals(t, n.Segments, []NetworkProvider{
+		{ProviderSegmentationID: 2, ProviderPhysicalNetwork: "8bab8453-1bc9-45af-8c70-f83aa9b50453", ProviderNetworkType: "vlan"},
+		{ProviderSegmentationID: 0, ProviderPhysicalNetwork: "8bab8453-1bc9-45af-8c70-f83aa9b50453", ProviderNetworkType: "stt"},
+	})
+	Equals(t, n.Shared, false)
+	Equals(t, n.PortSecurityEnabled, true)
+	Equals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+}
+
+func TestCreateNetworkWithOptionalFields(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+	"network": {
+			"name": "sample_network",
+			"admin_state_up": true,
+			"shared": true,
+			"tenant_id": "12345"
+	}
+}
+		`)
+
+		w.WriteHeader(http.StatusCreated)
+	})
+
+	shared := true
+	options := NetworkOpts{Name: "sample_network", AdminStateUp: true, Shared: &shared, TenantID: "12345"}
+
+	_, err := Create(ServiceClient(), options)
+	if err != nil {
+		t.Fatalf("Unexpected error: %#v", err)
+	}
+}

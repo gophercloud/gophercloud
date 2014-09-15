@@ -23,3 +23,7 @@ func ExtensionURL(c *gophercloud.ServiceClient, name string) string {
 func NetworkURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(Version, "networks", id)
 }
+
+func CreateURL(c *gophercloud.ServiceClient) string {
+	return c.ServiceURL(Version, "networks")
+}

@@ -4,6 +4,7 @@ package v2
 
 import (
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
@@ -12,7 +13,9 @@ import (
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
-var Client *gophercloud.ServiceClient
+var (
+	Client *gophercloud.ServiceClient
+)
 
 func NewClient() (*gophercloud.ServiceClient, error) {
 	opts, err := utils.AuthOptions()
@@ -46,6 +49,12 @@ func Teardown() {
 
 func Equals(t *testing.T, actual interface{}, expected interface{}) {
 	if expected != actual {
+		t.Fatalf("Expected %#v but got %#v", expected, actual)
+	}
+}
+
+func DeepEquals(t *testing.T, actual, expected interface{}) {
+	if !reflect.DeepEqual(actual, expected) {
 		t.Fatalf("Expected %#v but got %#v", expected, actual)
 	}
 }
@@ -116,22 +125,50 @@ func TestListNetworks(t *testing.T) {
 	//networks.List()
 }
 
-func TestGetNetwork(t *testing.T) {
-	//networks.Get()
-}
+func TestNetworkCRUDOperations(t *testing.T) {
+	Setup(t)
+	defer Teardown()
 
-func TestCreateNetwork(t *testing.T) {
-	//networks.Create()
+	// Create a network
+	res, err := networks.Create(Client, networks.NetworkOpts{Name: "sample_network", AdminStateUp: true})
+	if err != nil {
+		t.Fatalf("Unexpected error when creating network: %#v", err)
+	}
+
+	Equals(t, res.Name, "sample_network")
+	Equals(t, res.AdminStateUp, true)
+
+	networkID := res.ID
+
+	// Get a network
+	if networkID == "" {
+		t.Fatalf("In order to retrieve a network, the NetworkID must be set")
+	}
+
+	Setup(t)
+	defer Teardown()
+
+	n, err := networks.Get(Client, networkID)
+	if err != nil {
+		t.Fatalf("Unexpected error: %#v", err)
+	}
+
+	Equals(t, n.Status, "ACTIVE")
+	DeepEquals(t, n.Subnets, []string{})
+	Equals(t, n.Name, "sample_network")
+	Equals(t, n.ProviderPhysicalNetwork, "")
+	Equals(t, n.ProviderNetworkType, "local")
+	Equals(t, n.ProviderSegmentationID, "")
+	Equals(t, n.AdminStateUp, true)
+	Equals(t, n.RouterExternal, false)
+	Equals(t, n.Shared, false)
+	Equals(t, n.ID, networkID)
+
+	// Update network
+
+	// Delete network
 }
 
 func TestCreateMultipleNetworks(t *testing.T) {
 	//networks.CreateMany()
-}
-
-func TestUpdateNetwork(t *testing.T) {
-	//networks.Update()
-}
-
-func TestDeleteNetwork(t *testing.T) {
-	//networks.Delete()
 }
