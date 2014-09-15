@@ -91,6 +91,7 @@ func TestListEndpoints(t *testing.T) {
 		testhelper.TestMethod(t, r, "GET")
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
 
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
 			{
 				"endpoints": [

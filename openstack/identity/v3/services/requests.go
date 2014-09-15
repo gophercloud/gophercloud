@@ -55,7 +55,15 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
 	}
 	u := getListURL(client) + utils.BuildQuery(q)
 
-	return gophercloud.NewLinkedPager(client, u)
+	countPage := func(p gophercloud.Page) (int, error) {
+		services, err := ExtractServices(p)
+		if err != nil {
+			return 0, err
+		}
+		return len(services), nil
+	}
+
+	return gophercloud.NewLinkedPager(client, u, countPage)
 }
 
 // Get returns additional information about a service, given its ID.

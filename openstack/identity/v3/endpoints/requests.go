@@ -109,8 +109,16 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
 		q["per_page"] = strconv.Itoa(opts.Page)
 	}
 
+	countPage := func(p gophercloud.Page) (int, error) {
+		es, err := ExtractEndpoints(p)
+		if err != nil {
+			return 0, err
+		}
+		return len(es), nil
+	}
+
 	u := getListURL(client) + utils.BuildQuery(q)
-	return gophercloud.NewLinkedPager(client, u)
+	return gophercloud.NewLinkedPager(client, u, countPage)
 }
 
 // Update changes an existing endpoint with new data.
