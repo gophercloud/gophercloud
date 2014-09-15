@@ -1,12 +1,23 @@
 package testhelper
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 // This function compares two arbitrary values and performs a comparison. If the
 // comparison fails, a fatal error is raised that will fail the test
-func Compare(t *testing.T, expected interface{}, actual interface{}) {
+func Equals(t *testing.T, expected, actual interface{}) {
 	if expected != actual {
 		t.Fatalf("Expected [%#v] but got [%#v]", expected, actual)
+	}
+}
+
+// This function, like Equals, performs a comparison - but on more complex
+// structures that requires deeper inspection
+func DeepEquals(t *testing.T, actual, expected interface{}) {
+	if !reflect.DeepEqual(actual, expected) {
+		t.Fatalf("Expected %#v but got %#v", expected, actual)
 	}
 }
 
