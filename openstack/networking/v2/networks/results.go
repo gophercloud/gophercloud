@@ -10,7 +10,7 @@ import (
 // A Network represents a a virtual layer-2 broadcast domain.
 type Network struct {
 	// Id is the unique identifier for the network.
-	Id string `json:"id"`
+	ID string `json:"id"`
 	// Name is the (not necessarily unique) human-readable identifier for the network.
 	Name string `json:"name"`
 	// AdminStateUp is administrative state of the network. If false, network is down.
@@ -22,7 +22,7 @@ type Network struct {
 	// Shared indicates whether the network can be accessed by any tenant or not.
 	Shared bool `json:"shared"`
 	// TenantId is the owner of the network. Admins may specify TenantId other than their own.
-	TenantId string `json:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 	// RouterExternal indicates if the network is connected to an external router.
 	RouterExternal bool `json:"router:external"`
 	// ProviderPhysicalNetwork is the name of the provider physical network.
@@ -30,7 +30,7 @@ type Network struct {
 	// ProviderNetworkType is the type of provider network (eg "vlan").
 	ProviderNetworkType string `json:"provider:network_type"`
 	// ProviderSegmentationId is the provider network identifier (such as the vlan id).
-	ProviderSegmentationId string `json:"provider:segmentation_id"`
+	ProviderSegmentationID string `json:"provider:segmentation_id"`
 }
 
 type APIVersion struct {

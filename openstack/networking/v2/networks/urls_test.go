@@ -35,3 +35,11 @@ func TestExtensionURL(t *testing.T) {
 		t.Fatalf("[%s] does not match expected [%s]", actual, expected)
 	}
 }
+
+func TestNetworkURL(t *testing.T) {
+	actual := NetworkURL(EndpointClient(), "foo")
+	expected := Endpoint + "v2.0/networks/foo"
+	if expected != actual {
+		t.Fatalf("[%s] does not match expected [%s]", actual, expected)
+	}
+}

@@ -19,3 +19,7 @@ func APIInfoURL(c *gophercloud.ServiceClient, version string) string {
 func ExtensionURL(c *gophercloud.ServiceClient, name string) string {
 	return c.ServiceURL(Version, "extensions", name)
 }
+
+func NetworkURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL(Version, "networks", id)
+}

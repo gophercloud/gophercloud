@@ -64,3 +64,18 @@ func GetExtension(c *gophercloud.ServiceClient, name string) (*Extension, error)
 	}
 	return &ext, nil
 }
+
+func Get(c *gophercloud.ServiceClient, id string) (*Network, error) {
+	var n Network
+	_, err := perigee.Request("GET", NetworkURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		Results: &struct {
+			Network *Network `json:"network"`
+		}{&n},
+		OkCodes: []int{200},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &n, nil
+}

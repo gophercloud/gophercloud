@@ -27,6 +27,12 @@ func Equals(t *testing.T, actual interface{}, expected interface{}) {
 	}
 }
 
+func DeepEquals(t *testing.T, actual, expected interface{}) {
+	if !reflect.DeepEqual(actual, expected) {
+		t.Fatalf("Expected %#v but got %#v", expected, actual)
+	}
+}
+
 func CheckErr(t *testing.T, e error) {
 	if e != nil {
 		t.Fatalf("An error occurred: %#v", e)
@@ -203,4 +209,56 @@ func TestGettingExtension(t *testing.T) {
 		Equals(t, ext.Alias, "agent")
 		Equals(t, ext.Description, "The agent management extension.")
 	})
+}
+
+func TestGettingNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "network": {
+        "status": "ACTIVE",
+        "subnets": [
+            "54d6f61d-db07-451c-9ab3-b9609b6b6f0b"
+        ],
+        "name": "private-network",
+        "provider:physical_network": null,
+        "admin_state_up": true,
+        "tenant_id": "4fd44f30292945e481c7b8a0c8908869",
+        "provider:network_type": "local",
+        "router:external": true,
+        "shared": true,
+        "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+        "provider:segmentation_id": null
+    }
+}
+			`)
+	})
+
+	c := ServiceClient()
+
+	n, err := Get(c, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	if err != nil {
+		t.Fatalf("Unexpected error: %#v", err)
+	}
+
+	Equals(t, n.Status, "ACTIVE")
+	DeepEquals(t, n.Subnets, []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
+	Equals(t, n.Name, "private-network")
+	Equals(t, n.ProviderPhysicalNetwork, "")
+	Equals(t, n.ProviderNetworkType, "local")
+	Equals(t, n.ProviderSegmentationID, "")
+	Equals(t, n.AdminStateUp, true)
+	Equals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
+	Equals(t, n.RouterExternal, true)
+	Equals(t, n.Shared, true)
+	Equals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
