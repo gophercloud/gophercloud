@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/racker/perigee"
 )
 
 var (
@@ -90,6 +91,17 @@ func RememberHTTPResponse(resp http.Response) (LastHTTPResponse, error) {
 	return LastHTTPResponse{Header: resp.Header, Body: parsedBody}, err
 }
 
+func request(client *ServiceClient, url string) (http.Response, error) {
+	resp, err := perigee.Request("GET", url, perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+	if err != nil {
+		return http.Response{}, err
+	}
+	return resp.HttpResponse, nil
+}
+
 // SinglePage is a page that contains all of the results from an operation.
 type SinglePage LastHTTPResponse
 
@@ -99,13 +111,13 @@ func (current SinglePage) NextPageURL() (string, error) {
 }
 
 // NewSinglePager constructs a Pager that "iterates" over a single Page.
-// Supply a function that returns the only page.
-func NewSinglePager(only func() (http.Response, error)) Pager {
+// Supply the URL to request.
+func NewSinglePager(client *ServiceClient, onlyURL string) Pager {
 	consumed := false
 	single := func(_ string) (Page, error) {
 		if !consumed {
 			consumed = true
-			resp, err := only()
+			resp, err := request(client, onlyURL)
 			if err != nil {
 				return SinglePage{}, err
 			}
@@ -150,9 +162,9 @@ func (current LinkedPage) NextPageURL() (string, error) {
 }
 
 // NewLinkedPager creates a Pager that uses a "links" element in the JSON response to locate the next page.
-func NewLinkedPager(initialURL string, request func(string) (http.Response, error)) Pager {
+func NewLinkedPager(client *ServiceClient, initialURL string) Pager {
 	fetchNextPage := func(url string) (Page, error) {
-		resp, err := request(url)
+		resp, err := request(client, url)
 		if err != nil {
 			return nil, err
 		}
