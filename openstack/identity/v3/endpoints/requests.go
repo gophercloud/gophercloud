@@ -1,7 +1,6 @@
 package endpoints
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/racker/perigee"
@@ -111,16 +110,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
 	}
 
 	u := getListURL(client) + utils.BuildQuery(q)
-	return gophercloud.NewLinkedPager(u, func(next string) (http.Response, error) {
-		r, err := perigee.Request("GET", u, perigee.Options{
-			MoreHeaders: client.Provider.AuthenticatedHeaders(),
-			OkCodes:     []int{200},
-		})
-		if err != nil {
-			return http.Response{}, err
-		}
-		return r.HttpResponse, nil
-	})
+	return gophercloud.NewLinkedPager(client, u)
 }
 
 // Update changes an existing endpoint with new data.

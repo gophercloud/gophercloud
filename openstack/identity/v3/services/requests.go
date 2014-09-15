@@ -1,7 +1,6 @@
 package services
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/racker/perigee"
@@ -56,16 +55,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
 	}
 	u := getListURL(client) + utils.BuildQuery(q)
 
-	return gophercloud.NewLinkedPager(u, func(next string) (http.Response, error) {
-		resp, err := perigee.Request("GET", u, perigee.Options{
-			MoreHeaders: client.Provider.AuthenticatedHeaders(),
-			OkCodes:     []int{200},
-		})
-		if err != nil {
-			return http.Response{}, err
-		}
-		return resp.HttpResponse, nil
-	})
+	return gophercloud.NewLinkedPager(client, u)
 }
 
 // Get returns additional information about a service, given its ID.
