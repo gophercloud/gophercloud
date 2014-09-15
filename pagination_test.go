@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/mitchellh/mapstructure"
@@ -37,6 +38,7 @@ func setupSinglePaged() Pager {
 	client := createClient()
 
 	testhelper.Mux.HandleFunc("/only", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{ "ints": [1, 2, 3] }`)
 	})
 
@@ -89,14 +91,17 @@ func createLinked(t *testing.T) Pager {
 	testhelper.SetupHTTP()
 
 	testhelper.Mux.HandleFunc("/page1", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{ "ints": [1, 2, 3], "links": { "next": "%s/page2" } }`, testhelper.Server.URL)
 	})
 
 	testhelper.Mux.HandleFunc("/page2", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{ "ints": [4, 5, 6], "links": { "next": "%s/page3" } }`, testhelper.Server.URL)
 	})
 
 	testhelper.Mux.HandleFunc("/page3", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{ "ints": [7, 8, 9], "links": { "next": null } }`)
 	})
 
@@ -145,4 +150,75 @@ func TestEnumerateLinked(t *testing.T) {
 	if callCount != 3 {
 		t.Errorf("Expected 3 calls, but was %d", callCount)
 	}
+}
+
+func createMarkerPaged(t *testing.T) Pager {
+	testhelper.SetupHTTP()
+
+	testhelper.Mux.HandleFunc("/page", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		ms := r.Form["marker"]
+		switch {
+		case len(ms) == 0:
+			fmt.Fprintf(w, "aaa\nbbb\nccc")
+		case len(ms) == 1 && ms[0] == "ccc":
+			fmt.Fprintf(w, "ddd\neee\nfff")
+		case len(ms) == 1 && ms[0] == "fff":
+			fmt.Fprintf(w, "ggg\nhhh\niii")
+		case len(ms) == 1 && ms[0] == "iii":
+			w.WriteHeader(http.StatusNoContent)
+		default:
+			t.Errorf("Request with unexpected marker: [%v]", ms)
+		}
+	})
+
+	client := createClient()
+
+	return NewMarkerPager(client, testhelper.Server.URL+"/page", func(p MarkerPage) (string, error) {
+		items, err := ExtractMarkerStrings(p)
+		if err != nil {
+			return "", err
+		}
+		return items[len(items)-1], nil
+	})
+}
+
+func ExtractMarkerStrings(page Page) ([]string, error) {
+	content := page.(MarkerPage).Body.([]uint8)
+	return strings.Split(string(content), "\n"), nil
+}
+
+func TestEnumerateMarker(t *testing.T) {
+	pager := createMarkerPaged(t)
+	defer testhelper.TeardownHTTP()
+
+	callCount := 0
+	err := pager.EachPage(func(page Page) (bool, error) {
+		actual, err := ExtractMarkerStrings(page)
+		if err != nil {
+			return false, err
+		}
+
+		t.Logf("Handler invoked with %v", actual)
+
+		var expected []string
+		switch callCount {
+		case 0:
+			expected = []string{"aaa", "bbb", "ccc"}
+		case 1:
+			expected = []string{"ddd", "eee", "fff"}
+		case 2:
+			expected = []string{"ggg", "hhh", "iii"}
+		default:
+			t.Fatalf("Unexpected call count: %d", callCount)
+			return false, nil
+		}
+
+		testhelper.CheckDeepEquals(t, expected, actual)
+
+		callCount++
+		return true, nil
+	})
+	testhelper.AssertNoErr(t, err)
+	testhelper.AssertEquals(t, callCount, 3)
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/racker/perigee"
@@ -17,6 +18,7 @@ var (
 
 // LastHTTPResponse stores generic information derived from an HTTP response.
 type LastHTTPResponse struct {
+	url.URL
 	http.Header
 	Body interface{}
 }
@@ -32,19 +34,28 @@ func RememberHTTPResponse(resp http.Response) (LastHTTPResponse, error) {
 	if err != nil {
 		return LastHTTPResponse{}, err
 	}
-	err = json.Unmarshal(rawBody, &parsedBody)
-	if err != nil {
-		return LastHTTPResponse{}, err
+
+	if resp.Header.Get("Content-Type") == "application/json" {
+		err = json.Unmarshal(rawBody, &parsedBody)
+		if err != nil {
+			return LastHTTPResponse{}, err
+		}
+	} else {
+		parsedBody = rawBody
 	}
 
-	return LastHTTPResponse{Header: resp.Header, Body: parsedBody}, err
+	return LastHTTPResponse{
+		URL:    *resp.Request.URL,
+		Header: resp.Header,
+		Body:   parsedBody,
+	}, err
 }
 
 // request performs a Perigee request and extracts the http.Response from the result.
 func request(client *ServiceClient, url string) (http.Response, error) {
 	resp, err := perigee.Request("GET", url, perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{200, 204},
 	})
 	if err != nil {
 		return http.Response{}, err
@@ -91,6 +102,30 @@ func (current LinkedPage) NextPageURL() (string, error) {
 	}
 
 	return *r.Links.Next, nil
+}
+
+// MarkerPage is a page in a collection that's paginated by "limit" and "marker" query parameters.
+type MarkerPage struct {
+	LastHTTPResponse
+
+	// lastMark is a captured function that returns the final entry on a given page.
+	lastMark func(MarkerPage) (string, error)
+}
+
+// NextPageURL generates the URL for the page of results after this one.
+func (current MarkerPage) NextPageURL() (string, error) {
+	currentURL := current.LastHTTPResponse.URL
+
+	mark, err := current.lastMark(current)
+	if err != nil {
+		return "", err
+	}
+
+	q := currentURL.Query()
+	q.Set("marker", mark)
+	currentURL.RawQuery = q.Encode()
+
+	return currentURL.String(), nil
 }
 
 // Pager knows how to advance through a specific resource collection, one page at a time.
@@ -150,6 +185,29 @@ func NewLinkedPager(client *ServiceClient, initialURL string) Pager {
 		}
 
 		return LinkedPage(cp), nil
+	}
+
+	return Pager{
+		initialURL:    initialURL,
+		fetchNextPage: fetchNextPage,
+	}
+}
+
+// NewMarkerPager creates a Pager that iterates over successive pages by issuing requests with a "marker" parameter set to the
+// final element of the previous Page.
+func NewMarkerPager(client *ServiceClient, initialURL string, lastMark func(MarkerPage) (string, error)) Pager {
+	fetchNextPage := func(currentURL string) (Page, error) {
+		resp, err := request(client, currentURL)
+		if err != nil {
+			return nil, err
+		}
+
+		last, err := RememberHTTPResponse(resp)
+		if err != nil {
+			return nil, err
+		}
+
+		return MarkerPage{LastHTTPResponse: last, lastMark: lastMark}, nil
 	}
 
 	return Pager{
