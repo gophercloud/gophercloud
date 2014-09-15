@@ -251,11 +251,11 @@ func TestGettingNetwork(t *testing.T) {
 	}
 
 	Equals(t, n.Status, "ACTIVE")
-	DeepEquals(t, n.Subnets, []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
+	DeepEquals(t, n.Subnets, []interface{}{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
 	Equals(t, n.Name, "private-network")
 	Equals(t, n.ProviderPhysicalNetwork, "")
 	Equals(t, n.ProviderNetworkType, "local")
-	Equals(t, n.ProviderSegmentationID, "")
+	Equals(t, n.ProviderSegmentationID, 0)
 	Equals(t, n.AdminStateUp, true)
 	Equals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
 	Equals(t, n.RouterExternal, true)
@@ -363,4 +363,59 @@ func TestCreateNetworkWithOptionalFields(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unexpected error: %#v", err)
 	}
+}
+
+func TestUpdateNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+		"network": {
+				"name": "new_network_name",
+				"admin_state_up": false,
+				"shared": true
+		}
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "network": {
+        "status": "ACTIVE",
+        "subnets": [],
+        "name": "new_network_name",
+        "provider:physical_network": null,
+        "admin_state_up": false,
+        "tenant_id": "4fd44f30292945e481c7b8a0c8908869",
+        "provider:network_type": "local",
+        "router:external": false,
+        "shared": true,
+        "id": "4e8e5957-649f-477b-9e5b-f1f75b21c03c",
+        "provider:segmentation_id": null
+    }
+}
+		`)
+	})
+
+	shared := true
+	options := NetworkOpts{Name: "new_network_name", AdminStateUp: false, Shared: &shared}
+
+	n, err := Update(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
+	if err != nil {
+		t.Fatalf("Unexpected error: %#v", err)
+	}
+
+	Equals(t, n.Name, "new_network_name")
+	Equals(t, n.AdminStateUp, false)
+	Equals(t, n.Shared, true)
+	Equals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 }

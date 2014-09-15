@@ -154,17 +154,23 @@ func TestNetworkCRUDOperations(t *testing.T) {
 	}
 
 	Equals(t, n.Status, "ACTIVE")
-	DeepEquals(t, n.Subnets, []string{})
+	DeepEquals(t, n.Subnets, []interface{}{})
 	Equals(t, n.Name, "sample_network")
 	Equals(t, n.ProviderPhysicalNetwork, "")
 	Equals(t, n.ProviderNetworkType, "local")
-	Equals(t, n.ProviderSegmentationID, "")
+	Equals(t, n.ProviderSegmentationID, 0)
 	Equals(t, n.AdminStateUp, true)
 	Equals(t, n.RouterExternal, false)
 	Equals(t, n.Shared, false)
 	Equals(t, n.ID, networkID)
 
 	// Update network
+	n, err = networks.Update(Client, networkID, networks.NetworkOpts{Name: "new_network_name"})
+	if err != nil {
+		t.Fatalf("Unexpected error: %#v", err)
+	}
+
+	Equals(t, n.Name, "new_network_name")
 
 	// Delete network
 }
