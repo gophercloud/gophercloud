@@ -27,15 +27,15 @@ type Page interface {
 type Pager struct {
 	initialURL string
 
-	advance func(string) (Page, error)
+	fetchNextPage func(string) (Page, error)
 }
 
 // NewPager constructs a manually-configured pager.
 // Supply the URL for the first page and a function that requests a specific page given a URL.
-func NewPager(initialURL string, advance func(string) (Page, error)) Pager {
+func NewPager(initialURL string, fetchNextPage func(string) (Page, error)) Pager {
 	return Pager{
-		initialURL: initialURL,
-		advance:    advance,
+		initialURL:    initialURL,
+		fetchNextPage: fetchNextPage,
 	}
 }
 
@@ -44,7 +44,7 @@ func NewPager(initialURL string, advance func(string) (Page, error)) Pager {
 func (p Pager) EachPage(handler func(Page) (bool, error)) error {
 	currentURL := p.initialURL
 	for {
-		currentPage, err := p.advance(currentURL)
+		currentPage, err := p.fetchNextPage(currentURL)
 		if err != nil {
 			return err
 		}
@@ -120,8 +120,8 @@ func NewSinglePager(only func() (http.Response, error)) Pager {
 	}
 
 	return Pager{
-		initialURL: "",
-		advance:    single,
+		initialURL:    "",
+		fetchNextPage: single,
 	}
 }
 
@@ -151,7 +151,7 @@ func (current LinkedPage) NextPageURL() (string, error) {
 
 // NewLinkedPager creates a Pager that uses a "links" element in the JSON response to locate the next page.
 func NewLinkedPager(initialURL string, request func(string) (http.Response, error)) Pager {
-	advance := func(url string) (Page, error) {
+	fetchNextPage := func(url string) (Page, error) {
 		resp, err := request(url)
 		if err != nil {
 			return nil, err
@@ -166,7 +166,7 @@ func NewLinkedPager(initialURL string, request func(string) (http.Response, erro
 	}
 
 	return Pager{
-		initialURL: initialURL,
-		advance:    advance,
+		initialURL:    initialURL,
+		fetchNextPage: fetchNextPage,
 	}
 }
