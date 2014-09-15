@@ -18,14 +18,14 @@ var (
 // LastHTTPResponse stores generic information derived from an HTTP response.
 type LastHTTPResponse struct {
 	http.Header
-	Body map[string]interface{}
+	Body interface{}
 }
 
 // RememberHTTPResponse parses an HTTP response as JSON and returns a LastHTTPResponse containing the results.
 // The main reason to do this instead of holding the response directly is that a response body can only be read once.
 // Also, this centralizes the JSON decoding.
 func RememberHTTPResponse(resp http.Response) (LastHTTPResponse, error) {
-	var parsedBody map[string]interface{}
+	var parsedBody interface{}
 
 	defer resp.Body.Close()
 	rawBody, err := ioutil.ReadAll(resp.Body)
