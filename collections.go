@@ -67,31 +67,31 @@ func (p Pager) EachPage(handler func(Page) (bool, error)) error {
 	}
 }
 
-// ConcretePage stores generic information derived from an HTTP response.
-type ConcretePage struct {
+// LastHTTPResponse stores generic information derived from an HTTP response.
+type LastHTTPResponse struct {
 	http.Header
 	Body map[string]interface{}
 }
 
-// NewConcretePage parses an HTTP response as JSON and returns a ConcretePage containing the results.
-func NewConcretePage(resp http.Response) (ConcretePage, error) {
+// RememberHTTPResponse parses an HTTP response as JSON and returns a LastHTTPResponse containing the results.
+func RememberHTTPResponse(resp http.Response) (LastHTTPResponse, error) {
 	var parsedBody map[string]interface{}
 
 	defer resp.Body.Close()
 	rawBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return ConcretePage{}, err
+		return LastHTTPResponse{}, err
 	}
 	err = json.Unmarshal(rawBody, &parsedBody)
 	if err != nil {
-		return ConcretePage{}, err
+		return LastHTTPResponse{}, err
 	}
 
-	return ConcretePage{Header: resp.Header, Body: parsedBody}, err
+	return LastHTTPResponse{Header: resp.Header, Body: parsedBody}, err
 }
 
 // SinglePage is a page that contains all of the results from an operation.
-type SinglePage ConcretePage
+type SinglePage LastHTTPResponse
 
 // NextPageURL always returns "" to indicate that there are no more pages to return.
 func (current SinglePage) NextPageURL() (string, error) {
@@ -110,7 +110,7 @@ func NewSinglePager(only func() (http.Response, error)) Pager {
 				return SinglePage{}, err
 			}
 
-			cp, err := NewConcretePage(resp)
+			cp, err := RememberHTTPResponse(resp)
 			if err != nil {
 				return SinglePage{}, err
 			}
@@ -126,7 +126,7 @@ func NewSinglePager(only func() (http.Response, error)) Pager {
 }
 
 // LinkedPage is a page in a collection that provides navigational "Next" and "Previous" links within its result.
-type LinkedPage ConcretePage
+type LinkedPage LastHTTPResponse
 
 // NextPageURL extracts the pagination structure from a JSON response and returns the "next" link, if one is present.
 func (current LinkedPage) NextPageURL() (string, error) {
@@ -157,7 +157,7 @@ func NewLinkedPager(initialURL string, request func(string) (http.Response, erro
 			return nil, err
 		}
 
-		cp, err := NewConcretePage(resp)
+		cp, err := RememberHTTPResponse(resp)
 		if err != nil {
 			return nil, err
 		}
