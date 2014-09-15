@@ -21,6 +21,18 @@ func ServiceClient() *gophercloud.ServiceClient {
 	}
 }
 
+func Equals(t *testing.T, actual interface{}, expected interface{}) {
+	if expected != actual {
+		t.Fatalf("Expected %#v but got %#v", expected, actual)
+	}
+}
+
+func CheckErr(t *testing.T, e error) {
+	if e != nil {
+		t.Fatalf("An error occurred: %#v", e)
+	}
+}
+
 func TestListAPIVersions(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -150,4 +162,45 @@ func TestAPIInfo(t *testing.T) {
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected %#v, got %#v", expected, actual)
 	}
+}
+
+func TestListingExtensions(t *testing.T) {
+
+}
+
+func TestGettingExtension(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/extension/agent", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "extension": {
+        "updated": "2013-02-03T10:00:00-00:00",
+        "name": "agent",
+        "links": [],
+        "namespace": "http://docs.openstack.org/ext/agent/api/v2.0",
+        "alias": "agent",
+        "description": "The agent management extension."
+    }
+}
+		`)
+
+		c := ServiceClient()
+
+		ext, err := GetExtension(c, "agent")
+		CheckErr(t, err)
+
+		Equals(t, ext.Updated, "2013-02-03T10:00:00-00:00")
+		Equals(t, ext.Name, "agent")
+		Equals(t, ext.Namespace, "http://docs.openstack.org/ext/agent/api/v2.0")
+		Equals(t, ext.Alias, "agent")
+		Equals(t, ext.Description, "The agent management extension.")
+	})
 }

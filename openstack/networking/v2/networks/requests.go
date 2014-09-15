@@ -48,3 +48,19 @@ func APIInfo(c *gophercloud.ServiceClient, v string) (*APIInfoList, error) {
 
 	return &resp, nil
 }
+
+func GetExtension(c *gophercloud.ServiceClient, name string) (*Extension, error) {
+	var ext Extension
+	_, err := perigee.Request("GET", ExtensionURL(c, name), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		Results: &struct {
+			Extension *Extension `json:"extension"`
+		}{&ext},
+		OkCodes: []int{200},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	return &ext, nil
+}

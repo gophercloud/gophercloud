@@ -44,6 +44,12 @@ func Teardown() {
 	Client = nil
 }
 
+func Equals(t *testing.T, actual interface{}, expected interface{}) {
+	if expected != actual {
+		t.Fatalf("Expected %#v but got %#v", expected, actual)
+	}
+}
+
 func TestListAPIVersions(t *testing.T) {
 	Setup(t)
 	defer Teardown()
@@ -91,7 +97,19 @@ func TestListExts(t *testing.T) {
 }
 
 func TestGetExt(t *testing.T) {
-	//networks.Extension()
+	Setup(t)
+	defer Teardown()
+
+	ext, err := networks.GetExtension(Client, "service-type")
+	if err != nil {
+		t.Fatalf("Unexpected error when getting extension: %#v", err)
+	}
+
+	Equals(t, ext.Updated, "2013-01-20T00:00:00-00:00")
+	Equals(t, ext.Name, "Neutron Service Type Management")
+	Equals(t, ext.Namespace, "http://docs.openstack.org/ext/neutron/service-type/api/v1.0")
+	Equals(t, ext.Alias, "service-type")
+	Equals(t, ext.Description, "API for retrieving service providers for Neutron advanced services")
 }
 
 func TestListNetworks(t *testing.T) {

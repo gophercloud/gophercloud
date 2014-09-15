@@ -6,7 +6,7 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-const Endpoint = "http://localhost:57909/v3/"
+const Endpoint = "http://localhost:57909/"
 
 func EndpointClient() *gophercloud.ServiceClient {
 	return &gophercloud.ServiceClient{Endpoint: Endpoint}
@@ -23,6 +23,14 @@ func TestAPIVersionsURL(t *testing.T) {
 func TestAPIInfoURL(t *testing.T) {
 	actual := APIInfoURL(EndpointClient(), "v2.0")
 	expected := Endpoint + "v2.0/"
+	if expected != actual {
+		t.Fatalf("[%s] does not match expected [%s]", actual, expected)
+	}
+}
+
+func TestExtensionURL(t *testing.T) {
+	actual := ExtensionURL(EndpointClient(), "agent")
+	expected := Endpoint + "v2.0/extensions/agent"
 	if expected != actual {
 		t.Fatalf("[%s] does not match expected [%s]", actual, expected)
 	}
