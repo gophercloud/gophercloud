@@ -5,12 +5,14 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 )
 
 // LastHTTPResponse stores generic information derived from an HTTP response.
+// This exists primarily because the body of an http.Response can only be used once.
 type LastHTTPResponse struct {
 	url.URL
 	http.Header
@@ -29,7 +31,7 @@ func RememberHTTPResponse(resp http.Response) (LastHTTPResponse, error) {
 		return LastHTTPResponse{}, err
 	}
 
-	if resp.Header.Get("Content-Type") == "application/json" {
+	if strings.HasPrefix(resp.Header.Get("Content-Type"), "application/json") {
 		err = json.Unmarshal(rawBody, &parsedBody)
 		if err != nil {
 			return LastHTTPResponse{}, err
@@ -46,9 +48,14 @@ func RememberHTTPResponse(resp http.Response) (LastHTTPResponse, error) {
 }
 
 // Request performs a Perigee request and extracts the http.Response from the result.
-func Request(client *gophercloud.ServiceClient, url string) (http.Response, error) {
+func Request(client *gophercloud.ServiceClient, headers map[string]string, url string) (http.Response, error) {
+	h := client.Provider.AuthenticatedHeaders()
+	for key, value := range headers {
+		h[key] = value
+	}
+
 	resp, err := perigee.Request("GET", url, perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: h,
 		OkCodes:     []int{200, 204},
 	})
 	if err != nil {

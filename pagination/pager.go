@@ -34,6 +34,9 @@ type Pager struct {
 	client *gophercloud.ServiceClient
 
 	createPage func(r LastHTTPResponse) Page
+
+	// Headers supplies additional HTTP headers to populate on each paged request.
+	Headers map[string]string
 }
 
 // NewPager constructs a manually-configured pager.
@@ -47,7 +50,7 @@ func NewPager(client *gophercloud.ServiceClient, initialURL string, createPage f
 }
 
 func (p Pager) fetchNextPage(url string) (Page, error) {
-	resp, err := Request(p.client, url)
+	resp, err := Request(p.client, p.Headers, url)
 	if err != nil {
 		return nil, err
 	}
