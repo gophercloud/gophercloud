@@ -61,7 +61,7 @@ func createLinked(t *testing.T) Pager {
 		return LinkedPageResult{LinkedPageBase(r)}
 	}
 
-	return NewLinkedPager(client, testhelper.Server.URL+"/page1", createPage)
+	return NewPager(client, testhelper.Server.URL+"/page1", createPage)
 }
 
 func TestEnumerateLinked(t *testing.T) {

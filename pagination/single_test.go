@@ -49,7 +49,7 @@ func setupSinglePaged() Pager {
 		return SinglePageResult{SinglePageBase(r)}
 	}
 
-	return NewSinglePager(client, testhelper.Server.URL+"/only", createPage)
+	return NewPager(client, testhelper.Server.URL+"/only", createPage)
 }
 
 func TestEnumerateSinglePaged(t *testing.T) {

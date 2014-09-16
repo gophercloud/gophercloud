@@ -1,7 +1,5 @@
 package pagination
 
-import "github.com/rackspace/gophercloud"
-
 // MarkerPage is a stricter Page interface that describes additional functionality required for use with NewMarkerPager.
 // For convenience, embed the MarkedPageBase struct.
 type MarkerPage interface {
@@ -33,28 +31,4 @@ func (current MarkerPageBase) NextPageURL() (string, error) {
 	currentURL.RawQuery = q.Encode()
 
 	return currentURL.String(), nil
-}
-
-// NewMarkerPager creates a Pager that iterates over successive pages by issuing requests with a "marker" parameter set to the
-// final element of the previous Page.
-func NewMarkerPager(client *gophercloud.ServiceClient, initialURL string, createPage func(resp LastHTTPResponse) MarkerPage) Pager {
-
-	fetchNextPage := func(currentURL string) (Page, error) {
-		resp, err := Request(client, currentURL)
-		if err != nil {
-			return nullPage{}, err
-		}
-
-		last, err := RememberHTTPResponse(resp)
-		if err != nil {
-			return nullPage{}, err
-		}
-
-		return createPage(last), nil
-	}
-
-	return Pager{
-		initialURL:    initialURL,
-		fetchNextPage: fetchNextPage,
-	}
 }

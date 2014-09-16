@@ -1,6 +1,10 @@
 package pagination
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/rackspace/gophercloud"
+)
 
 var (
 	// ErrPageNotAvailable is returned from a Pager when a next or previous page is requested, but does not exist.
@@ -27,16 +31,33 @@ type Page interface {
 type Pager struct {
 	initialURL string
 
-	fetchNextPage func(string) (Page, error)
+	client *gophercloud.ServiceClient
+
+	createPage func(r LastHTTPResponse) Page
 }
 
 // NewPager constructs a manually-configured pager.
 // Supply the URL for the first page, a function that requests a specific page given a URL, and a function that counts a page.
-func NewPager(initialURL string, fetchNextPage func(string) (Page, error)) Pager {
+func NewPager(client *gophercloud.ServiceClient, initialURL string, createPage func(r LastHTTPResponse) Page) Pager {
 	return Pager{
-		initialURL:    initialURL,
-		fetchNextPage: fetchNextPage,
+		initialURL: initialURL,
+		client:     client,
+		createPage: createPage,
 	}
+}
+
+func (p Pager) fetchNextPage(url string) (Page, error) {
+	resp, err := Request(p.client, url)
+	if err != nil {
+		return nil, err
+	}
+
+	remembered, err := RememberHTTPResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return p.createPage(remembered), nil
 }
 
 // EachPage iterates over each page returned by a Pager, yielding one at a time to a handler function.

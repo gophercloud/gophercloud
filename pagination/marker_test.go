@@ -56,13 +56,13 @@ func createMarkerPaged(t *testing.T) Pager {
 
 	client := createClient()
 
-	createPage := func(r LastHTTPResponse) MarkerPage {
+	createPage := func(r LastHTTPResponse) Page {
 		p := MarkerPageResult{MarkerPageBase{LastHTTPResponse: r}}
 		p.MarkerPageBase.Owner = p
 		return p
 	}
 
-	return NewMarkerPager(client, testhelper.Server.URL+"/page", createPage)
+	return NewPager(client, testhelper.Server.URL+"/page", createPage)
 }
 
 func ExtractMarkerStrings(page Page) ([]string, error) {
