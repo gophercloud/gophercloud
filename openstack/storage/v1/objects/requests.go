@@ -157,10 +157,6 @@ func Delete(c *gophercloud.ServiceClient, opts DeleteOpts) error {
 func Get(c *gophercloud.ServiceClient, opts GetOpts) (GetResult, error) {
 	h := c.Provider.AuthenticatedHeaders()
 
-	for k, v := range opts.Headers {
-		h[k] = v
-	}
-
 	url := objectURL(c, opts.Container, opts.Name)
 	resp, err := perigee.Request("HEAD", url, perigee.Options{
 		MoreHeaders: h,

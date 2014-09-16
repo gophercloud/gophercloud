@@ -39,8 +39,7 @@ type UpdateOpts struct {
 
 // GetOpts is a structure that holds parameters for getting a container's metadata.
 type GetOpts struct {
-	Name     string
-	Metadata map[string]string
+	Name string
 }
 
 // ExtractInfo is a function that takes a ListResult and returns the containers' information.

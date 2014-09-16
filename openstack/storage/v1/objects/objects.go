@@ -58,7 +58,6 @@ type DeleteOpts struct {
 type GetOpts struct {
 	Container string
 	Name      string
-	Headers   map[string]string
 	Params    map[string]string
 }
 
@@ -120,7 +119,10 @@ func ExtractContent(dr DownloadResult) ([]byte, error) {
 	var body []byte
 	defer dr.Body.Close()
 	body, err := ioutil.ReadAll(dr.Body)
-	return body, err
+	if err != nil {
+		return body, fmt.Errorf("Error trying to read DownloadResult body: %v", err)
+	}
+	return body, nil
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)

@@ -131,10 +131,6 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOpts) error {
 func Get(c *gophercloud.ServiceClient, opts GetOpts) (GetResult, error) {
 	h := c.Provider.AuthenticatedHeaders()
 
-	for k, v := range opts.Metadata {
-		h["X-Container-Meta-"+k] = v
-	}
-
 	url := containerURL(c, opts.Name)
 	resp, err := perigee.Request("HEAD", url, perigee.Options{
 		MoreHeaders: h,
