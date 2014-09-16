@@ -20,166 +20,7 @@ func ServiceClient() *gophercloud.ServiceClient {
 	}
 }
 
-func TestListAPIVersions(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-    "versions": [
-        {
-            "status": "CURRENT",
-            "id": "v2.0",
-            "links": [
-                {
-                    "href": "http://23.253.228.211:9696/v2.0",
-                    "rel": "self"
-                }
-            ]
-        }
-    ]
-}`)
-	})
-
-	c := ServiceClient()
-
-	res, err := APIVersions(c)
-	th.AssertNoErr(err)
-
-	coll, err := gophercloud.AllPages(res)
-	th.AssertNoErr(err)
-
-	actual := ToAPIVersions(coll)
-
-	expected := []APIVersion{
-		APIVersion{
-			Status: "CURRENT",
-			ID:     "v2.0",
-		},
-	}
-	th.AssertDeepEquals(expected, actual)
-}
-
-func TestAPIInfo(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/v2.0/", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-    "resources": [
-        {
-            "links": [
-                {
-                    "href": "http://23.253.228.211:9696/v2.0/subnets",
-                    "rel": "self"
-                }
-            ],
-            "name": "subnet",
-            "collection": "subnets"
-        },
-        {
-            "links": [
-                {
-                    "href": "http://23.253.228.211:9696/v2.0/networks",
-                    "rel": "self"
-                }
-            ],
-            "name": "network",
-            "collection": "networks"
-        },
-        {
-            "links": [
-                {
-                    "href": "http://23.253.228.211:9696/v2.0/ports",
-                    "rel": "self"
-                }
-            ],
-            "name": "port",
-            "collection": "ports"
-        }
-    ]
-}
-			`)
-	})
-
-	res, err := APIInfo(ServiceClient(), "v2.0")
-	th.AssertNoErr(err)
-
-	coll, err := gophercloud.AllPages(res)
-	th.AssertNoErr(err)
-
-	actual := ToAPIResource(coll)
-	expected := []APIResource{
-		APIResource{
-			Name:       "subnet",
-			Collection: "subnets",
-		},
-		APIResource{
-			Name:       "network",
-			Collection: "networks",
-		},
-		APIResource{
-			Name:       "port",
-			Collection: "ports",
-		},
-	}
-	th.AssertDeepEquals(expected, actual)
-}
-
-func TestListingExtensions(t *testing.T) {
-
-}
-
-func TestGettingExtension(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/v2.0/extension/agent", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-    "extension": {
-        "updated": "2013-02-03T10:00:00-00:00",
-        "name": "agent",
-        "links": [],
-        "namespace": "http://docs.openstack.org/ext/agent/api/v2.0",
-        "alias": "agent",
-        "description": "The agent management extension."
-    }
-}
-		`)
-
-		ext, err := GetExtension(ServiceClient(), "agent")
-		th.AssertNoErr(t, err)
-
-		th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")
-		th.AssertEquals(t, ext.Name, "agent")
-		th.AssertEquals(t, ext.Namespace, "http://docs.openstack.org/ext/agent/api/v2.0")
-		th.AssertEquals(t, ext.Alias, "agent")
-		th.AssertEquals(t, ext.Description, "The agent management extension.")
-	})
-}
-
-func TestGettingNetwork(t *testing.T) {
+func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -212,7 +53,7 @@ func TestGettingNetwork(t *testing.T) {
 	})
 
 	n, err := Get(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
 	th.AssertDeepEquals(t, n.Subnets, []interface{}{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
@@ -227,7 +68,7 @@ func TestGettingNetwork(t *testing.T) {
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
 
-func TestCreateNetwork(t *testing.T) {
+func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -278,7 +119,7 @@ func TestCreateNetwork(t *testing.T) {
 
 	options := NetworkOpts{Name: "sample_network", AdminStateUp: true}
 	n, err := Create(ServiceClient(), options)
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
 	th.AssertDeepEquals(t, n.Subnets, []interface{}{})
@@ -294,7 +135,7 @@ func TestCreateNetwork(t *testing.T) {
 	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 }
 
-func TestCreateNetworkWithOptionalFields(t *testing.T) {
+func TestCreateWithOptionalFields(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -320,10 +161,10 @@ func TestCreateNetworkWithOptionalFields(t *testing.T) {
 	shared := true
 	options := NetworkOpts{Name: "sample_network", AdminStateUp: true, Shared: &shared, TenantID: "12345"}
 	_, err := Create(ServiceClient(), options)
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 }
 
-func TestUpdateNetwork(t *testing.T) {
+func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -367,7 +208,7 @@ func TestUpdateNetwork(t *testing.T) {
 	shared := true
 	options := NetworkOpts{Name: "new_network_name", AdminStateUp: false, Shared: &shared}
 	n, err := Update(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "new_network_name")
 	th.AssertEquals(t, n.AdminStateUp, false)
@@ -375,7 +216,7 @@ func TestUpdateNetwork(t *testing.T) {
 	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 }
 
-func TestDeleteNetwork(t *testing.T) {
+func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -386,5 +227,5 @@ func TestDeleteNetwork(t *testing.T) {
 	})
 
 	err := Delete(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 }

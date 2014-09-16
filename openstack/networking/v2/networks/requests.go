@@ -5,48 +5,11 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-func APIVersions(c *gophercloud.ServiceClient) (*APIVersionsList, error) {
-	var resp APIVersionsList
-	_, err := perigee.Request("GET", APIVersionsURL(c), perigee.Options{
-		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results:     &resp,
-		OkCodes:     []int{200},
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &resp, nil
-}
-
-func APIInfo(c *gophercloud.ServiceClient, v string) (*APIInfoList, error) {
-	var resp APIInfoList
-	_, err := perigee.Request("GET", APIInfoURL(c, v), perigee.Options{
-		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results:     &resp,
-		OkCodes:     []int{200},
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &resp, nil
-}
-
-func GetExtension(c *gophercloud.ServiceClient, name string) (*Extension, error) {
-	var ext Extension
-	_, err := perigee.Request("GET", ExtensionURL(c, name), perigee.Options{
-		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results: &struct {
-			Extension *Extension `json:"extension"`
-		}{&ext},
-		OkCodes: []int{200},
-	})
-
-	if err != nil {
-		return nil, err
-	}
-	return &ext, nil
+type NetworkOpts struct {
+	AdminStateUp bool
+	Name         string
+	Shared       *bool
+	TenantID     string
 }
 
 func Get(c *gophercloud.ServiceClient, id string) (*NetworkResult, error) {
@@ -62,13 +25,6 @@ func Get(c *gophercloud.ServiceClient, id string) (*NetworkResult, error) {
 		return nil, err
 	}
 	return &n, nil
-}
-
-type NetworkOpts struct {
-	AdminStateUp bool
-	Name         string
-	Shared       *bool
-	TenantID     string
 }
 
 func Create(c *gophercloud.ServiceClient, opts NetworkOpts) (*NetworkCreateResult, error) {

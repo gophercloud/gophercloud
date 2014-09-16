@@ -36,7 +36,7 @@ func NewClient() (*gophercloud.ServiceClient, error) {
 
 func Setup(t *testing.T) {
 	client, err := NewClient()
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 	Client = client
 }
 
@@ -49,7 +49,7 @@ func TestListAPIVersions(t *testing.T) {
 	defer Teardown()
 
 	res, err := networks.APIVersions(Client)
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 
 	err = gophercloud.EachPage(res, func(page gophercloud.Collection) bool {
 		t.Logf("--- Page ---")
@@ -58,7 +58,7 @@ func TestListAPIVersions(t *testing.T) {
 		}
 		return true
 	})
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 }
 
 func TestGetApiInfo(t *testing.T) {
@@ -66,7 +66,7 @@ func TestGetApiInfo(t *testing.T) {
 	defer Teardown()
 
 	res, err := networks.APIInfo(Client, "v2.0")
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 
 	err = gophercloud.EachPage(res, func(page gophercloud.Collection) bool {
 		t.Logf("--- Page ---")
@@ -75,7 +75,7 @@ func TestGetApiInfo(t *testing.T) {
 		}
 		return true
 	})
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 }
 
 func TestListExts(t *testing.T) {
@@ -87,7 +87,7 @@ func TestGetExt(t *testing.T) {
 	defer Teardown()
 
 	ext, err := networks.GetExtension(Client, "service-type")
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, ext.Updated, "2013-01-20T00:00:00-00:00")
 	th.AssertEquals(t, ext.Name, "Neutron Service Type Management")
@@ -106,7 +106,7 @@ func TestNetworkCRUDOperations(t *testing.T) {
 
 	// Create a network
 	res, err := networks.Create(Client, networks.NetworkOpts{Name: "sample_network", AdminStateUp: true})
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 	th.AssertEquals(t, res.Name, "sample_network")
 	th.AssertEquals(t, res.AdminStateUp, true)
 	networkID := res.ID
@@ -116,7 +116,7 @@ func TestNetworkCRUDOperations(t *testing.T) {
 		t.Fatalf("In order to retrieve a network, the NetworkID must be set")
 	}
 	n, err := networks.Get(Client, networkID)
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 	th.AssertEquals(t, n.Status, "ACTIVE")
 	th.AssertDeepEquals(t, n.Subnets, []interface{}{})
 	th.AssertEquals(t, n.Name, "sample_network")
@@ -130,12 +130,12 @@ func TestNetworkCRUDOperations(t *testing.T) {
 
 	// Update network
 	n, err = networks.Update(Client, networkID, networks.NetworkOpts{Name: "new_network_name"})
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 	th.AssertEquals(t, n.Name, "new_network_name")
 
 	// Delete network
 	err := networks.Delete(Client, networkID)
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 }
 
 func TestCreateMultipleNetworks(t *testing.T) {
