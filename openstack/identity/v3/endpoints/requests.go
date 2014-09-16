@@ -6,6 +6,7 @@ import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // maybeString returns nil for empty strings and nil for empty.
@@ -94,7 +95,7 @@ type ListOpts struct {
 }
 
 // List enumerates endpoints in a paginated collection, optionally filtered by ListOpts criteria.
-func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
+func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	q := make(map[string]string)
 	if opts.Availability != "" {
 		q["interface"] = string(opts.Availability)
@@ -109,16 +110,12 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
 		q["per_page"] = strconv.Itoa(opts.Page)
 	}
 
-	countPage := func(p gophercloud.Page) (int, error) {
-		es, err := ExtractEndpoints(p)
-		if err != nil {
-			return 0, err
-		}
-		return len(es), nil
+	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
+		return EndpointPage{pagination.LinkedPageBase(r)}
 	}
 
 	u := getListURL(client) + utils.BuildQuery(q)
-	return gophercloud.NewLinkedPager(client, u, countPage)
+	return pagination.NewLinkedPager(client, u, createPage)
 }
 
 // Update changes an existing endpoint with new data.

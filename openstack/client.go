@@ -11,6 +11,7 @@ import (
 	services3 "github.com/rackspace/gophercloud/openstack/identity/v3/services"
 	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 const (
@@ -194,7 +195,7 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 	// Discover the service we're interested in.
 	var services = make([]services3.Service, 0, 1)
 	servicePager := services3.List(v3Client, services3.ListOpts{ServiceType: opts.Type})
-	err := servicePager.EachPage(func(page gophercloud.Page) (bool, error) {
+	err := servicePager.EachPage(func(page pagination.Page) (bool, error) {
 		part, err := services3.ExtractServices(page)
 		if err != nil {
 			return false, err
@@ -226,7 +227,7 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 		Availability: opts.Availability,
 		ServiceID:    service.ID,
 	})
-	err = endpointPager.EachPage(func(page gophercloud.Page) (bool, error) {
+	err = endpointPager.EachPage(func(page pagination.Page) (bool, error) {
 		part, err := endpoints3.ExtractEndpoints(page)
 		if err != nil {
 			return false, err
