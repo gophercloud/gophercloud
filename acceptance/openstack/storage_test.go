@@ -242,15 +242,17 @@ func TestObjects(t *testing.T) {
 		}
 	}()
 
-	lr, err := objects.List(client, objects.ListOpts{
-		Full:      false,
-		Container: cName,
+	pager := objects.List(client, objects.ListOpts{Full: false, Container: cName})
+	ons := make([]string, 0, len(oNames))
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		names, err := objects.ExtractNames(page)
+		if err != nil {
+			return false, err
+		}
+		ons = append(ons, names...)
+
+		return true, nil
 	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	ons, err := objects.ExtractNames(lr)
 	if err != nil {
 		t.Error(err)
 		return
@@ -260,15 +262,18 @@ func TestObjects(t *testing.T) {
 		return
 	}
 
-	lr, err = objects.List(client, objects.ListOpts{
-		Full:      true,
-		Container: cName,
+	pager = objects.List(client, objects.ListOpts{Full: true, Container: cName})
+	ois := make([]objects.Object, 0, len(oNames))
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		info, err := objects.ExtractInfo(page)
+		if err != nil {
+			return false, nil
+		}
+
+		ois = append(ois, info...)
+
+		return true, nil
 	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	ois, err := objects.ExtractInfo(lr)
 	if err != nil {
 		t.Error(err)
 		return
