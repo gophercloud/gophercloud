@@ -65,26 +65,61 @@ func request(client *ServiceClient, url string) (http.Response, error) {
 
 // Page must be satisfied by the result type of any resource collection.
 // It allows clients to interact with the resource uniformly, regardless of whether or not or how it's paginated.
+// Generally, rather than implementing this interface directly, implementors should embed one of the concrete PageBase structs,
+// instead.
 type Page interface {
 
 	// NextPageURL generates the URL for the page of data that follows this collection.
 	// Return "" if no such page exists.
 	NextPageURL() (string, error)
+
+	// IsEmpty returns true if this Page has no items in it.
+	IsEmpty() (bool, error)
 }
 
-// SinglePage is a page that contains all of the results from an operation.
-type SinglePage LastHTTPResponse
+// MarkerPage is a stricter Page interface that describes additional functionality required for use with NewMarkerPager.
+// For convenience, embed the MarkedPageBase struct.
+type MarkerPage interface {
+	Page
+
+	// LastMark returns the last "marker" value on this page.
+	LastMark() (string, error)
+}
+
+// nullPage is an always-empty page that trivially satisfies all Page interfacts.
+// It's useful to be returned along with an error.
+type nullPage struct{}
 
 // NextPageURL always returns "" to indicate that there are no more pages to return.
-func (current SinglePage) NextPageURL() (string, error) {
+func (p nullPage) NextPageURL() (string, error) {
 	return "", nil
 }
 
-// LinkedPage is a page in a collection that provides navigational "Next" and "Previous" links within its result.
-type LinkedPage LastHTTPResponse
+// IsEmpty always returns true to prevent iteration over nullPages.
+func (p nullPage) IsEmpty() (bool, error) {
+	return true, nil
+}
+
+// LastMark always returns "" because the nullPage contains no items to have a mark.
+func (p nullPage) LastMark() (string, error) {
+	return "", nil
+}
+
+// SinglePageBase may be embedded in a Page that contains all of the results from an operation at once.
+type SinglePageBase LastHTTPResponse
+
+// NextPageURL always returns "" to indicate that there are no more pages to return.
+func (current SinglePageBase) NextPageURL() (string, error) {
+	return "", nil
+}
+
+// LinkedPageBase may be embedded to implement a page that provides navigational "Next" and "Previous" links within its result.
+type LinkedPageBase LastHTTPResponse
 
 // NextPageURL extracts the pagination structure from a JSON response and returns the "next" link, if one is present.
-func (current LinkedPage) NextPageURL() (string, error) {
+// It assumes that the links are available in a "links" element of the top-level response object.
+// If this is not the case, override NextPageURL on your result type.
+func (current LinkedPageBase) NextPageURL() (string, error) {
 	type response struct {
 		Links struct {
 			Next *string `mapstructure:"next,omitempty"`
@@ -104,19 +139,19 @@ func (current LinkedPage) NextPageURL() (string, error) {
 	return *r.Links.Next, nil
 }
 
-// MarkerPage is a page in a collection that's paginated by "limit" and "marker" query parameters.
-type MarkerPage struct {
+// MarkerPageBase is a page in a collection that's paginated by "limit" and "marker" query parameters.
+type MarkerPageBase struct {
 	LastHTTPResponse
 
-	// lastMark is a captured function that returns the final entry on a given page.
-	lastMark func(Page) (string, error)
+	// A reference to the embedding struct.
+	Self MarkerPage
 }
 
 // NextPageURL generates the URL for the page of results after this one.
-func (current MarkerPage) NextPageURL() (string, error) {
-	currentURL := current.LastHTTPResponse.URL
+func (current MarkerPageBase) NextPageURL() (string, error) {
+	currentURL := current.URL
 
-	mark, err := current.lastMark(current)
+	mark, err := current.Self.LastMark()
 	if err != nil {
 		return "", err
 	}
@@ -133,50 +168,46 @@ type Pager struct {
 	initialURL string
 
 	fetchNextPage func(string) (Page, error)
-
-	countPage func(Page) (int, error)
 }
 
 // NewPager constructs a manually-configured pager.
 // Supply the URL for the first page, a function that requests a specific page given a URL, and a function that counts a page.
-func NewPager(initialURL string, fetchNextPage func(string) (Page, error), countPage func(Page) (int, error)) Pager {
+func NewPager(initialURL string, fetchNextPage func(string) (Page, error)) Pager {
 	return Pager{
 		initialURL:    initialURL,
 		fetchNextPage: fetchNextPage,
-		countPage:     countPage,
 	}
 }
 
 // NewSinglePager constructs a Pager that "iterates" over a single Page.
-// Supply the URL to request.
-func NewSinglePager(client *ServiceClient, onlyURL string, countPage func(Page) (int, error)) Pager {
+// Supply the URL to request and a function that creates a Page of the appropriate type.
+func NewSinglePager(client *ServiceClient, onlyURL string, createPage func(resp LastHTTPResponse) Page) Pager {
 	consumed := false
 	single := func(_ string) (Page, error) {
 		if !consumed {
 			consumed = true
 			resp, err := request(client, onlyURL)
 			if err != nil {
-				return SinglePage{}, err
+				return nullPage{}, err
 			}
 
 			cp, err := RememberHTTPResponse(resp)
 			if err != nil {
-				return SinglePage{}, err
+				return nullPage{}, err
 			}
-			return SinglePage(cp), nil
+			return createPage(cp), nil
 		}
-		return SinglePage{}, ErrPageNotAvailable
+		return nullPage{}, ErrPageNotAvailable
 	}
 
 	return Pager{
 		initialURL:    "",
 		fetchNextPage: single,
-		countPage:     countPage,
 	}
 }
 
 // NewLinkedPager creates a Pager that uses a "links" element in the JSON response to locate the next page.
-func NewLinkedPager(client *ServiceClient, initialURL string, countPage func(Page) (int, error)) Pager {
+func NewLinkedPager(client *ServiceClient, initialURL string, createPage func(resp LastHTTPResponse) Page) Pager {
 	fetchNextPage := func(url string) (Page, error) {
 		resp, err := request(client, url)
 		if err != nil {
@@ -188,39 +219,36 @@ func NewLinkedPager(client *ServiceClient, initialURL string, countPage func(Pag
 			return nil, err
 		}
 
-		return LinkedPage(cp), nil
+		return createPage(cp), nil
 	}
 
 	return Pager{
 		initialURL:    initialURL,
 		fetchNextPage: fetchNextPage,
-		countPage:     countPage,
 	}
 }
 
 // NewMarkerPager creates a Pager that iterates over successive pages by issuing requests with a "marker" parameter set to the
 // final element of the previous Page.
-func NewMarkerPager(client *ServiceClient, initialURL string,
-	lastMark func(Page) (string, error), countPage func(Page) (int, error)) Pager {
+func NewMarkerPager(client *ServiceClient, initialURL string, createPage func(resp LastHTTPResponse) MarkerPage) Pager {
 
 	fetchNextPage := func(currentURL string) (Page, error) {
 		resp, err := request(client, currentURL)
 		if err != nil {
-			return nil, err
+			return nullPage{}, err
 		}
 
 		last, err := RememberHTTPResponse(resp)
 		if err != nil {
-			return nil, err
+			return nullPage{}, err
 		}
 
-		return MarkerPage{LastHTTPResponse: last, lastMark: lastMark}, nil
+		return createPage(last), nil
 	}
 
 	return Pager{
 		initialURL:    initialURL,
 		fetchNextPage: fetchNextPage,
-		countPage:     countPage,
 	}
 }
 
@@ -234,11 +262,11 @@ func (p Pager) EachPage(handler func(Page) (bool, error)) error {
 			return err
 		}
 
-		count, err := p.countPage(currentPage)
+		empty, err := currentPage.IsEmpty()
 		if err != nil {
 			return err
 		}
-		if count == 0 {
+		if empty {
 			return nil
 		}
 

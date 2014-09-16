@@ -20,12 +20,24 @@ func createClient() *ServiceClient {
 
 // SinglePage sample and test cases.
 
+type SinglePageResult struct {
+	SinglePageBase
+}
+
+func (r SinglePageResult) IsEmpty() (bool, error) {
+	is, err := ExtractSingleInts(r)
+	if err != nil {
+		return true, err
+	}
+	return len(is) == 0, nil
+}
+
 func ExtractSingleInts(page Page) ([]int, error) {
 	var response struct {
 		Ints []int `mapstructure:"ints"`
 	}
 
-	err := mapstructure.Decode(page.(SinglePage).Body, &response)
+	err := mapstructure.Decode(page.(SinglePageResult).Body, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -42,15 +54,11 @@ func setupSinglePaged() Pager {
 		fmt.Fprintf(w, `{ "ints": [1, 2, 3] }`)
 	})
 
-	countPage := func(p Page) (int, error) {
-		is, err := ExtractSingleInts(p)
-		if err != nil {
-			return 0, err
-		}
-		return len(is), nil
+	createPage := func(r LastHTTPResponse) Page {
+		return SinglePageResult{SinglePageBase(r)}
 	}
 
-	return NewSinglePager(client, testhelper.Server.URL+"/only", countPage)
+	return NewSinglePager(client, testhelper.Server.URL+"/only", createPage)
 }
 
 func TestEnumerateSinglePaged(t *testing.T) {
@@ -63,31 +71,34 @@ func TestEnumerateSinglePaged(t *testing.T) {
 
 		expected := []int{1, 2, 3}
 		actual, err := ExtractSingleInts(page)
-		if err != nil {
-			return false, err
-		}
-		if !reflect.DeepEqual(expected, actual) {
-			t.Errorf("Expected %v, but was %v", expected, actual)
-		}
+		testhelper.AssertNoErr(t, err)
+		testhelper.CheckDeepEquals(t, expected, actual)
 		return true, nil
 	})
-	if err != nil {
-		t.Fatalf("Unexpected error calling EachPage: %v", err)
-	}
-
-	if callCount != 1 {
-		t.Errorf("Callback was invoked %d times", callCount)
-	}
+	testhelper.CheckNoErr(t, err)
+	testhelper.CheckEquals(t, 1, callCount)
 }
 
 // LinkedPager sample and test cases.
+
+type LinkedPageResult struct {
+	LinkedPageBase
+}
+
+func (r LinkedPageResult) IsEmpty() (bool, error) {
+	is, err := ExtractLinkedInts(r)
+	if err != nil {
+		return true, nil
+	}
+	return len(is) == 0, nil
+}
 
 func ExtractLinkedInts(page Page) ([]int, error) {
 	var response struct {
 		Ints []int `mapstructure:"ints"`
 	}
 
-	err := mapstructure.Decode(page.(LinkedPage).Body, &response)
+	err := mapstructure.Decode(page.(LinkedPageResult).Body, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -115,15 +126,11 @@ func createLinked(t *testing.T) Pager {
 
 	client := createClient()
 
-	countPage := func(p Page) (int, error) {
-		is, err := ExtractLinkedInts(p)
-		if err != nil {
-			return 0, err
-		}
-		return len(is), nil
+	createPage := func(r LastHTTPResponse) Page {
+		return LinkedPageResult{LinkedPageBase(r)}
 	}
 
-	return NewLinkedPager(client, testhelper.Server.URL+"/page1", countPage)
+	return NewLinkedPager(client, testhelper.Server.URL+"/page1", createPage)
 }
 
 func TestEnumerateLinked(t *testing.T) {
@@ -168,6 +175,31 @@ func TestEnumerateLinked(t *testing.T) {
 	}
 }
 
+// MarkerPager sample and test cases.
+
+type MarkerPageResult struct {
+	MarkerPageBase
+}
+
+func (r MarkerPageResult) IsEmpty() (bool, error) {
+	results, err := ExtractMarkerStrings(r)
+	if err != nil {
+		return true, err
+	}
+	return len(results) == 0, err
+}
+
+func (r MarkerPageResult) LastMark() (string, error) {
+	results, err := ExtractMarkerStrings(r)
+	if err != nil {
+		return "", err
+	}
+	if len(results) == 0 {
+		return "", nil
+	}
+	return results[len(results)-1], nil
+}
+
 func createMarkerPaged(t *testing.T) Pager {
 	testhelper.SetupHTTP()
 
@@ -190,28 +222,17 @@ func createMarkerPaged(t *testing.T) Pager {
 
 	client := createClient()
 
-	lastMark := func(p Page) (string, error) {
-		items, err := ExtractMarkerStrings(p)
-		if err != nil {
-			return "", err
-		}
-		return items[len(items)-1], nil
+	createPage := func(r LastHTTPResponse) MarkerPage {
+		p := MarkerPageResult{MarkerPageBase{LastHTTPResponse: r}}
+		p.MarkerPageBase.Self = p
+		return p
 	}
 
-	countPage := func(p Page) (int, error) {
-		items, err := ExtractMarkerStrings(p)
-		if err != nil {
-			return 0, err
-		}
-		fmt.Printf("Counting items [%#v] = [%d]\n", items, len(items))
-		return len(items), nil
-	}
-
-	return NewMarkerPager(client, testhelper.Server.URL+"/page", lastMark, countPage)
+	return NewMarkerPager(client, testhelper.Server.URL+"/page", createPage)
 }
 
 func ExtractMarkerStrings(page Page) ([]string, error) {
-	content := page.(MarkerPage).Body.([]uint8)
+	content := page.(MarkerPageResult).Body.([]uint8)
 	parts := strings.Split(string(content), "\n")
 	results := make([]string, 0, len(parts))
 	for _, part := range parts {
