@@ -6,10 +6,34 @@ import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // ListResult is a *http.Response that is returned from a call to the List function.
-type ListResult *http.Response
+type ListResult struct {
+	pagination.MarkerPageBase
+}
+
+// IsEmpty returns true if a ListResult contains no container names.
+func (r ListResult) IsEmpty() (bool, error) {
+	names, err := ExtractNames(r)
+	if err != nil {
+		return true, err
+	}
+	return len(names) == 0, nil
+}
+
+// LastMarker returns the last container name in a ListResult.
+func (r ListResult) LastMarker() (string, error) {
+	names, err := ExtractNames(r)
+	if err != nil {
+		return "", err
+	}
+	if len(names) == 0 {
+		return "", nil
+	}
+	return names[len(names)-1], nil
+}
 
 // GetResult is a *http.Response that is returned from a call to the Get function.
 type GetResult *http.Response
@@ -17,24 +41,25 @@ type GetResult *http.Response
 // List is a function that retrieves all objects in a container. It also returns the details
 // for the account. To extract just the container information or names, pass the ListResult
 // response to the ExtractInfo or ExtractNames function, respectively.
-func List(c *gophercloud.ServiceClient, opts ListOpts) (ListResult, error) {
-	contentType := ""
-
-	h := c.Provider.AuthenticatedHeaders()
+func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
+	var headers map[string]string
 
 	query := utils.BuildQuery(opts.Params)
 
 	if !opts.Full {
-		contentType = "text/plain"
+		headers = map[string]string{"Content-Type": "text/plain"}
+	}
+
+	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
+		p := ListResult{pagination.MarkerPageBase{LastHTTPResponse: r}}
+		p.MarkerPageBase.Owner = p
+		return p
 	}
 
 	url := getAccountURL(c) + query
-	resp, err := perigee.Request("GET", url, perigee.Options{
-		MoreHeaders: h,
-		Accept:      contentType,
-		OkCodes:     []int{200, 204},
-	})
-	return &resp.HttpResponse, err
+	pager := pagination.NewPager(c, url, createPage)
+	pager.Headers = headers
+	return pager
 }
 
 // Create is a function that creates a new container.
