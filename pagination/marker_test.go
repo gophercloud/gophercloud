@@ -23,7 +23,7 @@ func (r MarkerPageResult) IsEmpty() (bool, error) {
 	return len(results) == 0, err
 }
 
-func (r MarkerPageResult) LastMark() (string, error) {
+func (r MarkerPageResult) LastMarker() (string, error) {
 	results, err := ExtractMarkerStrings(r)
 	if err != nil {
 		return "", err

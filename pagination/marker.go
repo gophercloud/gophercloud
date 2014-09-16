@@ -7,8 +7,8 @@ import "github.com/rackspace/gophercloud"
 type MarkerPage interface {
 	Page
 
-	// LastMark returns the last "marker" value on this page.
-	LastMark() (string, error)
+	// LastMarker returns the last "marker" value on this page.
+	LastMarker() (string, error)
 }
 
 // MarkerPageBase is a page in a collection that's paginated by "limit" and "marker" query parameters.
@@ -23,7 +23,7 @@ type MarkerPageBase struct {
 func (current MarkerPageBase) NextPageURL() (string, error) {
 	currentURL := current.URL
 
-	mark, err := current.Self.LastMark()
+	mark, err := current.Self.LastMarker()
 	if err != nil {
 		return "", err
 	}
