@@ -1,4 +1,4 @@
-package networks
+package extensions
 
 import (
 	"testing"
@@ -16,5 +16,11 @@ func EndpointClient() *gophercloud.ServiceClient {
 func TestExtensionURL(t *testing.T) {
 	actual := ExtensionURL(EndpointClient(), "agent")
 	expected := Endpoint + "v2.0/extensions/agent"
+	th.AssertEquals(t, expected, actual)
+}
+
+func TestListExtensionURL(t *testing.T) {
+	actual := ListExtensionURL(EndpointClient())
+	expected := Endpoint + "v2.0/extensions"
 	th.AssertEquals(t, expected, actual)
 }

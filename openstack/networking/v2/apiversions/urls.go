@@ -1,4 +1,4 @@
-package networks
+package apiversions
 
 import (
 	"strings"

@@ -13,8 +13,8 @@ func EndpointClient() *gophercloud.ServiceClient {
 	return &gophercloud.ServiceClient{Endpoint: Endpoint}
 }
 
-func TestNetworkURL(t *testing.T) {
-	actual := NetworkURL(EndpointClient(), "foo")
+func TestGetURL(t *testing.T) {
+	actual := GetURL(EndpointClient(), "foo")
 	expected := Endpoint + "v2.0/networks/foo"
 	th.AssertEquals(t, expected, actual)
 }
@@ -22,5 +22,17 @@ func TestNetworkURL(t *testing.T) {
 func TestCreateURL(t *testing.T) {
 	actual := CreateURL(EndpointClient())
 	expected := Endpoint + "v2.0/networks"
+	th.AssertEquals(t, expected, actual)
+}
+
+func TestListURL(t *testing.T) {
+	actual := CreateURL(EndpointClient())
+	expected := Endpoint + "v2.0/networks"
+	th.AssertEquals(t, expected, actual)
+}
+
+func TestDeleteURL(t *testing.T) {
+	actual := DeleteURL(EndpointClient(), "foo")
+	expected := Endpoint + "v2.0/networks/foo"
 	th.AssertEquals(t, expected, actual)
 }

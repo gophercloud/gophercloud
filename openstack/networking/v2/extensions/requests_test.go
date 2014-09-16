@@ -1,4 +1,4 @@
-package networks
+package extensions
 
 import (
 	"fmt"
@@ -21,14 +21,66 @@ func ServiceClient() *gophercloud.ServiceClient {
 }
 
 func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
+	th.Mux.HandleFunc("/v2.0/extensions", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+
+		fmt.Fprintf(w, `
+{
+    "extensions": [
+        {
+            "updated": "2013-01-20T00:00:00-00:00",
+            "name": "Neutron Service Type Management",
+            "links": [],
+            "namespace": "http://docs.openstack.org/ext/neutron/service-type/api/v1.0",
+            "alias": "service-type",
+            "description": "API for retrieving service providers for Neutron advanced services"
+        }
+    ]
+}
+			`)
+	})
+
+	count := 0
+
+	List(ServiceClient()).EachPage(func(page gophercloud.Page) (bool, error) {
+		count++
+		actual, err := ExtractExtensions(page)
+		if err != nil {
+			t.Errorf("Failed to extract extensions: %v", err)
+		}
+
+		expected := []Extension{
+			Extension{
+				Updated:     "2013-01-20T00:00:00-00:00",
+				Name:        "Neutron Service Type Management",
+				Links:       []interface{}{},
+				Namespace:   "http://docs.openstack.org/ext/neutron/service-type/api/v1.0",
+				Alias:       "service-type",
+				Description: "API for retrieving service providers for Neutron advanced services",
+			},
+		}
+
+		th.AssertDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }
 
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/extension/agent", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/extensions/agent", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", TokenID)
 

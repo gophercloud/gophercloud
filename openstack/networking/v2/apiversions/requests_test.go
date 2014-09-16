@@ -1,4 +1,4 @@
-package networks
+package apiversions
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ func ServiceClient() *gophercloud.ServiceClient {
 	}
 }
 
-func TestList(t *testing.T) {
+func TestListVersions(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -48,21 +48,31 @@ func TestList(t *testing.T) {
 }`)
 	})
 
-	res, err := List(ServiceClient())
-	th.AssertNoErr(t, err)
+	count := 0
 
-	coll, err := gophercloud.AllPages(res)
-	th.AssertNoErr(t, err)
+	ListVersions(ServiceClient()).EachPage(func(page gophercloud.Page) (bool, error) {
+		count++
+		actual, err := ExtractAPIVersions(page)
+		if err != nil {
+			t.Errorf("Failed to extract API versions: %v", err)
+			return false, err
+		}
 
-	actual := ToAPIVersions(coll)
+		expected := []APIVersion{
+			APIVersion{
+				Status: "CURRENT",
+				ID:     "v2.0",
+			},
+		}
 
-	expected := []APIVersion{
-		APIVersion{
-			Status: "CURRENT",
-			ID:     "v2.0",
-		},
+		th.AssertDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
 	}
-	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestAPIInfo(t *testing.T) {
@@ -114,26 +124,37 @@ func TestAPIInfo(t *testing.T) {
 			`)
 	})
 
-	res, err := Get(ServiceClient(), "v2.0")
-	th.AssertNoErr(t, err)
+	count := 0
 
-	coll, err := gophercloud.AllPages(res)
-	th.AssertNoErr(t, err)
+	ListVersionResources(ServiceClient(), "v2.0").EachPage(func(page gophercloud.Page) (bool, error) {
+		count++
+		actual, err := ExtractVersionResources(page)
+		if err != nil {
+			t.Errorf("Failed to extract version resources: %v", err)
+			return false, err
+		}
 
-	actual := ToAPIResource(coll)
-	expected := []APIResource{
-		APIResource{
-			Name:       "subnet",
-			Collection: "subnets",
-		},
-		APIResource{
-			Name:       "network",
-			Collection: "networks",
-		},
-		APIResource{
-			Name:       "port",
-			Collection: "ports",
-		},
+		expected := []APIVersionResource{
+			APIVersionResource{
+				Name:       "subnet",
+				Collection: "subnets",
+			},
+			APIVersionResource{
+				Name:       "network",
+				Collection: "networks",
+			},
+			APIVersionResource{
+				Name:       "port",
+				Collection: "ports",
+			},
+		}
+
+		th.AssertDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
 	}
-	th.AssertDeepEquals(t, expected, actual)
 }

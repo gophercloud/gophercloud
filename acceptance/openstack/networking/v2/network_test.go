@@ -4,6 +4,7 @@ package v2
 
 import (
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
@@ -13,9 +14,7 @@ import (
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
-var (
-	Client *gophercloud.ServiceClient
-)
+var Client *gophercloud.ServiceClient
 
 func NewClient() (*gophercloud.ServiceClient, error) {
 	opts, err := utils.AuthOptions()
@@ -44,60 +43,25 @@ func Teardown() {
 	Client = nil
 }
 
-func TestListAPIVersions(t *testing.T) {
-	Setup(t)
-	defer Teardown()
-
-	res, err := networks.APIVersions(Client)
-	th.AssertNoErr(t, err)
-
-	err = gophercloud.EachPage(res, func(page gophercloud.Collection) bool {
-		t.Logf("--- Page ---")
-		for _, v := range networks.ToAPIVersions(page) {
-			t.Logf("API version: ID [%s] Status [%s]", v.ID, v.Status)
-		}
-		return true
-	})
-	th.AssertNoErr(t, err)
-}
-
-func TestGetApiInfo(t *testing.T) {
-	Setup(t)
-	defer Teardown()
-
-	res, err := networks.APIInfo(Client, "v2.0")
-	th.AssertNoErr(t, err)
-
-	err = gophercloud.EachPage(res, func(page gophercloud.Collection) bool {
-		t.Logf("--- Page ---")
-		for _, r := range networks.ToAPIResource(page) {
-			t.Logf("API resource: Name [%s] Collection [%s]", r.Name, r.Collection)
-		}
-		return true
-	})
-	th.AssertNoErr(t, err)
-}
-
-func TestListExts(t *testing.T) {
-	//networks.Extensions()
-}
-
-func TestGetExt(t *testing.T) {
-	Setup(t)
-	defer Teardown()
-
-	ext, err := networks.GetExtension(Client, "service-type")
-	th.AssertNoErr(t, err)
-
-	th.AssertEquals(t, ext.Updated, "2013-01-20T00:00:00-00:00")
-	th.AssertEquals(t, ext.Name, "Neutron Service Type Management")
-	th.AssertEquals(t, ext.Namespace, "http://docs.openstack.org/ext/neutron/service-type/api/v1.0")
-	th.AssertEquals(t, ext.Alias, "service-type")
-	th.AssertEquals(t, ext.Description, "API for retrieving service providers for Neutron advanced services")
-}
-
 func TestListNetworks(t *testing.T) {
-	//networks.List()
+	Setup(t)
+	defer Teardown()
+
+	pager := networks.List(Client, networks.ListOpts{})
+	err := pager.EachPage(func(page gophercloud.Page) (bool, error) {
+		t.Logf("--- Page ---")
+
+		networks, err := networks.ExtractNetworks(page)
+		th.AssertNoErr(t, err)
+
+		for _, n := range networks {
+			t.Logf("Network: ID [%s] Name [%s] Status [%s] Is shared? [%s]",
+				n.ID, n.Name, n.Status, strconv.FormatBool(n.Shared))
+		}
+
+		return true, nil
+	})
+	th.CheckNoErr(t, err)
 }
 
 func TestNetworkCRUDOperations(t *testing.T) {
@@ -134,7 +98,7 @@ func TestNetworkCRUDOperations(t *testing.T) {
 	th.AssertEquals(t, n.Name, "new_network_name")
 
 	// Delete network
-	err := networks.Delete(Client, networkID)
+	err = networks.Delete(Client, networkID)
 	th.AssertNoErr(t, err)
 }
 

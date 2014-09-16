@@ -1,4 +1,4 @@
-package networks
+package extensions
 
 import (
 	"github.com/racker/perigee"
@@ -19,4 +19,8 @@ func Get(c *gophercloud.ServiceClient, name string) (*Extension, error) {
 		return nil, err
 	}
 	return &ext, nil
+}
+
+func List(c *gophercloud.ServiceClient) gophercloud.Pager {
+	return gophercloud.NewLinkedPager(c, ListExtensionURL(c))
 }
