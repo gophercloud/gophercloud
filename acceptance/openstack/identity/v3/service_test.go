@@ -5,8 +5,8 @@ package v3
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	services3 "github.com/rackspace/gophercloud/openstack/identity/v3/services"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 func TestListServices(t *testing.T) {
@@ -18,7 +18,7 @@ func TestListServices(t *testing.T) {
 
 	// Use the client to list all available services.
 	pager := services3.List(serviceClient, services3.ListOpts{})
-	err := pager.EachPage(func(page gophercloud.Page) (bool, error) {
+	err := pager.EachPage(func(page pagination.Page) (bool, error) {
 		parts, err := services3.ExtractServices(page)
 		if err != nil {
 			return false, err

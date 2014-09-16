@@ -8,6 +8,7 @@ import (
 	"github.com/rackspace/gophercloud"
 	endpoints3 "github.com/rackspace/gophercloud/openstack/identity/v3/endpoints"
 	services3 "github.com/rackspace/gophercloud/openstack/identity/v3/services"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 func TestListEndpoints(t *testing.T) {
@@ -19,7 +20,7 @@ func TestListEndpoints(t *testing.T) {
 
 	// Use the service to list all available endpoints.
 	pager := endpoints3.List(serviceClient, endpoints3.ListOpts{})
-	err := pager.EachPage(func(page gophercloud.Page) (bool, error) {
+	err := pager.EachPage(func(page pagination.Page) (bool, error) {
 		t.Logf("--- Page ---")
 
 		endpoints, err := endpoints3.ExtractEndpoints(page)
@@ -51,7 +52,7 @@ func TestNavigateCatalog(t *testing.T) {
 
 	// Discover the service we're interested in.
 	servicePager := services3.List(client, services3.ListOpts{ServiceType: "compute"})
-	err := servicePager.EachPage(func(page gophercloud.Page) (bool, error) {
+	err := servicePager.EachPage(func(page pagination.Page) (bool, error) {
 		part, err := services3.ExtractServices(page)
 		if err != nil {
 			return false, err
@@ -81,7 +82,7 @@ func TestNavigateCatalog(t *testing.T) {
 		Availability: gophercloud.AvailabilityPublic,
 		ServiceID:    compute.ID,
 	})
-	err = computePager.EachPage(func(page gophercloud.Page) (bool, error) {
+	err = computePager.EachPage(func(page pagination.Page) (bool, error) {
 		part, err := endpoints3.ExtractEndpoints(page)
 		if err != nil {
 			return false, err
