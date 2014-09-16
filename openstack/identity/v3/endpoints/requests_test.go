@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/testhelper"
 )
 
@@ -91,6 +92,7 @@ func TestListEndpoints(t *testing.T) {
 		testhelper.TestMethod(t, r, "GET")
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
 
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
 			{
 				"endpoints": [
@@ -128,7 +130,7 @@ func TestListEndpoints(t *testing.T) {
 	client := serviceClient()
 
 	count := 0
-	List(client, ListOpts{}).EachPage(func(page gophercloud.Page) (bool, error) {
+	List(client, ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractEndpoints(page)
 		if err != nil {

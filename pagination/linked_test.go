@@ -1,4 +1,4 @@
-package gophercloud
+package pagination
 
 import (
 	"fmt"
@@ -10,74 +10,26 @@ import (
 	"github.com/rackspace/gophercloud/testhelper"
 )
 
-func createClient() *ServiceClient {
-	return &ServiceClient{
-		Provider: &ProviderClient{TokenID: "abc123"},
-		Endpoint: testhelper.Endpoint(),
-	}
-}
-
-// SinglePage sample and test cases.
-
-func ExtractSingleInts(page Page) ([]int, error) {
-	var response struct {
-		Ints []int `mapstructure:"ints"`
-	}
-
-	err := mapstructure.Decode(page.(SinglePage).Body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.Ints, nil
-}
-
-func setupSinglePaged() Pager {
-	testhelper.SetupHTTP()
-	client := createClient()
-
-	testhelper.Mux.HandleFunc("/only", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, `{ "ints": [1, 2, 3] }`)
-	})
-
-	return NewSinglePager(client, testhelper.Server.URL+"/only")
-}
-
-func TestEnumerateSinglePaged(t *testing.T) {
-	callCount := 0
-	pager := setupSinglePaged()
-	defer testhelper.TeardownHTTP()
-
-	err := pager.EachPage(func(page Page) (bool, error) {
-		callCount++
-
-		expected := []int{1, 2, 3}
-		actual, err := ExtractSingleInts(page)
-		if err != nil {
-			return false, err
-		}
-		if !reflect.DeepEqual(expected, actual) {
-			t.Errorf("Expected %v, but was %v", expected, actual)
-		}
-		return true, nil
-	})
-	if err != nil {
-		t.Fatalf("Unexpected error calling EachPage: %v", err)
-	}
-
-	if callCount != 1 {
-		t.Errorf("Callback was invoked %d times", callCount)
-	}
-}
-
 // LinkedPager sample and test cases.
+
+type LinkedPageResult struct {
+	LinkedPageBase
+}
+
+func (r LinkedPageResult) IsEmpty() (bool, error) {
+	is, err := ExtractLinkedInts(r)
+	if err != nil {
+		return true, nil
+	}
+	return len(is) == 0, nil
+}
 
 func ExtractLinkedInts(page Page) ([]int, error) {
 	var response struct {
 		Ints []int `mapstructure:"ints"`
 	}
 
-	err := mapstructure.Decode(page.(LinkedPage).Body, &response)
+	err := mapstructure.Decode(page.(LinkedPageResult).Body, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -89,20 +41,27 @@ func createLinked(t *testing.T) Pager {
 	testhelper.SetupHTTP()
 
 	testhelper.Mux.HandleFunc("/page1", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{ "ints": [1, 2, 3], "links": { "next": "%s/page2" } }`, testhelper.Server.URL)
 	})
 
 	testhelper.Mux.HandleFunc("/page2", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{ "ints": [4, 5, 6], "links": { "next": "%s/page3" } }`, testhelper.Server.URL)
 	})
 
 	testhelper.Mux.HandleFunc("/page3", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{ "ints": [7, 8, 9], "links": { "next": null } }`)
 	})
 
 	client := createClient()
 
-	return NewLinkedPager(client, testhelper.Server.URL+"/page1")
+	createPage := func(r LastHTTPResponse) Page {
+		return LinkedPageResult{LinkedPageBase(r)}
+	}
+
+	return NewPager(client, testhelper.Server.URL+"/page1", createPage)
 }
 
 func TestEnumerateLinked(t *testing.T) {

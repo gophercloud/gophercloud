@@ -6,6 +6,7 @@ import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 type response struct {
@@ -42,7 +43,7 @@ type ListOpts struct {
 }
 
 // List enumerates the services available to a specific user.
-func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
+func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	q := make(map[string]string)
 	if opts.ServiceType != "" {
 		q["type"] = opts.ServiceType
@@ -55,7 +56,11 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
 	}
 	u := getListURL(client) + utils.BuildQuery(q)
 
-	return gophercloud.NewLinkedPager(client, u)
+	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
+		return ServicePage{pagination.LinkedPageBase(r)}
+	}
+
+	return pagination.NewPager(client, u, createPage)
 }
 
 // Get returns additional information about a service, given its ID.

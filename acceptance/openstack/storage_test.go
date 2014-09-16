@@ -15,6 +15,7 @@ import (
 	"github.com/rackspace/gophercloud/openstack/storage/v1/containers"
 	"github.com/rackspace/gophercloud/openstack/storage/v1/objects"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 var metadata = map[string]string{"gopher": "cloud"}
@@ -112,35 +113,41 @@ func TestContainers(t *testing.T) {
 		}
 	}()
 
-	lr, err := containers.List(client, containers.ListOpts{
-		Full: false,
+	cns := make([]string, 0, numContainers)
+	pager := containers.List(client, containers.ListOpts{Full: false})
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		names, err := containers.ExtractNames(page)
+		if err != nil {
+			return false, err
+		}
+
+		cns = append(cns, names...)
+
+		return true, nil
 	})
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 		return
 	}
-	cns, err := containers.ExtractNames(lr)
-	if err != nil {
-		t.Error(err)
-		return
-	}
+
 	if len(cns) != len(cNames) {
 		t.Errorf("Expected %d names and got %d", len(cNames), len(cns))
 		return
 	}
 
-	lr, err = containers.List(client, containers.ListOpts{
-		Full: true,
+	cis := make([]containers.Container, 0, numContainers)
+	pager = containers.List(client, containers.ListOpts{Full: true})
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		cisPage, err := containers.ExtractInfo(page)
+		if err != nil {
+			return false, err
+		}
+
+		cis = append(cis, cisPage...)
+
+		return true, nil
 	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	cis, err := containers.ExtractInfo(lr)
-	if err != nil {
-		t.Error(err)
-		return
-	}
+
 	if len(cis) != len(cNames) {
 		t.Errorf("Expected %d containers and got %d", len(cNames), len(cis))
 		return
@@ -235,15 +242,17 @@ func TestObjects(t *testing.T) {
 		}
 	}()
 
-	lr, err := objects.List(client, objects.ListOpts{
-		Full:      false,
-		Container: cName,
+	pager := objects.List(client, objects.ListOpts{Full: false, Container: cName})
+	ons := make([]string, 0, len(oNames))
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		names, err := objects.ExtractNames(page)
+		if err != nil {
+			return false, err
+		}
+		ons = append(ons, names...)
+
+		return true, nil
 	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	ons, err := objects.ExtractNames(lr)
 	if err != nil {
 		t.Error(err)
 		return
@@ -253,15 +262,18 @@ func TestObjects(t *testing.T) {
 		return
 	}
 
-	lr, err = objects.List(client, objects.ListOpts{
-		Full:      true,
-		Container: cName,
+	pager = objects.List(client, objects.ListOpts{Full: true, Container: cName})
+	ois := make([]objects.Object, 0, len(oNames))
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		info, err := objects.ExtractInfo(page)
+		if err != nil {
+			return false, nil
+		}
+
+		ois = append(ois, info...)
+
+		return true, nil
 	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	ois, err := objects.ExtractInfo(lr)
 	if err != nil {
 		t.Error(err)
 		return
