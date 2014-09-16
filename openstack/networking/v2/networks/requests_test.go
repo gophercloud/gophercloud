@@ -419,3 +419,19 @@ func TestUpdateNetwork(t *testing.T) {
 	Equals(t, n.Shared, true)
 	Equals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 }
+
+func TestDeleteNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	err := Delete(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	if err != nil {
+		t.Fatalf("Unexpected error: %#v", err)
+	}
+}

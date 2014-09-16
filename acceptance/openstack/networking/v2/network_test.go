@@ -158,7 +158,7 @@ func TestNetworkCRUDOperations(t *testing.T) {
 	Equals(t, n.Name, "sample_network")
 	Equals(t, n.ProviderPhysicalNetwork, "")
 	Equals(t, n.ProviderNetworkType, "local")
-	Equals(t, n.ProviderSegmentationID, 0)
+	Equals(t, n.ProviderSegmentationID, 0f)
 	Equals(t, n.AdminStateUp, true)
 	Equals(t, n.RouterExternal, false)
 	Equals(t, n.Shared, false)
@@ -173,6 +173,10 @@ func TestNetworkCRUDOperations(t *testing.T) {
 	Equals(t, n.Name, "new_network_name")
 
 	// Delete network
+	err := networks.Delete(Client, networkID)
+	if err != nil {
+		t.Fatalf("Unexpected error: %#v", err)
+	}
 }
 
 func TestCreateMultipleNetworks(t *testing.T) {
