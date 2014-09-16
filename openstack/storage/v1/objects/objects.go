@@ -1,10 +1,12 @@
 package objects
 
 import (
-	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"strings"
+
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // Object is a structure that holds information related to a storage object.
@@ -69,32 +71,47 @@ type UpdateOpts struct {
 	Headers   map[string]string
 }
 
-// ExtractInfo is a function that takes a ListResult (of type *http.Response)
-// and returns the objects' information.
-func ExtractInfo(lr ListResult) ([]Object, error) {
-	var oi []Object
-	defer lr.Body.Close()
-	body, err := ioutil.ReadAll(lr.Body)
-	if err != nil {
-		return oi, err
+// ExtractInfo is a function that takes a page of objects and returns their full information.
+func ExtractInfo(page pagination.Page) ([]Object, error) {
+	untyped := page.(ListResult).Body.([]interface{})
+	results := make([]Object, len(untyped))
+	for index, each := range untyped {
+		results[index] = Object(each.(map[string]interface{}))
 	}
-	err = json.Unmarshal(body, &oi)
-	return oi, err
+	return results, nil
 }
 
-// ExtractNames is a function that takes a ListResult (of type *http.Response)
-// and returns the objects' names.
-func ExtractNames(lr ListResult) ([]string, error) {
-	var ons []string
-	defer lr.Body.Close()
-	body, err := ioutil.ReadAll(lr.Body)
-	if err != nil {
-		return ons, err
+// ExtractNames is a function that takes a page of objects and returns only their names.
+func ExtractNames(page pagination.Page) ([]string, error) {
+	casted := page.(ListResult)
+	ct := casted.Header.Get("Content-Type")
+
+	switch {
+	case strings.HasPrefix(ct, "application/json"):
+		parsed, err := ExtractInfo(page)
+		if err != nil {
+			return nil, err
+		}
+
+		names := make([]string, 0, len(parsed))
+		for _, object := range parsed {
+			names = append(names, object["name"].(string))
+		}
+		return names, nil
+	case strings.HasPrefix(ct, "text/plain"):
+		names := make([]string, 0, 50)
+
+		body := string(page.(ListResult).Body.([]uint8))
+		for _, name := range strings.Split(body, "\n") {
+			if len(name) > 0 {
+				names = append(names, name)
+			}
+		}
+
+		return names, nil
+	default:
+		return nil, fmt.Errorf("Cannot extract names from response with content-type: [%s]", ct)
 	}
-	jr := string(body)
-	ons = strings.Split(jr, "\n")
-	ons = ons[:len(ons)-1]
-	return ons, nil
 }
 
 // ExtractContent is a function that takes a DownloadResult (of type *http.Response)
