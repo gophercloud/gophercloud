@@ -58,7 +58,7 @@ func createMarkerPaged(t *testing.T) Pager {
 
 	createPage := func(r LastHTTPResponse) MarkerPage {
 		p := MarkerPageResult{MarkerPageBase{LastHTTPResponse: r}}
-		p.MarkerPageBase.Self = p
+		p.MarkerPageBase.Owner = p
 		return p
 	}
 

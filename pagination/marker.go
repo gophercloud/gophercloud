@@ -15,15 +15,15 @@ type MarkerPage interface {
 type MarkerPageBase struct {
 	LastHTTPResponse
 
-	// A reference to the embedding struct.
-	Self MarkerPage
+	// Owner is a reference to the embedding struct.
+	Owner MarkerPage
 }
 
 // NextPageURL generates the URL for the page of results after this one.
 func (current MarkerPageBase) NextPageURL() (string, error) {
 	currentURL := current.URL
 
-	mark, err := current.Self.LastMarker()
+	mark, err := current.Owner.LastMarker()
 	if err != nil {
 		return "", err
 	}
