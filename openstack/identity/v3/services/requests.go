@@ -60,7 +60,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 		return ServicePage{pagination.LinkedPageBase(r)}
 	}
 
-	return pagination.NewLinkedPager(client, u, createPage)
+	return pagination.NewPager(client, u, createPage)
 }
 
 // Get returns additional information about a service, given its ID.

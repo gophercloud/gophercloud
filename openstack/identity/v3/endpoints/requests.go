@@ -115,7 +115,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	}
 
 	u := getListURL(client) + utils.BuildQuery(q)
-	return pagination.NewLinkedPager(client, u, createPage)
+	return pagination.NewPager(client, u, createPage)
 }
 
 // Update changes an existing endpoint with new data.
