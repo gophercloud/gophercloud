@@ -3,7 +3,6 @@ package networks
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
@@ -18,24 +17,6 @@ func ServiceClient() *gophercloud.ServiceClient {
 			TokenID: TokenID,
 		},
 		Endpoint: th.Endpoint(),
-	}
-}
-
-func Equals(t *testing.T, actual interface{}, expected interface{}) {
-	if expected != actual {
-		t.Fatalf("Expected %#v but got %#v", expected, actual)
-	}
-}
-
-func DeepEquals(t *testing.T, actual, expected interface{}) {
-	if !reflect.DeepEqual(actual, expected) {
-		t.Fatalf("Expected %#v but got %#v", expected, actual)
-	}
-}
-
-func CheckErr(t *testing.T, e error) {
-	if e != nil {
-		t.Fatalf("An error occurred: %#v", e)
 	}
 }
 
@@ -70,11 +51,10 @@ func TestListAPIVersions(t *testing.T) {
 	c := ServiceClient()
 
 	res, err := APIVersions(c)
-	if err != nil {
-		t.Fatalf("Error listing API versions: %v", err)
-	}
+	th.AssertNoErr(err)
 
 	coll, err := gophercloud.AllPages(res)
+	th.AssertNoErr(err)
 
 	actual := ToAPIVersions(coll)
 
@@ -84,10 +64,7 @@ func TestListAPIVersions(t *testing.T) {
 			ID:     "v2.0",
 		},
 	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("Expected %#v, got %#v", expected, actual)
-	}
+	th.AssertDeepEquals(expected, actual)
 }
 
 func TestAPIInfo(t *testing.T) {
@@ -139,17 +116,13 @@ func TestAPIInfo(t *testing.T) {
 			`)
 	})
 
-	c := ServiceClient()
-
-	res, err := APIInfo(c, "v2.0")
-	if err != nil {
-		t.Fatalf("Error getting API info: %v", err)
-	}
+	res, err := APIInfo(ServiceClient(), "v2.0")
+	th.AssertNoErr(err)
 
 	coll, err := gophercloud.AllPages(res)
+	th.AssertNoErr(err)
 
 	actual := ToAPIResource(coll)
-
 	expected := []APIResource{
 		APIResource{
 			Name:       "subnet",
@@ -164,10 +137,7 @@ func TestAPIInfo(t *testing.T) {
 			Collection: "ports",
 		},
 	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("Expected %#v, got %#v", expected, actual)
-	}
+	th.AssertDeepEquals(expected, actual)
 }
 
 func TestListingExtensions(t *testing.T) {
@@ -198,16 +168,14 @@ func TestGettingExtension(t *testing.T) {
 }
 		`)
 
-		c := ServiceClient()
+		ext, err := GetExtension(ServiceClient(), "agent")
+		th.AssertNoErr(t, err)
 
-		ext, err := GetExtension(c, "agent")
-		CheckErr(t, err)
-
-		Equals(t, ext.Updated, "2013-02-03T10:00:00-00:00")
-		Equals(t, ext.Name, "agent")
-		Equals(t, ext.Namespace, "http://docs.openstack.org/ext/agent/api/v2.0")
-		Equals(t, ext.Alias, "agent")
-		Equals(t, ext.Description, "The agent management extension.")
+		th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")
+		th.AssertEquals(t, ext.Name, "agent")
+		th.AssertEquals(t, ext.Namespace, "http://docs.openstack.org/ext/agent/api/v2.0")
+		th.AssertEquals(t, ext.Alias, "agent")
+		th.AssertEquals(t, ext.Description, "The agent management extension.")
 	})
 }
 
@@ -243,24 +211,20 @@ func TestGettingNetwork(t *testing.T) {
 			`)
 	})
 
-	c := ServiceClient()
+	n, err := Get(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertNoErr(err)
 
-	n, err := Get(c, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	if err != nil {
-		t.Fatalf("Unexpected error: %#v", err)
-	}
-
-	Equals(t, n.Status, "ACTIVE")
-	DeepEquals(t, n.Subnets, []interface{}{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
-	Equals(t, n.Name, "private-network")
-	Equals(t, n.ProviderPhysicalNetwork, "")
-	Equals(t, n.ProviderNetworkType, "local")
-	Equals(t, n.ProviderSegmentationID, 0)
-	Equals(t, n.AdminStateUp, true)
-	Equals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	Equals(t, n.RouterExternal, true)
-	Equals(t, n.Shared, true)
-	Equals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertDeepEquals(t, n.Subnets, []interface{}{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
+	th.AssertEquals(t, n.Name, "private-network")
+	th.AssertEquals(t, n.ProviderPhysicalNetwork, "")
+	th.AssertEquals(t, n.ProviderNetworkType, "local")
+	th.AssertEquals(t, n.ProviderSegmentationID, 0)
+	th.AssertEquals(t, n.AdminStateUp, true)
+	th.AssertEquals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
+	th.AssertEquals(t, n.RouterExternal, true)
+	th.AssertEquals(t, n.Shared, true)
+	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
 
 func TestCreateNetwork(t *testing.T) {
@@ -313,24 +277,21 @@ func TestCreateNetwork(t *testing.T) {
 	})
 
 	options := NetworkOpts{Name: "sample_network", AdminStateUp: true}
-
 	n, err := Create(ServiceClient(), options)
-	if err != nil {
-		t.Fatalf("Unexpected error: %#v", err)
-	}
+	th.AssertNoErr(err)
 
-	Equals(t, n.Status, "ACTIVE")
-	DeepEquals(t, n.Subnets, []interface{}{})
-	Equals(t, n.Name, "net1")
-	Equals(t, n.AdminStateUp, true)
-	Equals(t, n.TenantID, "9bacb3c5d39d41a79512987f338cf177")
-	DeepEquals(t, n.Segments, []NetworkProvider{
+	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertDeepEquals(t, n.Subnets, []interface{}{})
+	th.AssertEquals(t, n.Name, "net1")
+	th.AssertEquals(t, n.AdminStateUp, true)
+	th.AssertEquals(t, n.TenantID, "9bacb3c5d39d41a79512987f338cf177")
+	th.AssertDeepEquals(t, n.Segments, []NetworkProvider{
 		{ProviderSegmentationID: 2, ProviderPhysicalNetwork: "8bab8453-1bc9-45af-8c70-f83aa9b50453", ProviderNetworkType: "vlan"},
 		{ProviderSegmentationID: 0, ProviderPhysicalNetwork: "8bab8453-1bc9-45af-8c70-f83aa9b50453", ProviderNetworkType: "stt"},
 	})
-	Equals(t, n.Shared, false)
-	Equals(t, n.PortSecurityEnabled, true)
-	Equals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	th.AssertEquals(t, n.Shared, false)
+	th.AssertEquals(t, n.PortSecurityEnabled, true)
+	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 }
 
 func TestCreateNetworkWithOptionalFields(t *testing.T) {
@@ -358,11 +319,8 @@ func TestCreateNetworkWithOptionalFields(t *testing.T) {
 
 	shared := true
 	options := NetworkOpts{Name: "sample_network", AdminStateUp: true, Shared: &shared, TenantID: "12345"}
-
 	_, err := Create(ServiceClient(), options)
-	if err != nil {
-		t.Fatalf("Unexpected error: %#v", err)
-	}
+	th.AssertNoErr(err)
 }
 
 func TestUpdateNetwork(t *testing.T) {
@@ -408,16 +366,13 @@ func TestUpdateNetwork(t *testing.T) {
 
 	shared := true
 	options := NetworkOpts{Name: "new_network_name", AdminStateUp: false, Shared: &shared}
-
 	n, err := Update(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
-	if err != nil {
-		t.Fatalf("Unexpected error: %#v", err)
-	}
+	th.AssertNoErr(err)
 
-	Equals(t, n.Name, "new_network_name")
-	Equals(t, n.AdminStateUp, false)
-	Equals(t, n.Shared, true)
-	Equals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	th.AssertEquals(t, n.Name, "new_network_name")
+	th.AssertEquals(t, n.AdminStateUp, false)
+	th.AssertEquals(t, n.Shared, true)
+	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 }
 
 func TestDeleteNetwork(t *testing.T) {
@@ -431,7 +386,5 @@ func TestDeleteNetwork(t *testing.T) {
 	})
 
 	err := Delete(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
-	if err != nil {
-		t.Fatalf("Unexpected error: %#v", err)
-	}
+	th.AssertNoErr(err)
 }

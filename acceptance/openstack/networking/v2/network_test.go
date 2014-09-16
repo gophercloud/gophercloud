@@ -4,13 +4,13 @@ package v2
 
 import (
 	"os"
-	"reflect"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 var (
@@ -36,10 +36,7 @@ func NewClient() (*gophercloud.ServiceClient, error) {
 
 func Setup(t *testing.T) {
 	client, err := NewClient()
-	if err != nil {
-		t.Fatalf("Error creating client: %s", err)
-	}
-
+	th.AssertNoErr(err)
 	Client = client
 }
 
@@ -47,26 +44,12 @@ func Teardown() {
 	Client = nil
 }
 
-func Equals(t *testing.T, actual interface{}, expected interface{}) {
-	if expected != actual {
-		t.Fatalf("Expected %#v but got %#v", expected, actual)
-	}
-}
-
-func DeepEquals(t *testing.T, actual, expected interface{}) {
-	if !reflect.DeepEqual(actual, expected) {
-		t.Fatalf("Expected %#v but got %#v", expected, actual)
-	}
-}
-
 func TestListAPIVersions(t *testing.T) {
 	Setup(t)
 	defer Teardown()
 
 	res, err := networks.APIVersions(Client)
-	if err != nil {
-		t.Fatalf("Failed to list API versions: %v", err)
-	}
+	th.AssertNoErr(err)
 
 	err = gophercloud.EachPage(res, func(page gophercloud.Collection) bool {
 		t.Logf("--- Page ---")
@@ -75,9 +58,7 @@ func TestListAPIVersions(t *testing.T) {
 		}
 		return true
 	})
-	if err != nil {
-		t.Fatalf("Unexpected error while iterating API versions: %v", err)
-	}
+	th.AssertNoErr(err)
 }
 
 func TestGetApiInfo(t *testing.T) {
@@ -85,9 +66,7 @@ func TestGetApiInfo(t *testing.T) {
 	defer Teardown()
 
 	res, err := networks.APIInfo(Client, "v2.0")
-	if err != nil {
-		t.Fatalf("Failed to list API info for v2: %v", err)
-	}
+	th.AssertNoErr(err)
 
 	err = gophercloud.EachPage(res, func(page gophercloud.Collection) bool {
 		t.Logf("--- Page ---")
@@ -96,9 +75,7 @@ func TestGetApiInfo(t *testing.T) {
 		}
 		return true
 	})
-	if err != nil {
-		t.Fatalf("Unexpected error while iteratoring API resources: %v", err)
-	}
+	th.AssertNoErr(err)
 }
 
 func TestListExts(t *testing.T) {
@@ -110,15 +87,13 @@ func TestGetExt(t *testing.T) {
 	defer Teardown()
 
 	ext, err := networks.GetExtension(Client, "service-type")
-	if err != nil {
-		t.Fatalf("Unexpected error when getting extension: %#v", err)
-	}
+	th.AssertNoErr(err)
 
-	Equals(t, ext.Updated, "2013-01-20T00:00:00-00:00")
-	Equals(t, ext.Name, "Neutron Service Type Management")
-	Equals(t, ext.Namespace, "http://docs.openstack.org/ext/neutron/service-type/api/v1.0")
-	Equals(t, ext.Alias, "service-type")
-	Equals(t, ext.Description, "API for retrieving service providers for Neutron advanced services")
+	th.AssertEquals(t, ext.Updated, "2013-01-20T00:00:00-00:00")
+	th.AssertEquals(t, ext.Name, "Neutron Service Type Management")
+	th.AssertEquals(t, ext.Namespace, "http://docs.openstack.org/ext/neutron/service-type/api/v1.0")
+	th.AssertEquals(t, ext.Alias, "service-type")
+	th.AssertEquals(t, ext.Description, "API for retrieving service providers for Neutron advanced services")
 }
 
 func TestListNetworks(t *testing.T) {
@@ -131,52 +106,36 @@ func TestNetworkCRUDOperations(t *testing.T) {
 
 	// Create a network
 	res, err := networks.Create(Client, networks.NetworkOpts{Name: "sample_network", AdminStateUp: true})
-	if err != nil {
-		t.Fatalf("Unexpected error when creating network: %#v", err)
-	}
-
-	Equals(t, res.Name, "sample_network")
-	Equals(t, res.AdminStateUp, true)
-
+	th.AssertNoErr(err)
+	th.AssertEquals(t, res.Name, "sample_network")
+	th.AssertEquals(t, res.AdminStateUp, true)
 	networkID := res.ID
 
 	// Get a network
 	if networkID == "" {
 		t.Fatalf("In order to retrieve a network, the NetworkID must be set")
 	}
-
-	Setup(t)
-	defer Teardown()
-
 	n, err := networks.Get(Client, networkID)
-	if err != nil {
-		t.Fatalf("Unexpected error: %#v", err)
-	}
-
-	Equals(t, n.Status, "ACTIVE")
-	DeepEquals(t, n.Subnets, []interface{}{})
-	Equals(t, n.Name, "sample_network")
-	Equals(t, n.ProviderPhysicalNetwork, "")
-	Equals(t, n.ProviderNetworkType, "local")
-	Equals(t, n.ProviderSegmentationID, 0f)
-	Equals(t, n.AdminStateUp, true)
-	Equals(t, n.RouterExternal, false)
-	Equals(t, n.Shared, false)
-	Equals(t, n.ID, networkID)
+	th.AssertNoErr(err)
+	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertDeepEquals(t, n.Subnets, []interface{}{})
+	th.AssertEquals(t, n.Name, "sample_network")
+	th.AssertEquals(t, n.ProviderPhysicalNetwork, "")
+	th.AssertEquals(t, n.ProviderNetworkType, "local")
+	th.AssertEquals(t, n.ProviderSegmentationID, 0)
+	th.AssertEquals(t, n.AdminStateUp, true)
+	th.AssertEquals(t, n.RouterExternal, false)
+	th.AssertEquals(t, n.Shared, false)
+	th.AssertEquals(t, n.ID, networkID)
 
 	// Update network
 	n, err = networks.Update(Client, networkID, networks.NetworkOpts{Name: "new_network_name"})
-	if err != nil {
-		t.Fatalf("Unexpected error: %#v", err)
-	}
-
-	Equals(t, n.Name, "new_network_name")
+	th.AssertNoErr(err)
+	th.AssertEquals(t, n.Name, "new_network_name")
 
 	// Delete network
 	err := networks.Delete(Client, networkID)
-	if err != nil {
-		t.Fatalf("Unexpected error: %#v", err)
-	}
+	th.AssertNoErr(err)
 }
 
 func TestCreateMultipleNetworks(t *testing.T) {
