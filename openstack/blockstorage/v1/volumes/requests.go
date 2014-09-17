@@ -3,22 +3,21 @@ package volumes
 import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/utils"
 )
 
 type VolumeOpts struct {
-	Availability string
-	Description  string
-	ImageID      string
-	Metadata     map[string]string
-	Name         string
-	Size         int
-	SnapshotID   string
-	Type         string
+	Availability                     string
+	Description                      string
+	Metadata                         map[string]string
+	Name                             string
+	Size                             int
+	SnapshotID, SourceVolID, ImageID string
+	VolumeType                       string
 }
 
-func Create(client *gophercloud.ServiceClient, opts VolumeOpts) (Volume, error) {
+func Create(client *gophercloud.ServiceClient, opts VolumeOpts) (*Volume, error) {
 
 	type volume struct {
 		Availability *string           `json:"availability_zone,omitempty"`
@@ -55,9 +54,9 @@ func Create(client *gophercloud.ServiceClient, opts VolumeOpts) (Volume, error) 
 
 	var respBody response
 
-	_, err = perigee.Request("POST", volumesURL(client), perigee.Options{
-		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{201},
+	_, err := perigee.Request("POST", volumesURL(client), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{200, 201},
 		ReqBody:     &reqBody,
 		Results:     &respBody,
 	})
@@ -69,30 +68,15 @@ func Create(client *gophercloud.ServiceClient, opts VolumeOpts) (Volume, error) 
 }
 
 func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	var url string
-
-	query := utils.BuildQuery(opts.Params)
-
-	if !opts.Full {
-		url = c.volumesURL()
-	} else {
-		url = c.volumeURL("detail")
-	}
 
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		p := ListResult{
-			pagination.MarkerPageBase{
-				LastHTTPResponse: r,
-			},
-		}
-		p.MarkerPageBase.Owner = p
-		return p
+		return ListResult{pagination.SinglePageBase(r)}
 	}
 
-	pager := pagination.NewPager(client, url, createPage)
-	return pager
+	return pagination.NewPager(client, volumesURL(client), createPage)
 }
 
+/*
 func Get(c *blockstorage.Client, opts GetOpts) (Volume, error) {
 	var v Volume
 	h, err := c.GetHeaders()
@@ -120,3 +104,4 @@ func Delete(c *blockstorage.Client, opts DeleteOpts) error {
 	})
 	return err
 }
+*/

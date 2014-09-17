@@ -22,28 +22,36 @@ type Volume struct {
 	Size             int
 }
 
-type VolumePage struct {
-	pagination.LinkedPageBase
+type ListOpts struct {
+	// AllTenants is an admin-only option. Set it to true to see a tenant volumes.
+	AllTenants bool
+	// List only volumes that contain Metadata.
+	Metadata map[string]string
+	// List only volumes that have Name as the display name.
+	Name string
+	// List only volumes that have a status of Status.
+	Status string
 }
 
-func (p VolumPage) IsEmpty() (bool, error) {
-	volumes, err := ExtractVolumes(p)
+// ListResult is a *http.Response that is returned from a call to the List function.
+type ListResult struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty returns true if a ListResult contains no container names.
+func (r ListResult) IsEmpty() (bool, error) {
+	volumes, err := ExtractVolumes(r)
 	if err != nil {
 		return true, err
 	}
 	return len(volumes) == 0, nil
 }
 
-func ExtractVolumes(page pagination.page) ([]Volume, error) {
+func ExtractVolumes(page pagination.Page) ([]Volume, error) {
 	var response struct {
 		Volumes []Volume `json:"volumes"`
 	}
 
-	err := mapstructure.Decode(page.(VolumePage).Body, &response)
+	err := mapstructure.Decode(page.(ListResult).Body, &response)
 	return response.Volumes, err
 }
-
-type CreateOpts map[string]interface{}
-type ListOpts map[string]bool
-type GetOpts map[string]string
-type DeleteOpts map[string]string
