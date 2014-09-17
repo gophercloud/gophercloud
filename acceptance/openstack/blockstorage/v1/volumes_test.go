@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
@@ -39,25 +40,23 @@ func TestVolumes(t *testing.T) {
 	}
 
 	for i := 0; i < numVols; i++ {
-		_, err = volumes.Create(client, volumes.VolumeOpts{
+		cv, err := volumes.Create(client, volumes.VolumeOpts{
 			Size: 1,
 			Name: "gophercloud-test-volume-" + strconv.Itoa(i),
 		})
 		if err != nil {
 			t.Error(err)
 			return
-		} /*
-			defer func() {
-				time.Sleep(10000 * time.Millisecond)
-				err = volumes.Delete(client, volumes.DeleteOpts{
-					"id": cv.Id,
-				})
-				if err != nil {
-					t.Error(err)
-					return
-				}
-			}()
-		*/
+		}
+		defer func() {
+			time.Sleep(10000 * time.Millisecond)
+			err = volumes.Delete(client, cv.ID)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+		}()
+
 	}
 
 	pager := volumes.List(client, volumes.ListOpts{})

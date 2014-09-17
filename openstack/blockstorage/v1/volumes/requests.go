@@ -92,16 +92,11 @@ func Get(c *blockstorage.Client, opts GetOpts) (Volume, error) {
 	})
 	return v, err
 }
+*/
 
-func Delete(c *blockstorage.Client, opts DeleteOpts) error {
-	h, err := c.GetHeaders()
-	if err != nil {
-		return err
-	}
-	url := c.GetVolumeURL(opts["id"])
-	_, err = perigee.Request("DELETE", url, perigee.Options{
-		MoreHeaders: h,
+func Delete(client *gophercloud.ServiceClient, id string) error {
+	_, err := perigee.Request("DELETE", volumeURL(client, id), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
 	return err
 }
-*/

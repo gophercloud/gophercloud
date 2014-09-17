@@ -18,7 +18,7 @@ type Volume struct {
 	SnapshotID       string
 	SourceVolID      string
 	Metadata         map[string]string
-	Id               string
+	ID               string
 	Size             int
 }
 
