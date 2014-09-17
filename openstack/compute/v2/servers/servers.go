@@ -65,9 +65,12 @@ type Server struct {
 // ExtractServers interprets the results of a single page from a List() call, producing a slice of Server entities.
 func ExtractServers(page pagination.Page) ([]Server, error) {
 	casted := page.(ListPage).Body
-	var servers []Server
-	err := mapstructure.Decode(servers, casted)
-	return servers, err
+
+	var response struct {
+		Servers []Server `mapstructure:"servers"`
+	}
+	err := mapstructure.Decode(casted, &response)
+	return response.Servers, err
 }
 
 // ExtractServer interprets the result of a call expected to return data on a single server.

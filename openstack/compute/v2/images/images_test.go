@@ -8,7 +8,7 @@ import (
 const (
 	// This example was taken from: http://docs.openstack.org/api/openstack-compute/2/content/Rebuild_Server-d1e3538.html
 
-	simpleImageJson = `{
+	simpleImageJSON = `{
 		"id": "52415800-8b69-11e0-9b19-734f6f006e54",
 		"name": "CentOS 5.2",
 		"links": [{
@@ -21,14 +21,14 @@ const (
 	}`
 )
 
-func TestGetImage(t *testing.T) {
+func TestExtractImage(t *testing.T) {
 	var simpleImageMap map[string]interface{}
-	err := json.Unmarshal([]byte(simpleImageJson), &simpleImageMap)
+	err := json.Unmarshal([]byte(simpleImageJSON), &simpleImageMap)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	image, err := GetImage(simpleImageMap)
+	image, err := ExtractImage(simpleImageMap)
 	if err != nil {
 		t.Fatal(err)
 	}
