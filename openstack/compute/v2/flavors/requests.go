@@ -6,13 +6,13 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// ListResult contains a single page of the response from a List call.
-type ListResult struct {
+// ListPage contains a single page of the response from a List call.
+type ListPage struct {
 	pagination.MarkerPageBase
 }
 
 // IsEmpty determines if a page contains any results.
-func (p ListResult) IsEmpty() (bool, error) {
+func (p ListPage) IsEmpty() (bool, error) {
 	flavors, err := ExtractFlavors(p)
 	if err != nil {
 		return true, err
@@ -21,7 +21,7 @@ func (p ListResult) IsEmpty() (bool, error) {
 }
 
 // LastMarker returns the ID field of the final result from this page, to be used as the marker for the next.
-func (p ListResult) LastMarker() (string, error) {
+func (p ListPage) LastMarker() (string, error) {
 	flavors, err := ExtractFlavors(p)
 	if err != nil {
 		return "", err
@@ -59,7 +59,7 @@ type ListFilterOptions struct {
 // See ListFilterOptions for more details.
 func List(client *gophercloud.ServiceClient, lfo ListFilterOptions) pagination.Pager {
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		p := ListResult{pagination.MarkerPageBase{LastHTTPResponse: r}}
+		p := ListPage{pagination.MarkerPageBase{LastHTTPResponse: r}}
 		p.MarkerPageBase.Owner = p
 		return p
 	}

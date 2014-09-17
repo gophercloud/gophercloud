@@ -8,15 +8,15 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// ListResult abstracts the raw results of making a List() request against the API.
+// ListPage abstracts the raw results of making a List() request against the API.
 // As OpenStack extensions may freely alter the response bodies of structures returned to the client, you may only safely access the
 // data provided through the ExtractServers call.
-type ListResult struct {
+type ListPage struct {
 	pagination.MarkerPageBase
 }
 
 // IsEmpty returns true if a page contains no Server results.
-func (page ListResult) IsEmpty() (bool, error) {
+func (page ListPage) IsEmpty() (bool, error) {
 	servers, err := ExtractServers(page)
 	if err != nil {
 		return true, err
@@ -25,7 +25,7 @@ func (page ListResult) IsEmpty() (bool, error) {
 }
 
 // LastMarker returns the ID of the final server on the current page.
-func (page ListResult) LastMarker() (string, error) {
+func (page ListPage) LastMarker() (string, error) {
 	servers, err := ExtractServers(page)
 	if err != nil {
 		return "", err
@@ -44,7 +44,7 @@ type ServerResult map[string]interface{}
 // List makes a request against the API to list servers accessible to you.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		p := ListResult{pagination.MarkerPageBase{LastHTTPResponse: r}}
+		p := ListPage{pagination.MarkerPageBase{LastHTTPResponse: r}}
 		p.MarkerPageBase.Owner = p
 		return p
 	}

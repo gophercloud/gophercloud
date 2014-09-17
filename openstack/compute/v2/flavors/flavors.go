@@ -43,7 +43,7 @@ func defaulter(from, to reflect.Kind, v interface{}) (interface{}, error) {
 
 // ExtractFlavors provides access to the list of flavors in a page acquired from the List operation.
 func ExtractFlavors(page pagination.Page) ([]Flavor, error) {
-	casted := page.(ListResult).Body
+	casted := page.(ListPage).Body
 	var flavors []Flavor
 
 	cfg := &mapstructure.DecoderConfig{

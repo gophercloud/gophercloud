@@ -30,7 +30,7 @@ type Image struct {
 
 // ExtractImages converts a page of List results into a slice of usable Image structs.
 func ExtractImages(page pagination.Page) ([]Image, error) {
-	casted := page.(ListResults).Body
+	casted := page.(ListPage).Body
 	var results []Image
 
 	err := mapstructure.Decode(results, casted)
