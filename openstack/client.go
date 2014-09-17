@@ -293,3 +293,13 @@ func NewStorageV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 	}
 	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
 }
+
+// NewComputeV2 creates a ServiceClient that may be used with the v2 compute package.
+func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("compute")
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+}
