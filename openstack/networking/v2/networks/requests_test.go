@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
@@ -72,7 +73,7 @@ func TestList(t *testing.T) {
 	client := ServiceClient()
 	count := 0
 
-	List(client, ListOpts{}).EachPage(func(page gophercloud.Page) (bool, error) {
+	List(client, ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractNetworks(page)
 		if err != nil {

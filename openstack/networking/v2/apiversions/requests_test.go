@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
@@ -50,7 +51,7 @@ func TestListVersions(t *testing.T) {
 
 	count := 0
 
-	ListVersions(ServiceClient()).EachPage(func(page gophercloud.Page) (bool, error) {
+	ListVersions(ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractAPIVersions(page)
 		if err != nil {
@@ -126,7 +127,7 @@ func TestAPIInfo(t *testing.T) {
 
 	count := 0
 
-	ListVersionResources(ServiceClient(), "v2.0").EachPage(func(page gophercloud.Page) (bool, error) {
+	ListVersionResources(ServiceClient(), "v2.0").EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractVersionResources(page)
 		if err != nil {

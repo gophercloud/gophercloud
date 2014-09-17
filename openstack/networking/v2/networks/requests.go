@@ -6,6 +6,7 @@ import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 type ListOpts struct {
@@ -17,6 +18,7 @@ type ListOpts struct {
 	ID           string
 	Page         int
 	PerPage      int
+	Limit        int
 }
 
 type NetworkOpts struct {
@@ -36,7 +38,7 @@ func ptrToStr(val *bool) string {
 	}
 }
 
-func List(c *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
+func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	// Build query parameters
 	q := make(map[string]string)
 	if opts.Status != "" {
@@ -63,9 +65,14 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) gophercloud.Pager {
 	if opts.PerPage != 0 {
 		q["per_page"] = strconv.Itoa(opts.PerPage)
 	}
+	if opts.Limit != 0 {
+		q["limit"] = strconv.Itoa(opts.Limit)
+	}
 
 	u := ListURL(c) + utils.BuildQuery(q)
-	return gophercloud.NewLinkedPager(c, u)
+	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
+		return NetworkPage{pagination.LinkedPageBase(r)}
+	})
 }
 
 func Get(c *gophercloud.ServiceClient, id string) (*Network, error) {

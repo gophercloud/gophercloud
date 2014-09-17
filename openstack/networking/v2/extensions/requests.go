@@ -3,6 +3,7 @@ package extensions
 import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 func Get(c *gophercloud.ServiceClient, name string) (*Extension, error) {
@@ -21,6 +22,8 @@ func Get(c *gophercloud.ServiceClient, name string) (*Extension, error) {
 	return &ext, nil
 }
 
-func List(c *gophercloud.ServiceClient) gophercloud.Pager {
-	return gophercloud.NewLinkedPager(c, ListExtensionURL(c))
+func List(c *gophercloud.ServiceClient) pagination.Pager {
+	return pagination.NewPager(c, ListExtensionURL(c), func(r pagination.LastHTTPResponse) pagination.Page {
+		return ExtensionPage{pagination.SinglePageBase(r)}
+	})
 }

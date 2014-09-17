@@ -2,7 +2,7 @@ package extensions
 
 import (
 	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 type Extension struct {
@@ -14,12 +14,24 @@ type Extension struct {
 	Description string        `json:"description"`
 }
 
-func ExtractExtensions(page gophercloud.Page) ([]Extension, error) {
+type ExtensionPage struct {
+	pagination.SinglePageBase
+}
+
+func (r ExtensionPage) IsEmpty() (bool, error) {
+	is, err := ExtractExtensions(r)
+	if err != nil {
+		return true, err
+	}
+	return len(is) == 0, nil
+}
+
+func ExtractExtensions(page pagination.Page) ([]Extension, error) {
 	var resp struct {
 		Extensions []Extension `mapstructure:"extensions"`
 	}
 
-	err := mapstructure.Decode(page.(gophercloud.LinkedPage).Body, &resp)
+	err := mapstructure.Decode(page.(ExtensionPage).Body, &resp)
 	if err != nil {
 		return nil, err
 	}

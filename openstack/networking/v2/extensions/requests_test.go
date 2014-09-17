@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
@@ -48,7 +49,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	List(ServiceClient()).EachPage(func(page gophercloud.Page) (bool, error) {
+	List(ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractExtensions(page)
 		if err != nil {

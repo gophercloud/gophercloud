@@ -2,7 +2,7 @@ package networks
 
 import (
 	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 type NetworkProvider struct {
@@ -31,12 +31,52 @@ type NetworkCreateResult struct {
 	PortSecurityEnabled bool              `json:"port_security_enabled"`
 }
 
-func ExtractNetworks(page gophercloud.Page) ([]Network, error) {
+type NetworkPage struct {
+	pagination.LinkedPageBase
+}
+
+func (current NetworkPage) NextPageURL() (string, error) {
+	type link struct {
+		Href string `mapstructure:"href"`
+		Rel  string `mapstructure:"rel"`
+	}
+	type resp struct {
+		Links []link `mapstructure:"networks_links"`
+	}
+
+	var r resp
+	err := mapstructure.Decode(current.Body, &r)
+	if err != nil {
+		return "", err
+	}
+
+	var url string
+	for _, l := range r.Links {
+		if l.Rel == "next" {
+			url = l.Href
+		}
+	}
+	if url == "" {
+		return "", nil
+	}
+
+	return url, nil
+}
+
+func (r NetworkPage) IsEmpty() (bool, error) {
+	is, err := ExtractNetworks(r)
+	if err != nil {
+		return true, nil
+	}
+	return len(is) == 0, nil
+}
+
+func ExtractNetworks(page pagination.Page) ([]Network, error) {
 	var resp struct {
 		Networks []Network `mapstructure:"networks" json:"networks"`
 	}
 
-	err := mapstructure.Decode(page.(gophercloud.LinkedPage).Body, &resp)
+	err := mapstructure.Decode(page.(NetworkPage).Body, &resp)
 	if err != nil {
 		return nil, err
 	}

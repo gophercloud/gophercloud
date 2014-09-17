@@ -11,6 +11,7 @@ import (
 	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
@@ -47,8 +48,8 @@ func TestListNetworks(t *testing.T) {
 	Setup(t)
 	defer Teardown()
 
-	pager := networks.List(Client, networks.ListOpts{})
-	err := pager.EachPage(func(page gophercloud.Page) (bool, error) {
+	pager := networks.List(Client, networks.ListOpts{Limit: 2})
+	err := pager.EachPage(func(page pagination.Page) (bool, error) {
 		t.Logf("--- Page ---")
 
 		networks, err := networks.ExtractNetworks(page)

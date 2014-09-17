@@ -5,8 +5,8 @@ package v2
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/extensions"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
@@ -15,7 +15,7 @@ func TestListExts(t *testing.T) {
 	defer Teardown()
 
 	pager := extensions.List(Client)
-	err := pager.EachPage(func(page gophercloud.Page) (bool, error) {
+	err := pager.EachPage(func(page pagination.Page) (bool, error) {
 		t.Logf("--- Page ---")
 
 		exts, err := extensions.ExtractExtensions(page)
