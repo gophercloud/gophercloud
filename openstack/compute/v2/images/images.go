@@ -36,3 +36,10 @@ func ExtractImages(page pagination.Page) ([]Image, error) {
 	err := mapstructure.Decode(results, casted)
 	return results, err
 }
+
+// ExtractImage converts the result of a Get call into a more usable Image structure.
+func ExtractImage(result GetResult) (Image, error) {
+	var decoded Image
+	err := mapstructure.Decode(result, &decoded)
+	return decoded, err
+}

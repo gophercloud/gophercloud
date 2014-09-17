@@ -75,8 +75,8 @@ func Delete(client *gophercloud.ServiceClient, id string) error {
 	return err
 }
 
-// GetDetail requests details on a single server, by ID.
-func GetDetail(client *gophercloud.ServiceClient, id string) (ServerResult, error) {
+// Get requests details on a single server, by ID.
+func Get(client *gophercloud.ServiceClient, id string) (ServerResult, error) {
 	var sr ServerResult
 	_, err := perigee.Request("GET", getServerURL(client, id), perigee.Options{
 		Results:     &sr,
