@@ -1,27 +1,30 @@
 package volumes
 
 import (
+	"fmt"
+
 	"github.com/rackspace/gophercloud/pagination"
 
 	"github.com/mitchellh/mapstructure"
 )
 
 type Volume struct {
-	Status           string
-	Name             string
-	Attachments      []string
-	AvailabilityZone string
-	Bootable         bool
-	CreatedAt        string
-	Description      string
-	VolumeType       string
-	SnapshotID       string
-	SourceVolID      string
-	Metadata         map[string]string
-	ID               string
-	Size             int
+	Status           string            `mapstructure:"status"`
+	Name             string            `mapstructure:"display_name"`
+	Attachments      []string          `mapstructure:"attachments"`
+	AvailabilityZone string            `mapstructure:"availability_zone"`
+	Bootable         string            `mapstructure:"bootable"`
+	CreatedAt        string            `mapstructure:"created_at"`
+	Description      string            `mapstructure:"display_discription"`
+	VolumeType       string            `mapstructure:"volume_type"`
+	SnapshotID       string            `mapstructure:"snapshot_id"`
+	SourceVolID      string            `mapstructure:"source_volid"`
+	Metadata         map[string]string `mapstructure:"metadata"`
+	ID               string            `mapstructure:"id"`
+	Size             int               `mapstructure:"size"`
 }
 
+// ListOpts holds options for listing volumes. It is passed to the volumes.List function.
 type ListOpts struct {
 	// AllTenants is an admin-only option. Set it to true to see a tenant volumes.
 	AllTenants bool
@@ -47,6 +50,7 @@ func (r ListResult) IsEmpty() (bool, error) {
 	return len(volumes) == 0, nil
 }
 
+// ExtractVolumes extracts and returns the Volumes from a 'List' request.
 func ExtractVolumes(page pagination.Page) ([]Volume, error) {
 	var response struct {
 		Volumes []Volume `json:"volumes"`
@@ -54,4 +58,19 @@ func ExtractVolumes(page pagination.Page) ([]Volume, error) {
 
 	err := mapstructure.Decode(page.(ListResult).Body, &response)
 	return response.Volumes, err
+}
+
+type GetResult map[string]interface{}
+
+// ExtractVolume extracts and returns the Volume from a 'Get' request.
+func ExtractVolume(gr GetResult) (*Volume, error) {
+	var response struct {
+		Volume *Volume `json:"volume"`
+	}
+
+	err := mapstructure.Decode(gr, &response)
+	if err != nil {
+		return nil, fmt.Errorf("volumes: Error decoding volumes.GetResult: %v", err)
+	}
+	return response.Volume, nil
 }

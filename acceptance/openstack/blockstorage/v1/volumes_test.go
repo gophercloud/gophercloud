@@ -3,6 +3,7 @@
 package v1
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"testing"
@@ -39,8 +40,9 @@ func TestVolumes(t *testing.T) {
 		t.Fatalf("Failed to create Block Storage v1 client: %v", err)
 	}
 
+	var cv *volumes.Volume
 	for i := 0; i < numVols; i++ {
-		cv, err := volumes.Create(client, volumes.VolumeOpts{
+		cv, err = volumes.Create(client, volumes.VolumeOpts{
 			Size: 1,
 			Name: "gophercloud-test-volume-" + strconv.Itoa(i),
 		})
@@ -58,6 +60,18 @@ func TestVolumes(t *testing.T) {
 		}()
 
 	}
+
+	gr, err := volumes.Get(client, cv.ID)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	v, err := volumes.ExtractVolume(gr)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Printf("Got volume: %+v\n", v)
 
 	pager := volumes.List(client, volumes.ListOpts{})
 	if err != nil {

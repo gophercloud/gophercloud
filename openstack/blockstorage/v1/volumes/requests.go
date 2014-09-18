@@ -76,23 +76,14 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	return pagination.NewPager(client, volumesURL(client), createPage)
 }
 
-/*
-func Get(c *blockstorage.Client, opts GetOpts) (Volume, error) {
-	var v Volume
-	h, err := c.GetHeaders()
-	if err != nil {
-		return v, err
-	}
-	url := c.GetVolumeURL(opts["id"])
-	_, err = perigee.Request("GET", url, perigee.Options{
-		Results: &struct {
-			Volume *Volume `json:"volume"`
-		}{&v},
-		MoreHeaders: h,
+func Get(client *gophercloud.ServiceClient, id string) (GetResult, error) {
+	var gr GetResult
+	_, err := perigee.Request("GET", volumeURL(client, id), perigee.Options{
+		Results:     &gr,
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
-	return v, err
+	return gr, err
 }
-*/
 
 func Delete(client *gophercloud.ServiceClient, id string) error {
 	_, err := perigee.Request("DELETE", volumeURL(client, id), perigee.Options{
