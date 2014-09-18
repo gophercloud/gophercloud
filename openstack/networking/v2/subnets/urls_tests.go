@@ -30,3 +30,15 @@ func TestCreateURL(t *testing.T) {
 	expected := Endpoint + "v2.0/subnets"
 	th.AssertEquals(t, expected, actual)
 }
+
+func TestUpdateURL(t *testing.T) {
+	actual := UpdateURL(EndpointClient(), "foo")
+	expected := Endpoint + "v2.0/subnets/foo"
+	th.AssertEquals(t, expected, actual)
+}
+
+func TestDeleteURL(t *testing.T) {
+	actual := DeleteURL(EndpointClient(), "foo")
+	expected := Endpoint + "v2.0/subnets/foo"
+	th.AssertEquals(t, expected, actual)
+}

@@ -258,3 +258,78 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, s.CIDR, "192.168.199.0/24")
 	th.AssertEquals(t, s.ID, "3b80198d-4f7b-4f77-9ef5-774d54e17126")
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/subnets/08eae331-0402-425a-923c-34f7cfe39c1b", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "subnet": {
+        "name": "my_new_subnet"
+    }
+}
+		`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, `
+{
+    "subnet": {
+        "name": "my_new_subnet",
+        "enable_dhcp": true,
+        "network_id": "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
+        "tenant_id": "26a7980765d0414dbc1fc1f88cdb7e6e",
+        "dns_nameservers": [],
+        "allocation_pools": [
+            {
+                "start": "10.0.0.2",
+                "end": "10.0.0.254"
+            }
+        ],
+        "host_routes": [],
+        "ip_version": 4,
+        "gateway_ip": "10.0.0.1",
+        "cidr": "10.0.0.0/24",
+        "id": "08eae331-0402-425a-923c-34f7cfe39c1b"
+    }
+}
+	`)
+	})
+
+	opts := SubnetOpts{Name: "my_new_subnet"}
+	s, err := Update(ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, s.Name, "my_new_subnet")
+	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
+}
+
+func TestCertainAttrsCannotBeUpdated(t *testing.T) {
+	opts := SubnetOpts{IPVersion: 6, CIDR: "192.0.0.1/24"}
+	_, err := Update(ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts)
+
+	if err == nil {
+		t.Errorf("An error was expected when updating IPVersion and CIDR, none was raised")
+	}
+}
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/subnets/08eae331-0402-425a-923c-34f7cfe39c1b", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	err := Delete(ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b")
+	th.AssertNoErr(t, err)
+}

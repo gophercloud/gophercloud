@@ -124,15 +124,14 @@ func Create(c *gophercloud.ServiceClient, opts SubnetOpts) (*Subnet, error) {
 	}
 
 	reqBody := request{Subnet: subnet{
-		NetworkID: opts.NetworkID,
-		CIDR:      opts.CIDR,
+		NetworkID:  opts.NetworkID,
+		CIDR:       opts.CIDR,
+		Name:       maybeString(opts.Name),
+		TenantID:   maybeString(opts.TenantID),
+		GatewayIP:  maybeString(opts.GatewayIP),
+		ID:         maybeString(opts.ID),
+		EnableDHCP: opts.EnableDHCP,
 	}}
-
-	reqBody.Subnet.Name = maybeString(opts.Name)
-	reqBody.Subnet.TenantID = maybeString(opts.TenantID)
-	reqBody.Subnet.GatewayIP = maybeString(opts.GatewayIP)
-	reqBody.Subnet.ID = maybeString(opts.ID)
-	reqBody.Subnet.EnableDHCP = opts.EnableDHCP
 
 	if opts.IPVersion != 0 {
 		reqBody.Subnet.IPVersion = opts.IPVersion
@@ -158,4 +157,64 @@ func Create(c *gophercloud.ServiceClient, opts SubnetOpts) (*Subnet, error) {
 	}
 
 	return res.Subnet, nil
+}
+
+func Update(c *gophercloud.ServiceClient, id string, opts SubnetOpts) (*Subnet, error) {
+	if opts.CIDR != "" {
+		return nil, ErrCIDRNotUpdatable
+	}
+	if opts.IPVersion != 0 {
+		return nil, ErrIPVersionNotUpdatable
+	}
+
+	type subnet struct {
+		NetworkID       string           `json:"network_id,omitempty"`
+		Name            *string          `json:"name,omitempty"`
+		TenantID        *string          `json:"tenant_id,omitempty"`
+		AllocationPools []AllocationPool `json:"allocation_pools,omitempty"`
+		GatewayIP       *string          `json:"gateway_ip,omitempty"`
+		ID              *string          `json:"id,omitempty"`
+		EnableDHCP      *bool            `json:"enable_dhcp,omitempty"`
+	}
+	type request struct {
+		Subnet subnet `json:"subnet"`
+	}
+
+	reqBody := request{Subnet: subnet{
+		NetworkID:  opts.NetworkID,
+		Name:       maybeString(opts.Name),
+		TenantID:   maybeString(opts.TenantID),
+		GatewayIP:  maybeString(opts.GatewayIP),
+		ID:         maybeString(opts.ID),
+		EnableDHCP: opts.EnableDHCP,
+	}}
+
+	if len(opts.AllocationPools) != 0 {
+		reqBody.Subnet.AllocationPools = opts.AllocationPools
+	}
+
+	type response struct {
+		Subnet *Subnet `json:"subnet"`
+	}
+
+	var res response
+	_, err := perigee.Request("PUT", UpdateURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &res,
+		OkCodes:     []int{201},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Subnet, nil
+}
+
+func Delete(c *gophercloud.ServiceClient, id string) error {
+	_, err := perigee.Request("DELETE", DeleteURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{204},
+	})
+	return err
 }
