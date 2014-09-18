@@ -19,3 +19,7 @@ func ListURL(c *gophercloud.ServiceClient) string {
 func GetURL(c *gophercloud.ServiceClient, id string) string {
 	return ResourceURL(c, id)
 }
+
+func CreateURL(c *gophercloud.ServiceClient) string {
+	return RootURL(c)
+}

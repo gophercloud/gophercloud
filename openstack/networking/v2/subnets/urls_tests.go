@@ -24,3 +24,9 @@ func TestGetURL(t *testing.T) {
 	expected := Endpoint + "v2.0/subnets/foo"
 	th.AssertEquals(t, expected, actual)
 }
+
+func TestCreateURL(t *testing.T) {
+	actual := CreateURL(EndpointClient())
+	expected := Endpoint + "v2.0/subnets"
+	th.AssertEquals(t, expected, actual)
+}

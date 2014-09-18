@@ -6,8 +6,8 @@ import (
 )
 
 type AllocationPool struct {
-	Start string
-	End   string
+	Start string `json:"start"`
+	End   string `json:"end"`
 }
 
 type Subnet struct {

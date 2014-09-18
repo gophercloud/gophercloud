@@ -190,3 +190,71 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.CIDR, "192.0.0.0/8")
 	th.AssertEquals(t, s.ID, "54d6f61d-db07-451c-9ab3-b9609b6b6f0b")
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/subnets", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "subnet": {
+        "network_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+        "ip_version": 4,
+        "cidr": "192.168.199.0/24"
+    }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, `
+{
+    "subnet": {
+        "name": "",
+        "enable_dhcp": true,
+        "network_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+        "tenant_id": "4fd44f30292945e481c7b8a0c8908869",
+        "dns_nameservers": [],
+        "allocation_pools": [
+            {
+                "start": "192.168.199.2",
+                "end": "192.168.199.254"
+            }
+        ],
+        "host_routes": [],
+        "ip_version": 4,
+        "gateway_ip": "192.168.199.1",
+        "cidr": "192.168.199.0/24",
+        "id": "3b80198d-4f7b-4f77-9ef5-774d54e17126"
+    }
+}
+		`)
+	})
+
+	opts := SubnetOpts{NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a22", IPVersion: 4, CIDR: "192.168.199.0/24"}
+	s, err := Create(ServiceClient(), opts)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, s.Name, "")
+	th.AssertEquals(t, s.EnableDHCP, true)
+	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
+	th.AssertDeepEquals(t, s.DNSNameservers, []interface{}{})
+	th.AssertDeepEquals(t, s.AllocationPools, []AllocationPool{
+		AllocationPool{
+			Start: "192.168.199.2",
+			End:   "192.168.199.254",
+		},
+	})
+	th.AssertDeepEquals(t, s.HostRoutes, []interface{}{})
+	th.AssertEquals(t, s.IPVersion, 4)
+	th.AssertEquals(t, s.GatewayIP, "192.168.199.1")
+	th.AssertEquals(t, s.CIDR, "192.168.199.0/24")
+	th.AssertEquals(t, s.ID, "3b80198d-4f7b-4f77-9ef5-774d54e17126")
+}
