@@ -18,6 +18,9 @@ type ListOpts struct {
 	GatewayIP  string
 	CIDR       string
 	ID         string
+	Limit      int
+	Page       string
+	PerPage    string
 }
 
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
@@ -46,6 +49,15 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	}
 	if opts.ID != "" {
 		q["id"] = opts.ID
+	}
+	if opts.Limit != 0 {
+		q["limit"] = strconv.Itoa(opts.Limit)
+	}
+	if opts.Page != "" {
+		q["page"] = opts.Page
+	}
+	if opts.PerPage != "" {
+		q["per_page"] = opts.PerPage
 	}
 
 	u := ListURL(c) + utils.BuildQuery(q)
@@ -202,7 +214,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts SubnetOpts) (*Subnet, 
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res,
-		OkCodes:     []int{201},
+		OkCodes:     []int{200, 201},
 	})
 	if err != nil {
 		return nil, err

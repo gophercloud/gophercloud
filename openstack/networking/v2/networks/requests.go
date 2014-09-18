@@ -169,7 +169,7 @@ func Update(c *gophercloud.ServiceClient, networkID string, opts NetworkOpts) (*
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res,
-		OkCodes:     []int{200},
+		OkCodes:     []int{200, 201},
 	})
 	if err != nil {
 		return nil, err
