@@ -6,4 +6,6 @@ func err(str string) error {
 	return fmt.Errorf("%s", str)
 }
 
-var ()
+var (
+	ErrNetworkIDRequired = err("A Network ID is required")
+)

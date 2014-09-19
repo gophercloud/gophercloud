@@ -103,3 +103,133 @@ func Get(c *gophercloud.ServiceClient, id string) (*Port, error) {
 	}
 	return &p, nil
 }
+
+type PortOpts struct {
+	NetworkID      string
+	Status         string
+	Name           string
+	AdminStateUp   *bool
+	TenantID       string
+	MACAddress     string
+	FixedIPs       interface{}
+	SecurityGroups []string
+}
+
+func maybeString(original string) *string {
+	if original != "" {
+		return &original
+	}
+	return nil
+}
+
+func Create(c *gophercloud.ServiceClient, opts PortOpts) (*Port, error) {
+	type port struct {
+		NetworkID      string      `json:"network_id,omitempty"`
+		Status         *string     `json:"status,omitempty"`
+		Name           *string     `json:"name,omitempty"`
+		AdminStateUp   *bool       `json:"admin_state_up,omitempty"`
+		TenantID       *string     `json:"tenant_id,omitempty"`
+		MACAddress     *string     `json:"mac_address,omitempty"`
+		FixedIPs       interface{} `json:"fixed_ips,omitempty"`
+		SecurityGroups []string    `json:"security_groups,omitempty"`
+	}
+	type request struct {
+		Port port `json:"port"`
+	}
+
+	// Validate
+	if opts.NetworkID == "" {
+		return nil, ErrNetworkIDRequired
+	}
+
+	// Populate request body
+	reqBody := request{Port: port{
+		NetworkID:    opts.NetworkID,
+		Status:       maybeString(opts.Status),
+		Name:         maybeString(opts.Name),
+		AdminStateUp: opts.AdminStateUp,
+		TenantID:     maybeString(opts.TenantID),
+		MACAddress:   maybeString(opts.MACAddress),
+	}}
+
+	if opts.FixedIPs != nil {
+		reqBody.Port.FixedIPs = opts.FixedIPs
+	}
+
+	if opts.SecurityGroups != nil {
+		reqBody.Port.SecurityGroups = opts.SecurityGroups
+	}
+
+	// Response
+	type response struct {
+		Port *Port `json:"port"`
+	}
+	var res response
+	_, err := perigee.Request("POST", CreateURL(c), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &res,
+		OkCodes:     []int{201},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Port, nil
+}
+
+func Update(c *gophercloud.ServiceClient, id string, opts PortOpts) (*Port, error) {
+	type port struct {
+		NetworkID      string      `json:"network_id,omitempty"`
+		Status         *string     `json:"status,omitempty"`
+		Name           *string     `json:"name,omitempty"`
+		AdminStateUp   *bool       `json:"admin_state_up,omitempty"`
+		TenantID       *string     `json:"tenant_id,omitempty"`
+		MACAddress     *string     `json:"mac_address,omitempty"`
+		FixedIPs       interface{} `json:"fixed_ips,omitempty"`
+		SecurityGroups []string    `json:"security_groups,omitempty"`
+	}
+	type request struct {
+		Port port `json:"port"`
+	}
+
+	// Validate
+	if opts.NetworkID == "" {
+		return nil, ErrNetworkIDRequired
+	}
+
+	// Populate request body
+	reqBody := request{Port: port{
+		NetworkID:    opts.NetworkID,
+		Status:       maybeString(opts.Status),
+		Name:         maybeString(opts.Name),
+		AdminStateUp: opts.AdminStateUp,
+		TenantID:     maybeString(opts.TenantID),
+		MACAddress:   maybeString(opts.MACAddress),
+	}}
+
+	if opts.FixedIPs != nil {
+		reqBody.Port.FixedIPs = opts.FixedIPs
+	}
+
+	if opts.SecurityGroups != nil {
+		reqBody.Port.SecurityGroups = opts.SecurityGroups
+	}
+
+	// Response
+	type response struct {
+		Port *Port `json:"port"`
+	}
+	var res response
+	_, err := perigee.Request("PUT", UpdateURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &res,
+		OkCodes:     []int{200, 201},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Port, nil
+}
