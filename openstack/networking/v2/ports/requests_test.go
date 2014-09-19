@@ -115,3 +115,73 @@ func TestList(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/ports/46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "port": {
+        "status": "ACTIVE",
+        "binding:host_id": "devstack",
+        "name": "",
+        "allowed_address_pairs": [],
+        "admin_state_up": true,
+        "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+        "tenant_id": "7e02058126cc4950b75f9970368ba177",
+        "extra_dhcp_opts": [],
+        "binding:vif_details": {
+            "port_filter": true,
+            "ovs_hybrid_plug": true
+        },
+        "binding:vif_type": "ovs",
+        "device_owner": "network:router_interface",
+        "mac_address": "fa:16:3e:23:fd:d7",
+        "binding:profile": {},
+        "binding:vnic_type": "normal",
+        "fixed_ips": [
+            {
+                "subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",
+                "ip_address": "10.0.0.1"
+            }
+        ],
+        "id": "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2",
+        "security_groups": [],
+        "device_id": "5e3898d7-11be-483e-9732-b2f5eccd2b2e"
+    }
+}
+			`)
+	})
+
+	n, err := Get(ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2")
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertEquals(t, n.BindingHostID, "devstack")
+	th.AssertEquals(t, n.Name, "")
+	th.AssertDeepEquals(t, n.AllowedAddressPairs, []interface{}(nil))
+	th.AssertEquals(t, n.AdminStateUp, true)
+	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
+	th.AssertEquals(t, n.TenantID, "7e02058126cc4950b75f9970368ba177")
+	th.AssertDeepEquals(t, n.ExtraDHCPOpts, []interface{}{})
+	th.AssertDeepEquals(t, n.BindingVIFDetails, map[string]interface{}{"port_filter": true, "ovs_hybrid_plug": true})
+	th.AssertEquals(t, n.DeviceOwner, "network:router_interface")
+	th.AssertEquals(t, n.MACAddress, "fa:16:3e:23:fd:d7")
+	th.AssertDeepEquals(t, n.BindingProfile, map[string]interface{}{})
+	th.AssertEquals(t, n.BindingVNICType, "normal")
+	th.AssertDeepEquals(t, n.FixedIPs, []IP{
+		IP{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.1"},
+	})
+	th.AssertEquals(t, n.ID, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2")
+	th.AssertDeepEquals(t, n.SecurityGroups, []string{})
+	th.AssertEquals(t, n.Status, "ACTIVE")
+	th.AssertEquals(t, n.DeviceID, "5e3898d7-11be-483e-9732-b2f5eccd2b2e")
+}

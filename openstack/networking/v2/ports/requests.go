@@ -3,6 +3,7 @@ package ports
 import (
 	"strconv"
 
+	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
@@ -86,4 +87,19 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
 		return PortPage{pagination.LinkedPageBase(r)}
 	})
+}
+
+func Get(c *gophercloud.ServiceClient, id string) (*Port, error) {
+	var p Port
+	_, err := perigee.Request("GET", GetURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		Results: &struct {
+			Port *Port `json:"port"`
+		}{&p},
+		OkCodes: []int{200},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
 }
