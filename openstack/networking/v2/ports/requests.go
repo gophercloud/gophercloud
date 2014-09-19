@@ -233,3 +233,11 @@ func Update(c *gophercloud.ServiceClient, id string, opts PortOpts) (*Port, erro
 
 	return res.Port, nil
 }
+
+func Delete(c *gophercloud.ServiceClient, id string) error {
+	_, err := perigee.Request("DELETE", DeleteURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{204},
+	})
+	return err
+}

@@ -346,3 +346,17 @@ func TestUpdate(t *testing.T) {
 	})
 	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	err := Delete(ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d")
+	th.AssertNoErr(t, err)
+}
