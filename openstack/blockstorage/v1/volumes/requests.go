@@ -7,7 +7,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-type VolumeOpts struct {
+type CreateOpts struct {
 	Availability                     string
 	Description                      string
 	Metadata                         map[string]string
@@ -17,7 +17,7 @@ type VolumeOpts struct {
 	VolumeType                       string
 }
 
-func Create(client *gophercloud.ServiceClient, opts VolumeOpts) (*Volume, error) {
+func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*Volume, error) {
 
 	type volume struct {
 		Availability *string           `json:"availability_zone,omitempty"`
@@ -83,6 +83,50 @@ func Get(client *gophercloud.ServiceClient, id string) (GetResult, error) {
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
 	return gr, err
+}
+
+type UpdateOpts struct {
+	Name        string
+	Description string
+	Metadata    map[string]string
+}
+
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Volume, error) {
+	type update struct {
+		Description *string           `json:"display_description,omitempty"`
+		Metadata    map[string]string `json:"metadata,omitempty"`
+		Name        *string           `json:"display_name,omitempty"`
+	}
+
+	type request struct {
+		Volume update `json:"volume"`
+	}
+
+	reqBody := request{
+		Volume: update{},
+	}
+
+	reqBody.Volume.Description = utils.MaybeString(opts.Description)
+	reqBody.Volume.Name = utils.MaybeString(opts.Name)
+
+	type response struct {
+		Volume Volume `json:"volume"`
+	}
+
+	var respBody response
+
+	_, err := perigee.Request("PUT", volumeURL(client, id), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+		ReqBody:     &reqBody,
+		Results:     &respBody,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &respBody.Volume, nil
+
 }
 
 func Delete(client *gophercloud.ServiceClient, id string) error {
