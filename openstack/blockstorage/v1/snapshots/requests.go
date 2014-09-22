@@ -17,7 +17,7 @@ type CreateOpts struct {
 func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*Snapshot, error) {
 	type snapshot struct {
 		Description *string                `json:"display_description,omitempty"`
-		Force       *bool                  `json:"force,omitempty"`
+		Force       bool                   `json:"force,omitempty"`
 		Metadata    map[string]interface{} `json:"metadata,omitempty"`
 		Name        *string                `json:"display_name,omitempty"`
 		VolumeID    *string                `json:"volume_id,omitempty"`
@@ -32,9 +32,10 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*Snapshot, erro
 	}
 
 	reqBody.Snapshot.Description = utils.MaybeString(opts.Description)
-	reqBody.Snapshot.Force = utils.MaybeString(opts.Force)
 	reqBody.Snapshot.Name = utils.MaybeString(opts.Name)
 	reqBody.Snapshot.VolumeID = utils.MaybeString(opts.VolumeID)
+
+	reqBody.Snapshot.Force = opts.Force
 
 	type response struct {
 		Snapshot Snapshot `json:"snapshot"`
