@@ -89,12 +89,20 @@ func Get(c *gophercloud.ServiceClient, id string) (*Subnet, error) {
 	return &s, nil
 }
 
+// maybeString returns nil for empty strings and nil for empty.
+func maybeString(original string) *string {
+	if original != "" {
+		return &original
+	}
+	return nil
+}
+
 const (
 	IPv4 = 4
 	IPv6 = 6
 )
 
-type SubnetOpts struct {
+type CreateOpts struct {
 	// Required
 	NetworkID string
 	CIDR      string
@@ -104,19 +112,12 @@ type SubnetOpts struct {
 	AllocationPools []AllocationPool
 	GatewayIP       string
 	IPVersion       int
-	ID              string
 	EnableDHCP      *bool
+	DNSNameservers  []string
+	HostRoutes      []interface{}
 }
 
-// maybeString returns nil for empty strings and nil for empty.
-func maybeString(original string) *string {
-	if original != "" {
-		return &original
-	}
-	return nil
-}
-
-func Create(c *gophercloud.ServiceClient, opts SubnetOpts) (*Subnet, error) {
+func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Subnet, error) {
 	// Validate required options
 	if opts.NetworkID == "" {
 		return nil, ErrNetworkIDRequired
@@ -136,8 +137,9 @@ func Create(c *gophercloud.ServiceClient, opts SubnetOpts) (*Subnet, error) {
 		AllocationPools []AllocationPool `json:"allocation_pools,omitempty"`
 		GatewayIP       *string          `json:"gateway_ip,omitempty"`
 		IPVersion       int              `json:"ip_version,omitempty"`
-		ID              *string          `json:"id,omitempty"`
 		EnableDHCP      *bool            `json:"enable_dhcp,omitempty"`
+		DNSNameservers  []string         `json:"dns_nameservers,omitempty"`
+		HostRoutes      []interface{}    `json:"host_routes,omitempty"`
 	}
 	type request struct {
 		Subnet subnet `json:"subnet"`
@@ -149,16 +151,20 @@ func Create(c *gophercloud.ServiceClient, opts SubnetOpts) (*Subnet, error) {
 		Name:       maybeString(opts.Name),
 		TenantID:   maybeString(opts.TenantID),
 		GatewayIP:  maybeString(opts.GatewayIP),
-		ID:         maybeString(opts.ID),
 		EnableDHCP: opts.EnableDHCP,
 	}}
 
 	if opts.IPVersion != 0 {
 		reqBody.Subnet.IPVersion = opts.IPVersion
 	}
-
 	if len(opts.AllocationPools) != 0 {
 		reqBody.Subnet.AllocationPools = opts.AllocationPools
+	}
+	if len(opts.DNSNameservers) != 0 {
+		reqBody.Subnet.DNSNameservers = opts.DNSNameservers
+	}
+	if len(opts.HostRoutes) != 0 {
+		reqBody.Subnet.HostRoutes = opts.HostRoutes
 	}
 
 	type response struct {
@@ -179,38 +185,38 @@ func Create(c *gophercloud.ServiceClient, opts SubnetOpts) (*Subnet, error) {
 	return res.Subnet, nil
 }
 
-func Update(c *gophercloud.ServiceClient, id string, opts SubnetOpts) (*Subnet, error) {
-	if opts.CIDR != "" {
-		return nil, ErrCIDRNotUpdatable
-	}
-	if opts.IPVersion != 0 {
-		return nil, ErrIPVersionNotUpdatable
-	}
+type UpdateOpts struct {
+	Name           string
+	GatewayIP      string
+	DNSNameservers []string
+	HostRoutes     []interface{}
+	EnableDHCP     *bool
+}
 
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Subnet, error) {
 	type subnet struct {
-		NetworkID       string           `json:"network_id,omitempty"`
-		Name            *string          `json:"name,omitempty"`
-		TenantID        *string          `json:"tenant_id,omitempty"`
-		AllocationPools []AllocationPool `json:"allocation_pools,omitempty"`
-		GatewayIP       *string          `json:"gateway_ip,omitempty"`
-		ID              *string          `json:"id,omitempty"`
-		EnableDHCP      *bool            `json:"enable_dhcp,omitempty"`
+		Name           *string       `json:"name,omitempty"`
+		GatewayIP      *string       `json:"gateway_ip,omitempty"`
+		DNSNameservers []string      `json:"dns_nameservers,omitempty"`
+		HostRoutes     []interface{} `json:"host_routes,omitempty"`
+		EnableDHCP     *bool         `json:"enable_dhcp,omitempty"`
 	}
 	type request struct {
 		Subnet subnet `json:"subnet"`
 	}
 
 	reqBody := request{Subnet: subnet{
-		NetworkID:  opts.NetworkID,
 		Name:       maybeString(opts.Name),
-		TenantID:   maybeString(opts.TenantID),
 		GatewayIP:  maybeString(opts.GatewayIP),
-		ID:         maybeString(opts.ID),
 		EnableDHCP: opts.EnableDHCP,
 	}}
 
-	if len(opts.AllocationPools) != 0 {
-		reqBody.Subnet.AllocationPools = opts.AllocationPools
+	if len(opts.DNSNameservers) != 0 {
+		reqBody.Subnet.DNSNameservers = opts.DNSNameservers
+	}
+
+	if len(opts.HostRoutes) != 0 {
+		reqBody.Subnet.HostRoutes = opts.HostRoutes
 	}
 
 	type response struct {

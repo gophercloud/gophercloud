@@ -10,13 +10,11 @@ import (
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
-const TokenID = "123"
+const tokenID = "123"
 
 func ServiceClient() *gophercloud.ServiceClient {
 	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{
-			TokenID: TokenID,
-		},
+		Provider: &gophercloud.ProviderClient{TokenID: tokenID},
 		Endpoint: th.Endpoint(),
 	}
 }
@@ -27,7 +25,7 @@ func TestList(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -122,7 +120,7 @@ func TestGet(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/ports/46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -192,7 +190,7 @@ func TestCreate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -241,7 +239,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	asu := true
-	options := PortOpts{Name: "private-port", AdminStateUp: &asu, NetworkID: "a87cc70a-3e15-4acf-8205-9b711a3531b7"}
+	options := CreateOpts{Name: "private-port", AdminStateUp: &asu, NetworkID: "a87cc70a-3e15-4acf-8205-9b711a3531b7"}
 	n, err := Create(ServiceClient(), options)
 	th.AssertNoErr(t, err)
 
@@ -272,13 +270,12 @@ func TestUpdate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
 {
 		"port": {
-				"network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
 				"name": "new_port_name",
 				"fixed_ips": [
             {
@@ -328,9 +325,8 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	options := PortOpts{
-		NetworkID: "a87cc70a-3e15-4acf-8205-9b711a3531b7",
-		Name:      "new_port_name",
+	options := UpdateOpts{
+		Name: "new_port_name",
 		FixedIPs: []IP{
 			IP{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
 		},
@@ -353,7 +349,7 @@ func TestDelete(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 

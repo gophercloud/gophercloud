@@ -91,7 +91,7 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 		q["sort_dir"] = opts.SortDir
 	}
 
-	u := ListURL(c) + utils.BuildQuery(q)
+	u := listURL(c) + utils.BuildQuery(q)
 	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
 		return PortPage{pagination.LinkedPageBase(r)}
 	})
@@ -99,7 +99,7 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 
 func Get(c *gophercloud.ServiceClient, id string) (*Port, error) {
 	var p Port
-	_, err := perigee.Request("GET", GetURL(c, id), perigee.Options{
+	_, err := perigee.Request("GET", getURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		Results: &struct {
 			Port *Port `json:"port"`
@@ -112,17 +112,6 @@ func Get(c *gophercloud.ServiceClient, id string) (*Port, error) {
 	return &p, nil
 }
 
-type PortOpts struct {
-	NetworkID      string
-	Status         string
-	Name           string
-	AdminStateUp   *bool
-	TenantID       string
-	MACAddress     string
-	FixedIPs       interface{}
-	SecurityGroups []string
-}
-
 func maybeString(original string) *string {
 	if original != "" {
 		return &original
@@ -130,15 +119,28 @@ func maybeString(original string) *string {
 	return nil
 }
 
-func Create(c *gophercloud.ServiceClient, opts PortOpts) (*Port, error) {
+type CreateOpts struct {
+	NetworkID      string
+	Name           string
+	AdminStateUp   *bool
+	MACAddress     string
+	FixedIPs       interface{}
+	DeviceID       string
+	DeviceOwner    string
+	TenantID       string
+	SecurityGroups []string
+}
+
+func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Port, error) {
 	type port struct {
 		NetworkID      string      `json:"network_id,omitempty"`
-		Status         *string     `json:"status,omitempty"`
 		Name           *string     `json:"name,omitempty"`
 		AdminStateUp   *bool       `json:"admin_state_up,omitempty"`
-		TenantID       *string     `json:"tenant_id,omitempty"`
 		MACAddress     *string     `json:"mac_address,omitempty"`
 		FixedIPs       interface{} `json:"fixed_ips,omitempty"`
+		DeviceID       *string     `json:"device_id,omitempty"`
+		DeviceOwner    *string     `json:"device_owner,omitempty"`
+		TenantID       *string     `json:"tenant_id,omitempty"`
 		SecurityGroups []string    `json:"security_groups,omitempty"`
 	}
 	type request struct {
@@ -153,11 +155,12 @@ func Create(c *gophercloud.ServiceClient, opts PortOpts) (*Port, error) {
 	// Populate request body
 	reqBody := request{Port: port{
 		NetworkID:    opts.NetworkID,
-		Status:       maybeString(opts.Status),
 		Name:         maybeString(opts.Name),
 		AdminStateUp: opts.AdminStateUp,
 		TenantID:     maybeString(opts.TenantID),
 		MACAddress:   maybeString(opts.MACAddress),
+		DeviceID:     maybeString(opts.DeviceID),
+		DeviceOwner:  maybeString(opts.DeviceOwner),
 	}}
 
 	if opts.FixedIPs != nil {
@@ -173,7 +176,7 @@ func Create(c *gophercloud.ServiceClient, opts PortOpts) (*Port, error) {
 		Port *Port `json:"port"`
 	}
 	var res response
-	_, err := perigee.Request("POST", CreateURL(c), perigee.Options{
+	_, err := perigee.Request("POST", createURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res,
@@ -187,34 +190,34 @@ func Create(c *gophercloud.ServiceClient, opts PortOpts) (*Port, error) {
 	return res.Port, nil
 }
 
-func Update(c *gophercloud.ServiceClient, id string, opts PortOpts) (*Port, error) {
+type UpdateOpts struct {
+	Name           string
+	AdminStateUp   *bool
+	FixedIPs       interface{}
+	DeviceID       string
+	DeviceOwner    string
+	SecurityGroups []string
+}
+
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Port, error) {
 	type port struct {
-		NetworkID      string      `json:"network_id,omitempty"`
-		Status         *string     `json:"status,omitempty"`
 		Name           *string     `json:"name,omitempty"`
 		AdminStateUp   *bool       `json:"admin_state_up,omitempty"`
-		TenantID       *string     `json:"tenant_id,omitempty"`
-		MACAddress     *string     `json:"mac_address,omitempty"`
 		FixedIPs       interface{} `json:"fixed_ips,omitempty"`
+		DeviceID       *string     `json:"device_id,omitempty"`
+		DeviceOwner    *string     `json:"device_owner,omitempty"`
 		SecurityGroups []string    `json:"security_groups,omitempty"`
 	}
 	type request struct {
 		Port port `json:"port"`
 	}
 
-	// Validate
-	if opts.NetworkID == "" {
-		return nil, ErrNetworkIDRequired
-	}
-
 	// Populate request body
 	reqBody := request{Port: port{
-		NetworkID:    opts.NetworkID,
-		Status:       maybeString(opts.Status),
 		Name:         maybeString(opts.Name),
 		AdminStateUp: opts.AdminStateUp,
-		TenantID:     maybeString(opts.TenantID),
-		MACAddress:   maybeString(opts.MACAddress),
+		DeviceID:     maybeString(opts.DeviceID),
+		DeviceOwner:  maybeString(opts.DeviceOwner),
 	}}
 
 	if opts.FixedIPs != nil {
@@ -230,7 +233,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts PortOpts) (*Port, erro
 		Port *Port `json:"port"`
 	}
 	var res response
-	_, err := perigee.Request("PUT", UpdateURL(c, id), perigee.Options{
+	_, err := perigee.Request("PUT", updateURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res,
@@ -244,7 +247,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts PortOpts) (*Port, erro
 }
 
 func Delete(c *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("DELETE", DeleteURL(c, id), perigee.Options{
+	_, err := perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})

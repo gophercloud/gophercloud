@@ -92,7 +92,7 @@ func TestList(t *testing.T) {
 				EnableDHCP:     true,
 				NetworkID:      "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
 				TenantID:       "26a7980765d0414dbc1fc1f88cdb7e6e",
-				DNSNameservers: []interface{}{},
+				DNSNameservers: []string{},
 				AllocationPools: []AllocationPool{
 					AllocationPool{
 						Start: "10.0.0.2",
@@ -110,7 +110,7 @@ func TestList(t *testing.T) {
 				EnableDHCP:     true,
 				NetworkID:      "d32019d3-bc6e-4319-9c1d-6722fc136a22",
 				TenantID:       "4fd44f30292945e481c7b8a0c8908869",
-				DNSNameservers: []interface{}{},
+				DNSNameservers: []string{},
 				AllocationPools: []AllocationPool{
 					AllocationPool{
 						Start: "192.0.0.2",
@@ -177,7 +177,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.EnableDHCP, true)
 	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.DNSNameservers, []interface{}{})
+	th.AssertDeepEquals(t, s.DNSNameservers, []string{})
 	th.AssertDeepEquals(t, s.AllocationPools, []AllocationPool{
 		AllocationPool{
 			Start: "192.0.0.2",
@@ -237,7 +237,7 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	opts := SubnetOpts{NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a22", IPVersion: 4, CIDR: "192.168.199.0/24"}
+	opts := CreateOpts{NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a22", IPVersion: 4, CIDR: "192.168.199.0/24"}
 	s, err := Create(ServiceClient(), opts)
 	th.AssertNoErr(t, err)
 
@@ -245,7 +245,7 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, s.EnableDHCP, true)
 	th.AssertEquals(t, s.NetworkID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertEquals(t, s.TenantID, "4fd44f30292945e481c7b8a0c8908869")
-	th.AssertDeepEquals(t, s.DNSNameservers, []interface{}{})
+	th.AssertDeepEquals(t, s.DNSNameservers, []string{})
 	th.AssertDeepEquals(t, s.AllocationPools, []AllocationPool{
 		AllocationPool{
 			Start: "192.168.199.2",
@@ -303,21 +303,12 @@ func TestUpdate(t *testing.T) {
 	`)
 	})
 
-	opts := SubnetOpts{Name: "my_new_subnet"}
+	opts := UpdateOpts{Name: "my_new_subnet"}
 	s, err := Update(ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "my_new_subnet")
 	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
-}
-
-func TestCertainAttrsCannotBeUpdated(t *testing.T) {
-	opts := SubnetOpts{IPVersion: 6, CIDR: "192.0.0.1/24"}
-	_, err := Update(ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts)
-
-	if err == nil {
-		t.Errorf("An error was expected when updating IPVersion and CIDR, none was raised")
-	}
 }
 
 func TestDelete(t *testing.T) {

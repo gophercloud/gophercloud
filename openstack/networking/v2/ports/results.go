@@ -11,19 +11,33 @@ type IP struct {
 }
 
 type Port struct {
-	Status              string        `mapstructure:"status" json:"status"`
-	Name                string        `mapstructure:"name" json:"name"`
+	// UUID for the port.
+	ID string `mapstructure:"id" json:"id"`
+	// Network that this port is associated with.
+	NetworkID string `mapstructure:"network_id" json:"network_id"`
+	// Human-readable name for the port. Might not be unique.
+	Name string `mapstructure:"name" json:"name"`
+	// Administrative state of port. If false (down), port does not forward packets.
+	AdminStateUp bool `mapstructure:"admin_state_up" json:"admin_state_up"`
+	// Indicates whether network is currently operational. Possible values include
+	// `ACTIVE', `DOWN', `BUILD', or `ERROR'. Plug-ins might define additional values.
+	Status string `mapstructure:"status" json:"status"`
+	// Mac address to use on this port.
+	MACAddress string `mapstructure:"mac_address" json:"mac_address"`
+	// Specifies IP addresses for the port thus associating the port itself with
+	// the subnets where the IP addresses are picked from
+	FixedIPs []IP `mapstructure:"fixed_ips" json:"fixed_ips"`
+	// Owner of network. Only admin users can specify a tenant_id other than its own.
+	TenantID string `mapstructure:"tenant_id" json:"tenant_id"`
+	// Identifies the entity (e.g.: dhcp agent) using this port.
+	DeviceOwner string `mapstructure:"device_owner" json:"device_owner"`
+	// Specifies the IDs of any security groups associated with a port.
+	SecurityGroups []string `mapstructure:"security_groups" json:"security_groups"`
+	// Identifies the device (e.g., virtual server) using this port.
+	DeviceID string `mapstructure:"device_id" json:"device_id"`
+
 	AllowedAddressPairs []interface{} `mapstructure:"allowed" json:"allowed"`
-	AdminStateUp        bool          `mapstructure:"admin_state_up" json:"admin_state_up"`
-	NetworkID           string        `mapstructure:"network_id" json:"network_id"`
-	TenantID            string        `mapstructure:"tenant_id" json:"tenant_id"`
 	ExtraDHCPOpts       interface{}   `mapstructure:"extra_dhcp_opts" json:"extra_dhcp_opts"`
-	DeviceOwner         string        `mapstructure:"device_owner" json:"device_owner"`
-	MACAddress          string        `mapstructure:"mac_address" json:"mac_address"`
-	FixedIPs            []IP          `mapstructure:"fixed_ips" json:"fixed_ips"`
-	ID                  string        `mapstructure:"id" json:"id"`
-	SecurityGroups      []string      `mapstructure:"security_groups" json:"security_groups"`
-	DeviceID            string        `mapstructure:"device_id" json:"device_id"`
 	BindingHostID       string        `mapstructure:"binding:host_id" json:"binding:host_id"`
 	BindingVIFDetails   interface{}   `mapstructure:"binding:vif_details" json:"binding:vif_details"`
 	BindingVIFType      string        `mapstructure:"binding:vif_type" json:"binding:vif_type"`

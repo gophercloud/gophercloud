@@ -84,7 +84,7 @@ func TestList(t *testing.T) {
 		expected := []Network{
 			Network{
 				Status:  "ACTIVE",
-				Subnets: []interface{}{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"},
+				Subnets: []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"},
 				Name:    "private-network",
 				ProviderPhysicalNetwork: "",
 				AdminStateUp:            true,
@@ -97,7 +97,7 @@ func TestList(t *testing.T) {
 			},
 			Network{
 				Status:  "ACTIVE",
-				Subnets: []interface{}{"08eae331-0402-425a-923c-34f7cfe39c1b"},
+				Subnets: []string{"08eae331-0402-425a-923c-34f7cfe39c1b"},
 				Name:    "private",
 				ProviderPhysicalNetwork: "",
 				AdminStateUp:            true,
@@ -156,7 +156,7 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
-	th.AssertDeepEquals(t, n.Subnets, []interface{}{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
+	th.AssertDeepEquals(t, n.Subnets, []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
 	th.AssertEquals(t, n.Name, "private-network")
 	th.AssertEquals(t, n.ProviderPhysicalNetwork, "")
 	th.AssertEquals(t, n.ProviderNetworkType, "local")
@@ -217,12 +217,12 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	options := NetworkOpts{Name: "sample_network", AdminStateUp: true}
+	options := CreateOpts{Name: "sample_network", AdminStateUp: true}
 	n, err := Create(ServiceClient(), options)
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
-	th.AssertDeepEquals(t, n.Subnets, []interface{}{})
+	th.AssertDeepEquals(t, n.Subnets, []string{})
 	th.AssertEquals(t, n.Name, "net1")
 	th.AssertEquals(t, n.AdminStateUp, true)
 	th.AssertEquals(t, n.TenantID, "9bacb3c5d39d41a79512987f338cf177")
@@ -259,7 +259,7 @@ func TestCreateWithOptionalFields(t *testing.T) {
 	})
 
 	shared := true
-	options := NetworkOpts{Name: "sample_network", AdminStateUp: true, Shared: &shared, TenantID: "12345"}
+	options := CreateOpts{Name: "sample_network", AdminStateUp: true, Shared: &shared, TenantID: "12345"}
 	_, err := Create(ServiceClient(), options)
 	th.AssertNoErr(t, err)
 }
@@ -306,7 +306,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	shared := true
-	options := NetworkOpts{Name: "new_network_name", AdminStateUp: false, Shared: &shared}
+	options := UpdateOpts{Name: "new_network_name", AdminStateUp: false, Shared: &shared}
 	n, err := Update(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
 	th.AssertNoErr(t, err)
 

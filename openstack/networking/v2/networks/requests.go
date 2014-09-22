@@ -23,7 +23,7 @@ type ListOpts struct {
 	SortDir      string
 }
 
-type NetworkOpts struct {
+type networkOpts struct {
 	AdminStateUp bool
 	Name         string
 	Shared       *bool
@@ -98,7 +98,9 @@ func Get(c *gophercloud.ServiceClient, id string) (*Network, error) {
 	return &n, nil
 }
 
-func Create(c *gophercloud.ServiceClient, opts NetworkOpts) (*NetworkCreateResult, error) {
+type CreateOpts networkOpts
+
+func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*NetworkCreateResult, error) {
 	// Define structures
 	type network struct {
 		AdminStateUp bool    `json:"admin_state_up"`
@@ -144,13 +146,14 @@ func Create(c *gophercloud.ServiceClient, opts NetworkOpts) (*NetworkCreateResul
 	return res.Network, nil
 }
 
-func Update(c *gophercloud.ServiceClient, networkID string, opts NetworkOpts) (*Network, error) {
+type UpdateOpts networkOpts
+
+func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOpts) (*Network, error) {
 	// Define structures
 	type network struct {
-		AdminStateUp bool    `json:"admin_state_up"`
-		Name         string  `json:"name"`
-		Shared       *bool   `json:"shared,omitempty"`
-		TenantID     *string `json:"tenant_id,omitempty"`
+		AdminStateUp bool   `json:"admin_state_up"`
+		Name         string `json:"name"`
+		Shared       *bool  `json:"shared,omitempty"`
 	}
 
 	type request struct {
@@ -166,10 +169,6 @@ func Update(c *gophercloud.ServiceClient, networkID string, opts NetworkOpts) (*
 		Name:         opts.Name,
 		Shared:       opts.Shared,
 	}}
-
-	if opts.TenantID != "" {
-		reqBody.Network.TenantID = &opts.TenantID
-	}
 
 	// Send request to API
 	var res response

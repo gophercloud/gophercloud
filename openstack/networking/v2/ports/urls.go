@@ -2,32 +2,32 @@ package ports
 
 import "github.com/rackspace/gophercloud"
 
-const Version = "v2.0"
+const version = "v2.0"
 
-func ResourceURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL(Version, "ports", id)
+func resourceURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL(version, "ports", id)
 }
 
-func RootURL(c *gophercloud.ServiceClient) string {
-	return c.ServiceURL(Version, "ports")
+func rootURL(c *gophercloud.ServiceClient) string {
+	return c.ServiceURL(version, "ports")
 }
 
-func ListURL(c *gophercloud.ServiceClient) string {
-	return RootURL(c)
+func listURL(c *gophercloud.ServiceClient) string {
+	return rootURL(c)
 }
 
-func GetURL(c *gophercloud.ServiceClient, id string) string {
-	return ResourceURL(c, id)
+func getURL(c *gophercloud.ServiceClient, id string) string {
+	return resourceURL(c, id)
 }
 
-func CreateURL(c *gophercloud.ServiceClient) string {
-	return RootURL(c)
+func createURL(c *gophercloud.ServiceClient) string {
+	return rootURL(c)
 }
 
-func UpdateURL(c *gophercloud.ServiceClient, id string) string {
-	return ResourceURL(c, id)
+func updateURL(c *gophercloud.ServiceClient, id string) string {
+	return resourceURL(c, id)
 }
 
-func DeleteURL(c *gophercloud.ServiceClient, id string) string {
-	return ResourceURL(c, id)
+func deleteURL(c *gophercloud.ServiceClient, id string) string {
+	return resourceURL(c, id)
 }
