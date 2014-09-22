@@ -51,3 +51,11 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*VolumeType, er
 	return &respBody.VolumeType, nil
 
 }
+
+func Delete(client *gophercloud.ServiceClient, id string) error {
+	_, err := perigee.Request("DELETE", volumeTypeURL(client, id), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{202},
+	})
+	return err
+}

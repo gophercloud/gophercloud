@@ -5,6 +5,7 @@ package v1
 import (
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumeTypes"
 )
@@ -23,20 +24,20 @@ func TestVolumeTypes(t *testing.T) {
 			ExtraSpecs: map[string]string{
 				"capabilities": "gpu",
 			},
-			Name: "gophercloud-test-volumeType-200" + strconv.Itoa(i),
+			Name: "gophercloud-test-volumeType-" + strconv.Itoa(i),
 		})
 		if err != nil {
 			t.Error(err)
 			return
-		} /*
-			defer func() {
-				time.Sleep(10000 * time.Millisecond)
-				err = volumeTypes.Delete(client, cvt.ID)
-				if err != nil {
-					t.Error(err)
-					return
-				}
-			}*/
+		}
+		defer func() {
+			time.Sleep(10000 * time.Millisecond)
+			err = volumeTypes.Delete(client, cvt.ID)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+		}()
 		t.Logf("created volume type: %+v\n", cvt)
 	}
 
