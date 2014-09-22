@@ -21,6 +21,8 @@ type ListOpts struct {
 	Limit      int
 	Page       string
 	PerPage    string
+	SortKey    string
+	SortDir    string
 }
 
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
@@ -58,6 +60,12 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	}
 	if opts.PerPage != "" {
 		q["per_page"] = opts.PerPage
+	}
+	if opts.SortKey != "" {
+		q["sort_key"] = opts.SortKey
+	}
+	if opts.SortDir != "" {
+		q["sort_dir"] = opts.SortDir
 	}
 
 	u := ListURL(c) + utils.BuildQuery(q)
