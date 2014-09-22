@@ -4,6 +4,7 @@ import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 type CreateOpts struct {
@@ -63,4 +64,12 @@ func Get(client *gophercloud.ServiceClient, id string) (GetResult, error) {
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
 	return gr, err
+}
+
+func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
+	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
+		return ListResult{pagination.SinglePageBase(r)}
+	}
+
+	return pagination.NewPager(client, volumeTypesURL(client), createPage)
 }

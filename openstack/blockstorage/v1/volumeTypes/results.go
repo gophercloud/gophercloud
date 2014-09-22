@@ -3,7 +3,7 @@ package volumeTypes
 import (
 	"fmt"
 
-	//"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/pagination"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -12,6 +12,34 @@ type VolumeType struct {
 	ExtraSpecs map[string]interface{} `json:"extra_specs" mapstructure:"extra_specs"`
 	ID         string                 `json:"id" mapstructure:"id"`
 	Name       string                 `json:"name" mapstructure:"name"`
+}
+
+// ListOpts holds options for listing volumes. It is passed to the volumes.List function.
+type ListOpts struct {
+}
+
+// ListResult is a *http.Response that is returned from a call to the List function.
+type ListResult struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty returns true if a ListResult contains no container names.
+func (r ListResult) IsEmpty() (bool, error) {
+	volumeTypes, err := ExtractVolumeTypes(r)
+	if err != nil {
+		return true, err
+	}
+	return len(volumeTypes) == 0, nil
+}
+
+// ExtractVolumeTypes extracts and returns the Volumes from a 'List' request.
+func ExtractVolumeTypes(page pagination.Page) ([]VolumeType, error) {
+	var response struct {
+		VolumeTypes []VolumeType `mapstructure:"volume_types"`
+	}
+
+	err := mapstructure.Decode(page.(ListResult).Body, &response)
+	return response.VolumeTypes, err
 }
 
 type GetResult map[string]interface{}

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumeTypes"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 var numVolTypes = 1
@@ -53,5 +54,19 @@ func TestVolumeTypes(t *testing.T) {
 		return
 	}
 	t.Logf("Got volume type: %+v\n", v)
+
+	pager := volumeTypes.List(client, volumeTypes.ListOpts{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		volTypes, err := volumeTypes.ExtractVolumeTypes(page)
+		if len(volTypes) != numVolTypes {
+			t.Errorf("Expected %d volume types, got %d", numVolTypes, len(volTypes))
+		}
+		t.Logf("Listing volume types: %+v\n", volTypes)
+		return true, err
+	})
 
 }
