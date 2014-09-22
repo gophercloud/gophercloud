@@ -21,8 +21,9 @@ func TestVolumeTypes(t *testing.T) {
 	var cvt *volumeTypes.VolumeType
 	for i := 0; i < numVolTypes; i++ {
 		cvt, err = volumeTypes.Create(client, volumeTypes.CreateOpts{
-			ExtraSpecs: map[string]string{
+			ExtraSpecs: map[string]interface{}{
 				"capabilities": "gpu",
+				"priority":     3,
 			},
 			Name: "gophercloud-test-volumeType-" + strconv.Itoa(i),
 		})
@@ -38,7 +39,19 @@ func TestVolumeTypes(t *testing.T) {
 				return
 			}
 		}()
-		t.Logf("created volume type: %+v\n", cvt)
+		t.Logf("Created volume type: %+v\n", cvt)
 	}
+
+	gr, err := volumeTypes.Get(client, cvt.ID)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	v, err := volumeTypes.ExtractVolumeType(gr)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Logf("Got volume type: %+v\n", v)
 
 }

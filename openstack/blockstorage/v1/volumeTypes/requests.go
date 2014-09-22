@@ -1,21 +1,20 @@
 package volumeTypes
 
 import (
-	"fmt"
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
 type CreateOpts struct {
-	ExtraSpecs map[string]string
+	ExtraSpecs map[string]interface{}
 	Name       string
 }
 
 func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*VolumeType, error) {
 	type volumeType struct {
-		ExtraSpecs map[string]string `json:"extra_specs,omitempty"`
-		Name       *string           `json:"name,omitempty"`
+		ExtraSpecs map[string]interface{} `json:"extra_specs,omitempty"`
+		Name       *string                `json:"name,omitempty"`
 	}
 
 	type request struct {
@@ -45,9 +44,6 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*VolumeType, er
 		return nil, err
 	}
 
-	fmt.Printf("req: %+v\n", reqBody)
-	fmt.Printf("res: %+v\n", respBody)
-
 	return &respBody.VolumeType, nil
 
 }
@@ -58,4 +54,13 @@ func Delete(client *gophercloud.ServiceClient, id string) error {
 		OkCodes:     []int{202},
 	})
 	return err
+}
+
+func Get(client *gophercloud.ServiceClient, id string) (GetResult, error) {
+	var gr GetResult
+	_, err := perigee.Request("GET", volumeTypeURL(client, id), perigee.Options{
+		Results:     &gr,
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+	})
+	return gr, err
 }
