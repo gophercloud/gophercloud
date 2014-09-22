@@ -19,10 +19,10 @@ func TestList(t *testing.T) {
 	err := pager.EachPage(func(page pagination.Page) (bool, error) {
 		t.Logf("--- Page ---")
 
-		subnets, err := subnets.ExtractSubnets(page)
+		subnetList, err := subnets.ExtractSubnets(page)
 		th.AssertNoErr(t, err)
 
-		for _, s := range subnets {
+		for _, s := range subnetList {
 			t.Logf("Subnet: ID [%s] Name [%s] IP Version [%d] CIDR [%s] GatewayIP [%s]",
 				s.ID, s.Name, s.IPVersion, s.CIDR, s.GatewayIP)
 		}

@@ -52,10 +52,10 @@ func TestListNetworks(t *testing.T) {
 	err := pager.EachPage(func(page pagination.Page) (bool, error) {
 		t.Logf("--- Page ---")
 
-		networks, err := networks.ExtractNetworks(page)
+		networkList, err := networks.ExtractNetworks(page)
 		th.AssertNoErr(t, err)
 
-		for _, n := range networks {
+		for _, n := range networkList {
 			t.Logf("Network: ID [%s] Name [%s] Status [%s] Is shared? [%s]",
 				n.ID, n.Name, n.Status, strconv.FormatBool(n.Shared))
 		}

@@ -170,6 +170,7 @@ func Create(c *gophercloud.ServiceClient, opts PortOpts) (*Port, error) {
 		ReqBody:     &reqBody,
 		Results:     &res,
 		OkCodes:     []int{201},
+		DumpReqJson: true,
 	})
 	if err != nil {
 		return nil, err
