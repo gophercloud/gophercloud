@@ -38,7 +38,7 @@ func TestCRUD(t *testing.T) {
 
 	// Setup network
 	t.Log("Setting up network")
-	res, err := networks.Create(Client, networks.NetworkOpts{Name: "tmp_network", AdminStateUp: true})
+	res, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: true})
 	th.AssertNoErr(t, err)
 	networkID := res.ID
 	defer networks.Delete(Client, networkID)
@@ -46,7 +46,7 @@ func TestCRUD(t *testing.T) {
 	// Create subnet
 	t.Log("Create subnet")
 	enable := false
-	opts := subnets.SubnetOpts{
+	opts := subnets.CreateOpts{
 		NetworkID:  networkID,
 		CIDR:       "192.168.199.0/24",
 		IPVersion:  subnets.IPv4,
@@ -71,7 +71,7 @@ func TestCRUD(t *testing.T) {
 
 	// Update subnet
 	t.Log("Update subnet")
-	s, err = subnets.Update(Client, subnetID, subnets.SubnetOpts{Name: "new_subnet_name"})
+	s, err = subnets.Update(Client, subnetID, subnets.UpdateOpts{Name: "new_subnet_name"})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, s.Name, "new_subnet_name")
 

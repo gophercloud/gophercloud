@@ -12,10 +12,66 @@ import (
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
-func TestPortList(t *testing.T) {
+func TestPortCRUD(t *testing.T) {
 	Setup(t)
 	defer Teardown()
 
+	// Setup network
+	t.Log("Setting up network")
+	networkID, err := createNetwork()
+	th.AssertNoErr(t, err)
+	defer networks.Delete(Client, networkID)
+
+	// Setup subnet
+	t.Logf("Setting up subnet on network %s", networkID)
+	subnetID, err := createSubnet(networkID)
+	th.AssertNoErr(t, err)
+	defer subnets.Delete(Client, subnetID)
+
+	// Create port
+	t.Logf("Create port based on subnet %s", subnetID)
+	portID := createPort(t, networkID, subnetID)
+
+	// List ports
+	t.Logf("Listing all ports")
+	listPorts(t)
+
+	// Get port
+	if portID == "" {
+		t.Fatalf("In order to retrieve a port, the portID must be set")
+	}
+	p, err := ports.Get(Client, portID)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, p.ID, portID)
+
+	// Update port
+	p, err = ports.Update(Client, portID, ports.UpdateOpts{Name: "new_port_name"})
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, p.Name, "new_port_name")
+
+	// Delete port
+	err = ports.Delete(Client, portID)
+	th.AssertNoErr(t, err)
+}
+
+func createPort(t *testing.T, networkID, subnetID string) string {
+	enable := false
+	opts := ports.CreateOpts{
+		NetworkID:    networkID,
+		Name:         "my_port",
+		AdminStateUp: &enable,
+		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
+	}
+	p, err := ports.Create(Client, opts)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, p.NetworkID, networkID)
+	th.AssertEquals(t, p.Name, "my_port")
+	th.AssertEquals(t, p.AdminStateUp, false)
+
+	return p.ID
+}
+
+func listPorts(t *testing.T) {
 	count := 0
 	pager := ports.List(Client, ports.ListOpts{})
 	err := pager.EachPage(func(page pagination.Page) (bool, error) {
@@ -36,18 +92,18 @@ func TestPortList(t *testing.T) {
 	th.CheckNoErr(t, err)
 
 	if count == 0 {
-		t.Errorf("No pages were iterated over when listing ports")
+		t.Logf("No pages were iterated over when listing ports")
 	}
 }
 
 func createNetwork() (string, error) {
-	res, err := networks.Create(Client, networks.NetworkOpts{Name: "tmp_network", AdminStateUp: true})
+	res, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: true})
 	return res.ID, err
 }
 
 func createSubnet(networkID string) (string, error) {
 	enable := false
-	s, err := subnets.Create(Client, subnets.SubnetOpts{
+	s, err := subnets.Create(Client, subnets.CreateOpts{
 		NetworkID:  networkID,
 		CIDR:       "192.168.199.0/24",
 		IPVersion:  subnets.IPv4,
@@ -55,58 +111,6 @@ func createSubnet(networkID string) (string, error) {
 		EnableDHCP: &enable,
 	})
 	return s.ID, err
-}
-
-func TestPortCRUD(t *testing.T) {
-	return
-	Setup(t)
-	defer Teardown()
-
-	// Setup network
-	t.Log("Setting up network")
-	networkID, err := createNetwork()
-	th.AssertNoErr(t, err)
-	defer networks.Delete(Client, networkID)
-
-	// Setup subnet
-	t.Logf("Setting up subnet on network %s", networkID)
-	subnetID, err := createSubnet(networkID)
-	th.AssertNoErr(t, err)
-	defer subnets.Delete(Client, subnetID)
-
-	// Create subnet
-	t.Logf("Create port based on subnet %s", subnetID)
-	enable := false
-	opts := ports.PortOpts{
-		NetworkID:    networkID,
-		Name:         "my_port",
-		AdminStateUp: &enable,
-		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
-	}
-	p, err := ports.Create(Client, opts)
-	th.AssertNoErr(t, err)
-
-	th.AssertEquals(t, p.NetworkID, networkID)
-	th.AssertEquals(t, p.Name, "my_port")
-	th.AssertEquals(t, p.AdminStateUp, false)
-	portID := p.ID
-
-	// Get port
-	if portID == "" {
-		t.Fatalf("In order to retrieve a port, the portID must be set")
-	}
-	p, err = ports.Get(Client, portID)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, p.ID, portID)
-
-	// Update port
-	p, err = ports.Update(Client, portID, ports.PortOpts{Name: "new_port_name"})
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, p.Name, "new_port_name")
-
-	// Delete port
-	err = ports.Delete(Client, portID)
-	th.AssertNoErr(t, err)
 }
 
 func TestPortBatchCreate(t *testing.T) {
