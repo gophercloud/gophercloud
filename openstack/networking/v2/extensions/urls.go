@@ -2,12 +2,12 @@ package extensions
 
 import "github.com/rackspace/gophercloud"
 
-const Version = "v2.0"
+const version = "v2.0"
 
-func ExtensionURL(c *gophercloud.ServiceClient, name string) string {
-	return c.ServiceURL(Version, "extensions", name)
+func extensionURL(c *gophercloud.ServiceClient, name string) string {
+	return c.ServiceURL(version, "extensions", name)
 }
 
-func ListExtensionURL(c *gophercloud.ServiceClient) string {
-	return c.ServiceURL(Version, "extensions")
+func listExtensionURL(c *gophercloud.ServiceClient) string {
+	return c.ServiceURL(version, "extensions")
 }

@@ -18,7 +18,7 @@ type APIVersionPage struct {
 	pagination.SinglePageBase
 }
 
-// IsEmpty checks whether the page is empty.
+// IsEmpty checks whether an APIVersionPage struct is empty.
 func (r APIVersionPage) IsEmpty() (bool, error) {
 	is, err := ExtractAPIVersions(r)
 	if err != nil {
@@ -27,7 +27,7 @@ func (r APIVersionPage) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
-// ExtractAPIVersion takes a collection page, extracts all of the elements,
+// ExtractAPIVersions takes a collection page, extracts all of the elements,
 // and returns them a slice of APIVersion structs. It is effectively a cast.
 func ExtractAPIVersions(page pagination.Page) ([]APIVersion, error) {
 	var resp struct {
@@ -49,10 +49,14 @@ type APIVersionResource struct {
 	Collection string `mapstructure:"collection" json:"collection"`
 }
 
+// APIVersionResourcePage is a concrete type which embeds the common
+// SinglePageBase struct, and is used when traversing API versions collections.
 type APIVersionResourcePage struct {
 	pagination.SinglePageBase
 }
 
+// IsEmpty is a concrete function which indicates whether an
+// APIVersionResourcePage is empty or not.
 func (r APIVersionResourcePage) IsEmpty() (bool, error) {
 	is, err := ExtractVersionResources(r)
 	if err != nil {
@@ -61,6 +65,10 @@ func (r APIVersionResourcePage) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
+// ExtractVersionResources accepts a Page struct, specifically a
+// APIVersionResourcePage struct, and extracts the elements into a slice of
+// APIVersionResource structs. In other words, the collection is mapped into
+// a relevant slice.
 func ExtractVersionResources(page pagination.Page) ([]APIVersionResource, error) {
 	var resp struct {
 		APIVersionResources []APIVersionResource `mapstructure:"resources"`

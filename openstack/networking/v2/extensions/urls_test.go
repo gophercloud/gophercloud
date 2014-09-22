@@ -7,20 +7,20 @@ import (
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
-const Endpoint = "http://localhost:57909/"
+const endpoint = "http://localhost:57909/"
 
-func EndpointClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{Endpoint: Endpoint}
+func endpointClient() *gophercloud.ServiceClient {
+	return &gophercloud.ServiceClient{Endpoint: endpoint}
 }
 
 func TestExtensionURL(t *testing.T) {
-	actual := ExtensionURL(EndpointClient(), "agent")
-	expected := Endpoint + "v2.0/extensions/agent"
+	actual := extensionURL(endpointClient(), "agent")
+	expected := endpoint + "v2.0/extensions/agent"
 	th.AssertEquals(t, expected, actual)
 }
 
 func TestListExtensionURL(t *testing.T) {
-	actual := ListExtensionURL(EndpointClient())
-	expected := Endpoint + "v2.0/extensions"
+	actual := listExtensionURL(endpointClient())
+	expected := endpoint + "v2.0/extensions"
 	th.AssertEquals(t, expected, actual)
 }
