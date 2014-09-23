@@ -7,5 +7,5 @@ func err(str string) error {
 }
 
 var (
-	ErrNetworkIDRequired = err("A Network ID is required")
+	errNetworkIDRequired = err("A Network ID is required")
 )

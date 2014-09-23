@@ -5,11 +5,14 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// AllocationPool is a sub-struct that represents an allocation pool
 type AllocationPool struct {
 	Start string `json:"start"`
 	End   string `json:"end"`
 }
 
+// Subnet represents a subnet. See package documentation for a top-level
+// description of what this is.
 type Subnet struct {
 	// UUID representing the subnet
 	ID string `mapstructure:"id" json:"id"`
@@ -35,11 +38,16 @@ type Subnet struct {
 	TenantID string `mapstructure:"tenant_id" json:"tenant_id"`
 }
 
+// SubnetPage is the page returned by a pager when traversing over a collection
+// of subnets.
 type SubnetPage struct {
 	pagination.LinkedPageBase
 }
 
-func (current SubnetPage) NextPageURL() (string, error) {
+// NextPageURL is invoked when a paginated collection of subnets has reached
+// the end of a page and the pager seeks to traverse over a new one. In order
+// to do this, it needs to construct the next page's URL.
+func (p SubnetPage) NextPageURL() (string, error) {
 	type link struct {
 		Href string `mapstructure:"href"`
 		Rel  string `mapstructure:"rel"`
@@ -49,7 +57,7 @@ func (current SubnetPage) NextPageURL() (string, error) {
 	}
 
 	var r resp
-	err := mapstructure.Decode(current.Body, &r)
+	err := mapstructure.Decode(p.Body, &r)
 	if err != nil {
 		return "", err
 	}
@@ -67,14 +75,18 @@ func (current SubnetPage) NextPageURL() (string, error) {
 	return url, nil
 }
 
-func (r SubnetPage) IsEmpty() (bool, error) {
-	is, err := ExtractSubnets(r)
+// IsEmpty checks whether a SubnetPage struct is empty.
+func (p SubnetPage) IsEmpty() (bool, error) {
+	is, err := ExtractSubnets(p)
 	if err != nil {
 		return true, nil
 	}
 	return len(is) == 0, nil
 }
 
+// ExtractSubnets accepts a Page struct, specifically a SubnetPage struct,
+// and extracts the elements into a slice of Subnet structs. In other words,
+// a generic collection is mapped into a relevant slice.
 func ExtractSubnets(page pagination.Page) ([]Subnet, error) {
 	var resp struct {
 		Subnets []Subnet `mapstructure:"subnets" json:"subnets"`

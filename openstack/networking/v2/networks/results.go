@@ -5,12 +5,14 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// NetworkProvider represents provider extension data
 type NetworkProvider struct {
 	ProviderSegmentationID  int    `json:"provider:segmentation_id"`
 	ProviderPhysicalNetwork string `json:"provider:physical_network"`
 	ProviderNetworkType     string `json:"provider:network_type"`
 }
 
+// Network represents, well, a network.
 type Network struct {
 	// UUID for the network
 	ID string `mapstructure:"id" json:"id"`
@@ -34,17 +36,23 @@ type Network struct {
 	RouterExternal          bool   `mapstructure:"router:external" json:"router:external"`
 }
 
+// NetworkCreateResult represents what is returned by a create operation.
 type NetworkCreateResult struct {
 	Network
 	Segments            []NetworkProvider `json:"segments"`
 	PortSecurityEnabled bool              `json:"port_security_enabled"`
 }
 
+// NetworkPage is the page returned by a pager when traversing over a
+// collection of networks.
 type NetworkPage struct {
 	pagination.LinkedPageBase
 }
 
-func (current NetworkPage) NextPageURL() (string, error) {
+// NextPageURL is invoked when a paginated collection of networks has reached
+// the end of a page and the pager seeks to traverse over a new one. In order
+// to do this, it needs to construct the next page's URL.
+func (p NetworkPage) NextPageURL() (string, error) {
 	type link struct {
 		Href string `mapstructure:"href"`
 		Rel  string `mapstructure:"rel"`
@@ -54,7 +62,7 @@ func (current NetworkPage) NextPageURL() (string, error) {
 	}
 
 	var r resp
-	err := mapstructure.Decode(current.Body, &r)
+	err := mapstructure.Decode(p.Body, &r)
 	if err != nil {
 		return "", err
 	}
@@ -72,14 +80,18 @@ func (current NetworkPage) NextPageURL() (string, error) {
 	return url, nil
 }
 
-func (r NetworkPage) IsEmpty() (bool, error) {
-	is, err := ExtractNetworks(r)
+// IsEmpty checks whether a NetworkPage struct is empty.
+func (p NetworkPage) IsEmpty() (bool, error) {
+	is, err := ExtractNetworks(p)
 	if err != nil {
 		return true, nil
 	}
 	return len(is) == 0, nil
 }
 
+// ExtractNetworks accepts a Page struct, specifically a NetworkPage struct,
+// and extracts the elements into a slice of Network structs. In other words,
+// a generic collection is mapped into a relevant slice.
 func ExtractNetworks(page pagination.Page) ([]Network, error) {
 	var resp struct {
 		Networks []Network `mapstructure:"networks" json:"networks"`

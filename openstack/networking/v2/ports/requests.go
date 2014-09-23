@@ -9,6 +9,18 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+func maybeString(original string) *string {
+	if original != "" {
+		return &original
+	}
+	return nil
+}
+
+// ListOpts allows the filtering and sorting of paginated collections through
+// the API. Filtering is achieved by passing in struct field values that map to
+// the port attributes you want to see returned. SortKey allows you to sort
+// by a particular port attribute. SortDir sets the direction, and is either
+// `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
 	Status          string
 	Name            string
@@ -18,18 +30,23 @@ type ListOpts struct {
 	DeviceOwner     string
 	MACAddress      string
 	ID              string
-	SecurityGroups  string
 	DeviceID        string
 	BindingHostID   string
 	BindingVIFType  string
 	BindingVNICType string
 	Limit           int
-	Page            string
-	PerPage         string
+	Marker          string
 	SortKey         string
 	SortDir         string
 }
 
+// List returns a Pager which allows you to iterate over a collection of
+// ports. It accepts a ListOpts struct, which allows you to filter and sort
+// the returned collection for greater efficiency.
+//
+// Default policy settings return only those ports that are owned by the tenant
+// who submits the request, unless the request is submitted by an user with
+// administrative rights.
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	// Build query parameters
 	q := make(map[string]string)
@@ -57,9 +74,6 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	if opts.ID != "" {
 		q["id"] = opts.ID
 	}
-	if opts.SecurityGroups != "" {
-		q["security_groups"] = opts.SecurityGroups
-	}
 	if opts.DeviceID != "" {
 		q["device_id"] = opts.DeviceID
 	}
@@ -78,11 +92,8 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	if opts.Limit != 0 {
 		q["limit"] = strconv.Itoa(opts.Limit)
 	}
-	if opts.Page != "" {
-		q["page"] = opts.Page
-	}
-	if opts.PerPage != "" {
-		q["per_page"] = opts.PerPage
+	if opts.Marker != "" {
+		q["marker"] = opts.Marker
 	}
 	if opts.SortKey != "" {
 		q["sort_key"] = opts.SortKey
@@ -97,6 +108,7 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+// Get retrieves a specific port based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (*Port, error) {
 	var p Port
 	_, err := perigee.Request("GET", getURL(c, id), perigee.Options{
@@ -112,13 +124,7 @@ func Get(c *gophercloud.ServiceClient, id string) (*Port, error) {
 	return &p, nil
 }
 
-func maybeString(original string) *string {
-	if original != "" {
-		return &original
-	}
-	return nil
-}
-
+// CreateOpts represents the attributes used when creating a new port.
 type CreateOpts struct {
 	NetworkID      string
 	Name           string
@@ -131,9 +137,11 @@ type CreateOpts struct {
 	SecurityGroups []string
 }
 
+// Create accepts a CreateOpts struct and creates a new network using the values
+// provided. You must remember to provide a NetworkID value.
 func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Port, error) {
 	type port struct {
-		NetworkID      string      `json:"network_id,omitempty"`
+		NetworkID      string      `json:"network_id"`
 		Name           *string     `json:"name,omitempty"`
 		AdminStateUp   *bool       `json:"admin_state_up,omitempty"`
 		MACAddress     *string     `json:"mac_address,omitempty"`
@@ -149,7 +157,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Port, error) {
 
 	// Validate
 	if opts.NetworkID == "" {
-		return nil, ErrNetworkIDRequired
+		return nil, errNetworkIDRequired
 	}
 
 	// Populate request body
@@ -190,6 +198,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Port, error) {
 	return res.Port, nil
 }
 
+// UpdateOpts represents the attributes used when updating an existing port.
 type UpdateOpts struct {
 	Name           string
 	AdminStateUp   *bool
@@ -199,6 +208,8 @@ type UpdateOpts struct {
 	SecurityGroups []string
 }
 
+// Update accepts a UpdateOpts struct and updates an existing port using the
+// values provided.
 func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Port, error) {
 	type port struct {
 		Name           *string     `json:"name,omitempty"`
@@ -246,6 +257,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Port, er
 	return res.Port, nil
 }
 
+// Delete accepts a unique ID and deletes the port associated with it.
 func Delete(c *gophercloud.ServiceClient, id string) error {
 	_, err := perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),

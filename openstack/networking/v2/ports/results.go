@@ -5,11 +5,14 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// IP is a sub-struct that represents an individual IP.
 type IP struct {
 	SubnetID  string `mapstructure:"subnet_id" json:"subnet_id"`
 	IPAddress string `mapstructure:"ip_address" json:"ip_address,omitempty"`
 }
 
+// Port represents a Neutron port. See package documentation for a top-level
+// description of what this is.
 type Port struct {
 	// UUID for the port.
 	ID string `mapstructure:"id" json:"id"`
@@ -45,11 +48,16 @@ type Port struct {
 	BindingVNICType     string        `mapstructure:"binding:vnic_type" json:"binding:vnic_type"`
 }
 
+// PortPage is the page returned by a pager when traversing over a collection
+// of network ports.
 type PortPage struct {
 	pagination.LinkedPageBase
 }
 
-func (current PortPage) NextPageURL() (string, error) {
+// NextPageURL is invoked when a paginated collection of ports has reached
+// the end of a page and the pager seeks to traverse over a new one. In order
+// to do this, it needs to construct the next page's URL.
+func (p PortPage) NextPageURL() (string, error) {
 	type resp struct {
 		Links []struct {
 			Href string `mapstructure:"href"`
@@ -58,7 +66,7 @@ func (current PortPage) NextPageURL() (string, error) {
 	}
 
 	var r resp
-	err := mapstructure.Decode(current.Body, &r)
+	err := mapstructure.Decode(p.Body, &r)
 	if err != nil {
 		return "", err
 	}
@@ -76,14 +84,18 @@ func (current PortPage) NextPageURL() (string, error) {
 	return url, nil
 }
 
-func (r PortPage) IsEmpty() (bool, error) {
-	is, err := ExtractPorts(r)
+// IsEmpty checks whether a PortPage struct is empty.
+func (p PortPage) IsEmpty() (bool, error) {
+	is, err := ExtractPorts(p)
 	if err != nil {
 		return true, nil
 	}
 	return len(is) == 0, nil
 }
 
+// ExtractPorts accepts a Page struct, specifically a PortPage struct,
+// and extracts the elements into a slice of Port structs. In other words,
+// a generic collection is mapped into a relevant slice.
 func ExtractPorts(page pagination.Page) ([]Port, error) {
 	var resp struct {
 		Ports []Port `mapstructure:"ports" json:"ports"`

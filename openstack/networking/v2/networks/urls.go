@@ -4,26 +4,26 @@ import "github.com/rackspace/gophercloud"
 
 const Version = "v2.0"
 
-func ResourceURL(c *gophercloud.ServiceClient, id string) string {
+func resourceURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(Version, "networks", id)
 }
 
-func RootURL(c *gophercloud.ServiceClient) string {
+func rootURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL(Version, "networks")
 }
 
-func GetURL(c *gophercloud.ServiceClient, id string) string {
-	return ResourceURL(c, id)
+func getURL(c *gophercloud.ServiceClient, id string) string {
+	return resourceURL(c, id)
 }
 
-func ListURL(c *gophercloud.ServiceClient) string {
-	return RootURL(c)
+func listURL(c *gophercloud.ServiceClient) string {
+	return rootURL(c)
 }
 
-func CreateURL(c *gophercloud.ServiceClient) string {
-	return RootURL(c)
+func createURL(c *gophercloud.ServiceClient) string {
+	return rootURL(c)
 }
 
-func DeleteURL(c *gophercloud.ServiceClient, id string) string {
-	return ResourceURL(c, id)
+func deleteURL(c *gophercloud.ServiceClient, id string) string {
+	return resourceURL(c, id)
 }
