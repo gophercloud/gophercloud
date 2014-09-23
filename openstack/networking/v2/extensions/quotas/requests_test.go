@@ -112,5 +112,5 @@ func TestReset(t *testing.T) {
 	})
 
 	res := Reset(serviceClient())
-	th.AssertNoErr(t, res.err)
+	th.AssertNoErr(t, res.Err)
 }

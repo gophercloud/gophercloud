@@ -8,10 +8,10 @@ import (
 func Get(c *gophercloud.ServiceClient) GetResult {
 	var res GetResult
 	_, err := perigee.Request("GET", rootURL(c), perigee.Options{
-		Results:     &res.resp,
+		Results:     &res.Resp,
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 	})
-	res.err = err
+	res.Err = err
 	return res
 }
 
@@ -66,11 +66,10 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOpts) UpdateResult {
 	_, err := perigee.Request("PUT", rootURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res.resp,
+		Results:     &res.Resp,
 		OkCodes:     []int{200},
 	})
-	res.err = err
-
+	res.Err = err
 	return res
 }
 
@@ -80,6 +79,6 @@ func Reset(c *gophercloud.ServiceClient) DeleteResult {
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.err = err
+	res.Err = err
 	return res
 }
