@@ -6,22 +6,16 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// Get retrieves information for a specific extension using its alias. If no
-// extension exists with this alias, an error will be returned.
-func Get(c *gophercloud.ServiceClient, alias string) (*Extension, error) {
-	var ext Extension
+// Get retrieves information for a specific extension using its alias.
+func Get(c *gophercloud.ServiceClient, alias string) GetResult {
+	var res GetResult
 	_, err := perigee.Request("GET", extensionURL(c, alias), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results: &struct {
-			Extension *Extension `json:"extension"`
-		}{&ext},
-		OkCodes: []int{200},
+		Results:     &res.Resp,
+		OkCodes:     []int{200},
 	})
-
-	if err != nil {
-		return nil, err
-	}
-	return &ext, nil
+	res.Err = err
+	return res
 }
 
 // List returns a Pager which allows you to iterate over the full collection of

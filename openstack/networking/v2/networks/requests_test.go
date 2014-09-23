@@ -132,7 +132,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	n, err := Get(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	n, err := Get(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
@@ -181,7 +181,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	options := CreateOpts{Name: "sample_network", AdminStateUp: true}
-	n, err := Create(ServiceClient(), options)
+	n, err := Create(ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
@@ -218,7 +218,7 @@ func TestCreateWithOptionalFields(t *testing.T) {
 
 	shared := true
 	options := CreateOpts{Name: "sample_network", AdminStateUp: true, Shared: &shared, TenantID: "12345"}
-	_, err := Create(ServiceClient(), options)
+	_, err := Create(ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -261,7 +261,7 @@ func TestUpdate(t *testing.T) {
 
 	shared := true
 	options := UpdateOpts{Name: "new_network_name", AdminStateUp: false, Shared: &shared}
-	n, err := Update(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
+	n, err := Update(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "new_network_name")
@@ -280,6 +280,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := Delete(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
-	th.AssertNoErr(t, err)
+	res := Delete(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	th.AssertNoErr(t, res.Err)
 }

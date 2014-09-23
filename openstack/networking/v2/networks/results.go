@@ -1,9 +1,47 @@
 package networks
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
+
+type commonResult struct {
+	gophercloud.CommonResult
+}
+
+func (r commonResult) Extract() (*Network, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res struct {
+		Network *Network `json:"network"`
+	}
+
+	err := mapstructure.Decode(r.Resp, &res)
+	if err != nil {
+		return nil, fmt.Errorf("Error decoding Neutron network: %v", err)
+	}
+
+	return res.Network, nil
+}
+
+type CreateResult struct {
+	commonResult
+}
+
+type GetResult struct {
+	commonResult
+}
+
+type UpdateResult struct {
+	commonResult
+}
+
+type DeleteResult commonResult
 
 // Network represents, well, a network.
 type Network struct {

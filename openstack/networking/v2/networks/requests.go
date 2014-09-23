@@ -88,19 +88,15 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 }
 
 // Get retrieves a specific network based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (*Network, error) {
-	var n Network
+func Get(c *gophercloud.ServiceClient, id string) GetResult {
+	var res GetResult
 	_, err := perigee.Request("GET", getURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results: &struct {
-			Network *Network `json:"network"`
-		}{&n},
-		OkCodes: []int{200},
+		Results:     &res.Resp,
+		OkCodes:     []int{200},
 	})
-	if err != nil {
-		return nil, err
-	}
-	return &n, nil
+	res.Err = err
+	return res
 }
 
 // CreateOpts represents the attributes used when creating a new network.
@@ -113,7 +109,7 @@ type CreateOpts networkOpts
 // The tenant ID that is contained in the URI is the tenant that creates the
 // network. An admin user, however, has the option of specifying another tenant
 // ID in the CreateOpts struct.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Network, error) {
+func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	// Define structures
 	type network struct {
 		AdminStateUp bool    `json:"admin_state_up,omitempty"`
@@ -123,9 +119,6 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Network, error) {
 	}
 	type request struct {
 		Network network `json:"network"`
-	}
-	type response struct {
-		Network *Network `json:"network"`
 	}
 
 	// Populate request body
@@ -140,18 +133,15 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Network, error) {
 	}
 
 	// Send request to API
-	var res response
+	var res CreateResult
 	_, err := perigee.Request("POST", createURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res,
+		Results:     &res.Resp,
 		OkCodes:     []int{201},
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return res.Network, nil
+	res.Err = err
+	return res
 }
 
 // UpdateOpts represents the attributes used when updating an existing network.
@@ -159,7 +149,7 @@ type UpdateOpts networkOpts
 
 // Update accepts a UpdateOpts struct and updates an existing network using the
 // values provided. For more information, see the Create function.
-func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOpts) (*Network, error) {
+func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOpts) UpdateResult {
 	// Define structures
 	type network struct {
 		AdminStateUp bool   `json:"admin_state_up"`
@@ -170,9 +160,6 @@ func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOpts) (*N
 	type request struct {
 		Network network `json:"network"`
 	}
-	type response struct {
-		Network *Network `json:"network"`
-	}
 
 	// Populate request body
 	reqBody := request{Network: network{
@@ -182,25 +169,24 @@ func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOpts) (*N
 	}}
 
 	// Send request to API
-	var res response
+	var res UpdateResult
 	_, err := perigee.Request("PUT", getURL(c, networkID), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res,
+		Results:     &res.Resp,
 		OkCodes:     []int{200, 201},
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return res.Network, nil
+	res.Err = err
+	return res
 }
 
 // Delete accepts a unique ID and deletes the network associated with it.
-func Delete(c *gophercloud.ServiceClient, networkID string) error {
+func Delete(c *gophercloud.ServiceClient, networkID string) DeleteResult {
+	var res DeleteResult
 	_, err := perigee.Request("DELETE", deleteURL(c, networkID), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	return err
+	res.Err = err
+	return res
 }

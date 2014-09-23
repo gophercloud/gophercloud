@@ -109,19 +109,15 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 }
 
 // Get retrieves a specific port based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (*Port, error) {
-	var p Port
+func Get(c *gophercloud.ServiceClient, id string) GetResult {
+	var res GetResult
 	_, err := perigee.Request("GET", getURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results: &struct {
-			Port *Port `json:"port"`
-		}{&p},
-		OkCodes: []int{200},
+		Results:     &res.Resp,
+		OkCodes:     []int{200},
 	})
-	if err != nil {
-		return nil, err
-	}
-	return &p, nil
+	res.Err = err
+	return res
 }
 
 // CreateOpts represents the attributes used when creating a new port.
@@ -139,7 +135,9 @@ type CreateOpts struct {
 
 // Create accepts a CreateOpts struct and creates a new network using the values
 // provided. You must remember to provide a NetworkID value.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Port, error) {
+func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
+	var res CreateResult
+
 	type port struct {
 		NetworkID      string      `json:"network_id"`
 		Name           *string     `json:"name,omitempty"`
@@ -157,7 +155,8 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Port, error) {
 
 	// Validate
 	if opts.NetworkID == "" {
-		return nil, errNetworkIDRequired
+		res.Err = errNetworkIDRequired
+		return res
 	}
 
 	// Populate request body
@@ -180,22 +179,15 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Port, error) {
 	}
 
 	// Response
-	type response struct {
-		Port *Port `json:"port"`
-	}
-	var res response
 	_, err := perigee.Request("POST", createURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res,
+		Results:     &res.Resp,
 		OkCodes:     []int{201},
 		DumpReqJson: true,
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return res.Port, nil
+	res.Err = err
+	return res
 }
 
 // UpdateOpts represents the attributes used when updating an existing port.
@@ -210,7 +202,7 @@ type UpdateOpts struct {
 
 // Update accepts a UpdateOpts struct and updates an existing port using the
 // values provided.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Port, error) {
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
 	type port struct {
 		Name           *string     `json:"name,omitempty"`
 		AdminStateUp   *bool       `json:"admin_state_up,omitempty"`
@@ -240,28 +232,24 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Port, er
 	}
 
 	// Response
-	type response struct {
-		Port *Port `json:"port"`
-	}
-	var res response
+	var res UpdateResult
 	_, err := perigee.Request("PUT", updateURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res,
+		Results:     &res.Resp,
 		OkCodes:     []int{200, 201},
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return res.Port, nil
+	res.Err = err
+	return res
 }
 
 // Delete accepts a unique ID and deletes the port associated with it.
-func Delete(c *gophercloud.ServiceClient, id string) error {
+func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
+	var res DeleteResult
 	_, err := perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	return err
+	res.Err = err
+	return res
 }

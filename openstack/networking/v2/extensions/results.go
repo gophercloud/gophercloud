@@ -1,9 +1,33 @@
 package extensions
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
+
+type GetResult struct {
+	gophercloud.CommonResult
+}
+
+func (r GetResult) Extract() (*Extension, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res struct {
+		Extension *Extension `json:"extension"`
+	}
+
+	err := mapstructure.Decode(r.Resp, &res)
+	if err != nil {
+		return nil, fmt.Errorf("Error decoding Neutron extension: %v", err)
+	}
+
+	return res.Extension, nil
+}
 
 // Extension is a struct that represents a Neutron extension.
 type Extension struct {

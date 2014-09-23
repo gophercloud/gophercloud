@@ -38,9 +38,9 @@ func TestCRUD(t *testing.T) {
 
 	// Setup network
 	t.Log("Setting up network")
-	res, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: true})
+	n, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: true}).Extract()
 	th.AssertNoErr(t, err)
-	networkID := res.ID
+	networkID := n.ID
 	defer networks.Delete(Client, networkID)
 
 	// Create subnet
@@ -53,7 +53,7 @@ func TestCRUD(t *testing.T) {
 		Name:       "my_subnet",
 		EnableDHCP: &enable,
 	}
-	s, err := subnets.Create(Client, opts)
+	s, err := subnets.Create(Client, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.NetworkID, networkID)
@@ -65,20 +65,20 @@ func TestCRUD(t *testing.T) {
 
 	// Get subnet
 	t.Log("Getting subnet")
-	s, err = subnets.Get(Client, subnetID)
+	s, err = subnets.Get(Client, subnetID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, s.ID, subnetID)
 
 	// Update subnet
 	t.Log("Update subnet")
-	s, err = subnets.Update(Client, subnetID, subnets.UpdateOpts{Name: "new_subnet_name"})
+	s, err = subnets.Update(Client, subnetID, subnets.UpdateOpts{Name: "new_subnet_name"}).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, s.Name, "new_subnet_name")
 
 	// Delete subnet
 	t.Log("Delete subnet")
-	err = subnets.Delete(Client, subnetID)
-	th.AssertNoErr(t, err)
+	res := subnets.Delete(Client, subnetID)
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestBatchCreate(t *testing.T) {

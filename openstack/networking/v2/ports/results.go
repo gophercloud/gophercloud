@@ -1,9 +1,47 @@
 package ports
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
+
+type commonResult struct {
+	gophercloud.CommonResult
+}
+
+func (r commonResult) Extract() (*Port, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res struct {
+		Port *Port `json:"port"`
+	}
+
+	err := mapstructure.Decode(r.Resp, &res)
+	if err != nil {
+		return nil, fmt.Errorf("Error decoding Neutron port: %v", err)
+	}
+
+	return res.Port, nil
+}
+
+type CreateResult struct {
+	commonResult
+}
+
+type GetResult struct {
+	commonResult
+}
+
+type UpdateResult struct {
+	commonResult
+}
+
+type DeleteResult commonResult
 
 // IP is a sub-struct that represents an individual IP.
 type IP struct {

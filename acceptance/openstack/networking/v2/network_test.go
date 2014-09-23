@@ -16,11 +16,11 @@ func TestNetworkCRUDOperations(t *testing.T) {
 	defer Teardown()
 
 	// Create a network
-	res, err := networks.Create(Client, networks.CreateOpts{Name: "sample_network", AdminStateUp: true})
+	n, err := networks.Create(Client, networks.CreateOpts{Name: "sample_network", AdminStateUp: true}).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, res.Name, "sample_network")
-	th.AssertEquals(t, res.AdminStateUp, true)
-	networkID := res.ID
+	th.AssertEquals(t, n.Name, "sample_network")
+	th.AssertEquals(t, n.AdminStateUp, true)
+	networkID := n.ID
 
 	// List networks
 	pager := networks.List(Client, networks.ListOpts{Limit: 2})
@@ -43,7 +43,7 @@ func TestNetworkCRUDOperations(t *testing.T) {
 	if networkID == "" {
 		t.Fatalf("In order to retrieve a network, the NetworkID must be set")
 	}
-	n, err := networks.Get(Client, networkID)
+	n, err = networks.Get(Client, networkID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, n.Status, "ACTIVE")
 	th.AssertDeepEquals(t, n.Subnets, []string{})
@@ -53,13 +53,13 @@ func TestNetworkCRUDOperations(t *testing.T) {
 	th.AssertEquals(t, n.ID, networkID)
 
 	// Update network
-	n, err = networks.Update(Client, networkID, networks.UpdateOpts{Name: "new_network_name"})
+	n, err = networks.Update(Client, networkID, networks.UpdateOpts{Name: "new_network_name"}).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, n.Name, "new_network_name")
 
 	// Delete network
-	err = networks.Delete(Client, networkID)
-	th.AssertNoErr(t, err)
+	res := networks.Delete(Client, networkID)
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestCreateMultipleNetworks(t *testing.T) {

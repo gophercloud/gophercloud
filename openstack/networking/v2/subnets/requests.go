@@ -90,19 +90,15 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 }
 
 // Get retrieves a specific subnet based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) (*Subnet, error) {
-	var s Subnet
+func Get(c *gophercloud.ServiceClient, id string) GetResult {
+	var res GetResult
 	_, err := perigee.Request("GET", getURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results: &struct {
-			Subnet *Subnet `json:"subnet"`
-		}{&s},
-		OkCodes: []int{200},
+		Results:     &res.Resp,
+		OkCodes:     []int{200},
 	})
-	if err != nil {
-		return nil, err
-	}
-	return &s, nil
+	res.Err = err
+	return res
 }
 
 // Valid IP types
@@ -129,16 +125,21 @@ type CreateOpts struct {
 
 // Create accepts a CreateOpts struct and creates a new subnet using the values
 // provided. You must remember to provide a valid NetworkID, CIDR and IP version.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Subnet, error) {
+func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
+	var res CreateResult
+
 	// Validate required options
 	if opts.NetworkID == "" {
-		return nil, errNetworkIDRequired
+		res.Err = errNetworkIDRequired
+		return res
 	}
 	if opts.CIDR == "" {
-		return nil, errCIDRRequired
+		res.Err = errCIDRRequired
+		return res
 	}
 	if opts.IPVersion != 0 && opts.IPVersion != IPv4 && opts.IPVersion != IPv6 {
-		return nil, errInvalidIPType
+		res.Err = errInvalidIPType
+		return res
 	}
 
 	type subnet struct {
@@ -179,22 +180,15 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Subnet, error) {
 		reqBody.Subnet.HostRoutes = opts.HostRoutes
 	}
 
-	type response struct {
-		Subnet *Subnet `json:"subnet"`
-	}
-
-	var res response
 	_, err := perigee.Request("POST", createURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res,
+		Results:     &res.Resp,
 		OkCodes:     []int{201},
 	})
-	if err != nil {
-		return nil, err
-	}
+	res.Err = err
 
-	return res.Subnet, nil
+	return res
 }
 
 // UpdateOpts represents the attributes used when updating an existing subnet.
@@ -208,7 +202,7 @@ type UpdateOpts struct {
 
 // Update accepts a UpdateOpts struct and updates an existing subnet using the
 // values provided.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Subnet, error) {
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
 	type subnet struct {
 		Name           *string       `json:"name,omitempty"`
 		GatewayIP      *string       `json:"gateway_ip,omitempty"`
@@ -234,29 +228,25 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Subnet, 
 		reqBody.Subnet.HostRoutes = opts.HostRoutes
 	}
 
-	type response struct {
-		Subnet *Subnet `json:"subnet"`
-	}
-
-	var res response
+	var res UpdateResult
 	_, err := perigee.Request("PUT", updateURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res,
+		Results:     &res.Resp,
 		OkCodes:     []int{200, 201},
 	})
-	if err != nil {
-		return nil, err
-	}
+	res.Err = err
 
-	return res.Subnet, nil
+	return res
 }
 
 // Delete accepts a unique ID and deletes the subnet associated with it.
-func Delete(c *gophercloud.ServiceClient, id string) error {
+func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
+	var res DeleteResult
 	_, err := perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	return err
+	res.Err = err
+	return res
 }

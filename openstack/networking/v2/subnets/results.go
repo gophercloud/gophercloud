@@ -1,9 +1,47 @@
 package subnets
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
+
+type commonResult struct {
+	gophercloud.CommonResult
+}
+
+func (r commonResult) Extract() (*Subnet, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res struct {
+		Subnet *Subnet `json:"subnet"`
+	}
+
+	err := mapstructure.Decode(r.Resp, &res)
+	if err != nil {
+		return nil, fmt.Errorf("Error decoding Neutron subnet: %v", err)
+	}
+
+	return res.Subnet, nil
+}
+
+type CreateResult struct {
+	commonResult
+}
+
+type GetResult struct {
+	commonResult
+}
+
+type UpdateResult struct {
+	commonResult
+}
+
+type DeleteResult commonResult
 
 // AllocationPool represents a sub-range of cidr available for dynamic
 // allocation to ports, e.g. {Start: "10.0.0.2", End: "10.0.0.254"}

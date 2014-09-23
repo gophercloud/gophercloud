@@ -40,18 +40,18 @@ func TestPortCRUD(t *testing.T) {
 	if portID == "" {
 		t.Fatalf("In order to retrieve a port, the portID must be set")
 	}
-	p, err := ports.Get(Client, portID)
+	p, err := ports.Get(Client, portID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, p.ID, portID)
 
 	// Update port
-	p, err = ports.Update(Client, portID, ports.UpdateOpts{Name: "new_port_name"})
+	p, err = ports.Update(Client, portID, ports.UpdateOpts{Name: "new_port_name"}).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, p.Name, "new_port_name")
 
 	// Delete port
-	err = ports.Delete(Client, portID)
-	th.AssertNoErr(t, err)
+	res := ports.Delete(Client, portID)
+	th.AssertNoErr(t, res.Err)
 }
 
 func createPort(t *testing.T, networkID, subnetID string) string {
@@ -62,7 +62,7 @@ func createPort(t *testing.T, networkID, subnetID string) string {
 		AdminStateUp: &enable,
 		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
 	}
-	p, err := ports.Create(Client, opts)
+	p, err := ports.Create(Client, opts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, p.NetworkID, networkID)
 	th.AssertEquals(t, p.Name, "my_port")
@@ -97,7 +97,7 @@ func listPorts(t *testing.T) {
 }
 
 func createNetwork() (string, error) {
-	res, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: true})
+	res, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: true}).Extract()
 	return res.ID, err
 }
 
@@ -109,7 +109,7 @@ func createSubnet(networkID string) (string, error) {
 		IPVersion:  subnets.IPv4,
 		Name:       "my_subnet",
 		EnableDHCP: &enable,
-	})
+	}).Extract()
 	return s.ID, err
 }
 

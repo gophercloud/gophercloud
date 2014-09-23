@@ -133,7 +133,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	n, err := Get(ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2")
+	n, err := Get(ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
@@ -203,7 +203,7 @@ func TestCreate(t *testing.T) {
 
 	asu := true
 	options := CreateOpts{Name: "private-port", AdminStateUp: &asu, NetworkID: "a87cc70a-3e15-4acf-8205-9b711a3531b7"}
-	n, err := Create(ServiceClient(), options)
+	n, err := Create(ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "DOWN")
@@ -283,7 +283,7 @@ func TestUpdate(t *testing.T) {
 		SecurityGroups: []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"},
 	}
 
-	s, err := Update(ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options)
+	s, err := Update(ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "new_port_name")
@@ -303,6 +303,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := Delete(ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d")
-	th.AssertNoErr(t, err)
+	res := Delete(ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d")
+	th.AssertNoErr(t, res.Err)
 }

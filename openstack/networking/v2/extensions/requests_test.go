@@ -101,7 +101,7 @@ func TestGet(t *testing.T) {
 }
 		`)
 
-		ext, err := Get(ServiceClient(), "agent")
+		ext, err := Get(ServiceClient(), "agent").Extract()
 		th.AssertNoErr(t, err)
 
 		th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")

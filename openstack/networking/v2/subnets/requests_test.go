@@ -170,7 +170,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	s, err := Get(ServiceClient(), "54d6f61d-db07-451c-9ab3-b9609b6b6f0b")
+	s, err := Get(ServiceClient(), "54d6f61d-db07-451c-9ab3-b9609b6b6f0b").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "my_subnet")
@@ -238,7 +238,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	opts := CreateOpts{NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a22", IPVersion: 4, CIDR: "192.168.199.0/24"}
-	s, err := Create(ServiceClient(), opts)
+	s, err := Create(ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "")
@@ -304,7 +304,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	opts := UpdateOpts{Name: "my_new_subnet"}
-	s, err := Update(ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts)
+	s, err := Update(ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "my_new_subnet")
@@ -321,6 +321,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := Delete(ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b")
-	th.AssertNoErr(t, err)
+	res := Delete(ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b")
+	th.AssertNoErr(t, res.Err)
 }

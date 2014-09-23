@@ -34,7 +34,7 @@ func TestGetExt(t *testing.T) {
 	Setup(t)
 	defer Teardown()
 
-	ext, err := extensions.Get(Client, "service-type")
+	ext, err := extensions.Get(Client, "service-type").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, ext.Updated, "2013-01-20T00:00:00-00:00")
