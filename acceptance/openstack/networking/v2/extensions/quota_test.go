@@ -1,6 +1,8 @@
-package quotas
+// +build acceptance networking extensions
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestGet(t *testing.T) {
 
