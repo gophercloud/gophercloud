@@ -37,20 +37,11 @@ func TestList(t *testing.T) {
             "status": "ACTIVE",
             "binding:host_id": "devstack",
             "name": "",
-            "allowed_address_pairs": [],
             "admin_state_up": true,
             "network_id": "70c1db1f-b701-45bd-96e0-a313ee3430b3",
             "tenant_id": "",
-            "extra_dhcp_opts": [],
-            "binding:vif_details": {
-                "port_filter": true,
-                "ovs_hybrid_plug": true
-            },
-            "binding:vif_type": "ovs",
             "device_owner": "network:router_gateway",
             "mac_address": "fa:16:3e:58:42:ed",
-            "binding:profile": {},
-            "binding:vnic_type": "normal",
             "fixed_ips": [
                 {
                     "subnet_id": "008ba151-0b8c-4a67-98b5-0d2b87666062",
@@ -78,29 +69,22 @@ func TestList(t *testing.T) {
 
 		expected := []Port{
 			Port{
-				Status:              "ACTIVE",
-				Name:                "",
-				AllowedAddressPairs: []interface{}(nil),
-				AdminStateUp:        true,
-				NetworkID:           "70c1db1f-b701-45bd-96e0-a313ee3430b3",
-				TenantID:            "",
-				ExtraDHCPOpts:       []interface{}{},
-				DeviceOwner:         "network:router_gateway",
-				MACAddress:          "fa:16:3e:58:42:ed",
+				Status:       "ACTIVE",
+				Name:         "",
+				AdminStateUp: true,
+				NetworkID:    "70c1db1f-b701-45bd-96e0-a313ee3430b3",
+				TenantID:     "",
+				DeviceOwner:  "network:router_gateway",
+				MACAddress:   "fa:16:3e:58:42:ed",
 				FixedIPs: []IP{
 					IP{
 						SubnetID:  "008ba151-0b8c-4a67-98b5-0d2b87666062",
 						IPAddress: "172.24.4.2",
 					},
 				},
-				ID:                "d80b1a3b-4fc1-49f3-952e-1e2ab7081d8b",
-				SecurityGroups:    []string{},
-				DeviceID:          "9ae135f4-b6e0-4dad-9e91-3c223e385824",
-				BindingHostID:     "devstack",
-				BindingVIFDetails: map[string]interface{}{"port_filter": true, "ovs_hybrid_plug": true},
-				BindingVIFType:    "ovs",
-				BindingProfile:    map[string]interface{}{},
-				BindingVNICType:   "normal",
+				ID:             "d80b1a3b-4fc1-49f3-952e-1e2ab7081d8b",
+				SecurityGroups: []string{},
+				DeviceID:       "9ae135f4-b6e0-4dad-9e91-3c223e385824",
 			},
 		}
 
@@ -129,22 +113,12 @@ func TestGet(t *testing.T) {
 {
     "port": {
         "status": "ACTIVE",
-        "binding:host_id": "devstack",
         "name": "",
-        "allowed_address_pairs": [],
         "admin_state_up": true,
         "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
         "tenant_id": "7e02058126cc4950b75f9970368ba177",
-        "extra_dhcp_opts": [],
-        "binding:vif_details": {
-            "port_filter": true,
-            "ovs_hybrid_plug": true
-        },
-        "binding:vif_type": "ovs",
         "device_owner": "network:router_interface",
         "mac_address": "fa:16:3e:23:fd:d7",
-        "binding:profile": {},
-        "binding:vnic_type": "normal",
         "fixed_ips": [
             {
                 "subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",
@@ -163,18 +137,12 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
-	th.AssertEquals(t, n.BindingHostID, "devstack")
 	th.AssertEquals(t, n.Name, "")
-	th.AssertDeepEquals(t, n.AllowedAddressPairs, []interface{}(nil))
 	th.AssertEquals(t, n.AdminStateUp, true)
 	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, n.TenantID, "7e02058126cc4950b75f9970368ba177")
-	th.AssertDeepEquals(t, n.ExtraDHCPOpts, []interface{}{})
-	th.AssertDeepEquals(t, n.BindingVIFDetails, map[string]interface{}{"port_filter": true, "ovs_hybrid_plug": true})
 	th.AssertEquals(t, n.DeviceOwner, "network:router_interface")
 	th.AssertEquals(t, n.MACAddress, "fa:16:3e:23:fd:d7")
-	th.AssertDeepEquals(t, n.BindingProfile, map[string]interface{}{})
-	th.AssertEquals(t, n.BindingVNICType, "normal")
 	th.AssertDeepEquals(t, n.FixedIPs, []IP{
 		IP{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.1"},
 	})
@@ -210,18 +178,13 @@ func TestCreate(t *testing.T) {
 {
     "port": {
         "status": "DOWN",
-        "binding:host_id": "",
         "name": "private-port",
         "allowed_address_pairs": [],
         "admin_state_up": true,
         "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
         "tenant_id": "d6700c0c9ffa4f1cb322cd4a1f3906fa",
-        "binding:vif_details": {},
-        "binding:vnic_type": "normal",
-        "binding:vif_type": "unbound",
         "device_owner": "",
         "mac_address": "fa:16:3e:c9:cb:f0",
-        "binding:profile": {},
         "fixed_ips": [
             {
                 "subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",
@@ -244,24 +207,17 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "DOWN")
-	th.AssertEquals(t, n.BindingHostID, "")
 	th.AssertEquals(t, n.Name, "private-port")
-	th.AssertDeepEquals(t, n.AllowedAddressPairs, []interface{}(nil))
 	th.AssertEquals(t, n.AdminStateUp, true)
 	th.AssertEquals(t, n.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, n.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertDeepEquals(t, n.BindingVIFDetails, map[string]interface{}{})
 	th.AssertEquals(t, n.DeviceOwner, "")
 	th.AssertEquals(t, n.MACAddress, "fa:16:3e:c9:cb:f0")
-	th.AssertDeepEquals(t, n.BindingProfile, map[string]interface{}{})
-	th.AssertEquals(t, n.BindingVNICType, "normal")
-	th.AssertEquals(t, n.BindingVIFType, "unbound")
 	th.AssertDeepEquals(t, n.FixedIPs, []IP{
 		IP{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
 	})
 	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
 	th.AssertDeepEquals(t, n.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
-	th.AssertEquals(t, n.DeviceID, "")
 }
 
 func TestUpdate(t *testing.T) {
@@ -297,18 +253,12 @@ func TestUpdate(t *testing.T) {
 {
     "port": {
         "status": "DOWN",
-        "binding:host_id": "",
         "name": "new_port_name",
-        "allowed_address_pairs": [],
         "admin_state_up": true,
         "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
         "tenant_id": "d6700c0c9ffa4f1cb322cd4a1f3906fa",
-        "binding:vif_details": {},
-        "binding:vnic_type": "normal",
-        "binding:vif_type": "unbound",
         "device_owner": "",
         "mac_address": "fa:16:3e:c9:cb:f0",
-        "binding:profile": {},
         "fixed_ips": [
             {
                 "subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",

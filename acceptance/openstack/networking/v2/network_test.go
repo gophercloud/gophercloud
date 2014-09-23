@@ -48,11 +48,7 @@ func TestNetworkCRUDOperations(t *testing.T) {
 	th.AssertEquals(t, n.Status, "ACTIVE")
 	th.AssertDeepEquals(t, n.Subnets, []string{})
 	th.AssertEquals(t, n.Name, "sample_network")
-	th.AssertEquals(t, n.ProviderPhysicalNetwork, "")
-	th.AssertEquals(t, n.ProviderNetworkType, "local")
-	th.AssertEquals(t, n.ProviderSegmentationID, 0)
 	th.AssertEquals(t, n.AdminStateUp, true)
-	th.AssertEquals(t, n.RouterExternal, false)
 	th.AssertEquals(t, n.Shared, false)
 	th.AssertEquals(t, n.ID, networkID)
 

@@ -38,14 +38,6 @@ type Port struct {
 	SecurityGroups []string `mapstructure:"security_groups" json:"security_groups"`
 	// Identifies the device (e.g., virtual server) using this port.
 	DeviceID string `mapstructure:"device_id" json:"device_id"`
-
-	AllowedAddressPairs []interface{} `mapstructure:"allowed" json:"allowed"`
-	ExtraDHCPOpts       interface{}   `mapstructure:"extra_dhcp_opts" json:"extra_dhcp_opts"`
-	BindingHostID       string        `mapstructure:"binding:host_id" json:"binding:host_id"`
-	BindingVIFDetails   interface{}   `mapstructure:"binding:vif_details" json:"binding:vif_details"`
-	BindingVIFType      string        `mapstructure:"binding:vif_type" json:"binding:vif_type"`
-	BindingProfile      interface{}   `mapstructure:"binding:profile" json:"binding:profile"`
-	BindingVNICType     string        `mapstructure:"binding:vnic_type" json:"binding:vnic_type"`
 }
 
 // PortPage is the page returned by a pager when traversing over a collection

@@ -5,10 +5,18 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// AllocationPool is a sub-struct that represents an allocation pool
+// AllocationPool represents a sub-range of cidr available for dynamic
+// allocation to ports, e.g. {Start: "10.0.0.2", End: "10.0.0.254"}
 type AllocationPool struct {
 	Start string `json:"start"`
 	End   string `json:"end"`
+}
+
+// HostRoute represents a route that should be used by devices with IPs from
+// a subnet (not including local subnet route).
+type HostRoute struct {
+	DestinationCIDR string `json:"destination"`
+	NextHop         string `json:"nexthop"`
 }
 
 // Subnet represents a subnet. See package documentation for a top-level
@@ -31,7 +39,7 @@ type Subnet struct {
 	// Sub-ranges of CIDR available for dynamic allocation to ports. See AllocationPool.
 	AllocationPools []AllocationPool `mapstructure:"allocation_pools" json:"allocation_pools"`
 	// Routes that should be used by devices with IPs from this subnet (not including local subnet route).
-	HostRoutes []interface{} `mapstructure:"host_routes" json:"host_routes"`
+	HostRoutes []HostRoute `mapstructure:"host_routes" json:"host_routes"`
 	// Specifies whether DHCP is enabled for this subnet or not.
 	EnableDHCP bool `mapstructure:"enable_dhcp" json:"enable_dhcp"`
 	// Owner of network. Only admin users can specify a tenant_id other than its own.

@@ -113,7 +113,7 @@ type CreateOpts networkOpts
 // The tenant ID that is contained in the URI is the tenant that creates the
 // network. An admin user, however, has the option of specifying another tenant
 // ID in the CreateOpts struct.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*NetworkCreateResult, error) {
+func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*Network, error) {
 	// Define structures
 	type network struct {
 		AdminStateUp bool    `json:"admin_state_up,omitempty"`
@@ -125,7 +125,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (*NetworkCreateResult
 		Network network `json:"network"`
 	}
 	type response struct {
-		Network *NetworkCreateResult `json:"network"`
+		Network *Network `json:"network"`
 	}
 
 	// Populate request body

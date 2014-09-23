@@ -5,13 +5,6 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// NetworkProvider represents provider extension data
-type NetworkProvider struct {
-	ProviderSegmentationID  int    `json:"provider:segmentation_id"`
-	ProviderPhysicalNetwork string `json:"provider:physical_network"`
-	ProviderNetworkType     string `json:"provider:network_type"`
-}
-
 // Network represents, well, a network.
 type Network struct {
 	// UUID for the network
@@ -29,18 +22,6 @@ type Network struct {
 	TenantID string `mapstructure:"tenant_id" json:"tenant_id"`
 	// Specifies whether the network resource can be accessed by any tenant or not.
 	Shared bool `mapstructure:"shared" json:"shared"`
-
-	ProviderSegmentationID  int    `mapstructure:"provider:segmentation_id" json:"provider:segmentation_id"`
-	ProviderPhysicalNetwork string `mapstructure:"provider:physical_network" json:"provider:physical_network"`
-	ProviderNetworkType     string `mapstructure:"provider:network_type" json:"provider:network_type"`
-	RouterExternal          bool   `mapstructure:"router:external" json:"router:external"`
-}
-
-// NetworkCreateResult represents what is returned by a create operation.
-type NetworkCreateResult struct {
-	Network
-	Segments            []NetworkProvider `json:"segments"`
-	PortSecurityEnabled bool              `json:"port_security_enabled"`
 }
 
 // NetworkPage is the page returned by a pager when traversing over a

@@ -99,7 +99,7 @@ func TestList(t *testing.T) {
 						End:   "10.0.0.254",
 					},
 				},
-				HostRoutes: []interface{}{},
+				HostRoutes: []HostRoute{},
 				IPVersion:  4,
 				GatewayIP:  "10.0.0.1",
 				CIDR:       "10.0.0.0/24",
@@ -117,7 +117,7 @@ func TestList(t *testing.T) {
 						End:   "192.255.255.254",
 					},
 				},
-				HostRoutes: []interface{}{},
+				HostRoutes: []HostRoute{},
 				IPVersion:  4,
 				GatewayIP:  "192.0.0.1",
 				CIDR:       "192.0.0.0/8",
@@ -184,7 +184,7 @@ func TestGet(t *testing.T) {
 			End:   "192.255.255.254",
 		},
 	})
-	th.AssertDeepEquals(t, s.HostRoutes, []interface{}{})
+	th.AssertDeepEquals(t, s.HostRoutes, []HostRoute{})
 	th.AssertEquals(t, s.IPVersion, 4)
 	th.AssertEquals(t, s.GatewayIP, "192.0.0.1")
 	th.AssertEquals(t, s.CIDR, "192.0.0.0/8")
@@ -252,7 +252,7 @@ func TestCreate(t *testing.T) {
 			End:   "192.168.199.254",
 		},
 	})
-	th.AssertDeepEquals(t, s.HostRoutes, []interface{}{})
+	th.AssertDeepEquals(t, s.HostRoutes, []HostRoute{})
 	th.AssertEquals(t, s.IPVersion, 4)
 	th.AssertEquals(t, s.GatewayIP, "192.168.199.1")
 	th.AssertEquals(t, s.CIDR, "192.168.199.0/24")
