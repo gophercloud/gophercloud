@@ -69,12 +69,7 @@ func TestVolumes(t *testing.T) {
 		return
 	}
 
-	gr, err := volumes.Get(client, cv.ID)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	v, err := volumes.ExtractVolume(gr)
+	v, err := volumes.Get(client, cv.ID).ExtractVolume()
 	if err != nil {
 		t.Error(err)
 		return

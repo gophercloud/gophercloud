@@ -60,15 +60,22 @@ func ExtractVolumes(page pagination.Page) ([]Volume, error) {
 	return response.Volumes, err
 }
 
-type GetResult map[string]interface{}
+type GetResult struct {
+	err error
+	r   map[string]interface{}
+}
 
 // ExtractVolume extracts and returns the Volume from a 'Get' request.
-func ExtractVolume(gr GetResult) (*Volume, error) {
+func (gr GetResult) ExtractVolume() (*Volume, error) {
+	if gr.err != nil {
+		return nil, gr.err
+	}
+
 	var response struct {
 		Volume *Volume `json:"volume"`
 	}
 
-	err := mapstructure.Decode(gr, &response)
+	err := mapstructure.Decode(gr.r, &response)
 	if err != nil {
 		return nil, fmt.Errorf("volumes: Error decoding volumes.GetResult: %v", err)
 	}

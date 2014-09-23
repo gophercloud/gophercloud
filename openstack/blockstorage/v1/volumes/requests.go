@@ -76,13 +76,14 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	return pagination.NewPager(client, volumesURL(client), createPage)
 }
 
-func Get(client *gophercloud.ServiceClient, id string) (GetResult, error) {
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var gr GetResult
 	_, err := perigee.Request("GET", volumeURL(client, id), perigee.Options{
-		Results:     &gr,
+		Results:     &gr.r,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
-	return gr, err
+	gr.err = err
+	return gr
 }
 
 type UpdateOpts struct {
