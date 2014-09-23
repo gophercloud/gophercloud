@@ -3,16 +3,32 @@
 package v1
 
 import (
+	"errors"
 	"strconv"
 	"testing"
-	//"time"
+	"time"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/snapshots"
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes"
 )
 
-func waitForVolume(id string) {
+func waitForVolume(client *gophercloud.ServiceClient, id string) error {
+	notReady := true
+	secondsSlept := 0
+	for notReady && secondsSlept < 20 {
+		gv, err := volumes.Get(client, id).ExtractVolume()
+		if err != nil {
+			return err
+		}
+		if gv.Status == "available" {
+			return nil
+		}
+		time.Sleep(1 * time.Millisecond)
+		secondsSlept = secondsSlept + 1
+	}
 
+	return errors.New("Time out waiting for volume to become available")
 }
 
 var numSnapshots = 1
@@ -31,7 +47,10 @@ func TestSnapshots(t *testing.T) {
 		t.Fatalf("Failed to create volume: %v", err)
 	}
 
-	waitForVolume(cv.ID)
+	err = waitForVolume(client, cv.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	var sss []*snapshots.Snapshot
 	for i := 0; i < numSnapshots; i++ {

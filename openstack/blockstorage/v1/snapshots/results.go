@@ -10,3 +10,5 @@ type Snapshot struct {
 	Status      string
 	VolumeID    string
 }
+
+type GetResult map[string]interface{}

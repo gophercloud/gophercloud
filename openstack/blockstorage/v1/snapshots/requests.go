@@ -55,3 +55,12 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*Snapshot, erro
 
 	return &respBody.Snapshot, nil
 }
+
+func Get(client *gophercloud.ServiceClient, id string) (GetResult, error) {
+	var gr GetResult
+	_, err := perigee.Request("GET", snapshotURL(client, id), perigee.Options{
+		Results:     &gr,
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+	})
+	return gr, err
+}
