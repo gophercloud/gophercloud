@@ -24,7 +24,7 @@ func waitForVolume(client *gophercloud.ServiceClient, id string) error {
 		if gv.Status == "available" {
 			return nil
 		}
-		time.Sleep(1 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 		secondsSlept = secondsSlept + 1
 	}
 
@@ -51,6 +51,13 @@ func TestSnapshots(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer func() {
+		err = volumes.Delete(client, cv.ID)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+	}()
 
 	var sss []*snapshots.Snapshot
 	for i := 0; i < numSnapshots; i++ {
@@ -63,6 +70,6 @@ func TestSnapshots(t *testing.T) {
 		}
 		sss = append(sss, css)
 	}
-
 	t.Logf("Created snapshots: %+v\n", sss)
+
 }
