@@ -273,48 +273,41 @@ func TestActionRebuild(t *testing.T) {
 	}
 }
 
-func resizeServer(t *testing.T, client *gophercloud.ServiceClient) *servers.Server {
-	choices, err := ComputeChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	server, err := createServer(t, client, choices)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
+func resizeServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server, choices *ComputeChoices) {
+	if err := waitForStatus(client, server, "ACTIVE"); err != nil {
 		t.Fatal(err)
 	}
 
 	t.Logf("Attempting to resize server [%s]", server.ID)
 
-	if err = servers.Resize(client, server.ID, choices.FlavorIDResize); err != nil {
+	if err := servers.Resize(client, server.ID, choices.FlavorIDResize); err != nil {
 		t.Fatal(err)
 	}
 
-	if err = waitForStatus(client, server, "RESIZE"); err != nil {
+	if err := waitForStatus(client, server, "VERIFY_RESIZE"); err != nil {
 		t.Fatal(err)
 	}
-
-	if err = waitForStatus(client, server, "VERIFY_RESIZE"); err != nil {
-		t.Fatal(err)
-	}
-
-	return server
 }
 
 func TestActionResizeConfirm(t *testing.T) {
 	t.Parallel()
+
+	choices, err := ComputeChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	client, err := newClient()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	server := resizeServer(t, client)
+	server, err := createServer(t, client, choices)
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer servers.Delete(client, server.ID)
+	resizeServer(t, client, server, choices)
 
 	t.Logf("Attempting to confirm resize for server %s", server.ID)
 
@@ -330,25 +323,26 @@ func TestActionResizeConfirm(t *testing.T) {
 func TestActionResizeRevert(t *testing.T) {
 	t.Parallel()
 
+	choices, err := ComputeChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	client, err := newClient()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	server := resizeServer(t, client)
-	defer servers.Delete(client, server.ID)
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
+	server, err := createServer(t, client, choices)
+	if err != nil {
 		t.Fatal(err)
 	}
+	defer servers.Delete(client, server.ID)
+	resizeServer(t, client, server, choices)
 
 	t.Logf("Attempting to revert resize for server %s", server.ID)
 
 	if err := servers.RevertResize(client, server.ID); err != nil {
-		t.Fatal(err)
-	}
-
-	if err = waitForStatus(client, server, "REVERT_RESIZE"); err != nil {
 		t.Fatal(err)
 	}
 

@@ -49,7 +49,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 		return p
 	}
 
-	return pagination.NewPager(client, getListURL(client), createPage)
+	return pagination.NewPager(client, getDetailURL(client), createPage)
 }
 
 // Create requests a server to be provisioned to the user in the current tenant.
@@ -100,12 +100,16 @@ func Update(client *gophercloud.ServiceClient, id string, opts map[string]interf
 
 // ChangeAdminPassword alters the administrator or root password for a specified server.
 func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword string) error {
+	var req struct {
+		ChangePassword struct {
+			AdminPass string `json:"adminPass"`
+		} `json:"changePassword"`
+	}
+
+	req.ChangePassword.AdminPass = newPassword
+
 	_, err := perigee.Request("POST", getActionURL(client, id), perigee.Options{
-		ReqBody: struct {
-			C map[string]string `json:"changePassword"`
-		}{
-			map[string]string{"adminPass": newPassword},
-		},
+		ReqBody:     req,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
