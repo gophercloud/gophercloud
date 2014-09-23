@@ -1,370 +1,102 @@
 // +build acceptance
 
-package compute
+package v2
 
 import (
 	"fmt"
 	"os"
-	"testing"
+	"strings"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/acceptance/tools"
-	"github.com/rackspace/gophercloud/openstack/compute/v2/flavors"
-	"github.com/rackspace/gophercloud/openstack/compute/v2/images"
+	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
-var service = "compute"
-
-func TestListServers(t *testing.T) {
-	ts, err := tools.SetupForList(service)
+func newClient() (*gophercloud.ServiceClient, error) {
+	ao, err := utils.AuthOptions()
 	if err != nil {
-		t.Error(err)
-		return
+		return nil, err
 	}
 
-	fmt.Fprintln(ts.W, "ID\tRegion\tName\tStatus\tIPv4\tIPv6\t")
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
 
-	region := os.Getenv("OS_REGION_NAME")
-	n := 0
-	for _, ep := range ts.EPs {
-		if (region != "") && (region != ep.Region) {
-			continue
-		}
+	return openstack.NewComputeV2(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
 
-		client := servers.NewClient(ep.PublicURL, ts.A, ts.O)
-
-		listResults, err := servers.List(client)
+func waitForStatus(client *gophercloud.ServiceClient, server *servers.Server, status string) error {
+	return tools.WaitFor(func() (bool, error) {
+		response, err := servers.Get(client, server.ID)
 		if err != nil {
-			t.Error(err)
-			return
+			return false, err
 		}
-
-		svrs, err := servers.GetServers(listResults)
+		latest, err := servers.ExtractServer(response)
 		if err != nil {
-			t.Error(err)
-			return
+			return false, err
 		}
 
-		n = n + len(svrs)
-
-		for _, s := range svrs {
-			fmt.Fprintf(ts.W, "%s\t%s\t%s\t%s\t%s\t%s\t\n", s.Id, s.Name, ep.Region, s.Status, s.AccessIPv4, s.AccessIPv6)
+		if latest.Status == status {
+			// Success!
+			return true, nil
 		}
-	}
-	ts.W.Flush()
-	fmt.Printf("--------\n%d servers listed.\n", n)
+
+		return false, nil
+	})
 }
 
-func TestListImages(t *testing.T) {
-	ts, err := tools.SetupForList(service)
-	if err != nil {
-		t.Error(err)
-		return
-	}
+// ComputeChoices contains image and flavor selections for use by the acceptance tests.
+type ComputeChoices struct {
+	// ImageID contains the ID of a valid image.
+	ImageID string
 
-	fmt.Fprintln(ts.W, "ID\tRegion\tName\tStatus\tCreated\t")
+	// FlavorID contains the ID of a valid flavor.
+	FlavorID string
 
-	region := os.Getenv("OS_REGION_NAME")
-	n := 0
-	for _, ep := range ts.EPs {
-		if (region != "") && (region != ep.Region) {
-			continue
-		}
-
-		client := images.NewClient(ep.PublicURL, ts.A, ts.O)
-
-		listResults, err := images.List(client)
-		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		imgs, err := images.GetImages(listResults)
-		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		n = n + len(imgs)
-
-		for _, i := range imgs {
-			fmt.Fprintf(ts.W, "%s\t%s\t%s\t%s\t%s\t\n", i.Id, ep.Region, i.Name, i.Status, i.Created)
-		}
-	}
-	ts.W.Flush()
-	fmt.Printf("--------\n%d images listed.\n", n)
+	// FlavorIDResize contains the ID of a different flavor available on the same OpenStack installation, that is distinct
+	// from FlavorID.
+	FlavorIDResize string
 }
 
-func TestListFlavors(t *testing.T) {
-	ts, err := tools.SetupForList(service)
-	if err != nil {
-		t.Error(err)
-		return
+// ComputeChoicesFromEnv populates a ComputeChoices struct from environment variables.
+// If any required state is missing, an `error` will be returned that enumerates the missing properties.
+func ComputeChoicesFromEnv() (*ComputeChoices, error) {
+	imageID := os.Getenv("OS_IMAGE_ID")
+	flavorID := os.Getenv("OS_FLAVOR_ID")
+	flavorIDResize := os.Getenv("OS_FLAVOR_ID_RESIZE")
+
+	missing := make([]string, 0, 3)
+	if imageID == "" {
+		missing = append(missing, "OS_IMAGE_ID")
+	}
+	if flavorID == "" {
+		missing = append(missing, "OS_FLAVOR_ID")
+	}
+	if flavorIDResize == "" {
+		missing = append(missing, "OS_FLAVOR_ID_RESIZE")
 	}
 
-	fmt.Fprintln(ts.W, "ID\tRegion\tName\tRAM\tDisk\tVCPUs\t")
+	notDistinct := ""
+	if flavorID == flavorIDResize {
+		notDistinct = "OS_FLAVOR_ID and OS_FLAVOR_ID_RESIZE must be distinct."
+	}
 
-	region := os.Getenv("OS_REGION_NAME")
-	n := 0
-	for _, ep := range ts.EPs {
-		if (region != "") && (region != ep.Region) {
-			continue
+	if len(missing) > 0 || notDistinct != "" {
+		text := "You're missing some important setup:\n"
+		if len(missing) > 0 {
+			text += " * These environment variables must be provided: " + strings.Join(missing, ", ") + "\n"
+		}
+		if notDistinct != "" {
+			text += " * " + notDistinct + "\n"
 		}
 
-		client := flavors.NewClient(ep.PublicURL, ts.A, ts.O)
-
-		listResults, err := flavors.List(client, flavors.ListFilterOptions{})
-		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		flavs, err := flavors.GetFlavors(listResults)
-		if err != nil {
-			t.Error(err)
-			return
-		}
-
-		n = n + len(flavs)
-
-		for _, f := range flavs {
-			fmt.Fprintf(ts.W, "%s\t%s\t%s\t%d\t%d\t%d\t\n", f.Id, ep.Region, f.Name, f.Ram, f.Disk, f.VCpus)
-		}
-	}
-	ts.W.Flush()
-	fmt.Printf("--------\n%d flavors listed.\n", n)
-}
-
-func TestGetFlavor(t *testing.T) {
-	ts, err := tools.SetupForCRUD()
-	if err != nil {
-		t.Fatal(err)
+		return nil, fmt.Errorf(text)
 	}
 
-	region := os.Getenv("OS_REGION_NAME")
-	for _, ep := range ts.EPs {
-		if (region != "") && (region != ep.Region) {
-			continue
-		}
-		client := flavors.NewClient(ep.PublicURL, ts.A, ts.O)
-
-		getResults, err := flavors.Get(client, ts.FlavorId)
-		if err != nil {
-			t.Fatal(err)
-		}
-		flav, err := flavors.GetFlavor(getResults)
-		if err != nil {
-			t.Fatal(err)
-		}
-		fmt.Printf("%#v\n", flav)
-	}
-}
-
-func TestCreateDestroyServer(t *testing.T) {
-	ts, err := tools.SetupForCRUD()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	err = tools.CreateServer(ts)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	// We put this in a defer so that it gets executed even in the face of errors or panics.
-	defer func() {
-		servers.Delete(ts.Client, ts.CreatedServer.Id)
-	}()
-
-	err = tools.WaitForStatus(ts, "ACTIVE")
-	if err != nil {
-		t.Error(err)
-	}
-}
-
-func TestUpdateServer(t *testing.T) {
-	ts, err := tools.SetupForCRUD()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	err = tools.CreateServer(ts)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	defer func() {
-		servers.Delete(ts.Client, ts.CreatedServer.Id)
-	}()
-
-	err = tools.WaitForStatus(ts, "ACTIVE")
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	err = tools.ChangeServerName(ts)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-}
-
-func TestActionChangeAdminPassword(t *testing.T) {
-	t.Parallel()
-
-	ts, err := tools.SetupForCRUD()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.CreateServer(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer func() {
-		servers.Delete(ts.Client, ts.CreatedServer.Id)
-	}()
-
-	err = tools.WaitForStatus(ts, "ACTIVE")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.ChangeAdminPassword(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestActionReboot(t *testing.T) {
-	t.Parallel()
-
-	ts, err := tools.SetupForCRUD()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.CreateServer(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer func() {
-		servers.Delete(ts.Client, ts.CreatedServer.Id)
-	}()
-
-	err = tools.WaitForStatus(ts, "ACTIVE")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = servers.Reboot(ts.Client, ts.CreatedServer.Id, "aldhjflaskhjf")
-	if err == nil {
-		t.Fatal("Expected the SDK to provide an ArgumentError here")
-	}
-
-	err = tools.RebootServer(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestActionRebuild(t *testing.T) {
-	t.Parallel()
-
-	ts, err := tools.SetupForCRUD()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.CreateServer(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer func() {
-		servers.Delete(ts.Client, ts.CreatedServer.Id)
-	}()
-
-	err = tools.WaitForStatus(ts, "ACTIVE")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.RebuildServer(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestActionResizeConfirm(t *testing.T) {
-	t.Parallel()
-
-	ts, err := tools.SetupForCRUD()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.CreateServer(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer func() {
-		servers.Delete(ts.Client, ts.CreatedServer.Id)
-	}()
-
-	err = tools.WaitForStatus(ts, "ACTIVE")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.ResizeServer(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.ConfirmResize(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestActionResizeRevert(t *testing.T) {
-	t.Parallel()
-
-	ts, err := tools.SetupForCRUD()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.CreateServer(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer func() {
-		servers.Delete(ts.Client, ts.CreatedServer.Id)
-	}()
-
-	err = tools.WaitForStatus(ts, "ACTIVE")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.ResizeServer(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tools.RevertResize(ts)
-	if err != nil {
-		t.Fatal(err)
-	}
+	return &ComputeChoices{ImageID: imageID, FlavorID: flavorID, FlavorIDResize: flavorIDResize}, nil
 }
