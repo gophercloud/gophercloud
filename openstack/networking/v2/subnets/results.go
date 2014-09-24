@@ -12,6 +12,7 @@ type commonResult struct {
 	gophercloud.CommonResult
 }
 
+// Extract is a function that accepts a result and extracts a subnet resource.
 func (r commonResult) Extract() (*Subnet, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -29,18 +30,22 @@ func (r commonResult) Extract() (*Subnet, error) {
 	return res.Subnet, nil
 }
 
+// CreateResult represents the result of a create operation.
 type CreateResult struct {
 	commonResult
 }
 
+// GetResult represents the result of a get operation.
 type GetResult struct {
 	commonResult
 }
 
+// UpdateResult represents the result of an update operation.
 type UpdateResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a delete operation.
 type DeleteResult commonResult
 
 // AllocationPool represents a sub-range of cidr available for dynamic
