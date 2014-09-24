@@ -293,3 +293,12 @@ func NewStorageV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 	}
 	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
 }
+
+func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("network")
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+}
