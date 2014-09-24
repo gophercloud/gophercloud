@@ -9,13 +9,6 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-func maybeString(original string) *string {
-	if original != "" {
-		return &original
-	}
-	return nil
-}
-
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the subnet attributes you want to see returned. SortKey allows you to sort
@@ -161,9 +154,9 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	reqBody := request{Subnet: subnet{
 		NetworkID:  opts.NetworkID,
 		CIDR:       opts.CIDR,
-		Name:       maybeString(opts.Name),
-		TenantID:   maybeString(opts.TenantID),
-		GatewayIP:  maybeString(opts.GatewayIP),
+		Name:       gophercloud.MaybeString(opts.Name),
+		TenantID:   gophercloud.MaybeString(opts.TenantID),
+		GatewayIP:  gophercloud.MaybeString(opts.GatewayIP),
 		EnableDHCP: opts.EnableDHCP,
 	}}
 
@@ -215,8 +208,8 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 	}
 
 	reqBody := request{Subnet: subnet{
-		Name:       maybeString(opts.Name),
-		GatewayIP:  maybeString(opts.GatewayIP),
+		Name:       gophercloud.MaybeString(opts.Name),
+		GatewayIP:  gophercloud.MaybeString(opts.GatewayIP),
 		EnableDHCP: opts.EnableDHCP,
 	}}
 

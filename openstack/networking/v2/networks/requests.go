@@ -16,16 +16,6 @@ type networkOpts struct {
 	TenantID     string
 }
 
-func ptrToStr(val *bool) string {
-	if *val == true {
-		return "true"
-	} else if *val == false {
-		return "false"
-	} else {
-		return ""
-	}
-}
-
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the network attributes you want to see returned. SortKey allows you to sort
@@ -57,13 +47,13 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 		q["name"] = opts.Name
 	}
 	if opts.AdminStateUp != nil {
-		q["admin_state_up"] = ptrToStr(opts.AdminStateUp)
+		q["admin_state_up"] = strconv.FormatBool(*opts.AdminStateUp)
 	}
 	if opts.TenantID != "" {
 		q["tenant_id"] = opts.TenantID
 	}
 	if opts.Shared != nil {
-		q["shared"] = ptrToStr(opts.Shared)
+		q["shared"] = strconv.FormatBool(*opts.Shared)
 	}
 	if opts.ID != "" {
 		q["id"] = opts.ID

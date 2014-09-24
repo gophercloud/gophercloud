@@ -9,13 +9,6 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-func maybeString(original string) *string {
-	if original != "" {
-		return &original
-	}
-	return nil
-}
-
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the port attributes you want to see returned. SortKey allows you to sort
@@ -162,12 +155,12 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	// Populate request body
 	reqBody := request{Port: port{
 		NetworkID:    opts.NetworkID,
-		Name:         maybeString(opts.Name),
+		Name:         gophercloud.MaybeString(opts.Name),
 		AdminStateUp: opts.AdminStateUp,
-		TenantID:     maybeString(opts.TenantID),
-		MACAddress:   maybeString(opts.MACAddress),
-		DeviceID:     maybeString(opts.DeviceID),
-		DeviceOwner:  maybeString(opts.DeviceOwner),
+		TenantID:     gophercloud.MaybeString(opts.TenantID),
+		MACAddress:   gophercloud.MaybeString(opts.MACAddress),
+		DeviceID:     gophercloud.MaybeString(opts.DeviceID),
+		DeviceOwner:  gophercloud.MaybeString(opts.DeviceOwner),
 	}}
 
 	if opts.FixedIPs != nil {
@@ -217,10 +210,10 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 
 	// Populate request body
 	reqBody := request{Port: port{
-		Name:         maybeString(opts.Name),
+		Name:         gophercloud.MaybeString(opts.Name),
 		AdminStateUp: opts.AdminStateUp,
-		DeviceID:     maybeString(opts.DeviceID),
-		DeviceOwner:  maybeString(opts.DeviceOwner),
+		DeviceID:     gophercloud.MaybeString(opts.DeviceID),
+		DeviceOwner:  gophercloud.MaybeString(opts.DeviceOwner),
 	}}
 
 	if opts.FixedIPs != nil {
