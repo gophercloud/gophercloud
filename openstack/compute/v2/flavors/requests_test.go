@@ -50,9 +50,14 @@ func TestListFlavors(t *testing.T) {
 								"ram": 1024,
 								"vcpus": 2
 							}
+						],
+						"flavors_links": [
+							{
+								"href": "%s/flavors?marker=2"
+							}
 						]
 					}
-				`)
+				`, testhelper.Server.URL)
 		case "2":
 			fmt.Fprintf(w, `{ "flavors": [] }`)
 		default:
