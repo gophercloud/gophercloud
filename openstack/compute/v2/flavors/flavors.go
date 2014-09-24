@@ -44,22 +44,24 @@ func defaulter(from, to reflect.Kind, v interface{}) (interface{}, error) {
 // ExtractFlavors provides access to the list of flavors in a page acquired from the List operation.
 func ExtractFlavors(page pagination.Page) ([]Flavor, error) {
 	casted := page.(ListPage).Body
-	var flavors []Flavor
+	var container struct {
+		Flavors []Flavor `mapstructure:"flavors"`
+	}
 
 	cfg := &mapstructure.DecoderConfig{
 		DecodeHook: defaulter,
-		Result:     &flavors,
+		Result:     &container,
 	}
 	decoder, err := mapstructure.NewDecoder(cfg)
 	if err != nil {
-		return flavors, err
+		return container.Flavors, err
 	}
 	err = decoder.Decode(casted)
 	if err != nil {
-		return flavors, err
+		return container.Flavors, err
 	}
 
-	return flavors, nil
+	return container.Flavors, nil
 }
 
 // ExtractFlavor provides access to the individual flavor returned by the Get function.
