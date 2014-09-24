@@ -19,11 +19,11 @@ WARNING: This library is still in the very early stages of development. Unless y
 
 === Getting the code
 
-To download Gophercloud, simpy run
+To download Gophercloud, simply run
 ```
 go get github.com/rackspace/gophercloud
 ```
-It will automatically retrieve all dependencies. Goperhcloud and its dependencies will be located within your $GOPATH.
+It will automatically retrieve all dependencies. Goperhcloud and its dependencies will be located within your $GOPATH (%GOPATH% if you are using Windows).
 
 === Running the tests
 
