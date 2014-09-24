@@ -303,3 +303,13 @@ func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 	}
 	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
 }
+
+// NewNetworkV2 creates a ServiceClient that may be used with the v2 network package.
+func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("network")
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+}
