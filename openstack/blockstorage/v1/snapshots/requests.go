@@ -45,7 +45,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*Snapshot, erro
 
 	_, err := perigee.Request("POST", snapshotsURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{201},
+		OkCodes:     []int{200, 201},
 		ReqBody:     &reqBody,
 		Results:     &respBody,
 	})
@@ -54,6 +54,13 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*Snapshot, erro
 	}
 
 	return &respBody.Snapshot, nil
+}
+
+func Delete(client *gophercloud.ServiceClient, id string) error {
+	_, err := perigee.Request("Delete", snapshotURL(client, id), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+	})
+	return err
 }
 
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
