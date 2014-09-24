@@ -1,48 +1,119 @@
 package images
 
 import (
-	"encoding/json"
+	"fmt"
+	"net/http"
+	"reflect"
 	"testing"
+
+	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/testhelper"
 )
 
-const (
-	// This example was taken from: http://docs.openstack.org/api/openstack-compute/2/content/Rebuild_Server-d1e3538.html
+const tokenID = "aaaaaa"
 
-	simpleImageJSON = `
-	{
-		"id": "52415800-8b69-11e0-9b19-734f6f006e54",
-		"name": "CentOS 5.2",
-		"links": [
-			{
-				"rel": "self",
-				"href": "http://servers.api.openstack.org/v2/1234/images/52415800-8b69-11e0-9b19-734f6f006e54"
+func serviceClient() *gophercloud.ServiceClient {
+	return &gophercloud.ServiceClient{
+		Provider: &gophercloud.ProviderClient{TokenID: tokenID},
+		Endpoint: testhelper.Endpoint(),
+	}
+}
+
+func TestListImages(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+
+	testhelper.Mux.HandleFunc("/images/detail", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, `
+				{
+					"images": [
+						{
+							"status": "ACTIVE",
+							"updated": "2014-09-23T12:54:56Z",
+							"id": "f3e4a95d-1f4f-4989-97ce-f3a1fb8c04d7",
+							"OS-EXT-IMG-SIZE:size": 476704768,
+							"name": "F17-x86_64-cfntools",
+							"created": "2014-09-23T12:54:52Z",
+							"minDisk": 0,
+							"progress": 100,
+							"minRam": 0,
+							"metadata": {}
+						},
+						{
+							"status": "ACTIVE",
+							"updated": "2014-09-23T12:51:43Z",
+							"id": "f90f6034-2570-4974-8351-6b49732ef2eb",
+							"OS-EXT-IMG-SIZE:size": 13167616,
+							"name": "cirros-0.3.2-x86_64-disk",
+							"created": "2014-09-23T12:51:42Z",
+							"minDisk": 0,
+							"progress": 100,
+							"minRam": 0,
+							"metadata": {}
+						}
+					]
+				}
+			`)
+		case "2":
+			fmt.Fprintf(w, `{ "images": [] }`)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
+	})
+
+	client := serviceClient()
+	pages := 0
+	err := List(client).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := ExtractImages(page)
+		if err != nil {
+			return false, err
+		}
+
+		expected := []Image{
+			Image{
+				ID:       "f3e4a95d-1f4f-4989-97ce-f3a1fb8c04d7",
+				Name:     "F17-x86_64-cfntools",
+				Created:  "2014-09-23T12:54:52Z",
+				Updated:  "2014-09-23T12:54:56Z",
+				MinDisk:  0,
+				MinRAM:   0,
+				Progress: 100,
+				Status:   "ACTIVE",
 			},
-			{
-				"rel": "bookmark",
-				"href": "http://servers.api.openstack.org/1234/images/52415800-8b69-11e0-9b19-734f6f006e54"
-			}
-		]
-	}
-	`
-)
+			Image{
+				ID:       "f90f6034-2570-4974-8351-6b49732ef2eb",
+				Name:     "cirros-0.3.2-x86_64-disk",
+				Created:  "2014-09-23T12:51:42Z",
+				Updated:  "2014-09-23T12:51:43Z",
+				MinDisk:  0,
+				MinRAM:   0,
+				Progress: 100,
+				Status:   "ACTIVE",
+			},
+		}
 
-func TestExtractImage(t *testing.T) {
-	var simpleImage GetResult
-	err := json.Unmarshal([]byte(simpleImageJSON), &simpleImage)
+		if !reflect.DeepEqual(expected, actual) {
+			t.Errorf("Unexpected page contents: expected %#v, got %#v", expected, actual)
+		}
+
+		return false, nil
+	})
+
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("EachPage error: %v", err)
 	}
-
-	image, err := ExtractImage(simpleImage)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if image.ID != "52415800-8b69-11e0-9b19-734f6f006e54" {
-		t.Fatal("I expected an image ID of 52415800-8b69-11e0-9b19-734f6f006e54; got " + image.ID)
-	}
-
-	if image.Name != "CentOS 5.2" {
-		t.Fatal("I expected an image name of CentOS 5.2; got " + image.Name)
+	if pages != 1 {
+		t.Errorf("Expected one page, got %d", pages)
 	}
 }

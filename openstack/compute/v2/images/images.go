@@ -31,10 +31,12 @@ type Image struct {
 // ExtractImages converts a page of List results into a slice of usable Image structs.
 func ExtractImages(page pagination.Page) ([]Image, error) {
 	casted := page.(ListPage).Body
-	var results []Image
+	var results struct {
+		Images []Image `mapstructure:"images"`
+	}
 
-	err := mapstructure.Decode(results, casted)
-	return results, err
+	err := mapstructure.Decode(casted, &results)
+	return results.Images, err
 }
 
 // ExtractImage converts the result of a Get call into a more usable Image structure.
