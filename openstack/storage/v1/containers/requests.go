@@ -57,12 +57,9 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	}
 
 	url := accountURL(c) + query
-	resp, err := perigee.Request("GET", url, perigee.Options{
-		MoreHeaders: h,
-		Accept:      contentType,
-		OkCodes:     []int{200, 204},
-	})
-	return &resp.HttpResponse, err
+	pager := pagination.NewPager(c, url, createPage)
+	pager.Headers = headers
+	return pager
 }
 
 // Create is a function that creates a new container.
