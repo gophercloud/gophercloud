@@ -89,4 +89,53 @@ func TestListFlavors(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if pages != 1 {
+		t.Errorf("Expected one page, got %d", pages)
+	}
+}
+
+func TestGetFlavor(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+
+	testhelper.Mux.HandleFunc("/flavors/12345", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `
+			{
+				"flavor": {
+					"id": "1",
+					"name": "m1.tiny",
+					"disk": 1,
+					"ram": 512,
+					"vcpus": 1,
+					"rxtx_factor": 1
+				}
+			}
+		`)
+	})
+
+	client := serviceClient()
+	result, err := Get(client, "12345")
+	if err != nil {
+		t.Fatalf("Unable to get flavor: %v", err)
+	}
+	actual, err := ExtractFlavor(result)
+	if err != nil {
+		t.Fatalf("Unable to extract flavor: %v", err)
+	}
+
+	expected := &Flavor{
+		ID:         "1",
+		Name:       "m1.tiny",
+		Disk:       1,
+		RAM:        512,
+		VCPUs:      1,
+		RxTxFactor: 1,
+	}
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %#v, but was %#v", expected, actual)
+	}
 }
