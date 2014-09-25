@@ -108,7 +108,19 @@ func TestCreateServer(t *testing.T) {
 func TestDeleteServer(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
-	t.Error("Pending")
+
+	testhelper.Mux.HandleFunc("/servers/asdfasdfasdf", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "DELETE")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	client := serviceClient()
+	err := Delete(client, "asdfasdfasdf")
+	if err != nil {
+		t.Fatalf("Unexpected Delete error: %v", err)
+	}
 }
 
 func TestGetServer(t *testing.T) {
