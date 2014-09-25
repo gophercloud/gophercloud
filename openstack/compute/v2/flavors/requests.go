@@ -32,9 +32,6 @@ func (p ListPage) LastMarker() (string, error) {
 	return flavors[len(flavors)-1].ID, nil
 }
 
-// GetResults temporarily encodes the result of a Get operation.
-type GetResults map[string]interface{}
-
 // ListFilterOptions helps control the results returned by the List() function.
 // For example, a flavor with a minDisk field of 10 will not be returned if you specify MinDisk set to 20.
 // Typically, software will use the last ID of the previous call to List to set the Marker for the current call.
@@ -69,11 +66,11 @@ func List(client *gophercloud.ServiceClient, lfo ListFilterOptions) pagination.P
 
 // Get instructs OpenStack to provide details on a single flavor, identified by its ID.
 // Use ExtractFlavor to convert its result into a Flavor.
-func Get(client *gophercloud.ServiceClient, id string) (GetResults, error) {
-	var gr GetResults
-	err := perigee.Get(getFlavorURL(client, id), perigee.Options{
-		Results:     &gr,
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
+	var gr GetResult
+	gr.Err = perigee.Get(getFlavorURL(client, id), perigee.Options{
+		Results:     &gr.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
-	return gr, err
+	return gr
 }

@@ -5,11 +5,39 @@ import (
 	"reflect"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
 // ErrCannotInterpret is returned by an Extract call if the response body doesn't have the expected structure.
 var ErrCannotInterpet = errors.New("Unable to interpret a response body.")
+
+// GetResult temporarily holds the reponse from a Get call.
+type GetResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract provides access to the individual Flavor returned by the Get function.
+func (gr GetResult) Extract() (*Flavor, error) {
+	if gr.Err != nil {
+		return nil, gr.Err
+	}
+
+	var result struct {
+		Flavor Flavor `mapstructure:"flavor"`
+	}
+
+	cfg := &mapstructure.DecoderConfig{
+		DecodeHook: defaulter,
+		Result:     &result,
+	}
+	decoder, err := mapstructure.NewDecoder(cfg)
+	if err != nil {
+		return nil, err
+	}
+	err = decoder.Decode(gr.Resp)
+	return &result.Flavor, err
+}
 
 // Flavor records represent (virtual) hardware configurations for server resources in a region.
 type Flavor struct {
@@ -62,24 +90,4 @@ func ExtractFlavors(page pagination.Page) ([]Flavor, error) {
 	}
 
 	return container.Flavors, nil
-}
-
-// ExtractFlavor provides access to the individual flavor returned by the Get function.
-func ExtractFlavor(gr GetResults) (*Flavor, error) {
-	f, ok := gr["flavor"]
-	if !ok {
-		return nil, ErrCannotInterpet
-	}
-
-	flav := new(Flavor)
-	cfg := &mapstructure.DecoderConfig{
-		DecodeHook: defaulter,
-		Result:     flav,
-	}
-	decoder, err := mapstructure.NewDecoder(cfg)
-	if err != nil {
-		return flav, err
-	}
-	err = decoder.Decode(f)
-	return flav, err
 }

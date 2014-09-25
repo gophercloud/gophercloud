@@ -118,13 +118,9 @@ func TestGetFlavor(t *testing.T) {
 	})
 
 	client := serviceClient()
-	result, err := Get(client, "12345")
+	actual, err := Get(client, "12345").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get flavor: %v", err)
-	}
-	actual, err := ExtractFlavor(result)
-	if err != nil {
-		t.Fatalf("Unable to extract flavor: %v", err)
 	}
 
 	expected := &Flavor{
