@@ -62,6 +62,49 @@ type Flavor struct {
 	VCPUs int `mapstructure:"vcpus"`
 }
 
+// FlavorPage contains a single page of the response from a List call.
+type FlavorPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines if a page contains any results.
+func (p FlavorPage) IsEmpty() (bool, error) {
+	flavors, err := ExtractFlavors(p)
+	if err != nil {
+		return true, err
+	}
+	return len(flavors) == 0, nil
+}
+
+// NextPageURL uses the response's embedded link reference to navigate to the next page of results.
+func (p FlavorPage) NextPageURL() (string, error) {
+	type link struct {
+		Href string `mapstructure:"href"`
+		Rel  string `mapstructure:"rel"`
+	}
+	type resp struct {
+		Links []link `mapstructure:"flavors_links"`
+	}
+
+	var r resp
+	err := mapstructure.Decode(p.Body, &r)
+	if err != nil {
+		return "", err
+	}
+
+	var url string
+	for _, l := range r.Links {
+		if l.Rel == "next" {
+			url = l.Href
+		}
+	}
+	if url == "" {
+		return "", nil
+	}
+
+	return url, nil
+}
+
 func defaulter(from, to reflect.Kind, v interface{}) (interface{}, error) {
 	if (from == reflect.String) && (to == reflect.Int) {
 		return 0, nil
@@ -71,7 +114,7 @@ func defaulter(from, to reflect.Kind, v interface{}) (interface{}, error) {
 
 // ExtractFlavors provides access to the list of flavors in a page acquired from the List operation.
 func ExtractFlavors(page pagination.Page) ([]Flavor, error) {
-	casted := page.(ListPage).Body
+	casted := page.(FlavorPage).Body
 	var container struct {
 		Flavors []Flavor `mapstructure:"flavors"`
 	}
