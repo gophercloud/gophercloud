@@ -126,7 +126,27 @@ func TestDeleteServer(t *testing.T) {
 func TestGetServer(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
-	t.Error("Pending")
+
+	testhelper.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, singleServerBody)
+	})
+
+	client := serviceClient()
+	response, err := Get(client, "1234asdf")
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
+
+	actual, err := ExtractServer(response)
+	if err != nil {
+		t.Fatalf("Unexpected ExtractServer error: %v", err)
+	}
+
+	equalServers(t, serverDerp, *actual)
 }
 
 func TestUpdateServer(t *testing.T) {
