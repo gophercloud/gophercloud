@@ -88,18 +88,13 @@ func TestCreateServer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	result, err := Create(client, map[string]interface{}{
+	actual, err := Create(client, map[string]interface{}{
 		"name":      "derp",
 		"imageRef":  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		"flavorRef": "1",
-	})
+	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Create error: %v", err)
-	}
-
-	actual, err := ExtractServer(result)
-	if err != nil {
-		t.Fatalf("Unexpected ExtractServer error: %v", err)
 	}
 
 	equalServers(t, serverDerp, *actual)
@@ -136,14 +131,9 @@ func TestGetServer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	response, err := Get(client, "1234asdf")
+	actual, err := Get(client, "1234asdf").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
-	}
-
-	actual, err := ExtractServer(response)
-	if err != nil {
-		t.Fatalf("Unexpected ExtractServer error: %v", err)
 	}
 
 	equalServers(t, serverDerp, *actual)
@@ -164,16 +154,11 @@ func TestUpdateServer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	response, err := Update(client, "1234asdf", map[string]interface{}{
+	actual, err := Update(client, "1234asdf", map[string]interface{}{
 		"name": "new-name",
-	})
+	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
-	}
-
-	actual, err := ExtractServer(response)
-	if err != nil {
-		t.Fatalf("Unexpected ExtractServer error: %v", err)
 	}
 
 	equalServers(t, serverDerp, *actual)
@@ -241,17 +226,13 @@ func TestRebuildServer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	response, err := Rebuild(client,
+	actual, err := Rebuild(client,
 		"1234asdf", "new-name", "swordfish",
 		"http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
-		map[string]interface{}{"accessIPv4": "1.2.3.4"})
+		map[string]interface{}{"accessIPv4": "1.2.3.4"},
+	).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Rebuild error: %v", err)
-	}
-
-	actual, err := ExtractServer(response)
-	if err != nil {
-		t.Fatalf("Unexpected ExtractServer error: %v", err)
 	}
 
 	equalServers(t, serverDerp, *actual)

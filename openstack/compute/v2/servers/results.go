@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -64,6 +65,60 @@ type Server struct {
 	AdminPass string `mapstructure:"adminPass"`
 }
 
+// extractServer interprets the result of a call expected to return data on a single server.
+func extractServer(r gophercloud.CommonResult) (*Server, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		Server Server `mapstructure:"server"`
+	}
+
+	err := mapstructure.Decode(r.Resp, &response)
+	return &response.Server, err
+}
+
+// CreateResult temporarily contains the response from a Create call.
+type CreateResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract interprets a CreateResult as a Server, if possible.
+func (r CreateResult) Extract() (*Server, error) {
+	return extractServer(r.CommonResult)
+}
+
+// GetResult temporarily contains the response from a Get call.
+type GetResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract interprets a GetResult as a Server, if possible.
+func (r GetResult) Extract() (*Server, error) {
+	return extractServer(r.CommonResult)
+}
+
+// UpdateResult temporarily contains the response from an Update call.
+type UpdateResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract interprets an UpdateResult as a Server, if possible.
+func (r UpdateResult) Extract() (*Server, error) {
+	return extractServer(r.CommonResult)
+}
+
+// RebuildResult temporarily contains the response from a Rebuild call.
+type RebuildResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract interprets a RebuildResult as a Server, if possible.
+func (r RebuildResult) Extract() (*Server, error) {
+	return extractServer(r.CommonResult)
+}
+
 // ExtractServers interprets the results of a single page from a List() call, producing a slice of Server entities.
 func ExtractServers(page pagination.Page) ([]Server, error) {
 	casted := page.(ListPage).Body
@@ -73,16 +128,4 @@ func ExtractServers(page pagination.Page) ([]Server, error) {
 	}
 	err := mapstructure.Decode(casted, &response)
 	return response.Servers, err
-}
-
-// ExtractServer interprets the result of a call expected to return data on a single server.
-func ExtractServer(sr ServerResult) (*Server, error) {
-	so, ok := sr["server"]
-	if !ok {
-		return nil, ErrCannotInterpet
-	}
-	serverObj := so.(map[string]interface{})
-	s := new(Server)
-	err := mapstructure.Decode(serverObj, s)
-	return s, err
 }

@@ -36,11 +36,6 @@ func (page ListPage) LastMarker() (string, error) {
 	return servers[len(servers)-1].ID, nil
 }
 
-// ServerResult abstracts a single server description, as returned by the OpenStack provider.
-// As OpenStack extensions may freely alter the response bodies of the structures returned to the client,
-// you may only safely access the data provided through separate, type-safe accessors or methods.
-type ServerResult map[string]interface{}
-
 // List makes a request against the API to list servers accessible to you.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
@@ -53,17 +48,17 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Create requests a server to be provisioned to the user in the current tenant.
-func Create(client *gophercloud.ServiceClient, opts map[string]interface{}) (ServerResult, error) {
-	var sr ServerResult
-	_, err := perigee.Request("POST", getListURL(client), perigee.Options{
-		Results: &sr,
+func Create(client *gophercloud.ServiceClient, opts map[string]interface{}) CreateResult {
+	var result CreateResult
+	_, result.Err = perigee.Request("POST", getListURL(client), perigee.Options{
+		Results: &result.Resp,
 		ReqBody: map[string]interface{}{
 			"server": opts,
 		},
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
-	return sr, err
+	return result
 }
 
 // Delete requests that a server previously provisioned be removed from your account.
@@ -76,26 +71,26 @@ func Delete(client *gophercloud.ServiceClient, id string) error {
 }
 
 // Get requests details on a single server, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (ServerResult, error) {
-	var sr ServerResult
-	_, err := perigee.Request("GET", getServerURL(client, id), perigee.Options{
-		Results:     &sr,
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
+	var result GetResult
+	_, result.Err = perigee.Request("GET", getServerURL(client, id), perigee.Options{
+		Results:     &result.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
-	return sr, err
+	return result
 }
 
 // Update requests that various attributes of the indicated server be changed.
-func Update(client *gophercloud.ServiceClient, id string, opts map[string]interface{}) (ServerResult, error) {
-	var sr ServerResult
-	_, err := perigee.Request("PUT", getServerURL(client, id), perigee.Options{
-		Results: &sr,
+func Update(client *gophercloud.ServiceClient, id string, opts map[string]interface{}) UpdateResult {
+	var result UpdateResult
+	_, result.Err = perigee.Request("PUT", getServerURL(client, id), perigee.Options{
+		Results: &result.Resp,
 		ReqBody: map[string]interface{}{
 			"server": opts,
 		},
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
-	return sr, err
+	return result
 }
 
 // ChangeAdminPassword alters the administrator or root password for a specified server.
@@ -194,39 +189,43 @@ func Reboot(client *gophercloud.ServiceClient, id string, how RebootMethod) erro
 //
 // Rebuild returns a server result as though you had called GetDetail() on the server's ID.
 // The information, however, refers to the new server, not the old.
-func Rebuild(client *gophercloud.ServiceClient, id, name, password, imageRef string, additional map[string]interface{}) (ServerResult, error) {
-	var sr ServerResult
+func Rebuild(client *gophercloud.ServiceClient, id, name, password, imageRef string, additional map[string]interface{}) RebuildResult {
+	var result RebuildResult
 
 	if id == "" {
-		return sr, &ErrArgument{
+		result.Err = &ErrArgument{
 			Function: "Rebuild",
 			Argument: "id",
 			Value:    "",
 		}
+		return result
 	}
 
 	if name == "" {
-		return sr, &ErrArgument{
+		result.Err = &ErrArgument{
 			Function: "Rebuild",
 			Argument: "name",
 			Value:    "",
 		}
+		return result
 	}
 
 	if password == "" {
-		return sr, &ErrArgument{
+		result.Err = &ErrArgument{
 			Function: "Rebuild",
 			Argument: "password",
 			Value:    "",
 		}
+		return result
 	}
 
 	if imageRef == "" {
-		return sr, &ErrArgument{
+		result.Err = &ErrArgument{
 			Function: "Rebuild",
 			Argument: "imageRef",
 			Value:    "",
 		}
+		return result
 	}
 
 	if additional == nil {
@@ -237,17 +236,17 @@ func Rebuild(client *gophercloud.ServiceClient, id, name, password, imageRef str
 	additional["imageRef"] = imageRef
 	additional["adminPass"] = password
 
-	_, err := perigee.Request("POST", getActionURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("POST", getActionURL(client, id), perigee.Options{
 		ReqBody: struct {
 			R map[string]interface{} `json:"rebuild"`
 		}{
 			additional,
 		},
-		Results:     &sr,
+		Results:     &result.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
-	return sr, err
+	return result
 }
 
 // Resize instructs the provider to change the flavor of the server.
