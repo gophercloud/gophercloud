@@ -152,7 +152,31 @@ func TestGetServer(t *testing.T) {
 func TestUpdateServer(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
-	t.Error("Pending")
+
+	testhelper.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "PUT")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "Accept", "application/json")
+		testhelper.TestHeader(t, r, "Content-Type", "application/json")
+		testhelper.TestJSONRequest(t, r, `{ "server": { "name": "new-name" } }`)
+
+		fmt.Fprintf(w, singleServerBody)
+	})
+
+	client := serviceClient()
+	response, err := Update(client, "1234asdf", map[string]interface{}{
+		"name": "new-name",
+	})
+	if err != nil {
+		t.Fatalf("Unexpected Update error: %v", err)
+	}
+
+	actual, err := ExtractServer(response)
+	if err != nil {
+		t.Fatalf("Unexpected ExtractServer error: %v", err)
+	}
+
+	equalServers(t, serverDerp, *actual)
 }
 
 func TestChangeServerAdminPassword(t *testing.T) {
