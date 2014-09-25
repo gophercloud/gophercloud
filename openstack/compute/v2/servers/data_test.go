@@ -150,7 +150,7 @@ const (
       }
     `
 
-	serverGetBody = `
+	singleServerBody = `
     {
       "server": {
         "status": "ACTIVE",
@@ -169,11 +169,11 @@ const (
         },
         "links": [
           {
-            "href": "http://104.130.131.164:8774/v2/e1a1494482b947f5a270acb6e5963aa3/servers/9e5476bd-a4ec-4653-93d6-72c93aa682ba",
+            "href": "http://104.130.131.164:8774/v2/fcad67a6189847c4aecfa3c81a05783b/servers/9e5476bd-a4ec-4653-93d6-72c93aa682ba",
             "rel": "self"
           },
           {
-            "href": "http://104.130.131.164:8774/e1a1494482b947f5a270acb6e5963aa3/servers/9e5476bd-a4ec-4653-93d6-72c93aa682ba",
+            "href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/servers/9e5476bd-a4ec-4653-93d6-72c93aa682ba",
             "rel": "bookmark"
           }
         ],
@@ -182,7 +182,7 @@ const (
           "id": "f90f6034-2570-4974-8351-6b49732ef2eb",
           "links": [
             {
-              "href": "http://104.130.131.164:8774/e1a1494482b947f5a270acb6e5963aa3/images/f90f6034-2570-4974-8351-6b49732ef2eb",
+              "href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
               "rel": "bookmark"
             }
           ]
@@ -196,7 +196,7 @@ const (
           "id": "1",
           "links": [
             {
-              "href": "http://104.130.131.164:8774/e1a1494482b947f5a270acb6e5963aa3/flavors/1",
+              "href": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/flavors/1",
               "rel": "bookmark"
             }
           ]

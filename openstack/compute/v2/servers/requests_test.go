@@ -70,7 +70,39 @@ func TestListServers(t *testing.T) {
 func TestCreateServer(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
-	t.Error("Pending")
+
+	testhelper.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "POST")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestJSONRequest(t, r, `{
+			"server": {
+				"name": "derp",
+				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
+				"flavorRef": "1"
+			}
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, singleServerBody)
+	})
+
+	client := serviceClient()
+	result, err := Create(client, map[string]interface{}{
+		"name":      "derp",
+		"imageRef":  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		"flavorRef": "1",
+	})
+	if err != nil {
+		t.Fatalf("Unexpected Create error: %v", err)
+	}
+
+	actual, err := ExtractServer(result)
+	if err != nil {
+		t.Fatalf("Unexpected ExtractServer error: %v", err)
+	}
+
+	equalServers(t, serverDerp, *actual)
 }
 
 func TestDeleteServer(t *testing.T) {
