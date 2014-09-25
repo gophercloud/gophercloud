@@ -60,13 +60,13 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 		return ListPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
-	return pagination.NewPager(client, getDetailURL(client), createPage)
+	return pagination.NewPager(client, detailURL(client), createPage)
 }
 
 // Create requests a server to be provisioned to the user in the current tenant.
 func Create(client *gophercloud.ServiceClient, opts map[string]interface{}) CreateResult {
 	var result CreateResult
-	_, result.Err = perigee.Request("POST", getListURL(client), perigee.Options{
+	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
 		Results: &result.Resp,
 		ReqBody: map[string]interface{}{
 			"server": opts,
@@ -79,7 +79,7 @@ func Create(client *gophercloud.ServiceClient, opts map[string]interface{}) Crea
 
 // Delete requests that a server previously provisioned be removed from your account.
 func Delete(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("DELETE", getServerURL(client, id), perigee.Options{
+	_, err := perigee.Request("DELETE", serverURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
@@ -89,7 +89,7 @@ func Delete(client *gophercloud.ServiceClient, id string) error {
 // Get requests details on a single server, by ID.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
-	_, result.Err = perigee.Request("GET", getServerURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("GET", serverURL(client, id), perigee.Options{
 		Results:     &result.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
@@ -99,7 +99,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 // Update requests that various attributes of the indicated server be changed.
 func Update(client *gophercloud.ServiceClient, id string, opts map[string]interface{}) UpdateResult {
 	var result UpdateResult
-	_, result.Err = perigee.Request("PUT", getServerURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("PUT", serverURL(client, id), perigee.Options{
 		Results: &result.Resp,
 		ReqBody: map[string]interface{}{
 			"server": opts,
@@ -119,7 +119,7 @@ func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword stri
 
 	req.ChangePassword.AdminPass = newPassword
 
-	_, err := perigee.Request("POST", getActionURL(client, id), perigee.Options{
+	_, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     req,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
@@ -184,7 +184,7 @@ func Reboot(client *gophercloud.ServiceClient, id string, how RebootMethod) erro
 		}
 	}
 
-	_, err := perigee.Request("POST", getActionURL(client, id), perigee.Options{
+	_, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody: struct {
 			C map[string]string `json:"reboot"`
 		}{
@@ -252,7 +252,7 @@ func Rebuild(client *gophercloud.ServiceClient, id, name, password, imageRef str
 	additional["imageRef"] = imageRef
 	additional["adminPass"] = password
 
-	_, result.Err = perigee.Request("POST", getActionURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody: struct {
 			R map[string]interface{} `json:"rebuild"`
 		}{
@@ -273,7 +273,7 @@ func Rebuild(client *gophercloud.ServiceClient, id, name, password, imageRef str
 // If you like it, call ConfirmResize() to commit the resize permanently.
 // Otherwise, call RevertResize() to restore the old configuration.
 func Resize(client *gophercloud.ServiceClient, id, flavorRef string) error {
-	_, err := perigee.Request("POST", getActionURL(client, id), perigee.Options{
+	_, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody: struct {
 			R map[string]interface{} `json:"resize"`
 		}{
@@ -288,7 +288,7 @@ func Resize(client *gophercloud.ServiceClient, id, flavorRef string) error {
 // ConfirmResize confirms a previous resize operation on a server.
 // See Resize() for more details.
 func ConfirmResize(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("POST", getActionURL(client, id), perigee.Options{
+	_, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     map[string]interface{}{"confirmResize": nil},
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
@@ -299,7 +299,7 @@ func ConfirmResize(client *gophercloud.ServiceClient, id string) error {
 // RevertResize cancels a previous resize operation on a server.
 // See Resize() for more details.
 func RevertResize(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("POST", getActionURL(client, id), perigee.Options{
+	_, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     map[string]interface{}{"revertResize": nil},
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},

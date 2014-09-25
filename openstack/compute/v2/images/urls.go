@@ -2,10 +2,10 @@ package images
 
 import "github.com/rackspace/gophercloud"
 
-func getListURL(client *gophercloud.ServiceClient) string {
+func listURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("images", "detail")
 }
 
-func getImageURL(client *gophercloud.ServiceClient, id string) string {
+func imageURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("images", id)
 }

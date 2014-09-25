@@ -33,14 +33,14 @@ func List(client *gophercloud.ServiceClient, lfo ListFilterOptions) pagination.P
 		return FlavorPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
-	return pagination.NewPager(client, getListURL(client, lfo), createPage)
+	return pagination.NewPager(client, listURL(client, lfo), createPage)
 }
 
 // Get instructs OpenStack to provide details on a single flavor, identified by its ID.
 // Use ExtractFlavor to convert its result into a Flavor.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var gr GetResult
-	gr.Err = perigee.Get(getFlavorURL(client, id), perigee.Options{
+	gr.Err = perigee.Get(flavorURL(client, id), perigee.Options{
 		Results:     &gr.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})

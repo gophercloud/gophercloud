@@ -8,7 +8,7 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-func getListURL(client *gophercloud.ServiceClient, lfo ListFilterOptions) string {
+func listURL(client *gophercloud.ServiceClient, lfo ListFilterOptions) string {
 	v := url.Values{}
 	if lfo.ChangesSince != "" {
 		v.Set("changes-since", lfo.ChangesSince)
@@ -32,6 +32,6 @@ func getListURL(client *gophercloud.ServiceClient, lfo ListFilterOptions) string
 	return client.ServiceURL("flavors", "detail") + tail
 }
 
-func getFlavorURL(client *gophercloud.ServiceClient, id string) string {
+func flavorURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("flavors", id)
 }

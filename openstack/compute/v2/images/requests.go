@@ -57,14 +57,14 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 		return ListPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
-	return pagination.NewPager(client, getListURL(client), createPage)
+	return pagination.NewPager(client, listURL(client), createPage)
 }
 
 // Get acquires additional detail about a specific image by ID.
 // Use ExtractImage() to intepret the result as an openstack Image.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
-	_, result.Err = perigee.Request("GET", getImageURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("GET", imageURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		Results:     &result.Resp,
 		OkCodes:     []int{200},
