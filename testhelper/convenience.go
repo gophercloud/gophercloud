@@ -1,37 +1,61 @@
 package testhelper
 
 import (
+	"fmt"
+	"path/filepath"
 	"reflect"
+	"runtime"
 	"testing"
 )
+
+func prefix() string {
+	_, file, line, _ := runtime.Caller(3)
+	return fmt.Sprintf("Failure in %s, line %d:", filepath.Base(file), line)
+}
+
+func green(str interface{}) string {
+	return fmt.Sprintf("\033[0m\033[1;32m%#v\033[0m\033[1;31m", str)
+}
+
+func yellow(str interface{}) string {
+	return fmt.Sprintf("\033[0m\033[1;33m%#v\033[0m\033[1;31m", str)
+}
+
+func logFatal(t *testing.T, str string) {
+	t.Fatalf("\033[1;31m%s %s\033[0m", prefix(), str)
+}
+
+func logError(t *testing.T, str string) {
+	t.Errorf("\033[1;31m%s %s\033[0m", prefix(), str)
+}
 
 // AssertEquals compares two arbitrary values and performs a comparison. If the
 // comparison fails, a fatal error is raised that will fail the test
 func AssertEquals(t *testing.T, expected, actual interface{}) {
 	if expected != actual {
-		t.Fatalf("Expected [%#v] but got [%#v]", expected, actual)
+		logFatal(t, fmt.Sprintf("expected %s but got %s", green(expected), yellow(actual)))
 	}
 }
 
 // CheckEquals is similar to AssertEquals, except with a non-fatal error
 func CheckEquals(t *testing.T, expected, actual interface{}) {
 	if expected != actual {
-		t.Errorf("Expected [%#v] but got [%#v]", expected, actual)
+		logError(t, fmt.Sprintf("expected %s but got %s", green(expected), yellow(actual)))
 	}
 }
 
 // AssertDeepEquals - like Equals - performs a comparison - but on more complex
 // structures that requires deeper inspection
-func AssertDeepEquals(t *testing.T, actual, expected interface{}) {
-	if !reflect.DeepEqual(actual, expected) {
-		t.Fatalf("Expected %#v but got %#v", expected, actual)
+func AssertDeepEquals(t *testing.T, expected, actual interface{}) {
+	if !reflect.DeepEqual(expected, actual) {
+		logFatal(t, fmt.Sprintf("expected %s but got %s", green(expected), yellow(actual)))
 	}
 }
 
 // CheckDeepEquals is similar to AssertDeepEquals, except with a non-fatal error
-func CheckDeepEquals(t *testing.T, actual, expected interface{}) {
-	if !reflect.DeepEqual(actual, expected) {
-		t.Errorf("Expected %#v but got %#v", expected, actual)
+func CheckDeepEquals(t *testing.T, expected, actual interface{}) {
+	if !reflect.DeepEqual(expected, actual) {
+		logError(t, fmt.Sprintf("expected %s but got %s", green(expected), yellow(actual)))
 	}
 }
 
@@ -39,13 +63,13 @@ func CheckDeepEquals(t *testing.T, actual, expected interface{}) {
 // an actual error
 func AssertNoErr(t *testing.T, e error) {
 	if e != nil {
-		t.Fatalf("Unexpected error: %#v", e)
+		logFatal(t, fmt.Sprintf("unexpected error %s", yellow(e)))
 	}
 }
 
 // CheckNoErr is similar to AssertNoErr, except with a non-fatal error
 func CheckNoErr(t *testing.T, e error) {
 	if e != nil {
-		t.Errorf("Unexpected error: %#v", e)
+		logError(t, fmt.Sprintf("unexpected error %s", yellow(e)))
 	}
 }
