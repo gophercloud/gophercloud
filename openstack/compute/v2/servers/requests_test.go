@@ -298,5 +298,18 @@ func TestConfirmResize(t *testing.T) {
 func TestRevertResize(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
-	t.Error("Pending")
+
+	testhelper.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "POST")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestJSONRequest(t, r, `{ "revertResize": null }`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	client := serviceClient()
+	err := RevertResize(client, "1234asdf")
+	if err != nil {
+		t.Errorf("Unexpected RevertResize error: %v", err)
+	}
 }
