@@ -220,7 +220,41 @@ func TestRebootServer(t *testing.T) {
 func TestRebuildServer(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
-	t.Error("Pending")
+
+	testhelper.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "POST")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestJSONRequest(t, r, `
+			{
+				"rebuild": {
+					"name": "new-name",
+					"adminPass": "swordfish",
+					"imageRef": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
+					"accessIPv4": "1.2.3.4"
+				}
+			}
+		`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, singleServerBody)
+	})
+
+	client := serviceClient()
+	response, err := Rebuild(client,
+		"1234asdf", "new-name", "swordfish",
+		"http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
+		map[string]interface{}{"accessIPv4": "1.2.3.4"})
+	if err != nil {
+		t.Fatalf("Unexpected Rebuild error: %v", err)
+	}
+
+	actual, err := ExtractServer(response)
+	if err != nil {
+		t.Fatalf("Unexpected ExtractServer error: %v", err)
+	}
+
+	equalServers(t, serverDerp, *actual)
 }
 
 func TestResizeServer(t *testing.T) {
