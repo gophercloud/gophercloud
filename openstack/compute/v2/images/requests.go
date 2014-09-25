@@ -1,26 +1,28 @@
 package images
 
 import (
-	"fmt"
 	"github.com/racker/perigee"
+	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
-var ErrNotImplemented = fmt.Errorf("Images functionality not implemented.")
-
-type ListResults map[string]interface{}
-type ImageResults map[string]interface{}
-
-func List(c *Client) (ListResults, error) {
-	var lr ListResults
-
-	h, err := c.getListHeaders()
-	if err != nil {
-		return nil, err
+// List enumerates the available images.
+func List(client *gophercloud.ServiceClient) pagination.Pager {
+	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
+		return ImagePage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
-	err = perigee.Get(c.getListUrl(), perigee.Options{
-		Results:     &lr,
-		MoreHeaders: h,
+	return pagination.NewPager(client, listURL(client), createPage)
+}
+
+// Get acquires additional detail about a specific image by ID.
+// Use ExtractImage() to intepret the result as an openstack Image.
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
+	var result GetResult
+	_, result.Err = perigee.Request("GET", imageURL(client, id), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		Results:     &result.Resp,
+		OkCodes:     []int{200},
 	})
-	return lr, err
+	return result
 }
