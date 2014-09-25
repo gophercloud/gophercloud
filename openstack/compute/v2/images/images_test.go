@@ -117,3 +117,56 @@ func TestListImages(t *testing.T) {
 		t.Errorf("Expected one page, got %d", pages)
 	}
 }
+
+func TestGetImage(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+
+	testhelper.Mux.HandleFunc("/images/12345678", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `
+			{
+				"image": {
+					"status": "ACTIVE",
+					"updated": "2014-09-23T12:54:56Z",
+					"id": "f3e4a95d-1f4f-4989-97ce-f3a1fb8c04d7",
+					"OS-EXT-IMG-SIZE:size": 476704768,
+					"name": "F17-x86_64-cfntools",
+					"created": "2014-09-23T12:54:52Z",
+					"minDisk": 0,
+					"progress": 100,
+					"minRam": 0,
+					"metadata": {}
+				}
+			}
+		`)
+	})
+
+	client := serviceClient()
+	result, err := Get(client, "12345678")
+	if err != nil {
+		t.Fatalf("Unexpected error from Get: %v", err)
+	}
+	actual, err := ExtractImage(result)
+	if err != nil {
+		t.Fatalf("Unexpected error extracting image: %v", err)
+	}
+
+	expected := Image{
+		Status:   "ACTIVE",
+		Updated:  "2014-09-23T12:54:56Z",
+		ID:       "f3e4a95d-1f4f-4989-97ce-f3a1fb8c04d7",
+		Name:     "F17-x86_64-cfntools",
+		Created:  "2014-09-23T12:54:52Z",
+		MinDisk:  0,
+		Progress: 100,
+		MinRAM:   0,
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %#v, but got %#v", expected, actual)
+	}
+}
