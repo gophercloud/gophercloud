@@ -32,11 +32,7 @@ func newClient() (*gophercloud.ServiceClient, error) {
 
 func waitForStatus(client *gophercloud.ServiceClient, server *servers.Server, status string) error {
 	return tools.WaitFor(func() (bool, error) {
-		response, err := servers.Get(client, server.ID)
-		if err != nil {
-			return false, err
-		}
-		latest, err := servers.ExtractServer(response)
+		latest, err := servers.Get(client, server.ID).Extract()
 		if err != nil {
 			return false, err
 		}

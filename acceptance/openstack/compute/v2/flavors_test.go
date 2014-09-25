@@ -48,13 +48,9 @@ func TestGetFlavor(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	result, err := flavors.Get(client, choices.FlavorID)
+	flavor, err := flavors.Get(client, choices.FlavorID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get flavor information: %v", err)
-	}
-	flavor, err := flavors.ExtractFlavor(result)
-	if err != nil {
-		t.Fatalf("Unable to extract flavor from GET result: %v", err)
 	}
 
 	t.Logf("Flavor: %#v", flavor)

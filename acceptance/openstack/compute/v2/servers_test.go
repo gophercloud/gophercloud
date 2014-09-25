@@ -50,12 +50,12 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *Comp
 		"flavorRef": choices.FlavorID,
 		"imageRef":  choices.ImageID,
 		"name":      name,
-	})
+	}).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 
-	return servers.ExtractServer(server)
+	return server, err
 }
 
 func TestCreateDestroyServer(t *testing.T) {
@@ -114,15 +114,11 @@ func TestUpdateServer(t *testing.T) {
 
 	t.Logf("Attempting to rename the server to %s.", alternateName)
 
-	result, err := servers.Update(client, server.ID, map[string]interface{}{
+	updated, err := servers.Update(client, server.ID, map[string]interface{}{
 		"name": alternateName,
-	})
+	}).Extract()
 	if err != nil {
 		t.Fatalf("Unable to rename server: %v", err)
-	}
-	updated, err := servers.ExtractServer(result)
-	if err != nil {
-		t.Fatalf("Unable to extract server: %v", err)
 	}
 
 	if updated.ID != server.ID {
@@ -130,11 +126,7 @@ func TestUpdateServer(t *testing.T) {
 	}
 
 	err = tools.WaitFor(func() (bool, error) {
-		result, err := servers.Get(client, updated.ID)
-		if err != nil {
-			return false, err
-		}
-		latest, err := servers.ExtractServer(result)
+		latest, err := servers.Get(client, updated.ID).Extract()
 		if err != nil {
 			return false, err
 		}
@@ -251,15 +243,11 @@ func TestActionRebuild(t *testing.T) {
 
 	newPassword := tools.MakeNewPassword(server.AdminPass)
 	newName := tools.RandomString("ACPTTEST", 16)
-	result, err := servers.Rebuild(client, server.ID, newName, newPassword, choices.ImageID, nil)
+	rebuilt, err := servers.Rebuild(client, server.ID, newName, newPassword, choices.ImageID, nil).Extract()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	rebuilt, err := servers.ExtractServer(result)
-	if err != nil {
-		t.Fatal(err)
-	}
 	if rebuilt.ID != server.ID {
 		t.Errorf("Expected rebuilt server ID of [%s]; got [%s]", server.ID, rebuilt.ID)
 	}
