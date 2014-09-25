@@ -146,16 +146,12 @@ func TestGetImage(t *testing.T) {
 	})
 
 	client := serviceClient()
-	result, err := Get(client, "12345678")
+	actual, err := Get(client, "12345678").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error from Get: %v", err)
 	}
-	actual, err := ExtractImage(result)
-	if err != nil {
-		t.Fatalf("Unexpected error extracting image: %v", err)
-	}
 
-	expected := Image{
+	expected := &Image{
 		Status:   "ACTIVE",
 		Updated:  "2014-09-23T12:54:56Z",
 		ID:       "f3e4a95d-1f4f-4989-97ce-f3a1fb8c04d7",
