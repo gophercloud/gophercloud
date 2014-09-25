@@ -1,6 +1,7 @@
 package flavors
 
 import (
+	"github.com/mitchellh/mapstructure"
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -8,7 +9,7 @@ import (
 
 // ListPage contains a single page of the response from a List call.
 type ListPage struct {
-	pagination.MarkerPageBase
+	pagination.LinkedPageBase
 }
 
 // IsEmpty determines if a page contains any results.
@@ -20,16 +21,33 @@ func (p ListPage) IsEmpty() (bool, error) {
 	return len(flavors) == 0, nil
 }
 
-// LastMarker returns the ID field of the final result from this page, to be used as the marker for the next.
-func (p ListPage) LastMarker() (string, error) {
-	flavors, err := ExtractFlavors(p)
+// NextPageURL uses the response's embedded link reference to navigate to the next page of results.
+func (p ListPage) NextPageURL() (string, error) {
+	type link struct {
+		Href string `mapstructure:"href"`
+		Rel  string `mapstructure:"rel"`
+	}
+	type resp struct {
+		Links []link `mapstructure:"flavors_links"`
+	}
+
+	var r resp
+	err := mapstructure.Decode(p.Body, &r)
 	if err != nil {
 		return "", err
 	}
-	if len(flavors) == 0 {
+
+	var url string
+	for _, l := range r.Links {
+		if l.Rel == "next" {
+			url = l.Href
+		}
+	}
+	if url == "" {
 		return "", nil
 	}
-	return flavors[len(flavors)-1].ID, nil
+
+	return url, nil
 }
 
 // ListFilterOptions helps control the results returned by the List() function.
@@ -56,9 +74,7 @@ type ListFilterOptions struct {
 // See ListFilterOptions for more details.
 func List(client *gophercloud.ServiceClient, lfo ListFilterOptions) pagination.Pager {
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		p := ListPage{pagination.MarkerPageBase{LastHTTPResponse: r}}
-		p.MarkerPageBase.Owner = p
-		return p
+		return ListPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
 	return pagination.NewPager(client, getListURL(client, lfo), createPage)

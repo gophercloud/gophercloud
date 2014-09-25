@@ -53,7 +53,8 @@ func TestListFlavors(t *testing.T) {
 						],
 						"flavors_links": [
 							{
-								"href": "%s/flavors?marker=2"
+								"href": "%s/flavors/detail?marker=2",
+								"rel": "next"
 							}
 						]
 					}
