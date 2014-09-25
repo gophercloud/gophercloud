@@ -65,8 +65,12 @@ type Server struct {
 	AdminPass string `mapstructure:"adminPass"`
 }
 
-// extractServer interprets the result of a call expected to return data on a single server.
-func extractServer(r gophercloud.CommonResult) (*Server, error) {
+type serverResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract interprets any serverResult as a Server, if possible.
+func (r serverResult) Extract() (*Server, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
@@ -81,42 +85,22 @@ func extractServer(r gophercloud.CommonResult) (*Server, error) {
 
 // CreateResult temporarily contains the response from a Create call.
 type CreateResult struct {
-	gophercloud.CommonResult
-}
-
-// Extract interprets a CreateResult as a Server, if possible.
-func (r CreateResult) Extract() (*Server, error) {
-	return extractServer(r.CommonResult)
+	serverResult
 }
 
 // GetResult temporarily contains the response from a Get call.
 type GetResult struct {
-	gophercloud.CommonResult
-}
-
-// Extract interprets a GetResult as a Server, if possible.
-func (r GetResult) Extract() (*Server, error) {
-	return extractServer(r.CommonResult)
+	serverResult
 }
 
 // UpdateResult temporarily contains the response from an Update call.
 type UpdateResult struct {
-	gophercloud.CommonResult
-}
-
-// Extract interprets an UpdateResult as a Server, if possible.
-func (r UpdateResult) Extract() (*Server, error) {
-	return extractServer(r.CommonResult)
+	serverResult
 }
 
 // RebuildResult temporarily contains the response from a Rebuild call.
 type RebuildResult struct {
-	gophercloud.CommonResult
-}
-
-// Extract interprets a RebuildResult as a Server, if possible.
-func (r RebuildResult) Extract() (*Server, error) {
-	return extractServer(r.CommonResult)
+	serverResult
 }
 
 // ExtractServers interprets the results of a single page from a List() call, producing a slice of Server entities.
