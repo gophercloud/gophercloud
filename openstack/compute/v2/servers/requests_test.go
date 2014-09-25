@@ -182,7 +182,20 @@ func TestUpdateServer(t *testing.T) {
 func TestChangeServerAdminPassword(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
-	t.Error("Pending")
+
+	testhelper.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "POST")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestJSONRequest(t, r, `{ "changePassword": { "adminPass": "new-password" } }`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	client := serviceClient()
+	err := ChangeAdminPassword(client, "1234asdf", "new-password")
+	if err != nil {
+		t.Errorf("Unexpected ChangeAdminPassword error: %v", err)
+	}
 }
 
 func TestRebootServer(t *testing.T) {
