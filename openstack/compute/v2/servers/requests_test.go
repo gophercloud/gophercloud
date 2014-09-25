@@ -201,7 +201,20 @@ func TestChangeServerAdminPassword(t *testing.T) {
 func TestRebootServer(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
-	t.Error("Pending")
+
+	testhelper.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "POST")
+		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestJSONRequest(t, r, `{ "reboot": { "type": "SOFT" } }`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	client := serviceClient()
+	err := Reboot(client, "1234asdf", SoftReboot)
+	if err != nil {
+		t.Errorf("Unexpected Reboot error: %v", err)
+	}
 }
 
 func TestRebuildServer(t *testing.T) {
