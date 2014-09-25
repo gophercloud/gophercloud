@@ -48,7 +48,6 @@ type Server struct {
 	Flavor map[string]interface{}
 
 	// Addresses includes a list of all IP addresses assigned to the server, keyed by pool.
-
 	Addresses map[string]interface{}
 
 	// Metadata includes a list of all user-specified key-value pairs attached to the server.
@@ -56,6 +55,9 @@ type Server struct {
 
 	// Links includes HTTP references to the itself, useful for passing along to other APIs that might want a server reference.
 	Links []interface{}
+
+	// KeyName indicates which public key was injected into the server on launch.
+	KeyName string `mapstructure:"keyname"`
 
 	// AdminPass will generally be empty ("").  However, it will contain the administrative password chosen when provisioning a new server without a set AdminPass setting in the first place.
 	// Note that this is the ONLY time this field will be valid.
