@@ -48,9 +48,53 @@ type Image struct {
 	Updated string
 }
 
+// ImagePage contains a single page of results from a List operation.
+// Use ExtractImages to convert it into a slice of usable structs.
+type ImagePage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty returns true if a page contains no Image results.
+func (page ImagePage) IsEmpty() (bool, error) {
+	images, err := ExtractImages(page)
+	if err != nil {
+		return true, err
+	}
+	return len(images) == 0, nil
+}
+
+// NextPageURL uses the response's embedded link reference to navigate to the next page of results.
+func (page ImagePage) NextPageURL() (string, error) {
+	type link struct {
+		Href string `mapstructure:"href"`
+		Rel  string `mapstructure:"rel"`
+	}
+	type resp struct {
+		Links []link `mapstructure:"images_links"`
+	}
+
+	var r resp
+	err := mapstructure.Decode(page.Body, &r)
+	if err != nil {
+		return "", err
+	}
+
+	var url string
+	for _, l := range r.Links {
+		if l.Rel == "next" {
+			url = l.Href
+		}
+	}
+	if url == "" {
+		return "", nil
+	}
+
+	return url, nil
+}
+
 // ExtractImages converts a page of List results into a slice of usable Image structs.
 func ExtractImages(page pagination.Page) ([]Image, error) {
-	casted := page.(ListPage).Body
+	casted := page.(ImagePage).Body
 	var results struct {
 		Images []Image `mapstructure:"images"`
 	}
