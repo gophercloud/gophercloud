@@ -1,15 +1,48 @@
 package servers
 
 import (
-	"errors"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// ErrCannotInterpret is returned by an Extract call if the response body doesn't have the expected structure.
-var ErrCannotInterpet = errors.New("Unable to interpret a response body.")
+type serverResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract interprets any serverResult as a Server, if possible.
+func (r serverResult) Extract() (*Server, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		Server Server `mapstructure:"server"`
+	}
+
+	err := mapstructure.Decode(r.Resp, &response)
+	return &response.Server, err
+}
+
+// CreateResult temporarily contains the response from a Create call.
+type CreateResult struct {
+	serverResult
+}
+
+// GetResult temporarily contains the response from a Get call.
+type GetResult struct {
+	serverResult
+}
+
+// UpdateResult temporarily contains the response from an Update call.
+type UpdateResult struct {
+	serverResult
+}
+
+// RebuildResult temporarily contains the response from a Rebuild call.
+type RebuildResult struct {
+	serverResult
+}
 
 // Server exposes only the standard OpenStack fields corresponding to a given server on the user's account.
 type Server struct {
@@ -65,47 +98,54 @@ type Server struct {
 	AdminPass string `mapstructure:"adminPass"`
 }
 
-type serverResult struct {
-	gophercloud.CommonResult
+// ServerPage abstracts the raw results of making a List() request against the API.
+// As OpenStack extensions may freely alter the response bodies of structures returned to the client, you may only safely access the
+// data provided through the ExtractServers call.
+type ServerPage struct {
+	pagination.LinkedPageBase
 }
 
-// Extract interprets any serverResult as a Server, if possible.
-func (r serverResult) Extract() (*Server, error) {
-	if r.Err != nil {
-		return nil, r.Err
+// IsEmpty returns true if a page contains no Server results.
+func (page ServerPage) IsEmpty() (bool, error) {
+	servers, err := ExtractServers(page)
+	if err != nil {
+		return true, err
+	}
+	return len(servers) == 0, nil
+}
+
+// NextPageURL uses the response's embedded link reference to navigate to the next page of results.
+func (page ServerPage) NextPageURL() (string, error) {
+	type link struct {
+		Href string `mapstructure:"href"`
+		Rel  string `mapstructure:"rel"`
+	}
+	type resp struct {
+		Links []link `mapstructure:"servers_links"`
 	}
 
-	var response struct {
-		Server Server `mapstructure:"server"`
+	var r resp
+	err := mapstructure.Decode(page.Body, &r)
+	if err != nil {
+		return "", err
 	}
 
-	err := mapstructure.Decode(r.Resp, &response)
-	return &response.Server, err
-}
+	var url string
+	for _, l := range r.Links {
+		if l.Rel == "next" {
+			url = l.Href
+		}
+	}
+	if url == "" {
+		return "", nil
+	}
 
-// CreateResult temporarily contains the response from a Create call.
-type CreateResult struct {
-	serverResult
-}
-
-// GetResult temporarily contains the response from a Get call.
-type GetResult struct {
-	serverResult
-}
-
-// UpdateResult temporarily contains the response from an Update call.
-type UpdateResult struct {
-	serverResult
-}
-
-// RebuildResult temporarily contains the response from a Rebuild call.
-type RebuildResult struct {
-	serverResult
+	return url, nil
 }
 
 // ExtractServers interprets the results of a single page from a List() call, producing a slice of Server entities.
 func ExtractServers(page pagination.Page) ([]Server, error) {
-	casted := page.(ListPage).Body
+	casted := page.(ServerPage).Body
 
 	var response struct {
 		Servers []Server `mapstructure:"servers"`

@@ -3,61 +3,15 @@ package servers
 import (
 	"fmt"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// ListPage abstracts the raw results of making a List() request against the API.
-// As OpenStack extensions may freely alter the response bodies of structures returned to the client, you may only safely access the
-// data provided through the ExtractServers call.
-type ListPage struct {
-	pagination.LinkedPageBase
-}
-
-// IsEmpty returns true if a page contains no Server results.
-func (page ListPage) IsEmpty() (bool, error) {
-	servers, err := ExtractServers(page)
-	if err != nil {
-		return true, err
-	}
-	return len(servers) == 0, nil
-}
-
-// NextPageURL uses the response's embedded link reference to navigate to the next page of results.
-func (page ListPage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
-	type resp struct {
-		Links []link `mapstructure:"servers_links"`
-	}
-
-	var r resp
-	err := mapstructure.Decode(page.Body, &r)
-	if err != nil {
-		return "", err
-	}
-
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
-}
-
 // List makes a request against the API to list servers accessible to you.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		return ListPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
+		return ServerPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
 	return pagination.NewPager(client, detailURL(client), createPage)
