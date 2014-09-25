@@ -1,6 +1,7 @@
 package images
 
 import (
+	"github.com/mitchellh/mapstructure"
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -9,7 +10,7 @@ import (
 // ListPage contains a single page of results from a List operation.
 // Use ExtractImages to convert it into a slice of usable structs.
 type ListPage struct {
-	pagination.MarkerPageBase
+	pagination.LinkedPageBase
 }
 
 // IsEmpty returns true if a page contains no Image results.
@@ -21,24 +22,39 @@ func (page ListPage) IsEmpty() (bool, error) {
 	return len(images) == 0, nil
 }
 
-// LastMarker returns the ID of the final Image on the current page of ListPage.
-func (page ListPage) LastMarker() (string, error) {
-	images, err := ExtractImages(page)
+// NextPageURL uses the response's embedded link reference to navigate to the next page of results.
+func (page ListPage) NextPageURL() (string, error) {
+	type link struct {
+		Href string `mapstructure:"href"`
+		Rel  string `mapstructure:"rel"`
+	}
+	type resp struct {
+		Links []link `mapstructure:"images_links"`
+	}
+
+	var r resp
+	err := mapstructure.Decode(page.Body, &r)
 	if err != nil {
 		return "", err
 	}
-	if len(images) == 0 {
+
+	var url string
+	for _, l := range r.Links {
+		if l.Rel == "next" {
+			url = l.Href
+		}
+	}
+	if url == "" {
 		return "", nil
 	}
-	return images[len(images)-1].ID, nil
+
+	return url, nil
 }
 
 // List enumerates the available images.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		p := ListPage{pagination.MarkerPageBase{LastHTTPResponse: r}}
-		p.MarkerPageBase.Owner = p
-		return p
+		return ListPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
 	return pagination.NewPager(client, getListURL(client), createPage)

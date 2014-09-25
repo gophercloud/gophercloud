@@ -3,6 +3,7 @@ package servers
 import (
 	"fmt"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -12,7 +13,7 @@ import (
 // As OpenStack extensions may freely alter the response bodies of structures returned to the client, you may only safely access the
 // data provided through the ExtractServers call.
 type ListPage struct {
-	pagination.MarkerPageBase
+	pagination.LinkedPageBase
 }
 
 // IsEmpty returns true if a page contains no Server results.
@@ -24,24 +25,39 @@ func (page ListPage) IsEmpty() (bool, error) {
 	return len(servers) == 0, nil
 }
 
-// LastMarker returns the ID of the final server on the current page.
-func (page ListPage) LastMarker() (string, error) {
-	servers, err := ExtractServers(page)
+// NextPageURL uses the response's embedded link reference to navigate to the next page of results.
+func (page ListPage) NextPageURL() (string, error) {
+	type link struct {
+		Href string `mapstructure:"href"`
+		Rel  string `mapstructure:"rel"`
+	}
+	type resp struct {
+		Links []link `mapstructure:"servers_links"`
+	}
+
+	var r resp
+	err := mapstructure.Decode(page.Body, &r)
 	if err != nil {
 		return "", err
 	}
-	if len(servers) == 0 {
+
+	var url string
+	for _, l := range r.Links {
+		if l.Rel == "next" {
+			url = l.Href
+		}
+	}
+	if url == "" {
 		return "", nil
 	}
-	return servers[len(servers)-1].ID, nil
+
+	return url, nil
 }
 
 // List makes a request against the API to list servers accessible to you.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		p := ListPage{pagination.MarkerPageBase{LastHTTPResponse: r}}
-		p.MarkerPageBase.Owner = p
-		return p
+		return ListPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
 	return pagination.NewPager(client, getDetailURL(client), createPage)
