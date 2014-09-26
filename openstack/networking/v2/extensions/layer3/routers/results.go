@@ -112,3 +112,28 @@ type UpdateResult struct {
 }
 
 type DeleteResult commonResult
+
+type InterfaceInfo struct {
+	SubnetID string `json:"subnet_id" mapstructure:"subnet_id"`
+	PortID   string `json:"port_id" mapstructure:"port_id"`
+	ID       string `json:"id" mapstructure:"id"`
+	TenantID string `json:"tenant_id" mapstructure:"tenant_id"`
+}
+
+type InterfaceResult struct {
+	gophercloud.CommonResult
+}
+
+func (r InterfaceResult) Extract() (*InterfaceInfo, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res *InterfaceInfo
+	err := mapstructure.Decode(r.Resp, &res)
+	if err != nil {
+		return nil, fmt.Errorf("Error decoding Neutron router interface: %v", err)
+	}
+
+	return res, nil
+}

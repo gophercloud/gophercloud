@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/racker/perigee"
@@ -20,6 +21,14 @@ func rootURL(c *gophercloud.ServiceClient) string {
 
 func resourceURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(version, resourcePath, id)
+}
+
+func addInterfaceURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL(version, resourcePath, id, "add_router_interface")
+}
+
+func removeInterfaceURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL(version, resourcePath, id, "remove_router_interface")
 }
 
 type ListOpts struct {
@@ -164,6 +173,63 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	_, err := perigee.Request("DELETE", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
+	})
+	res.Err = err
+	return res
+}
+
+var errInvalidInterfaceOpts = fmt.Errorf("When adding a router interface you must provide either a subnet ID or a port ID")
+
+type InterfaceOpts struct {
+	SubnetID string
+	PortID   string
+}
+
+func AddInterface(c *gophercloud.ServiceClient, id string, opts InterfaceOpts) InterfaceResult {
+	var res InterfaceResult
+
+	// Validate
+	if (opts.SubnetID == "" && opts.PortID == "") || (opts.SubnetID != "" && opts.PortID != "") {
+		res.Err = errInvalidInterfaceOpts
+	}
+
+	type request struct {
+		SubnetID string `json:"subnet_id,omitempty"`
+		PortID   string `json:"port_id,omitempty"`
+	}
+
+	body := request{SubnetID: opts.SubnetID, PortID: opts.PortID}
+
+	_, err := perigee.Request("PUT", addInterfaceURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &body,
+		Results:     &res.Resp,
+		OkCodes:     []int{200},
+	})
+	res.Err = err
+	return res
+}
+
+func RemoveInterface(c *gophercloud.ServiceClient, id string, opts InterfaceOpts) InterfaceResult {
+	var res InterfaceResult
+
+	// Validate
+	if (opts.SubnetID == "" && opts.PortID == "") || (opts.SubnetID != "" && opts.PortID != "") {
+		res.Err = errInvalidInterfaceOpts
+	}
+
+	type request struct {
+		SubnetID string `json:"subnet_id,omitempty"`
+		PortID   string `json:"port_id,omitempty"`
+	}
+
+	body := request{SubnetID: opts.SubnetID, PortID: opts.PortID}
+
+	_, err := perigee.Request("PUT", removeInterfaceURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &body,
+		Results:     &res.Resp,
+		OkCodes:     []int{200},
 	})
 	res.Err = err
 	return res

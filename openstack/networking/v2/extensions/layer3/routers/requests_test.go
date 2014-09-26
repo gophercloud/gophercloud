@@ -258,3 +258,79 @@ func TestDelete(t *testing.T) {
 	res := Delete(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestAddInterface(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c/add_router_interface", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "subnet_id": "a2f1f29d-571b-4533-907f-5803ab96ead1"
+}
+	`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "subnet_id": "0d32a837-8069-4ec3-84c4-3eef3e10b188",
+    "tenant_id": "017d8de156df4177889f31a9bd6edc00",
+    "port_id": "3f990102-4485-4df1-97a0-2c35bdb85b31",
+    "id": "9a83fa11-8da5-436e-9afe-3d3ac5ce7770"
+}
+`)
+	})
+
+	opts := InterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
+	res, err := AddInterface(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "0d32a837-8069-4ec3-84c4-3eef3e10b188", res.SubnetID)
+	th.AssertEquals(t, "017d8de156df4177889f31a9bd6edc00", res.TenantID)
+	th.AssertEquals(t, "3f990102-4485-4df1-97a0-2c35bdb85b31", res.PortID)
+	th.AssertEquals(t, "9a83fa11-8da5-436e-9afe-3d3ac5ce7770", res.ID)
+}
+
+func TestRemoveInterface(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c/remove_router_interface", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+		"subnet_id": "a2f1f29d-571b-4533-907f-5803ab96ead1"
+}
+	`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+		"subnet_id": "0d32a837-8069-4ec3-84c4-3eef3e10b188",
+		"tenant_id": "017d8de156df4177889f31a9bd6edc00",
+		"port_id": "3f990102-4485-4df1-97a0-2c35bdb85b31",
+		"id": "9a83fa11-8da5-436e-9afe-3d3ac5ce7770"
+}
+`)
+	})
+
+	opts := InterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
+	res, err := RemoveInterface(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "0d32a837-8069-4ec3-84c4-3eef3e10b188", res.SubnetID)
+	th.AssertEquals(t, "017d8de156df4177889f31a9bd6edc00", res.TenantID)
+	th.AssertEquals(t, "3f990102-4485-4df1-97a0-2c35bdb85b31", res.PortID)
+	th.AssertEquals(t, "9a83fa11-8da5-436e-9afe-3d3ac5ce7770", res.ID)
+}
