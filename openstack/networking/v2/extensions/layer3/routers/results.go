@@ -1,7 +1,10 @@
 package routers
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -10,12 +13,12 @@ type GatewayInfo struct {
 }
 
 type Router struct {
-	Status         string      `json:"status" mapstructure:"status"`
-	ExtGatewayInfo GatewayInfo `json:"external_gateway_info" mapstructure:"external_gateway_info"`
-	AdminStateUp   bool        `json:"admin_state_up" mapstructure:"admin_state_up"`
-	Name           string      `json:"name" mapstructure:"name"`
-	ID             string      `json:"id" mapstructure:"id"`
-	TenantID       string      `json:"tenant_id" mapstructure:"tenant_id"`
+	Status       string      `json:"status" mapstructure:"status"`
+	GatewayInfo  GatewayInfo `json:"external_gateway_info" mapstructure:"external_gateway_info"`
+	AdminStateUp bool        `json:"admin_state_up" mapstructure:"admin_state_up"`
+	Name         string      `json:"name" mapstructure:"name"`
+	ID           string      `json:"id" mapstructure:"id"`
+	TenantID     string      `json:"tenant_id" mapstructure:"tenant_id"`
 }
 
 type RouterPage struct {
@@ -70,3 +73,42 @@ func ExtractRouters(page pagination.Page) ([]Router, error) {
 
 	return resp.Routers, nil
 }
+
+type commonResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract is a function that accepts a result and extracts a network resource.
+func (r commonResult) Extract() (*Router, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res struct {
+		Router *Router `json:"router"`
+	}
+
+	err := mapstructure.Decode(r.Resp, &res)
+	if err != nil {
+		return nil, fmt.Errorf("Error decoding Neutron router: %v", err)
+	}
+
+	return res.Router, nil
+}
+
+// CreateResult represents the result of a create operation.
+type CreateResult struct {
+	commonResult
+}
+
+// GetResult represents the result of a get operation.
+type GetResult struct {
+	commonResult
+}
+
+// UpdateResult represents the result of an update operation.
+type UpdateResult struct {
+	commonResult
+}
+
+type DeleteResult commonResult
