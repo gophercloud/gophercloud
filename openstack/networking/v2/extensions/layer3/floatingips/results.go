@@ -79,10 +79,15 @@ type UpdateResult struct {
 // DeleteResult represents the result of an update operation.
 type DeleteResult commonResult
 
+// FloatingIPPage is the page returned by a pager when traversing over a
+// collection of floating IPs.
 type FloatingIPPage struct {
 	pagination.LinkedPageBase
 }
 
+// NextPageURL is invoked when a paginated collection of floating IPs has reached
+// the end of a page and the pager seeks to traverse over a new one. In order
+// to do this, it needs to construct the next page's URL.
 func (p FloatingIPPage) NextPageURL() (string, error) {
 	type link struct {
 		Href string `mapstructure:"href"`
@@ -111,6 +116,7 @@ func (p FloatingIPPage) NextPageURL() (string, error) {
 	return url, nil
 }
 
+// IsEmpty checks whether a NetworkPage struct is empty.
 func (p FloatingIPPage) IsEmpty() (bool, error) {
 	is, err := ExtractFloatingIPs(p)
 	if err != nil {
@@ -119,6 +125,9 @@ func (p FloatingIPPage) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
+// ExtractFloatingIPs accepts a Page struct, specifically a FloatingIPPage struct,
+// and extracts the elements into a slice of FloatingIP structs. In other words,
+// a generic collection is mapped into a relevant slice.
 func ExtractFloatingIPs(page pagination.Page) ([]FloatingIP, error) {
 	var resp struct {
 		FloatingIPs []FloatingIP `mapstructure:"floatingips" json:"floatingips"`
