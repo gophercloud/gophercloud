@@ -63,13 +63,13 @@ func CheckDeepEquals(t *testing.T, expected, actual interface{}) {
 // an actual error
 func AssertNoErr(t *testing.T, e error) {
 	if e != nil {
-		logFatal(t, fmt.Sprintf("unexpected error %s", yellow(e)))
+		logFatal(t, fmt.Sprintf("unexpected error %s", yellow(e.Error())))
 	}
 }
 
 // CheckNoErr is similar to AssertNoErr, except with a non-fatal error
 func CheckNoErr(t *testing.T, e error) {
 	if e != nil {
-		logError(t, fmt.Sprintf("unexpected error %s", yellow(e)))
+		logError(t, fmt.Sprintf("unexpected error %s", yellow(e.Error())))
 	}
 }

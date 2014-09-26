@@ -89,6 +89,10 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	return res
 }
 
+type CreateOpts interface {
+	ToMap() map[string]interface{}
+}
+
 // CreateOpts represents the attributes used when creating a new network.
 type CreateOpts networkOpts
 

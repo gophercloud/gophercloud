@@ -52,17 +52,23 @@ type DeleteResult commonResult
 type Network struct {
 	// UUID for the network
 	ID string `mapstructure:"id" json:"id"`
+
 	// Human-readable name for the network. Might not be unique.
 	Name string `mapstructure:"name" json:"name"`
+
 	// The administrative state of network. If false (down), the network does not forward packets.
 	AdminStateUp bool `mapstructure:"admin_state_up" json:"admin_state_up"`
+
 	// Indicates whether network is currently operational. Possible values include
 	// `ACTIVE', `DOWN', `BUILD', or `ERROR'. Plug-ins might define additional values.
 	Status string `mapstructure:"status" json:"status"`
+
 	// Subnets associated with this network.
 	Subnets []string `mapstructure:"subnets" json:"subnets"`
+
 	// Owner of network. Only admin users can specify a tenant_id other than its own.
 	TenantID string `mapstructure:"tenant_id" json:"tenant_id"`
+
 	// Specifies whether the network resource can be accessed by any tenant or not.
 	Shared bool `mapstructure:"shared" json:"shared"`
 }
