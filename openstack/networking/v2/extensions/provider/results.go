@@ -51,6 +51,8 @@ type NetworkExtAttrs struct {
 	SegmentationID string `json:"provider:segmentation_id" mapstructure:"provider:segmentation_id"`
 }
 
+// ExtractGet decorates a GetResult struct returned from a networks.Get()
+// function with extended attributes.
 func ExtractGet(r networks.GetResult) (*NetworkExtAttrs, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -65,6 +67,8 @@ func ExtractGet(r networks.GetResult) (*NetworkExtAttrs, error) {
 	return res.Network, nil
 }
 
+// ExtractGet decorates a CreateResult struct returned from a networks.Create()
+// function with extended attributes.
 func ExtractCreate(r networks.CreateResult) (*NetworkExtAttrs, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -79,6 +83,8 @@ func ExtractCreate(r networks.CreateResult) (*NetworkExtAttrs, error) {
 	return res.Network, nil
 }
 
+// ExtractUpdate decorates a UpdateResult struct returned from a
+// networks.Update() function with extended attributes.
 func ExtractUpdate(r networks.UpdateResult) (*NetworkExtAttrs, error) {
 	if r.Err != nil {
 		return nil, r.Err

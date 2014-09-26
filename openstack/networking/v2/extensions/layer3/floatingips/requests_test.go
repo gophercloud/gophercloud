@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
@@ -15,6 +16,86 @@ func serviceClient() *gophercloud.ServiceClient {
 	return &gophercloud.ServiceClient{
 		Provider: &gophercloud.ProviderClient{TokenID: tokenID},
 		Endpoint: th.Endpoint(),
+	}
+}
+
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "floatingips": [
+        {
+            "floating_network_id": "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
+            "router_id": null,
+            "fixed_ip_address": null,
+            "floating_ip_address": "192.0.0.4",
+            "tenant_id": "017d8de156df4177889f31a9bd6edc00",
+            "status": "DOWN",
+            "port_id": null,
+            "id": "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e"
+        },
+        {
+            "floating_network_id": "90f742b1-6d17-487b-ba95-71881dbc0b64",
+            "router_id": "0a24cb83-faf5-4d7f-b723-3144ed8a2167",
+            "fixed_ip_address": "192.0.0.2",
+            "floating_ip_address": "10.0.0.3",
+            "tenant_id": "017d8de156df4177889f31a9bd6edc00",
+            "status": "DOWN",
+            "port_id": "74a342ce-8e07-4e91-880c-9f834b68fa25",
+            "id": "ada25a95-f321-4f59-b0e0-f3a970dd3d63"
+        }
+    ]
+}
+			`)
+	})
+
+	count := 0
+
+	List(serviceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := ExtractFloatingIPs(page)
+		if err != nil {
+			t.Errorf("Failed to extract floating IPs: %v", err)
+			return false, err
+		}
+
+		expected := []FloatingIP{
+			FloatingIP{
+				FloatingNetworkID: "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
+				FixedIP:           "",
+				FloatingIP:        "192.0.0.4",
+				TenantID:          "017d8de156df4177889f31a9bd6edc00",
+				Status:            "DOWN",
+				PortID:            "",
+				ID:                "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e",
+			},
+			FloatingIP{
+				FloatingNetworkID: "90f742b1-6d17-487b-ba95-71881dbc0b64",
+				FixedIP:           "192.0.0.2",
+				FloatingIP:        "10.0.0.3",
+				TenantID:          "017d8de156df4177889f31a9bd6edc00",
+				Status:            "DOWN",
+				PortID:            "74a342ce-8e07-4e91-880c-9f834b68fa25",
+				ID:                "ada25a95-f321-4f59-b0e0-f3a970dd3d63",
+			},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
 
