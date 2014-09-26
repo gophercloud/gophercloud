@@ -14,6 +14,7 @@ type FloatingIP struct {
 	PortID            string `json:"port_id" mapstructure:"port_id"`
 	FixedIP           string `json:"fixed_ip_address" mapstructure:"fixed_ip_address"`
 	TenantID          string `json:"tenant_id" mapstructure:"tenant_id"`
+	Status            string `json:"status" mapstructure:"status"`
 }
 
 type commonResult struct {
@@ -37,6 +38,19 @@ func (r commonResult) Extract() (*FloatingIP, error) {
 	return res.FloatingIP, nil
 }
 
+// CreateResult represents the result of a create operation.
 type CreateResult struct {
 	commonResult
 }
+
+// GetResult represents the result of a get operation.
+type GetResult struct {
+	commonResult
+}
+
+// UpdateResult represents the result of an update operation.
+type UpdateResult struct {
+	commonResult
+}
+
+type DeleteResult commonResult

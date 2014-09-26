@@ -63,3 +63,58 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 
 	return res
 }
+
+func Get(c *gophercloud.ServiceClient, id string) GetResult {
+	var res GetResult
+	_, err := perigee.Request("GET", resourceURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		Results:     &res.Resp,
+		OkCodes:     []int{200},
+	})
+	res.Err = err
+	return res
+}
+
+type UpdateOpts struct {
+	PortID string
+}
+
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
+	type floatingIP struct {
+		PortID *string `json:"port_id"`
+	}
+
+	type request struct {
+		FloatingIP floatingIP `json:"floatingip"`
+	}
+
+	var portID *string
+	if opts.PortID == "" {
+		portID = nil
+	} else {
+		portID = &opts.PortID
+	}
+
+	reqBody := request{FloatingIP: floatingIP{PortID: portID}}
+
+	// Send request to API
+	var res UpdateResult
+	_, err := perigee.Request("PUT", resourceURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &res.Resp,
+		OkCodes:     []int{200},
+	})
+	res.Err = err
+	return res
+}
+
+func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
+	var res DeleteResult
+	_, err := perigee.Request("DELETE", resourceURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{204},
+	})
+	res.Err = err
+	return res
+}
