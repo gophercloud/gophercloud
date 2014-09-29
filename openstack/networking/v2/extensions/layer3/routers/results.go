@@ -15,8 +15,8 @@ type GatewayInfo struct {
 }
 
 // Router represents a Neutron router. A router is a logical entity that
-// forwards packets across internal subnets and NATs them on external networks
-// through an appropriate external gateway.
+// forwards packets across internal subnets and NATs (network address
+// translation) them on external networks through an appropriate gateway.
 //
 // A router has an interface for each subnet with which it is associated. By
 // default, the IP address of such interface is the subnet's gateway IP. Also,
@@ -162,7 +162,7 @@ type InterfaceInfo struct {
 	TenantID string `json:"tenant_id" mapstructure:"tenant_id"`
 }
 
-// DeleteResult represents the result of interface operations, such as
+// InterfaceResult represents the result of interface operations, such as
 // AddInterface() and RemoveInterface().
 type InterfaceResult struct {
 	gophercloud.CommonResult

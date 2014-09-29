@@ -196,7 +196,8 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	options := networks.CreateOpts{Name: "sample_network", AdminStateUp: true}
+	iTrue := true
+	options := networks.CreateOpts{Name: "sample_network", AdminStateUp: &iTrue}
 	res := networks.Create(serviceClient(), options)
 	n, err := ExtractCreate(res)
 
@@ -249,8 +250,8 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	shared := true
-	options := networks.UpdateOpts{Name: "new_network_name", AdminStateUp: false, Shared: &shared}
+	iTrue, iFalse := true, false
+	options := networks.UpdateOpts{Name: "new_network_name", AdminStateUp: &iFalse, Shared: &iTrue}
 	res := networks.Update(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
 	n, err := ExtractUpdate(res)
 
