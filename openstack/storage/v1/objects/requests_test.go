@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -15,7 +16,7 @@ const (
 	tokenId = "abcabcabcabc"
 )
 
-var metadata = map[string]string{"gophercloud-test": "objects"}
+var metadata = map[string]string{"Gophercloud-Test": "objects"}
 
 func serviceClient() *gophercloud.ServiceClient {
 	return &gophercloud.ServiceClient{
@@ -55,14 +56,18 @@ func TestListObjectInfo(t *testing.T) {
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `[{'hash': '451e372e48e0f6b1114fa0724aa79fa1','last_modified': '2014-01-15T16:41:49.390270','bytes': 14,'name': 'goodbye','content_type': 'application/octet-stream'}]`)
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, `[{'hash': '451e372e48e0f6b1114fa0724aa79fa1','last_modified': '2009-11-10 23:00:00 +0000 UTC','bytes': 14,'name': 'goodbye','content_type': 'application/octet-stream'}]`)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
 	})
 
 	client := serviceClient()
-	count := 0
 	List(client, "testContainer", ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
-		count++
 		actual, err := ExtractInfo(page)
 		if err != nil {
 			t.Errorf("Failed to extract object info: %v", err)
@@ -71,11 +76,11 @@ func TestListObjectInfo(t *testing.T) {
 
 		expected := []Object{
 			Object{
-				"hash":          "451e372e48e0f6b1114fa0724aa79fa1",
-				"last_modified": "2014-01-15T16:41:49.390270",
-				"bytes":         14,
-				"name":          "goodbye",
-				"content_type":  "application/octet-stream",
+				Hash:         "451e372e48e0f6b1114fa0724aa79fa1",
+				LastModified: time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
+				Bytes:        14,
+				Name:         "goodbye",
+				ContentType:  "application/octet-stream",
 			},
 		}
 
@@ -83,10 +88,6 @@ func TestListObjectInfo(t *testing.T) {
 
 		return true, nil
 	})
-
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
 }
 
 func TestListObjectNames(t *testing.T) {
@@ -104,9 +105,7 @@ func TestListObjectNames(t *testing.T) {
 	})
 
 	client := serviceClient()
-	count := 0
 	List(client, "testContainer", ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
-		count++
 		actual, err := ExtractNames(page)
 		if err != nil {
 			t.Errorf("Failed to extract object names: %v", err)
@@ -119,11 +118,8 @@ func TestListObjectNames(t *testing.T) {
 
 		return true, nil
 	})
-
-	if count != 0 {
-		t.Fatalf("Expected 0 pages, got %d", count)
-	}
 }
+
 func TestCreateObject(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
@@ -207,6 +203,7 @@ func TestGetObject(t *testing.T) {
 		testhelper.TestMethod(t, r, "HEAD")
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
+		w.Header().Add("X-Object-Meta-Gophercloud-Test", "objects")
 		w.WriteHeader(http.StatusNoContent)
 	})
 

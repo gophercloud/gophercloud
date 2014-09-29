@@ -5,12 +5,20 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
 // Object is a structure that holds information related to a storage object.
-type Object map[string]interface{}
+type Object struct {
+	Bytes        int       `json:"bytes"`
+	ContentType  string    `json:"content_type"`
+	Hash         string    `json:"hash"`
+	LastModified time.Time `json:"last_modified"`
+	Name         string    `json:"name"`
+}
 
 // ListResult is a single page of objects that is returned from a call to the List function.
 type ObjectPage struct {
@@ -55,7 +63,12 @@ func ExtractInfo(page pagination.Page) ([]Object, error) {
 	untyped := page.(ObjectPage).Body.([]interface{})
 	results := make([]Object, len(untyped))
 	for index, each := range untyped {
-		results[index] = Object(each.(map[string]interface{}))
+		object := each.(map[string]interface{})
+		err := mapstructure.Decode(object, results[index])
+		if err != nil {
+			return results, err
+		}
+
 	}
 	return results, nil
 }
@@ -74,7 +87,7 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 
 		names := make([]string, 0, len(parsed))
 		for _, object := range parsed {
-			names = append(names, object["name"].(string))
+			names = append(names, object.Name)
 		}
 		return names, nil
 	case strings.HasPrefix(ct, "text/plain"):

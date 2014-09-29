@@ -80,7 +80,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOpts)
 		OkCodes:     []int{201, 204},
 	})
 	if err == nil {
-		container = Container{"name": containerName}
+		container = Container{Name: containerName}
 	}
 	return container, err
 }

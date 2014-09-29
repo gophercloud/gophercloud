@@ -33,14 +33,29 @@ func TestListContainerInfo(t *testing.T) {
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `[{'count': 0,'bytes': 0,'name': 'janeausten'},{'count': 1,'bytes': 14,'name': 'marktwain'}]`)
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, `[
+				{
+					"count": 0,
+					"bytes": 0,
+					"name": "janeausten"
+				},
+				{
+					"count": 1,
+					"bytes": 14,
+					"name": "marktwain"
+				}
+			]`)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
 	})
 
 	client := serviceClient()
-	count := 0
 	List(client, ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
-		count++
 		actual, err := ExtractInfo(page)
 		if err != nil {
 			t.Errorf("Failed to extract container info: %v", err)
@@ -49,14 +64,14 @@ func TestListContainerInfo(t *testing.T) {
 
 		expected := []Container{
 			Container{
-				"count": 0,
-				"bytes": 0,
-				"name":  "janeausten",
+				Count: 0,
+				Bytes: 0,
+				Name:  "janeausten",
 			},
 			Container{
-				"count": 1,
-				"bytes": 14,
-				"name":  "marktwain",
+				Count: 1,
+				Bytes: 14,
+				Name:  "marktwain",
 			},
 		}
 
@@ -64,10 +79,6 @@ func TestListContainerInfo(t *testing.T) {
 
 		return true, nil
 	})
-
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
 }
 
 func TestListContainerNames(t *testing.T) {
@@ -85,9 +96,7 @@ func TestListContainerNames(t *testing.T) {
 	})
 
 	client := serviceClient()
-	count := 0
 	List(client, ListOpts{Full: false}).EachPage(func(page pagination.Page) (bool, error) {
-		count++
 		actual, err := ExtractNames(page)
 		if err != nil {
 			t.Errorf("Failed to extract container names: %v", err)
@@ -100,10 +109,6 @@ func TestListContainerNames(t *testing.T) {
 
 		return true, nil
 	})
-
-	if count != 0 {
-		t.Fatalf("Expected 0 pages, got %d", count)
-	}
 }
 
 func TestCreateContainer(t *testing.T) {

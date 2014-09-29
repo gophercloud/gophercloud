@@ -9,7 +9,11 @@ import (
 	"strings"
 )
 
-type Container map[string]interface{}
+type Container struct {
+	Bytes int
+	Count int
+	Name  string
+}
 
 type commonResult struct {
 	gophercloud.CommonResult
@@ -79,7 +83,11 @@ func ExtractInfo(page pagination.Page) ([]Container, error) {
 	untyped := page.(ContainerPage).Body.([]interface{})
 	results := make([]Container, len(untyped))
 	for index, each := range untyped {
-		results[index] = Container(each.(map[string]interface{}))
+		container := each.(map[string]interface{})
+		err := mapstructure.Decode(container, results[index])
+		if err != nil {
+			return results, err
+		}
 	}
 	return results, nil
 }
@@ -98,7 +106,7 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 
 		names := make([]string, 0, len(parsed))
 		for _, container := range parsed {
-			names = append(names, container["name"].(string))
+			names = append(names, container.Name)
 		}
 		return names, nil
 	case strings.HasPrefix(ct, "text/plain"):
