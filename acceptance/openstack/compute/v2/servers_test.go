@@ -114,9 +114,7 @@ func TestUpdateServer(t *testing.T) {
 
 	t.Logf("Attempting to rename the server to %s.", alternateName)
 
-	updated, err := servers.Update(client, server.ID, map[string]interface{}{
-		"name": alternateName,
-	}).Extract()
+	updated, err := servers.Update(client, server.ID, servers.UpdateOpts{Name: alternateName}).Extract()
 	if err != nil {
 		t.Fatalf("Unable to rename server: %v", err)
 	}

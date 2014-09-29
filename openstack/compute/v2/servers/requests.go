@@ -157,14 +157,46 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	return result
 }
 
+// UpdateOptsLike allows extentions to add additional attributes to the Update request.
+type UpdateOptsLike interface {
+	ToServerUpdateReqBody() map[string]interface{}
+}
+
+// UpdateOpts specifies the base attributes that may be updated on an existing server.
+type UpdateOpts struct {
+	// Name [optional] changes the displayed name of the server.
+	// The server host name will *not* change.
+	// Server names are not constrained to be unique, even within the same tenant.
+	Name string
+
+	// AccessIPv4 [optional] provides a new IPv4 address for the instance.
+	AccessIPv4 string
+
+	// AccessIPv6 [optional] provides a new IPv6 address for the instance.
+	AccessIPv6 string
+}
+
+// ToServerUpdateReqBody formats an UpdateOpts structure into a request body.
+func (opts UpdateOpts) ToServerUpdateReqBody() map[string]interface{} {
+	server := make(map[string]string)
+	if opts.Name != "" {
+		server["name"] = opts.Name
+	}
+	if opts.AccessIPv4 != "" {
+		server["accessIPv4"] = opts.AccessIPv4
+	}
+	if opts.AccessIPv6 != "" {
+		server["accessIPv6"] = opts.AccessIPv6
+	}
+	return map[string]interface{}{"server": server}
+}
+
 // Update requests that various attributes of the indicated server be changed.
-func Update(client *gophercloud.ServiceClient, id string, opts map[string]interface{}) UpdateResult {
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsLike) UpdateResult {
 	var result UpdateResult
 	_, result.Err = perigee.Request("PUT", serverURL(client, id), perigee.Options{
-		Results: &result.Resp,
-		ReqBody: map[string]interface{}{
-			"server": opts,
-		},
+		Results:     &result.Resp,
+		ReqBody:     opts.ToServerUpdateReqBody(),
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
 	return result

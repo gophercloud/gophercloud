@@ -154,9 +154,7 @@ func TestUpdateServer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	actual, err := Update(client, "1234asdf", map[string]interface{}{
-		"name": "new-name",
-	}).Extract()
+	actual, err := Update(client, "1234asdf", UpdateOpts{Name: "new-name"}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
 	}
