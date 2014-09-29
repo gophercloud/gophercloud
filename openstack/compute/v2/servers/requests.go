@@ -21,7 +21,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 // CreateOptsLike describes struct types that can be accepted by the Create call.
 // The CreateOpts struct in this package does.
 type CreateOptsLike interface {
-	ToServerCreateReqBody() map[string]interface{}
+	ToServerCreateMap() map[string]interface{}
 }
 
 // Network is used within CreateOpts to control a new server's network attachments.
@@ -75,8 +75,8 @@ type CreateOpts struct {
 	ConfigDrive bool
 }
 
-// ToServerCreateReqBody assembles a request body based on the contents of a CreateOpts.
-func (opts CreateOpts) ToServerCreateReqBody() map[string]interface{} {
+// ToServerCreateMap assembles a request body based on the contents of a CreateOpts.
+func (opts CreateOpts) ToServerCreateMap() map[string]interface{} {
 	server := make(map[string]interface{})
 
 	server["name"] = opts.Name
@@ -131,7 +131,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsLike) CreateResult
 	var result CreateResult
 	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
 		Results:     &result.Resp,
-		ReqBody:     opts.ToServerCreateReqBody(),
+		ReqBody:     opts.ToServerCreateMap(),
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
@@ -159,7 +159,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 
 // UpdateOptsLike allows extentions to add additional attributes to the Update request.
 type UpdateOptsLike interface {
-	ToServerUpdateReqBody() map[string]interface{}
+	ToServerUpdateMap() map[string]interface{}
 }
 
 // UpdateOpts specifies the base attributes that may be updated on an existing server.
@@ -176,8 +176,8 @@ type UpdateOpts struct {
 	AccessIPv6 string
 }
 
-// ToServerUpdateReqBody formats an UpdateOpts structure into a request body.
-func (opts UpdateOpts) ToServerUpdateReqBody() map[string]interface{} {
+// ToServerUpdateMap formats an UpdateOpts structure into a request body.
+func (opts UpdateOpts) ToServerUpdateMap() map[string]interface{} {
 	server := make(map[string]string)
 	if opts.Name != "" {
 		server["name"] = opts.Name
@@ -196,7 +196,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsLike) U
 	var result UpdateResult
 	_, result.Err = perigee.Request("PUT", serverURL(client, id), perigee.Options{
 		Results:     &result.Resp,
-		ReqBody:     opts.ToServerUpdateReqBody(),
+		ReqBody:     opts.ToServerUpdateMap(),
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
 	return result
