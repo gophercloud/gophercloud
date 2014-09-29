@@ -180,7 +180,8 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	options := CreateOpts{Name: "sample_network", AdminStateUp: true}
+	iTrue := true
+	options := CreateOpts{Name: "sample_network", AdminStateUp: &iTrue}
 	n, err := Create(ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
@@ -216,8 +217,8 @@ func TestCreateWithOptionalFields(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 	})
 
-	shared := true
-	options := CreateOpts{Name: "sample_network", AdminStateUp: true, Shared: &shared, TenantID: "12345"}
+	iTrue := true
+	options := CreateOpts{Name: "sample_network", AdminStateUp: &iTrue, Shared: &iTrue, TenantID: "12345"}
 	_, err := Create(ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
@@ -259,8 +260,8 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	shared := true
-	options := UpdateOpts{Name: "new_network_name", AdminStateUp: false, Shared: &shared}
+	iTrue, iFalse := true, false
+	options := UpdateOpts{Name: "new_network_name", AdminStateUp: &iFalse, Shared: &iTrue}
 	n, err := Update(ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 

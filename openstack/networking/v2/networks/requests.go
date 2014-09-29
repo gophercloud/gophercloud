@@ -1,6 +1,7 @@
 package networks
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/racker/perigee"
@@ -10,7 +11,7 @@ import (
 )
 
 type networkOpts struct {
-	AdminStateUp bool
+	AdminStateUp *bool
 	Name         string
 	Shared       *bool
 	TenantID     string
@@ -89,12 +90,36 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	return res
 }
 
-type CreateOpts interface {
-	ToMap() map[string]interface{}
+type CreateOptsInt interface {
+	ToMap() map[string]map[string]interface{}
+	IsCreateOpts() bool
 }
 
-// CreateOpts represents the attributes used when creating a new network.
 type CreateOpts networkOpts
+
+func (o CreateOpts) ToMap() map[string]map[string]interface{} {
+	inner := make(map[string]interface{})
+
+	if o.AdminStateUp != nil {
+		inner["admin_state_up"] = &o.AdminStateUp
+	}
+	if o.Name != "" {
+		inner["name"] = o.Name
+	}
+	if o.Shared != nil {
+		inner["shared"] = &o.Shared
+	}
+	if o.TenantID != "" {
+		inner["tenant_id"] = o.TenantID
+	}
+
+	outer := make(map[string]map[string]interface{})
+	outer["network"] = inner
+
+	return outer
+}
+
+func (o CreateOpts) IsCreateOpts() bool { return true }
 
 // Create accepts a CreateOpts struct and creates a new network using the values
 // provided. This operation does not actually require a request body, i.e. the
@@ -103,31 +128,17 @@ type CreateOpts networkOpts
 // The tenant ID that is contained in the URI is the tenant that creates the
 // network. An admin user, however, has the option of specifying another tenant
 // ID in the CreateOpts struct.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	// Define structures
-	type network struct {
-		AdminStateUp bool    `json:"admin_state_up,omitempty"`
-		Name         string  `json:"name,omitempty"`
-		Shared       *bool   `json:"shared,omitempty"`
-		TenantID     *string `json:"tenant_id,omitempty"`
-	}
-	type request struct {
-		Network network `json:"network"`
+func Create(c *gophercloud.ServiceClient, opts CreateOptsInt) CreateResult {
+	var res CreateResult
+
+	if opts.IsCreateOpts() != true {
+		res.Err = fmt.Errorf("Must provide valid create opts")
+		return res
 	}
 
-	// Populate request body
-	reqBody := request{Network: network{
-		AdminStateUp: opts.AdminStateUp,
-		Name:         opts.Name,
-		Shared:       opts.Shared,
-	}}
-
-	if opts.TenantID != "" {
-		reqBody.Network.TenantID = &opts.TenantID
-	}
+	reqBody := opts.ToMap()
 
 	// Send request to API
-	var res CreateResult
 	_, err := perigee.Request("POST", createURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
@@ -138,32 +149,47 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	return res
 }
 
-// UpdateOpts represents the attributes used when updating an existing network.
+type UpdateOptsInt interface {
+	ToMap() map[string]map[string]interface{}
+	IsUpdateOpts() bool
+}
+
 type UpdateOpts networkOpts
+
+func (o UpdateOpts) ToMap() map[string]map[string]interface{} {
+	inner := make(map[string]interface{})
+
+	if o.AdminStateUp != nil {
+		inner["admin_state_up"] = &o.AdminStateUp
+	}
+	if o.Name != "" {
+		inner["name"] = o.Name
+	}
+	if o.Shared != nil {
+		inner["shared"] = &o.Shared
+	}
+
+	outer := make(map[string]map[string]interface{})
+	outer["network"] = inner
+
+	return outer
+}
+
+func (o UpdateOpts) IsUpdateOpts() bool { return true }
 
 // Update accepts a UpdateOpts struct and updates an existing network using the
 // values provided. For more information, see the Create function.
-func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOpts) UpdateResult {
-	// Define structures
-	type network struct {
-		AdminStateUp bool   `json:"admin_state_up"`
-		Name         string `json:"name"`
-		Shared       *bool  `json:"shared,omitempty"`
+func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsInt) UpdateResult {
+	var res UpdateResult
+
+	if opts.IsUpdateOpts() != true {
+		res.Err = fmt.Errorf("Must provide valid update opts")
+		return res
 	}
 
-	type request struct {
-		Network network `json:"network"`
-	}
-
-	// Populate request body
-	reqBody := request{Network: network{
-		AdminStateUp: opts.AdminStateUp,
-		Name:         opts.Name,
-		Shared:       opts.Shared,
-	}}
+	reqBody := opts.ToMap()
 
 	// Send request to API
-	var res UpdateResult
 	_, err := perigee.Request("PUT", getURL(c, networkID), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,

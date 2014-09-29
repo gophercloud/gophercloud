@@ -182,8 +182,10 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	options := networks.CreateOpts{External: true}
+	iTrue := true
+	options := CreateOpts{networks.CreateOpts{Name: "ext_net", AdminStateUp: &iTrue}, true}
 	res := networks.Create(serviceClient(), options)
+
 	n, err := ExtractCreate(res)
 
 	th.AssertNoErr(t, err)
@@ -202,7 +204,8 @@ func TestUpdate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
 		"network": {
-				"router:external": true
+				"router:external": true,
+				"name": "new_name"
 		}
 }
 			`)
@@ -215,7 +218,7 @@ func TestUpdate(t *testing.T) {
 	"network": {
 			"admin_state_up": true,
 			"id": "8d05a1b1-297a-46ca-8974-17debf51ca3c",
-			"name": "ext_net",
+			"name": "new_name",
 			"router:external": true,
 			"shared": false,
 			"status": "ACTIVE",
@@ -228,8 +231,7 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	shared := true
-	options := networks.UpdateOpts{External: true}
+	options := UpdateOpts{networks.UpdateOpts{Name: "new_name"}, true}
 	res := networks.Update(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
 	n, err := ExtractUpdate(res)
 
