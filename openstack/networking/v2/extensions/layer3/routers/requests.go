@@ -65,7 +65,7 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 
 	u := rootURL(c) + utils.BuildQuery(q)
 	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
-		return RouterPage{pagination.LinkedPageBase(r)}
+		return RouterPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	})
 }
 
