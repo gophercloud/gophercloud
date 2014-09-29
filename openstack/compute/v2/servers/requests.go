@@ -21,7 +21,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 // CreateOptsLike describes struct types that can be accepted by the Create call.
 // The CreateOpts struct in this package does.
 type CreateOptsLike interface {
-	ToServerCreateReqData() map[string]interface{}
+	ToServerCreateReqBody() map[string]interface{}
 }
 
 // Network is used within CreateOpts to control a new server's network attachments.
@@ -75,8 +75,8 @@ type CreateOpts struct {
 	ConfigDrive bool
 }
 
-// ToServerCreateReqData assembles a request body based on the contents of a CreateOpts.
-func (opts CreateOpts) ToServerCreateReqData() map[string]interface{} {
+// ToServerCreateReqBody assembles a request body based on the contents of a CreateOpts.
+func (opts CreateOpts) ToServerCreateReqBody() map[string]interface{} {
 	server := make(map[string]interface{})
 
 	server["name"] = opts.Name
@@ -131,7 +131,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsLike) CreateResult
 	var result CreateResult
 	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
 		Results:     &result.Resp,
-		ReqBody:     opts.ToServerCreateReqData(),
+		ReqBody:     opts.ToServerCreateReqBody(),
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
