@@ -35,6 +35,8 @@ type Pager struct {
 
 	createPage func(r LastHTTPResponse) Page
 
+	Err error
+
 	// Headers supplies additional HTTP headers to populate on each paged request.
 	Headers map[string]string
 }
