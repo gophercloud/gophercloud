@@ -1,14 +1,16 @@
 package containers
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/testhelper"
 )
 
-const ( 
+const (
 	tokenId = "abcabcabcabc"
 )
 
@@ -29,12 +31,42 @@ func TestListContainerInfo(t *testing.T) {
 		testhelper.TestMethod(t, r, "GET")
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `[{'count': 0,'bytes': 0,'name': 'janeausten'},{'count': 1,'bytes': 14,'name': 'marktwain'}]`)
 	})
 
 	client := serviceClient()
-	_, err := List(client, ListOpts{Full: true})
-	if err != nil {
-		t.Fatalf("Unexpected error listing containers info: %v", err)
+	count := 0
+	List(client, ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := ExtractInfo(page)
+		if err != nil {
+			t.Errorf("Failed to extract container info: %v", err)
+			return false, err
+		}
+
+		expected := []Container{
+			Container{
+				"count": 0,
+				"bytes": 0,
+				"name":  "janeausten",
+			},
+			Container{
+				"count": 1,
+				"bytes": 14,
+				"name":  "marktwain",
+			},
+		}
+
+		testhelper.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
 
@@ -46,12 +78,31 @@ func TestListContainerNames(t *testing.T) {
 		testhelper.TestMethod(t, r, "GET")
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 		testhelper.TestHeader(t, r, "Accept", "text/plain")
+
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "")
 	})
 
 	client := serviceClient()
-	_, err := List(client, ListOpts{})
-	if err != nil {
-		t.Fatalf("Unexpected error listing containers info: %v", err)
+	count := 0
+	List(client, ListOpts{Full: false}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := ExtractNames(page)
+		if err != nil {
+			t.Errorf("Failed to extract container names: %v", err)
+			return false, err
+		}
+
+		expected := []string{"janeausten, marktwain"}
+
+		testhelper.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 0 {
+		t.Fatalf("Expected 0 pages, got %d", count)
 	}
 }
 
@@ -67,9 +118,7 @@ func TestCreateContainer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	_, err := Create(client, CreateOpts{
-		Name: "testContainer",
-	})
+	_, err := Create(client, "testContainer", CreateOpts{})
 	if err != nil {
 		t.Fatalf("Unexpected error creating container: %v", err)
 	}
@@ -87,9 +136,7 @@ func TestDeleteContainer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Delete(client, DeleteOpts{
-		Name: "testContainer",
-	})
+	err := Delete(client, "testContainer")
 	if err != nil {
 		t.Fatalf("Unexpected error deleting container: %v", err)
 	}
@@ -107,9 +154,7 @@ func TestUpateContainer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Update(client, UpdateOpts{
-		Name: "testContainer",
-	})
+	err := Update(client, "testContainer", UpdateOpts{})
 	if err != nil {
 		t.Fatalf("Unexpected error updating container metadata: %v", err)
 	}
@@ -124,12 +169,13 @@ func TestGetContainer(t *testing.T) {
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusNoContent)
+		fmt.Fprintf(w, `
+		
+		`)
 	})
 
 	client := serviceClient()
-	_, err := Get(client, GetOpts{
-			Name: "testContainer",
-	})
+	_, err := Get(client, "testContainer").ExtractMetadata()
 	if err != nil {
 		t.Fatalf("Unexpected error getting container metadata: %v", err)
 	}

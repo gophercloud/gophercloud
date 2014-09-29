@@ -8,6 +8,7 @@ import (
 
 	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/openstack/storage/v1/containers"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // numContainers is the number of containers to create for testing.
@@ -18,7 +19,6 @@ func TestContainers(t *testing.T) {
 	client, err := newClient()
 	if err != nil {
 		t.Error(err)
-		return
 	}
 
 	// Create a slice of random container names.
@@ -29,80 +29,65 @@ func TestContainers(t *testing.T) {
 
 	// Create numContainers containers.
 	for i := 0; i < len(cNames); i++ {
-		_, err := containers.Create(client, containers.CreateOpts{
-			Name: cNames[i],
-		})
+		_, err := containers.Create(client, cNames[i], containers.CreateOpts{})
 		if err != nil {
 			t.Error(err)
-			return
 		}
 	}
 	// Delete the numContainers containers after function completion.
 	defer func() {
 		for i := 0; i < len(cNames); i++ {
-			err = containers.Delete(client, containers.DeleteOpts{
-				Name: cNames[i],
-			})
+			err = containers.Delete(client, cNames[i])
 			if err != nil {
 				t.Error(err)
-				return
 			}
 		}
 	}()
 
 	// List the numContainer names that were just created. To just list those,
 	// the 'prefix' parameter is used.
-	lr, err := containers.List(client, containers.ListOpts{
-		Full: false,
-		Params: map[string]string{
-			"prefix": "gophercloud-test-container-",
-		},
+	pager := containers.List(client, containers.ListOpts{Full: true, Prefix: "gophercloud-test-container-"})
+	if pager.Err != nil {
+		t.Error(err)
+		return
+	}
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		containerList, err := containers.ExtractInfo(page)
+		if err != nil {
+			t.Error(err)
+		}
+		for _, n := range containerList {
+			t.Logf("Container: Name [%s] Count [%d] Bytes [%d]",
+				n["name"], int(n["count"].(float64)), int(n["bytes"].(float64)))
+		}
+
+		return true, nil
 	})
 	if err != nil {
 		t.Error(err)
-		return
-	}
-	// Extract the names from the 'List' response.
-	cns, err := containers.ExtractNames(lr)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	if len(cns) != len(cNames) {
-		t.Errorf("Expected %d names and got %d:\nExpected:%v\nActual:%v", len(cNames), len(cns), cNames, cns)
-		return
 	}
 
 	// List the info for the numContainer containers that were created.
-	lr, err = containers.List(client, containers.ListOpts{
-		Full: true,
-		Params: map[string]string{
-			"prefix": "gophercloud-test-container-",
-		},
+	pager = containers.List(client, containers.ListOpts{Full: false, Prefix: "gophercloud-test-container-"})
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		containerList, err := containers.ExtractNames(page)
+		if err != nil {
+			return false, err
+		}
+		for _, n := range containerList {
+			t.Logf("Container: Name [%s]", n)
+		}
+
+		return true, nil
 	})
 	if err != nil {
 		t.Error(err)
-		return
-	}
-	// Extract the info from the 'List' response.
-	cis, err := containers.ExtractInfo(lr)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	if len(cis) != len(cNames) {
-		t.Errorf("Expected %d containers and got %d", len(cNames), len(cis))
-		return
 	}
 
 	// Update one of the numContainer container metadata.
-	err = containers.Update(client, containers.UpdateOpts{
-		Name:     cNames[0],
-		Metadata: metadata,
-	})
+	err = containers.Update(client, cNames[0], containers.UpdateOpts{Metadata: metadata})
 	if err != nil {
 		t.Error(err)
-		return
 	}
 	// After the tests are done, delete the metadata that was set.
 	defer func() {
@@ -110,30 +95,20 @@ func TestContainers(t *testing.T) {
 		for k := range metadata {
 			tempMap[k] = ""
 		}
-		err = containers.Update(client, containers.UpdateOpts{
-			Name:     cNames[0],
-			Metadata: tempMap,
-		})
+		err = containers.Update(client, cNames[0], containers.UpdateOpts{Metadata: tempMap})
 		if err != nil {
 			t.Error(err)
-			return
 		}
 	}()
 
 	// Retrieve a container's metadata.
-	gr, err := containers.Get(client, containers.GetOpts{
-		Name: cNames[0],
-	})
+	cm, err := containers.Get(client, cNames[0]).ExtractMetadata()
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	// Extract the metadata from the 'Get' response.
-	cm := containers.ExtractMetadata(gr)
 	for k := range metadata {
 		if cm[k] != metadata[strings.Title(k)] {
 			t.Errorf("Expected custom metadata with key: %s", k)
-			return
 		}
 	}
 }

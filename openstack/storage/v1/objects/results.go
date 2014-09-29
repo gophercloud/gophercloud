@@ -2,8 +2,8 @@ package objects
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
+	"net/http"
 	"strings"
 
 	"github.com/rackspace/gophercloud/pagination"
@@ -12,67 +12,47 @@ import (
 // Object is a structure that holds information related to a storage object.
 type Object map[string]interface{}
 
-// ListOpts is a structure that holds parameters for listing objects.
-type ListOpts struct {
-	Container string
-	Full      bool
-	Params    map[string]string
+// ListResult is a single page of objects that is returned from a call to the List function.
+type ObjectPage struct {
+	pagination.MarkerPageBase
 }
 
-// DownloadOpts is a structure that holds parameters for downloading an object.
-type DownloadOpts struct {
-	Container string
-	Name      string
-	Headers   map[string]string
-	Params    map[string]string
+// IsEmpty returns true if a ListResult contains no object names.
+func (r ObjectPage) IsEmpty() (bool, error) {
+	names, err := ExtractNames(r)
+	if err != nil {
+		return true, err
+	}
+	return len(names) == 0, nil
 }
 
-// CreateOpts is a structure that holds parameters for creating an object.
-type CreateOpts struct {
-	Container string
-	Name      string
-	Content   io.Reader
-	Metadata  map[string]string
-	Headers   map[string]string
-	Params    map[string]string
+// LastMarker returns the last object name in a ListResult.
+func (r ObjectPage) LastMarker() (string, error) {
+	names, err := ExtractNames(r)
+	if err != nil {
+		return "", err
+	}
+	if len(names) == 0 {
+		return "", nil
+	}
+	return names[len(names)-1], nil
 }
 
-// CopyOpts is a structure that holds parameters for copying one object to another.
-type CopyOpts struct {
-	Container    string
-	Name         string
-	NewContainer string
-	NewName      string
-	Metadata     map[string]string
-	Headers      map[string]string
+// DownloadResult is a *http.Response that is returned from a call to the Download function.
+type DownloadResult struct {
+	Resp *http.Response
+	Err  error
 }
 
-// DeleteOpts is a structure that holds parameters for deleting an object.
-type DeleteOpts struct {
-	Container string
-	Name      string
-	Params    map[string]string
-}
-
-// GetOpts is a structure that holds parameters for getting an object's metadata.
-type GetOpts struct {
-	Container string
-	Name      string
-	Params    map[string]string
-}
-
-// UpdateOpts is a structure that holds parameters for updating, creating, or deleting an
-// object's metadata.
-type UpdateOpts struct {
-	Container string
-	Name      string
-	Metadata  map[string]string
-	Headers   map[string]string
+// GetResult is a *http.Response that is returned from a call to the Get function.
+type GetResult struct {
+	Resp *http.Response
+	Err  error
 }
 
 // ExtractInfo is a function that takes a page of objects and returns their full information.
 func ExtractInfo(page pagination.Page) ([]Object, error) {
-	untyped := page.(ListResult).Body.([]interface{})
+	untyped := page.(ObjectPage).Body.([]interface{})
 	results := make([]Object, len(untyped))
 	for index, each := range untyped {
 		results[index] = Object(each.(map[string]interface{}))
@@ -82,7 +62,7 @@ func ExtractInfo(page pagination.Page) ([]Object, error) {
 
 // ExtractNames is a function that takes a page of objects and returns only their names.
 func ExtractNames(page pagination.Page) ([]string, error) {
-	casted := page.(ListResult)
+	casted := page.(ObjectPage)
 	ct := casted.Header.Get("Content-Type")
 
 	switch {
@@ -100,7 +80,7 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 	case strings.HasPrefix(ct, "text/plain"):
 		names := make([]string, 0, 50)
 
-		body := string(page.(ListResult).Body.([]uint8))
+		body := string(page.(ObjectPage).Body.([]uint8))
 		for _, name := range strings.Split(body, "\n") {
 			if len(name) > 0 {
 				names = append(names, name)
@@ -115,10 +95,13 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 
 // ExtractContent is a function that takes a DownloadResult (of type *http.Response)
 // and returns the object's content.
-func ExtractContent(dr DownloadResult) ([]byte, error) {
+func (dr DownloadResult) ExtractContent() ([]byte, error) {
+	if dr.Err != nil {
+		return nil, nil
+	}
 	var body []byte
-	defer dr.Body.Close()
-	body, err := ioutil.ReadAll(dr.Body)
+	defer dr.Resp.Body.Close()
+	body, err := ioutil.ReadAll(dr.Resp.Body)
 	if err != nil {
 		return body, fmt.Errorf("Error trying to read DownloadResult body: %v", err)
 	}
@@ -127,13 +110,16 @@ func ExtractContent(dr DownloadResult) ([]byte, error) {
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
 // and returns the custom metadata associated with the object.
-func ExtractMetadata(gr GetResult) map[string]string {
+func (gr GetResult) ExtractMetadata() (map[string]string, error) {
+	if gr.Err != nil {
+		return nil, gr.Err
+	}
 	metadata := make(map[string]string)
-	for k, v := range gr.Header {
+	for k, v := range gr.Resp.Header {
 		if strings.HasPrefix(k, "X-Object-Meta-") {
 			key := strings.TrimPrefix(k, "X-Object-Meta-")
 			metadata[key] = v[0]
 		}
 	}
-	return metadata
+	return metadata, nil
 }

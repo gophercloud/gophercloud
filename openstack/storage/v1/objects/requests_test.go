@@ -2,14 +2,16 @@ package objects
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/testhelper"
 )
 
-const ( 
+const (
 	tokenId = "abcabcabcabc"
 )
 
@@ -22,23 +24,25 @@ func serviceClient() *gophercloud.ServiceClient {
 	}
 }
 
-func TestDownloadObject(t * testing.T) {
+func TestDownloadObject(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
-	
+
 	testhelper.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "Successful download with Gophercloud")
 	})
 
 	client := serviceClient()
-	_, err := Download(client, DownloadOpts{
-		Container: "testContainer",
-		Name: "testObject",
-	})
+	content, err := Download(client, "testContainer", "testObject", DownloadOpts{}).ExtractContent()
 	if err != nil {
 		t.Fatalf("Unexpected error downloading object: %v", err)
+	}
+	if string(content) != "Successful download with Gophercloud" {
+		t.Errorf("Expected %s, got %s", "Successful download with Gophercloud", content)
 	}
 }
 
@@ -49,16 +53,39 @@ func TestListObjectInfo(t *testing.T) {
 	testhelper.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
-		testhelper.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `[{'hash': '451e372e48e0f6b1114fa0724aa79fa1','last_modified': '2014-01-15T16:41:49.390270','bytes': 14,'name': 'goodbye','content_type': 'application/octet-stream'}]`)
 	})
 
 	client := serviceClient()
-	_, err := List(client, ListOpts{
-		Full: true,
-		Container: "testContainer",
+	count := 0
+	List(client, "testContainer", ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := ExtractInfo(page)
+		if err != nil {
+			t.Errorf("Failed to extract object info: %v", err)
+			return false, err
+		}
+
+		expected := []Object{
+			Object{
+				"hash":          "451e372e48e0f6b1114fa0724aa79fa1",
+				"last_modified": "2014-01-15T16:41:49.390270",
+				"bytes":         14,
+				"name":          "goodbye",
+				"content_type":  "application/octet-stream",
+			},
+		}
+
+		testhelper.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
 	})
-	if err != nil {
-		t.Fatalf("Unexpected error listing objects info: %v", err)
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
 
@@ -70,17 +97,33 @@ func TestListObjectNames(t *testing.T) {
 		testhelper.TestMethod(t, r, "GET")
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 		testhelper.TestHeader(t, r, "Accept", "text/plain")
+
+		w.Header().Add("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "")
 	})
 
 	client := serviceClient()
-	_, err := List(client, ListOpts{
-		Container: "testContainer",
+	count := 0
+	List(client, "testContainer", ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := ExtractNames(page)
+		if err != nil {
+			t.Errorf("Failed to extract object names: %v", err)
+			return false, err
+		}
+
+		expected := []string{"helloworld", "goodbye"}
+
+		testhelper.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
 	})
-	if err != nil {
-		t.Fatalf("Unexpected error listing object names: %v", err)
+
+	if count != 0 {
+		t.Fatalf("Expected 0 pages, got %d", count)
 	}
 }
-
 func TestCreateObject(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
@@ -93,11 +136,8 @@ func TestCreateObject(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Create(client, CreateOpts{
-		Content: bytes.NewBufferString("Did gyre and gimble in the wabe:"),
-		Container: "testContainer",
-		Name: "testObject",
-	})
+	content := bytes.NewBufferString("Did gyre and gimble in the wabe")
+	err := Create(client, "testContainer", "testObject", content, CreateOpts{})
 	if err != nil {
 		t.Fatalf("Unexpected error creating object: %v", err)
 	}
@@ -116,12 +156,7 @@ func TestCopyObject(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Copy(client, CopyOpts{
-		NewContainer: "newTestContainer",
-		NewName: "newTestObject",
-		Container: "testContainer",
-		Name: "testObject",
-	})
+	err := Copy(client, "testContainer", "testObject", CopyOpts{Destination: "/newTestContainer/newTestObject"})
 	if err != nil {
 		t.Fatalf("Unexpected error copying object: %v", err)
 	}
@@ -139,10 +174,7 @@ func TestDeleteObject(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Delete(client, DeleteOpts{
-		Container: "testContainer",
-		Name: "testObject",
-	})
+	err := Delete(client, "testContainer", "testObject", DeleteOpts{})
 	if err != nil {
 		t.Fatalf("Unexpected error deleting object: %v", err)
 	}
@@ -161,17 +193,13 @@ func TestUpateObjectMetadata(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Update(client, UpdateOpts{
-		Container: "testContainer",
-		Name: "testObject",
-		Metadata: metadata,
-	})
+	err := Update(client, "testContainer", "testObject", UpdateOpts{Metadata: metadata})
 	if err != nil {
 		t.Fatalf("Unexpected error updating object metadata: %v", err)
 	}
 }
 
-func TestGetContainer(t *testing.T) {
+func TestGetObject(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
@@ -183,11 +211,10 @@ func TestGetContainer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	_, err := Get(client, GetOpts{
-			Container: "testContainer",
-			Name: "testObject",
-	})
+	expected := metadata
+	actual, err := Get(client, "testContainer", "testObject", GetOpts{}).ExtractMetadata()
 	if err != nil {
 		t.Fatalf("Unexpected error getting object metadata: %v", err)
 	}
+	testhelper.CheckDeepEquals(t, expected, actual)
 }

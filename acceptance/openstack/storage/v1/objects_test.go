@@ -33,18 +33,14 @@ func TestObjects(t *testing.T) {
 
 	// Create a container to hold the test objects.
 	cName := tools.RandomString("test-container-", 8)
-	_, err = containers.Create(client, containers.CreateOpts{
-		Name: cName,
-	})
+	_, err = containers.Create(client, cName, containers.CreateOpts{})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 	// Defer deletion of the container until after testing.
 	defer func() {
-		err = containers.Delete(client, containers.DeleteOpts{
-			Name: cName,
-		})
+		err = containers.Delete(client, cName)
 		if err != nil {
 			t.Error(err)
 			return
@@ -55,11 +51,7 @@ func TestObjects(t *testing.T) {
 	oContents := make([]*bytes.Buffer, numObjects)
 	for i := 0; i < numObjects; i++ {
 		oContents[i] = bytes.NewBuffer([]byte(tools.RandomString("", 10)))
-		err = objects.Create(client, objects.CreateOpts{
-			Container: cName,
-			Name:      oNames[i],
-			Content:   oContents[i],
-		})
+		err = objects.Create(client, cName, oNames[i], oContents[i], objects.CreateOpts{})
 		if err != nil {
 			t.Error(err)
 			return
@@ -68,14 +60,11 @@ func TestObjects(t *testing.T) {
 	// Delete the objects after testing.
 	defer func() {
 		for i := 0; i < numObjects; i++ {
-			err = objects.Delete(client, objects.DeleteOpts{
-				Container: cName,
-				Name:      oNames[i],
-			})
+			err = objects.Delete(client, cName, oNames[i], objects.DeleteOpts{})
 		}
 	}()
 
-	pager := objects.List(client, objects.ListOpts{Full: false, Container: cName})
+	pager := objects.List(client, cName, objects.ListOpts{Full: false})
 	ons := make([]string, 0, len(oNames))
 	err = pager.EachPage(func(page pagination.Page) (bool, error) {
 		names, err := objects.ExtractNames(page)
@@ -95,7 +84,7 @@ func TestObjects(t *testing.T) {
 		return
 	}
 
-	pager = objects.List(client, objects.ListOpts{Full: true, Container: cName})
+	pager = objects.List(client, cName, objects.ListOpts{Full: true})
 	ois := make([]objects.Object, 0, len(oNames))
 	err = pager.EachPage(func(page pagination.Page) (bool, error) {
 		info, err := objects.ExtractInfo(page)
@@ -117,42 +106,20 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Copy the contents of one object to another.
-	err = objects.Copy(client, objects.CopyOpts{
-		Container:    cName,
-		Name:         oNames[0],
-		NewContainer: cName,
-		NewName:      oNames[1],
-	})
+	err = objects.Copy(client, cName, oNames[0], objects.CopyOpts{Destination: cName + "/" + oNames[1]})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	// Download one of the objects that was created above.
-	dr, err := objects.Download(client, objects.DownloadOpts{
-		Container: cName,
-		Name:      oNames[1],
-	})
+	o1Content, err := objects.Download(client, cName, oNames[0], objects.DownloadOpts{}).ExtractContent()
 	if err != nil {
 		t.Error(err)
 		return
-	}
-	// Extract the content from the 'Download' response of object.
-	o2Content, err := objects.ExtractContent(dr)
-	if err != nil {
-		t.Error(err)
 	}
 	// Download the another object that was create above.
-	dr, err = objects.Download(client, objects.DownloadOpts{
-		Container: cName,
-		Name:      oNames[0],
-	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	// Extract the content from the 'Download' response of other object.
-	o1Content, err := objects.ExtractContent(dr)
+	o2Content, err := objects.Download(client, cName, oNames[1], objects.DownloadOpts{}).ExtractContent()
 	if err != nil {
 		t.Error(err)
 		return
@@ -164,11 +131,7 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Update an object's metadata.
-	err = objects.Update(client, objects.UpdateOpts{
-		Container: cName,
-		Name:      oNames[0],
-		Metadata:  metadata,
-	})
+	err = objects.Update(client, cName, oNames[0], objects.UpdateOpts{Metadata: metadata})
 	if err != nil {
 		t.Error(err)
 		return
@@ -179,11 +142,7 @@ func TestObjects(t *testing.T) {
 		for k := range metadata {
 			tempMap[k] = ""
 		}
-		err = objects.Update(client, objects.UpdateOpts{
-			Container: cName,
-			Name:      oNames[0],
-			Metadata:  tempMap,
-		})
+		err = objects.Update(client, cName, oNames[0], objects.UpdateOpts{Metadata: tempMap})
 		if err != nil {
 			t.Error(err)
 			return
@@ -191,13 +150,11 @@ func TestObjects(t *testing.T) {
 	}()
 
 	// Retrieve an object's metadata.
-	gr, err := objects.Get(client, objects.GetOpts{})
+	om, err := objects.Get(client, cName, oNames[0], objects.GetOpts{}).ExtractMetadata()
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	// Extract the custom metadata from the 'Get' response.
-	om := objects.ExtractMetadata(gr)
 	for k := range metadata {
 		if om[k] != metadata[strings.Title(k)] {
 			t.Errorf("Expected custom metadata with key: %s", k)
