@@ -1,6 +1,7 @@
 package servers
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/racker/perigee"
@@ -17,14 +18,120 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 	return pagination.NewPager(client, detailURL(client), createPage)
 }
 
+// CreateOptsLike describes struct types that can be accepted by the Create call.
+// The CreateOpts struct in this package does.
+type CreateOptsLike interface {
+	ToServerCreateReqData() map[string]interface{}
+}
+
+// Network is used within CreateOpts to control a new server's network attachments.
+type Network struct {
+	// UUID of a nova-network to attach to the newly provisioned server.
+	// Required unless Port is provided.
+	UUID string
+
+	// Port of a neutron network to attach to the newly provisioned server.
+	// Required unless UUID is provided.
+	Port string
+
+	// FixedIP [optional] specifies a fixed IPv4 address to be used on this network.
+	FixedIP string
+}
+
+// CreateOpts specifies server creation parameters.
+type CreateOpts struct {
+	// Name [required] is the name to assign to the newly launched server.
+	Name string
+
+	// ImageRef [required] is the ID or full URL to the image that contains the server's OS and initial state.
+	// Optional if using the boot-from-volume extension.
+	ImageRef string
+
+	// FlavorRef [required] is the ID or full URL to the flavor that describes the server's specs.
+	FlavorRef string
+
+	// SecurityGroups [optional] lists the names of the security groups to which this server should belong.
+	SecurityGroups []string
+
+	// UserData [optional] contains configuration information or scripts to use upon launch.
+	// Create will base64-encode it for you.
+	UserData []byte
+
+	// AvailabilityZone [optional] in which to launch the server.
+	AvailabilityZone string
+
+	// Networks [optional] dictates how this server will be attached to available networks.
+	// By default, the server will be attached to all isolated networks for the tenant.
+	Networks []Network
+
+	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the server.
+	Metadata map[string]string
+
+	// Personality [optional] includes the path and contents of a file to inject into the server at launch.
+	// The maximum size of the file is 255 bytes (decoded).
+	Personality []byte
+
+	// ConfigDrive [optional] enables metadata injection through a configuration drive.
+	ConfigDrive bool
+}
+
+// ToServerCreateReqData assembles a request body based on the contents of a CreateOpts.
+func (opts CreateOpts) ToServerCreateReqData() map[string]interface{} {
+	server := make(map[string]interface{})
+
+	server["name"] = opts.Name
+	server["imageRef"] = opts.ImageRef
+	server["flavorRef"] = opts.FlavorRef
+
+	if opts.UserData != nil {
+		encoded := base64.StdEncoding.EncodeToString(opts.UserData)
+		server["user_data"] = &encoded
+	}
+	if opts.Personality != nil {
+		encoded := base64.StdEncoding.EncodeToString(opts.Personality)
+		server["personality"] = &encoded
+	}
+	if opts.ConfigDrive {
+		server["config_drive"] = "true"
+	}
+	if opts.AvailabilityZone != "" {
+		server["availability_zone"] = opts.AvailabilityZone
+	}
+	if opts.Metadata != nil {
+		server["metadata"] = opts.Metadata
+	}
+
+	if len(opts.SecurityGroups) > 0 {
+		securityGroups := make([]map[string]interface{}, len(opts.SecurityGroups))
+		for i, groupName := range opts.SecurityGroups {
+			securityGroups[i] = map[string]interface{}{"name": groupName}
+		}
+	}
+	if len(opts.Networks) > 0 {
+		networks := make([]map[string]interface{}, len(opts.Networks))
+		for i, net := range opts.Networks {
+			networks[i] = make(map[string]interface{})
+			if net.UUID != "" {
+				networks[i]["uuid"] = net.UUID
+			}
+			if net.Port != "" {
+				networks[i]["port"] = net.Port
+			}
+			if net.FixedIP != "" {
+				networks[i]["fixed_ip"] = net.FixedIP
+			}
+		}
+	}
+
+	return map[string]interface{}{"server": server}
+}
+
 // Create requests a server to be provisioned to the user in the current tenant.
-func Create(client *gophercloud.ServiceClient, opts map[string]interface{}) CreateResult {
+func Create(client *gophercloud.ServiceClient, opts CreateOptsLike) CreateResult {
 	var result CreateResult
 	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
-		Results: &result.Resp,
-		ReqBody: map[string]interface{}{
-			"server": opts,
-		},
+		Results:     &result.Resp,
+		ReqBody:     opts.ToServerCreateReqData(),
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
