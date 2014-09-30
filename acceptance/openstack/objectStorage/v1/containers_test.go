@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud/acceptance/tools"
-	"github.com/rackspace/gophercloud/openstack/storage/v1/containers"
+	"github.com/rackspace/gophercloud/openstack/objectStorage/v1/containers"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -58,7 +58,7 @@ func TestContainers(t *testing.T) {
 		}
 		for _, n := range containerList {
 			t.Logf("Container: Name [%s] Count [%d] Bytes [%d]",
-				n["name"], int(n["count"].(float64)), int(n["bytes"].(float64)))
+				n.Name, n.Count, n.Bytes)
 		}
 
 		return true, nil

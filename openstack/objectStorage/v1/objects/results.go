@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud/pagination"
@@ -13,11 +12,11 @@ import (
 
 // Object is a structure that holds information related to a storage object.
 type Object struct {
-	Bytes        int       `json:"bytes"`
-	ContentType  string    `json:"content_type"`
-	Hash         string    `json:"hash"`
-	LastModified time.Time `json:"last_modified"`
-	Name         string    `json:"name"`
+	Bytes        int    `json:"bytes"			mapstructure:"bytes"`
+	ContentType  string `json:"content_type"	mapstructure:"content_type"`
+	Hash         string `json:"hash"			mapstructure:"hash"`
+	LastModified string `json:"last_modified"	mapstructure:"last_modified"`
+	Name         string `json:"name"			mapstructure:"name"`
 }
 
 // ListResult is a single page of objects that is returned from a call to the List function.
@@ -64,11 +63,10 @@ func ExtractInfo(page pagination.Page) ([]Object, error) {
 	results := make([]Object, len(untyped))
 	for index, each := range untyped {
 		object := each.(map[string]interface{})
-		err := mapstructure.Decode(object, results[index])
+		err := mapstructure.Decode(object, &results[index])
 		if err != nil {
 			return results, err
 		}
-
 	}
 	return results, nil
 }
@@ -77,7 +75,6 @@ func ExtractInfo(page pagination.Page) ([]Object, error) {
 func ExtractNames(page pagination.Page) ([]string, error) {
 	casted := page.(ObjectPage)
 	ct := casted.Header.Get("Content-Type")
-
 	switch {
 	case strings.HasPrefix(ct, "application/json"):
 		parsed, err := ExtractInfo(page)
@@ -89,6 +86,7 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 		for _, object := range parsed {
 			names = append(names, object.Name)
 		}
+
 		return names, nil
 	case strings.HasPrefix(ct, "text/plain"):
 		names := make([]string, 0, 50)
@@ -101,6 +99,8 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 		}
 
 		return names, nil
+	case strings.HasPrefix(ct, "text/html"):
+		return []string{}, nil
 	default:
 		return nil, fmt.Errorf("Cannot extract names from response with content-type: [%s]", ct)
 	}

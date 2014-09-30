@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -77,7 +76,7 @@ func TestListObjectInfo(t *testing.T) {
 		expected := []Object{
 			Object{
 				Hash:         "451e372e48e0f6b1114fa0724aa79fa1",
-				LastModified: time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
+				LastModified: "2009-11-10 23:00:00 +0000 UTC",
 				Bytes:        14,
 				Name:         "goodbye",
 				ContentType:  "application/octet-stream",
@@ -100,8 +99,16 @@ func TestListObjectNames(t *testing.T) {
 		testhelper.TestHeader(t, r, "Accept", "text/plain")
 
 		w.Header().Add("Content-Type", "text/plain")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "")
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, "goodbye\n")
+		case "goodbye":
+			fmt.Fprintf(w, "")
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
 	})
 
 	client := serviceClient()
@@ -112,7 +119,7 @@ func TestListObjectNames(t *testing.T) {
 			return false, err
 		}
 
-		expected := []string{"helloworld", "goodbye"}
+		expected := []string{"goodbye"}
 
 		testhelper.CheckDeepEquals(t, expected, actual)
 

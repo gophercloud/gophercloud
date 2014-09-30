@@ -35,7 +35,7 @@ func List(c *gophercloud.ServiceClient, containerName string, opts ListOpts) pag
 	}
 
 	if !opts.Full {
-		headers = map[string]string{"Accept": "text/plain"}
+		headers = map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
 	}
 
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {

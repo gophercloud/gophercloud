@@ -22,14 +22,13 @@ type ListOpts struct {
 // response to the ExtractInfo or ExtractNames function, respectively.
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	var headers map[string]string
-
 	query, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return pagination.Pager{Err: err}
 	}
 
 	if !opts.Full {
-		headers = map[string]string{"Accept": "text/plain"}
+		headers = map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
 	}
 
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {

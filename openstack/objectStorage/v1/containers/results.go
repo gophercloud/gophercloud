@@ -10,9 +10,9 @@ import (
 )
 
 type Container struct {
-	Bytes int
-	Count int
-	Name  string
+	Bytes int    `json:"bytes" mapstructure:"bytes"`
+	Count int    `json:"count" mapstructure:"count"`
+	Name  string `json:"name"  mapstructure:"name"`
 }
 
 type commonResult struct {
@@ -84,7 +84,7 @@ func ExtractInfo(page pagination.Page) ([]Container, error) {
 	results := make([]Container, len(untyped))
 	for index, each := range untyped {
 		container := each.(map[string]interface{})
-		err := mapstructure.Decode(container, results[index])
+		err := mapstructure.Decode(container, &results[index])
 		if err != nil {
 			return results, err
 		}

@@ -34,6 +34,7 @@ func TestListContainerInfo(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		r.ParseForm()
+		fmt.Printf("r: %+v\n", r)
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
@@ -49,6 +50,8 @@ func TestListContainerInfo(t *testing.T) {
 					"name": "marktwain"
 				}
 			]`)
+		case "marktwain":
+			fmt.Fprintf(w, `[]`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
@@ -91,8 +94,16 @@ func TestListContainerNames(t *testing.T) {
 		testhelper.TestHeader(t, r, "Accept", "text/plain")
 
 		w.Header().Set("Content-Type", "text/plain")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "")
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, "janeausten\nmarktwain\n")
+		case "marktwain":
+			fmt.Fprintf(w, ``)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
 	})
 
 	client := serviceClient()
@@ -103,7 +114,7 @@ func TestListContainerNames(t *testing.T) {
 			return false, err
 		}
 
-		expected := []string{"janeausten, marktwain"}
+		expected := []string{"janeausten", "marktwain"}
 
 		testhelper.CheckDeepEquals(t, expected, actual)
 
