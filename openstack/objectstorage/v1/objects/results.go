@@ -12,11 +12,11 @@ import (
 
 // Object is a structure that holds information related to a storage object.
 type Object struct {
-	Bytes        int    `json:"bytes"			mapstructure:"bytes"`
-	ContentType  string `json:"content_type"	mapstructure:"content_type"`
-	Hash         string `json:"hash"			mapstructure:"hash"`
-	LastModified string `json:"last_modified"	mapstructure:"last_modified"`
-	Name         string `json:"name"			mapstructure:"name"`
+	Bytes        int    `json:"bytes" mapstructure:"bytes"`
+	ContentType  string `json:"content_type" mapstructure:"content_type"`
+	Hash         string `json:"hash" mapstructure:"hash"`
+	LastModified string `json:"last_modified" mapstructure:"last_modified"`
+	Name         string `json:"name" mapstructure:"name"`
 }
 
 // ListResult is a single page of objects that is returned from a call to the List function.

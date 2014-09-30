@@ -79,8 +79,6 @@ func TestListContainerInfo(t *testing.T) {
 			},
 		}
 
-		t.Logf("actual: %+v/n", actual)
-
 		testhelper.CheckDeepEquals(t, expected, actual)
 
 		return true, nil

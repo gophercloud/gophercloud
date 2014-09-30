@@ -65,7 +65,7 @@ func TestListObjectInfo(t *testing.T) {
 					"hash": "451e372e48e0f6b1114fa0724aa79fa1",
 					"last_modified": "2009-11-10 23:00:00 +0000 UTC",
 					"bytes": 14,
-					"name": 'goodbye",
+					"name": "goodbye",
 					"content_type": "application/octet-stream"
 				},
 				{
@@ -85,7 +85,7 @@ func TestListObjectInfo(t *testing.T) {
 
 	client := serviceClient()
 	count := 0
-	List(client, "testContainer", &ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(client, "testContainer", &ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractInfo(page)
 		if err != nil {
@@ -110,10 +110,13 @@ func TestListObjectInfo(t *testing.T) {
 			},
 		}
 
-		testhelper.CheckDeepEquals(t, expected, actual)
+		testhelper.CheckDeepEquals(t, actual, expected)
 
 		return true, nil
 	})
+	if err != nil {
+		t.Error(err)
+	}
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
