@@ -9,14 +9,6 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// maybeString returns nil for empty strings and nil for empty.
-func maybeString(original string) *string {
-	if original != "" {
-		return &original
-	}
-	return nil
-}
-
 // EndpointOpts contains the subset of Endpoint attributes that should be used to create or update an Endpoint.
 type EndpointOpts struct {
 	Availability gophercloud.Availability
@@ -43,7 +35,7 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, er
 	}
 
 	type response struct {
-		Endpoint Endpoint `json:"endpoint"`
+		Endpoint `json:"endpoint"`
 	}
 
 	// Ensure that EndpointOpts is fully populated.
@@ -69,7 +61,7 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, er
 			ServiceID: opts.ServiceID,
 		},
 	}
-	reqBody.Endpoint.Region = maybeString(opts.Region)
+	reqBody.Endpoint.Region = gophercloud.MaybeString(opts.Region)
 
 	var respBody response
 	_, err := perigee.Request("POST", getListURL(client), perigee.Options{
@@ -138,11 +130,11 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 	}
 
 	reqBody := request{Endpoint: endpoint{}}
-	reqBody.Endpoint.Interface = maybeString(string(opts.Availability))
-	reqBody.Endpoint.Name = maybeString(opts.Name)
-	reqBody.Endpoint.Region = maybeString(opts.Region)
-	reqBody.Endpoint.URL = maybeString(opts.URL)
-	reqBody.Endpoint.ServiceID = maybeString(opts.ServiceID)
+	reqBody.Endpoint.Interface = gophercloud.MaybeString(string(opts.Availability))
+	reqBody.Endpoint.Name = gophercloud.MaybeString(opts.Name)
+	reqBody.Endpoint.Region = gophercloud.MaybeString(opts.Region)
+	reqBody.Endpoint.URL = gophercloud.MaybeString(opts.URL)
+	reqBody.Endpoint.ServiceID = gophercloud.MaybeString(opts.ServiceID)
 
 	var respBody response
 	_, err := perigee.Request("PATCH", getEndpointURL(client, endpointID), perigee.Options{
