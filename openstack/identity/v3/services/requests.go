@@ -22,7 +22,7 @@ func Create(client *gophercloud.ServiceClient, serviceType string) (*Service, er
 	req := request{Type: serviceType}
 	var resp response
 
-	_, err := perigee.Request("POST", getListURL(client), perigee.Options{
+	_, err := perigee.Request("POST", listURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		ReqBody:     &req,
 		Results:     &resp,
@@ -54,7 +54,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	if opts.PerPage != 0 {
 		q["perPage"] = strconv.Itoa(opts.PerPage)
 	}
-	u := getListURL(client) + utils.BuildQuery(q)
+	u := listURL(client) + utils.BuildQuery(q)
 
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
 		return ServicePage{pagination.LinkedPageBase{LastHTTPResponse: r}}
@@ -66,7 +66,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 // Get returns additional information about a service, given its ID.
 func Get(client *gophercloud.ServiceClient, serviceID string) (*Service, error) {
 	var resp response
-	_, err := perigee.Request("GET", getServiceURL(client, serviceID), perigee.Options{
+	_, err := perigee.Request("GET", serviceURL(client, serviceID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		Results:     &resp,
 		OkCodes:     []int{200},
@@ -86,7 +86,7 @@ func Update(client *gophercloud.ServiceClient, serviceID string, serviceType str
 	req := request{Type: serviceType}
 
 	var resp response
-	_, err := perigee.Request("PATCH", getServiceURL(client, serviceID), perigee.Options{
+	_, err := perigee.Request("PATCH", serviceURL(client, serviceID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		ReqBody:     &req,
 		Results:     &resp,
@@ -102,7 +102,7 @@ func Update(client *gophercloud.ServiceClient, serviceID string, serviceType str
 // Delete removes an existing service.
 // It either deletes all associated endpoints, or fails until all endpoints are deleted.
 func Delete(client *gophercloud.ServiceClient, serviceID string) error {
-	_, err := perigee.Request("DELETE", getServiceURL(client, serviceID), perigee.Options{
+	_, err := perigee.Request("DELETE", serviceURL(client, serviceID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})

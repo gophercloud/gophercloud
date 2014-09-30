@@ -233,7 +233,7 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 	}
 
 	var result TokenCreateResult
-	response, err := perigee.Request("POST", getTokenURL(c), perigee.Options{
+	response, err := perigee.Request("POST", tokenURL(c), perigee.Options{
 		ReqBody: &req,
 		Results: &result.response,
 		OkCodes: []int{201},
@@ -252,7 +252,7 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 func Get(c *gophercloud.ServiceClient, token string) (*TokenCreateResult, error) {
 	var result TokenCreateResult
 
-	response, err := perigee.Request("GET", getTokenURL(c), perigee.Options{
+	response, err := perigee.Request("GET", tokenURL(c), perigee.Options{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		Results:     &result.response,
 		OkCodes:     []int{200, 203},
@@ -270,7 +270,7 @@ func Get(c *gophercloud.ServiceClient, token string) (*TokenCreateResult, error)
 
 // Validate determines if a specified token is valid or not.
 func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
-	response, err := perigee.Request("HEAD", getTokenURL(c), perigee.Options{
+	response, err := perigee.Request("HEAD", tokenURL(c), perigee.Options{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		OkCodes:     []int{204, 404},
 	})
@@ -283,7 +283,7 @@ func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
 
 // Revoke immediately makes specified token invalid.
 func Revoke(c *gophercloud.ServiceClient, token string) error {
-	_, err := perigee.Request("DELETE", getTokenURL(c), perigee.Options{
+	_, err := perigee.Request("DELETE", tokenURL(c), perigee.Options{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		OkCodes:     []int{204},
 	})

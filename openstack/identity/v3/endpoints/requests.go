@@ -64,7 +64,7 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, er
 	reqBody.Endpoint.Region = gophercloud.MaybeString(opts.Region)
 
 	var respBody response
-	_, err := perigee.Request("POST", getListURL(client), perigee.Options{
+	_, err := perigee.Request("POST", listURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &respBody,
@@ -106,7 +106,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 		return EndpointPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
-	u := getListURL(client) + utils.BuildQuery(q)
+	u := listURL(client) + utils.BuildQuery(q)
 	return pagination.NewPager(client, u, createPage)
 }
 
@@ -137,7 +137,7 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 	reqBody.Endpoint.ServiceID = gophercloud.MaybeString(opts.ServiceID)
 
 	var respBody response
-	_, err := perigee.Request("PATCH", getEndpointURL(client, endpointID), perigee.Options{
+	_, err := perigee.Request("PATCH", endpointURL(client, endpointID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &respBody,
@@ -152,7 +152,7 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 
 // Delete removes an endpoint from the service catalog.
 func Delete(client *gophercloud.ServiceClient, endpointID string) error {
-	_, err := perigee.Request("DELETE", getEndpointURL(client, endpointID), perigee.Options{
+	_, err := perigee.Request("DELETE", endpointURL(client, endpointID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
