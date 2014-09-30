@@ -20,7 +20,7 @@ type EndpointOpts struct {
 
 // Create inserts a new Endpoint into the service catalog.
 // Within EndpointOpts, Region may be omitted by being left as "", but all other fields are required.
-func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, error) {
+func Create(client *gophercloud.ServiceClient, opts EndpointOpts) CreateResult {
 	// Redefined so that Region can be re-typed as a *string, which can be omitted from the JSON output.
 	type endpoint struct {
 		Interface string  `json:"interface"`
@@ -34,22 +34,18 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, er
 		Endpoint endpoint `json:"endpoint"`
 	}
 
-	type response struct {
-		Endpoint `json:"endpoint"`
-	}
-
 	// Ensure that EndpointOpts is fully populated.
 	if opts.Availability == "" {
-		return nil, ErrAvailabilityRequired
+		return createErr(ErrAvailabilityRequired)
 	}
 	if opts.Name == "" {
-		return nil, ErrNameRequired
+		return createErr(ErrNameRequired)
 	}
 	if opts.URL == "" {
-		return nil, ErrURLRequired
+		return createErr(ErrURLRequired)
 	}
 	if opts.ServiceID == "" {
-		return nil, ErrServiceIDRequired
+		return createErr(ErrServiceIDRequired)
 	}
 
 	// Populate the request body.
@@ -63,18 +59,14 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) (*Endpoint, er
 	}
 	reqBody.Endpoint.Region = gophercloud.MaybeString(opts.Region)
 
-	var respBody response
-	_, err := perigee.Request("POST", listURL(client), perigee.Options{
+	var result CreateResult
+	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &respBody,
+		Results:     &result.Resp,
 		OkCodes:     []int{201},
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &respBody.Endpoint, nil
+	return result
 }
 
 // ListOpts allows finer control over the the endpoints returned by a List call.
@@ -112,7 +104,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 
 // Update changes an existing endpoint with new data.
 // All fields are optional in the provided EndpointOpts.
-func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointOpts) (*Endpoint, error) {
+func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointOpts) UpdateResult {
 	type endpoint struct {
 		Interface *string `json:"interface,omitempty"`
 		Name      *string `json:"name,omitempty"`
@@ -125,10 +117,6 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 		Endpoint endpoint `json:"endpoint"`
 	}
 
-	type response struct {
-		Endpoint Endpoint `json:"endpoint"`
-	}
-
 	reqBody := request{Endpoint: endpoint{}}
 	reqBody.Endpoint.Interface = gophercloud.MaybeString(string(opts.Availability))
 	reqBody.Endpoint.Name = gophercloud.MaybeString(opts.Name)
@@ -136,18 +124,14 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 	reqBody.Endpoint.URL = gophercloud.MaybeString(opts.URL)
 	reqBody.Endpoint.ServiceID = gophercloud.MaybeString(opts.ServiceID)
 
-	var respBody response
-	_, err := perigee.Request("PATCH", endpointURL(client, endpointID), perigee.Options{
+	var result UpdateResult
+	_, result.Err = perigee.Request("PATCH", endpointURL(client, endpointID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &respBody,
+		Results:     &result.Resp,
 		OkCodes:     []int{200},
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &respBody.Endpoint, nil
+	return result
 }
 
 // Delete removes an endpoint from the service catalog.

@@ -14,25 +14,21 @@ type response struct {
 }
 
 // Create adds a new service of the requested type to the catalog.
-func Create(client *gophercloud.ServiceClient, serviceType string) (*Service, error) {
+func Create(client *gophercloud.ServiceClient, serviceType string) CreateResult {
 	type request struct {
 		Type string `json:"type"`
 	}
 
 	req := request{Type: serviceType}
-	var resp response
 
-	_, err := perigee.Request("POST", listURL(client), perigee.Options{
+	var result CreateResult
+	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		ReqBody:     &req,
-		Results:     &resp,
+		Results:     &result.Resp,
 		OkCodes:     []int{201},
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &resp.Service, nil
+	return result
 }
 
 // ListOpts allows you to query the List method.
@@ -64,39 +60,32 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 }
 
 // Get returns additional information about a service, given its ID.
-func Get(client *gophercloud.ServiceClient, serviceID string) (*Service, error) {
-	var resp response
-	_, err := perigee.Request("GET", serviceURL(client, serviceID), perigee.Options{
+func Get(client *gophercloud.ServiceClient, serviceID string) GetResult {
+	var result GetResult
+	_, result.Err = perigee.Request("GET", serviceURL(client, serviceID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		Results:     &resp,
+		Results:     &result.Resp,
 		OkCodes:     []int{200},
 	})
-	if err != nil {
-		return nil, err
-	}
-	return &resp.Service, nil
+	return result
 }
 
 // Update changes the service type of an existing service.s
-func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) (*Service, error) {
+func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) UpdateResult {
 	type request struct {
 		Type string `json:"type"`
 	}
 
 	req := request{Type: serviceType}
 
-	var resp response
-	_, err := perigee.Request("PATCH", serviceURL(client, serviceID), perigee.Options{
+	var result UpdateResult
+	_, result.Err = perigee.Request("PATCH", serviceURL(client, serviceID), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		ReqBody:     &req,
-		Results:     &resp,
+		Results:     &result.Resp,
 		OkCodes:     []int{200},
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &resp.Service, nil
+	return result
 }
 
 // Delete removes an existing service.
