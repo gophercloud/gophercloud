@@ -85,6 +85,7 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+// Supported attributes for create/update operations.
 const (
 	LBMethodRoundRobin       = "ROUND_ROBIN"
 	LBMethodLeastConnections = "LEAST_CONNECTIONS"

@@ -8,6 +8,11 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// Pool represents a logical set of devices, such as web servers, that you
+// group together to receive and process traffic. The load balancing function
+// chooses a member of the pool according to the configured load balancing
+// method to handle the new requests or connections received on the VIP address.
+// There is only one pool per virtual IP.
 type Pool struct {
 	// The status of the pool. Indicates whether the pool is operational.
 	Status string
@@ -96,7 +101,7 @@ func (p PoolPage) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
-// ExtractRouters accepts a Page struct, specifically a RouterPage struct,
+// ExtractPools accepts a Page struct, specifically a RouterPage struct,
 // and extracts the elements into a slice of Router structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractPools(page pagination.Page) ([]Pool, error) {
