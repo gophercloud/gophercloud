@@ -1,7 +1,10 @@
 package vips
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -64,7 +67,7 @@ type VirtualIP struct {
 
 	// Indicates whether connections in the same session will be processed by the
 	// same pool member or not.
-	Persistence SessionPersistence `mapstructure:"session_persistence" json:"session_persistence"`
+	//Persistence SessionPersistence `mapstructure:"session_persistence" json:"session_persistence"`
 
 	// The maximum number of connections allowed for the VIP. Default is -1,
 	// meaning no limit.
@@ -138,3 +141,43 @@ func ExtractVIPs(page pagination.Page) ([]VirtualIP, error) {
 
 	return resp.VIPs, nil
 }
+
+type commonResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract is a function that accepts a result and extracts a router.
+func (r commonResult) Extract() (*VirtualIP, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res struct {
+		VirtualIP *VirtualIP `mapstructure:"vip" json:"vip"`
+	}
+
+	err := mapstructure.Decode(r.Resp, &res)
+	if err != nil {
+		return nil, fmt.Errorf("Error decoding Neutron Virtual IP: %v", err)
+	}
+
+	return res.VirtualIP, nil
+}
+
+// CreateResult represents the result of a create operation.
+type CreateResult struct {
+	commonResult
+}
+
+// GetResult represents the result of a get operation.
+type GetResult struct {
+	commonResult
+}
+
+// UpdateResult represents the result of an update operation.
+type UpdateResult struct {
+	commonResult
+}
+
+// DeleteResult represents the result of a delete operation.
+type DeleteResult commonResult

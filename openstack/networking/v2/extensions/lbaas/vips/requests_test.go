@@ -98,7 +98,7 @@ func TestList(t *testing.T) {
 				Protocol:     "HTTP",
 				ProtocolPort: 80,
 				PoolID:       "cfc6589d-f949-4c66-99d2-c2da56ef3764",
-				Persistence:  SessionPersistence{},
+				//Persistence:  SessionPersistence{},
 				ConnLimit:    0,
 				AdminStateUp: true,
 				Status:       "ACTIVE",
@@ -114,7 +114,7 @@ func TestList(t *testing.T) {
 				Protocol:     "TCP",
 				ProtocolPort: 3306,
 				PoolID:       "41efe233-7591-43c5-9cf7-923964759f9e",
-				Persistence:  SessionPersistence{Type: "SOURCE_IP"},
+				//Persistence:  SessionPersistence{Type: "SOURCE_IP"},
 				ConnLimit:    2000,
 				AdminStateUp: true,
 				Status:       "INACTIVE",
@@ -129,4 +129,78 @@ func TestList(t *testing.T) {
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
+}
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/lb/vips", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "vip": {
+        "protocol": "HTTP",
+        "name": "NewVip",
+        "admin_state_up": true,
+        "subnet_id": "8032909d-47a1-4715-90af-5153ffe39861",
+        "pool_id": "61b1f87a-7a21-4ad3-9dda-7f81d249944f",
+        "protocol_port": 80
+    }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, `
+{
+    "vip": {
+        "status": "PENDING_CREATE",
+        "protocol": "HTTP",
+        "description": "",
+        "admin_state_up": true,
+        "subnet_id": "8032909d-47a1-4715-90af-5153ffe39861",
+        "tenant_id": "83657cfcdfe44cd5920adaf26c48ceea",
+        "connection_limit": -1,
+        "pool_id": "61b1f87a-7a21-4ad3-9dda-7f81d249944f",
+        "address": "10.0.0.11",
+        "protocol_port": 80,
+        "port_id": "f7e6fe6a-b8b5-43a8-8215-73456b32e0f5",
+        "id": "c987d2be-9a3c-4ac9-a046-e8716b1350e2",
+        "name": "NewVip"
+    }
+}
+		`)
+	})
+
+	iTrue := true
+	opts := CreateOpts{
+		Protocol:     "HTTP",
+		Name:         "NewVip",
+		AdminStateUp: &iTrue,
+		SubnetID:     "8032909d-47a1-4715-90af-5153ffe39861",
+		PoolID:       "61b1f87a-7a21-4ad3-9dda-7f81d249944f",
+		ProtocolPort: 80,
+	}
+
+	r, err := Create(serviceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "PENDING_CREATE", r.Status)
+	th.AssertEquals(t, "HTTP", r.Protocol)
+	th.AssertEquals(t, "", r.Description)
+	th.AssertEquals(t, true, r.AdminStateUp)
+	th.AssertEquals(t, "8032909d-47a1-4715-90af-5153ffe39861", r.SubnetID)
+	th.AssertEquals(t, "83657cfcdfe44cd5920adaf26c48ceea", r.TenantID)
+	th.AssertEquals(t, -1, r.ConnLimit)
+	th.AssertEquals(t, "61b1f87a-7a21-4ad3-9dda-7f81d249944f", r.PoolID)
+	th.AssertEquals(t, "10.0.0.11", r.Address)
+	th.AssertEquals(t, 80, r.ProtocolPort)
+	th.AssertEquals(t, "f7e6fe6a-b8b5-43a8-8215-73456b32e0f5", r.PortID)
+	th.AssertEquals(t, "c987d2be-9a3c-4ac9-a046-e8716b1350e2", r.ID)
+	th.AssertEquals(t, "NewVip", r.Name)
 }
