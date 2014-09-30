@@ -301,3 +301,17 @@ func TestUpdate(t *testing.T) {
 	th.AssertEquals(t, "PENDING_UPDATE", vip.Status)
 	th.AssertEquals(t, 1000, vip.ConnLimit)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/lb/vips/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := Delete(serviceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	th.AssertNoErr(t, res.Err)
+}

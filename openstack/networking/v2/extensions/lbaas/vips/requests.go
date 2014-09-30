@@ -300,3 +300,14 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 
 	return res
 }
+
+// Delete will permanently delete a particular virtual IP based on its unique ID.
+func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
+	var res DeleteResult
+	_, err := perigee.Request("DELETE", resourceURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{204},
+	})
+	res.Err = err
+	return res
+}
