@@ -20,7 +20,7 @@ func subjectTokenHeaders(c *gophercloud.ServiceClient, subjectToken string) map[
 }
 
 // Create authenticates and either generates a new token, or changes the Scope of an existing token.
-func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope *Scope) (gophercloud.AuthResults, error) {
+func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope *Scope) CreateResult {
 	type domainReq struct {
 		ID   *string `json:"id,omitempty"`
 		Name *string `json:"name,omitempty"`
@@ -73,13 +73,13 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 
 	// Test first for unrecognized arguments.
 	if options.APIKey != "" {
-		return nil, ErrAPIKeyProvided
+		return createErr(ErrAPIKeyProvided)
 	}
 	if options.TenantID != "" {
-		return nil, ErrTenantIDProvided
+		return createErr(ErrTenantIDProvided)
 	}
 	if options.TenantName != "" {
-		return nil, ErrTenantNameProvided
+		return createErr(ErrTenantNameProvided)
 	}
 
 	if options.Password == "" {
@@ -87,16 +87,16 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 			// Because we aren't using password authentication, it's an error to also provide any of the user-based authentication
 			// parameters.
 			if options.Username != "" {
-				return nil, ErrUsernameWithToken
+				return createErr(ErrUsernameWithToken)
 			}
 			if options.UserID != "" {
-				return nil, ErrUserIDWithToken
+				return createErr(ErrUserIDWithToken)
 			}
 			if options.DomainID != "" {
-				return nil, ErrDomainIDWithToken
+				return createErr(ErrDomainIDWithToken)
 			}
 			if options.DomainName != "" {
-				return nil, ErrDomainNameWithToken
+				return createErr(ErrDomainNameWithToken)
 			}
 
 			// Configure the request for Token authentication.
@@ -106,7 +106,7 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 			}
 		} else {
 			// If no password or token ID are available, authentication can't continue.
-			return nil, ErrMissingPassword
+			createErr(ErrMissingPassword)
 		}
 	} else {
 		// Password authentication.
@@ -114,23 +114,23 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 
 		// At least one of Username and UserID must be specified.
 		if options.Username == "" && options.UserID == "" {
-			return nil, ErrUsernameOrUserID
+			return createErr(ErrUsernameOrUserID)
 		}
 
 		if options.Username != "" {
 			// If Username is provided, UserID may not be provided.
 			if options.UserID != "" {
-				return nil, ErrUsernameOrUserID
+				return createErr(ErrUsernameOrUserID)
 			}
 
 			// Either DomainID or DomainName must also be specified.
 			if options.DomainID == "" && options.DomainName == "" {
-				return nil, ErrDomainIDOrDomainName
+				return createErr(ErrDomainIDOrDomainName)
 			}
 
 			if options.DomainID != "" {
 				if options.DomainName != "" {
-					return nil, ErrDomainIDOrDomainName
+					return createErr(ErrDomainIDOrDomainName)
 				}
 
 				// Configure the request for Username and Password authentication with a DomainID.
@@ -158,10 +158,10 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 		if options.UserID != "" {
 			// If UserID is specified, neither DomainID nor DomainName may be.
 			if options.DomainID != "" {
-				return nil, ErrDomainIDWithUserID
+				return createErr(ErrDomainIDWithUserID)
 			}
 			if options.DomainName != "" {
-				return nil, ErrDomainNameWithUserID
+				return createErr(ErrDomainNameWithUserID)
 			}
 
 			// Configure the request for UserID and Password authentication.
@@ -177,10 +177,10 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 			// ProjectName provided: either DomainID or DomainName must also be supplied.
 			// ProjectID may not be supplied.
 			if scope.DomainID == "" && scope.DomainName == "" {
-				return nil, ErrScopeDomainIDOrDomainName
+				return createErr(ErrScopeDomainIDOrDomainName)
 			}
 			if scope.ProjectID != "" {
-				return nil, ErrScopeProjectIDOrProjectName
+				return createErr(ErrScopeProjectIDOrProjectName)
 			}
 
 			if scope.DomainID != "" {
@@ -205,10 +205,10 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 		} else if scope.ProjectID != "" {
 			// ProjectID provided. ProjectName, DomainID, and DomainName may not be provided.
 			if scope.DomainID != "" {
-				return nil, ErrScopeProjectIDAlone
+				return createErr(ErrScopeProjectIDAlone)
 			}
 			if scope.DomainName != "" {
-				return nil, ErrScopeProjectIDAlone
+				return createErr(ErrScopeProjectIDAlone)
 			}
 
 			// ProjectID
@@ -218,7 +218,7 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 		} else if scope.DomainID != "" {
 			// DomainID provided. ProjectID, ProjectName, and DomainName may not be provided.
 			if scope.DomainName != "" {
-				return nil, ErrScopeDomainIDOrDomainName
+				return createErr(ErrScopeDomainIDOrDomainName)
 			}
 
 			// DomainID
@@ -226,46 +226,40 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 				Domain: &domainReq{ID: &scope.DomainID},
 			}
 		} else if scope.DomainName != "" {
-			return nil, ErrScopeDomainName
+			return createErr(ErrScopeDomainName)
 		} else {
-			return nil, ErrScopeEmpty
+			return createErr(ErrScopeEmpty)
 		}
 	}
 
-	var result TokenCreateResult
-	response, err := perigee.Request("POST", tokenURL(c), perigee.Options{
+	var result CreateResult
+	var response *perigee.Response
+	response, result.Err = perigee.Request("POST", tokenURL(c), perigee.Options{
 		ReqBody: &req,
-		Results: &result.response,
+		Results: &result.Resp,
 		OkCodes: []int{201},
 	})
-	if err != nil {
-		return nil, err
+	if result.Err != nil {
+		return result
 	}
-
-	// Extract the token ID from the response, if present.
-	result.tokenID = response.HttpResponse.Header.Get("X-Subject-Token")
-
-	return &result, nil
+	result.header = response.HttpResponse.Header
+	return result
 }
 
 // Get validates and retrieves information about another token.
-func Get(c *gophercloud.ServiceClient, token string) (*TokenCreateResult, error) {
-	var result TokenCreateResult
-
-	response, err := perigee.Request("GET", tokenURL(c), perigee.Options{
+func Get(c *gophercloud.ServiceClient, token string) GetResult {
+	var result GetResult
+	var response *perigee.Response
+	response, result.Err = perigee.Request("GET", tokenURL(c), perigee.Options{
 		MoreHeaders: subjectTokenHeaders(c, token),
-		Results:     &result.response,
+		Results:     &result.Resp,
 		OkCodes:     []int{200, 203},
 	})
-
-	if err != nil {
-		return nil, err
+	if result.Err != nil {
+		return result
 	}
-
-	// Extract the token ID from the response, if present.
-	result.tokenID = response.HttpResponse.Header.Get("X-Subject-Token")
-
-	return &result, nil
+	result.header = response.HttpResponse.Header
+	return result
 }
 
 // Validate determines if a specified token is valid or not.
