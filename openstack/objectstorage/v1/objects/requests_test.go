@@ -55,7 +55,7 @@ func TestListObjectInfo(t *testing.T) {
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 
-		w.Header().Add("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
 		r.ParseForm()
 		marker := r.Form.Get("marker")
 		switch marker {
@@ -129,7 +129,7 @@ func TestListObjectNames(t *testing.T) {
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 		testhelper.TestHeader(t, r, "Accept", "text/plain")
 
-		w.Header().Add("Content-Type", "text/plain")
+		w.Header().Set("Content-Type", "text/plain")
 		r.ParseForm()
 		marker := r.Form.Get("marker")
 		switch marker {
@@ -144,7 +144,7 @@ func TestListObjectNames(t *testing.T) {
 
 	client := serviceClient()
 	count := 0
-	List(client, "testContainer", nil).EachPage(func(page pagination.Page) (bool, error) {
+	List(client, "testContainer", &ListOpts{Full: false}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractNames(page)
 		if err != nil {

@@ -32,7 +32,7 @@ func TestListContainerInfo(t *testing.T) {
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 
-		w.Header().Add("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
 		r.ParseForm()
 		marker := r.Form.Get("marker")
 		switch marker {
