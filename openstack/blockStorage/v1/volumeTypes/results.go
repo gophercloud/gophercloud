@@ -10,12 +10,8 @@ import (
 
 type VolumeType struct {
 	ExtraSpecs map[string]interface{} `json:"extra_specs" mapstructure:"extra_specs"`
-	ID         string                 `json:"id" mapstructure:"id"`
-	Name       string                 `json:"name" mapstructure:"name"`
-}
-
-// ListOpts holds options for listing volumes. It is passed to the volumes.List function.
-type ListOpts struct {
+	ID         string                 `json:"id"		  mapstructure:"id"`
+	Name       string                 `json:"name"		  mapstructure:"name"`
 }
 
 // ListResult is a *http.Response that is returned from a call to the List function.

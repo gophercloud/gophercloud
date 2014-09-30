@@ -66,6 +66,10 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	return gr
 }
 
+// ListOpts holds options for listing volumes. It is passed to the volumes.List function.
+type ListOpts struct {
+}
+
 func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
 		return ListResult{pagination.SinglePageBase(r)}
