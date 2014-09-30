@@ -10,9 +10,16 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-const (
-	Up   = true
-	Down = false
+type AdminState *bool
+
+// Convenience vars for AdminStateUp values.
+var (
+	iTrue  = true
+	iFalse = false
+
+	Nothing AdminState = nil
+	Up      AdminState = &iTrue
+	Down    AdminState = &iFalse
 )
 
 // ListOpts allows the filtering and sorting of paginated collections through
