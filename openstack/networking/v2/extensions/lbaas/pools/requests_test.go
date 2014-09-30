@@ -270,3 +270,17 @@ func TestUpdate(t *testing.T) {
 	th.AssertEquals(t, "SuperPool", n.Name)
 	th.AssertDeepEquals(t, "LEAST_CONNECTIONS", n.LBMethod)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/lb/pools/332abe93-f488-41ba-870b-2ac66be7f853", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := Delete(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853")
+	th.AssertNoErr(t, res.Err)
+}
