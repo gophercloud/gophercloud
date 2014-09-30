@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud/acceptance/tools"
-	"github.com/rackspace/gophercloud/openstack/objectStorage/v1/containers"
+	"github.com/rackspace/gophercloud/openstack/objectstorage/v1/containers"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
