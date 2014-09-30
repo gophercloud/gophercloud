@@ -1,7 +1,10 @@
 package pools
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -23,7 +26,8 @@ type Pool struct {
 	// The IDs of associated monitors which check the health of the pool members.
 	MonitorIDs []string `json:"health_monitors" mapstructure:"health_monitors"`
 
-	// The ID of the subnet associated with the pool
+	// The network on which the members of the pool will be located. Only members
+	// that are on this network can be added to the pool.
 	SubnetID string `json:"subnet_id" mapstructure:"subnet_id"`
 
 	// Owner of the pool. Only an administrative user can specify a tenant ID
@@ -107,3 +111,43 @@ func ExtractPools(page pagination.Page) ([]Pool, error) {
 
 	return resp.Pools, nil
 }
+
+type commonResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract is a function that accepts a result and extracts a router.
+func (r commonResult) Extract() (*Pool, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res struct {
+		Pool *Pool `json:"pool"`
+	}
+
+	err := mapstructure.Decode(r.Resp, &res)
+	if err != nil {
+		return nil, fmt.Errorf("Error decoding Neutron pool: %v", err)
+	}
+
+	return res.Pool, nil
+}
+
+// CreateResult represents the result of a create operation.
+type CreateResult struct {
+	commonResult
+}
+
+// GetResult represents the result of a get operation.
+type GetResult struct {
+	commonResult
+}
+
+// UpdateResult represents the result of an update operation.
+type UpdateResult struct {
+	commonResult
+}
+
+// DeleteResult represents the result of a delete operation.
+type DeleteResult commonResult

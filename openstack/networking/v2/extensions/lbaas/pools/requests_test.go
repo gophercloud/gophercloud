@@ -110,3 +110,71 @@ func TestList(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/lb/pools", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "pool": {
+        "lb_method": "ROUND_ROBIN",
+        "protocol": "HTTP",
+        "name": "Example pool",
+        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
+        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f"
+    }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, `
+{
+    "pool": {
+        "status": "PENDING_CREATE",
+        "lb_method": "ROUND_ROBIN",
+        "protocol": "HTTP",
+        "description": "",
+        "health_monitors": [],
+        "members": [],
+        "status_description": null,
+        "id": "69055154-f603-4a28-8951-7cc2d9e54a9a",
+        "vip_id": null,
+        "name": "Example pool",
+        "admin_state_up": true,
+        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
+        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
+        "health_monitors_status": []
+    }
+}
+		`)
+	})
+
+	options := CreateOpts{
+		LBMethod: LBMethodRoundRobin,
+		Protocol: "HTTP",
+		Name:     "Example pool",
+		SubnetID: "1981f108-3c48-48d2-b908-30f7d28532c9",
+		TenantID: "2ffc6e22aae24e4795f87155d24c896f",
+	}
+	p, err := Create(serviceClient(), options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "PENDING_CREATE", p.Status)
+	th.AssertEquals(t, "ROUND_ROBIN", p.LBMethod)
+	th.AssertEquals(t, "HTTP", p.Protocol)
+	th.AssertEquals(t, "", p.Description)
+	th.AssertDeepEquals(t, []string{}, p.MonitorIDs)
+	th.AssertDeepEquals(t, []string{}, p.MemberIDs)
+	th.AssertEquals(t, "69055154-f603-4a28-8951-7cc2d9e54a9a", p.ID)
+	th.AssertEquals(t, "Example pool", p.Name)
+	th.AssertEquals(t, "1981f108-3c48-48d2-b908-30f7d28532c9", p.SubnetID)
+	th.AssertEquals(t, "2ffc6e22aae24e4795f87155d24c896f", p.TenantID)
+}
