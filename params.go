@@ -94,7 +94,7 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 
 		}
 		// URL encode the string for safety.
-		s := url.QueryEscape(strings.Join(optsSlice, "&"))
+		s := strings.Join(optsSlice, "&")
 		if s != "" {
 			s = "?" + s
 		}
