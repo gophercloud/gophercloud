@@ -161,3 +161,41 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	res.Err = err
 	return res
 }
+
+// UpdateOpts contains the values used when updating a pool.
+type UpdateOpts struct {
+	// Required. Name of the pool.
+	Name string
+
+	// The algorithm used to distribute load between the members of the pool. The
+	// current specification supports LBMethodRoundRobin and
+	// LBMethodLeastConnections as valid values for this attribute.
+	LBMethod string
+}
+
+// Update allows pools to be updated.
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
+	type pool struct {
+		Name     string `json:"name,"`
+		LBMethod string `json:"lb_method"`
+	}
+	type request struct {
+		Pool pool `json:"pool"`
+	}
+
+	reqBody := request{Pool: pool{
+		Name:     opts.Name,
+		LBMethod: opts.LBMethod,
+	}}
+
+	// Send request to API
+	var res UpdateResult
+	_, err := perigee.Request("PUT", resourceURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &res.Resp,
+		OkCodes:     []int{200},
+	})
+	res.Err = err
+	return res
+}

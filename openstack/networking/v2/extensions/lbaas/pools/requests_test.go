@@ -216,3 +216,57 @@ func TestGet(t *testing.T) {
 
 	th.AssertEquals(t, n.ID, "332abe93-f488-41ba-870b-2ac66be7f853")
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/lb/pools/332abe93-f488-41ba-870b-2ac66be7f853", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+   "pool":{
+      "name":"SuperPool",
+      "lb_method": "LEAST_CONNECTIONS"
+   }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+   "pool":{
+      "status":"PENDING_UPDATE",
+      "lb_method":"LEAST_CONNECTIONS",
+      "protocol":"TCP",
+      "description":"",
+      "health_monitors":[
+
+      ],
+      "subnet_id":"8032909d-47a1-4715-90af-5153ffe39861",
+      "tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
+      "admin_state_up":true,
+      "name":"SuperPool",
+      "members":[
+
+      ],
+      "id":"61b1f87a-7a21-4ad3-9dda-7f81d249944f",
+      "vip_id":null
+   }
+}
+		`)
+	})
+
+	options := UpdateOpts{Name: "SuperPool", LBMethod: LBMethodLeastConnections}
+
+	n, err := Update(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "SuperPool", n.Name)
+	th.AssertDeepEquals(t, "LEAST_CONNECTIONS", n.LBMethod)
+}
