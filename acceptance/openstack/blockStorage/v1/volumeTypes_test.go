@@ -3,7 +3,6 @@
 package v1
 
 import (
-	"strconv"
 	"testing"
 	"time"
 
@@ -11,62 +10,49 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-var numVolTypes = 1
-
 func TestVolumeTypes(t *testing.T) {
 	client, err := newClient()
 	if err != nil {
 		t.Fatalf("Failed to create Block Storage v1 client: %v", err)
 	}
 
-	var cvt *volumeTypes.VolumeType
-	for i := 0; i < numVolTypes; i++ {
-		cvt, err = volumeTypes.Create(client, volumeTypes.CreateOpts{
-			ExtraSpecs: map[string]interface{}{
-				"capabilities": "gpu",
-				"priority":     3,
-			},
-			Name: "gophercloud-test-volumeType-" + strconv.Itoa(i),
-		})
+	vt, err := volumeTypes.Create(client, volumeTypes.CreateOpts{
+		ExtraSpecs: map[string]interface{}{
+			"capabilities": "gpu",
+			"priority":     3,
+		},
+		Name: "gophercloud-test-volumeType",
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer func() {
+		time.Sleep(10000 * time.Millisecond)
+		err = volumeTypes.Delete(client, vt.ID)
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		defer func() {
-			time.Sleep(10000 * time.Millisecond)
-			err = volumeTypes.Delete(client, cvt.ID)
-			if err != nil {
-				t.Error(err)
-				return
-			}
-		}()
-		t.Logf("Created volume type: %+v\n", cvt)
-	}
+	}()
+	t.Logf("Created volume type: %+v\n", vt)
 
-	gr, err := volumeTypes.Get(client, cvt.ID)
+	vt, err = volumeTypes.Get(client, vt.ID).ExtractVolumeType()
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	v, err := volumeTypes.ExtractVolumeType(gr)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	t.Logf("Got volume type: %+v\n", v)
+	t.Logf("Got volume type: %+v\n", vt)
 
-	pager := volumeTypes.List(client, volumeTypes.ListOpts{})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = volumeTypes.List(client, volumeTypes.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		volTypes, err := volumeTypes.ExtractVolumeTypes(page)
-		if len(volTypes) != numVolTypes {
-			t.Errorf("Expected %d volume types, got %d", numVolTypes, len(volTypes))
+		if len(volTypes) != 1 {
+			t.Errorf("Expected 1 volume type, got %d", len(volTypes))
 		}
 		t.Logf("Listing volume types: %+v\n", volTypes)
 		return true, err
 	})
-
+	if err != nil {
+		t.Errorf("Error trying to list volume types: %v", err)
+	}
 }

@@ -57,13 +57,13 @@ func Delete(client *gophercloud.ServiceClient, id string) error {
 	return err
 }
 
-func Get(client *gophercloud.ServiceClient, id string) (GetResult, error) {
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var gr GetResult
-	_, err := perigee.Request("GET", volumeTypeURL(client, id), perigee.Options{
-		Results:     &gr,
+	_, gr.Err = perigee.Request("GET", volumeTypeURL(client, id), perigee.Options{
+		Results:     &gr.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
-	return gr, err
+	return gr
 }
 
 func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {

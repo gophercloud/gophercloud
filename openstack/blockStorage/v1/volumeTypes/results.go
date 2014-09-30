@@ -3,9 +3,9 @@ package volumeTypes
 import (
 	"fmt"
 
-	"github.com/rackspace/gophercloud/pagination"
-
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 type VolumeType struct {
@@ -42,9 +42,14 @@ func ExtractVolumeTypes(page pagination.Page) ([]VolumeType, error) {
 	return response.VolumeTypes, err
 }
 
-type GetResult map[string]interface{}
+type GetResult struct {
+	gophercloud.CommonResult
+}
 
-func ExtractVolumeType(gr GetResult) (*VolumeType, error) {
+func (gr GetResult) ExtractVolumeType() (*VolumeType, error) {
+	if gr.Err != nil {
+		return nil, gr.Err
+	}
 	var response struct {
 		VolumeType *VolumeType `mapstructure:"volume_type"`
 	}
