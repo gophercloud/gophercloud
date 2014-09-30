@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumeTypes"
+	"github.com/rackspace/gophercloud/openstack/blockStorage/v1/volumeTypes"
 	"github.com/rackspace/gophercloud/pagination"
 )
 

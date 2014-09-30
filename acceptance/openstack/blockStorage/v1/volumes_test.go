@@ -11,7 +11,7 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
-	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes"
+	"github.com/rackspace/gophercloud/openstack/blockStorage/v1/volumes"
 	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )

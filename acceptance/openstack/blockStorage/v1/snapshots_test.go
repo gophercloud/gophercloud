@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/snapshots"
+	"github.com/rackspace/gophercloud/openstack/blockStorage/v1/snapshots"
 )
 
 func waitForSnapshot(client *gophercloud.ServiceClient, id string) error {
