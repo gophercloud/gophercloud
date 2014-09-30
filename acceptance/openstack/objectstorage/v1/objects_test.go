@@ -64,12 +64,8 @@ func TestObjects(t *testing.T) {
 		}
 	}()
 
-	pager := objects.List(client, cName, objects.ListOpts{Full: false, Prefix: "test-object-"})
-	if pager.Err != nil {
-		t.Fatalf("Pager error: %v", pager.Err)
-	}
 	ons := make([]string, 0, len(oNames))
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = objects.List(client, cName, objects.ListOpts{Full: false, Prefix: "test-object-"}).EachPage(func(page pagination.Page) (bool, error) {
 		names, err := objects.ExtractNames(page)
 		if err != nil {
 			return false, err
@@ -87,12 +83,8 @@ func TestObjects(t *testing.T) {
 		return
 	}
 
-	pager = objects.List(client, cName, objects.ListOpts{Full: true, Prefix: "test-object-"})
-	if pager.Err != nil {
-		t.Fatalf("Pager error: %v", pager.Err)
-	}
 	ois := make([]objects.Object, 0, len(oNames))
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = objects.List(client, cName, objects.ListOpts{Full: true, Prefix: "test-object-"}).EachPage(func(page pagination.Page) (bool, error) {
 		info, err := objects.ExtractInfo(page)
 		if err != nil {
 			return false, nil

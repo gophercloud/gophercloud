@@ -46,12 +46,7 @@ func TestContainers(t *testing.T) {
 
 	// List the numContainer names that were just created. To just list those,
 	// the 'prefix' parameter is used.
-	pager := containers.List(client, containers.ListOpts{Full: true, Prefix: "gophercloud-test-container-"})
-	if pager.Err != nil {
-		t.Error(err)
-		return
-	}
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = containers.List(client, containers.ListOpts{Full: true, Prefix: "gophercloud-test-container-"}).EachPage(func(page pagination.Page) (bool, error) {
 		containerList, err := containers.ExtractInfo(page)
 		if err != nil {
 			t.Error(err)
@@ -68,8 +63,7 @@ func TestContainers(t *testing.T) {
 	}
 
 	// List the info for the numContainer containers that were created.
-	pager = containers.List(client, containers.ListOpts{Full: false, Prefix: "gophercloud-test-container-"})
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+	err = containers.List(client, containers.ListOpts{Full: false, Prefix: "gophercloud-test-container-"}).EachPage(func(page pagination.Page) (bool, error) {
 		containerList, err := containers.ExtractNames(page)
 		if err != nil {
 			return false, err
