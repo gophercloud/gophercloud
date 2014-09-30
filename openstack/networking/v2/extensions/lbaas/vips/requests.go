@@ -99,6 +99,14 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+var (
+	errNameRequired         = fmt.Errorf("Name is required")
+	errSubnetIDRequried     = fmt.Errorf("SubnetID is required")
+	errProtocolRequired     = fmt.Errorf("Protocol is required")
+	errProtocolPortRequired = fmt.Errorf("Protocol port is required")
+	errPoolIDRequired       = fmt.Errorf("PoolID is required")
+)
+
 // CreateOpts contains all the values needed to create a new virtual IP.
 type CreateOpts struct {
 	// Required. Human-readable name for the VIP. Does not have to be unique.
@@ -137,14 +145,6 @@ type CreateOpts struct {
 	// or false (DOWN).
 	AdminStateUp *bool
 }
-
-var (
-	errNameRequired         = fmt.Errorf("Name is required")
-	errSubnetIDRequried     = fmt.Errorf("SubnetID is required")
-	errProtocolRequired     = fmt.Errorf("Protocol is required")
-	errProtocolPortRequired = fmt.Errorf("Protocol port is required")
-	errPoolIDRequired       = fmt.Errorf("PoolID is required")
-)
 
 // Create is an operation which provisions a new virtual IP based on the
 // configuration defined in the CreateOpts struct. Once the request is
@@ -236,5 +236,67 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 		OkCodes:     []int{200},
 	})
 	res.Err = err
+	return res
+}
+
+// UpdateOpts contains all the values needed to update an existing virtual IP.
+// Attributes not listed here but appear in CreateOpts are immutable and cannot
+// be updated.
+type UpdateOpts struct {
+	// Human-readable name for the VIP. Does not have to be unique.
+	Name string
+
+	// Required. The ID of the pool with which the VIP is associated.
+	PoolID string
+
+	// Optional. Human-readable description for the VIP.
+	Description string
+
+	// Optional. Omit this field to prevent session persistence.
+	Persistence *SessionPersistence
+
+	// Optional. The maximum number of connections allowed for the VIP.
+	ConnLimit *int
+
+	// Optional. The administrative state of the VIP. A valid value is true (UP)
+	// or false (DOWN).
+	AdminStateUp *bool
+}
+
+// Update is an operation which modifies the attributes of the specified VIP.
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
+	type vip struct {
+		Name         string              `json:"name,omitempty"`
+		PoolID       string              `json:"pool_id,omitempty"`
+		Description  *string             `json:"description,omitempty"`
+		Persistence  *SessionPersistence `json:"session_persistence,omitempty"`
+		ConnLimit    *int                `json:"connection_limit,omitempty"`
+		AdminStateUp *bool               `json:"admin_state_up,omitempty"`
+	}
+
+	type request struct {
+		VirtualIP vip `json:"vip"`
+	}
+
+	reqBody := request{VirtualIP: vip{
+		Name:         opts.Name,
+		PoolID:       opts.PoolID,
+		Description:  gophercloud.MaybeString(opts.Description),
+		ConnLimit:    opts.ConnLimit,
+		AdminStateUp: opts.AdminStateUp,
+	}}
+
+	if opts.Persistence != nil {
+		reqBody.VirtualIP.Persistence = opts.Persistence
+	}
+
+	var res UpdateResult
+	_, res.Err = perigee.Request("PUT", resourceURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &res.Resp,
+		OkCodes:     []int{202},
+	})
+
 	return res
 }

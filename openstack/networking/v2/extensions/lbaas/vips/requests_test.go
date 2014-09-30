@@ -251,3 +251,53 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, 1000, vip.ConnLimit)
 	th.AssertEquals(t, SessionPersistence{Type: "APP_COOKIE", CookieName: "MyAppCookie"}, vip.Persistence)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/lb/vips/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "vip": {
+        "connection_limit": 1000
+    }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, `
+{
+    "vip": {
+        "status": "PENDING_UPDATE",
+        "protocol": "HTTP",
+        "description": "",
+        "admin_state_up": true,
+        "subnet_id": "8032909d-47a1-4715-90af-5153ffe39861",
+        "tenant_id": "83657cfcdfe44cd5920adaf26c48ceea",
+        "connection_limit": 1000,
+        "pool_id": "61b1f87a-7a21-4ad3-9dda-7f81d249944f",
+        "address": "10.0.0.11",
+        "protocol_port": 80,
+        "port_id": "f7e6fe6a-b8b5-43a8-8215-73456b32e0f5",
+        "id": "c987d2be-9a3c-4ac9-a046-e8716b1350e2",
+        "name": "NewVip"
+    }
+}
+		`)
+	})
+
+	i1000 := 1000
+	options := UpdateOpts{ConnLimit: &i1000}
+	vip, err := Update(serviceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "PENDING_UPDATE", vip.Status)
+	th.AssertEquals(t, 1000, vip.ConnLimit)
+}
