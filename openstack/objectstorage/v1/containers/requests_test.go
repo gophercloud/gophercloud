@@ -34,7 +34,6 @@ func TestListContainerInfo(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		r.ParseForm()
-		fmt.Printf("r: %+v\n", r)
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
@@ -58,7 +57,9 @@ func TestListContainerInfo(t *testing.T) {
 	})
 
 	client := serviceClient()
-	List(client, ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
+	count := 0
+	List(client, &ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
 		actual, err := ExtractInfo(page)
 		if err != nil {
 			t.Errorf("Failed to extract container info: %v", err)
@@ -78,10 +79,16 @@ func TestListContainerInfo(t *testing.T) {
 			},
 		}
 
+		t.Logf("actual: %+v/n", actual)
+
 		testhelper.CheckDeepEquals(t, expected, actual)
 
 		return true, nil
 	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }
 
 func TestListContainerNames(t *testing.T) {
@@ -107,7 +114,9 @@ func TestListContainerNames(t *testing.T) {
 	})
 
 	client := serviceClient()
-	List(client, ListOpts{Full: false}).EachPage(func(page pagination.Page) (bool, error) {
+	count := 0
+	List(client, &ListOpts{Full: false}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
 		actual, err := ExtractNames(page)
 		if err != nil {
 			t.Errorf("Failed to extract container names: %v", err)
@@ -120,6 +129,10 @@ func TestListContainerNames(t *testing.T) {
 
 		return true, nil
 	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }
 
 func TestCreateContainer(t *testing.T) {
@@ -134,7 +147,7 @@ func TestCreateContainer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	_, err := Create(client, "testContainer", CreateOpts{})
+	_, err := Create(client, "testContainer", nil)
 	if err != nil {
 		t.Fatalf("Unexpected error creating container: %v", err)
 	}
@@ -170,7 +183,7 @@ func TestUpateContainer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Update(client, "testContainer", UpdateOpts{})
+	err := Update(client, "testContainer", nil)
 	if err != nil {
 		t.Fatalf("Unexpected error updating container metadata: %v", err)
 	}
@@ -185,9 +198,6 @@ func TestGetContainer(t *testing.T) {
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusNoContent)
-		fmt.Fprintf(w, `
-		
-		`)
 	})
 
 	client := serviceClient()

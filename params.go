@@ -51,7 +51,7 @@ func isZero(v reflect.Value) bool {
 	return v.Interface() == z.Interface()
 }
 
-func BuildQueryString(opts interface{}) (string, error) {
+func BuildQueryString(opts interface{}) (*url.URL, error) {
 	optsValue := reflect.ValueOf(opts)
 	if optsValue.Kind() == reflect.Ptr {
 		optsValue = optsValue.Elem()
@@ -87,7 +87,7 @@ func BuildQueryString(opts interface{}) (string, error) {
 					// Otherwise, the field is not set.
 					if len(tags) == 2 && tags[1] == "required" {
 						// And the field is required. Return an error.
-						return "", fmt.Errorf("Required query parameter not set.")
+						return nil, fmt.Errorf("Required query parameter not set.")
 					}
 				}
 			}
@@ -98,10 +98,14 @@ func BuildQueryString(opts interface{}) (string, error) {
 		if s != "" {
 			s = "?" + s
 		}
-		return s, nil
+		u, err := url.Parse(s)
+		if err != nil {
+			return nil, err
+		}
+		return u, nil
 	}
 	// Return an error if the underlying type of 'opts' isn't a struct.
-	return "", fmt.Errorf("Options type is not a struct.")
+	return nil, fmt.Errorf("Options type is not a struct.")
 }
 
 func BuildRequestBody(opts interface{}) (map[string]interface{}, error) {

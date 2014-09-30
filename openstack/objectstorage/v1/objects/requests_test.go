@@ -37,7 +37,7 @@ func TestDownloadObject(t *testing.T) {
 	})
 
 	client := serviceClient()
-	content, err := Download(client, "testContainer", "testObject", DownloadOpts{}).ExtractContent()
+	content, err := Download(client, "testContainer", "testObject", nil).ExtractContent()
 	if err != nil {
 		t.Fatalf("Unexpected error downloading object: %v", err)
 	}
@@ -53,20 +53,40 @@ func TestListObjectInfo(t *testing.T) {
 	testhelper.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
 		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
+		testhelper.TestHeader(t, r, "Accept", "application/json")
 
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Add("Content-Type", "application/json")
 		r.ParseForm()
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, `[{'hash': '451e372e48e0f6b1114fa0724aa79fa1','last_modified': '2009-11-10 23:00:00 +0000 UTC','bytes': 14,'name': 'goodbye','content_type': 'application/octet-stream'}]`)
+			fmt.Fprintf(w, `[
+				{
+					"hash": "451e372e48e0f6b1114fa0724aa79fa1",
+					"last_modified": "2009-11-10 23:00:00 +0000 UTC",
+					"bytes": 14,
+					"name": 'goodbye",
+					"content_type": "application/octet-stream"
+				},
+				{
+					"hash": "451e372e48e0f6b1114fa0724aa79fa1",
+					"last_modified": "2009-11-10 23:00:00 +0000 UTC",
+					"bytes": 14,
+					"name": "hello",
+					"content_type": "application/octet-stream"
+				}
+			]`)
+		case "hello":
+			fmt.Fprintf(w, `[]`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
 	})
 
 	client := serviceClient()
-	List(client, "testContainer", ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
+	count := 0
+	List(client, "testContainer", &ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
 		actual, err := ExtractInfo(page)
 		if err != nil {
 			t.Errorf("Failed to extract object info: %v", err)
@@ -81,12 +101,23 @@ func TestListObjectInfo(t *testing.T) {
 				Name:         "goodbye",
 				ContentType:  "application/octet-stream",
 			},
+			Object{
+				Hash:         "451e372e48e0f6b1114fa0724aa79fa1",
+				LastModified: "2009-11-10 23:00:00 +0000 UTC",
+				Bytes:        14,
+				Name:         "hello",
+				ContentType:  "application/octet-stream",
+			},
 		}
 
 		testhelper.CheckDeepEquals(t, expected, actual)
 
 		return true, nil
 	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }
 
 func TestListObjectNames(t *testing.T) {
@@ -103,7 +134,7 @@ func TestListObjectNames(t *testing.T) {
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, "goodbye\n")
+			fmt.Fprintf(w, "hello\ngoodbye\n")
 		case "goodbye":
 			fmt.Fprintf(w, "")
 		default:
@@ -112,19 +143,25 @@ func TestListObjectNames(t *testing.T) {
 	})
 
 	client := serviceClient()
-	List(client, "testContainer", ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	count := 0
+	List(client, "testContainer", nil).EachPage(func(page pagination.Page) (bool, error) {
+		count++
 		actual, err := ExtractNames(page)
 		if err != nil {
 			t.Errorf("Failed to extract object names: %v", err)
 			return false, err
 		}
 
-		expected := []string{"goodbye"}
+		expected := []string{"hello", "goodbye"}
 
 		testhelper.CheckDeepEquals(t, expected, actual)
 
 		return true, nil
 	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }
 
 func TestCreateObject(t *testing.T) {
@@ -140,7 +177,7 @@ func TestCreateObject(t *testing.T) {
 
 	client := serviceClient()
 	content := bytes.NewBufferString("Did gyre and gimble in the wabe")
-	err := Create(client, "testContainer", "testObject", content, CreateOpts{})
+	err := Create(client, "testContainer", "testObject", content, nil)
 	if err != nil {
 		t.Fatalf("Unexpected error creating object: %v", err)
 	}
@@ -159,7 +196,7 @@ func TestCopyObject(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Copy(client, "testContainer", "testObject", CopyOpts{Destination: "/newTestContainer/newTestObject"})
+	err := Copy(client, "testContainer", "testObject", &CopyOpts{Destination: "/newTestContainer/newTestObject"})
 	if err != nil {
 		t.Fatalf("Unexpected error copying object: %v", err)
 	}
@@ -177,7 +214,7 @@ func TestDeleteObject(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Delete(client, "testContainer", "testObject", DeleteOpts{})
+	err := Delete(client, "testContainer", "testObject", nil)
 	if err != nil {
 		t.Fatalf("Unexpected error deleting object: %v", err)
 	}
@@ -196,7 +233,7 @@ func TestUpateObjectMetadata(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Update(client, "testContainer", "testObject", UpdateOpts{Metadata: metadata})
+	err := Update(client, "testContainer", "testObject", &UpdateOpts{Metadata: metadata})
 	if err != nil {
 		t.Fatalf("Unexpected error updating object metadata: %v", err)
 	}
@@ -216,7 +253,7 @@ func TestGetObject(t *testing.T) {
 
 	client := serviceClient()
 	expected := metadata
-	actual, err := Get(client, "testContainer", "testObject", GetOpts{}).ExtractMetadata()
+	actual, err := Get(client, "testContainer", "testObject", nil).ExtractMetadata()
 	if err != nil {
 		t.Fatalf("Unexpected error getting object metadata: %v", err)
 	}
