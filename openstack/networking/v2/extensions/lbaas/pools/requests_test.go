@@ -178,3 +178,41 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, "1981f108-3c48-48d2-b908-30f7d28532c9", p.SubnetID)
 	th.AssertEquals(t, "2ffc6e22aae24e4795f87155d24c896f", p.TenantID)
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/lb/pools/332abe93-f488-41ba-870b-2ac66be7f853", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+   "pool":{
+      "id":"332abe93-f488-41ba-870b-2ac66be7f853",
+      "tenant_id":"19eaa775-cf5d-49bc-902e-2f85f668d995",
+      "name":"Example pool",
+      "description":"",
+      "protocol":"tcp",
+      "lb_algorithm":"ROUND_ROBIN",
+      "session_persistence":{
+      },
+      "healthmonitor_id":null,
+      "members":[
+      ],
+      "admin_state_up":true,
+      "status":"ACTIVE"
+   }
+}
+			`)
+	})
+
+	n, err := Get(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.ID, "332abe93-f488-41ba-870b-2ac66be7f853")
+}
