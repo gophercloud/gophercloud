@@ -33,10 +33,27 @@ func TestBuildQueryStringWithPointerToStruct(t *testing.T) {
 
 	opts := Opts{J: 2, R: "red"}
 
-	actual, err := BuildQueryString(opts)
+	actual, err := BuildQueryString(&opts)
 	if err != nil {
 		t.Errorf("Error building query string: %v", err)
 	}
 
 	th.CheckDeepEquals(t, actual, expected)
+}
+
+func TestBuildQueryStringWithoutRequiredFieldSet(t *testing.T) {
+	type Opts struct {
+		J int    `q:"j"`
+		R string `q:"r,required"`
+		C bool
+	}
+
+	opts := Opts{J: 2, C: true}
+
+	_, err := BuildQueryString(&opts)
+	if err == nil {
+		t.Error("Unexpected result: There should be an error thrown when a required field isn't set.")
+	}
+
+	t.Log(err)
 }

@@ -87,7 +87,7 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 					// Otherwise, the field is not set.
 					if len(tags) == 2 && tags[1] == "required" {
 						// And the field is required. Return an error.
-						return nil, fmt.Errorf("Required query parameter not set.")
+						return nil, fmt.Errorf("Required query parameter [%s] not set.", f.Name)
 					}
 				}
 			}
