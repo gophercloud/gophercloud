@@ -98,7 +98,7 @@ func TestList(t *testing.T) {
 				Protocol:     "HTTP",
 				ProtocolPort: 80,
 				PoolID:       "cfc6589d-f949-4c66-99d2-c2da56ef3764",
-				//Persistence:  SessionPersistence{},
+				Persistence:  SessionPersistence{},
 				ConnLimit:    0,
 				AdminStateUp: true,
 				Status:       "ACTIVE",
@@ -114,7 +114,7 @@ func TestList(t *testing.T) {
 				Protocol:     "TCP",
 				ProtocolPort: 3306,
 				PoolID:       "41efe233-7591-43c5-9cf7-923964759f9e",
-				//Persistence:  SessionPersistence{Type: "SOURCE_IP"},
+				Persistence:  SessionPersistence{Type: "SOURCE_IP"},
 				ConnLimit:    2000,
 				AdminStateUp: true,
 				Status:       "INACTIVE",
@@ -203,4 +203,51 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, "f7e6fe6a-b8b5-43a8-8215-73456b32e0f5", r.PortID)
 	th.AssertEquals(t, "c987d2be-9a3c-4ac9-a046-e8716b1350e2", r.ID)
 	th.AssertEquals(t, "NewVip", r.Name)
+}
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/lb/vips/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "vip": {
+        "status": "ACTIVE",
+        "protocol": "HTTP",
+        "description": "",
+        "admin_state_up": true,
+        "subnet_id": "8032909d-47a1-4715-90af-5153ffe39861",
+        "tenant_id": "83657cfcdfe44cd5920adaf26c48ceea",
+        "connection_limit": 1000,
+        "pool_id": "72741b06-df4d-4715-b142-276b6bce75ab",
+        "session_persistence": {
+            "cookie_name": "MyAppCookie",
+            "type": "APP_COOKIE"
+        },
+        "address": "10.0.0.10",
+        "protocol_port": 80,
+        "port_id": "b5a743d6-056b-468b-862d-fb13a9aa694e",
+        "id": "4ec89087-d057-4e2c-911f-60a3b47ee304",
+        "name": "my-vip"
+    }
+}
+			`)
+	})
+
+	vip, err := Get(serviceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "ACTIVE", vip.Status)
+	th.AssertEquals(t, "HTTP", vip.Protocol)
+	th.AssertEquals(t, "", vip.Description)
+	th.AssertEquals(t, true, vip.AdminStateUp)
+	th.AssertEquals(t, 1000, vip.ConnLimit)
+	th.AssertEquals(t, SessionPersistence{Type: "APP_COOKIE", CookieName: "MyAppCookie"}, vip.Persistence)
 }

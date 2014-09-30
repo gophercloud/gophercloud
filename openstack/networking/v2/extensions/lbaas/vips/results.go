@@ -25,7 +25,10 @@ import (
 //              same member of the pool.
 type SessionPersistence struct {
 	// The type of persistence mode
-	Type string
+	Type string `mapstructure:"type" json:"type"`
+
+	// Name of cookie if persistence mode is set appropriately
+	CookieName string `mapstructure:"cookie_name" json:"cookie_name"`
 }
 
 // VirtualIP is the primary load balancing configuration object that specifies
@@ -67,7 +70,7 @@ type VirtualIP struct {
 
 	// Indicates whether connections in the same session will be processed by the
 	// same pool member or not.
-	//Persistence SessionPersistence `mapstructure:"session_persistence" json:"session_persistence"`
+	Persistence SessionPersistence `mapstructure:"session_persistence" json:"session_persistence"`
 
 	// The maximum number of connections allowed for the VIP. Default is -1,
 	// meaning no limit.

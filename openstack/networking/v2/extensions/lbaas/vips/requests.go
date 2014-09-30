@@ -226,3 +226,15 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 
 	return res
 }
+
+// Get retrieves a particular virtual IP based on its unique ID.
+func Get(c *gophercloud.ServiceClient, id string) GetResult {
+	var res GetResult
+	_, err := perigee.Request("GET", resourceURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		Results:     &res.Resp,
+		OkCodes:     []int{200},
+	})
+	res.Err = err
+	return res
+}
