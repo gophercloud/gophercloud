@@ -33,7 +33,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	var res CreateResult
 	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{200, 201},
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 	})
