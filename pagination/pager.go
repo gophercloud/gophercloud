@@ -35,6 +35,8 @@ type Pager struct {
 
 	createPage func(r LastHTTPResponse) Page
 
+	Err error
+
 	// Headers supplies additional HTTP headers to populate on each paged request.
 	Headers map[string]string
 }
@@ -66,6 +68,9 @@ func (p Pager) fetchNextPage(url string) (Page, error) {
 // EachPage iterates over each page returned by a Pager, yielding one at a time to a handler function.
 // Return "false" from the handler to prematurely stop iterating.
 func (p Pager) EachPage(handler func(Page) (bool, error)) error {
+	if p.Err != nil {
+		return p.Err
+	}
 	currentURL := p.initialURL
 	for {
 		currentPage, err := p.fetchNextPage(currentURL)

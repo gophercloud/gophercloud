@@ -1,6 +1,6 @@
 // +build acceptance
 
-package openstack
+package v2
 
 import (
 	"fmt"
