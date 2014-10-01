@@ -110,12 +110,12 @@ func (p MonitorPage) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
-// ExtractPools accepts a Page struct, specifically a RouterPage struct,
-// and extracts the elements into a slice of Router structs. In other words,
+// ExtractMonitors accepts a Page struct, specifically a MonitorPage struct,
+// and extracts the elements into a slice of Monitor structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractMonitors(page pagination.Page) ([]Monitor, error) {
 	var resp struct {
-		Monitors []Monitor `mapstructure:"health_monitor" json:"health_monitor"`
+		Monitors []Monitor `mapstructure:"health_monitors" json:"health_monitors"`
 	}
 
 	err := mapstructure.Decode(page.(MonitorPage).Body, &resp)
