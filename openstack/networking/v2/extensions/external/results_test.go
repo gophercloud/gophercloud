@@ -182,8 +182,7 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	iTrue := true
-	options := CreateOpts{networks.CreateOpts{Name: "ext_net", AdminStateUp: &iTrue}, true}
+	options := CreateOpts{networks.CreateOpts{Name: "ext_net", AdminStateUp: Up}, true}
 	res := networks.Create(serviceClient(), options)
 
 	n, err := ExtractCreate(res)

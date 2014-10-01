@@ -8,6 +8,18 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+type AdminState *bool
+
+// Convenience vars for AdminStateUp values.
+var (
+	iTrue  = true
+	iFalse = false
+
+	Nothing AdminState = nil
+	Up      AdminState = &iTrue
+	Down    AdminState = &iFalse
+)
+
 // NetworkExtAttrs represents an extended form of a Network with additional fields.
 type NetworkExtAttrs struct {
 	// UUID for the network
