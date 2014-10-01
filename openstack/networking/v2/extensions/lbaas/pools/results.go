@@ -53,6 +53,9 @@ type Pool struct {
 
 	// The ID of the virtual IP associated with this pool
 	VIPID string `json:"vip_id" mapstructure:"vip_id"`
+
+	// The provider
+	Provider string
 }
 
 // PoolPage is the page returned by a pager when traversing over a
