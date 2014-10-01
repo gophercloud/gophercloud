@@ -232,3 +232,13 @@ func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) As
 	res.Err = err
 	return res
 }
+
+func DisassociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) AssociateResult {
+	var res AssociateResult
+	_, err := perigee.Request("DELETE", disassociateURL(c, poolID, monitorID), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{204},
+	})
+	res.Err = err
+	return res
+}

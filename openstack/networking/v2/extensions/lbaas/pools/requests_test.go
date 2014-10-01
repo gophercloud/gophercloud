@@ -312,5 +312,15 @@ func TestAssociateHealthMonitor(t *testing.T) {
 }
 
 func TestDisassociateHealthMonitor(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
+	th.Mux.HandleFunc("/v2.0/lb/pools/332abe93-f488-41ba-870b-2ac66be7f853/health_monitors/b624decf-d5d3-4c66-9a3d-f047e7786181", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := DisassociateMonitor(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "b624decf-d5d3-4c66-9a3d-f047e7786181")
+	th.AssertNoErr(t, res.Err)
 }

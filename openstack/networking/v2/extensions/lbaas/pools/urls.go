@@ -20,3 +20,7 @@ func resourceURL(c *gophercloud.ServiceClient, id string) string {
 func associateURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(version, rootPath, resourcePath, id, monitorPath)
 }
+
+func disassociateURL(c *gophercloud.ServiceClient, poolID, monitorID string) string {
+	return c.ServiceURL(version, rootPath, resourcePath, poolID, monitorPath, monitorID)
+}
