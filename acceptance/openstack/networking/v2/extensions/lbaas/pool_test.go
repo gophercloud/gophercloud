@@ -1,3 +1,5 @@
+// +build acceptance networking lbaaspool
+
 package lbaas
 
 import (
@@ -5,55 +7,71 @@ import (
 
 	base "github.com/rackspace/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/extensions/lbaas/pools"
-	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
-	"github.com/rackspace/gophercloud/openstack/networking/v2/subnets"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
-func SetupTopology(t *testing.T) (string, string) {
-	// create network
-	n, err := networks.Create(base.Client, networks.CreateOpts{Name: "tmp_network"}).Extract()
-	th.AssertNoErr(t, err)
+func TestPools(t *testing.T) {
+	base.Setup(t)
+	defer base.Teardown()
 
-	t.Logf("Created network %s", n.ID)
+	// setup
+	networkID, subnetID := SetupTopology(t)
 
-	// create subnet
-	s, err := subnets.Create(base.Client, subnets.CreateOpts{
-		NetworkID: n.ID,
-		CIDR:      "192.168.199.0/24",
-		IPVersion: subnets.IPv4,
-		Name:      "tmp_subnet",
-	}).Extract()
-	th.AssertNoErr(t, err)
+	// create pool
+	poolID := CreatePool(t, subnetID)
 
-	t.Logf("Created subnet %s", s.ID)
+	// list pools
+	listPools(t)
 
-	return n.ID, s.ID
+	// update pool
+	updatePool(t, poolID)
+
+	// get pool
+	getPool(t, poolID)
+
+	// associate health monitor
+
+	// disassociate health monitor
+
+	// delete pool
+	DeletePool(t, poolID)
+
+	// teardown
+	DeleteTopology(t, networkID)
 }
 
-func DeleteTopology(t *testing.T, networkID string) {
-	res := networks.Delete(base.Client, networkID)
-	th.AssertNoErr(t, res.Err)
-	t.Logf("Deleted network %s", networkID)
+func listPools(t *testing.T) {
+	err := pools.List(base.Client, pools.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		poolList, err := pools.ExtractPools(page)
+		if err != nil {
+			t.Errorf("Failed to extract pools: %v", err)
+			return false, err
+		}
+
+		for _, p := range poolList {
+			t.Logf("Listing pool: ID [%s] Name [%s] Status [%s] LB algorithm [%s]", p.ID, p.Name, p.Status, p.LBMethod)
+		}
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
 }
 
-func CreatePool(t *testing.T, subnetID string) string {
-	p, err := pools.Create(base.Client, pools.CreateOpts{
-		LBMethod: pools.LBMethodRoundRobin,
-		Protocol: "HTTP",
-		Name:     "tmp_pool",
-		SubnetID: subnetID,
-	}).Extract()
+func updatePool(t *testing.T, poolID string) {
+	opts := pools.UpdateOpts{Name: "SuperPool", LBMethod: pools.LBMethodLeastConnections}
+	p, err := pools.Update(base.Client, poolID, opts).Extract()
 
 	th.AssertNoErr(t, err)
 
-	t.Logf("Created pool %s", p.ID)
-
-	return p.ID
+	t.Logf("Updated pool ID [%s]", p.ID)
 }
 
-func DeletePool(t *testing.T, poolID string) {
-	res := pools.Delete(base.Client, poolID)
-	th.AssertNoErr(t, res.Err)
-	t.Logf("Deleted pool %s", poolID)
+func getPool(t *testing.T, poolID string) {
+	p, err := pools.Get(base.Client, poolID).Extract()
+
+	th.AssertNoErr(t, err)
+
+	t.Logf("Getting pool ID [%s]", p.ID)
 }

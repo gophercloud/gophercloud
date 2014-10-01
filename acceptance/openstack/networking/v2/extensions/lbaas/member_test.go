@@ -11,7 +11,7 @@ import (
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
-func TestAll(t *testing.T) {
+func TestMembers(t *testing.T) {
 	base.Setup(t)
 	defer base.Teardown()
 
