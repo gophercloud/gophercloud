@@ -1,6 +1,7 @@
-package volumeTypes
+package volumetypes
 
 import (
+	"fmt"
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
@@ -12,7 +13,7 @@ type CreateOpts struct {
 	Name       string
 }
 
-func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*VolumeType, error) {
+func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	type volumeType struct {
 		ExtraSpecs map[string]interface{} `json:"extra_specs,omitempty"`
 		Name       *string                `json:"name,omitempty"`
@@ -29,51 +30,42 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*VolumeType, er
 	reqBody.VolumeType.Name = utils.MaybeString(opts.Name)
 	reqBody.VolumeType.ExtraSpecs = opts.ExtraSpecs
 
-	type response struct {
-		VolumeType VolumeType `json:"volume_type"`
-	}
-
-	var respBody response
-
-	_, err := perigee.Request("POST", volumeTypesURL(client), perigee.Options{
+	var res CreateResult
+	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 		ReqBody:     &reqBody,
-		Results:     &respBody,
+		Results:     &res.Resp,
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &respBody.VolumeType, nil
-
+	return res
 }
 
-func Delete(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("DELETE", volumeTypeURL(client, id), perigee.Options{
+func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
+	var res DeleteResult
+	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
-	return err
+	res.Err = err
+	return res
 }
 
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var gr GetResult
-	_, gr.Err = perigee.Request("GET", volumeTypeURL(client, id), perigee.Options{
-		Results:     &gr.Resp,
+	var res GetResult
+	resp, err := perigee.Request("GET", getURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+		Results:     &res.Resp,
 	})
-	return gr
+	res.Err = err
+	fmt.Printf("resp: %+v\n", resp)
+	return res
 }
 
-// ListOpts holds options for listing volumes. It is passed to the volumes.List function.
-type ListOpts struct {
-}
-
-func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
+func List(client *gophercloud.ServiceClient) pagination.Pager {
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
 		return ListResult{pagination.SinglePageBase(r)}
 	}
 
-	return pagination.NewPager(client, volumeTypesURL(client), createPage)
+	return pagination.NewPager(client, listURL(client), createPage)
 }

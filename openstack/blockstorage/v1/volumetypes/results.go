@@ -1,4 +1,4 @@
-package volumeTypes
+package volumetypes
 
 import (
 	"fmt"
@@ -10,8 +10,8 @@ import (
 
 type VolumeType struct {
 	ExtraSpecs map[string]interface{} `json:"extra_specs" mapstructure:"extra_specs"`
-	ID         string                 `json:"id"		  mapstructure:"id"`
-	Name       string                 `json:"name"		  mapstructure:"name"`
+	ID         string                 `json:"id" mapstructure:"id"`
+	Name       string                 `json:"name" mapstructure:"name"`
 }
 
 // ListResult is a *http.Response that is returned from a call to the List function.
@@ -38,20 +38,33 @@ func ExtractVolumeTypes(page pagination.Page) ([]VolumeType, error) {
 	return response.VolumeTypes, err
 }
 
-type GetResult struct {
+type commonResult struct {
 	gophercloud.CommonResult
 }
 
-func (gr GetResult) ExtractVolumeType() (*VolumeType, error) {
-	if gr.Err != nil {
-		return nil, gr.Err
+func (r commonResult) Extract() (*VolumeType, error) {
+	if r.Err != nil {
+		return nil, r.Err
 	}
-	var response struct {
-		VolumeType *VolumeType `mapstructure:"volume_type"`
+
+	var res struct {
+		VolumeType *VolumeType `json:"volume_type" mapstructure:"volume_type"`
 	}
-	err := mapstructure.Decode(gr, &response)
+
+	err := mapstructure.Decode(r.Resp, &res)
 	if err != nil {
-		return nil, fmt.Errorf("volumeTypes: Error decoding volumeTypes.GetResult: %v", err)
+		return nil, fmt.Errorf("Error decoding Volume Type: %v", err)
 	}
-	return response.VolumeType, nil
+
+	return res.VolumeType, nil
 }
+
+type GetResult struct {
+	commonResult
+}
+
+type CreateResult struct {
+	commonResult
+}
+
+type DeleteResult commonResult
