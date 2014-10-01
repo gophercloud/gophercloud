@@ -180,7 +180,7 @@ func TestCreateObject(t *testing.T) {
 
 	client := serviceClient()
 	content := bytes.NewBufferString("Did gyre and gimble in the wabe")
-	err := Create(client, "testContainer", "testObject", content, nil)
+	_, err := Create(client, "testContainer", "testObject", content, nil).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error creating object: %v", err)
 	}
@@ -199,7 +199,7 @@ func TestCopyObject(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Copy(client, "testContainer", "testObject", &CopyOpts{Destination: "/newTestContainer/newTestObject"})
+	_, err := Copy(client, "testContainer", "testObject", &CopyOpts{Destination: "/newTestContainer/newTestObject"}).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error copying object: %v", err)
 	}
@@ -217,7 +217,7 @@ func TestDeleteObject(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Delete(client, "testContainer", "testObject", nil)
+	_, err := Delete(client, "testContainer", "testObject", nil).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error deleting object: %v", err)
 	}
@@ -236,7 +236,7 @@ func TestUpateObjectMetadata(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Update(client, "testContainer", "testObject", &UpdateOpts{Metadata: metadata})
+	_, err := Update(client, "testContainer", "testObject", &UpdateOpts{Metadata: metadata}).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error updating object metadata: %v", err)
 	}

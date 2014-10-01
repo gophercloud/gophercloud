@@ -145,7 +145,7 @@ func TestCreateContainer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	_, err := Create(client, "testContainer", nil)
+	_, err := Create(client, "testContainer", nil).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error creating container: %v", err)
 	}
@@ -163,7 +163,7 @@ func TestDeleteContainer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Delete(client, "testContainer")
+	_, err := Delete(client, "testContainer").ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error deleting container: %v", err)
 	}
@@ -181,7 +181,7 @@ func TestUpateContainer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	err := Update(client, "testContainer", nil)
+	_, err := Update(client, "testContainer", nil).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error updating container metadata: %v", err)
 	}

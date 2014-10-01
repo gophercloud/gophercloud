@@ -29,7 +29,7 @@ func TestContainers(t *testing.T) {
 
 	// Create numContainers containers.
 	for i := 0; i < len(cNames); i++ {
-		_, err := containers.Create(client, cNames[i], nil)
+		_, err := containers.Create(client, cNames[i], nil).ExtractHeaders()
 		if err != nil {
 			t.Error(err)
 		}
@@ -37,7 +37,7 @@ func TestContainers(t *testing.T) {
 	// Delete the numContainers containers after function completion.
 	defer func() {
 		for i := 0; i < len(cNames); i++ {
-			err = containers.Delete(client, cNames[i])
+			_, err = containers.Delete(client, cNames[i]).ExtractHeaders()
 			if err != nil {
 				t.Error(err)
 			}
@@ -79,7 +79,7 @@ func TestContainers(t *testing.T) {
 	}
 
 	// Update one of the numContainer container metadata.
-	err = containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: metadata})
+	_, err = containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: metadata}).ExtractHeaders()
 	if err != nil {
 		t.Error(err)
 	}
@@ -89,7 +89,7 @@ func TestContainers(t *testing.T) {
 		for k := range metadata {
 			tempMap[k] = ""
 		}
-		err = containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: tempMap})
+		_, err = containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: tempMap}).ExtractHeaders()
 		if err != nil {
 			t.Error(err)
 		}

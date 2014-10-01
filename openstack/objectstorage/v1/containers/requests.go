@@ -9,17 +9,16 @@ import (
 // ListOpts is a structure that holds options for listing containers.
 type ListOpts struct {
 	Full      bool
-	Limit     int    `q:"limit"`
-	Marker    string `q:"marker"`
-	EndMarker string `q:"end_marker"`
-	Format    string `q:"format"`
-	Prefix    string `q:"prefix"`
-	Delimiter []byte `q:"delimiter"`
+	Limit     int     `q:"limit"`
+	Marker    string  `q:"marker"`
+	EndMarker string  `q:"end_marker"`
+	Format    string  `q:"format"`
+	Prefix    string  `q:"prefix"`
+	Delimiter [1]byte `q:"delimiter"`
 }
 
-// List is a function that retrieves all objects in a container. It also returns the details
-// for the account. To extract just the container information or names, pass the ListResult
-// response to the ExtractInfo or ExtractNames function, respectively.
+// List is a function that retrieves containers associated with the account as well as account
+// metadata. It returns a pager which can be iterated with the EachPage function.
 func List(c *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
 	var headers map[string]string
 
@@ -34,6 +33,8 @@ func List(c *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
 		if !opts.Full {
 			headers = map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
 		}
+	} else {
+		headers = map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
 	}
 
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
@@ -61,14 +62,15 @@ type CreateOpts struct {
 }
 
 // Create is a function that creates a new container.
-func Create(c *gophercloud.ServiceClient, containerName string, opts *CreateOpts) (Container, error) {
-	var container Container
+func Create(c *gophercloud.ServiceClient, containerName string, opts *CreateOpts) CreateResult {
+	var res CreateResult
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
 		headers, err := gophercloud.BuildHeaders(opts)
 		if err != nil {
-			return container, err
+			res.Err = err
+			return res
 		}
 
 		for k, v := range headers {
@@ -80,23 +82,25 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts *CreateOpts
 		}
 	}
 
-	_, err := perigee.Request("PUT", containerURL(c, containerName), perigee.Options{
+	resp, err := perigee.Request("PUT", containerURL(c, containerName), perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 204},
 	})
-	if err == nil {
-		container = Container{Name: containerName}
-	}
-	return container, err
+	res.Resp = &resp.HttpResponse
+	res.Err = err
+	return res
 }
 
 // Delete is a function that deletes a container.
-func Delete(c *gophercloud.ServiceClient, containerName string) error {
-	_, err := perigee.Request("DELETE", containerURL(c, containerName), perigee.Options{
+func Delete(c *gophercloud.ServiceClient, containerName string) DeleteResult {
+	var res DeleteResult
+	resp, err := perigee.Request("DELETE", containerURL(c, containerName), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	return err
+	res.Resp = &resp.HttpResponse
+	res.Err = err
+	return res
 }
 
 // UpdateOpts is a structure that holds parameters for updating, creating, or deleting a
@@ -114,13 +118,15 @@ type UpdateOpts struct {
 }
 
 // Update is a function that creates, updates, or deletes a container's metadata.
-func Update(c *gophercloud.ServiceClient, containerName string, opts *UpdateOpts) error {
+func Update(c *gophercloud.ServiceClient, containerName string, opts *UpdateOpts) UpdateResult {
+	var res UpdateResult
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
 		headers, err := gophercloud.BuildHeaders(opts)
 		if err != nil {
-			return err
+			res.Err = err
+			return res
 		}
 
 		for k, v := range headers {
@@ -132,22 +138,24 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts *UpdateOpts
 		}
 	}
 
-	_, err := perigee.Request("POST", containerURL(c, containerName), perigee.Options{
+	resp, err := perigee.Request("POST", containerURL(c, containerName), perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
-	return err
+	res.Resp = &resp.HttpResponse
+	res.Err = err
+	return res
 }
 
 // Get is a function that retrieves the metadata of a container. To extract just the custom
 // metadata, pass the GetResult response to the ExtractMetadata function.
 func Get(c *gophercloud.ServiceClient, containerName string) GetResult {
-	var gr GetResult
+	var res GetResult
 	resp, err := perigee.Request("HEAD", containerURL(c, containerName), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	gr.Err = err
-	gr.Resp = &resp.HttpResponse
-	return gr
+	res.Resp = &resp.HttpResponse
+	res.Err = err
+	return res
 }

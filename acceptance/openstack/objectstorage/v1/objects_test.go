@@ -33,14 +33,14 @@ func TestObjects(t *testing.T) {
 
 	// Create a container to hold the test objects.
 	cName := tools.RandomString("test-container-", 8)
-	_, err = containers.Create(client, cName, nil)
+	_, err = containers.Create(client, cName, nil).ExtractHeaders()
 	if err != nil {
 		t.Error(err)
 		return
 	}
 	// Defer deletion of the container until after testing.
 	defer func() {
-		err = containers.Delete(client, cName)
+		_, err = containers.Delete(client, cName).ExtractHeaders()
 		if err != nil {
 			t.Error(err)
 			return
@@ -51,7 +51,7 @@ func TestObjects(t *testing.T) {
 	oContents := make([]*bytes.Buffer, numObjects)
 	for i := 0; i < numObjects; i++ {
 		oContents[i] = bytes.NewBuffer([]byte(tools.RandomString("", 10)))
-		err = objects.Create(client, cName, oNames[i], oContents[i], nil)
+		_, err = objects.Create(client, cName, oNames[i], oContents[i], nil).ExtractHeaders()
 		if err != nil {
 			t.Error(err)
 			return
@@ -60,7 +60,7 @@ func TestObjects(t *testing.T) {
 	// Delete the objects after testing.
 	defer func() {
 		for i := 0; i < numObjects; i++ {
-			err = objects.Delete(client, cName, oNames[i], nil)
+			_, err = objects.Delete(client, cName, oNames[i], nil).ExtractHeaders()
 		}
 	}()
 
@@ -104,7 +104,7 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Copy the contents of one object to another.
-	err = objects.Copy(client, cName, oNames[0], &objects.CopyOpts{Destination: cName + "/" + oNames[1]})
+	_, err = objects.Copy(client, cName, oNames[0], &objects.CopyOpts{Destination: cName + "/" + oNames[1]}).ExtractHeaders()
 	if err != nil {
 		t.Error(err)
 		return
@@ -129,7 +129,7 @@ func TestObjects(t *testing.T) {
 	}
 
 	// Update an object's metadata.
-	err = objects.Update(client, cName, oNames[0], &objects.UpdateOpts{Metadata: metadata})
+	_, err = objects.Update(client, cName, oNames[0], &objects.UpdateOpts{Metadata: metadata}).ExtractHeaders()
 	if err != nil {
 		t.Error(err)
 		return
@@ -140,7 +140,7 @@ func TestObjects(t *testing.T) {
 		for k := range metadata {
 			tempMap[k] = ""
 		}
-		err = objects.Update(client, cName, oNames[0], &objects.UpdateOpts{Metadata: tempMap})
+		_, err = objects.Update(client, cName, oNames[0], &objects.UpdateOpts{Metadata: tempMap}).ExtractHeaders()
 		if err != nil {
 			t.Error(err)
 			return

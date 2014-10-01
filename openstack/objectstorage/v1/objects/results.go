@@ -45,18 +45,6 @@ func (r ObjectPage) LastMarker() (string, error) {
 	return names[len(names)-1], nil
 }
 
-// DownloadResult is a *http.Response that is returned from a call to the Download function.
-type DownloadResult struct {
-	Resp *http.Response
-	Err  error
-}
-
-// GetResult is a *http.Response that is returned from a call to the Get function.
-type GetResult struct {
-	Resp *http.Response
-	Err  error
-}
-
 // ExtractInfo is a function that takes a page of objects and returns their full information.
 func ExtractInfo(page pagination.Page) ([]Object, error) {
 	untyped := page.(ObjectPage).Body.([]interface{})
@@ -106,6 +94,11 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 	}
 }
 
+// DownloadResult is a *http.Response that is returned from a call to the Download function.
+type DownloadResult struct {
+	commonResult
+}
+
 // ExtractContent is a function that takes a DownloadResult (of type *http.Response)
 // and returns the object's content.
 func (dr DownloadResult) ExtractContent() ([]byte, error) {
@@ -119,6 +112,11 @@ func (dr DownloadResult) ExtractContent() ([]byte, error) {
 		return body, fmt.Errorf("Error trying to read DownloadResult body: %v", err)
 	}
 	return body, nil
+}
+
+// GetResult is a *http.Response that is returned from a call to the Get function.
+type GetResult struct {
+	commonResult
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -135,4 +133,34 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 		}
 	}
 	return metadata, nil
+}
+
+type commonResult struct {
+	Resp *http.Response
+	Err  error
+}
+
+func (cr commonResult) ExtractHeaders() (http.Header, error) {
+	var headers http.Header
+	if cr.Err != nil {
+		return headers, cr.Err
+	}
+
+	return cr.Resp.Header, nil
+}
+
+type CreateResult struct {
+	commonResult
+}
+
+type UpdateResult struct {
+	commonResult
+}
+
+type DeleteResult struct {
+	commonResult
+}
+
+type CopyResult struct {
+	commonResult
 }

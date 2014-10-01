@@ -40,6 +40,8 @@ func List(c *gophercloud.ServiceClient, containerName string, opts *ListOpts) pa
 		if !opts.Full {
 			headers = map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
 		}
+	} else {
+		headers = map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
 	}
 
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
@@ -69,7 +71,7 @@ type DownloadOpts struct {
 // To extract just the content, pass the DownloadResult response to the ExtractContent
 // function.
 func Download(c *gophercloud.ServiceClient, containerName, objectName string, opts *DownloadOpts) DownloadResult {
-	var dr DownloadResult
+	var res DownloadResult
 
 	url := objectURL(c, containerName, objectName)
 	h := c.Provider.AuthenticatedHeaders()
@@ -77,8 +79,8 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 	if opts != nil {
 		headers, err := gophercloud.BuildHeaders(opts)
 		if err != nil {
-			dr.Err = err
-			return dr
+			res.Err = err
+			return res
 		}
 
 		for k, v := range headers {
@@ -87,8 +89,8 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 
 		query, err := gophercloud.BuildQueryString(opts)
 		if err != nil {
-			dr.Err = err
-			return dr
+			res.Err = err
+			return res
 		}
 		url += query.String()
 	}
@@ -97,9 +99,9 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 		MoreHeaders: h,
 		OkCodes:     []int{200},
 	})
-	dr.Err = err
-	dr.Resp = &resp.HttpResponse
-	return dr
+	res.Err = err
+	res.Resp = &resp.HttpResponse
+	return res
 }
 
 // CreateOpts is a structure that holds parameters for creating an object.
@@ -123,7 +125,8 @@ type CreateOpts struct {
 }
 
 // Create is a function that creates a new object or replaces an existing object.
-func Create(c *gophercloud.ServiceClient, containerName, objectName string, content io.Reader, opts *CreateOpts) error {
+func Create(c *gophercloud.ServiceClient, containerName, objectName string, content io.Reader, opts *CreateOpts) CreateResult {
+	var res CreateResult
 	var reqBody []byte
 
 	url := objectURL(c, containerName, objectName)
@@ -132,7 +135,8 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 	if opts != nil {
 		headers, err := gophercloud.BuildHeaders(opts)
 		if err != nil {
-			return nil
+			res.Err = err
+			return res
 		}
 
 		for k, v := range headers {
@@ -145,8 +149,10 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 
 		query, err := gophercloud.BuildQueryString(opts)
 		if err != nil {
-			return err
+			res.Err = err
+			return res
 		}
+
 		url += query.String()
 	}
 
@@ -154,16 +160,19 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		reqBody = make([]byte, 0)
 		_, err := content.Read(reqBody)
 		if err != nil {
-			return err
+			res.Err = err
+			return res
 		}
 	}
 
-	_, err := perigee.Request("PUT", url, perigee.Options{
+	resp, err := perigee.Request("PUT", url, perigee.Options{
 		ReqBody:     reqBody,
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
-	return err
+	res.Resp = &resp.HttpResponse
+	res.Err = err
+	return res
 }
 
 // CopyOpts is a structure that holds parameters for copying one object to another.
@@ -176,15 +185,18 @@ type CopyOpts struct {
 }
 
 // Copy is a function that copies one object to another.
-func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts *CopyOpts) error {
+func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts *CopyOpts) CopyResult {
+	var res CopyResult
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts == nil {
-		return fmt.Errorf("Required CopyOpts field 'Destination' not set.")
+		res.Err = fmt.Errorf("Required CopyOpts field 'Destination' not set.")
+		return res
 	}
 	headers, err := gophercloud.BuildHeaders(opts)
 	if err != nil {
-		return err
+		res.Err = err
+		return res
 	}
 	for k, v := range headers {
 		h[k] = v
@@ -195,11 +207,12 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts *
 	}
 
 	url := objectURL(c, containerName, objectName)
-	_, err = perigee.Request("COPY", url, perigee.Options{
+	resp, err := perigee.Request("COPY", url, perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
-	return err
+	res.Resp = &resp.HttpResponse
+	return res
 }
 
 // DeleteOpts is a structure that holds parameters for deleting an object.
@@ -208,22 +221,26 @@ type DeleteOpts struct {
 }
 
 // Delete is a function that deletes an object.
-func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts *DeleteOpts) error {
+func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts *DeleteOpts) DeleteResult {
+	var res DeleteResult
 	url := objectURL(c, containerName, objectName)
 
 	if opts != nil {
 		query, err := gophercloud.BuildQueryString(opts)
 		if err != nil {
-			return err
+			res.Err = err
+			return res
 		}
 		url += query.String()
 	}
 
-	_, err := perigee.Request("DELETE", url, perigee.Options{
+	resp, err := perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	return err
+	res.Resp = &resp.HttpResponse
+	res.Err = err
+	return res
 }
 
 // GetOpts is a structure that holds parameters for getting an object's metadata.
@@ -235,14 +252,14 @@ type GetOpts struct {
 // Get is a function that retrieves the metadata of an object. To extract just the custom
 // metadata, pass the GetResult response to the ExtractMetadata function.
 func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts *GetOpts) GetResult {
-	var gr GetResult
+	var res GetResult
 	url := objectURL(c, containerName, objectName)
 
 	if opts != nil {
 		query, err := gophercloud.BuildQueryString(opts)
 		if err != nil {
-			gr.Err = err
-			return gr
+			res.Err = err
+			return res
 		}
 		url += query.String()
 	}
@@ -251,9 +268,9 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts *G
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200, 204},
 	})
-	gr.Err = err
-	gr.Resp = &resp.HttpResponse
-	return gr
+	res.Err = err
+	res.Resp = &resp.HttpResponse
+	return res
 }
 
 // UpdateOpts is a structure that holds parameters for updating, creating, or deleting an
@@ -269,13 +286,15 @@ type UpdateOpts struct {
 }
 
 // Update is a function that creates, updates, or deletes an object's metadata.
-func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts *UpdateOpts) error {
+func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts *UpdateOpts) UpdateResult {
+	var res UpdateResult
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
 		headers, err := gophercloud.BuildHeaders(opts)
 		if err != nil {
-			return nil
+			res.Err = err
+			return res
 		}
 
 		for k, v := range headers {
@@ -288,9 +307,11 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	}
 
 	url := objectURL(c, containerName, objectName)
-	_, err := perigee.Request("POST", url, perigee.Options{
+	resp, err := perigee.Request("POST", url, perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{202},
 	})
-	return err
+	res.Resp = &resp.HttpResponse
+	res.Err = err
+	return res
 }

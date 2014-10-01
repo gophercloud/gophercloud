@@ -2,55 +2,18 @@ package containers
 
 import (
 	"fmt"
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
 	"net/http"
 	"strings"
+
+	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 type Container struct {
 	Bytes int    `json:"bytes" mapstructure:"bytes"`
 	Count int    `json:"count" mapstructure:"count"`
-	Name  string `json:"name"  mapstructure:"name"`
+	Name  string `json:"name" mapstructure:"name"`
 }
-
-type commonResult struct {
-	gophercloud.CommonResult
-}
-
-func (r GetResult) Extract() (*Container, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-
-	var res struct {
-		Container *Container
-	}
-
-	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Object Storage Container: %v", err)
-	}
-
-	return res.Container, nil
-}
-
-type CreateResult struct {
-	commonResult
-}
-
-// GetResult represents the result of a get operation.
-type GetResult struct {
-	Resp *http.Response
-	Err  error
-}
-
-// UpdateResult represents the result of an update operation.
-type UpdateResult commonResult
-
-// DeleteResult represents the result of a delete operation.
-type DeleteResult commonResult
 
 // ListResult is a *http.Response that is returned from a call to the List function.
 type ContainerPage struct {
@@ -125,6 +88,12 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 	}
 }
 
+// GetResult represents the result of a get operation.
+type GetResult struct {
+	Resp *http.Response
+	Err  error
+}
+
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
 // and returns the custom metadata associated with the container.
 func (gr GetResult) ExtractMetadata() (map[string]string, error) {
@@ -139,4 +108,30 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 		}
 	}
 	return metadata, nil
+}
+
+type commonResult struct {
+	Resp *http.Response
+	Err  error
+}
+
+func (cr commonResult) ExtractHeaders() (http.Header, error) {
+	var headers http.Header
+	if cr.Err != nil {
+		return headers, cr.Err
+	}
+
+	return cr.Resp.Header, nil
+}
+
+type CreateResult struct {
+	commonResult
+}
+
+type UpdateResult struct {
+	commonResult
+}
+
+type DeleteResult struct {
+	commonResult
 }
