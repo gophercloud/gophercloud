@@ -1,4 +1,4 @@
-// +build acceptance networking lbaaspool
+// +build acceptance networking lbaas lbaaspool
 
 package lbaas
 
@@ -30,9 +30,14 @@ func TestPools(t *testing.T) {
 	// get pool
 	getPool(t, poolID)
 
+	// create monitor
+	monitorID := CreateMonitor(t)
+
 	// associate health monitor
+	associateMonitor(t, poolID, monitorID)
 
 	// disassociate health monitor
+	disassociateMonitor(t, poolID, monitorID)
 
 	// delete pool
 	DeletePool(t, poolID)
@@ -74,4 +79,20 @@ func getPool(t *testing.T, poolID string) {
 	th.AssertNoErr(t, err)
 
 	t.Logf("Getting pool ID [%s]", p.ID)
+}
+
+func associateMonitor(t *testing.T, poolID, monitorID string) {
+	res := pools.AssociateMonitor(base.Client, poolID, monitorID)
+
+	th.AssertNoErr(t, res.Err)
+
+	t.Logf("Associated pool %s with monitor %s", poolID, monitorID)
+}
+
+func disassociateMonitor(t *testing.T, poolID, monitorID string) {
+	res := pools.DisassociateMonitor(base.Client, poolID, monitorID)
+
+	th.AssertNoErr(t, res.Err)
+
+	t.Logf("Disassociated pool %s with monitor %s", poolID, monitorID)
 }

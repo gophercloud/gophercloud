@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	base "github.com/rackspace/gophercloud/acceptance/openstack/networking/v2"
+	"github.com/rackspace/gophercloud/openstack/networking/v2/extensions/lbaas/monitors"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/extensions/lbaas/pools"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/subnets"
@@ -56,4 +57,22 @@ func DeletePool(t *testing.T, poolID string) {
 	res := pools.Delete(base.Client, poolID)
 	th.AssertNoErr(t, res.Err)
 	t.Logf("Deleted pool %s", poolID)
+}
+
+func CreateMonitor(t *testing.T) string {
+	m, err := monitors.Create(base.Client, monitors.CreateOpts{
+		Delay:         5,
+		Timeout:       10,
+		MaxRetries:    3,
+		Type:          monitors.TypeHTTP,
+		ExpectedCodes: "200",
+		URLPath:       "/login",
+		HTTPMethod:    "GET",
+	}).Extract()
+
+	th.AssertNoErr(t, err)
+
+	t.Logf("Created monitor ID [%s]", m.ID)
+
+	return m.ID
 }

@@ -1,4 +1,4 @@
-// +build acceptance networking lbaasmember
+// +build acceptance networking lbaas lbaasmember
 
 package lbaas
 

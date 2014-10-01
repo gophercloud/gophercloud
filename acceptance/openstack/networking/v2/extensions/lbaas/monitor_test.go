@@ -1,4 +1,4 @@
-// +build acceptance networking lbaasmonitor
+// +build acceptance networking lbaas lbaasmonitor
 
 package lbaas
 
@@ -16,7 +16,7 @@ func TestMonitors(t *testing.T) {
 	defer base.Teardown()
 
 	// create monitor
-	monitorID := createMonitor(t)
+	monitorID := CreateMonitor(t)
 
 	// list monitors
 	listMonitors(t)
@@ -48,24 +48,6 @@ func listMonitors(t *testing.T) {
 	})
 
 	th.AssertNoErr(t, err)
-}
-
-func createMonitor(t *testing.T) string {
-	m, err := monitors.Create(base.Client, monitors.CreateOpts{
-		Delay:         5,
-		Timeout:       10,
-		MaxRetries:    3,
-		Type:          monitors.TypeHTTP,
-		ExpectedCodes: "200",
-		URLPath:       "/login",
-		HTTPMethod:    "GET",
-	}).Extract()
-
-	th.AssertNoErr(t, err)
-
-	t.Logf("Created monitor ID [%s]", m.ID)
-
-	return m.ID
 }
 
 func updateMonitor(t *testing.T, monitorID string) {
