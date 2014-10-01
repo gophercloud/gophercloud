@@ -159,3 +159,8 @@ type UpdateResult struct {
 
 // DeleteResult represents the result of a delete operation.
 type DeleteResult commonResult
+
+// AssociateResult represents the result of an association operation.
+type AssociateResult struct {
+	commonResult
+}

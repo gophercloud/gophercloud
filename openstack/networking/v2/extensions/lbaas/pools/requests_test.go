@@ -96,8 +96,9 @@ func TestList(t *testing.T) {
 					"701b531b-111a-4f21-ad85-4795b7b12af6",
 					"beb53b4d-230b-4abd-8118-575b8fa006ef",
 				},
-				ID:    "72741b06-df4d-4715-b142-276b6bce75ab",
-				VIPID: "4ec89087-d057-4e2c-911f-60a3b47ee304",
+				ID:       "72741b06-df4d-4715-b142-276b6bce75ab",
+				VIPID:    "4ec89087-d057-4e2c-911f-60a3b47ee304",
+				Provider: "haproxy",
 			},
 		}
 
@@ -283,4 +284,33 @@ func TestDelete(t *testing.T) {
 
 	res := Delete(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestAssociateHealthMonitor(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/lb/pools/332abe93-f488-41ba-870b-2ac66be7f853/health_monitors", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+   "health_monitor":{
+      "id":"b624decf-d5d3-4c66-9a3d-f047e7786181"
+   }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+	})
+
+	_, err := AssociateMonitor(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "b624decf-d5d3-4c66-9a3d-f047e7786181").Extract()
+	th.AssertNoErr(t, err)
+}
+
+func TestDisassociateHealthMonitor(t *testing.T) {
+
 }

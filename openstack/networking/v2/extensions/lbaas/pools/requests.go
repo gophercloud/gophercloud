@@ -211,3 +211,24 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	res.Err = err
 	return res
 }
+
+func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) AssociateResult {
+	type hm struct {
+		ID string `json:"id"`
+	}
+	type request struct {
+		Monitor hm `json:"health_monitor"`
+	}
+
+	reqBody := request{hm{ID: monitorID}}
+
+	var res AssociateResult
+	_, err := perigee.Request("POST", associateURL(c, poolID), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &res.Resp,
+		OkCodes:     []int{201},
+	})
+	res.Err = err
+	return res
+}

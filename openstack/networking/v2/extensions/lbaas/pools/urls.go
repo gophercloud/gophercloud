@@ -6,6 +6,7 @@ const (
 	version      = "v2.0"
 	rootPath     = "lb"
 	resourcePath = "pools"
+	monitorPath  = "health_monitors"
 )
 
 func rootURL(c *gophercloud.ServiceClient) string {
@@ -14,4 +15,8 @@ func rootURL(c *gophercloud.ServiceClient) string {
 
 func resourceURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(version, rootPath, resourcePath, id)
+}
+
+func associateURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL(version, rootPath, resourcePath, id, monitorPath)
 }
