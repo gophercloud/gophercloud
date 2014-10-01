@@ -34,9 +34,6 @@ type Member struct {
 
 	// The unique ID for the member.
 	ID string
-
-	// The ID of the associated subnet for this member.
-	SubnetID string `json:"subnet_id" mapstructure:"subnet_id"`
 }
 
 // MemberPage is the page returned by a pager when traversing over a

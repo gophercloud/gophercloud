@@ -94,8 +94,8 @@ type CreateOpts struct {
 	// Required. The port on which the application is hosted.
 	ProtocolPort int
 
-	// Required. Subnet in which to access this member.
-	SubnetID string
+	// Required. The pool to which this member will belong.
+	PoolID string
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new
@@ -104,8 +104,8 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	type member struct {
 		TenantID     string `json:"tenant_id"`
 		ProtocolPort int    `json:"protocol_port"`
-		SubnetID     string `json:"subnet_id"`
 		Address      string `json:"address"`
+		PoolID       string `json:"pool_id"`
 	}
 	type request struct {
 		Member member `json:"member"`
@@ -115,7 +115,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 		Address:      opts.Address,
 		TenantID:     opts.TenantID,
 		ProtocolPort: opts.ProtocolPort,
-		SubnetID:     opts.SubnetID,
+		PoolID:       opts.PoolID,
 	}}
 
 	var res CreateResult

@@ -121,9 +121,9 @@ func TestCreate(t *testing.T) {
 {
   "member": {
     "tenant_id": "453105b9-1754-413f-aab1-55f1af620750",
+		"pool_id": "foo",
     "address": "192.0.2.14",
-    "protocol_port":8080,
-    "subnet_id": "SUBNET_ID"
+    "protocol_port":8080
   }
 }
       `)
@@ -140,7 +140,6 @@ func TestCreate(t *testing.T) {
     "tenant_id": "453105b9-1754-413f-aab1-55f1af620750",
     "admin_state_up":true,
     "weight": 1,
-    "subnet_id": "SUBNET_ID",
     "status": "DOWN"
   }
 }
@@ -151,7 +150,7 @@ func TestCreate(t *testing.T) {
 		TenantID:     "453105b9-1754-413f-aab1-55f1af620750",
 		Address:      "192.0.2.14",
 		ProtocolPort: 8080,
-		SubnetID:     "SUBNET_ID",
+		PoolID:       "foo",
 	}
 	_, err := Create(serviceClient(), options).Extract()
 	th.AssertNoErr(t, err)
@@ -177,7 +176,6 @@ func TestGet(t *testing.T) {
       "tenant_id":"453105b9-1754-413f-aab1-55f1af620750",
       "admin_state_up":true,
       "weight":1,
-      "subnet_id":"SUBNET_ID",
       "status":"DOWN"
    }
 }
@@ -193,7 +191,6 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "453105b9-1754-413f-aab1-55f1af620750", m.TenantID)
 	th.AssertEquals(t, true, m.AdminStateUp)
 	th.AssertEquals(t, 1, m.Weight)
-	th.AssertEquals(t, "SUBNET_ID", m.SubnetID)
 	th.AssertEquals(t, "DOWN", m.Status)
 }
 
