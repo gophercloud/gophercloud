@@ -1,7 +1,6 @@
 package volumetypes
 
 import (
-	"fmt"
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
@@ -58,7 +57,6 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 		Results:     &res.Resp,
 	})
 	res.Err = err
-	fmt.Printf("resp: %+v\n", resp)
 	return res
 }
 

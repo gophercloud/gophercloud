@@ -102,9 +102,9 @@ func TestGet(t *testing.T) {
 {
     "volume_type": {
         "name": "vol-type-001",
-        "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"
+        "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
 		"extra_specs": {
-			"serverNumber": 2
+			"serverNumber": "2"
 		}
     }
 }
@@ -114,8 +114,7 @@ func TestGet(t *testing.T) {
 	vt, err := Get(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
-	t.Logf("vt: %+v\n", vt)
-	th.AssertDeepEquals(t, vt.ExtraSpecs, map[string]interface{}{"serverNumber": 2})
+	th.AssertDeepEquals(t, vt.ExtraSpecs, map[string]interface{}{"serverNumber": "2"})
 	th.AssertEquals(t, vt.Name, "vol-type-001")
 	th.AssertEquals(t, vt.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
@@ -132,8 +131,7 @@ func TestCreate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "volume_type": {
-        "name": "vol-type-001",
-		"id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"
+        "name": "vol-type-001"
     }
 }
 			`)
