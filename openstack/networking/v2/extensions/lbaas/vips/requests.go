@@ -302,7 +302,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
-		OkCodes:     []int{202},
+		OkCodes:     []int{200, 202},
 	})
 
 	return res

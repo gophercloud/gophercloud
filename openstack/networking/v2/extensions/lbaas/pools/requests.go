@@ -122,8 +122,8 @@ type CreateOpts struct {
 // load balancer pool.
 func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	type pool struct {
-		Name     string `json:"name,"`
-		TenantID string `json:"tenant_id"`
+		Name     string `json:"name"`
+		TenantID string `json:"tenant_id,omitempty"`
 		Protocol string `json:"protocol"`
 		SubnetID string `json:"subnet_id"`
 		LBMethod string `json:"lb_method"`

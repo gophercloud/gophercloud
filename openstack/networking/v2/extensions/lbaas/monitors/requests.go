@@ -202,7 +202,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	}
 
 	type request struct {
-		Monitor monitor `json:"healthmonitor"`
+		Monitor monitor `json:"health_monitor"`
 	}
 
 	reqBody := request{Monitor: monitor{
@@ -283,7 +283,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 	}
 
 	type request struct {
-		Monitor monitor `json:"healthmonitor"`
+		Monitor monitor `json:"health_monitor"`
 	}
 
 	reqBody := request{Monitor: monitor{
@@ -302,7 +302,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
-		OkCodes:     []int{202},
+		OkCodes:     []int{200, 202},
 	})
 
 	return res

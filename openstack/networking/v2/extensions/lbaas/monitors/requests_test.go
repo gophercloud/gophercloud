@@ -22,14 +22,14 @@ func serviceClient() *gophercloud.ServiceClient {
 func TestURLs(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/healthmonitors", rootURL(serviceClient()))
+	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/health_monitors", rootURL(serviceClient()))
 }
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/lb/healthmonitors", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/lb/health_monitors", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", tokenID)
 
@@ -38,7 +38,7 @@ func TestList(t *testing.T) {
 
 		fmt.Fprintf(w, `
 {
-   "healthmonitors":[
+   "health_monitors":[
       {
          "admin_state_up":true,
          "tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
@@ -113,14 +113,14 @@ func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/lb/healthmonitors", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/lb/health_monitors", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", tokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
 {
-   "healthmonitor":{
+   "health_monitor":{
       "type":"HTTP",
       "tenant_id":"453105b9-1754-413f-aab1-55f1af620750",
       "delay":20,
@@ -137,7 +137,7 @@ func TestCreate(t *testing.T) {
 
 		fmt.Fprintf(w, `
 {
-   "healthmonitor":{
+   "health_monitor":{
       "id":"f3eeab00-8367-4524-b662-55e64d4cacb5",
       "tenant_id":"453105b9-1754-413f-aab1-55f1af620750",
       "type":"HTTP",
@@ -171,7 +171,7 @@ func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/lb/healthmonitors/f3eeab00-8367-4524-b662-55e64d4cacb5", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/lb/health_monitors/f3eeab00-8367-4524-b662-55e64d4cacb5", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", tokenID)
 
@@ -180,7 +180,7 @@ func TestGet(t *testing.T) {
 
 		fmt.Fprintf(w, `
 {
-   "healthmonitor":{
+   "health_monitor":{
       "id":"f3eeab00-8367-4524-b662-55e64d4cacb5",
       "tenant_id":"453105b9-1754-413f-aab1-55f1af620750",
       "type":"HTTP",
@@ -217,14 +217,14 @@ func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/lb/healthmonitors/b05e44b5-81f9-4551-b474-711a722698f7", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/lb/health_monitors/b05e44b5-81f9-4551-b474-711a722698f7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", tokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
 {
-   "healthmonitor":{
+   "health_monitor":{
       "delay": 3,
       "timeout": 20,
       "max_retries": 10,
@@ -239,7 +239,7 @@ func TestUpdate(t *testing.T) {
 
 		fmt.Fprintf(w, `
 {
-    "healthmonitor": {
+    "health_monitor": {
         "admin_state_up": true,
         "tenant_id": "4fd44f30292945e481c7b8a0c8908869",
         "delay": 3,
@@ -275,7 +275,7 @@ func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/lb/healthmonitors/b05e44b5-81f9-4551-b474-711a722698f7", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/lb/health_monitors/b05e44b5-81f9-4551-b474-711a722698f7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", tokenID)
 		w.WriteHeader(http.StatusNoContent)

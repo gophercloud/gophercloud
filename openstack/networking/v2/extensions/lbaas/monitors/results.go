@@ -79,7 +79,7 @@ func (p MonitorPage) NextPageURL() (string, error) {
 		Rel  string `mapstructure:"rel"`
 	}
 	type resp struct {
-		Links []link `mapstructure:"healthmonitors_links"`
+		Links []link `mapstructure:"health_monitors_links"`
 	}
 
 	var r resp
@@ -115,7 +115,7 @@ func (p MonitorPage) IsEmpty() (bool, error) {
 // a generic collection is mapped into a relevant slice.
 func ExtractMonitors(page pagination.Page) ([]Monitor, error) {
 	var resp struct {
-		Monitors []Monitor `mapstructure:"healthmonitors" json:"healthmonitors"`
+		Monitors []Monitor `mapstructure:"health_monitor" json:"health_monitor"`
 	}
 
 	err := mapstructure.Decode(page.(MonitorPage).Body, &resp)
@@ -137,7 +137,7 @@ func (r commonResult) Extract() (*Monitor, error) {
 	}
 
 	var res struct {
-		Monitor *Monitor `json:"healthmonitor" mapstructure:"healthmonitor"`
+		Monitor *Monitor `json:"health_monitor" mapstructure:"health_monitor"`
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
