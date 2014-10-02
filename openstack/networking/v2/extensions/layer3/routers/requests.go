@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
@@ -156,7 +156,7 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	return res
 }
 
-var errInvalidInterfaceOpts = fmt.Errorf("When adding a router interface you must provide either a subnet ID or a port ID")
+var errInvalidInterfaceOpts = errors.New("When adding a router interface you must provide either a subnet ID or a port ID")
 
 // InterfaceOpts allow you to work with operations that either add or remote
 // an internal interface from a router.
@@ -192,6 +192,7 @@ func AddInterface(c *gophercloud.ServiceClient, id string, opts InterfaceOpts) I
 	// Validate
 	if (opts.SubnetID == "" && opts.PortID == "") || (opts.SubnetID != "" && opts.PortID != "") {
 		res.Err = errInvalidInterfaceOpts
+		return res
 	}
 
 	type request struct {
