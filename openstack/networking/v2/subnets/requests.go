@@ -1,8 +1,6 @@
 package subnets
 
 import (
-	"strconv"
-
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
@@ -15,18 +13,18 @@ import (
 // by a particular subnet attribute. SortDir sets the direction, and is either
 // `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	Name       string
-	EnableDHCP *bool
-	NetworkID  string
-	TenantID   string
-	IPVersion  int
-	GatewayIP  string
-	CIDR       string
-	ID         string
-	Limit      int
-	Marker     string
-	SortKey    string
-	SortDir    string
+	Name       string `q:"name"`
+	EnableDHCP *bool  `q:"enable_dhcp"`
+	NetworkID  string `q:"network_id"`
+	TenantID   string `q:"tenant_id"`
+	IPVersion  int    `q:"ip_version"`
+	GatewayIP  string `q:"gateway_ip"`
+	CIDR       string `q:"cidr"`
+	ID         string `q:"id"`
+	Limit      int    `q:"limit"`
+	Marker     string `q:"marker"`
+	SortKey    string `q:"sort_key"`
+	SortDir    string `q:"sort_dir"`
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -38,43 +36,6 @@ type ListOpts struct {
 // administrative rights.
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	// Build query parameters
-	q := make(map[string]string)
-	if opts.Name != "" {
-		q["name"] = opts.Name
-	}
-	if opts.EnableDHCP != nil {
-		q["enable_dhcp"] = strconv.FormatBool(*opts.EnableDHCP)
-	}
-	if opts.NetworkID != "" {
-		q["network_id"] = opts.NetworkID
-	}
-	if opts.TenantID != "" {
-		q["tenant_id"] = opts.TenantID
-	}
-	if opts.IPVersion != 0 {
-		q["ip_version"] = strconv.Itoa(opts.IPVersion)
-	}
-	if opts.GatewayIP != "" {
-		q["gateway_ip"] = opts.GatewayIP
-	}
-	if opts.CIDR != "" {
-		q["cidr"] = opts.CIDR
-	}
-	if opts.ID != "" {
-		q["id"] = opts.ID
-	}
-	if opts.Limit != 0 {
-		q["limit"] = strconv.Itoa(opts.Limit)
-	}
-	if opts.Marker != "" {
-		q["marker"] = opts.Marker
-	}
-	if opts.SortKey != "" {
-		q["sort_key"] = opts.SortKey
-	}
-	if opts.SortDir != "" {
-		q["sort_dir"] = opts.SortDir
-	}
 
 	u := listURL(c) + utils.BuildQuery(q)
 	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
