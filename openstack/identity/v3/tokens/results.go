@@ -14,6 +14,8 @@ const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
 // commonResult is the deferred result of a Create or a Get call.
 type commonResult struct {
 	gophercloud.CommonResult
+
+	// header stores the headers from the original HTTP response because token responses are returned in an X-Subject-Token header.
 	header http.Header
 }
 
