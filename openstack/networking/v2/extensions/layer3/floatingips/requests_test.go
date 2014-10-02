@@ -180,7 +180,44 @@ func TestGet(t *testing.T) {
 }
 
 func TestAssociate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
+	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+	"floatingip": {
+		"port_id": "423abc8d-2991-4a55-ba98-2aaea84cc72e"
+	}
+}
+		`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+	"floatingip": {
+			"router_id": "d23abc8d-2991-4a55-ba98-2aaea84cc72f",
+			"tenant_id": "4969c491a3c74ee4af974e6d800c62de",
+			"floating_network_id": "376da547-b977-4cfe-9cba-275c80debf57",
+			"fixed_ip_address": null,
+			"floating_ip_address": "172.24.4.228",
+			"port_id": "423abc8d-2991-4a55-ba98-2aaea84cc72e",
+			"id": "2f245a7b-796b-4f26-9cf9-9e82d248fda7"
+	}
+}
+	`)
+	})
+
+	ip, err := Update(th.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", UpdateOpts{PortID: "423abc8d-2991-4a55-ba98-2aaea84cc72e"}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, "423abc8d-2991-4a55-ba98-2aaea84cc72e", ip.PortID)
 }
 
 func TestDisassociate(t *testing.T) {
