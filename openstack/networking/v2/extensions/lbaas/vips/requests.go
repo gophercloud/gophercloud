@@ -17,7 +17,7 @@ var (
 	iTrue  = true
 	iFalse = false
 
-	Nothing AdminState = nil
+	Nothing AdminState
 	Up      AdminState = &iTrue
 	Down    AdminState = &iFalse
 )
@@ -237,12 +237,11 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 // Get retrieves a particular virtual IP based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, err := perigee.Request("GET", resourceURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("GET", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		Results:     &res.Resp,
 		OkCodes:     []int{200},
 	})
-	res.Err = err
 	return res
 }
 
@@ -311,10 +310,9 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 // Delete will permanently delete a particular virtual IP based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, err := perigee.Request("DELETE", resourceURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Err = err
 	return res
 }

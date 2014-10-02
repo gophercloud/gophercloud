@@ -85,12 +85,11 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 // Get retrieves a specific subnet based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, err := perigee.Request("GET", getURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("GET", getURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		Results:     &res.Resp,
 		OkCodes:     []int{200},
 	})
-	res.Err = err
 	return res
 }
 
@@ -173,13 +172,12 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 		reqBody.Subnet.HostRoutes = opts.HostRoutes
 	}
 
-	_, err := perigee.Request("POST", createURL(c), perigee.Options{
+	_, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{201},
 	})
-	res.Err = err
 
 	return res
 }
@@ -222,13 +220,12 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 	}
 
 	var res UpdateResult
-	_, err := perigee.Request("PUT", updateURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("PUT", updateURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{200, 201},
 	})
-	res.Err = err
 
 	return res
 }
@@ -236,10 +233,9 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 // Delete accepts a unique ID and deletes the subnet associated with it.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, err := perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Err = err
 	return res
 }

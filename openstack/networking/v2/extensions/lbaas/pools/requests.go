@@ -141,25 +141,23 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	}}
 
 	var res CreateResult
-	_, err := perigee.Request("POST", rootURL(c), perigee.Options{
+	_, res.Err = perigee.Request("POST", rootURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{201},
 	})
-	res.Err = err
 	return res
 }
 
 // Get retrieves a particular pool based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, err := perigee.Request("GET", resourceURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("GET", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		Results:     &res.Resp,
 		OkCodes:     []int{200},
 	})
-	res.Err = err
 	return res
 }
 
@@ -191,27 +189,30 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 
 	// Send request to API
 	var res UpdateResult
-	_, err := perigee.Request("PUT", resourceURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("PUT", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{200},
 	})
-	res.Err = err
 	return res
 }
 
 // Delete will permanently delete a particular pool based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, err := perigee.Request("DELETE", resourceURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Err = err
 	return res
 }
 
+// AssociateMonitor will associate a health monitor with a particular pool.
+// Once associated, the health monitor will start monitoring the members of the
+// pool and will deactivate these members if they are deemed unhealthy. A
+// member can be deactivated (status set to INACTIVE) if any of health monitors
+// finds it unhealthy.
 func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) AssociateResult {
 	type hm struct {
 		ID string `json:"id"`
@@ -223,22 +224,23 @@ func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) As
 	reqBody := request{hm{ID: monitorID}}
 
 	var res AssociateResult
-	_, err := perigee.Request("POST", associateURL(c, poolID), perigee.Options{
+	_, res.Err = perigee.Request("POST", associateURL(c, poolID), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{201},
 	})
-	res.Err = err
 	return res
 }
 
+// DisassociateMonitor will disassociate a health monitor with a particular
+// pool. When dissociation is successful, the health monitor will no longer
+// check for the health of the members of the pool.
 func DisassociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) AssociateResult {
 	var res AssociateResult
-	_, err := perigee.Request("DELETE", disassociateURL(c, poolID, monitorID), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", disassociateURL(c, poolID, monitorID), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Err = err
 	return res
 }

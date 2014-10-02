@@ -119,25 +119,23 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	}}
 
 	var res CreateResult
-	_, err := perigee.Request("POST", rootURL(c), perigee.Options{
+	_, res.Err = perigee.Request("POST", rootURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{201},
 	})
-	res.Err = err
 	return res
 }
 
 // Get retrieves a particular pool member based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, err := perigee.Request("GET", resourceURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("GET", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		Results:     &res.Resp,
 		OkCodes:     []int{200},
 	})
-	res.Err = err
 	return res
 }
 
@@ -160,23 +158,21 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 
 	// Send request to API
 	var res UpdateResult
-	_, err := perigee.Request("PUT", resourceURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("PUT", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{200},
 	})
-	res.Err = err
 	return res
 }
 
 // Delete will permanently delete a particular member based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, err := perigee.Request("DELETE", resourceURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Err = err
 	return res
 }

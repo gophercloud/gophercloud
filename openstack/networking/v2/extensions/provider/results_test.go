@@ -249,8 +249,8 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	iTrue, iFalse := true, false
-	options := networks.UpdateOpts{Name: "new_network_name", AdminStateUp: &iFalse, Shared: &iTrue}
+	iFalse := false
+	options := networks.UpdateOpts{Name: "new_network_name", AdminStateUp: Down, Shared: &iTrue}
 	res := networks.Update(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
 	n, err := ExtractUpdate(res)
 
