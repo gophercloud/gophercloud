@@ -5,20 +5,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
-
-const tokenID = "123"
-
-func serviceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{TokenID: tokenID},
-		Endpoint: th.Endpoint(),
-	}
-}
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
@@ -26,7 +16,7 @@ func TestList(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -69,7 +59,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	networks.List(serviceClient(), networks.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	networks.List(th.ServiceClient(), networks.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractList(page)
 		if err != nil {
@@ -120,7 +110,7 @@ func TestGet(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/networks/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -145,7 +135,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	res := networks.Get(serviceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := networks.Get(th.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	n, err := ExtractGet(res)
 
 	th.AssertNoErr(t, err)
@@ -161,7 +151,7 @@ func TestCreate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -197,7 +187,7 @@ func TestCreate(t *testing.T) {
 	})
 
 	options := networks.CreateOpts{Name: "sample_network", AdminStateUp: Up}
-	res := networks.Create(serviceClient(), options)
+	res := networks.Create(th.ServiceClient(), options)
 	n, err := ExtractCreate(res)
 
 	th.AssertNoErr(t, err)
@@ -213,7 +203,7 @@ func TestUpdate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/networks/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -251,7 +241,7 @@ func TestUpdate(t *testing.T) {
 
 	iTrue := true
 	options := networks.UpdateOpts{Name: "new_network_name", AdminStateUp: Down, Shared: &iTrue}
-	res := networks.Update(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
+	res := networks.Update(th.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
 	n, err := ExtractUpdate(res)
 
 	th.AssertNoErr(t, err)

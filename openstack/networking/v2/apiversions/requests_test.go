@@ -5,21 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
-
-const TokenID = "123"
-
-func ServiceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{
-			TokenID: TokenID,
-		},
-		Endpoint: th.Endpoint(),
-	}
-}
 
 func TestListVersions(t *testing.T) {
 	th.SetupHTTP()
@@ -27,7 +15,7 @@ func TestListVersions(t *testing.T) {
 
 	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -51,7 +39,7 @@ func TestListVersions(t *testing.T) {
 
 	count := 0
 
-	ListVersions(ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	ListVersions(th.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractAPIVersions(page)
 		if err != nil {
@@ -82,7 +70,7 @@ func TestAPIInfo(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -127,7 +115,7 @@ func TestAPIInfo(t *testing.T) {
 
 	count := 0
 
-	ListVersionResources(ServiceClient(), "v2.0").EachPage(func(page pagination.Page) (bool, error) {
+	ListVersionResources(th.ServiceClient(), "v2.0").EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractVersionResources(page)
 		if err != nil {

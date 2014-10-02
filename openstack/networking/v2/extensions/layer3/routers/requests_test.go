@@ -5,25 +5,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
-
-const tokenID = "123"
-
-func serviceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{TokenID: tokenID},
-		Endpoint: th.Endpoint(),
-	}
-}
 
 func TestURLs(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.AssertEquals(t, th.Endpoint()+"v2.0/routers", rootURL(serviceClient()))
+	th.AssertEquals(t, th.Endpoint()+"v2.0/routers", rootURL(th.ServiceClient()))
 }
 
 func TestList(t *testing.T) {
@@ -32,7 +22,7 @@ func TestList(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/routers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -65,7 +55,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	List(serviceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	List(th.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractRouters(page)
 		if err != nil {
@@ -108,7 +98,7 @@ func TestCreate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/routers", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -150,7 +140,7 @@ func TestCreate(t *testing.T) {
 		AdminStateUp: &asu,
 		GatewayInfo:  &gwi,
 	}
-	r, err := Create(serviceClient(), options).Extract()
+	r, err := Create(th.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "foo_router", r.Name)
@@ -164,7 +154,7 @@ func TestGet(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/routers/a07eea83-7710-4860-931b-5fe220fae533", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -185,7 +175,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	n, err := Get(serviceClient(), "a07eea83-7710-4860-931b-5fe220fae533").Extract()
+	n, err := Get(th.ServiceClient(), "a07eea83-7710-4860-931b-5fe220fae533").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
@@ -202,7 +192,7 @@ func TestUpdate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -238,7 +228,7 @@ func TestUpdate(t *testing.T) {
 	gwi := GatewayInfo{NetworkID: "8ca37218-28ff-41cb-9b10-039601ea7e6b"}
 	options := UpdateOpts{Name: "new_name", GatewayInfo: &gwi}
 
-	n, err := Update(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	n, err := Update(th.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "new_name")
@@ -251,11 +241,11 @@ func TestDelete(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := Delete(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	res := Delete(th.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -265,7 +255,7 @@ func TestAddInterface(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c/add_router_interface", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -288,7 +278,7 @@ func TestAddInterface(t *testing.T) {
 	})
 
 	opts := InterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
-	res, err := AddInterface(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
+	res, err := AddInterface(th.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "0d32a837-8069-4ec3-84c4-3eef3e10b188", res.SubnetID)
@@ -303,7 +293,7 @@ func TestRemoveInterface(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c/remove_router_interface", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -326,7 +316,7 @@ func TestRemoveInterface(t *testing.T) {
 	})
 
 	opts := InterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
-	res, err := RemoveInterface(serviceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
+	res, err := RemoveInterface(th.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "0d32a837-8069-4ec3-84c4-3eef3e10b188", res.SubnetID)

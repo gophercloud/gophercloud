@@ -5,26 +5,16 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
-
-const tokenID = "123"
-
-func serviceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{TokenID: tokenID},
-		Endpoint: th.Endpoint(),
-	}
-}
 
 func TestURLs(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/vips", rootURL(serviceClient()))
-	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/vips/foo", resourceURL(serviceClient(), "foo"))
+	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/vips", rootURL(th.ServiceClient()))
+	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/vips/foo", resourceURL(th.ServiceClient(), "foo"))
 }
 
 func TestList(t *testing.T) {
@@ -33,7 +23,7 @@ func TestList(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/vips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -78,7 +68,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	List(serviceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	List(th.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractVIPs(page)
 		if err != nil {
@@ -137,7 +127,7 @@ func TestCreate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/vips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -186,7 +176,7 @@ func TestCreate(t *testing.T) {
 		ProtocolPort: 80,
 	}
 
-	r, err := Create(serviceClient(), opts).Extract()
+	r, err := Create(th.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "PENDING_CREATE", r.Status)
@@ -210,7 +200,7 @@ func TestGet(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/vips/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -240,7 +230,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	vip, err := Get(serviceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
+	vip, err := Get(th.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "ACTIVE", vip.Status)
@@ -257,7 +247,7 @@ func TestUpdate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/vips/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -294,7 +284,7 @@ func TestUpdate(t *testing.T) {
 
 	i1000 := 1000
 	options := UpdateOpts{ConnLimit: &i1000}
-	vip, err := Update(serviceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304", options).Extract()
+	vip, err := Update(th.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "PENDING_UPDATE", vip.Status)
@@ -307,10 +297,10 @@ func TestDelete(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/vips/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := Delete(serviceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	res := Delete(th.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }

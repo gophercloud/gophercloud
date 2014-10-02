@@ -5,25 +5,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
-
-const tokenID = "123"
-
-func serviceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{TokenID: tokenID},
-		Endpoint: th.Endpoint(),
-	}
-}
 
 func TestURLs(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/pools", rootURL(serviceClient()))
+	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/pools", rootURL(th.ServiceClient()))
 }
 
 func TestList(t *testing.T) {
@@ -32,7 +22,7 @@ func TestList(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/pools", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -70,7 +60,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	List(serviceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	List(th.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractPools(page)
 		if err != nil {
@@ -118,7 +108,7 @@ func TestCreate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/pools", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -165,7 +155,7 @@ func TestCreate(t *testing.T) {
 		SubnetID: "1981f108-3c48-48d2-b908-30f7d28532c9",
 		TenantID: "2ffc6e22aae24e4795f87155d24c896f",
 	}
-	p, err := Create(serviceClient(), options).Extract()
+	p, err := Create(th.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "PENDING_CREATE", p.Status)
@@ -186,7 +176,7 @@ func TestGet(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/pools/332abe93-f488-41ba-870b-2ac66be7f853", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -212,7 +202,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	n, err := Get(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853").Extract()
+	n, err := Get(th.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.ID, "332abe93-f488-41ba-870b-2ac66be7f853")
@@ -224,7 +214,7 @@ func TestUpdate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/pools/332abe93-f488-41ba-870b-2ac66be7f853", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -265,7 +255,7 @@ func TestUpdate(t *testing.T) {
 
 	options := UpdateOpts{Name: "SuperPool", LBMethod: LBMethodLeastConnections}
 
-	n, err := Update(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", options).Extract()
+	n, err := Update(th.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "SuperPool", n.Name)
@@ -278,11 +268,11 @@ func TestDelete(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/pools/332abe93-f488-41ba-870b-2ac66be7f853", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := Delete(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853")
+	res := Delete(th.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -292,7 +282,7 @@ func TestAssociateHealthMonitor(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/pools/332abe93-f488-41ba-870b-2ac66be7f853/health_monitors", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -307,7 +297,7 @@ func TestAssociateHealthMonitor(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 	})
 
-	_, err := AssociateMonitor(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "b624decf-d5d3-4c66-9a3d-f047e7786181").Extract()
+	_, err := AssociateMonitor(th.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "b624decf-d5d3-4c66-9a3d-f047e7786181").Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -317,10 +307,10 @@ func TestDisassociateHealthMonitor(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/pools/332abe93-f488-41ba-870b-2ac66be7f853/health_monitors/b624decf-d5d3-4c66-9a3d-f047e7786181", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", tokenID)
+		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := DisassociateMonitor(serviceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "b624decf-d5d3-4c66-9a3d-f047e7786181")
+	res := DisassociateMonitor(th.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "b624decf-d5d3-4c66-9a3d-f047e7786181")
 	th.AssertNoErr(t, res.Err)
 }
