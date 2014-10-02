@@ -4,10 +4,8 @@ import (
 	"time"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 )
-
-// RFC3339Milli describes the time format used by identity API responses.
-const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
 
 // TokenCreateResult contains the document structure returned from a Create call.
 type TokenCreateResult struct {
@@ -37,7 +35,7 @@ func (r *TokenCreateResult) ExpiresAt() (time.Time, error) {
 	}
 
 	// Attempt to parse the timestamp.
-	ts, err := time.Parse(RFC3339Milli, resp.Token.ExpiresAt)
+	ts, err := time.Parse(gophercloud.RFC3339Milli, resp.Token.ExpiresAt)
 	if err != nil {
 		return time.Time{}, err
 	}
