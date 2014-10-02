@@ -46,7 +46,7 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *Comp
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create server: %s\n", name)
 
-	server, err := servers.Create(client, &servers.CreateOpts{
+	server, err := servers.Create(client, servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		ImageRef:  choices.ImageID,
