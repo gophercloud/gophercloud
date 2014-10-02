@@ -88,7 +88,7 @@ func TestCreateServer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	actual, err := Create(client, &CreateOpts{
+	actual, err := Create(client, CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
