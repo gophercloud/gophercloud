@@ -106,7 +106,7 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 			}
 		} else {
 			// If no password or token ID are available, authentication can't continue.
-			createErr(ErrMissingPassword)
+			return createErr(ErrMissingPassword)
 		}
 	} else {
 		// Password authentication.
