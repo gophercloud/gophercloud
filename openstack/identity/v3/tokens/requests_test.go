@@ -29,7 +29,11 @@ func authTokenPost(t *testing.T, options gophercloud.AuthOptions, scope *Scope, 
 		testhelper.TestJSONRequest(t, r, requestJSON)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{}`)
+		fmt.Fprintf(w, `{
+			"token": {
+				"expires_at": "2014-10-02T13:45:00.000000Z"
+			}
+		}`)
 	})
 
 	_, err := Create(&client, options, scope).Extract()
@@ -250,13 +254,17 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 		w.Header().Add("X-Subject-Token", "aaa111")
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{}`)
+		fmt.Fprintf(w, `{
+			"token": {
+				"expires_at": "2014-10-02T13:45:00.000000Z"
+			}
+		}`)
 	})
 
 	options := gophercloud.AuthOptions{UserID: "me", Password: "shhh"}
 	token, err := Create(&client, options, nil).Extract()
 	if err != nil {
-		t.Errorf("Create returned an error: %v", err)
+		t.Fatalf("Create returned an error: %v", err)
 	}
 
 	if token.ID != "aaa111" {

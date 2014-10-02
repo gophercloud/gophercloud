@@ -175,15 +175,12 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		v3Client.Endpoint = endpoint
 	}
 
-	result, err := tokens3.Create(v3Client, options, nil)
+	token, err := tokens3.Create(v3Client, options, nil).Extract()
 	if err != nil {
 		return err
 	}
+	client.TokenID = token.ID
 
-	client.TokenID, err = result.TokenID()
-	if err != nil {
-		return err
-	}
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
 		return v3endpointLocator(v3Client, opts)
 	}
