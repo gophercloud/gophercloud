@@ -70,7 +70,7 @@ func Get(client *gophercloud.ServiceClient, serviceID string) GetResult {
 	return result
 }
 
-// Update changes the service type of an existing service.s
+// Update changes the service type of an existing service.
 func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) UpdateResult {
 	type request struct {
 		Type string `json:"type"`
