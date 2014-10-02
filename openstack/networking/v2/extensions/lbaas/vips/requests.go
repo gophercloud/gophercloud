@@ -2,11 +2,9 @@ package vips
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -28,21 +26,21 @@ var (
 // sort by a particular network attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	ID              string
-	Name            string
-	AdminStateUp    *bool
-	Status          string
-	TenantID        string
-	SubnetID        string
-	Address         string
-	PortID          string
-	Protocol        string
-	ProtocolPort    int
-	ConnectionLimit int
-	Limit           int
-	Marker          string
-	SortKey         string
-	SortDir         string
+	ID              string `q:"id"`
+	Name            string `q:"name"`
+	AdminStateUp    *bool  `q:"admin_state_up"`
+	Status          string `q:"status"`
+	TenantID        string `q:"tenant_id"`
+	SubnetID        string `q:"subnet_id"`
+	Address         string `q:"address"`
+	PortID          string `q:"port_id"`
+	Protocol        string `q:"protocol"`
+	ProtocolPort    int    `q:"protocol_port"`
+	ConnectionLimit int    `q:"connection_limit"`
+	Limit           int    `q:"limit"`
+	Marker          string `q:"marker"`
+	SortKey         string `q:"sort_key"`
+	SortDir         string `q:"sort_dir"`
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -52,55 +50,11 @@ type ListOpts struct {
 // Default policy settings return only those routers that are owned by the
 // tenant who submits the request, unless an admin user submits the request.
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	q := make(map[string]string)
-	if opts.ID != "" {
-		q["id"] = opts.ID
+	q, err := gophercloud.BuildQueryString(&opts)
+	if err != nil {
+		return pagination.Pager{Err: err}
 	}
-	if opts.Name != "" {
-		q["name"] = opts.Name
-	}
-	if opts.AdminStateUp != nil {
-		q["admin_state_up"] = strconv.FormatBool(*opts.AdminStateUp)
-	}
-	if opts.Status != "" {
-		q["status"] = opts.Status
-	}
-	if opts.TenantID != "" {
-		q["tenant_id"] = opts.TenantID
-	}
-	if opts.SubnetID != "" {
-		q["subnet_id"] = opts.SubnetID
-	}
-	if opts.Address != "" {
-		q["address"] = opts.Address
-	}
-	if opts.PortID != "" {
-		q["port_id"] = opts.PortID
-	}
-	if opts.Protocol != "" {
-		q["protocol"] = opts.Protocol
-	}
-	if opts.ProtocolPort != 0 {
-		q["protocol_port"] = strconv.Itoa(opts.ProtocolPort)
-	}
-	if opts.ConnectionLimit != 0 {
-		q["connection_limit"] = strconv.Itoa(opts.ConnectionLimit)
-	}
-	if opts.Marker != "" {
-		q["marker"] = opts.Marker
-	}
-	if opts.Limit != 0 {
-		q["limit"] = strconv.Itoa(opts.Limit)
-	}
-	if opts.SortKey != "" {
-		q["sort_key"] = opts.SortKey
-	}
-	if opts.SortDir != "" {
-		q["sort_dir"] = opts.SortDir
-	}
-
-	u := rootURL(c) + utils.BuildQuery(q)
-
+	u := rootURL(c) + q.String()
 	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
 		return VIPPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	})

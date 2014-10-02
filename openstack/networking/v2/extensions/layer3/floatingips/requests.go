@@ -2,11 +2,9 @@ package floatingips
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -16,52 +14,27 @@ import (
 // sort by a particular network attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	ID                string
-	FloatingNetworkID string
-	PortID            string
-	FixedIP           string
-	FloatingIP        string
-	TenantID          string
-	Limit             int
-	Marker            string
-	SortKey           string
-	SortDir           string
+	ID                string `q:"id"`
+	FloatingNetworkID string `q:"floating_network_id"`
+	PortID            string `q:"port_id"`
+	FixedIP           string `q:"fixed_ip_address"`
+	FloatingIP        string `q:"floating_ip_address"`
+	TenantID          string `q:"tenant_id"`
+	Limit             int    `q:"limit"`
+	Marker            string `q:"marker"`
+	SortKey           string `q:"sort_key"`
+	SortDir           string `q:"sort_dir"`
 }
 
 // List returns a Pager which allows you to iterate over a collection of
 // floating IP resources. It accepts a ListOpts struct, which allows you to
 // filter and sort the returned collection for greater efficiency.
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	q := make(map[string]string)
-	if opts.ID != "" {
-		q["id"] = opts.ID
+	q, err := gophercloud.BuildQueryString(&opts)
+	if err != nil {
+		return pagination.Pager{Err: err}
 	}
-	if opts.FloatingNetworkID != "" {
-		q["floating_network_id"] = opts.FloatingNetworkID
-	}
-	if opts.FixedIP != "" {
-		q["fixed_ip_address"] = opts.FixedIP
-	}
-	if opts.FloatingIP != "" {
-		q["floating_ip_address"] = opts.FloatingIP
-	}
-	if opts.TenantID != "" {
-		q["tenant_id"] = opts.TenantID
-	}
-	if opts.Marker != "" {
-		q["marker"] = opts.Marker
-	}
-	if opts.Limit != 0 {
-		q["limit"] = strconv.Itoa(opts.Limit)
-	}
-	if opts.SortKey != "" {
-		q["sort_key"] = opts.SortKey
-	}
-	if opts.SortDir != "" {
-		q["sort_dir"] = opts.SortDir
-	}
-
-	u := rootURL(c) + utils.BuildQuery(q)
+	u := rootURL(c) + q.String()
 	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
 		return FloatingIPPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	})

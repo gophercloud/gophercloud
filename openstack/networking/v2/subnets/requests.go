@@ -3,7 +3,6 @@ package subnets
 import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -36,9 +35,13 @@ type ListOpts struct {
 // administrative rights.
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	// Build query parameters
+	query, err := gophercloud.BuildQueryString(&opts)
+	if err != nil {
+		return pagination.Pager{Err: err}
+	}
+	url := listURL(c) + query.String()
 
-	u := listURL(c) + utils.BuildQuery(q)
-	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
+	return pagination.NewPager(c, url, func(r pagination.LastHTTPResponse) pagination.Page {
 		return SubnetPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	})
 }

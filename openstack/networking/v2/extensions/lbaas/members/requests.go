@@ -1,11 +1,8 @@
 package members
 
 import (
-	"strconv"
-
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -15,18 +12,18 @@ import (
 // sort by a particular network attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	Status       string
-	Weight       int
-	AdminStateUp *bool
-	TenantID     string
-	PoolID       string
-	Address      string
-	ProtocolPort int
-	ID           string
-	Limit        int
-	Marker       string
-	SortKey      string
-	SortDir      string
+	Status       string `q:"status"`
+	Weight       int    `q:"weight"`
+	AdminStateUp *bool  `q:"admin_state_up"`
+	TenantID     string `q:"tenant_id"`
+	PoolID       string `q:"pool_id"`
+	Address      string `q:"address"`
+	ProtocolPort int    `q:"protocol_port"`
+	ID           string `q:"id"`
+	Limit        int    `q:"limit"`
+	Marker       string `q:"marker"`
+	SortKey      string `q:"sort_key"`
+	SortDir      string `q:"sort_dir"`
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -36,47 +33,11 @@ type ListOpts struct {
 // Default policy settings return only those pools that are owned by the
 // tenant who submits the request, unless an admin user submits the request.
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	q := make(map[string]string)
-
-	if opts.Status != "" {
-		q["status"] = opts.Status
+	q, err := gophercloud.BuildQueryString(&opts)
+	if err != nil {
+		return pagination.Pager{Err: err}
 	}
-	if opts.Weight != 0 {
-		q["weight"] = strconv.Itoa(opts.Weight)
-	}
-	if opts.PoolID != "" {
-		q["pool_id"] = opts.PoolID
-	}
-	if opts.Address != "" {
-		q["address"] = opts.Address
-	}
-	if opts.TenantID != "" {
-		q["tenant_id"] = opts.TenantID
-	}
-	if opts.AdminStateUp != nil {
-		q["admin_state_up"] = strconv.FormatBool(*opts.AdminStateUp)
-	}
-	if opts.ProtocolPort != 0 {
-		q["protocol_port"] = strconv.Itoa(opts.ProtocolPort)
-	}
-	if opts.ID != "" {
-		q["id"] = opts.ID
-	}
-	if opts.Marker != "" {
-		q["marker"] = opts.Marker
-	}
-	if opts.Limit != 0 {
-		q["limit"] = strconv.Itoa(opts.Limit)
-	}
-	if opts.SortKey != "" {
-		q["sort_key"] = opts.SortKey
-	}
-	if opts.SortDir != "" {
-		q["sort_dir"] = opts.SortDir
-	}
-
-	u := rootURL(c) + utils.BuildQuery(q)
-
+	u := rootURL(c) + q.String()
 	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
 		return MemberPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	})

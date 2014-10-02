@@ -2,11 +2,9 @@ package networks
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -23,16 +21,16 @@ type networkOpts struct {
 // by a particular network attribute. SortDir sets the direction, and is either
 // `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	Status       string
-	Name         string
-	AdminStateUp *bool
-	TenantID     string
-	Shared       *bool
-	ID           string
-	Marker       string
-	Limit        int
-	SortKey      string
-	SortDir      string
+	Status       string `q:"status"`
+	Name         string `q:"name"`
+	AdminStateUp *bool  `q:"admin_state_up"`
+	TenantID     string `q:"tenant_id"`
+	Shared       *bool  `q:"shared"`
+	ID           string `q:"id"`
+	Marker       string `q:"marker"`
+	Limit        int    `q:"limit"`
+	SortKey      string `q:"sort_key"`
+	SortDir      string `q:"sort_dir"`
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -40,39 +38,11 @@ type ListOpts struct {
 // the returned collection for greater efficiency.
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	// Build query parameters
-	q := make(map[string]string)
-	if opts.Status != "" {
-		q["status"] = opts.Status
+	q, err := gophercloud.BuildQueryString(&opts)
+	if err != nil {
+		return pagination.Pager{Err: err}
 	}
-	if opts.Name != "" {
-		q["name"] = opts.Name
-	}
-	if opts.AdminStateUp != nil {
-		q["admin_state_up"] = strconv.FormatBool(*opts.AdminStateUp)
-	}
-	if opts.TenantID != "" {
-		q["tenant_id"] = opts.TenantID
-	}
-	if opts.Shared != nil {
-		q["shared"] = strconv.FormatBool(*opts.Shared)
-	}
-	if opts.ID != "" {
-		q["id"] = opts.ID
-	}
-	if opts.Marker != "" {
-		q["marker"] = opts.Marker
-	}
-	if opts.Limit != 0 {
-		q["limit"] = strconv.Itoa(opts.Limit)
-	}
-	if opts.SortKey != "" {
-		q["sort_key"] = opts.SortKey
-	}
-	if opts.SortDir != "" {
-		q["sort_dir"] = opts.SortDir
-	}
-
-	u := listURL(c) + utils.BuildQuery(q)
+	u := listURL(c) + q.String()
 	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
 		return NetworkPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	})
