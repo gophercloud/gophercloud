@@ -55,7 +55,7 @@ func createMember(t *testing.T, poolID string) string {
 }
 
 func listMembers(t *testing.T) {
-	members.List(base.Client, members.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := members.List(base.Client, members.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		memberList, err := members.ExtractMembers(page)
 		if err != nil {
 			t.Errorf("Failed to extract members: %v", err)
@@ -68,6 +68,8 @@ func listMembers(t *testing.T) {
 
 		return true, nil
 	})
+
+	th.AssertNoErr(t, err)
 }
 
 func updateMember(t *testing.T, memberID string) {
