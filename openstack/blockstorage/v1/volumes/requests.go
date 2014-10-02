@@ -17,7 +17,7 @@ type CreateOpts struct {
 	VolumeType                       string
 }
 
-func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*Volume, error) {
+func Create(client *gophercloud.ServiceClient, opts *CreateOpts) CreateResult {
 
 	type volume struct {
 		Availability *string           `json:"availability_zone,omitempty"`
@@ -48,42 +48,43 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (*Volume, error)
 	reqBody.Volume.SourceVolID = utils.MaybeString(opts.SourceVolID)
 	reqBody.Volume.VolumeType = utils.MaybeString(opts.VolumeType)
 
-	type response struct {
-		Volume Volume `json:"volume"`
-	}
-
-	var respBody response
-
-	_, err := perigee.Request("POST", volumesURL(client), perigee.Options{
+	var res CreateResult
+	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{200, 201},
 		ReqBody:     &reqBody,
-		Results:     &respBody,
+		Results:     &res.Resp,
+		OkCodes:     []int{200, 201},
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &respBody.Volume, nil
+	return res
 }
 
-func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
+// ListOpts holds options for listing volumes. It is passed to the volumes.List function.
+type ListOpts struct {
+	// AllTenants is an admin-only option. Set it to true to see a tenant volumes.
+	AllTenants bool
+	// List only volumes that contain Metadata.
+	Metadata map[string]string
+	// List only volumes that have Name as the display name.
+	Name string
+	// List only volumes that have a status of Status.
+	Status string
+}
 
+func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
 		return ListResult{pagination.SinglePageBase(r)}
 	}
-
-	return pagination.NewPager(client, volumesURL(client), createPage)
+	return pagination.NewPager(client, listURL(client), createPage)
 }
 
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var gr GetResult
-	_, err := perigee.Request("GET", volumeURL(client, id), perigee.Options{
-		Results:     &gr.r,
+	var res GetResult
+	_, res.Err = perigee.Request("GET", getURL(client, id), perigee.Options{
+		Results:     &res.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
 	})
-	gr.err = err
-	return gr
+	return res
 }
 
 type UpdateOpts struct {
@@ -92,7 +93,7 @@ type UpdateOpts struct {
 	Metadata    map[string]string
 }
 
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Volume, error) {
+func Update(client *gophercloud.ServiceClient, id string, opts *UpdateOpts) UpdateResult {
 	type update struct {
 		Description *string           `json:"display_description,omitempty"`
 		Metadata    map[string]string `json:"metadata,omitempty"`
@@ -110,29 +111,23 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (*Vol
 	reqBody.Volume.Description = utils.MaybeString(opts.Description)
 	reqBody.Volume.Name = utils.MaybeString(opts.Name)
 
-	type response struct {
-		Volume Volume `json:"volume"`
-	}
+	var res UpdateResult
 
-	var respBody response
-
-	_, err := perigee.Request("PUT", volumeURL(client, id), perigee.Options{
+	_, res.Err = perigee.Request("PUT", updateURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 		ReqBody:     &reqBody,
-		Results:     &respBody,
+		Results:     &res.Resp,
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &respBody.Volume, nil
+	return res
 
 }
 
-func Delete(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("DELETE", volumeURL(client, id), perigee.Options{
+func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
+	var res DeleteResult
+	_, res.Err = perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{204},
 	})
-	return err
+	return res
 }

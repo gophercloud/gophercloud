@@ -3,6 +3,7 @@ package volumes
 import (
 	"fmt"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 
 	"github.com/mitchellh/mapstructure"
@@ -22,18 +23,6 @@ type Volume struct {
 	Metadata         map[string]string `mapstructure:"metadata"`
 	ID               string            `mapstructure:"id"`
 	Size             int               `mapstructure:"size"`
-}
-
-// ListOpts holds options for listing volumes. It is passed to the volumes.List function.
-type ListOpts struct {
-	// AllTenants is an admin-only option. Set it to true to see a tenant volumes.
-	AllTenants bool
-	// List only volumes that contain Metadata.
-	Metadata map[string]string
-	// List only volumes that have Name as the display name.
-	Name string
-	// List only volumes that have a status of Status.
-	Status string
 }
 
 // ListResult is a *http.Response that is returned from a call to the List function.
@@ -60,24 +49,36 @@ func ExtractVolumes(page pagination.Page) ([]Volume, error) {
 	return response.Volumes, err
 }
 
-type GetResult struct {
-	err error
-	r   map[string]interface{}
+type commonResult struct {
+	gophercloud.CommonResult
 }
 
 // ExtractVolume extracts and returns the Volume from a 'Get' request.
-func (gr GetResult) ExtractVolume() (*Volume, error) {
-	if gr.err != nil {
-		return nil, gr.err
+func (r commonResult) Extract() (*Volume, error) {
+	if r.Err != nil {
+		return nil, r.Err
 	}
 
-	var response struct {
+	var res struct {
 		Volume *Volume `json:"volume"`
 	}
 
-	err := mapstructure.Decode(gr.r, &response)
+	err := mapstructure.Decode(r.Resp, &res)
 	if err != nil {
-		return nil, fmt.Errorf("volumes: Error decoding volumes.GetResult: %v", err)
+		return nil, fmt.Errorf("volumes: Error decoding volumes.commonResult: %v", err)
 	}
-	return response.Volume, nil
+	return res.Volume, nil
 }
+
+type GetResult struct {
+	commonResult
+}
+
+type CreateResult struct {
+	commonResult
+}
+type UpdateResult struct {
+	commonResult
+}
+
+type DeleteResult commonResult

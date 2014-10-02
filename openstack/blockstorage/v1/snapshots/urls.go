@@ -2,10 +2,26 @@ package snapshots
 
 import "github.com/rackspace/gophercloud"
 
-func snapshotsURL(c *gophercloud.ServiceClient) string {
+func createURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("snapshots")
 }
 
-func snapshotURL(c *gophercloud.ServiceClient, id string) string {
+func deleteURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("snapshots", id)
+}
+
+func getURL(c *gophercloud.ServiceClient, id string) string {
+	return deleteURL(c, id)
+}
+
+func listURL(c *gophercloud.ServiceClient) string {
+	return createURL(c)
+}
+
+func metadataURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("snapshots", id, "metadata")
+}
+
+func updateURL(c *gophercloud.ServiceClient, id string) string {
+	return metadataURL(c, id)
 }
