@@ -145,6 +145,44 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
 
+func TestUpdateMetadata(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/snapshots/123/metadata", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `
+		{
+			"metadata": {
+				"key": "v1"
+			}
+		}
+		`)
+
+		fmt.Fprintf(w, `
+			{
+				"metadata": {
+					"key": "v1"
+				}
+			}
+		`)
+	})
+
+	expected := map[string]interface{}{"key": "v1"}
+
+	options := &UpdateMetadataOpts{
+		Metadata: map[string]interface{}{
+			"key": "v1",
+		},
+	}
+	actual, err := UpdateMetadata(ServiceClient(), "123", options).ExtractMetadata()
+
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, actual, expected)
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

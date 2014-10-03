@@ -60,9 +60,20 @@ func ExtractSnapshots(page pagination.Page) ([]Snapshot, error) {
 	return response.Snapshots, err
 }
 
-// UpdateResult contains the response body and error from an Update request.
-type UpdateResult struct {
+// UpdateMetadataResult contains the response body and error from an UpdateMetadata request.
+type UpdateMetadataResult struct {
 	commonResult
+}
+
+// ExtractMetadata returns the metadata from a response from snapshots.UpdateMetadata.
+func (r UpdateMetadataResult) ExtractMetadata() (map[string]interface{}, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	m := r.Resp["metadata"].(map[string]interface{})
+
+	return m, nil
 }
 
 type commonResult struct {

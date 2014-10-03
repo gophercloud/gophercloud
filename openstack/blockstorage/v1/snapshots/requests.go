@@ -104,35 +104,26 @@ func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
 // UpdateOpts contain options for updating an existing Snapshot. This object is
 // passed to the snapshots.Update function. For more information about the
 // parameters, see the Snapshot object.
-type UpdateOpts struct {
-	Description string
-	Name        string
+type UpdateMetadataOpts struct {
+	Metadata map[string]interface{}
 }
 
 // Update will update the Snapshot with provided information. To extract the updated
-// Snapshot from the response, call the Extract method on the UpdateResult.
-func Update(client *gophercloud.ServiceClient, id string, opts *UpdateOpts) UpdateResult {
-	type update struct {
-		Description *string `json:"display_description,omitempty"`
-		Name        *string `json:"display_name,omitempty"`
-	}
-
+// Snapshot from the response, call the ExtractMetadata method on the UpdateResult.
+func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts *UpdateMetadataOpts) UpdateMetadataResult {
 	type request struct {
-		Volume update `json:"snapshot"`
+		Metadata map[string]interface{} `json:"metadata,omitempty"`
 	}
 
-	reqBody := request{
-		Volume: update{},
-	}
+	reqBody := request{}
 
-	reqBody.Volume.Description = utils.MaybeString(opts.Description)
-	reqBody.Volume.Name = utils.MaybeString(opts.Name)
+	reqBody.Metadata = opts.Metadata
 
-	var res UpdateResult
+	var res UpdateMetadataResult
 
-	_, res.Err = perigee.Request("PUT", updateURL(client, id), perigee.Options{
+	_, res.Err = perigee.Request("PUT", updateMetadataURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{202, 204},
+		OkCodes:     []int{200},
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 	})

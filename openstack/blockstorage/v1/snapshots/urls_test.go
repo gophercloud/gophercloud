@@ -43,8 +43,8 @@ func TestMetadataURL(t *testing.T) {
 	th.AssertEquals(t, expected, actual)
 }
 
-func TestUpdateURL(t *testing.T) {
-	actual := updateURL(endpointClient(), "foo")
+func TestUpdateMetadataURL(t *testing.T) {
+	actual := updateMetadataURL(endpointClient(), "foo")
 	expected := endpoint + "snapshots/foo/metadata"
 	th.AssertEquals(t, expected, actual)
 }

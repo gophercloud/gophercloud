@@ -22,6 +22,6 @@ func metadataURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("snapshots", id, "metadata")
 }
 
-func updateURL(c *gophercloud.ServiceClient, id string) string {
+func updateMetadataURL(c *gophercloud.ServiceClient, id string) string {
 	return metadataURL(c, id)
 }
