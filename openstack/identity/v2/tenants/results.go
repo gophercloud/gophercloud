@@ -1,6 +1,8 @@
 package tenants
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -70,6 +72,7 @@ func ExtractTenants(page pagination.Page) ([]Tenant, error) {
 		Tenants []Tenant `mapstructure:"tenants"`
 	}
 
+	fmt.Printf("Decode %#v => %#v\n", casted, response)
 	err := mapstructure.Decode(casted, &response)
 	return response.Tenants, err
 }
