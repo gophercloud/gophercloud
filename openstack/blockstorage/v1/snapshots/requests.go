@@ -2,7 +2,6 @@ package snapshots
 
 import (
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 
 	"github.com/racker/perigee"
@@ -39,9 +38,9 @@ func Create(client *gophercloud.ServiceClient, opts *CreateOpts) CreateResult {
 		Snapshot: snapshot{},
 	}
 
-	reqBody.Snapshot.Description = utils.MaybeString(opts.Description)
-	reqBody.Snapshot.Name = utils.MaybeString(opts.Name)
-	reqBody.Snapshot.VolumeID = utils.MaybeString(opts.VolumeID)
+	reqBody.Snapshot.Description = gophercloud.MaybeString(opts.Description)
+	reqBody.Snapshot.Name = gophercloud.MaybeString(opts.Name)
+	reqBody.Snapshot.VolumeID = gophercloud.MaybeString(opts.VolumeID)
 
 	reqBody.Snapshot.Force = opts.Force
 

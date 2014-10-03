@@ -21,6 +21,13 @@ func MaybeString(original string) *string {
 	return nil
 }
 
+func MaybeInt(original int) *int {
+	if original != 0 {
+		return &original
+	}
+	return nil
+}
+
 var t time.Time
 
 func isZero(v reflect.Value) bool {

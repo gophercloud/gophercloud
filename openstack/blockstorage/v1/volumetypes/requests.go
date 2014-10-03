@@ -3,7 +3,6 @@ package volumetypes
 import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -31,7 +30,7 @@ func Create(client *gophercloud.ServiceClient, opts *CreateOpts) CreateResult {
 		VolumeType: volumeType{},
 	}
 
-	reqBody.VolumeType.Name = utils.MaybeString(opts.Name)
+	reqBody.VolumeType.Name = gophercloud.MaybeString(opts.Name)
 	reqBody.VolumeType.ExtraSpecs = opts.ExtraSpecs
 
 	var res CreateResult

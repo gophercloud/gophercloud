@@ -2,7 +2,6 @@ package volumes
 
 import (
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 
 	"github.com/racker/perigee"
@@ -45,14 +44,14 @@ func Create(client *gophercloud.ServiceClient, opts *CreateOpts) CreateResult {
 		Volume: volume{},
 	}
 
-	reqBody.Volume.Availability = utils.MaybeString(opts.Availability)
-	reqBody.Volume.Description = utils.MaybeString(opts.Description)
-	reqBody.Volume.ImageID = utils.MaybeString(opts.ImageID)
-	reqBody.Volume.Name = utils.MaybeString(opts.Name)
-	reqBody.Volume.Size = utils.MaybeInt(opts.Size)
-	reqBody.Volume.SnapshotID = utils.MaybeString(opts.SnapshotID)
-	reqBody.Volume.SourceVolID = utils.MaybeString(opts.SourceVolID)
-	reqBody.Volume.VolumeType = utils.MaybeString(opts.VolumeType)
+	reqBody.Volume.Availability = gophercloud.MaybeString(opts.Availability)
+	reqBody.Volume.Description = gophercloud.MaybeString(opts.Description)
+	reqBody.Volume.ImageID = gophercloud.MaybeString(opts.ImageID)
+	reqBody.Volume.Name = gophercloud.MaybeString(opts.Name)
+	reqBody.Volume.Size = gophercloud.MaybeInt(opts.Size)
+	reqBody.Volume.SnapshotID = gophercloud.MaybeString(opts.SnapshotID)
+	reqBody.Volume.SourceVolID = gophercloud.MaybeString(opts.SourceVolID)
+	reqBody.Volume.VolumeType = gophercloud.MaybeString(opts.VolumeType)
 
 	var res CreateResult
 	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
@@ -136,8 +135,8 @@ func Update(client *gophercloud.ServiceClient, id string, opts *UpdateOpts) Upda
 		Volume: update{},
 	}
 
-	reqBody.Volume.Description = utils.MaybeString(opts.Description)
-	reqBody.Volume.Name = utils.MaybeString(opts.Name)
+	reqBody.Volume.Description = gophercloud.MaybeString(opts.Description)
+	reqBody.Volume.Name = gophercloud.MaybeString(opts.Name)
 
 	var res UpdateResult
 

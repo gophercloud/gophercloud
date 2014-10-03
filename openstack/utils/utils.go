@@ -71,17 +71,3 @@ func BuildQuery(params map[string]string) string {
 	query = query[:len(query)-1]
 	return query
 }
-
-func MaybeString(original string) *string {
-	if original != "" {
-		return &original
-	}
-	return nil
-}
-
-func MaybeInt(original int) *int {
-	if original != 0 {
-		return &original
-	}
-	return nil
-}
