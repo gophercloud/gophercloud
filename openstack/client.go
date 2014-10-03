@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/rackspace/gophercloud"
-	identity2 "github.com/rackspace/gophercloud/openstack/identity/v2"
+	tokens2 "github.com/rackspace/gophercloud/openstack/identity/v2/tokens"
 	endpoints3 "github.com/rackspace/gophercloud/openstack/identity/v3/endpoints"
 	services3 "github.com/rackspace/gophercloud/openstack/identity/v3/services"
 	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
@@ -99,25 +99,27 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		v2Client.Endpoint = endpoint
 	}
 
-	result, err := identity2.Authenticate(v2Client, options)
+	result := tokens2.Create(v2client, options)
+
+	token, err := result.ExtractToken()
 	if err != nil {
 		return err
 	}
 
-	token, err := identity2.GetToken(result)
+	catalog, err := result.ExtractServiceCatalog()
 	if err != nil {
 		return err
 	}
 
 	client.TokenID = token.ID
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
-		return v2endpointLocator(result, opts)
+		return v2endpointLocator(catalog, opts)
 	}
 
 	return nil
 }
 
-func v2endpointLocator(authResults identity2.AuthResults, opts gophercloud.EndpointOpts) (string, error) {
+func v2endpointLocator(catalog tokens2.ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
 	catalog, err := identity2.GetServiceCatalog(authResults)
 	if err != nil {
 		return "", err
