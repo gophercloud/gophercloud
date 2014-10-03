@@ -1,22 +1,28 @@
 package volumes
 
 import (
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
+
+	"github.com/racker/perigee"
 )
 
+// CreateOpts contains options for creating a Volume. This object is passed to
+// the volumes.Create function. For more information about these parameters,
+// see the Volume object.
 type CreateOpts struct {
-	Availability                     string
-	Description                      string
-	Metadata                         map[string]string
-	Name                             string
-	Size                             int
-	SnapshotID, SourceVolID, ImageID string
-	VolumeType                       string
+	Availability                     string            // OPTIONAL
+	Description                      string            // OPTIONAL
+	Metadata                         map[string]string // OPTIONAL
+	Name                             string            // OPTIONAL
+	Size                             int               // REQUIRED
+	SnapshotID, SourceVolID, ImageID string            // REQUIRED (one of them)
+	VolumeType                       string            // OPTIONAL
 }
 
+// Create will create a new Volume based on the values in CreateOpts. To extract
+// the Volume object from the response, call the Extract method on the CreateResult.
 func Create(client *gophercloud.ServiceClient, opts *CreateOpts) CreateResult {
 
 	type volume struct {
@@ -58,25 +64,17 @@ func Create(client *gophercloud.ServiceClient, opts *CreateOpts) CreateResult {
 	return res
 }
 
-// ListOpts holds options for listing volumes. It is passed to the volumes.List function.
-type ListOpts struct {
-	// AllTenants is an admin-only option. Set it to true to see all tenant volumes.
-	AllTenants bool
-	// List only volumes that contain Metadata.
-	Metadata map[string]string
-	// List only volumes that have Name as the display name.
-	Name string
-	// List only volumes that have a status of Status.
-	Status string
+// Delete will delete the existing Volume with the provided ID.
+func Delete(client *gophercloud.ServiceClient, id string) error {
+	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
+		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{202, 204},
+	})
+	return err
 }
 
-func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
-	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		return ListResult{pagination.SinglePageBase(r)}
-	}
-	return pagination.NewPager(client, listURL(client), createPage)
-}
-
+// Get retrieves the Volume with the provided ID. To extract the Volume object from
+// the response, call the Extract method on the GetResult.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = perigee.Request("GET", getURL(client, id), perigee.Options{
@@ -87,12 +85,34 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	return res
 }
 
-type UpdateOpts struct {
-	Name        string
-	Description string
-	Metadata    map[string]string
+// ListOpts holds options for listing Volumes. It is passed to the volumes.List
+// function.
+type ListOpts struct {
+	AllTenants bool              // admin-only option. Set it to true to see all tenant volumes.
+	Metadata   map[string]string // List only volumes that contain Metadata.
+	Name       string            // List only volumes that have Name as the display name.
+	Status     string            // List only volumes that have a status of Status.
 }
 
+// List returns Volumes optionally limited by the conditions provided in ListOpts.
+func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
+	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
+		return ListResult{pagination.SinglePageBase(r)}
+	}
+	return pagination.NewPager(client, listURL(client), createPage)
+}
+
+// UpdateOpts contain options for updating an existing Volume. This object is passed
+// to the volumes.Update function. For more information about the parameters, see
+// the Volume object.
+type UpdateOpts struct {
+	Name        string            // OPTIONAL
+	Description string            // OPTIONAL
+	Metadata    map[string]string // OPTIONAL
+}
+
+// Update will update the Volume with provided information. To extract the updated
+// Volume from the response, call the Extract method on the UpdateResult.
 func Update(client *gophercloud.ServiceClient, id string, opts *UpdateOpts) UpdateResult {
 	type update struct {
 		Description *string           `json:"display_description,omitempty"`
@@ -120,13 +140,4 @@ func Update(client *gophercloud.ServiceClient, id string, opts *UpdateOpts) Upda
 		Results:     &res.Resp,
 	})
 	return res
-
-}
-
-func Delete(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{202, 204},
-	})
-	return err
 }
