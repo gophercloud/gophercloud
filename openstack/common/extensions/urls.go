@@ -2,10 +2,12 @@ package extensions
 
 import "github.com/rackspace/gophercloud"
 
-func extensionURL(c *gophercloud.ServiceClient, name string) string {
+// ExtensionURL generates the URL for an extension resource by name.
+func ExtensionURL(c *gophercloud.ServiceClient, name string) string {
 	return c.ServiceURL("extensions", name)
 }
 
-func listExtensionURL(c *gophercloud.ServiceClient) string {
+// ListExtensionURL generates the URL for the extensions resource collection.
+func ListExtensionURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("extensions")
 }
