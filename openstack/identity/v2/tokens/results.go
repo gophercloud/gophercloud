@@ -76,6 +76,10 @@ type CreateResult struct {
 
 // ExtractToken returns the just-created Token from a CreateResult.
 func (result CreateResult) ExtractToken() (*Token, error) {
+	if result.Err != nil {
+		return nil, result.Err
+	}
+
 	var response struct {
 		Access struct {
 			Token struct {
@@ -105,6 +109,10 @@ func (result CreateResult) ExtractToken() (*Token, error) {
 
 // ExtractServiceCatalog returns the ServiceCatalog that was generated along with the user's Token.
 func (result CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
+	if result.Err != nil {
+		return nil, result.Err
+	}
+
 	var response struct {
 		Access struct {
 			Entries []CatalogEntry `mapstructure:"serviceCatalog"`

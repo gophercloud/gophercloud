@@ -127,7 +127,7 @@ func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr err
 		fmt.Fprintf(w, `{}`)
 	})
 
-	_, actualErr := Create(&client, options).ExtractToken()
+	actualErr := Create(&client, options).Err
 	th.CheckEquals(t, expectedErr, actualErr)
 }
 
@@ -215,4 +215,54 @@ func TestCreateTokenWithTenantName(t *testing.T) {
       }
     }
   `))
+}
+
+func TestProhibitUserID(t *testing.T) {
+	options := gophercloud.AuthOptions{
+		Username: "me",
+		UserID:   "1234",
+		Password: "thing",
+	}
+	tokenPostErr(t, options, ErrUserIDProvided)
+}
+
+func TestProhibitDomainID(t *testing.T) {
+	options := gophercloud.AuthOptions{
+		Username: "me",
+		Password: "thing",
+		DomainID: "1234",
+	}
+	tokenPostErr(t, options, ErrDomainIDProvided)
+}
+
+func TestProhibitDomainName(t *testing.T) {
+	options := gophercloud.AuthOptions{
+		Username:   "me",
+		Password:   "thing",
+		DomainName: "wat",
+	}
+	tokenPostErr(t, options, ErrDomainNameProvided)
+}
+
+func TestRequireUsername(t *testing.T) {
+	options := gophercloud.AuthOptions{
+		Password: "thing",
+	}
+	tokenPostErr(t, options, ErrUsernameRequired)
+}
+
+func TestProhibitBothPasswordAndAPIKey(t *testing.T) {
+	options := gophercloud.AuthOptions{
+		Username: "me",
+		Password: "thing",
+		APIKey:   "123412341234",
+	}
+	tokenPostErr(t, options, ErrPasswordOrAPIKey)
+}
+
+func TestRequirePasswordOrAPIKey(t *testing.T) {
+	options := gophercloud.AuthOptions{
+		Username: "me",
+	}
+	tokenPostErr(t, options, ErrPasswordOrAPIKey)
 }
