@@ -88,14 +88,22 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 // ListOpts holds options for listing Volumes. It is passed to the volumes.List
 // function.
 type ListOpts struct {
-	AllTenants bool              // admin-only option. Set it to true to see all tenant volumes.
-	Metadata   map[string]string // List only volumes that contain Metadata.
-	Name       string            // List only volumes that have Name as the display name.
-	Status     string            // List only volumes that have a status of Status.
+	AllTenants bool              `q:"all_tenants"` // admin-only option. Set it to true to see all tenant volumes.
+	Metadata   map[string]string `q:"metadata"`    // List only volumes that contain Metadata.
+	Name       string            `q:"name"`        // List only volumes that have Name as the display name.
+	Status     string            `q:"status"`      // List only volumes that have a status of Status.
 }
 
 // List returns Volumes optionally limited by the conditions provided in ListOpts.
 func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
+	url := listURL(client)
+	if opts != nil {
+		query, err := gophercloud.BuildQueryString(opts)
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query.String()
+	}
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
 		return ListResult{pagination.SinglePageBase(r)}
 	}
