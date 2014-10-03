@@ -16,7 +16,7 @@ func TestEnumerateTenants(t *testing.T) {
 	t.Logf("Tenants to which your current token grants access:")
 	count := 0
 	err := tenants2.List(service, nil).EachPage(func(page pagination.Page) (bool, error) {
-		t.Logf("--- Page %d ---", count)
+		t.Logf("--- Page %02d ---", count)
 
 		tenants, err := tenants2.ExtractTenants(page)
 		th.AssertNoErr(t, err)
