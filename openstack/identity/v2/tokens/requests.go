@@ -10,18 +10,22 @@ import (
 // Generally, rather than interact with this call directly, end users should call openstack.AuthenticatedClient(),
 // which abstracts all of the gory details about navigating service catalogs and such.
 func Create(client *gophercloud.ServiceClient, auth gophercloud.AuthOptions) CreateResult {
+	type passwordCredentials struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	type apiKeyCredentials struct {
+		Username string `json:"username"`
+		APIKey   string `json:"apiKey"`
+	}
+
 	var request struct {
 		Auth struct {
-			PasswordCredentials struct {
-				Username string `json:"username"`
-				Password string `json:"password"`
-			} `json:"passwordCredentials,omitempty"`
-			APIKeyCredentials struct {
-				Username string `json:"username"`
-				APIKey   string `json:"apiKey"`
-			} `json:"RAX-KSKEY:apiKeyCredentials,omitempty"`
-			TenantID   string `json:"tenantId,omitempty"`
-			TenantName string `json:"tenantName,omitempty"`
+			PasswordCredentials *passwordCredentials `json:"passwordCredentials,omitempty"`
+			APIKeyCredentials   *apiKeyCredentials   `json:"RAX-KSKEY:apiKeyCredentials,omitempty"`
+			TenantID            string               `json:"tenantId,omitempty"`
+			TenantName          string               `json:"tenantName,omitempty"`
 		} `json:"auth"`
 	}
 
@@ -48,12 +52,16 @@ func Create(client *gophercloud.ServiceClient, auth gophercloud.AuthOptions) Cre
 		}
 
 		// Username + Password
-		request.Auth.PasswordCredentials.Username = auth.Username
-		request.Auth.PasswordCredentials.Password = auth.Password
+		request.Auth.PasswordCredentials = &passwordCredentials{
+			Username: auth.Username,
+			Password: auth.Password,
+		}
 	} else if auth.APIKey != "" {
 		// API key authentication.
-		request.Auth.APIKeyCredentials.Username = auth.Username
-		request.Auth.APIKeyCredentials.APIKey = auth.APIKey
+		request.Auth.APIKeyCredentials = &apiKeyCredentials{
+			Username: auth.Username,
+			APIKey:   auth.APIKey,
+		}
 	} else {
 		return createErr(ErrPasswordOrAPIKey)
 	}
