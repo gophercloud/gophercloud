@@ -25,7 +25,7 @@ func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/extensions", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/extensions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", TokenID)
 
@@ -33,16 +33,16 @@ func TestList(t *testing.T) {
 
 		fmt.Fprintf(w, `
 {
-    "extensions": [
-        {
-            "updated": "2013-01-20T00:00:00-00:00",
-            "name": "Neutron Service Type Management",
-            "links": [],
-            "namespace": "http://docs.openstack.org/ext/neutron/service-type/api/v1.0",
-            "alias": "service-type",
-            "description": "API for retrieving service providers for Neutron advanced services"
-        }
-    ]
+	"extensions": [
+		{
+			"updated": "2013-01-20T00:00:00-00:00",
+			"name": "Neutron Service Type Management",
+			"links": [],
+			"namespace": "http://docs.openstack.org/ext/neutron/service-type/api/v1.0",
+			"alias": "service-type",
+			"description": "API for retrieving service providers for Neutron advanced services"
+		}
+	]
 }
 			`)
 	})
@@ -90,14 +90,14 @@ func TestGet(t *testing.T) {
 
 		fmt.Fprintf(w, `
 {
-    "extension": {
-        "updated": "2013-02-03T10:00:00-00:00",
-        "name": "agent",
-        "links": [],
-        "namespace": "http://docs.openstack.org/ext/agent/api/v2.0",
-        "alias": "agent",
-        "description": "The agent management extension."
-    }
+	"extension": {
+		"updated": "2013-02-03T10:00:00-00:00",
+		"name": "agent",
+		"links": [],
+		"namespace": "http://docs.openstack.org/ext/agent/api/v2.0",
+		"alias": "agent",
+		"description": "The agent management extension."
+	}
 }
 		`)
 
