@@ -176,3 +176,43 @@ func TestCreateTokenWithAPIKey(t *testing.T) {
     }
   `))
 }
+
+func TestCreateTokenWithTenantID(t *testing.T) {
+	options := gophercloud.AuthOptions{
+		Username: "me",
+		Password: "opensesame",
+		TenantID: "fc394f2ab2df4114bde39905f800dc57",
+	}
+
+	isSuccessful(t, tokenPost(t, options, `
+    {
+      "auth": {
+        "tenantId": "fc394f2ab2df4114bde39905f800dc57",
+        "passwordCredentials": {
+          "username": "me",
+          "password": "opensesame"
+        }
+      }
+    }
+  `))
+}
+
+func TestCreateTokenWithTenantName(t *testing.T) {
+	options := gophercloud.AuthOptions{
+		Username:   "me",
+		Password:   "opensesame",
+		TenantName: "demo",
+	}
+
+	isSuccessful(t, tokenPost(t, options, `
+    {
+      "auth": {
+        "tenantName": "demo",
+        "passwordCredentials": {
+          "username": "me",
+          "password": "opensesame"
+        }
+      }
+    }
+  `))
+}
