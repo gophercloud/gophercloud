@@ -6,16 +6,16 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/testhelper"
+	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 func TestAuthenticatedClientV3(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
 	const ID = "0123456789"
 
-	testhelper.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"versions": {
@@ -37,10 +37,10 @@ func TestAuthenticatedClientV3(t *testing.T) {
 					]
 				}
 			}
-		`, testhelper.Endpoint()+"v3/", testhelper.Endpoint()+"v2.0/")
+		`, th.Endpoint()+"v3/", th.Endpoint()+"v2.0/")
 	})
 
-	testhelper.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("X-Subject-Token", ID)
 
 		w.WriteHeader(http.StatusCreated)
@@ -50,7 +50,7 @@ func TestAuthenticatedClientV3(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		UserID:           "me",
 		Password:         "secret",
-		IdentityEndpoint: testhelper.Endpoint(),
+		IdentityEndpoint: th.Endpoint(),
 	}
 	client, err := AuthenticatedClient(options)
 
@@ -64,10 +64,10 @@ func TestAuthenticatedClientV3(t *testing.T) {
 }
 
 func TestAuthenticatedClientV2(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"versions": {
@@ -89,10 +89,10 @@ func TestAuthenticatedClientV2(t *testing.T) {
 					]
 				}
 			}
-		`, testhelper.Endpoint()+"v3/", testhelper.Endpoint()+"v2.0/")
+		`, th.Endpoint()+"v3/", th.Endpoint()+"v2.0/")
 	})
 
-	testhelper.Mux.HandleFunc("/v2.0/tokens", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/tokens", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"access": {
@@ -159,7 +159,7 @@ func TestAuthenticatedClientV2(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		Username:         "me",
 		Password:         "secret",
-		IdentityEndpoint: testhelper.Endpoint(),
+		IdentityEndpoint: th.Endpoint(),
 	}
 	client, err := AuthenticatedClient(options)
 
