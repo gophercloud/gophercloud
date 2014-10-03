@@ -2,10 +2,10 @@ package services
 
 import "github.com/rackspace/gophercloud"
 
-func getListURL(client *gophercloud.ServiceClient) string {
+func listURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("services")
 }
 
-func getServiceURL(client *gophercloud.ServiceClient, serviceID string) string {
+func serviceURL(client *gophercloud.ServiceClient, serviceID string) string {
 	return client.ServiceURL("services", serviceID)
 }

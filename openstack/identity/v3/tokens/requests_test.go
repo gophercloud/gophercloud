@@ -29,10 +29,14 @@ func authTokenPost(t *testing.T, options gophercloud.AuthOptions, scope *Scope, 
 		testhelper.TestJSONRequest(t, r, requestJSON)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{}`)
+		fmt.Fprintf(w, `{
+			"token": {
+				"expires_at": "2014-10-02T13:45:00.000000Z"
+			}
+		}`)
 	})
 
-	_, err := Create(&client, options, scope)
+	_, err := Create(&client, options, scope).Extract()
 	if err != nil {
 		t.Errorf("Create returned an error: %v", err)
 	}
@@ -50,7 +54,7 @@ func authTokenPostErr(t *testing.T, options gophercloud.AuthOptions, scope *Scop
 		client.Provider.TokenID = "abcdef123456"
 	}
 
-	_, err := Create(&client, options, scope)
+	_, err := Create(&client, options, scope).Extract()
 	if err == nil {
 		t.Errorf("Create did NOT return an error")
 	}
@@ -250,18 +254,21 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 		w.Header().Add("X-Subject-Token", "aaa111")
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{}`)
+		fmt.Fprintf(w, `{
+			"token": {
+				"expires_at": "2014-10-02T13:45:00.000000Z"
+			}
+		}`)
 	})
 
 	options := gophercloud.AuthOptions{UserID: "me", Password: "shhh"}
-	result, err := Create(&client, options, nil)
+	token, err := Create(&client, options, nil).Extract()
 	if err != nil {
-		t.Errorf("Create returned an error: %v", err)
+		t.Fatalf("Create returned an error: %v", err)
 	}
 
-	token, _ := result.TokenID()
-	if token != "aaa111" {
-		t.Errorf("Expected token to be aaa111, but was %s", token)
+	if token.ID != "aaa111" {
+		t.Errorf("Expected token to be aaa111, but was %s", token.ID)
 	}
 }
 
@@ -413,19 +420,14 @@ func TestGetRequest(t *testing.T) {
 		`)
 	})
 
-	result, err := Get(&client, "abcdef12345")
+	token, err := Get(&client, "abcdef12345").Extract()
 	if err != nil {
 		t.Errorf("Info returned an error: %v", err)
 	}
 
-	expires, err := result.ExpiresAt()
-	if err != nil {
-		t.Errorf("Error extracting token expiration time: %v", err)
-	}
-
 	expected, _ := time.Parse(time.UnixDate, "Fri Aug 29 13:10:01 UTC 2014")
-	if expires != expected {
-		t.Errorf("Expected expiration time %s, but was %s", expected.Format(time.UnixDate), expires.Format(time.UnixDate))
+	if token.ExpiresAt != expected {
+		t.Errorf("Expected expiration time %s, but was %s", expected.Format(time.UnixDate), token.ExpiresAt.Format(time.UnixDate))
 	}
 }
 
