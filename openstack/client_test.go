@@ -53,14 +53,8 @@ func TestAuthenticatedClientV3(t *testing.T) {
 		IdentityEndpoint: th.Endpoint(),
 	}
 	client, err := AuthenticatedClient(options)
-
-	if err != nil {
-		t.Fatalf("Unexpected error from AuthenticatedClient: %s", err)
-	}
-
-	if client.TokenID != ID {
-		t.Errorf("Expected token ID to be [%s], but was [%s]", ID, client.TokenID)
-	}
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, ID, client.TokenID)
 }
 
 func TestAuthenticatedClientV2(t *testing.T) {
@@ -162,12 +156,6 @@ func TestAuthenticatedClientV2(t *testing.T) {
 		IdentityEndpoint: th.Endpoint(),
 	}
 	client, err := AuthenticatedClient(options)
-
-	if err != nil {
-		t.Fatalf("Unexpected error from AuthenticatedClient: %s", err)
-	}
-
-	if client.TokenID != "01234567890" {
-		t.Errorf("Expected token ID to be [01234567890], but was [%s]", client.TokenID)
-	}
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, "01234567890", client.TokenID)
 }
