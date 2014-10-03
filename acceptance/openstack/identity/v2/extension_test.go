@@ -32,3 +32,15 @@ func TestEnumerateExtensions(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 }
+
+func TestGetExtension(t *testing.T) {
+	service := authenticatedClient(t)
+
+	ext, err := extensions2.Get(service, "OS-KSCRUD").Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckEquals(t, "OpenStack Keystone User CRUD", ext.Name)
+	th.CheckEquals(t, "http://docs.openstack.org/identity/api/ext/OS-KSCRUD/v1.0", ext.Namespace)
+	th.CheckEquals(t, "OS-KSCRUD", ext.Alias)
+	th.CheckEquals(t, "OpenStack extensions to Keystone v2.0 API enabling User Operations.", ext.Description)
+}
