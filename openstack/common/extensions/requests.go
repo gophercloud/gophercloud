@@ -18,8 +18,8 @@ func Get(c *gophercloud.ServiceClient, alias string) GetResult {
 	return res
 }
 
-// List returns a Pager which allows you to iterate over the full collection of
-// extensions. It does not accept query parameters.
+// List returns a Pager which allows you to iterate over the full collection of extensions.
+// It does not accept query parameters.
 func List(c *gophercloud.ServiceClient) pagination.Pager {
 	return pagination.NewPager(c, listExtensionURL(c), func(r pagination.LastHTTPResponse) pagination.Page {
 		return ExtensionPage{pagination.SinglePageBase(r)}
