@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	common "github.com/rackspace/gophercloud/openstack/common/extensions"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
@@ -44,7 +45,7 @@ func TestList(t *testing.T) {
         }
     ]
 }
-			`)
+      `)
 	})
 
 	count := 0
@@ -58,12 +59,14 @@ func TestList(t *testing.T) {
 
 		expected := []Extension{
 			Extension{
-				Updated:     "2013-01-20T00:00:00-00:00",
-				Name:        "Neutron Service Type Management",
-				Links:       []interface{}{},
-				Namespace:   "http://docs.openstack.org/ext/neutron/service-type/api/v1.0",
-				Alias:       "service-type",
-				Description: "API for retrieving service providers for Neutron advanced services",
+				common.Extension{
+					Updated:     "2013-01-20T00:00:00-00:00",
+					Name:        "Neutron Service Type Management",
+					Links:       []interface{}{},
+					Namespace:   "http://docs.openstack.org/ext/neutron/service-type/api/v1.0",
+					Alias:       "service-type",
+					Description: "API for retrieving service providers for Neutron advanced services",
+				},
 			},
 		}
 
@@ -99,7 +102,7 @@ func TestGet(t *testing.T) {
         "description": "The agent management extension."
     }
 }
-		`)
+    `)
 
 		ext, err := Get(ServiceClient(), "agent").Extract()
 		th.AssertNoErr(t, err)
