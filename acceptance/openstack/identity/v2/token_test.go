@@ -5,29 +5,13 @@ package v2
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/openstack"
 	tokens2 "github.com/rackspace/gophercloud/openstack/identity/v2/tokens"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 func TestAuthenticate(t *testing.T) {
-	// Obtain credentials from the environment.
-	ao, err := utils.AuthOptions()
-	th.AssertNoErr(t, err)
-
-	// Trim out unused fields. Prefer authentication by API key to password.
-	ao.UserID, ao.DomainID, ao.DomainName = "", "", ""
-	if ao.APIKey != "" {
-		ao.Password = ""
-	}
-
-	// Create an unauthenticated client.
-	provider, err := openstack.NewClient(ao.IdentityEndpoint)
-	th.AssertNoErr(t, err)
-
-	// Create a service client.
-	service := openstack.NewIdentityV2(provider)
+	ao := v2AuthOptions(t)
+	service := unauthenticatedClient(t)
 
 	// Authenticated!
 	result := tokens2.Create(service, ao)
@@ -46,7 +30,7 @@ func TestAuthenticate(t *testing.T) {
 
 	t.Logf("Acquired service catalog listing [%d] services", len(catalog.Entries))
 	for i, entry := range catalog.Entries {
-		t.Logf("[%d]: name=[%s], type=[%s]", i, entry.Name, entry.Type)
+		t.Logf("[%02d]: name=[%s], type=[%s]", i, entry.Name, entry.Type)
 		for _, endpoint := range entry.Endpoints {
 			t.Logf("      - region=[%s] publicURL=[%s]", endpoint.Region, endpoint.PublicURL)
 		}
