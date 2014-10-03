@@ -46,10 +46,10 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *Comp
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create server: %s\n", name)
 
-	server, err := servers.Create(client, map[string]interface{}{
-		"flavorRef": choices.FlavorID,
-		"imageRef":  choices.ImageID,
-		"name":      name,
+	server, err := servers.Create(client, servers.CreateOpts{
+		Name:      name,
+		FlavorRef: choices.FlavorID,
+		ImageRef:  choices.ImageID,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
@@ -114,9 +114,7 @@ func TestUpdateServer(t *testing.T) {
 
 	t.Logf("Attempting to rename the server to %s.", alternateName)
 
-	updated, err := servers.Update(client, server.ID, map[string]interface{}{
-		"name": alternateName,
-	}).Extract()
+	updated, err := servers.Update(client, server.ID, servers.UpdateOpts{Name: alternateName}).Extract()
 	if err != nil {
 		t.Fatalf("Unable to rename server: %v", err)
 	}

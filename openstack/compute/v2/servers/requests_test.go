@@ -88,10 +88,10 @@ func TestCreateServer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	actual, err := Create(client, map[string]interface{}{
-		"name":      "derp",
-		"imageRef":  "f90f6034-2570-4974-8351-6b49732ef2eb",
-		"flavorRef": "1",
+	actual, err := Create(client, CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Create error: %v", err)
@@ -154,9 +154,7 @@ func TestUpdateServer(t *testing.T) {
 	})
 
 	client := serviceClient()
-	actual, err := Update(client, "1234asdf", map[string]interface{}{
-		"name": "new-name",
-	}).Extract()
+	actual, err := Update(client, "1234asdf", UpdateOpts{Name: "new-name"}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
 	}
