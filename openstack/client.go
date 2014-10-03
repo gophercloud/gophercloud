@@ -99,7 +99,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		v2Client.Endpoint = endpoint
 	}
 
-	result := tokens2.Create(v2client, options)
+	result := tokens2.Create(v2Client, options)
 
 	token, err := result.ExtractToken()
 	if err != nil {
@@ -119,20 +119,10 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 	return nil
 }
 
-func v2endpointLocator(catalog tokens2.ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
-	catalog, err := identity2.GetServiceCatalog(authResults)
-	if err != nil {
-		return "", err
-	}
-
-	entries, err := catalog.CatalogEntries()
-	if err != nil {
-		return "", err
-	}
-
+func v2endpointLocator(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
 	// Extract Endpoints from the catalog entries that match the requested Type, Name if provided, and Region if provided.
-	var endpoints = make([]identity2.Endpoint, 0, 1)
-	for _, entry := range entries {
+	var endpoints = make([]tokens2.Endpoint, 0, 1)
+	for _, entry := range catalog.Entries {
 		if (entry.Type == opts.Type) && (opts.Name == "" || entry.Name == opts.Name) {
 			for _, endpoint := range entry.Endpoints {
 				if opts.Region == "" || endpoint.Region == opts.Region {
@@ -157,6 +147,8 @@ func v2endpointLocator(catalog tokens2.ServiceCatalog, opts gophercloud.Endpoint
 			return normalizeURL(endpoint.PublicURL), nil
 		case gophercloud.AvailabilityInternal:
 			return normalizeURL(endpoint.InternalURL), nil
+		case gophercloud.AvailabilityAdmin:
+			return normalizeURL(endpoint.AdminURL), nil
 		default:
 			return "", fmt.Errorf("Unexpected availability in endpoint query: %s", opts.Availability)
 		}

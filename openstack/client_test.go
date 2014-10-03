@@ -93,12 +93,12 @@ func TestAuthenticatedClientV2(t *testing.T) {
 	})
 
 	testhelper.Mux.HandleFunc("/v2.0/tokens", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, `
 			{
 				"access": {
 					"token": {
-						"id": "01234567890"
+						"id": "01234567890",
+						"expires": "2014-10-01T10:00:00.000000Z"
 					},
 					"serviceCatalog": [
 						{
