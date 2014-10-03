@@ -49,13 +49,12 @@ func Create(client *gophercloud.ServiceClient, opts *CreateOpts) CreateResult {
 	return res
 }
 
-func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
+func Delete(client *gophercloud.ServiceClient, id string) error {
+	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{204},
+		OkCodes:     []int{202, 204},
 	})
-	return res
+	return err
 }
 
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
@@ -116,7 +115,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts *UpdateOpts) Upda
 
 	_, res.Err = perigee.Request("PUT", updateURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202, 204},
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 	})

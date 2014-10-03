@@ -80,5 +80,3 @@ type CreateResult struct {
 type UpdateResult struct {
 	commonResult
 }
-
-type DeleteResult commonResult

@@ -155,6 +155,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := Delete(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertNoErr(t, res.Err)
+	err := Delete(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertNoErr(t, err)
 }

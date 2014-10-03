@@ -60,7 +60,7 @@ func Create(client *gophercloud.ServiceClient, opts *CreateOpts) CreateResult {
 
 // ListOpts holds options for listing volumes. It is passed to the volumes.List function.
 type ListOpts struct {
-	// AllTenants is an admin-only option. Set it to true to see a tenant volumes.
+	// AllTenants is an admin-only option. Set it to true to see all tenant volumes.
 	AllTenants bool
 	// List only volumes that contain Metadata.
 	Metadata map[string]string
@@ -123,11 +123,10 @@ func Update(client *gophercloud.ServiceClient, id string, opts *UpdateOpts) Upda
 
 }
 
-func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
+func Delete(client *gophercloud.ServiceClient, id string) error {
+	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{204},
+		OkCodes:     []int{202, 204},
 	})
-	return res
+	return err
 }

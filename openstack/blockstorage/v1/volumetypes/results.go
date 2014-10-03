@@ -66,5 +66,3 @@ type GetResult struct {
 type CreateResult struct {
 	commonResult
 }
-
-type DeleteResult commonResult

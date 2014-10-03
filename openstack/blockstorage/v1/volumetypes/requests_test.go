@@ -149,7 +149,7 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	options := CreateOpts{Name: "vol-type-001"}
+	options := &CreateOpts{Name: "vol-type-001"}
 	n, err := Create(ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
@@ -167,6 +167,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := Delete(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertNoErr(t, res.Err)
+	err := Delete(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertNoErr(t, err)
 }

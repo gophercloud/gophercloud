@@ -12,7 +12,7 @@ type CreateOpts struct {
 	Name       string
 }
 
-func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
+func Create(client *gophercloud.ServiceClient, opts *CreateOpts) CreateResult {
 	type volumeType struct {
 		ExtraSpecs map[string]interface{} `json:"extra_specs,omitempty"`
 		Name       *string                `json:"name,omitempty"`
@@ -39,19 +39,17 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	return res
 }
 
-func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
+func Delete(client *gophercloud.ServiceClient, id string) error {
 	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
-	res.Err = err
-	return res
+	return err
 }
 
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	resp, err := perigee.Request("GET", getURL(client, id), perigee.Options{
+	_, err := perigee.Request("GET", getURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 		Results:     &res.Resp,

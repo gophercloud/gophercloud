@@ -3,65 +3,85 @@
 package v1
 
 import (
-	"fmt"
-	"os"
 	"testing"
-	"time"
 
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/blockStorage/v1/snapshots"
+	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/snapshots"
+	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes"
 )
 
-func waitForSnapshot(client *gophercloud.ServiceClient, id string) error {
-	for secondsSlept := 0; secondsSlept < 240; secondsSlept++ {
-		fmt.Printf("Seconds slept waiting for snapshot: %d\n", secondsSlept)
-		gss, err := snapshots.Get(client, id).ExtractSnapshot()
-		if err != nil {
-			return err
-		}
-		if gss.Status == "available" {
-			return nil
-		}
-		if gss.Status == "error" {
-			return fmt.Errorf("Error waiting for snapshot to create. Snapshot status is 'error'.")
-		}
-		time.Sleep(1 * time.Second)
-	}
-	gss, err := snapshots.Get(client, id).ExtractSnapshot()
-	if err != nil {
-		return err
-	}
-	return fmt.Errorf("Time out waiting for snapshot to become available: %+v", gss)
-}
-
 func TestSnapshots(t *testing.T) {
-
-	volumeID := os.Getenv("OS_VOLUME_ID")
-	if volumeID == "" {
-		t.Errorf("Expect OS_VOLUME_ID environment variable. Skipping create and delete snapshot functions.")
-		return
-	}
 
 	client, err := newClient()
 	if err != nil {
 		t.Fatalf("Failed to create Block Storage v1 client: %v", err)
 	}
 
-	css, err := snapshots.Create(client, snapshots.CreateOpts{
+	v, err := volumes.Create(client, &volumes.CreateOpts{
+		Name: "gophercloud-test-volume",
+		Size: 1,
+	}).Extract()
+	if err != nil {
+		t.Fatalf("Failed to create volume: %v\n", err)
+	}
+
+	err = volumes.WaitForStatus(client, v.ID, "available", 120)
+	if err != nil {
+		t.Fatalf("Failed to create volume: %v\n", err)
+	}
+
+	t.Logf("Created volume: %v\n", v)
+
+	ss, err := snapshots.Create(client, &snapshots.CreateOpts{
 		Name:     "gophercloud-test-snapshot",
-		VolumeID: volumeID,
+		VolumeID: v.ID,
+	}).Extract()
+	if err != nil {
+		t.Fatalf("Failed to create snapshot: %v\n", err)
+	}
+
+	err = snapshots.WaitForStatus(client, ss.ID, "available", 120)
+	if err != nil {
+		t.Fatalf("Failed to create snapshot: %v\n", err)
+	}
+
+	t.Logf("Created snapshot: %+v\n", ss)
+
+	err = snapshots.Delete(client, ss.ID)
+	if err != nil {
+		t.Fatalf("Failed to delete snapshot: %v", err)
+	}
+
+	err = gophercloud.WaitFor(120, func() (bool, error) {
+		_, err := snapshots.Get(client, ss.ID).Extract()
+		if err != nil {
+			return true, nil
+		}
+
+		return false, nil
 	})
 	if err != nil {
-		t.Errorf("Failed to create snapshot: %v\n", err)
+		t.Fatalf("Failed to delete snapshot: %v", err)
 	}
 
-	err = waitForSnapshot(client, css.ID)
+	t.Log("Deleted snapshot\n")
+
+	err = volumes.Delete(client, v.ID)
 	if err != nil {
-		t.Errorf("Failed to create snapshot: %v\n", err)
+		t.Errorf("Failed to delete volume: %v", err)
 	}
 
-	err = waitForSnapshot(client, css.ID)
+	err = gophercloud.WaitFor(120, func() (bool, error) {
+		_, err := volumes.Get(client, v.ID).Extract()
+		if err != nil {
+			return true, nil
+		}
 
-	t.Logf("Created snapshots: %+v\n", *css)
+		return false, nil
+	})
+	if err != nil {
+		t.Errorf("Failed to delete volume: %v", err)
+	}
 
+	t.Log("Deleted volume\n")
 }
