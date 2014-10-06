@@ -1,11 +1,8 @@
 package ports
 
 import (
-	"strconv"
-
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -15,22 +12,19 @@ import (
 // by a particular port attribute. SortDir sets the direction, and is either
 // `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	Status          string
-	Name            string
-	AdminStateUp    *bool
-	NetworkID       string
-	TenantID        string
-	DeviceOwner     string
-	MACAddress      string
-	ID              string
-	DeviceID        string
-	BindingHostID   string
-	BindingVIFType  string
-	BindingVNICType string
-	Limit           int
-	Marker          string
-	SortKey         string
-	SortDir         string
+	Status       string `q:"status"`
+	Name         string `q:"name"`
+	AdminStateUp *bool  `q:"admin_state_up"`
+	NetworkID    string `q:"network_id"`
+	TenantID     string `q:"tenant_id"`
+	DeviceOwner  string `q:"device_owner"`
+	MACAddress   string `q:"mac_address"`
+	ID           string `q:"id"`
+	DeviceID     string `q:"device_id"`
+	Limit        int    `q:"limit"`
+	Marker       string `q:"marker"`
+	SortKey      string `q:"sort_key"`
+	SortDir      string `q:"sort_dir"`
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -42,60 +36,12 @@ type ListOpts struct {
 // administrative rights.
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	// Build query parameters
-	q := make(map[string]string)
-	if opts.Status != "" {
-		q["status"] = opts.Status
+	q, err := gophercloud.BuildQueryString(&opts)
+	if err != nil {
+		return pagination.Pager{Err: err}
 	}
-	if opts.Name != "" {
-		q["name"] = opts.Name
-	}
-	if opts.AdminStateUp != nil {
-		q["admin_state_up"] = strconv.FormatBool(*opts.AdminStateUp)
-	}
-	if opts.NetworkID != "" {
-		q["network_id"] = opts.NetworkID
-	}
-	if opts.TenantID != "" {
-		q["tenant_id"] = opts.TenantID
-	}
-	if opts.DeviceOwner != "" {
-		q["device_owner"] = opts.DeviceOwner
-	}
-	if opts.MACAddress != "" {
-		q["mac_address"] = opts.MACAddress
-	}
-	if opts.ID != "" {
-		q["id"] = opts.ID
-	}
-	if opts.DeviceID != "" {
-		q["device_id"] = opts.DeviceID
-	}
-	if opts.BindingHostID != "" {
-		q["binding:host_id"] = opts.BindingHostID
-	}
-	if opts.BindingVIFType != "" {
-		q["binding:vif_type"] = opts.BindingVIFType
-	}
-	if opts.BindingVNICType != "" {
-		q["binding:vnic_type"] = opts.BindingVNICType
-	}
-	if opts.NetworkID != "" {
-		q["network_id"] = opts.NetworkID
-	}
-	if opts.Limit != 0 {
-		q["limit"] = strconv.Itoa(opts.Limit)
-	}
-	if opts.Marker != "" {
-		q["marker"] = opts.Marker
-	}
-	if opts.SortKey != "" {
-		q["sort_key"] = opts.SortKey
-	}
-	if opts.SortDir != "" {
-		q["sort_dir"] = opts.SortDir
-	}
+	u := listURL(c) + q.String()
 
-	u := listURL(c) + utils.BuildQuery(q)
 	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
 		return PortPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	})
@@ -104,12 +50,11 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 // Get retrieves a specific port based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, err := perigee.Request("GET", getURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("GET", getURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		Results:     &res.Resp,
 		OkCodes:     []int{200},
 	})
-	res.Err = err
 	return res
 }
 
@@ -172,14 +117,14 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	}
 
 	// Response
-	_, err := perigee.Request("POST", createURL(c), perigee.Options{
+	_, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{201},
 		DumpReqJson: true,
 	})
-	res.Err = err
+
 	return res
 }
 
@@ -226,23 +171,21 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 
 	// Response
 	var res UpdateResult
-	_, err := perigee.Request("PUT", updateURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("PUT", updateURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{200, 201},
 	})
-	res.Err = err
 	return res
 }
 
 // Delete accepts a unique ID and deletes the port associated with it.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, err := perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Err = err
 	return res
 }

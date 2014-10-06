@@ -14,7 +14,7 @@ func TestTokenURL(t *testing.T) {
 	client := gophercloud.ServiceClient{Endpoint: testhelper.Endpoint()}
 
 	expected := testhelper.Endpoint() + "auth/tokens"
-	actual := getTokenURL(&client)
+	actual := tokenURL(&client)
 	if actual != expected {
 		t.Errorf("Expected URL %s, but was %s", expected, actual)
 	}

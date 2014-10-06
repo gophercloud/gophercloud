@@ -169,15 +169,12 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		v3Client.Endpoint = endpoint
 	}
 
-	result, err := tokens3.Create(v3Client, options, nil)
+	token, err := tokens3.Create(v3Client, options, nil).Extract()
 	if err != nil {
 		return err
 	}
+	client.TokenID = token.ID
 
-	client.TokenID, err = result.TokenID()
-	if err != nil {
-		return err
-	}
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
 		return v3endpointLocator(v3Client, opts)
 	}
@@ -301,6 +298,16 @@ func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 // NewNetworkV2 creates a ServiceClient that may be used with the v2 network package.
 func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("network")
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+}
+
+// NewBlockStorageV1 creates a ServiceClient that may be used to access the v1 block storage service.
+func NewBlockStorageV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("volume")
 	url, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err

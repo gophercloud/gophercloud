@@ -59,13 +59,13 @@ func TestCreateSuccessful(t *testing.T) {
 
 	client := serviceClient()
 
-	result, err := Create(client, EndpointOpts{
+	actual, err := Create(client, EndpointOpts{
 		Availability: gophercloud.AvailabilityPublic,
 		Name:         "the-endiest-of-points",
 		Region:       "underground",
 		URL:          "https://1.2.3.4:9000/",
 		ServiceID:    "asdfasdfasdfasdf",
-	})
+	}).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create an endpoint: %v", err)
 	}
@@ -79,8 +79,8 @@ func TestCreateSuccessful(t *testing.T) {
 		URL:          "https://1.2.3.4:9000/",
 	}
 
-	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("Expected %#v, was %#v", expected, result)
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected %#v, was %#v", expected, actual)
 	}
 }
 
@@ -205,7 +205,7 @@ func TestUpdateEndpoint(t *testing.T) {
 	actual, err := Update(client, "12", EndpointOpts{
 		Name:   "renamed",
 		Region: "somewhere-else",
-	})
+	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error from Update: %v", err)
 	}

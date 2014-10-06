@@ -5,22 +5,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	common "github.com/rackspace/gophercloud/openstack/common/extensions"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
-
-const TokenID = "123"
-
-func ServiceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{
-			TokenID: TokenID,
-		},
-		Endpoint: th.Endpoint(),
-	}
-}
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
@@ -28,7 +17,7 @@ func TestList(t *testing.T) {
 
 	th.Mux.HandleFunc("/extensions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 
@@ -50,7 +39,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	List(ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractExtensions(page)
 		if err != nil {
@@ -86,7 +75,7 @@ func TestGet(t *testing.T) {
 
 	th.Mux.HandleFunc("/extensions/agent", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -104,7 +93,7 @@ func TestGet(t *testing.T) {
 }
     `)
 
-		ext, err := Get(ServiceClient(), "agent").Extract()
+		ext, err := Get(fake.ServiceClient(), "agent").Extract()
 		th.AssertNoErr(t, err)
 
 		th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")

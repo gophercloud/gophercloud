@@ -9,12 +9,11 @@ import (
 // Get retrieves information for a specific extension using its alias.
 func Get(c *gophercloud.ServiceClient, alias string) GetResult {
 	var res GetResult
-	_, err := perigee.Request("GET", ExtensionURL(c, alias), perigee.Options{
+	_, res.Err = perigee.Request("GET", ExtensionURL(c, alias), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		Results:     &res.Resp,
 		OkCodes:     []int{200},
 	})
-	res.Err = err
 	return res
 }
 

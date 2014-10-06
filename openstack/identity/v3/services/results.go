@@ -1,10 +1,51 @@
 package services
 
 import (
+	"fmt"
+
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 
 	"github.com/mitchellh/mapstructure"
 )
+
+type commonResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract interprets a GetResult, CreateResult or UpdateResult as a concrete Service.
+// An error is returned if the original call or the extraction failed.
+func (r commonResult) Extract() (*Service, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res struct {
+		Service `json:"service"`
+	}
+
+	err := mapstructure.Decode(r.Resp, &res)
+	if err != nil {
+		return nil, fmt.Errorf("Error decoding Service: %v", err)
+	}
+
+	return &res.Service, nil
+}
+
+// CreateResult is the deferred result of a Create call.
+type CreateResult struct {
+	commonResult
+}
+
+// GetResult is the deferred result of a Get call.
+type GetResult struct {
+	commonResult
+}
+
+// UpdateResult is the deferred result of an Update call.
+type UpdateResult struct {
+	commonResult
+}
 
 // Service is the result of a list or information query.
 type Service struct {

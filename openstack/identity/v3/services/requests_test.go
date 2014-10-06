@@ -45,7 +45,7 @@ func TestCreateSuccessful(t *testing.T) {
 
 	client := serviceClient()
 
-	result, err := Create(client, "compute")
+	result, err := Create(client, "compute").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error from Create: %v", err)
 	}
@@ -161,7 +161,7 @@ func TestGetSuccessful(t *testing.T) {
 
 	client := serviceClient()
 
-	result, err := Get(client, "12345")
+	result, err := Get(client, "12345").Extract()
 	if err != nil {
 		t.Fatalf("Error fetching service information: %v", err)
 	}
@@ -202,13 +202,13 @@ func TestUpdateSuccessful(t *testing.T) {
 
 	client := serviceClient()
 
-	result, err := Update(client, "12345", "lasermagic")
+	result, err := Update(client, "12345", "lasermagic").Extract()
 	if err != nil {
 		t.Fatalf("Unable to update service: %v", err)
 	}
 
 	if result.ID != "12345" {
-
+		t.Fatalf("Expected ID 12345, was %s", result.ID)
 	}
 }
 

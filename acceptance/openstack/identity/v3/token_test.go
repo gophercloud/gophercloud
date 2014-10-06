@@ -34,15 +34,10 @@ func TestGetToken(t *testing.T) {
 	service := openstack.NewIdentityV3(provider)
 
 	// Use the service to create a token.
-	result, err := tokens3.Create(service, ao, nil)
+	token, err := tokens3.Create(service, ao, nil).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get token: %v", err)
 	}
 
-	token, err := result.TokenID()
-	if err != nil {
-		t.Fatalf("Unable to extract token from response: %v", err)
-	}
-
-	t.Logf("Acquired token: %s", token)
+	t.Logf("Acquired token: %s", token.ID)
 }

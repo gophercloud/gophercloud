@@ -8,7 +8,7 @@ import (
 
 func TestGetListURL(t *testing.T) {
 	client := gophercloud.ServiceClient{Endpoint: "http://localhost:5000/v3/"}
-	url := getListURL(&client)
+	url := listURL(&client)
 	if url != "http://localhost:5000/v3/endpoints" {
 		t.Errorf("Unexpected list URL generated: [%s]", url)
 	}
@@ -16,7 +16,7 @@ func TestGetListURL(t *testing.T) {
 
 func TestGetEndpointURL(t *testing.T) {
 	client := gophercloud.ServiceClient{Endpoint: "http://localhost:5000/v3/"}
-	url := getEndpointURL(&client, "1234")
+	url := endpointURL(&client, "1234")
 	if url != "http://localhost:5000/v3/endpoints/1234" {
 		t.Errorf("Unexpected service URL generated: [%s]", url)
 	}

@@ -1,11 +1,8 @@
 package subnets
 
 import (
-	"strconv"
-
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -15,18 +12,18 @@ import (
 // by a particular subnet attribute. SortDir sets the direction, and is either
 // `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	Name       string
-	EnableDHCP *bool
-	NetworkID  string
-	TenantID   string
-	IPVersion  int
-	GatewayIP  string
-	CIDR       string
-	ID         string
-	Limit      int
-	Marker     string
-	SortKey    string
-	SortDir    string
+	Name       string `q:"name"`
+	EnableDHCP *bool  `q:"enable_dhcp"`
+	NetworkID  string `q:"network_id"`
+	TenantID   string `q:"tenant_id"`
+	IPVersion  int    `q:"ip_version"`
+	GatewayIP  string `q:"gateway_ip"`
+	CIDR       string `q:"cidr"`
+	ID         string `q:"id"`
+	Limit      int    `q:"limit"`
+	Marker     string `q:"marker"`
+	SortKey    string `q:"sort_key"`
+	SortDir    string `q:"sort_dir"`
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -38,46 +35,13 @@ type ListOpts struct {
 // administrative rights.
 func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	// Build query parameters
-	q := make(map[string]string)
-	if opts.Name != "" {
-		q["name"] = opts.Name
+	query, err := gophercloud.BuildQueryString(&opts)
+	if err != nil {
+		return pagination.Pager{Err: err}
 	}
-	if opts.EnableDHCP != nil {
-		q["enable_dhcp"] = strconv.FormatBool(*opts.EnableDHCP)
-	}
-	if opts.NetworkID != "" {
-		q["network_id"] = opts.NetworkID
-	}
-	if opts.TenantID != "" {
-		q["tenant_id"] = opts.TenantID
-	}
-	if opts.IPVersion != 0 {
-		q["ip_version"] = strconv.Itoa(opts.IPVersion)
-	}
-	if opts.GatewayIP != "" {
-		q["gateway_ip"] = opts.GatewayIP
-	}
-	if opts.CIDR != "" {
-		q["cidr"] = opts.CIDR
-	}
-	if opts.ID != "" {
-		q["id"] = opts.ID
-	}
-	if opts.Limit != 0 {
-		q["limit"] = strconv.Itoa(opts.Limit)
-	}
-	if opts.Marker != "" {
-		q["marker"] = opts.Marker
-	}
-	if opts.SortKey != "" {
-		q["sort_key"] = opts.SortKey
-	}
-	if opts.SortDir != "" {
-		q["sort_dir"] = opts.SortDir
-	}
+	url := listURL(c) + query.String()
 
-	u := listURL(c) + utils.BuildQuery(q)
-	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
+	return pagination.NewPager(c, url, func(r pagination.LastHTTPResponse) pagination.Page {
 		return SubnetPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	})
 }
@@ -85,12 +49,11 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 // Get retrieves a specific subnet based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, err := perigee.Request("GET", getURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("GET", getURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		Results:     &res.Resp,
 		OkCodes:     []int{200},
 	})
-	res.Err = err
 	return res
 }
 
@@ -173,13 +136,12 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 		reqBody.Subnet.HostRoutes = opts.HostRoutes
 	}
 
-	_, err := perigee.Request("POST", createURL(c), perigee.Options{
+	_, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{201},
 	})
-	res.Err = err
 
 	return res
 }
@@ -222,13 +184,12 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 	}
 
 	var res UpdateResult
-	_, err := perigee.Request("PUT", updateURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("PUT", updateURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{200, 201},
 	})
-	res.Err = err
 
 	return res
 }
@@ -236,10 +197,9 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 // Delete accepts a unique ID and deletes the subnet associated with it.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, err := perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Err = err
 	return res
 }
