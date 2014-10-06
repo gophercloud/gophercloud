@@ -74,7 +74,7 @@ func TestBuildQueryStringWithoutRequiredFieldSet(t *testing.T) {
 func TestBuildHeaders(t *testing.T) {
 	testStruct := struct {
 		Accept string `h:"Accept"`
-		Num    int    `h:"Number"`
+		Num    int    `h:"Number,required"`
 		Style  bool   `h:"Style"`
 	}{
 		Accept: "application/json",
@@ -85,6 +85,17 @@ func TestBuildHeaders(t *testing.T) {
 	actual, err := BuildHeaders(&testStruct)
 	th.CheckNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
+
+	testStruct.Num = 0
+	_, err = BuildHeaders(&testStruct)
+	if err == nil {
+		t.Errorf("Expected error: 'Required header not set'")
+	}
+
+	_, err = BuildHeaders(map[string]interface{}{"Number": 4})
+	if err == nil {
+		t.Errorf("Expected error: 'Options type is not a struct'")
+	}
 }
 
 func TestIsZero(t *testing.T) {
