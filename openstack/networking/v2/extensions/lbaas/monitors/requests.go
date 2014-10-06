@@ -20,8 +20,8 @@ type ListOpts struct {
 	Delay         int    `q:"delay"`
 	Timeout       int    `q:"timeout"`
 	MaxRetries    int    `q:"max_retries"`
-	HttpMethod    string `q:"http_method"`
-	UrlPath       string `q:"url_path"`
+	HTTPMethod    string `q:"http_method"`
+	URLPath       string `q:"url_path"`
 	ExpectedCodes string `q:"expected_codes"`
 	AdminStateUp  *bool  `q:"admin_state_up"`
 	Status        string `q:"status"`
@@ -49,6 +49,7 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+// Constants that represent approved monitoring types.
 const (
 	TypePING  = "PING"
 	TypeTCP   = "TCP"
