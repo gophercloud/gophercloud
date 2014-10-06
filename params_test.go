@@ -7,16 +7,27 @@ import (
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
-func TestMaybeStringWithNonEmptyString(t *testing.T) {
-	testString := "carol"
-	expected := &testString
-	actual := MaybeString("carol")
+func TestMaybeString(t *testing.T) {
+	testString := ""
+	var expected *string
+	actual := MaybeString(testString)
+	th.CheckDeepEquals(t, actual, expected)
+
+	testString = "carol"
+	expected = &testString
+	actual = MaybeString(testString)
 	th.CheckDeepEquals(t, actual, expected)
 }
 
-func TestMaybeStringWithEmptyString(t *testing.T) {
-	var expected *string
-	actual := MaybeString("")
+func TestMaybeInt(t *testing.T) {
+	testInt := 0
+	var expected *int
+	actual := MaybeInt(testInt)
+	th.CheckDeepEquals(t, actual, expected)
+
+	testInt = 4
+	expected = &testInt
+	actual = MaybeInt(testInt)
 	th.CheckDeepEquals(t, actual, expected)
 }
 
