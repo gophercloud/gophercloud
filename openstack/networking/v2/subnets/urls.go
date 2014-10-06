@@ -2,14 +2,12 @@ package subnets
 
 import "github.com/rackspace/gophercloud"
 
-const version = "v2.0"
-
 func resourceURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL(version, "subnets", id)
+	return c.ServiceURL("subnets", id)
 }
 
 func rootURL(c *gophercloud.ServiceClient) string {
-	return c.ServiceURL(version, "subnets")
+	return c.ServiceURL("subnets")
 }
 
 func listURL(c *gophercloud.ServiceClient) string {
