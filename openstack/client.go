@@ -302,7 +302,11 @@ func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+	return &gophercloud.ServiceClient{
+		Provider:     client,
+		Endpoint:     url,
+		ResourceBase: url + "v2.0/",
+	}, nil
 }
 
 // NewBlockStorageV1 creates a ServiceClient that may be used to access the v1 block storage service.
