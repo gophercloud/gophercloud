@@ -8,7 +8,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// GetResult temporarility stores the result of a Get call.
+// GetResult temporarily stores the result of a Get call.
 // Use its Extract() method to interpret it as an Extension.
 type GetResult struct {
 	gophercloud.CommonResult

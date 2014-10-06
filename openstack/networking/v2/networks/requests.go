@@ -57,12 +57,19 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	return res
 }
 
+// CreateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Create operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
 type CreateOptsBuilder interface {
 	ToNetworkCreateMap() map[string]map[string]interface{}
 }
 
+// CreateOpts is the common options struct used in this package's Create
+// operation.
 type CreateOpts networkOpts
 
+// ToNetworkCreateMap casts a CreateOpts struct to a map.
 func (o CreateOpts) ToNetworkCreateMap() map[string]map[string]interface{} {
 	inner := make(map[string]interface{})
 
@@ -107,12 +114,19 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	return res
 }
 
+// UpdateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Update operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
 type UpdateOptsBuilder interface {
 	ToNetworkUpdateMap() map[string]map[string]interface{}
 }
 
+// UpdateOpts is the common options struct used in this package's Update
+// operation.
 type UpdateOpts networkOpts
 
+// ToNetworkUpdateMap casts a UpdateOpts struct to a map.
 func (o UpdateOpts) ToNetworkUpdateMap() map[string]map[string]interface{} {
 	inner := make(map[string]interface{})
 
