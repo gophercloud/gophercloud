@@ -7,6 +7,7 @@ import (
 
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestList(t *testing.T) {
@@ -15,7 +16,7 @@ func TestList(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -50,7 +51,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	List(th.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	List(fake.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractFloatingIPs(page)
 		if err != nil {
@@ -95,7 +96,7 @@ func TestCreate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -130,7 +131,7 @@ func TestCreate(t *testing.T) {
 		PortID:            "ce705c24-c1ef-408a-bda3-7bbd946164ab",
 	}
 
-	ip, err := Create(th.ServiceClient(), options).Extract()
+	ip, err := Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
@@ -147,7 +148,7 @@ func TestGet(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -167,7 +168,7 @@ func TestGet(t *testing.T) {
       `)
 	})
 
-	ip, err := Get(th.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7").Extract()
+	ip, err := Get(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "90f742b1-6d17-487b-ba95-71881dbc0b64", ip.FloatingNetworkID)
@@ -185,7 +186,7 @@ func TestAssociate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -214,7 +215,7 @@ func TestAssociate(t *testing.T) {
 	`)
 	})
 
-	ip, err := Update(th.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", UpdateOpts{PortID: "423abc8d-2991-4a55-ba98-2aaea84cc72e"}).Extract()
+	ip, err := Update(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", UpdateOpts{PortID: "423abc8d-2991-4a55-ba98-2aaea84cc72e"}).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, "423abc8d-2991-4a55-ba98-2aaea84cc72e", ip.PortID)
@@ -226,7 +227,7 @@ func TestDisassociate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -255,7 +256,7 @@ func TestDisassociate(t *testing.T) {
     `)
 	})
 
-	ip, err := Update(th.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", UpdateOpts{}).Extract()
+	ip, err := Update(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", UpdateOpts{}).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, "", ip.FixedIP)
@@ -268,10 +269,10 @@ func TestDelete(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := Delete(th.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7")
+	res := Delete(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7")
 	th.AssertNoErr(t, res.Err)
 }

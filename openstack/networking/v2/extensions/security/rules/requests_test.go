@@ -7,14 +7,15 @@ import (
 
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestURLs(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.AssertEquals(t, th.Endpoint()+"v2.0/security-group-rules", rootURL(th.ServiceClient()))
-	th.AssertEquals(t, th.Endpoint()+"v2.0/security-group-rules/foo", resourceURL(th.ServiceClient(), "foo"))
+	th.AssertEquals(t, th.Endpoint()+"v2.0/security-group-rules", rootURL(fake.ServiceClient()))
+	th.AssertEquals(t, th.Endpoint()+"v2.0/security-group-rules/foo", resourceURL(fake.ServiceClient(), "foo"))
 }
 
 func TestList(t *testing.T) {
@@ -23,7 +24,7 @@ func TestList(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -62,7 +63,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	List(th.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	List(fake.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractRules(page)
 		if err != nil {
@@ -113,7 +114,7 @@ func TestCreate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/security-group-rules", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -160,7 +161,7 @@ func TestCreate(t *testing.T) {
 		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
 		SecGroupID:    "a7734e61-b545-452d-a3cd-0189cbd9747a",
 	}
-	_, err := Create(th.ServiceClient(), opts).Extract()
+	_, err := Create(fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 }
 
@@ -170,7 +171,7 @@ func TestGet(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/security-group-rules/3c0e45ff-adaf-4124-b083-bf390e5482ff", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -193,7 +194,7 @@ func TestGet(t *testing.T) {
       `)
 	})
 
-	sr, err := Get(th.ServiceClient(), "3c0e45ff-adaf-4124-b083-bf390e5482ff").Extract()
+	sr, err := Get(fake.ServiceClient(), "3c0e45ff-adaf-4124-b083-bf390e5482ff").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "egress", sr.Direction)
@@ -214,10 +215,10 @@ func TestDelete(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/security-group-rules/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := Delete(th.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	res := Delete(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }

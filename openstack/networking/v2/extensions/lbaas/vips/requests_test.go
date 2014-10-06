@@ -7,14 +7,15 @@ import (
 
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestURLs(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/vips", rootURL(th.ServiceClient()))
-	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/vips/foo", resourceURL(th.ServiceClient(), "foo"))
+	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/vips", rootURL(fake.ServiceClient()))
+	th.AssertEquals(t, th.Endpoint()+"v2.0/lb/vips/foo", resourceURL(fake.ServiceClient(), "foo"))
 }
 
 func TestList(t *testing.T) {
@@ -23,7 +24,7 @@ func TestList(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/vips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -68,7 +69,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	List(th.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	List(fake.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractVIPs(page)
 		if err != nil {
@@ -127,7 +128,7 @@ func TestCreate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/vips", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -176,7 +177,7 @@ func TestCreate(t *testing.T) {
 		ProtocolPort: 80,
 	}
 
-	r, err := Create(th.ServiceClient(), opts).Extract()
+	r, err := Create(fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "PENDING_CREATE", r.Status)
@@ -200,7 +201,7 @@ func TestGet(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/vips/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -230,7 +231,7 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-	vip, err := Get(th.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
+	vip, err := Get(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "ACTIVE", vip.Status)
@@ -247,7 +248,7 @@ func TestUpdate(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/vips/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
@@ -284,7 +285,7 @@ func TestUpdate(t *testing.T) {
 
 	i1000 := 1000
 	options := UpdateOpts{ConnLimit: &i1000}
-	vip, err := Update(th.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304", options).Extract()
+	vip, err := Update(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "PENDING_UPDATE", vip.Status)
@@ -297,10 +298,10 @@ func TestDelete(t *testing.T) {
 
 	th.Mux.HandleFunc("/v2.0/lb/vips/4ec89087-d057-4e2c-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", th.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := Delete(th.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
+	res := Delete(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }
