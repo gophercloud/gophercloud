@@ -6,23 +6,12 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/testhelper"
-)
-
-const (
-	tokenId = "abcabcabcabc"
+	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 var metadata = map[string]string{"Gophercloud-Test": "objects"}
-
-func serviceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{TokenID: tokenId},
-		Endpoint: testhelper.Endpoint(),
-	}
-}
 
 func TestDownloadObject(t *testing.T) {
 	testhelper.SetupHTTP()
@@ -30,14 +19,13 @@ func TestDownloadObject(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
+		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "Successful download with Gophercloud")
 	})
 
-	client := serviceClient()
-	content, err := Download(client, "testContainer", "testObject", nil).ExtractContent()
+	content, err := Download(fake.ServiceClient(), "testContainer", "testObject", nil).ExtractContent()
 	if err != nil {
 		t.Fatalf("Unexpected error downloading object: %v", err)
 	}
@@ -52,7 +40,7 @@ func TestListObjectInfo(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
+		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
@@ -83,9 +71,9 @@ func TestListObjectInfo(t *testing.T) {
 		}
 	})
 
-	client := serviceClient()
 	count := 0
-	err := List(client, "testContainer", &ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
+
+	err := List(fake.ServiceClient(), "testContainer", &ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractInfo(page)
 		if err != nil {
@@ -129,7 +117,7 @@ func TestListObjectNames(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
+		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		testhelper.TestHeader(t, r, "Accept", "text/plain")
 
 		w.Header().Set("Content-Type", "text/plain")
@@ -145,9 +133,8 @@ func TestListObjectNames(t *testing.T) {
 		}
 	})
 
-	client := serviceClient()
 	count := 0
-	List(client, "testContainer", &ListOpts{Full: false}).EachPage(func(page pagination.Page) (bool, error) {
+	List(fake.ServiceClient(), "testContainer", &ListOpts{Full: false}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractNames(page)
 		if err != nil {
@@ -173,14 +160,13 @@ func TestCreateObject(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "PUT")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
+		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusCreated)
 	})
 
-	client := serviceClient()
 	content := bytes.NewBufferString("Did gyre and gimble in the wabe")
-	_, err := Create(client, "testContainer", "testObject", content, nil).ExtractHeaders()
+	_, err := Create(fake.ServiceClient(), "testContainer", "testObject", content, nil).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error creating object: %v", err)
 	}
@@ -192,14 +178,13 @@ func TestCopyObject(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "COPY")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
+		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		testhelper.TestHeader(t, r, "Destination", "/newTestContainer/newTestObject")
 		w.WriteHeader(http.StatusCreated)
 	})
 
-	client := serviceClient()
-	_, err := Copy(client, "testContainer", "testObject", &CopyOpts{Destination: "/newTestContainer/newTestObject"}).ExtractHeaders()
+	_, err := Copy(fake.ServiceClient(), "testContainer", "testObject", &CopyOpts{Destination: "/newTestContainer/newTestObject"}).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error copying object: %v", err)
 	}
@@ -211,13 +196,12 @@ func TestDeleteObject(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "DELETE")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
+		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	client := serviceClient()
-	_, err := Delete(client, "testContainer", "testObject", nil).ExtractHeaders()
+	_, err := Delete(fake.ServiceClient(), "testContainer", "testObject", nil).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error deleting object: %v", err)
 	}
@@ -229,14 +213,13 @@ func TestUpateObjectMetadata(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
+		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		testhelper.TestHeader(t, r, "X-Object-Meta-Gophercloud-Test", "objects")
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	client := serviceClient()
-	_, err := Update(client, "testContainer", "testObject", &UpdateOpts{Metadata: metadata}).ExtractHeaders()
+	_, err := Update(fake.ServiceClient(), "testContainer", "testObject", &UpdateOpts{Metadata: metadata}).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error updating object metadata: %v", err)
 	}
@@ -248,15 +231,14 @@ func TestGetObject(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "HEAD")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenId)
+		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Add("X-Object-Meta-Gophercloud-Test", "objects")
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	client := serviceClient()
 	expected := metadata
-	actual, err := Get(client, "testContainer", "testObject", nil).ExtractMetadata()
+	actual, err := Get(fake.ServiceClient(), "testContainer", "testObject", nil).ExtractMetadata()
 	if err != nil {
 		t.Fatalf("Unexpected error getting object metadata: %v", err)
 	}
