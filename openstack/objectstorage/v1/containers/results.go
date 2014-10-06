@@ -9,13 +9,20 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// Container represents a container resource.
 type Container struct {
-	Bytes int    `json:"bytes" mapstructure:"bytes"`
-	Count int    `json:"count" mapstructure:"count"`
-	Name  string `json:"name" mapstructure:"name"`
+	// The total number of bytes stored in the container.
+	Bytes int `json:"bytes" mapstructure:"bytes"`
+
+	// The total number of objects stored in the container.
+	Count int `json:"count" mapstructure:"count"`
+
+	// The name of the container.
+	Name string `json:"name" mapstructure:"name"`
 }
 
-// ListResult is a *http.Response that is returned from a call to the List function.
+// ContainerPage is the page returned by a pager when traversing over a
+// collection of containers.
 type ContainerPage struct {
 	pagination.MarkerPageBase
 }
@@ -124,14 +131,17 @@ func (cr commonResult) ExtractHeaders() (http.Header, error) {
 	return cr.Resp.Header, nil
 }
 
+// CreateResult represents the result of a create operation.
 type CreateResult struct {
 	commonResult
 }
 
+// UpdateResult represents the result of an update operation.
 type UpdateResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	commonResult
 }
