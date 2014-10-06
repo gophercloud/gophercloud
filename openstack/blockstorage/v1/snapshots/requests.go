@@ -100,15 +100,16 @@ func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
 	return pagination.NewPager(client, url, createPage)
 }
 
-// UpdateOpts contain options for updating an existing Snapshot. This object is
-// passed to the snapshots.Update function. For more information about the
-// parameters, see the Snapshot object.
+// UpdateMetadataOpts contain options for updating an existing Snapshot. This
+// object is passed to the snapshots.Update function. For more information
+// about the parameters, see the Snapshot object.
 type UpdateMetadataOpts struct {
 	Metadata map[string]interface{}
 }
 
-// Update will update the Snapshot with provided information. To extract the updated
-// Snapshot from the response, call the ExtractMetadata method on the UpdateResult.
+// UpdateMetadata will update the Snapshot with provided information. To
+// extract the updated Snapshot from the response, call the ExtractMetadata
+// method on the UpdateMetadataResult.
 func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts *UpdateMetadataOpts) UpdateMetadataResult {
 	type request struct {
 		Metadata map[string]interface{} `json:"metadata,omitempty"`
