@@ -1,8 +1,6 @@
 package networks
 
 import (
-	"fmt"
-
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -59,14 +57,13 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	return res
 }
 
-type CreateOptsInt interface {
-	ToMap() map[string]map[string]interface{}
-	IsCreateOpts() bool
+type CreateOptsBuilder interface {
+	ToNetworkCreateMap() map[string]map[string]interface{}
 }
 
 type CreateOpts networkOpts
 
-func (o CreateOpts) ToMap() map[string]map[string]interface{} {
+func (o CreateOpts) ToNetworkCreateMap() map[string]map[string]interface{} {
 	inner := make(map[string]interface{})
 
 	if o.AdminStateUp != nil {
@@ -88,8 +85,6 @@ func (o CreateOpts) ToMap() map[string]map[string]interface{} {
 	return outer
 }
 
-func (o CreateOpts) IsCreateOpts() bool { return true }
-
 // Create accepts a CreateOpts struct and creates a new network using the values
 // provided. This operation does not actually require a request body, i.e. the
 // CreateOpts struct argument can be empty.
@@ -97,15 +92,10 @@ func (o CreateOpts) IsCreateOpts() bool { return true }
 // The tenant ID that is contained in the URI is the tenant that creates the
 // network. An admin user, however, has the option of specifying another tenant
 // ID in the CreateOpts struct.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsInt) CreateResult {
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
-	if opts.IsCreateOpts() != true {
-		res.Err = fmt.Errorf("Must provide valid create opts")
-		return res
-	}
-
-	reqBody := opts.ToMap()
+	reqBody := opts.ToNetworkCreateMap()
 
 	// Send request to API
 	_, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
@@ -117,14 +107,13 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsInt) CreateResult {
 	return res
 }
 
-type UpdateOptsInt interface {
-	ToMap() map[string]map[string]interface{}
-	IsUpdateOpts() bool
+type UpdateOptsBuilder interface {
+	ToNetworkUpdateMap() map[string]map[string]interface{}
 }
 
 type UpdateOpts networkOpts
 
-func (o UpdateOpts) ToMap() map[string]map[string]interface{} {
+func (o UpdateOpts) ToNetworkUpdateMap() map[string]map[string]interface{} {
 	inner := make(map[string]interface{})
 
 	if o.AdminStateUp != nil {
@@ -143,19 +132,12 @@ func (o UpdateOpts) ToMap() map[string]map[string]interface{} {
 	return outer
 }
 
-func (o UpdateOpts) IsUpdateOpts() bool { return true }
-
 // Update accepts a UpdateOpts struct and updates an existing network using the
 // values provided. For more information, see the Create function.
-func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsInt) UpdateResult {
+func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
 
-	if opts.IsUpdateOpts() != true {
-		res.Err = fmt.Errorf("Must provide valid update opts")
-		return res
-	}
-
-	reqBody := opts.ToMap()
+	reqBody := opts.ToNetworkUpdateMap()
 
 	// Send request to API
 	_, res.Err = perigee.Request("PUT", getURL(c, networkID), perigee.Options{

@@ -19,27 +19,23 @@ type CreateOpts struct {
 	External bool
 }
 
-func (o CreateOpts) ToMap() map[string]map[string]interface{} {
-	outer := o.Parent.ToMap()
+func (o CreateOpts) ToNetworkCreateMap() map[string]map[string]interface{} {
+	outer := o.Parent.ToNetworkCreateMap()
 
 	outer["network"]["router:external"] = o.External
 
 	return outer
 }
-
-func (o CreateOpts) IsCreateOpts() bool { return true }
 
 type UpdateOpts struct {
 	Parent   networks.UpdateOpts
 	External bool
 }
 
-func (o UpdateOpts) ToMap() map[string]map[string]interface{} {
-	outer := o.Parent.ToMap()
+func (o UpdateOpts) ToNetworkUpdateMap() map[string]map[string]interface{} {
+	outer := o.Parent.ToNetworkUpdateMap()
 
 	outer["network"]["router:external"] = o.External
 
 	return outer
 }
-
-func (o UpdateOpts) IsUpdateOpts() bool { return true }
