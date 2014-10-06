@@ -33,42 +33,41 @@ func TestMaybeInt(t *testing.T) {
 	th.CheckDeepEquals(t, expected, actual)
 }
 
-func TestBuildQueryStringWithPointerToStruct(t *testing.T) {
-	expected := &url.URL{
-		RawQuery: "j=2&r=red",
-	}
-
-	type Opts struct {
+func TestBuildQueryString(t *testing.T) {
+	opts := struct {
 		J int    `q:"j"`
-		R string `q:"r"`
-		C bool
+		R string `q:"r,required"`
+		C bool   `q:"c"`
+	}{
+		J: 2,
+		R: "red",
+		C: true,
 	}
-
-	opts := Opts{J: 2, R: "red"}
-
+	expected := &url.URL{RawQuery: "j=2&r=red&c=true"}
 	actual, err := BuildQueryString(&opts)
 	if err != nil {
 		t.Errorf("Error building query string: %v", err)
 	}
-
 	th.CheckDeepEquals(t, expected, actual)
-}
 
-func TestBuildQueryStringWithoutRequiredFieldSet(t *testing.T) {
-	type Opts struct {
+	opts = struct {
 		J int    `q:"j"`
 		R string `q:"r,required"`
-		C bool
+		C bool   `q:"c"`
+	}{
+		J: 2,
+		C: true,
 	}
-
-	opts := Opts{J: 2, C: true}
-
-	_, err := BuildQueryString(&opts)
+	_, err = BuildQueryString(&opts)
 	if err == nil {
-		t.Error("Unexpected result: There should be an error thrown when a required field isn't set.")
+		t.Errorf("Expected error: 'Required field not set'")
 	}
+	th.CheckDeepEquals(t, expected, actual)
 
-	t.Log(err)
+	_, err = BuildQueryString(map[string]interface{}{"Number": 4})
+	if err == nil {
+		t.Errorf("Expected error: 'Options type is not a struct'")
+	}
 }
 
 func TestBuildHeaders(t *testing.T) {
