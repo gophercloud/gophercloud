@@ -29,13 +29,22 @@ func ExtractExtensions(page pagination.Page) ([]Extension, error) {
 	return outer, nil
 }
 
+// rebased is a temporary workaround to isolate changes to this package. FIXME: set ResourceBase
+// in the NewNetworkV2 method and remove the version string from URL generation methods in
+// networking resources.
+func rebased(c *gophercloud.ServiceClient) *gophercloud.ServiceClient {
+	var r = *c
+	r.ResourceBase = c.Endpoint + "v2.0/"
+	return &r
+}
+
 // Get retrieves information for a specific extension using its alias.
 func Get(c *gophercloud.ServiceClient, alias string) GetResult {
-	return GetResult{common.Get(c, alias)}
+	return GetResult{common.Get(rebased(c), alias)}
 }
 
 // List returns a Pager which allows you to iterate over the full collection of extensions.
 // It does not accept query parameters.
 func List(c *gophercloud.ServiceClient) pagination.Pager {
-	return common.List(c)
+	return common.List(rebased(c))
 }
