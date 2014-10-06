@@ -1,8 +1,6 @@
 language: go
 install:
-  - go get -v .
-  - go get -v ./openstack/...
-  - go get -v ./rackspace/...
+  - go get -v ./...
 go:
   - 1.1
   - 1.2
@@ -13,4 +11,3 @@ after_success:
   - go get github.com/mattn/goveralls
   - export PATH=$PATH:$HOME/gopath/bin/
   - goveralls 2k7PTU3xa474Hymwgdj6XjqenNfGTNkO8
-
