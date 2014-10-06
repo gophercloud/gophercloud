@@ -11,9 +11,28 @@ type ServiceClient struct {
 	// Endpoint is the base URL of the service's API, acquired from a service catalog.
 	// It MUST end with a /.
 	Endpoint string
+
+	// ResourceBase is the base URL shared by the resources within a service's API. It should include
+	// the API version and, like Endpoint, MUST end with a / if set. If not set, the Endpoint is used
+	// as-is, instead.
+	ResourceBase string
+}
+
+// ResourceBaseURL returns the base URL of any resources used by this service. It MUST end with a /.
+func (client *ServiceClient) ResourceBaseURL() string {
+	if client.ResourceBase != "" {
+		return client.ResourceBase
+	}
+	return client.Endpoint
 }
 
 // ServiceURL constructs a URL for a resource belonging to this provider.
 func (client *ServiceClient) ServiceURL(parts ...string) string {
-	return client.Endpoint + strings.Join(parts, "/")
+	return client.ResourceBaseURL() + strings.Join(parts, "/")
+}
+
+// AuthenticatedHeaders returns a collection of HTTP request headers that mark a request as
+// belonging to the currently authenticated user.
+func (client *ServiceClient) AuthenticatedHeaders() map[string]string {
+	return client.Provider.AuthenticatedHeaders()
 }
