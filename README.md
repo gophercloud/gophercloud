@@ -1,4 +1,5 @@
-# gophercloud: the OpenStack SDK for Go [![Build Status](https://travis-ci.org/rackspace/gophercloud.svg?branch=v0.2.0)](https://travis-ci.org/rackspace/gophercloud)
+# gophercloud: the OpenStack SDK for Go
+[![Build Status](https://travis-ci.org/rackspace/gophercloud.svg?branch=v0.2.0)](https://travis-ci.org/rackspace/gophercloud)
 
 gophercloud is a flexible SDK that allows you to consume and work with OpenStack
 clouds in a simple and idiomatic way using golang. Many services are supported,
@@ -107,19 +108,17 @@ client, err := openstack.NewComputeV2(provider, gophercloud.EndpointOpts{
 
 We then use this `client` for any Compute API operation we want. In our case,
 we want to provision a new server - so we invoke the `Create` method and pass
-in the flavor (hardware specification) and image (operating system) we're
+in the flavor ID (hardware specification) and image ID (operating system) we're
 interested in:
 
 ```go
+import "github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+
 server, err := servers.Create(client, servers.CreateOpts{
   Name:      "My new server!",
   FlavorRef: "flavor_id",
   ImageRef:  "image_id",
 }).Extract()
-
-if err != nil {
-  fmt.Printf("Unable to create server for the following reason: %v", err)
-}
 ```
 
 If you are unsure about what images and flavors are, you can read our [Compute
@@ -130,8 +129,8 @@ in the `server` variable (a
 
 ### Next steps
 
-Cool! You've handled authentication and got your `ProviderClient`. You're now
-ready to use an OpenStack service.
+Cool! You've handled authentication, got your `ProviderClient` and provisioned
+a new server. You're now ready to use more OpenStack services.
 
 * [Getting started with Compute](http://gophercloud.io/docs/compute)
 * [Getting started with Object Storage](http://gophercloud.io/docs/object-storage)
@@ -143,13 +142,13 @@ ready to use an OpenStack service.
 
 Engaging the community and lowering barriers for contributors is something we
 care a lot about. For this reason, we've taken the time to write a [contributing
-guide](./CONTRIBUTING.md) for folks interested in getting involved in the project.
-If you're not sure what you can do to get involved, feel free to submit an issue
-or ping us an e-mail! You don't need to be a Go expert - all members of the
-community are welcome.
+guide](./CONTRIBUTING.md) for folks interested in getting involved in our project.
+If you're not sure how you can get involved, feel free to submit an issue or
+[e-mail us](mailto:sdk-support@rackspace.com) privately. You don't need to be a
+Go expert - all members of the community are welcome!
 
 ## Help and feedback
 
 If you're struggling with something or have spotted a potential bug, feel free
 to submit an issue to our [bug tracker](/issues) or e-mail us directly at
-sdk-support@rackspace.com.
+[sdk-support@rackspace.com](mailto:sdk-support@rackspace.com).
