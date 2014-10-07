@@ -6,41 +6,50 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// ListFilterOptions helps control the results returned by the List() function.
+// ListOpts helps control the results returned by the List() function.
 // For example, a flavor with a minDisk field of 10 will not be returned if you specify MinDisk set to 20.
 // Typically, software will use the last ID of the previous call to List to set the Marker for the current call.
-type ListFilterOptions struct {
+type ListOpts struct {
 
 	// ChangesSince, if provided, instructs List to return only those things which have changed since the timestamp provided.
-	ChangesSince string
+	ChangesSince string `q:"changes-since"`
 
 	// MinDisk and MinRAM, if provided, elides flavors which do not meet your criteria.
-	MinDisk, MinRAM int
+	MinDisk int `q:"minDisk"`
+	MinRAM  int `q:"minRam"`
 
 	// Marker and Limit control paging.
 	// Marker instructs List where to start listing from.
-	Marker string
+	Marker string `q:"marker"`
 
 	// Limit instructs List to refrain from sending excessively large lists of flavors.
-	Limit int
+	Limit int `q:"limit"`
 }
 
 // List instructs OpenStack to provide a list of flavors.
 // You may provide criteria by which List curtails its results for easier processing.
-// See ListFilterOptions for more details.
-func List(client *gophercloud.ServiceClient, lfo ListFilterOptions) pagination.Pager {
+// See ListOpts for more details.
+func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
+	url := listURL(client)
+	if opts != nil {
+		query, err := gophercloud.BuildQueryString(opts)
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query.String()
+	}
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
 		return FlavorPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
-	return pagination.NewPager(client, listURL(client, lfo), createPage)
+	return pagination.NewPager(client, url, createPage)
 }
 
 // Get instructs OpenStack to provide details on a single flavor, identified by its ID.
 // Use ExtractFlavor to convert its result into a Flavor.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var gr GetResult
-	gr.Err = perigee.Get(flavorURL(client, id), perigee.Options{
+	gr.Err = perigee.Get(getURL(client, id), perigee.Options{
 		Results:     &gr.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
