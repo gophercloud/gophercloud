@@ -5,53 +5,72 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-// Create authenticates to the identity service and attempts to acquire a Token.
-// If successful, the CreateResult
-// Generally, rather than interact with this call directly, end users should call openstack.AuthenticatedClient(),
-// which abstracts all of the gory details about navigating service catalogs and such.
-func Create(client *gophercloud.ServiceClient, auth gophercloud.AuthOptions) CreateResult {
-	type passwordCredentials struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
+// AuthOptionsBuilder describes any argument that may be passed to the Create call.
+type AuthOptionsBuilder interface {
 
-	var request struct {
-		Auth struct {
-			PasswordCredentials *passwordCredentials `json:"passwordCredentials"`
-			TenantID            string               `json:"tenantId,omitempty"`
-			TenantName          string               `json:"tenantName,omitempty"`
-		} `json:"auth"`
-	}
+	// ToTokenCreateMap assembles the Create request body, returning an error if parameters are
+	// missing or inconsistent.
+	ToTokenCreateMap() (map[string]interface{}, error)
+}
 
+// AuthOptions wraps a gophercloud AuthOptions in order to adhere to the AuthOptionsBuilder
+// interface.
+type AuthOptions struct {
+	gophercloud.AuthOptions
+}
+
+// ToTokenCreateMap converts AuthOptions into nested maps that can be serialized into a JSON
+// request.
+func (auth AuthOptions) ToTokenCreateMap() (map[string]interface{}, error) {
 	// Error out if an unsupported auth option is present.
 	if auth.UserID != "" {
-		return createErr(ErrUserIDProvided)
+		return nil, ErrUserIDProvided
 	}
 	if auth.APIKey != "" {
-		return createErr(ErrAPIKeyProvided)
+		return nil, ErrAPIKeyProvided
 	}
 	if auth.DomainID != "" {
-		return createErr(ErrDomainIDProvided)
+		return nil, ErrDomainIDProvided
 	}
 	if auth.DomainName != "" {
-		return createErr(ErrDomainNameProvided)
+		return nil, ErrDomainNameProvided
 	}
 
 	// Username and Password are always required.
 	if auth.Username == "" {
-		return createErr(ErrUsernameRequired)
+		return nil, ErrUsernameRequired
 	}
 	if auth.Password == "" {
-		return createErr(ErrPasswordRequired)
+		return nil, ErrPasswordRequired
 	}
 
-	// Populate the request.
-	request.Auth.PasswordCredentials = &passwordCredentials{
-		Username: auth.Username,
-		Password: auth.Password,
+	// Populate the request map.
+	authMap := make(map[string]interface{})
+
+	authMap["passwordCredentials"] = map[string]interface{}{
+		"username": auth.Username,
+		"password": auth.Password,
 	}
-	request.Auth.TenantID = auth.TenantID
-	request.Auth.TenantName = auth.TenantName
+
+	if auth.TenantID != "" {
+		authMap["tenantId"] = auth.TenantID
+	}
+	if auth.TenantName != "" {
+		authMap["tenantName"] = auth.TenantName
+	}
+
+	return map[string]interface{}{"auth": authMap}, nil
+}
+
+// Create authenticates to the identity service and attempts to acquire a Token.
+// If successful, the CreateResult
+// Generally, rather than interact with this call directly, end users should call openstack.AuthenticatedClient(),
+// which abstracts all of the gory details about navigating service catalogs and such.
+func Create(client *gophercloud.ServiceClient, auth AuthOptionsBuilder) CreateResult {
+	request, err := auth.ToTokenCreateMap()
+	if err != nil {
+		return CreateResult{gophercloud.CommonResult{Err: err}}
+	}
 
 	var result CreateResult
 	_, result.Err = perigee.Request("POST", CreateURL(client), perigee.Options{

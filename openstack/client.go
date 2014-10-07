@@ -95,7 +95,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		v2Client.Endpoint = endpoint
 	}
 
-	result := tokens2.Create(v2Client, options)
+	result := tokens2.Create(v2Client, tokens2.AuthOptions{AuthOptions: options})
 
 	token, err := result.ExtractToken()
 	if err != nil {

@@ -51,7 +51,7 @@ var expectedServiceCatalog = &ServiceCatalog{
 	},
 }
 
-func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string) CreateResult {
+func tokenPost(t *testing.T, options AuthOptions, requestJSON string) CreateResult {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -112,7 +112,7 @@ func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string
 	return Create(&client, options)
 }
 
-func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr error) {
+func tokenPostErr(t *testing.T, options AuthOptions, expectedErr error) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -142,9 +142,11 @@ func isSuccessful(t *testing.T, result CreateResult) {
 }
 
 func TestCreateWithPassword(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "swordfish",
+	options := AuthOptions{
+		gophercloud.AuthOptions{
+			Username: "me",
+			Password: "swordfish",
+		},
 	}
 
 	isSuccessful(t, tokenPost(t, options, `
@@ -160,10 +162,12 @@ func TestCreateWithPassword(t *testing.T) {
 }
 
 func TestCreateTokenWithTenantID(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "opensesame",
-		TenantID: "fc394f2ab2df4114bde39905f800dc57",
+	options := AuthOptions{
+		gophercloud.AuthOptions{
+			Username: "me",
+			Password: "opensesame",
+			TenantID: "fc394f2ab2df4114bde39905f800dc57",
+		},
 	}
 
 	isSuccessful(t, tokenPost(t, options, `
@@ -180,10 +184,12 @@ func TestCreateTokenWithTenantID(t *testing.T) {
 }
 
 func TestCreateTokenWithTenantName(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username:   "me",
-		Password:   "opensesame",
-		TenantName: "demo",
+	options := AuthOptions{
+		gophercloud.AuthOptions{
+			Username:   "me",
+			Password:   "opensesame",
+			TenantName: "demo",
+		},
 	}
 
 	isSuccessful(t, tokenPost(t, options, `
@@ -200,51 +206,63 @@ func TestCreateTokenWithTenantName(t *testing.T) {
 }
 
 func TestProhibitUserID(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		UserID:   "1234",
-		Password: "thing",
+	options := AuthOptions{
+		gophercloud.AuthOptions{
+			Username: "me",
+			UserID:   "1234",
+			Password: "thing",
+		},
 	}
 	tokenPostErr(t, options, ErrUserIDProvided)
 }
 
 func TestProhibitAPIKey(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "thing",
-		APIKey:   "123412341234",
+	options := AuthOptions{
+		gophercloud.AuthOptions{
+			Username: "me",
+			Password: "thing",
+			APIKey:   "123412341234",
+		},
 	}
 	tokenPostErr(t, options, ErrAPIKeyProvided)
 }
 
 func TestProhibitDomainID(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "thing",
-		DomainID: "1234",
+	options := AuthOptions{
+		gophercloud.AuthOptions{
+			Username: "me",
+			Password: "thing",
+			DomainID: "1234",
+		},
 	}
 	tokenPostErr(t, options, ErrDomainIDProvided)
 }
 
 func TestProhibitDomainName(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username:   "me",
-		Password:   "thing",
-		DomainName: "wat",
+	options := AuthOptions{
+		gophercloud.AuthOptions{
+			Username:   "me",
+			Password:   "thing",
+			DomainName: "wat",
+		},
 	}
 	tokenPostErr(t, options, ErrDomainNameProvided)
 }
 
 func TestRequireUsername(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Password: "thing",
+	options := AuthOptions{
+		gophercloud.AuthOptions{
+			Password: "thing",
+		},
 	}
 	tokenPostErr(t, options, ErrUsernameRequired)
 }
 
 func TestRequirePassword(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
+	options := AuthOptions{
+		gophercloud.AuthOptions{
+			Username: "me",
+		},
 	}
 	tokenPostErr(t, options, ErrPasswordRequired)
 }
