@@ -3,7 +3,7 @@
 - [Getting started](#getting-started)
 - [Tests](#tests)
 - [Style guide](#basic-style-guide)
-- [4 ways to get involved](#4-ways-to-get-involved)
+- [5 ways to get involved](#5-ways-to-get-involved)
 
 ## Setting up your git workspace
 
@@ -15,32 +15,32 @@ way than just downloading it. Here are the basic installation instructions:
 
 2. Move into the directory that houses your local repository:
 
-```bash
-cd ${GOPATH}/src/github.com/rackspace/gophercloud
-```
+   ```bash
+   cd ${GOPATH}/src/github.com/rackspace/gophercloud
+   ```
 
 3. Fork the `rackspace/gophercloud` repository and update your remote refs. You
 will need to rename the `origin` remote branch to `upstream`, and add your
 fork as `origin` instead:
 
-```bash
-git remote rename origin upstream
-git remote add origin git@github.com/<my_username>/gophercloud
-```
+   ```bash
+   git remote rename origin upstream
+   git remote add origin git@github.com/<my_username>/gophercloud
+   ```
 
 4. Checkout the latest development branch ([click here](/branches) to see all
 the branches):
 
-```bash
-git checkout v0.2.0
-```
+   ```bash
+   git checkout v0.2.0
+   ```
 
 5. If you're working on something (discussed more in detail below), you will
 need to checkout a new feature branch:
 
-```bash
-git checkout -b my-new-feature
-```
+   ```bash
+   git checkout -b my-new-feature
+   ```
 
 Another thing to bear in mind is that you will need to add a few extra
 environment variables for acceptance tests - this is documented in our
