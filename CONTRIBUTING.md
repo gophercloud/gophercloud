@@ -5,12 +5,50 @@
 - [Style guide](#basic-style-guide)
 - [4 ways to get involved](#4-ways-to-get-involved)
 
-## Getting started
+## Setting up your git workspace
 
-There should be no fundamental differences of setup between contributors and
-normal end-users. The only thing to bear in mind is that you will need to add a
-few extra environment variables for acceptance tests - this is documented in
-our [acceptance tests readme](/acceptance).
+As a contributor you will need to setup your workspace in a slightly different
+way than just downloading it. Here are the basic installation instructions:
+
+1. clone the upstream repository into a directory of your choice:
+
+```bash
+mkdir ~/projects/gophercloud && cd ~/projects/gophercloud
+export GOPATH=$(pwd)
+```
+
+2. Move into the directory that houses your local repository:
+
+```bash
+cd src/github.com/rackspace/gophercloud
+```
+
+3. Fork the `rackspace/gophercloud` repository and update your remote refs. You
+will need to rename the `origin` remote branch to `upstream`, and add your
+fork as `origin` instead:
+
+```bash
+git remote rename origin upstream
+git remote add origin git@github.com/<my_username>/gophercloud
+```
+
+4. Checkout the latest development branch ([click here](/branches) to see all
+the branches):
+
+```bash
+git checkout v0.2.0
+```
+
+5. If you're working on something (discussed more in detail below), you will
+need to checkout a new feature branch:
+
+```bash
+git checkout -b my-new-feature
+```
+
+Another thing to bear in mind is that you will need to add a few extra
+environment variables for acceptance tests - this is documented in our
+[acceptance tests readme](/acceptance).
 
 ## Tests
 
@@ -115,6 +153,11 @@ expectations, they instead do a full run-through and consequently test how the
 entire system _integrates_ together. When an API satisfies expectations, it
 proves by default that the requirements for a contract have been met.
 
+Please be aware that acceptance tests will hit a live API - and may incur
+service charges from your provider. Although most tests handle their own
+teardown procedures, it is always worth manually checking that resources are
+deleted after the test suite finishes.
+
 ### Running tests
 
 To run all tests:
@@ -149,19 +192,34 @@ definitely worth reading - but the relevant sections are
 [formatting](https://golang.org/doc/effective_go.html#formatting)
 and [names](https://golang.org/doc/effective_go.html#names).
 
-## 4 ways to get involved
+## 5 ways to get involved
 
-There are four main ways you can get involved in our open-source project, and
+There are five main ways you can get involved in our open-source project, and
 each is described briefly below. Once you've made up your mind and decided on
 your fix, you will need to follow the same basic steps that all submissions are
 required to adhere to:
 
 1. [fork](https://help.github.com/articles/fork-a-repo/) the `rackspace/gophercloud` repository
 2. checkout a [new branch](https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches)
-3. ensure all your commits are [well-organized](https://help.github.com/articles/about-git-rebase/)
-4. submit your branch as a [pull request](https://help.github.com/articles/creating-a-pull-request/)
+3. submit your branch as a [pull request](https://help.github.com/articles/creating-a-pull-request/)
 
-### 1. Fixing bugs
+### 1. Providing feedback
+
+On of the easiest ways to get readily involved in our project is to let us know
+about your experiences using our SDK. Feedback like this is incredibly useful
+to us, because it allows us to refine and change features based on what our
+users want and expect of us. There are a bunch of ways to get in contact! You
+can [ping us](mailto:sdk-support@rackspace.com) via e-mail, talk to us on irc
+(#rackspace-dev on freenode), [tweet us](https://twitter.com/rackspace), or
+submit an issue on our [bug tracker](/issues). Things you might like to tell us
+are:
+
+* how easy was it to start using our SDK?
+* did it meet your expectations? If not, why not?
+* did our documentation help or hinder you?
+* what could we improve in general?
+
+### 2. Fixing bugs
 
 If you want to start fixing open bugs, we'd really appreciate that! Bug fixing
 is central to any project. The best way to get started is by heading to our
@@ -170,7 +228,7 @@ bugs that you think nobody is working on. It might be useful to comment on the
 thread to see the current state of the issue and if anybody has made any
 breakthroughs on it so far.
 
-### 2. Improving documentation
+### 3. Improving documentation
 
 We have three forms of documentation:
 
@@ -185,7 +243,7 @@ ambiguity or fix a grammatical mistake - please feel entitled to do so! We
 welcome doc pull requests with the same childlike enthusiasm as any other
 contribution!
 
-### 3. Optimizing existing features
+### 4. Optimizing existing features
 
 If you would like to improve or optimize an existing feature, please be aware
 that we adhere to [semantic versioning](http://semver.org) - which means that
@@ -194,13 +252,25 @@ we cannot introduce breaking changes to the API without a major version change
 refactor rather than rewrite. Running tests will prevent regression and avoid
 the possibility of breaking somebody's current implementation.
 
-### 4. Working on a new feature
+Another tip is to keep the focus of your work as small as possible - try not to
+introduce a change that affects lots and lots of files because it introduces
+added risk and increases the cognitive load on the reviewers checking your
+work. Change-sets which are easily understood and will not negatively impact
+users are more likely to be integrated quickly.
+
+Lastly, if you're seeking to optimize a particular operation, you should try to
+demonstrate a negative performance impact - perhaps using go's inbuilt
+[benchmark capabilities](http://dave.cheney.net/2013/06/30/how-to-write-benchmarks-in-go).
+
+### 5. Working on a new feature
 
 If you've found something we've left out, definitely feel free to start work on
-introducing that feature. It's always useful to open an issue first to indicate
-your intent to a core contributor - this enables quick feedback and can help
-steer you in the right direction by avoiding known issues. It might also help
-you avoid losing time implementing something that might not ever work.
+introducing that feature. It's always useful to open an issue or submit a pull
+request early on to indicate your intent to a core contributor - this enables
+quick/early feedback and can help steer you in the right direction by avoiding
+known issues. It might also help you avoid losing time implementing something
+that might not ever work. One tip is to prefix your Pull Request issue title
+with [wip] - then people know it's a work in progress.
 
 You must ensure that all of your work is well tested - both in terms of unit
 and acceptance tests. Untested code will not be merged because it introduces
