@@ -159,24 +159,6 @@ func TestCreateWithPassword(t *testing.T) {
   `))
 }
 
-func TestCreateTokenWithAPIKey(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		APIKey:   "1234567890abcdef",
-	}
-
-	isSuccessful(t, tokenPost(t, options, `
-    {
-      "auth": {
-        "RAX-KSKEY:apiKeyCredentials": {
-          "username": "me",
-          "apiKey": "1234567890abcdef"
-        }
-      }
-    }
-  `))
-}
-
 func TestCreateTokenWithTenantID(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		Username: "me",
@@ -226,6 +208,15 @@ func TestProhibitUserID(t *testing.T) {
 	tokenPostErr(t, options, ErrUserIDProvided)
 }
 
+func TestProhibitAPIKey(t *testing.T) {
+	options := gophercloud.AuthOptions{
+		Username: "me",
+		Password: "thing",
+		APIKey:   "123412341234",
+	}
+	tokenPostErr(t, options, ErrAPIKeyProvided)
+}
+
 func TestProhibitDomainID(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		Username: "me",
@@ -251,18 +242,9 @@ func TestRequireUsername(t *testing.T) {
 	tokenPostErr(t, options, ErrUsernameRequired)
 }
 
-func TestProhibitBothPasswordAndAPIKey(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "thing",
-		APIKey:   "123412341234",
-	}
-	tokenPostErr(t, options, ErrPasswordOrAPIKey)
-}
-
-func TestRequirePasswordOrAPIKey(t *testing.T) {
+func TestRequirePassword(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		Username: "me",
 	}
-	tokenPostErr(t, options, ErrPasswordOrAPIKey)
+	tokenPostErr(t, options, ErrPasswordRequired)
 }

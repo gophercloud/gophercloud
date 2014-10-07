@@ -15,15 +15,9 @@ func Create(client *gophercloud.ServiceClient, auth gophercloud.AuthOptions) Cre
 		Password string `json:"password"`
 	}
 
-	type apiKeyCredentials struct {
-		Username string `json:"username"`
-		APIKey   string `json:"apiKey"`
-	}
-
 	var request struct {
 		Auth struct {
-			PasswordCredentials *passwordCredentials `json:"passwordCredentials,omitempty"`
-			APIKeyCredentials   *apiKeyCredentials   `json:"RAX-KSKEY:apiKeyCredentials,omitempty"`
+			PasswordCredentials *passwordCredentials `json:"passwordCredentials"`
 			TenantID            string               `json:"tenantId,omitempty"`
 			TenantName          string               `json:"tenantName,omitempty"`
 		} `json:"auth"`
@@ -33,6 +27,9 @@ func Create(client *gophercloud.ServiceClient, auth gophercloud.AuthOptions) Cre
 	if auth.UserID != "" {
 		return createErr(ErrUserIDProvided)
 	}
+	if auth.APIKey != "" {
+		return createErr(ErrAPIKeyProvided)
+	}
 	if auth.DomainID != "" {
 		return createErr(ErrDomainIDProvided)
 	}
@@ -40,38 +37,24 @@ func Create(client *gophercloud.ServiceClient, auth gophercloud.AuthOptions) Cre
 		return createErr(ErrDomainNameProvided)
 	}
 
-	// Username is always required.
+	// Username and Password are always required.
 	if auth.Username == "" {
 		return createErr(ErrUsernameRequired)
 	}
-
-	// Populate either PasswordCredentials or APIKeyCredentials
-	if auth.Password != "" {
-		if auth.APIKey != "" {
-			return createErr(ErrPasswordOrAPIKey)
-		}
-
-		// Username + Password
-		request.Auth.PasswordCredentials = &passwordCredentials{
-			Username: auth.Username,
-			Password: auth.Password,
-		}
-	} else if auth.APIKey != "" {
-		// API key authentication.
-		request.Auth.APIKeyCredentials = &apiKeyCredentials{
-			Username: auth.Username,
-			APIKey:   auth.APIKey,
-		}
-	} else {
-		return createErr(ErrPasswordOrAPIKey)
+	if auth.Password == "" {
+		return createErr(ErrPasswordRequired)
 	}
 
-	// Populate the TenantName or TenantID, if provided.
+	// Populate the request.
+	request.Auth.PasswordCredentials = &passwordCredentials{
+		Username: auth.Username,
+		Password: auth.Password,
+	}
 	request.Auth.TenantID = auth.TenantID
 	request.Auth.TenantName = auth.TenantName
 
 	var result CreateResult
-	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
+	_, result.Err = perigee.Request("POST", CreateURL(client), perigee.Options{
 		ReqBody: &request,
 		Results: &result.Resp,
 		OkCodes: []int{200, 203},
