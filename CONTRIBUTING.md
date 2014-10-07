@@ -10,17 +10,13 @@
 As a contributor you will need to setup your workspace in a slightly different
 way than just downloading it. Here are the basic installation instructions:
 
-1. clone the upstream repository into a directory of your choice:
-
-```bash
-mkdir ~/projects/gophercloud && cd ~/projects/gophercloud
-export GOPATH=$(pwd)
-```
+1. Configure your `$GOPATH` and run `go get` as described in the main
+[README](/#how-to-install).
 
 2. Move into the directory that houses your local repository:
 
 ```bash
-cd src/github.com/rackspace/gophercloud
+cd ${GOPATH}/src/github.com/rackspace/gophercloud
 ```
 
 3. Fork the `rackspace/gophercloud` repository and update your remote refs. You
@@ -238,10 +234,10 @@ generated from source code comments
 * user documentation on our [homepage](http://gophercloud.io) that includes
 getting started guides, installation guides and code samples
 
-If you feel that a certain section could be improved - whether its to clarify
-ambiguity or fix a grammatical mistake - please feel entitled to do so! We
-welcome doc pull requests with the same childlike enthusiasm as any other
-contribution!
+If you feel that a certain section could be improved - whether it's to clarify
+ambiguity, correct a technical mistake, or to fix a grammatical error - please
+feel entitled to do so! We welcome doc pull requests with the same childlike
+enthusiasm as any other contribution!
 
 ### 4. Optimizing existing features
 
