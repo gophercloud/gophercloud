@@ -158,3 +158,27 @@ func TestDelete(t *testing.T) {
 	err := Delete(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, err)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/volumes/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+		{
+			"volume": {
+				"display_name": "vol-002",
+				"id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"
+		    }
+		}
+		`)
+	})
+
+	options := &UpdateOpts{Name: "vol-002"}
+	v, err := Update(ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, "vol-002", v.Name)
+}
