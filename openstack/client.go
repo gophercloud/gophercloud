@@ -111,49 +111,9 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 	}
 
 	client.TokenID = token.ID
-	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
-		return v2endpointLocator(catalog, opts)
-	}
+	client.EndpointLocator = catalog.EndpointURL
 
 	return nil
-}
-
-func v2endpointLocator(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
-	// Extract Endpoints from the catalog entries that match the requested Type, Name if provided, and Region if provided.
-	var endpoints = make([]tokens2.Endpoint, 0, 1)
-	for _, entry := range catalog.Entries {
-		if (entry.Type == opts.Type) && (opts.Name == "" || entry.Name == opts.Name) {
-			for _, endpoint := range entry.Endpoints {
-				if opts.Region == "" || endpoint.Region == opts.Region {
-					endpoints = append(endpoints, endpoint)
-				}
-			}
-		}
-	}
-
-	// Report an error if the options were ambiguous.
-	if len(endpoints) == 0 {
-		return "", gophercloud.ErrEndpointNotFound
-	}
-	if len(endpoints) > 1 {
-		return "", fmt.Errorf("Discovered %d matching endpoints: %#v", len(endpoints), endpoints)
-	}
-
-	// Extract the appropriate URL from the matching Endpoint.
-	for _, endpoint := range endpoints {
-		switch opts.Availability {
-		case gophercloud.AvailabilityPublic:
-			return normalizeURL(endpoint.PublicURL), nil
-		case gophercloud.AvailabilityInternal:
-			return normalizeURL(endpoint.InternalURL), nil
-		case gophercloud.AvailabilityAdmin:
-			return normalizeURL(endpoint.AdminURL), nil
-		default:
-			return "", fmt.Errorf("Unexpected availability in endpoint query: %s", opts.Availability)
-		}
-	}
-
-	return "", gophercloud.ErrEndpointNotFound
 }
 
 // AuthenticateV3 explicitly authenticates against the identity v3 service.

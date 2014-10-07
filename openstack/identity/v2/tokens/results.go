@@ -133,11 +133,11 @@ func createErr(err error) CreateResult {
 	return CreateResult{gophercloud.CommonResult{Err: err}}
 }
 
-// LocateEndpointURL discovers the endpoint URL for a specific service from a ServiceCatalog acquired
-// from a Create request. The specified EndpointOpts are used to identify a unique, unambiguous
-// endpoint to return. The minimum that can be specified is a Type, but you will also often need
-// to specify a Name and/or a Region depending on what's available on your OpenStack deployment.
-func LocateEndpointURL(catalog *ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
+// EndpointURL discovers the endpoint URL for a specific service with a ServiceCatalog. The
+// specified EndpointOpts are used to identify a unique, unambiguous endpoint to return. The minimum
+// that can be specified is a Type, but you will also often need to specify a Name and/or a Region
+// depending on what's available on your OpenStack deployment.
+func (catalog *ServiceCatalog) EndpointURL(opts gophercloud.EndpointOpts) (string, error) {
 	// Extract Endpoints from the catalog entries that match the requested Type, Name if provided, and Region if provided.
 	var endpoints = make([]Endpoint, 0, 1)
 	for _, entry := range catalog.Entries {
