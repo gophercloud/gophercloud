@@ -6,16 +6,16 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/testhelper"
+	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 func TestAuthenticatedClientV3(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
 	const ID = "0123456789"
 
-	testhelper.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"versions": {
@@ -37,10 +37,10 @@ func TestAuthenticatedClientV3(t *testing.T) {
 					]
 				}
 			}
-		`, testhelper.Endpoint()+"v3/", testhelper.Endpoint()+"v2.0/")
+		`, th.Endpoint()+"v3/", th.Endpoint()+"v2.0/")
 	})
 
-	testhelper.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("X-Subject-Token", ID)
 
 		w.WriteHeader(http.StatusCreated)
@@ -50,24 +50,18 @@ func TestAuthenticatedClientV3(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		UserID:           "me",
 		Password:         "secret",
-		IdentityEndpoint: testhelper.Endpoint(),
+		IdentityEndpoint: th.Endpoint(),
 	}
 	client, err := AuthenticatedClient(options)
-
-	if err != nil {
-		t.Fatalf("Unexpected error from AuthenticatedClient: %s", err)
-	}
-
-	if client.TokenID != ID {
-		t.Errorf("Expected token ID to be [%s], but was [%s]", ID, client.TokenID)
-	}
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, ID, client.TokenID)
 }
 
 func TestAuthenticatedClientV2(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"versions": {
@@ -89,16 +83,16 @@ func TestAuthenticatedClientV2(t *testing.T) {
 					]
 				}
 			}
-		`, testhelper.Endpoint()+"v3/", testhelper.Endpoint()+"v2.0/")
+		`, th.Endpoint()+"v3/", th.Endpoint()+"v2.0/")
 	})
 
-	testhelper.Mux.HandleFunc("/v2.0/tokens", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusCreated)
+	th.Mux.HandleFunc("/v2.0/tokens", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
 			{
 				"access": {
 					"token": {
-						"id": "01234567890"
+						"id": "01234567890",
+						"expires": "2014-10-01T10:00:00.000000Z"
 					},
 					"serviceCatalog": [
 						{
@@ -159,15 +153,9 @@ func TestAuthenticatedClientV2(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		Username:         "me",
 		Password:         "secret",
-		IdentityEndpoint: testhelper.Endpoint(),
+		IdentityEndpoint: th.Endpoint(),
 	}
 	client, err := AuthenticatedClient(options)
-
-	if err != nil {
-		t.Fatalf("Unexpected error from AuthenticatedClient: %s", err)
-	}
-
-	if client.TokenID != "01234567890" {
-		t.Errorf("Expected token ID to be [01234567890], but was [%s]", client.TokenID)
-	}
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, "01234567890", client.TokenID)
 }

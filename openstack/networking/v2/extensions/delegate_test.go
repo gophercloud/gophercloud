@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	common "github.com/rackspace/gophercloud/openstack/common/extensions"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
@@ -14,7 +15,7 @@ func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/extensions", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/extensions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -33,7 +34,7 @@ func TestList(t *testing.T) {
         }
     ]
 }
-			`)
+      `)
 	})
 
 	count := 0
@@ -47,12 +48,14 @@ func TestList(t *testing.T) {
 
 		expected := []Extension{
 			Extension{
-				Updated:     "2013-01-20T00:00:00-00:00",
-				Name:        "Neutron Service Type Management",
-				Links:       []interface{}{},
-				Namespace:   "http://docs.openstack.org/ext/neutron/service-type/api/v1.0",
-				Alias:       "service-type",
-				Description: "API for retrieving service providers for Neutron advanced services",
+				common.Extension{
+					Updated:     "2013-01-20T00:00:00-00:00",
+					Name:        "Neutron Service Type Management",
+					Links:       []interface{}{},
+					Namespace:   "http://docs.openstack.org/ext/neutron/service-type/api/v1.0",
+					Alias:       "service-type",
+					Description: "API for retrieving service providers for Neutron advanced services",
+				},
 			},
 		}
 
@@ -70,7 +73,7 @@ func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/extensions/agent", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/extensions/agent", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -88,7 +91,7 @@ func TestGet(t *testing.T) {
         "description": "The agent management extension."
     }
 }
-		`)
+    `)
 
 		ext, err := Get(fake.ServiceClient(), "agent").Extract()
 		th.AssertNoErr(t, err)

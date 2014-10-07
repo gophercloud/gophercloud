@@ -2,14 +2,12 @@ package networks
 
 import "github.com/rackspace/gophercloud"
 
-const Version = "v2.0"
-
 func resourceURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL(Version, "networks", id)
+	return c.ServiceURL("networks", id)
 }
 
 func rootURL(c *gophercloud.ServiceClient) string {
-	return c.ServiceURL(Version, "networks")
+	return c.ServiceURL("networks")
 }
 
 func getURL(c *gophercloud.ServiceClient, id string) string {

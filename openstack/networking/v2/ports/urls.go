@@ -2,14 +2,12 @@ package ports
 
 import "github.com/rackspace/gophercloud"
 
-const version = "v2.0"
-
 func resourceURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL(version, "ports", id)
+	return c.ServiceURL("ports", id)
 }
 
 func rootURL(c *gophercloud.ServiceClient) string {
-	return c.ServiceURL(version, "ports")
+	return c.ServiceURL("ports")
 }
 
 func listURL(c *gophercloud.ServiceClient) string {

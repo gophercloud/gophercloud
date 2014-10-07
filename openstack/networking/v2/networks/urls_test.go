@@ -10,7 +10,7 @@ import (
 const endpoint = "http://localhost:57909/"
 
 func endpointClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{Endpoint: endpoint}
+	return &gophercloud.ServiceClient{Endpoint: endpoint, ResourceBase: endpoint + "v2.0/"}
 }
 
 func TestGetURL(t *testing.T) {

@@ -8,10 +8,13 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// GetResult temporarility stores the result of a Get call.
+// Use its Extract() method to interpret it as an Extension.
 type GetResult struct {
 	gophercloud.CommonResult
 }
 
+// Extract interprets a GetResult as an Extension.
 func (r GetResult) Extract() (*Extension, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -23,13 +26,13 @@ func (r GetResult) Extract() (*Extension, error) {
 
 	err := mapstructure.Decode(r.Resp, &res)
 	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron extension: %v", err)
+		return nil, fmt.Errorf("Error decoding OpenStack extension: %v", err)
 	}
 
 	return res.Extension, nil
 }
 
-// Extension is a struct that represents a Neutron extension.
+// Extension is a struct that represents an OpenStack extension.
 type Extension struct {
 	Updated     string        `json:"updated"`
 	Name        string        `json:"name"`
@@ -39,8 +42,7 @@ type Extension struct {
 	Description string        `json:"description"`
 }
 
-// ExtensionPage is the page returned by a pager when traversing over a
-// collection of extensions.
+// ExtensionPage is the page returned by a pager when traversing over a collection of extensions.
 type ExtensionPage struct {
 	pagination.SinglePageBase
 }
@@ -54,9 +56,9 @@ func (r ExtensionPage) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
-// ExtractExtensions accepts a Page struct, specifically an ExtensionPage
-// struct, and extracts the elements into a slice of Extension structs. In other
-// words, a generic collection is mapped into a relevant slice.
+// ExtractExtensions accepts a Page struct, specifically an ExtensionPage struct, and extracts the
+// elements into a slice of Extension structs.
+// In other words, a generic collection is mapped into a relevant slice.
 func ExtractExtensions(page pagination.Page) ([]Extension, error) {
 	var resp struct {
 		Extensions []Extension `mapstructure:"extensions"`

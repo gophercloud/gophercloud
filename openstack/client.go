@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/rackspace/gophercloud"
-	identity2 "github.com/rackspace/gophercloud/openstack/identity/v2"
+	tokens2 "github.com/rackspace/gophercloud/openstack/identity/v2/tokens"
 	endpoints3 "github.com/rackspace/gophercloud/openstack/identity/v3/endpoints"
 	services3 "github.com/rackspace/gophercloud/openstack/identity/v3/services"
 	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
@@ -99,38 +99,30 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		v2Client.Endpoint = endpoint
 	}
 
-	result, err := identity2.Authenticate(v2Client, options)
+	result := tokens2.Create(v2Client, options)
+
+	token, err := result.ExtractToken()
 	if err != nil {
 		return err
 	}
 
-	token, err := identity2.GetToken(result)
+	catalog, err := result.ExtractServiceCatalog()
 	if err != nil {
 		return err
 	}
 
 	client.TokenID = token.ID
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
-		return v2endpointLocator(result, opts)
+		return v2endpointLocator(catalog, opts)
 	}
 
 	return nil
 }
 
-func v2endpointLocator(authResults identity2.AuthResults, opts gophercloud.EndpointOpts) (string, error) {
-	catalog, err := identity2.GetServiceCatalog(authResults)
-	if err != nil {
-		return "", err
-	}
-
-	entries, err := catalog.CatalogEntries()
-	if err != nil {
-		return "", err
-	}
-
+func v2endpointLocator(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
 	// Extract Endpoints from the catalog entries that match the requested Type, Name if provided, and Region if provided.
-	var endpoints = make([]identity2.Endpoint, 0, 1)
-	for _, entry := range entries {
+	var endpoints = make([]tokens2.Endpoint, 0, 1)
+	for _, entry := range catalog.Entries {
 		if (entry.Type == opts.Type) && (opts.Name == "" || entry.Name == opts.Name) {
 			for _, endpoint := range entry.Endpoints {
 				if opts.Region == "" || endpoint.Region == opts.Region {
@@ -155,6 +147,8 @@ func v2endpointLocator(authResults identity2.AuthResults, opts gophercloud.Endpo
 			return normalizeURL(endpoint.PublicURL), nil
 		case gophercloud.AvailabilityInternal:
 			return normalizeURL(endpoint.InternalURL), nil
+		case gophercloud.AvailabilityAdmin:
+			return normalizeURL(endpoint.AdminURL), nil
 		default:
 			return "", fmt.Errorf("Unexpected availability in endpoint query: %s", opts.Availability)
 		}
@@ -308,7 +302,11 @@ func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+	return &gophercloud.ServiceClient{
+		Provider:     client,
+		Endpoint:     url,
+		ResourceBase: url + "v2.0/",
+	}, nil
 }
 
 // NewBlockStorageV1 creates a ServiceClient that may be used to access the v1 block storage service.

@@ -14,13 +14,13 @@ func endpointClient() *gophercloud.ServiceClient {
 }
 
 func TestExtensionURL(t *testing.T) {
-	actual := extensionURL(endpointClient(), "agent")
-	expected := endpoint + "v2.0/extensions/agent"
+	actual := ExtensionURL(endpointClient(), "agent")
+	expected := endpoint + "extensions/agent"
 	th.AssertEquals(t, expected, actual)
 }
 
 func TestListExtensionURL(t *testing.T) {
-	actual := listExtensionURL(endpointClient())
-	expected := endpoint + "v2.0/extensions"
+	actual := ListExtensionURL(endpointClient())
+	expected := endpoint + "extensions"
 	th.AssertEquals(t, expected, actual)
 }

@@ -8,9 +8,6 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-// RFC3339Milli describes the time format used by identity API responses.
-const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
-
 // commonResult is the deferred result of a Create or a Get call.
 type commonResult struct {
 	gophercloud.CommonResult
@@ -42,7 +39,7 @@ func (r commonResult) Extract() (*Token, error) {
 	}
 
 	// Attempt to parse the timestamp.
-	token.ExpiresAt, err = time.Parse(RFC3339Milli, response.Token.ExpiresAt)
+	token.ExpiresAt, err = time.Parse(gophercloud.RFC3339Milli, response.Token.ExpiresAt)
 	if err != nil {
 		return nil, err
 	}
