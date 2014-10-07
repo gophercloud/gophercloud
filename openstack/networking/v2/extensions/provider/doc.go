@@ -1,4 +1,4 @@
-// Package networkattrs gives access to the provider Neutron plugin, allowing
+// Package provider gives access to the provider Neutron plugin, allowing
 // network extended attributes. The provider extended attributes for networks
 // enable administrative users to specify how network objects map to the
 // underlying networking infrastructure. These extended attributes also appear

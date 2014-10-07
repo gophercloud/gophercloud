@@ -19,7 +19,8 @@ type Object struct {
 	Name         string `json:"name" mapstructure:"name"`
 }
 
-// ListResult is a single page of objects that is returned from a call to the List function.
+// ObjectPage is a single page of objects that is returned from a call to the
+// List function.
 type ObjectPage struct {
 	pagination.MarkerPageBase
 }
@@ -149,18 +150,22 @@ func (cr commonResult) ExtractHeaders() (http.Header, error) {
 	return cr.Resp.Header, nil
 }
 
+// CreateResult represents the result of a create operation.
 type CreateResult struct {
 	commonResult
 }
 
+// UpdateResult represents the result of an update operation.
 type UpdateResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	commonResult
 }
 
+// CopyResult represents the result of a copy operation.
 type CopyResult struct {
 	commonResult
 }

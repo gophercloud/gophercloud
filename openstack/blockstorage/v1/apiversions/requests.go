@@ -7,7 +7,7 @@ import (
 	"github.com/racker/perigee"
 )
 
-// ListVersions lists all the Cinder API versions available to end-users.
+// List lists all the Cinder API versions available to end-users.
 func List(c *gophercloud.ServiceClient) pagination.Pager {
 	return pagination.NewPager(c, listURL(c), func(r pagination.LastHTTPResponse) pagination.Page {
 		return APIVersionPage{pagination.SinglePageBase(r)}

@@ -44,10 +44,12 @@ func ExtractAPIVersions(page pagination.Page) ([]APIVersion, error) {
 	return resp.Versions, nil
 }
 
+// GetResult represents the result of a get operation.
 type GetResult struct {
 	gophercloud.CommonResult
 }
 
+// Extract is a function that accepts a result and extracts an API version resource.
 func (r GetResult) Extract() (*APIVersion, error) {
 	var resp struct {
 		Version *APIVersion `mapstructure:"version"`

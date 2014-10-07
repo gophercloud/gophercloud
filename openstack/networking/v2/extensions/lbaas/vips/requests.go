@@ -8,6 +8,8 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// AdminState gives users a solid type to work with for create and update
+// operations. It is recommended that users use the `Up` and `Down` enums.
 type AdminState *bool
 
 // Convenience vars for AdminStateUp values.
@@ -15,9 +17,8 @@ var (
 	iTrue  = true
 	iFalse = false
 
-	Nothing AdminState
-	Up      AdminState = &iTrue
-	Down    AdminState = &iFalse
+	Up   AdminState = &iTrue
+	Down AdminState = &iFalse
 )
 
 // ListOpts allows the filtering and sorting of paginated collections through

@@ -8,6 +8,8 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// AdminState gives users a solid type to work with for create and update
+// operations. It is recommended that users use the `Up` and `Down` enums.
 type AdminState *bool
 
 // Convenience vars for AdminStateUp values.
@@ -15,9 +17,8 @@ var (
 	iTrue  = true
 	iFalse = false
 
-	Nothing AdminState = nil
-	Up      AdminState = &iTrue
-	Down    AdminState = &iFalse
+	Up   AdminState = &iTrue
+	Down AdminState = &iFalse
 )
 
 // NetworkExtAttrs represents an extended form of a Network with additional fields.
@@ -79,7 +80,7 @@ func ExtractGet(r networks.GetResult) (*NetworkExtAttrs, error) {
 	return res.Network, nil
 }
 
-// ExtractGet decorates a CreateResult struct returned from a networks.Create()
+// ExtractCreate decorates a CreateResult struct returned from a networks.Create()
 // function with extended attributes.
 func ExtractCreate(r networks.CreateResult) (*NetworkExtAttrs, error) {
 	if r.Err != nil {

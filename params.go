@@ -21,6 +21,8 @@ func MaybeString(original string) *string {
 	return nil
 }
 
+// MaybeInt takes an int that might be a zero-value, and either returns a
+// pointer to its address or a nil value (i.e. empty pointer).
 func MaybeInt(original int) *int {
 	if original != 0 {
 		return &original
@@ -58,6 +60,19 @@ func isZero(v reflect.Value) bool {
 	return v.Interface() == z.Interface()
 }
 
+// BuildQueryString accepts a generic structure and parses it URL struct. It
+// converts field names into query names based on tags. So for example, this
+// type:
+//
+// struct {
+//    Bar string `q:"x_bar"`
+//    Baz int    `q:"lorem_ipsum"`
+// }{
+//    Bar: "XXX",
+//    Baz: "YYY",
+// }
+//
+// will be converted into ?x_bar=XXX&lorem_ipsum=YYYY
 func BuildQueryString(opts interface{}) (*url.URL, error) {
 	optsValue := reflect.ValueOf(opts)
 	if optsValue.Kind() == reflect.Ptr {
@@ -69,7 +84,7 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 		optsType = optsType.Elem()
 	}
 
-	optsSlice := make([]string, 0)
+	var optsSlice []string
 	if optsValue.Kind() == reflect.Struct {
 		for i := 0; i < optsValue.NumField(); i++ {
 			v := optsValue.Field(i)
@@ -115,10 +130,9 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 	return nil, fmt.Errorf("Options type is not a struct.")
 }
 
-func BuildRequestBody(opts interface{}) (map[string]interface{}, error) {
-	return nil, nil
-}
-
+// BuildHeaders accepts a generic structure and parses it string map. It
+// converts field names into header names based on "h" tags, and field values
+// into header values by a simple one-to-one mapping.
 func BuildHeaders(opts interface{}) (map[string]string, error) {
 	optsValue := reflect.ValueOf(opts)
 	if optsValue.Kind() == reflect.Ptr {
