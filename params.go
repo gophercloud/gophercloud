@@ -130,11 +130,6 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 	return nil, fmt.Errorf("Options type is not a struct.")
 }
 
-// BuildRequestBody is not currently implemented.
-func BuildRequestBody(opts interface{}) (map[string]interface{}, error) {
-	return nil, nil
-}
-
 // BuildHeaders accepts a generic structure and parses it string map. It
 // converts field names into header names based on "h" tags, and field values
 // into header values by a simple one-to-one mapping.

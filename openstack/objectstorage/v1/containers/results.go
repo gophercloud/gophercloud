@@ -131,17 +131,23 @@ func (cr commonResult) ExtractHeaders() (http.Header, error) {
 	return cr.Resp.Header, nil
 }
 
-// CreateResult represents the result of a create operation.
+// CreateResult represents the result of a create operation. To extract the
+// the headers from the HTTP response, you can invoke the 'ExtractHeaders'
+// method on the result struct.
 type CreateResult struct {
 	commonResult
 }
 
-// UpdateResult represents the result of an update operation.
+// UpdateResult represents the result of an update operation. To extract the
+// the headers from the HTTP response, you can invoke the 'ExtractHeaders'
+// method on the result struct.
 type UpdateResult struct {
 	commonResult
 }
 
-// DeleteResult represents the result of a delete operation.
+// DeleteResult represents the result of a delete operation. To extract the
+// the headers from the HTTP response, you can invoke the 'ExtractHeaders'
+// method on the result struct.
 type DeleteResult struct {
 	commonResult
 }
