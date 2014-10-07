@@ -1,10 +1,17 @@
-# gophercloud
+# gophercloud: the OpenStack SDK for Go [![Build Status](https://travis-ci.org/rackspace/gophercloud.svg?branch=v0.2.0)](https://travis-ci.org/rackspace/gophercloud)
 
 gophercloud is a flexible SDK that allows you to consume and work with OpenStack
 clouds in a simple and idiomatic way using golang. Many services are supported,
 including Compute, Block Storage, Object Storage, Networking, and Identity.
-Each service API is backed with documentation, code samples, unit tests and
-acceptance tests.
+Each service API is backed with getting started guides, code samples, reference
+documentation, unit tests and acceptance tests.
+
+## Useful links
+
+* [gophercloud homepage](http://gophercloud.io)
+* [Reference documentation](http://godoc.org/github.com/rackspace/gophercloud)
+* [Getting started guides](http://gophercloud.io/docs)
+* [Effective Go](https://golang.org/doc/effective_go.html)
 
 ## How to install
 
@@ -57,6 +64,12 @@ gophercloud. The next step is authentication, and this is handled by a base
 explicitly, or tell gophercloud to use environment variables:
 
 ```go
+import (
+  "github.com/rackspace/gophercloud"
+  "github.com/rackspace/gophercloud/openstack"
+  "github.com/rackspace/gophercloud/openstack/utils"
+)
+
 // Option 1: Pass in the values yourself
 opts := gophercloud.AuthOptions{
   IdentityEndpoint: "https://my-openstack.com:5000/v2.0",
@@ -66,7 +79,6 @@ opts := gophercloud.AuthOptions{
 }
 
 // Option 2: Use a utility function to retrieve all your environment variables
-import "github.com/rackspace/gophercloud/openstack/utils"
 opts, err := utils.AuthOptions()
 ```
 
@@ -74,14 +86,47 @@ Once you have the `opts` variable, you can pass it in and get back a
 `ProviderClient` struct:
 
 ```go
-import "github.com/rackspace/gophercloud/openstack"
-
 provider, err := openstack.AuthenticatedClient(opts)
 ```
 
 The `ProviderClient` is the top-level client that all of your OpenStack services
 derive from. The provider contains all of the authentication details that allow
 your Go code to access the API - such as the base URL and token ID.
+
+### Provision a server
+
+Once we have a base Provider, we inject it as a dependency into each OpenStack
+service. In order to work with the Compute API, we need a Compute service
+client; which can be created like so:
+
+```go
+client, err := openstack.NewComputeV2(provider, gophercloud.EndpointOpts{
+  Region: os.Getenv("OS_REGION_NAME"),
+})
+```
+
+We then use this `client` for any Compute API operation we want. In our case,
+we want to provision a new server - so we invoke the `Create` method and pass
+in the flavor (hardware specification) and image (operating system) we're
+interested in:
+
+```go
+server, err := servers.Create(client, servers.CreateOpts{
+  Name:      "My new server!",
+  FlavorRef: "flavor_id",
+  ImageRef:  "image_id",
+}).Extract()
+
+if err != nil {
+  fmt.Printf("Unable to create server for the following reason: %v", err)
+}
+```
+
+If you are unsure about what images and flavors are, you can read our [Compute
+Getting Started guide](http://gophercloud.io/docs/compute). The above code
+sample creates a new server with the parameters, and embodies the new resource
+in the `server` variable (a
+[`servers.Server`](http://godoc.org/github.com/rackspace/gophercloud) struct).
 
 ### Next steps
 
