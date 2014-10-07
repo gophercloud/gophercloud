@@ -1,10 +1,12 @@
 package rackspace
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack"
+	"github.com/rackspace/gophercloud/openstack/utils"
+	tokens2 "github.com/rackspace/gophercloud/rackspace/identity/v2/tokens"
 )
 
 const (
@@ -13,6 +15,10 @@ const (
 
 	// RackspaceUKIdentity is an identity endpoint located in the UK.
 	RackspaceUKIdentity = "https://lon.identity.api.rackspacecloud.com/v2.0/"
+)
+
+const (
+	v20 = "v2.0"
 )
 
 // NewClient creates a client that's prepared to communicate with the Rackspace API, but is not
@@ -35,10 +41,71 @@ func AuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.Provider
 		options.IdentityEndpoint = RackspaceUSIdentity
 	}
 
-	_, err := NewClient(options.IdentityEndpoint)
+	client, err := NewClient(options.IdentityEndpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, errors.New("Incomplete")
+	err = Authenticate(client, options)
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
+// Authenticate or re-authenticate against the most recent identity service supported at the
+// provided endpoint.
+func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
+	versions := []*utils.Version{
+		&utils.Version{ID: v20, Priority: 20, Suffix: "/v2.0/"},
+	}
+
+	chosen, endpoint, err := utils.ChooseVersion(client.IdentityBase, client.IdentityEndpoint, versions)
+	if err != nil {
+		return err
+	}
+
+	switch chosen.ID {
+	case v20:
+		return v2auth(client, endpoint, options)
+	default:
+		// The switch statement must be out of date from the versions list.
+		return fmt.Errorf("Unrecognized identity version: %s", chosen.ID)
+	}
+}
+
+func v2auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions) error {
+	v2Client := NewIdentityV2(client)
+	if endpoint != "" {
+		v2Client.Endpoint = endpoint
+	}
+
+	result := tokens2.Create(v2Client, tokens2.WrapOptions(options))
+
+	token, err := result.ExtractToken()
+	if err != nil {
+		return err
+	}
+
+	catalog, err := result.ExtractServiceCatalog()
+	if err != nil {
+		return err
+	}
+
+	client.TokenID = token.ID
+	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
+		return os.V2EndpointURL(catalog, opts)
+	}
+
+	return nil
+}
+
+// NewIdentityV2 creates a ServiceClient that may be used to access the v2 identity service.
+func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
+	v2Endpoint := client.IdentityBase + "v2.0/"
+
+	return &gophercloud.ServiceClient{
+		Provider: client,
+		Endpoint: v2Endpoint,
+	}
 }
