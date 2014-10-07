@@ -1,6 +1,7 @@
 package tokens
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -130,4 +131,46 @@ func (result CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
 // createErr quickly packs an error in a CreateResult.
 func createErr(err error) CreateResult {
 	return CreateResult{gophercloud.CommonResult{Err: err}}
+}
+
+// LocateEndpointURL discovers the endpoint URL for a specific service from a ServiceCatalog acquired
+// from a Create request. The specified EndpointOpts are used to identify a unique, unambiguous
+// endpoint to return. The minimum that can be specified is a Type, but you will also often need
+// to specify a Name and/or a Region depending on what's available on your OpenStack deployment.
+func LocateEndpointURL(catalog *ServiceCatalog, opts gophercloud.EndpointOpts) (string, error) {
+	// Extract Endpoints from the catalog entries that match the requested Type, Name if provided, and Region if provided.
+	var endpoints = make([]Endpoint, 0, 1)
+	for _, entry := range catalog.Entries {
+		if (entry.Type == opts.Type) && (opts.Name == "" || entry.Name == opts.Name) {
+			for _, endpoint := range entry.Endpoints {
+				if opts.Region == "" || endpoint.Region == opts.Region {
+					endpoints = append(endpoints, endpoint)
+				}
+			}
+		}
+	}
+
+	// Report an error if the options were ambiguous.
+	if len(endpoints) == 0 {
+		return "", gophercloud.ErrEndpointNotFound
+	}
+	if len(endpoints) > 1 {
+		return "", fmt.Errorf("Discovered %d matching endpoints: %#v", len(endpoints), endpoints)
+	}
+
+	// Extract the appropriate URL from the matching Endpoint.
+	for _, endpoint := range endpoints {
+		switch opts.Availability {
+		case gophercloud.AvailabilityPublic:
+			return gophercloud.NormalizeURL(endpoint.PublicURL), nil
+		case gophercloud.AvailabilityInternal:
+			return gophercloud.NormalizeURL(endpoint.InternalURL), nil
+		case gophercloud.AvailabilityAdmin:
+			return gophercloud.NormalizeURL(endpoint.AdminURL), nil
+		default:
+			return "", fmt.Errorf("Unexpected availability in endpoint query: %s", opts.Availability)
+		}
+	}
+
+	return "", gophercloud.ErrEndpointNotFound
 }

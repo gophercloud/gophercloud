@@ -3,7 +3,6 @@ package openstack
 import (
 	"fmt"
 	"net/url"
-	"strings"
 
 	"github.com/rackspace/gophercloud"
 	tokens2 "github.com/rackspace/gophercloud/openstack/identity/v2/tokens"
@@ -32,8 +31,8 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 	u.Path, u.RawQuery, u.Fragment = "", "", ""
 	base := u.String()
 
-	endpoint = normalizeURL(endpoint)
-	base = normalizeURL(base)
+	endpoint = gophercloud.NormalizeURL(endpoint)
+	base = gophercloud.NormalizeURL(base)
 
 	if hadPath {
 		return &gophercloud.ProviderClient{
@@ -244,15 +243,7 @@ func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.End
 	}
 	endpoint := endpoints[0]
 
-	return normalizeURL(endpoint.URL), nil
-}
-
-// normalizeURL ensures that each endpoint URL has a closing `/`, as expected by ServiceClient.
-func normalizeURL(url string) string {
-	if !strings.HasSuffix(url, "/") {
-		return url + "/"
-	}
-	return url
+	return gophercloud.NormalizeURL(endpoint.URL), nil
 }
 
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.
