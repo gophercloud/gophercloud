@@ -1,5 +1,10 @@
 # Contributing to gophercloud
 
+- [Getting started](#getting-started)
+- [Tests](#tests)
+- [Style guide](#basic-style-guide)
+- [4 ways to get involved](#4-ways-to-get-involved)
+
 ## Getting started
 
 There should be no fundamental differences of setup between contributors and
@@ -33,16 +38,15 @@ import (
   "github.com/rackspace/gophercloud/testhelper"
 )
 
-
 func TestSomething(t *testing.T) {
-  testhelper.AssertEquals(t, "expected", "actual")
-}
-
-func TestErrors(t *testing.T) {
   result, err := Operation()
 
   testhelper.AssertEquals(t, "foo", result.Bar)
   testhelper.AssertNoErr(t, err)
+}
+
+func TestSomethingElse(t *testing.T) {
+  testhelper.CheckEquals(t, "expected", "actual")
 }
 ```
 
@@ -53,7 +57,7 @@ being that `t.Errorf` is raised rather than `t.Fatalf`.
 
 Here is a truncated example of mocked HTTP responses:
 
-```
+```go
 import (
 	"testing"
 
@@ -62,21 +66,22 @@ import (
 )
 
 func TestGet(t *testing.T) {
+	// Setup the HTTP request multiplexer and server
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	th.Mux.HandleFunc("/networks/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		// Test we're using the correct HTTP method
-    th.TestMethod(t, r, "GET")
+		th.TestMethod(t, r, "GET")
 
-    // Test we're setting the auth token
+		// Test we're setting the auth token
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-    // Set the appropriate headers for our mocked response
+		// Set the appropriate headers for our mocked response
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-    // Set the HTTP body
+		// Set the HTTP body
 		fmt.Fprintf(w, `
 {
     "network": {
@@ -91,21 +96,21 @@ func TestGet(t *testing.T) {
 			`)
 	})
 
-  // Call our API operation
+	// Call our API operation
 	network, err := Get(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 
-  // Assert no errors and equality
+	// Assert no errors and equality
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, n.Status, "ACTIVE")
 }
 ```
 
-### Acceptance tests + build tags
+### Acceptance tests
 
 As we've already mentioned, unit tests have a very narrow and confined focus -
 they test small units of behaviour. Acceptance tests on the other hand have a
 far larger scope: they are fully functional tests that test the entire API of a
-service in one fell swoop. They don't care about unit independence or mocking
+service in one fell swoop. They don't care about unit isolation or mocking
 expectations, they instead do a full run-through and consequently test how the
 entire system _integrates_ together. When an API satisfies expectations, it
 proves by default that the requirements for a contract have been met.
@@ -170,24 +175,24 @@ breakthroughs on it so far.
 We have three forms of documentation:
 
 * short README documents that briefly introduce a topic
-* reference documentation on [godoc.org](http://godoc.org) that automatically
-generates from source code comments
+* reference documentation on [godoc.org](http://godoc.org) that is automatically
+generated from source code comments
 * user documentation on our [homepage](http://gophercloud.io) that includes
 getting started guides, installation guides and code samples
 
 If you feel that a certain section could be improved - whether its to clarify
-ambiguity or a fix a grammatical mistake - please feel entitled to do so! We
+ambiguity or fix a grammatical mistake - please feel entitled to do so! We
 welcome doc pull requests with the same childlike enthusiasm as any other
 contribution!
 
 ### 3. Optimizing existing features
 
 If you would like to improve or optimize an existing feature, please be aware
-that we adhere to semantic versioning] - which means that we cannot introduce
-breaking changes to the API without a major version change (v1.x -> v2.x).
-Making that leap is a big step, so we encourage contributors to refactor rather
-than rewrite. Running tests will prevent regression and avoid the possibility
-of breaking somebody's current implementation.
+that we adhere to [semantic versioning](http://semver.org) - which means that
+we cannot introduce breaking changes to the API without a major version change
+(v1.x -> v2.x). Making that leap is a big step, so we encourage contributors to
+refactor rather than rewrite. Running tests will prevent regression and avoid
+the possibility of breaking somebody's current implementation.
 
 ### 4. Working on a new feature
 
@@ -199,4 +204,6 @@ you avoid losing time implementing something that might not ever work.
 
 You must ensure that all of your work is well tested - both in terms of unit
 and acceptance tests. Untested code will not be merged because it introduces
-too much of a risk to end-users. Happy hacking!
+too much of a risk to end-users.
+
+Happy hacking!
