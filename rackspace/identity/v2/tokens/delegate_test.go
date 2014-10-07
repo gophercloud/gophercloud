@@ -110,7 +110,7 @@ func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string
     `)
 	})
 
-	return Create(&client, options)
+	return Create(&client, WrapOptions(options))
 }
 
 func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr error) {
@@ -128,7 +128,7 @@ func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr err
 		fmt.Fprintf(w, `{}`)
 	})
 
-	actualErr := Create(&client, options).Err
+	actualErr := Create(&client, WrapOptions(options)).Err
 	th.CheckEquals(t, expectedErr, actualErr)
 }
 

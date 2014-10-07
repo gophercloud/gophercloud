@@ -19,6 +19,11 @@ type AuthOptions struct {
 	gophercloud.AuthOptions
 }
 
+// WrapOptions embeds a root AuthOptions struct in a package-specific one.
+func WrapOptions(original gophercloud.AuthOptions) AuthOptions {
+	return AuthOptions{AuthOptions: original}
+}
+
 // ToTokenCreateMap converts AuthOptions into nested maps that can be serialized into a JSON
 // request.
 func (auth AuthOptions) ToTokenCreateMap() (map[string]interface{}, error) {
