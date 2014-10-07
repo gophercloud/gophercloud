@@ -6,11 +6,8 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	tokens2 "github.com/rackspace/gophercloud/openstack/identity/v2/tokens"
-	endpoints3 "github.com/rackspace/gophercloud/openstack/identity/v3/endpoints"
-	services3 "github.com/rackspace/gophercloud/openstack/identity/v3/services"
 	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
 	"github.com/rackspace/gophercloud/openstack/utils"
-	"github.com/rackspace/gophercloud/pagination"
 )
 
 const (
@@ -111,7 +108,9 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 	}
 
 	client.TokenID = token.ID
-	client.EndpointLocator = catalog.EndpointURL
+	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
+		return V2EndpointURL(catalog, opts)
+	}
 
 	return nil
 }
@@ -135,75 +134,10 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 	client.TokenID = token.ID
 
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
-		return v3endpointLocator(v3Client, opts)
+		return V3EndpointLocator(v3Client, opts)
 	}
 
 	return nil
-}
-
-func v3endpointLocator(v3Client *gophercloud.ServiceClient, opts gophercloud.EndpointOpts) (string, error) {
-	// Discover the service we're interested in.
-	var services = make([]services3.Service, 0, 1)
-	servicePager := services3.List(v3Client, services3.ListOpts{ServiceType: opts.Type})
-	err := servicePager.EachPage(func(page pagination.Page) (bool, error) {
-		part, err := services3.ExtractServices(page)
-		if err != nil {
-			return false, err
-		}
-
-		for _, service := range part {
-			if service.Name == opts.Name {
-				services = append(services, service)
-			}
-		}
-
-		return true, nil
-	})
-	if err != nil {
-		return "", err
-	}
-
-	if len(services) == 0 {
-		return "", gophercloud.ErrServiceNotFound
-	}
-	if len(services) > 1 {
-		return "", fmt.Errorf("Discovered %d matching services: %#v", len(services), services)
-	}
-	service := services[0]
-
-	// Enumerate the endpoints available for this service.
-	var endpoints []endpoints3.Endpoint
-	endpointPager := endpoints3.List(v3Client, endpoints3.ListOpts{
-		Availability: opts.Availability,
-		ServiceID:    service.ID,
-	})
-	err = endpointPager.EachPage(func(page pagination.Page) (bool, error) {
-		part, err := endpoints3.ExtractEndpoints(page)
-		if err != nil {
-			return false, err
-		}
-
-		for _, endpoint := range part {
-			if opts.Region == "" || endpoint.Region == opts.Region {
-				endpoints = append(endpoints, endpoint)
-			}
-		}
-
-		return true, nil
-	})
-	if err != nil {
-		return "", err
-	}
-
-	if len(endpoints) == 0 {
-		return "", gophercloud.ErrEndpointNotFound
-	}
-	if len(endpoints) > 1 {
-		return "", fmt.Errorf("Discovered %d matching endpoints: %#v", len(endpoints), endpoints)
-	}
-	endpoint := endpoints[0]
-
-	return gophercloud.NormalizeURL(endpoint.URL), nil
 }
 
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.
