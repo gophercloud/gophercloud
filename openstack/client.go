@@ -134,7 +134,7 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 	client.TokenID = token.ID
 
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
-		return V3EndpointLocator(v3Client, opts)
+		return V3EndpointURL(v3Client, opts)
 	}
 
 	return nil
