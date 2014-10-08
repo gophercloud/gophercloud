@@ -78,12 +78,8 @@ func (p FlavorPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the next page of results.
 func (p FlavorPage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
 	type resp struct {
-		Links []link `mapstructure:"flavors_links"`
+		Links []gophercloud.Link `mapstructure:"flavors_links"`
 	}
 
 	var r resp
@@ -92,17 +88,7 @@ func (p FlavorPage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 func defaulter(from, to reflect.Kind, v interface{}) (interface{}, error) {

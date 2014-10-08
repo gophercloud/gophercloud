@@ -116,12 +116,8 @@ func (page ServerPage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the next page of results.
 func (page ServerPage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
 	type resp struct {
-		Links []link `mapstructure:"servers_links"`
+		Links []gophercloud.Link `mapstructure:"servers_links"`
 	}
 
 	var r resp
@@ -130,17 +126,7 @@ func (page ServerPage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 // ExtractServers interprets the results of a single page from a List() call, producing a slice of Server entities.
