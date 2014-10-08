@@ -40,11 +40,8 @@ func (r commonResult) Extract() (*Token, error) {
 
 	// Attempt to parse the timestamp.
 	token.ExpiresAt, err = time.Parse(gophercloud.RFC3339Milli, response.Token.ExpiresAt)
-	if err != nil {
-		return nil, err
-	}
 
-	return &token, nil
+	return &token, err
 }
 
 // CreateResult is the deferred response from a Create call.

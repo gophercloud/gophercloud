@@ -1,8 +1,6 @@
 package endpoints
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -24,11 +22,8 @@ func (r commonResult) Extract() (*Endpoint, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Endpoint: %v", err)
-	}
 
-	return &res.Endpoint, nil
+	return &res.Endpoint, err
 }
 
 // CreateResult is the deferred result of a Create call.
@@ -77,8 +72,6 @@ func ExtractEndpoints(page pagination.Page) ([]Endpoint, error) {
 	}
 
 	err := mapstructure.Decode(page.(EndpointPage).Body, &response)
-	if err != nil {
-		return nil, err
-	}
-	return response.Endpoints, nil
+
+	return response.Endpoints, err
 }
