@@ -1,8 +1,6 @@
 package volumetypes
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -64,9 +62,6 @@ func (r commonResult) Extract() (*VolumeType, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Volume Type: %v", err)
-	}
 
-	return res.VolumeType, nil
+	return res.VolumeType, err
 }

@@ -37,11 +37,8 @@ func ExtractAPIVersions(page pagination.Page) ([]APIVersion, error) {
 	}
 
 	err := mapstructure.Decode(page.(APIVersionPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Versions, nil
+	return resp.Versions, err
 }
 
 // GetResult represents the result of a get operation.
@@ -56,9 +53,6 @@ func (r GetResult) Extract() (*APIVersion, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Version, nil
+	return resp.Version, err
 }

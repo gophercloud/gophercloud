@@ -1,8 +1,6 @@
 package volumes
 
 import (
-	"fmt"
-
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 
@@ -80,8 +78,6 @@ func (r commonResult) Extract() (*Volume, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("volumes: Error decoding volumes.commonResult: %v", err)
-	}
-	return res.Volume, nil
+
+	return res.Volume, err
 }
