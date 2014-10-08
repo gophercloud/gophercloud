@@ -17,7 +17,7 @@ func TestListImages(t *testing.T) {
 
 	t.Logf("ID\tRegion\tName\tStatus\tCreated")
 
-	pager := images.List(client)
+	pager := images.ListDetail(client, nil)
 	count, pages := 0, 0
 	pager.EachPage(func(page pagination.Page) (bool, error) {
 		pages++
