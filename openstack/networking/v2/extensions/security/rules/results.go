@@ -1,8 +1,6 @@
 package rules
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -65,12 +63,8 @@ type SecGroupRulePage struct {
 // reached the end of a page and the pager seeks to traverse over a new one. In
 // order to do this, it needs to construct the next page's URL.
 func (p SecGroupRulePage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
 	type resp struct {
-		Links []link `mapstructure:"security_group_rules_links"`
+		Links []gophercloud.Link `mapstructure:"security_group_rules_links"`
 	}
 
 	var r resp
@@ -79,17 +73,7 @@ func (p SecGroupRulePage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 // IsEmpty checks whether a SecGroupRulePage struct is empty.
@@ -110,11 +94,8 @@ func ExtractRules(page pagination.Page) ([]SecGroupRule, error) {
 	}
 
 	err := mapstructure.Decode(page.(SecGroupRulePage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.SecGroupRules, nil
+	return resp.SecGroupRules, err
 }
 
 type commonResult struct {
@@ -132,11 +113,8 @@ func (r commonResult) Extract() (*SecGroupRule, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron SecGroupRule: %v", err)
-	}
 
-	return res.SecGroupRule, nil
+	return res.SecGroupRule, err
 }
 
 // CreateResult represents the result of a create operation.

@@ -1,8 +1,6 @@
 package pools
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -68,12 +66,8 @@ type PoolPage struct {
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
 func (p PoolPage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
 	type resp struct {
-		Links []link `mapstructure:"pools_links"`
+		Links []gophercloud.Link `mapstructure:"pools_links"`
 	}
 
 	var r resp
@@ -82,17 +76,7 @@ func (p PoolPage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 // IsEmpty checks whether a PoolPage struct is empty.
@@ -113,11 +97,8 @@ func ExtractPools(page pagination.Page) ([]Pool, error) {
 	}
 
 	err := mapstructure.Decode(page.(PoolPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Pools, nil
+	return resp.Pools, err
 }
 
 type commonResult struct {
@@ -135,11 +116,8 @@ func (r commonResult) Extract() (*Pool, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron pool: %v", err)
-	}
 
-	return res.Pool, nil
+	return res.Pool, err
 }
 
 // CreateResult represents the result of a create operation.

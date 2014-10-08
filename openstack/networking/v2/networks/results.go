@@ -1,8 +1,6 @@
 package networks
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -23,11 +21,8 @@ func (r commonResult) Extract() (*Network, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron network: %v", err)
-	}
 
-	return res.Network, nil
+	return res.Network, err
 }
 
 // CreateResult represents the result of a create operation.
@@ -83,12 +78,8 @@ type NetworkPage struct {
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
 func (p NetworkPage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
 	type resp struct {
-		Links []link `mapstructure:"networks_links"`
+		Links []gophercloud.Link `mapstructure:"networks_links"`
 	}
 
 	var r resp
@@ -97,17 +88,7 @@ func (p NetworkPage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 // IsEmpty checks whether a NetworkPage struct is empty.
@@ -128,9 +109,6 @@ func ExtractNetworks(page pagination.Page) ([]Network, error) {
 	}
 
 	err := mapstructure.Decode(page.(NetworkPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Networks, nil
+	return resp.Networks, err
 }

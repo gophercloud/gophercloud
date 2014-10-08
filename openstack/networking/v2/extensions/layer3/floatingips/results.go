@@ -120,9 +120,6 @@ func ExtractFloatingIPs(page pagination.Page) ([]FloatingIP, error) {
 	}
 
 	err := mapstructure.Decode(page.(FloatingIPPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.FloatingIPs, nil
+	return resp.FloatingIPs, err
 }

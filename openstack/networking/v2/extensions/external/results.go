@@ -1,8 +1,6 @@
 package external
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
 	"github.com/rackspace/gophercloud/pagination"
@@ -47,11 +45,8 @@ func commonExtract(e error, response map[string]interface{}) (*NetworkExternal, 
 	}
 
 	err := mapstructure.Decode(response, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron network: %v", err)
-	}
 
-	return res.Network, nil
+	return res.Network, err
 }
 
 // ExtractGet decorates a GetResult struct returned from a networks.Get()
@@ -81,9 +76,6 @@ func ExtractList(page pagination.Page) ([]NetworkExternal, error) {
 	}
 
 	err := mapstructure.Decode(page.(networks.NetworkPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Networks, nil
+	return resp.Networks, err
 }

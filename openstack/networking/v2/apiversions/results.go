@@ -35,11 +35,8 @@ func ExtractAPIVersions(page pagination.Page) ([]APIVersion, error) {
 	}
 
 	err := mapstructure.Decode(page.(APIVersionPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Versions, nil
+	return resp.Versions, err
 }
 
 // APIVersionResource represents a generic API resource. It contains the name
@@ -75,9 +72,6 @@ func ExtractVersionResources(page pagination.Page) ([]APIVersionResource, error)
 	}
 
 	err := mapstructure.Decode(page.(APIVersionResourcePage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.APIVersionResources, nil
+	return resp.APIVersionResources, err
 }
