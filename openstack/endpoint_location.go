@@ -30,9 +30,6 @@ func V2EndpointURL(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpt
 	}
 
 	// Report an error if the options were ambiguous.
-	if len(endpoints) == 0 {
-		return "", gophercloud.ErrEndpointNotFound
-	}
 	if len(endpoints) > 1 {
 		return "", fmt.Errorf("Discovered %d matching endpoints: %#v", len(endpoints), endpoints)
 	}
@@ -51,6 +48,7 @@ func V2EndpointURL(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpt
 		}
 	}
 
+	// Report an error if there were no matching endpoints.
 	return "", gophercloud.ErrEndpointNotFound
 }
 
