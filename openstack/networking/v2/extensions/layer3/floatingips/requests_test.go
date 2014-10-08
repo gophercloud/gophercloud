@@ -90,6 +90,34 @@ func TestList(t *testing.T) {
 	}
 }
 
+func TestInvalidNextPageURLs(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `{"floatingips": [{}], "floatingips_links": {}}`)
+	})
+
+	List(fake.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		ExtractFloatingIPs(page)
+		return true, nil
+	})
+}
+
+func TestRequiredFieldsForCreate(t *testing.T) {
+	res1 := Create(fake.ServiceClient(), CreateOpts{FloatingNetworkID: ""})
+	if res1.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+
+	res2 := Create(fake.ServiceClient(), CreateOpts{FloatingNetworkID: "foo", PortID: ""})
+	if res2.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+}
+
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
