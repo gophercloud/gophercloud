@@ -17,7 +17,7 @@ func TestListFlavors(t *testing.T) {
 
 	t.Logf("ID\tRegion\tName\tStatus\tCreated")
 
-	pager := flavors.List(client, flavors.ListFilterOptions{})
+	pager := flavors.List(client, nil)
 	count, pages := 0, 0
 	pager.EachPage(func(page pagination.Page) (bool, error) {
 		t.Logf("---")
