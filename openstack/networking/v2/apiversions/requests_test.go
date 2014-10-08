@@ -65,6 +65,22 @@ func TestListVersions(t *testing.T) {
 	}
 }
 
+func TestNonJSONCannotBeExtractedIntoAPIVersions(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	ListVersions(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+		if _, err := ExtractAPIVersions(page); err == nil {
+			t.Fatalf("Expected error, got nil")
+		}
+		return true, nil
+	})
+}
+
 func TestAPIInfo(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -147,4 +163,20 @@ func TestAPIInfo(t *testing.T) {
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
+}
+
+func TestNonJSONCannotBeExtractedIntoAPIVersionResources(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	ListVersionResources(fake.ServiceClient(), "v2.0").EachPage(func(page pagination.Page) (bool, error) {
+		if _, err := ExtractVersionResources(page); err == nil {
+			t.Fatalf("Expected error, got nil")
+		}
+		return true, nil
+	})
 }
