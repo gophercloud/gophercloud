@@ -53,12 +53,8 @@ type RouterPage struct {
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
 func (p RouterPage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
 	type resp struct {
-		Links []link `mapstructure:"routers_links"`
+		Links []gophercloud.Link `mapstructure:"routers_links"`
 	}
 
 	var r resp
@@ -67,17 +63,7 @@ func (p RouterPage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 // IsEmpty checks whether a RouterPage struct is empty.

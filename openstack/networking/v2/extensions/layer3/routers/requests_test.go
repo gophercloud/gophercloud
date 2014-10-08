@@ -288,6 +288,17 @@ func TestAddInterface(t *testing.T) {
 	th.AssertEquals(t, "9a83fa11-8da5-436e-9afe-3d3ac5ce7770", res.ID)
 }
 
+func TestAddInterfaceRequiredOpts(t *testing.T) {
+	_, err := AddInterface(fake.ServiceClient(), "foo", InterfaceOpts{}).Extract()
+	if err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+	_, err = AddInterface(fake.ServiceClient(), "foo", InterfaceOpts{SubnetID: "bar", PortID: "baz"}).Extract()
+	if err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+}
+
 func TestRemoveInterface(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
