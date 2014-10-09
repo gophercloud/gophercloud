@@ -6,16 +6,16 @@ import (
 	"testing"
 
 	common "github.com/rackspace/gophercloud/openstack/common/extensions"
+	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/extensions", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/extensions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -73,7 +73,7 @@ func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/extensions/agent", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/extensions/agent", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -92,14 +92,14 @@ func TestGet(t *testing.T) {
     }
 }
     `)
-
-		ext, err := Get(fake.ServiceClient(), "agent").Extract()
-		th.AssertNoErr(t, err)
-
-		th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")
-		th.AssertEquals(t, ext.Name, "agent")
-		th.AssertEquals(t, ext.Namespace, "http://docs.openstack.org/ext/agent/api/v2.0")
-		th.AssertEquals(t, ext.Alias, "agent")
-		th.AssertEquals(t, ext.Description, "The agent management extension.")
 	})
+
+	ext, err := Get(fake.ServiceClient(), "agent").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")
+	th.AssertEquals(t, ext.Name, "agent")
+	th.AssertEquals(t, ext.Namespace, "http://docs.openstack.org/ext/agent/api/v2.0")
+	th.AssertEquals(t, ext.Alias, "agent")
+	th.AssertEquals(t, ext.Description, "The agent management extension.")
 }

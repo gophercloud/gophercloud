@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
+	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestURLs(t *testing.T) {
@@ -286,6 +286,17 @@ func TestAddInterface(t *testing.T) {
 	th.AssertEquals(t, "017d8de156df4177889f31a9bd6edc00", res.TenantID)
 	th.AssertEquals(t, "3f990102-4485-4df1-97a0-2c35bdb85b31", res.PortID)
 	th.AssertEquals(t, "9a83fa11-8da5-436e-9afe-3d3ac5ce7770", res.ID)
+}
+
+func TestAddInterfaceRequiredOpts(t *testing.T) {
+	_, err := AddInterface(fake.ServiceClient(), "foo", InterfaceOpts{}).Extract()
+	if err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+	_, err = AddInterface(fake.ServiceClient(), "foo", InterfaceOpts{SubnetID: "bar", PortID: "baz"}).Extract()
+	if err == nil {
+		t.Fatalf("Expected error, got none")
+	}
 }
 
 func TestRemoveInterface(t *testing.T) {

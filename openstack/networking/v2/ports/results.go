@@ -1,8 +1,6 @@
 package ports
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -23,11 +21,8 @@ func (r commonResult) Extract() (*Port, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron port: %v", err)
-	}
 
-	return res.Port, nil
+	return res.Port, err
 }
 
 // CreateResult represents the result of a create operation.
@@ -94,10 +89,7 @@ type PortPage struct {
 // to do this, it needs to construct the next page's URL.
 func (p PortPage) NextPageURL() (string, error) {
 	type resp struct {
-		Links []struct {
-			Href string `mapstructure:"href"`
-			Rel  string `mapstructure:"rel"`
-		} `mapstructure:"ports_links"`
+		Links []gophercloud.Link `mapstructure:"ports_links"`
 	}
 
 	var r resp
@@ -106,17 +98,7 @@ func (p PortPage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 // IsEmpty checks whether a PortPage struct is empty.
@@ -137,9 +119,6 @@ func ExtractPorts(page pagination.Page) ([]Port, error) {
 	}
 
 	err := mapstructure.Decode(page.(PortPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Ports, nil
+	return resp.Ports, err
 }

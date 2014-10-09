@@ -2,6 +2,7 @@ package tenants
 
 import (
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -36,12 +37,8 @@ func (page TenantPage) IsEmpty() (bool, error) {
 
 // NextPageURL extracts the "next" link from the tenants_links section of the result.
 func (page TenantPage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
 	type resp struct {
-		Links []link `mapstructure:"tenants_links"`
+		Links []gophercloud.Link `mapstructure:"tenants_links"`
 	}
 
 	var r resp
@@ -50,17 +47,7 @@ func (page TenantPage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 // ExtractTenants returns a slice of Tenants contained in a single page of results.

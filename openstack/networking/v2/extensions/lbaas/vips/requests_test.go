@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
+	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestURLs(t *testing.T) {
@@ -139,7 +139,8 @@ func TestCreate(t *testing.T) {
         "admin_state_up": true,
         "subnet_id": "8032909d-47a1-4715-90af-5153ffe39861",
         "pool_id": "61b1f87a-7a21-4ad3-9dda-7f81d249944f",
-        "protocol_port": 80
+        "protocol_port": 80,
+				"session_persistence": {"type": "SOURCE_IP"}
     }
 }
 			`)
@@ -175,6 +176,7 @@ func TestCreate(t *testing.T) {
 		SubnetID:     "8032909d-47a1-4715-90af-5153ffe39861",
 		PoolID:       "61b1f87a-7a21-4ad3-9dda-7f81d249944f",
 		ProtocolPort: 80,
+		Persistence:  &SessionPersistence{Type: "SOURCE_IP"},
 	}
 
 	r, err := Create(fake.ServiceClient(), opts).Extract()
@@ -193,6 +195,29 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, "f7e6fe6a-b8b5-43a8-8215-73456b32e0f5", r.PortID)
 	th.AssertEquals(t, "c987d2be-9a3c-4ac9-a046-e8716b1350e2", r.ID)
 	th.AssertEquals(t, "NewVip", r.Name)
+}
+
+func TestRequiredCreateOpts(t *testing.T) {
+	res := Create(fake.ServiceClient(), CreateOpts{})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+	res = Create(fake.ServiceClient(), CreateOpts{Name: "foo"})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+	res = Create(fake.ServiceClient(), CreateOpts{Name: "foo", SubnetID: "bar"})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+	res = Create(fake.ServiceClient(), CreateOpts{Name: "foo", SubnetID: "bar", Protocol: "bar"})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+	res = Create(fake.ServiceClient(), CreateOpts{Name: "foo", SubnetID: "bar", Protocol: "bar", ProtocolPort: 80})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
 }
 
 func TestGet(t *testing.T) {
@@ -254,7 +279,8 @@ func TestUpdate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "vip": {
-        "connection_limit": 1000
+        "connection_limit": 1000,
+				"session_persistence": {"type": "SOURCE_IP"}
     }
 }
 			`)
@@ -284,7 +310,10 @@ func TestUpdate(t *testing.T) {
 	})
 
 	i1000 := 1000
-	options := UpdateOpts{ConnLimit: &i1000}
+	options := UpdateOpts{
+		ConnLimit:   &i1000,
+		Persistence: &SessionPersistence{Type: "SOURCE_IP"},
+	}
 	vip, err := Update(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304", options).Extract()
 	th.AssertNoErr(t, err)
 

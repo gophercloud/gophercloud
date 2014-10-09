@@ -1,8 +1,6 @@
 package external
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
 	"github.com/rackspace/gophercloud/pagination"
@@ -37,52 +35,36 @@ type NetworkExternal struct {
 	External bool `mapstructure:"router:external" json:"router:external"`
 }
 
-// ExtractGet decorates a GetResult struct returned from a networks.Get()
-// function with extended attributes.
-func ExtractGet(r networks.GetResult) (*NetworkExternal, error) {
-	if r.Err != nil {
-		return nil, r.Err
+func commonExtract(e error, response map[string]interface{}) (*NetworkExternal, error) {
+	if e != nil {
+		return nil, e
 	}
+
 	var res struct {
 		Network *NetworkExternal `json:"network"`
 	}
-	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron network: %v", err)
-	}
-	return res.Network, nil
+
+	err := mapstructure.Decode(response, &res)
+
+	return res.Network, err
+}
+
+// ExtractGet decorates a GetResult struct returned from a networks.Get()
+// function with extended attributes.
+func ExtractGet(r networks.GetResult) (*NetworkExternal, error) {
+	return commonExtract(r.Err, r.Resp)
 }
 
 // ExtractCreate decorates a CreateResult struct returned from a networks.Create()
 // function with extended attributes.
 func ExtractCreate(r networks.CreateResult) (*NetworkExternal, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-	var res struct {
-		Network *NetworkExternal `json:"network"`
-	}
-	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron network: %v", err)
-	}
-	return res.Network, nil
+	return commonExtract(r.Err, r.Resp)
 }
 
 // ExtractUpdate decorates a UpdateResult struct returned from a
 // networks.Update() function with extended attributes.
 func ExtractUpdate(r networks.UpdateResult) (*NetworkExternal, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-	var res struct {
-		Network *NetworkExternal `json:"network"`
-	}
-	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron network: %v", err)
-	}
-	return res.Network, nil
+	return commonExtract(r.Err, r.Resp)
 }
 
 // ExtractList accepts a Page struct, specifically a NetworkPage struct, and
@@ -94,9 +76,6 @@ func ExtractList(page pagination.Page) ([]NetworkExternal, error) {
 	}
 
 	err := mapstructure.Decode(page.(networks.NetworkPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Networks, nil
+	return resp.Networks, err
 }

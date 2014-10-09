@@ -1,6 +1,7 @@
 package external
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -227,4 +228,27 @@ func TestUpdate(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, n.External)
+}
+
+func TestExtractFnsReturnsErrWhenResultContainsErr(t *testing.T) {
+	gr := networks.GetResult{}
+	gr.Err = errors.New("")
+
+	if _, err := ExtractGet(gr); err == nil {
+		t.Fatalf("Expected error, got one")
+	}
+
+	ur := networks.UpdateResult{}
+	ur.Err = errors.New("")
+
+	if _, err := ExtractUpdate(ur); err == nil {
+		t.Fatalf("Expected error, got one")
+	}
+
+	cr := networks.CreateResult{}
+	cr.Err = errors.New("")
+
+	if _, err := ExtractCreate(cr); err == nil {
+		t.Fatalf("Expected error, got one")
+	}
 }

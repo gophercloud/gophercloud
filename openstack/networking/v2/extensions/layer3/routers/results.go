@@ -1,8 +1,6 @@
 package routers
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -53,12 +51,8 @@ type RouterPage struct {
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
 func (p RouterPage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
 	type resp struct {
-		Links []link `mapstructure:"routers_links"`
+		Links []gophercloud.Link `mapstructure:"routers_links"`
 	}
 
 	var r resp
@@ -67,17 +61,7 @@ func (p RouterPage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 // IsEmpty checks whether a RouterPage struct is empty.
@@ -98,11 +82,8 @@ func ExtractRouters(page pagination.Page) ([]Router, error) {
 	}
 
 	err := mapstructure.Decode(page.(RouterPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Routers, nil
+	return resp.Routers, err
 }
 
 type commonResult struct {
@@ -120,11 +101,8 @@ func (r commonResult) Extract() (*Router, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron router: %v", err)
-	}
 
-	return res.Router, nil
+	return res.Router, err
 }
 
 // CreateResult represents the result of a create operation.
@@ -176,9 +154,6 @@ func (r InterfaceResult) Extract() (*InterfaceInfo, error) {
 
 	var res *InterfaceInfo
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron router interface: %v", err)
-	}
 
-	return res, nil
+	return res, err
 }

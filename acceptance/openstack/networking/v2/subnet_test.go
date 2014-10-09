@@ -38,7 +38,7 @@ func TestCRUD(t *testing.T) {
 
 	// Setup network
 	t.Log("Setting up network")
-	n, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: true}).Extract()
+	n, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: networks.Up}).Extract()
 	th.AssertNoErr(t, err)
 	networkID := n.ID
 	defer networks.Delete(Client, networkID)

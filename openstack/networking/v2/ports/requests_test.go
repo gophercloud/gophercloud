@@ -5,16 +5,16 @@ import (
 	"net/http"
 	"testing"
 
+	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/ports", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -93,7 +93,7 @@ func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/ports/46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/ports/46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -147,7 +147,7 @@ func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/ports", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -157,7 +157,14 @@ func TestCreate(t *testing.T) {
     "port": {
         "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
         "name": "private-port",
-        "admin_state_up": true
+        "admin_state_up": true,
+				"fixed_ips": [
+						{
+								"subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",
+								"ip_address": "10.0.0.2"
+						}
+				],
+				"security_groups": ["foo"]
     }
 }
 			`)
@@ -193,7 +200,15 @@ func TestCreate(t *testing.T) {
 	})
 
 	asu := true
-	options := CreateOpts{Name: "private-port", AdminStateUp: &asu, NetworkID: "a87cc70a-3e15-4acf-8205-9b711a3531b7"}
+	options := CreateOpts{
+		Name:         "private-port",
+		AdminStateUp: &asu,
+		NetworkID:    "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+		FixedIPs: []IP{
+			IP{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
+		},
+		SecurityGroups: []string{"foo"},
+	}
 	n, err := Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
@@ -211,11 +226,18 @@ func TestCreate(t *testing.T) {
 	th.AssertDeepEquals(t, n.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
 }
 
+func TestRequiredCreateOpts(t *testing.T) {
+	res := Create(fake.ServiceClient(), CreateOpts{})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+}
+
 func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -288,7 +310,7 @@ func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)

@@ -1,8 +1,6 @@
 package extensions
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -25,11 +23,8 @@ func (r GetResult) Extract() (*Extension, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding OpenStack extension: %v", err)
-	}
 
-	return res.Extension, nil
+	return res.Extension, err
 }
 
 // Extension is a struct that represents an OpenStack extension.
@@ -65,9 +60,6 @@ func ExtractExtensions(page pagination.Page) ([]Extension, error) {
 	}
 
 	err := mapstructure.Decode(page.(ExtensionPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Extensions, nil
+	return resp.Extensions, err
 }

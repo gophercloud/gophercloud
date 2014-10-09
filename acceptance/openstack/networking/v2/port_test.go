@@ -97,18 +97,17 @@ func listPorts(t *testing.T) {
 }
 
 func createNetwork() (string, error) {
-	res, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: true}).Extract()
+	res, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: networks.Up}).Extract()
 	return res.ID, err
 }
 
 func createSubnet(networkID string) (string, error) {
-	enable := false
 	s, err := subnets.Create(Client, subnets.CreateOpts{
 		NetworkID:  networkID,
 		CIDR:       "192.168.199.0/24",
 		IPVersion:  subnets.IPv4,
 		Name:       "my_subnet",
-		EnableDHCP: &enable,
+		EnableDHCP: subnets.Down,
 	}).Extract()
 	return s.ID, err
 }

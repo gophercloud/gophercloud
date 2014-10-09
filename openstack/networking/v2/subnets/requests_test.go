@@ -5,16 +5,16 @@ import (
 	"net/http"
 	"testing"
 
+	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/subnets", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/subnets", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -128,7 +128,7 @@ func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/subnets/54d6f61d-db07-451c-9ab3-b9609b6b6f0b", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/subnets/54d6f61d-db07-451c-9ab3-b9609b6b6f0b", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -184,7 +184,7 @@ func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/subnets", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/subnets", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -194,7 +194,15 @@ func TestCreate(t *testing.T) {
     "subnet": {
         "network_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
         "ip_version": 4,
-        "cidr": "192.168.199.0/24"
+        "cidr": "192.168.199.0/24",
+				"dns_nameservers": ["foo"],
+				"allocation_pools": [
+						{
+								"start": "192.168.199.2",
+								"end": "192.168.199.254"
+						}
+				],
+				"host_routes": [{"destination":"","nexthop": "bar"}]
     }
 }
 			`)
@@ -226,7 +234,21 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	opts := CreateOpts{NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a22", IPVersion: 4, CIDR: "192.168.199.0/24"}
+	opts := CreateOpts{
+		NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+		IPVersion: 4,
+		CIDR:      "192.168.199.0/24",
+		AllocationPools: []AllocationPool{
+			AllocationPool{
+				Start: "192.168.199.2",
+				End:   "192.168.199.254",
+			},
+		},
+		DNSNameservers: []string{"foo"},
+		HostRoutes: []HostRoute{
+			HostRoute{NextHop: "bar"},
+		},
+	}
 	s, err := Create(fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
@@ -248,11 +270,28 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, s.ID, "3b80198d-4f7b-4f77-9ef5-774d54e17126")
 }
 
+func TestRequiredCreateOpts(t *testing.T) {
+	res := Create(fake.ServiceClient(), CreateOpts{})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+
+	res = Create(fake.ServiceClient(), CreateOpts{NetworkID: "foo"})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+
+	res = Create(fake.ServiceClient(), CreateOpts{NetworkID: "foo", CIDR: "bar", IPVersion: 40})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+}
+
 func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/subnets/08eae331-0402-425a-923c-34f7cfe39c1b", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/subnets/08eae331-0402-425a-923c-34f7cfe39c1b", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -260,7 +299,9 @@ func TestUpdate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "subnet": {
-        "name": "my_new_subnet"
+        "name": "my_new_subnet",
+				"dns_nameservers": ["foo"],
+				"host_routes": [{"destination":"","nexthop": "bar"}]
     }
 }
 		`)
@@ -292,7 +333,13 @@ func TestUpdate(t *testing.T) {
 	`)
 	})
 
-	opts := UpdateOpts{Name: "my_new_subnet"}
+	opts := UpdateOpts{
+		Name:           "my_new_subnet",
+		DNSNameservers: []string{"foo"},
+		HostRoutes: []HostRoute{
+			HostRoute{NextHop: "bar"},
+		},
+	}
 	s, err := Update(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
 	th.AssertNoErr(t, err)
 
@@ -304,7 +351,7 @@ func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/subnets/08eae331-0402-425a-923c-34f7cfe39c1b", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/subnets/08eae331-0402-425a-923c-34f7cfe39c1b", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)

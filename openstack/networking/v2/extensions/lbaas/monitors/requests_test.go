@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
+	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestURLs(t *testing.T) {
@@ -156,6 +156,17 @@ func TestCreate(t *testing.T) {
 	}).Extract()
 
 	th.AssertNoErr(t, err)
+}
+
+func TestRequiredCreateOpts(t *testing.T) {
+	res := Create(fake.ServiceClient(), CreateOpts{})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+	res = Create(fake.ServiceClient(), CreateOpts{Type: TypeHTTP})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
 }
 
 func TestGet(t *testing.T) {

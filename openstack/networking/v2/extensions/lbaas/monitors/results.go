@@ -1,8 +1,6 @@
 package monitors
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -74,12 +72,8 @@ type MonitorPage struct {
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
 func (p MonitorPage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
 	type resp struct {
-		Links []link `mapstructure:"health_monitors_links"`
+		Links []gophercloud.Link `mapstructure:"health_monitors_links"`
 	}
 
 	var r resp
@@ -88,17 +82,7 @@ func (p MonitorPage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 // IsEmpty checks whether a PoolPage struct is empty.
@@ -119,11 +103,8 @@ func ExtractMonitors(page pagination.Page) ([]Monitor, error) {
 	}
 
 	err := mapstructure.Decode(page.(MonitorPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Monitors, nil
+	return resp.Monitors, err
 }
 
 type commonResult struct {
@@ -141,11 +122,8 @@ func (r commonResult) Extract() (*Monitor, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron monitor: %v", err)
-	}
 
-	return res.Monitor, nil
+	return res.Monitor, err
 }
 
 // CreateResult represents the result of a create operation.

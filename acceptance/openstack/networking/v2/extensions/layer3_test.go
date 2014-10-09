@@ -219,7 +219,7 @@ func listRouters(t *testing.T) {
 }
 
 func updateRouter(t *testing.T, routerID string) {
-	r, err := routers.Update(base.Client, routerID, routers.UpdateOpts{
+	_, err := routers.Update(base.Client, routerID, routers.UpdateOpts{
 		Name: "another_name",
 	}).Extract()
 

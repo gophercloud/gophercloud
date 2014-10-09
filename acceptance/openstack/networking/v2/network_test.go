@@ -16,7 +16,7 @@ func TestNetworkCRUDOperations(t *testing.T) {
 	defer Teardown()
 
 	// Create a network
-	n, err := networks.Create(Client, networks.CreateOpts{Name: "sample_network", AdminStateUp: true}).Extract()
+	n, err := networks.Create(Client, networks.CreateOpts{Name: "sample_network", AdminStateUp: networks.Up}).Extract()
 	th.AssertNoErr(t, err)
 	defer networks.Delete(Client, n.ID)
 	th.AssertEquals(t, n.Name, "sample_network")

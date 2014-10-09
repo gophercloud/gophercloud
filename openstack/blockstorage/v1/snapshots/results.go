@@ -1,8 +1,6 @@
 package snapshots
 
 import (
-	"fmt"
-
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 
@@ -91,8 +89,6 @@ func (r commonResult) Extract() (*Snapshot, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("snapshots: Error decoding snapshots.commonResult: %v", err)
-	}
-	return res.Snapshot, nil
+
+	return res.Snapshot, err
 }

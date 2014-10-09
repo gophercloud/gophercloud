@@ -65,12 +65,8 @@ func (page ImagePage) IsEmpty() (bool, error) {
 
 // NextPageURL uses the response's embedded link reference to navigate to the next page of results.
 func (page ImagePage) NextPageURL() (string, error) {
-	type link struct {
-		Href string `mapstructure:"href"`
-		Rel  string `mapstructure:"rel"`
-	}
 	type resp struct {
-		Links []link `mapstructure:"images_links"`
+		Links []gophercloud.Link `mapstructure:"images_links"`
 	}
 
 	var r resp
@@ -79,17 +75,7 @@ func (page ImagePage) NextPageURL() (string, error) {
 		return "", err
 	}
 
-	var url string
-	for _, l := range r.Links {
-		if l.Rel == "next" {
-			url = l.Href
-		}
-	}
-	if url == "" {
-		return "", nil
-	}
-
-	return url, nil
+	return gophercloud.ExtractNextURL(r.Links)
 }
 
 // ExtractImages converts a page of List results into a slice of usable Image structs.

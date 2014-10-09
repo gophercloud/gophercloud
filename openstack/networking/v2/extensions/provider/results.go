@@ -1,8 +1,6 @@
 package provider
 
 import (
-	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
 	"github.com/rackspace/gophercloud/pagination"
@@ -70,14 +68,14 @@ func ExtractGet(r networks.GetResult) (*NetworkExtAttrs, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
+
 	var res struct {
 		Network *NetworkExtAttrs `json:"network"`
 	}
+
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron network: %v", err)
-	}
-	return res.Network, nil
+
+	return res.Network, err
 }
 
 // ExtractCreate decorates a CreateResult struct returned from a networks.Create()
@@ -86,14 +84,14 @@ func ExtractCreate(r networks.CreateResult) (*NetworkExtAttrs, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
+
 	var res struct {
 		Network *NetworkExtAttrs `json:"network"`
 	}
+
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron network: %v", err)
-	}
-	return res.Network, nil
+
+	return res.Network, err
 }
 
 // ExtractUpdate decorates a UpdateResult struct returned from a
@@ -102,14 +100,14 @@ func ExtractUpdate(r networks.UpdateResult) (*NetworkExtAttrs, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
+
 	var res struct {
 		Network *NetworkExtAttrs `json:"network"`
 	}
+
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Neutron network: %v", err)
-	}
-	return res.Network, nil
+
+	return res.Network, err
 }
 
 // ExtractList accepts a Page struct, specifically a NetworkPage struct, and
@@ -121,9 +119,6 @@ func ExtractList(page pagination.Page) ([]NetworkExtAttrs, error) {
 	}
 
 	err := mapstructure.Decode(page.(networks.NetworkPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
 
-	return resp.Networks, nil
+	return resp.Networks, err
 }

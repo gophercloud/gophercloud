@@ -7,9 +7,9 @@ import (
 )
 
 func apiVersionsURL(c *gophercloud.ServiceClient) string {
-	return c.ServiceURL("")
+	return c.Endpoint
 }
 
 func apiInfoURL(c *gophercloud.ServiceClient, version string) string {
-	return c.ServiceURL(strings.TrimRight(version, "/") + "/")
+	return c.Endpoint + strings.TrimRight(version, "/") + "/"
 }

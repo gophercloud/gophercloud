@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 
@@ -25,11 +23,8 @@ func (r commonResult) Extract() (*Service, error) {
 	}
 
 	err := mapstructure.Decode(r.Resp, &res)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding Service: %v", err)
-	}
 
-	return &res.Service, nil
+	return &res.Service, err
 }
 
 // CreateResult is the deferred result of a Create call.
