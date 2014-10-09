@@ -120,18 +120,6 @@ func deleteSecGroup(t *testing.T, groupID string) {
 	t.Logf("Deleted security group %s", groupID)
 }
 
-func deletePort(t *testing.T, portID string) {
-	res := ports.Delete(base.Client, portID)
-	th.AssertNoErr(t, res.Err)
-	t.Logf("Deleted port %s", portID)
-}
-
-func deleteNetwork(t *testing.T, networkID string) {
-	res := networks.Delete(base.Client, networkID)
-	th.AssertNoErr(t, res.Err)
-	t.Logf("Deleted network %s", networkID)
-}
-
 func createSecRule(t *testing.T, groupID string) string {
 	r, err := rules.Create(base.Client, rules.CreateOpts{
 		Direction:    "ingress",
