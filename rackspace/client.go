@@ -28,6 +28,9 @@ const (
 // Provide the base URL of the identity endpoint you wish to authenticate against as "endpoint".
 // Often, this will be either RackspaceUSIdentity or RackspaceUKIdentity.
 func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
+	if endpoint == "" {
+		return os.NewClient(RackspaceUSIdentity)
+	}
 	return os.NewClient(endpoint)
 }
 
@@ -37,10 +40,6 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 // If the provided AuthOptions does not specify an explicit IdentityEndpoint, it will default to
 // the canonical, production Rackspace US identity endpoint.
 func AuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
-	if options.IdentityEndpoint == "" {
-		options.IdentityEndpoint = RackspaceUSIdentity
-	}
-
 	client, err := NewClient(options.IdentityEndpoint)
 	if err != nil {
 		return nil, err
