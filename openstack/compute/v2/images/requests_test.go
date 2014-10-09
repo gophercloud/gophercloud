@@ -161,14 +161,14 @@ func TestGetImage(t *testing.T) {
 func TestNextPageURL(t *testing.T) {
 	var page ImagePage
 	var body map[string]interface{}
-	bodyString := []byte(`{"images":{"links":[{"href":"http://192.154.23.87/12345/images/image3","rel":"next"},{"href":"http://192.154.23.87/12345/images/image1","rel":"previous"}]}}`)
+	bodyString := []byte(`{"images":{"links":[{"href":"http://192.154.23.87/12345/images/image3","rel":"bookmark"}]}, "images_links":[{"href":"http://192.154.23.87/12345/images/image4","rel":"next"}]}`)
 	err := json.Unmarshal(bodyString, &body)
 	if err != nil {
 		t.Fatalf("Error unmarshaling data into page body: %v", err)
 	}
 	page.Body = body
 
-	expected := "http://192.154.23.87/12345/images/image3"
+	expected := "http://192.154.23.87/12345/images/image4"
 	actual, err := page.NextPageURL()
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, expected, actual)
