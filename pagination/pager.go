@@ -29,11 +29,11 @@ type Page interface {
 
 // Pager knows how to advance through a specific resource collection, one page at a time.
 type Pager struct {
-	initialURL string
-
 	client *gophercloud.ServiceClient
 
-	createPage func(r LastHTTPResponse) Page
+	InitialURL string
+
+	CreatePage func(r LastHTTPResponse) Page
 
 	Err error
 
@@ -45,9 +45,9 @@ type Pager struct {
 // Supply the URL for the first page, a function that requests a specific page given a URL, and a function that counts a page.
 func NewPager(client *gophercloud.ServiceClient, initialURL string, createPage func(r LastHTTPResponse) Page) Pager {
 	return Pager{
-		initialURL: initialURL,
 		client:     client,
-		createPage: createPage,
+		InitialURL: initialURL,
+		CreatePage: createPage,
 	}
 }
 
@@ -62,7 +62,7 @@ func (p Pager) fetchNextPage(url string) (Page, error) {
 		return nil, err
 	}
 
-	return p.createPage(remembered), nil
+	return p.CreatePage(remembered), nil
 }
 
 // EachPage iterates over each page returned by a Pager, yielding one at a time to a handler function.
@@ -71,7 +71,7 @@ func (p Pager) EachPage(handler func(Page) (bool, error)) error {
 	if p.Err != nil {
 		return p.Err
 	}
-	currentURL := p.initialURL
+	currentURL := p.InitialURL
 	for {
 		currentPage, err := p.fetchNextPage(currentURL)
 		if err != nil {
