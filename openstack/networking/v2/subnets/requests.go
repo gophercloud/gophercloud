@@ -6,6 +6,19 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// AdminState gives users a solid type to work with for create and update
+// operations. It is recommended that users use the `Up` and `Down` enums.
+type AdminState *bool
+
+// Convenience vars for AdminStateUp values.
+var (
+	iTrue  = true
+	iFalse = false
+
+	Up   AdminState = &iTrue
+	Down AdminState = &iFalse
+)
+
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the subnet attributes you want to see returned. SortKey allows you to sort
