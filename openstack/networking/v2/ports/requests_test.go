@@ -157,7 +157,14 @@ func TestCreate(t *testing.T) {
     "port": {
         "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
         "name": "private-port",
-        "admin_state_up": true
+        "admin_state_up": true,
+				"fixed_ips": [
+						{
+								"subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",
+								"ip_address": "10.0.0.2"
+						}
+				],
+				"security_groups": ["foo"]
     }
 }
 			`)
@@ -193,7 +200,15 @@ func TestCreate(t *testing.T) {
 	})
 
 	asu := true
-	options := CreateOpts{Name: "private-port", AdminStateUp: &asu, NetworkID: "a87cc70a-3e15-4acf-8205-9b711a3531b7"}
+	options := CreateOpts{
+		Name:         "private-port",
+		AdminStateUp: &asu,
+		NetworkID:    "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+		FixedIPs: []IP{
+			IP{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
+		},
+		SecurityGroups: []string{"foo"},
+	}
 	n, err := Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
@@ -209,6 +224,13 @@ func TestCreate(t *testing.T) {
 	})
 	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
 	th.AssertDeepEquals(t, n.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
+}
+
+func TestRequiredCreateOpts(t *testing.T) {
+	res := Create(fake.ServiceClient(), CreateOpts{})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
 }
 
 func TestUpdate(t *testing.T) {
