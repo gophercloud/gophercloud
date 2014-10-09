@@ -73,6 +73,11 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 	}
 }
 
+// AuthenticateV2 explicitly authenticates with v2 of the identity service.
+func AuthenticateV2(client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
+	return v2auth(client, "", options)
+}
+
 func v2auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions) error {
 	v2Client := NewIdentityV2(client)
 	if endpoint != "" {
