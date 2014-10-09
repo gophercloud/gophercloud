@@ -89,7 +89,7 @@ type CreateOpts struct {
 	IPVersion       int
 	EnableDHCP      *bool
 	DNSNameservers  []string
-	HostRoutes      []interface{}
+	HostRoutes      []HostRoute
 }
 
 // Create accepts a CreateOpts struct and creates a new subnet using the values
@@ -121,7 +121,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 		IPVersion       int              `json:"ip_version,omitempty"`
 		EnableDHCP      *bool            `json:"enable_dhcp,omitempty"`
 		DNSNameservers  []string         `json:"dns_nameservers,omitempty"`
-		HostRoutes      []interface{}    `json:"host_routes,omitempty"`
+		HostRoutes      []HostRoute      `json:"host_routes,omitempty"`
 	}
 	type request struct {
 		Subnet subnet `json:"subnet"`
@@ -164,7 +164,7 @@ type UpdateOpts struct {
 	Name           string
 	GatewayIP      string
 	DNSNameservers []string
-	HostRoutes     []interface{}
+	HostRoutes     []HostRoute
 	EnableDHCP     *bool
 }
 
@@ -172,11 +172,11 @@ type UpdateOpts struct {
 // values provided.
 func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
 	type subnet struct {
-		Name           *string       `json:"name,omitempty"`
-		GatewayIP      *string       `json:"gateway_ip,omitempty"`
-		DNSNameservers []string      `json:"dns_nameservers,omitempty"`
-		HostRoutes     []interface{} `json:"host_routes,omitempty"`
-		EnableDHCP     *bool         `json:"enable_dhcp,omitempty"`
+		Name           *string     `json:"name,omitempty"`
+		GatewayIP      *string     `json:"gateway_ip,omitempty"`
+		DNSNameservers []string    `json:"dns_nameservers,omitempty"`
+		HostRoutes     []HostRoute `json:"host_routes,omitempty"`
+		EnableDHCP     *bool       `json:"enable_dhcp,omitempty"`
 	}
 	type request struct {
 		Subnet subnet `json:"subnet"`
