@@ -26,7 +26,7 @@ type SessionPersistence struct {
 	Type string `mapstructure:"type" json:"type"`
 
 	// Name of cookie if persistence mode is set appropriately
-	CookieName string `mapstructure:"cookie_name" json:"cookie_name"`
+	CookieName string `mapstructure:"cookie_name" json:"cookie_name,omitempty"`
 }
 
 // VirtualIP is the primary load balancing configuration object that specifies

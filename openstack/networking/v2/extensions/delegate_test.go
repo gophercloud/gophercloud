@@ -92,14 +92,14 @@ func TestGet(t *testing.T) {
     }
 }
     `)
-
-		ext, err := Get(fake.ServiceClient(), "agent").Extract()
-		th.AssertNoErr(t, err)
-
-		th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")
-		th.AssertEquals(t, ext.Name, "agent")
-		th.AssertEquals(t, ext.Namespace, "http://docs.openstack.org/ext/agent/api/v2.0")
-		th.AssertEquals(t, ext.Alias, "agent")
-		th.AssertEquals(t, ext.Description, "The agent management extension.")
 	})
+
+	ext, err := Get(fake.ServiceClient(), "agent").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, ext.Updated, "2013-02-03T10:00:00-00:00")
+	th.AssertEquals(t, ext.Name, "agent")
+	th.AssertEquals(t, ext.Namespace, "http://docs.openstack.org/ext/agent/api/v2.0")
+	th.AssertEquals(t, ext.Alias, "agent")
+	th.AssertEquals(t, ext.Description, "The agent management extension.")
 }
