@@ -1,20 +1,12 @@
 package accounts
 
 import (
+	"net/http"
 	"strings"
 )
 
-// UpdateOpts is a structure that contains parameters for updating, creating, or deleting an
-// account's metadata.
-type UpdateOpts struct {
-	Metadata map[string]string
-	Headers  map[string]string
-}
-
-// GetOpts is a structure that contains parameters for getting an account's metadata.
-type GetOpts struct {
-	Headers map[string]string
-}
+// GetResult is a *http.Response that is returned from a call to the Get function.
+type GetResult *http.Response
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
 // and returns the custom metatdata associated with the account.

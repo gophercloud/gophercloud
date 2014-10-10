@@ -1,14 +1,16 @@
 package accounts
 
 import (
-	"net/http"
-
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 )
 
-// GetResult is a *http.Response that is returned from a call to the Get function.
-type GetResult *http.Response
+// UpdateOpts is a structure that contains parameters for updating, creating, or deleting an
+// account's metadata.
+type UpdateOpts struct {
+	Metadata map[string]string
+	Headers  map[string]string
+}
 
 // Update is a function that creates, updates, or deletes an account's metadata.
 func Update(c *gophercloud.ServiceClient, opts UpdateOpts) error {
@@ -27,6 +29,11 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOpts) error {
 		OkCodes:     []int{204},
 	})
 	return err
+}
+
+// GetOpts is a structure that contains parameters for getting an account's metadata.
+type GetOpts struct {
+	Headers map[string]string
 }
 
 // Get is a function that retrieves an account's metadata. To extract just the custom

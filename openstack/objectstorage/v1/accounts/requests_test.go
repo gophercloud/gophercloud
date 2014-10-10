@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"net/http"
+	"reflect"
 	"testing"
 
 	"github.com/rackspace/gophercloud/testhelper"
@@ -40,5 +41,17 @@ func TestGetAccount(t *testing.T) {
 	_, err := Get(fake.ServiceClient(), GetOpts{})
 	if err != nil {
 		t.Fatalf("Unable to get account metadata: %v", err)
+	}
+}
+
+func TestExtractAccountMetadata(t *testing.T) {
+	getResult := &http.Response{}
+
+	expected := map[string]string{}
+
+	actual := ExtractMetadata(getResult)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected: %+v\nActual:%+v", expected, actual)
 	}
 }
