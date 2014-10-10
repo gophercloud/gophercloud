@@ -31,9 +31,9 @@ type Page interface {
 type Pager struct {
 	client *gophercloud.ServiceClient
 
-	InitialURL string
+	initialURL string
 
-	CreatePage func(r LastHTTPResponse) Page
+	createPage func(r LastHTTPResponse) Page
 
 	Err error
 
@@ -46,8 +46,18 @@ type Pager struct {
 func NewPager(client *gophercloud.ServiceClient, initialURL string, createPage func(r LastHTTPResponse) Page) Pager {
 	return Pager{
 		client:     client,
-		InitialURL: initialURL,
-		CreatePage: createPage,
+		initialURL: initialURL,
+		createPage: createPage,
+	}
+}
+
+// WithPageCreator returns a new Pager that substitutes a different page creation function. This is
+// useful for overriding List functions in delegation.
+func (p Pager) WithPageCreator(createPage func(r LastHTTPResponse) Page) Pager {
+	return Pager{
+		client:     p.client,
+		initialURL: p.initialURL,
+		createPage: createPage,
 	}
 }
 
@@ -62,7 +72,7 @@ func (p Pager) fetchNextPage(url string) (Page, error) {
 		return nil, err
 	}
 
-	return p.CreatePage(remembered), nil
+	return p.createPage(remembered), nil
 }
 
 // EachPage iterates over each page returned by a Pager, yielding one at a time to a handler function.
@@ -71,7 +81,7 @@ func (p Pager) EachPage(handler func(Page) (bool, error)) error {
 	if p.Err != nil {
 		return p.Err
 	}
-	currentURL := p.InitialURL
+	currentURL := p.initialURL
 	for {
 		currentPage, err := p.fetchNextPage(currentURL)
 		if err != nil {

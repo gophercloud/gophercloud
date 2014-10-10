@@ -79,11 +79,9 @@ func Get(c *gophercloud.ServiceClient, alias string) GetResult {
 // List returns a Pager which allows you to iterate over the full collection of extensions.
 // It does not accept query parameters.
 func List(c *gophercloud.ServiceClient) pagination.Pager {
-	pager := common.List(c)
-	pager.CreatePage = func(r pagination.LastHTTPResponse) pagination.Page {
+	return common.List(c).WithPageCreator(func(r pagination.LastHTTPResponse) pagination.Page {
 		return ExtensionPage{
 			ExtensionPage: common.ExtensionPage{SinglePageBase: pagination.SinglePageBase(r)},
 		}
-	}
-	return pager
+	})
 }
