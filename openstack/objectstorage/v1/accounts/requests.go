@@ -13,22 +13,29 @@ type UpdateOpts struct {
 }
 
 // Update is a function that creates, updates, or deletes an account's metadata.
-func Update(c *gophercloud.ServiceClient, opts UpdateOpts) error {
-	h := c.Provider.AuthenticatedHeaders()
+func Update(c *gophercloud.ServiceClient, opts UpdateOpts) UpdateResult {
+	headers := c.Provider.AuthenticatedHeaders()
 
 	for k, v := range opts.Headers {
-		h[k] = v
+		headers[k] = v
 	}
 
 	for k, v := range opts.Metadata {
-		h["X-Account-Meta-"+k] = v
+		headers["X-Account-Meta-"+k] = v
 	}
 
-	_, err := perigee.Request("POST", accountURL(c), perigee.Options{
-		MoreHeaders: h,
+	var res UpdateResult
+
+	var resp *perigee.Response
+
+	resp, res.Err = perigee.Request("POST", accountURL(c), perigee.Options{
+		MoreHeaders: headers,
 		OkCodes:     []int{204},
 	})
-	return err
+
+	res.Resp = &resp.HttpResponse
+
+	return res
 }
 
 // GetOpts is a structure that contains parameters for getting an account's metadata.
@@ -38,16 +45,23 @@ type GetOpts struct {
 
 // Get is a function that retrieves an account's metadata. To extract just the custom
 // metadata, pass the GetResult response to the ExtractMetadata function.
-func Get(c *gophercloud.ServiceClient, opts GetOpts) (GetResult, error) {
-	h := c.Provider.AuthenticatedHeaders()
+func Get(c *gophercloud.ServiceClient, opts GetOpts) GetResult {
+	headers := c.Provider.AuthenticatedHeaders()
 
 	for k, v := range opts.Headers {
-		h[k] = v
+		headers[k] = v
 	}
 
-	resp, err := perigee.Request("HEAD", accountURL(c), perigee.Options{
-		MoreHeaders: h,
+	var res GetResult
+	var resp *perigee.Response
+
+	resp, res.Err = perigee.Request("HEAD", accountURL(c), perigee.Options{
+		MoreHeaders: headers,
+		Results:     &res.Resp,
 		OkCodes:     []int{204},
 	})
-	return &resp.HttpResponse, err
+
+	res.Resp = &resp.HttpResponse
+
+	return res
 }
