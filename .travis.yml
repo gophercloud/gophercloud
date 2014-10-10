@@ -1,6 +1,6 @@
 language: go
 install:
-  - go get -v ./...
+  - go get -v -tags 'fixtures acceptance' ./...
 go:
   - 1.1
   - 1.2
