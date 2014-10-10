@@ -1,5 +1,5 @@
 #!/bin/bash
 #
-# Run all the tests.
+# Run the unit tests.
 
 exec go test -tags fixtures ./... $@
