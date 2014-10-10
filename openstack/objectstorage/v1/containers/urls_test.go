@@ -1,29 +1,43 @@
 package containers
 
 import (
-	"testing"
 	"github.com/rackspace/gophercloud"
+	th "github.com/rackspace/gophercloud/testhelper"
+	"testing"
 )
 
-func TestAccountURL(t *testing.T) {
-	client := gophercloud.ServiceClient{
-		Endpoint: "http://localhost:5000/v1/",
-	}
-	expected := "http://localhost:5000/v1/"
-	actual := accountURL(&client)
-	if actual != expected {
-		t.Errorf("Unexpected service URL generated: [%s]", actual)
-	}
+const endpoint = "http://localhost:57909/"
 
+func endpointClient() *gophercloud.ServiceClient {
+	return &gophercloud.ServiceClient{Endpoint: endpoint}
 }
 
-func TestContainerURL(t *testing.T) {
-	client := gophercloud.ServiceClient{
-		Endpoint: "http://localhost:5000/v1/",
-	}
-	expected := "http://localhost:5000/v1/testContainer"
-	actual := containerURL(&client, "testContainer")
-	if actual != expected {
-		t.Errorf("Unexpected service URL generated: [%s]", actual)
-	}
+func TestListURL(t *testing.T) {
+	actual := listURL(endpointClient())
+	expected := endpoint
+	th.CheckEquals(t, expected, actual)
+}
+
+func TestCreateURL(t *testing.T) {
+	actual := createURL(endpointClient(), "foo")
+	expected := endpoint + "foo"
+	th.CheckEquals(t, expected, actual)
+}
+
+func TestGetURL(t *testing.T) {
+	actual := getURL(endpointClient(), "foo")
+	expected := endpoint + "foo"
+	th.CheckEquals(t, expected, actual)
+}
+
+func TestDeleteURL(t *testing.T) {
+	actual := deleteURL(endpointClient(), "foo")
+	expected := endpoint + "foo"
+	th.CheckEquals(t, expected, actual)
+}
+
+func TestUpdateURL(t *testing.T) {
+	actual := updateURL(endpointClient(), "foo")
+	expected := endpoint + "foo"
+	th.CheckEquals(t, expected, actual)
 }

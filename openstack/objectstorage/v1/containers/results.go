@@ -2,11 +2,12 @@ package containers
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 
-	"github.com/mitchellh/mapstructure"
+	objectstorage "github.com/rackspace/gophercloud/openstack/objectstorage/v1"
 	"github.com/rackspace/gophercloud/pagination"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 // Container represents a container resource.
@@ -97,8 +98,7 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 
 // GetResult represents the result of a get operation.
 type GetResult struct {
-	Resp *http.Response
-	Err  error
+	objectstorage.CommonResult
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -117,37 +117,23 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 	return metadata, nil
 }
 
-type commonResult struct {
-	Resp *http.Response
-	Err  error
-}
-
-func (cr commonResult) ExtractHeaders() (http.Header, error) {
-	var headers http.Header
-	if cr.Err != nil {
-		return headers, cr.Err
-	}
-
-	return cr.Resp.Header, nil
-}
-
 // CreateResult represents the result of a create operation. To extract the
 // the headers from the HTTP response, you can invoke the 'ExtractHeaders'
 // method on the result struct.
 type CreateResult struct {
-	commonResult
+	objectstorage.CommonResult
 }
 
 // UpdateResult represents the result of an update operation. To extract the
 // the headers from the HTTP response, you can invoke the 'ExtractHeaders'
 // method on the result struct.
 type UpdateResult struct {
-	commonResult
+	objectstorage.CommonResult
 }
 
 // DeleteResult represents the result of a delete operation. To extract the
 // the headers from the HTTP response, you can invoke the 'ExtractHeaders'
 // method on the result struct.
 type DeleteResult struct {
-	commonResult
+	objectstorage.CommonResult
 }

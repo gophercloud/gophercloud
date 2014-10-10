@@ -22,7 +22,7 @@ type ListOpts struct {
 func List(c *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
 	var headers map[string]string
 
-	url := accountURL(c)
+	url := listURL(c)
 	if opts != nil {
 		query, err := gophercloud.BuildQueryString(opts)
 		if err != nil {
@@ -82,7 +82,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts *CreateOpts
 		}
 	}
 
-	resp, err := perigee.Request("PUT", containerURL(c, containerName), perigee.Options{
+	resp, err := perigee.Request("PUT", createURL(c, containerName), perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 204},
 	})
@@ -94,7 +94,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts *CreateOpts
 // Delete is a function that deletes a container.
 func Delete(c *gophercloud.ServiceClient, containerName string) DeleteResult {
 	var res DeleteResult
-	resp, err := perigee.Request("DELETE", containerURL(c, containerName), perigee.Options{
+	resp, err := perigee.Request("DELETE", deleteURL(c, containerName), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
@@ -138,7 +138,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts *UpdateOpts
 		}
 	}
 
-	resp, err := perigee.Request("POST", containerURL(c, containerName), perigee.Options{
+	resp, err := perigee.Request("POST", updateURL(c, containerName), perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
@@ -151,7 +151,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts *UpdateOpts
 // metadata, pass the GetResult response to the ExtractMetadata function.
 func Get(c *gophercloud.ServiceClient, containerName string) GetResult {
 	var res GetResult
-	resp, err := perigee.Request("HEAD", containerURL(c, containerName), perigee.Options{
+	resp, err := perigee.Request("HEAD", getURL(c, containerName), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
