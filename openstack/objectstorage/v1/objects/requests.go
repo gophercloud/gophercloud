@@ -28,7 +28,7 @@ type ListOpts struct {
 func List(c *gophercloud.ServiceClient, containerName string, opts *ListOpts) pagination.Pager {
 	var headers map[string]string
 
-	url := containerURL(c, containerName)
+	url := listURL(c, containerName)
 	if opts != nil {
 		query, err := gophercloud.BuildQueryString(opts)
 		if err != nil {
@@ -73,7 +73,7 @@ type DownloadOpts struct {
 func Download(c *gophercloud.ServiceClient, containerName, objectName string, opts *DownloadOpts) DownloadResult {
 	var res DownloadResult
 
-	url := objectURL(c, containerName, objectName)
+	url := downloadURL(c, containerName, objectName)
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
@@ -129,7 +129,7 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 	var res CreateResult
 	var reqBody []byte
 
-	url := objectURL(c, containerName, objectName)
+	url := createURL(c, containerName, objectName)
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
@@ -206,7 +206,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts *
 		h["X-Object-Meta-"+k] = v
 	}
 
-	url := objectURL(c, containerName, objectName)
+	url := copyURL(c, containerName, objectName)
 	resp, err := perigee.Request("COPY", url, perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
@@ -223,7 +223,7 @@ type DeleteOpts struct {
 // Delete is a function that deletes an object.
 func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts *DeleteOpts) DeleteResult {
 	var res DeleteResult
-	url := objectURL(c, containerName, objectName)
+	url := deleteURL(c, containerName, objectName)
 
 	if opts != nil {
 		query, err := gophercloud.BuildQueryString(opts)
@@ -253,7 +253,7 @@ type GetOpts struct {
 // metadata, pass the GetResult response to the ExtractMetadata function.
 func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts *GetOpts) GetResult {
 	var res GetResult
-	url := objectURL(c, containerName, objectName)
+	url := getURL(c, containerName, objectName)
 
 	if opts != nil {
 		query, err := gophercloud.BuildQueryString(opts)
@@ -306,7 +306,7 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		}
 	}
 
-	url := objectURL(c, containerName, objectName)
+	url := updateURL(c, containerName, objectName)
 	resp, err := perigee.Request("POST", url, perigee.Options{
 		MoreHeaders: h,
 		OkCodes:     []int{202},
