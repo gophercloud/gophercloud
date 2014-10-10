@@ -4,14 +4,23 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	th "github.com/rackspace/gophercloud/testhelper"
 )
 
-func TestAccountURL(t *testing.T) {
-	client := gophercloud.ServiceClient{
-		Endpoint: "http://localhost:5000/v3/",
-	}
-	url := accountURL(&client)
-	if url != "http://localhost:5000/v3/" {
-		t.Errorf("Unexpected service URL generated: [%s]", url)
-	}
+const endpoint = "http://localhost:57909/"
+
+func endpointClient() *gophercloud.ServiceClient {
+	return &gophercloud.ServiceClient{Endpoint: endpoint}
+}
+
+func TestGetURL(t *testing.T) {
+	actual := getURL(endpointClient())
+	expected := endpoint
+	th.CheckEquals(t, expected, actual)
+}
+
+func TestUpdateURL(t *testing.T) {
+	actual := updateURL(endpointClient())
+	expected := endpoint
+	th.CheckEquals(t, expected, actual)
 }
