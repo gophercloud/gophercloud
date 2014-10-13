@@ -34,12 +34,12 @@ func (r GetResult) Extract() (*Extension, error) {
 
 // Extension is a struct that represents an OpenStack extension.
 type Extension struct {
-	Updated     string        `json:"updated"`
-	Name        string        `json:"name"`
-	Links       []interface{} `json:"links"`
-	Namespace   string        `json:"namespace"`
-	Alias       string        `json:"alias"`
-	Description string        `json:"description"`
+	Updated     string        `json:"updated" mapstructure:"updated"`
+	Name        string        `json:"name" mapstructure:"name"`
+	Links       []interface{} `json:"links" mapstructure:"links"`
+	Namespace   string        `json:"namespace" mapstructure:"namespace"`
+	Alias       string        `json:"alias" mapstructure:"alias"`
+	Description string        `json:"description" mapstructure:"description"`
 }
 
 // ExtensionPage is the page returned by a pager when traversing over a collection of extensions.
