@@ -6,6 +6,12 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// ListOptsBuilder allows extensions to add additional parameters to the List
+// request.
+type ListOptsBuilder interface {
+	ToContainerListParams() (bool, string, error)
+}
+
 // ListOpts is a structure that holds options for listing containers.
 type ListOpts struct {
 	Full      bool
@@ -17,24 +23,33 @@ type ListOpts struct {
 	Delimiter [1]byte `q:"delimiter"`
 }
 
-// List is a function that retrieves containers associated with the account as well as account
-// metadata. It returns a pager which can be iterated with the EachPage function.
-func List(c *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
-	var headers map[string]string
+// ToContainerListParams formats a ListOpts into a query string and boolean
+// representing whether to list complete information for each container.
+func (opts ListOpts) ToContainerListParams() (bool, string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return false, "", err
+	}
+	return opts.Full, q.String(), nil
+}
+
+// List is a function that retrieves containers associated with the account as
+// well as account metadata. It returns a pager which can be iterated with the
+// EachPage function.
+func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	headers := map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
 
 	url := listURL(c)
 	if opts != nil {
-		query, err := gophercloud.BuildQueryString(opts)
+		full, query, err := opts.ToContainerListParams()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
-		url += query.String()
+		url += query
 
-		if !opts.Full {
-			headers = map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
+		if full {
+			headers = map[string]string{"Accept": "application/json", "Content-Type": "application/json"}
 		}
-	} else {
-		headers = map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
 	}
 
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
@@ -46,6 +61,12 @@ func List(c *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
 	pager := pagination.NewPager(c, url, createPage)
 	pager.Headers = headers
 	return pager
+}
+
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type CreateOptsBuilder interface {
+	ToContainerCreateParams() (map[string]string, error)
 }
 
 // CreateOpts is a structure that holds parameters for creating a container.
@@ -61,13 +82,25 @@ type CreateOpts struct {
 	VersionsLocation  string `h:"X-Versions-Location"`
 }
 
+// ToContainerCreateParams formats a CreateOpts into a map of headers.
+func (opts CreateOpts) ToContainerCreateParams() (map[string]string, error) {
+	h, err := gophercloud.BuildHeaders(opts)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range opts.Metadata {
+		h["X-Container-Meta-"+k] = v
+	}
+	return h, nil
+}
+
 // Create is a function that creates a new container.
-func Create(c *gophercloud.ServiceClient, containerName string, opts *CreateOpts) CreateResult {
+func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
-		headers, err := gophercloud.BuildHeaders(opts)
+		headers, err := opts.ToContainerCreateParams()
 		if err != nil {
 			res.Err = err
 			return res
@@ -75,10 +108,6 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts *CreateOpts
 
 		for k, v := range headers {
 			h[k] = v
-		}
-
-		for k, v := range opts.Metadata {
-			h["X-Container-Meta-"+k] = v
 		}
 	}
 
@@ -103,8 +132,14 @@ func Delete(c *gophercloud.ServiceClient, containerName string) DeleteResult {
 	return res
 }
 
-// UpdateOpts is a structure that holds parameters for updating, creating, or deleting a
-// container's metadata.
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToContainerUpdateParams() (map[string]string, error)
+}
+
+// UpdateOpts is a structure that holds parameters for updating, creating, or
+// deleting a container's metadata.
 type UpdateOpts struct {
 	Metadata               map[string]string
 	ContainerRead          string `h:"X-Container-Read"`
@@ -117,13 +152,26 @@ type UpdateOpts struct {
 	VersionsLocation       string `h:"X-Versions-Location"`
 }
 
-// Update is a function that creates, updates, or deletes a container's metadata.
-func Update(c *gophercloud.ServiceClient, containerName string, opts *UpdateOpts) UpdateResult {
+// ToContainerUpdateParams formats a CreateOpts into a map of headers.
+func (opts UpdateOpts) ToContainerUpdateParams() (map[string]string, error) {
+	h, err := gophercloud.BuildHeaders(opts)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range opts.Metadata {
+		h["X-Container-Meta-"+k] = v
+	}
+	return h, nil
+}
+
+// Update is a function that creates, updates, or deletes a container's
+// metadata.
+func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
-		headers, err := gophercloud.BuildHeaders(opts)
+		headers, err := opts.ToContainerUpdateParams()
 		if err != nil {
 			res.Err = err
 			return res
@@ -131,10 +179,6 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts *UpdateOpts
 
 		for k, v := range headers {
 			h[k] = v
-		}
-
-		for k, v := range opts.Metadata {
-			h["X-Container-Meta-"+k] = v
 		}
 	}
 
@@ -147,8 +191,9 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts *UpdateOpts
 	return res
 }
 
-// Get is a function that retrieves the metadata of a container. To extract just the custom
-// metadata, pass the GetResult response to the ExtractMetadata function.
+// Get is a function that retrieves the metadata of a container. To extract just
+// the custom metadata, pass the GetResult response to the ExtractMetadata
+// function.
 func Get(c *gophercloud.ServiceClient, containerName string) GetResult {
 	var res GetResult
 	resp, err := perigee.Request("HEAD", getURL(c, containerName), perigee.Options{

@@ -5,20 +5,33 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-// GetOpts is a structure that contains parameters for getting an account's metadata.
+// GetOptsBuilder allows extensions to add additional headers to the Get
+// request.
+type GetOptsBuilder interface {
+	ToAccountGetMap() (map[string]string, error)
+}
+
+// GetOpts is a structure that contains parameters for getting an account's
+// metadata.
 type GetOpts struct {
 	Newest bool `h:"X-Newest"`
 }
 
-// Get is a function that retrieves an account's metadata. To extract just the custom
-// metadata, call the ExtractMetadata method on the GetResult. To extract all the headers that are
-// returned (including the metadata), call the ExtractHeaders method on the GetResult.
-func Get(c *gophercloud.ServiceClient, opts *GetOpts) GetResult {
+// ToAccountGetMap formats a GetOpts into a map[string]string of headers.
+func (opts GetOpts) ToAccountGetMap() (map[string]string, error) {
+	return gophercloud.BuildHeaders(opts)
+}
+
+// Get is a function that retrieves an account's metadata. To extract just the
+// custom metadata, call the ExtractMetadata method on the GetResult. To extract
+// all the headers that are returned (including the metadata), call the
+// ExtractHeaders method on the GetResult.
+func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) GetResult {
 	var res GetResult
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
-		headers, err := gophercloud.BuildHeaders(opts)
+		headers, err := opts.ToAccountGetMap()
 		if err != nil {
 			res.Err = err
 			return res
@@ -38,8 +51,14 @@ func Get(c *gophercloud.ServiceClient, opts *GetOpts) GetResult {
 	return res
 }
 
-// UpdateOpts is a structure that contains parameters for updating, creating, or deleting an
-// account's metadata.
+// UpdateOptsBuilder allows extensions to add additional headers to the Update
+// request.
+type UpdateOptsBuilder interface {
+	ToAccountUpdateMap() (map[string]string, error)
+}
+
+// UpdateOpts is a structure that contains parameters for updating, creating, or
+// deleting an account's metadata.
 type UpdateOpts struct {
 	Metadata          map[string]string
 	ContentType       string `h:"Content-Type"`
@@ -48,24 +67,33 @@ type UpdateOpts struct {
 	TempURLKey2       string `h:"X-Account-Meta-Temp-URL-Key-2"`
 }
 
-// Update is a function that creates, updates, or deletes an account's metadata. To extract the
-// headers returned, call the ExtractHeaders method on the UpdateResult.
-func Update(c *gophercloud.ServiceClient, opts *UpdateOpts) UpdateResult {
+// ToAccountUpdateMap formats an UpdateOpts into a map[string]string of headers.
+func (opts UpdateOpts) ToAccountUpdateMap() (map[string]string, error) {
+	headers, err := gophercloud.BuildHeaders(opts)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range opts.Metadata {
+		headers["X-Account-Meta-"+k] = v
+	}
+	return headers, err
+}
+
+// Update is a function that creates, updates, or deletes an account's metadata.
+// To extract the headers returned, call the ExtractHeaders method on the
+// UpdateResult.
+func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
-		headers, err := gophercloud.BuildHeaders(opts)
+		headers, err := opts.ToAccountUpdateMap()
 		if err != nil {
 			res.Err = err
 			return res
 		}
 		for k, v := range headers {
 			h[k] = v
-		}
-
-		for k, v := range opts.Metadata {
-			h["X-Account-Meta-"+k] = v
 		}
 	}
 
