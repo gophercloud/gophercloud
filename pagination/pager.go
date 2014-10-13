@@ -29,9 +29,9 @@ type Page interface {
 
 // Pager knows how to advance through a specific resource collection, one page at a time.
 type Pager struct {
-	initialURL string
-
 	client *gophercloud.ServiceClient
+
+	initialURL string
 
 	createPage func(r LastHTTPResponse) Page
 
@@ -45,8 +45,18 @@ type Pager struct {
 // Supply the URL for the first page, a function that requests a specific page given a URL, and a function that counts a page.
 func NewPager(client *gophercloud.ServiceClient, initialURL string, createPage func(r LastHTTPResponse) Page) Pager {
 	return Pager{
-		initialURL: initialURL,
 		client:     client,
+		initialURL: initialURL,
+		createPage: createPage,
+	}
+}
+
+// WithPageCreator returns a new Pager that substitutes a different page creation function. This is
+// useful for overriding List functions in delegation.
+func (p Pager) WithPageCreator(createPage func(r LastHTTPResponse) Page) Pager {
+	return Pager{
+		client:     p.client,
+		initialURL: p.initialURL,
 		createPage: createPage,
 	}
 }

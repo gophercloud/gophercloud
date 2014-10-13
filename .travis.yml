@@ -1,10 +1,11 @@
 language: go
 install:
-  - go get -v ./...
+  - go get -v -tags 'fixtures acceptance' ./...
 go:
   - 1.1
   - 1.2
   - tip
+script: script/cibuild
 after_success:
   - go get code.google.com/p/go.tools/cmd/cover
   - go get github.com/axw/gocov/gocov

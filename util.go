@@ -2,6 +2,7 @@ package gophercloud
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -19,4 +20,12 @@ func WaitFor(secs int, predicate func() (bool, error)) error {
 		}
 	}
 	return fmt.Errorf("Time out in WaitFor.")
+}
+
+// NormalizeURL ensures that each endpoint URL has a closing `/`, as expected by ServiceClient.
+func NormalizeURL(url string) string {
+	if !strings.HasSuffix(url, "/") {
+		return url + "/"
+	}
+	return url
 }

@@ -9,6 +9,9 @@ var (
 	// ErrUserIDProvided is returned if you attempt to authenticate with a UserID.
 	ErrUserIDProvided = unacceptedAttributeErr("UserID")
 
+	// ErrAPIKeyProvided is returned if you attempt to authenticate with an APIKey.
+	ErrAPIKeyProvided = unacceptedAttributeErr("APIKey")
+
 	// ErrDomainIDProvided is returned if you attempt to authenticate with a DomainID.
 	ErrDomainIDProvided = unacceptedAttributeErr("DomainID")
 
@@ -18,8 +21,8 @@ var (
 	// ErrUsernameRequired is returned if you attempt ot authenticate without a Username.
 	ErrUsernameRequired = errors.New("You must supply a Username in your AuthOptions.")
 
-	// ErrPasswordOrAPIKey is returned if you provide both a password and an API key.
-	ErrPasswordOrAPIKey = errors.New("Please supply exactly one of Password or APIKey in your AuthOptions.")
+	// ErrPasswordRequired is returned if you don't provide a password.
+	ErrPasswordRequired = errors.New("Please supply a Password in your AuthOptions.")
 )
 
 func unacceptedAttributeErr(attribute string) error {
