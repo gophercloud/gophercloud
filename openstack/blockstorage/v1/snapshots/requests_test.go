@@ -119,6 +119,7 @@ func TestCreate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "snapshot": {
+				"volume_id": "1234",
         "display_name": "snapshot-001"
     }
 }
@@ -130,6 +131,7 @@ func TestCreate(t *testing.T) {
 		fmt.Fprintf(w, `
 {
     "snapshot": {
+				"volume_id": "1234",
         "display_name": "snapshot-001",
         "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"
     }
@@ -137,10 +139,11 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	options := &CreateOpts{Name: "snapshot-001"}
+	options := &CreateOpts{VolumeID: "1234", Name: "snapshot-001"}
 	n, err := Create(ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
+	th.AssertEquals(t, n.VolumeID, "1234")
 	th.AssertEquals(t, n.Name, "snapshot-001")
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }

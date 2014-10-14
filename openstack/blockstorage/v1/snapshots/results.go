@@ -9,19 +9,32 @@ import (
 
 // Snapshot contains all the information associated with an OpenStack Snapshot.
 type Snapshot struct {
-	Status           string            `mapstructure:"status"`              // currect status of the Snapshot
-	Name             string            `mapstructure:"display_name"`        // display name
-	Attachments      []string          `mapstructure:"attachments"`         // instances onto which the Snapshot is attached
-	AvailabilityZone string            `mapstructure:"availability_zone"`   // logical group
-	Bootable         string            `mapstructure:"bootable"`            // is the Snapshot bootable
-	CreatedAt        string            `mapstructure:"created_at"`          // date created
-	Description      string            `mapstructure:"display_discription"` // display description
-	VolumeType       string            `mapstructure:"volume_type"`         // see VolumeType object for more information
-	SnapshotID       string            `mapstructure:"snapshot_id"`         // ID of the Snapshot from which this Snapshot was created
-	SourceVolID      string            `mapstructure:"source_volid"`        // ID of the Volume from which this Snapshot was created
-	Metadata         map[string]string `mapstructure:"metadata"`            // user-defined key-value pairs
-	ID               string            `mapstructure:"id"`                  // unique identifier
-	Size             int               `mapstructure:"size"`                // size of the Snapshot, in GB
+	// Currect status of the Snapshot.
+	Status string `mapstructure:"status"`
+	// Display name.
+	Name string `mapstructure:"display_name"`
+	// Instances onto which the Snapshot is attached.
+	Attachments []string `mapstructure:"attachments"`
+	// Logical group.
+	AvailabilityZone string `mapstructure:"availability_zone"`
+	// Is the Snapshot bootable?
+	Bootable string `mapstructure:"bootable"`
+	// Date created.
+	CreatedAt string `mapstructure:"created_at"`
+	// Display description.
+	Description string `mapstructure:"display_discription"`
+	// See VolumeType object for more information.
+	VolumeType string `mapstructure:"volume_type"`
+	// ID of the Snapshot from which this Snapshot was created.
+	SnapshotID string `mapstructure:"snapshot_id"`
+	// ID of the Volume from which this Snapshot was created.
+	VolumeID string `mapstructure:"volume_id"`
+	// User-defined key-value pairs.
+	Metadata map[string]string `mapstructure:"metadata"`
+	// Unique identifier.
+	ID string `mapstructure:"id"`
+	// Size of the Snapshot, in GB.
+	Size int `mapstructure:"size"`
 }
 
 // CreateResult contains the response body and error from a Create request.

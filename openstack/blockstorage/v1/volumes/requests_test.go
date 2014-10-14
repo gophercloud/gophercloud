@@ -119,7 +119,7 @@ func TestCreate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "volume": {
-        "display_name": "vol-001"
+        "size": 4
     }
 }
 			`)
@@ -130,18 +130,18 @@ func TestCreate(t *testing.T) {
 		fmt.Fprintf(w, `
 {
     "volume": {
-        "display_name": "vol-001",
+        "size": 4,
         "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"
     }
 }
 		`)
 	})
 
-	options := &CreateOpts{Name: "vol-001"}
+	options := &CreateOpts{Size: 4}
 	n, err := Create(ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, n.Name, "vol-001")
+	th.AssertEquals(t, n.Size, 4)
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
 

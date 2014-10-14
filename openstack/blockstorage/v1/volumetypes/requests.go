@@ -6,6 +6,12 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type CreateOptsBuilder interface {
+	ToVolumeTypeCreateMap() map[string]interface{}
+}
+
 // CreateOpts are options for creating a volume type.
 type CreateOpts struct {
 	// OPTIONAL. See VolumeType.
@@ -14,30 +20,28 @@ type CreateOpts struct {
 	Name string
 }
 
-// Create will create a new volume, optionally wih CreateOpts. To extract the
-// created volume type object, call the Extract method on the CreateResult.
-func Create(client *gophercloud.ServiceClient, opts *CreateOpts) CreateResult {
-	type volumeType struct {
-		ExtraSpecs map[string]interface{} `json:"extra_specs,omitempty"`
-		Name       *string                `json:"name,omitempty"`
+// ToVolumeTypeCreateMap casts a CreateOpts struct to a map.
+func (opts CreateOpts) ToVolumeTypeCreateMap() map[string]interface{} {
+	vt := make(map[string]interface{})
+
+	if opts.ExtraSpecs != nil {
+		vt["extra_specs"] = opts.ExtraSpecs
+	}
+	if opts.Name != "" {
+		vt["name"] = opts.Name
 	}
 
-	type request struct {
-		VolumeType volumeType `json:"volume_type"`
-	}
+	return map[string]interface{}{"volume_type": vt}
+}
 
-	reqBody := request{
-		VolumeType: volumeType{},
-	}
-
-	reqBody.VolumeType.Name = gophercloud.MaybeString(opts.Name)
-	reqBody.VolumeType.ExtraSpecs = opts.ExtraSpecs
-
+// Create will create a new volume. To extract the created volume type object,
+// call the Extract method on the CreateResult.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200, 201},
-		ReqBody:     &reqBody,
+		ReqBody:     opts.ToVolumeTypeCreateMap(),
 		Results:     &res.Resp,
 	})
 	return res
