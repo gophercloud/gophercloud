@@ -9,7 +9,7 @@ import (
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
-	ToFlavorListParams() (string, error)
+	ToFlavorListQuery() (string, error)
 }
 
 // ListOpts helps control the results returned by the List() function.
@@ -32,8 +32,8 @@ type ListOpts struct {
 	Limit int `q:"limit"`
 }
 
-// ToFlavorListParams formats a ListOpts into a query string.
-func (opts ListOpts) ToFlavorListParams() (string, error) {
+// ToFlavorListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToFlavorListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -47,7 +47,7 @@ func (opts ListOpts) ToFlavorListParams() (string, error) {
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
-		query, err := opts.ToFlavorListParams()
+		query, err := opts.ToFlavorListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}

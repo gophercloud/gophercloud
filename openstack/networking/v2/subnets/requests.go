@@ -23,7 +23,7 @@ var (
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
-	ToSubnetListString() (string, error)
+	ToSubnetListQuery() (string, error)
 }
 
 // ListOpts allows the filtering and sorting of paginated collections through
@@ -46,8 +46,8 @@ type ListOpts struct {
 	SortDir    string `q:"sort_dir"`
 }
 
-// ToSubnetListString formats a ListOpts into a query string.
-func (opts ListOpts) ToSubnetListString() (string, error) {
+// ToSubnetListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToSubnetListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -65,7 +65,7 @@ func (opts ListOpts) ToSubnetListString() (string, error) {
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
-		query, err := opts.ToSubnetListString()
+		query, err := opts.ToSubnetListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}

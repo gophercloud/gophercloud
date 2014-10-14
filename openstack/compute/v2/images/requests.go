@@ -10,7 +10,7 @@ import (
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
-	ToImageListParams() (string, error)
+	ToImageListQuery() (string, error)
 }
 
 // ListOpts contain options for limiting the number of Images returned from a call to ListDetail.
@@ -31,8 +31,8 @@ type ListOpts struct {
 	Type string `q:"type"`
 }
 
-// ToImageListParams formats a ListOpts into a query string.
-func (opts ListOpts) ToImageListParams() (string, error) {
+// ToImageListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToImageListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -44,7 +44,7 @@ func (opts ListOpts) ToImageListParams() (string, error) {
 func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listDetailURL(client)
 	if opts != nil {
-		query, err := opts.ToImageListParams()
+		query, err := opts.ToImageListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}

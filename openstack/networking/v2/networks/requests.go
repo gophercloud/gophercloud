@@ -30,7 +30,7 @@ type networkOpts struct {
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
-	ToNetworkListString() (string, error)
+	ToNetworkListQuery() (string, error)
 }
 
 // ListOpts allows the filtering and sorting of paginated collections through
@@ -51,8 +51,8 @@ type ListOpts struct {
 	SortDir      string `q:"sort_dir"`
 }
 
-// ToNetworkListString formats a ListOpts into a query string.
-func (opts ListOpts) ToNetworkListString() (string, error) {
+// ToNetworkListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToNetworkListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -66,7 +66,7 @@ func (opts ListOpts) ToNetworkListString() (string, error) {
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
-		query, err := opts.ToNetworkListString()
+		query, err := opts.ToNetworkListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}

@@ -23,7 +23,7 @@ var (
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
-	ToPortListString() (string, error)
+	ToPortListQuery() (string, error)
 }
 
 // ListOpts allows the filtering and sorting of paginated collections through
@@ -47,8 +47,8 @@ type ListOpts struct {
 	SortDir      string `q:"sort_dir"`
 }
 
-// ToPortListString formats a ListOpts into a query string.
-func (opts ListOpts) ToPortListString() (string, error) {
+// ToPortListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToPortListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -66,7 +66,7 @@ func (opts ListOpts) ToPortListString() (string, error) {
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 	if opts != nil {
-		query, err := opts.ToPortListString()
+		query, err := opts.ToPortListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}

@@ -277,7 +277,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 // DeleteOptsBuilder allows extensions to add additional parameters to the
 // Delete request.
 type DeleteOptsBuilder interface {
-	ToObjectDeleteString() (string, error)
+	ToObjectDeleteQuery() (string, error)
 }
 
 // DeleteOpts is a structure that holds parameters for deleting an object.
@@ -285,8 +285,8 @@ type DeleteOpts struct {
 	MultipartManifest string `q:"multipart-manifest"`
 }
 
-// ToObjectDeleteString formats a DeleteOpts into a query string.
-func (opts DeleteOpts) ToObjectDeleteString() (string, error) {
+// ToObjectDeleteQuery formats a DeleteOpts into a query string.
+func (opts DeleteOpts) ToObjectDeleteQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -300,7 +300,7 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	url := deleteURL(c, containerName, objectName)
 
 	if opts != nil {
-		query, err := opts.ToObjectDeleteString()
+		query, err := opts.ToObjectDeleteQuery()
 		if err != nil {
 			res.Err = err
 			return res
@@ -320,7 +320,7 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 // GetOptsBuilder allows extensions to add additional parameters to the
 // Get request.
 type GetOptsBuilder interface {
-	ToObjectGetString() (string, error)
+	ToObjectGetQuery() (string, error)
 }
 
 // GetOpts is a structure that holds parameters for getting an object's metadata.
@@ -329,8 +329,8 @@ type GetOpts struct {
 	Signature string `q:"signature"`
 }
 
-// ToObjectGetString formats a GetOpts into a query string.
-func (opts GetOpts) ToObjectGetString() (string, error) {
+// ToObjectGetQuery formats a GetOpts into a query string.
+func (opts GetOpts) ToObjectGetQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -345,7 +345,7 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 	url := getURL(c, containerName, objectName)
 
 	if opts != nil {
-		query, err := opts.ToObjectGetString()
+		query, err := opts.ToObjectGetQuery()
 		if err != nil {
 			res.Err = err
 			return res

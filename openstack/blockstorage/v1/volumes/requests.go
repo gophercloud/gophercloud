@@ -118,7 +118,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 // ListOptsBuilder allows extensions to add additional parameters to the List
 // request.
 type ListOptsBuilder interface {
-	ToVolumeListString() (string, error)
+	ToVolumeListQuery() (string, error)
 }
 
 // ListOpts holds options for listing Volumes. It is passed to the volumes.List
@@ -134,8 +134,8 @@ type ListOpts struct {
 	Status string `q:"status"`
 }
 
-// ToVolumeListString formats a ListOpts into a query string.
-func (opts ListOpts) ToVolumeListString() (string, error) {
+// ToVolumeListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToVolumeListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -147,7 +147,7 @@ func (opts ListOpts) ToVolumeListString() (string, error) {
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
-		query, err := opts.ToVolumeListString()
+		query, err := opts.ToVolumeListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}

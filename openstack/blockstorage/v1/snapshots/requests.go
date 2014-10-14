@@ -102,7 +102,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 // ListOptsBuilder allows extensions to add additional parameters to the List
 // request.
 type ListOptsBuilder interface {
-	ToSnapshotListString() (string, error)
+	ToSnapshotListQuery() (string, error)
 }
 
 // ListOpts hold options for listing Snapshots. It is passed to the
@@ -113,8 +113,8 @@ type ListOpts struct {
 	VolumeID string `q:"volume_id"`
 }
 
-// ToSnapshotListString formats a ListOpts into a query string.
-func (opts ListOpts) ToSnapshotListString() (string, error) {
+// ToSnapshotListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToSnapshotListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -127,7 +127,7 @@ func (opts ListOpts) ToSnapshotListString() (string, error) {
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
-		query, err := opts.ToSnapshotListString()
+		query, err := opts.ToSnapshotListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
