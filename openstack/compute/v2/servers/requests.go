@@ -15,7 +15,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 		return ServerPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
-	return pagination.NewPager(client, detailURL(client), createPage)
+	return pagination.NewPager(client, listDetailURL(client), createPage)
 }
 
 // CreateOptsBuilder describes struct types that can be accepted by the Create call.
@@ -140,7 +140,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 
 // Delete requests that a server previously provisioned be removed from your account.
 func Delete(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("DELETE", serverURL(client, id), perigee.Options{
+	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
@@ -150,15 +150,15 @@ func Delete(client *gophercloud.ServiceClient, id string) error {
 // Get requests details on a single server, by ID.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
-	_, result.Err = perigee.Request("GET", serverURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("GET", getURL(client, id), perigee.Options{
 		Results:     &result.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
 	return result
 }
 
-// UpdateOptsLike allows extentions to add additional attributes to the Update request.
-type UpdateOptsLike interface {
+// UpdateOptsBuilder allows extentions to add additional attributes to the Update request.
+type UpdateOptsBuilder interface {
 	ToServerUpdateMap() map[string]interface{}
 }
 
@@ -192,9 +192,9 @@ func (opts UpdateOpts) ToServerUpdateMap() map[string]interface{} {
 }
 
 // Update requests that various attributes of the indicated server be changed.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsLike) UpdateResult {
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var result UpdateResult
-	_, result.Err = perigee.Request("PUT", serverURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("PUT", updateURL(client, id), perigee.Options{
 		Results:     &result.Resp,
 		ReqBody:     opts.ToServerUpdateMap(),
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),

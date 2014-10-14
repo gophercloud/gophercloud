@@ -1,4 +1,4 @@
-package accounts
+package flavors
 
 import (
 	"testing"
@@ -14,13 +14,13 @@ func endpointClient() *gophercloud.ServiceClient {
 }
 
 func TestGetURL(t *testing.T) {
-	actual := getURL(endpointClient())
-	expected := endpoint
+	actual := getURL(endpointClient(), "foo")
+	expected := endpoint + "flavors/foo"
 	th.CheckEquals(t, expected, actual)
 }
 
-func TestUpdateURL(t *testing.T) {
-	actual := updateURL(endpointClient())
-	expected := endpoint
+func TestListURL(t *testing.T) {
+	actual := listURL(endpointClient())
+	expected := endpoint + "flavors/detail"
 	th.CheckEquals(t, expected, actual)
 }

@@ -1,38 +1,34 @@
 package accounts
 
 import (
-	"net/http"
 	"strings"
 
-	"github.com/rackspace/gophercloud"
+	objectstorage "github.com/rackspace/gophercloud/openstack/objectstorage/v1"
 )
 
-type commonResult struct {
-	gophercloud.CommonResult
-	Resp *http.Response
-}
-
-// GetResult represents the result of a create operation.
+// GetResult is returned from a call to the Get function. See v1.CommonResult.
 type GetResult struct {
-	commonResult
-}
-
-// UpdateResult represents the result of an update operation.
-type UpdateResult struct {
-	commonResult
+	objectstorage.CommonResult
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
 // and returns the custom metatdata associated with the account.
-func (res commonResult) ExtractMetadata() map[string]string {
-	metadata := make(map[string]string)
+func (gr GetResult) ExtractMetadata() (map[string]string, error) {
+	if gr.Err != nil {
+		return nil, gr.Err
+	}
 
-	for k, v := range res.Resp.Header {
+	metadata := make(map[string]string)
+	for k, v := range gr.Resp.Header {
 		if strings.HasPrefix(k, "X-Account-Meta-") {
 			key := strings.TrimPrefix(k, "X-Account-Meta-")
 			metadata[key] = v[0]
 		}
 	}
+	return metadata, nil
+}
 
-	return metadata
+// UpdateResult is returned from a call to the Update function. See v1.CommonResult.
+type UpdateResult struct {
+	objectstorage.CommonResult
 }

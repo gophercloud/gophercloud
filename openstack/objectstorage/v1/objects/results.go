@@ -3,11 +3,12 @@ package objects
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"strings"
 
-	"github.com/mitchellh/mapstructure"
+	objectstorage "github.com/rackspace/gophercloud/openstack/objectstorage/v1"
 	"github.com/rackspace/gophercloud/pagination"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 // Object is a structure that holds information related to a storage object.
@@ -97,7 +98,7 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 
 // DownloadResult is a *http.Response that is returned from a call to the Download function.
 type DownloadResult struct {
-	commonResult
+	objectstorage.CommonResult
 }
 
 // ExtractContent is a function that takes a DownloadResult (of type *http.Response)
@@ -117,7 +118,7 @@ func (dr DownloadResult) ExtractContent() ([]byte, error) {
 
 // GetResult is a *http.Response that is returned from a call to the Get function.
 type GetResult struct {
-	commonResult
+	objectstorage.CommonResult
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -136,36 +137,22 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 	return metadata, nil
 }
 
-type commonResult struct {
-	Resp *http.Response
-	Err  error
-}
-
-func (cr commonResult) ExtractHeaders() (http.Header, error) {
-	var headers http.Header
-	if cr.Err != nil {
-		return headers, cr.Err
-	}
-
-	return cr.Resp.Header, nil
-}
-
 // CreateResult represents the result of a create operation.
 type CreateResult struct {
-	commonResult
+	objectstorage.CommonResult
 }
 
 // UpdateResult represents the result of an update operation.
 type UpdateResult struct {
-	commonResult
+	objectstorage.CommonResult
 }
 
 // DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
-	commonResult
+	objectstorage.CommonResult
 }
 
 // CopyResult represents the result of a copy operation.
 type CopyResult struct {
-	commonResult
+	objectstorage.CommonResult
 }

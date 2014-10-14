@@ -166,7 +166,8 @@ func TestCreateObject(t *testing.T) {
 	})
 
 	content := bytes.NewBufferString("Did gyre and gimble in the wabe")
-	_, err := Create(fake.ServiceClient(), "testContainer", "testObject", content, nil).ExtractHeaders()
+	options := &CreateOpts{ContentType: "application/json"}
+	_, err := Create(fake.ServiceClient(), "testContainer", "testObject", content, options).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error creating object: %v", err)
 	}
@@ -184,7 +185,8 @@ func TestCopyObject(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 	})
 
-	_, err := Copy(fake.ServiceClient(), "testContainer", "testObject", &CopyOpts{Destination: "/newTestContainer/newTestObject"}).ExtractHeaders()
+	options := &CopyOpts{Destination: "/newTestContainer/newTestObject"}
+	_, err := Copy(fake.ServiceClient(), "testContainer", "testObject", options).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error copying object: %v", err)
 	}

@@ -2,12 +2,22 @@ package containers
 
 import "github.com/rackspace/gophercloud"
 
-// accountURL returns the URI used to list Containers.
-func accountURL(c *gophercloud.ServiceClient) string {
+func listURL(c *gophercloud.ServiceClient) string {
 	return c.Endpoint
 }
 
-// containerURL returns the URI for making Container requests.
-func containerURL(c *gophercloud.ServiceClient, container string) string {
+func createURL(c *gophercloud.ServiceClient, container string) string {
 	return c.ServiceURL(container)
+}
+
+func getURL(c *gophercloud.ServiceClient, container string) string {
+	return createURL(c, container)
+}
+
+func deleteURL(c *gophercloud.ServiceClient, container string) string {
+	return createURL(c, container)
+}
+
+func updateURL(c *gophercloud.ServiceClient, container string) string {
+	return createURL(c, container)
 }

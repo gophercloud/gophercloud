@@ -24,12 +24,15 @@ type CreateOpts struct {
 }
 
 // ToNetworkCreateMap casts a CreateOpts struct to a map.
-func (o CreateOpts) ToNetworkCreateMap() map[string]map[string]interface{} {
-	outer := o.Parent.ToNetworkCreateMap()
+func (o CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
+	outer, err := o.Parent.ToNetworkCreateMap()
+	if err != nil {
+		return nil, err
+	}
 
-	outer["network"]["router:external"] = o.External
+	outer["network"].(map[string]interface{})["router:external"] = o.External
 
-	return outer
+	return outer, nil
 }
 
 // UpdateOpts is the structure used when updating existing external network
@@ -41,10 +44,13 @@ type UpdateOpts struct {
 }
 
 // ToNetworkUpdateMap casts an UpdateOpts struct to a map.
-func (o UpdateOpts) ToNetworkUpdateMap() map[string]map[string]interface{} {
-	outer := o.Parent.ToNetworkUpdateMap()
+func (o UpdateOpts) ToNetworkUpdateMap() (map[string]interface{}, error) {
+	outer, err := o.Parent.ToNetworkUpdateMap()
+	if err != nil {
+		return nil, err
+	}
 
-	outer["network"]["router:external"] = o.External
+	outer["network"].(map[string]interface{})["router:external"] = o.External
 
-	return outer
+	return outer, nil
 }

@@ -1,32 +1,24 @@
 package images
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/testhelper"
+	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
-const tokenID = "aaaaaa"
-
-func serviceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{TokenID: tokenID},
-		Endpoint: testhelper.Endpoint(),
-	}
-}
-
 func TestListImages(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/images/detail", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+	th.Mux.HandleFunc("/images/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		r.ParseForm()
@@ -70,9 +62,9 @@ func TestListImages(t *testing.T) {
 		}
 	})
 
-	client := serviceClient()
 	pages := 0
-	err := List(client).EachPage(func(page pagination.Page) (bool, error) {
+	options := &ListOpts{Limit: 2}
+	err := ListDetail(fake.ServiceClient(), options).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := ExtractImages(page)
@@ -119,12 +111,12 @@ func TestListImages(t *testing.T) {
 }
 
 func TestGetImage(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/images/12345678", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+	th.Mux.HandleFunc("/images/12345678", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
@@ -145,8 +137,7 @@ func TestGetImage(t *testing.T) {
 		`)
 	})
 
-	client := serviceClient()
-	actual, err := Get(client, "12345678").Extract()
+	actual, err := Get(fake.ServiceClient(), "12345678").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error from Get: %v", err)
 	}
@@ -165,4 +156,20 @@ func TestGetImage(t *testing.T) {
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected %#v, but got %#v", expected, actual)
 	}
+}
+
+func TestNextPageURL(t *testing.T) {
+	var page ImagePage
+	var body map[string]interface{}
+	bodyString := []byte(`{"images":{"links":[{"href":"http://192.154.23.87/12345/images/image3","rel":"bookmark"}]}, "images_links":[{"href":"http://192.154.23.87/12345/images/image4","rel":"next"}]}`)
+	err := json.Unmarshal(bodyString, &body)
+	if err != nil {
+		t.Fatalf("Error unmarshaling data into page body: %v", err)
+	}
+	page.Body = body
+
+	expected := "http://192.154.23.87/12345/images/image4"
+	actual, err := page.NextPageURL()
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, expected, actual)
 }

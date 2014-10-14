@@ -1,9 +1,10 @@
 package networks
 
 import (
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+
+	"github.com/racker/perigee"
 )
 
 // AdminState gives users a solid type to work with for create and update
@@ -26,6 +27,12 @@ type networkOpts struct {
 	TenantID     string
 }
 
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToNetworkListQuery() (string, error)
+}
+
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the network attributes you want to see returned. SortKey allows you to sort
@@ -44,17 +51,29 @@ type ListOpts struct {
 	SortDir      string `q:"sort_dir"`
 }
 
+// ToNetworkListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToNetworkListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+	return q.String(), nil
+}
+
 // List returns a Pager which allows you to iterate over a collection of
 // networks. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
-func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	// Build query parameters
-	q, err := gophercloud.BuildQueryString(&opts)
-	if err != nil {
-		return pagination.Pager{Err: err}
+func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listURL(c)
+	if opts != nil {
+		query, err := opts.ToNetworkListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
 	}
-	u := listURL(c) + q.String()
-	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
+
+	return pagination.NewPager(c, url, func(r pagination.LastHTTPResponse) pagination.Page {
 		return NetworkPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	})
 }
@@ -75,7 +94,7 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type CreateOptsBuilder interface {
-	ToNetworkCreateMap() map[string]map[string]interface{}
+	ToNetworkCreateMap() (map[string]interface{}, error)
 }
 
 // CreateOpts is the common options struct used in this package's Create
@@ -83,26 +102,23 @@ type CreateOptsBuilder interface {
 type CreateOpts networkOpts
 
 // ToNetworkCreateMap casts a CreateOpts struct to a map.
-func (o CreateOpts) ToNetworkCreateMap() map[string]map[string]interface{} {
-	inner := make(map[string]interface{})
+func (opts CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
+	n := make(map[string]interface{})
 
-	if o.AdminStateUp != nil {
-		inner["admin_state_up"] = &o.AdminStateUp
+	if opts.AdminStateUp != nil {
+		n["admin_state_up"] = &opts.AdminStateUp
 	}
-	if o.Name != "" {
-		inner["name"] = o.Name
+	if opts.Name != "" {
+		n["name"] = opts.Name
 	}
-	if o.Shared != nil {
-		inner["shared"] = &o.Shared
+	if opts.Shared != nil {
+		n["shared"] = &opts.Shared
 	}
-	if o.TenantID != "" {
-		inner["tenant_id"] = o.TenantID
+	if opts.TenantID != "" {
+		n["tenant_id"] = opts.TenantID
 	}
 
-	outer := make(map[string]map[string]interface{})
-	outer["network"] = inner
-
-	return outer
+	return map[string]interface{}{"network": n}, nil
 }
 
 // Create accepts a CreateOpts struct and creates a new network using the values
@@ -115,7 +131,11 @@ func (o CreateOpts) ToNetworkCreateMap() map[string]map[string]interface{} {
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
-	reqBody := opts.ToNetworkCreateMap()
+	reqBody, err := opts.ToNetworkCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
 
 	// Send request to API
 	_, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
@@ -132,7 +152,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type UpdateOptsBuilder interface {
-	ToNetworkUpdateMap() map[string]map[string]interface{}
+	ToNetworkUpdateMap() (map[string]interface{}, error)
 }
 
 // UpdateOpts is the common options struct used in this package's Update
@@ -140,23 +160,20 @@ type UpdateOptsBuilder interface {
 type UpdateOpts networkOpts
 
 // ToNetworkUpdateMap casts a UpdateOpts struct to a map.
-func (o UpdateOpts) ToNetworkUpdateMap() map[string]map[string]interface{} {
-	inner := make(map[string]interface{})
+func (opts UpdateOpts) ToNetworkUpdateMap() (map[string]interface{}, error) {
+	n := make(map[string]interface{})
 
-	if o.AdminStateUp != nil {
-		inner["admin_state_up"] = &o.AdminStateUp
+	if opts.AdminStateUp != nil {
+		n["admin_state_up"] = &opts.AdminStateUp
 	}
-	if o.Name != "" {
-		inner["name"] = o.Name
+	if opts.Name != "" {
+		n["name"] = opts.Name
 	}
-	if o.Shared != nil {
-		inner["shared"] = &o.Shared
+	if opts.Shared != nil {
+		n["shared"] = &opts.Shared
 	}
 
-	outer := make(map[string]map[string]interface{})
-	outer["network"] = inner
-
-	return outer
+	return map[string]interface{}{"network": n}, nil
 }
 
 // Update accepts a UpdateOpts struct and updates an existing network using the
@@ -164,7 +181,11 @@ func (o UpdateOpts) ToNetworkUpdateMap() map[string]map[string]interface{} {
 func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
 
-	reqBody := opts.ToNetworkUpdateMap()
+	reqBody, err := opts.ToNetworkUpdateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
 
 	// Send request to API
 	_, res.Err = perigee.Request("PUT", getURL(c, networkID), perigee.Options{

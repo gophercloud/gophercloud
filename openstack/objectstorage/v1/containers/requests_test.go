@@ -6,20 +6,20 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/testhelper"
+	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 var metadata = map[string]string{"gophercloud-test": "containers"}
 
 func TestListContainerInfo(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestHeader(t, r, "Accept", "application/json")
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
 
 		w.Header().Set("Content-Type", "application/json")
 		r.ParseForm()
@@ -68,7 +68,7 @@ func TestListContainerInfo(t *testing.T) {
 			},
 		}
 
-		testhelper.CheckDeepEquals(t, expected, actual)
+		th.CheckDeepEquals(t, expected, actual)
 
 		return true, nil
 	})
@@ -79,13 +79,13 @@ func TestListContainerInfo(t *testing.T) {
 }
 
 func TestListContainerNames(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestHeader(t, r, "Accept", "text/plain")
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "text/plain")
 
 		w.Header().Set("Content-Type", "text/plain")
 		r.ParseForm()
@@ -112,7 +112,7 @@ func TestListContainerNames(t *testing.T) {
 
 		expected := []string{"janeausten", "marktwain"}
 
-		testhelper.CheckDeepEquals(t, expected, actual)
+		th.CheckDeepEquals(t, expected, actual)
 
 		return true, nil
 	})
@@ -123,30 +123,34 @@ func TestListContainerNames(t *testing.T) {
 }
 
 func TestCreateContainer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "PUT")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestHeader(t, r, "Accept", "application/json")
+	th.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Add("X-Container-Meta-Foo", "bar")
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	_, err := Create(fake.ServiceClient(), "testContainer", nil).ExtractHeaders()
+	options := CreateOpts{ContentType: "application/json", Metadata: map[string]string{"foo": "bar"}}
+	headers, err := Create(fake.ServiceClient(), "testContainer", options).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error creating container: %v", err)
 	}
+	th.CheckEquals(t, "bar", headers["X-Container-Meta-Foo"][0])
 }
 
 func TestDeleteContainer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "DELETE")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestHeader(t, r, "Accept", "application/json")
+	th.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusNoContent)
 	})
 
@@ -157,30 +161,31 @@ func TestDeleteContainer(t *testing.T) {
 }
 
 func TestUpateContainer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestHeader(t, r, "Accept", "application/json")
+	th.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	_, err := Update(fake.ServiceClient(), "testContainer", nil).ExtractHeaders()
+	options := &UpdateOpts{Metadata: map[string]string{"foo": "bar"}}
+	_, err := Update(fake.ServiceClient(), "testContainer", options).ExtractHeaders()
 	if err != nil {
 		t.Fatalf("Unexpected error updating container metadata: %v", err)
 	}
 }
 
 func TestGetContainer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "HEAD")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestHeader(t, r, "Accept", "application/json")
+	th.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "HEAD")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusNoContent)
 	})
 

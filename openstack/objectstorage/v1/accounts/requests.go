@@ -5,63 +5,103 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-// UpdateOpts is a structure that contains parameters for updating, creating, or deleting an
-// account's metadata.
-type UpdateOpts struct {
-	Metadata map[string]string
-	Headers  map[string]string
+// GetOptsBuilder allows extensions to add additional headers to the Get
+// request.
+type GetOptsBuilder interface {
+	ToAccountGetMap() (map[string]string, error)
 }
 
-// Update is a function that creates, updates, or deletes an account's metadata.
-func Update(c *gophercloud.ServiceClient, opts UpdateOpts) UpdateResult {
-	headers := c.Provider.AuthenticatedHeaders()
+// GetOpts is a structure that contains parameters for getting an account's
+// metadata.
+type GetOpts struct {
+	Newest bool `h:"X-Newest"`
+}
 
-	for k, v := range opts.Headers {
-		headers[k] = v
+// ToAccountGetMap formats a GetOpts into a map[string]string of headers.
+func (opts GetOpts) ToAccountGetMap() (map[string]string, error) {
+	return gophercloud.BuildHeaders(opts)
+}
+
+// Get is a function that retrieves an account's metadata. To extract just the
+// custom metadata, call the ExtractMetadata method on the GetResult. To extract
+// all the headers that are returned (including the metadata), call the
+// ExtractHeaders method on the GetResult.
+func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) GetResult {
+	var res GetResult
+	h := c.Provider.AuthenticatedHeaders()
+
+	if opts != nil {
+		headers, err := opts.ToAccountGetMap()
+		if err != nil {
+			res.Err = err
+			return res
+		}
+
+		for k, v := range headers {
+			h[k] = v
+		}
 	}
 
-	for k, v := range opts.Metadata {
-		headers["X-Account-Meta-"+k] = v
-	}
-
-	var res UpdateResult
-
-	var resp *perigee.Response
-
-	resp, res.Err = perigee.Request("POST", accountURL(c), perigee.Options{
-		MoreHeaders: headers,
+	resp, err := perigee.Request("HEAD", getURL(c), perigee.Options{
+		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
-
 	res.Resp = &resp.HttpResponse
-
+	res.Err = err
 	return res
 }
 
-// GetOpts is a structure that contains parameters for getting an account's metadata.
-type GetOpts struct {
-	Headers map[string]string
+// UpdateOptsBuilder allows extensions to add additional headers to the Update
+// request.
+type UpdateOptsBuilder interface {
+	ToAccountUpdateMap() (map[string]string, error)
 }
 
-// Get is a function that retrieves an account's metadata. To extract just the custom
-// metadata, pass the GetResult response to the ExtractMetadata function.
-func Get(c *gophercloud.ServiceClient, opts GetOpts) GetResult {
-	headers := c.Provider.AuthenticatedHeaders()
+// UpdateOpts is a structure that contains parameters for updating, creating, or
+// deleting an account's metadata.
+type UpdateOpts struct {
+	Metadata          map[string]string
+	ContentType       string `h:"Content-Type"`
+	DetectContentType bool   `h:"X-Detect-Content-Type"`
+	TempURLKey        string `h:"X-Account-Meta-Temp-URL-Key"`
+	TempURLKey2       string `h:"X-Account-Meta-Temp-URL-Key-2"`
+}
 
-	for k, v := range opts.Headers {
-		headers[k] = v
+// ToAccountUpdateMap formats an UpdateOpts into a map[string]string of headers.
+func (opts UpdateOpts) ToAccountUpdateMap() (map[string]string, error) {
+	headers, err := gophercloud.BuildHeaders(opts)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range opts.Metadata {
+		headers["X-Account-Meta-"+k] = v
+	}
+	return headers, err
+}
+
+// Update is a function that creates, updates, or deletes an account's metadata.
+// To extract the headers returned, call the ExtractHeaders method on the
+// UpdateResult.
+func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) UpdateResult {
+	var res UpdateResult
+	h := c.Provider.AuthenticatedHeaders()
+
+	if opts != nil {
+		headers, err := opts.ToAccountUpdateMap()
+		if err != nil {
+			res.Err = err
+			return res
+		}
+		for k, v := range headers {
+			h[k] = v
+		}
 	}
 
-	var res GetResult
-	var resp *perigee.Response
-
-	resp, res.Err = perigee.Request("HEAD", accountURL(c), perigee.Options{
-		MoreHeaders: headers,
-		Results:     &res.Resp,
+	resp, err := perigee.Request("POST", updateURL(c), perigee.Options{
+		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
-
 	res.Resp = &resp.HttpResponse
-
+	res.Err = err
 	return res
 }

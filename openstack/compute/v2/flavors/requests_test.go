@@ -6,27 +6,20 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/testhelper"
+	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 const tokenID = "blerb"
 
-func serviceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{TokenID: tokenID},
-		Endpoint: testhelper.Endpoint(),
-	}
-}
-
 func TestListFlavors(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/flavors/detail", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+	th.Mux.HandleFunc("/flavors/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		r.ParseForm()
@@ -58,7 +51,7 @@ func TestListFlavors(t *testing.T) {
 							}
 						]
 					}
-				`, testhelper.Server.URL)
+				`, th.Server.URL)
 		case "2":
 			fmt.Fprintf(w, `{ "flavors": [] }`)
 		default:
@@ -66,9 +59,8 @@ func TestListFlavors(t *testing.T) {
 		}
 	})
 
-	client := serviceClient()
 	pages := 0
-	err := List(client, ListFilterOptions{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(fake.ServiceClient(), &ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := ExtractFlavors(page)
@@ -96,12 +88,12 @@ func TestListFlavors(t *testing.T) {
 }
 
 func TestGetFlavor(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/flavors/12345", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+	th.Mux.HandleFunc("/flavors/12345", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
@@ -118,8 +110,7 @@ func TestGetFlavor(t *testing.T) {
 		`)
 	})
 
-	client := serviceClient()
-	actual, err := Get(client, "12345").Extract()
+	actual, err := Get(fake.ServiceClient(), "12345").Extract()
 	if err != nil {
 		t.Fatalf("Unable to get flavor: %v", err)
 	}
