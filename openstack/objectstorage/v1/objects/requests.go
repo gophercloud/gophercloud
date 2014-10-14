@@ -19,13 +19,13 @@ type ListOptsBuilder interface {
 // ListOpts is a structure that holds parameters for listing objects.
 type ListOpts struct {
 	Full      bool
-	Limit     int     `q:"limit"`
-	Marker    string  `q:"marker"`
-	EndMarker string  `q:"end_marker"`
-	Format    string  `q:"format"`
-	Prefix    string  `q:"prefix"`
-	Delimiter [1]byte `q:"delimiter"`
-	Path      string  `q:"path"`
+	Limit     int    `q:"limit"`
+	Marker    string `q:"marker"`
+	EndMarker string `q:"end_marker"`
+	Format    string `q:"format"`
+	Prefix    string `q:"prefix"`
+	Delimiter string `q:"delimiter"`
+	Path      string `q:"path"`
 }
 
 // ToObjectListParams formats a ListOpts into a query string and boolean
@@ -222,7 +222,7 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 // CopyOptsBuilder allows extensions to add additional parameters to the
 // Copy request.
 type CopyOptsBuilder interface {
-	ToObjectCopyParams() (map[string]string, error)
+	ToObjectCopyMap() (map[string]string, error)
 }
 
 // CopyOpts is a structure that holds parameters for copying one object to
@@ -235,8 +235,8 @@ type CopyOpts struct {
 	Destination        string `h:"Destination,required"`
 }
 
-// ToObjectCopyParams formats a CopyOpts into a map of headers.
-func (opts CopyOpts) ToObjectCopyParams() (map[string]string, error) {
+// ToObjectCopyMap formats a CopyOpts into a map of headers.
+func (opts CopyOpts) ToObjectCopyMap() (map[string]string, error) {
 	if opts.Destination == "" {
 		return nil, fmt.Errorf("Required CopyOpts field 'Destination' not set.")
 	}
@@ -255,7 +255,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 	var res CopyResult
 	h := c.Provider.AuthenticatedHeaders()
 
-	headers, err := opts.ToObjectCopyParams()
+	headers, err := opts.ToObjectCopyMap()
 	if err != nil {
 		res.Err = err
 		return res
@@ -277,7 +277,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 // DeleteOptsBuilder allows extensions to add additional parameters to the
 // Delete request.
 type DeleteOptsBuilder interface {
-	ToObjectDeleteParams() (string, error)
+	ToObjectDeleteString() (string, error)
 }
 
 // DeleteOpts is a structure that holds parameters for deleting an object.
@@ -285,8 +285,8 @@ type DeleteOpts struct {
 	MultipartManifest string `q:"multipart-manifest"`
 }
 
-// ToObjectDeleteParams formats a DeleteOpts into a query string.
-func (opts DeleteOpts) ToObjectDeleteParams() (string, error) {
+// ToObjectDeleteString formats a DeleteOpts into a query string.
+func (opts DeleteOpts) ToObjectDeleteString() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -300,7 +300,7 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	url := deleteURL(c, containerName, objectName)
 
 	if opts != nil {
-		query, err := opts.ToObjectDeleteParams()
+		query, err := opts.ToObjectDeleteString()
 		if err != nil {
 			res.Err = err
 			return res
@@ -320,7 +320,7 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 // GetOptsBuilder allows extensions to add additional parameters to the
 // Get request.
 type GetOptsBuilder interface {
-	ToObjectGetParams() (string, error)
+	ToObjectGetString() (string, error)
 }
 
 // GetOpts is a structure that holds parameters for getting an object's metadata.
@@ -329,8 +329,8 @@ type GetOpts struct {
 	Signature string `q:"signature"`
 }
 
-// ToObjectGetParams formats a GetOpts into a query string.
-func (opts GetOpts) ToObjectGetParams() (string, error) {
+// ToObjectGetString formats a GetOpts into a query string.
+func (opts GetOpts) ToObjectGetString() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -345,7 +345,7 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 	url := getURL(c, containerName, objectName)
 
 	if opts != nil {
-		query, err := opts.ToObjectGetParams()
+		query, err := opts.ToObjectGetString()
 		if err != nil {
 			res.Err = err
 			return res
@@ -365,7 +365,7 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToObjectUpdateParams() (map[string]string, error)
+	ToObjectUpdateMap() (map[string]string, error)
 }
 
 // UpdateOpts is a structure that holds parameters for updating, creating, or deleting an
@@ -380,8 +380,8 @@ type UpdateOpts struct {
 	DetectContentType  bool   `h:"X-Detect-Content-Type"`
 }
 
-// ToObjectUpdateParams formats a UpdateOpts into a map of headers.
-func (opts UpdateOpts) ToObjectUpdateParams() (map[string]string, error) {
+// ToObjectUpdateMap formats a UpdateOpts into a map of headers.
+func (opts UpdateOpts) ToObjectUpdateMap() (map[string]string, error) {
 	h, err := gophercloud.BuildHeaders(opts)
 	if err != nil {
 		return nil, err
@@ -398,7 +398,7 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
-		headers, err := opts.ToObjectUpdateParams()
+		headers, err := opts.ToObjectUpdateMap()
 		if err != nil {
 			res.Err = err
 			return res

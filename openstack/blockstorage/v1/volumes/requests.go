@@ -87,7 +87,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 
 	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		ReqBody:     reqBody,
+		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 		OkCodes:     []int{200, 201},
 	})
@@ -118,7 +118,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 // ListOptsBuilder allows extensions to add additional parameters to the List
 // request.
 type ListOptsBuilder interface {
-	ToVolumeListParams() (string, error)
+	ToVolumeListString() (string, error)
 }
 
 // ListOpts holds options for listing Volumes. It is passed to the volumes.List
@@ -134,8 +134,8 @@ type ListOpts struct {
 	Status string `q:"status"`
 }
 
-// ToVolumeListParams formats a ListOpts into a query string.
-func (opts ListOpts) ToVolumeListParams() (string, error) {
+// ToVolumeListString formats a ListOpts into a query string.
+func (opts ListOpts) ToVolumeListString() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -147,7 +147,7 @@ func (opts ListOpts) ToVolumeListParams() (string, error) {
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
-		query, err := opts.ToVolumeListParams()
+		query, err := opts.ToVolumeListString()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
@@ -197,7 +197,7 @@ func (opts UpdateOpts) ToVolumeUpdateMap() (map[string]interface{}, error) {
 
 // Update will update the Volume with provided information. To extract the updated
 // Volume from the response, call the Extract method on the UpdateResult.
-func Update(client *gophercloud.ServiceClient, id string, opts *UpdateOpts) UpdateResult {
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
 
 	reqBody, err := opts.ToVolumeUpdateMap()
@@ -209,7 +209,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts *UpdateOpts) Upda
 	_, res.Err = perigee.Request("PUT", updateURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
-		ReqBody:     reqBody,
+		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 	})
 	return res

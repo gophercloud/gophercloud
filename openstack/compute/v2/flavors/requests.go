@@ -6,6 +6,12 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToFlavorListParams() (string, error)
+}
+
 // ListOpts helps control the results returned by the List() function.
 // For example, a flavor with a minDisk field of 10 will not be returned if you specify MinDisk set to 20.
 // Typically, software will use the last ID of the previous call to List to set the Marker for the current call.
@@ -26,17 +32,26 @@ type ListOpts struct {
 	Limit int `q:"limit"`
 }
 
+// ToFlavorListParams formats a ListOpts into a query string.
+func (opts ListOpts) ToFlavorListParams() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+	return q.String(), nil
+}
+
 // List instructs OpenStack to provide a list of flavors.
 // You may provide criteria by which List curtails its results for easier processing.
 // See ListOpts for more details.
-func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
-		query, err := gophercloud.BuildQueryString(opts)
+		query, err := opts.ToFlavorListParams()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
-		url += query.String()
+		url += query
 	}
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
 		return FlavorPage{pagination.LinkedPageBase{LastHTTPResponse: r}}

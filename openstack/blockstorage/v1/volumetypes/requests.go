@@ -9,7 +9,7 @@ import (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToVolumeTypeCreateMap() map[string]interface{}
+	ToVolumeTypeCreateMap() (map[string]interface{}, error)
 }
 
 // CreateOpts are options for creating a volume type.
@@ -21,7 +21,7 @@ type CreateOpts struct {
 }
 
 // ToVolumeTypeCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToVolumeTypeCreateMap() map[string]interface{} {
+func (opts CreateOpts) ToVolumeTypeCreateMap() (map[string]interface{}, error) {
 	vt := make(map[string]interface{})
 
 	if opts.ExtraSpecs != nil {
@@ -31,17 +31,24 @@ func (opts CreateOpts) ToVolumeTypeCreateMap() map[string]interface{} {
 		vt["name"] = opts.Name
 	}
 
-	return map[string]interface{}{"volume_type": vt}
+	return map[string]interface{}{"volume_type": vt}, nil
 }
 
 // Create will create a new volume. To extract the created volume type object,
 // call the Extract method on the CreateResult.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
+
+	reqBody, err := opts.ToVolumeTypeCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
 	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200, 201},
-		ReqBody:     opts.ToVolumeTypeCreateMap(),
+		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 	})
 	return res

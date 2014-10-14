@@ -1,9 +1,10 @@
 package subnets
 
 import (
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+
+	"github.com/racker/perigee"
 )
 
 // AdminState gives users a solid type to work with for create and update
@@ -18,6 +19,12 @@ var (
 	Up   AdminState = &iTrue
 	Down AdminState = &iFalse
 )
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToSubnetListString() (string, error)
+}
 
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
@@ -39,6 +46,15 @@ type ListOpts struct {
 	SortDir    string `q:"sort_dir"`
 }
 
+// ToSubnetListString formats a ListOpts into a query string.
+func (opts ListOpts) ToSubnetListString() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+	return q.String(), nil
+}
+
 // List returns a Pager which allows you to iterate over a collection of
 // subnets. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
@@ -46,13 +62,15 @@ type ListOpts struct {
 // Default policy settings return only those subnets that are owned by the tenant
 // who submits the request, unless the request is submitted by an user with
 // administrative rights.
-func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	// Build query parameters
-	query, err := gophercloud.BuildQueryString(&opts)
-	if err != nil {
-		return pagination.Pager{Err: err}
+func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listURL(c)
+	if opts != nil {
+		query, err := opts.ToSubnetListString()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
 	}
-	url := listURL(c) + query.String()
 
 	return pagination.NewPager(c, url, func(r pagination.LastHTTPResponse) pagination.Page {
 		return SubnetPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
@@ -76,6 +94,14 @@ const (
 	IPv6 = 6
 )
 
+// CreateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Create operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
+type CreateOptsBuilder interface {
+	ToSubnetCreateMap() (map[string]interface{}, error)
+}
+
 // CreateOpts represents the attributes used when creating a new subnet.
 type CreateOpts struct {
 	// Required
@@ -92,61 +118,60 @@ type CreateOpts struct {
 	HostRoutes      []HostRoute
 }
 
-// Create accepts a CreateOpts struct and creates a new subnet using the values
-// provided. You must remember to provide a valid NetworkID, CIDR and IP version.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	var res CreateResult
+// ToSubnetCreateMap casts a CreateOpts struct to a map.
+func (opts CreateOpts) ToSubnetCreateMap() (map[string]interface{}, error) {
+	s := make(map[string]interface{})
 
-	// Validate required options
 	if opts.NetworkID == "" {
-		res.Err = errNetworkIDRequired
-		return res
+		return nil, errNetworkIDRequired
 	}
 	if opts.CIDR == "" {
-		res.Err = errCIDRRequired
-		return res
+		return nil, errCIDRRequired
 	}
 	if opts.IPVersion != 0 && opts.IPVersion != IPv4 && opts.IPVersion != IPv6 {
-		res.Err = errInvalidIPType
-		return res
+		return nil, errInvalidIPType
 	}
 
-	type subnet struct {
-		NetworkID       string           `json:"network_id"`
-		CIDR            string           `json:"cidr"`
-		Name            *string          `json:"name,omitempty"`
-		TenantID        *string          `json:"tenant_id,omitempty"`
-		AllocationPools []AllocationPool `json:"allocation_pools,omitempty"`
-		GatewayIP       *string          `json:"gateway_ip,omitempty"`
-		IPVersion       int              `json:"ip_version,omitempty"`
-		EnableDHCP      *bool            `json:"enable_dhcp,omitempty"`
-		DNSNameservers  []string         `json:"dns_nameservers,omitempty"`
-		HostRoutes      []HostRoute      `json:"host_routes,omitempty"`
-	}
-	type request struct {
-		Subnet subnet `json:"subnet"`
-	}
+	s["network_id"] = opts.NetworkID
+	s["cidr"] = opts.CIDR
 
-	reqBody := request{Subnet: subnet{
-		NetworkID:  opts.NetworkID,
-		CIDR:       opts.CIDR,
-		Name:       gophercloud.MaybeString(opts.Name),
-		TenantID:   gophercloud.MaybeString(opts.TenantID),
-		GatewayIP:  gophercloud.MaybeString(opts.GatewayIP),
-		EnableDHCP: opts.EnableDHCP,
-	}}
-
+	if opts.EnableDHCP != nil {
+		s["enable_dhcp"] = &opts.EnableDHCP
+	}
+	if opts.Name != "" {
+		s["name"] = opts.Name
+	}
+	if opts.GatewayIP != "" {
+		s["gateway_ip"] = opts.GatewayIP
+	}
+	if opts.TenantID != "" {
+		s["tenant_id"] = opts.TenantID
+	}
 	if opts.IPVersion != 0 {
-		reqBody.Subnet.IPVersion = opts.IPVersion
+		s["ip_version"] = opts.IPVersion
 	}
 	if len(opts.AllocationPools) != 0 {
-		reqBody.Subnet.AllocationPools = opts.AllocationPools
+		s["allocation_pools"] = opts.AllocationPools
 	}
 	if len(opts.DNSNameservers) != 0 {
-		reqBody.Subnet.DNSNameservers = opts.DNSNameservers
+		s["dns_nameservers"] = opts.DNSNameservers
 	}
 	if len(opts.HostRoutes) != 0 {
-		reqBody.Subnet.HostRoutes = opts.HostRoutes
+		s["host_routes"] = opts.HostRoutes
+	}
+
+	return map[string]interface{}{"subnet": s}, nil
+}
+
+// Create accepts a CreateOpts struct and creates a new subnet using the values
+// provided. You must remember to provide a valid NetworkID, CIDR and IP version.
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
+	var res CreateResult
+
+	reqBody, err := opts.ToSubnetCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
 	}
 
 	_, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
@@ -159,6 +184,12 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	return res
 }
 
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToSubnetUpdateMap() (map[string]interface{}, error)
+}
+
 // UpdateOpts represents the attributes used when updating an existing subnet.
 type UpdateOpts struct {
 	Name           string
@@ -168,35 +199,40 @@ type UpdateOpts struct {
 	EnableDHCP     *bool
 }
 
+// ToSubnetUpdateMap casts an UpdateOpts struct to a map.
+func (opts UpdateOpts) ToSubnetUpdateMap() (map[string]interface{}, error) {
+	s := make(map[string]interface{})
+
+	if opts.EnableDHCP != nil {
+		s["enable_dhcp"] = &opts.EnableDHCP
+	}
+	if opts.Name != "" {
+		s["name"] = opts.Name
+	}
+	if opts.GatewayIP != "" {
+		s["gateway_ip"] = opts.GatewayIP
+	}
+	if len(opts.DNSNameservers) != 0 {
+		s["dns_nameservers"] = opts.DNSNameservers
+	}
+	if len(opts.HostRoutes) != 0 {
+		s["host_routes"] = opts.HostRoutes
+	}
+
+	return map[string]interface{}{"subnet": s}, nil
+}
+
 // Update accepts a UpdateOpts struct and updates an existing subnet using the
 // values provided.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
-	type subnet struct {
-		Name           *string     `json:"name,omitempty"`
-		GatewayIP      *string     `json:"gateway_ip,omitempty"`
-		DNSNameservers []string    `json:"dns_nameservers,omitempty"`
-		HostRoutes     []HostRoute `json:"host_routes,omitempty"`
-		EnableDHCP     *bool       `json:"enable_dhcp,omitempty"`
-	}
-	type request struct {
-		Subnet subnet `json:"subnet"`
-	}
-
-	reqBody := request{Subnet: subnet{
-		Name:       gophercloud.MaybeString(opts.Name),
-		GatewayIP:  gophercloud.MaybeString(opts.GatewayIP),
-		EnableDHCP: opts.EnableDHCP,
-	}}
-
-	if len(opts.DNSNameservers) != 0 {
-		reqBody.Subnet.DNSNameservers = opts.DNSNameservers
-	}
-
-	if len(opts.HostRoutes) != 0 {
-		reqBody.Subnet.HostRoutes = opts.HostRoutes
-	}
-
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
+
+	reqBody, err := opts.ToSubnetUpdateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
 	_, res.Err = perigee.Request("PUT", updateURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,

@@ -72,7 +72,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200, 201},
-		ReqBody:     reqBody,
+		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 	})
 	return res
@@ -102,7 +102,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 // ListOptsBuilder allows extensions to add additional parameters to the List
 // request.
 type ListOptsBuilder interface {
-	ToVolumeListParams() (string, error)
+	ToSnapshotListString() (string, error)
 }
 
 // ListOpts hold options for listing Snapshots. It is passed to the
@@ -113,8 +113,8 @@ type ListOpts struct {
 	VolumeID string `q:"volume_id"`
 }
 
-// ToVolumeListParams formats a ListOpts into a query string.
-func (opts ListOpts) ToVolumeListParams() (string, error) {
+// ToSnapshotListString formats a ListOpts into a query string.
+func (opts ListOpts) ToSnapshotListString() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return "", err
@@ -127,7 +127,7 @@ func (opts ListOpts) ToVolumeListParams() (string, error) {
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
-		query, err := opts.ToVolumeListParams()
+		query, err := opts.ToSnapshotListString()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
@@ -180,7 +180,7 @@ func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMet
 	_, res.Err = perigee.Request("PUT", updateMetadataURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
-		ReqBody:     reqBody,
+		ReqBody:     &reqBody,
 		Results:     &res.Resp,
 	})
 	return res

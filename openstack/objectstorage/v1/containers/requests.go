@@ -15,12 +15,12 @@ type ListOptsBuilder interface {
 // ListOpts is a structure that holds options for listing containers.
 type ListOpts struct {
 	Full      bool
-	Limit     int     `q:"limit"`
-	Marker    string  `q:"marker"`
-	EndMarker string  `q:"end_marker"`
-	Format    string  `q:"format"`
-	Prefix    string  `q:"prefix"`
-	Delimiter [1]byte `q:"delimiter"`
+	Limit     int    `q:"limit"`
+	Marker    string `q:"marker"`
+	EndMarker string `q:"end_marker"`
+	Format    string `q:"format"`
+	Prefix    string `q:"prefix"`
+	Delimiter string `q:"delimiter"`
 }
 
 // ToContainerListParams formats a ListOpts into a query string and boolean
@@ -66,7 +66,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToContainerCreateParams() (map[string]string, error)
+	ToContainerCreateMap() (map[string]string, error)
 }
 
 // CreateOpts is a structure that holds parameters for creating a container.
@@ -82,8 +82,8 @@ type CreateOpts struct {
 	VersionsLocation  string `h:"X-Versions-Location"`
 }
 
-// ToContainerCreateParams formats a CreateOpts into a map of headers.
-func (opts CreateOpts) ToContainerCreateParams() (map[string]string, error) {
+// ToContainerCreateMap formats a CreateOpts into a map of headers.
+func (opts CreateOpts) ToContainerCreateMap() (map[string]string, error) {
 	h, err := gophercloud.BuildHeaders(opts)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
-		headers, err := opts.ToContainerCreateParams()
+		headers, err := opts.ToContainerCreateMap()
 		if err != nil {
 			res.Err = err
 			return res
@@ -135,7 +135,7 @@ func Delete(c *gophercloud.ServiceClient, containerName string) DeleteResult {
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
-	ToContainerUpdateParams() (map[string]string, error)
+	ToContainerUpdateMap() (map[string]string, error)
 }
 
 // UpdateOpts is a structure that holds parameters for updating, creating, or
@@ -152,8 +152,8 @@ type UpdateOpts struct {
 	VersionsLocation       string `h:"X-Versions-Location"`
 }
 
-// ToContainerUpdateParams formats a CreateOpts into a map of headers.
-func (opts UpdateOpts) ToContainerUpdateParams() (map[string]string, error) {
+// ToContainerUpdateMap formats a CreateOpts into a map of headers.
+func (opts UpdateOpts) ToContainerUpdateMap() (map[string]string, error) {
 	h, err := gophercloud.BuildHeaders(opts)
 	if err != nil {
 		return nil, err
@@ -171,7 +171,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 	h := c.Provider.AuthenticatedHeaders()
 
 	if opts != nil {
-		headers, err := opts.ToContainerUpdateParams()
+		headers, err := opts.ToContainerUpdateMap()
 		if err != nil {
 			res.Err = err
 			return res

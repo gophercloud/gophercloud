@@ -1,10 +1,17 @@
 package images
 
 import (
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+
+	"github.com/racker/perigee"
 )
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToImageListParams() (string, error)
+}
 
 // ListOpts contain options for limiting the number of Images returned from a call to ListDetail.
 type ListOpts struct {
@@ -24,15 +31,24 @@ type ListOpts struct {
 	Type string `q:"type"`
 }
 
+// ToImageListParams formats a ListOpts into a query string.
+func (opts ListOpts) ToImageListParams() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+	return q.String(), nil
+}
+
 // ListDetail enumerates the available images.
-func ListDetail(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
+func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listDetailURL(client)
 	if opts != nil {
-		query, err := gophercloud.BuildQueryString(opts)
+		query, err := opts.ToImageListParams()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
-		url += query.String()
+		url += query
 	}
 
 	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
