@@ -7,19 +7,19 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/testhelper"
+	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
 const tokenID = "blerb"
 
 func TestListFlavors(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/flavors/detail", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+	th.Mux.HandleFunc("/flavors/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		r.ParseForm()
@@ -51,7 +51,7 @@ func TestListFlavors(t *testing.T) {
 							}
 						]
 					}
-				`, testhelper.Server.URL)
+				`, th.Server.URL)
 		case "2":
 			fmt.Fprintf(w, `{ "flavors": [] }`)
 		default:
@@ -88,12 +88,12 @@ func TestListFlavors(t *testing.T) {
 }
 
 func TestGetFlavor(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/flavors/12345", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+	th.Mux.HandleFunc("/flavors/12345", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
