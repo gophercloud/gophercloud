@@ -20,5 +20,7 @@ func TestGetURL(t *testing.T) {
 }
 
 func TestListURL(t *testing.T) {
-
+	actual := listURL(endpointClient())
+	expected := endpoint + "flavors/detail"
+	th.CheckEquals(t, expected, actual)
 }
