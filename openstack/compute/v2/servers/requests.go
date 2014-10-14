@@ -157,8 +157,8 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	return result
 }
 
-// UpdateOptsLike allows extentions to add additional attributes to the Update request.
-type UpdateOptsLike interface {
+// UpdateOptsBuilder allows extentions to add additional attributes to the Update request.
+type UpdateOptsBuilder interface {
 	ToServerUpdateMap() map[string]interface{}
 }
 
@@ -192,7 +192,7 @@ func (opts UpdateOpts) ToServerUpdateMap() map[string]interface{} {
 }
 
 // Update requests that various attributes of the indicated server be changed.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsLike) UpdateResult {
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var result UpdateResult
 	_, result.Err = perigee.Request("PUT", updateURL(client, id), perigee.Options{
 		Results:     &result.Resp,
