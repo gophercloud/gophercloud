@@ -160,8 +160,8 @@ func NewIdentityV3(client *gophercloud.ProviderClient) *gophercloud.ServiceClien
 	}
 }
 
-// NewStorageV1 creates a ServiceClient that may be used with the v1 object storage package.
-func NewStorageV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+// NewObjectStorageV1 creates a ServiceClient that may be used with the v1 object storage package.
+func NewObjectStorageV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("object-store")
 	url, err := client.EndpointLocator(eo)
 	if err != nil {
