@@ -6,6 +6,18 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// ExtractInfo interprets a page of List results when full container info
+// is requested.
+func ExtractInfo(page pagination.Page) ([]os.Container, error) {
+	return os.ExtractInfo(page)
+}
+
+// ExtractNames interprets a page of List results when just the container
+// names are requested.
+func ExtractNames(page pagination.Page) ([]string, error) {
+	return os.ExtractNames(page)
+}
+
 // List is a function that retrieves containers associated with the account as
 // well as account metadata. It returns a pager which can be iterated with the
 // EachPage function.
