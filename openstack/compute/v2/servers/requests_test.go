@@ -42,7 +42,7 @@ func TestListServers(t *testing.T) {
 
 	client := serviceClient()
 	pages := 0
-	err := List(client).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(client, ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := ExtractServers(page)
@@ -59,9 +59,8 @@ func TestListServers(t *testing.T) {
 		return true, nil
 	})
 
-	if err != nil {
-		t.Fatalf("Unexpected error from EachPage: %v", err)
-	}
+	testhelper.AssertNoErr(t, err)
+
 	if pages != 1 {
 		t.Errorf("Expected 1 page, saw %d", pages)
 	}
