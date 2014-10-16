@@ -239,9 +239,13 @@ func TestActionRebuild(t *testing.T) {
 
 	t.Logf("Attempting to rebuild server %s", server.ID)
 
-	newPassword := tools.MakeNewPassword(server.AdminPass)
-	newName := tools.RandomString("ACPTTEST", 16)
-	rebuilt, err := servers.Rebuild(client, server.ID, newName, newPassword, choices.ImageID, nil).Extract()
+	rebuildOpts := servers.RebuildOpts{
+		Name:      tools.RandomString("ACPTTEST", 16),
+		AdminPass: tools.MakeNewPassword(server.AdminPass),
+		ImageID:   choices.ImageID,
+	}
+
+	rebuilt, err := servers.Rebuild(client, server.ID, rebuildOpts).Extract()
 	if err != nil {
 		t.Fatal(err)
 	}
