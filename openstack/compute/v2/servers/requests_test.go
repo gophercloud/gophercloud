@@ -223,15 +223,15 @@ func TestRebuildServer(t *testing.T) {
 		fmt.Fprintf(w, singleServerBody)
 	})
 
-	client := serviceClient()
-	actual, err := Rebuild(client,
-		"1234asdf", "new-name", "swordfish",
-		"http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
-		map[string]interface{}{"accessIPv4": "1.2.3.4"},
-	).Extract()
-	if err != nil {
-		t.Fatalf("Unexpected Rebuild error: %v", err)
+	opts := RebuildOpts{
+		Name:       "new-name",
+		AdminPass:  "swordfish",
+		ImageID:    "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
+		AccessIPv4: "1.2.3.4",
 	}
+
+	actual, err := Rebuild(serviceClient(), "1234asdf", opts).Extract()
+	testhelper.AssertNoErr(t, err)
 
 	equalServers(t, serverDerp, *actual)
 }

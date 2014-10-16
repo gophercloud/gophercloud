@@ -289,72 +289,102 @@ func Reboot(client *gophercloud.ServiceClient, id string, how RebootMethod) erro
 	return err
 }
 
-// Rebuild requests that the Openstack provider reprovision the server.
-// The rebuild will need to know the server's name and new image reference or ID.
-// In addition, and unlike building a server with Create(), you must provide an administrator password.
-//
-// Additional options may be specified with the additional map.
-// This function treats a nil map the same as an empty map.
-//
-// Rebuild returns a server result as though you had called GetDetail() on the server's ID.
-// The information, however, refers to the new server, not the old.
-func Rebuild(client *gophercloud.ServiceClient, id, name, password, imageRef string, additional map[string]interface{}) RebuildResult {
+// RebuildOptsBuilder is an interface that allows extensions to override the
+// default behaviour of rebuild options
+type RebuildOptsBuilder interface {
+	ToServerRebuildMap() (map[string]interface{}, error)
+}
+
+// RebuildOpts represents the configuration options used in a server rebuild
+// operation
+type RebuildOpts struct {
+	// Required. The ID of the image you want your server to be provisioned on
+	ImageID string `json:"imageRef"`
+
+	// Name to set the server to
+	Name string `json:"name"`
+
+	// Required. The server's admin password
+	AdminPass string `json:"adminPass"`
+
+	// AccessIPv4 [optional] provides a new IPv4 address for the instance.
+	AccessIPv4 string `json:"accessIPv4"`
+
+	// AccessIPv6 [optional] provides a new IPv6 address for the instance.
+	AccessIPv6 string `json:"accessIPv6"`
+
+	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the server.
+	Metadata map[string]string `json:"metadata"`
+
+	// Personality [optional] includes the path and contents of a file to inject into the server at launch.
+	// The maximum size of the file is 255 bytes (decoded).
+	Personality []byte `json:"personality"`
+}
+
+// ToServerRebuildMap formats a RebuildOpts struct into a map for use in JSON
+func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
+	var err error
+	server := make(map[string]interface{})
+
+	if opts.AdminPass == "" {
+		err = fmt.Errorf("AdminPass is required")
+	}
+
+	if opts.ImageID == "" {
+		err = fmt.Errorf("ImageID is required")
+	}
+
+	if err != nil {
+		return server, err
+	}
+
+	server["name"] = opts.Name
+	server["adminPass"] = opts.AdminPass
+	server["imageRef"] = opts.ImageID
+
+	if opts.AccessIPv4 != "" {
+		server["accessIPv4"] = opts.AccessIPv4
+	}
+
+	if opts.AccessIPv6 != "" {
+		server["accessIPv6"] = opts.AccessIPv6
+	}
+
+	if opts.Metadata != nil {
+		server["metadata"] = opts.Metadata
+	}
+
+	if opts.Personality != nil {
+		encoded := base64.StdEncoding.EncodeToString(opts.Personality)
+		server["personality"] = &encoded
+	}
+
+	return map[string]interface{}{"rebuild": server}, nil
+}
+
+// Rebuild will reprovision the server according to the configuration options
+// provided in the RebuildOpts struct.
+func Rebuild(client *gophercloud.ServiceClient, id string, opts RebuildOptsBuilder) RebuildResult {
 	var result RebuildResult
 
 	if id == "" {
-		result.Err = &ErrArgument{
-			Function: "Rebuild",
-			Argument: "id",
-			Value:    "",
-		}
+		result.Err = fmt.Errorf("ID is required")
 		return result
 	}
 
-	if name == "" {
-		result.Err = &ErrArgument{
-			Function: "Rebuild",
-			Argument: "name",
-			Value:    "",
-		}
+	reqBody, err := opts.ToServerRebuildMap()
+	if err != nil {
+		result.Err = err
 		return result
 	}
-
-	if password == "" {
-		result.Err = &ErrArgument{
-			Function: "Rebuild",
-			Argument: "password",
-			Value:    "",
-		}
-		return result
-	}
-
-	if imageRef == "" {
-		result.Err = &ErrArgument{
-			Function: "Rebuild",
-			Argument: "imageRef",
-			Value:    "",
-		}
-		return result
-	}
-
-	if additional == nil {
-		additional = make(map[string]interface{}, 0)
-	}
-
-	additional["name"] = name
-	additional["imageRef"] = imageRef
-	additional["adminPass"] = password
 
 	_, result.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
-		ReqBody: struct {
-			R map[string]interface{} `json:"rebuild"`
-		}{
-			additional,
-		},
+		ReqBody:     &reqBody,
 		Results:     &result.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
+
 	return result
 }
 
