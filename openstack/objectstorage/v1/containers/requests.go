@@ -198,7 +198,7 @@ func Get(c *gophercloud.ServiceClient, containerName string) GetResult {
 	var res GetResult
 	resp, err := perigee.Request("HEAD", getURL(c, containerName), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{204},
+		OkCodes:     []int{200, 204},
 	})
 	res.Header = resp.HttpResponse.Header
 	res.Err = err
