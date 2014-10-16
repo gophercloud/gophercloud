@@ -261,7 +261,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 }
 
 // ChangeAdminPassword alters the administrator or root password for a specified server.
-func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword string) error {
+func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword string) ActionResult {
 	var req struct {
 		ChangePassword struct {
 			AdminPass string `json:"adminPass"`
@@ -270,12 +270,16 @@ func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword stri
 
 	req.ChangePassword.AdminPass = newPassword
 
-	_, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
+	var res ActionResult
+
+	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     req,
+		Results:     &res.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
-	return err
+
+	return res
 }
 
 // ErrArgument errors occur when an argument supplied to a package function
@@ -326,25 +330,30 @@ const (
 //
 // SoftReboot (aka OSReboot) simply tells the OS to restart under its own procedures.
 // E.g., in Linux, asking it to enter runlevel 6, or executing "sudo shutdown -r now", or by asking Windows to restart the machine.
-func Reboot(client *gophercloud.ServiceClient, id string, how RebootMethod) error {
+func Reboot(client *gophercloud.ServiceClient, id string, how RebootMethod) ActionResult {
+	var res ActionResult
+
 	if (how != SoftReboot) && (how != HardReboot) {
-		return &ErrArgument{
+		res.Err = &ErrArgument{
 			Function: "Reboot",
 			Argument: "how",
 			Value:    how,
 		}
+		return res
 	}
 
-	_, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
+	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody: struct {
 			C map[string]string `json:"reboot"`
 		}{
 			map[string]string{"type": string(how)},
 		},
+		Results:     &res.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
-	return err
+
+	return res
 }
 
 // RebuildOptsBuilder is an interface that allows extensions to override the
@@ -453,37 +462,49 @@ func Rebuild(client *gophercloud.ServiceClient, id string, opts RebuildOptsBuild
 // While in this state, you can explore the use of the new server's configuration.
 // If you like it, call ConfirmResize() to commit the resize permanently.
 // Otherwise, call RevertResize() to restore the old configuration.
-func Resize(client *gophercloud.ServiceClient, id, flavorRef string) error {
-	_, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
+func Resize(client *gophercloud.ServiceClient, id, flavorRef string) ActionResult {
+	var res ActionResult
+
+	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody: struct {
 			R map[string]interface{} `json:"resize"`
 		}{
 			map[string]interface{}{"flavorRef": flavorRef},
 		},
+		Results:     &res.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
-	return err
+
+	return res
 }
 
 // ConfirmResize confirms a previous resize operation on a server.
 // See Resize() for more details.
-func ConfirmResize(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
+func ConfirmResize(client *gophercloud.ServiceClient, id string) ActionResult {
+	var res ActionResult
+
+	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     map[string]interface{}{"confirmResize": nil},
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		Results:     &res.Resp,
 		OkCodes:     []int{204},
 	})
-	return err
+
+	return res
 }
 
 // RevertResize cancels a previous resize operation on a server.
 // See Resize() for more details.
-func RevertResize(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
+func RevertResize(client *gophercloud.ServiceClient, id string) ActionResult {
+	var res ActionResult
+
+	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     map[string]interface{}{"revertResize": nil},
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		Results:     &res.Resp,
 		OkCodes:     []int{202},
 	})
-	return err
+
+	return res
 }

@@ -163,11 +163,8 @@ func TestChangeServerAdminPassword(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	client := fake.ServiceClient()
-	err := ChangeAdminPassword(client, "1234asdf", "new-password")
-	if err != nil {
-		t.Errorf("Unexpected ChangeAdminPassword error: %v", err)
-	}
+	res := ChangeAdminPassword(fake.ServiceClient(), "1234asdf", "new-password")
+	testhelper.AssertNoErr(t, res.Err)
 }
 
 func TestRebootServer(t *testing.T) {
@@ -182,11 +179,8 @@ func TestRebootServer(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	client := fake.ServiceClient()
-	err := Reboot(client, "1234asdf", SoftReboot)
-	if err != nil {
-		t.Errorf("Unexpected Reboot error: %v", err)
-	}
+	res := Reboot(fake.ServiceClient(), "1234asdf", SoftReboot)
+	testhelper.AssertNoErr(t, res.Err)
 }
 
 func TestRebuildServer(t *testing.T) {
@@ -237,11 +231,8 @@ func TestResizeServer(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	client := fake.ServiceClient()
-	err := Resize(client, "1234asdf", "2")
-	if err != nil {
-		t.Errorf("Unexpected Reboot error: %v", err)
-	}
+	res := Resize(fake.ServiceClient(), "1234asdf", "2")
+	testhelper.AssertNoErr(t, res.Err)
 }
 
 func TestConfirmResize(t *testing.T) {
@@ -256,11 +247,8 @@ func TestConfirmResize(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	client := fake.ServiceClient()
-	err := ConfirmResize(client, "1234asdf")
-	if err != nil {
-		t.Errorf("Unexpected ConfirmResize error: %v", err)
-	}
+	res := ConfirmResize(fake.ServiceClient(), "1234asdf")
+	testhelper.AssertNoErr(t, res.Err)
 }
 
 func TestRevertResize(t *testing.T) {
@@ -275,9 +263,6 @@ func TestRevertResize(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	client := fake.ServiceClient()
-	err := RevertResize(client, "1234asdf")
-	if err != nil {
-		t.Errorf("Unexpected RevertResize error: %v", err)
-	}
+	res := RevertResize(fake.ServiceClient(), "1234asdf")
+	testhelper.AssertNoErr(t, res.Err)
 }
