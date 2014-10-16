@@ -15,9 +15,7 @@ func TestGetAccounts(t *testing.T) {
 
 	options := &UpdateOpts{Metadata: map[string]string{"gophercloud-test": "accounts"}}
 	_, err := Update(fake.ServiceClient(), options).ExtractHeaders()
-	if err != nil {
-		t.Fatalf("Unable to update account: %v", err)
-	}
+	th.CheckNoErr(t, err)
 }
 
 func TestUpdateAccounts(t *testing.T) {
@@ -27,8 +25,6 @@ func TestUpdateAccounts(t *testing.T) {
 
 	expected := map[string]string{"Foo": "bar"}
 	actual, err := Get(fake.ServiceClient()).ExtractMetadata()
-	if err != nil {
-		t.Fatalf("Unable to get account metadata: %v", err)
-	}
+	th.CheckNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }

@@ -33,7 +33,7 @@ func (opts ListOpts) ToContainerListParams() (bool, string, error) {
 // List is a function that retrieves containers associated with the account as
 // well as account metadata. It returns a pager which can be iterated with the
 // EachPage function.
-func List(c *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
+func List(c *gophercloud.ServiceClient, opts os.ListOptsBuilder) pagination.Pager {
 	return os.List(c, opts)
 }
 
