@@ -299,26 +299,26 @@ type RebuildOptsBuilder interface {
 // operation
 type RebuildOpts struct {
 	// Required. The ID of the image you want your server to be provisioned on
-	ImageID string `json:"imageRef"`
+	ImageID string
 
 	// Name to set the server to
-	Name string `json:"name"`
+	Name string
 
 	// Required. The server's admin password
-	AdminPass string `json:"adminPass"`
+	AdminPass string
 
 	// AccessIPv4 [optional] provides a new IPv4 address for the instance.
-	AccessIPv4 string `json:"accessIPv4"`
+	AccessIPv4 string
 
 	// AccessIPv6 [optional] provides a new IPv6 address for the instance.
-	AccessIPv6 string `json:"accessIPv6"`
+	AccessIPv6 string
 
 	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the server.
-	Metadata map[string]string `json:"metadata"`
+	Metadata map[string]string
 
 	// Personality [optional] includes the path and contents of a file to inject into the server at launch.
 	// The maximum size of the file is 255 bytes (decoded).
-	Personality []byte `json:"personality"`
+	Personality []byte
 }
 
 // ToServerRebuildMap formats a RebuildOpts struct into a map for use in JSON
