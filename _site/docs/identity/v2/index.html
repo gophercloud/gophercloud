@@ -1,0 +1,52 @@
+<h2 id="tokens">Tokens</h2>
+
+<p>A token is an arbitrary bit of text that is used to access resources. Each
+token has a scope that describes which resources are accessible with it. A
+token may be revoked at anytime and is valid for a finite duration.</p>
+
+<h3 id="generate-a-token">Generate a token</h3>
+
+<p>The nature of required and optional auth options will depend on your provider,
+but generally the <code>Username</code> and <code>IdentityEndpoint</code> fields are always
+required. Some providers will insist on a <code>Password</code> instead of an <code>APIKey</code>,
+others will prefer <code>TenantID</code> over <code>TenantName</code> - so it is always worth
+checking before writing your implementation in Go.</p>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="s">&quot;github.com/rackspace/gophercloud/openstack/identity/v2/tokens&quot;</span>
+
+<span class="nx">opts</span> <span class="o">:=</span> <span class="nx">tokens</span><span class="p">.</span><span class="nx">AuthOptions</span><span class="p">{</span>
+  <span class="nx">IdentityEndpoint</span><span class="p">:</span> <span class="s">&quot;{identityURL}&quot;</span><span class="p">,</span>
+  <span class="nx">Username</span><span class="p">:</span>         <span class="s">&quot;{username}&quot;</span><span class="p">,</span>
+  <span class="nx">APIKey</span><span class="p">:</span>           <span class="s">&quot;{apiKey}&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="nx">token</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">tokens</span><span class="p">.</span><span class="nx">Create</span><span class="p">(</span><span class="nx">client</span><span class="p">,</span> <span class="nx">opts</span><span class="p">).</span><span class="nx">Extract</span><span class="p">()</span></code></pre></div>
+
+<h2 id="tenants">Tenants</h2>
+
+<p>A tenant is a container used to group or isolate API resources. Depending on
+the provider, a tenant can map to a customer, account, organization, or project.</p>
+
+<h3 id="list-tenants"> List tenants</h3>
+
+<div class="highlight"><pre><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="p">(</span>
+  <span class="s">&quot;github.com/rackspace/gophercloud/pagination&quot;</span>
+  <span class="s">&quot;github.com/rackspace/gophercloud/openstack/identity/v2/tenants&quot;</span>
+<span class="p">)</span>
+
+<span class="c1">// We have the option of filtering the tenant list. If we want the full</span>
+<span class="c1">// collection, leave it as an empty struct</span>
+<span class="nx">opts</span> <span class="o">:=</span> <span class="nx">tenants</span><span class="p">.</span><span class="nx">ListOpts</span><span class="p">{</span><span class="nx">Limit</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+
+<span class="c1">// Retrieve a pager (i.e. a paginated collection)</span>
+<span class="nx">pager</span> <span class="o">:=</span> <span class="nx">tenants</span><span class="p">.</span><span class="nx">List</span><span class="p">(</span><span class="nx">client</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span>
+
+<span class="c1">// Define an anonymous function to be executed on each page&#39;s iteration</span>
+<span class="nx">err</span> <span class="o">:=</span> <span class="nx">pager</span><span class="p">.</span><span class="nx">EachPage</span><span class="p">(</span><span class="kd">func</span><span class="p">(</span><span class="nx">page</span> <span class="nx">pagination</span><span class="p">.</span><span class="nx">Page</span><span class="p">)</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">tenantList</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">tenants</span><span class="p">.</span><span class="nx">ExtractTenants</span><span class="p">(</span><span class="nx">page</span><span class="p">)</span>
+
+  <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">t</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tenantList</span> <span class="p">{</span>
+    <span class="c1">// &quot;t&quot; will be a tenants.Tenant</span>
+  <span class="p">}</span>
+<span class="p">})</span></code></pre></div>
+
