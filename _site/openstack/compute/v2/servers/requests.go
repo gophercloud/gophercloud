@@ -290,7 +290,6 @@ func Reboot(client *gophercloud.ServiceClient, id string, how RebootMethod) Acti
 		}{
 			map[string]string{"type": string(how)},
 		},
-		Results:     &res.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
@@ -413,7 +412,6 @@ func Resize(client *gophercloud.ServiceClient, id, flavorRef string) ActionResul
 		}{
 			map[string]interface{}{"flavorRef": flavorRef},
 		},
-		Results:     &res.Resp,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
@@ -429,7 +427,6 @@ func ConfirmResize(client *gophercloud.ServiceClient, id string) ActionResult {
 	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     map[string]interface{}{"confirmResize": nil},
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		Results:     &res.Resp,
 		OkCodes:     []int{204},
 	})
 
@@ -444,7 +441,6 @@ func RevertResize(client *gophercloud.ServiceClient, id string) ActionResult {
 	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     map[string]interface{}{"revertResize": nil},
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		Results:     &res.Resp,
 		OkCodes:     []int{202},
 	})
 

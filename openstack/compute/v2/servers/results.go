@@ -40,8 +40,18 @@ type UpdateResult struct {
 }
 
 // RebuildResult temporarily contains the response from a Rebuild call.
-type ActionResult struct {
+type RebuildResult struct {
 	serverResult
+}
+
+// ActionResult represents the result of server action operations, like reboot
+type ActionResult struct {
+	gophercloud.CommonResult
+}
+
+// Extract is a function that extracts error information from a result
+func (r ActionResult) Extract() error {
+	return r.Err
 }
 
 // Server exposes only the standard OpenStack fields corresponding to a given server on the user's account.

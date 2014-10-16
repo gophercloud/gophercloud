@@ -157,8 +157,8 @@ func TestActionChangeAdminPassword(t *testing.T) {
 	}
 
 	randomPassword := tools.MakeNewPassword(server.AdminPass)
-	err = servers.ChangeAdminPassword(client, server.ID, randomPassword)
-	if err != nil {
+	res = servers.ChangeAdminPassword(client, server.ID, randomPassword)
+	if res.Err != nil {
 		t.Fatal(err)
 	}
 
@@ -194,14 +194,14 @@ func TestActionReboot(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = servers.Reboot(client, server.ID, "aldhjflaskhjf")
-	if err == nil {
+	res = servers.Reboot(client, server.ID, "aldhjflaskhjf")
+	if res.Err == nil {
 		t.Fatal("Expected the SDK to provide an ArgumentError here")
 	}
 
 	t.Logf("Attempting reboot of server %s", server.ID)
-	err = servers.Reboot(client, server.ID, servers.OSReboot)
-	if err != nil {
+	res = servers.Reboot(client, server.ID, servers.OSReboot)
+	if res.Err != nil {
 		t.Fatalf("Unable to reboot server: %v", err)
 	}
 
@@ -270,7 +270,7 @@ func resizeServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 
 	t.Logf("Attempting to resize server [%s]", server.ID)
 
-	if err := servers.Resize(client, server.ID, choices.FlavorIDResize); err != nil {
+	if res := servers.Resize(client, server.ID, choices.FlavorIDResize); res.Err != nil {
 		t.Fatal(err)
 	}
 
@@ -301,7 +301,7 @@ func TestActionResizeConfirm(t *testing.T) {
 
 	t.Logf("Attempting to confirm resize for server %s", server.ID)
 
-	if err = servers.ConfirmResize(client, server.ID); err != nil {
+	if res := servers.ConfirmResize(client, server.ID); res.Err != nil {
 		t.Fatal(err)
 	}
 
@@ -332,7 +332,7 @@ func TestActionResizeRevert(t *testing.T) {
 
 	t.Logf("Attempting to revert resize for server %s", server.ID)
 
-	if err := servers.RevertResize(client, server.ID); err != nil {
+	if res := servers.RevertResize(client, server.ID); res.Err != nil {
 		t.Fatal(err)
 	}
 
