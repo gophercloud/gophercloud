@@ -219,7 +219,7 @@ func TestRebuildServer(t *testing.T) {
 		AccessIPv4: "1.2.3.4",
 	}
 
-	actual, err := Rebuild(serviceClient(), "1234asdf", opts).Extract()
+	actual, err := Rebuild(fake.ServiceClient(), "1234asdf", opts).Extract()
 	testhelper.AssertNoErr(t, err)
 
 	equalServers(t, serverDerp, *actual)
