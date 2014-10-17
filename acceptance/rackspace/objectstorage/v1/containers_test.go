@@ -1,4 +1,4 @@
-// +build acceptance rackspace
+// +build acceptance rackspace objectstorage v1
 
 package v1
 

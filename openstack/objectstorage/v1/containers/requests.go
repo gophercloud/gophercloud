@@ -113,7 +113,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 
 	resp, err := perigee.Request("PUT", createURL(c, containerName), perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{201, 204},
+		OkCodes:     []int{201, 202, 204},
 	})
 	res.Header = resp.HttpResponse.Header
 	res.Err = err
