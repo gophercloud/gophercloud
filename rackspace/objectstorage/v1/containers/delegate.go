@@ -21,7 +21,7 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 // List is a function that retrieves containers associated with the account as
 // well as account metadata. It returns a pager which can be iterated with the
 // EachPage function.
-func List(c *gophercloud.ServiceClient, opts *os.ListOpts) pagination.Pager {
+func List(c *gophercloud.ServiceClient, opts os.ListOptsBuilder) pagination.Pager {
 	return os.List(c, opts)
 }
 
@@ -81,7 +81,7 @@ func (opts UpdateOpts) ToContainerUpdateMap() (map[string]string, error) {
 
 // Update is a function that creates, updates, or deletes a container's
 // metadata.
-func Update(c *gophercloud.ServiceClient, containerName string, opts *os.UpdateOpts) os.UpdateResult {
+func Update(c *gophercloud.ServiceClient, containerName string, opts os.UpdateOptsBuilder) os.UpdateResult {
 	return os.Update(c, containerName, opts)
 }
 
