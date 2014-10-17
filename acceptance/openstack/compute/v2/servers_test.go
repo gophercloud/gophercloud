@@ -20,7 +20,7 @@ func TestListServers(t *testing.T) {
 
 	t.Logf("ID\tRegion\tName\tStatus\tIPv4\tIPv6")
 
-	pager := servers.List(client)
+	pager := servers.List(client, servers.ListOpts{})
 	count, pages := 0, 0
 	pager.EachPage(func(page pagination.Page) (bool, error) {
 		pages++

@@ -9,13 +9,71 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToServerListQuery() (string, error)
+}
+
+// ListOpts allows the filtering and sorting of paginated collections through
+// the API. Filtering is achieved by passing in struct field values that map to
+// the server attributes you want to see returned. Marker and Limit are used
+// for pagination.
+type ListOpts struct {
+	// A time/date stamp for when the server last changed status.
+	ChangesSince string `q:"changes-since"`
+
+	// Name of the image in URL format.
+	Image string `q:"image"`
+
+	// Name of the flavor in URL format.
+	Flavor string `q:"flavor"`
+
+	// Name of the server as a string; can be queried with regular expressions.
+	// Realize that ?name=bob returns both bob and bobb. If you need to match bob
+	// only, you can use a regular expression matching the syntax of the
+	// underlying database server implemented for Compute.
+	Name string `q:"name"`
+
+	// Value of the status of the server so that you can filter on "ACTIVE" for example.
+	Status string `q:"status"`
+
+	// Name of the host as a string.
+	Host string `q:"host"`
+
+	// UUID of the server at which you want to set a marker.
+	Marker string `q:"marker"`
+
+	// Integer value for the limit of values to return.
+	Limit int `q:"limit"`
+}
+
+// ToServerListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToServerListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+	return q.String(), nil
+}
+
 // List makes a request against the API to list servers accessible to you.
-func List(client *gophercloud.ServiceClient) pagination.Pager {
-	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listDetailURL(client)
+
+	if opts != nil {
+		query, err := opts.ToServerListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
+	createPageFn := func(r pagination.LastHTTPResponse) pagination.Page {
 		return ServerPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
 	}
 
-	return pagination.NewPager(client, listDetailURL(client), createPage)
+	return pagination.NewPager(client, url, createPageFn)
 }
 
 // CreateOptsBuilder describes struct types that can be accepted by the Create call.
