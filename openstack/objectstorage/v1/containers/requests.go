@@ -125,7 +125,7 @@ func Delete(c *gophercloud.ServiceClient, containerName string) DeleteResult {
 	var res DeleteResult
 	resp, err := perigee.Request("DELETE", deleteURL(c, containerName), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		OkCodes:     []int{204},
+		OkCodes:     []int{202, 204},
 	})
 	res.Header = resp.HttpResponse.Header
 	res.Err = err
@@ -184,7 +184,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 
 	resp, err := perigee.Request("POST", updateURL(c, containerName), perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{204},
+		OkCodes:     []int{202, 204},
 	})
 	res.Header = resp.HttpResponse.Header
 	res.Err = err

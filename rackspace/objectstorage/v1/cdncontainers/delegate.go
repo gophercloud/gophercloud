@@ -1,6 +1,8 @@
 package cdncontainers
 
 import (
+	"strconv"
+
 	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack/objectstorage/v1/containers"
 	"github.com/rackspace/gophercloud/pagination"
@@ -58,7 +60,7 @@ func (opts UpdateOpts) ToContainerUpdateMap() (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	h["X-Cdn-Enabled"] = strconv.FormatBool(opts.CDNEnabled)
 	return h, nil
 }
 
