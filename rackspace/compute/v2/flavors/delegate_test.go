@@ -43,3 +43,20 @@ func TestListFlavors(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, 1, count)
 }
+
+func TestGetFlavor(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/flavors/performance1-1", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, GetOutput)
+	})
+
+	actual, err := Get(client.ServiceClient(), "performance1-1").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &Performance1Flavor, actual)
+}
