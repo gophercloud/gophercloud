@@ -127,7 +127,7 @@ func ExtractVIPs(page pagination.Page) ([]VirtualIP, error) {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract is a function that accepts a result and extracts a router.

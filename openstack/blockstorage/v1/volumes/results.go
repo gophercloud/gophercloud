@@ -64,7 +64,7 @@ type UpdateResult struct {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract will get the Volume object out of the commonResult object.

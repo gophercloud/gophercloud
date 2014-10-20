@@ -108,7 +108,7 @@ func ExtractMonitors(page pagination.Page) ([]Monitor, error) {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract is a function that accepts a result and extracts a monitor.

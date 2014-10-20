@@ -7,7 +7,7 @@ import (
 )
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract interprets a GetResult, CreateResult or UpdateResult as a concrete Endpoint.
@@ -33,7 +33,7 @@ type CreateResult struct {
 
 // createErr quickly wraps an error in a CreateResult.
 func createErr(err error) CreateResult {
-	return CreateResult{commonResult{gophercloud.CommonResult{Err: err}}}
+	return CreateResult{commonResult{gophercloud.Result{Err: err}}}
 }
 
 // UpdateResult is the deferred result of an Update call.

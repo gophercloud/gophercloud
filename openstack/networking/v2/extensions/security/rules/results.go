@@ -99,7 +99,7 @@ func ExtractRules(page pagination.Page) ([]SecGroupRule, error) {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract is a function that accepts a result and extracts a security rule.

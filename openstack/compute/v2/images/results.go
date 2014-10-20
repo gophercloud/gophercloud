@@ -8,7 +8,7 @@ import (
 
 // GetResult temporarily stores a Get response.
 type GetResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract interprets a GetResult as an Image.

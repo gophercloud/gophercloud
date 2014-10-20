@@ -242,7 +242,7 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 	if result.Err != nil {
 		return result
 	}
-	result.header = response.HttpResponse.Header
+	result.Headers = response.HttpResponse.Header
 	return result
 }
 
@@ -258,7 +258,7 @@ func Get(c *gophercloud.ServiceClient, token string) GetResult {
 	if result.Err != nil {
 		return result
 	}
-	result.header = response.HttpResponse.Header
+	result.Headers = response.HttpResponse.Header
 	return result
 }
 

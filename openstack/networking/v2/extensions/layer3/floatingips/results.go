@@ -40,7 +40,7 @@ type FloatingIP struct {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract a result and extracts a FloatingIP resource.

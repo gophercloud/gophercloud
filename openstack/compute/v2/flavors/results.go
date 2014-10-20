@@ -14,7 +14,7 @@ var ErrCannotInterpet = errors.New("Unable to interpret a response body.")
 
 // GetResult temporarily holds the reponse from a Get call.
 type GetResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract provides access to the individual Flavor returned by the Get function.

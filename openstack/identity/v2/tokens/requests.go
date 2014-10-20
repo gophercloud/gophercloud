@@ -74,7 +74,7 @@ func (auth AuthOptions) ToTokenCreateMap() (map[string]interface{}, error) {
 func Create(client *gophercloud.ServiceClient, auth AuthOptionsBuilder) CreateResult {
 	request, err := auth.ToTokenCreateMap()
 	if err != nil {
-		return CreateResult{gophercloud.CommonResult{Err: err}}
+		return CreateResult{gophercloud.Result{Err: err}}
 	}
 
 	var result CreateResult

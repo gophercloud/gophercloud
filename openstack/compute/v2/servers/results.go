@@ -7,7 +7,7 @@ import (
 )
 
 type serverResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract interprets any serverResult as a Server, if possible.

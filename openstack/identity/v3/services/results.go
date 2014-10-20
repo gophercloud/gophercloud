@@ -8,7 +8,7 @@ import (
 )
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract interprets a GetResult, CreateResult or UpdateResult as a concrete Service.

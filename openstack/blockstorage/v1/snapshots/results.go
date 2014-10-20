@@ -88,7 +88,7 @@ func (r UpdateMetadataResult) ExtractMetadata() (map[string]interface{}, error) 
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract will get the Snapshot object out of the commonResult object.
