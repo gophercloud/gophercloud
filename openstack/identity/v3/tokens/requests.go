@@ -236,13 +236,13 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 	var response *perigee.Response
 	response, result.Err = perigee.Request("POST", tokenURL(c), perigee.Options{
 		ReqBody: &req,
-		Results: &result.Resp,
+		Results: &result.Body,
 		OkCodes: []int{201},
 	})
 	if result.Err != nil {
 		return result
 	}
-	result.header = response.HttpResponse.Header
+	result.Header = response.HttpResponse.Header
 	return result
 }
 
@@ -252,13 +252,13 @@ func Get(c *gophercloud.ServiceClient, token string) GetResult {
 	var response *perigee.Response
 	response, result.Err = perigee.Request("GET", tokenURL(c), perigee.Options{
 		MoreHeaders: subjectTokenHeaders(c, token),
-		Results:     &result.Resp,
+		Results:     &result.Body,
 		OkCodes:     []int{200, 203},
 	})
 	if result.Err != nil {
 		return result
 	}
-	result.header = response.HttpResponse.Header
+	result.Header = response.HttpResponse.Header
 	return result
 }
 

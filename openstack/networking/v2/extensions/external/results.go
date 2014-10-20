@@ -35,7 +35,7 @@ type NetworkExternal struct {
 	External bool `mapstructure:"router:external" json:"router:external"`
 }
 
-func commonExtract(e error, response map[string]interface{}) (*NetworkExternal, error) {
+func commonExtract(e error, response interface{}) (*NetworkExternal, error) {
 	if e != nil {
 		return nil, e
 	}
@@ -52,19 +52,19 @@ func commonExtract(e error, response map[string]interface{}) (*NetworkExternal, 
 // ExtractGet decorates a GetResult struct returned from a networks.Get()
 // function with extended attributes.
 func ExtractGet(r networks.GetResult) (*NetworkExternal, error) {
-	return commonExtract(r.Err, r.Resp)
+	return commonExtract(r.Err, r.Body)
 }
 
 // ExtractCreate decorates a CreateResult struct returned from a networks.Create()
 // function with extended attributes.
 func ExtractCreate(r networks.CreateResult) (*NetworkExternal, error) {
-	return commonExtract(r.Err, r.Resp)
+	return commonExtract(r.Err, r.Body)
 }
 
 // ExtractUpdate decorates a UpdateResult struct returned from a
 // networks.Update() function with extended attributes.
 func ExtractUpdate(r networks.UpdateResult) (*NetworkExternal, error) {
-	return commonExtract(r.Err, r.Resp)
+	return commonExtract(r.Err, r.Body)
 }
 
 // ExtractList accepts a Page struct, specifically a NetworkPage struct, and

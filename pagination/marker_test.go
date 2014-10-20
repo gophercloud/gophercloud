@@ -56,8 +56,8 @@ func createMarkerPaged(t *testing.T) Pager {
 
 	client := createClient()
 
-	createPage := func(r LastHTTPResponse) Page {
-		p := MarkerPageResult{MarkerPageBase{LastHTTPResponse: r}}
+	createPage := func(r PageResult) Page {
+		p := MarkerPageResult{MarkerPageBase{PageResult: r}}
 		p.MarkerPageBase.Owner = p
 		return p
 	}

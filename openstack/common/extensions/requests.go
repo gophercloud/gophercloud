@@ -11,7 +11,7 @@ func Get(c *gophercloud.ServiceClient, alias string) GetResult {
 	var res GetResult
 	_, res.Err = perigee.Request("GET", ExtensionURL(c, alias), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results:     &res.Resp,
+		Results:     &res.Body,
 		OkCodes:     []int{200},
 	})
 	return res
@@ -20,7 +20,7 @@ func Get(c *gophercloud.ServiceClient, alias string) GetResult {
 // List returns a Pager which allows you to iterate over the full collection of extensions.
 // It does not accept query parameters.
 func List(c *gophercloud.ServiceClient) pagination.Pager {
-	return pagination.NewPager(c, ListExtensionURL(c), func(r pagination.LastHTTPResponse) pagination.Page {
+	return pagination.NewPager(c, ListExtensionURL(c), func(r pagination.PageResult) pagination.Page {
 		return ExtensionPage{pagination.SinglePageBase(r)}
 	})
 }
