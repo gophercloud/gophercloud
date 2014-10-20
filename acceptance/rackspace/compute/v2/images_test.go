@@ -40,3 +40,24 @@ func TestListImages(t *testing.T) {
 		t.Errorf("Expected at least one page of images.")
 	}
 }
+
+func TestGetImage(t *testing.T) {
+	client, err := newClient()
+	th.AssertNoErr(t, err)
+
+	options, err := optionsFromEnv()
+	th.AssertNoErr(t, err)
+
+	image, err := images.Get(client, options.imageID).Extract()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Requested image:")
+	t.Logf("       id=[%s]", image.ID)
+	t.Logf("     name=[%s]", image.Name)
+	t.Logf("  created=[%s]", image.Created)
+	t.Logf("  updated=[%s]", image.Updated)
+	t.Logf(" min disk=[%d]", image.MinDisk)
+	t.Logf("  min RAM=[%d]", image.MinRAM)
+	t.Logf(" progress=[%d]", image.Progress)
+	t.Logf("   status=[%s]", image.Status)
+}
