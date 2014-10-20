@@ -49,7 +49,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200, 201},
 		ReqBody:     &reqBody,
-		Results:     &res.Resp,
+		Results:     &res.Body,
 	})
 	return res
 }
@@ -70,7 +70,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	_, err := perigee.Request("GET", getURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
-		Results:     &res.Resp,
+		Results:     &res.Body,
 	})
 	res.Err = err
 	return res
@@ -78,7 +78,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 
 // List returns all volume types.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
-	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
+	createPage := func(r pagination.PageResult) pagination.Page {
 		return ListResult{pagination.SinglePageBase(r)}
 	}
 

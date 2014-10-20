@@ -1,14 +1,15 @@
 package accounts
 
 import (
+	"net/http"
 	"strings"
 
-	objectstorage "github.com/rackspace/gophercloud/openstack/objectstorage/v1"
+	"github.com/rackspace/gophercloud"
 )
 
-// GetResult is returned from a call to the Get function. See v1.CommonResult.
+// GetResult is returned from a call to the Get function.
 type GetResult struct {
-	objectstorage.CommonResult
+	gophercloud.Result
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -19,7 +20,7 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 	}
 
 	metadata := make(map[string]string)
-	for k, v := range gr.Resp.Header {
+	for k, v := range gr.Header {
 		if strings.HasPrefix(k, "X-Account-Meta-") {
 			key := strings.TrimPrefix(k, "X-Account-Meta-")
 			metadata[key] = v[0]
@@ -28,7 +29,13 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 	return metadata, nil
 }
 
-// UpdateResult is returned from a call to the Update function. See v1.CommonResult.
+// UpdateResult is returned from a call to the Update function.
 type UpdateResult struct {
-	objectstorage.CommonResult
+	gophercloud.Result
+}
+
+// Extract returns the unmodified HTTP headers and any error conditions encountered during the
+// metadata update.
+func (ur UpdateResult) Extract() (http.Header, error) {
+	return ur.Header, ur.Err
 }

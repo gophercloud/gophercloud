@@ -2,10 +2,10 @@ package objects
 
 import (
 	"fmt"
-	"io/ioutil"
+	"net/http"
 	"strings"
 
-	objectstorage "github.com/rackspace/gophercloud/openstack/objectstorage/v1"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 
 	"github.com/mitchellh/mapstructure"
@@ -98,27 +98,21 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 
 // DownloadResult is a *http.Response that is returned from a call to the Download function.
 type DownloadResult struct {
-	objectstorage.CommonResult
+	gophercloud.Result
 }
 
 // ExtractContent is a function that takes a DownloadResult (of type *http.Response)
 // and returns the object's content.
 func (dr DownloadResult) ExtractContent() ([]byte, error) {
 	if dr.Err != nil {
-		return nil, nil
+		return nil, dr.Err
 	}
-	var body []byte
-	defer dr.Resp.Body.Close()
-	body, err := ioutil.ReadAll(dr.Resp.Body)
-	if err != nil {
-		return body, fmt.Errorf("Error trying to read DownloadResult body: %v", err)
-	}
-	return body, nil
+	return dr.Body.([]byte), nil
 }
 
 // GetResult is a *http.Response that is returned from a call to the Get function.
 type GetResult struct {
-	objectstorage.CommonResult
+	gophercloud.Result
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -128,7 +122,7 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 		return nil, gr.Err
 	}
 	metadata := make(map[string]string)
-	for k, v := range gr.Resp.Header {
+	for k, v := range gr.Header {
 		if strings.HasPrefix(k, "X-Object-Meta-") {
 			key := strings.TrimPrefix(k, "X-Object-Meta-")
 			metadata[key] = v[0]
@@ -137,22 +131,32 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 	return metadata, nil
 }
 
+type headerResult struct {
+	gophercloud.Result
+}
+
+// Extract returns the unmodified HTTP response headers from a Create, Update, or Delete call, as
+// well as any errors that occurred during the call.
+func (result headerResult) Extract() (http.Header, error) {
+	return result.Header, result.Err
+}
+
 // CreateResult represents the result of a create operation.
 type CreateResult struct {
-	objectstorage.CommonResult
+	headerResult
 }
 
 // UpdateResult represents the result of an update operation.
 type UpdateResult struct {
-	objectstorage.CommonResult
+	headerResult
 }
 
 // DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
-	objectstorage.CommonResult
+	headerResult
 }
 
 // CopyResult represents the result of a copy operation.
 type CopyResult struct {
-	objectstorage.CommonResult
+	headerResult
 }

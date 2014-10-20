@@ -83,7 +83,7 @@ func ExtractMembers(page pagination.Page) ([]Member, error) {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract is a function that accepts a result and extracts a router.
@@ -96,7 +96,7 @@ func (r commonResult) Extract() (*Member, error) {
 		Member *Member `json:"member"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Member, err
 }

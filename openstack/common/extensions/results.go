@@ -9,7 +9,7 @@ import (
 // GetResult temporarily stores the result of a Get call.
 // Use its Extract() method to interpret it as an Extension.
 type GetResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract interprets a GetResult as an Extension.
@@ -22,7 +22,7 @@ func (r GetResult) Extract() (*Extension, error) {
 		Extension *Extension `json:"extension"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Extension, err
 }

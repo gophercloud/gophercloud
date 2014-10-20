@@ -11,7 +11,7 @@ type MarkerPage interface {
 
 // MarkerPageBase is a page in a collection that's paginated by "limit" and "marker" query parameters.
 type MarkerPageBase struct {
-	LastHTTPResponse
+	PageResult
 
 	// Owner is a reference to the embedding struct.
 	Owner MarkerPage

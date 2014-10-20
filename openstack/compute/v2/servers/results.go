@@ -7,7 +7,7 @@ import (
 )
 
 type serverResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract interprets any serverResult as a Server, if possible.
@@ -20,7 +20,7 @@ func (r serverResult) Extract() (*Server, error) {
 		Server Server `mapstructure:"server"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &response)
+	err := mapstructure.Decode(r.Body, &response)
 	return &response.Server, err
 }
 

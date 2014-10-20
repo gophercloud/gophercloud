@@ -45,7 +45,7 @@ func setupSinglePaged() Pager {
 		fmt.Fprintf(w, `{ "ints": [1, 2, 3] }`)
 	})
 
-	createPage := func(r LastHTTPResponse) Page {
+	createPage := func(r PageResult) Page {
 		return SinglePageResult{SinglePageBase(r)}
 	}
 

@@ -3,6 +3,7 @@ package objects
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"time"
 
 	"github.com/racker/perigee"
@@ -58,8 +59,8 @@ func List(c *gophercloud.ServiceClient, containerName string, opts ListOptsBuild
 		}
 	}
 
-	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		p := ObjectPage{pagination.MarkerPageBase{LastHTTPResponse: r}}
+	createPage := func(r pagination.PageResult) pagination.Page {
+		p := ObjectPage{pagination.MarkerPageBase{PageResult: r}}
 		p.MarkerPageBase.Owner = p
 		return p
 	}
@@ -128,8 +129,11 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 		MoreHeaders: h,
 		OkCodes:     []int{200},
 	})
+	defer resp.HttpResponse.Body.Close()
+	body, err := ioutil.ReadAll(resp.HttpResponse.Body)
+	res.Body = body
 	res.Err = err
-	res.Resp = &resp.HttpResponse
+	res.Header = resp.HttpResponse.Header
 	return res
 }
 
@@ -214,7 +218,7 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
-	res.Resp = &resp.HttpResponse
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }
@@ -270,7 +274,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
-	res.Resp = &resp.HttpResponse
+	res.Header = resp.HttpResponse.Header
 	return res
 }
 
@@ -312,7 +316,7 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Resp = &resp.HttpResponse
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }
@@ -357,8 +361,8 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200, 204},
 	})
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
-	res.Resp = &resp.HttpResponse
 	return res
 }
 
@@ -414,7 +418,7 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		MoreHeaders: h,
 		OkCodes:     []int{202},
 	})
-	res.Resp = &resp.HttpResponse
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }

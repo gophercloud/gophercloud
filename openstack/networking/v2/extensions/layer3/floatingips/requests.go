@@ -35,8 +35,8 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 		return pagination.Pager{Err: err}
 	}
 	u := rootURL(c) + q.String()
-	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
-		return FloatingIPPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
+	return pagination.NewPager(c, u, func(r pagination.PageResult) pagination.Page {
+		return FloatingIPPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
@@ -117,7 +117,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	_, res.Err = perigee.Request("POST", rootURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res.Resp,
+		Results:     &res.Body,
 		OkCodes:     []int{201},
 	})
 
@@ -129,7 +129,7 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = perigee.Request("GET", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results:     &res.Resp,
+		Results:     &res.Body,
 		OkCodes:     []int{200},
 	})
 	return res
@@ -170,7 +170,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 	_, res.Err = perigee.Request("PUT", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res.Resp,
+		Results:     &res.Body,
 		OkCodes:     []int{200},
 	})
 

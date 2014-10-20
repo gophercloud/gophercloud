@@ -64,7 +64,7 @@ type UpdateResult struct {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract will get the Volume object out of the commonResult object.
@@ -77,7 +77,7 @@ func (r commonResult) Extract() (*Volume, error) {
 		Volume *Volume `json:"volume"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Volume, err
 }
