@@ -46,7 +46,7 @@ func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) GetResult {
 		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
-	res.Resp = &resp.HttpResponse
+	res.Headers = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }
@@ -80,8 +80,7 @@ func (opts UpdateOpts) ToAccountUpdateMap() (map[string]string, error) {
 }
 
 // Update is a function that creates, updates, or deletes an account's metadata.
-// To extract the headers returned, call the ExtractHeaders method on the
-// UpdateResult.
+// To extract the headers returned, call the Extract method on the UpdateResult.
 func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
 	h := c.Provider.AuthenticatedHeaders()
@@ -101,7 +100,7 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) UpdateResult {
 		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
-	res.Resp = &resp.HttpResponse
+	res.Headers = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }

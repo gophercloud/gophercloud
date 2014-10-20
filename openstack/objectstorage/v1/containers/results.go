@@ -2,9 +2,10 @@ package containers
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
-	objectstorage "github.com/rackspace/gophercloud/openstack/objectstorage/v1"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 
 	"github.com/mitchellh/mapstructure"
@@ -98,7 +99,7 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 
 // GetResult represents the result of a get operation.
 type GetResult struct {
-	objectstorage.CommonResult
+	gophercloud.Result
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -108,7 +109,7 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 		return nil, gr.Err
 	}
 	metadata := make(map[string]string)
-	for k, v := range gr.Resp.Header {
+	for k, v := range gr.Headers {
 		if strings.HasPrefix(k, "X-Container-Meta-") {
 			key := strings.TrimPrefix(k, "X-Container-Meta-")
 			metadata[key] = v[0]
@@ -117,23 +118,32 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 	return metadata, nil
 }
 
+type headerResult struct {
+	gophercloud.Result
+}
+
+// Extract pulls the unmodified headers from a Create, Update, or Delete result.
+func (result headerResult) Extract() (http.Header, error) {
+	return result.Headers, result.Err
+}
+
 // CreateResult represents the result of a create operation. To extract the
 // the headers from the HTTP response, you can invoke the 'ExtractHeaders'
 // method on the result struct.
 type CreateResult struct {
-	objectstorage.CommonResult
+	headerResult
 }
 
 // UpdateResult represents the result of an update operation. To extract the
 // the headers from the HTTP response, you can invoke the 'ExtractHeaders'
 // method on the result struct.
 type UpdateResult struct {
-	objectstorage.CommonResult
+	headerResult
 }
 
 // DeleteResult represents the result of a delete operation. To extract the
 // the headers from the HTTP response, you can invoke the 'ExtractHeaders'
 // method on the result struct.
 type DeleteResult struct {
-	objectstorage.CommonResult
+	headerResult
 }

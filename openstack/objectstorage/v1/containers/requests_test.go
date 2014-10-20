@@ -136,7 +136,7 @@ func TestCreateContainer(t *testing.T) {
 	})
 
 	options := CreateOpts{ContentType: "application/json", Metadata: map[string]string{"foo": "bar"}}
-	headers, err := Create(fake.ServiceClient(), "testContainer", options).ExtractHeaders()
+	headers, err := Create(fake.ServiceClient(), "testContainer", options).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error creating container: %v", err)
 	}
@@ -154,7 +154,7 @@ func TestDeleteContainer(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	_, err := Delete(fake.ServiceClient(), "testContainer").ExtractHeaders()
+	_, err := Delete(fake.ServiceClient(), "testContainer").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error deleting container: %v", err)
 	}
@@ -172,7 +172,7 @@ func TestUpateContainer(t *testing.T) {
 	})
 
 	options := &UpdateOpts{Metadata: map[string]string{"foo": "bar"}}
-	_, err := Update(fake.ServiceClient(), "testContainer", options).ExtractHeaders()
+	_, err := Update(fake.ServiceClient(), "testContainer", options).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error updating container metadata: %v", err)
 	}
