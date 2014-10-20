@@ -46,7 +46,7 @@ type RebuildResult struct {
 
 // ActionResult represents the result of server action operations, like reboot
 type ActionResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract is a function that extracts error information from a result
