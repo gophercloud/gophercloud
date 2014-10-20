@@ -11,39 +11,38 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-// LastHTTPResponse stores generic information derived from an HTTP response.
-// This exists primarily because the body of an http.Response can only be used once.
-type LastHTTPResponse struct {
+// PageResult stores the HTTP response that returned the current page of results.
+type PageResult struct {
+	gophercloud.Result
 	url.URL
-	http.Header
-	Body interface{}
 }
 
-// RememberHTTPResponse parses an HTTP response as JSON and returns a LastHTTPResponse containing the results.
-// The main reason to do this instead of holding the response directly is that a response body can only be read once.
-// Also, this centralizes the JSON decoding.
-func RememberHTTPResponse(resp http.Response) (LastHTTPResponse, error) {
+// PageResultFrom parses an HTTP response as JSON and returns a PageResult containing the
+// results, interpreting it as JSON if the content type indicates.
+func PageResultFrom(resp http.Response) (PageResult, error) {
 	var parsedBody interface{}
 
 	defer resp.Body.Close()
 	rawBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return LastHTTPResponse{}, err
+		return PageResult{}, err
 	}
 
 	if strings.HasPrefix(resp.Header.Get("Content-Type"), "application/json") {
 		err = json.Unmarshal(rawBody, &parsedBody)
 		if err != nil {
-			return LastHTTPResponse{}, err
+			return PageResult{}, err
 		}
 	} else {
 		parsedBody = rawBody
 	}
 
-	return LastHTTPResponse{
-		URL:    *resp.Request.URL,
-		Header: resp.Header,
-		Body:   parsedBody,
+	return PageResult{
+		Result: gophercloud.Result{
+			Body:    parsedBody,
+			Headers: resp.Header,
+		},
+		URL: *resp.Request.URL,
 	}, err
 }
 

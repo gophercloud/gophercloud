@@ -4,7 +4,7 @@ import "fmt"
 
 // LinkedPageBase may be embedded to implement a page that provides navigational "Next" and "Previous" links within its result.
 type LinkedPageBase struct {
-	LastHTTPResponse
+	PageResult
 
 	// LinkPath lists the keys that should be traversed within a response to arrive at the "next" pointer.
 	// If any link along the path is missing, an empty URL will be returned.

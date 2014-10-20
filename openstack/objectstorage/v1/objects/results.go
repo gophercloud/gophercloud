@@ -64,7 +64,7 @@ func ExtractInfo(page pagination.Page) ([]Object, error) {
 // ExtractNames is a function that takes a page of objects and returns only their names.
 func ExtractNames(page pagination.Page) ([]string, error) {
 	casted := page.(ObjectPage)
-	ct := casted.Header.Get("Content-Type")
+	ct := casted.Headers.Get("Content-Type")
 	switch {
 	case strings.HasPrefix(ct, "application/json"):
 		parsed, err := ExtractInfo(page)

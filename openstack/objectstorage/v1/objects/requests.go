@@ -59,8 +59,8 @@ func List(c *gophercloud.ServiceClient, containerName string, opts ListOptsBuild
 		}
 	}
 
-	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		p := ObjectPage{pagination.MarkerPageBase{LastHTTPResponse: r}}
+	createPage := func(r pagination.PageResult) pagination.Page {
+		p := ObjectPage{pagination.MarkerPageBase{PageResult: r}}
 		p.MarkerPageBase.Owner = p
 		return p
 	}

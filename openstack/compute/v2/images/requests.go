@@ -51,8 +51,8 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 		url += query
 	}
 
-	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		return ImagePage{pagination.LinkedPageBase{LastHTTPResponse: r}}
+	createPage := func(r pagination.PageResult) pagination.Page {
+		return ImagePage{pagination.LinkedPageBase{PageResult: r}}
 	}
 
 	return pagination.NewPager(client, url, createPage)

@@ -44,8 +44,8 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	}
 	u := rootURL(c) + q.String()
 
-	return pagination.NewPager(c, u, func(r pagination.LastHTTPResponse) pagination.Page {
-		return MonitorPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
+	return pagination.NewPager(c, u, func(r pagination.PageResult) pagination.Page {
+		return MonitorPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 

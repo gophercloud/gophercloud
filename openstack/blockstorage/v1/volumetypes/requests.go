@@ -78,7 +78,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 
 // List returns all volume types.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
-	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
+	createPage := func(r pagination.PageResult) pagination.Page {
 		return ListResult{pagination.SinglePageBase(r)}
 	}
 

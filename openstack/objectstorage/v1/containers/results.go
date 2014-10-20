@@ -67,7 +67,7 @@ func ExtractInfo(page pagination.Page) ([]Container, error) {
 // ExtractNames is a function that takes a ListResult and returns the containers' names.
 func ExtractNames(page pagination.Page) ([]string, error) {
 	casted := page.(ContainerPage)
-	ct := casted.Header.Get("Content-Type")
+	ct := casted.Headers.Get("Content-Type")
 
 	switch {
 	case strings.HasPrefix(ct, "application/json"):
