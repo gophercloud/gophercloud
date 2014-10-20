@@ -1,11 +1,18 @@
 package gophercloud
 
-// CommonResult acts as a base struct that other results can embed. It contains
-// the deserialized JSON structure returned from the server (Resp), and any
-// errors that might have occurred during transport or deserialization.
-type CommonResult struct {
+import "net/http"
+
+// Result acts as a base struct that other results can embed.
+type Result struct {
+	// Resp is the deserialized JSON structure returned from the server.
 	Resp map[string]interface{}
-	Err  error
+
+	// Headers contains the HTTP header structure from the original response.
+	Headers http.Header
+
+	// Err is an error that occurred during the operation. It's deferred until extraction to make
+	// it easier to chain operations.
+	Err error
 }
 
 // RFC3339Milli describes a time format used by API responses.
