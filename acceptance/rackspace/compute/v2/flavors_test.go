@@ -50,6 +50,7 @@ func TestGetFlavor(t *testing.T) {
 	flavor, err := flavors.Get(client, options.flavorID).Extract()
 	th.AssertNoErr(t, err)
 
+	t.Logf("Requested flavor:")
 	t.Logf("          id=[%s]", flavor.ID)
 	t.Logf("        name=[%s]", flavor.Name)
 	t.Logf("        disk=[%d]", flavor.Disk)
