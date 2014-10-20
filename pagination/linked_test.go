@@ -57,8 +57,8 @@ func createLinked(t *testing.T) Pager {
 
 	client := createClient()
 
-	createPage := func(r LastHTTPResponse) Page {
-		return LinkedPageResult{LinkedPageBase{LastHTTPResponse: r}}
+	createPage := func(r PageResult) Page {
+		return LinkedPageResult{LinkedPageBase{PageResult: r}}
 	}
 
 	return NewPager(client, testhelper.Server.URL+"/page1", createPage)

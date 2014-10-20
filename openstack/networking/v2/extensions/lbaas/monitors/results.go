@@ -108,7 +108,7 @@ func ExtractMonitors(page pagination.Page) ([]Monitor, error) {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract is a function that accepts a result and extracts a monitor.
@@ -121,7 +121,7 @@ func (r commonResult) Extract() (*Monitor, error) {
 		Monitor *Monitor `json:"health_monitor" mapstructure:"health_monitor"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Monitor, err
 }

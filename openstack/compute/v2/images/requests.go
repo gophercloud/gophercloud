@@ -51,8 +51,8 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 		url += query
 	}
 
-	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		return ImagePage{pagination.LinkedPageBase{LastHTTPResponse: r}}
+	createPage := func(r pagination.PageResult) pagination.Page {
+		return ImagePage{pagination.LinkedPageBase{PageResult: r}}
 	}
 
 	return pagination.NewPager(client, url, createPage)
@@ -64,7 +64,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
 	_, result.Err = perigee.Request("GET", getURL(client, id), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
-		Results:     &result.Resp,
+		Results:     &result.Body,
 		OkCodes:     []int{200},
 	})
 	return result

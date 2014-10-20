@@ -8,7 +8,7 @@ import (
 
 // GetResult temporarily stores a Get response.
 type GetResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract interprets a GetResult as an Image.
@@ -21,7 +21,7 @@ func (gr GetResult) Extract() (*Image, error) {
 		Image Image `mapstructure:"image"`
 	}
 
-	err := mapstructure.Decode(gr.Resp, &decoded)
+	err := mapstructure.Decode(gr.Body, &decoded)
 	return &decoded.Image, err
 }
 

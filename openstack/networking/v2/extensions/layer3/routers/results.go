@@ -87,7 +87,7 @@ func ExtractRouters(page pagination.Page) ([]Router, error) {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract is a function that accepts a result and extracts a router.
@@ -100,7 +100,7 @@ func (r commonResult) Extract() (*Router, error) {
 		Router *Router `json:"router"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Router, err
 }
@@ -143,7 +143,7 @@ type InterfaceInfo struct {
 // InterfaceResult represents the result of interface operations, such as
 // AddInterface() and RemoveInterface().
 type InterfaceResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract is a function that accepts a result and extracts an information struct.
@@ -153,7 +153,7 @@ func (r InterfaceResult) Extract() (*InterfaceInfo, error) {
 	}
 
 	var res *InterfaceInfo
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res, err
 }

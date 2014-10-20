@@ -9,7 +9,7 @@ import (
 
 // List lists all the Cinder API versions available to end-users.
 func List(c *gophercloud.ServiceClient) pagination.Pager {
-	return pagination.NewPager(c, listURL(c), func(r pagination.LastHTTPResponse) pagination.Page {
+	return pagination.NewPager(c, listURL(c), func(r pagination.PageResult) pagination.Page {
 		return APIVersionPage{pagination.SinglePageBase(r)}
 	})
 }
@@ -21,7 +21,7 @@ func Get(client *gophercloud.ServiceClient, v string) GetResult {
 	_, err := perigee.Request("GET", getURL(client, v), perigee.Options{
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
-		Results:     &res.Resp,
+		Results:     &res.Body,
 	})
 	res.Err = err
 	return res

@@ -71,7 +71,7 @@ type ServiceCatalog struct {
 // CreateResult defers the interpretation of a created token.
 // Use ExtractToken() to interpret it as a Token, or ExtractServiceCatalog() to interpret it as a service catalog.
 type CreateResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // ExtractToken returns the just-created Token from a CreateResult.
@@ -90,7 +90,7 @@ func (result CreateResult) ExtractToken() (*Token, error) {
 		} `mapstructure:"access"`
 	}
 
-	err := mapstructure.Decode(result.Resp, &response)
+	err := mapstructure.Decode(result.Body, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (result CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
 		} `mapstructure:"access"`
 	}
 
-	err := mapstructure.Decode(result.Resp, &response)
+	err := mapstructure.Decode(result.Body, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -129,5 +129,5 @@ func (result CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
 
 // createErr quickly packs an error in a CreateResult.
 func createErr(err error) CreateResult {
-	return CreateResult{gophercloud.CommonResult{Err: err}}
+	return CreateResult{gophercloud.Result{Err: err}}
 }

@@ -16,8 +16,8 @@ type ListOpts struct {
 
 // List enumerates the Tenants to which the current token has access.
 func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
-	createPage := func(r pagination.LastHTTPResponse) pagination.Page {
-		return TenantPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
+	createPage := func(r pagination.PageResult) pagination.Page {
+		return TenantPage{pagination.LinkedPageBase{PageResult: r}}
 	}
 
 	url := listURL(client)

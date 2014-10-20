@@ -74,7 +74,7 @@ func ExtractGroups(page pagination.Page) ([]SecGroup, error) {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // Extract is a function that accepts a result and extracts a security group.
@@ -87,7 +87,7 @@ func (r commonResult) Extract() (*SecGroup, error) {
 		SecGroup *SecGroup `mapstructure:"security_group" json:"security_group"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.SecGroup, err
 }

@@ -69,8 +69,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		url += query
 	}
 
-	createPageFn := func(r pagination.LastHTTPResponse) pagination.Page {
-		return ServerPage{pagination.LinkedPageBase{LastHTTPResponse: r}}
+	createPageFn := func(r pagination.PageResult) pagination.Page {
+		return ServerPage{pagination.LinkedPageBase{PageResult: r}}
 	}
 
 	return pagination.NewPager(client, url, createPageFn)
@@ -188,7 +188,7 @@ func (opts CreateOpts) ToServerCreateMap() map[string]interface{} {
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var result CreateResult
 	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
-		Results:     &result.Resp,
+		Results:     &result.Body,
 		ReqBody:     opts.ToServerCreateMap(),
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
@@ -209,7 +209,7 @@ func Delete(client *gophercloud.ServiceClient, id string) error {
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
 	_, result.Err = perigee.Request("GET", getURL(client, id), perigee.Options{
-		Results:     &result.Resp,
+		Results:     &result.Body,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
 	return result
@@ -253,7 +253,7 @@ func (opts UpdateOpts) ToServerUpdateMap() map[string]interface{} {
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var result UpdateResult
 	_, result.Err = perigee.Request("PUT", updateURL(client, id), perigee.Options{
-		Results:     &result.Resp,
+		Results:     &result.Body,
 		ReqBody:     opts.ToServerUpdateMap(),
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
@@ -274,7 +274,7 @@ func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword stri
 
 	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     req,
-		Results:     &res.Resp,
+		Results:     &res.Body,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
@@ -446,7 +446,7 @@ func Rebuild(client *gophercloud.ServiceClient, id string, opts RebuildOptsBuild
 
 	_, result.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     &reqBody,
-		Results:     &result.Resp,
+		Results:     &result.Body,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})

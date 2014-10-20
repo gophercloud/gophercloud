@@ -1,7 +1,6 @@
 package tokens
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -10,10 +9,7 @@ import (
 
 // commonResult is the deferred result of a Create or a Get call.
 type commonResult struct {
-	gophercloud.CommonResult
-
-	// header stores the headers from the original HTTP response because token responses are returned in an X-Subject-Token header.
-	header http.Header
+	gophercloud.Result
 }
 
 // Extract interprets a commonResult as a Token.
@@ -31,9 +27,9 @@ func (r commonResult) Extract() (*Token, error) {
 	var token Token
 
 	// Parse the token itself from the stored headers.
-	token.ID = r.header.Get("X-Subject-Token")
+	token.ID = r.Header.Get("X-Subject-Token")
 
-	err := mapstructure.Decode(r.Resp, &response)
+	err := mapstructure.Decode(r.Body, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -52,10 +48,7 @@ type CreateResult struct {
 // createErr quickly creates a CreateResult that reports an error.
 func createErr(err error) CreateResult {
 	return CreateResult{
-		commonResult: commonResult{
-			CommonResult: gophercloud.CommonResult{Err: err},
-			header:       nil,
-		},
+		commonResult: commonResult{Result: gophercloud.Result{Err: err}},
 	}
 }
 
