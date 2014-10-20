@@ -9,19 +9,44 @@ import (
 
 // Volume contains all the information associated with an OpenStack Volume.
 type Volume struct {
-	Status           string            `mapstructure:"status"`              // current status of the Volume
-	Name             string            `mapstructure:"display_name"`        // display name
-	Attachments      []string          `mapstructure:"attachments"`         // instances onto which the Volume is attached
-	AvailabilityZone string            `mapstructure:"availability_zone"`   // logical group
-	Bootable         string            `mapstructure:"bootable"`            // is the volume bootable
-	CreatedAt        string            `mapstructure:"created_at"`          // date created
-	Description      string            `mapstructure:"display_discription"` // display description
-	VolumeType       string            `mapstructure:"volume_type"`         // see VolumeType object for more information
-	SnapshotID       string            `mapstructure:"snapshot_id"`         // ID of the Snapshot from which the Volume was created
-	SourceVolID      string            `mapstructure:"source_volid"`        // ID of the Volume from which the Volume was created
-	Metadata         map[string]string `mapstructure:"metadata"`            // user-defined key-value pairs
-	ID               string            `mapstructure:"id"`                  // unique identifier
-	Size             int               `mapstructure:"size"`                // size of the Volume, in GB
+	// Current status of the volume.
+	Status string `mapstructure:"status"`
+
+	// Human-readable display name for the volume.
+	Name string `mapstructure:"display_name"`
+
+	// Instances onto which the volume is attached.
+	Attachments []string `mapstructure:"attachments"`
+
+	// This parameter is no longer used.
+	AvailabilityZone string `mapstructure:"availability_zone"`
+
+	// Indicates whether this is a bootable volume.
+	Bootable bool `mapstructure:"bootable"`
+
+	// The date when this volume was created.
+	CreatedAt string `mapstructure:"created_at"`
+
+	// Human-readable description for the volume.
+	Description string `mapstructure:"display_discription"`
+
+	// The type of volume to create, either SATA or SSD.
+	VolumeType string `mapstructure:"volume_type"`
+
+	// The ID of the snapshot from which the volume was created
+	SnapshotID string `mapstructure:"snapshot_id"`
+
+	// The ID of another block storage volume from which the current volume was created
+	SourceVolID string `mapstructure:"source_volid"`
+
+	// Arbitrary key-value pairs defined by the user.
+	Metadata map[string]string `mapstructure:"metadata"`
+
+	// Unique identifier for the volume.
+	ID string `mapstructure:"id"`
+
+	// Size of the volume in GB.
+	Size int `mapstructure:"size"`
 }
 
 // CreateResult contains the response body and error from a Create request.
