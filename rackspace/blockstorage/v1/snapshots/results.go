@@ -3,6 +3,7 @@ package snapshots
 import (
 	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack/blockstorage/v1/snapshots"
+	"github.com/rackspace/gophercloud/pagination"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -59,27 +60,44 @@ type commonResult struct {
 
 // CreateResult represents the result of a create operation
 type CreateResult struct {
-	Common os.CreateResult
-	commonResult
+	os.CreateResult
 }
 
 // GetResult represents the result of a get operation
 type GetResult struct {
-	Common os.GetResult
-	commonResult
+	os.GetResult
 }
 
-// Extract will get the Snapshot object out of the commonResult object.
-func (r commonResult) Extract() (*Snapshot, error) {
-	if r.Err != nil {
-		return nil, r.Err
+func commonExtract(resp map[string]interface{}, err error) (*Snapshot, error) {
+	if err != nil {
+		return nil, err
 	}
 
-	var res struct {
+	var respStruct struct {
 		Snapshot *Snapshot `json:"snapshot"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err = mapstructure.Decode(resp, &respStruct)
 
-	return res.Snapshot, err
+	return respStruct.Snapshot, err
+}
+
+// Extract will get the Snapshot object out of the GetResult object.
+func (r GetResult) Extract() (*Snapshot, error) {
+	return commonExtract(r.Resp, r.Err)
+}
+
+// Extract will get the Snapshot object out of the CreateResult object.
+func (r CreateResult) Extract() (*Snapshot, error) {
+	return commonExtract(r.Resp, r.Err)
+}
+
+// ExtractSnapshots extracts and returns Snapshots. It is used while iterating over a snapshots.List call.
+func ExtractSnapshots(page pagination.Page) ([]Snapshot, error) {
+	var response struct {
+		Snapshots []Snapshot `json:"snapshots"`
+	}
+
+	err := mapstructure.Decode(page.(os.ListResult).Body, &response)
+	return response.Snapshots, err
 }

@@ -57,7 +57,7 @@ func (opts CreateOpts) ToSnapshotCreateMap() (map[string]interface{}, error) {
 // extract the Snapshot object from the response, call the Extract method on the
 // CreateResult.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	return CreateResult{Common: os.Create(client, opts)}
+	return CreateResult{os.Create(client, opts)}
 }
 
 // Delete will delete the existing Snapshot with the provided ID.
@@ -68,7 +68,7 @@ func Delete(client *gophercloud.ServiceClient, id string) error {
 // Get retrieves the Snapshot with the provided ID. To extract the Snapshot
 // object from the response, call the Extract method on the GetResult.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	return GetResult{Common: os.Get(client, id)}
+	return GetResult{os.Get(client, id)}
 }
 
 // List returns Snapshots.
