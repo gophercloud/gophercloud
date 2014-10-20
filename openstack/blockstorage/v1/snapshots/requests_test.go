@@ -1,8 +1,6 @@
 package snapshots
 
 import (
-	"fmt"
-	"net/http"
 	"testing"
 
 	"github.com/rackspace/gophercloud/pagination"
@@ -14,30 +12,10 @@ func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/snapshots", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-		{
-			"snapshots": [
-				{
-					"id": "289da7f8-6440-407c-9fb4-7db01ec49164",
-					"display_name": "snapshot-001"
-				},
-				{
-					"id": "96c3bda7-c82a-4f50-be73-ca7621794835",
-					"display_name": "snapshot-002"
-				}
-			]
-		}
-		`)
-	})
+	MockListResponse(t)
 
 	count := 0
+
 	List(client.ServiceClient(), &ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractSnapshots(page)
@@ -71,21 +49,7 @@ func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/snapshots/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
-{
-    "snapshot": {
-        "display_name": "snapshot-001",
-        "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"
-    }
-}
-			`)
-	})
+	MockGetResponse(t)
 
 	v, err := Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
@@ -98,35 +62,9 @@ func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/snapshots", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, `
-{
-    "snapshot": {
-				"volume_id": "1234",
-        "display_name": "snapshot-001"
-    }
-}
-			`)
+	MockCreateResponse(t)
 
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-
-		fmt.Fprintf(w, `
-{
-    "snapshot": {
-				"volume_id": "1234",
-        "display_name": "snapshot-001",
-        "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"
-    }
-}
-		`)
-	})
-
-	options := &CreateOpts{VolumeID: "1234", Name: "snapshot-001"}
+	options := CreateOpts{VolumeID: "1234", Name: "snapshot-001"}
 	n, err := Create(client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
@@ -139,26 +77,7 @@ func TestUpdateMetadata(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/snapshots/123/metadata", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestJSONRequest(t, r, `
-		{
-			"metadata": {
-				"key": "v1"
-			}
-		}
-		`)
-
-		fmt.Fprintf(w, `
-			{
-				"metadata": {
-					"key": "v1"
-				}
-			}
-		`)
-	})
+	MockUpdateMetadataResponse(t)
 
 	expected := map[string]interface{}{"key": "v1"}
 
@@ -167,6 +86,7 @@ func TestUpdateMetadata(t *testing.T) {
 			"key": "v1",
 		},
 	}
+
 	actual, err := UpdateMetadata(client.ServiceClient(), "123", options).ExtractMetadata()
 
 	th.AssertNoErr(t, err)
@@ -177,11 +97,7 @@ func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/snapshots/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		w.WriteHeader(http.StatusNoContent)
-	})
+	MockDeleteResponse(t)
 
 	err := Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, err)
