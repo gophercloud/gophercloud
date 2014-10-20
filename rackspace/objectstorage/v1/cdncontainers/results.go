@@ -1,8 +1,8 @@
 package cdncontainers
 
-import objectstorage "github.com/rackspace/gophercloud/openstack/objectstorage/v1"
+import "github.com/rackspace/gophercloud"
 
 // EnableResult represents the result of a get operation.
 type EnableResult struct {
-	objectstorage.CommonResult
+	gophercloud.Result
 }

@@ -52,7 +52,7 @@ func Enable(c *gophercloud.ServiceClient, containerName string, opts EnableOptsB
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})
-	res.Resp = &resp.HttpResponse
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }
