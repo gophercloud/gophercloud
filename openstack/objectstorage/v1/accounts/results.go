@@ -20,7 +20,7 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 	}
 
 	metadata := make(map[string]string)
-	for k, v := range gr.Headers {
+	for k, v := range gr.Header {
 		if strings.HasPrefix(k, "X-Account-Meta-") {
 			key := strings.TrimPrefix(k, "X-Account-Meta-")
 			metadata[key] = v[0]
@@ -37,5 +37,5 @@ type UpdateResult struct {
 // Extract returns the unmodified HTTP headers and any error conditions encountered during the
 // metadata update.
 func (ur UpdateResult) Extract() (http.Header, error) {
-	return ur.Headers, ur.Err
+	return ur.Header, ur.Err
 }

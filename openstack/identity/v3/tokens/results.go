@@ -27,7 +27,7 @@ func (r commonResult) Extract() (*Token, error) {
 	var token Token
 
 	// Parse the token itself from the stored headers.
-	token.ID = r.Headers.Get("X-Subject-Token")
+	token.ID = r.Header.Get("X-Subject-Token")
 
 	err := mapstructure.Decode(r.Body, &response)
 	if err != nil {

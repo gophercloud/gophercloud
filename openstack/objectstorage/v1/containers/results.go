@@ -67,7 +67,7 @@ func ExtractInfo(page pagination.Page) ([]Container, error) {
 // ExtractNames is a function that takes a ListResult and returns the containers' names.
 func ExtractNames(page pagination.Page) ([]string, error) {
 	casted := page.(ContainerPage)
-	ct := casted.Headers.Get("Content-Type")
+	ct := casted.Header.Get("Content-Type")
 
 	switch {
 	case strings.HasPrefix(ct, "application/json"):
@@ -109,7 +109,7 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 		return nil, gr.Err
 	}
 	metadata := make(map[string]string)
-	for k, v := range gr.Headers {
+	for k, v := range gr.Header {
 		if strings.HasPrefix(k, "X-Container-Meta-") {
 			key := strings.TrimPrefix(k, "X-Container-Meta-")
 			metadata[key] = v[0]
@@ -124,7 +124,7 @@ type headerResult struct {
 
 // Extract pulls the unmodified headers from a Create, Update, or Delete result.
 func (result headerResult) Extract() (http.Header, error) {
-	return result.Headers, result.Err
+	return result.Header, result.Err
 }
 
 // CreateResult represents the result of a create operation. To extract the

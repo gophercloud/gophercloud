@@ -64,7 +64,7 @@ func ExtractInfo(page pagination.Page) ([]Object, error) {
 // ExtractNames is a function that takes a page of objects and returns only their names.
 func ExtractNames(page pagination.Page) ([]string, error) {
 	casted := page.(ObjectPage)
-	ct := casted.Headers.Get("Content-Type")
+	ct := casted.Header.Get("Content-Type")
 	switch {
 	case strings.HasPrefix(ct, "application/json"):
 		parsed, err := ExtractInfo(page)
@@ -122,7 +122,7 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 		return nil, gr.Err
 	}
 	metadata := make(map[string]string)
-	for k, v := range gr.Headers {
+	for k, v := range gr.Header {
 		if strings.HasPrefix(k, "X-Object-Meta-") {
 			key := strings.TrimPrefix(k, "X-Object-Meta-")
 			metadata[key] = v[0]
@@ -138,7 +138,7 @@ type headerResult struct {
 // Extract returns the unmodified HTTP response headers from a Create, Update, or Delete call, as
 // well as any errors that occurred during the call.
 func (result headerResult) Extract() (http.Header, error) {
-	return result.Headers, result.Err
+	return result.Header, result.Err
 }
 
 // CreateResult represents the result of a create operation.

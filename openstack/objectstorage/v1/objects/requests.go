@@ -133,7 +133,7 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 	body, err := ioutil.ReadAll(resp.HttpResponse.Body)
 	res.Body = body
 	res.Err = err
-	res.Headers = resp.HttpResponse.Header
+	res.Header = resp.HttpResponse.Header
 	return res
 }
 
@@ -218,7 +218,7 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
-	res.Headers = resp.HttpResponse.Header
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }
@@ -274,7 +274,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
-	res.Headers = resp.HttpResponse.Header
+	res.Header = resp.HttpResponse.Header
 	return res
 }
 
@@ -316,7 +316,7 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Headers = resp.HttpResponse.Header
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }
@@ -361,7 +361,7 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200, 204},
 	})
-	res.Headers = resp.HttpResponse.Header
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }
@@ -418,7 +418,7 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		MoreHeaders: h,
 		OkCodes:     []int{202},
 	})
-	res.Headers = resp.HttpResponse.Header
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }

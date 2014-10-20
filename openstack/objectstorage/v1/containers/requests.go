@@ -115,7 +115,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 		MoreHeaders: h,
 		OkCodes:     []int{201, 204},
 	})
-	res.Headers = resp.HttpResponse.Header
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }
@@ -127,7 +127,7 @@ func Delete(c *gophercloud.ServiceClient, containerName string) DeleteResult {
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Headers = resp.HttpResponse.Header
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }
@@ -186,7 +186,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
-	res.Headers = resp.HttpResponse.Header
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }
@@ -200,7 +200,7 @@ func Get(c *gophercloud.ServiceClient, containerName string) GetResult {
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Headers = resp.HttpResponse.Header
+	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
 }

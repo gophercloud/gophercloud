@@ -8,8 +8,8 @@ type Result struct {
 	// deserialized JSON structure.
 	Body interface{}
 
-	// Headers contains the HTTP header structure from the original response.
-	Headers http.Header
+	// Header contains the HTTP header structure from the original response.
+	Header http.Header
 
 	// Err is an error that occurred during the operation. It's deferred until extraction to make
 	// it easier to chain operations.
