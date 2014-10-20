@@ -3,11 +3,17 @@ package snapshots
 import (
 	"fmt"
 
+	"github.com/racker/perigee"
+
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 
 	os "github.com/rackspace/gophercloud/openstack/blockstorage/v1/snapshots"
 )
+
+func updateURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("snapshots", id)
+}
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
@@ -74,4 +80,55 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 // List returns Snapshots.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	return os.List(client, os.ListOpts{})
+}
+
+// UpdateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Update operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
+type UpdateOptsBuilder interface {
+	ToSnapshotUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts is the common options struct used in this package's Update
+// operation.
+type UpdateOpts struct {
+	Name        string
+	Description string
+}
+
+// ToSnapshotUpdateMap casts a UpdateOpts struct to a map.
+func (opts UpdateOpts) ToSnapshotUpdateMap() (map[string]interface{}, error) {
+	s := make(map[string]interface{})
+
+	if opts.Name != "" {
+		s["display_name"] = opts.Name
+	}
+	if opts.Description != "" {
+		s["display_description"] = opts.Description
+	}
+
+	return map[string]interface{}{"snapshot": s}, nil
+}
+
+// Update accepts a UpdateOpts struct and updates an existing snapshot using the
+// values provided.
+func Update(c *gophercloud.ServiceClient, snapshotID string, opts UpdateOptsBuilder) UpdateResult {
+	var res UpdateResult
+
+	reqBody, err := opts.ToSnapshotUpdateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
+	// Send request to API
+	_, res.Err = perigee.Request("PUT", updateURL(c, snapshotID), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &res.Resp,
+		OkCodes:     []int{200, 201},
+	})
+
+	return res
 }

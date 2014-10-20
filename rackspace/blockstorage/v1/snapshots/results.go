@@ -68,6 +68,11 @@ type GetResult struct {
 	os.GetResult
 }
 
+// UpdateResult represents the result of an update operation
+type UpdateResult struct {
+	gophercloud.CommonResult
+}
+
 func commonExtract(resp map[string]interface{}, err error) (*Snapshot, error) {
 	if err != nil {
 		return nil, err
@@ -89,6 +94,11 @@ func (r GetResult) Extract() (*Snapshot, error) {
 
 // Extract will get the Snapshot object out of the CreateResult object.
 func (r CreateResult) Extract() (*Snapshot, error) {
+	return commonExtract(r.Resp, r.Err)
+}
+
+// Extract will get the Snapshot object out of the UpdateResult object.
+func (r UpdateResult) Extract() (*Snapshot, error) {
 	return commonExtract(r.Resp, r.Err)
 }
 
