@@ -73,7 +73,7 @@ func ExtractGet(r networks.GetResult) (*NetworkExtAttrs, error) {
 		Network *NetworkExtAttrs `json:"network"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Network, err
 }
@@ -89,7 +89,7 @@ func ExtractCreate(r networks.CreateResult) (*NetworkExtAttrs, error) {
 		Network *NetworkExtAttrs `json:"network"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Network, err
 }
@@ -105,7 +105,7 @@ func ExtractUpdate(r networks.UpdateResult) (*NetworkExtAttrs, error) {
 		Network *NetworkExtAttrs `json:"network"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Network, err
 }

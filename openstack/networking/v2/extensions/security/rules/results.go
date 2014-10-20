@@ -112,7 +112,7 @@ func (r commonResult) Extract() (*SecGroupRule, error) {
 		SecGroupRule *SecGroupRule `mapstructure:"security_group_rule" json:"security_group_rule"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.SecGroupRule, err
 }

@@ -131,9 +131,7 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 	})
 	defer resp.HttpResponse.Body.Close()
 	body, err := ioutil.ReadAll(resp.HttpResponse.Body)
-	res.Resp = map[string]interface{}{
-		"body": body,
-	}
+	res.Body = body
 	res.Err = err
 	res.Headers = resp.HttpResponse.Header
 	return res

@@ -20,7 +20,7 @@ func (r commonResult) Extract() (*Subnet, error) {
 		Subnet *Subnet `json:"subnet"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Subnet, err
 }

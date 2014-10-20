@@ -35,7 +35,7 @@ func (gr GetResult) Extract() (*Flavor, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = decoder.Decode(gr.Resp)
+	err = decoder.Decode(gr.Body)
 	return &result.Flavor, err
 }
 

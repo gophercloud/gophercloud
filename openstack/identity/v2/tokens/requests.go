@@ -80,7 +80,7 @@ func Create(client *gophercloud.ServiceClient, auth AuthOptionsBuilder) CreateRe
 	var result CreateResult
 	_, result.Err = perigee.Request("POST", CreateURL(client), perigee.Options{
 		ReqBody: &request,
-		Results: &result.Resp,
+		Results: &result.Body,
 		OkCodes: []int{200, 203},
 	})
 	return result

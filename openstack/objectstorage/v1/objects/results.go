@@ -107,7 +107,7 @@ func (dr DownloadResult) ExtractContent() ([]byte, error) {
 	if dr.Err != nil {
 		return nil, dr.Err
 	}
-	return dr.Resp["body"].([]byte), nil
+	return dr.Body.([]byte), nil
 }
 
 // GetResult is a *http.Response that is returned from a call to the Get function.

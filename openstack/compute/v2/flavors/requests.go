@@ -65,7 +65,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var gr GetResult
 	gr.Err = perigee.Get(getURL(client, id), perigee.Options{
-		Results:     &gr.Resp,
+		Results:     &gr.Body,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
 	return gr

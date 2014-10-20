@@ -188,7 +188,7 @@ func (opts CreateOpts) ToServerCreateMap() map[string]interface{} {
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var result CreateResult
 	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
-		Results:     &result.Resp,
+		Results:     &result.Body,
 		ReqBody:     opts.ToServerCreateMap(),
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
@@ -209,7 +209,7 @@ func Delete(client *gophercloud.ServiceClient, id string) error {
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
 	_, result.Err = perigee.Request("GET", getURL(client, id), perigee.Options{
-		Results:     &result.Resp,
+		Results:     &result.Body,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
 	return result
@@ -253,7 +253,7 @@ func (opts UpdateOpts) ToServerUpdateMap() map[string]interface{} {
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var result UpdateResult
 	_, result.Err = perigee.Request("PUT", updateURL(client, id), perigee.Options{
-		Results:     &result.Resp,
+		Results:     &result.Body,
 		ReqBody:     opts.ToServerUpdateMap(),
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 	})
@@ -438,7 +438,7 @@ func Rebuild(client *gophercloud.ServiceClient, id string, opts RebuildOptsBuild
 
 	_, result.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     &reqBody,
-		Results:     &result.Resp,
+		Results:     &result.Body,
 		MoreHeaders: client.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})

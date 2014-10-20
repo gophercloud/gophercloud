@@ -83,7 +83,7 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = perigee.Request("GET", getURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results:     &res.Resp,
+		Results:     &res.Body,
 		OkCodes:     []int{200},
 	})
 	return res
@@ -141,7 +141,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	_, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res.Resp,
+		Results:     &res.Body,
 		OkCodes:     []int{201},
 	})
 	return res
@@ -191,7 +191,7 @@ func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuild
 	_, res.Err = perigee.Request("PUT", getURL(c, networkID), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		Results:     &res.Resp,
+		Results:     &res.Body,
 		OkCodes:     []int{200, 201},
 	})
 

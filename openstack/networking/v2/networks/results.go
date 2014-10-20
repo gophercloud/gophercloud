@@ -20,7 +20,7 @@ func (r commonResult) Extract() (*Network, error) {
 		Network *Network `json:"network"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Network, err
 }

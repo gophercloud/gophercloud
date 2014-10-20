@@ -52,7 +52,7 @@ func (r GetResult) Extract() (*APIVersion, error) {
 		Version *APIVersion `mapstructure:"version"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &resp)
+	err := mapstructure.Decode(r.Body, &resp)
 
 	return resp.Version, err
 }

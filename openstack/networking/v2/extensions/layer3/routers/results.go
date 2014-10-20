@@ -100,7 +100,7 @@ func (r commonResult) Extract() (*Router, error) {
 		Router *Router `json:"router"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Router, err
 }
@@ -153,7 +153,7 @@ func (r InterfaceResult) Extract() (*InterfaceInfo, error) {
 	}
 
 	var res *InterfaceInfo
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res, err
 }

@@ -11,28 +11,40 @@ import (
 type Snapshot struct {
 	// Currect status of the Snapshot.
 	Status string `mapstructure:"status"`
+
 	// Display name.
 	Name string `mapstructure:"display_name"`
+
 	// Instances onto which the Snapshot is attached.
 	Attachments []string `mapstructure:"attachments"`
+
 	// Logical group.
 	AvailabilityZone string `mapstructure:"availability_zone"`
+
 	// Is the Snapshot bootable?
 	Bootable string `mapstructure:"bootable"`
+
 	// Date created.
 	CreatedAt string `mapstructure:"created_at"`
+
 	// Display description.
 	Description string `mapstructure:"display_discription"`
+
 	// See VolumeType object for more information.
 	VolumeType string `mapstructure:"volume_type"`
+
 	// ID of the Snapshot from which this Snapshot was created.
 	SnapshotID string `mapstructure:"snapshot_id"`
+
 	// ID of the Volume from which this Snapshot was created.
 	VolumeID string `mapstructure:"volume_id"`
+
 	// User-defined key-value pairs.
 	Metadata map[string]string `mapstructure:"metadata"`
+
 	// Unique identifier.
 	ID string `mapstructure:"id"`
+
 	// Size of the Snapshot, in GB.
 	Size int `mapstructure:"size"`
 }
@@ -82,9 +94,8 @@ func (r UpdateMetadataResult) ExtractMetadata() (map[string]interface{}, error) 
 		return nil, r.Err
 	}
 
-	m := r.Resp["metadata"].(map[string]interface{})
-
-	return m, nil
+	m := r.Body.(map[string]interface{})["metadata"]
+	return m.(map[string]interface{}), nil
 }
 
 type commonResult struct {
@@ -101,7 +112,7 @@ func (r commonResult) Extract() (*Snapshot, error) {
 		Snapshot *Snapshot `json:"snapshot"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Snapshot, err
 }

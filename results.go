@@ -4,8 +4,9 @@ import "net/http"
 
 // Result acts as a base struct that other results can embed.
 type Result struct {
-	// Resp is the deserialized JSON structure returned from the server.
-	Resp map[string]interface{}
+	// Body is the payload of the HTTP response from the server. In most cases, this will be the
+	// deserialized JSON structure.
+	Body interface{}
 
 	// Headers contains the HTTP header structure from the original response.
 	Headers http.Header

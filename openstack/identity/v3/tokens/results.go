@@ -29,7 +29,7 @@ func (r commonResult) Extract() (*Token, error) {
 	// Parse the token itself from the stored headers.
 	token.ID = r.Headers.Get("X-Subject-Token")
 
-	err := mapstructure.Decode(r.Resp, &response)
+	err := mapstructure.Decode(r.Body, &response)
 	if err != nil {
 		return nil, err
 	}

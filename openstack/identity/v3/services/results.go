@@ -22,7 +22,7 @@ func (r commonResult) Extract() (*Service, error) {
 		Service `json:"service"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return &res.Service, err
 }

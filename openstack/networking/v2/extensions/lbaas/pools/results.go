@@ -115,7 +115,7 @@ func (r commonResult) Extract() (*Pool, error) {
 		Pool *Pool `json:"pool"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Pool, err
 }

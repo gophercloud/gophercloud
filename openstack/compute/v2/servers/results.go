@@ -20,7 +20,7 @@ func (r serverResult) Extract() (*Server, error) {
 		Server Server `mapstructure:"server"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &response)
+	err := mapstructure.Decode(r.Body, &response)
 	return &response.Server, err
 }
 

@@ -11,7 +11,7 @@ func Get(c *gophercloud.ServiceClient, alias string) GetResult {
 	var res GetResult
 	_, res.Err = perigee.Request("GET", ExtensionURL(c, alias), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
-		Results:     &res.Resp,
+		Results:     &res.Body,
 		OkCodes:     []int{200},
 	})
 	return res

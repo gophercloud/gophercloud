@@ -21,7 +21,7 @@ func (gr GetResult) Extract() (*Image, error) {
 		Image Image `mapstructure:"image"`
 	}
 
-	err := mapstructure.Decode(gr.Resp, &decoded)
+	err := mapstructure.Decode(gr.Body, &decoded)
 	return &decoded.Image, err
 }
 

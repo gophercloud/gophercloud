@@ -87,7 +87,7 @@ func (r commonResult) Extract() (*SecGroup, error) {
 		SecGroup *SecGroup `mapstructure:"security_group" json:"security_group"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 
 	return res.SecGroup, err
 }

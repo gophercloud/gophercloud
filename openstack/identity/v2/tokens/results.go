@@ -90,7 +90,7 @@ func (result CreateResult) ExtractToken() (*Token, error) {
 		} `mapstructure:"access"`
 	}
 
-	err := mapstructure.Decode(result.Resp, &response)
+	err := mapstructure.Decode(result.Body, &response)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (result CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
 		} `mapstructure:"access"`
 	}
 
-	err := mapstructure.Decode(result.Resp, &response)
+	err := mapstructure.Decode(result.Body, &response)
 	if err != nil {
 		return nil, err
 	}

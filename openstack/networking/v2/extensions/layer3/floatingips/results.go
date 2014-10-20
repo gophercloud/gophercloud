@@ -53,7 +53,7 @@ func (r commonResult) Extract() (*FloatingIP, error) {
 		FloatingIP *FloatingIP `json:"floatingip"`
 	}
 
-	err := mapstructure.Decode(r.Resp, &res)
+	err := mapstructure.Decode(r.Body, &res)
 	if err != nil {
 		return nil, fmt.Errorf("Error decoding Neutron floating IP: %v", err)
 	}
