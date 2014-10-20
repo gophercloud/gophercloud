@@ -6,24 +6,24 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
+	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestListServers(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+	th.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		r.ParseForm()
 		marker := r.Form.Get("marker")
 		switch marker {
 		case "":
-			fmt.Fprintf(w, serverListBody)
+			fmt.Fprintf(w, ServerListBody)
 		case "9e5476bd-a4ec-4653-93d6-72c93aa682ba":
 			fmt.Fprintf(w, `{ "servers": [] }`)
 		default:
@@ -32,7 +32,7 @@ func TestListServers(t *testing.T) {
 	})
 
 	pages := 0
-	err := List(fake.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(client.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := ExtractServers(page)
@@ -43,13 +43,13 @@ func TestListServers(t *testing.T) {
 		if len(actual) != 2 {
 			t.Fatalf("Expected 2 servers, got %d", len(actual))
 		}
-		equalServers(t, serverHerp, actual[0])
-		equalServers(t, serverDerp, actual[1])
+		CheckServerEquals(t, ServerHerp, actual[0])
+		CheckServerEquals(t, ServerDerp, actual[1])
 
 		return true, nil
 	})
 
-	testhelper.AssertNoErr(t, err)
+	th.AssertNoErr(t, err)
 
 	if pages != 1 {
 		t.Errorf("Expected 1 page, saw %d", pages)
@@ -57,13 +57,13 @@ func TestListServers(t *testing.T) {
 }
 
 func TestCreateServer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestJSONRequest(t, r, `{
+	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
 			"server": {
 				"name": "derp",
 				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
@@ -73,10 +73,10 @@ func TestCreateServer(t *testing.T) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, singleServerBody)
+		fmt.Fprintf(w, SingleServerBody)
 	})
 
-	client := fake.ServiceClient()
+	client := client.ServiceClient()
 	actual, err := Create(client, CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
@@ -86,21 +86,21 @@ func TestCreateServer(t *testing.T) {
 		t.Fatalf("Unexpected Create error: %v", err)
 	}
 
-	equalServers(t, serverDerp, *actual)
+	CheckServerEquals(t, ServerDerp, *actual)
 }
 
 func TestDeleteServer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers/asdfasdfasdf", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "DELETE")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+	th.Mux.HandleFunc("/servers/asdfasdfasdf", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	client := fake.ServiceClient()
+	client := client.ServiceClient()
 	err := Delete(client, "asdfasdfasdf")
 	if err != nil {
 		t.Fatalf("Unexpected Delete error: %v", err)
@@ -108,89 +108,89 @@ func TestDeleteServer(t *testing.T) {
 }
 
 func TestGetServer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestHeader(t, r, "Accept", "application/json")
+	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, singleServerBody)
+		fmt.Fprintf(w, SingleServerBody)
 	})
 
-	client := fake.ServiceClient()
+	client := client.ServiceClient()
 	actual, err := Get(client, "1234asdf").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
 
-	equalServers(t, serverDerp, *actual)
+	CheckServerEquals(t, ServerDerp, *actual)
 }
 
 func TestUpdateServer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "PUT")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestHeader(t, r, "Content-Type", "application/json")
-		testhelper.TestJSONRequest(t, r, `{ "server": { "name": "new-name" } }`)
+	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{ "server": { "name": "new-name" } }`)
 
-		fmt.Fprintf(w, singleServerBody)
+		fmt.Fprintf(w, SingleServerBody)
 	})
 
-	client := fake.ServiceClient()
+	client := client.ServiceClient()
 	actual, err := Update(client, "1234asdf", UpdateOpts{Name: "new-name"}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
 	}
 
-	equalServers(t, serverDerp, *actual)
+	CheckServerEquals(t, ServerDerp, *actual)
 }
 
 func TestChangeServerAdminPassword(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestJSONRequest(t, r, `{ "changePassword": { "adminPass": "new-password" } }`)
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "changePassword": { "adminPass": "new-password" } }`)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := ChangeAdminPassword(fake.ServiceClient(), "1234asdf", "new-password")
-	testhelper.AssertNoErr(t, res.Err)
+	res := ChangeAdminPassword(client.ServiceClient(), "1234asdf", "new-password")
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestRebootServer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestJSONRequest(t, r, `{ "reboot": { "type": "SOFT" } }`)
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "reboot": { "type": "SOFT" } }`)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := Reboot(fake.ServiceClient(), "1234asdf", SoftReboot)
-	testhelper.AssertNoErr(t, res.Err)
+	res := Reboot(client.ServiceClient(), "1234asdf", SoftReboot)
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestRebuildServer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestJSONRequest(t, r, `
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `
 			{
 				"rebuild": {
 					"name": "new-name",
@@ -203,7 +203,7 @@ func TestRebuildServer(t *testing.T) {
 
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, singleServerBody)
+		fmt.Fprintf(w, SingleServerBody)
 	})
 
 	opts := RebuildOpts{
@@ -213,56 +213,56 @@ func TestRebuildServer(t *testing.T) {
 		AccessIPv4: "1.2.3.4",
 	}
 
-	actual, err := Rebuild(fake.ServiceClient(), "1234asdf", opts).Extract()
-	testhelper.AssertNoErr(t, err)
+	actual, err := Rebuild(client.ServiceClient(), "1234asdf", opts).Extract()
+	th.AssertNoErr(t, err)
 
-	equalServers(t, serverDerp, *actual)
+	CheckServerEquals(t, ServerDerp, *actual)
 }
 
 func TestResizeServer(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestJSONRequest(t, r, `{ "resize": { "flavorRef": "2" } }`)
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "resize": { "flavorRef": "2" } }`)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := Resize(fake.ServiceClient(), "1234asdf", "2")
-	testhelper.AssertNoErr(t, res.Err)
+	res := Resize(client.ServiceClient(), "1234asdf", "2")
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestConfirmResize(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestJSONRequest(t, r, `{ "confirmResize": null }`)
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "confirmResize": null }`)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	res := ConfirmResize(fake.ServiceClient(), "1234asdf")
-	testhelper.AssertNoErr(t, res.Err)
+	res := ConfirmResize(client.ServiceClient(), "1234asdf")
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestRevertResize(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		testhelper.TestJSONRequest(t, r, `{ "revertResize": null }`)
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "revertResize": null }`)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := RevertResize(fake.ServiceClient(), "1234asdf")
-	testhelper.AssertNoErr(t, res.Err)
+	res := RevertResize(client.ServiceClient(), "1234asdf")
+	th.AssertNoErr(t, res.Err)
 }
