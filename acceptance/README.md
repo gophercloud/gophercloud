@@ -12,11 +12,11 @@ to a remote API.
 
 ### Step 1. Set environment variables
 
-A lot of tests rely on environment variables for configuration - so you will need 
+A lot of tests rely on environment variables for configuration - so you will need
 to set them before running the suite. If you're testing against pure OpenStack APIs,
-you can download a file that contains all of these variables for you: just visit 
-the `project/access_and_security` page in your control panel and click the "Download 
-OpenStack RC File" button at the top right. For all other providers, you will need 
+you can download a file that contains all of these variables for you: just visit
+the `project/access_and_security` page in your control panel and click the "Download
+OpenStack RC File" button at the top right. For all other providers, you will need
 to set them manually.
 
 #### Authentication
@@ -28,12 +28,15 @@ to set them manually.
 |`OS_AUTH_URL`|The identity URL you need to authenticate|
 |`OS_TENANT_NAME`|Your API tenant name|
 |`OS_TENANT_ID`|Your API tenant ID|
+|`RS_USERNAME`|Your Rackspace username|
+|`RS_APIKEY`|Your Rackspace API key|
 
 #### General
 
 |Name|Description|
 |---|---|
 |`OS_REGION_NAME`|The region you want your resources to reside in|
+|`RS_REGION`|Rackspace region you want your resource to reside in|
 
 #### Compute
 
@@ -42,13 +45,21 @@ to set them manually.
 |`OS_IMAGE_ID`|The ID of the image your want your server to be based on|
 |`OS_FLAVOR_ID`|The ID of the flavor you want your server to be based on|
 |`OS_FLAVOR_ID_RESIZE`|The ID of the flavor you want your server to be resized to|
+|`RS_IMAGE_ID`|The ID of the image you want servers to be created with|
+|`RS_FLAVOR_ID`|The ID of the flavor you want your server to be created with|
 
 ### 2. Run the test suite
 
-From any directory, run:
+Run:
 
 ```
-go test -v -tags acceptance github.com/rackspace/gophercloud/...
+script/acceptancetest
+```
+
+Or manually with:
+
+```
+go test -v -tags 'acceptance fixtures' github.com/rackspace/gophercloud/...
 ```
 
 Alternatively, you can execute the above from your nested git folder (i.e. the
