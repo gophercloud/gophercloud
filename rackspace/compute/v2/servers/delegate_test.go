@@ -51,3 +51,19 @@ func TestGetServer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &GophercloudServer, actual)
 }
+
+func TestChangeAdminPassword(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "changePassword": { "adminPass": "new-password" } }`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	res := ChangeAdminPassword(client.ServiceClient(), "1234asdf", "new-password")
+	th.AssertNoErr(t, res.Err)
+}
