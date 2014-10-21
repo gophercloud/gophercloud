@@ -59,32 +59,14 @@ func TestListServers(t *testing.T) {
 func TestCreateServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	HandleServerCreationSuccessfully(t, SingleServerBody)
 
-	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, `{
-			"server": {
-				"name": "derp",
-				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
-				"flavorRef": "1"
-			}
-		}`)
-
-		w.WriteHeader(http.StatusAccepted)
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, SingleServerBody)
-	})
-
-	client := client.ServiceClient()
-	actual, err := Create(client, CreateOpts{
+	actual, err := Create(client.ServiceClient(), CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
 	}).Extract()
-	if err != nil {
-		t.Fatalf("Unexpected Create error: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
@@ -92,19 +74,10 @@ func TestCreateServer(t *testing.T) {
 func TestDeleteServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	HandleServerDeletionSuccessfully(t)
 
-	th.Mux.HandleFunc("/servers/asdfasdfasdf", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-
-		w.WriteHeader(http.StatusNoContent)
-	})
-
-	client := client.ServiceClient()
-	err := Delete(client, "asdfasdfasdf")
-	if err != nil {
-		t.Fatalf("Unexpected Delete error: %v", err)
-	}
+	err := Delete(client.ServiceClient(), "asdfasdfasdf")
+	th.AssertNoErr(t, err)
 }
 
 func TestGetServer(t *testing.T) {

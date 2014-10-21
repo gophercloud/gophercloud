@@ -2,6 +2,15 @@
 
 package servers
 
+import (
+	"fmt"
+	"net/http"
+	"testing"
+
+	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/rackspace/gophercloud/testhelper/client"
+)
+
 // ServerListBody contains the canned body of a servers.List response.
 const ServerListBody = `
 {
@@ -329,3 +338,33 @@ var (
 		Metadata: map[string]interface{}{},
 	}
 )
+
+// HandleServerCreationSuccessfully sets up the test server to respond to a server creation request
+// with a given response.
+func HandleServerCreationSuccessfully(t *testing.T, response string) {
+	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"server": {
+				"name": "derp",
+				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
+				"flavorRef": "1"
+			}
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
+	})
+}
+
+// HandleServerDeletionSuccessfully sets up the test server to respond to a server deletion request.
+func HandleServerDeletionSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/asdfasdfasdf", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
