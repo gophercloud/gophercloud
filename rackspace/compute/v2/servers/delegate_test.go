@@ -94,3 +94,19 @@ func TestReboot(t *testing.T) {
 	res := Reboot(client.ServiceClient(), "1234asdf", os.SoftReboot)
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestRebuildServer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	os.HandleRebuildSuccessfully(t, GetOutput)
+
+	opts := os.RebuildOpts{
+		Name:       "new-name",
+		AdminPass:  "swordfish",
+		ImageID:    "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
+		AccessIPv4: "1.2.3.4",
+	}
+	actual, err := Rebuild(client.ServiceClient(), "1234asdf", opts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &GophercloudServer, actual)
+}

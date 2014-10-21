@@ -145,25 +145,7 @@ func TestRebootServer(t *testing.T) {
 func TestRebuildServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, `
-			{
-				"rebuild": {
-					"name": "new-name",
-					"adminPass": "swordfish",
-					"imageRef": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
-					"accessIPv4": "1.2.3.4"
-				}
-			}
-		`)
-
-		w.WriteHeader(http.StatusAccepted)
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, SingleServerBody)
-	})
+	HandleRebuildSuccessfully(t, SingleServerBody)
 
 	opts := RebuildOpts{
 		Name:       "new-name",
