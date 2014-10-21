@@ -45,3 +45,20 @@ func TestListImageDetails(t *testing.T) {
 		t.Fatalf("At least one page of image results expected.")
 	}
 }
+
+func TestGetImageDetails(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/images/e19a734c-c7e6-443a-830c-242209c4d65d", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, GetOutput)
+	})
+
+	actual, err := Get(client.ServiceClient(), "e19a734c-c7e6-443a-830c-242209c4d65d").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &UbuntuImage, actual)
+}
