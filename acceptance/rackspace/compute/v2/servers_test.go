@@ -119,9 +119,32 @@ func TestChangeAdminPassword(t *testing.T) {
 	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
 	th.AssertNoErr(t, err)
 
+	t.Logf("Changing server password.")
 	err = servers.ChangeAdminPassword(client, s.ID, tools.MakeNewPassword(original)).Extract()
 	th.AssertNoErr(t, err)
 
 	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
 	th.AssertNoErr(t, err)
+	t.Logf("Password changed successfully.")
+}
+
+func TestReboot(t *testing.T) {
+	t.Parallel()
+
+	client, err := newClient()
+	th.AssertNoErr(t, err)
+
+	s := createServer(t, client)
+	defer deleteServer(t, client, s)
+
+	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
+	th.AssertNoErr(t, err)
+
+	t.Logf("Rebooting server.")
+	err = servers.Reboot(client, s.ID, os.HardReboot).Extract()
+	th.AssertNoErr(t, err)
+
+	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
+	th.AssertNoErr(t, err)
+	t.Logf("Server successfully rebooted.")
 }
