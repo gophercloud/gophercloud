@@ -22,8 +22,8 @@ func TestEnableCDNContainer(t *testing.T) {
 	})
 
 	options := &EnableOpts{CDNEnabled: true, TTL: 259200}
-	actual, err := Enable(fake.ServiceClient(), "testContainer", options).ExtractHeaders()
-	th.AssertNoErr(t, err)
-	th.CheckEquals(t, actual["X-Ttl"][0], "259200")
-	th.CheckEquals(t, actual["X-Cdn-Enabled"][0], "True")
+	actual := Enable(fake.ServiceClient(), "testContainer", options)
+	th.AssertNoErr(t, actual.Err)
+	th.CheckEquals(t, actual.Header["X-Ttl"][0], "259200")
+	th.CheckEquals(t, actual.Header["X-Cdn-Enabled"][0], "True")
 }

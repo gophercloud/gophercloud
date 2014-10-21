@@ -69,8 +69,8 @@ func TestCreateObject(t *testing.T) {
 
 	content := bytes.NewBufferString("Did gyre and gimble in the wabe")
 	options := &CreateOpts{ContentType: "application/json"}
-	_, err := Create(fake.ServiceClient(), "testContainer", "testObject", content, options).ExtractHeaders()
-	th.AssertNoErr(t, err)
+	res := Create(fake.ServiceClient(), "testContainer", "testObject", content, options)
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestCopyObject(t *testing.T) {
@@ -79,8 +79,8 @@ func TestCopyObject(t *testing.T) {
 	HandleCopyObjectSuccessfully(t)
 
 	options := &CopyOpts{Destination: "/newTestContainer/newTestObject"}
-	_, err := Copy(fake.ServiceClient(), "testContainer", "testObject", options).ExtractHeaders()
-	th.AssertNoErr(t, err)
+	res := Copy(fake.ServiceClient(), "testContainer", "testObject", options)
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestDeleteObject(t *testing.T) {
@@ -88,8 +88,8 @@ func TestDeleteObject(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteObjectSuccessfully(t)
 
-	_, err := Delete(fake.ServiceClient(), "testContainer", "testObject", nil).ExtractHeaders()
-	th.AssertNoErr(t, err)
+	res := Delete(fake.ServiceClient(), "testContainer", "testObject", nil)
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestUpateObjectMetadata(t *testing.T) {
@@ -98,8 +98,8 @@ func TestUpateObjectMetadata(t *testing.T) {
 	HandleUpdateObjectSuccessfully(t)
 
 	options := &UpdateOpts{Metadata: map[string]string{"Gophercloud-Test": "objects"}}
-	_, err := Update(fake.ServiceClient(), "testContainer", "testObject", options).ExtractHeaders()
-	th.AssertNoErr(t, err)
+	res := Update(fake.ServiceClient(), "testContainer", "testObject", options)
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetObject(t *testing.T) {

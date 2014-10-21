@@ -14,8 +14,8 @@ func TestGetAccounts(t *testing.T) {
 	os.HandleGetAccountSuccessfully(t)
 
 	options := &UpdateOpts{Metadata: map[string]string{"gophercloud-test": "accounts"}}
-	_, err := Update(fake.ServiceClient(), options).ExtractHeaders()
-	th.CheckNoErr(t, err)
+	res := Update(fake.ServiceClient(), options)
+	th.CheckNoErr(t, res.Err)
 }
 
 func TestUpdateAccounts(t *testing.T) {
