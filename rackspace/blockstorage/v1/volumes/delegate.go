@@ -6,13 +6,6 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// CreateOpts contains options for creating a Volume. This object is passed to
-// the volumes.Create function. For more information about these parameters,
-// see the Volume object.
-type CreateOpts struct {
-	os.CreateOpts
-}
-
 // Create will create a new Volume based on the values in CreateOpts. To extract
 // the Volume object from the response, call the Extract method on the
 // CreateResult.

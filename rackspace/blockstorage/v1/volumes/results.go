@@ -8,12 +8,10 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-type Volume struct {
-	os.Volume
-}
+type Volume os.Volume
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // CreateResult represents the result of a create operation
@@ -31,7 +29,7 @@ type UpdateResult struct {
 	os.UpdateResult
 }
 
-func commonExtract(resp map[string]interface{}, err error) (*Volume, error) {
+func commonExtract(resp interface{}, err error) (*Volume, error) {
 	if err != nil {
 		return nil, err
 	}
@@ -47,17 +45,17 @@ func commonExtract(resp map[string]interface{}, err error) (*Volume, error) {
 
 // Extract will get the Volume object out of the GetResult object.
 func (r GetResult) Extract() (*Volume, error) {
-	return commonExtract(r.Resp, r.Err)
+	return commonExtract(r.Body, r.Err)
 }
 
 // Extract will get the Volume object out of the CreateResult object.
 func (r CreateResult) Extract() (*Volume, error) {
-	return commonExtract(r.Resp, r.Err)
+	return commonExtract(r.Body, r.Err)
 }
 
 // Extract will get the Volume object out of the UpdateResult object.
 func (r UpdateResult) Extract() (*Volume, error) {
-	return commonExtract(r.Resp, r.Err)
+	return commonExtract(r.Body, r.Err)
 }
 
 // ExtractSnapshots extracts and returns Volumes. It is used while iterating over a volumes.List call.
