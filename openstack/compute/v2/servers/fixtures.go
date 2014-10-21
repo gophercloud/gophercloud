@@ -1,12 +1,5 @@
 // +build fixtures
-
 package servers
-
-import (
-	"testing"
-
-	th "github.com/rackspace/gophercloud/testhelper"
-)
 
 // ServerListBody contains the canned body of a servers.List response.
 const ServerListBody = `
@@ -335,26 +328,3 @@ var (
 		Metadata: map[string]interface{}{},
 	}
 )
-
-// CheckServerEquals provides more fine-grained failures when Servers differ, because Server structs
-// are too damn big to compare by eye.
-func CheckServerEquals(t *testing.T, expected Server, actual Server) {
-	th.CheckEquals(t, expected.ID, actual.ID)
-	th.CheckEquals(t, expected.TenantID, actual.TenantID)
-	th.CheckEquals(t, expected.UserID, actual.UserID)
-	th.CheckEquals(t, expected.Name, actual.Name)
-	th.CheckEquals(t, expected.Updated, actual.Updated)
-	th.CheckEquals(t, expected.Created, actual.Created)
-	th.CheckEquals(t, expected.HostID, actual.HostID)
-	th.CheckEquals(t, expected.Status, actual.Status)
-	th.CheckEquals(t, expected.Progress, actual.Progress)
-	th.CheckEquals(t, expected.AccessIPv4, actual.AccessIPv4)
-	th.CheckEquals(t, expected.AccessIPv6, actual.AccessIPv6)
-	th.CheckDeepEquals(t, expected.Image, actual.Image)
-	th.CheckDeepEquals(t, expected.Flavor, actual.Flavor)
-	th.CheckDeepEquals(t, expected.Addresses, actual.Addresses)
-	th.CheckDeepEquals(t, expected.Metadata, actual.Metadata)
-	th.CheckDeepEquals(t, expected.Links, actual.Links)
-	th.CheckEquals(t, expected.KeyName, actual.KeyName)
-	th.CheckEquals(t, expected.AdminPass, actual.AdminPass)
-}

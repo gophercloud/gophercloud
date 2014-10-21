@@ -43,8 +43,8 @@ func TestListServers(t *testing.T) {
 		if len(actual) != 2 {
 			t.Fatalf("Expected 2 servers, got %d", len(actual))
 		}
-		CheckServerEquals(t, ServerHerp, actual[0])
-		CheckServerEquals(t, ServerDerp, actual[1])
+		th.CheckDeepEquals(t, ServerHerp, actual[0])
+		th.CheckDeepEquals(t, ServerDerp, actual[1])
 
 		return true, nil
 	})
@@ -86,7 +86,7 @@ func TestCreateServer(t *testing.T) {
 		t.Fatalf("Unexpected Create error: %v", err)
 	}
 
-	CheckServerEquals(t, ServerDerp, *actual)
+	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
 func TestDeleteServer(t *testing.T) {
@@ -125,7 +125,7 @@ func TestGetServer(t *testing.T) {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
 
-	CheckServerEquals(t, ServerDerp, *actual)
+	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
 func TestUpdateServer(t *testing.T) {
@@ -148,7 +148,7 @@ func TestUpdateServer(t *testing.T) {
 		t.Fatalf("Unexpected Update error: %v", err)
 	}
 
-	CheckServerEquals(t, ServerDerp, *actual)
+	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
 func TestChangeServerAdminPassword(t *testing.T) {
@@ -216,7 +216,7 @@ func TestRebuildServer(t *testing.T) {
 	actual, err := Rebuild(client.ServiceClient(), "1234asdf", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	CheckServerEquals(t, ServerDerp, *actual)
+	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
 func TestResizeServer(t *testing.T) {
