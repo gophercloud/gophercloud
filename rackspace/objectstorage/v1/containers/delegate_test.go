@@ -3,25 +3,24 @@ package containers
 import (
 	"testing"
 
+	os "github.com/rackspace/gophercloud/openstack/objectstorage/v1/containers"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
-var metadata = map[string]string{"gophercloud-test": "containers"}
-
 func TestListContainerInfo(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListContainerInfoSuccessfully(t)
+	os.HandleListContainerInfoSuccessfully(t)
 
 	count := 0
-	err := List(fake.ServiceClient(), &ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(fake.ServiceClient(), &os.ListOpts{Full: true}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractInfo(page)
 		th.AssertNoErr(t, err)
 
-		th.CheckDeepEquals(t, ExpectedListInfo, actual)
+		th.CheckDeepEquals(t, os.ExpectedListInfo, actual)
 
 		return true, nil
 	})
@@ -32,10 +31,10 @@ func TestListContainerInfo(t *testing.T) {
 func TestListContainerNames(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListContainerNamesSuccessfully(t)
+	os.HandleListContainerNamesSuccessfully(t)
 
 	count := 0
-	err := List(fake.ServiceClient(), &ListOpts{Full: false}).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(fake.ServiceClient(), &os.ListOpts{Full: false}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractNames(page)
 		if err != nil {
@@ -43,7 +42,7 @@ func TestListContainerNames(t *testing.T) {
 			return false, err
 		}
 
-		th.CheckDeepEquals(t, ExpectedListNames, actual)
+		th.CheckDeepEquals(t, os.ExpectedListNames, actual)
 
 		return true, nil
 	})
@@ -51,40 +50,41 @@ func TestListContainerNames(t *testing.T) {
 	th.CheckEquals(t, count, 1)
 }
 
-func TestCreateContainer(t *testing.T) {
+func TestCreateContainers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleCreateContainerSuccessfully(t)
+	os.HandleCreateContainerSuccessfully(t)
 
-	options := CreateOpts{ContentType: "application/json", Metadata: map[string]string{"foo": "bar"}}
+	options := os.CreateOpts{ContentType: "application/json", Metadata: map[string]string{"foo": "bar"}}
 	res := Create(fake.ServiceClient(), "testContainer", options)
 	th.CheckNoErr(t, res.Err)
 	th.CheckEquals(t, "bar", res.Header["X-Container-Meta-Foo"][0])
+
 }
 
-func TestDeleteContainer(t *testing.T) {
+func TestDeleteContainers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleDeleteContainerSuccessfully(t)
+	os.HandleDeleteContainerSuccessfully(t)
 
 	res := Delete(fake.ServiceClient(), "testContainer")
 	th.CheckNoErr(t, res.Err)
 }
 
-func TestUpateContainer(t *testing.T) {
+func TestUpdateContainers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleUpdateContainerSuccessfully(t)
+	os.HandleUpdateContainerSuccessfully(t)
 
-	options := &UpdateOpts{Metadata: map[string]string{"foo": "bar"}}
+	options := &os.UpdateOpts{Metadata: map[string]string{"foo": "bar"}}
 	res := Update(fake.ServiceClient(), "testContainer", options)
 	th.CheckNoErr(t, res.Err)
 }
 
-func TestGetContainer(t *testing.T) {
+func TestGetContainers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleGetContainerSuccessfully(t)
+	os.HandleGetContainerSuccessfully(t)
 
 	_, err := Get(fake.ServiceClient(), "testContainer").ExtractMetadata()
 	th.CheckNoErr(t, err)
