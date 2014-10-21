@@ -4,11 +4,15 @@ package v2
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/acceptance/tools"
+	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
+	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -42,7 +46,49 @@ func TestListServers(t *testing.T) {
 	fmt.Printf("--------\n%d servers listed on %d pages.\n", count, pages)
 }
 
+func networkingClient() (*gophercloud.ServiceClient, error) {
+	opts, err := utils.AuthOptions()
+	if err != nil {
+		return nil, err
+	}
+
+	provider, err := openstack.AuthenticatedClient(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewNetworkV2(provider, gophercloud.EndpointOpts{
+		Name:   "neutron",
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
 func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *ComputeChoices) (*servers.Server, error) {
+	var network networks.Network
+
+	networkingClient, err := networkingClient()
+	if err != nil {
+		t.Fatalf("Unable to create a networking client: %v", err)
+	}
+
+	pager := networks.List(networkingClient, networks.ListOpts{Name: "public", Limit: 1})
+	pager.EachPage(func(page pagination.Page) (bool, error) {
+		networks, err := networks.ExtractNetworks(page)
+		if err != nil {
+			t.Errorf("Failed to extract networks: %v", err)
+			return false, err
+		}
+
+		if len(networks) == 0 {
+			t.Errorf("No networks to attach to server")
+			return false, err
+		}
+
+		network = networks[0]
+
+		return false, nil
+	})
+
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create server: %s\n", name)
 
@@ -50,6 +96,9 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *Comp
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		ImageRef:  choices.ImageID,
+		Networks: []servers.Network{
+			servers.Network{UUID: network.ID},
+		},
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
@@ -68,9 +117,6 @@ func TestCreateDestroyServer(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
-
-	name := tools.RandomString("ACPTTEST", 16)
-	t.Logf("Attempting to create server: %s\n", name)
 
 	server, err := createServer(t, client, choices)
 	if err != nil {
@@ -157,7 +203,7 @@ func TestActionChangeAdminPassword(t *testing.T) {
 	}
 
 	randomPassword := tools.MakeNewPassword(server.AdminPass)
-	res = servers.ChangeAdminPassword(client, server.ID, randomPassword)
+	res := servers.ChangeAdminPassword(client, server.ID, randomPassword)
 	if res.Err != nil {
 		t.Fatal(err)
 	}
@@ -194,7 +240,7 @@ func TestActionReboot(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	res = servers.Reboot(client, server.ID, "aldhjflaskhjf")
+	res := servers.Reboot(client, server.ID, "aldhjflaskhjf")
 	if res.Err == nil {
 		t.Fatal("Expected the SDK to provide an ArgumentError here")
 	}
@@ -271,7 +317,7 @@ func resizeServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 	t.Logf("Attempting to resize server [%s]", server.ID)
 
 	if res := servers.Resize(client, server.ID, choices.FlavorIDResize); res.Err != nil {
-		t.Fatal(err)
+		t.Fatal(res.Err)
 	}
 
 	if err := waitForStatus(client, server, "VERIFY_RESIZE"); err != nil {

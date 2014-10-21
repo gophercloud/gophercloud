@@ -21,6 +21,9 @@ func TestSecurityGroups(t *testing.T) {
 	// create security group
 	groupID := createSecGroup(t)
 
+	// delete security group
+	defer deleteSecGroup(t, groupID)
+
 	// list security group
 	listSecGroups(t)
 
@@ -30,14 +33,11 @@ func TestSecurityGroups(t *testing.T) {
 	// create port with security group
 	networkID, portID := createPort(t, groupID)
 
-	// delete port
-	deletePort(t, portID)
-
-	// delete security group
-	deleteSecGroup(t, groupID)
-
 	// teardown
-	deleteNetwork(t, networkID)
+	defer deleteNetwork(t, networkID)
+
+	// delete port
+	defer deletePort(t, portID)
 }
 
 func TestSecurityGroupRules(t *testing.T) {
@@ -46,6 +46,8 @@ func TestSecurityGroupRules(t *testing.T) {
 
 	// create security group
 	groupID := createSecGroup(t)
+
+	defer deleteSecGroup(t, groupID)
 
 	// create security group rule
 	ruleID := createSecRule(t, groupID)
