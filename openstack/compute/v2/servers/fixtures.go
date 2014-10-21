@@ -368,3 +368,15 @@ func HandleServerDeletionSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
+
+// HandleAdminPasswordChangeSuccessfully sets up the test server to respond to a server password
+// change request.
+func HandleAdminPasswordChangeSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "changePassword": { "adminPass": "new-password" } }`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
