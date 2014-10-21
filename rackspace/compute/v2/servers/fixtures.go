@@ -215,6 +215,27 @@ const GetOutput = `
 }
 `
 
+// CreateOutput contains a sample of Rackspace's response to a Create call.
+const CreateOutput = `
+{
+	"server": {
+		"OS-DCF:diskConfig": "AUTO",
+		"adminPass": "v7tADqbE5pr9",
+		"id": "bb63327b-6a2f-34bc-b0ef-4b6d97ea637e",
+		"links": [
+			{
+				"href": "https://dfw.servers.api.rackspacecloud.com/v2/111111/servers/bb63327b-6a2f-34bc-b0ef-4b6d97ea637e",
+				"rel": "self"
+			},
+			{
+				"href": "https://dfw.servers.api.rackspacecloud.com/111111/servers/bb63327b-6a2f-34bc-b0ef-4b6d97ea637e",
+				"rel": "bookmark"
+			}
+		]
+	}
+}
+`
+
 // DevstackServer is the expected first result from parsing ListOutput.
 var DevstackServer = os.Server{
 	ID:         "59818cee-bc8c-44eb-8073-673ee65105f7",
@@ -405,6 +426,13 @@ var GophercloudServer = os.Server{
 	},
 	KeyName:   "",
 	AdminPass: "",
+}
+
+// CreatedServer is the partial Server struct that can be parsed from CreateOutput.
+var CreatedServer = os.Server{
+	ID:        "bb63327b-6a2f-34bc-b0ef-4b6d97ea637e",
+	AdminPass: "v7tADqbE5pr9",
+	Links:     []interface{}{},
 }
 
 // ExpectedServerSlice is the collection of servers, in order, that should be parsed from ListOutput.
