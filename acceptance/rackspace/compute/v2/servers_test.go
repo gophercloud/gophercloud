@@ -93,8 +93,6 @@ func TestListServers(t *testing.T) {
 		count++
 		t.Logf("-- Page %02d --", count)
 
-		t.Logf("\n%s", page.(os.ServerPage).PrettyPrintJSON())
-
 		s, err := servers.ExtractServers(page)
 		th.AssertNoErr(t, err)
 		for index, server := range s {
