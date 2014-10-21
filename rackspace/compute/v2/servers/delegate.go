@@ -49,27 +49,6 @@ func Rebuild(client *gophercloud.ServiceClient, id string, opts os.RebuildOptsBu
 	return os.Rebuild(client, id, opts)
 }
 
-// Resize instructs the provider to change the flavor of the server. Note that this implies
-// rebuilding it. Unfortunately, one cannot pass rebuild parameters to the resize function. When the
-// resize completes, the server will be in RESIZE_VERIFY state. While in this state, you can explore
-// the use of the new server's configuration. If you like it, call ConfirmResize() to commit the
-// resize permanently. Otherwise, call RevertResize() to restore the old configuration.
-//
-// Note that only Rackspace servers with standard flavors can be resized.
-func Resize(client *gophercloud.ServiceClient, id, flavorRef string) os.ActionResult {
-	return os.Resize(client, id, flavorRef)
-}
-
-// ConfirmResize confirms a previous resize operation on a server. See Resize() for more details.
-func ConfirmResize(client *gophercloud.ServiceClient, id string) os.ActionResult {
-	return os.ConfirmResize(client, id)
-}
-
-// RevertResize cancels a previous resize operation on a server. See Resize() for more details.
-func RevertResize(client *gophercloud.ServiceClient, id string) os.ActionResult {
-	return os.RevertResize(client, id)
-}
-
 // WaitForStatus will continually poll a server until it successfully transitions to a specified
 // status. It will do this for at most the number of seconds specified.
 func WaitForStatus(c *gophercloud.ServiceClient, id, status string, secs int) error {
