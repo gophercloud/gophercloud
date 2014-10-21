@@ -75,3 +75,8 @@ func RevertResize(client *gophercloud.ServiceClient, id string) os.ActionResult 
 func WaitForStatus(c *gophercloud.ServiceClient, id, status string, secs int) error {
 	return os.WaitForStatus(c, id, status, secs)
 }
+
+// ExtractServers interprets the results of a single page from a List() call, producing a slice of Server entities.
+func ExtractServers(page pagination.Page) ([]os.Server, error) {
+	return os.ExtractServers(page)
+}
