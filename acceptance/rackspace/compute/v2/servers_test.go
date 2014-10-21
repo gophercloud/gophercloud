@@ -105,3 +105,23 @@ func TestListServers(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 }
+
+func TestChangeAdminPassword(t *testing.T) {
+	t.Parallel()
+
+	client, err := newClient()
+	th.AssertNoErr(t, err)
+
+	s := createServer(t, client)
+	defer deleteServer(t, client, s)
+	original := s.AdminPass
+
+	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
+	th.AssertNoErr(t, err)
+
+	err = servers.ChangeAdminPassword(client, s.ID, tools.MakeNewPassword(original)).Extract()
+	th.AssertNoErr(t, err)
+
+	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
+	th.AssertNoErr(t, err)
+}
