@@ -380,3 +380,14 @@ func HandleAdminPasswordChangeSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+// HandleRebootSuccessfully sets up the test server to respond to a reboot request with success.
+func HandleRebootSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "reboot": { "type": "SOFT" } }`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}

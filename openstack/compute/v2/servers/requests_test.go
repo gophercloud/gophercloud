@@ -136,14 +136,7 @@ func TestChangeServerAdminPassword(t *testing.T) {
 func TestRebootServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, `{ "reboot": { "type": "SOFT" } }`)
-
-		w.WriteHeader(http.StatusAccepted)
-	})
+	HandleRebootSuccessfully(t)
 
 	res := Reboot(client.ServiceClient(), "1234asdf", SoftReboot)
 	th.AssertNoErr(t, res.Err)
