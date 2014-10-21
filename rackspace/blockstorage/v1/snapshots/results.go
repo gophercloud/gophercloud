@@ -55,7 +55,7 @@ type Snapshot struct {
 }
 
 type commonResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
 // CreateResult represents the result of a create operation
@@ -70,10 +70,10 @@ type GetResult struct {
 
 // UpdateResult represents the result of an update operation
 type UpdateResult struct {
-	gophercloud.CommonResult
+	gophercloud.Result
 }
 
-func commonExtract(resp map[string]interface{}, err error) (*Snapshot, error) {
+func commonExtract(resp interface{}, err error) (*Snapshot, error) {
 	if err != nil {
 		return nil, err
 	}
@@ -89,17 +89,17 @@ func commonExtract(resp map[string]interface{}, err error) (*Snapshot, error) {
 
 // Extract will get the Snapshot object out of the GetResult object.
 func (r GetResult) Extract() (*Snapshot, error) {
-	return commonExtract(r.Resp, r.Err)
+	return commonExtract(r.Body, r.Err)
 }
 
 // Extract will get the Snapshot object out of the CreateResult object.
 func (r CreateResult) Extract() (*Snapshot, error) {
-	return commonExtract(r.Resp, r.Err)
+	return commonExtract(r.Body, r.Err)
 }
 
 // Extract will get the Snapshot object out of the UpdateResult object.
 func (r UpdateResult) Extract() (*Snapshot, error) {
-	return commonExtract(r.Resp, r.Err)
+	return commonExtract(r.Body, r.Err)
 }
 
 // ExtractSnapshots extracts and returns Snapshots. It is used while iterating over a snapshots.List call.
