@@ -17,20 +17,23 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient) *os.Server {
 	options, err := optionsFromEnv()
 	th.AssertNoErr(t, err)
 
-	r := servers.Create(client, &os.CreateOpts{
-		Name:      tools.RandomString("Gophercloud-", 8),
+	name := tools.RandomString("Gophercloud-", 8)
+	t.Logf("Creating server [%s].", name)
+	s, err := servers.Create(client, &os.CreateOpts{
+		Name:      name,
 		ImageRef:  options.imageID,
 		FlavorRef: options.flavorID,
-	})
-	t.Logf("\n%s", r.PrettyPrintJSON())
-	s, err := r.Extract()
+	}).Extract()
 	th.AssertNoErr(t, err)
+	t.Logf("Server created successfully.")
 	return s
 }
 
 func deleteServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("Deleting server [%s].", server.ID)
 	err := servers.Delete(client, server.ID)
 	th.AssertNoErr(t, err)
+	t.Logf("Server deleted successfully.")
 }
 
 func logServer(t *testing.T, server *os.Server, index int) {
@@ -64,24 +67,18 @@ func TestCreateServer(t *testing.T) {
 	client, err := newClient()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Creating a new server:")
 	s := createServer(t, client)
-	defer func() {
-		t.Logf("Deleting server")
-		deleteServer(t, client, s)
-	}()
+	defer deleteServer(t, client, s)
 
 	t.Logf("Waiting for server to become active ...")
 	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
 	th.AssertNoErr(t, err)
 
-	t.Logf("Server launched:")
+	t.Logf("Server launched.")
 	logServer(t, s, -1)
 
-	t.Logf("Getting additional server details:")
-	r := servers.Get(client, s.ID)
-	t.Logf("\n%s", r.PrettyPrintJSON())
-	details, err := r.Extract()
+	t.Logf("Getting additional server details.")
+	details, err := servers.Get(client, s.ID).Extract()
 	logServer(t, details, -1)
 }
 
