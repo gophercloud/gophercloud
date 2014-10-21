@@ -146,3 +146,34 @@ func TestReboot(t *testing.T) {
 	th.AssertNoErr(t, err)
 	t.Logf("Server successfully rebooted.")
 }
+
+func TestRebuild(t *testing.T) {
+	t.Parallel()
+
+	options, err := optionsFromEnv()
+	th.AssertNoErr(t, err)
+
+	client, err := newClient()
+	th.AssertNoErr(t, err)
+
+	s := createServer(t, client)
+	defer deleteServer(t, client, s)
+
+	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
+	th.AssertNoErr(t, err)
+
+	t.Logf("Rebuilding server.")
+	opts := os.RebuildOpts{
+		Name:      tools.RandomString("RenamedGopher", 16),
+		AdminPass: tools.MakeNewPassword(s.AdminPass),
+		ImageID:   options.imageID,
+	}
+	after, err := servers.Rebuild(client, s.ID, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	err = servers.WaitForStatus(client, after.ID, "ACTIVE", 300)
+	th.AssertNoErr(t, err)
+
+	t.Logf("Server successfully rebuilt.")
+	logServer(t, after, -1)
+}
