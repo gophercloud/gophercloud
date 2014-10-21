@@ -80,7 +80,7 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *Comp
 		}
 
 		if len(networks) == 0 {
-			t.Errorf("No networks to attach to server")
+			t.Fatalf("No networks to attach to server")
 			return false, err
 		}
 
