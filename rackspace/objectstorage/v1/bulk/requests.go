@@ -1,14 +1,7 @@
 package bulk
 
 import (
-  "archive/tar"
-  "compress/gzip"
-  "compress/bzip2"
-  "errors"
-  "io"
 	"net/url"
-  "os"
-  "path/filepath"
 	"strings"
 
 	"github.com/racker/perigee"
@@ -43,10 +36,10 @@ func Delete(c *gophercloud.ServiceClient, opts DeleteOptsBuilder) DeleteResult {
 		return res
 	}
 
-  reqBody := strings.NewReader(reqString)
+	reqBody := strings.NewReader(reqString)
 
 	resp, err := perigee.Request("DELETE", deleteURL(c), perigee.Options{
-    ContentType: "text/plain",
+		ContentType: "text/plain",
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 		ReqBody:     reqBody,
@@ -55,53 +48,4 @@ func Delete(c *gophercloud.ServiceClient, opts DeleteOptsBuilder) DeleteResult {
 	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
-}
-
-// Extract will extract the files in `file` and create objects in object storage
-// from them.
-func Extract(c *gophercloud.ServiceClient, file string) ExtractResult {
-  var res ExtractResult
-
-  if file == ""{
-    res.Err = errors.New("Missing required field 'f'.")
-    return res
-  }
-
-  var ext string
-  var reqBody io.Reader
-  f, err := os.Open(file)
-  if err != nil {
-    res.Err = errors.New("Error opening file.")
-    return res
-  }
-  defer f.Close()
-
-  switch filepath.Ext(file) {
-    case "tar":
-      ext = "tar"
-      reqBody = tar.NewReader(f)
-    case "gz":
-      ext = "tar.gz"
-      reqBody, err = gzip.NewReader(f)
-      if err != nil {
-        res.Err = err
-        return res
-      }
-    case "bz2":
-      ext = "tar.bz2"
-      reqBody = bzip2.NewReader(f)
-    default:
-      res.Err = errors.New("Unsupported extension type.")
-      return res
-  }
-
-  resp, err := perigee.Request("PUT", extractURL(c, ext), perigee.Options{
-    MoreHeaders: c.Provider.AuthenticatedHeaders(),
-    OkCodes:     []int{200},
-    ReqBody:     reqBody,
-    Results:     &res.Body,
-  })
-  res.Header = resp.HttpResponse.Header
-  res.Err = err
-  return res
 }

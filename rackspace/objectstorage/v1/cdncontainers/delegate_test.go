@@ -44,7 +44,7 @@ func TestUpdateCDNContainer(t *testing.T) {
 	os.HandleUpdateContainerSuccessfully(t)
 
 	options := &UpdateOpts{TTL: 3600}
-	_, err := Update(fake.ServiceClient(), "testContainer", options).ExtractHeaders()
-	th.CheckNoErr(t, err)
+	res := Update(fake.ServiceClient(), "testContainer", options)
+	th.CheckNoErr(t, res.Err)
 
 }

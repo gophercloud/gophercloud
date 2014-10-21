@@ -13,7 +13,7 @@ func TestDeleteCDNObject(t *testing.T) {
 	defer th.TeardownHTTP()
 	os.HandleDeleteObjectSuccessfully(t)
 
-	_, err := Delete(fake.ServiceClient(), "testContainer", "testObject", nil).ExtractHeaders()
-	th.AssertNoErr(t, err)
+	res := Delete(fake.ServiceClient(), "testContainer", "testObject", nil)
+	th.AssertNoErr(t, res.Err)
 
 }

@@ -15,7 +15,7 @@ func TestBulkDelete(t *testing.T) {
 	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-    th.AssertEquals(t, r.URL.RawQuery, "bulk-delete")
+		th.AssertEquals(t, r.URL.RawQuery, "bulk-delete")
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `
@@ -29,7 +29,7 @@ func TestBulkDelete(t *testing.T) {
     `)
 	})
 
-	options := &DeleteOpts{"gophercloud-testcontainer1", "gophercloud-testcontainer2"}
+	options := DeleteOpts{"gophercloud-testcontainer1", "gophercloud-testcontainer2"}
 	actual, err := Delete(fake.ServiceClient(), options).ExtractBody()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, actual.NumberDeleted, 1)

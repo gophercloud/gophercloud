@@ -56,9 +56,9 @@ func TestCreateContainers(t *testing.T) {
 	os.HandleCreateContainerSuccessfully(t)
 
 	options := os.CreateOpts{ContentType: "application/json", Metadata: map[string]string{"foo": "bar"}}
-	headers, err := Create(fake.ServiceClient(), "testContainer", options).ExtractHeaders()
-	th.CheckNoErr(t, err)
-	th.CheckEquals(t, "bar", headers["X-Container-Meta-Foo"][0])
+	res := Create(fake.ServiceClient(), "testContainer", options)
+	th.CheckNoErr(t, res.Err)
+	th.CheckEquals(t, "bar", res.Header["X-Container-Meta-Foo"][0])
 
 }
 
@@ -67,8 +67,8 @@ func TestDeleteContainers(t *testing.T) {
 	defer th.TeardownHTTP()
 	os.HandleDeleteContainerSuccessfully(t)
 
-	_, err := Delete(fake.ServiceClient(), "testContainer").ExtractHeaders()
-	th.CheckNoErr(t, err)
+	res := Delete(fake.ServiceClient(), "testContainer")
+	th.CheckNoErr(t, res.Err)
 }
 
 func TestUpdateContainers(t *testing.T) {
@@ -77,8 +77,8 @@ func TestUpdateContainers(t *testing.T) {
 	os.HandleUpdateContainerSuccessfully(t)
 
 	options := &os.UpdateOpts{Metadata: map[string]string{"foo": "bar"}}
-	_, err := Update(fake.ServiceClient(), "testContainer", options).ExtractHeaders()
-	th.CheckNoErr(t, err)
+	res := Update(fake.ServiceClient(), "testContainer", options)
+	th.CheckNoErr(t, res.Err)
 }
 
 func TestGetContainers(t *testing.T) {
