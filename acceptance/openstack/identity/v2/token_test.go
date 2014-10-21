@@ -14,7 +14,7 @@ func TestAuthenticate(t *testing.T) {
 	service := unauthenticatedClient(t)
 
 	// Authenticated!
-	result := tokens2.Create(service, ao)
+	result := tokens2.Create(service, tokens2.WrapOptions(ao))
 
 	// Extract and print the token.
 	token, err := result.ExtractToken()
