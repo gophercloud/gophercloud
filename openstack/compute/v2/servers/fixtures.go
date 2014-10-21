@@ -1,4 +1,5 @@
 // +build fixtures
+
 package servers
 
 // ServerListBody contains the canned body of a servers.List response.
