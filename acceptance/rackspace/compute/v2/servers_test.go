@@ -8,6 +8,7 @@ import (
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/acceptance/tools"
 	os "github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/compute/v2/servers"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
@@ -58,6 +59,8 @@ func logServer(t *testing.T, server *os.Server, index int) {
 }
 
 func TestCreateServer(t *testing.T) {
+	t.Parallel()
+
 	client, err := newClient()
 	th.AssertNoErr(t, err)
 
@@ -74,4 +77,34 @@ func TestCreateServer(t *testing.T) {
 
 	t.Logf("Server launched:")
 	logServer(t, s, -1)
+
+	t.Logf("Getting additional server details:")
+	r := servers.Get(client, s.ID)
+	t.Logf("\n%s", r.PrettyPrintJSON())
+	details, err := r.Extract()
+	logServer(t, details, -1)
+}
+
+func TestListServers(t *testing.T) {
+	t.Parallel()
+
+	client, err := newClient()
+	th.AssertNoErr(t, err)
+
+	count := 0
+	err = servers.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		t.Logf("-- Page %02d --", count)
+
+		t.Logf("\n%s", page.(os.ServerPage).PrettyPrintJSON())
+
+		s, err := servers.ExtractServers(page)
+		th.AssertNoErr(t, err)
+		for index, server := range s {
+			logServer(t, &server, index)
+		}
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
 }
