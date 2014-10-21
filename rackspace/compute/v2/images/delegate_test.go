@@ -41,9 +41,7 @@ func TestListImageDetails(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	if count < 1 {
-		t.Fatalf("At least one page of image results expected.")
-	}
+	th.CheckEquals(t, 1, count)
 }
 
 func TestGetImageDetails(t *testing.T) {
