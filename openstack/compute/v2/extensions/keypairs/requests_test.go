@@ -25,3 +25,13 @@ func TestList(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, 1, count)
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetSuccessfully(t)
+
+	actual, err := Get(client.ServiceClient(), "firstkey").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &FirstKeyPair, actual)
+}

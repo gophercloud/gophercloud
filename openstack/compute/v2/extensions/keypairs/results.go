@@ -68,7 +68,7 @@ func (r keyPairResult) Extract() (*KeyPair, error) {
 	}
 
 	var res struct {
-		KeyPair *KeyPair `json:"key_pair" mapstructure:"key_pair"`
+		KeyPair *KeyPair `json:"keypair" mapstructure:"keypair"`
 	}
 
 	err := mapstructure.Decode(r.Body, &res)
