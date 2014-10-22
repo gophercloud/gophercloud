@@ -5,7 +5,7 @@ import (
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
+	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -98,7 +98,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 		return EndpointPage{pagination.LinkedPageBase{PageResult: r}}
 	}
 
-	u := listURL(client) + utils.BuildQuery(q)
+	u := listURL(client) + openstack.BuildQuery(q)
 	return pagination.NewPager(client, u, createPage)
 }
 

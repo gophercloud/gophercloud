@@ -5,7 +5,7 @@ import (
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
+	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -50,7 +50,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	if opts.PerPage != 0 {
 		q["perPage"] = strconv.Itoa(opts.PerPage)
 	}
-	u := listURL(client) + utils.BuildQuery(q)
+	u := listURL(client) + openstack.BuildQuery(q)
 
 	createPage := func(r pagination.PageResult) pagination.Page {
 		return ServicePage{pagination.LinkedPageBase{PageResult: r}}
