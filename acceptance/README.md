@@ -50,18 +50,8 @@ to set them manually.
 
 ### 2. Run the test suite
 
-Run:
+From the root directory, run:
 
 ```
-script/acceptancetest
+./script/acceptancetest
 ```
-
-Or manually with:
-
-```
-go test -v -tags 'acceptance fixtures' github.com/rackspace/gophercloud/...
-```
-
-Alternatively, you can execute the above from your nested git folder (i.e. the
-  workspace visible when browsing the Github repository) by replacing
-  `github.com/rackspace/gophercloud/...` with `./...`

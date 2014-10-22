@@ -185,7 +185,6 @@ func (opts CreateOpts) ToObjectCreateParams() (map[string]string, string, error)
 // Create is a function that creates a new object or replaces an existing object.
 func Create(c *gophercloud.ServiceClient, containerName, objectName string, content io.Reader, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
-	var reqBody []byte
 
 	url := createURL(c, containerName, objectName)
 	h := c.Provider.AuthenticatedHeaders()
@@ -204,19 +203,13 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		url += query
 	}
 
-	if content != nil {
-		reqBody = make([]byte, 0)
-		_, err := content.Read(reqBody)
-		if err != nil {
-			res.Err = err
-			return res
-		}
-	}
+	contentType := h["Content-Type"]
 
 	resp, err := perigee.Request("PUT", url, perigee.Options{
-		ReqBody:     reqBody,
+		ContentType: contentType,
+		ReqBody:     content,
 		MoreHeaders: h,
-		OkCodes:     []int{201},
+		OkCodes:     []int{201, 202},
 	})
 	res.Header = resp.HttpResponse.Header
 	res.Err = err

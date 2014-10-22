@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"testing"
 
+	os "github.com/rackspace/gophercloud/openstack/objectstorage/v1/objects"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
@@ -12,26 +13,26 @@ import (
 func TestDownloadObject(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleDownloadObjectSuccessfully(t)
+	os.HandleDownloadObjectSuccessfully(t)
 
 	content, err := Download(fake.ServiceClient(), "testContainer", "testObject", nil).ExtractContent()
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, string(content), "Successful download with Gophercloud")
 }
 
-func TestListObjectInfo(t *testing.T) {
+func TestListObjectsInfo(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListObjectsInfoSuccessfully(t)
+	os.HandleListObjectsInfoSuccessfully(t)
 
 	count := 0
-	options := &ListOpts{Full: true}
+	options := &os.ListOpts{Full: true}
 	err := List(fake.ServiceClient(), "testContainer", options).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractInfo(page)
 		th.AssertNoErr(t, err)
 
-		th.CheckDeepEquals(t, ExpectedListInfo, actual)
+		th.CheckDeepEquals(t, os.ExpectedListInfo, actual)
 
 		return true, nil
 	})
@@ -42,10 +43,10 @@ func TestListObjectInfo(t *testing.T) {
 func TestListObjectNames(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListObjectNamesSuccessfully(t)
+	os.HandleListObjectNamesSuccessfully(t)
 
 	count := 0
-	options := &ListOpts{Full: false}
+	options := &os.ListOpts{Full: false}
 	err := List(fake.ServiceClient(), "testContainer", options).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractNames(page)
@@ -54,7 +55,7 @@ func TestListObjectNames(t *testing.T) {
 			return false, err
 		}
 
-		th.CheckDeepEquals(t, ExpectedListNames, actual)
+		th.CheckDeepEquals(t, os.ExpectedListNames, actual)
 
 		return true, nil
 	})
@@ -65,10 +66,10 @@ func TestListObjectNames(t *testing.T) {
 func TestCreateObject(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleCreateObjectSuccessfully(t)
+	os.HandleCreateObjectSuccessfully(t)
 
 	content := bytes.NewBufferString("Did gyre and gimble in the wabe")
-	options := &CreateOpts{ContentType: "application/json"}
+	options := &os.CreateOpts{ContentType: "application/json"}
 	res := Create(fake.ServiceClient(), "testContainer", "testObject", content, options)
 	th.AssertNoErr(t, res.Err)
 }
@@ -76,7 +77,7 @@ func TestCreateObject(t *testing.T) {
 func TestCopyObject(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleCopyObjectSuccessfully(t)
+	os.HandleCopyObjectSuccessfully(t)
 
 	options := &CopyOpts{Destination: "/newTestContainer/newTestObject"}
 	res := Copy(fake.ServiceClient(), "testContainer", "testObject", options)
@@ -86,18 +87,18 @@ func TestCopyObject(t *testing.T) {
 func TestDeleteObject(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleDeleteObjectSuccessfully(t)
+	os.HandleDeleteObjectSuccessfully(t)
 
 	res := Delete(fake.ServiceClient(), "testContainer", "testObject", nil)
 	th.AssertNoErr(t, res.Err)
 }
 
-func TestUpateObjectMetadata(t *testing.T) {
+func TestUpdateObject(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleUpdateObjectSuccessfully(t)
+	os.HandleUpdateObjectSuccessfully(t)
 
-	options := &UpdateOpts{Metadata: map[string]string{"Gophercloud-Test": "objects"}}
+	options := &os.UpdateOpts{Metadata: map[string]string{"Gophercloud-Test": "objects"}}
 	res := Update(fake.ServiceClient(), "testContainer", "testObject", options)
 	th.AssertNoErr(t, res.Err)
 }
@@ -105,7 +106,7 @@ func TestUpateObjectMetadata(t *testing.T) {
 func TestGetObject(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleGetObjectSuccessfully(t)
+	os.HandleGetObjectSuccessfully(t)
 
 	expected := map[string]string{"Gophercloud-Test": "objects"}
 	actual, err := Get(fake.ServiceClient(), "testContainer", "testObject", nil).ExtractMetadata()

@@ -9,6 +9,7 @@ import (
 	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/openstack/objectstorage/v1/containers"
 	"github.com/rackspace/gophercloud/pagination"
+	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 // numContainers is the number of containers to create for testing.
@@ -17,9 +18,7 @@ var numContainers = 2
 func TestContainers(t *testing.T) {
 	// Create a new client to execute the HTTP requests. See common.go for newClient body.
 	client, err := newClient()
-	if err != nil {
-		t.Error(err)
-	}
+	th.AssertNoErr(err)
 
 	// Create a slice of random container names.
 	cNames := make([]string, numContainers)
@@ -29,18 +28,14 @@ func TestContainers(t *testing.T) {
 
 	// Create numContainers containers.
 	for i := 0; i < len(cNames); i++ {
-		_, err := containers.Create(client, cNames[i], nil).ExtractHeaders()
-		if err != nil {
-			t.Error(err)
-		}
+		res := containers.Create(client, cNames[i], nil)
+		th.AssertNoErr(res.Err)
 	}
 	// Delete the numContainers containers after function completion.
 	defer func() {
 		for i := 0; i < len(cNames); i++ {
-			_, err = containers.Delete(client, cNames[i]).ExtractHeaders()
-			if err != nil {
-				t.Error(err)
-			}
+			res = containers.Delete(client, cNames[i])
+			th.AssertNoErr(res.Err)
 		}
 	}()
 
@@ -48,9 +43,8 @@ func TestContainers(t *testing.T) {
 	// the 'prefix' parameter is used.
 	err = containers.List(client, &containers.ListOpts{Full: true, Prefix: "gophercloud-test-container-"}).EachPage(func(page pagination.Page) (bool, error) {
 		containerList, err := containers.ExtractInfo(page)
-		if err != nil {
-			t.Error(err)
-		}
+		th.AssertNoErr(err)
+
 		for _, n := range containerList {
 			t.Logf("Container: Name [%s] Count [%d] Bytes [%d]",
 				n.Name, n.Count, n.Bytes)
@@ -58,48 +52,36 @@ func TestContainers(t *testing.T) {
 
 		return true, nil
 	})
-	if err != nil {
-		t.Error(err)
-	}
+	th.AssertNoErr(err)
 
 	// List the info for the numContainer containers that were created.
 	err = containers.List(client, &containers.ListOpts{Full: false, Prefix: "gophercloud-test-container-"}).EachPage(func(page pagination.Page) (bool, error) {
 		containerList, err := containers.ExtractNames(page)
-		if err != nil {
-			return false, err
-		}
+		th.AssertNoErr(err)
 		for _, n := range containerList {
 			t.Logf("Container: Name [%s]", n)
 		}
 
 		return true, nil
 	})
-	if err != nil {
-		t.Error(err)
-	}
+	th.AssertNoErr(err)
 
 	// Update one of the numContainer container metadata.
-	_, err = containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: metadata}).ExtractHeaders()
-	if err != nil {
-		t.Error(err)
-	}
+	res = containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: metadata})
+	th.AssertNoErr(res.Err)
 	// After the tests are done, delete the metadata that was set.
 	defer func() {
 		tempMap := make(map[string]string)
 		for k := range metadata {
 			tempMap[k] = ""
 		}
-		_, err = containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: tempMap}).ExtractHeaders()
-		if err != nil {
-			t.Error(err)
-		}
+		res = containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: tempMap})
+		th.AssertNoErr(res.Err)
 	}()
 
 	// Retrieve a container's metadata.
 	cm, err := containers.Get(client, cNames[0]).ExtractMetadata()
-	if err != nil {
-		t.Error(err)
-	}
+	th.AssertNoErr(err)
 	for k := range metadata {
 		if cm[k] != metadata[strings.Title(k)] {
 			t.Errorf("Expected custom metadata with key: %s", k)

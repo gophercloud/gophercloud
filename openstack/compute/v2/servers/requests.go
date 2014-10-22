@@ -165,6 +165,7 @@ func (opts CreateOpts) ToServerCreateMap() map[string]interface{} {
 			securityGroups[i] = map[string]interface{}{"name": groupName}
 		}
 	}
+
 	if len(opts.Networks) > 0 {
 		networks := make([]map[string]interface{}, len(opts.Networks))
 		for i, net := range opts.Networks {
@@ -179,6 +180,7 @@ func (opts CreateOpts) ToServerCreateMap() map[string]interface{} {
 				networks[i]["fixed_ip"] = net.FixedIP
 			}
 		}
+		server["networks"] = networks
 	}
 
 	return map[string]interface{}{"server": server}

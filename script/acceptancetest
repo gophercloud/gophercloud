@@ -2,4 +2,4 @@
 #
 # Run the acceptance tests.
 
-exec go test -tags 'acceptance fixtures' ./acceptance/... $@
+exec go test -v -p=1 -tags 'acceptance fixtures' ./acceptance/... $@

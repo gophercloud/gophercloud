@@ -121,8 +121,24 @@ func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 	if err != nil {
 		return nil, err
 	}
+
 	return &gophercloud.ServiceClient{
 		Provider: client,
 		Endpoint: url,
 	}, nil
+}
+
+// NewObjectCDNV1 creates a ServiceClient that may be used with the Rackspace v1 CDN.
+func NewObjectCDNV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("rax:object-cdn")
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+}
+
+// NewObjectStorageV1 creates a ServiceClient that may be used with the Rackspace v1 object storage package.
+func NewObjectStorageV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	return os.NewObjectStorageV1(client, eo)
 }
