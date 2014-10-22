@@ -131,9 +131,7 @@ func HandleCreateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/os-keypairs", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, `
-			{ "keypair": { "name": "createdkey" } }
-		`)
+		th.TestJSONRequest(t, r, `{ "keypair": { "name": "createdkey" } }`)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, CreateOutput)

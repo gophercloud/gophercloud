@@ -26,6 +26,18 @@ func TestList(t *testing.T) {
 	th.CheckEquals(t, 1, count)
 }
 
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSuccessfully(t)
+
+	actual, err := Create(client.ServiceClient(), CreateOpts{
+		Name: "createdkey",
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &CreatedKeyPair, actual)
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
