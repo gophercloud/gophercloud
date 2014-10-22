@@ -1,0 +1,158 @@
+// +build acceptance
+
+package v2
+
+import (
+	"testing"
+
+	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/acceptance/tools"
+	os "github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/compute/v2/servers"
+	th "github.com/rackspace/gophercloud/testhelper"
+)
+
+func createServer(t *testing.T, client *gophercloud.ServiceClient) *os.Server {
+	options, err := optionsFromEnv()
+	th.AssertNoErr(t, err)
+
+	name := tools.RandomString("Gophercloud-", 8)
+	t.Logf("Creating server [%s].", name)
+	s, err := servers.Create(client, &os.CreateOpts{
+		Name:      name,
+		ImageRef:  options.imageID,
+		FlavorRef: options.flavorID,
+	}).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Creating server.")
+
+	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
+	th.AssertNoErr(t, err)
+	t.Logf("Server created successfully.")
+
+	return s
+}
+
+func logServer(t *testing.T, server *os.Server, index int) {
+	if index == -1 {
+		t.Logf("             id=[%s]", server.ID)
+	} else {
+		t.Logf("[%02d]             id=[%s]", index, server.ID)
+	}
+	t.Logf("           name=[%s]", server.Name)
+	t.Logf("      tenant ID=[%s]", server.TenantID)
+	t.Logf("        user ID=[%s]", server.UserID)
+	t.Logf("        updated=[%s]", server.Updated)
+	t.Logf("        created=[%s]", server.Created)
+	t.Logf("        host ID=[%s]", server.HostID)
+	t.Logf("    access IPv4=[%s]", server.AccessIPv4)
+	t.Logf("    access IPv6=[%s]", server.AccessIPv6)
+	t.Logf("          image=[%v]", server.Image)
+	t.Logf("         flavor=[%v]", server.Flavor)
+	t.Logf("      addresses=[%v]", server.Addresses)
+	t.Logf("       metadata=[%v]", server.Metadata)
+	t.Logf("          links=[%v]", server.Links)
+	t.Logf("        keyname=[%s]", server.KeyName)
+	t.Logf(" admin password=[%s]", server.AdminPass)
+	t.Logf("         status=[%s]", server.Status)
+	t.Logf("       progress=[%d]", server.Progress)
+}
+
+func getServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("> servers.Get")
+
+	details, err := servers.Get(client, server.ID).Extract()
+	th.AssertNoErr(t, err)
+	logServer(t, details, -1)
+}
+
+func listServers(t *testing.T, client *gophercloud.ServiceClient) {
+	t.Logf("> servers.List")
+
+	count := 0
+	err := servers.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		t.Logf("--- Page %02d ---", count)
+
+		s, err := servers.ExtractServers(page)
+		th.AssertNoErr(t, err)
+		for index, server := range s {
+			logServer(t, &server, index)
+		}
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+}
+
+func changeAdminPassword(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("> servers.ChangeAdminPassword")
+
+	original := server.AdminPass
+
+	t.Logf("Changing server password.")
+	err := servers.ChangeAdminPassword(client, server.ID, tools.MakeNewPassword(original)).Extract()
+	th.AssertNoErr(t, err)
+
+	err = servers.WaitForStatus(client, server.ID, "ACTIVE", 300)
+	th.AssertNoErr(t, err)
+	t.Logf("Password changed successfully.")
+}
+
+func rebootServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("> servers.Reboot")
+
+	err := servers.Reboot(client, server.ID, os.HardReboot).Extract()
+	th.AssertNoErr(t, err)
+
+	err = servers.WaitForStatus(client, server.ID, "ACTIVE", 300)
+	th.AssertNoErr(t, err)
+
+	t.Logf("Server successfully rebooted.")
+}
+
+func rebuildServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("> servers.Rebuild")
+
+	options, err := optionsFromEnv()
+	th.AssertNoErr(t, err)
+
+	opts := os.RebuildOpts{
+		Name:      tools.RandomString("RenamedGopher", 16),
+		AdminPass: tools.MakeNewPassword(server.AdminPass),
+		ImageID:   options.imageID,
+	}
+	after, err := servers.Rebuild(client, server.ID, opts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, after.ID, server.ID)
+
+	err = servers.WaitForStatus(client, after.ID, "ACTIVE", 300)
+	th.AssertNoErr(t, err)
+
+	t.Logf("Server successfully rebuilt.")
+	logServer(t, after, -1)
+}
+
+func deleteServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("> servers.Delete")
+
+	err := servers.Delete(client, server.ID)
+	th.AssertNoErr(t, err)
+
+	t.Logf("Server deleted successfully.")
+}
+
+func TestServerOperations(t *testing.T) {
+	client, err := newClient()
+	th.AssertNoErr(t, err)
+
+	server := createServer(t, client)
+	defer deleteServer(t, client, server)
+
+	getServer(t, client, server)
+	listServers(t, client)
+	changeAdminPassword(t, client, server)
+	rebootServer(t, client, server)
+	rebuildServer(t, client, server)
+}

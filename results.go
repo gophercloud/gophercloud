@@ -1,6 +1,9 @@
 package gophercloud
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 // Result acts as a base struct that other results can embed.
 type Result struct {
@@ -14,6 +17,15 @@ type Result struct {
 	// Err is an error that occurred during the operation. It's deferred until extraction to make
 	// it easier to chain operations.
 	Err error
+}
+
+// PrettyPrintJSON creates a string containing the full response body as pretty-printed JSON.
+func (r Result) PrettyPrintJSON() string {
+	pretty, err := json.MarshalIndent(r.Body, "", "  ")
+	if err != nil {
+		panic(err.Error())
+	}
+	return string(pretty)
 }
 
 // RFC3339Milli describes a time format used by API responses.

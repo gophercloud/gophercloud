@@ -28,12 +28,15 @@ to set them manually.
 |`OS_AUTH_URL`|The identity URL you need to authenticate|
 |`OS_TENANT_NAME`|Your API tenant name|
 |`OS_TENANT_ID`|Your API tenant ID|
+|`RS_USERNAME`|Your Rackspace username|
+|`RS_APIKEY`|Your Rackspace API key|
 
 #### General
 
 |Name|Description|
 |---|---|
 |`OS_REGION_NAME`|The region you want your resources to reside in|
+|`RS_REGION`|Rackspace region you want your resource to reside in|
 
 #### Compute
 
@@ -42,6 +45,8 @@ to set them manually.
 |`OS_IMAGE_ID`|The ID of the image your want your server to be based on|
 |`OS_FLAVOR_ID`|The ID of the flavor you want your server to be based on|
 |`OS_FLAVOR_ID_RESIZE`|The ID of the flavor you want your server to be resized to|
+|`RS_IMAGE_ID`|The ID of the image you want servers to be created with|
+|`RS_FLAVOR_ID`|The ID of the flavor you want your server to be created with|
 
 ### 2. Run the test suite
 

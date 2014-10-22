@@ -114,6 +114,20 @@ func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClien
 	}
 }
 
+// NewComputeV2 creates a ServiceClient that may be used to access the v2 compute service.
+func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("compute")
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+
+	return &gophercloud.ServiceClient{
+		Provider: client,
+		Endpoint: url,
+	}, nil
+}
+
 // NewObjectCDNV1 creates a ServiceClient that may be used with the Rackspace v1 CDN.
 func NewObjectCDNV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("rax:object-cdn")
