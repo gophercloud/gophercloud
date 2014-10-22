@@ -12,7 +12,6 @@ import (
 	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -47,7 +46,7 @@ func TestListServers(t *testing.T) {
 }
 
 func networkingClient() (*gophercloud.ServiceClient, error) {
-	opts, err := utils.AuthOptions()
+	opts, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
 		return nil, err
 	}
