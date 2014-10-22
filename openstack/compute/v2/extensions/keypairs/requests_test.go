@@ -60,3 +60,12 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstKeyPair, actual)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfully(t)
+
+	err := Delete(client.ServiceClient(), "deletedkey").Extract()
+	th.AssertNoErr(t, err)
+}
