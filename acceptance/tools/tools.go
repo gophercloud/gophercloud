@@ -71,3 +71,12 @@ func RandomString(prefix string, n int) string {
 	}
 	return prefix + string(bytes)
 }
+
+// Elide returns the first bit of its input string with a suffix of "..." if it's longer than
+// a comfortable 40 characters.
+func Elide(value string) string {
+	if len(value) > 40 {
+		return value[0:37] + "..."
+	}
+	return value
+}
