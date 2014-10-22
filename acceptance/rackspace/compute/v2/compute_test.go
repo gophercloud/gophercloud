@@ -12,17 +12,18 @@ import (
 
 func newClient() (*gophercloud.ServiceClient, error) {
 	// Obtain credentials from the environment.
-	options := gophercloud.AuthOptions{
-		Username: os.Getenv("RS_USERNAME"),
-		APIKey:   os.Getenv("RS_APIKEY"),
+	options, err := rackspace.AuthOptionsFromEnv()
+	if err != nil {
+		return err
 	}
+	options = tools.OnlyRS(options)
 	region := os.Getenv("RS_REGION")
 
 	if options.Username == "" {
 		return nil, errors.New("Please provide a Rackspace username as RS_USERNAME.")
 	}
 	if options.APIKey == "" {
-		return nil, errors.New("Please provide a Rackspace API key as RS_APIKEY.")
+		return nil, errors.New("Please provide a Rackspace API key as RS_API_KEY.")
 	}
 	if region == "" {
 		return nil, errors.New("Please provide a Rackspace region as RS_REGION.")

@@ -13,16 +13,15 @@ import (
 
 func rackspaceAuthOptions(t *testing.T) gophercloud.AuthOptions {
 	// Obtain credentials from the environment.
-	options := gophercloud.AuthOptions{
-		Username: os.Getenv("RS_USERNAME"),
-		APIKey:   os.Getenv("RS_APIKEY"),
-	}
+	options, err := rackspace.AuthOptionsFromEnv()
+	th.AssertNoErr(t, err)
+	options = tools.OnlyRS(options)
 
 	if options.Username == "" {
 		t.Fatal("Please provide a Rackspace username as RS_USERNAME.")
 	}
 	if options.APIKey == "" {
-		t.Fatal("Please provide a Rackspace API key as RS_APIKEY.")
+		t.Fatal("Please provide a Rackspace API key as RS_API_KEY.")
 	}
 
 	return options
