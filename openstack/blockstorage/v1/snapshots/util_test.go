@@ -7,6 +7,7 @@ import (
 	"time"
 
 	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/rackspace/gophercloud/testhelper/client"
 )
 
 func TestWaitForStatus(t *testing.T) {
@@ -27,11 +28,11 @@ func TestWaitForStatus(t *testing.T) {
 		}`)
 	})
 
-	err := WaitForStatus(ServiceClient(), "1234", "available", 0)
+	err := WaitForStatus(client.ServiceClient(), "1234", "available", 0)
 	if err == nil {
 		t.Errorf("Expected error: 'Time Out in WaitFor'")
 	}
 
-	err = WaitForStatus(ServiceClient(), "1234", "available", 3)
+	err = WaitForStatus(client.ServiceClient(), "1234", "available", 3)
 	th.CheckNoErr(t, err)
 }
