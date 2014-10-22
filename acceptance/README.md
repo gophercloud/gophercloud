@@ -12,11 +12,11 @@ to a remote API.
 
 ### Step 1. Set environment variables
 
-A lot of tests rely on environment variables for configuration - so you will need 
+A lot of tests rely on environment variables for configuration - so you will need
 to set them before running the suite. If you're testing against pure OpenStack APIs,
-you can download a file that contains all of these variables for you: just visit 
-the `project/access_and_security` page in your control panel and click the "Download 
-OpenStack RC File" button at the top right. For all other providers, you will need 
+you can download a file that contains all of these variables for you: just visit
+the `project/access_and_security` page in your control panel and click the "Download
+OpenStack RC File" button at the top right. For all other providers, you will need
 to set them manually.
 
 #### Authentication
@@ -45,12 +45,8 @@ to set them manually.
 
 ### 2. Run the test suite
 
-From any directory, run:
+From the root directory, run:
 
 ```
-go test -v -tags acceptance github.com/rackspace/gophercloud/...
+./script/acceptancetest
 ```
-
-Alternatively, you can execute the above from your nested git folder (i.e. the
-  workspace visible when browsing the Github repository) by replacing
-  `github.com/rackspace/gophercloud/...` with `./...`
