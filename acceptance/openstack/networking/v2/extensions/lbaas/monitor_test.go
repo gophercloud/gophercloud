@@ -51,7 +51,7 @@ func listMonitors(t *testing.T) {
 }
 
 func updateMonitor(t *testing.T, monitorID string) {
-	opts := monitors.UpdateOpts{Delay: 5, Timeout: 10, MaxRetries: 3}
+	opts := monitors.UpdateOpts{Delay: 10, Timeout: 10, MaxRetries: 3}
 	m, err := monitors.Update(base.Client, monitorID, opts).Extract()
 
 	th.AssertNoErr(t, err)

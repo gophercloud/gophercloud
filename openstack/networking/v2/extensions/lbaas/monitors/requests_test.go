@@ -100,6 +100,30 @@ func TestList(t *testing.T) {
 	}
 }
 
+func TestDelayMustBeGreaterOrEqualThanTimeout(t *testing.T) {
+	_, err := Create(fake.ServiceClient(), CreateOpts{
+		Type:          "HTTP",
+		Delay:         1,
+		Timeout:       10,
+		MaxRetries:    5,
+		URLPath:       "/check",
+		ExpectedCodes: "200-299",
+	}).Extract()
+
+	if err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+
+	_, err = Update(fake.ServiceClient(), "453105b9-1754-413f-aab1-55f1af620750", UpdateOpts{
+		Delay:   1,
+		Timeout: 10,
+	}).Extract()
+
+	if err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+}
+
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

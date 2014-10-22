@@ -60,6 +60,9 @@ func TestSecurityGroupRules(t *testing.T) {
 
 	// delete security group rule
 	deleteSecRule(t, ruleID)
+
+	// delete security group
+	deleteSecGroup(t, groupID)
 }
 
 func createSecGroup(t *testing.T) string {
