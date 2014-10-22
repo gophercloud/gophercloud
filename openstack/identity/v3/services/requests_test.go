@@ -6,21 +6,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/testhelper"
+	"github.com/rackspace/gophercloud/testhelper/client"
 )
-
-const tokenID = "111111"
-
-func serviceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{
-			TokenID: tokenID,
-		},
-		Endpoint: testhelper.Endpoint(),
-	}
-}
 
 func TestCreateSuccessful(t *testing.T) {
 	testhelper.SetupHTTP()
@@ -28,7 +17,7 @@ func TestCreateSuccessful(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		testhelper.TestJSONRequest(t, r, `{ "type": "compute" }`)
 
 		w.Header().Add("Content-Type", "application/json")
@@ -43,9 +32,7 @@ func TestCreateSuccessful(t *testing.T) {
     }`)
 	})
 
-	client := serviceClient()
-
-	result, err := Create(client, "compute").Extract()
+	result, err := Create(client.ServiceClient(), "compute").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error from Create: %v", err)
 	}
@@ -70,7 +57,7 @@ func TestListSinglePage(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
@@ -97,10 +84,8 @@ func TestListSinglePage(t *testing.T) {
 		`)
 	})
 
-	client := serviceClient()
-
 	count := 0
-	err := List(client, ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(client.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractServices(page)
 		if err != nil {
@@ -144,7 +129,7 @@ func TestGetSuccessful(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
@@ -159,9 +144,7 @@ func TestGetSuccessful(t *testing.T) {
 		`)
 	})
 
-	client := serviceClient()
-
-	result, err := Get(client, "12345").Extract()
+	result, err := Get(client.ServiceClient(), "12345").Extract()
 	if err != nil {
 		t.Fatalf("Error fetching service information: %v", err)
 	}
@@ -186,7 +169,7 @@ func TestUpdateSuccessful(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "PATCH")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		testhelper.TestJSONRequest(t, r, `{ "type": "lasermagic" }`)
 
 		w.Header().Add("Content-Type", "application/json")
@@ -200,9 +183,7 @@ func TestUpdateSuccessful(t *testing.T) {
 		`)
 	})
 
-	client := serviceClient()
-
-	result, err := Update(client, "12345", "lasermagic").Extract()
+	result, err := Update(client.ServiceClient(), "12345", "lasermagic").Extract()
 	if err != nil {
 		t.Fatalf("Unable to update service: %v", err)
 	}
@@ -218,14 +199,12 @@ func TestDeleteSuccessful(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "DELETE")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	client := serviceClient()
-
-	err := Delete(client, "12345")
+	err := Delete(client.ServiceClient(), "12345")
 	if err != nil {
 		t.Fatalf("Unable to delete service: %v", err)
 	}
