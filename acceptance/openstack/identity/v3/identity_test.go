@@ -7,14 +7,13 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
+	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 func createAuthenticatedClient(t *testing.T) *gophercloud.ServiceClient {
 	// Obtain credentials from the environment.
 	ao, err := openstack.AuthOptionsFromEnv()
-	if err != nil {
-		t.Fatalf("Unable to acquire credentials: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	// Trim out unused fields.
 	ao.Username, ao.TenantID, ao.TenantName = "", "", ""
