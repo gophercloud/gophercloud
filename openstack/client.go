@@ -145,8 +145,8 @@ func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClien
 	v2Endpoint := client.IdentityBase + "v2.0/"
 
 	return &gophercloud.ServiceClient{
-		Provider: client,
-		Endpoint: v2Endpoint,
+		ProviderClient: client,
+		Endpoint:       v2Endpoint,
 	}
 }
 
@@ -155,8 +155,8 @@ func NewIdentityV3(client *gophercloud.ProviderClient) *gophercloud.ServiceClien
 	v3Endpoint := client.IdentityBase + "v3/"
 
 	return &gophercloud.ServiceClient{
-		Provider: client,
-		Endpoint: v3Endpoint,
+		ProviderClient: client,
+		Endpoint:       v3Endpoint,
 	}
 }
 
@@ -167,7 +167,7 @@ func NewObjectStorageV1(client *gophercloud.ProviderClient, eo gophercloud.Endpo
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
 }
 
 // NewComputeV2 creates a ServiceClient that may be used with the v2 compute package.
@@ -177,7 +177,7 @@ func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
 }
 
 // NewNetworkV2 creates a ServiceClient that may be used with the v2 network package.
@@ -188,9 +188,9 @@ func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 		return nil, err
 	}
 	return &gophercloud.ServiceClient{
-		Provider:     client,
-		Endpoint:     url,
-		ResourceBase: url + "v2.0/",
+		ProviderClient: client,
+		Endpoint:       url,
+		ResourceBase:   url + "v2.0/",
 	}, nil
 }
 
@@ -201,5 +201,5 @@ func NewBlockStorageV1(client *gophercloud.ProviderClient, eo gophercloud.Endpoi
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
 }

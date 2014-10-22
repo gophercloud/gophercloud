@@ -7,7 +7,7 @@ import (
 
 func createClient() *gophercloud.ServiceClient {
 	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{TokenID: "abc123"},
-		Endpoint: testhelper.Endpoint(),
+		ProviderClient: &gophercloud.ProviderClient{TokenID: "abc123"},
+		Endpoint:       testhelper.Endpoint(),
 	}
 }
