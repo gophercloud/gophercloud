@@ -123,8 +123,8 @@ func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 	}
 
 	return &gophercloud.ServiceClient{
-		Provider: client,
-		Endpoint: url,
+		ProviderClient: client,
+		Endpoint:       url,
 	}, nil
 }
 
