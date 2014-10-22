@@ -16,7 +16,7 @@ func authTokenPost(t *testing.T, options gophercloud.AuthOptions, scope *Scope, 
 	defer testhelper.TeardownHTTP()
 
 	client := gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{
+		ProviderClient: &gophercloud.ProviderClient{
 			TokenID: "12345abcdef",
 		},
 		Endpoint: testhelper.Endpoint(),
@@ -47,11 +47,11 @@ func authTokenPostErr(t *testing.T, options gophercloud.AuthOptions, scope *Scop
 	defer testhelper.TeardownHTTP()
 
 	client := gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{},
-		Endpoint: testhelper.Endpoint(),
+		ProviderClient: &gophercloud.ProviderClient{},
+		Endpoint:       testhelper.Endpoint(),
 	}
 	if includeToken {
-		client.Provider.TokenID = "abcdef123456"
+		client.TokenID = "abcdef123456"
 	}
 
 	_, err := Create(&client, options, scope).Extract()
@@ -246,8 +246,8 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 
 	client := gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{},
-		Endpoint: testhelper.Endpoint(),
+		ProviderClient: &gophercloud.ProviderClient{},
+		Endpoint:       testhelper.Endpoint(),
 	}
 
 	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
@@ -401,7 +401,7 @@ func TestGetRequest(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 
 	client := gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{
+		ProviderClient: &gophercloud.ProviderClient{
 			TokenID: "12345abcdef",
 		},
 		Endpoint: testhelper.Endpoint(),
@@ -433,7 +433,7 @@ func TestGetRequest(t *testing.T) {
 
 func prepareAuthTokenHandler(t *testing.T, expectedMethod string, status int) gophercloud.ServiceClient {
 	client := gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{
+		ProviderClient: &gophercloud.ProviderClient{
 			TokenID: "12345abcdef",
 		},
 		Endpoint: testhelper.Endpoint(),
