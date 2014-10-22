@@ -142,3 +142,8 @@ func NewObjectCDNV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointO
 func NewObjectStorageV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	return os.NewObjectStorageV1(client, eo)
 }
+
+// NewNetworkV2 creates a ServiceClient that may be used with the Rackspace v2 networking package.
+func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	return NewComputeV2(client, eo)
+}

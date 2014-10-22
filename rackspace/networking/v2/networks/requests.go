@@ -85,7 +85,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
-		OkCodes:     []int{201, 202},
+		OkCodes:     []int{200, 201, 202},
 	})
 	return res
 }
