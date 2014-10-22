@@ -29,3 +29,17 @@ func NormalizeURL(url string) string {
 	}
 	return url
 }
+
+// BuildQuery constructs the query section of a URI from a map.
+func BuildQuery(params map[string]string) string {
+	if len(params) == 0 {
+		return ""
+	}
+
+	query := "?"
+	for k, v := range params {
+		query += k + "=" + v + "&"
+	}
+	query = query[:len(query)-1]
+	return query
+}

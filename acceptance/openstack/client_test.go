@@ -8,12 +8,11 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
-	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
 func TestAuthenticatedClient(t *testing.T) {
 	// Obtain credentials from the environment.
-	ao, err := utils.AuthOptions()
+	ao, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
 		t.Fatalf("Unable to acquire credentials: %v", err)
 	}

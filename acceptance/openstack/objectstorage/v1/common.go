@@ -7,14 +7,13 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 var metadata = map[string]string{"gopher": "cloud"}
 
 func newClient() (*gophercloud.ServiceClient, error) {
-	ao, err := utils.AuthOptions()
+	ao, err := openstack.AuthOptionsFromEnv()
 	th.AssertNoErr(t, err)
 
 	client, err := openstack.AuthenticatedClient(ao)

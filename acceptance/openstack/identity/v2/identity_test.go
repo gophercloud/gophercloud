@@ -7,13 +7,12 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 func v2AuthOptions(t *testing.T) gophercloud.AuthOptions {
 	// Obtain credentials from the environment.
-	ao, err := utils.AuthOptions()
+	ao, err := openstack.AuthOptionsFromEnv()
 	th.AssertNoErr(t, err)
 
 	// Trim out unused fields. Prefer authentication by API key to password.

@@ -1,5 +1,4 @@
-// Package utils contains utilities which eases working with Gophercloud's OpenStack APIs.
-package utils
+package openstack
 
 import (
 	"fmt"
@@ -22,7 +21,7 @@ var (
 // OS_* environment variables.  The following variables provide sources of truth: OS_AUTH_URL, OS_USERNAME,
 // OS_PASSWORD, OS_TENANT_ID, and OS_TENANT_NAME.  Of these, OS_USERNAME, OS_PASSWORD, and OS_AUTH_URL must
 // have settings, or an error will result.  OS_TENANT_ID and OS_TENANT_NAME are optional.
-func AuthOptions() (gophercloud.AuthOptions, error) {
+func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	authURL := os.Getenv("OS_AUTH_URL")
 	username := os.Getenv("OS_USERNAME")
 	userID := os.Getenv("OS_USERID")
@@ -56,18 +55,4 @@ func AuthOptions() (gophercloud.AuthOptions, error) {
 	}
 
 	return ao, nil
-}
-
-// BuildQuery constructs the query section of a URI from a map.
-func BuildQuery(params map[string]string) string {
-	if len(params) == 0 {
-		return ""
-	}
-
-	query := "?"
-	for k, v := range params {
-		query += k + "=" + v + "&"
-	}
-	query = query[:len(query)-1]
-	return query
 }

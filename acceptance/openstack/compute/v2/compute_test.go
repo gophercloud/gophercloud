@@ -11,11 +11,10 @@ import (
 	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
-	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
 func newClient() (*gophercloud.ServiceClient, error) {
-	ao, err := utils.AuthOptions()
+	ao, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
 		return nil, err
 	}

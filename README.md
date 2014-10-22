@@ -80,7 +80,7 @@ opts := gophercloud.AuthOptions{
 }
 
 // Option 2: Use a utility function to retrieve all your environment variables
-opts, err := utils.AuthOptions()
+opts, err := openstack.AuthOptionsFromEnv()
 ```
 
 Once you have the `opts` variable, you can pass it in and get back a
