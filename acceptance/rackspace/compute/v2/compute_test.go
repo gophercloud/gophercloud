@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/rackspace"
 )
 
@@ -14,7 +15,7 @@ func newClient() (*gophercloud.ServiceClient, error) {
 	// Obtain credentials from the environment.
 	options, err := rackspace.AuthOptionsFromEnv()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	options = tools.OnlyRS(options)
 	region := os.Getenv("RS_REGION")
