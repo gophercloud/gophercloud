@@ -192,7 +192,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
 		Results:     &result.Body,
 		ReqBody:     opts.ToServerCreateMap(),
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
 	return result
@@ -201,7 +201,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 // Delete requests that a server previously provisioned be removed from your account.
 func Delete(client *gophercloud.ServiceClient, id string) error {
 	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
 	return err
@@ -212,7 +212,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
 	_, result.Err = perigee.Request("GET", getURL(client, id), perigee.Options{
 		Results:     &result.Body,
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 	})
 	return result
 }
@@ -257,7 +257,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	_, result.Err = perigee.Request("PUT", updateURL(client, id), perigee.Options{
 		Results:     &result.Body,
 		ReqBody:     opts.ToServerUpdateMap(),
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 	})
 	return result
 }
@@ -277,7 +277,7 @@ func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword stri
 	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     req,
 		Results:     &res.Body,
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
 
@@ -350,7 +350,7 @@ func Reboot(client *gophercloud.ServiceClient, id string, how RebootMethod) Acti
 		}{
 			map[string]string{"type": string(how)},
 		},
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
 
@@ -449,7 +449,7 @@ func Rebuild(client *gophercloud.ServiceClient, id string, opts RebuildOptsBuild
 	_, result.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     &reqBody,
 		Results:     &result.Body,
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
 
@@ -472,7 +472,7 @@ func Resize(client *gophercloud.ServiceClient, id, flavorRef string) ActionResul
 		}{
 			map[string]interface{}{"flavorRef": flavorRef},
 		},
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
 
@@ -486,7 +486,7 @@ func ConfirmResize(client *gophercloud.ServiceClient, id string) ActionResult {
 
 	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     map[string]interface{}{"confirmResize": nil},
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
 
@@ -500,7 +500,7 @@ func RevertResize(client *gophercloud.ServiceClient, id string) ActionResult {
 
 	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     map[string]interface{}{"revertResize": nil},
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
 

@@ -28,7 +28,7 @@ func (opts GetOpts) ToAccountGetMap() (map[string]string, error) {
 // ExtractHeaders method on the GetResult.
 func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) GetResult {
 	var res GetResult
-	h := c.Provider.AuthenticatedHeaders()
+	h := c.AuthenticatedHeaders()
 
 	if opts != nil {
 		headers, err := opts.ToAccountGetMap()
@@ -83,7 +83,7 @@ func (opts UpdateOpts) ToAccountUpdateMap() (map[string]string, error) {
 // To extract the headers returned, call the Extract method on the UpdateResult.
 func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
-	h := c.Provider.AuthenticatedHeaders()
+	h := c.AuthenticatedHeaders()
 
 	if opts != nil {
 		headers, err := opts.ToAccountUpdateMap()

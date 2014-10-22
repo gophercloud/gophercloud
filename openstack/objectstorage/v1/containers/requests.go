@@ -97,7 +97,7 @@ func (opts CreateOpts) ToContainerCreateMap() (map[string]string, error) {
 // Create is a function that creates a new container.
 func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
-	h := c.Provider.AuthenticatedHeaders()
+	h := c.AuthenticatedHeaders()
 
 	if opts != nil {
 		headers, err := opts.ToContainerCreateMap()
@@ -124,7 +124,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 func Delete(c *gophercloud.ServiceClient, containerName string) DeleteResult {
 	var res DeleteResult
 	resp, err := perigee.Request("DELETE", deleteURL(c, containerName), perigee.Options{
-		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{202, 204},
 	})
 	res.Header = resp.HttpResponse.Header
@@ -168,7 +168,7 @@ func (opts UpdateOpts) ToContainerUpdateMap() (map[string]string, error) {
 // metadata.
 func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
-	h := c.Provider.AuthenticatedHeaders()
+	h := c.AuthenticatedHeaders()
 
 	if opts != nil {
 		headers, err := opts.ToContainerUpdateMap()
@@ -197,7 +197,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 func Get(c *gophercloud.ServiceClient, containerName string) GetResult {
 	var res GetResult
 	resp, err := perigee.Request("HEAD", getURL(c, containerName), perigee.Options{
-		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{200, 204},
 	})
 	res.Header = resp.HttpResponse.Header

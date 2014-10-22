@@ -9,16 +9,8 @@ import (
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/testhelper"
+	"github.com/rackspace/gophercloud/testhelper/client"
 )
-
-const tokenID = "abcabcabcabc"
-
-func serviceClient() *gophercloud.ServiceClient {
-	return &gophercloud.ServiceClient{
-		Provider: &gophercloud.ProviderClient{TokenID: tokenID},
-		Endpoint: testhelper.Endpoint(),
-	}
-}
 
 func TestCreateSuccessful(t *testing.T) {
 	testhelper.SetupHTTP()
@@ -26,7 +18,7 @@ func TestCreateSuccessful(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		testhelper.TestJSONRequest(t, r, `
       {
         "endpoint": {
@@ -57,9 +49,7 @@ func TestCreateSuccessful(t *testing.T) {
     `)
 	})
 
-	client := serviceClient()
-
-	actual, err := Create(client, EndpointOpts{
+	actual, err := Create(client.ServiceClient(), EndpointOpts{
 		Availability: gophercloud.AvailabilityPublic,
 		Name:         "the-endiest-of-points",
 		Region:       "underground",
@@ -90,7 +80,7 @@ func TestListEndpoints(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
@@ -127,10 +117,8 @@ func TestListEndpoints(t *testing.T) {
 		`)
 	})
 
-	client := serviceClient()
-
 	count := 0
-	List(client, ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	List(client.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractEndpoints(page)
 		if err != nil {
@@ -174,7 +162,7 @@ func TestUpdateEndpoint(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/endpoints/12", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "PATCH")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		testhelper.TestJSONRequest(t, r, `
 		{
 	    "endpoint": {
@@ -201,8 +189,7 @@ func TestUpdateEndpoint(t *testing.T) {
 	`)
 	})
 
-	client := serviceClient()
-	actual, err := Update(client, "12", EndpointOpts{
+	actual, err := Update(client.ServiceClient(), "12", EndpointOpts{
 		Name:   "renamed",
 		Region: "somewhere-else",
 	}).Extract()
@@ -229,14 +216,12 @@ func TestDeleteEndpoint(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/endpoints/34", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "DELETE")
-		testhelper.TestHeader(t, r, "X-Auth-Token", tokenID)
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	client := serviceClient()
-
-	err := Delete(client, "34")
+	err := Delete(client.ServiceClient(), "34")
 	if err != nil {
 		t.Fatalf("Unexpected error from Delete: %v", err)
 	}

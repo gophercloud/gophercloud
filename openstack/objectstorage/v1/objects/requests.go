@@ -109,7 +109,7 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 	var res DownloadResult
 
 	url := downloadURL(c, containerName, objectName)
-	h := c.Provider.AuthenticatedHeaders()
+	h := c.AuthenticatedHeaders()
 
 	if opts != nil {
 		headers, query, err := opts.ToObjectDownloadParams()
@@ -187,7 +187,7 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 	var res CreateResult
 
 	url := createURL(c, containerName, objectName)
-	h := c.Provider.AuthenticatedHeaders()
+	h := c.AuthenticatedHeaders()
 
 	if opts != nil {
 		headers, query, err := opts.ToObjectCreateParams()
@@ -250,7 +250,7 @@ func (opts CopyOpts) ToObjectCopyMap() (map[string]string, error) {
 // Copy is a function that copies one object to another.
 func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts CopyOptsBuilder) CopyResult {
 	var res CopyResult
-	h := c.Provider.AuthenticatedHeaders()
+	h := c.AuthenticatedHeaders()
 
 	headers, err := opts.ToObjectCopyMap()
 	if err != nil {
@@ -306,7 +306,7 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	}
 
 	resp, err := perigee.Request("DELETE", url, perigee.Options{
-		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
 	res.Header = resp.HttpResponse.Header
@@ -351,7 +351,7 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 	}
 
 	resp, err := perigee.Request("HEAD", url, perigee.Options{
-		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{200, 204},
 	})
 	res.Header = resp.HttpResponse.Header
@@ -392,7 +392,7 @@ func (opts UpdateOpts) ToObjectUpdateMap() (map[string]string, error) {
 // Update is a function that creates, updates, or deletes an object's metadata.
 func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
-	h := c.Provider.AuthenticatedHeaders()
+	h := c.AuthenticatedHeaders()
 
 	if opts != nil {
 		headers, err := opts.ToObjectUpdateMap()

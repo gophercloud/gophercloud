@@ -48,7 +48,7 @@ func PageResultFrom(resp http.Response) (PageResult, error) {
 
 // Request performs a Perigee request and extracts the http.Response from the result.
 func Request(client *gophercloud.ServiceClient, headers map[string]string, url string) (http.Response, error) {
-	h := client.Provider.AuthenticatedHeaders()
+	h := client.AuthenticatedHeaders()
 	for key, value := range headers {
 		h[key] = value
 	}

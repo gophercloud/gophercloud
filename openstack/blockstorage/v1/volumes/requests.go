@@ -86,7 +86,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 	}
 
 	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
 		OkCodes:     []int{200, 201},
@@ -97,7 +97,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 // Delete will delete the existing Volume with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) error {
 	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202, 204},
 	})
 	return err
@@ -109,7 +109,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = perigee.Request("GET", getURL(client, id), perigee.Options{
 		Results:     &res.Body,
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 	})
 	return res
@@ -207,7 +207,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	}
 
 	_, res.Err = perigee.Request("PUT", updateURL(client, id), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 		ReqBody:     &reqBody,
 		Results:     &res.Body,

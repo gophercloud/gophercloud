@@ -109,8 +109,8 @@ func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClien
 	v2Endpoint := client.IdentityBase + "v2.0/"
 
 	return &gophercloud.ServiceClient{
-		Provider: client,
-		Endpoint: v2Endpoint,
+		ProviderClient: client,
+		Endpoint:       v2Endpoint,
 	}
 }
 
@@ -121,7 +121,7 @@ func NewObjectCDNV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointO
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{Provider: client, Endpoint: url}, nil
+	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
 }
 
 // NewObjectStorageV1 creates a ServiceClient that may be used with the Rackspace v1 object storage package.
