@@ -64,6 +64,7 @@ var (
 	errMaxRetriesRequired    = fmt.Errorf("MaxRetries is required")
 	errURLPathRequired       = fmt.Errorf("URL path is required")
 	errExpectedCodesRequired = fmt.Errorf("ExpectedCodes is required")
+	errDelayMustGETimeout    = fmt.Errorf("Delay must be greater than or equal to timeout")
 )
 
 // CreateOpts contains all the values needed to create a new health monitor.
@@ -140,6 +141,9 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 		if opts.ExpectedCodes == "" {
 			res.Err = errExpectedCodesRequired
 		}
+	}
+	if opts.Delay < opts.Timeout {
+		res.Err = errDelayMustGETimeout
 	}
 	if res.Err != nil {
 		return res
@@ -227,6 +231,12 @@ type UpdateOpts struct {
 
 // Update is an operation which modifies the attributes of the specified monitor.
 func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
+	var res UpdateResult
+
+	if opts.Delay > 0 && opts.Timeout > 0 && opts.Delay < opts.Timeout {
+		res.Err = errDelayMustGETimeout
+	}
+
 	type monitor struct {
 		Delay         int     `json:"delay"`
 		Timeout       int     `json:"timeout"`
@@ -250,8 +260,6 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 		HTTPMethod:    gophercloud.MaybeString(opts.HTTPMethod),
 		AdminStateUp:  opts.AdminStateUp,
 	}}
-
-	var res UpdateResult
 
 	_, res.Err = perigee.Request("PUT", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.Provider.AuthenticatedHeaders(),
