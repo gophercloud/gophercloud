@@ -46,6 +46,9 @@ func TestListEndpoints(t *testing.T) {
 func TestNavigateCatalog(t *testing.T) {
 	// Create a service client.
 	client := createAuthenticatedClient(t)
+	if client == nil {
+		return
+	}
 
 	var compute *services3.Service
 	var endpoint *endpoints3.Endpoint

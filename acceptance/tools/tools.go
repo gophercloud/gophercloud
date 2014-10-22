@@ -5,11 +5,33 @@ package tools
 import (
 	"crypto/rand"
 	"errors"
+	"os"
 	"time"
+
+	"github.com/rackspace/gophercloud"
 )
 
 // ErrTimeout is returned if WaitFor takes longer than 300 second to happen.
 var ErrTimeout = errors.New("Timed out")
+
+// OnlyRS overrides the default Gophercloud behavior of using OS_-prefixed environment variables
+// if RS_ variables aren't present. Otherwise, they'll stomp over each other here in the acceptance
+// tests, where you need to have both defined.
+func OnlyRS(original gophercloud.AuthOptions) gophercloud.AuthOptions {
+	if os.Getenv("RS_AUTH_URL") == "" {
+		original.IdentityEndpoint = ""
+	}
+	if os.Getenv("RS_USERNAME") == "" {
+		original.Username = ""
+	}
+	if os.Getenv("RS_PASSWORD") == "" {
+		original.Password = ""
+	}
+	if os.Getenv("RS_API_KEY") == "" {
+		original.APIKey = ""
+	}
+	return original
+}
 
 // WaitFor polls a predicate function once per second to wait for a certain state to arrive.
 func WaitFor(predicate func() (bool, error)) error {

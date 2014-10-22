@@ -29,7 +29,7 @@ to set them manually.
 |`OS_TENANT_NAME`|Your API tenant name|
 |`OS_TENANT_ID`|Your API tenant ID|
 |`RS_USERNAME`|Your Rackspace username|
-|`RS_APIKEY`|Your Rackspace API key|
+|`RS_API_KEY`|Your Rackspace API key|
 
 #### General
 
