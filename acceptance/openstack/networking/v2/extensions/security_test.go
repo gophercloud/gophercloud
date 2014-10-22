@@ -52,17 +52,14 @@ func TestSecurityGroupRules(t *testing.T) {
 	// create security group rule
 	ruleID := createSecRule(t, groupID)
 
+	// delete security group rule
+	defer deleteSecRule(t, ruleID)
+
 	// list security group rule
 	listSecRules(t)
 
 	// get security group rule
 	getSecRule(t, ruleID)
-
-	// delete security group rule
-	deleteSecRule(t, ruleID)
-
-	// delete security group
-	deleteSecGroup(t, groupID)
 }
 
 func createSecGroup(t *testing.T) string {
