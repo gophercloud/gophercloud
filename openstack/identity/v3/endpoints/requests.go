@@ -61,7 +61,7 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) CreateResult {
 
 	var result CreateResult
 	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &result.Body,
 		OkCodes:     []int{201},
@@ -126,7 +126,7 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 
 	var result UpdateResult
 	_, result.Err = perigee.Request("PATCH", endpointURL(client, endpointID), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &result.Body,
 		OkCodes:     []int{200},
@@ -137,7 +137,7 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 // Delete removes an endpoint from the service catalog.
 func Delete(client *gophercloud.ServiceClient, endpointID string) error {
 	_, err := perigee.Request("DELETE", endpointURL(client, endpointID), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
 	return err

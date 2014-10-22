@@ -70,7 +70,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 	}
 
 	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{200, 201},
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
@@ -81,7 +81,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 // Delete will delete the existing Snapshot with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) error {
 	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202, 204},
 	})
 	return err
@@ -93,7 +93,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = perigee.Request("GET", getURL(client, id), perigee.Options{
 		Results:     &res.Body,
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 	})
 	return res
@@ -178,7 +178,7 @@ func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMet
 	}
 
 	_, res.Err = perigee.Request("PUT", updateMetadataURL(client, id), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 		ReqBody:     &reqBody,
 		Results:     &res.Body,

@@ -40,7 +40,7 @@ func Delete(c *gophercloud.ServiceClient, opts DeleteOptsBuilder) DeleteResult {
 
 	resp, err := perigee.Request("DELETE", deleteURL(c), perigee.Options{
 		ContentType: "text/plain",
-		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 		ReqBody:     reqBody,
 		Results:     &res.Body,

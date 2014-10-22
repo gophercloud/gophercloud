@@ -19,7 +19,7 @@ func List(c *gophercloud.ServiceClient) pagination.Pager {
 func Get(client *gophercloud.ServiceClient, v string) GetResult {
 	var res GetResult
 	_, err := perigee.Request("GET", getURL(client, v), perigee.Options{
-		MoreHeaders: client.Provider.AuthenticatedHeaders(),
+		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 		Results:     &res.Body,
 	})
