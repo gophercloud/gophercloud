@@ -157,7 +157,7 @@ func TestActionChangeAdminPassword(t *testing.T) {
 	}
 
 	randomPassword := tools.MakeNewPassword(server.AdminPass)
-	res = servers.ChangeAdminPassword(client, server.ID, randomPassword)
+	res := servers.ChangeAdminPassword(client, server.ID, randomPassword)
 	if res.Err != nil {
 		t.Fatal(err)
 	}
@@ -194,7 +194,7 @@ func TestActionReboot(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	res = servers.Reboot(client, server.ID, "aldhjflaskhjf")
+	res := servers.Reboot(client, server.ID, "aldhjflaskhjf")
 	if res.Err == nil {
 		t.Fatal("Expected the SDK to provide an ArgumentError here")
 	}
@@ -271,7 +271,7 @@ func resizeServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 	t.Logf("Attempting to resize server [%s]", server.ID)
 
 	if res := servers.Resize(client, server.ID, choices.FlavorIDResize); res.Err != nil {
-		t.Fatal(err)
+		t.Fatal(res.Err)
 	}
 
 	if err := waitForStatus(client, server, "VERIFY_RESIZE"); err != nil {

@@ -61,7 +61,7 @@ func DeletePool(t *testing.T, poolID string) {
 
 func CreateMonitor(t *testing.T) string {
 	m, err := monitors.Create(base.Client, monitors.CreateOpts{
-		Delay:         5,
+		Delay:         10,
 		Timeout:       10,
 		MaxRetries:    3,
 		Type:          monitors.TypeHTTP,
