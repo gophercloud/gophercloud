@@ -1,33 +1,34 @@
 package networks
 
 import (
-  "errors"
+	"errors"
 
-  "github.com/rackspace/gophercloud"
-  "github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 
-  "github.com/racker/perigee"
+	"github.com/racker/perigee"
 )
 
 // List returns a Pager which allows you to iterate over a collection of
 // networks. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
 func List(c *gophercloud.ServiceClient) pagination.Pager {
-  url := listURL(c)
-  return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
-    return NetworkPage{pagination.SinglePageBase{PageResult: r}}
-  })
+	createPage := func(r pagination.PageResult) pagination.Page {
+		return NetworkPage{pagination.SinglePageBase(r)}
+	}
+
+	return pagination.NewPager(c, listURL(c), createPage)
 }
 
 // Get retrieves a specific network based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
-  var res GetResult
-  _, res.Err = perigee.Request("GET", getURL(c, id), perigee.Options{
-    MoreHeaders: c.Provider.AuthenticatedHeaders(),
-    Results:     &res.Body,
-    OkCodes:     []int{200},
-  })
-  return res
+	var res GetResult
+	_, res.Err = perigee.Request("GET", getURL(c, id), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+	return res
 }
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -35,32 +36,32 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type CreateOptsBuilder interface {
-  ToNetworkCreateMap() (map[string]interface{}, error)
+	ToNetworkCreateMap() (map[string]interface{}, error)
 }
 
 // CreateOpts is the common options struct used in this package's Create
 // operation.
-type CreateOpts struct{
-  // REQUIRED. See Network object for more info.
-  CIDR string
-  // REQUIRED. See Network object for more info.
-  Label string
+type CreateOpts struct {
+	// REQUIRED. See Network object for more info.
+	CIDR string
+	// REQUIRED. See Network object for more info.
+	Label string
 }
 
 // ToNetworkCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
-  n := make(map[string]interface{})
+	n := make(map[string]interface{})
 
-  if opts.CIDR == "" {
-    return nil, errors.New("Required field CIDR not set.")
-  }
-  if opts.Label == "" {
-    return nil, errors.New("Required field Label not set.")
-  }
+	if opts.CIDR == "" {
+		return nil, errors.New("Required field CIDR not set.")
+	}
+	if opts.Label == "" {
+		return nil, errors.New("Required field Label not set.")
+	}
 
-  n["label"] = opts.Label
-  n["cidr"] = opts.CIDR
-  return map[string]interface{}{"network": n}, nil
+	n["label"] = opts.Label
+	n["cidr"] = opts.CIDR
+	return map[string]interface{}{"network": n}, nil
 }
 
 // Create accepts a CreateOpts struct and creates a new network using the values
@@ -71,20 +72,30 @@ func (opts CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
 // network. An admin user, however, has the option of specifying another tenant
 // ID in the CreateOpts struct.
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-  var res CreateResult
+	var res CreateResult
 
-  reqBody, err := opts.ToNetworkCreateMap()
-  if err != nil {
-    res.Err = err
-    return res
-  }
+	reqBody, err := opts.ToNetworkCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
 
-  // Send request to API
-  _, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
-    MoreHeaders: c.Provider.AuthenticatedHeaders(),
-    ReqBody:     &reqBody,
-    Results:     &res.Body,
-    OkCodes:     []int{201},
-  })
-  return res
+	// Send request to API
+	_, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &res.Body,
+		OkCodes:     []int{201, 202},
+	})
+	return res
+}
+
+// Delete accepts a unique ID and deletes the network associated with it.
+func Delete(c *gophercloud.ServiceClient, networkID string) DeleteResult {
+	var res DeleteResult
+	_, res.Err = perigee.Request("DELETE", deleteURL(c, networkID), perigee.Options{
+		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		OkCodes:     []int{204},
+	})
+	return res
 }
