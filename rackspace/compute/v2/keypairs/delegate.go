@@ -26,3 +26,8 @@ func Get(client *gophercloud.ServiceClient, name string) os.GetResult {
 func Delete(client *gophercloud.ServiceClient, name string) os.DeleteResult {
 	return os.Delete(client, name)
 }
+
+// ExtractKeyPairs interprets a page of results as a slice of KeyPairs.
+func ExtractKeyPairs(page pagination.Page) ([]os.KeyPair, error) {
+	return os.ExtractKeyPairs(page)
+}
