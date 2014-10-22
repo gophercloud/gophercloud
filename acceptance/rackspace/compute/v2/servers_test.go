@@ -25,15 +25,13 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient) *os.Server {
 		FlavorRef: options.flavorID,
 	}).Extract()
 	th.AssertNoErr(t, err)
-	t.Logf("Server created successfully.")
-	return s
-}
+	t.Logf("Creating server.")
 
-func deleteServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
-	t.Logf("Deleting server [%s].", server.ID)
-	err := servers.Delete(client, server.ID)
+	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
 	th.AssertNoErr(t, err)
-	t.Logf("Server deleted successfully.")
+	t.Logf("Server created successfully.")
+
+	return s
 }
 
 func logServer(t *testing.T, server *os.Server, index int) {
@@ -61,37 +59,21 @@ func logServer(t *testing.T, server *os.Server, index int) {
 	t.Logf("       progress=[%d]", server.Progress)
 }
 
-func TestCreateServer(t *testing.T) {
-	t.Parallel()
+func getServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("> servers.Get")
 
-	client, err := newClient()
+	details, err := servers.Get(client, server.ID).Extract()
 	th.AssertNoErr(t, err)
-
-	s := createServer(t, client)
-	defer deleteServer(t, client, s)
-
-	t.Logf("Waiting for server to become active ...")
-	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
-	th.AssertNoErr(t, err)
-
-	t.Logf("Server launched.")
-	logServer(t, s, -1)
-
-	t.Logf("Getting additional server details.")
-	details, err := servers.Get(client, s.ID).Extract()
 	logServer(t, details, -1)
 }
 
-func TestListServers(t *testing.T) {
-	t.Parallel()
-
-	client, err := newClient()
-	th.AssertNoErr(t, err)
+func listServers(t *testing.T, client *gophercloud.ServiceClient) {
+	t.Logf("> servers.List")
 
 	count := 0
-	err = servers.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := servers.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
 		count++
-		t.Logf("-- Page %02d --", count)
+		t.Logf("--- Page %02d ---", count)
 
 		s, err := servers.ExtractServers(page)
 		th.AssertNoErr(t, err)
@@ -104,76 +86,73 @@ func TestListServers(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestChangeAdminPassword(t *testing.T) {
-	t.Parallel()
+func changeAdminPassword(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("> servers.ChangeAdminPassword")
 
-	client, err := newClient()
-	th.AssertNoErr(t, err)
-
-	s := createServer(t, client)
-	defer deleteServer(t, client, s)
-	original := s.AdminPass
-
-	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
-	th.AssertNoErr(t, err)
+	original := server.AdminPass
 
 	t.Logf("Changing server password.")
-	err = servers.ChangeAdminPassword(client, s.ID, tools.MakeNewPassword(original)).Extract()
+	err := servers.ChangeAdminPassword(client, server.ID, tools.MakeNewPassword(original)).Extract()
 	th.AssertNoErr(t, err)
 
-	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
+	err = servers.WaitForStatus(client, server.ID, "ACTIVE", 300)
 	th.AssertNoErr(t, err)
 	t.Logf("Password changed successfully.")
 }
 
-func TestReboot(t *testing.T) {
-	t.Parallel()
+func rebootServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("> servers.Reboot")
 
-	client, err := newClient()
+	err := servers.Reboot(client, server.ID, os.HardReboot).Extract()
 	th.AssertNoErr(t, err)
 
-	s := createServer(t, client)
-	defer deleteServer(t, client, s)
-
-	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
+	err = servers.WaitForStatus(client, server.ID, "ACTIVE", 300)
 	th.AssertNoErr(t, err)
 
-	t.Logf("Rebooting server.")
-	err = servers.Reboot(client, s.ID, os.HardReboot).Extract()
-	th.AssertNoErr(t, err)
-
-	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
-	th.AssertNoErr(t, err)
 	t.Logf("Server successfully rebooted.")
 }
 
-func TestRebuild(t *testing.T) {
-	t.Parallel()
+func rebuildServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("> servers.Rebuild")
 
 	options, err := optionsFromEnv()
 	th.AssertNoErr(t, err)
 
-	client, err := newClient()
-	th.AssertNoErr(t, err)
-
-	s := createServer(t, client)
-	defer deleteServer(t, client, s)
-
-	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
-	th.AssertNoErr(t, err)
-
-	t.Logf("Rebuilding server.")
 	opts := os.RebuildOpts{
 		Name:      tools.RandomString("RenamedGopher", 16),
-		AdminPass: tools.MakeNewPassword(s.AdminPass),
+		AdminPass: tools.MakeNewPassword(server.AdminPass),
 		ImageID:   options.imageID,
 	}
-	after, err := servers.Rebuild(client, s.ID, opts).Extract()
+	after, err := servers.Rebuild(client, server.ID, opts).Extract()
 	th.AssertNoErr(t, err)
+	th.CheckEquals(t, after.ID, server.ID)
 
 	err = servers.WaitForStatus(client, after.ID, "ACTIVE", 300)
 	th.AssertNoErr(t, err)
 
 	t.Logf("Server successfully rebuilt.")
 	logServer(t, after, -1)
+}
+
+func deleteServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
+	t.Logf("> servers.Delete")
+
+	err := servers.Delete(client, server.ID)
+	th.AssertNoErr(t, err)
+
+	t.Logf("Server deleted successfully.")
+}
+
+func TestServerOperations(t *testing.T) {
+	client, err := newClient()
+	th.AssertNoErr(t, err)
+
+	server := createServer(t, client)
+	defer deleteServer(t, client, server)
+
+	getServer(t, client, server)
+	listServers(t, client)
+	changeAdminPassword(t, client, server)
+	rebootServer(t, client, server)
+	rebuildServer(t, client, server)
 }
