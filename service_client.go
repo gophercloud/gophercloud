@@ -5,8 +5,8 @@ import "strings"
 // ServiceClient stores details required to interact with a specific service API implemented by a provider.
 // Generally, you'll acquire these by calling the appropriate `New` method on a ProviderClient.
 type ServiceClient struct {
-	// Provider is a reference to the provider that implements this service.
-	Provider *ProviderClient
+	// ProviderClient is a reference to the provider that implements this service.
+	*ProviderClient
 
 	// Endpoint is the base URL of the service's API, acquired from a service catalog.
 	// It MUST end with a /.
@@ -29,10 +29,4 @@ func (client *ServiceClient) ResourceBaseURL() string {
 // ServiceURL constructs a URL for a resource belonging to this provider.
 func (client *ServiceClient) ServiceURL(parts ...string) string {
 	return client.ResourceBaseURL() + strings.Join(parts, "/")
-}
-
-// AuthenticatedHeaders returns a collection of HTTP request headers that mark a request as
-// belonging to the currently authenticated user.
-func (client *ServiceClient) AuthenticatedHeaders() map[string]string {
-	return client.Provider.AuthenticatedHeaders()
 }
