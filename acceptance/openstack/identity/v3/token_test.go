@@ -7,12 +7,11 @@ import (
 
 	"github.com/rackspace/gophercloud/openstack"
 	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
-	"github.com/rackspace/gophercloud/openstack/utils"
 )
 
 func TestGetToken(t *testing.T) {
 	// Obtain credentials from the environment.
-	ao, err := utils.AuthOptions()
+	ao, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
 		t.Fatalf("Unable to acquire credentials: %v", err)
 	}

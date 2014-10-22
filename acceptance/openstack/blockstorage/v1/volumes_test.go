@@ -10,12 +10,11 @@ import (
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
 func newClient() (*gophercloud.ServiceClient, error) {
-	ao, err := utils.AuthOptions()
+	ao, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
 		return nil, err
 	}

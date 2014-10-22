@@ -6,14 +6,13 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 var Client *gophercloud.ServiceClient
 
 func NewClient() (*gophercloud.ServiceClient, error) {
-	opts, err := utils.AuthOptions()
+	opts, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
 		return nil, err
 	}

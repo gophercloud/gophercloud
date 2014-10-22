@@ -5,13 +5,12 @@ package rackspace
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/rackspace"
 )
 
 func TestAuthenticatedClient(t *testing.T) {
 	// Obtain credentials from the environment.
-	ao, err := utils.AuthOptions()
+	ao, err := rackspace.AuthOptionsFromEnv()
 	if err != nil {
 		t.Fatalf("Unable to acquire credentials: %v", err)
 	}
