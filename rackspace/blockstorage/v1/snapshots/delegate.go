@@ -124,7 +124,7 @@ func Update(c *gophercloud.ServiceClient, snapshotID string, opts UpdateOptsBuil
 
 	// Send request to API
 	_, res.Err = perigee.Request("PUT", updateURL(c, snapshotID), perigee.Options{
-		MoreHeaders: c.Provider.AuthenticatedHeaders(),
+		MoreHeaders: c.ProviderClient.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
 		OkCodes:     []int{200, 201},
