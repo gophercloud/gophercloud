@@ -34,7 +34,7 @@ func Create(c *gophercloud.ServiceClient, instanceID, networkID string) CreateRe
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
-		OkCodes:     []int{201, 202},
+		OkCodes:     []int{200, 201, 202},
 	})
 	return res
 }
@@ -45,7 +45,7 @@ func Delete(c *gophercloud.ServiceClient, instanceID, interfaceID string) Delete
 	var res DeleteResult
 	_, res.Err = perigee.Request("DELETE", deleteURL(c, instanceID, interfaceID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{204},
+		OkCodes:     []int{200, 204},
 	})
 	return res
 }
