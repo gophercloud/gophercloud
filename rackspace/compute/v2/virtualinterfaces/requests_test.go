@@ -54,7 +54,7 @@ func TestList(t *testing.T) {
 	client := fake.ServiceClient()
 	count := 0
 
-	List(client, "12345").EachPage(func(page pagination.Page) (bool, error) {
+	err := List(client, "12345").EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractVirtualInterfaces(page)
 		if err != nil {
@@ -91,10 +91,8 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
-
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 1, count)
 }
 
 func TestCreate(t *testing.T) {
