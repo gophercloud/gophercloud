@@ -146,9 +146,7 @@ func NewObjectStorageV1(client *gophercloud.ProviderClient, eo gophercloud.Endpo
 // NewBlockStorageV1 creates a ServiceClient that can be used to access the
 // Rackspace Cloud Block Storage v1 API.
 func NewBlockStorageV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	eo.Type = "volume"
-	eo.Name = "cloudBlockStorage"
-
+	eo.ApplyDefaults("volume")
 	url, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
