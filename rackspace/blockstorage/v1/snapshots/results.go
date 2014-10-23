@@ -1,9 +1,6 @@
 package snapshots
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/racker/perigee"
 
 	"github.com/rackspace/gophercloud"
@@ -57,10 +54,6 @@ type Snapshot struct {
 
 	// The ID of the volume which this snapshot seeks to back up.
 	VolumeID string `mapstructure:"volume_id"`
-}
-
-type commonResult struct {
-	gophercloud.Result
 }
 
 // CreateResult represents the result of a create operation
@@ -121,46 +114,36 @@ func ExtractSnapshots(page pagination.Page) ([]Snapshot, error) {
 // transitions to a specified state. It will do this for at most the number of
 // seconds specified.
 func (snapshot Snapshot) WaitUntilComplete(c *gophercloud.ServiceClient, timeout int) error {
-	start := time.Now().Second()
-	var err error
-	for {
+	return gophercloud.WaitFor(timeout, func() (bool, error) {
+		// Poll resource
 		current, err := Get(c, snapshot.ID).Extract()
-
 		if err != nil {
-			break
-		}
-		if timeout > 0 && time.Now().Second()-start >= timeout {
-			err = fmt.Errorf("A timeout occurred")
-			break
+			return false, err
 		}
 
+		// Has it been built yet?
 		if current.Progress == "100%" {
-			break
+			return true, nil
 		}
-	}
 
-	return err
+		return false, nil
+	})
 }
 
+// WaitUntilDeleted will continually poll a snapshot until it has been
+// successfully deleted, i.e. returns a 404 status.
 func (snapshot Snapshot) WaitUntilDeleted(c *gophercloud.ServiceClient, timeout int) error {
-	start := time.Now().Second()
-	var err error
-	for {
+	return gophercloud.WaitFor(timeout, func() (bool, error) {
+		// Poll resource
 		_, err := Get(c, snapshot.ID).Extract()
 
-		// We actually want an error here
+		// Check for a 404
 		if casted, ok := err.(*perigee.UnexpectedResponseCodeError); ok && casted.Actual == 404 {
-			err = nil
-			break
+			return true, nil
 		} else if err != nil {
-			break
+			return false, err
 		}
 
-		if timeout > 0 && time.Now().Second()-start >= timeout {
-			err = fmt.Errorf("A timeout occurred")
-			break
-		}
-	}
-
-	return err
+		return false, nil
+	})
 }

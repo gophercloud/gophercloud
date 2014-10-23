@@ -1,18 +1,14 @@
 package volumes
 
 import (
-	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes"
 	"github.com/rackspace/gophercloud/pagination"
 
 	"github.com/mitchellh/mapstructure"
 )
 
+// Volume wraps an Openstack volume
 type Volume os.Volume
-
-type commonResult struct {
-	gophercloud.Result
-}
 
 // CreateResult represents the result of a create operation
 type CreateResult struct {
@@ -58,7 +54,7 @@ func (r UpdateResult) Extract() (*Volume, error) {
 	return commonExtract(r.Body, r.Err)
 }
 
-// ExtractSnapshots extracts and returns Volumes. It is used while iterating over a volumes.List call.
+// ExtractVolumes extracts and returns Volumes. It is used while iterating over a volumes.List call.
 func ExtractVolumes(page pagination.Page) ([]Volume, error) {
 	var response struct {
 		Volumes []Volume `json:"volumes"`
