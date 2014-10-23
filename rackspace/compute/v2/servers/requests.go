@@ -83,3 +83,56 @@ func (opts CreateOpts) ToServerCreateMap() map[string]interface{} {
 
 	return result
 }
+
+// RebuildOpts represents all of the configuration options used in a server rebuild operation that
+// are supported by Rackspace.
+type RebuildOpts struct {
+	// Required. The ID of the image you want your server to be provisioned on
+	ImageID string
+
+	// Name to set the server to
+	Name string
+
+	// Required. The server's admin password
+	AdminPass string
+
+	// AccessIPv4 [optional] provides a new IPv4 address for the instance.
+	AccessIPv4 string
+
+	// AccessIPv6 [optional] provides a new IPv6 address for the instance.
+	AccessIPv6 string
+
+	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the server.
+	Metadata map[string]string
+
+	// Personality [optional] includes the path and contents of a file to inject into the server at launch.
+	// The maximum size of the file is 255 bytes (decoded).
+	Personality []byte
+
+	// Rackspace-specific stuff begins here.
+
+	// DiskConfig [optional] controls how the created server's disk is partitioned. See the "diskconfig"
+	// extension in OpenStack compute v2.
+	DiskConfig diskconfig.DiskConfig
+}
+
+// ToServerRebuildMap constructs a request body using all of the OpenStack extensions that are
+// active on Rackspace.
+func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
+	base := os.RebuildOpts{
+		ImageID:     opts.ImageID,
+		Name:        opts.Name,
+		AdminPass:   opts.AdminPass,
+		AccessIPv4:  opts.AccessIPv4,
+		AccessIPv6:  opts.AccessIPv6,
+		Metadata:    opts.Metadata,
+		Personality: opts.Personality,
+	}
+
+	drive := diskconfig.RebuildOptsExt{
+		RebuildOptsBuilder: base,
+		DiskConfig:         opts.DiskConfig,
+	}
+
+	return drive.ToServerRebuildMap()
+}

@@ -29,3 +29,27 @@ func TestCreateOpts(t *testing.T) {
 	`
 	th.CheckJSONEquals(t, expected, opts.ToServerCreateMap())
 }
+
+func TestRebuildOpts(t *testing.T) {
+	opts := RebuildOpts{
+		Name:       "rebuiltserver",
+		AdminPass:  "swordfish",
+		ImageID:    "asdfasdfasdf",
+		DiskConfig: diskconfig.Auto,
+	}
+
+	actual, err := opts.ToServerRebuildMap()
+	th.AssertNoErr(t, err)
+
+	expected := `
+	{
+		"rebuild": {
+			"name": "rebuiltserver",
+			"imageRef": "asdfasdfasdf",
+			"adminPass": "swordfish",
+			"OS-DCF:diskConfig": "AUTO"
+		}
+	}
+	`
+	th.CheckJSONEquals(t, expected, actual)
+}
