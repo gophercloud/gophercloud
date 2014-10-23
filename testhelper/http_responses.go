@@ -81,33 +81,11 @@ func TestJSONRequest(t *testing.T, r *http.Request, expected string) {
 		t.Errorf("Unable to read request body: %v", err)
 	}
 
-	var expectedJSON interface{}
-	err = json.Unmarshal([]byte(expected), &expectedJSON)
-	if err != nil {
-		t.Errorf("Unable to parse expected value as JSON: %v", err)
-	}
-
 	var actualJSON interface{}
 	err = json.Unmarshal(b, &actualJSON)
 	if err != nil {
 		t.Errorf("Unable to parse request body as JSON: %v", err)
 	}
 
-	if !reflect.DeepEqual(expectedJSON, actualJSON) {
-		prettyExpected, err := json.MarshalIndent(expectedJSON, "", "  ")
-		if err != nil {
-			t.Logf("Unable to pretty-print expected JSON: %v\n%s", err, expected)
-		} else {
-			t.Logf("Expected JSON:\n%s", prettyExpected)
-		}
-
-		prettyActual, err := json.MarshalIndent(actualJSON, "", "  ")
-		if err != nil {
-			t.Logf("Unable to pretty-print actual JSON: %v\n%s", err, b)
-		} else {
-			t.Logf("Actual JSON:\n%s", prettyActual)
-		}
-
-		t.Errorf("Response body did not contain the correct JSON.")
-	}
+	CheckJSONEquals(t, expected, actualJSON)
 }
