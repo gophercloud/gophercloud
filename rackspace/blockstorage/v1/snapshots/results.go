@@ -1,6 +1,11 @@
 package snapshots
 
 import (
+	"fmt"
+	"time"
+
+	"github.com/racker/perigee"
+
 	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack/blockstorage/v1/snapshots"
 	"github.com/rackspace/gophercloud/pagination"
@@ -110,4 +115,52 @@ func ExtractSnapshots(page pagination.Page) ([]Snapshot, error) {
 
 	err := mapstructure.Decode(page.(os.ListResult).Body, &response)
 	return response.Snapshots, err
+}
+
+// WaitUntilComplete will continually poll a snapshot until it successfully
+// transitions to a specified state. It will do this for at most the number of
+// seconds specified.
+func (snapshot Snapshot) WaitUntilComplete(c *gophercloud.ServiceClient, timeout int) error {
+	start := time.Now().Second()
+	var err error
+	for {
+		current, err := Get(c, snapshot.ID).Extract()
+
+		if err != nil {
+			break
+		}
+		if timeout > 0 && time.Now().Second()-start >= timeout {
+			err = fmt.Errorf("A timeout occurred")
+			break
+		}
+
+		if current.Progress == "100%" {
+			break
+		}
+	}
+
+	return err
+}
+
+func (snapshot Snapshot) WaitUntilDeleted(c *gophercloud.ServiceClient, timeout int) error {
+	start := time.Now().Second()
+	var err error
+	for {
+		_, err := Get(c, snapshot.ID).Extract()
+
+		// We actually want an error here
+		if casted, ok := err.(*perigee.UnexpectedResponseCodeError); ok && casted.Actual == 404 {
+			err = nil
+			break
+		} else if err != nil {
+			break
+		}
+
+		if timeout > 0 && time.Now().Second()-start >= timeout {
+			err = fmt.Errorf("A timeout occurred")
+			break
+		}
+	}
+
+	return err
 }
