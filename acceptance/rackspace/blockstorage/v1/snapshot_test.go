@@ -1,3 +1,5 @@
+// +build acceptance blockstorage snapshots
+
 package v1
 
 import (

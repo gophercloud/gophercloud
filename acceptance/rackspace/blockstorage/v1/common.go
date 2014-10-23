@@ -1,3 +1,5 @@
+// +build acceptance
+
 package v1
 
 import (
