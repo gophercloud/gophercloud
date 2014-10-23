@@ -64,7 +64,7 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t)
 
-	options := &CreateOpts{Size: 4}
+	options := &CreateOpts{Size: 75}
 	n, err := Create(client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
