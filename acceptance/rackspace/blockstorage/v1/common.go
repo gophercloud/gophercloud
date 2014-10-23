@@ -1,9 +1,11 @@
 package v1
 
 import (
+	"os"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/rackspace"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
@@ -13,6 +15,8 @@ func newClient() (*gophercloud.ServiceClient, error) {
 	if err != nil {
 		return nil, err
 	}
+	opts = tools.OnlyRS(opts)
+	region := os.Getenv("RS_REGION")
 
 	provider, err := rackspace.AuthenticatedClient(opts)
 	if err != nil {
@@ -20,7 +24,7 @@ func newClient() (*gophercloud.ServiceClient, error) {
 	}
 
 	return rackspace.NewBlockStorageV1(provider, gophercloud.EndpointOpts{
-		Region: "IAD",
+		Region: region,
 	})
 }
 
