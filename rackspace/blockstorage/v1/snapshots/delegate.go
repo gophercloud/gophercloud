@@ -1,7 +1,7 @@
 package snapshots
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/racker/perigee"
 
@@ -41,7 +41,7 @@ func (opts CreateOpts) ToSnapshotCreateMap() (map[string]interface{}, error) {
 	s := make(map[string]interface{})
 
 	if opts.VolumeID == "" {
-		return nil, fmt.Errorf("Required CreateOpts field 'VolumeID' not set.")
+		return nil, errors.New("Required CreateOpts field 'VolumeID' not set.")
 	}
 
 	s["volume_id"] = opts.VolumeID
@@ -52,7 +52,7 @@ func (opts CreateOpts) ToSnapshotCreateMap() (map[string]interface{}, error) {
 	if opts.Name != "" {
 		s["display_name"] = opts.Name
 	}
-	if opts.Force == true {
+	if opts.Force {
 		s["force"] = opts.Force
 	}
 
@@ -124,7 +124,7 @@ func Update(c *gophercloud.ServiceClient, snapshotID string, opts UpdateOptsBuil
 
 	// Send request to API
 	_, res.Err = perigee.Request("PUT", updateURL(c, snapshotID), perigee.Options{
-		MoreHeaders: c.ProviderClient.AuthenticatedHeaders(),
+		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
 		OkCodes:     []int{200, 201},
