@@ -22,7 +22,7 @@ type Volume struct {
 	AvailabilityZone string `mapstructure:"availability_zone"`
 
 	// Indicates whether this is a bootable volume.
-	Bootable bool `mapstructure:"bootable"`
+	Bootable string `mapstructure:"bootable"`
 
 	// The date when this volume was created.
 	CreatedAt string `mapstructure:"created_at"`
