@@ -1,16 +1,20 @@
 package gophercloud
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 	"time"
 )
 
-// WaitFor polls a predicate function once per second up to secs times to wait for a certain state to arrive.
-func WaitFor(secs int, predicate func() (bool, error)) error {
-	for i := 0; i < secs; i++ {
+// WaitFor polls a predicate function once per second up to secs times to wait
+// for a certain state to arrive.
+func WaitFor(timeout int, predicate func() (bool, error)) error {
+	start := time.Now().Second()
+	for {
+		// Force a 1s sleep
 		time.Sleep(1 * time.Second)
 
+		// Execute the function
 		satisfied, err := predicate()
 		if err != nil {
 			return err
@@ -18,8 +22,12 @@ func WaitFor(secs int, predicate func() (bool, error)) error {
 		if satisfied {
 			return nil
 		}
+
+		// If a timeout is set, and that's been exceeded, shut it down
+		if timeout > 0 && time.Now().Second()-start >= timeout {
+			return errors.New("A timeout occurred")
+		}
 	}
-	return fmt.Errorf("Time out in WaitFor.")
 }
 
 // NormalizeURL ensures that each endpoint URL has a closing `/`, as expected by ServiceClient.
