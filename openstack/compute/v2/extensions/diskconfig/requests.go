@@ -49,7 +49,7 @@ func (opts CreateOptsExt) ToServerCreateMap() map[string]interface{} {
 	base := opts.CreateOptsBuilder.ToServerCreateMap()
 
 	serverMap := base["server"].(map[string]interface{})
-	serverMap["OS-DCF:diskconfig"] = string(opts.DiskConfig)
+	serverMap["OS-DCF:diskConfig"] = string(opts.DiskConfig)
 
 	return base
 }
@@ -75,7 +75,7 @@ func (opts RebuildOptsExt) ToServerRebuildMap() (map[string]interface{}, error) 
 	}
 
 	serverMap := base["rebuild"].(map[string]interface{})
-	serverMap["OS-DCF:diskconfig"] = string(opts.DiskConfig)
+	serverMap["OS-DCF:diskConfig"] = string(opts.DiskConfig)
 
 	return base, nil
 }
@@ -101,7 +101,7 @@ func (opts ResizeOptsExt) ToServerResizeMap() (map[string]interface{}, error) {
 	}
 
 	serverMap := base["resize"].(map[string]interface{})
-	serverMap["OS-DCF:diskconfig"] = string(opts.DiskConfig)
+	serverMap["OS-DCF:diskConfig"] = string(opts.DiskConfig)
 
 	return base, nil
 }
