@@ -3,20 +3,34 @@ package snapshots
 import (
 	"testing"
 
+	"github.com/rackspace/gophercloud"
+	os "github.com/rackspace/gophercloud/openstack/blockstorage/v1/snapshots"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
-	"github.com/rackspace/gophercloud/testhelper/client"
+	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
+
+const endpoint = "http://localhost:57909/v1/12345"
+
+func endpointClient() *gophercloud.ServiceClient {
+	return &gophercloud.ServiceClient{Endpoint: endpoint}
+}
+
+func TestUpdateURL(t *testing.T) {
+	actual := updateURL(endpointClient(), "foo")
+	expected := endpoint + "snapshots/foo"
+	th.AssertEquals(t, expected, actual)
+}
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockListResponse(t)
+	os.MockListResponse(t)
 
 	count := 0
 
-	List(client.ServiceClient(), &ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractSnapshots(page)
 		if err != nil {
@@ -40,18 +54,17 @@ func TestList(t *testing.T) {
 		return true, nil
 	})
 
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
+	th.AssertEquals(t, 1, count)
+	th.AssertNoErr(t, err)
 }
 
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockGetResponse(t)
+	os.MockGetResponse(t)
 
-	v, err := Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	v, err := Get(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, v.Name, "snapshot-001")
@@ -62,10 +75,10 @@ func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockCreateResponse(t)
+	os.MockCreateResponse(t)
 
-	options := CreateOpts{VolumeID: "1234", Name: "snapshot-001"}
-	n, err := Create(client.ServiceClient(), options).Extract()
+	options := &CreateOpts{VolumeID: "1234", Name: "snapshot-001"}
+	n, err := Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.VolumeID, "1234")
@@ -73,32 +86,12 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
 
-func TestUpdateMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	MockUpdateMetadataResponse(t)
-
-	expected := map[string]interface{}{"key": "v1"}
-
-	options := &UpdateMetadataOpts{
-		Metadata: map[string]interface{}{
-			"key": "v1",
-		},
-	}
-
-	actual, err := UpdateMetadata(client.ServiceClient(), "123", options).ExtractMetadata()
-
-	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, actual, expected)
-}
-
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockDeleteResponse(t)
+	os.MockDeleteResponse(t)
 
-	err := Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	err := Delete(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, err)
 }
