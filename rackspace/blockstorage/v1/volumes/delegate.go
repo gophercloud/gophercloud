@@ -1,10 +1,24 @@
 package volumes
 
 import (
+	"fmt"
+
 	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes"
 	"github.com/rackspace/gophercloud/pagination"
 )
+
+type CreateOpts struct {
+	os.CreateOpts
+}
+
+func (opts CreateOpts) ToVolumeCreateMap() (map[string]interface{}, error) {
+	if opts.Size < 75 || opts.Size > 1024 {
+		return nil, fmt.Errorf("Size field must be between 75 and 1024")
+	}
+
+	return opts.CreateOpts.ToVolumeCreateMap()
+}
 
 // Create will create a new Volume based on the values in CreateOpts. To extract
 // the Volume object from the response, call the Extract method on the

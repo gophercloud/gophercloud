@@ -65,12 +65,23 @@ func TestCreate(t *testing.T) {
 
 	os.MockCreateResponse(t)
 
-	options := os.CreateOpts{Size: 4}
-	n, err := Create(fake.ServiceClient(), options).Extract()
+	n, err := Create(fake.ServiceClient(), CreateOpts{os.CreateOpts{Size: 40}}).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Size, 4)
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+}
+
+func TestSizeRange(t *testing.T) {
+	_, err := Create(fake.ServiceClient(), CreateOpts{os.CreateOpts{Size: 1}}).Extract()
+	if err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+
+	_, err = Create(fake.ServiceClient(), CreateOpts{os.CreateOpts{Size: 2000}}).Extract()
+	if err == nil {
+		t.Fatalf("Expected error, got none")
+	}
 }
 
 func TestDelete(t *testing.T) {
