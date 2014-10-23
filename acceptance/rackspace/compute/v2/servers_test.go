@@ -140,10 +140,11 @@ func rebuildServer(t *testing.T, client *gophercloud.ServiceClient, server *os.S
 	options, err := optionsFromEnv()
 	th.AssertNoErr(t, err)
 
-	opts := os.RebuildOpts{
-		Name:      tools.RandomString("RenamedGopher", 16),
-		AdminPass: tools.MakeNewPassword(server.AdminPass),
-		ImageID:   options.imageID,
+	opts := servers.RebuildOpts{
+		Name:       tools.RandomString("RenamedGopher", 16),
+		AdminPass:  tools.MakeNewPassword(server.AdminPass),
+		ImageID:    options.imageID,
+		DiskConfig: diskconfig.Manual,
 	}
 	after, err := servers.Rebuild(client, server.ID, opts).Extract()
 	th.AssertNoErr(t, err)
