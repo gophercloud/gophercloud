@@ -456,6 +456,28 @@ func Rebuild(client *gophercloud.ServiceClient, id string, opts RebuildOptsBuild
 	return result
 }
 
+// ResizeOptsBuilder is an interface that allows extensions to override the default structure of
+// a Resize request.
+type ResizeOptsBuilder interface {
+	ToServerResizeMap() (map[string]interface{}, error)
+}
+
+// ResizeOpts represents the configuration options used to control a Resize operation.
+type ResizeOpts struct {
+	// FlavorRef is the ID of the flavor you wish your server to become.
+	FlavorRef string
+}
+
+// ToServerResizeMap formats a ResizeOpts as a map that can be used as a JSON request body to the
+// Resize request.
+func (opts ResizeOpts) ToServerResizeMap() (map[string]interface{}, error) {
+	resize := map[string]interface{}{
+		"flavorRef": opts.FlavorRef,
+	}
+
+	return map[string]interface{}{"resize": resize}, nil
+}
+
 // Resize instructs the provider to change the flavor of the server.
 // Note that this implies rebuilding it.
 // Unfortunately, one cannot pass rebuild parameters to the resize function.
@@ -463,15 +485,16 @@ func Rebuild(client *gophercloud.ServiceClient, id string, opts RebuildOptsBuild
 // While in this state, you can explore the use of the new server's configuration.
 // If you like it, call ConfirmResize() to commit the resize permanently.
 // Otherwise, call RevertResize() to restore the old configuration.
-func Resize(client *gophercloud.ServiceClient, id, flavorRef string) ActionResult {
+func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOpts) ActionResult {
 	var res ActionResult
+	reqBody, err := opts.ToServerResizeMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
 
 	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
-		ReqBody: struct {
-			R map[string]interface{} `json:"resize"`
-		}{
-			map[string]interface{}{"flavorRef": flavorRef},
-		},
+		ReqBody:     reqBody,
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})

@@ -172,7 +172,7 @@ func TestResizeServer(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := Resize(client.ServiceClient(), "1234asdf", "2")
+	res := Resize(client.ServiceClient(), "1234asdf", ResizeOpts{FlavorRef: "2"})
 	th.AssertNoErr(t, res.Err)
 }
 
