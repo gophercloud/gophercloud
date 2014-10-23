@@ -14,6 +14,10 @@ import (
 )
 
 func createServer(t *testing.T, client *gophercloud.ServiceClient) *os.Server {
+	if testing.Short(){
+		t.Skip("Skipping test that requires server creation in short mode.")
+	}
+
 	options, err := optionsFromEnv()
 	th.AssertNoErr(t, err)
 
