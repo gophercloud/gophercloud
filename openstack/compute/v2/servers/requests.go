@@ -485,7 +485,7 @@ func (opts ResizeOpts) ToServerResizeMap() (map[string]interface{}, error) {
 // While in this state, you can explore the use of the new server's configuration.
 // If you like it, call ConfirmResize() to commit the resize permanently.
 // Otherwise, call RevertResize() to restore the old configuration.
-func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOpts) ActionResult {
+func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder) ActionResult {
 	var res ActionResult
 	reqBody, err := opts.ToServerResizeMap()
 	if err != nil {
