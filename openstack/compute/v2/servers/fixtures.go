@@ -359,6 +359,26 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 	})
 }
 
+// HandleServerListSuccessfully sets up the test server to respond to a server List request.
+func HandleServerListSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, ServerListBody)
+		case "9e5476bd-a4ec-4653-93d6-72c93aa682ba":
+			fmt.Fprintf(w, `{ "servers": [] }`)
+		default:
+			t.Fatalf("/servers/detail invoked with unexpected marker=[%s]", marker)
+		}
+	})
+}
+
 // HandleServerDeletionSuccessfully sets up the test server to respond to a server deletion request.
 func HandleServerDeletionSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/asdfasdfasdf", func(w http.ResponseWriter, r *http.Request) {
@@ -366,6 +386,30 @@ func HandleServerDeletionSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleServerGetSuccessfully sets up the test server to respond to a server Get request.
+func HandleServerGetSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, SingleServerBody)
+	})
+}
+
+// HandleServerUpdateSuccessfully sets up the test server to respond to a server Update request.
+func HandleServerUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{ "server": { "name": "new-name" } }`)
+
+		fmt.Fprintf(w, SingleServerBody)
 	})
 }
 

@@ -1,6 +1,7 @@
 package testhelper
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"reflect"
@@ -9,25 +10,32 @@ import (
 	"testing"
 )
 
+const (
+	logBodyFmt = "\033[1;31m%s %s\033[0m"
+	greenCode  = "\033[0m\033[1;32m"
+	yellowCode = "\033[0m\033[1;33m"
+	resetCode  = "\033[0m\033[1;31m"
+)
+
 func prefix(depth int) string {
 	_, file, line, _ := runtime.Caller(depth)
 	return fmt.Sprintf("Failure in %s, line %d:", filepath.Base(file), line)
 }
 
 func green(str interface{}) string {
-	return fmt.Sprintf("\033[0m\033[1;32m%#v\033[0m\033[1;31m", str)
+	return fmt.Sprintf("%s%#v%s", greenCode, str, resetCode)
 }
 
 func yellow(str interface{}) string {
-	return fmt.Sprintf("\033[0m\033[1;33m%#v\033[0m\033[1;31m", str)
+	return fmt.Sprintf("%s%#v%s", yellowCode, str, resetCode)
 }
 
 func logFatal(t *testing.T, str string) {
-	t.Fatalf("\033[1;31m%s %s\033[0m", prefix(3), str)
+	t.Fatalf(logBodyFmt, prefix(3), str)
 }
 
 func logError(t *testing.T, str string) {
-	t.Errorf("\033[1;31m%s %s\033[0m", prefix(3), str)
+	t.Errorf(logBodyFmt, prefix(3), str)
 }
 
 type diffLogger func([]string, interface{}, interface{})
@@ -246,6 +254,58 @@ func CheckDeepEquals(t *testing.T, expected, actual interface{}) {
 			green(expected),
 			yellow(actual))
 	})
+}
+
+// isJSONEquals is a utility function that implements JSON comparison for AssertJSONEquals and
+// CheckJSONEquals.
+func isJSONEquals(t *testing.T, expectedJSON string, actual interface{}) bool {
+	var parsedExpected interface{}
+	err := json.Unmarshal([]byte(expectedJSON), &parsedExpected)
+	if err != nil {
+		t.Errorf("Unable to parse expected value as JSON: %v", err)
+		return false
+	}
+
+	if !reflect.DeepEqual(parsedExpected, actual) {
+		prettyExpected, err := json.MarshalIndent(parsedExpected, "", "  ")
+		if err != nil {
+			t.Logf("Unable to pretty-print expected JSON: %v\n%s", err, expectedJSON)
+		} else {
+			// We can't use green() here because %#v prints prettyExpected as a byte array literal, which
+			// is... unhelpful. Converting it to a string first leaves "\n" uninterpreted for some reason.
+			t.Logf("Expected JSON:\n%s%s%s", greenCode, prettyExpected, resetCode)
+		}
+
+		prettyActual, err := json.MarshalIndent(actual, "", "  ")
+		if err != nil {
+			t.Logf("Unable to pretty-print actual JSON: %v\n%#v", err, actual)
+		} else {
+			// We can't use yellow() for the same reason.
+			t.Logf("Actual JSON:\n%s%s%s", yellowCode, prettyActual, resetCode)
+		}
+
+		return false
+	}
+	return true
+}
+
+// AssertJSONEquals serializes a value as JSON, parses an expected string as JSON, and ensures that
+// both are consistent. If they aren't, the expected and actual structures are pretty-printed and
+// shown for comparison.
+//
+// This is useful for comparing structures that are built as nested map[string]interface{} values,
+// which are a pain to construct as literals.
+func AssertJSONEquals(t *testing.T, expectedJSON string, actual interface{}) {
+	if !isJSONEquals(t, expectedJSON, actual) {
+		logFatal(t, "The generated JSON structure differed.")
+	}
+}
+
+// CheckJSONEquals is similar to AssertJSONEquals, but nonfatal.
+func CheckJSONEquals(t *testing.T, expectedJSON string, actual interface{}) {
+	if !isJSONEquals(t, expectedJSON, actual) {
+		logError(t, "The generated JSON structure differed.")
+	}
 }
 
 // AssertNoErr is a convenience function for checking whether an error value is

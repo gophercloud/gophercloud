@@ -1,7 +1,6 @@
 package servers
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -13,23 +12,7 @@ import (
 func TestListServers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
-		marker := r.Form.Get("marker")
-		switch marker {
-		case "":
-			fmt.Fprintf(w, ServerListBody)
-		case "9e5476bd-a4ec-4653-93d6-72c93aa682ba":
-			fmt.Fprintf(w, `{ "servers": [] }`)
-		default:
-			t.Fatalf("/servers/detail invoked with unexpected marker=[%s]", marker)
-		}
-	})
+	HandleServerListSuccessfully(t)
 
 	pages := 0
 	err := List(client.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
@@ -83,14 +66,7 @@ func TestDeleteServer(t *testing.T) {
 func TestGetServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestHeader(t, r, "Accept", "application/json")
-
-		fmt.Fprintf(w, SingleServerBody)
-	})
+	HandleServerGetSuccessfully(t)
 
 	client := client.ServiceClient()
 	actual, err := Get(client, "1234asdf").Extract()
@@ -104,16 +80,7 @@ func TestGetServer(t *testing.T) {
 func TestUpdateServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestJSONRequest(t, r, `{ "server": { "name": "new-name" } }`)
-
-		fmt.Fprintf(w, SingleServerBody)
-	})
+	HandleServerUpdateSuccessfully(t)
 
 	client := client.ServiceClient()
 	actual, err := Update(client, "1234asdf", UpdateOpts{Name: "new-name"}).Extract()
@@ -172,7 +139,7 @@ func TestResizeServer(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := Resize(client.ServiceClient(), "1234asdf", "2")
+	res := Resize(client.ServiceClient(), "1234asdf", ResizeOpts{FlavorRef: "2"})
 	th.AssertNoErr(t, res.Err)
 }
 
