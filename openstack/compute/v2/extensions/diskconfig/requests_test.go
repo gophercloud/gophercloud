@@ -59,3 +59,27 @@ func TestRebuildOpts(t *testing.T) {
 	`
 	th.CheckJSONEquals(t, expected, actual)
 }
+
+func TestResizeOpts(t *testing.T) {
+	base := servers.ResizeOpts{
+		FlavorRef: "performance1-8",
+	}
+
+	ext := ResizeOptsExt{
+		ResizeOptsBuilder: base,
+		DiskConfig:        Auto,
+	}
+
+	actual, err := ext.ToServerResizeMap()
+	th.AssertNoErr(t, err)
+
+	expected := `
+		{
+			"resize": {
+				"flavorRef": "performance1-8",
+				"OS-DCF:diskConfig": "AUTO"
+			}
+		}
+	`
+	th.CheckJSONEquals(t, expected, actual)
+}
