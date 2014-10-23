@@ -4,13 +4,12 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/utils"
 	"github.com/rackspace/gophercloud/rackspace"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 func newClient() (*gophercloud.ServiceClient, error) {
-	opts, err := utils.AuthOptions()
+	opts, err := rackspace.AuthOptionsFromEnv()
 	if err != nil {
 		return nil, err
 	}
