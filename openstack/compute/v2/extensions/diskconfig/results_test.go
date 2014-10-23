@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	"github.com/rackspace/gophercloud/testhelper/client"
 )
@@ -45,4 +46,23 @@ func TestExtractRebuild(t *testing.T) {
 	config, err := ExtractRebuild(r)
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, Manual, *config)
+}
+
+func TestExtractList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	servers.HandleServerListSuccessfully(t)
+
+	pages := 0
+	err := servers.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		config, err := ExtractDiskConfig(page, 0)
+		th.AssertNoErr(t, err)
+		th.CheckEquals(t, Manual, *config)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, pages, 1)
 }

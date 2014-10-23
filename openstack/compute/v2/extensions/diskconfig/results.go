@@ -44,7 +44,7 @@ func ExtractDiskConfig(page pagination.Page, index int) (*DiskConfig, error) {
 	casted := page.(servers.ServerPage).Body
 
 	type server struct {
-		DiskConfig string `mapstructure:"OS-CDF:diskConfig"`
+		DiskConfig string `mapstructure:"OS-DCF:diskConfig"`
 	}
 	var response struct {
 		Servers []server `mapstructure:"servers"`
