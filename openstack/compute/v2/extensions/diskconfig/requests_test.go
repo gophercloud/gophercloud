@@ -34,7 +34,7 @@ func TestCreateOpts(t *testing.T) {
 
 func TestRebuildOpts(t *testing.T) {
 	base := servers.RebuildOpts{
-		Name:      "createdserver",
+		Name:      "rebuiltserver",
 		AdminPass: "swordfish",
 		ImageID:   "asdfasdfasdf",
 	}
@@ -50,7 +50,7 @@ func TestRebuildOpts(t *testing.T) {
 	expected := `
 		{
 			"rebuild": {
-				"name": "createdserver",
+				"name": "rebuiltserver",
 				"imageRef": "asdfasdfasdf",
 				"adminPass": "swordfish",
 				"OS-DCF:diskConfig": "AUTO"
