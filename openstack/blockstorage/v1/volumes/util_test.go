@@ -15,7 +15,7 @@ func TestWaitForStatus(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	th.Mux.HandleFunc("/volumes/1234", func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(2 * time.Second)
+		time.Sleep(3 * time.Second)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `
@@ -33,6 +33,6 @@ func TestWaitForStatus(t *testing.T) {
 		t.Errorf("Expected error: 'Time Out in WaitFor'")
 	}
 
-	err = WaitForStatus(client.ServiceClient(), "1234", "available", 3)
+	err = WaitForStatus(client.ServiceClient(), "1234", "available", 6)
 	th.CheckNoErr(t, err)
 }
