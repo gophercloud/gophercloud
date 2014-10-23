@@ -153,8 +153,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	s := fake.ServiceClient()
-	t.Logf("fake.serviceclient: %+v\n", s)
-	res := Delete(s, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	res := Delete(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 	th.AssertNoErr(t, res.Err)
 }

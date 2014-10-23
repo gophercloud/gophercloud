@@ -1,4 +1,4 @@
-// +build acceptance rackspace networking v2
+// +build acceptance rackspace
 
 package v2
 
@@ -6,24 +6,25 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/rackspace/networking/v2/networks"
+	"github.com/rackspace/gophercloud/rackspace/compute/v2/networks"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 func TestNetworks(t *testing.T) {
-	Setup(t)
-	defer Teardown()
+	client, err := newClient()
+	th.AssertNoErr(t, err)
 
 	// Create a network
-	n, err := networks.Create(Client, networks.CreateOpts{Label: "sample_network", CIDR: "172.20.0.0/24"}).Extract()
+	n, err := networks.Create(client, networks.CreateOpts{Label: "sample_network", CIDR: "172.20.0.0/24"}).Extract()
 	th.AssertNoErr(t, err)
-	defer networks.Delete(Client, n.ID)
+	t.Logf("Created network: %+v\n", n)
+	defer networks.Delete(client, n.ID)
 	th.AssertEquals(t, n.Label, "sample_network")
 	th.AssertEquals(t, n.CIDR, "172.20.0.0/24")
 	networkID := n.ID
 
 	// List networks
-	pager := networks.List(Client)
+	pager := networks.List(client)
 	err = pager.EachPage(func(page pagination.Page) (bool, error) {
 		t.Logf("--- Page ---")
 
@@ -43,9 +44,10 @@ func TestNetworks(t *testing.T) {
 	if networkID == "" {
 		t.Fatalf("In order to retrieve a network, the NetworkID must be set")
 	}
-	n, err = networks.Get(Client, networkID).Extract()
+	n, err = networks.Get(client, networkID).Extract()
+	t.Logf("Retrieved Network: %+v\n", n)
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, n.CIDR, "172.20.0.0/24")
+	th.AssertEquals(t, n.CIDR, "172.20.0.0/24")
 	th.AssertEquals(t, n.Label, "sample_network")
 	th.AssertEquals(t, n.ID, networkID)
 }
