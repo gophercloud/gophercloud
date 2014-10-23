@@ -369,6 +369,30 @@ func HandleServerDeletionSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleServerGetSuccessfully sets up the test server to respond to a server Get request.
+func HandleServerGetSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, SingleServerBody)
+	})
+}
+
+// HandleServerUpdateSuccessfully sets up the test server to respond to a server Update request.
+func HandleServerUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/1234asdf", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{ "server": { "name": "new-name" } }`)
+
+		fmt.Fprintf(w, SingleServerBody)
+	})
+}
+
 // HandleAdminPasswordChangeSuccessfully sets up the test server to respond to a server password
 // change request.
 func HandleAdminPasswordChangeSuccessfully(t *testing.T) {
