@@ -1,7 +1,6 @@
 package servers
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -13,23 +12,7 @@ import (
 func TestListServers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
-		marker := r.Form.Get("marker")
-		switch marker {
-		case "":
-			fmt.Fprintf(w, ServerListBody)
-		case "9e5476bd-a4ec-4653-93d6-72c93aa682ba":
-			fmt.Fprintf(w, `{ "servers": [] }`)
-		default:
-			t.Fatalf("/servers/detail invoked with unexpected marker=[%s]", marker)
-		}
-	})
+	HandleServerListSuccessfully(t)
 
 	pages := 0
 	err := List(client.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
