@@ -17,7 +17,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractVolumeTypes(page)
 		if err != nil {
@@ -45,9 +45,8 @@ func TestList(t *testing.T) {
 		return true, nil
 	})
 
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
+	th.AssertEquals(t, 1, count)
+	th.AssertNoErr(t, err)
 }
 
 func TestGet(t *testing.T) {
