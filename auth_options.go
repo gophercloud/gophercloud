@@ -1,24 +1,26 @@
 package gophercloud
 
-// AuthOptions lets anyone calling Authenticate() supply the required access credentials.
-// Its fields are the union of those recognized by each identity implementation and provider.
+// AuthOptions allows anyone calling Authenticate to supply the required access
+// credentials. Its fields are the union of those recognized by each identity
+// implementation and provider.
 type AuthOptions struct {
-
-	// IdentityEndpoint specifies the HTTP endpoint offering the Identity API of the appropriate version.
-	// Required by the identity services, but often populated by a provider Client.
+	// IdentityEndpoint specifies the HTTP endpoint that is required to work with
+	// the Identity API of the appropriate version. Required by the identity
+	// services, but often populated by a provider Client.
 	IdentityEndpoint string
 
-	// Username is required if using Identity V2 API.
-	// Consult with your provider's control panel to discover your account's username.
-	// In Identity V3, either UserID or a combination of Username and DomainID or DomainName.
+	// Username is required if using Identity V2 API. Consult with your provider's
+	// control panel to discover your account's username. In Identity V3, either
+	// UserID or a combination of Username and DomainID or DomainName.
 	Username, UserID string
 
-	// Exactly one of Password or ApiKey is required for the Identity V2 and V3 APIs.
-	// Consult with your provider's control panel to discover your account's preferred method of authentication.
+	// Exactly one of Password or ApiKey is required for the Identity V2 and V3
+	// APIs. Consult with your provider's control panel to discover your account's
+	// preferred method of authentication.
 	Password, APIKey string
 
-	// At most one of DomainID and DomainName must be provided if using Username with Identity V3.
-	// Otherwise, either are optional.
+	// At most one of DomainID and DomainName must be provided if using Username
+	// with Identity V3. Otherwise, either are optional.
 	DomainID, DomainName string
 
 	// The TenantID and TenantName fields are optional for the Identity V2 API.

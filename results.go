@@ -39,7 +39,8 @@ type Link struct {
 }
 
 // ExtractNextURL attempts to extract the next URL from a JSON structure. It
-// follows the common structure of nesting back and next links.
+// follows the common convention of nesting back and next URLs in a "links"
+// JSON array.
 func ExtractNextURL(links []Link) (string, error) {
 	var url string
 

@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-// WaitFor polls a predicate function once per second up to secs times to wait
-// for a certain state to arrive.
+// WaitFor polls a predicate function, once per second, up to a timeout limit.
+// It usually does this to wait for the resource to transition to a certain state.
 func WaitFor(timeout int, predicate func() (bool, error)) error {
 	start := time.Now().Second()
 	for {

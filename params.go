@@ -60,19 +60,21 @@ func isZero(v reflect.Value) bool {
 	return v.Interface() == z.Interface()
 }
 
-// BuildQueryString accepts a generic structure and parses it URL struct. It
-// converts field names into query names based on tags. So for example, this
-// type:
-//
-// struct {
-//    Bar string `q:"x_bar"`
-//    Baz int    `q:"lorem_ipsum"`
-// }{
-//    Bar: "XXX",
-//    Baz: "YYY",
-// }
-//
-// will be converted into ?x_bar=XXX&lorem_ipsum=YYYY
+/*
+BuildQueryString accepts a generic structure and parses it URL struct. It
+converts field names into query names based on "q" tags. So for example, this
+type:
+
+	struct {
+	   Bar string `q:"x_bar"`
+	   Baz int    `q:"lorem_ipsum"`
+	}{
+	   Bar: "XXX",
+	   Baz: "YYY",
+	}
+
+will be converted into ?x_bar=XXX&lorem_ipsum=YYYY
+*/
 func BuildQueryString(opts interface{}) (*url.URL, error) {
 	optsValue := reflect.ValueOf(opts)
 	if optsValue.Kind() == reflect.Ptr {
@@ -130,7 +132,7 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 	return nil, fmt.Errorf("Options type is not a struct.")
 }
 
-// BuildHeaders accepts a generic structure and parses it string map. It
+// BuildHeaders accepts a generic structure and parses it into a string map. It
 // converts field names into header names based on "h" tags, and field values
 // into header values by a simple one-to-one mapping.
 func BuildHeaders(opts interface{}) (map[string]string, error) {
