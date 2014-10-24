@@ -20,8 +20,7 @@ var numObjects = 2
 func TestObjects(t *testing.T) {
 	// Create a provider client for executing the HTTP request.
 	// See common.go for more information.
-	client, err := newClient()
-	th.AssertNoErr(err)
+	client := newClient()
 
 	// Make a slice of length numObjects to hold the random object names.
 	oNames := make([]string, numObjects)

@@ -17,8 +17,7 @@ var numContainers = 2
 
 func TestContainers(t *testing.T) {
 	// Create a new client to execute the HTTP requests. See common.go for newClient body.
-	client, err := newClient()
-	th.AssertNoErr(err)
+	client := newClient(t)
 
 	// Create a slice of random container names.
 	cNames := make([]string, numContainers)

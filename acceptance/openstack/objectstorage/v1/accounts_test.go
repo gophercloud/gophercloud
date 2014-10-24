@@ -13,8 +13,7 @@ import (
 func TestAccounts(t *testing.T) {
 	// Create a provider client for making the HTTP requests.
 	// See common.go in this directory for more information.
-	client, err := newClient()
-	th.AssertNoErr(t, err)
+	client := newClient(t)
 
 	// Update an account's metadata.
 	res = accounts.Update(client, accounts.UpdateOpts{Metadata: metadata})

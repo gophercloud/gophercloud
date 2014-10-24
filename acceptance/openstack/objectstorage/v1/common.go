@@ -4,6 +4,7 @@ package v1
 
 import (
 	"os"
+	"testing"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
@@ -12,7 +13,7 @@ import (
 
 var metadata = map[string]string{"gopher": "cloud"}
 
-func newClient() (*gophercloud.ServiceClient, error) {
+func newClient(t *testing.T) *gophercloud.ServiceClient {
 	ao, err := openstack.AuthOptionsFromEnv()
 	th.AssertNoErr(t, err)
 
@@ -21,5 +22,5 @@ func newClient() (*gophercloud.ServiceClient, error) {
 
 	return openstack.NewObjectStorageV1(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
-	}), nil
+	})
 }
