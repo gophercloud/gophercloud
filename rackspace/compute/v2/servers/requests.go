@@ -1,6 +1,7 @@
 package servers
 
 import (
+	"github.com/rackspace/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 	"github.com/rackspace/gophercloud/openstack/compute/v2/extensions/diskconfig"
 	os "github.com/rackspace/gophercloud/openstack/compute/v2/servers"
 )
@@ -51,6 +52,10 @@ type CreateOpts struct {
 	// DiskConfig [optional] controls how the created server's disk is partitioned. See the "diskconfig"
 	// extension in OpenStack compute v2.
 	DiskConfig diskconfig.DiskConfig
+
+	// BlockDevice [optional] will create the server from a volume, which is created from an image,
+	// a snapshot, or an another volume.
+	BlockDevice bootfromvolume.BlockDevice
 }
 
 // ToServerCreateMap constructs a request body using all of the OpenStack extensions that are
@@ -83,6 +88,8 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	// we need to add it manually.
 	serverMap := res["server"].(map[string]interface{})
 	serverMap["key_name"] = opts.KeyPair
+
+	serverMap["block_device_mapping_v2"] = opts.BlockDevice
 
 	return res, nil
 }
