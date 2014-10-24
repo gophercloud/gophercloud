@@ -10,9 +10,9 @@ var (
 	ErrEndpointNotFound = errors.New("No suitable endpoint could be found in the service catalog.")
 )
 
-// Availability describes the accessibility of a specific service endpoint.
-// Identity v2 lists these as different kinds of URLs ("adminURL", "internalURL", and "publicURL"), while
-// v3 lists them as "Interfaces".
+// Availability indicates whether a specific service endpoint is accessible.
+// Identity v2 lists these as different kinds of URLs ("adminURL",
+// "internalURL", and "publicURL"), while v3 lists them as "Interfaces".
 type Availability string
 
 const (
@@ -28,31 +28,33 @@ const (
 
 // EndpointOpts contains options for finding an endpoint for an Openstack client.
 type EndpointOpts struct {
-
 	// Type is the service type for the client (e.g., "compute", "object-store").
-	// Type is a required field.
+	// Required.
 	Type string
 
-	// Name is the service name for the client (e.g., "nova").
-	// Name is not a required field, but it is used if present.
-	// Services can have the same Type but a different Name, which is one example of when both Type and Name are needed.
+	// Name is the service name for the client (e.g., "nova") as it appears in
+	// the service catalog. Services can have the same Type but a different Name,
+	// which is why both Type and Name are sometimes needed. Optional.
 	Name string
 
-	// Region is the region in which the service resides.
-	// Region must be specified for services that span multiple regions.
+	// Region is the geographic region in which the service resides. Required only
+	// for services that span multiple regions.
 	Region string
 
-	// Availability is the visibility of the endpoint to be returned: AvailabilityPublic, AvailabilityInternal, or AvailabilityAdmin.
+	// Availability is the visibility of the endpoint to be returned. Valid types
+	// are: AvailabilityPublic, AvailabilityInternal, or AvailabilityAdmin.
 	// Availability is not required, and defaults to AvailabilityPublic.
 	// Not all providers or services offer all Availability options.
 	Availability Availability
 }
 
-// EndpointLocator is a function that describes how to locate a single endpoint from a service catalog for a specific ProviderClient.
-// It should be set during ProviderClient authentication and used to discover related ServiceClients.
+// EndpointLocator is a function that describes how to locate a single endpoint
+// from a service catalog for a specific ProviderClient. It should be set
+// during ProviderClient authentication and used to discover related ServiceClients.
 type EndpointLocator func(EndpointOpts) (string, error)
 
-// ApplyDefaults sets EndpointOpts fields if not already set. Currently, EndpointOpts.Availability defaults to the public endpoint.
+// ApplyDefaults sets EndpointOpts fields if not already set. Currently,
+// EndpointOpts.Availability defaults to the public endpoint.
 func (eo *EndpointOpts) ApplyDefaults(t string) {
 	if eo.Type == "" {
 		eo.Type = t
