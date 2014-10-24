@@ -15,46 +15,51 @@ import (
 // volume.
 type BlockDevice struct {
 	// BootIndex [optional] is the boot index. It defaults to 0.
-	BootIndex int
+	BootIndex int `json:"boot_index"`
 
 	// DeleteOnTermination [optional] specifies whether or not to delete the attached volume
 	// when the server is deleted. Defaults to `false`.
-	DeleteOnTermination bool
+	DeleteOnTermination bool `json:"delete_on_termination"`
 
 	// DestinationType [optional] is the type that gets created. Possible values are "volume"
 	// and "local".
-	DestinationType string
+	DestinationType string `json:"destination_type"`
 
 	// SourceType [optional] must be one of: "volume", "snapshot", "image".
-	SourceType string
+	SourceType string `json:"source_type"`
 
 	// UUID [optional] is the unique identifier for the volume, snapshot, or image (see above)
-	UUID string
+	UUID string `json:"uuid"`
 
 	// VolumeSize [optional] is the size of the volume to create (in gigabytes).
-	VolumeSize int
+	VolumeSize int `json:"volume_size"`
 }
 
 // CreateOptsExt is a structure that extends the server `CreateOpts` structure
 // by allowing for a block device mapping.
 type CreateOptsExt struct {
 	servers.CreateOptsBuilder
-	BlockDevice BlockDevice
+	BlockDevice BlockDevice `json:"block_device_mapping_v2,omitempty"`
 }
 
 // ToServerCreateMap adds the block device mapping option to the base server
 // creation options.
 func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
+	base, err := opts.CreateOptsBuilder.ToServerCreateMap()
+	if err != nil {
+		return nil, err
+	}
+
+	var blockDevice BlockDevice
+	if opts.BlockDevice == blockDevice {
+		return base, nil
+	}
+
 	if opts.BlockDevice.SourceType != "volume" &&
 		opts.BlockDevice.SourceType != "image" &&
 		opts.BlockDevice.SourceType != "snapshot" &&
 		opts.BlockDevice.SourceType != "" {
 		return nil, errors.New("SourceType must be one of: volume, image, snapshot, [blank].")
-	}
-
-	base, err := opts.CreateOptsBuilder.ToServerCreateMap()
-	if err != nil {
-		return nil, err
 	}
 
 	serverMap := base["server"].(map[string]interface{})
@@ -77,8 +82,8 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a server from the given block device mapping.
-func Create(client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) servers.CreateResult {
-	var res servers.CreateResult
+func Create(client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) CreateResult {
+	var res CreateResult
 
 	reqBody, err := opts.ToServerCreateMap()
 	if err != nil {
@@ -90,7 +95,8 @@ func Create(client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) s
 		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     reqBody,
 		Results:     &res.Body,
-		OkCodes:     []int{200},
+		OkCodes:     []int{200, 202},
+		DumpReqJson: true,
 	})
 	return res
 }

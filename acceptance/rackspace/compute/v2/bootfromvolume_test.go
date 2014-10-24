@@ -5,7 +5,9 @@ package v2
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
+	osBFV "github.com/rackspace/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
+	"github.com/rackspace/gophercloud/rackspace/compute/v2/bootfromvolume"
+	"github.com/rackspace/gophercloud/rackspace/compute/v2/servers"
 	th "github.com/rackspace/gophercloud/testhelper"
 	"github.com/smashwilson/gophercloud/acceptance/tools"
 )
@@ -24,15 +26,19 @@ func TestBootFromVolume(t *testing.T) {
 	name := tools.RandomString("Gophercloud-", 8)
 	t.Logf("Creating server [%s].", name)
 
-	bd := bootfromvolume.BlockDevice{
+	bd := osBFV.BlockDevice{
 		UUID:       options.imageID,
 		SourceType: "image",
+		VolumeSize: 10,
 	}
 
-	server, err := bootfromvolume.Create(client, bootfromvolume.CreateOptsExt{
+	server, err := bootfromvolume.Create(client, servers.CreateOpts{
 		Name:        name,
+		FlavorRef:   "performance1-1",
 		BlockDevice: bd,
 	}).Extract()
 	th.AssertNoErr(t, err)
-	//defer deleteServer(t, client, server)
+	t.Logf("Created server: %+v\n", server)
+	defer deleteServer(t, client, server)
+	t.Logf("Deleting server [%s]...", name)
 }

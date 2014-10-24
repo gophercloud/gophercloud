@@ -89,7 +89,10 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	serverMap := res["server"].(map[string]interface{})
 	serverMap["key_name"] = opts.KeyPair
 
-	serverMap["block_device_mapping_v2"] = opts.BlockDevice
+	var bd bootfromvolume.BlockDevice
+	if opts.BlockDevice != bd {
+		serverMap["block_device_mapping_v2"] = []bootfromvolume.BlockDevice{opts.BlockDevice}
+	}
 
 	return res, nil
 }
