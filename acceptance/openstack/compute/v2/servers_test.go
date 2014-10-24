@@ -3,7 +3,6 @@
 package v2
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -42,7 +41,7 @@ func TestListServers(t *testing.T) {
 		return true, nil
 	})
 
-	fmt.Printf("--------\n%d servers listed on %d pages.\n", count, pages)
+	t.Logf("--------\n%d servers listed on %d pages.\n", count, pages)
 }
 
 func networkingClient() (*gophercloud.ServiceClient, error) {
