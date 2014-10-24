@@ -84,11 +84,6 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	// key_name doesn't actually come from the extension (or at least isn't documented there) so
-	// we need to add it manually.
-	serverMap := res["server"].(map[string]interface{})
-	serverMap["key_name"] = opts.KeyPair
-
 	if len(opts.BlockDevice) != 0 {
 		bfv := bootfromvolume.CreateOptsExt{
 			CreateOptsBuilder: drive,
@@ -100,6 +95,11 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 	}
+
+	// key_name doesn't actually come from the extension (or at least isn't documented there) so
+	// we need to add it manually.
+	serverMap := res["server"].(map[string]interface{})
+	serverMap["key_name"] = opts.KeyPair
 
 	return res, nil
 }
