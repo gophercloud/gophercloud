@@ -32,7 +32,7 @@ fork as `origin` instead:
 the branches):
 
    ```bash
-   git checkout v0.2.0
+   git checkout release/v1.0.1
    ```
 
 5. If you're working on something (discussed more in detail below), you will
