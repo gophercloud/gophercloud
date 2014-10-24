@@ -32,7 +32,7 @@ func TestListFlavors(t *testing.T) {
 	})
 
 	count := 0
-	err := List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := ListDetail(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
 		actual, err := ExtractFlavors(page)
 		th.AssertNoErr(t, err)
 		th.CheckDeepEquals(t, ExpectedFlavorSlice, actual)

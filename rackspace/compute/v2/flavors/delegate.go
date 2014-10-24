@@ -30,9 +30,9 @@ func (opts ListOpts) ToFlavorListQuery() (string, error) {
 	return q.String(), nil
 }
 
-// List enumerates the server images available to your account.
-func List(client *gophercloud.ServiceClient, opts os.ListOptsBuilder) pagination.Pager {
-	return os.List(client, opts)
+// ListDetail enumerates the server images available to your account.
+func ListDetail(client *gophercloud.ServiceClient, opts os.ListOptsBuilder) pagination.Pager {
+	return os.ListDetail(client, opts)
 }
 
 // Get returns details about a single flavor, identity by ID.

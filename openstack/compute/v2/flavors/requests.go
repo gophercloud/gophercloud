@@ -41,10 +41,10 @@ func (opts ListOpts) ToFlavorListQuery() (string, error) {
 	return q.String(), nil
 }
 
-// List instructs OpenStack to provide a list of flavors.
+// ListDetail instructs OpenStack to provide a list of flavors.
 // You may provide criteria by which List curtails its results for easier processing.
 // See ListOpts for more details.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToFlavorListQuery()

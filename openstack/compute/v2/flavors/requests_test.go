@@ -60,7 +60,7 @@ func TestListFlavors(t *testing.T) {
 	})
 
 	pages := 0
-	err := List(fake.ServiceClient(), &ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := ListDetail(fake.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := ExtractFlavors(page)
