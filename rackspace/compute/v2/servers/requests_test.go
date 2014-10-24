@@ -27,7 +27,9 @@ func TestCreateOpts(t *testing.T) {
 		}
 	}
 	`
-	th.CheckJSONEquals(t, expected, opts.ToServerCreateMap())
+	actual, err := opts.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, expected, actual)
 }
 
 func TestRebuildOpts(t *testing.T) {

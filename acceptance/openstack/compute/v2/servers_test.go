@@ -63,7 +63,7 @@ func networkingClient() (*gophercloud.ServiceClient, error) {
 }
 
 func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *ComputeChoices) (*servers.Server, error) {
-	if testing.Short(){
+	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 

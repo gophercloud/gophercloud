@@ -45,13 +45,16 @@ type CreateOptsExt struct {
 }
 
 // ToServerCreateMap adds the diskconfig option to the base server creation options.
-func (opts CreateOptsExt) ToServerCreateMap() map[string]interface{} {
-	base := opts.CreateOptsBuilder.ToServerCreateMap()
+func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
+	base, err := opts.CreateOptsBuilder.ToServerCreateMap()
+	if err != nil {
+		return nil, err
+	}
 
 	serverMap := base["server"].(map[string]interface{})
 	serverMap["OS-DCF:diskConfig"] = string(opts.DiskConfig)
 
-	return base
+	return base, nil
 }
 
 // RebuildOptsExt adds a DiskConfig option to the base RebuildOpts.

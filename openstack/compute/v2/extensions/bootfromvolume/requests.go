@@ -1,31 +1,34 @@
 package bootfromvolume
 
 import (
-  "errors"
+	"errors"
 
-  "github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
 )
 
 type CreateOptsExt struct {
 	servers.CreateOptsBuilder
-	BlockDeviceMapping BlockDeviceMapping
+	BDM BlockDeviceMapping
 }
 
 // ToServerCreateMap adds the block device mapping option to the base server
 // creation options.
 func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
-  if opts.SourceType != "volume" && opts.SourceType != "image" && opts.SourceType != "snapshot" {
-    return nil, errors.New("SourceType must be one of: volume, image, snapshot.")
-  }
+	if opts.BDM.SourceType != "volume" && opts.BDM.SourceType != "image" && opts.BDM.SourceType != "snapshot" {
+		return nil, errors.New("SourceType must be one of: volume, image, snapshot.")
+	}
 
-  if opts.UUID == "" {
-    return nil, errors.New("Required field UUID not set.")
-  }
+	if opts.BDM.UUID == "" {
+		return nil, errors.New("Required field UUID not set.")
+	}
 
-  base := opts.CreateOptsBuilder.ToServerCreateMap()
+	base, err := opts.CreateOptsBuilder.ToServerCreateMap()
+	if err != nil {
+		return nil, err
+	}
 
-  serverMap := base["server"].(map[string]interface{})
-  serverMap["block_device_mapping_v2"] = opts.BlockDeviceMapping
+	serverMap := base["server"].(map[string]interface{})
+	serverMap["block_device_mapping_v2"] = opts.BDM
 
-  return base
+	return base, nil
 }

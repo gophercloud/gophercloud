@@ -79,7 +79,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // CreateOptsBuilder describes struct types that can be accepted by the Create call.
 // The CreateOpts struct in this package does.
 type CreateOptsBuilder interface {
-	ToServerCreateMap() map[string]interface{}
+	ToServerCreateMap() (map[string]interface{}, error)
 }
 
 // Network is used within CreateOpts to control a new server's network attachments.
@@ -134,7 +134,7 @@ type CreateOpts struct {
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a CreateOpts.
-func (opts CreateOpts) ToServerCreateMap() map[string]interface{} {
+func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	server := make(map[string]interface{})
 
 	server["name"] = opts.Name
@@ -183,19 +183,26 @@ func (opts CreateOpts) ToServerCreateMap() map[string]interface{} {
 		server["networks"] = networks
 	}
 
-	return map[string]interface{}{"server": server}
+	return map[string]interface{}{"server": server}, nil
 }
 
 // Create requests a server to be provisioned to the user in the current tenant.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var result CreateResult
-	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
-		Results:     &result.Body,
-		ReqBody:     opts.ToServerCreateMap(),
+	var res CreateResult
+
+	reqBody, err := opts.ToServerCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
+	_, res.Err = perigee.Request("POST", listURL(client), perigee.Options{
+		Results:     &res.Body,
+		ReqBody:     reqBody,
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
-	return result
+	return res
 }
 
 // Delete requests that a server previously provisioned be removed from your account.
