@@ -49,7 +49,6 @@ func List(c *gophercloud.ServiceClient, containerName string, opts ListOptsBuild
 	if opts != nil {
 		full, query, err := opts.ToObjectListParams()
 		if err != nil {
-			fmt.Printf("Error building query string: %v", err)
 			return pagination.Pager{Err: err}
 		}
 		url += query
