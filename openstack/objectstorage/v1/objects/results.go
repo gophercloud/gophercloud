@@ -2,7 +2,6 @@ package objects
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/rackspace/gophercloud"
@@ -96,9 +95,13 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 	}
 }
 
+type commonResult struct {
+	gophercloud.Result
+}
+
 // DownloadResult is a *http.Response that is returned from a call to the Download function.
 type DownloadResult struct {
-	gophercloud.Result
+	commonResult
 }
 
 // ExtractContent is a function that takes a DownloadResult (of type *http.Response)
@@ -112,7 +115,7 @@ func (dr DownloadResult) ExtractContent() ([]byte, error) {
 
 // GetResult is a *http.Response that is returned from a call to the Get function.
 type GetResult struct {
-	gophercloud.Result
+	commonResult
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -131,32 +134,22 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 	return metadata, nil
 }
 
-type headerResult struct {
-	gophercloud.Result
-}
-
-// Extract returns the unmodified HTTP response headers from a Create, Update, or Delete call, as
-// well as any errors that occurred during the call.
-func (result headerResult) Extract() (http.Header, error) {
-	return result.Header, result.Err
-}
-
 // CreateResult represents the result of a create operation.
 type CreateResult struct {
-	headerResult
+	commonResult
 }
 
 // UpdateResult represents the result of an update operation.
 type UpdateResult struct {
-	headerResult
+	commonResult
 }
 
 // DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
-	headerResult
+	commonResult
 }
 
 // CopyResult represents the result of a copy operation.
 type CopyResult struct {
-	headerResult
+	commonResult
 }

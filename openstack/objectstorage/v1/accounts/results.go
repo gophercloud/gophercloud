@@ -1,7 +1,6 @@
 package accounts
 
 import (
-	"net/http"
 	"strings"
 
 	"github.com/rackspace/gophercloud"
@@ -32,10 +31,4 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 // UpdateResult is returned from a call to the Update function.
 type UpdateResult struct {
 	gophercloud.Result
-}
-
-// Extract returns the unmodified HTTP headers and any error conditions encountered during the
-// metadata update.
-func (ur UpdateResult) Extract() (http.Header, error) {
-	return ur.Header, ur.Err
 }

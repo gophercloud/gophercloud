@@ -13,12 +13,11 @@ import (
 func TestAccounts(t *testing.T) {
 	// Create a provider client for making the HTTP requests.
 	// See common.go in this directory for more information.
-	client, err := newClient()
-	th.AssertNoErr(t, err)
+	client := newClient(t)
 
 	// Update an account's metadata.
-	res = accounts.Update(client, accounts.UpdateOpts{Metadata: metadata})
-	th.AssertNoErr(t, res.Err)
+	updateres := accounts.Update(client, accounts.UpdateOpts{Metadata: metadata})
+	th.AssertNoErr(t, updateres.Err)
 
 	// Defer the deletion of the metadata set above.
 	defer func() {
@@ -26,15 +25,16 @@ func TestAccounts(t *testing.T) {
 		for k := range metadata {
 			tempMap[k] = ""
 		}
-		res = accounts.Update(client, accounts.UpdateOpts{Metadata: tempMap})
-		th.AssertNoErr(t, res.Err)
+		updateres = accounts.Update(client, accounts.UpdateOpts{Metadata: tempMap})
+		th.AssertNoErr(t, updateres.Err)
 	}()
 
 	// Retrieve account metadata.
-	res := accounts.Get(client, accounts.GetOpts{})
-	th.AssertNoErr(res.Err)
+	getres := accounts.Get(client, nil)
+	th.AssertNoErr(t, getres.Err)
 	// Extract the custom metadata from the 'Get' response.
-	am := accounts.ExtractMetadata(gr)
+	am, err := getres.ExtractMetadata()
+	th.AssertNoErr(t, err)
 	for k := range metadata {
 		if am[k] != metadata[strings.Title(k)] {
 			t.Errorf("Expected custom metadata with key: %s", k)

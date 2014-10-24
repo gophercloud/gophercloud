@@ -17,21 +17,21 @@ func TestObjects(t *testing.T) {
 	c, err := createClient(t, false)
 	th.AssertNoErr(t, err)
 
-	_, err = raxContainers.Create(c, "gophercloud-test", nil).ExtractHeaders()
-	th.AssertNoErr(t, err)
+	res := raxContainers.Create(c, "gophercloud-test", nil)
+	th.AssertNoErr(t, res.Err)
 
 	defer func() {
-		_, err := raxContainers.Delete(c, "gophercloud-test").ExtractHeaders()
-		th.AssertNoErr(t, err)
+		res := raxContainers.Delete(c, "gophercloud-test")
+		th.AssertNoErr(t, res.Err)
 	}()
 
 	content := bytes.NewBufferString("Lewis Carroll")
 	options := &osObjects.CreateOpts{ContentType: "text/plain"}
-	_, err = raxObjects.Create(c, "gophercloud-test", "o1", content, options).ExtractHeaders()
-	th.AssertNoErr(t, err)
+	createres := raxObjects.Create(c, "gophercloud-test", "o1", content, options)
+	th.AssertNoErr(t, createres.Err)
 	defer func() {
-		_, err := raxObjects.Delete(c, "gophercloud-test", "o1", nil).ExtractHeaders()
-		th.AssertNoErr(t, err)
+		res := raxObjects.Delete(c, "gophercloud-test", "o1", nil)
+		th.AssertNoErr(t, res.Err)
 	}()
 
 	t.Logf("Objects Info available to the currently issued token:")
@@ -77,11 +77,11 @@ func TestObjects(t *testing.T) {
 		t.Errorf("No objects listed for your current token.")
 	}
 
-	_, err = raxObjects.Copy(c, "gophercloud-test", "o1", &raxObjects.CopyOpts{Destination: "gophercloud-test/o2"}).ExtractHeaders()
-	th.AssertNoErr(t, err)
+	copyres := raxObjects.Copy(c, "gophercloud-test", "o1", &raxObjects.CopyOpts{Destination: "gophercloud-test/o2"})
+	th.AssertNoErr(t, copyres.Err)
 	defer func() {
-		_, err := raxObjects.Delete(c, "gophercloud-test", "o2", nil).ExtractHeaders()
-		th.AssertNoErr(t, err)
+		res := raxObjects.Delete(c, "gophercloud-test", "o2", nil)
+		th.AssertNoErr(t, res.Err)
 	}()
 
 	o1Content, err := raxObjects.Download(c, "gophercloud-test", "o1", nil).ExtractContent()
@@ -90,23 +90,22 @@ func TestObjects(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, string(o2Content), string(o1Content))
 
-	headers, err := raxObjects.Update(c, "gophercloud-test", "o2", osObjects.UpdateOpts{Metadata: map[string]string{"white": "mountains"}}).ExtractHeaders()
-	th.AssertNoErr(t, err)
-	t.Logf("Headers from Update Account request: %+v\n", headers)
+	updateres := raxObjects.Update(c, "gophercloud-test", "o2", osObjects.UpdateOpts{Metadata: map[string]string{"white": "mountains"}})
+	th.AssertNoErr(t, updateres.Err)
+	t.Logf("Headers from Update Account request: %+v\n", updateres.Header)
 	defer func() {
-		_, err := raxObjects.Update(c, "gophercloud-test", "o2", osObjects.UpdateOpts{Metadata: map[string]string{"white": ""}}).ExtractHeaders()
-		th.AssertNoErr(t, err)
+		res := raxObjects.Update(c, "gophercloud-test", "o2", osObjects.UpdateOpts{Metadata: map[string]string{"white": ""}})
+		th.AssertNoErr(t, res.Err)
 		metadata, err := raxObjects.Get(c, "gophercloud-test", "o2", nil).ExtractMetadata()
 		th.AssertNoErr(t, err)
 		t.Logf("Metadata from Get Account request (after update reverted): %+v\n", metadata)
 		th.CheckEquals(t, metadata["White"], "")
 	}()
 
-	getResult := raxObjects.Get(c, "gophercloud-test", "o2", nil)
-	headers, err = getResult.ExtractHeaders()
-	th.AssertNoErr(t, err)
-	t.Logf("Headers from Get Account request (after update): %+v\n", headers)
-	metadata, err := getResult.ExtractMetadata()
+	getres := raxObjects.Get(c, "gophercloud-test", "o2", nil)
+	th.AssertNoErr(t, getres.Err)
+	t.Logf("Headers from Get Account request (after update): %+v\n", getres.Header)
+	metadata, err := getres.ExtractMetadata()
 	th.AssertNoErr(t, err)
 	t.Logf("Metadata from Get Account request (after update): %+v\n", metadata)
 	th.CheckEquals(t, metadata["White"], "mountains")
