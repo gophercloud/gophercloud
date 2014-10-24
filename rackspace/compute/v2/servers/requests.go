@@ -1,6 +1,7 @@
 package servers
 
 import (
+	"github.com/rackspace/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 	"github.com/rackspace/gophercloud/openstack/compute/v2/extensions/diskconfig"
 	os "github.com/rackspace/gophercloud/openstack/compute/v2/servers"
 )
@@ -51,11 +52,15 @@ type CreateOpts struct {
 	// DiskConfig [optional] controls how the created server's disk is partitioned. See the "diskconfig"
 	// extension in OpenStack compute v2.
 	DiskConfig diskconfig.DiskConfig
+
+	// BlockDevice [optional] will create the server from a volume, which is created from an image,
+	// a snapshot, or an another volume.
+	BlockDevice []bootfromvolume.BlockDevice
 }
 
 // ToServerCreateMap constructs a request body using all of the OpenStack extensions that are
 // active on Rackspace.
-func (opts CreateOpts) ToServerCreateMap() map[string]interface{} {
+func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	base := os.CreateOpts{
 		Name:             opts.Name,
 		ImageRef:         opts.ImageRef,
@@ -74,14 +79,29 @@ func (opts CreateOpts) ToServerCreateMap() map[string]interface{} {
 		DiskConfig:        opts.DiskConfig,
 	}
 
-	result := drive.ToServerCreateMap()
+	res, err := drive.ToServerCreateMap()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(opts.BlockDevice) != 0 {
+		bfv := bootfromvolume.CreateOptsExt{
+			CreateOptsBuilder: drive,
+			BlockDevice:       opts.BlockDevice,
+		}
+
+		res, err = bfv.ToServerCreateMap()
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	// key_name doesn't actually come from the extension (or at least isn't documented there) so
 	// we need to add it manually.
-	serverMap := result["server"].(map[string]interface{})
+	serverMap := res["server"].(map[string]interface{})
 	serverMap["key_name"] = opts.KeyPair
 
-	return result
+	return res, nil
 }
 
 // RebuildOpts represents all of the configuration options used in a server rebuild operation that

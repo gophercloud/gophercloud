@@ -259,14 +259,19 @@ func CheckDeepEquals(t *testing.T, expected, actual interface{}) {
 // isJSONEquals is a utility function that implements JSON comparison for AssertJSONEquals and
 // CheckJSONEquals.
 func isJSONEquals(t *testing.T, expectedJSON string, actual interface{}) bool {
-	var parsedExpected interface{}
+	var parsedExpected, parsedActual interface{}
 	err := json.Unmarshal([]byte(expectedJSON), &parsedExpected)
 	if err != nil {
 		t.Errorf("Unable to parse expected value as JSON: %v", err)
 		return false
 	}
 
-	if !reflect.DeepEqual(parsedExpected, actual) {
+	jsonActual, err := json.Marshal(actual)
+	AssertNoErr(t, err)
+	err = json.Unmarshal(jsonActual, &parsedActual)
+	AssertNoErr(t, err)
+
+	if !reflect.DeepEqual(parsedExpected, parsedActual) {
 		prettyExpected, err := json.MarshalIndent(parsedExpected, "", "  ")
 		if err != nil {
 			t.Logf("Unable to pretty-print expected JSON: %v\n%s", err, expectedJSON)

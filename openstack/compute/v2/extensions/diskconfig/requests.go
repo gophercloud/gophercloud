@@ -41,17 +41,24 @@ type CreateOptsExt struct {
 	servers.CreateOptsBuilder
 
 	// DiskConfig [optional] controls how the created server's disk is partitioned.
-	DiskConfig DiskConfig
+	DiskConfig DiskConfig `json:"OS-DCF:diskConfig,omitempty"`
 }
 
 // ToServerCreateMap adds the diskconfig option to the base server creation options.
-func (opts CreateOptsExt) ToServerCreateMap() map[string]interface{} {
-	base := opts.CreateOptsBuilder.ToServerCreateMap()
+func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
+	base, err := opts.CreateOptsBuilder.ToServerCreateMap()
+	if err != nil {
+		return nil, err
+	}
+
+	if string(opts.DiskConfig) == "" {
+		return base, nil
+	}
 
 	serverMap := base["server"].(map[string]interface{})
 	serverMap["OS-DCF:diskConfig"] = string(opts.DiskConfig)
 
-	return base
+	return base, nil
 }
 
 // RebuildOptsExt adds a DiskConfig option to the base RebuildOpts.
