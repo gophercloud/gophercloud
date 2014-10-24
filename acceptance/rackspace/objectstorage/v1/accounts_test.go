@@ -13,11 +13,11 @@ func TestAccounts(t *testing.T) {
 	c, err := createClient(t, false)
 	th.AssertNoErr(t, err)
 
-	headers, err := raxAccounts.Update(c, raxAccounts.UpdateOpts{Metadata: map[string]string{"white": "mountains"}}).ExtractHeaders()
+	headers, err := raxAccounts.Update(c, raxAccounts.UpdateOpts{Metadata: map[string]string{"white": "mountains"}}).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Headers from Update Account request: %+v\n", headers)
 	defer func() {
-		_, err := raxAccounts.Update(c, raxAccounts.UpdateOpts{Metadata: map[string]string{"white": ""}}).ExtractHeaders()
+		_, err := raxAccounts.Update(c, raxAccounts.UpdateOpts{Metadata: map[string]string{"white": ""}}).Extract()
 		th.AssertNoErr(t, err)
 		metadata, err := raxAccounts.Get(c).ExtractMetadata()
 		th.AssertNoErr(t, err)
@@ -25,11 +25,7 @@ func TestAccounts(t *testing.T) {
 		th.CheckEquals(t, metadata["White"], "")
 	}()
 
-	getResult := raxAccounts.Get(c)
-	headers, err = getResult.ExtractHeaders()
-	th.AssertNoErr(t, err)
-	t.Logf("Headers from Get Account request (after update): %+v\n", headers)
-	metadata, err := getResult.ExtractMetadata()
+	metadata, err := raxAccounts.Get(c).ExtractMetadata()
 	th.AssertNoErr(t, err)
 	t.Logf("Metadata from Get Account request (after update): %+v\n", metadata)
 

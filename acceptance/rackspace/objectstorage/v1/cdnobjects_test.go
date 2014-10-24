@@ -17,30 +17,30 @@ func TestCDNObjects(t *testing.T) {
 	raxClient, err := createClient(t, false)
 	th.AssertNoErr(t, err)
 
-	headers, err := raxContainers.Create(raxClient, "gophercloud-test", nil).ExtractHeaders()
-	th.AssertNoErr(t, err)
-	t.Logf("Headers from Create Container request: %+v\n", headers)
+	createContResult := raxContainers.Create(raxClient, "gophercloud-test", nil)
+	th.AssertNoErr(t, createContResult.Err)
+	t.Logf("Headers from Create Container request: %+v\n", createContResult.Header)
 	defer func() {
-		_, err := raxContainers.Delete(raxClient, "gophercloud-test").ExtractHeaders()
-		th.AssertNoErr(t, err)
+		deleteResult := raxContainers.Delete(raxClient, "gophercloud-test")
+		th.AssertNoErr(t, deleteResult.Err)
 	}()
 
-	headers, err = raxObjects.Create(raxClient, "gophercloud-test", "test-object", bytes.NewBufferString("gophercloud cdn test"), nil).ExtractHeaders()
-	th.AssertNoErr(t, err)
-	t.Logf("Headers from Create Object request: %+v\n", headers)
+	createObjResult := raxObjects.Create(raxClient, "gophercloud-test", "test-object", bytes.NewBufferString("gophercloud cdn test"), nil)
+	th.AssertNoErr(t, createObjResult.Err)
+	t.Logf("Headers from Create Object request: %+v\n", createObjResult.Header)
 	defer func() {
-		_, err := raxObjects.Delete(raxClient, "gophercloud-test", "test-object", nil).ExtractHeaders()
-		th.AssertNoErr(t, err)
+		deleteResult := raxObjects.Delete(raxClient, "gophercloud-test", "test-object", nil)
+		th.AssertNoErr(t, deleteResult.Err)
 	}()
 
 	raxCDNClient, err := createClient(t, true)
 	th.AssertNoErr(t, err)
 
-	headers, err = raxCDNContainers.Enable(raxCDNClient, "gophercloud-test", raxCDNContainers.EnableOpts{CDNEnabled: true, TTL: 900}).ExtractHeaders()
-	th.AssertNoErr(t, err)
-	t.Logf("Headers from Enable CDN Container request: %+v\n", headers)
+	enableResult := raxCDNContainers.Enable(raxCDNClient, "gophercloud-test", raxCDNContainers.EnableOpts{CDNEnabled: true, TTL: 900})
+	th.AssertNoErr(t, enableResult.Err)
+	t.Logf("Headers from Enable CDN Container request: %+v\n", enableResult.Header)
 
-	headers, err = raxCDNObjects.Delete(raxCDNClient, "gophercloud-test", "test-object", nil).ExtractHeaders()
-	th.AssertNoErr(t, err)
-	t.Logf("Headers from Delete CDN Object request: %+v\n", headers)
+	deleteResult := raxCDNObjects.Delete(raxCDNClient, "gophercloud-test", "test-object", nil)
+	th.AssertNoErr(t, deleteResult.Err)
+	t.Logf("Headers from Delete CDN Object request: %+v\n", deleteResult.Err)
 }
