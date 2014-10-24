@@ -62,7 +62,7 @@ func networkingClient() (*gophercloud.ServiceClient, error) {
 }
 
 func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *ComputeChoices) (*servers.Server, error) {
-	if testing.Short(){
+	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
@@ -318,7 +318,10 @@ func resizeServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 
 	t.Logf("Attempting to resize server [%s]", server.ID)
 
-	if res := servers.Resize(client, server.ID, choices.FlavorIDResize); res.Err != nil {
+	opts := &servers.ResizeOpts{
+		FlavorRef: choices.FlavorIDResize,
+	}
+	if res := servers.Resize(client, server.ID, opts); res.Err != nil {
 		t.Fatal(res.Err)
 	}
 
