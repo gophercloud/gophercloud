@@ -16,7 +16,7 @@ func TestVirtualInterfaces(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Create a server
-	server := createServer(t, client)
+	server := createServer(t, client, "")
 	t.Logf("Created Server: %v\n", server)
 	defer deleteServer(t, client, server)
 	serverID := server.ID

@@ -38,14 +38,20 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, keyName strin
 	th.AssertNoErr(t, err)
 
 	name := tools.RandomString("Gophercloud-", 8)
-	t.Logf("Creating server [%s].", name)
-	s, err := servers.Create(client, &servers.CreateOpts{
+
+	opts := &servers.CreateOpts{
 		Name:       name,
 		ImageRef:   options.imageID,
 		FlavorRef:  options.flavorID,
-		KeyPair:    keyName,
 		DiskConfig: diskconfig.Manual,
-	}).Extract()
+	}
+
+	if keyName != "" {
+		opts.KeyPair = keyName
+	}
+
+	t.Logf("Creating server [%s].", name)
+	s, err := servers.Create(client, opts).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Creating server.")
 

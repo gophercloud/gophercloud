@@ -39,8 +39,6 @@ func (current LinkedPageBase) NextPageURL() (string, error) {
 			return "", nil
 		}
 
-		fmt.Printf("key = %#v, path = %#v, value = %#v\n", key, path, value)
-
 		if len(path) > 0 {
 			submap, ok = value.(map[string]interface{})
 			if !ok {

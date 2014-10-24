@@ -3,7 +3,6 @@
 package v1
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -68,7 +67,7 @@ func TestVolumes(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	fmt.Printf("Got volume: %+v\n", v)
+	t.Logf("Got volume: %+v\n", v)
 
 	if v.Name != "gophercloud-updated-volume" {
 		t.Errorf("Unable to update volume: Expected name: gophercloud-updated-volume\nActual name: %s", v.Name)

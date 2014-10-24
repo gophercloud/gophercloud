@@ -3,7 +3,6 @@
 package v2
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -42,7 +41,7 @@ func TestListServers(t *testing.T) {
 		return true, nil
 	})
 
-	fmt.Printf("--------\n%d servers listed on %d pages.\n", count, pages)
+	t.Logf("--------\n%d servers listed on %d pages.\n", count, pages)
 }
 
 func networkingClient() (*gophercloud.ServiceClient, error) {
@@ -319,7 +318,10 @@ func resizeServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 
 	t.Logf("Attempting to resize server [%s]", server.ID)
 
-	if res := servers.Resize(client, server.ID, choices.FlavorIDResize); res.Err != nil {
+	opts := &servers.ResizeOpts{
+		FlavorRef: choices.FlavorIDResize,
+	}
+	if res := servers.Resize(client, server.ID, opts); res.Err != nil {
 		t.Fatal(res.Err)
 	}
 
