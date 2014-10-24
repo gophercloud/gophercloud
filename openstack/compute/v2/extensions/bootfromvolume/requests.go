@@ -25,10 +25,10 @@ type BlockDevice struct {
 	// and "local".
 	DestinationType string `json:"destination_type"`
 
-	// SourceType [optional] must be one of: "volume", "snapshot", "image".
+	// SourceType [required] must be one of: "volume", "snapshot", "image".
 	SourceType string `json:"source_type"`
 
-	// UUID [optional] is the unique identifier for the volume, snapshot, or image (see above)
+	// UUID [required] is the unique identifier for the volume, snapshot, or image (see above)
 	UUID string `json:"uuid"`
 
 	// VolumeSize [optional] is the size of the volume to create (in gigabytes).
