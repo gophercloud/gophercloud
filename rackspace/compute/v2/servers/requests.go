@@ -55,7 +55,7 @@ type CreateOpts struct {
 
 	// BlockDevice [optional] will create the server from a volume, which is created from an image,
 	// a snapshot, or an another volume.
-	BlockDevice bootfromvolume.BlockDevice
+	BlockDevice []bootfromvolume.BlockDevice
 }
 
 // ToServerCreateMap constructs a request body using all of the OpenStack extensions that are
@@ -89,9 +89,16 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	serverMap := res["server"].(map[string]interface{})
 	serverMap["key_name"] = opts.KeyPair
 
-	var bd bootfromvolume.BlockDevice
-	if opts.BlockDevice != bd {
-		serverMap["block_device_mapping_v2"] = []bootfromvolume.BlockDevice{opts.BlockDevice}
+	if len(opts.BlockDevice) != 0 {
+		bfv := bootfromvolume.CreateOptsExt{
+			CreateOptsBuilder: drive,
+			BlockDevice:       opts.BlockDevice,
+		}
+
+		res, err = bfv.ToServerCreateMap()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return res, nil

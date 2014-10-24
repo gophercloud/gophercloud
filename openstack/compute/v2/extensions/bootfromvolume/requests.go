@@ -10,6 +10,15 @@ import (
 	"github.com/racker/perigee"
 )
 
+// SourceType represents the type of medium being used to create the volume.
+type SourceType string
+
+const (
+	Volume   SourceType = "volume"
+	Snapshot SourceType = "snapshot"
+	Image    SourceType = "image"
+)
+
 // BlockDevice is a structure with options for booting a server instance
 // from a volume. The volume may be created from an image, snapshot, or another
 // volume.
@@ -26,7 +35,7 @@ type BlockDevice struct {
 	DestinationType string `json:"destination_type"`
 
 	// SourceType [required] must be one of: "volume", "snapshot", "image".
-	SourceType string `json:"source_type"`
+	SourceType SourceType `json:"source_type"`
 
 	// UUID [required] is the unique identifier for the volume, snapshot, or image (see above)
 	UUID string `json:"uuid"`
@@ -39,7 +48,7 @@ type BlockDevice struct {
 // by allowing for a block device mapping.
 type CreateOptsExt struct {
 	servers.CreateOptsBuilder
-	BlockDevice BlockDevice `json:"block_device_mapping_v2,omitempty"`
+	BlockDevice []BlockDevice `json:"block_device_mapping_v2,omitempty"`
 }
 
 // ToServerCreateMap adds the block device mapping option to the base server
@@ -50,40 +59,41 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	var blockDevice BlockDevice
-	if opts.BlockDevice == blockDevice {
-		return base, nil
-	}
-
-	if opts.BlockDevice.SourceType != "volume" &&
-		opts.BlockDevice.SourceType != "image" &&
-		opts.BlockDevice.SourceType != "snapshot" &&
-		opts.BlockDevice.SourceType != "" {
-		return nil, errors.New("SourceType must be one of: volume, image, snapshot, [blank].")
+	if len(opts.BlockDevice) == 0 {
+		return nil, errors.New("Required fields UUID and SourceType not set.")
 	}
 
 	serverMap := base["server"].(map[string]interface{})
 
-	bd := make(map[string]interface{})
-	bd["source_type"] = opts.BlockDevice.SourceType
-	bd["boot_index"] = strconv.Itoa(opts.BlockDevice.BootIndex)
-	bd["delete_on_termination"] = strconv.FormatBool(opts.BlockDevice.DeleteOnTermination)
-	bd["volume_size"] = strconv.Itoa(opts.BlockDevice.VolumeSize)
-	if opts.BlockDevice.UUID != "" {
-		bd["uuid"] = opts.BlockDevice.UUID
-	}
-	if opts.BlockDevice.DestinationType != "" {
-		bd["destination_type"] = opts.BlockDevice.DestinationType
-	}
+	blockDevice := make([]map[string]interface{}, len(opts.BlockDevice))
 
-	serverMap["block_device_mapping_v2"] = []map[string]interface{}{bd}
+	for i, bd := range opts.BlockDevice {
+		if string(bd.SourceType) == "" {
+			return nil, errors.New("SourceType must be one of: volume, image, snapshot.")
+		}
+
+		blockDevice[i] = make(map[string]interface{})
+
+		blockDevice[i]["source_type"] = bd.SourceType
+		blockDevice[i]["boot_index"] = strconv.Itoa(bd.BootIndex)
+		blockDevice[i]["delete_on_termination"] = strconv.FormatBool(bd.DeleteOnTermination)
+		blockDevice[i]["volume_size"] = strconv.Itoa(bd.VolumeSize)
+		if bd.UUID != "" {
+			blockDevice[i]["uuid"] = bd.UUID
+		}
+		if bd.DestinationType != "" {
+			blockDevice[i]["destination_type"] = bd.DestinationType
+		}
+
+	}
+	serverMap["block_device_mapping_v2"] = blockDevice
 
 	return base, nil
 }
 
 // Create requests the creation of a server from the given block device mapping.
-func Create(client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) CreateResult {
-	var res CreateResult
+func Create(client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) servers.CreateResult {
+	var res servers.CreateResult
 
 	reqBody, err := opts.ToServerCreateMap()
 	if err != nil {

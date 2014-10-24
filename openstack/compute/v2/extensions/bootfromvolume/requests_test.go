@@ -16,11 +16,13 @@ func TestCreateOpts(t *testing.T) {
 
 	ext := CreateOptsExt{
 		CreateOptsBuilder: base,
-		BlockDevice: BlockDevice{
-			UUID:            "123456",
-			SourceType:      "image",
-			DestinationType: "volume",
-			VolumeSize:      10,
+		BlockDevice: []BlockDevice{
+			BlockDevice{
+				UUID:            "123456",
+				SourceType:      Image,
+				DestinationType: "volume",
+				VolumeSize:      10,
+			},
 		},
 	}
 

@@ -26,10 +26,12 @@ func TestBootFromVolume(t *testing.T) {
 	name := tools.RandomString("Gophercloud-", 8)
 	t.Logf("Creating server [%s].", name)
 
-	bd := osBFV.BlockDevice{
-		UUID:       options.imageID,
-		SourceType: "image",
-		VolumeSize: 10,
+	bd := []osBFV.BlockDevice{
+		osBFV.BlockDevice{
+			UUID:       options.imageID,
+			SourceType: osBFV.Image,
+			VolumeSize: 10,
+		},
 	}
 
 	server, err := bootfromvolume.Create(client, servers.CreateOpts{
@@ -39,6 +41,6 @@ func TestBootFromVolume(t *testing.T) {
 	}).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Created server: %+v\n", server)
-	defer deleteServer(t, client, server)
+	//defer deleteServer(t, client, server)
 	t.Logf("Deleting server [%s]...", name)
 }

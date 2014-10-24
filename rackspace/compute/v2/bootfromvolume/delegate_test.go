@@ -17,11 +17,13 @@ func TestCreateOpts(t *testing.T) {
 
 	ext := osBFV.CreateOptsExt{
 		CreateOptsBuilder: base,
-		BlockDevice: osBFV.BlockDevice{
-			UUID:            "123456",
-			SourceType:      "image",
-			DestinationType: "volume",
-			VolumeSize:      10,
+		BlockDevice: []osBFV.BlockDevice{
+			osBFV.BlockDevice{
+				UUID:            "123456",
+				SourceType:      osBFV.Image,
+				DestinationType: "volume",
+				VolumeSize:      10,
+			},
 		},
 	}
 
