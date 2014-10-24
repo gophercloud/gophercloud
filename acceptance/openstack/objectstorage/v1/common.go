@@ -20,7 +20,9 @@ func newClient(t *testing.T) *gophercloud.ServiceClient {
 	client, err := openstack.AuthenticatedClient(ao)
 	th.AssertNoErr(t, err)
 
-	return openstack.NewObjectStorageV1(client, gophercloud.EndpointOpts{
+	c, err := openstack.NewObjectStorageV1(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
+	th.AssertNoErr(t, err)
+	return c
 }

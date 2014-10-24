@@ -28,21 +28,21 @@ func TestContainers(t *testing.T) {
 	// Create numContainers containers.
 	for i := 0; i < len(cNames); i++ {
 		res := containers.Create(client, cNames[i], nil)
-		th.AssertNoErr(res.Err)
+		th.AssertNoErr(t, res.Err)
 	}
 	// Delete the numContainers containers after function completion.
 	defer func() {
 		for i := 0; i < len(cNames); i++ {
-			res = containers.Delete(client, cNames[i])
-			th.AssertNoErr(res.Err)
+			res := containers.Delete(client, cNames[i])
+			th.AssertNoErr(t, res.Err)
 		}
 	}()
 
 	// List the numContainer names that were just created. To just list those,
 	// the 'prefix' parameter is used.
-	err = containers.List(client, &containers.ListOpts{Full: true, Prefix: "gophercloud-test-container-"}).EachPage(func(page pagination.Page) (bool, error) {
+	err := containers.List(client, &containers.ListOpts{Full: true, Prefix: "gophercloud-test-container-"}).EachPage(func(page pagination.Page) (bool, error) {
 		containerList, err := containers.ExtractInfo(page)
-		th.AssertNoErr(err)
+		th.AssertNoErr(t, err)
 
 		for _, n := range containerList {
 			t.Logf("Container: Name [%s] Count [%d] Bytes [%d]",
@@ -51,36 +51,36 @@ func TestContainers(t *testing.T) {
 
 		return true, nil
 	})
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 
 	// List the info for the numContainer containers that were created.
 	err = containers.List(client, &containers.ListOpts{Full: false, Prefix: "gophercloud-test-container-"}).EachPage(func(page pagination.Page) (bool, error) {
 		containerList, err := containers.ExtractNames(page)
-		th.AssertNoErr(err)
+		th.AssertNoErr(t, err)
 		for _, n := range containerList {
 			t.Logf("Container: Name [%s]", n)
 		}
 
 		return true, nil
 	})
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 
 	// Update one of the numContainer container metadata.
-	res = containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: metadata})
-	th.AssertNoErr(res.Err)
+	updateres := containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: metadata})
+	th.AssertNoErr(t, updateres.Err)
 	// After the tests are done, delete the metadata that was set.
 	defer func() {
 		tempMap := make(map[string]string)
 		for k := range metadata {
 			tempMap[k] = ""
 		}
-		res = containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: tempMap})
-		th.AssertNoErr(res.Err)
+		res := containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: tempMap})
+		th.AssertNoErr(t, res.Err)
 	}()
 
 	// Retrieve a container's metadata.
 	cm, err := containers.Get(client, cNames[0]).ExtractMetadata()
-	th.AssertNoErr(err)
+	th.AssertNoErr(t, err)
 	for k := range metadata {
 		if cm[k] != metadata[strings.Title(k)] {
 			t.Errorf("Expected custom metadata with key: %s", k)
