@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/rackspace"
 	th "github.com/rackspace/gophercloud/testhelper"
 )

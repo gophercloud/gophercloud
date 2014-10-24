@@ -13,12 +13,12 @@ func TestAccounts(t *testing.T) {
 	c, err := createClient(t, false)
 	th.AssertNoErr(t, err)
 
-	headers, err := raxAccounts.Update(c, raxAccounts.UpdateOpts{Metadata: map[string]string{"white": "mountains"}}).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Headers from Update Account request: %+v\n", headers)
+	updateres := raxAccounts.Update(c, raxAccounts.UpdateOpts{Metadata: map[string]string{"white": "mountains"}})
+	th.AssertNoErr(t, updateres.Err)
+	t.Logf("Headers from Update Account request: %+v\n", updateres.Header)
 	defer func() {
-		_, err := raxAccounts.Update(c, raxAccounts.UpdateOpts{Metadata: map[string]string{"white": ""}}).Extract()
-		th.AssertNoErr(t, err)
+		updateres = raxAccounts.Update(c, raxAccounts.UpdateOpts{Metadata: map[string]string{"white": ""}})
+		th.AssertNoErr(t, updateres.Err)
 		metadata, err := raxAccounts.Get(c).ExtractMetadata()
 		th.AssertNoErr(t, err)
 		t.Logf("Metadata from Get Account request (after update reverted): %+v\n", metadata)
