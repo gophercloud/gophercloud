@@ -15,7 +15,7 @@ func TestListFlavors(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	count := 0
-	err = flavors.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
+	err = flavors.ListDetail(client, nil).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		t.Logf("-- Page %0d --", count)
 
