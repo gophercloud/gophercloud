@@ -71,6 +71,11 @@ type UpdateResult struct {
 	gophercloud.Result
 }
 
+// DeleteResult represents the result of a delete operation
+type DeleteResult struct {
+	os.DeleteResult
+}
+
 func commonExtract(resp interface{}, err error) (*Snapshot, error) {
 	if err != nil {
 		return nil, err
