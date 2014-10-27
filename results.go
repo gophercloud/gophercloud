@@ -28,15 +28,15 @@ func (r Result) PrettyPrintJSON() string {
 	return string(pretty)
 }
 
-// ExtractErrResult represents results that only contain a potential error and
+// ErrResult represents results that only contain a potential error and
 // nothing else. Usually if the operation executed successfully, the Err field
 // will be nil; otherwise it will be stocked with a relevant error.
-type ExtractErrResult struct {
+type ErrResult struct {
 	Err error
 }
 
-// Extract is a function that extracts error information from a result
-func (r ExtractErrResult) Extract() error {
+// ExtractErr is a function that extracts error information from a result
+func (r ErrResult) ExtractErr() error {
 	return r.Err
 }
 

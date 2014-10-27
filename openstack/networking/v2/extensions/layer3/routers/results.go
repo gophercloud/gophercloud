@@ -122,7 +122,7 @@ type UpdateResult struct {
 
 // DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
-	gophercloud.ExtractErrResult
+	gophercloud.ErrResult
 }
 
 // InterfaceInfo represents information about a particular router interface. As

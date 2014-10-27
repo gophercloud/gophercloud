@@ -78,7 +78,7 @@ type UpdateResult struct {
 
 // DeleteResult represents the result of an update operation.
 type DeleteResult struct {
-	gophercloud.ExtractErrResult
+	gophercloud.ErrResult
 }
 
 // FloatingIPPage is the page returned by a pager when traversing over a

@@ -175,7 +175,7 @@ func deleteServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Se
 func deleteServerKeyPair(t *testing.T, client *gophercloud.ServiceClient, k *oskey.KeyPair) {
 	t.Logf("> keypairs.Delete")
 
-	err := keypairs.Delete(client, k.Name).Extract()
+	err := keypairs.Delete(client, k.Name).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Keypair deleted successfully.")

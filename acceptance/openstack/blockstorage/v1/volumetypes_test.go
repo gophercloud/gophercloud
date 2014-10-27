@@ -29,7 +29,7 @@ func TestVolumeTypes(t *testing.T) {
 	}
 	defer func() {
 		time.Sleep(10000 * time.Millisecond)
-		err = volumetypes.Delete(client, vt.ID)
+		err = volumetypes.Delete(client, vt.ID).ExtractErr()
 		if err != nil {
 			t.Error(err)
 			return
