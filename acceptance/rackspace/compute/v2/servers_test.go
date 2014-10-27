@@ -166,8 +166,8 @@ func rebuildServer(t *testing.T, client *gophercloud.ServiceClient, server *os.S
 func deleteServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
 	t.Logf("> servers.Delete")
 
-	err := servers.Delete(client, server.ID)
-	th.AssertNoErr(t, err)
+	res := servers.Delete(client, server.ID)
+	th.AssertNoErr(t, res.Err)
 
 	t.Logf("Server deleted successfully.")
 }

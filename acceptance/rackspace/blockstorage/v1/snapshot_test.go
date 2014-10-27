@@ -76,7 +76,7 @@ func testSnapshotUpdate(t *testing.T, client *gophercloud.ServiceClient, id stri
 }
 
 func testSnapshotDelete(t *testing.T, client *gophercloud.ServiceClient, id string) {
-	err := snapshots.Delete(client, id)
-	th.AssertNoErr(t, err)
+	res := snapshots.Delete(client, id)
+	th.AssertNoErr(t, res.Err)
 	t.Logf("Deleted snapshot %s", id)
 }
