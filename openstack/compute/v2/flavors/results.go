@@ -12,7 +12,7 @@ import (
 // ErrCannotInterpret is returned by an Extract call if the response body doesn't have the expected structure.
 var ErrCannotInterpet = errors.New("Unable to interpret a response body.")
 
-// GetResult temporarily holds the reponse from a Get call.
+// GetResult temporarily holds the response from a Get call.
 type GetResult struct {
 	gophercloud.Result
 }

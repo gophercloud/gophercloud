@@ -61,7 +61,7 @@ func (opts ListOpts) ToPortListQuery() (string, error) {
 // the returned collection for greater efficiency.
 //
 // Default policy settings return only those ports that are owned by the tenant
-// who submits the request, unless the request is submitted by an user with
+// who submits the request, unless the request is submitted by a user with
 // administrative rights.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
