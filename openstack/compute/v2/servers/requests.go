@@ -284,7 +284,6 @@ func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword stri
 
 	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     req,
-		Results:     &res.Body,
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})

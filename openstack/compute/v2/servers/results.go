@@ -51,7 +51,7 @@ type RebuildResult struct {
 
 // ActionResult represents the result of server action operations, like reboot
 type ActionResult struct {
-	gophercloud.Result
+	gophercloud.ExtractErrResult
 }
 
 // Server exposes only the standard OpenStack fields corresponding to a given server on the user's account.
@@ -82,8 +82,7 @@ type Server struct {
 	Progress int
 
 	// AccessIPv4 and AccessIPv6 contain the IP addresses of the server, suitable for remote access for administration.
-	AccessIPv4 string
-	AccessIPv6 string
+	AccessIPv4, AccessIPv6 string
 
 	// Image refers to a JSON object, which itself indicates the OS image used to deploy the server.
 	Image map[string]interface{}
