@@ -57,6 +57,11 @@ type GetResult struct {
 	commonResult
 }
 
+// RevokeResult is the deferred response from a Revoke call.
+type RevokeResult struct {
+	commonResult
+}
+
 // Token is a string that grants a user access to a controlled set of services in an OpenStack provider.
 // Each Token is valid for a set length of time.
 type Token struct {
