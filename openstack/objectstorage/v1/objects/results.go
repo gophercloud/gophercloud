@@ -2,6 +2,8 @@ package objects
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
 	"strings"
 
 	"github.com/rackspace/gophercloud"
@@ -102,15 +104,23 @@ type commonResult struct {
 // DownloadResult is a *http.Response that is returned from a call to the Download function.
 type DownloadResult struct {
 	commonResult
+	Body io.Reader
 }
 
-// ExtractContent is a function that takes a DownloadResult (of type *http.Response)
-// and returns the object's content.
+// ExtractContent is a function that takes a DownloadResult's io.Reader body
+// and reads all available data into a slice of bytes. Please be aware that due
+// the nature of io.Reader is forward-only - meaning that it can only be read
+// once and not rewound. You can recreate a reader from the output of this
+// function by using bytes.NewReader(downloadBytes)
 func (dr DownloadResult) ExtractContent() ([]byte, error) {
 	if dr.Err != nil {
 		return nil, dr.Err
 	}
-	return dr.Body.([]byte), nil
+	body, err := ioutil.ReadAll(dr.Body)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
 }
 
 // GetResult is a *http.Response that is returned from a call to the Get function.
