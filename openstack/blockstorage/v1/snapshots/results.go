@@ -61,7 +61,7 @@ type GetResult struct {
 
 // DeleteResult contains the response body and error from a Delete request.
 type DeleteResult struct {
-	commonResult
+	gophercloud.ExtractErrResult
 }
 
 // ListResult is a pagination.Pager that is returned from a call to the List function.
