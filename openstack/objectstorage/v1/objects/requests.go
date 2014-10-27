@@ -3,7 +3,6 @@ package objects
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"time"
 
 	"github.com/racker/perigee"
@@ -128,11 +127,11 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 		MoreHeaders: h,
 		OkCodes:     []int{200},
 	})
-	defer resp.HttpResponse.Body.Close()
-	body, err := ioutil.ReadAll(resp.HttpResponse.Body)
-	res.Body = body
+
+	res.Body = resp.HttpResponse.Body
 	res.Err = err
 	res.Header = resp.HttpResponse.Header
+
 	return res
 }
 

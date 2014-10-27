@@ -2,6 +2,7 @@ package objects
 
 import (
 	"bytes"
+	"io"
 	"testing"
 
 	"github.com/rackspace/gophercloud/pagination"
@@ -9,14 +10,30 @@ import (
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
-func TestDownloadObject(t *testing.T) {
+func TestDownloadReader(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleDownloadObjectSuccessfully(t)
 
-	content, err := Download(fake.ServiceClient(), "testContainer", "testObject", nil).ExtractContent()
+	response := Download(fake.ServiceClient(), "testContainer", "testObject", nil)
+
+	// Check reader
+	buf := bytes.NewBuffer(make([]byte, 0))
+	io.CopyN(buf, response.Body, 10)
+	th.CheckEquals(t, "Successful", string(buf.Bytes()))
+}
+
+func TestDownloadExtraction(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDownloadObjectSuccessfully(t)
+
+	response := Download(fake.ServiceClient(), "testContainer", "testObject", nil)
+
+	// Check []byte extraction
+	bytes, err := response.ExtractContent()
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, string(content), "Successful download with Gophercloud")
+	th.CheckEquals(t, "Successful download with Gophercloud", string(bytes))
 }
 
 func TestListObjectInfo(t *testing.T) {
