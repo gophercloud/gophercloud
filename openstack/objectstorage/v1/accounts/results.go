@@ -1,14 +1,23 @@
 package accounts
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/rackspace/gophercloud"
 )
 
+type headerResult struct {
+	gophercloud.Result
+}
+
+func (hr headerResult) ExtractHeader() (http.Header, error) {
+	return hr.Header, hr.Err
+}
+
 // GetResult is returned from a call to the Get function.
 type GetResult struct {
-	gophercloud.Result
+	headerResult
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -30,5 +39,5 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 
 // UpdateResult is returned from a call to the Update function.
 type UpdateResult struct {
-	gophercloud.Result
+	headerResult
 }

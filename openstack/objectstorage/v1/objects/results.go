@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"strings"
 
 	"github.com/rackspace/gophercloud"
@@ -97,13 +98,17 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 	}
 }
 
-type commonResult struct {
+type headerResult struct {
 	gophercloud.Result
+}
+
+func (hr headerResult) ExtractHeader() (http.Header, error) {
+	return hr.Header, hr.Err
 }
 
 // DownloadResult is a *http.Response that is returned from a call to the Download function.
 type DownloadResult struct {
-	commonResult
+	headerResult
 	Body io.Reader
 }
 
@@ -125,7 +130,7 @@ func (dr DownloadResult) ExtractContent() ([]byte, error) {
 
 // GetResult is a *http.Response that is returned from a call to the Get function.
 type GetResult struct {
-	commonResult
+	headerResult
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -146,20 +151,20 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 
 // CreateResult represents the result of a create operation.
 type CreateResult struct {
-	commonResult
+	headerResult
 }
 
 // UpdateResult represents the result of an update operation.
 type UpdateResult struct {
-	commonResult
+	headerResult
 }
 
 // DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
-	gophercloud.ExtractErrResult
+	headerResult
 }
 
 // CopyResult represents the result of a copy operation.
 type CopyResult struct {
-	commonResult
+	headerResult
 }

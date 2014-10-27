@@ -25,9 +25,9 @@ func TestCDNObjects(t *testing.T) {
 		th.AssertNoErr(t, deleteResult.Err)
 	}()
 
-	createObjResult := raxObjects.Create(raxClient, "gophercloud-test", "test-object", bytes.NewBufferString("gophercloud cdn test"), nil)
-	th.AssertNoErr(t, createObjResult.Err)
-	t.Logf("Headers from Create Object request: %+v\n", createObjResult.Header)
+	header, err := raxObjects.Create(raxClient, "gophercloud-test", "test-object", bytes.NewBufferString("gophercloud cdn test"), nil).ExtractHeader()
+	th.AssertNoErr(t, err)
+	t.Logf("Headers from Create Object request: %+v\n", header)
 	defer func() {
 		deleteResult := raxObjects.Delete(raxClient, "gophercloud-test", "test-object", nil)
 		th.AssertNoErr(t, deleteResult.Err)
