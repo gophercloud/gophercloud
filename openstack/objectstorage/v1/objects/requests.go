@@ -304,12 +304,11 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		url += query
 	}
 
-	resp, err := perigee.Request("DELETE", url, perigee.Options{
+	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
+
 	return res
 }
 

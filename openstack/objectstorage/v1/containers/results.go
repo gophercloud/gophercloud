@@ -139,5 +139,5 @@ type UpdateResult struct {
 // the headers from the HTTP response, you can invoke the 'ExtractHeaders'
 // method on the result struct.
 type DeleteResult struct {
-	commonResult
+	gophercloud.ExtractErrResult
 }
