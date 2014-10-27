@@ -32,21 +32,19 @@ func (r Result) PrettyPrintJSON() string {
 // nothing else. Usually if the operation executed successfully, the Err field
 // will be nil; otherwise it will be stocked with a relevant error.
 type ErrResult struct {
-	Err error
+	Result
 }
 
-// ExtractErr is a function that extracts error information from a result
+// ExtractErr is a function that extracts error information from a result.
 func (r ErrResult) ExtractErr() error {
 	return r.Err
 }
 
 // HeaderResult represents a result that only contains an `error` (possibly nil)
 // and an http.Header. This is used, for example, by the `objectstorage` packages
-// in `openstack` because most of the operations don't return response bodies. This
-// object is a gopherclou.Result without the `Body` field.
+// in `openstack`, because most of the operations don't return response bodies.
 type HeaderResult struct {
-	Header http.Header
-	Err    error
+	Result
 }
 
 // ExtractHeader will return the http.Header and error from the HeaderResult.
