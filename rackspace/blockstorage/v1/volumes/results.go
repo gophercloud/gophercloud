@@ -25,6 +25,11 @@ type UpdateResult struct {
 	os.UpdateResult
 }
 
+// DeleteResult represents the result of a delete operation
+type DeleteResult struct {
+	os.DeleteResult
+}
+
 func commonExtract(resp interface{}, err error) (*Volume, error) {
 	if err != nil {
 		return nil, err
