@@ -16,6 +16,7 @@ func TestDownloadReader(t *testing.T) {
 	HandleDownloadObjectSuccessfully(t)
 
 	response := Download(fake.ServiceClient(), "testContainer", "testObject", nil)
+	defer response.Body.Close()
 
 	// Check reader
 	buf := bytes.NewBuffer(make([]byte, 0))
