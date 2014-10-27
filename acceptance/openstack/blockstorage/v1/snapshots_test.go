@@ -47,8 +47,8 @@ func TestSnapshots(t *testing.T) {
 
 	t.Logf("Created snapshot: %+v\n", ss)
 
-	res = snapshots.Delete(client, ss.ID)
-	if res.Err != nil {
+	err = snapshots.Delete(client, ss.ID).Extract()
+	if err != nil {
 		t.Fatalf("Failed to delete snapshot: %v", err)
 	}
 
@@ -66,8 +66,8 @@ func TestSnapshots(t *testing.T) {
 
 	t.Log("Deleted snapshot\n")
 
-	res = volumes.Delete(client, v.ID)
-	if res.Err != nil {
+	err = volumes.Delete(client, v.ID).Extract()
+	if err != nil {
 		t.Errorf("Failed to delete volume: %v", err)
 	}
 
