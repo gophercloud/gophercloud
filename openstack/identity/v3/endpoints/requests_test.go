@@ -221,8 +221,6 @@ func TestDeleteEndpoint(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := Delete(client.ServiceClient(), "34")
-	if err != nil {
-		t.Fatalf("Unexpected error from Delete: %v", err)
-	}
+	res := Delete(client.ServiceClient(), "34")
+	testhelper.AssertNoErr(t, res.Err)
 }
