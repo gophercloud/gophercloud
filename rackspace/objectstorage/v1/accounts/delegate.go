@@ -8,7 +8,7 @@ import (
 // Get is a function that retrieves an account's metadata. To extract just the
 // custom metadata, call the ExtractMetadata method on the GetResult. To extract
 // all the headers that are returned (including the metadata), call the
-// ExtractHeaders method on the GetResult.
+// ExtractHeader method on the GetResult.
 func Get(c *gophercloud.ServiceClient) os.GetResult {
 	return os.Get(c, nil)
 }
@@ -33,6 +33,7 @@ func (opts UpdateOpts) ToAccountUpdateMap() (map[string]string, error) {
 	return headers, err
 }
 
+// Update will update an account's metadata with the Metadata in the UpdateOptsBuilder.
 func Update(c *gophercloud.ServiceClient, opts os.UpdateOptsBuilder) os.UpdateResult {
 	return os.Update(c, opts)
 }

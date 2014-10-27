@@ -127,21 +127,21 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 }
 
 // CreateResult represents the result of a create operation. To extract the
-// the headers from the HTTP response, you can invoke the 'ExtractHeaders'
+// the headers from the HTTP response, you can invoke the 'ExtractHeader'
 // method on the result struct.
 type CreateResult struct {
 	headerResult
 }
 
 // UpdateResult represents the result of an update operation. To extract the
-// the headers from the HTTP response, you can invoke the 'ExtractHeaders'
+// the headers from the HTTP response, you can invoke the 'ExtractHeader'
 // method on the result struct.
 type UpdateResult struct {
 	headerResult
 }
 
 // DeleteResult represents the result of a delete operation. To extract the
-// the headers from the HTTP response, you can invoke the 'ExtractHeaders'
+// the headers from the HTTP response, you can invoke the 'ExtractHeader'
 // method on the result struct.
 type DeleteResult struct {
 	headerResult
