@@ -43,7 +43,7 @@ type UpdateResult struct {
 
 // DeleteResult is the deferred result of an Delete call.
 type DeleteResult struct {
-	commonResult
+	gophercloud.ExtractErrResult
 }
 
 // Endpoint describes the entry point for another service's API.
