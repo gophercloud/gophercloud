@@ -2,7 +2,6 @@ package containers
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/rackspace/gophercloud"
@@ -97,17 +96,9 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 	}
 }
 
-type headerResult struct {
-	gophercloud.Result
-}
-
-func (hr headerResult) ExtractHeader() (http.Header, error) {
-	return hr.Header, hr.Err
-}
-
 // GetResult represents the result of a get operation.
 type GetResult struct {
-	headerResult
+	gophercloud.HeaderResult
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -130,19 +121,19 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 // the headers from the HTTP response, you can invoke the 'ExtractHeader'
 // method on the result struct.
 type CreateResult struct {
-	headerResult
+	gophercloud.HeaderResult
 }
 
 // UpdateResult represents the result of an update operation. To extract the
 // the headers from the HTTP response, you can invoke the 'ExtractHeader'
 // method on the result struct.
 type UpdateResult struct {
-	headerResult
+	gophercloud.HeaderResult
 }
 
 // DeleteResult represents the result of a delete operation. To extract the
 // the headers from the HTTP response, you can invoke the 'ExtractHeader'
 // method on the result struct.
 type DeleteResult struct {
-	headerResult
+	gophercloud.HeaderResult
 }

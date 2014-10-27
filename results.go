@@ -40,6 +40,21 @@ func (r ExtractErrResult) Extract() error {
 	return r.Err
 }
 
+// HeaderResult represents a result that only contains an `error` (possibly nil)
+// and an http.Header. This is used, for example, by the `objectstorage` packages
+// in `openstack` because most of the operations don't return response bodies. This
+// object is a gopherclou.Result without the `Body` field.
+type HeaderResult struct {
+	Header http.Header
+	Err    error
+}
+
+// ExtractHeader will return the http.Header and error from the HeaderResult.
+// Usage: header, err := objects.Create(client, "my_container", objects.CreateOpts{}).ExtractHeader()
+func (hr HeaderResult) ExtractHeader() (http.Header, error) {
+	return hr.Header, hr.Err
+}
+
 // RFC3339Milli describes a time format used by API responses.
 const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
 
