@@ -104,7 +104,7 @@ type commonResult struct {
 // DownloadResult is a *http.Response that is returned from a call to the Download function.
 type DownloadResult struct {
 	commonResult
-	Body io.Reader
+	Body io.ReadCloser
 }
 
 // ExtractContent is a function that takes a DownloadResult's io.Reader body
@@ -120,6 +120,7 @@ func (dr DownloadResult) ExtractContent() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	dr.Body.Close()
 	return body, nil
 }
 
