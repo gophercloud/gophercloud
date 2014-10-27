@@ -65,7 +65,7 @@ func testVolumeUpdate(t *testing.T, client *gophercloud.ServiceClient, id string
 }
 
 func testVolumeDelete(t *testing.T, client *gophercloud.ServiceClient, id string) {
-	err := volumes.Delete(client, id)
-	th.AssertNoErr(t, err)
+	res := volumes.Delete(client, id)
+	th.AssertNoErr(t, res.Err)
 	t.Logf("Deleted volume %s", id)
 }

@@ -103,4 +103,6 @@ type GetResult struct {
 }
 
 // DeleteResult represents the result of a delete operation.
-type DeleteResult commonResult
+type DeleteResult struct {
+	gophercloud.ExtractErrResult
+}

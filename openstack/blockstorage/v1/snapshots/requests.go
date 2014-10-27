@@ -79,12 +79,13 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 }
 
 // Delete will delete the existing Snapshot with the provided ID.
-func Delete(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
+func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
+	var res DeleteResult
+	_, res.Err = perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202, 204},
 	})
-	return err
+	return res
 }
 
 // Get retrieves the Snapshot with the provided ID. To extract the Snapshot

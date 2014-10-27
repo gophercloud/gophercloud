@@ -204,8 +204,6 @@ func TestDeleteSuccessful(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := Delete(client.ServiceClient(), "12345")
-	if err != nil {
-		t.Fatalf("Unable to delete service: %v", err)
-	}
+	res := Delete(client.ServiceClient(), "12345")
+	testhelper.AssertNoErr(t, res.Err)
 }

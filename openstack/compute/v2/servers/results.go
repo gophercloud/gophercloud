@@ -39,6 +39,11 @@ type UpdateResult struct {
 	serverResult
 }
 
+// DeleteResult temporarily contains the response from an Delete call.
+type DeleteResult struct {
+	gophercloud.ExtractErrResult
+}
+
 // RebuildResult temporarily contains the response from a Rebuild call.
 type RebuildResult struct {
 	serverResult
@@ -46,12 +51,7 @@ type RebuildResult struct {
 
 // ActionResult represents the result of server action operations, like reboot
 type ActionResult struct {
-	gophercloud.Result
-}
-
-// Extract is a function that extracts error information from a result
-func (r ActionResult) Extract() error {
-	return r.Err
+	gophercloud.ExtractErrResult
 }
 
 // Server exposes only the standard OpenStack fields corresponding to a given server on the user's account.
@@ -82,8 +82,7 @@ type Server struct {
 	Progress int
 
 	// AccessIPv4 and AccessIPv6 contain the IP addresses of the server, suitable for remote access for administration.
-	AccessIPv4 string
-	AccessIPv6 string
+	AccessIPv4, AccessIPv6 string
 
 	// Image refers to a JSON object, which itself indicates the OS image used to deploy the server.
 	Image map[string]interface{}

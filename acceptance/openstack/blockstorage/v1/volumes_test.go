@@ -47,8 +47,8 @@ func TestVolumes(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		err = volumes.Delete(client, cv.ID)
-		if err != nil {
+		res = volumes.Delete(client, cv.ID)
+		if res.Err != nil {
 			t.Error(err)
 			return
 		}

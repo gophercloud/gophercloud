@@ -28,6 +28,18 @@ func (r Result) PrettyPrintJSON() string {
 	return string(pretty)
 }
 
+// ExtractErrResult represents results that only contain a potential error and
+// nothing else. Usually if the operation executed successfully, the Err field
+// will be nil; otherwise it will be stocked with a relevant error.
+type ExtractErrResult struct {
+	Err error
+}
+
+// Extract is a function that extracts error information from a result
+func (r ExtractErrResult) Extract() error {
+	return r.Err
+}
+
 // RFC3339Milli describes a time format used by API responses.
 const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
 

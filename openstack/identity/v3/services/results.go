@@ -42,6 +42,11 @@ type UpdateResult struct {
 	commonResult
 }
 
+// DeleteResult is the deferred result of an Delete call.
+type DeleteResult struct {
+	gophercloud.ExtractErrResult
+}
+
 // Service is the result of a list or information query.
 type Service struct {
 	Description *string `json:"description,omitempty"`

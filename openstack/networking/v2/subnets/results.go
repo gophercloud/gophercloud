@@ -41,7 +41,9 @@ type UpdateResult struct {
 }
 
 // DeleteResult represents the result of a delete operation.
-type DeleteResult commonResult
+type DeleteResult struct {
+	gophercloud.ExtractErrResult
+}
 
 // AllocationPool represents a sub-range of cidr available for dynamic
 // allocation to ports, e.g. {Start: "10.0.0.2", End: "10.0.0.254"}

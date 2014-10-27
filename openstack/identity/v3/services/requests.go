@@ -89,10 +89,11 @@ func Update(client *gophercloud.ServiceClient, serviceID string, serviceType str
 
 // Delete removes an existing service.
 // It either deletes all associated endpoints, or fails until all endpoints are deleted.
-func Delete(client *gophercloud.ServiceClient, serviceID string) error {
-	_, err := perigee.Request("DELETE", serviceURL(client, serviceID), perigee.Options{
+func Delete(client *gophercloud.ServiceClient, serviceID string) DeleteResult {
+	var res DeleteResult
+	_, res.Err = perigee.Request("DELETE", serviceURL(client, serviceID), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	return err
+	return res
 }

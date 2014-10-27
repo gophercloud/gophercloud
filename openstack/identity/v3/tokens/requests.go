@@ -276,10 +276,11 @@ func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
 }
 
 // Revoke immediately makes specified token invalid.
-func Revoke(c *gophercloud.ServiceClient, token string) error {
-	_, err := perigee.Request("DELETE", tokenURL(c), perigee.Options{
+func Revoke(c *gophercloud.ServiceClient, token string) RevokeResult {
+	var res RevokeResult
+	_, res.Err = perigee.Request("DELETE", tokenURL(c), perigee.Options{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		OkCodes:     []int{204},
 	})
-	return err
+	return res
 }

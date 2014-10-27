@@ -28,7 +28,7 @@ func Create(client *gophercloud.ServiceClient, opts os.CreateOptsBuilder) Create
 }
 
 // Delete will delete the existing Volume with the provided ID.
-func Delete(client *gophercloud.ServiceClient, id string) error {
+func Delete(client *gophercloud.ServiceClient, id string) os.DeleteResult {
 	return os.Delete(client, id)
 }
 

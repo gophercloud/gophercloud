@@ -498,10 +498,8 @@ func TestRevokeRequestSuccessful(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "DELETE", http.StatusNoContent)
 
-	err := Revoke(&client, "abcdef12345")
-	if err != nil {
-		t.Errorf("Unexpected error from Revoke: %v", err)
-	}
+	res := Revoke(&client, "abcdef12345")
+	testhelper.AssertNoErr(t, res.Err)
 }
 
 func TestRevokeRequestError(t *testing.T) {
@@ -509,8 +507,8 @@ func TestRevokeRequestError(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	client := prepareAuthTokenHandler(t, "DELETE", http.StatusNotFound)
 
-	err := Revoke(&client, "abcdef12345")
-	if err == nil {
+	res := Revoke(&client, "abcdef12345")
+	if res.Err == nil {
 		t.Errorf("Missing expected error from Revoke")
 	}
 }

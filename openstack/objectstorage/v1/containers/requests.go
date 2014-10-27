@@ -123,12 +123,10 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 // Delete is a function that deletes a container.
 func Delete(c *gophercloud.ServiceClient, containerName string) DeleteResult {
 	var res DeleteResult
-	resp, err := perigee.Request("DELETE", deleteURL(c, containerName), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", deleteURL(c, containerName), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{202, 204},
 	})
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 	return res
 }
 

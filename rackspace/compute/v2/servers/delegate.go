@@ -17,7 +17,7 @@ func Create(client *gophercloud.ServiceClient, opts os.CreateOptsBuilder) os.Cre
 }
 
 // Delete requests that a server previously provisioned be removed from your account.
-func Delete(client *gophercloud.ServiceClient, id string) error {
+func Delete(client *gophercloud.ServiceClient, id string) os.DeleteResult {
 	return os.Delete(client, id)
 }
 
