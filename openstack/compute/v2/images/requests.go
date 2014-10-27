@@ -59,7 +59,7 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 }
 
 // Get acquires additional detail about a specific image by ID.
-// Use ExtractImage() to intepret the result as an openstack Image.
+// Use ExtractImage() to interpret the result as an openstack Image.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
 	_, result.Err = perigee.Request("GET", getURL(client, id), perigee.Options{

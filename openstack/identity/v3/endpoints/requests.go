@@ -68,7 +68,7 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) CreateResult {
 	return result
 }
 
-// ListOpts allows finer control over the the endpoints returned by a List call.
+// ListOpts allows finer control over the endpoints returned by a List call.
 // All fields are optional.
 type ListOpts struct {
 	Availability gophercloud.Availability

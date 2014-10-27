@@ -20,7 +20,7 @@ var goodStatus = map[string]bool{
 	"stable":    true,
 }
 
-// ChooseVersion queries the base endpoint of a API to choose the most recent non-experimental alternative from a service's
+// ChooseVersion queries the base endpoint of an API to choose the most recent non-experimental alternative from a service's
 // published versions.
 // It returns the highest-Priority Version among the alternatives that are provided, as well as its corresponding endpoint.
 func ChooseVersion(identityBase string, identityEndpoint string, recognized []*Version) (*Version, string, error) {

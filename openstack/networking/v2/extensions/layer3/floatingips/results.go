@@ -11,7 +11,7 @@ import (
 // FloatingIP represents a floating IP resource. A floating IP is an external
 // IP address that is mapped to an internal port and, optionally, a specific
 // IP address on a private network. In other words, it enables access to an
-// instance on a private network from an external network. For thsi reason,
+// instance on a private network from an external network. For this reason,
 // floating IPs can only be defined on networks where the `router:external'
 // attribute (provided by the external network extension) is set to True.
 type FloatingIP struct {

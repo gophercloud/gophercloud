@@ -225,7 +225,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	return result
 }
 
-// UpdateOptsBuilder allows extentions to add additional attributes to the Update request.
+// UpdateOptsBuilder allows extensions to add additional attributes to the Update request.
 type UpdateOptsBuilder interface {
 	ToServerUpdateMap() map[string]interface{}
 }
