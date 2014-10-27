@@ -90,10 +90,5 @@ type GetResult struct {
 // DeleteResult is the response from a Delete operation. Call its Extract method to determine if
 // the call succeeded or failed.
 type DeleteResult struct {
-	gophercloud.Result
-}
-
-// Extract determines whether or not a deletion request was accepted.
-func (r DeleteResult) Extract() error {
-	return r.Err
+	gophercloud.ExtractErrResult
 }
