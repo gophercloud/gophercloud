@@ -206,12 +206,13 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 }
 
 // Delete requests that a server previously provisioned be removed from your account.
-func Delete(client *gophercloud.ServiceClient, id string) error {
-	_, err := perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
+func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
+	var res DeleteResult
+	_, res.Err = perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})
-	return err
+	return res
 }
 
 // Get requests details on a single server, by ID.

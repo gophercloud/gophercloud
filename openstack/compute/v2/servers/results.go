@@ -39,6 +39,11 @@ type UpdateResult struct {
 	serverResult
 }
 
+// DeleteResult temporarily contains the response from an Delete call.
+type DeleteResult struct {
+	serverResult
+}
+
 // RebuildResult temporarily contains the response from a Rebuild call.
 type RebuildResult struct {
 	serverResult
