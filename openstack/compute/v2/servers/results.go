@@ -41,7 +41,7 @@ type UpdateResult struct {
 
 // DeleteResult temporarily contains the response from an Delete call.
 type DeleteResult struct {
-	gophercloud.ExtractErrResult
+	gophercloud.ErrResult
 }
 
 // RebuildResult temporarily contains the response from a Rebuild call.
@@ -51,7 +51,7 @@ type RebuildResult struct {
 
 // ActionResult represents the result of server action operations, like reboot
 type ActionResult struct {
-	gophercloud.ExtractErrResult
+	gophercloud.ErrResult
 }
 
 // Server exposes only the standard OpenStack fields corresponding to a given server on the user's account.

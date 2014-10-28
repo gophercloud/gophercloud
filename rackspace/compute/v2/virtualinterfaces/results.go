@@ -32,7 +32,7 @@ type CreateResult struct {
 
 // DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
-	gophercloud.ExtractErrResult
+	gophercloud.ErrResult
 }
 
 // IPAddress represents a vitual address attached to a VirtualInterface.

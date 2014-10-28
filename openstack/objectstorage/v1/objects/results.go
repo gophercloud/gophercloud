@@ -97,13 +97,9 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 	}
 }
 
-type commonResult struct {
-	gophercloud.Result
-}
-
 // DownloadResult is a *http.Response that is returned from a call to the Download function.
 type DownloadResult struct {
-	commonResult
+	gophercloud.HeaderResult
 	Body io.ReadCloser
 }
 
@@ -126,7 +122,7 @@ func (dr DownloadResult) ExtractContent() ([]byte, error) {
 
 // GetResult is a *http.Response that is returned from a call to the Get function.
 type GetResult struct {
-	commonResult
+	gophercloud.HeaderResult
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -147,20 +143,20 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 
 // CreateResult represents the result of a create operation.
 type CreateResult struct {
-	commonResult
+	gophercloud.HeaderResult
 }
 
 // UpdateResult represents the result of an update operation.
 type UpdateResult struct {
-	commonResult
+	gophercloud.HeaderResult
 }
 
 // DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
-	gophercloud.ExtractErrResult
+	gophercloud.HeaderResult
 }
 
 // CopyResult represents the result of a copy operation.
 type CopyResult struct {
-	commonResult
+	gophercloud.HeaderResult
 }

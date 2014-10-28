@@ -8,7 +8,7 @@ import (
 
 // GetResult is returned from a call to the Get function.
 type GetResult struct {
-	gophercloud.Result
+	gophercloud.HeaderResult
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -30,5 +30,5 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 
 // UpdateResult is returned from a call to the Update function.
 type UpdateResult struct {
-	gophercloud.Result
+	gophercloud.HeaderResult
 }

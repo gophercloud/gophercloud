@@ -28,16 +28,29 @@ func (r Result) PrettyPrintJSON() string {
 	return string(pretty)
 }
 
-// ExtractErrResult represents results that only contain a potential error and
+// ErrResult represents results that only contain a potential error and
 // nothing else. Usually if the operation executed successfully, the Err field
 // will be nil; otherwise it will be stocked with a relevant error.
-type ExtractErrResult struct {
-	Err error
+type ErrResult struct {
+	Result
 }
 
-// Extract is a function that extracts error information from a result
-func (r ExtractErrResult) Extract() error {
+// ExtractErr is a function that extracts error information from a result.
+func (r ErrResult) ExtractErr() error {
 	return r.Err
+}
+
+// HeaderResult represents a result that only contains an `error` (possibly nil)
+// and an http.Header. This is used, for example, by the `objectstorage` packages
+// in `openstack`, because most of the operations don't return response bodies.
+type HeaderResult struct {
+	Result
+}
+
+// ExtractHeader will return the http.Header and error from the HeaderResult.
+// Usage: header, err := objects.Create(client, "my_container", objects.CreateOpts{}).ExtractHeader()
+func (hr HeaderResult) ExtractHeader() (http.Header, error) {
+	return hr.Header, hr.Err
 }
 
 // RFC3339Milli describes a time format used by API responses.

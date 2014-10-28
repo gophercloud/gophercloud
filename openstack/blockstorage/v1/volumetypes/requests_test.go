@@ -113,6 +113,6 @@ func TestDelete(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	err := Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	err := Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractErr()
 	th.AssertNoErr(t, err)
 }

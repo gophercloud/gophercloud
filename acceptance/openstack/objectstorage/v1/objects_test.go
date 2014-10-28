@@ -30,8 +30,9 @@ func TestObjects(t *testing.T) {
 
 	// Create a container to hold the test objects.
 	cName := tools.RandomString("test-container-", 8)
-	createres := containers.Create(client, cName, nil)
-	th.AssertNoErr(t, createres.Err)
+	header, err := containers.Create(client, cName, nil).ExtractHeader()
+	th.AssertNoErr(t, err)
+	t.Logf("Create object headers: %+v\n", header)
 
 	// Defer deletion of the container until after testing.
 	defer func() {
@@ -55,7 +56,7 @@ func TestObjects(t *testing.T) {
 	}()
 
 	ons := make([]string, 0, len(oNames))
-	err := objects.List(client, cName, &objects.ListOpts{Full: false, Prefix: "test-object-"}).EachPage(func(page pagination.Page) (bool, error) {
+	err = objects.List(client, cName, &objects.ListOpts{Full: false, Prefix: "test-object-"}).EachPage(func(page pagination.Page) (bool, error) {
 		names, err := objects.ExtractNames(page)
 		th.AssertNoErr(t, err)
 		ons = append(ons, names...)

@@ -66,6 +66,6 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
-	err := Delete(client.ServiceClient(), "deletedkey").Extract()
+	err := Delete(client.ServiceClient(), "deletedkey").ExtractErr()
 	th.AssertNoErr(t, err)
 }

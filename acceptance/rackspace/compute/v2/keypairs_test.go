@@ -14,7 +14,7 @@ import (
 )
 
 func deleteKeyPair(t *testing.T, client *gophercloud.ServiceClient, name string) {
-	err := keypairs.Delete(client, name).Extract()
+	err := keypairs.Delete(client, name).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Successfully deleted key [%s].", name)
 }

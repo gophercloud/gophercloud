@@ -25,7 +25,7 @@ func (opts GetOpts) ToAccountGetMap() (map[string]string, error) {
 // Get is a function that retrieves an account's metadata. To extract just the
 // custom metadata, call the ExtractMetadata method on the GetResult. To extract
 // all the headers that are returned (including the metadata), call the
-// ExtractHeaders method on the GetResult.
+// ExtractHeader method on the GetResult.
 func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) GetResult {
 	var res GetResult
 	h := c.AuthenticatedHeaders()
