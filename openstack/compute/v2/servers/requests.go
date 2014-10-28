@@ -536,3 +536,42 @@ func RevertResize(client *gophercloud.ServiceClient, id string) ActionResult {
 
 	return res
 }
+
+type RescueOptsBuilder interface {
+	ToServerRescueMap() (map[string]interface{}, error)
+}
+
+type RescueOpts struct {
+	AdminPass string
+}
+
+func (opts RescueOpts) ToServerRescueMap() (map[string]interface{}, error) {
+	server := make(map[string]interface{})
+	if opts.AdminPass != "" {
+		server["adminPass"] = opts.AdminPass
+	}
+	return map[string]interface{}{"rescue": server}, nil
+}
+
+func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder) ActionResult {
+	var result ActionResult
+
+	if id == "" {
+		result.Err = fmt.Errorf("ID is required")
+		return result
+	}
+	reqBody, err := opts.ToServerRescueMap()
+	if err != nil {
+		result.Err = err
+		return result
+	}
+
+	_, result.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
+		ReqBody:     &reqBody,
+		Results:     &results.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return result
+}
