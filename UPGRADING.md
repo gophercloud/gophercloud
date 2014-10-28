@@ -34,7 +34,7 @@ please [submit an issue](/issues/new) or
 # Authentication
 
 One of the major differences that this release introduces is the level of
-sub-packaging to differentiate between services and providers. You know have
+sub-packaging to differentiate between services and providers. You now have
 the option of authenticating with OpenStack and other providers (like Rackspace).
 
 To authenticate with a vanilla OpenStack installation, you can either specify
