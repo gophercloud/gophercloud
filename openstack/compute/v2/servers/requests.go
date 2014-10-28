@@ -568,7 +568,6 @@ func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder
 
 	_, result.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		ReqBody:     &reqBody,
-		Results:     &results.Body,
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 	})
