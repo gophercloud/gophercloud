@@ -475,7 +475,7 @@ type ResizeOpts struct {
 	FlavorRef string
 }
 
-// ToServerResizeMap formats a ResizeOpts as a map that can be used as a JSON request body to the
+// ToServerResizeMap formats a ResizeOpts as a map that can be used as a JSON request body for the
 // Resize request.
 func (opts ResizeOpts) ToServerResizeMap() (map[string]interface{}, error) {
 	resize := map[string]interface{}{
@@ -537,14 +537,22 @@ func RevertResize(client *gophercloud.ServiceClient, id string) ActionResult {
 	return res
 }
 
+// RescueOptsBuilder is an interface that allows extensions to override the
+// default structure of a Rescue request.
 type RescueOptsBuilder interface {
 	ToServerRescueMap() (map[string]interface{}, error)
 }
 
+// RescueOpts represents the configuration options used to control a Rescue
+// option.
 type RescueOpts struct {
+	// AdminPass is the desired administrative password for the instance in
+	// RESCUE mode.
 	AdminPass string
 }
 
+// ToRescueResizeMap formats a RescueOpts as a map that can be used a JSON
+// request body for the Rescue request.
 func (opts RescueOpts) ToServerRescueMap() (map[string]interface{}, error) {
 	server := make(map[string]interface{})
 	if opts.AdminPass != "" {
@@ -553,6 +561,7 @@ func (opts RescueOpts) ToServerRescueMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"rescue": server}, nil
 }
 
+// Rescue instructs the provider to place the server into RESCUE mode.
 func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder) ActionResult {
 	var result ActionResult
 
