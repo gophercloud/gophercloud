@@ -1,7 +1,7 @@
-# gophercloud: the OpenStack SDK for Go
+# Gophercloud: the OpenStack SDK for Go
 [![Build Status](https://travis-ci.org/rackspace/gophercloud.svg?branch=master)](https://travis-ci.org/rackspace/gophercloud)
 
-gophercloud is a flexible SDK that allows you to consume and work with OpenStack
+Gophercloud is a flexible SDK that allows you to consume and work with OpenStack
 clouds in a simple and idiomatic way using golang. Many services are supported,
 including Compute, Block Storage, Object Storage, Networking, and Identity.
 Each service API is backed with getting started guides, code samples, reference
@@ -9,7 +9,7 @@ documentation, unit tests and acceptance tests.
 
 ## Useful links
 
-* [gophercloud homepage](http://gophercloud.io)
+* [Gophercloud homepage](http://gophercloud.io)
 * [Reference documentation](http://godoc.org/github.com/rackspace/gophercloud)
 * [Getting started guides](http://gophercloud.io/docs)
 * [Effective Go](https://golang.org/doc/effective_go.html)
@@ -17,7 +17,7 @@ documentation, unit tests and acceptance tests.
 ## How to install
 
 Before installing, you need to ensure that your [GOPATH environment variable](https://golang.org/doc/code.html#GOPATH)
-is pointing to an appropriate directory where you want to install gophercloud:
+is pointing to an appropriate directory where you want to install Gophercloud:
 
 ```bash
 mkdir $HOME/go
@@ -27,7 +27,7 @@ export GOPATH=$HOME/go
 To protect yourself against changes in your dependencies, we highly recommend choosing a
 [dependency management solution](https://code.google.com/p/go-wiki/wiki/PackageManagementTools) for
 your projects, such as [godep](https://github.com/tools/godep). Once this is set up, you can install
-gophercloud as a dependency like so:
+Gophercloud as a dependency like so:
 
 ```bash
 go get github.com/rackspace/gophercloud
@@ -67,9 +67,9 @@ prompted for your password.
 ### Authentication
 
 Once you have access to your credentials, you can begin plugging them into
-gophercloud. The next step is authentication, and this is handled by a base
+Gophercloud. The next step is authentication, and this is handled by a base
 "Provider" struct. To get one, you can either pass in your credentials
-explicitly, or tell gophercloud to use environment variables:
+explicitly, or tell Gophercloud to use environment variables:
 
 ```go
 import (
