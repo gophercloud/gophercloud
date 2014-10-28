@@ -1,8 +1,6 @@
 package services
 
 import (
-	"strconv"
-
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -32,25 +30,19 @@ func Create(client *gophercloud.ServiceClient, serviceType string) CreateResult 
 
 // ListOpts allows you to query the List method.
 type ListOpts struct {
-	ServiceType string
-	PerPage     int
-	Page        int
+	ServiceType string `q:"type"`
+	PerPage     int    `q:"perPage"`
+	Page        int    `q:"page"`
 }
 
 // List enumerates the services available to a specific user.
 func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	q := make(map[string]string)
-	if opts.ServiceType != "" {
-		q["type"] = opts.ServiceType
+	u := listURL(client)
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return pagination.Pager{Err: err}
 	}
-	if opts.Page != 0 {
-		q["page"] = strconv.Itoa(opts.Page)
-	}
-	if opts.PerPage != 0 {
-		q["perPage"] = strconv.Itoa(opts.PerPage)
-	}
-	u := listURL(client) + gophercloud.BuildQuery(q)
-
+	u += q.String()
 	createPage := func(r pagination.PageResult) pagination.Page {
 		return ServicePage{pagination.LinkedPageBase{PageResult: r}}
 	}
