@@ -24,10 +24,17 @@ mkdir $HOME/go
 export GOPATH=$HOME/go
 ```
 
-Once this is set up, you can install the gophercloud package like so:
+To protect yourself against changes in your dependencies, we highly recommend choosing a
+[dependency management solution](https://code.google.com/p/go-wiki/wiki/PackageManagementTools) for
+your projects, such as [godep](https://github.com/tools/godep). Once this is set up, you can install
+gophercloud as a dependency like so:
 
 ```bash
 go get github.com/rackspace/gophercloud
+
+# Edit your code to import relevant packages from "github.com/rackspace/gophercloud"
+
+godep save ./...
 ```
 
 This will install all the source files you need into a `pkg` directory, which is
