@@ -11,9 +11,9 @@ please [submit an issue](/issues/new) or
 [e-mail our support team](mailto:sdk-support@rackspace.com).
 
 * [Authentication](#authentication)
-* [Servers](#compute)
+* [Servers](#servers)
   * [List servers](#list-servers)
-  * [Get server details](#get-server)
+  * [Get server details](#get-server-details)
   * [Create server](#create-server)
   * [Resize server](#resize-server)
   * [Reboot server](#reboot-server)
@@ -22,13 +22,13 @@ please [submit an issue](/issues/new) or
   * [Change admin password](#change-admin-password)
   * [Delete server](#delete-server)
   * [Rescue server](#rescue-server)
-* [Images and flavors](#images)
+* [Images and flavors](#images-and-flavors)
   * [List images](#list-images)
   * [List flavors](#list-flavors)
-  * [Create/delete image](#create-image)
+  * [Create/delete image](#createdelete-image)
 * [Other](#other)
   * [List keypairs](#list-keypairs)
-  * [Create/delete keypair](#create-keypair)
+  * [Create/delete keypair](#createdelete-keypair)
   * [List IP addresses](#list-ip-addresses)
 
 # Authentication
