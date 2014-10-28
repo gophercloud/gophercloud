@@ -1,8 +1,6 @@
 package endpoints
 
 import (
-	"strconv"
-
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -71,33 +69,24 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) CreateResult {
 // ListOpts allows finer control over the endpoints returned by a List call.
 // All fields are optional.
 type ListOpts struct {
-	Availability gophercloud.Availability
-	ServiceID    string
-	Page         int
-	PerPage      int
+	Availability gophercloud.Availability `q:"interface"`
+	ServiceID    string                   `q:"service_id"`
+	Page         int                      `q:"page"`
+	PerPage      int                      `q:"per_page"`
 }
 
 // List enumerates endpoints in a paginated collection, optionally filtered by ListOpts criteria.
 func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	q := make(map[string]string)
-	if opts.Availability != "" {
-		q["interface"] = string(opts.Availability)
+	u := listURL(client)
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return pagination.Pager{Err: err}
 	}
-	if opts.ServiceID != "" {
-		q["service_id"] = opts.ServiceID
-	}
-	if opts.Page != 0 {
-		q["page"] = strconv.Itoa(opts.Page)
-	}
-	if opts.PerPage != 0 {
-		q["per_page"] = strconv.Itoa(opts.Page)
-	}
-
+	u += q.String()
 	createPage := func(r pagination.PageResult) pagination.Page {
 		return EndpointPage{pagination.LinkedPageBase{PageResult: r}}
 	}
 
-	u := listURL(client) + gophercloud.BuildQuery(q)
 	return pagination.NewPager(client, u, createPage)
 }
 
