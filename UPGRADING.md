@@ -1,13 +1,35 @@
-# Upgrading to v1.0.0 release
+# Upgrading to v1.0.0
 
 With the arrival of this new major version increment, the unfortunate news is
-that many breaking changes to existing services have been introduced. The API
-has been completely rewritten to make the library more extendible and easy-to-use.
+that breaking changes have been introduced to existing services. The API
+has been completely rewritten from the ground up to make the library more
+extensible, maintainable and easy-to-use.
 
-Below we've compiled specific upgrade instructions for the various services
-that existed before. If you have a specific issue that is not addressed below,
+Below we've compiled upgrade instructions for the various services that
+existed before. If you have a specific issue that is not addressed below,
 please [submit an issue](/issues/new) or
 [e-mail our support team](mailto:sdk-support@rackspace.com).
+
+* [Authentication](#authentication)
+* [Servers](#compute)
+  * [List servers](#list-servers)
+  * [Get server details](#get-server)
+  * [Create server](#create-server)
+  * [Resize server](#resize-server)
+  * [Reboot server](#reboot-server)
+  * [Update server](#update-server)
+  * [Rebuild server](#rebuild-server)
+  * [Change admin password](#change-admin-password)
+  * [Delete server](#delete-server)
+  * [Rescue server](#rescue-server)
+* [Images and flavors](#images)
+  * [List images](#list-images)
+  * [List flavors](#list-flavors)
+  * [Create/delete image](#create-image)
+* [Other](#other)
+  * [List keypairs](#list-keypairs)
+  * [Create/delete keypair](#create-keypair)
+  * [List IP addresses](#list-ip-addresses)
 
 # Authentication
 
@@ -47,9 +69,7 @@ provider, err := openstack.AuthenticatedClient(opts)
 
 This provider is the top-level structure that all services are created from.
 
-# Compute
-
-## Client
+# Servers
 
 Before you can interact with the Compute API, you need to retrieve a
 `gophercloud.ServiceClient` client. To do this:
@@ -127,59 +147,6 @@ response := servers.Create(client, opts)
 server, err := response.Extract()
 ```
 
-## List images
-
-As with listing servers (see above), you first retrieve a Pager, and then pass
-in a callback over each page:
-
-```go
-import (
-  "github.com/rackspace/gophercloud/pagination"
-  "github.com/rackspace/gophercloud/openstack/compute/v2/images"
-)
-
-// We have the option of filtering the image list. If we want the full
-// collection, leave it as an empty struct
-opts := images.ListOpts{ChangesSince: "2014-01-01T01:02:03Z", Name: "Ubuntu 12.04"}
-
-// Retrieve a pager (i.e. a paginated collection)
-pager := images.List(client, opts)
-
-// Define an anonymous function to be executed on each page's iteration
-err := pager.EachPage(func(page pagination.Page) (bool, error) {
-  imageList, err := images.ExtractImages(page)
-
-  for _, i := range imageList {
-    // "i" will be a images.Image
-  }
-})
-```
-
-## List flavors
-
-```go
-import (
-  "github.com/rackspace/gophercloud/pagination"
-  "github.com/rackspace/gophercloud/openstack/compute/v2/flavors"
-)
-
-// We have the option of filtering the flavor list. If we want the full
-// collection, leave it as an empty struct
-opts := flavors.ListOpts{ChangesSince: "2014-01-01T01:02:03Z", MinRAM: 4}
-
-// Retrieve a pager (i.e. a paginated collection)
-pager := flavors.List(client, opts)
-
-// Define an anonymous function to be executed on each page's iteration
-err := pager.EachPage(func(page pagination.Page) (bool, error) {
-  flavorList, err := networks.ExtractFlavors(page)
-
-  for _, f := range flavorList {
-    // "f" will be a flavors.Flavor
-  }
-})
-```
-
 ## Change admin password
 
 ```go
@@ -234,6 +201,96 @@ result := servers.Rebuild(client, "server_id", opts)
 server, err := result.Extract()
 ```
 
+## Delete server
+
+```go
+import "github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+
+response := servers.Delete(client, "server_id")
+```
+
+## Rescue server
+
+The server rescue extension for Compute is not currently supported.
+
+# Images and flavors
+
+## List images
+
+As with listing servers (see above), you first retrieve a Pager, and then pass
+in a callback over each page:
+
+```go
+import (
+  "github.com/rackspace/gophercloud/pagination"
+  "github.com/rackspace/gophercloud/openstack/compute/v2/images"
+)
+
+// We have the option of filtering the image list. If we want the full
+// collection, leave it as an empty struct
+opts := images.ListOpts{ChangesSince: "2014-01-01T01:02:03Z", Name: "Ubuntu 12.04"}
+
+// Retrieve a pager (i.e. a paginated collection)
+pager := images.List(client, opts)
+
+// Define an anonymous function to be executed on each page's iteration
+err := pager.EachPage(func(page pagination.Page) (bool, error) {
+  imageList, err := images.ExtractImages(page)
+
+  for _, i := range imageList {
+    // "i" will be a images.Image
+  }
+})
+```
+
+## List flavors
+
+```go
+import (
+  "github.com/rackspace/gophercloud/pagination"
+  "github.com/rackspace/gophercloud/openstack/compute/v2/flavors"
+)
+
+// We have the option of filtering the flavor list. If we want the full
+// collection, leave it as an empty struct
+opts := flavors.ListOpts{ChangesSince: "2014-01-01T01:02:03Z", MinRAM: 4}
+
+// Retrieve a pager (i.e. a paginated collection)
+pager := flavors.List(client, opts)
+
+// Define an anonymous function to be executed on each page's iteration
+err := pager.EachPage(func(page pagination.Page) (bool, error) {
+  flavorList, err := networks.ExtractFlavors(page)
+
+  for _, f := range flavorList {
+    // "f" will be a flavors.Flavor
+  }
+})
+```
+
+## Create/delete image
+
+Image management has been shifted to Glance, but unfortunately this service is
+not supported as of yet. You can, however, list Compute images like so:
+
+```go
+import "github.com/rackspace/gophercloud/openstack/compute/v2/images"
+
+// Retrieve a pager (i.e. a paginated collection)
+pager := images.List(client, opts)
+
+// Define an anonymous function to be executed on each page's iteration
+err := pager.EachPage(func(page pagination.Page) (bool, error) {
+  imageList, err := images.ExtractImages(page)
+
+  for _, i := range imageList {
+    // "i" will be a images.Image
+  }
+})
+```
+
+# Other
+
 ## List keypairs
 
 ```go
@@ -275,39 +332,6 @@ To delete an existing keypair:
 ```go
 response := keypairs.Delete(client, "keypair_id")
 ```
-
-## Create/delete image
-
-Image management has been shifted to Glance, but unfortunately this service is
-not supported as of yet. You can, however, list Compute images like so:
-
-```go
-import "github.com/rackspace/gophercloud/openstack/compute/v2/images"
-
-// Retrieve a pager (i.e. a paginated collection)
-pager := images.List(client, opts)
-
-// Define an anonymous function to be executed on each page's iteration
-err := pager.EachPage(func(page pagination.Page) (bool, error) {
-  imageList, err := images.ExtractImages(page)
-
-  for _, i := range imageList {
-    // "i" will be a images.Image
-  }
-})
-```
-
-## Delete server
-
-```go
-import "github.com/rackspace/gophercloud/openstack/compute/v2/servers"
-
-response := servers.Delete(client, "server_id")
-```
-
-## Rescue server
-
-The server rescue extension for Compute is not currently supported.
 
 ## List IP addresses
 
