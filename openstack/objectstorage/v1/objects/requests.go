@@ -266,6 +266,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 		OkCodes:     []int{201},
 	})
 	res.Header = resp.HttpResponse.Header
+	res.Err = err
 	return res
 }
 
