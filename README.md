@@ -37,8 +37,8 @@ go get github.com/rackspace/gophercloud
 godep save ./...
 ```
 
-This will install all the source files you need into a `pkg` directory, which is
-referenceable from your own source files.
+This will install all the source files you need into a `Godeps/_workspace` directory, which is
+referenceable from your own source files when you use the `godep go` command.
 
 ## Getting started
 
