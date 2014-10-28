@@ -72,7 +72,7 @@ This provider is the top-level structure that all services are created from.
 # Servers
 
 Before you can interact with the Compute API, you need to retrieve a
-`gophercloud.ServiceClient` client. To do this:
+`gophercloud.ServiceClient`. To do this:
 
 ```go
 // Define your region, etc.
@@ -99,7 +99,7 @@ import (
 )
 
 // We have the option of filtering the server list. If we want the full
-// collection, leave it as an empty struct
+// collection, leave it as an empty struct or nil
 opts := servers.ListOpts{Name: "server_1"}
 
 // Retrieve a pager (i.e. a paginated collection)
