@@ -22,15 +22,19 @@ func MockListResponse(t *testing.T) {
     "users":[
         {
             "id": "u1000",
+						"name": "John Smith",
             "username": "jqsmith",
             "email": "john.smith@example.org",
-            "enabled": true
+            "enabled": true,
+						"tenant_id": "12345"
         },
         {
             "id": "u1001",
+						"name": "Jane Smith",
             "username": "jqsmith",
-            "email": "john.smith@example.org",
-            "enabled": true
+            "email": "jane.smith@example.org",
+            "enabled": true,
+						"tenant_id": "12345"
         }
     ]
 }
