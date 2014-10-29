@@ -51,3 +51,31 @@ func TestList(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, count)
 }
+
+func TestCreateUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockCreateUser(t)
+
+	opts := CreateOpts{
+		Name:     "new_user",
+		TenantID: "12345",
+		Enabled:  Disabled,
+		Email:    "new_user@foo.com",
+	}
+
+	user, err := Create(client.ServiceClient(), opts).Extract()
+
+	th.AssertNoErr(t, err)
+
+	expected := &User{
+		Name:     "new_user",
+		ID:       "c39e3de9be2d4c779f1dfd6abacc176d",
+		Email:    "new_user@foo.com",
+		Enabled:  false,
+		TenantID: "12345",
+	}
+
+	th.AssertDeepEquals(t, expected, user)
+}

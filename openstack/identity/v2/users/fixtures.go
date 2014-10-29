@@ -41,3 +41,25 @@ func MockListResponse(t *testing.T) {
   `)
 	})
 }
+
+func MockCreateUser(t *testing.T) {
+	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "user": {
+        "name": "new_user",
+        "tenant_id": "12345",
+        "enabled": false,
+        "email": "new_user@foo.com",
+        "id": "c39e3de9be2d4c779f1dfd6abacc176d"
+    }
+}
+`)
+	})
+}

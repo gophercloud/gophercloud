@@ -2,6 +2,8 @@ package users
 
 import (
 	"github.com/mitchellh/mapstructure"
+
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -49,4 +51,27 @@ func ExtractUsers(page pagination.Page) ([]User, error) {
 
 	err := mapstructure.Decode(casted, &response)
 	return response.Users, err
+}
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any commonResult as a User, if possible.
+func (r commonResult) Extract() (*User, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		User User `mapstructure:"user"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.User, err
+}
+
+type CreateResult struct {
+	commonResult
 }
