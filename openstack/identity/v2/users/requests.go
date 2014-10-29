@@ -103,7 +103,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
 
-	_, result.Err = perigee.Request("GET", resourceURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("GET", ResourceURL(client, id), perigee.Options{
 		Results:     &result.Body,
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
@@ -147,7 +147,7 @@ func (opts UpdateOpts) ToUserUpdateMap() map[string]interface{} {
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var result UpdateResult
 
-	_, result.Err = perigee.Request("PUT", resourceURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("PUT", ResourceURL(client, id), perigee.Options{
 		Results:     &result.Body,
 		ReqBody:     opts.ToUserUpdateMap(),
 		MoreHeaders: client.AuthenticatedHeaders(),
@@ -161,7 +161,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var result DeleteResult
 
-	_, result.Err = perigee.Request("DELETE", resourceURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("DELETE", ResourceURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
 	})

@@ -7,7 +7,7 @@ const (
 	userPath   = "users"
 )
 
-func resourceURL(c *gophercloud.ServiceClient, id string) string {
+func ResourceURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(userPath, id)
 }
 
