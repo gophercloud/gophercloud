@@ -28,8 +28,23 @@ type User struct {
 	TenantID string `mapstructure:"tenant_id"`
 }
 
+// Role assigns specific responsibilities to users, allowing them to accomplish
+// certain API operations whilst scoped to a service.
+type Role struct {
+	// UUID of the role
+	ID string
+
+	// Name of the role
+	Name string
+}
+
 // UserPage is a single page of a User collection.
 type UserPage struct {
+	pagination.SinglePageBase
+}
+
+// RolePage is a single page of a user Role collection.
+type RolePage struct {
 	pagination.SinglePageBase
 }
 
@@ -51,6 +66,26 @@ func ExtractUsers(page pagination.Page) ([]User, error) {
 
 	err := mapstructure.Decode(casted, &response)
 	return response.Users, err
+}
+
+// IsEmpty determines whether or not a page of Tenants contains any results.
+func (page RolePage) IsEmpty() (bool, error) {
+	users, err := ExtractRoles(page)
+	if err != nil {
+		return false, err
+	}
+	return len(users) == 0, nil
+}
+
+// ExtractRoles returns a slice of Roles contained in a single page of results.
+func ExtractRoles(page pagination.Page) ([]Role, error) {
+	casted := page.(RolePage).Body
+	var response struct {
+		Roles []Role `mapstructure:"roles"`
+	}
+
+	err := mapstructure.Decode(casted, &response)
+	return response.Roles, err
 }
 
 type commonResult struct {

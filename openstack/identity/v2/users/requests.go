@@ -168,3 +168,11 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 
 	return result
 }
+
+func ListRoles(client *gophercloud.ServiceClient, tenantID, userID string) pagination.Pager {
+	createPage := func(r pagination.PageResult) pagination.Page {
+		return RolePage{pagination.SinglePageBase(r)}
+	}
+
+	return pagination.NewPager(client, listRolesURL(client, tenantID, userID), createPage)
+}

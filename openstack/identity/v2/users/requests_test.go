@@ -137,3 +137,29 @@ func TestDeleteServer(t *testing.T) {
 	res := Delete(client.ServiceClient(), "c39e3de9be2d4c779f1dfd6abacc176d")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestListingUserRoles(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockListRolesResponse(t)
+
+	tenantID := "1d8b6120dcc640fda4fc9194ffc80273"
+	userID := "c39e3de9be2d4c779f1dfd6abacc176d"
+
+	err := ListRoles(client.ServiceClient(), tenantID, userID).EachPage(func(page pagination.Page) (bool, error) {
+		actual, err := ExtractRoles(page)
+		th.AssertNoErr(t, err)
+
+		expected := []Role{
+			Role{ID: "9fe2ff9ee4384b1894a90878d3e92bab", Name: "foo_role"},
+			Role{ID: "1ea3d56793574b668e85960fbf651e13", Name: "admin"},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+}
