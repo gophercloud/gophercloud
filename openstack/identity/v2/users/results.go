@@ -81,3 +81,8 @@ type CreateResult struct {
 type GetResult struct {
 	commonResult
 }
+
+// UpdateResult represents the result of an Update operation
+type UpdateResult struct {
+	commonResult
+}

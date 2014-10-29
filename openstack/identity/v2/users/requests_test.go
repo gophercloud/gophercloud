@@ -99,3 +99,31 @@ func TestGetUser(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, user)
 }
+
+func TestUpdateUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUpdateUser(t)
+
+	id := "c39e3de9be2d4c779f1dfd6abacc176d"
+	opts := UpdateOpts{
+		Name:    "new_name",
+		Enabled: Enabled,
+		Email:   "new_email@foo.com",
+	}
+
+	user, err := Update(client.ServiceClient(), id, opts).Extract()
+
+	th.AssertNoErr(t, err)
+
+	expected := &User{
+		Name:     "new_name",
+		ID:       id,
+		Email:    "new_email@foo.com",
+		Enabled:  true,
+		TenantID: "12345",
+	}
+
+	th.AssertDeepEquals(t, expected, user)
+}

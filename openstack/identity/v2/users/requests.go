@@ -28,8 +28,7 @@ var (
 	Disabled EnabledState = &iFalse
 )
 
-// CreateOpts represents the options needed when creating new users.
-type CreateOpts struct {
+type commonOpts struct {
 	// Either a name or username is required. When provided, the value must be
 	// unique or a 409 conflict error will be returned. If you provide a name but
 	// omit a username, the latter will be set to the former; and vice versa.
@@ -44,6 +43,9 @@ type CreateOpts struct {
 	// The email address of this user.
 	Email string
 }
+
+// CreateOpts represents the options needed when creating new users.
+type CreateOpts commonOpts
 
 // CreateOptsBuilder describes struct types that can be accepted by the Create call.
 type CreateOptsBuilder interface {
@@ -70,8 +72,11 @@ func (opts CreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
 	if opts.Email != "" {
 		m["email"] = opts.Email
 	}
+	if opts.TenantID != "" {
+		m["tenant_id"] = opts.TenantID
+	}
 
-	return m, nil
+	return map[string]interface{}{"user": m}, nil
 }
 
 // Create is the operation responsible for creating new users.
@@ -100,6 +105,50 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 
 	_, result.Err = perigee.Request("GET", resourceURL(client, id), perigee.Options{
 		Results:     &result.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+	})
+
+	return result
+}
+
+// UpdateOptsBuilder allows extentions to add additional attributes to the Update request.
+type UpdateOptsBuilder interface {
+	ToUserUpdateMap() map[string]interface{}
+}
+
+// UpdateOpts specifies the base attributes that may be updated on an existing server.
+type UpdateOpts commonOpts
+
+// ToUserUpdateMap formats an UpdateOpts structure into a request body.
+func (opts UpdateOpts) ToUserUpdateMap() map[string]interface{} {
+	m := make(map[string]interface{})
+
+	if opts.Name != "" {
+		m["name"] = opts.Name
+	}
+	if opts.Username != "" {
+		m["username"] = opts.Username
+	}
+	if opts.Enabled != nil {
+		m["enabled"] = &opts.Enabled
+	}
+	if opts.Email != "" {
+		m["email"] = opts.Email
+	}
+	if opts.TenantID != "" {
+		m["tenant_id"] = opts.TenantID
+	}
+
+	return map[string]interface{}{"user": m}
+}
+
+// Update is the operation responsible for updating exist users by their UUID.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
+	var result UpdateResult
+
+	_, result.Err = perigee.Request("PUT", resourceURL(client, id), perigee.Options{
+		Results:     &result.Body,
+		ReqBody:     opts.ToUserUpdateMap(),
 		MoreHeaders: client.AuthenticatedHeaders(),
 	})
 
