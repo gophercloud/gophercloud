@@ -86,3 +86,8 @@ type GetResult struct {
 type UpdateResult struct {
 	commonResult
 }
+
+// DeleteResult represents the result of a Delete operation
+type DeleteResult struct {
+	commonResult
+}

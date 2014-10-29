@@ -127,3 +127,13 @@ func TestUpdateUser(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, user)
 }
+
+func TestDeleteServer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteUser(t)
+
+	res := Delete(client.ServiceClient(), "c39e3de9be2d4c779f1dfd6abacc176d")
+	th.AssertNoErr(t, res.Err)
+}

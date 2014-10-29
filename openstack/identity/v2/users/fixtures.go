@@ -128,3 +128,11 @@ func MockUpdateUser(t *testing.T) {
 `)
 	})
 }
+
+func MockDeleteUser(t *testing.T) {
+	th.Mux.HandleFunc("/users/c39e3de9be2d4c779f1dfd6abacc176d", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

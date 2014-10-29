@@ -106,6 +106,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	_, result.Err = perigee.Request("GET", resourceURL(client, id), perigee.Options{
 		Results:     &result.Body,
 		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
 	})
 
 	return result
@@ -150,6 +151,19 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 		Results:     &result.Body,
 		ReqBody:     opts.ToUserUpdateMap(),
 		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return result
+}
+
+// Delete is the operation responsible for permanently deleting an API user.
+func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
+	var result DeleteResult
+
+	_, result.Err = perigee.Request("DELETE", resourceURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{204},
 	})
 
 	return result
