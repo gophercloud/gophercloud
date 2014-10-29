@@ -72,6 +72,12 @@ func (r commonResult) Extract() (*User, error) {
 	return &response.User, err
 }
 
+// CreateResult represents the result of a Create operation
 type CreateResult struct {
+	commonResult
+}
+
+// GetResult represents the result of a Get operation
+type GetResult struct {
 	commonResult
 }

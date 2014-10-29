@@ -79,3 +79,23 @@ func TestCreateUser(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, user)
 }
+
+func TestGetUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetUser(t)
+
+	user, err := Get(client.ServiceClient(), "new_user").Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &User{
+		Name:     "new_user",
+		ID:       "c39e3de9be2d4c779f1dfd6abacc176d",
+		Email:    "new_user@foo.com",
+		Enabled:  false,
+		TenantID: "12345",
+	}
+
+	th.AssertDeepEquals(t, expected, user)
+}

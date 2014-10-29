@@ -93,3 +93,15 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 
 	return res
 }
+
+// Get requests details on a single user, either by ID or username.
+func Get(client *gophercloud.ServiceClient, identifier string) GetResult {
+	var result GetResult
+
+	_, result.Err = perigee.Request("GET", resourceURL(client, identifier), perigee.Options{
+		Results:     &result.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+	})
+
+	return result
+}
