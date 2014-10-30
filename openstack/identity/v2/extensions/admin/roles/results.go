@@ -6,6 +6,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// Role represents an API role resource.
 type Role struct {
 	// The unique ID for the role.
 	ID string
@@ -42,6 +43,8 @@ func ExtractRoles(page pagination.Page) ([]Role, error) {
 	return response.Roles, err
 }
 
+// UserRoleResult represents the result of either an AddUserRole or
+// a DeleteUserRole operation.
 type UserRoleResult struct {
 	gophercloud.ErrResult
 }
