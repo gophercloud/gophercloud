@@ -138,7 +138,7 @@ func mockDeleteUserResponse(t *testing.T) {
 }
 
 func mockListRolesResponse(t *testing.T) {
-	th.Mux.HandleFunc("/tenants/1d8b6120dcc640fda4fc9194ffc80273/users/c39e3de9be2d4c779f1dfd6abacc176d", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/tenants/1d8b6120dcc640fda4fc9194ffc80273/users/c39e3de9be2d4c779f1dfd6abacc176d/roles", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 

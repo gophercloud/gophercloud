@@ -92,7 +92,7 @@ func TestDeleteServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	os.MockDeleteUser(t)
+	mockDeleteUser(t)
 
 	res := Delete(client.ServiceClient(), "c39e3de9be2d4c779f1dfd6abacc176d")
 	th.AssertNoErr(t, res.Err)

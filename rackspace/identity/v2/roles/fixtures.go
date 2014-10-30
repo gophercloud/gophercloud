@@ -33,7 +33,7 @@ func MockListRoleResponse(t *testing.T) {
 }
 
 func MockAddUserRoleResponse(t *testing.T) {
-	th.Mux.HandleFunc("/users/{user_id}/OS-KSADMN/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/users/{user_id}/roles/OS-KSADM/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusCreated)
@@ -41,7 +41,7 @@ func MockAddUserRoleResponse(t *testing.T) {
 }
 
 func MockDeleteUserRoleResponse(t *testing.T) {
-	th.Mux.HandleFunc("/users/{user_id}/OS-KSADMN/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/users/{user_id}/roles/OS-KSADM/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
