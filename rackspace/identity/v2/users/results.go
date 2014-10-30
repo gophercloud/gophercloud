@@ -1,6 +1,8 @@
 package users
 
 import (
+	"strconv"
+
 	os "github.com/rackspace/gophercloud/openstack/identity/v2/users"
 
 	"github.com/mitchellh/mapstructure"
@@ -40,7 +42,7 @@ type User struct {
 	Password string `mapstructure:"OS-KSADM:password"`
 
 	// Indicates whether the user has enabled multi-factor authentication.
-	MultiFactorEnabled string `mapstructure:"RAX-AUTH:multiFactorEnabled"`
+	MultiFactorEnabled bool `mapstructure:"RAX-AUTH:multiFactorEnabled"`
 }
 
 // CreateResult represents the result of a Create operation
@@ -67,7 +69,16 @@ func commonExtract(resp interface{}, err error) (*User, error) {
 		User *User `json:"user"`
 	}
 
-	err = mapstructure.Decode(resp, &respStruct)
+	// Since the API returns a string instead of a bool, we need to hack the JSON
+	json := resp.(map[string]interface{})
+	user := json["user"].(map[string]interface{})
+	if s, ok := user["RAX-AUTH:multiFactorEnabled"].(string); ok && s != "" {
+		if b, err := strconv.ParseBool(s); err == nil {
+			user["RAX-AUTH:multiFactorEnabled"] = b
+		}
+	}
+
+	err = mapstructure.Decode(json, &respStruct)
 
 	return respStruct.User, err
 }

@@ -64,7 +64,7 @@ func TestGetUser(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, true, user.Enabled)
-	th.AssertEquals(t, "true", user.MultiFactorEnabled)
+	th.AssertEquals(t, true, user.MultiFactorEnabled)
 }
 
 func TestUpdateUser(t *testing.T) {
