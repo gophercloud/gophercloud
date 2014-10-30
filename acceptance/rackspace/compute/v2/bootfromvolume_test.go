@@ -5,11 +5,11 @@ package v2
 import (
 	"testing"
 
+	"github.com/rackspace/gophercloud/acceptance/tools"
 	osBFV "github.com/rackspace/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 	"github.com/rackspace/gophercloud/rackspace/compute/v2/bootfromvolume"
 	"github.com/rackspace/gophercloud/rackspace/compute/v2/servers"
 	th "github.com/rackspace/gophercloud/testhelper"
-	"github.com/smashwilson/gophercloud/acceptance/tools"
 )
 
 func TestBootFromVolume(t *testing.T) {
