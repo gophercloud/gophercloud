@@ -47,7 +47,18 @@ func TestAddUserRole(t *testing.T) {
 
 	MockAddUserRoleResponse(t)
 
-	err := AddRoleToUser(client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
+	err := AddUserRole(client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
+
+	th.AssertNoErr(t, err)
+}
+
+func TestDeleteUserRole(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteUserRoleResponse(t)
+
+	err := DeleteUserRole(client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
 
 	th.AssertNoErr(t, err)
 }

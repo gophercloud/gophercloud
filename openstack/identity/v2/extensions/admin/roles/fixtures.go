@@ -38,3 +38,11 @@ func MockAddUserRoleResponse(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 	})
 }
+
+func MockDeleteUserRoleResponse(t *testing.T) {
+	th.Mux.HandleFunc("/tenants/{tenant_id}/users/{user_id}/OS-KSADMN/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

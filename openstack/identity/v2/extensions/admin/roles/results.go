@@ -42,6 +42,6 @@ func ExtractRoles(page pagination.Page) ([]Role, error) {
 	return response.Roles, err
 }
 
-type AddRoleResult struct {
+type UserRoleResult struct {
 	gophercloud.ErrResult
 }
