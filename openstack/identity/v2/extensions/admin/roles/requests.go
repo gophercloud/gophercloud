@@ -1,6 +1,7 @@
 package roles
 
 import (
+	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
