@@ -5,6 +5,7 @@ import "github.com/rackspace/gophercloud"
 const (
 	tenantPath = "tenants"
 	userPath   = "users"
+	rolePath   = "roles"
 )
 
 func ResourceURL(c *gophercloud.ServiceClient, id string) string {
@@ -16,5 +17,5 @@ func rootURL(c *gophercloud.ServiceClient) string {
 }
 
 func listRolesURL(c *gophercloud.ServiceClient, tenantID, userID string) string {
-	return c.ServiceURL(tenantPath, tenantID, userPath, userID)
+	return c.ServiceURL(tenantPath, tenantID, userPath, userID, rolePath)
 }
