@@ -12,7 +12,7 @@ func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockListResponse(t)
+	MockListUserResponse(t)
 
 	count := 0
 
@@ -56,7 +56,7 @@ func TestCreateUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockCreateUser(t)
+	mockCreateUserResponse(t)
 
 	opts := CreateOpts{
 		Name:     "new_user",
@@ -84,7 +84,7 @@ func TestGetUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockGetUser(t)
+	mockGetUserResponse(t)
 
 	user, err := Get(client.ServiceClient(), "new_user").Extract()
 	th.AssertNoErr(t, err)
@@ -104,7 +104,7 @@ func TestUpdateUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockUpdateUser(t)
+	mockUpdateUserResponse(t)
 
 	id := "c39e3de9be2d4c779f1dfd6abacc176d"
 	opts := UpdateOpts{
@@ -128,11 +128,11 @@ func TestUpdateUser(t *testing.T) {
 	th.AssertDeepEquals(t, expected, user)
 }
 
-func TestDeleteServer(t *testing.T) {
+func TestDeleteUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockDeleteUser(t)
+	mockDeleteUserResponse(t)
 
 	res := Delete(client.ServiceClient(), "c39e3de9be2d4c779f1dfd6abacc176d")
 	th.AssertNoErr(t, res.Err)
@@ -142,7 +142,7 @@ func TestListingUserRoles(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockListRolesResponse(t)
+	mockListRolesResponse(t)
 
 	tenantID := "1d8b6120dcc640fda4fc9194ffc80273"
 	userID := "c39e3de9be2d4c779f1dfd6abacc176d"

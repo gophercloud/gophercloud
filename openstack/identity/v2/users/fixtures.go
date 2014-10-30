@@ -9,7 +9,7 @@ import (
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
-func MockListResponse(t *testing.T) {
+func MockListUserResponse(t *testing.T) {
 	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -42,7 +42,7 @@ func MockListResponse(t *testing.T) {
 	})
 }
 
-func MockCreateUser(t *testing.T) {
+func mockCreateUserResponse(t *testing.T) {
 	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -75,7 +75,7 @@ func MockCreateUser(t *testing.T) {
 	})
 }
 
-func MockGetUser(t *testing.T) {
+func mockGetUserResponse(t *testing.T) {
 	th.Mux.HandleFunc("/users/new_user", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -97,7 +97,7 @@ func MockGetUser(t *testing.T) {
 	})
 }
 
-func MockUpdateUser(t *testing.T) {
+func mockUpdateUserResponse(t *testing.T) {
 	th.Mux.HandleFunc("/users/c39e3de9be2d4c779f1dfd6abacc176d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -129,7 +129,7 @@ func MockUpdateUser(t *testing.T) {
 	})
 }
 
-func MockDeleteUser(t *testing.T) {
+func mockDeleteUserResponse(t *testing.T) {
 	th.Mux.HandleFunc("/users/c39e3de9be2d4c779f1dfd6abacc176d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -137,7 +137,7 @@ func MockDeleteUser(t *testing.T) {
 	})
 }
 
-func MockListRolesResponse(t *testing.T) {
+func mockListRolesResponse(t *testing.T) {
 	th.Mux.HandleFunc("/tenants/1d8b6120dcc640fda4fc9194ffc80273/users/c39e3de9be2d4c779f1dfd6abacc176d", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
