@@ -10,7 +10,7 @@ import (
 )
 
 func MockListRoleResponse(t *testing.T) {
-	th.Mux.HandleFunc("/OS-KSADMN/roles", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/OS-KSADM/roles", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 

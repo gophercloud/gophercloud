@@ -22,7 +22,7 @@ func AddUserRole(client *gophercloud.ServiceClient, userID, roleID string) UserR
 
 	_, result.Err = perigee.Request("PUT", userRoleURL(client, userID, roleID), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{201},
+		OkCodes:     []int{200, 201},
 	})
 
 	return result
@@ -49,5 +49,5 @@ type UserRoleResult struct {
 }
 
 func userRoleURL(c *gophercloud.ServiceClient, userID, roleID string) string {
-	return c.ServiceURL(os.UserPath, userID, os.ExtPath, roleID)
+	return c.ServiceURL(os.UserPath, userID, os.RolePath, os.ExtPath, roleID)
 }
