@@ -16,6 +16,9 @@ type Role struct {
 
 	// The description of the role.
 	Description string
+
+	// The associated service for this role.
+	ServiceID string
 }
 
 // RolePage is a single page of a user Role collection.
