@@ -40,3 +40,14 @@ func TestRole(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, count)
 }
+
+func TestAddUserRole(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockAddUserRoleResponse(t)
+
+	err := AddRoleToUser(client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
+
+	th.AssertNoErr(t, err)
+}

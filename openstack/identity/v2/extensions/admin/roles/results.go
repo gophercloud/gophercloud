@@ -2,7 +2,7 @@ package roles
 
 import (
 	"github.com/mitchellh/mapstructure"
-
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -40,4 +40,8 @@ func ExtractRoles(page pagination.Page) ([]Role, error) {
 
 	err := mapstructure.Decode(casted, &response)
 	return response.Roles, err
+}
+
+type AddRoleResult struct {
+	gophercloud.ErrResult
 }
