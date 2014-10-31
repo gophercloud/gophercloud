@@ -159,3 +159,77 @@ func mockDeleteLBResponse(t *testing.T, id int) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+func mockGetLBResponse(t *testing.T, id int) {
+	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id), func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "loadBalancer": {
+    "id": 2000,
+    "name": "sample-loadbalancer",
+    "protocol": "HTTP",
+    "port": 80,
+    "algorithm": "RANDOM",
+    "status": "ACTIVE",
+    "timeout": 30,
+    "connectionLogging": {
+      "enabled": true
+    },
+    "virtualIps": [
+      {
+        "id": 1000,
+        "address": "206.10.10.210",
+        "type": "PUBLIC",
+        "ipVersion": "IPV4"
+      }
+    ],
+    "nodes": [
+      {
+        "id": 1041,
+        "address": "10.1.1.1",
+        "port": 80,
+        "condition": "ENABLED",
+        "status": "ONLINE"
+      },
+      {
+        "id": 1411,
+        "address": "10.1.1.2",
+        "port": 80,
+        "condition": "ENABLED",
+        "status": "ONLINE"
+      }
+    ],
+    "sessionPersistence": {
+      "persistenceType": "HTTP_COOKIE"
+    },
+    "connectionThrottle": {
+      "minConnections": 10,
+      "maxConnections": 100,
+      "maxConnectionRate": 50,
+      "rateInterval": 60
+    },
+    "cluster": {
+      "name": "c1.dfw1"
+    },
+    "created": {
+      "time": "2010-11-30T03:23:42Z"
+    },
+    "updated": {
+      "time": "2010-11-30T03:23:44Z"
+    },
+    "sourceAddresses": {
+      "ipv6Public": "2001:4801:79f1:1::1/64",
+      "ipv4Servicenet": "10.0.0.0",
+      "ipv4Public": "10.12.99.28"
+    }
+  }
+}
+	`)
+	})
+}

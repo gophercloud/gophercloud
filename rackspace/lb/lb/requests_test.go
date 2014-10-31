@@ -8,6 +8,11 @@ import (
 	"github.com/rackspace/gophercloud/testhelper/client"
 )
 
+const (
+	id1 = 12345
+	id2 = 67890
+)
+
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -120,7 +125,7 @@ func TestBulkDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	ids := []int{12345, 67890}
+	ids := []int{id1, id2}
 
 	mockBatchDeleteLBResponse(t, ids)
 
@@ -132,14 +137,70 @@ func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	id := 12345
+	mockDeleteLBResponse(t, id1)
 
-	mockDeleteLBResponse(t, id)
-
-	err := Delete(client.ServiceClient(), id).ExtractErr()
+	err := Delete(client.ServiceClient(), id1).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
 func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
+	mockGetLBResponse(t, id1)
+
+	lb, err := Get(client.ServiceClient(), id1).Extract()
+
+	expected := &LoadBalancer{
+		Name:              "sample-loadbalancer",
+		ID:                2000,
+		Protocol:          "HTTP",
+		Port:              80,
+		Algorithm:         RAND,
+		Status:            ACTIVE,
+		Timeout:           30,
+		ConnectionLogging: ConnectionLogging{Enabled: true},
+		VIPs: []VIP{
+			VIP{
+				ID:      1000,
+				Address: "206.10.10.210",
+				Type:    "PUBLIC",
+				Version: "IPV4",
+			},
+		},
+		Nodes: []Node{
+			Node{
+				Address:   "10.1.1.1",
+				ID:        1041,
+				Port:      80,
+				Status:    "ONLINE",
+				Condition: "ENABLED",
+			},
+			Node{
+				Address:   "10.1.1.2",
+				ID:        1411,
+				Port:      80,
+				Status:    "ONLINE",
+				Condition: "ENABLED",
+			},
+		},
+		SessionPersistence: SessionPersistence{Type: "HTTP_COOKIE"},
+		ConnectionThrottle: ConnectionThrottle{
+			MinConns:     10,
+			MaxConns:     100,
+			MaxConnRate:  50,
+			RateInterval: 60,
+		},
+		Cluster: Cluster{Name: "c1.dfw1"},
+		Created: Datetime{Time: "2010-11-30T03:23:42Z"},
+		Updated: Datetime{Time: "2010-11-30T03:23:44Z"},
+		SourceAddrs: SourceAddrs{
+			IPv4Public:  "10.12.99.28",
+			IPv4Private: "10.0.0.0",
+			IPv6Public:  "2001:4801:79f1:1::1/64",
+		},
+	}
+
+	th.AssertDeepEquals(t, expected, lb)
+	th.AssertNoErr(t, err)
 }

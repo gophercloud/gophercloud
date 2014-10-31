@@ -144,6 +144,30 @@ type LoadBalancer struct {
 	Nodes []Node
 
 	ConnectionLogging ConnectionLogging
+
+	SessionPersistence SessionPersistence
+
+	ConnectionThrottle ConnectionThrottle
+
+	SourceAddrs SourceAddrs `mapstructure:"sourceAddresses"`
+}
+
+type SourceAddrs struct {
+	IPv4Public  string `json:"ipv4Public" mapstructure:"ipv4Public"`
+	IPv4Private string `json:"ipv4Servicenet" mapstructure:"ipv4Servicenet"`
+	IPv6Public  string `json:"ipv6Public" mapstructure:"ipv6Public"`
+	IPv6Private string `json:"ipv6Servicenet" mapstructure:"ipv6Servicenet"`
+}
+
+type SessionPersistence struct {
+	Type string `json:"persistenceType" mapstructure:"persistenceType"`
+}
+
+type ConnectionThrottle struct {
+	MinConns     int `json:"minConnections" mapstructure:"minConnections"`
+	MaxConns     int `json:"maxConnections" mapstructure:"maxConnections"`
+	MaxConnRate  int `json:"maxConnectionRate" mapstructure:"maxConnectionRate"`
+	RateInterval int `json:"rateInterval" mapstructure:"rateInterval"`
 }
 
 type ConnectionLogging struct {
@@ -216,4 +240,8 @@ type CreateResult struct {
 
 type DeleteResult struct {
 	gophercloud.ErrResult
+}
+
+type GetResult struct {
+	commonResult
 }

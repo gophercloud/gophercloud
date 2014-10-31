@@ -227,6 +227,18 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	return res
 }
 
+func Get(c *gophercloud.ServiceClient, id int) GetResult {
+	var res GetResult
+
+	_, res.Err = perigee.Request("GET", resourceURL(c, id), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
+
 func BulkDelete(c *gophercloud.ServiceClient, ids []int) DeleteResult {
 	var res DeleteResult
 
