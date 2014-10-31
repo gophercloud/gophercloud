@@ -3,6 +3,7 @@ package lb
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"testing"
 
 	th "github.com/rackspace/gophercloud/testhelper"
@@ -135,8 +136,24 @@ func mockCreateLBResponse(t *testing.T) {
 	})
 }
 
-func mockDeleteLBResponse(t *testing.T) {
+func mockBatchDeleteLBResponse(t *testing.T, ids []int) {
 	th.Mux.HandleFunc("/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		r.ParseForm()
+
+		for k, v := range ids {
+			fids := r.Form["id"]
+			th.AssertEquals(t, strconv.Itoa(v), fids[k])
+		}
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func mockDeleteLBResponse(t *testing.T, id int) {
+	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusAccepted)

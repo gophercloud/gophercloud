@@ -247,3 +247,14 @@ func BulkDelete(c *gophercloud.ServiceClient, ids []int) DeleteResult {
 
 	return res
 }
+
+func Delete(c *gophercloud.ServiceClient, id int) DeleteResult {
+	var res DeleteResult
+
+	_, res.Err = perigee.Request("DELETE", resourceURL(c, id), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		OkCodes:     []int{202},
+	})
+
+	return res
+}

@@ -1,11 +1,15 @@
 package lb
 
-import "github.com/rackspace/gophercloud"
+import (
+	"strconv"
+
+	"github.com/rackspace/gophercloud"
+)
 
 const path = "loadbalancers"
 
-func resourceURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL(path, id)
+func resourceURL(c *gophercloud.ServiceClient, id int) string {
+	return c.ServiceURL(path, strconv.Itoa(id))
 }
 
 func rootURL(c *gophercloud.ServiceClient) string {
