@@ -32,8 +32,10 @@ func WaitFor(timeout int, predicate func() (bool, error)) error {
 	}
 }
 
-// NormalizeURL ensures that each endpoint URL has a closing `/`, as expected
-// by ServiceClient.
+// NormalizeURL is an internal function to be used by provider clients.
+//
+// It ensures that each endpoint URL has a closing `/`, as expected by
+// ServiceClient's methods.
 func NormalizeURL(url string) string {
 	if !strings.HasSuffix(url, "/") {
 		return url + "/"
