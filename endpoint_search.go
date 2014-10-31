@@ -68,14 +68,19 @@ type EndpointOpts struct {
 	Availability Availability
 }
 
-// EndpointLocator is a function that describes how to locate a single endpoint
-// from a service catalog for a specific ProviderClient. It should be set
-// during ProviderClient authentication and used to discover related
-// ServiceClients.
+/*
+EndpointLocator is an internal function to be used by provider implementations.
+
+It provides an implementation that locates a single endpoint from a service
+catalog for a specific ProviderClient based on user-provided EndpointOpts. The
+provider then uses it to discover related ServiceClients.
+*/
 type EndpointLocator func(EndpointOpts) (string, error)
 
-// ApplyDefaults sets EndpointOpts fields if not already set. Currently,
-// EndpointOpts.Availability defaults to the public endpoint.
+// ApplyDefaults is an internal method to be used by provider implementations.
+//
+// It sets EndpointOpts fields if not already set, including a default type.
+// Currently, EndpointOpts.Availability defaults to the public endpoint.
 func (eo *EndpointOpts) ApplyDefaults(t string) {
 	if eo.Type == "" {
 		eo.Type = t
