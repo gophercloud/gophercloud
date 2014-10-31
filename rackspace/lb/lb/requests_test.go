@@ -116,7 +116,7 @@ func TestCreate(t *testing.T) {
 	th.AssertDeepEquals(t, expected, lb)
 }
 
-func TestBulkDeleteLBs(t *testing.T) {
+func TestBulkDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -128,7 +128,7 @@ func TestBulkDeleteLBs(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestDeleteLB(t *testing.T) {
+func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -138,4 +138,8 @@ func TestDeleteLB(t *testing.T) {
 
 	err := Delete(client.ServiceClient(), id).ExtractErr()
 	th.AssertNoErr(t, err)
+}
+
+func TestGet(t *testing.T) {
+
 }
