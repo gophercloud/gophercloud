@@ -51,3 +51,67 @@ func TestList(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, count)
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockCreateLBResponse(t)
+
+	opts := CreateOpts{
+		Name:     "a-new-loadbalancer",
+		Port:     80,
+		Protocol: "HTTP",
+		VIPs: []VIP{
+			VIP{ID: 2341},
+			VIP{ID: 900001},
+		},
+		Nodes: []Node{
+			Node{Address: "10.1.1.1", Port: 80, Condition: "ENABLED"},
+		},
+	}
+
+	lb, err := Create(client.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &LoadBalancer{
+		Name:       "a-new-loadbalancer",
+		ID:         144,
+		Protocol:   "HTTP",
+		HalfClosed: false,
+		Port:       83,
+		Algorithm:  RAND,
+		Status:     BUILD,
+		Timeout:    30,
+		Cluster:    Cluster{Name: "ztm-n01.staging1.lbaas.rackspace.net"},
+		Nodes: []Node{
+			Node{
+				Address:   "10.1.1.1",
+				ID:        653,
+				Port:      80,
+				Status:    "ONLINE",
+				Condition: "ENABLED",
+				Weight:    1,
+			},
+		},
+		VIPs: []VIP{
+			VIP{
+				ID:      39,
+				Address: "206.10.10.210",
+				Type:    "PUBLIC",
+				Version: "IPV4",
+			},
+			VIP{
+				ID:      900001,
+				Address: "2001:4801:79f1:0002:711b:be4c:0000:0021",
+				Type:    "PUBLIC",
+				Version: "IPV6",
+			},
+		},
+		Created:           Datetime{Time: "2011-04-13T14:18:07Z"},
+		Updated:           Datetime{Time: "2011-04-13T14:18:07Z"},
+		ConnectionLogging: ConnectionLogging{Enabled: false},
+	}
+
+	th.AssertDeepEquals(t, expected, lb)
+}

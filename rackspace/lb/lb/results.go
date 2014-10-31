@@ -2,6 +2,8 @@ package lb
 
 import (
 	"github.com/mitchellh/mapstructure"
+
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -96,10 +98,10 @@ type Datetime struct {
 }
 
 type VIP struct {
-	Address string
-	ID      int
-	Type    string
-	Version string `mapstructure:"ipVersion"`
+	Address string `json:"address,omitempty"`
+	ID      int    `json:"id,omitempty"`
+	Type    string `json:"type,omitempty"`
+	Version string `json:"ipVersion,omitempty" mapstructure:"ipVersion"`
 }
 
 type LoadBalancer struct {
@@ -132,6 +134,33 @@ type LoadBalancer struct {
 	Updated Datetime
 
 	Port int
+
+	HalfClosed bool
+
+	Timeout int
+
+	Cluster Cluster
+
+	Nodes []Node
+
+	ConnectionLogging ConnectionLogging
+}
+
+type ConnectionLogging struct {
+	Enabled bool
+}
+
+type Cluster struct {
+	Name string
+}
+
+type Node struct {
+	Address   string
+	ID        int
+	Port      int
+	Status    Status
+	Condition string
+	Weight    int
 }
 
 // LBPage is the page returned by a pager when traversing over a collection of
@@ -160,4 +189,27 @@ func ExtractLBs(page pagination.Page) ([]LoadBalancer, error) {
 	err := mapstructure.Decode(page.(LBPage).Body, &resp)
 
 	return resp.LBs, err
+}
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any commonResult as a LB, if possible.
+func (r commonResult) Extract() (*LoadBalancer, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		LB LoadBalancer `mapstructure:"loadBalancer"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.LB, err
+}
+
+type CreateResult struct {
+	commonResult
 }
