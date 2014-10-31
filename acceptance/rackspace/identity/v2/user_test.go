@@ -25,6 +25,8 @@ func TestUsers(t *testing.T) {
 
 	updateUser(t, client, userID)
 
+	resetApiKey(t, client, userID)
+
 	deleteUser(t, client, userID)
 }
 
@@ -77,4 +79,15 @@ func deleteUser(t *testing.T, client *gophercloud.ServiceClient, userID string) 
 	res := users.Delete(client, userID)
 	th.AssertNoErr(t, res.Err)
 	t.Logf("Deleted user %s", userID)
+}
+
+func resetApiKey(t *testing.T, client *gophercloud.ServiceClient, userID string) {
+	key, err := users.ResetAPIKey(client, userID).Extract()
+	th.AssertNoErr(t, err)
+
+	if key.APIKey == "" {
+		t.Fatal("failed to reset API key for user")
+	}
+
+	t.Logf("Reset API key for user %s to %s", key.Username, key.APIKey)
 }
