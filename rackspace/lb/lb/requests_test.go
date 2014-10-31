@@ -115,3 +115,13 @@ func TestCreate(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, lb)
 }
+
+func TestBulkDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDeleteLBResponse(t)
+
+	err := BulkDelete(client.ServiceClient(), []int{12345, 67890}).ExtractErr()
+	th.AssertNoErr(t, err)
+}

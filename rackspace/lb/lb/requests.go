@@ -2,6 +2,7 @@ package lb
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/racker/perigee"
 
@@ -221,6 +222,27 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
 		OkCodes:     []int{200},
+	})
+
+	return res
+}
+
+func BulkDelete(c *gophercloud.ServiceClient, ids []int) DeleteResult {
+	var res DeleteResult
+
+	url := rootURL(c)
+	for k, v := range ids {
+		if k == 0 {
+			url += "?"
+		} else {
+			url += "&"
+		}
+		url += "id=" + strconv.Itoa(v)
+	}
+
+	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		OkCodes:     []int{202},
 	})
 
 	return res

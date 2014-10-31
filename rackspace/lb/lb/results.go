@@ -213,3 +213,7 @@ func (r commonResult) Extract() (*LoadBalancer, error) {
 type CreateResult struct {
 	commonResult
 }
+
+type DeleteResult struct {
+	gophercloud.ErrResult
+}

@@ -134,3 +134,11 @@ func mockCreateLBResponse(t *testing.T) {
 	`)
 	})
 }
+
+func mockDeleteLBResponse(t *testing.T) {
+	th.Mux.HandleFunc("/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
