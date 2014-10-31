@@ -3,6 +3,7 @@ package users
 import (
 	"strconv"
 
+	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack/identity/v2/users"
 
 	"github.com/mitchellh/mapstructure"
@@ -96,4 +97,33 @@ func (r CreateResult) Extract() (*User, error) {
 // Extract will get the Snapshot object out of the UpdateResult object.
 func (r UpdateResult) Extract() (*User, error) {
 	return commonExtract(r.Body, r.Err)
+}
+
+// ResetAPIKeyResult represents the server response to the ResetAPIKey method.
+type ResetAPIKeyResult struct {
+	gophercloud.Result
+}
+
+// ResetAPIKeyValue represents an API Key that has been reset.
+type ResetAPIKeyValue struct {
+	// The Username for this API Key reset.
+	Username string `mapstructure:"username"`
+
+	// The new API Key for this user.
+	APIKey string `mapstructure:"apiKey"`
+}
+
+// Extract will get the Error or ResetAPIKeyValue object out of the ResetAPIKeyResult object.
+func (r ResetAPIKeyResult) Extract() (*ResetAPIKeyValue, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		ResetAPIKeyValue ResetAPIKeyValue `mapstructure:"RAX-KSKEY:apiKeyCredentials"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.ResetAPIKeyValue, err
 }

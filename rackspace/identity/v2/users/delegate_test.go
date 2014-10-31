@@ -97,3 +97,15 @@ func TestDeleteServer(t *testing.T) {
 	res := Delete(client.ServiceClient(), "c39e3de9be2d4c779f1dfd6abacc176d")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestResetAPIKey(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockResetAPIKey(t)
+
+	apiKey, err := ResetAPIKey(client.ServiceClient(), "99").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "joesmith", apiKey.Username)
+	th.AssertEquals(t, "mooH1eiLahd5ahYood7r", apiKey.APIKey)
+}
