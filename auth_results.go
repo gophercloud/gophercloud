@@ -2,9 +2,9 @@ package gophercloud
 
 import "time"
 
-// AuthResults is a leftover type from the v0.x days. It was intended to
-// describe common functionality among identity service results, but is not
-// actually used anywhere.
+// AuthResults [deprecated] is a leftover type from the v0.x days. It was
+// intended to describe common functionality among identity service results, but
+// is not actually used anywhere.
 type AuthResults interface {
 	// TokenID returns the token's ID value from the authentication response.
 	TokenID() (string, error)

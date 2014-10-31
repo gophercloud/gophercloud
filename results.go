@@ -6,7 +6,8 @@ import (
 )
 
 /*
-Result is an internal type to be used by individual resource packages.
+Result is an internal type to be used by individual resource packages, but its
+methods will be available on a wide variety of user-facing embedding types.
 
 It acts as a base struct that other Result types, returned from request
 functions, can embed for convenience. All Results capture basic information
@@ -42,10 +43,15 @@ func (r Result) PrettyPrintJSON() string {
 	return string(pretty)
 }
 
-// ErrResult represents results that only contain a potential error and
+// ErrResult is an internal type to be used by individual resource packages, but
+// its methods will be available on a wide variety of user-facing embedding
+// types.
+//
+// It represents results that only contain a potential error and
 // nothing else. Usually, if the operation executed successfully, the Err field
 // will be nil; otherwise it will be stocked with a relevant error. Use the
-// ExtractErr method to cleanly pull it out.
+// ExtractErr method
+// to cleanly pull it out.
 type ErrResult struct {
 	Result
 }
@@ -56,7 +62,8 @@ func (r ErrResult) ExtractErr() error {
 }
 
 /*
-HeaderResult is an internal type to be used by individual resource packages.
+HeaderResult is an internal type to be used by individual resource packages, but
+its methods will be available on a wide variety of user-facing embedding types.
 
 It represents a result that only contains an error (possibly nil) and an
 http.Header. This is used, for example, by the objectstorage packages in
