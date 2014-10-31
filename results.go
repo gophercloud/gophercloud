@@ -34,7 +34,8 @@ type Result struct {
 
 // PrettyPrintJSON creates a string containing the full response body as
 // pretty-printed JSON. It's useful for capturing test fixtures and for
-// debugging extraction bugs.
+// debugging extraction bugs. If you include its output in an issue related to
+// a buggy extraction function, we will all love you forever.
 func (r Result) PrettyPrintJSON() string {
 	pretty, err := json.MarshalIndent(r.Body, "", "  ")
 	if err != nil {
