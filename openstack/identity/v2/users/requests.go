@@ -28,7 +28,9 @@ var (
 	Disabled EnabledState = &iFalse
 )
 
-type commonOpts struct {
+// CommonOpts are the parameters that are shared between CreateOpts and
+// UpdateOpts
+type CommonOpts struct {
 	// Either a name or username is required. When provided, the value must be
 	// unique or a 409 conflict error will be returned. If you provide a name but
 	// omit a username, the latter will be set to the former; and vice versa.
@@ -45,7 +47,7 @@ type commonOpts struct {
 }
 
 // CreateOpts represents the options needed when creating new users.
-type CreateOpts commonOpts
+type CreateOpts CommonOpts
 
 // CreateOptsBuilder describes struct types that can be accepted by the Create call.
 type CreateOptsBuilder interface {
@@ -118,7 +120,7 @@ type UpdateOptsBuilder interface {
 }
 
 // UpdateOpts specifies the base attributes that may be updated on an existing server.
-type UpdateOpts commonOpts
+type UpdateOpts CommonOpts
 
 // ToUserUpdateMap formats an UpdateOpts structure into a request body.
 func (opts UpdateOpts) ToUserUpdateMap() map[string]interface{} {
