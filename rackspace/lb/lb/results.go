@@ -242,6 +242,10 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+type UpdateResult struct {
+	gophercloud.ErrResult
+}
+
 type GetResult struct {
 	commonResult
 }

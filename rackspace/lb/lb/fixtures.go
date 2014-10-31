@@ -233,3 +233,26 @@ func mockGetLBResponse(t *testing.T, id int) {
 	`)
 	})
 }
+
+func mockUpdateLBResponse(t *testing.T, id int) {
+	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id), func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+	"loadBalancer": {
+		"name": "a-new-loadbalancer",
+		"protocol": "TCP",
+		"halfClosed": true,
+		"algorithm": "RANDOM",
+		"port": 8080,
+		"timeout": 100,
+		"httpsRedirect": false
+	}
+}
+		`)
+
+		w.WriteHeader(http.StatusOK)
+	})
+}

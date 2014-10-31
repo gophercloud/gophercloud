@@ -204,3 +204,23 @@ func TestGet(t *testing.T) {
 	th.AssertDeepEquals(t, expected, lb)
 	th.AssertNoErr(t, err)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockUpdateLBResponse(t, id1)
+
+	opts := UpdateOpts{
+		Name:          "a-new-loadbalancer",
+		Protocol:      "TCP",
+		HalfClosed:    Enabled,
+		Algorithm:     RAND,
+		Port:          8080,
+		Timeout:       100,
+		HTTPSRedirect: Disabled,
+	}
+
+	err := Update(client.ServiceClient(), id1, opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}

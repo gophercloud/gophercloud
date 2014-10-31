@@ -270,3 +270,70 @@ func Delete(c *gophercloud.ServiceClient, id int) DeleteResult {
 
 	return res
 }
+
+type UpdateOptsBuilder interface {
+	ToLBUpdateMap() (map[string]interface{}, error)
+}
+
+type UpdateOpts struct {
+	Name string
+
+	Protocol Protocol
+
+	HalfClosed enabledState
+
+	Algorithm Algorithm
+
+	Port int
+
+	Timeout int
+
+	HTTPSRedirect enabledState
+}
+
+// ToLBUpdateMap casts a CreateOpts struct to a map.
+func (opts UpdateOpts) ToLBUpdateMap() (map[string]interface{}, error) {
+	lb := make(map[string]interface{})
+
+	if opts.Name != "" {
+		lb["name"] = opts.Name
+	}
+	if opts.Protocol != "" {
+		lb["protocol"] = opts.Protocol
+	}
+	if opts.HalfClosed != nil {
+		lb["halfClosed"] = opts.HalfClosed
+	}
+	if opts.Algorithm != "" {
+		lb["algorithm"] = opts.Algorithm
+	}
+	if opts.Port > 0 {
+		lb["port"] = opts.Port
+	}
+	if opts.Timeout > 0 {
+		lb["timeout"] = opts.Timeout
+	}
+	if opts.HTTPSRedirect != nil {
+		lb["httpsRedirect"] = &opts.HTTPSRedirect
+	}
+
+	return map[string]interface{}{"loadBalancer": lb}, nil
+}
+
+func Update(c *gophercloud.ServiceClient, id int, opts UpdateOptsBuilder) UpdateResult {
+	var res UpdateResult
+
+	reqBody, err := opts.ToLBUpdateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
+	_, res.Err = perigee.Request("PUT", resourceURL(c, id), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
