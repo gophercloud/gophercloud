@@ -28,7 +28,7 @@ var (
 	Disabled EnabledState = &iFalse
 )
 
-type commonOpts struct {
+type CreateOpts struct {
 	// Either a name or username is required. When provided, the value must be
 	// unique or a 409 conflict error will be returned. If you provide a name but
 	// omit a username, the latter will be set to the former; and vice versa.
@@ -43,9 +43,6 @@ type commonOpts struct {
 	// The email address of this user.
 	Email string
 }
-
-// CreateOpts represents the options needed when creating new users.
-type CreateOpts commonOpts
 
 // CreateOptsBuilder describes struct types that can be accepted by the Create call.
 type CreateOptsBuilder interface {
@@ -117,8 +114,23 @@ type UpdateOptsBuilder interface {
 	ToUserUpdateMap() map[string]interface{}
 }
 
-// UpdateOpts specifies the base attributes that may be updated on an existing server.
-type UpdateOpts commonOpts
+// UpdateOpts specifies the base attributes that may be updated on an existing
+// server.
+type UpdateOpts struct {
+	// Either a name or username is required. When provided, the value must be
+	// unique or a 409 conflict error will be returned. If you provide a name but
+	// omit a username, the latter will be set to the former; and vice versa.
+	Name, Username string
+
+	// The ID of the tenant to which you want to assign this user.
+	TenantID string
+
+	// Indicates whether this user is enabled or not.
+	Enabled EnabledState
+
+	// The email address of this user.
+	Email string
+}
 
 // ToUserUpdateMap formats an UpdateOpts structure into a request body.
 func (opts UpdateOpts) ToUserUpdateMap() map[string]interface{} {
