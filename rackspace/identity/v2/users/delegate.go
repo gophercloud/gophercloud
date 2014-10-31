@@ -130,3 +130,16 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 func Delete(client *gophercloud.ServiceClient, id string) os.DeleteResult {
 	return os.Delete(client, id)
 }
+
+// ResetAPIKey resets the User's API key.
+func ResetAPIKey(client *gophercloud.ServiceClient, id string) ResetAPIKeyResult {
+	var result ResetAPIKeyResult
+
+	_, result.Err = perigee.Request("POST", resetAPIKeyURL(client, id), perigee.Options{
+		Results:     &result.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return result
+}
