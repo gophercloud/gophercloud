@@ -14,7 +14,9 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 	return os.List(client)
 }
 
-type commonOpts struct {
+// CommonOpts are the options which are shared between CreateOpts and
+// UpdateOpts
+type CommonOpts struct {
 	// Required. The username to assign to the user. When provided, the username
 	// must:
 	// - start with an alphabetical (A-Za-z) character
@@ -43,7 +45,7 @@ type commonOpts struct {
 }
 
 // CreateOpts represents the options needed when creating new users.
-type CreateOpts commonOpts
+type CreateOpts CommonOpts
 
 // ToUserCreateMap assembles a request body based on the contents of a CreateOpts.
 func (opts CreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
@@ -91,7 +93,7 @@ type UpdateOptsBuilder interface {
 }
 
 // UpdateOpts specifies the base attributes that may be updated on an existing server.
-type UpdateOpts commonOpts
+type UpdateOpts CommonOpts
 
 // ToUserUpdateMap formats an UpdateOpts structure into a request body.
 func (opts UpdateOpts) ToUserUpdateMap() map[string]interface{} {
