@@ -45,7 +45,7 @@ Extract function from an applicable extension:
 All requests that enumerate a collection return a Pager struct that is used to
 iterate through the results one page at a time. Use the EachPage method on that
 Pager to handle each successive Page in a closure, then use the appropriate
-extraction method from that requests' package to interpret that Page as a slice
+extraction method from that request's package to interpret that Page as a slice
 of results:
 
   err := servers.List(client, nil).EachPage(func (page pagination.Page) (bool, error) {

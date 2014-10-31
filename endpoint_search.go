@@ -21,15 +21,16 @@ var (
 // Different identity services use different terminology for these. Identity v2
 // lists them as different kinds of URLs within the service catalog ("adminURL",
 // "internalURL", and "publicURL"), while v3 lists them as "Interfaces" in an
-// endpoints response.
+// endpoint's response.
 type Availability string
 
 const (
-	// AvailabilityAdmin indicates that an endpoint only available to administrators.
+	// AvailabilityAdmin indicates that an endpoint is only available to
+	// administrators.
 	AvailabilityAdmin Availability = "admin"
 
-	// AvailabilityPublic indicates that an endpoint available to everyone on the
-	// internet.
+	// AvailabilityPublic indicates that an endpoint is available to everyone on
+	// the internet.
 	AvailabilityPublic Availability = "public"
 
 	// AvailabilityInternal indicates that an endpoint is only available within
@@ -37,7 +38,7 @@ const (
 	AvailabilityInternal Availability = "internal"
 )
 
-// EndpointOpts specifies search criteria used to by queries against an
+// EndpointOpts specifies search criteria used by queries against an
 // OpenStack service catalog. The options must contain enough information to
 // unambiguously identify one, and only one, endpoint within the catalog.
 //
