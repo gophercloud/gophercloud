@@ -90,7 +90,7 @@ converted into query parameters based on a "q" tag. For example:
 will be converted into "?x_bar=AAA&lorem_ipsum=BBB".
 
 The struct's fields may be strings, integers, or boolean values. Fields left at
-their type's zero value will be omittted from the query.
+their type's zero value will be omitted from the query.
 */
 func BuildQueryString(opts interface{}) (*url.URL, error) {
 	optsValue := reflect.ValueOf(opts)
@@ -153,7 +153,7 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 BuildHeaders is an internal function to be used by request methods in
 individual resource packages.
 
-It accepts a arbitrary tagged structure and produces a string map that's
+It accepts an arbitrary tagged structure and produces a string map that's
 suitable for use as the HTTP headers of an outgoing request. Field names are
 mapped to header names based in "h" tags.
 
