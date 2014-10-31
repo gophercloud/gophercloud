@@ -28,6 +28,8 @@ var (
 	Disabled EnabledState = &iFalse
 )
 
+// CommonOpts are the parameters that are shared between CreateOpts and
+// UpdateOpts
 type CommonOpts struct {
 	// Either a name or username is required. When provided, the value must be
 	// unique or a 409 conflict error will be returned. If you provide a name but
