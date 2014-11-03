@@ -120,7 +120,7 @@ func changeAdminPassword(t *testing.T, client *gophercloud.ServiceClient, server
 	original := server.AdminPass
 
 	t.Logf("Changing server password.")
-	err := servers.ChangeAdminPassword(client, server.ID, tools.MakeNewPassword(original)).Extract()
+	err := servers.ChangeAdminPassword(client, server.ID, tools.MakeNewPassword(original)).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = servers.WaitForStatus(client, server.ID, "ACTIVE", 300)
@@ -131,7 +131,7 @@ func changeAdminPassword(t *testing.T, client *gophercloud.ServiceClient, server
 func rebootServer(t *testing.T, client *gophercloud.ServiceClient, server *os.Server) {
 	t.Logf("> servers.Reboot")
 
-	err := servers.Reboot(client, server.ID, os.HardReboot).Extract()
+	err := servers.Reboot(client, server.ID, os.HardReboot).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = servers.WaitForStatus(client, server.ID, "ACTIVE", 300)
