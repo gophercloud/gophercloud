@@ -125,7 +125,7 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 
 	resp, err := perigee.Request("GET", url, perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{200},
+		OkCodes:     []int{200, 304},
 	})
 
 	res.Body = resp.HttpResponse.Body
