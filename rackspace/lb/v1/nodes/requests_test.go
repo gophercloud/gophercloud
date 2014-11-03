@@ -140,3 +140,20 @@ func TestGet(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, node)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockUpdateResponse(t, lbID, nodeID)
+
+	opts := UpdateOpts{
+		Address:   "1.2.3.4",
+		Weight:    IntToPointer(10),
+		Condition: DRAINING,
+		Type:      SECONDARY,
+	}
+
+	err := Update(client.ServiceClient(), lbID, nodeID, opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}

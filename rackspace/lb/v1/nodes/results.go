@@ -63,7 +63,7 @@ const (
 	// DRAINING indicates that the node is allowed to service existing
 	// established connections and connections that are being directed to it as a
 	// result of the session persistence configuration.
-	DRAINING
+	DRAINING Condition = "DRAINING"
 )
 
 // Status indicates whether the node can accept service traffic. If a node is
@@ -137,6 +137,10 @@ type commonResult struct {
 
 type GetResult struct {
 	commonResult
+}
+
+type UpdateResult struct {
+	gophercloud.ErrResult
 }
 
 func (r commonResult) Extract() (*Node, error) {

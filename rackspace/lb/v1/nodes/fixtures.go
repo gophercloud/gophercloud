@@ -163,13 +163,15 @@ func mockUpdateResponse(t *testing.T, lbID, nodeID int) {
 		th.TestJSONRequest(t, r, `
 {
   "node": {
-    "condition": "ENABLED",
-    "weight": 59
+		"address": "1.2.3.4",
+    "condition": "DRAINING",
+    "weight": 10,
+		"type": "SECONDARY"
   }
 }
     `)
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 

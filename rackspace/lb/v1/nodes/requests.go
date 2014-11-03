@@ -33,6 +33,14 @@ type CreateOpt struct {
 	Port      int
 	Condition Condition
 	Type      Type
+	Weight    *int
+}
+
+func validateWeight(weight *int) error {
+	if weight != nil && (*weight > 100 || *weight < 0) {
+		return errors.New("Weight must be a valid int between 0 and 100")
+	}
+	return nil
 }
 
 func (opts CreateOpts) ToNodeCreateMap() (map[string]interface{}, error) {
@@ -42,6 +50,9 @@ func (opts CreateOpts) ToNodeCreateMap() (map[string]interface{}, error) {
 	for k, v := range opts {
 		if v.Address == "" {
 			return nodeMap{}, fmt.Errorf("ID is a required attribute, none provided for %d CreateOpt element", k)
+		}
+		if weightErr := validateWeight(v.Weight); weightErr != nil {
+			return nodeMap{}, weightErr
 		}
 
 		node := make(map[string]interface{})
@@ -55,6 +66,9 @@ func (opts CreateOpts) ToNodeCreateMap() (map[string]interface{}, error) {
 		}
 		if v.Type != "" {
 			node["type"] = v.Type
+		}
+		if v.Weight != nil {
+			node["weight"] = &v.Weight
 		}
 
 		nodes = append(nodes, node)
@@ -118,6 +132,61 @@ func Get(c *gophercloud.ServiceClient, lbID, nodeID int) GetResult {
 		MoreHeaders: c.AuthenticatedHeaders(),
 		Results:     &res.Body,
 		OkCodes:     []int{200},
+	})
+
+	return res
+}
+
+func IntToPointer(i int) *int {
+	return &i
+}
+
+type UpdateOptsBuilder interface {
+	ToNodeUpdateMap() (map[string]interface{}, error)
+}
+
+type UpdateOpts struct {
+	Address   string
+	Condition Condition
+	Weight    *int
+	Type      Type
+}
+
+func (opts UpdateOpts) ToNodeUpdateMap() (map[string]interface{}, error) {
+	node := make(map[string]interface{})
+
+	if opts.Address != "" {
+		node["address"] = opts.Address
+	}
+	if opts.Condition != "" {
+		node["condition"] = opts.Condition
+	}
+	if opts.Weight != nil {
+		if weightErr := validateWeight(opts.Weight); weightErr != nil {
+			return node, weightErr
+		}
+		node["weight"] = &opts.Weight
+	}
+	if opts.Type != "" {
+		node["type"] = opts.Type
+	}
+
+	return map[string]interface{}{"node": node}, nil
+}
+
+func Update(c *gophercloud.ServiceClient, lbID, nodeID int, opts UpdateOptsBuilder) UpdateResult {
+	var res UpdateResult
+
+	reqBody, err := opts.ToNodeUpdateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
+	_, res.Err = perigee.Request("PUT", resourceURL(c, lbID, nodeID), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		OkCodes:     []int{202},
 	})
 
 	return res
