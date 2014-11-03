@@ -18,6 +18,10 @@ type ListOptsBuilder interface {
 
 // ListOpts is a structure that holds parameters for listing objects.
 type ListOpts struct {
+	// Full is a true/false value that represents the amount of object information
+	// returned. If Full is set to true, then the content-type, number of bytes, hash
+	// date last modified, and name are returned. If set to false or not set, then
+	// only the object names are returned.
 	Full      bool
 	Limit     int    `q:"limit"`
 	Marker    string `q:"marker"`

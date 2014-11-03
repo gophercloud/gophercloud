@@ -14,11 +14,22 @@ import (
 
 // Object is a structure that holds information related to a storage object.
 type Object struct {
-	Bytes        int64  `json:"bytes" mapstructure:"bytes"`
-	ContentType  string `json:"content_type" mapstructure:"content_type"`
-	Hash         string `json:"hash" mapstructure:"hash"`
+	// Bytes is the total number of bytes that comprise the object.
+	Bytes int64 `json:"bytes" mapstructure:"bytes"`
+
+	// ContentType is the content type of the object.
+	ContentType string `json:"content_type" mapstructure:"content_type"`
+
+	// Hash represents the MD5 checksum value of the object's content.
+	Hash string `json:"hash" mapstructure:"hash"`
+
+	// LastModified is the RFC3339Milli time the object was last modified, represented
+	// as a string. For any given object (obj), this value may be parsed to a time.Time:
+	// lastModified, err := time.Parse(gophercloud.RFC3339Milli, obj.LastModified)
 	LastModified string `json:"last_modified" mapstructure:"last_modified"`
-	Name         string `json:"name" mapstructure:"name"`
+
+	// Name is the unique name for the object.
+	Name string `json:"name" mapstructure:"name"`
 }
 
 // ObjectPage is a single page of objects that is returned from a call to the
