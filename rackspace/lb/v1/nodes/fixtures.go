@@ -49,8 +49,8 @@ func mockListResponse(t *testing.T, lbID int) {
 	})
 }
 
-func mockCreateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
+func mockCreateResponse(t *testing.T, lbID int) {
+	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 

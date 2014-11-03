@@ -98,15 +98,31 @@ func (p NodePage) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
-// ExtractNodes accepts a Page struct, specifically a NodePage struct, and
-// extracts the elements into a slice of Node structs. In other words, a
-// generic collection is mapped into a relevant slice.
-func ExtractNodes(page pagination.Page) ([]Node, error) {
+func commonExtractNodes(body interface{}) ([]Node, error) {
 	var resp struct {
 		Nodes []Node `mapstructure:"nodes" json:"nodes"`
 	}
 
-	err := mapstructure.Decode(page.(NodePage).Body, &resp)
+	err := mapstructure.Decode(body, &resp)
 
 	return resp.Nodes, err
+}
+
+// ExtractNodes accepts a Page struct, specifically a NodePage struct, and
+// extracts the elements into a slice of Node structs. In other words, a
+// generic collection is mapped into a relevant slice.
+func ExtractNodes(page pagination.Page) ([]Node, error) {
+	return commonExtractNodes(page.(NodePage).Body)
+}
+
+// CreateResult represents the result of a create operation. Since multiple
+// nodes can be added in one operation, this result represents multiple nodes -
+// and should be treated as a typical pagination Page. Use ExtractNodes to get
+// out a slice of Node structs.
+type CreateResult struct {
+	pagination.SinglePageBase
+}
+
+func (res CreateResult) ExtractNodes() ([]Node, error) {
+	return commonExtractNodes(res.Body)
 }

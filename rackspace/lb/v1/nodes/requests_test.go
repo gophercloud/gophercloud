@@ -55,3 +55,53 @@ func TestList(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, count)
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockCreateResponse(t, lbID)
+
+	opts := CreateOpts{
+		CreateOpt{
+			Address:   "10.2.2.3",
+			Port:      80,
+			Condition: ENABLED,
+			Type:      PRIMARY,
+		},
+		CreateOpt{
+			Address:   "10.2.2.4",
+			Port:      81,
+			Condition: ENABLED,
+			Type:      SECONDARY,
+		},
+	}
+
+	page := Create(client.ServiceClient(), lbID, opts)
+
+	actual, err := page.ExtractNodes()
+	th.AssertNoErr(t, err)
+
+	expected := []Node{
+		Node{
+			ID:        185,
+			Address:   "10.2.2.3",
+			Port:      80,
+			Condition: ENABLED,
+			Status:    ONLINE,
+			Weight:    1,
+			Type:      PRIMARY,
+		},
+		Node{
+			ID:        186,
+			Address:   "10.2.2.4",
+			Port:      81,
+			Condition: ENABLED,
+			Status:    ONLINE,
+			Weight:    1,
+			Type:      SECONDARY,
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
+}
