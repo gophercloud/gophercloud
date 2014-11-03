@@ -88,7 +88,7 @@ type DownloadOpts struct {
 
 // ToObjectDownloadParams formats a DownloadOpts into a query string and map of
 // headers.
-func (opts ListOpts) ToObjectDownloadParams() (map[string]string, string, error) {
+func (opts DownloadOpts) ToObjectDownloadParams() (map[string]string, string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return nil, "", err
