@@ -2,7 +2,7 @@ package nodes
 
 import (
 	"github.com/mitchellh/mapstructure"
-
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -116,13 +116,17 @@ func ExtractNodes(page pagination.Page) ([]Node, error) {
 }
 
 // CreateResult represents the result of a create operation. Since multiple
-// nodes can be added in one operation, this result represents multiple nodes -
-// and should be treated as a typical pagination Page. Use ExtractNodes to get
-// out a slice of Node structs.
+// nodes can be added in one operation, this result represents multiple nodes
+// and should be treated as a typical pagination Page. Use its ExtractNodes
+// method to get out a slice of Node structs.
 type CreateResult struct {
 	pagination.SinglePageBase
 }
 
 func (res CreateResult) ExtractNodes() ([]Node, error) {
 	return commonExtractNodes(res.Body)
+}
+
+type DeleteResult struct {
+	gophercloud.ErrResult
 }

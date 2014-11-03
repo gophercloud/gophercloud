@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
@@ -88,4 +89,25 @@ func Create(client *gophercloud.ServiceClient, loadBalancerID int, opts CreateOp
 	}
 
 	return CreateResult{pagination.SinglePageBase(pr)}
+}
+
+func BulkDelete(c *gophercloud.ServiceClient, loadBalancerID int, nodeIDs []int) DeleteResult {
+	var res DeleteResult
+
+	url := rootURL(c, loadBalancerID)
+	for k, v := range nodeIDs {
+		if k == 0 {
+			url += "?"
+		} else {
+			url += "&"
+		}
+		url += "id=" + strconv.Itoa(v)
+	}
+
+	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		OkCodes:     []int{202},
+	})
+
+	return res
 }
