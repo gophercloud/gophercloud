@@ -176,7 +176,7 @@ func mockUpdateResponse(t *testing.T, lbID, nodeID int) {
 }
 
 func mockListEventsResponse(t *testing.T, lbID, nodeID int) {
-	th.Mux.HandleFunc(_nodeURL(lbID, nodeID), func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc(_nodeURL(lbID, nodeID)+"/events", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -200,21 +200,6 @@ func mockListEventsResponse(t *testing.T, lbID, nodeID int) {
       "title": "Node Status Updated",
       "author": "Rackspace Cloud",
       "created": "10-30-2012 10:18:23"
-    },
-    {
-      "detailedMessage": "Invalid HTTP response received; premature end of headers",
-      "nodeId": 373,
-      "id": 8,
-      "type": "UPDATE_NODE",
-      "description": "Node '373' status changed to 'OFFLINE' for load balancer '323'",
-      "category": "UPDATE",
-      "severity": "INFO",
-      "relativeUri": "/406271/loadbalancers/323/nodes/373/events",
-      "accountId": 406271,
-      "loadbalancerId": 323,
-      "title": "Node Status Updated",
-      "author": "Rackspace Cloud",
-      "created": "10-30-2012 11:22:25"
     }
   ]
 }

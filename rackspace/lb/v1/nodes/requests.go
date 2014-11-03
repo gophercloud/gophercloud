@@ -194,11 +194,16 @@ func Update(c *gophercloud.ServiceClient, lbID, nodeID int, opts UpdateOptsBuild
 
 func Delete(c *gophercloud.ServiceClient, lbID, nodeID int) DeleteResult {
 	var res DeleteResult
-
 	_, res.Err = perigee.Request("DELETE", resourceURL(c, lbID, nodeID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 	})
-
 	return res
+}
+
+func ListEvents(client *gophercloud.ServiceClient, loadBalancerID, nodeID int) pagination.Pager {
+	url := eventsURL(client, loadBalancerID, nodeID)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return NodeEventPage{pagination.SinglePageBase(r)}
+	})
 }

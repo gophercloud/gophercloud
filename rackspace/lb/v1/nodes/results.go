@@ -156,3 +156,41 @@ func (r commonResult) Extract() (*Node, error) {
 
 	return &response.Node, err
 }
+
+type NodeEvent struct {
+	ID              int
+	DetailedMessage string
+	NodeID          int
+	Type            string
+	Description     string
+	Category        string
+	Severity        string
+	RelativeURI     string
+	AccountID       int
+	LoadBalancerID  int
+	Title           string
+	Author          string
+	Created         string
+}
+
+type NodeEventPage struct {
+	pagination.SinglePageBase
+}
+
+func (r NodeEventPage) IsEmpty() (bool, error) {
+	is, err := ExtractNodeEvents(r)
+	if err != nil {
+		return true, err
+	}
+	return len(is) == 0, nil
+}
+
+func ExtractNodeEvents(page pagination.Page) ([]NodeEvent, error) {
+	var resp struct {
+		Events []NodeEvent `mapstructure:"nodeServiceEvents" json:"nodeServiceEvents"`
+	}
+
+	err := mapstructure.Decode(page.(NodeEventPage).Body, &resp)
+
+	return resp.Events, err
+}

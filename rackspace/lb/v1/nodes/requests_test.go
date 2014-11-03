@@ -167,3 +167,43 @@ func TestDelete(t *testing.T) {
 	err := Delete(client.ServiceClient(), lbID, nodeID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestListEvents(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockListEventsResponse(t, lbID, nodeID)
+
+	count := 0
+
+	err := ListEvents(client.ServiceClient(), lbID, nodeID).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := ExtractNodeEvents(page)
+		th.AssertNoErr(t, err)
+
+		expected := []NodeEvent{
+			NodeEvent{
+				DetailedMessage: "Node is ok",
+				NodeID:          373,
+				ID:              7,
+				Type:            "UPDATE_NODE",
+				Description:     "Node '373' status changed to 'ONLINE' for load balancer '323'",
+				Category:        "UPDATE",
+				Severity:        "INFO",
+				RelativeURI:     "/406271/loadbalancers/323/nodes/373/events",
+				AccountID:       406271,
+				LoadBalancerID:  323,
+				Title:           "Node Status Updated",
+				Author:          "Rackspace Cloud",
+				Created:         "10-30-2012 10:18:23",
+			},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, count)
+}
