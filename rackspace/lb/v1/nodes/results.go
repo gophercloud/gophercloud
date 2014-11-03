@@ -49,6 +49,7 @@ const (
 	SECONDARY Type = "SECONDARY"
 )
 
+// Condition represents the condition of a node.
 type Condition string
 
 const (
@@ -123,10 +124,12 @@ type CreateResult struct {
 	pagination.SinglePageBase
 }
 
+// ExtractNodes extracts a slice of Node structs from a CreateResult.
 func (res CreateResult) ExtractNodes() ([]Node, error) {
 	return commonExtractNodes(res.Body)
 }
 
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
@@ -135,10 +138,12 @@ type commonResult struct {
 	gophercloud.Result
 }
 
+// GetResult represents the result of a get operation.
 type GetResult struct {
 	commonResult
 }
 
+// UpdateResult represents the result of an update operation.
 type UpdateResult struct {
 	gophercloud.ErrResult
 }
@@ -157,6 +162,8 @@ func (r commonResult) Extract() (*Node, error) {
 	return &response.Node, err
 }
 
+// NodeEvent represents a service event that occurred between a node and a
+// load balancer.
 type NodeEvent struct {
 	ID              int
 	DetailedMessage string
@@ -173,10 +180,14 @@ type NodeEvent struct {
 	Created         string
 }
 
+// NodeEventPage is a concrete type which embeds the common SinglePageBase
+// struct, and is used when traversing node event collections.
 type NodeEventPage struct {
 	pagination.SinglePageBase
 }
 
+// IsEmpty is a concrete function which indicates whether an NodeEventPage is
+// empty or not.
 func (r NodeEventPage) IsEmpty() (bool, error) {
 	is, err := ExtractNodeEvents(r)
 	if err != nil {
@@ -185,6 +196,9 @@ func (r NodeEventPage) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
+// ExtractNodeEvents accepts a Page struct, specifically a NodeEventPage
+// struct, and extracts the elements into a slice of NodeEvent structs. In
+// other words, the collection is mapped into a relevant slice.
 func ExtractNodeEvents(page pagination.Page) ([]NodeEvent, error) {
 	var resp struct {
 		Events []NodeEvent `mapstructure:"nodeServiceEvents" json:"nodeServiceEvents"`
