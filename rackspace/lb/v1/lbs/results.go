@@ -8,6 +8,7 @@ import (
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
 )
 
+// Protocol represents the network protocol which the load balancer accepts.
 type Protocol string
 
 // The constants below represent all the compatible load balancer protocols.
@@ -62,6 +63,7 @@ const (
 	WRR = "WEIGHTED_ROUND_ROBIN"
 )
 
+// Status represents the potential state of a load balancer resource.
 type Status string
 
 const (
@@ -94,10 +96,12 @@ const (
 	DELETED = "DELETED"
 )
 
+// Datetime represents the structure of a Created or Updated field.
 type Datetime struct {
 	Time string
 }
 
+// VIP - temp
 type VIP struct {
 	Address string `json:"address,omitempty"`
 	ID      int    `json:"id,omitempty"`
@@ -105,6 +109,7 @@ type VIP struct {
 	Version string `json:"ipVersion,omitempty" mapstructure:"ipVersion"`
 }
 
+// LoadBalancer represents a load balancer API resource.
 type LoadBalancer struct {
 	// Human-readable name for the load balancer.
 	Name string
@@ -112,11 +117,12 @@ type LoadBalancer struct {
 	// The unique ID for the load balancer.
 	ID int
 
-	// Represents the service protocol being load balanced.
+	// Represents the service protocol being load balanced. See Protocol type for
+	// a list of accepted values.
 	Protocol Protocol
 
 	// Defines how traffic should be directed between back-end nodes. The default
-	// algorithm is RANDOM.
+	// algorithm is RANDOM. See Algorithm type for a list of accepted values.
 	Algorithm Algorithm
 
 	// The current status of the load balancer.
@@ -134,25 +140,41 @@ type LoadBalancer struct {
 	// Datetime when the LB was created.
 	Updated Datetime
 
+	// Port number for the service you are load balancing.
 	Port int
 
+	// HalfClosed provides the ability for one end of the connection to
+	// terminate its output while still receiving data from the other end. This
+	// is only available on TCP/TCP_CLIENT_FIRST protocols.
 	HalfClosed bool
 
+	// Timeout represents the timeout value between a load balancer and its
+	// nodes. Defaults to 30 seconds with a maximum of 120 seconds.
 	Timeout int
 
+	// TODO
 	Cluster Cluster
 
+	// Nodes shows all the back-end nodes which are associated with the load
+	// balancer. These are the devices which are delivered traffic.
 	Nodes []nodes.Node
 
+	// TODO
 	ConnectionLogging ConnectionLogging
 
+	// SessionPersistence specifies whether multiple requests from clients are
+	// directed to the same node.
 	SessionPersistence SessionPersistence
 
+	// ConnectionThrottle specifies a limit on the number of connections per IP
+	// address to help mitigate malicious or abusive traffic to your applications.
 	ConnectionThrottle ConnectionThrottle
 
+	// TODO
 	SourceAddrs SourceAddrs `mapstructure:"sourceAddresses"`
 }
 
+// SourceAddrs - temp
 type SourceAddrs struct {
 	IPv4Public  string `json:"ipv4Public" mapstructure:"ipv4Public"`
 	IPv4Private string `json:"ipv4Servicenet" mapstructure:"ipv4Servicenet"`
@@ -160,10 +182,12 @@ type SourceAddrs struct {
 	IPv6Private string `json:"ipv6Servicenet" mapstructure:"ipv6Servicenet"`
 }
 
+// SessionPersistence - temp
 type SessionPersistence struct {
 	Type string `json:"persistenceType" mapstructure:"persistenceType"`
 }
 
+// ConnectionThrottle - temp
 type ConnectionThrottle struct {
 	MinConns     int `json:"minConnections" mapstructure:"minConnections"`
 	MaxConns     int `json:"maxConnections" mapstructure:"maxConnections"`
@@ -171,10 +195,12 @@ type ConnectionThrottle struct {
 	RateInterval int `json:"rateInterval" mapstructure:"rateInterval"`
 }
 
+// ConnectionLogging - temp
 type ConnectionLogging struct {
 	Enabled bool
 }
 
+// Cluster - temp
 type Cluster struct {
 	Name string
 }
@@ -226,18 +252,22 @@ func (r commonResult) Extract() (*LoadBalancer, error) {
 	return &response.LB, err
 }
 
+// CreateResult represents the result of a create operation.
 type CreateResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// UpdateResult represents the result of an update operation.
 type UpdateResult struct {
 	gophercloud.ErrResult
 }
 
+// GetResult represents the result of a get operation.
 type GetResult struct {
 	commonResult
 }

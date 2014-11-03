@@ -36,6 +36,8 @@ func (opts ListOpts) ToLBListQuery() (string, error) {
 	return q.String(), nil
 }
 
+// List is the operation responsible for returning a paginated collection of
+// load balancers. You may pass in a ListOpts struct to filter results.
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(client)
 	if opts != nil {
@@ -53,6 +55,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 
 type enabledState *bool
 
+// Convenience vars to help setting enabled state.
 var (
 	iTrue  = true
 	iFalse = false
@@ -105,9 +108,10 @@ type CreateOpts struct {
 
 	// Optional - specifies a limit on the number of connections per IP address
 	// to help mitigate malicious or abusive traffic to your applications.
-	//??? ConnThrottle string
+	ConnThrottle *ConnectionThrottle
 
-	//??? HealthMonitor string
+	// Optional -
+	//HealthMonitor string
 
 	// Optional - arbitrary information that can be associated with each LB.
 	Metadata map[string]interface{}
@@ -121,7 +125,7 @@ type CreateOpts struct {
 
 	// Optional - specifies whether multiple requests from clients are directed
 	// to the same node.
-	//??? SessionPersistence
+	SessionPersistence *SessionPersistence
 
 	// Optional - enables or disables HTTP to HTTPS redirection for the load
 	// balancer. When enabled, any HTTP request returns status code 301 (Moved
@@ -171,7 +175,6 @@ func (opts CreateOpts) ToLBCreateMap() (map[string]interface{}, error) {
 	}
 
 	if len(opts.VIPs) > 0 {
-
 		lb["virtualIps"] = opts.VIPs
 	}
 
@@ -184,9 +187,9 @@ func (opts CreateOpts) ToLBCreateMap() (map[string]interface{}, error) {
 	if opts.ConnectionLogging != nil {
 		lb["connectionLogging"] = &opts.ConnectionLogging
 	}
-	// if opts.ConnThrottle != "" {
-	// 	lb["connectionThrottle"] = opts.ConnThrottle
-	// }
+	if opts.ConnThrottle != nil {
+		lb["connectionThrottle"] = &opts.ConnThrottle
+	}
 	// if opts.HealthMonitor != "" {
 	// 	lb["healthMonitor"] = opts.HealthMonitor
 	// }
@@ -199,9 +202,9 @@ func (opts CreateOpts) ToLBCreateMap() (map[string]interface{}, error) {
 	if opts.Timeout > 0 {
 		lb["timeout"] = opts.Timeout
 	}
-	// if opts.SessionPersistence != "" {
-	// 	lb["sessionPersistence"] = opts.SessionPersistence
-	// }
+	if opts.SessionPersistence != nil {
+		lb["sessionPersistence"] = &opts.SessionPersistence
+	}
 	if opts.HTTPSRedirect != nil {
 		lb["httpsRedirect"] = &opts.HTTPSRedirect
 	}
@@ -209,6 +212,18 @@ func (opts CreateOpts) ToLBCreateMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"loadBalancer": lb}, nil
 }
 
+// Create is the operation responsible for asynchronously provisioning a new
+// load balancer based on the configuration defined in CreateOpts. Once the
+// request is validated and progress has started on the provisioning process, a
+// response struct is returned. When extracted (with Extract()), you have
+// to the load balancer's unique ID and status.
+//
+// Once an ID is attained, you can check on the progress of the operation by
+// calling Get and passing in the ID. If the corresponding request cannot be
+// fulfilled due to insufficient or invalid data, a HTTP 400 (Bad Request)
+// error response is returned with information regarding the nature of the
+// failure in the body of the response. Failures in the validation process are
+// non-recoverable and require the caller to correct the cause of the failure.
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
@@ -228,6 +243,10 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	return res
 }
 
+// Get is the operation responsible for providing detailed information
+// regarding a specific load balancer which is configured and associated with
+// your account. This operation is not capable of returning details for a load
+// balancer which has been deleted.
 func Get(c *gophercloud.ServiceClient, id int) GetResult {
 	var res GetResult
 
@@ -240,6 +259,13 @@ func Get(c *gophercloud.ServiceClient, id int) GetResult {
 	return res
 }
 
+// BulkDelete removes all the load balancers referenced in the slice of IDs.
+// Any and all configuration data associated with these load balancers are
+// immediately purged and is not recoverable.
+//
+// If one of the items in the list cannot be removed due to its current status,
+// a 400 Bad Request error is returned along with the IDs of the ones the
+// system identified as potential failures for this request.
 func BulkDelete(c *gophercloud.ServiceClient, ids []int) DeleteResult {
 	var res DeleteResult
 
@@ -259,6 +285,7 @@ func BulkDelete(c *gophercloud.ServiceClient, ids []int) DeleteResult {
 	return res
 }
 
+// Delete removes a single load balancer.
 func Delete(c *gophercloud.ServiceClient, id int) DeleteResult {
 	var res DeleteResult
 
@@ -270,27 +297,37 @@ func Delete(c *gophercloud.ServiceClient, id int) DeleteResult {
 	return res
 }
 
+// UpdateOptsBuilder represents a type that can be converted into a JSON-like
+// map structure.
 type UpdateOptsBuilder interface {
 	ToLBUpdateMap() (map[string]interface{}, error)
 }
 
+// UpdateOpts represent the options for updating an existing load balancer.
 type UpdateOpts struct {
+	// Optional - new name of the load balancer.
 	Name string
 
+	// Optional - the new protocol you want your load balancer to have.
 	Protocol Protocol
 
+	// Optional - see the HalfClosed field in CreateOpts for more information.
 	HalfClosed enabledState
 
+	// Optional - see the Algorithm field in CreateOpts for more information.
 	Algorithm Algorithm
 
+	// Optional - see the Port field in CreateOpts for more information.
 	Port int
 
+	// Optional - see the Timeout field in CreateOpts for more information.
 	Timeout int
 
+	// Optional - see the HTTPSRedirect field in CreateOpts for more information.
 	HTTPSRedirect enabledState
 }
 
-// ToLBUpdateMap casts a CreateOpts struct to a map.
+// ToLBUpdateMap casts an UpdateOpts struct to a map.
 func (opts UpdateOpts) ToLBUpdateMap() (map[string]interface{}, error) {
 	lb := make(map[string]interface{})
 
@@ -319,6 +356,12 @@ func (opts UpdateOpts) ToLBUpdateMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"loadBalancer": lb}, nil
 }
 
+// Update is the operation responsible for asynchronously updating the
+// attributes of a specific load balancer. Upon successful validation of the
+// request, the service returns a 202 Accepted response and the load balancer
+// enters a PENDING_UPDATE state. A user can poll the load balancer with Get to
+// wait for the changes to be applied. When this happens, the load balancer will
+// return to an ACTIVE state.
 func Update(c *gophercloud.ServiceClient, id int, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
 
