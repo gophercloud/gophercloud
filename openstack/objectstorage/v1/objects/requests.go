@@ -146,7 +146,7 @@ type CreateOpts struct {
 	Metadata           map[string]string
 	ContentDisposition string `h:"Content-Disposition"`
 	ContentEncoding    string `h:"Content-Encoding"`
-	ContentLength      int    `h:"Content-Length"`
+	ContentLength      int64  `h:"Content-Length"`
 	ContentType        string `h:"Content-Type"`
 	CopyFrom           string `h:"X-Copy-From"`
 	DeleteAfter        int    `h:"X-Delete-After"`

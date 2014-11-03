@@ -14,7 +14,7 @@ import (
 
 // Object is a structure that holds information related to a storage object.
 type Object struct {
-	Bytes        int    `json:"bytes" mapstructure:"bytes"`
+	Bytes        int64  `json:"bytes" mapstructure:"bytes"`
 	ContentType  string `json:"content_type" mapstructure:"content_type"`
 	Hash         string `json:"hash" mapstructure:"hash"`
 	LastModified string `json:"last_modified" mapstructure:"last_modified"`
