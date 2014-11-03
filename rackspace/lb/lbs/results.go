@@ -1,4 +1,4 @@
-package lb
+package lbs
 
 import (
 	"github.com/mitchellh/mapstructure"
