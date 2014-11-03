@@ -8,6 +8,7 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -76,7 +77,7 @@ type CreateOpts struct {
 	Name string
 
 	// Optional - nodes to be added.
-	Nodes []Node
+	Nodes []nodes.Node
 
 	// Required - protocol of the service that is being load balanced.
 	Protocol Protocol
@@ -241,6 +242,11 @@ func Get(c *gophercloud.ServiceClient, id int) GetResult {
 
 func BulkDelete(c *gophercloud.ServiceClient, ids []int) DeleteResult {
 	var res DeleteResult
+
+	if len(ids) > 10 || len(ids) == 0 {
+		res.Err = errors.New("You must provide a minimum of 1 and a maximum of 10 LB IDs")
+		return res
+	}
 
 	url := rootURL(c)
 	for k, v := range ids {

@@ -1,6 +1,7 @@
 package nodes
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -93,6 +94,11 @@ func Create(client *gophercloud.ServiceClient, loadBalancerID int, opts CreateOp
 
 func BulkDelete(c *gophercloud.ServiceClient, loadBalancerID int, nodeIDs []int) DeleteResult {
 	var res DeleteResult
+
+	if len(nodeIDs) > 10 || len(nodeIDs) == 0 {
+		res.Err = errors.New("You must provide a minimum of 1 and a maximum of 10 node IDs")
+		return res
+	}
 
 	url := rootURL(c, loadBalancerID)
 	for k, v := range nodeIDs {
