@@ -118,3 +118,25 @@ func TestBulkDelete(t *testing.T) {
 	err := BulkDelete(client.ServiceClient(), lbID, ids).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockGetResponse(t, lbID, nodeID)
+
+	node, err := Get(client.ServiceClient(), lbID, nodeID).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &Node{
+		ID:        410,
+		Address:   "10.1.1.1",
+		Port:      80,
+		Condition: ENABLED,
+		Status:    ONLINE,
+		Weight:    12,
+		Type:      PRIMARY,
+	}
+
+	th.AssertDeepEquals(t, expected, node)
+}

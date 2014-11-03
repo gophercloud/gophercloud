@@ -130,3 +130,25 @@ func (res CreateResult) ExtractNodes() ([]Node, error) {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+type GetResult struct {
+	commonResult
+}
+
+func (r commonResult) Extract() (*Node, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		Node Node `mapstructure:"node"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.Node, err
+}

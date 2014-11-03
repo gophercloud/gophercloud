@@ -14,6 +14,10 @@ func _rootURL(lbID int) string {
 	return "/loadbalancers/" + strconv.Itoa(lbID) + "/nodes"
 }
 
+func _nodeURL(lbID, nodeID int) string {
+	return _rootURL(lbID) + "/" + strconv.Itoa(nodeID)
+}
+
 func mockListResponse(t *testing.T, lbID int) {
 	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -119,16 +123,16 @@ func mockBatchDeleteResponse(t *testing.T, lbID int, ids []int) {
 	})
 }
 
-func mockDeleteLBResponse(t *testing.T, id int) {
-	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id), func(w http.ResponseWriter, r *http.Request) {
+func mockDeleteLBResponse(t *testing.T, lbID, nodeID int) {
+	th.Mux.HandleFunc(_nodeURL(lbID, nodeID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
-func mockGetResponse(t *testing.T, id int) {
-	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id), func(w http.ResponseWriter, r *http.Request) {
+func mockGetResponse(t *testing.T, lbID, nodeID int) {
+	th.Mux.HandleFunc(_nodeURL(lbID, nodeID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -151,8 +155,8 @@ func mockGetResponse(t *testing.T, id int) {
 	})
 }
 
-func mockUpdateResponse(t *testing.T, id int) {
-	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id), func(w http.ResponseWriter, r *http.Request) {
+func mockUpdateResponse(t *testing.T, lbID, nodeID int) {
+	th.Mux.HandleFunc(_nodeURL(lbID, nodeID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -169,8 +173,8 @@ func mockUpdateResponse(t *testing.T, id int) {
 	})
 }
 
-func mockListEventsResponse(t *testing.T) {
-	th.Mux.HandleFunc("/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
+func mockListEventsResponse(t *testing.T, lbID, nodeID int) {
+	th.Mux.HandleFunc(_nodeURL(lbID, nodeID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
