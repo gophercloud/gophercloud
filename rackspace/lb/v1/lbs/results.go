@@ -5,6 +5,7 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
 )
 
 type Protocol string
@@ -141,7 +142,7 @@ type LoadBalancer struct {
 
 	Cluster Cluster
 
-	Nodes []Node
+	Nodes []nodes.Node
 
 	ConnectionLogging ConnectionLogging
 
@@ -176,15 +177,6 @@ type ConnectionLogging struct {
 
 type Cluster struct {
 	Name string
-}
-
-type Node struct {
-	Address   string
-	ID        int
-	Port      int
-	Status    Status
-	Condition string
-	Weight    int
 }
 
 // LBPage is the page returned by a pager when traversing over a collection of
