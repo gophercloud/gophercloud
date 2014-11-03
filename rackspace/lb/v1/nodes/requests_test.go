@@ -176,7 +176,9 @@ func TestListEvents(t *testing.T) {
 
 	count := 0
 
-	err := ListEvents(client.ServiceClient(), lbID, nodeID).EachPage(func(page pagination.Page) (bool, error) {
+	pager := ListEvents(client.ServiceClient(), lbID, nodeID, ListEventsOpts{})
+
+	err := pager.EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractNodeEvents(page)
 		th.AssertNoErr(t, err)

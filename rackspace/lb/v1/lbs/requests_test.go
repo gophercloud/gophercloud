@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
 	th "github.com/rackspace/gophercloud/testhelper"
 	"github.com/rackspace/gophercloud/testhelper/client"
 )
@@ -71,8 +72,8 @@ func TestCreate(t *testing.T) {
 			VIP{ID: 2341},
 			VIP{ID: 900001},
 		},
-		Nodes: []Node{
-			Node{Address: "10.1.1.1", Port: 80, Condition: "ENABLED"},
+		Nodes: []nodes.Node{
+			nodes.Node{Address: "10.1.1.1", Port: 80, Condition: "ENABLED"},
 		},
 	}
 
@@ -89,8 +90,8 @@ func TestCreate(t *testing.T) {
 		Status:     BUILD,
 		Timeout:    30,
 		Cluster:    Cluster{Name: "ztm-n01.staging1.lbaas.rackspace.net"},
-		Nodes: []Node{
-			Node{
+		Nodes: []nodes.Node{
+			nodes.Node{
 				Address:   "10.1.1.1",
 				ID:        653,
 				Port:      80,
@@ -168,15 +169,15 @@ func TestGet(t *testing.T) {
 				Version: "IPV4",
 			},
 		},
-		Nodes: []Node{
-			Node{
+		Nodes: []nodes.Node{
+			nodes.Node{
 				Address:   "10.1.1.1",
 				ID:        1041,
 				Port:      80,
 				Status:    "ONLINE",
 				Condition: "ENABLED",
 			},
-			Node{
+			nodes.Node{
 				Address:   "10.1.1.2",
 				ID:        1411,
 				Port:      80,
