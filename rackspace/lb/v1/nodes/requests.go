@@ -3,11 +3,11 @@ package nodes
 import (
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1"
 )
 
 func List(client *gophercloud.ServiceClient, loadBalancerID int, limit *int) pagination.Pager {
@@ -101,14 +101,7 @@ func BulkDelete(c *gophercloud.ServiceClient, loadBalancerID int, nodeIDs []int)
 	}
 
 	url := rootURL(c, loadBalancerID)
-	for k, v := range nodeIDs {
-		if k == 0 {
-			url += "?"
-		} else {
-			url += "&"
-		}
-		url += "id=" + strconv.Itoa(v)
-	}
+	url += v1.IDSliceToQueryString("id", nodeIDs)
 
 	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),

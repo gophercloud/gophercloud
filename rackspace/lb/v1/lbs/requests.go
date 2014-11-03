@@ -2,12 +2,12 @@ package lbs
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/racker/perigee"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
 )
 
@@ -249,14 +249,7 @@ func BulkDelete(c *gophercloud.ServiceClient, ids []int) DeleteResult {
 	}
 
 	url := rootURL(c)
-	for k, v := range ids {
-		if k == 0 {
-			url += "?"
-		} else {
-			url += "&"
-		}
-		url += "id=" + strconv.Itoa(v)
-	}
+	url += v1.IDSliceToQueryString("id", ids)
 
 	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
