@@ -1,5 +1,11 @@
 package nodes
 
+import (
+	"github.com/mitchellh/mapstructure"
+
+	"github.com/rackspace/gophercloud/pagination"
+)
+
 // Node represents a back-end device, usually a virtual machine, that can
 // handle traffic. It is assigned traffic based on its parent load balancer.
 type Node struct {
@@ -16,7 +22,7 @@ type Node struct {
 	Status Status
 
 	// The node's condition.
-	Condition string
+	Condition Condition
 
 	// The priority at which this node will receive traffic if a weighted
 	// algorithm is used by its parent load balancer. Ranges from 1 to 100.
@@ -76,3 +82,31 @@ const (
 	// satisfied with the node's response time.
 	OFFLINE Status = "OFFLINE"
 )
+
+// NodePage is the page returned by a pager when traversing over a collection
+// of nodes.
+type NodePage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty checks whether a NodePage struct is empty.
+func (p NodePage) IsEmpty() (bool, error) {
+	is, err := ExtractNodes(p)
+	if err != nil {
+		return true, nil
+	}
+	return len(is) == 0, nil
+}
+
+// ExtractNodes accepts a Page struct, specifically a NodePage struct, and
+// extracts the elements into a slice of Node structs. In other words, a
+// generic collection is mapped into a relevant slice.
+func ExtractNodes(page pagination.Page) ([]Node, error) {
+	var resp struct {
+		Nodes []Node `mapstructure:"nodes" json:"nodes"`
+	}
+
+	err := mapstructure.Decode(page.(NodePage).Body, &resp)
+
+	return resp.Nodes, err
+}

@@ -10,8 +10,12 @@ import (
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
-func mockListResponse(t *testing.T) {
-	th.Mux.HandleFunc("/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
+func _rootURL(lbID int) string {
+	return "/loadbalancers/" + strconv.Itoa(lbID) + "/nodes"
+}
+
+func mockListResponse(t *testing.T, lbID int) {
+	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -22,7 +26,7 @@ func mockListResponse(t *testing.T) {
 {
   "nodes": [
     {
-      "id": "410",
+      "id": 410,
       "address": "10.1.1.1",
       "port": 80,
       "condition": "ENABLED",
@@ -31,7 +35,7 @@ func mockListResponse(t *testing.T) {
       "type": "PRIMARY"
     },
     {
-      "id": "411",
+      "id": 411,
       "address": "10.1.1.2",
       "port": 80,
       "condition": "ENABLED",
