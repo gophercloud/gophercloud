@@ -157,3 +157,13 @@ func TestUpdate(t *testing.T) {
 	err := Update(client.ServiceClient(), lbID, nodeID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDeleteResponse(t, lbID, nodeID)
+
+	err := Delete(client.ServiceClient(), lbID, nodeID).ExtractErr()
+	th.AssertNoErr(t, err)
+}

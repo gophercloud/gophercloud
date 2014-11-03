@@ -191,3 +191,14 @@ func Update(c *gophercloud.ServiceClient, lbID, nodeID int, opts UpdateOptsBuild
 
 	return res
 }
+
+func Delete(c *gophercloud.ServiceClient, lbID, nodeID int) DeleteResult {
+	var res DeleteResult
+
+	_, res.Err = perigee.Request("DELETE", resourceURL(c, lbID, nodeID), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return res
+}

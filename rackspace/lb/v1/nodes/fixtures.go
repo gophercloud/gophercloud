@@ -123,11 +123,11 @@ func mockBatchDeleteResponse(t *testing.T, lbID int, ids []int) {
 	})
 }
 
-func mockDeleteLBResponse(t *testing.T, lbID, nodeID int) {
+func mockDeleteResponse(t *testing.T, lbID, nodeID int) {
 	th.Mux.HandleFunc(_nodeURL(lbID, nodeID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusAccepted)
+		w.WriteHeader(http.StatusOK)
 	})
 }
 
