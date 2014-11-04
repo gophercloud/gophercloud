@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	lbID  = 12345
-	niID1 = 67890
-	niID2 = 67891
+	lbID    = 12345
+	itemID1 = 67890
+	itemID2 = 67891
 )
 
 func TestList(t *testing.T) {
@@ -62,10 +62,20 @@ func TestBulkDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	ids := []int{niID1, niID2}
+	ids := []int{itemID1, itemID2}
 
 	mockBatchDeleteResponse(t, lbID, ids)
 
 	err := BulkDelete(client.ServiceClient(), lbID, ids).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDeleteResponse(t, lbID, itemID1)
+
+	err := Delete(client.ServiceClient(), lbID, itemID1).ExtractErr()
 	th.AssertNoErr(t, err)
 }

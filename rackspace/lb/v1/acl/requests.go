@@ -99,3 +99,12 @@ func BulkDelete(c *gophercloud.ServiceClient, loadBalancerID int, itemIDs []int)
 
 	return res
 }
+
+func Delete(c *gophercloud.ServiceClient, lbID, itemID int) DeleteResult {
+	var res DeleteResult
+	_, res.Err = perigee.Request("DELETE", resourceURL(c, lbID, itemID), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+	return res
+}
