@@ -34,7 +34,7 @@ func TestList(t *testing.T) {
 				ID:        71,
 				Protocol:  "HTTP",
 				Port:      80,
-				Algorithm: RAND,
+				Algorithm: "RANDOM",
 				Status:    ACTIVE,
 				NodeCount: 3,
 				VIPs: []vips.VIP{
@@ -87,7 +87,7 @@ func TestCreate(t *testing.T) {
 		Protocol:   "HTTP",
 		HalfClosed: false,
 		Port:       83,
-		Algorithm:  RAND,
+		Algorithm:  "RANDOM",
 		Status:     BUILD,
 		Timeout:    30,
 		Cluster:    Cluster{Name: "ztm-n01.staging1.lbaas.rackspace.net"},
@@ -158,7 +158,7 @@ func TestGet(t *testing.T) {
 		ID:                2000,
 		Protocol:          "HTTP",
 		Port:              80,
-		Algorithm:         RAND,
+		Algorithm:         "RANDOM",
 		Status:            ACTIVE,
 		Timeout:           30,
 		ConnectionLogging: ConnectionLogging{Enabled: true},
@@ -217,7 +217,7 @@ func TestUpdate(t *testing.T) {
 		Name:          "a-new-loadbalancer",
 		Protocol:      "TCP",
 		HalfClosed:    Enabled,
-		Algorithm:     RAND,
+		Algorithm:     "RANDOM",
 		Port:          8080,
 		Timeout:       100,
 		HTTPSRedirect: Disabled,
@@ -251,6 +251,36 @@ func TestListProtocols(t *testing.T) {
 		}
 
 		th.CheckDeepEquals(t, expected[0:7], actual)
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, count)
+}
+
+func TestListAlgorithms(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockListAlgorithmsResponse(t)
+
+	count := 0
+
+	err := ListAlgorithms(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := ExtractAlgorithms(page)
+		th.AssertNoErr(t, err)
+
+		expected := []Algorithm{
+			Algorithm{Name: "LEAST_CONNECTIONS"},
+			Algorithm{Name: "RANDOM"},
+			Algorithm{Name: "ROUND_ROBIN"},
+			Algorithm{Name: "WEIGHTED_LEAST_CONNECTIONS"},
+			Algorithm{Name: "WEIGHTED_ROUND_ROBIN"},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
 
 		return true, nil
 	})

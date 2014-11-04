@@ -19,27 +19,10 @@ type Protocol struct {
 }
 
 // Algorithm defines how traffic should be directed between back-end nodes.
-type Algorithm string
-
-const (
-	// LC directs traffic to the node with the lowest number of connections.
-	LC = "LEAST_CONNECTIONS"
-
-	// RAND directs traffic to nodes at random.
-	RAND = "RANDOM"
-
-	// RR directs traffic to each of the nodes in turn.
-	RR = "ROUND_ROBIN"
-
-	// WLC directs traffic to a node based on the number of concurrent
-	// connections and its weight.
-	WLC = "WEIGHTED_LEAST_CONNECTIONS"
-
-	// WRR directs traffic to a node according to the RR algorithm, but with
-	// different proportions of traffic being directed to the back-end nodes.
-	// Weights must be defined as part of the node configuration.
-	WRR = "WEIGHTED_ROUND_ROBIN"
-)
+type Algorithm struct {
+	// The name of the algorithm, e.g RANDOM, ROUND_ROBIN, etc.
+	Name string
+}
 
 // Status represents the potential state of a load balancer resource.
 type Status string
@@ -95,7 +78,7 @@ type LoadBalancer struct {
 
 	// Defines how traffic should be directed between back-end nodes. The default
 	// algorithm is RANDOM. See Algorithm type for a list of accepted values.
-	Algorithm Algorithm
+	Algorithm string
 
 	// The current status of the load balancer.
 	Status Status
@@ -266,8 +249,32 @@ func ExtractProtocols(page pagination.Page) ([]Protocol, error) {
 	var resp struct {
 		Protocols []Protocol `mapstructure:"protocols" json:"protocols"`
 	}
-
 	err := mapstructure.Decode(page.(ProtocolPage).Body, &resp)
-
 	return resp.Protocols, err
+}
+
+// AlgorithmPage is the page returned by a pager when traversing over a
+// collection of LB algorithms.
+type AlgorithmPage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty checks whether a ProtocolPage struct is empty.
+func (p AlgorithmPage) IsEmpty() (bool, error) {
+	is, err := ExtractAlgorithms(p)
+	if err != nil {
+		return true, nil
+	}
+	return len(is) == 0, nil
+}
+
+// ExtractAlgorithms accepts a Page struct, specifically a AlgorithmPage struct,
+// and extracts the elements into a slice of Algorithm structs. In other
+// words, a generic collection is mapped into a relevant slice.
+func ExtractAlgorithms(page pagination.Page) ([]Algorithm, error) {
+	var resp struct {
+		Algorithms []Algorithm `mapstructure:"algorithms" json:"algorithms"`
+	}
+	err := mapstructure.Decode(page.(AlgorithmPage).Body, &resp)
+	return resp.Algorithms, err
 }

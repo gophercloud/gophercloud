@@ -349,3 +349,35 @@ func mockListProtocolsResponse(t *testing.T) {
 	`)
 	})
 }
+
+func mockListAlgorithmsResponse(t *testing.T) {
+	th.Mux.HandleFunc("/loadbalancers/algorithms", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "algorithms": [
+    {
+      "name": "LEAST_CONNECTIONS"
+    },
+    {
+      "name": "RANDOM"
+    },
+    {
+      "name": "ROUND_ROBIN"
+    },
+    {
+      "name": "WEIGHTED_LEAST_CONNECTIONS"
+    },
+    {
+      "name": "WEIGHTED_ROUND_ROBIN"
+    }
+  ]
+}
+			`)
+	})
+}

@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	path          = "loadbalancers"
-	protocolsPath = "protocols"
+	path           = "loadbalancers"
+	protocolsPath  = "protocols"
+	algorithmsPath = "algorithms"
 )
 
 func resourceURL(c *gophercloud.ServiceClient, id int) string {
@@ -21,4 +22,8 @@ func rootURL(c *gophercloud.ServiceClient) string {
 
 func protocolsURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL(path, protocolsPath)
+}
+
+func algorithmsURL(c *gophercloud.ServiceClient) string {
+	return c.ServiceURL(path, algorithmsPath)
 }

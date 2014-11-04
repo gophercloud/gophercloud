@@ -104,7 +104,7 @@ type CreateOpts struct {
 
 	// Optional - algorithm that defines how traffic should be directed between
 	// back-end nodes.
-	Algorithm Algorithm
+	Algorithm string
 
 	// Optional - current connection logging configuration.
 	ConnectionLogging *ConnectionLogging
@@ -320,7 +320,7 @@ type UpdateOpts struct {
 	HalfClosed enabledState
 
 	// Optional - see the Algorithm field in CreateOpts for more information.
-	Algorithm Algorithm
+	Algorithm string
 
 	// Optional - see the Port field in CreateOpts for more information.
 	Port int
@@ -391,5 +391,14 @@ func ListProtocols(client *gophercloud.ServiceClient) pagination.Pager {
 	url := protocolsURL(client)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return ProtocolPage{pagination.SinglePageBase(r)}
+	})
+}
+
+// ListAlgorithms is the operation responsible for returning a paginated
+// collection of load balancer algorithms.
+func ListAlgorithms(client *gophercloud.ServiceClient) pagination.Pager {
+	url := algorithmsURL(client)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return AlgorithmPage{pagination.SinglePageBase(r)}
 	})
 }
