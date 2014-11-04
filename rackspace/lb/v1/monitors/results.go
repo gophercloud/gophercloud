@@ -1,5 +1,7 @@
 package monitors
 
+import "github.com/rackspace/gophercloud"
+
 // Type represents the type of Monitor.
 type Type string
 
@@ -16,19 +18,17 @@ const (
 // does no post-processing or protocol specific health checks.
 type ConnectMonitor struct {
 	// Number of permissible monitor failures before removing a node from
-	// rotation. Must be a number between 1 and 10.
+	// rotation.
 	AttemptLimit int `mapstructure:"attemptsBeforeDeactivation"`
 
 	// The minimum number of seconds to wait before executing the health monitor.
-	// Must be a number between 1 and 3600.
 	Delay int
 
 	// Maximum number of seconds to wait for a connection to be established
-	// before timing out. Must be a number between 1 and 300.
+	// before timing out.
 	Timeout int
 
-	// Type of the health monitor. Must be specified as "CONNECT" to monitor
-	// connections.
+	// Type of the health monitor.
 	Type Type
 }
 
@@ -39,19 +39,17 @@ type ConnectMonitor struct {
 // are used to evaluate the HTTP response.
 type HTTPMonitor struct {
 	// Number of permissible monitor failures before removing a node from
-	// rotation. Must be a number between 1 and 10.
+	// rotation.
 	AttemptLimit int `mapstructure:"attemptsBeforeDeactivation"`
 
 	// The minimum number of seconds to wait before executing the health monitor.
-	// Must be a number between 1 and 3600.
 	Delay int
 
 	// Maximum number of seconds to wait for a connection to be established
-	// before timing out. Must be a number between 1 and 300.
+	// before timing out.
 	Timeout int
 
-	// Type of the health monitor. Must be specified as "CONNECT" to monitor
-	// connections.
+	// Type of the health monitor.
 	Type Type
 
 	// A regular expression that will be used to evaluate the contents of the
@@ -71,3 +69,8 @@ type HTTPMonitor struct {
 
 // HTTPSMonitor the HTTPS equivalent of HTTPMonitor
 type HTTPSMonitor HTTPMonitor
+
+// UpdateResult represents the result of an Update operation.
+type UpdateResult struct {
+	gophercloud.ErrResult
+}

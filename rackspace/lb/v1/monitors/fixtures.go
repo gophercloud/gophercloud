@@ -1,4 +1,4 @@
-package nodes
+package monitors
 
 import (
 	"fmt"
@@ -14,8 +14,8 @@ func _rootURL(lbID int) string {
 	return "/loadbalancers/" + strconv.Itoa(lbID) + "/healthmonitor"
 }
 
-func mockGetResponse(t *testing.T, lbID, nodeID int) {
-	th.Mux.HandleFunc(_nodeURL(lbID, nodeID), func(w http.ResponseWriter, r *http.Request) {
+func mockGetResponse(t *testing.T, lbID int) {
+	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -35,8 +35,8 @@ func mockGetResponse(t *testing.T, lbID, nodeID int) {
 	})
 }
 
-func mockUpdateResponse(t *testing.T, lbID, nodeID int) {
-	th.Mux.HandleFunc(_nodeURL(lbID, nodeID), func(w http.ResponseWriter, r *http.Request) {
+func mockUpdateConnectResponse(t *testing.T, lbID int) {
+	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -55,8 +55,31 @@ func mockUpdateResponse(t *testing.T, lbID, nodeID int) {
 	})
 }
 
-func mockDeleteResponse(t *testing.T, lbID, nodeID int) {
-	th.Mux.HandleFunc(_nodeURL(lbID, nodeID), func(w http.ResponseWriter, r *http.Request) {
+func mockUpdateHTTPResponse(t *testing.T, lbID int) {
+	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+  "healthMonitor": {
+    "attemptsBeforeDeactivation": 3,
+    "bodyRegex": "{regex}",
+    "delay": 10,
+    "path": "/foo",
+    "statusRegex": "200",
+    "timeout": 10,
+    "type": "HTTPS"
+  }
+}
+		`)
+
+		w.WriteHeader(http.StatusOK)
+	})
+}
+
+func mockDeleteResponse(t *testing.T, lbID int) {
+	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusOK)
