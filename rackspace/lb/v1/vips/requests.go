@@ -1,10 +1,13 @@
 package vips
 
 import (
+	"errors"
+
 	"github.com/racker/perigee"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1"
 )
 
 // List is the operation responsible for returning a paginated collection of
@@ -27,11 +30,15 @@ type CreateOptsBuilder interface {
 // CreateOpts is the common options struct used in this package's Create
 // operation.
 type CreateOpts struct {
+	// Optional - the ID of an existing virtual IP. By doing this, you are
+	// allowing load balancers to share IPV6 addresses.
 	ID string
 
-	Type string
+	// Optional - the type of address.
+	Type Type
 
-	Version string
+	// Optional - the version of address.
+	Version Version
 }
 
 // ToVIPCreateMap casts a CreateOpts struct to a map.
@@ -51,6 +58,9 @@ func (opts CreateOpts) ToVIPCreateMap() (map[string]interface{}, error) {
 	return lb, nil
 }
 
+// Create is the operation responsible for assigning a new Virtual IP to an
+// existing load balancer resource. Currently, only version 6 IP addresses may
+// be added.
 func Create(c *gophercloud.ServiceClient, lbID int, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
@@ -67,5 +77,37 @@ func Create(c *gophercloud.ServiceClient, lbID int, opts CreateOptsBuilder) Crea
 		OkCodes:     []int{202},
 	})
 
+	return res
+}
+
+// BulkDelete is the operation responsible for batch deleting multiple VIPs in
+// a single operation. It accepts a slice of integer IDs and will remove them
+// from the load balancer. The maximum limit is 10 VIP removals at once.
+func BulkDelete(c *gophercloud.ServiceClient, loadBalancerID int, vipIDs []int) DeleteResult {
+	var res DeleteResult
+
+	if len(vipIDs) > 10 || len(vipIDs) == 0 {
+		res.Err = errors.New("You must provide a minimum of 1 and a maximum of 10 VIP IDs")
+		return res
+	}
+
+	url := rootURL(c, loadBalancerID)
+	url += v1.IDSliceToQueryString("id", vipIDs)
+
+	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		OkCodes:     []int{202},
+	})
+
+	return res
+}
+
+// Delete is the operation responsible for permanently deleting a VIP.
+func Delete(c *gophercloud.ServiceClient, lbID, vipID int) DeleteResult {
+	var res DeleteResult
+	_, res.Err = perigee.Request("DELETE", resourceURL(c, lbID, vipID), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
 	return res
 }

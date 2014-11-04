@@ -9,11 +9,31 @@ import (
 
 // VIP represents a Virtual IP API resource.
 type VIP struct {
-	Address string `json:"address,omitempty"`
-	ID      int    `json:"id,omitempty"`
-	Type    string `json:"type,omitempty"`
-	Version string `json:"ipVersion,omitempty" mapstructure:"ipVersion"`
+	Address string  `json:"address,omitempty"`
+	ID      int     `json:"id,omitempty"`
+	Type    Type    `json:"type,omitempty"`
+	Version Version `json:"ipVersion,omitempty" mapstructure:"ipVersion"`
 }
+
+// Version represents the version of a VIP.
+type Version string
+
+// Convenient constants to use for type
+const (
+	IPV4 Version = "IPV4"
+	IPV6 Version = "IPV6"
+)
+
+// Type represents the type of a VIP.
+type Type string
+
+const (
+	// PUBLIC indicates a VIP type that is routable on the public Internet.
+	PUBLIC Type = "PUBLIC"
+
+	// PRIVATE indicates a VIP type that is routable only on ServiceNet.
+	PRIVATE Type = "SERVICENET"
+)
 
 // VIPPage is the page returned by a pager when traversing over a collection
 // of VIPs.
@@ -58,6 +78,12 @@ func (r commonResult) Extract() (*VIP, error) {
 	return resp, err
 }
 
+// CreateResult represents the result of a create operation.
 type CreateResult struct {
 	commonResult
+}
+
+// DeleteResult represents the result of a delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
 }

@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	lbID  = 12345
-	vipID = 67890
+	lbID   = 12345
+	vipID  = 67890
+	vipID2 = 67891
 )
 
 func TestList(t *testing.T) {
@@ -61,4 +62,26 @@ func TestCreate(t *testing.T) {
 	}
 
 	th.CheckDeepEquals(t, expected, vip)
+}
+
+func TestBulkDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	ids := []int{vipID, vipID2}
+
+	mockBatchDeleteResponse(t, lbID, ids)
+
+	err := BulkDelete(client.ServiceClient(), lbID, ids).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDeleteResponse(t, lbID, vipID)
+
+	err := Delete(client.ServiceClient(), lbID, vipID).ExtractErr()
+	th.AssertNoErr(t, err)
 }
