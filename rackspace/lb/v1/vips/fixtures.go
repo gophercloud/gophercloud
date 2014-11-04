@@ -49,7 +49,7 @@ func mockCreateResponse(t *testing.T, lbID int) {
     `)
 
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 
 		fmt.Fprintf(w, `
 {

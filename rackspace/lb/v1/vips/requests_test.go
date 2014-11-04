@@ -38,3 +38,27 @@ func TestList(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, count)
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockCreateResponse(t, lbID)
+
+	opts := CreateOpts{
+		Type:    "PUBLIC",
+		Version: "IPV6",
+	}
+
+	vip, err := Create(client.ServiceClient(), lbID, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &VIP{
+		Address: "fd24:f480:ce44:91bc:1af2:15ff:0000:0002",
+		ID:      9000134,
+		Type:    "PUBLIC",
+		Version: "IPV6",
+	}
+
+	th.CheckDeepEquals(t, expected, vip)
+}

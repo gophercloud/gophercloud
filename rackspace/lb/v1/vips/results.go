@@ -2,6 +2,8 @@ package vips
 
 import (
 	"github.com/mitchellh/mapstructure"
+
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -39,4 +41,23 @@ func ExtractVIPs(page pagination.Page) ([]VIP, error) {
 	err := mapstructure.Decode(page.(VIPPage).Body, &resp)
 
 	return resp.VIPs, err
+}
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+func (r commonResult) Extract() (*VIP, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	resp := &VIP{}
+	err := mapstructure.Decode(r.Body, resp)
+
+	return resp, err
+}
+
+type CreateResult struct {
+	commonResult
 }
