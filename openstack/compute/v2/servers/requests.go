@@ -131,6 +131,10 @@ type CreateOpts struct {
 
 	// ConfigDrive [optional] enables metadata injection through a configuration drive.
 	ConfigDrive bool
+
+	// AdminPass [optional] sets the root user password. If not set, a randomly-generated
+	// password will be created and returned in the response.
+	AdminPass string
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a CreateOpts.
@@ -157,6 +161,9 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	}
 	if opts.Metadata != nil {
 		server["metadata"] = opts.Metadata
+	}
+	if opts.AdminPass != "" {
+		server["adminPass"] = opts.AdminPass
 	}
 
 	if len(opts.SecurityGroups) > 0 {
