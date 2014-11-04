@@ -108,3 +108,12 @@ func Delete(c *gophercloud.ServiceClient, lbID, itemID int) DeleteResult {
 	})
 	return res
 }
+
+func DeleteAll(c *gophercloud.ServiceClient, lbID int) DeleteResult {
+	var res DeleteResult
+	_, res.Err = perigee.Request("DELETE", rootURL(c, lbID), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+	return res
+}

@@ -79,3 +79,13 @@ func TestDelete(t *testing.T) {
 	err := Delete(client.ServiceClient(), lbID, itemID1).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestDeleteAll(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDeleteAllResponse(t, lbID)
+
+	err := DeleteAll(client.ServiceClient(), lbID).ExtractErr()
+	th.AssertNoErr(t, err)
+}
