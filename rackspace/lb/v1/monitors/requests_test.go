@@ -63,3 +63,13 @@ func TestGet(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, m)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDeleteResponse(t, lbID)
+
+	err := Delete(client.ServiceClient(), lbID).ExtractErr()
+	th.AssertNoErr(t, err)
+}

@@ -69,6 +69,11 @@ type GetResult struct {
 	gophercloud.Result
 }
 
+// DeleteResult represents the result of an Delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract interprets any GetResult as a Monitor.
 func (r GetResult) Extract() (*Monitor, error) {
 	if r.Err != nil {

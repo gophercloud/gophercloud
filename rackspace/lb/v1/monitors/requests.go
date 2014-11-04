@@ -156,12 +156,25 @@ func Update(c *gophercloud.ServiceClient, id int, opts UpdateOptsBuilder) Update
 	return res
 }
 
+// Get is the operation responsible for showing details of a health monitor.
 func Get(c *gophercloud.ServiceClient, id int) GetResult {
 	var res GetResult
 
 	_, res.Err = perigee.Request("GET", rootURL(c, id), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
+
+// Delete is the operation responsible for deleting a health monitor.
+func Delete(c *gophercloud.ServiceClient, id int) DeleteResult {
+	var res DeleteResult
+
+	_, res.Err = perigee.Request("DELETE", rootURL(c, id), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{200},
 	})
 
