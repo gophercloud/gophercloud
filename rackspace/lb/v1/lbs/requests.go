@@ -84,7 +84,9 @@ type CreateOpts struct {
 	Nodes []nodes.Node
 
 	// Required - protocol of the service that is being load balanced.
-	Protocol Protocol
+	// See http://docs.rackspace.com/loadbalancers/api/v1.0/clb-devguide/content/protocols.html
+	// for a full list of supported protocols.
+	Protocol string
 
 	// Optional - enables or disables Half-Closed support for the load balancer.
 	// Half-Closed support provides the ability for one end of the connection to
@@ -310,7 +312,9 @@ type UpdateOpts struct {
 	Name string
 
 	// Optional - the new protocol you want your load balancer to have.
-	Protocol Protocol
+	// See http://docs.rackspace.com/loadbalancers/api/v1.0/clb-devguide/content/protocols.html
+	// for a full list of supported protocols.
+	Protocol string
 
 	// Optional - see the HalfClosed field in CreateOpts for more information.
 	HalfClosed enabledState
@@ -379,4 +383,13 @@ func Update(c *gophercloud.ServiceClient, id int, opts UpdateOptsBuilder) Update
 	})
 
 	return res
+}
+
+// ListProtocols is the operation responsible for returning a paginated
+// collection of load balancer protocols.
+func ListProtocols(client *gophercloud.ServiceClient) pagination.Pager {
+	url := protocolsURL(client)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return ProtocolPage{pagination.SinglePageBase(r)}
+	})
 }

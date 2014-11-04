@@ -226,3 +226,35 @@ func TestUpdate(t *testing.T) {
 	err := Update(client.ServiceClient(), id1, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestListProtocols(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockListProtocolsResponse(t)
+
+	count := 0
+
+	err := ListProtocols(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := ExtractProtocols(page)
+		th.AssertNoErr(t, err)
+
+		expected := []Protocol{
+			Protocol{Name: "DNS_TCP", Port: 53},
+			Protocol{Name: "DNS_UDP", Port: 53},
+			Protocol{Name: "FTP", Port: 21},
+			Protocol{Name: "HTTP", Port: 80},
+			Protocol{Name: "HTTPS", Port: 443},
+			Protocol{Name: "IMAPS", Port: 993},
+			Protocol{Name: "IMAPv4", Port: 143},
+		}
+
+		th.CheckDeepEquals(t, expected[0:7], actual)
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, count)
+}

@@ -256,3 +256,96 @@ func mockUpdateLBResponse(t *testing.T, id int) {
 		w.WriteHeader(http.StatusOK)
 	})
 }
+
+func mockListProtocolsResponse(t *testing.T) {
+	th.Mux.HandleFunc("/loadbalancers/protocols", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "protocols": [
+    {
+      "name": "DNS_TCP",
+      "port": 53
+    },
+    {
+      "name": "DNS_UDP",
+      "port": 53
+    },
+    {
+      "name": "FTP",
+      "port": 21
+    },
+    {
+      "name": "HTTP",
+      "port": 80
+    },
+    {
+      "name": "HTTPS",
+      "port": 443
+    },
+    {
+      "name": "IMAPS",
+      "port": 993
+    },
+    {
+      "name": "IMAPv4",
+      "port": 143
+    },
+    {
+      "name": "LDAP",
+      "port": 389
+    },
+    {
+      "name": "LDAPS",
+      "port": 636
+    },
+    {
+      "name": "MYSQL",
+      "port": 3306
+    },
+    {
+      "name": "POP3",
+      "port": 110
+    },
+    {
+      "name": "POP3S",
+      "port": 995
+    },
+    {
+      "name": "SMTP",
+      "port": 25
+    },
+    {
+      "name": "TCP",
+      "port": 0
+    },
+    {
+      "name": "TCP_CLIENT_FIRST",
+      "port": 0
+    },
+    {
+      "name": "UDP",
+      "port": 0
+    },
+    {
+      "name": "UDP_STREAM",
+      "port": 0
+    },
+    {
+      "name": "SFTP",
+      "port": 22
+    },
+    {
+      "name": "TCP_STREAM",
+      "port": 0
+    }
+  ]
+}
+	`)
+	})
+}

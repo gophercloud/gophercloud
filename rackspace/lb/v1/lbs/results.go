@@ -10,36 +10,13 @@ import (
 )
 
 // Protocol represents the network protocol which the load balancer accepts.
-type Protocol string
+type Protocol struct {
+	// The name of the protocol, e.g. HTTP, LDAP, FTP, etc.
+	Name string
 
-// The constants below represent all the compatible load balancer protocols.
-const (
-	// DNSTCP is a protocol that works with IPv6 and allows your DNS server to
-	// receive traffic using TCP port 53.
-	DNSTCP = "DNS_TCP"
-
-	// DNSUDP is a protocol that works with IPv6 and allows your DNS server to
-	// receive traffic using UDP port 53.
-	DNSUDP = "DNS_UDP"
-
-	// TCP is one of the core protocols of the Internet Protocol Suite. It
-	// provides a reliable, ordered delivery of a stream of bytes from one
-	// program on a computer to another program on another computer. Applications
-	// that require an ordered and reliable delivery of packets use this protocol.
-	TCP = "TCP"
-
-	// TCPCLIENTFIRST is a protocol similar to TCP, but is more efficient when a
-	// client is expected to write the data first.
-	TCPCLIENTFIRST = "TCP_CLIENT_FIRST"
-
-	// UDP provides a datagram service that emphasizes speed over reliability. It
-	// works well with applications that provide security through other measures.
-	UDP = "UDP"
-
-	// UDPSTREAM is a protocol designed to stream media over networks and is
-	// built on top of UDP.
-	UDPSTREAM = "UDP_STREAM"
-)
+	// The port number for the protocol.
+	Port int
+}
 
 // Algorithm defines how traffic should be directed between back-end nodes.
 type Algorithm string
@@ -112,7 +89,9 @@ type LoadBalancer struct {
 
 	// Represents the service protocol being load balanced. See Protocol type for
 	// a list of accepted values.
-	Protocol Protocol
+	// See http://docs.rackspace.com/loadbalancers/api/v1.0/clb-devguide/content/protocols.html
+	// for a full list of supported protocols.
+	Protocol string
 
 	// Defines how traffic should be directed between back-end nodes. The default
 	// algorithm is RANDOM. See Algorithm type for a list of accepted values.
@@ -263,4 +242,32 @@ type UpdateResult struct {
 // GetResult represents the result of a get operation.
 type GetResult struct {
 	commonResult
+}
+
+// ProtocolPage is the page returned by a pager when traversing over a
+// collection of LB protocols.
+type ProtocolPage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty checks whether a ProtocolPage struct is empty.
+func (p ProtocolPage) IsEmpty() (bool, error) {
+	is, err := ExtractProtocols(p)
+	if err != nil {
+		return true, nil
+	}
+	return len(is) == 0, nil
+}
+
+// ExtractProtocols accepts a Page struct, specifically a ProtocolPage struct,
+// and extracts the elements into a slice of LoadBalancer structs. In other
+// words, a generic collection is mapped into a relevant slice.
+func ExtractProtocols(page pagination.Page) ([]Protocol, error) {
+	var resp struct {
+		Protocols []Protocol `mapstructure:"protocols" json:"protocols"`
+	}
+
+	err := mapstructure.Decode(page.(ProtocolPage).Body, &resp)
+
+	return resp.Protocols, err
 }

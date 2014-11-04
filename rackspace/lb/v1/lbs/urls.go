@@ -6,7 +6,10 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-const path = "loadbalancers"
+const (
+	path          = "loadbalancers"
+	protocolsPath = "protocols"
+)
 
 func resourceURL(c *gophercloud.ServiceClient, id int) string {
 	return c.ServiceURL(path, strconv.Itoa(id))
@@ -14,4 +17,8 @@ func resourceURL(c *gophercloud.ServiceClient, id int) string {
 
 func rootURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL(path)
+}
+
+func protocolsURL(c *gophercloud.ServiceClient) string {
+	return c.ServiceURL(path, protocolsPath)
 }
