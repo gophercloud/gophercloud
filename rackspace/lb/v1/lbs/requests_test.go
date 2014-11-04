@@ -5,6 +5,7 @@ import (
 
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/vips"
 	th "github.com/rackspace/gophercloud/testhelper"
 	"github.com/rackspace/gophercloud/testhelper/client"
 )
@@ -36,8 +37,8 @@ func TestList(t *testing.T) {
 				Algorithm: RAND,
 				Status:    ACTIVE,
 				NodeCount: 3,
-				VIPs: []VIP{
-					VIP{
+				VIPs: []vips.VIP{
+					vips.VIP{
 						ID:      403,
 						Address: "206.55.130.1",
 						Type:    "PUBLIC",
@@ -68,9 +69,9 @@ func TestCreate(t *testing.T) {
 		Name:     "a-new-loadbalancer",
 		Port:     80,
 		Protocol: "HTTP",
-		VIPs: []VIP{
-			VIP{ID: 2341},
-			VIP{ID: 900001},
+		VIPs: []vips.VIP{
+			vips.VIP{ID: 2341},
+			vips.VIP{ID: 900001},
 		},
 		Nodes: []nodes.Node{
 			nodes.Node{Address: "10.1.1.1", Port: 80, Condition: "ENABLED"},
@@ -100,14 +101,14 @@ func TestCreate(t *testing.T) {
 				Weight:    1,
 			},
 		},
-		VIPs: []VIP{
-			VIP{
+		VIPs: []vips.VIP{
+			vips.VIP{
 				ID:      39,
 				Address: "206.10.10.210",
 				Type:    "PUBLIC",
 				Version: "IPV4",
 			},
-			VIP{
+			vips.VIP{
 				ID:      900001,
 				Address: "2001:4801:79f1:0002:711b:be4c:0000:0021",
 				Type:    "PUBLIC",
@@ -161,8 +162,8 @@ func TestGet(t *testing.T) {
 		Status:            ACTIVE,
 		Timeout:           30,
 		ConnectionLogging: ConnectionLogging{Enabled: true},
-		VIPs: []VIP{
-			VIP{
+		VIPs: []vips.VIP{
+			vips.VIP{
 				ID:      1000,
 				Address: "206.10.10.210",
 				Type:    "PUBLIC",

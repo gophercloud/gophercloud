@@ -9,6 +9,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/vips"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -93,7 +94,7 @@ type CreateOpts struct {
 
 	// Optional - the type of virtual IPs you want associated with the load
 	// balancer.
-	VIPs []VIP
+	VIPs []vips.VIP
 
 	// Optional - the access list management feature allows fine-grained network
 	// access controls to be applied to the load balancer virtual IP address.

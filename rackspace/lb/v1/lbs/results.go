@@ -6,6 +6,7 @@ import (
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/vips"
 )
 
 // Protocol represents the network protocol which the load balancer accepts.
@@ -101,14 +102,6 @@ type Datetime struct {
 	Time string
 }
 
-// VIP - temp
-type VIP struct {
-	Address string `json:"address,omitempty"`
-	ID      int    `json:"id,omitempty"`
-	Type    string `json:"type,omitempty"`
-	Version string `json:"ipVersion,omitempty" mapstructure:"ipVersion"`
-}
-
 // LoadBalancer represents a load balancer API resource.
 type LoadBalancer struct {
 	// Human-readable name for the load balancer.
@@ -132,7 +125,7 @@ type LoadBalancer struct {
 	NodeCount int `mapstructure:"nodeCount"`
 
 	// Slice of virtual IPs associated with this load balancer.
-	VIPs []VIP `mapstructure:"virtualIps"`
+	VIPs []vips.VIP `mapstructure:"virtualIps"`
 
 	// Datetime when the LB was created.
 	Created Datetime
