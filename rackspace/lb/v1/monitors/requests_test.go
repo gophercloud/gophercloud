@@ -44,3 +44,22 @@ func TestUpdateHTTP(t *testing.T) {
 	err := Update(client.ServiceClient(), lbID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockGetResponse(t, lbID)
+
+	m, err := Get(client.ServiceClient(), lbID).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &Monitor{
+		Type:         CONNECT,
+		Delay:        10,
+		Timeout:      10,
+		AttemptLimit: 3,
+	}
+
+	th.AssertDeepEquals(t, expected, m)
+}

@@ -155,3 +155,15 @@ func Update(c *gophercloud.ServiceClient, id int, opts UpdateOptsBuilder) Update
 
 	return res
 }
+
+func Get(c *gophercloud.ServiceClient, id int) GetResult {
+	var res GetResult
+
+	_, res.Err = perigee.Request("GET", rootURL(c, id), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
