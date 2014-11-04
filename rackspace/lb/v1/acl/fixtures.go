@@ -27,42 +27,22 @@ func mockListResponse(t *testing.T, id int) {
   "accessList": [
     {
       "address": "206.160.163.21",
+      "id": 21,
+      "type": "DENY"
+    },
+    {
+      "address": "206.160.163.22",
+      "id": 22,
+      "type": "DENY"
+    },
+    {
+      "address": "206.160.163.23",
       "id": 23,
       "type": "DENY"
     },
     {
-      "address": "206.160.165.11",
+      "address": "206.160.163.24",
       "id": 24,
-      "type": "DENY"
-    },
-    {
-      "address": "206.160.163.21",
-      "id": 25,
-      "type": "DENY"
-    },
-    {
-      "address": "206.160.165.11",
-      "id": 26,
-      "type": "DENY"
-    },
-    {
-      "address": "206.160.123.11",
-      "id": 27,
-      "type": "DENY"
-    },
-    {
-      "address": "206.160.122.21",
-      "id": 28,
-      "type": "DENY"
-    },
-    {
-      "address": "206.140.123.11",
-      "id": 29,
-      "type": "DENY"
-    },
-    {
-      "address": "206.140.122.21",
-      "id": 30,
       "type": "DENY"
     }
   ]
@@ -71,8 +51,8 @@ func mockListResponse(t *testing.T, id int) {
 	})
 }
 
-func mockCreateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/loadbalancers", func(w http.ResponseWriter, r *http.Request) {
+func mockCreateResponse(t *testing.T, lbID int) {
+	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
