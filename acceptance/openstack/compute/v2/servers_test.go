@@ -12,6 +12,7 @@ import (
 	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
 	"github.com/rackspace/gophercloud/pagination"
+	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 func TestListServers(t *testing.T) {
@@ -94,6 +95,8 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *Comp
 	name := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create server: %s\n", name)
 
+	pwd := tools.MakeNewPassword("")
+
 	server, err := servers.Create(client, servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
@@ -101,10 +104,13 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *Comp
 		Networks: []servers.Network{
 			servers.Network{UUID: network.ID},
 		},
+		AdminPass: pwd,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
+
+	th.AssertEquals(t, pwd, server.AdminPass)
 
 	return server, err
 }

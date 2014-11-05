@@ -39,11 +39,14 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, keyName strin
 
 	name := tools.RandomString("Gophercloud-", 8)
 
+	pwd := tools.MakeNewPassword("")
+
 	opts := &servers.CreateOpts{
 		Name:       name,
 		ImageRef:   options.imageID,
 		FlavorRef:  options.flavorID,
 		DiskConfig: diskconfig.Manual,
+		AdminPass:  pwd,
 	}
 
 	if keyName != "" {
@@ -58,6 +61,8 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, keyName strin
 	err = servers.WaitForStatus(client, s.ID, "ACTIVE", 300)
 	th.AssertNoErr(t, err)
 	t.Logf("Server created successfully.")
+
+	th.CheckEquals(t, pwd, s.AdminPass)
 
 	return s
 }
