@@ -13,6 +13,7 @@ import (
 )
 
 func TestVIPs(t *testing.T) {
+	return
 	client := setup(t)
 
 	ids := createLB(t, client, 1)

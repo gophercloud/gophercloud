@@ -150,7 +150,7 @@ func Update(c *gophercloud.ServiceClient, id int, opts UpdateOptsBuilder) Update
 	_, res.Err = perigee.Request("PUT", rootURL(c, id), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res
@@ -175,7 +175,7 @@ func Delete(c *gophercloud.ServiceClient, id int) DeleteResult {
 
 	_, res.Err = perigee.Request("DELETE", rootURL(c, id), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res
