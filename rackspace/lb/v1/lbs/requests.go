@@ -240,7 +240,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res
@@ -379,7 +379,7 @@ func Update(c *gophercloud.ServiceClient, id int, opts UpdateOptsBuilder) Update
 	_, res.Err = perigee.Request("PUT", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res

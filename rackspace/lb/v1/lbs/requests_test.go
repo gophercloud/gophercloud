@@ -105,14 +105,14 @@ func TestCreate(t *testing.T) {
 			vips.VIP{
 				ID:      39,
 				Address: "206.10.10.210",
-				Type:    "PUBLIC",
-				Version: "IPV4",
+				Type:    vips.PUBLIC,
+				Version: vips.IPV4,
 			},
 			vips.VIP{
 				ID:      900001,
 				Address: "2001:4801:79f1:0002:711b:be4c:0000:0021",
-				Type:    "PUBLIC",
-				Version: "IPV6",
+				Type:    vips.PUBLIC,
+				Version: vips.IPV6,
 			},
 		},
 		Created:           Datetime{Time: "2011-04-13T14:18:07Z"},
