@@ -107,7 +107,7 @@ func Delete(c *gophercloud.ServiceClient, lbID, vipID int) DeleteResult {
 	var res DeleteResult
 	_, res.Err = perigee.Request("DELETE", resourceURL(c, lbID, vipID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 	return res
 }

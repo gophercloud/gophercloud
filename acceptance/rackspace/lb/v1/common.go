@@ -4,6 +4,8 @@ package v1
 
 import (
 	"os"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
@@ -49,4 +51,12 @@ func setup(t *testing.T) *gophercloud.ServiceClient {
 	th.AssertNoErr(t, err)
 
 	return client
+}
+
+func intsToStr(ids []int) string {
+	strIDs := []string{}
+	for _, id := range ids {
+		strIDs = append(strIDs, strconv.Itoa(id))
+	}
+	return strings.Join(strIDs, ", ")
 }

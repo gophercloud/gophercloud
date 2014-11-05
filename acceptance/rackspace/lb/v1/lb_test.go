@@ -3,8 +3,6 @@
 package v1
 
 import (
-	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
@@ -154,9 +152,5 @@ func deleteLB(t *testing.T, client *gophercloud.ServiceClient, id int) {
 func batchDeleteLBs(t *testing.T, client *gophercloud.ServiceClient, ids []int) {
 	err := lbs.BulkDelete(client, ids).ExtractErr()
 	th.AssertNoErr(t, err)
-	strIDs := []string{}
-	for _, id := range ids {
-		strIDs = append(strIDs, strconv.Itoa(id))
-	}
-	t.Logf("Deleted %s", strings.Join(strIDs, ", "))
+	t.Logf("Deleted %s", intsToStr(ids))
 }
