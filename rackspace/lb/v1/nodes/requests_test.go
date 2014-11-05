@@ -172,11 +172,11 @@ func TestListEvents(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	mockListEventsResponse(t, lbID, nodeID)
+	mockListEventsResponse(t, lbID)
 
 	count := 0
 
-	pager := ListEvents(client.ServiceClient(), lbID, nodeID, ListEventsOpts{})
+	pager := ListEvents(client.ServiceClient(), lbID, ListEventsOpts{})
 
 	err := pager.EachPage(func(page pagination.Page) (bool, error) {
 		count++

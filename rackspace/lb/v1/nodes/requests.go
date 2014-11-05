@@ -118,7 +118,7 @@ func Create(client *gophercloud.ServiceClient, loadBalancerID int, opts CreateOp
 		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 	if err != nil {
 		res.Err = err
@@ -245,7 +245,7 @@ func Delete(c *gophercloud.ServiceClient, lbID, nodeID int) DeleteResult {
 	var res DeleteResult
 	_, res.Err = perigee.Request("DELETE", resourceURL(c, lbID, nodeID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 	return res
 }
@@ -276,8 +276,8 @@ func (opts ListEventsOpts) ToEventsListQuery() (string, error) {
 // associated with the activity between the node and the load balancer. The
 // events report errors found with the node. The detailedMessage provides the
 // detailed reason for the error.
-func ListEvents(client *gophercloud.ServiceClient, loadBalancerID, nodeID int, opts ListEventsOptsBuilder) pagination.Pager {
-	url := eventsURL(client, loadBalancerID, nodeID)
+func ListEvents(client *gophercloud.ServiceClient, loadBalancerID int, opts ListEventsOptsBuilder) pagination.Pager {
+	url := eventsURL(client, loadBalancerID)
 
 	if opts != nil {
 		query, err := opts.ToEventsListQuery()

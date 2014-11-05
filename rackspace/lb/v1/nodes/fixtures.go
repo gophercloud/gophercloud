@@ -175,8 +175,8 @@ func mockUpdateResponse(t *testing.T, lbID, nodeID int) {
 	})
 }
 
-func mockListEventsResponse(t *testing.T, lbID, nodeID int) {
-	th.Mux.HandleFunc(_nodeURL(lbID, nodeID)+"/events", func(w http.ResponseWriter, r *http.Request) {
+func mockListEventsResponse(t *testing.T, lbID int) {
+	th.Mux.HandleFunc(_rootURL(lbID)+"/events", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
