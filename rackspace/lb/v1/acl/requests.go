@@ -94,7 +94,7 @@ func BulkDelete(c *gophercloud.ServiceClient, loadBalancerID int, itemIDs []int)
 
 	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res
@@ -104,7 +104,7 @@ func Delete(c *gophercloud.ServiceClient, lbID, itemID int) DeleteResult {
 	var res DeleteResult
 	_, res.Err = perigee.Request("DELETE", resourceURL(c, lbID, itemID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 	return res
 }
@@ -113,7 +113,7 @@ func DeleteAll(c *gophercloud.ServiceClient, lbID int) DeleteResult {
 	var res DeleteResult
 	_, res.Err = perigee.Request("DELETE", rootURL(c, lbID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 	return res
 }
