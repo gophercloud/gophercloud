@@ -81,7 +81,7 @@ func mockCreateLBResponse(t *testing.T) {
 		`)
 
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 
 		fmt.Fprintf(w, `
 {
@@ -253,7 +253,7 @@ func mockUpdateLBResponse(t *testing.T, id int) {
 }
 		`)
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 

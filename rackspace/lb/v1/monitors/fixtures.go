@@ -51,7 +51,7 @@ func mockUpdateConnectResponse(t *testing.T, lbID int) {
 }
     `)
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
@@ -74,7 +74,7 @@ func mockUpdateHTTPResponse(t *testing.T, lbID int) {
 }
 		`)
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
@@ -82,6 +82,6 @@ func mockDeleteResponse(t *testing.T, lbID int) {
 	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }

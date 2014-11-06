@@ -80,7 +80,7 @@ func mockDeleteAllResponse(t *testing.T, lbID int) {
 	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
@@ -96,7 +96,7 @@ func mockBatchDeleteResponse(t *testing.T, lbID int, ids []int) {
 			th.AssertEquals(t, strconv.Itoa(v), fids[k])
 		}
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
@@ -104,6 +104,6 @@ func mockDeleteResponse(t *testing.T, lbID, networkID int) {
 	th.Mux.HandleFunc(_rootURL(lbID)+"/"+strconv.Itoa(networkID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }

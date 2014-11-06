@@ -78,7 +78,7 @@ func mockCreateResponse(t *testing.T, lbID int) {
     `)
 
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 
 		fmt.Fprintf(w, `
 {
@@ -127,7 +127,7 @@ func mockDeleteResponse(t *testing.T, lbID, nodeID int) {
 	th.Mux.HandleFunc(_nodeURL(lbID, nodeID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
