@@ -6,6 +6,7 @@ import (
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/sessions"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/vips"
 )
 
@@ -119,7 +120,7 @@ type LoadBalancer struct {
 
 	// SessionPersistence specifies whether multiple requests from clients are
 	// directed to the same node.
-	SessionPersistence SessionPersistence
+	SessionPersistence sessions.SessionPersistence
 
 	// ConnectionThrottle specifies a limit on the number of connections per IP
 	// address to help mitigate malicious or abusive traffic to your applications.
@@ -135,11 +136,6 @@ type SourceAddrs struct {
 	IPv4Private string `json:"ipv4Servicenet" mapstructure:"ipv4Servicenet"`
 	IPv6Public  string `json:"ipv6Public" mapstructure:"ipv6Public"`
 	IPv6Private string `json:"ipv6Servicenet" mapstructure:"ipv6Servicenet"`
-}
-
-// SessionPersistence - temp
-type SessionPersistence struct {
-	Type string `json:"persistenceType" mapstructure:"persistenceType"`
 }
 
 // ConnectionThrottle - temp

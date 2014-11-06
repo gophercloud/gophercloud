@@ -9,6 +9,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/sessions"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/vips"
 )
 
@@ -128,7 +129,7 @@ type CreateOpts struct {
 
 	// Optional - specifies whether multiple requests from clients are directed
 	// to the same node.
-	SessionPersistence *SessionPersistence
+	SessionPersistence *sessions.SessionPersistence
 
 	// Optional - enables or disables HTTP to HTTPS redirection for the load
 	// balancer. When enabled, any HTTP request returns status code 301 (Moved

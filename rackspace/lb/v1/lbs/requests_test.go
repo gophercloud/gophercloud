@@ -5,6 +5,7 @@ import (
 
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/sessions"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/vips"
 	th "github.com/rackspace/gophercloud/testhelper"
 	"github.com/rackspace/gophercloud/testhelper/client"
@@ -186,7 +187,7 @@ func TestGet(t *testing.T) {
 				Condition: "ENABLED",
 			},
 		},
-		SessionPersistence: SessionPersistence{Type: "HTTP_COOKIE"},
+		SessionPersistence: sessions.SessionPersistence{Type: "HTTP_COOKIE"},
 		ConnectionThrottle: ConnectionThrottle{
 			MinConns:     10,
 			MaxConns:     100,
