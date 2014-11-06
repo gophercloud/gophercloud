@@ -9,6 +9,20 @@ import (
 	"time"
 )
 
+// EnabledState is a convenience type, mostly used in Create and Update
+// operations. Because the zero value of a bool is FALSE, we need to use a
+// pointer instead to indicate zero-ness.
+type EnabledState *bool
+
+// Convenience vars for EnabledState values.
+var (
+	iTrue  = true
+	iFalse = false
+
+	Enabled  EnabledState = &iTrue
+	Disabled EnabledState = &iFalse
+)
+
 /*
 MaybeString is an internal function to be used by request methods in individual
 resource packages.
