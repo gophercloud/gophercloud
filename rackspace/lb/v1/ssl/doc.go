@@ -1,5 +1,5 @@
 /*
-Package throttle provides information and interaction with the SSL Termination
+Package ssl provides information and interaction with the SSL Termination
 feature of the Rackspace Cloud Load Balancer service.
 
 You may only enable and configure SSL termination on load balancers with
@@ -19,4 +19,4 @@ to the CA root.
 If used for HTTP to HTTPS redirection, the LoadBalancer's securePort attribute
 must be set to 443 and its secureTrafficOnly attribute must be true.
 */
-package throttle
+package ssl

@@ -1,8 +1,10 @@
-package throttle
+package ssl
 
 import (
 	"github.com/mitchellh/mapstructure"
+
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // SSLTermConfig represents the SSL configuration for a particular load balancer.
@@ -65,4 +67,65 @@ func (r GetResult) Extract() (*SSLTermConfig, error) {
 	err := mapstructure.Decode(r.Body, &response)
 
 	return &response.SSL, err
+}
+
+type CertificateMapping struct {
+	ID             int
+	HostName       string
+	Certificate    string
+	IntCertificate string `mapstructure:"intermediateCertificate"`
+}
+
+type CertMappingPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty checks whether a CertMappingPage struct is empty.
+func (p CertMappingPage) IsEmpty() (bool, error) {
+	is, err := ExtractCertMappings(p)
+	if err != nil {
+		return true, nil
+	}
+	return len(is) == 0, nil
+}
+
+// ExtractCertMappings accepts a Page struct, specifically a CertMappingPage struct, and extracts
+// the elements into a slice of CertMapping structs. In other words, a generic
+// collection is mapped into a relevant slice.
+func ExtractCertMappings(page pagination.Page) ([]CertificateMapping, error) {
+	type NestedMap struct {
+		CertMap CertificateMapping `mapstructure:"certificateMapping" json:"certificateMapping"`
+	}
+	var resp struct {
+		CertMappings []NestedMap `mapstructure:"certificateMappings" json:"certificateMappings"`
+	}
+
+	err := mapstructure.Decode(page.(CertMappingPage).Body, &resp)
+
+	slice := []CertificateMapping{}
+
+	for _, cert := range resp.CertMappings {
+		slice = append(slice, cert.CertMap)
+	}
+
+	return slice, err
+}
+
+type CreateCertMappingResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a result as a CertMapping struct, if possible.
+func (r CreateCertMappingResult) Extract() (*CertificateMapping, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		CertMapping CertificateMapping `mapstructure:"certificateMapping"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.CertMapping, err
 }

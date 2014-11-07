@@ -1,4 +1,4 @@
-package throttle
+package ssl
 
 import (
 	"strconv"
@@ -7,10 +7,15 @@ import (
 )
 
 const (
-	path    = "loadbalancers"
-	sslPath = "ssltermination"
+	path     = "loadbalancers"
+	sslPath  = "ssltermination"
+	certPath = "certificatemappings"
 )
 
 func rootURL(c *gophercloud.ServiceClient, id int) string {
 	return c.ServiceURL(path, strconv.Itoa(id), sslPath)
+}
+
+func certURL(c *gophercloud.ServiceClient, id int) string {
+	return c.ServiceURL(path, strconv.Itoa(id), sslPath, certPath)
 }

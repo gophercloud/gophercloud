@@ -1,4 +1,4 @@
-package throttle
+package ssl
 
 import (
 	"errors"
@@ -6,6 +6,7 @@ import (
 	"github.com/racker/perigee"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -36,6 +37,12 @@ type UpdateOpts struct {
 	SecureTrafficOnly *bool
 }
 
+var (
+	errPrivateKey     = errors.New("PrivateKey is a required field")
+	errCertificate    = errors.New("Certificate is a required field")
+	errIntCertificate = errors.New("IntCertificate is a required field")
+)
+
 // ToSSLUpdateMap casts a CreateOpts struct to a map.
 func (opts UpdateOpts) ToSSLUpdateMap() (map[string]interface{}, error) {
 	ssl := make(map[string]interface{})
@@ -44,19 +51,19 @@ func (opts UpdateOpts) ToSSLUpdateMap() (map[string]interface{}, error) {
 		return ssl, errors.New("SecurePort needs to be an integer greater than 0")
 	}
 	if opts.PrivateKey == "" {
-		return ssl, errors.New("PrivateKey is a required field")
+		return ssl, errPrivateKey
 	}
 	if opts.Certificate == "" {
-		return ssl, errors.New("Certificate is a required field")
+		return ssl, errCertificate
 	}
 	if opts.IntCertificate == "" {
-		return ssl, errors.New("IntCertificate is a required field")
+		return ssl, errIntCertificate
 	}
 
 	ssl["securePort"] = opts.SecurePort
 	ssl["privateKey"] = opts.PrivateKey
 	ssl["certificate"] = opts.Certificate
-	ssl["intermediatecertificate"] = opts.IntCertificate
+	ssl["intermediateCertificate"] = opts.IntCertificate
 
 	if opts.Enabled != nil {
 		ssl["enabled"] = &opts.Enabled
@@ -111,6 +118,67 @@ func Delete(c *gophercloud.ServiceClient, lbID int) DeleteResult {
 
 	_, res.Err = perigee.Request("DELETE", rootURL(c, lbID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
+
+func ListCertMappings(c *gophercloud.ServiceClient, lbID int) pagination.Pager {
+	url := certURL(c, lbID)
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return CertMappingPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+type CertMappingCreateOptsBuilder interface {
+	ToCertMappingCreateMap() (map[string]interface{}, error)
+}
+
+type CertMappingCreateOpts struct {
+	HostName       string
+	PrivateKey     string
+	Certificate    string
+	IntCertificate string
+}
+
+func (opts CertMappingCreateOpts) ToCertMappingCreateMap() (map[string]interface{}, error) {
+	cm := make(map[string]interface{})
+
+	if opts.HostName == "" {
+		return cm, errors.New("HostName is a required option")
+	}
+	if opts.PrivateKey == "" {
+		return cm, errPrivateKey
+	}
+	if opts.Certificate == "" {
+		return cm, errCertificate
+	}
+
+	cm["hostName"] = opts.HostName
+	cm["privateKey"] = opts.PrivateKey
+	cm["certificate"] = opts.Certificate
+
+	if opts.IntCertificate != "" {
+		cm["intermediateCertificate"] = opts.IntCertificate
+	}
+
+	return map[string]interface{}{"certificateMapping": cm}, nil
+}
+
+func AddCertMapping(c *gophercloud.ServiceClient, lbID int, opts CertMappingCreateOptsBuilder) CreateCertMappingResult {
+	var res CreateCertMappingResult
+
+	reqBody, err := opts.ToCertMappingCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
+	_, res.Err = perigee.Request("POST", certURL(c, lbID), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		Results:     &res.Body,
 		OkCodes:     []int{200},
 	})
 
