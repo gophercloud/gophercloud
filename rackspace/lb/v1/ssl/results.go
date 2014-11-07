@@ -69,20 +69,20 @@ func (r GetResult) Extract() (*SSLTermConfig, error) {
 	return &response.SSL, err
 }
 
-type CertificateMapping struct {
+type Certificate struct {
 	ID             int
 	HostName       string
 	Certificate    string
 	IntCertificate string `mapstructure:"intermediateCertificate"`
 }
 
-type CertMappingPage struct {
+type CertPage struct {
 	pagination.LinkedPageBase
 }
 
 // IsEmpty checks whether a CertMappingPage struct is empty.
-func (p CertMappingPage) IsEmpty() (bool, error) {
-	is, err := ExtractCertMappings(p)
+func (p CertPage) IsEmpty() (bool, error) {
+	is, err := ExtractCerts(p)
 	if err != nil {
 		return true, nil
 	}
@@ -92,20 +92,19 @@ func (p CertMappingPage) IsEmpty() (bool, error) {
 // ExtractCertMappings accepts a Page struct, specifically a CertMappingPage struct, and extracts
 // the elements into a slice of CertMapping structs. In other words, a generic
 // collection is mapped into a relevant slice.
-func ExtractCertMappings(page pagination.Page) ([]CertificateMapping, error) {
+func ExtractCerts(page pagination.Page) ([]Certificate, error) {
 	type NestedMap struct {
-		CertMap CertificateMapping `mapstructure:"certificateMapping" json:"certificateMapping"`
+		Cert Certificate `mapstructure:"certificateMapping" json:"certificateMapping"`
 	}
 	var resp struct {
-		CertMappings []NestedMap `mapstructure:"certificateMappings" json:"certificateMappings"`
+		Certs []NestedMap `mapstructure:"certificateMappings" json:"certificateMappings"`
 	}
 
-	err := mapstructure.Decode(page.(CertMappingPage).Body, &resp)
+	err := mapstructure.Decode(page.(CertPage).Body, &resp)
 
-	slice := []CertificateMapping{}
-
-	for _, cert := range resp.CertMappings {
-		slice = append(slice, cert.CertMap)
+	slice := []Certificate{}
+	for _, cert := range resp.Certs {
+		slice = append(slice, cert.Cert)
 	}
 
 	return slice, err
@@ -116,28 +115,28 @@ type certResult struct {
 }
 
 // Extract interprets a result as a CertMapping struct, if possible.
-func (r certResult) Extract() (*CertificateMapping, error) {
+func (r certResult) Extract() (*Certificate, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
 
 	var response struct {
-		CertMapping CertificateMapping `mapstructure:"certificateMapping"`
+		Cert Certificate `mapstructure:"certificateMapping"`
 	}
 
 	err := mapstructure.Decode(r.Body, &response)
 
-	return &response.CertMapping, err
+	return &response.Cert, err
 }
 
-type CreateCertMappingResult struct {
+type AddCertResult struct {
 	certResult
 }
 
-type GetCertMappingResult struct {
+type GetCertResult struct {
 	certResult
 }
 
-type UpdateCertMappingResult struct {
+type UpdateCertResult struct {
 	certResult
 }

@@ -124,25 +124,25 @@ func Delete(c *gophercloud.ServiceClient, lbID int) DeleteResult {
 	return res
 }
 
-func ListCertMappings(c *gophercloud.ServiceClient, lbID int) pagination.Pager {
+func ListCerts(c *gophercloud.ServiceClient, lbID int) pagination.Pager {
 	url := certURL(c, lbID)
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
-		return CertMappingPage{pagination.LinkedPageBase{PageResult: r}}
+		return CertPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
-type CertMappingCreateOptsBuilder interface {
-	ToCertMappingCreateMap() (map[string]interface{}, error)
+type AddCertOptsBuilder interface {
+	ToCertAddMap() (map[string]interface{}, error)
 }
 
-type CertMappingCreateOpts struct {
+type AddCertOpts struct {
 	HostName       string
 	PrivateKey     string
 	Certificate    string
 	IntCertificate string
 }
 
-func (opts CertMappingCreateOpts) ToCertMappingCreateMap() (map[string]interface{}, error) {
+func (opts AddCertOpts) ToCertAddMap() (map[string]interface{}, error) {
 	cm := make(map[string]interface{})
 
 	if opts.HostName == "" {
@@ -166,10 +166,10 @@ func (opts CertMappingCreateOpts) ToCertMappingCreateMap() (map[string]interface
 	return map[string]interface{}{"certificateMapping": cm}, nil
 }
 
-func AddCertMapping(c *gophercloud.ServiceClient, lbID int, opts CertMappingCreateOptsBuilder) CreateCertMappingResult {
-	var res CreateCertMappingResult
+func AddCert(c *gophercloud.ServiceClient, lbID int, opts AddCertOptsBuilder) AddCertResult {
+	var res AddCertResult
 
-	reqBody, err := opts.ToCertMappingCreateMap()
+	reqBody, err := opts.ToCertAddMap()
 	if err != nil {
 		res.Err = err
 		return res
@@ -185,8 +185,8 @@ func AddCertMapping(c *gophercloud.ServiceClient, lbID int, opts CertMappingCrea
 	return res
 }
 
-func GetCertMapping(c *gophercloud.ServiceClient, lbID, certID int) GetCertMappingResult {
-	var res GetCertMappingResult
+func GetCert(c *gophercloud.ServiceClient, lbID, certID int) GetCertResult {
+	var res GetCertResult
 
 	_, res.Err = perigee.Request("GET", certResourceURL(c, lbID, certID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
@@ -197,18 +197,18 @@ func GetCertMapping(c *gophercloud.ServiceClient, lbID, certID int) GetCertMappi
 	return res
 }
 
-type CertMappingUpdateOptsBuilder interface {
-	ToCertMappingUpdateMap() (map[string]interface{}, error)
+type UpdateCertOptsBuilder interface {
+	ToCertUpdateMap() (map[string]interface{}, error)
 }
 
-type CertMappingUpdateOpts struct {
+type UpdateCertOpts struct {
 	HostName       string
 	PrivateKey     string
 	Certificate    string
 	IntCertificate string
 }
 
-func (opts CertMappingUpdateOpts) ToCertMappingUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateCertOpts) ToCertUpdateMap() (map[string]interface{}, error) {
 	cm := make(map[string]interface{})
 
 	if opts.HostName != "" {
@@ -227,10 +227,10 @@ func (opts CertMappingUpdateOpts) ToCertMappingUpdateMap() (map[string]interface
 	return map[string]interface{}{"certificateMapping": cm}, nil
 }
 
-func UpdateCertMapping(c *gophercloud.ServiceClient, lbID, certID int, opts CertMappingUpdateOptsBuilder) UpdateCertMappingResult {
-	var res UpdateCertMappingResult
+func UpdateCert(c *gophercloud.ServiceClient, lbID, certID int, opts UpdateCertOptsBuilder) UpdateCertResult {
+	var res UpdateCertResult
 
-	reqBody, err := opts.ToCertMappingUpdateMap()
+	reqBody, err := opts.ToCertUpdateMap()
 	if err != nil {
 		res.Err = err
 		return res

@@ -74,7 +74,7 @@ func mockDeleteResponse(t *testing.T, lbID int) {
 	})
 }
 
-func mockListCertMappingsResponse(t *testing.T, lbID int) {
+func mockListCertsResponse(t *testing.T, lbID int) {
 	th.Mux.HandleFunc(_certURL(lbID, 0), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -103,7 +103,7 @@ func mockListCertMappingsResponse(t *testing.T, lbID int) {
 	})
 }
 
-func mockAddCertMappingResponse(t *testing.T, lbID int) {
+func mockAddCertResponse(t *testing.T, lbID int) {
 	th.Mux.HandleFunc(_certURL(lbID, 0), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -134,7 +134,7 @@ func mockAddCertMappingResponse(t *testing.T, lbID int) {
 	})
 }
 
-func mockGetCertMappingResponse(t *testing.T, lbID, certID int) {
+func mockGetCertResponse(t *testing.T, lbID, certID int) {
 	th.Mux.HandleFunc(_certURL(lbID, certID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -155,7 +155,7 @@ func mockGetCertMappingResponse(t *testing.T, lbID, certID int) {
 	})
 }
 
-func mockUpdateCertMappingResponse(t *testing.T, lbID, certID int) {
+func mockUpdateCertResponse(t *testing.T, lbID, certID int) {
 	th.Mux.HandleFunc(_certURL(lbID, certID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
