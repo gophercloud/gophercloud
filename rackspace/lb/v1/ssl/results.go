@@ -111,12 +111,12 @@ func ExtractCertMappings(page pagination.Page) ([]CertificateMapping, error) {
 	return slice, err
 }
 
-type CreateCertMappingResult struct {
+type certResult struct {
 	gophercloud.Result
 }
 
 // Extract interprets a result as a CertMapping struct, if possible.
-func (r CreateCertMappingResult) Extract() (*CertificateMapping, error) {
+func (r certResult) Extract() (*CertificateMapping, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
@@ -128,4 +128,16 @@ func (r CreateCertMappingResult) Extract() (*CertificateMapping, error) {
 	err := mapstructure.Decode(r.Body, &response)
 
 	return &response.CertMapping, err
+}
+
+type CreateCertMappingResult struct {
+	certResult
+}
+
+type GetCertMappingResult struct {
+	certResult
+}
+
+type UpdateCertMappingResult struct {
+	certResult
 }
