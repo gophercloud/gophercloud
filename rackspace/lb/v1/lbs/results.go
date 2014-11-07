@@ -5,8 +5,10 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/acl"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/sessions"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/throttle"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/vips"
 )
 
@@ -124,10 +126,15 @@ type LoadBalancer struct {
 
 	// ConnectionThrottle specifies a limit on the number of connections per IP
 	// address to help mitigate malicious or abusive traffic to your applications.
-	ConnectionThrottle ConnectionThrottle
+	ConnectionThrottle throttle.ConnectionThrottle
 
 	// TODO
 	SourceAddrs SourceAddrs `mapstructure:"sourceAddresses"`
+
+	// Represents the access rules for this particular load balancer. IP addresses
+	// or subnet ranges, depending on their type (ALLOW or DENY), can be permitted
+	// or blocked.
+	AccessList acl.AccessList
 }
 
 // SourceAddrs - temp
@@ -136,14 +143,6 @@ type SourceAddrs struct {
 	IPv4Private string `json:"ipv4Servicenet" mapstructure:"ipv4Servicenet"`
 	IPv6Public  string `json:"ipv6Public" mapstructure:"ipv6Public"`
 	IPv6Private string `json:"ipv6Servicenet" mapstructure:"ipv6Servicenet"`
-}
-
-// ConnectionThrottle - temp
-type ConnectionThrottle struct {
-	MinConns     int `json:"minConnections" mapstructure:"minConnections"`
-	MaxConns     int `json:"maxConnections" mapstructure:"maxConnections"`
-	MaxConnRate  int `json:"maxConnectionRate" mapstructure:"maxConnectionRate"`
-	RateInterval int `json:"rateInterval" mapstructure:"rateInterval"`
 }
 
 // ConnectionLogging - temp

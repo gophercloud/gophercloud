@@ -169,12 +169,6 @@ func Get(c *gophercloud.ServiceClient, lbID, nodeID int) GetResult {
 	return res
 }
 
-// IntToPointer is a function for converting integers into integer pointers.
-// This is useful when updating the weight of a node.
-func IntToPointer(i int) *int {
-	return &i
-}
-
 // UpdateOptsBuilder represents a type that can be converted into a JSON-like
 // map structure.
 type UpdateOptsBuilder interface {

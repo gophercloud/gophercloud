@@ -20,3 +20,9 @@ func IDSliceToQueryString(name string, ids []int) string {
 	}
 	return str
 }
+
+// WithinRange returns TRUE if an integer falls within a defined range, and
+// FALSE if not.
+func WithinRange(val, min, max int) bool {
+	return val > min && val < max
+}

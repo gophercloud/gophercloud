@@ -209,10 +209,7 @@ func mockGetLBResponse(t *testing.T, id int) {
       "persistenceType": "HTTP_COOKIE"
     },
     "connectionThrottle": {
-      "minConnections": 10,
-      "maxConnections": 100,
-      "maxConnectionRate": 50,
-      "rateInterval": 60
+      "maxConnections": 100
     },
     "cluster": {
       "name": "c1.dfw1"

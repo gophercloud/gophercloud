@@ -1,6 +1,6 @@
 /*
-Package nodes provides information and interaction with the Session Persistence
-feature of the Rackspace Cloud Load Balancer service.
+Package sessions provides information and interaction with the Session
+Persistence feature of the Rackspace Cloud Load Balancer service.
 
 Session persistence is a feature of the load balancing service that forces
 multiple requests from clients (of the same protocol) to be directed to the

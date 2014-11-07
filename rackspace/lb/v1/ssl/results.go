@@ -69,6 +69,8 @@ func (r GetResult) Extract() (*SSLTermConfig, error) {
 	return &response.SSL, err
 }
 
+// Certificate represents an SSL certificate associated with an SSL-terminated
+// HTTP load balancer.
 type Certificate struct {
 	ID             int
 	HostName       string
@@ -76,6 +78,7 @@ type Certificate struct {
 	IntCertificate string `mapstructure:"intermediateCertificate"`
 }
 
+// CertPage represents a page of certificates.
 type CertPage struct {
 	pagination.LinkedPageBase
 }
@@ -89,8 +92,8 @@ func (p CertPage) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
-// ExtractCertMappings accepts a Page struct, specifically a CertMappingPage struct, and extracts
-// the elements into a slice of CertMapping structs. In other words, a generic
+// ExtractCerts accepts a Page struct, specifically a CertPage struct, and
+// extracts the elements into a slice of Cert structs. In other words, a generic
 // collection is mapped into a relevant slice.
 func ExtractCerts(page pagination.Page) ([]Certificate, error) {
 	type NestedMap struct {
@@ -129,14 +132,17 @@ func (r certResult) Extract() (*Certificate, error) {
 	return &response.Cert, err
 }
 
+// AddCertResult represents the result of an AddCert operation.
 type AddCertResult struct {
 	certResult
 }
 
+// GetCertResult represents the result of a GetCert operation.
 type GetCertResult struct {
 	certResult
 }
 
+// UpdateCertResult represents the result of an UpdateCert operation.
 type UpdateCertResult struct {
 	certResult
 }

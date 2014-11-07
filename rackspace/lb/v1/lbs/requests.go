@@ -8,9 +8,17 @@ import (
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/acl"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/monitors"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/sessions"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/throttle"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/vips"
+)
+
+var (
+	errNameRequired    = errors.New("Name is a required attribute")
+	errTimeoutExceeded = errors.New("Timeout must be less than 120")
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -55,17 +63,6 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-type enabledState *bool
-
-// Convenience vars to help setting enabled state.
-var (
-	iTrue  = true
-	iFalse = false
-
-	Enabled  enabledState = &iTrue
-	Disabled enabledState = &iFalse
-)
-
 // CreateOptsBuilder is the interface options structs have to satisfy in order
 // to be used in the main Create operation in this package. Since many
 // extensions decorate or modify the common logic, it is useful for them to
@@ -93,7 +90,7 @@ type CreateOpts struct {
 	// Half-Closed support provides the ability for one end of the connection to
 	// terminate its output, while still receiving data from the other end. Only
 	// available for TCP/TCP_CLIENT_FIRST protocols.
-	HalfClosed enabledState
+	HalfClosed gophercloud.EnabledState
 
 	// Optional - the type of virtual IPs you want associated with the load
 	// balancer.
@@ -101,7 +98,7 @@ type CreateOpts struct {
 
 	// Optional - the access list management feature allows fine-grained network
 	// access controls to be applied to the load balancer virtual IP address.
-	AccessList string
+	AccessList *acl.AccessList
 
 	// Optional - algorithm that defines how traffic should be directed between
 	// back-end nodes.
@@ -112,10 +109,10 @@ type CreateOpts struct {
 
 	// Optional - specifies a limit on the number of connections per IP address
 	// to help mitigate malicious or abusive traffic to your applications.
-	ConnThrottle *ConnectionThrottle
+	ConnThrottle *throttle.ConnectionThrottle
 
-	// Optional -
-	//HealthMonitor string
+	// Optional
+	HealthMonitor *monitors.Monitor
 
 	// Optional - arbitrary information that can be associated with each LB.
 	Metadata map[string]interface{}
@@ -138,13 +135,8 @@ type CreateOpts struct {
 	// would be redirected to https://example.com/page.html. Only available for
 	// HTTPS protocol (port=443), or HTTP protocol with a properly configured SSL
 	// termination (secureTrafficOnly=true, securePort=443).
-	HTTPSRedirect enabledState
+	HTTPSRedirect gophercloud.EnabledState
 }
-
-var (
-	errNameRequired    = errors.New("Name is a required attribute")
-	errTimeoutExceeded = errors.New("Timeout must be less than 120")
-)
 
 // ToLBCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToLBCreateMap() (map[string]interface{}, error) {
@@ -177,14 +169,12 @@ func (opts CreateOpts) ToLBCreateMap() (map[string]interface{}, error) {
 	if opts.HalfClosed != nil {
 		lb["halfClosed"] = opts.HalfClosed
 	}
-
 	if len(opts.VIPs) > 0 {
 		lb["virtualIps"] = opts.VIPs
 	}
-
-	// if opts.AccessList != "" {
-	// 	lb["accessList"] = opts.AccessList
-	// }
+	if opts.AccessList != nil {
+		lb["accessList"] = &opts.AccessList
+	}
 	if opts.Algorithm != "" {
 		lb["algorithm"] = opts.Algorithm
 	}
@@ -194,9 +184,9 @@ func (opts CreateOpts) ToLBCreateMap() (map[string]interface{}, error) {
 	if opts.ConnThrottle != nil {
 		lb["connectionThrottle"] = &opts.ConnThrottle
 	}
-	// if opts.HealthMonitor != "" {
-	// 	lb["healthMonitor"] = opts.HealthMonitor
-	// }
+	if opts.HealthMonitor != nil {
+		lb["healthMonitor"] = &opts.HealthMonitor
+	}
 	if len(opts.Metadata) != 0 {
 		lb["metadata"] = opts.Metadata
 	}
@@ -318,7 +308,7 @@ type UpdateOpts struct {
 	Protocol string
 
 	// Optional - see the HalfClosed field in CreateOpts for more information.
-	HalfClosed enabledState
+	HalfClosed gophercloud.EnabledState
 
 	// Optional - see the Algorithm field in CreateOpts for more information.
 	Algorithm string
@@ -330,7 +320,7 @@ type UpdateOpts struct {
 	Timeout int
 
 	// Optional - see the HTTPSRedirect field in CreateOpts for more information.
-	HTTPSRedirect enabledState
+	HTTPSRedirect gophercloud.EnabledState
 }
 
 // ToLBUpdateMap casts an UpdateOpts struct to a map.

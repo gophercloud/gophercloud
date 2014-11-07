@@ -9,8 +9,14 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+var (
+	errPrivateKey     = errors.New("PrivateKey is a required field")
+	errCertificate    = errors.New("Certificate is a required field")
+	errIntCertificate = errors.New("IntCertificate is a required field")
+)
+
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
-// to be used in the main Create operation in this package.
+// to be used in the main Update operation in this package.
 type UpdateOptsBuilder interface {
 	ToSSLUpdateMap() (map[string]interface{}, error)
 }
@@ -36,12 +42,6 @@ type UpdateOpts struct {
 	// Optional
 	SecureTrafficOnly *bool
 }
-
-var (
-	errPrivateKey     = errors.New("PrivateKey is a required field")
-	errCertificate    = errors.New("Certificate is a required field")
-	errIntCertificate = errors.New("IntCertificate is a required field")
-)
 
 // ToSSLUpdateMap casts a CreateOpts struct to a map.
 func (opts UpdateOpts) ToSSLUpdateMap() (map[string]interface{}, error) {
@@ -124,6 +124,8 @@ func Delete(c *gophercloud.ServiceClient, lbID int) DeleteResult {
 	return res
 }
 
+// ListCerts will list all of the certificate mappings associated with a
+// SSL-terminated HTTP load balancer.
 func ListCerts(c *gophercloud.ServiceClient, lbID int) pagination.Pager {
 	url := certURL(c, lbID)
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
@@ -131,10 +133,13 @@ func ListCerts(c *gophercloud.ServiceClient, lbID int) pagination.Pager {
 	})
 }
 
+// AddCertOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the AddCert operation in this package.
 type AddCertOptsBuilder interface {
 	ToCertAddMap() (map[string]interface{}, error)
 }
 
+// AddCertOpts represents the options used when adding a new certificate mapping.
 type AddCertOpts struct {
 	HostName       string
 	PrivateKey     string
@@ -142,6 +147,7 @@ type AddCertOpts struct {
 	IntCertificate string
 }
 
+// ToCertAddMap will cast an AddCertOpts struct to a map for JSON serialization.
 func (opts AddCertOpts) ToCertAddMap() (map[string]interface{}, error) {
 	cm := make(map[string]interface{})
 
@@ -166,6 +172,10 @@ func (opts AddCertOpts) ToCertAddMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"certificateMapping": cm}, nil
 }
 
+// AddCert will add a new SSL certificate and allow an SSL-terminated HTTP
+// load balancer to use it. This feature is useful because it allows multiple
+// certificates to be used. The maximum number of certificates that can be
+// stored per LB is 20.
 func AddCert(c *gophercloud.ServiceClient, lbID int, opts AddCertOptsBuilder) AddCertResult {
 	var res AddCertResult
 
@@ -185,6 +195,7 @@ func AddCert(c *gophercloud.ServiceClient, lbID int, opts AddCertOptsBuilder) Ad
 	return res
 }
 
+// GetCert will show the details of an existing SSL certificate.
 func GetCert(c *gophercloud.ServiceClient, lbID, certID int) GetCertResult {
 	var res GetCertResult
 
@@ -197,10 +208,13 @@ func GetCert(c *gophercloud.ServiceClient, lbID, certID int) GetCertResult {
 	return res
 }
 
+// UpdateCertOptsBuilder is the interface options structs have to satisfy in
+// order to be used in the UpdateCert operation in this package.
 type UpdateCertOptsBuilder interface {
 	ToCertUpdateMap() (map[string]interface{}, error)
 }
 
+// UpdateCertOpts represents the options needed to update a SSL certificate.
 type UpdateCertOpts struct {
 	HostName       string
 	PrivateKey     string
@@ -208,6 +222,8 @@ type UpdateCertOpts struct {
 	IntCertificate string
 }
 
+// ToCertUpdateMap will cast an UpdateCertOpts struct into a map for JSON
+// seralization.
 func (opts UpdateCertOpts) ToCertUpdateMap() (map[string]interface{}, error) {
 	cm := make(map[string]interface{})
 
@@ -227,6 +243,8 @@ func (opts UpdateCertOpts) ToCertUpdateMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"certificateMapping": cm}, nil
 }
 
+// UpdateCert is the operation responsible for updating the details of an
+// existing SSL certificate.
 func UpdateCert(c *gophercloud.ServiceClient, lbID, certID int, opts UpdateCertOptsBuilder) UpdateCertResult {
 	var res UpdateCertResult
 
@@ -246,6 +264,8 @@ func UpdateCert(c *gophercloud.ServiceClient, lbID, certID int, opts UpdateCertO
 	return res
 }
 
+// DeleteCert is the operation responsible for permanently removing a SSL
+// certificate.
 func DeleteCert(c *gophercloud.ServiceClient, lbID, certID int) DeleteResult {
 	var res DeleteResult
 

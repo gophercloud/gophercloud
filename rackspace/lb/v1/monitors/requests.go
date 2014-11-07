@@ -6,6 +6,13 @@ import (
 	"github.com/racker/perigee"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1"
+)
+
+var (
+	errAttemptLimit = errors.New("AttemptLimit field must be an int greater than 1 and less than 10")
+	errDelay        = errors.New("Delay field must be an int greater than 1 and less than 10")
+	errTimeout      = errors.New("Timeout field must be an int greater than 1 and less than 10")
 )
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -30,27 +37,17 @@ type UpdateConnectMonitorOpts struct {
 	Timeout int
 }
 
-var (
-	errAttemptLimit = errors.New("AttemptLimit field must be an int greater than 1 and less than 10")
-	errDelay        = errors.New("Delay field must be an int greater than 1 and less than 10")
-	errTimeout      = errors.New("Timeout field must be an int greater than 1 and less than 10")
-)
-
-func withinRange(val, min, max int) bool {
-	return val > min && val < max
-}
-
 // ToMonitorUpdateMap produces a map for updating CONNECT monitors.
 func (opts UpdateConnectMonitorOpts) ToMonitorUpdateMap() (map[string]interface{}, error) {
 	type m map[string]interface{}
 
-	if !withinRange(opts.AttemptLimit, 1, 10) {
+	if !v1.WithinRange(opts.AttemptLimit, 1, 10) {
 		return m{}, errAttemptLimit
 	}
-	if !withinRange(opts.Delay, 1, 3600) {
+	if !v1.WithinRange(opts.Delay, 1, 3600) {
 		return m{}, errDelay
 	}
-	if !withinRange(opts.Timeout, 1, 300) {
+	if !v1.WithinRange(opts.Timeout, 1, 300) {
 		return m{}, errTimeout
 	}
 
@@ -98,13 +95,13 @@ type UpdateHTTPMonitorOpts struct {
 func (opts UpdateHTTPMonitorOpts) ToMonitorUpdateMap() (map[string]interface{}, error) {
 	type m map[string]interface{}
 
-	if !withinRange(opts.AttemptLimit, 1, 10) {
+	if !v1.WithinRange(opts.AttemptLimit, 1, 10) {
 		return m{}, errAttemptLimit
 	}
-	if !withinRange(opts.Delay, 1, 3600) {
+	if !v1.WithinRange(opts.Delay, 1, 3600) {
 		return m{}, errDelay
 	}
-	if !withinRange(opts.Timeout, 1, 300) {
+	if !v1.WithinRange(opts.Timeout, 1, 300) {
 		return m{}, errTimeout
 	}
 	if opts.Type != HTTP && opts.Type != HTTPS {

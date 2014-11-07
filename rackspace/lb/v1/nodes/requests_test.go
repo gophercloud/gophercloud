@@ -3,6 +3,7 @@ package nodes
 import (
 	"testing"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	"github.com/rackspace/gophercloud/testhelper/client"
@@ -149,7 +150,7 @@ func TestUpdate(t *testing.T) {
 
 	opts := UpdateOpts{
 		Address:   "1.2.3.4",
-		Weight:    IntToPointer(10),
+		Weight:    gophercloud.IntToPointer(10),
 		Condition: DRAINING,
 		Type:      SECONDARY,
 	}

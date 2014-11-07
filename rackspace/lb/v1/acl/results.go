@@ -7,16 +7,27 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// AccessList represents the rules of network access to a particular load
+// balancer.
 type AccessList []NetworkItem
 
+// NetworkItem describes how an IP address or entire subnet may interact with a
+// load balancer.
 type NetworkItem struct {
+	// The IP address or subnet (CIDR) that defines the network item.
 	Address string
-	ID      int
-	Type    Type
+
+	// The numeric unique ID for this item.
+	ID int
+
+	// Either ALLOW or DENY.
+	Type Type
 }
 
+// Type defines how an item may connect to the load balancer.
 type Type string
 
+// Convenience consts.
 const (
 	ALLOW Type = "ALLOW"
 	DENY  Type = "DENY"
@@ -50,10 +61,12 @@ func ExtractAccessList(page pagination.Page) (AccessList, error) {
 	return resp.List, err
 }
 
+// CreateResult represents the result of a create operation.
 type CreateResult struct {
 	gophercloud.ErrResult
 }
 
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	gophercloud.ErrResult
 }

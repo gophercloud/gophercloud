@@ -3,9 +3,11 @@ package lbs
 import (
 	"testing"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/nodes"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/sessions"
+	"github.com/rackspace/gophercloud/rackspace/lb/v1/throttle"
 	"github.com/rackspace/gophercloud/rackspace/lb/v1/vips"
 	th "github.com/rackspace/gophercloud/testhelper"
 	"github.com/rackspace/gophercloud/testhelper/client"
@@ -188,15 +190,10 @@ func TestGet(t *testing.T) {
 			},
 		},
 		SessionPersistence: sessions.SessionPersistence{Type: "HTTP_COOKIE"},
-		ConnectionThrottle: ConnectionThrottle{
-			MinConns:     10,
-			MaxConns:     100,
-			MaxConnRate:  50,
-			RateInterval: 60,
-		},
-		Cluster: Cluster{Name: "c1.dfw1"},
-		Created: Datetime{Time: "2010-11-30T03:23:42Z"},
-		Updated: Datetime{Time: "2010-11-30T03:23:44Z"},
+		ConnectionThrottle: throttle.ConnectionThrottle{MaxConnections: 100},
+		Cluster:            Cluster{Name: "c1.dfw1"},
+		Created:            Datetime{Time: "2010-11-30T03:23:42Z"},
+		Updated:            Datetime{Time: "2010-11-30T03:23:44Z"},
 		SourceAddrs: SourceAddrs{
 			IPv4Public:  "10.12.99.28",
 			IPv4Private: "10.0.0.0",
@@ -217,11 +214,11 @@ func TestUpdate(t *testing.T) {
 	opts := UpdateOpts{
 		Name:          "a-new-loadbalancer",
 		Protocol:      "TCP",
-		HalfClosed:    Enabled,
+		HalfClosed:    gophercloud.Enabled,
 		Algorithm:     "RANDOM",
 		Port:          8080,
 		Timeout:       100,
-		HTTPSRedirect: Disabled,
+		HTTPSRedirect: gophercloud.Disabled,
 	}
 
 	err := Update(client.ServiceClient(), id1, opts).ExtractErr()

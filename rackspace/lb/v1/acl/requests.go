@@ -63,6 +63,10 @@ func (opts CreateOpts) ToAccessListCreateMap() (map[string]interface{}, error) {
 	return itemMap{"accessList": items}, nil
 }
 
+// Create is the operation responsible for adding network items to the access
+// rules for a particular load balancer. If network items already exist, the
+// new item will be appended. A single IP address or subnet range is considered
+// unique, and cannot be duplicated.
 func Create(client *gophercloud.ServiceClient, loadBalancerID int, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
@@ -81,6 +85,8 @@ func Create(client *gophercloud.ServiceClient, loadBalancerID int, opts CreateOp
 	return res
 }
 
+// BulkDelete will delete multiple network items from a load balancer's access
+// list in a single operation.
 func BulkDelete(c *gophercloud.ServiceClient, loadBalancerID int, itemIDs []int) DeleteResult {
 	var res DeleteResult
 
@@ -100,6 +106,7 @@ func BulkDelete(c *gophercloud.ServiceClient, loadBalancerID int, itemIDs []int)
 	return res
 }
 
+// Delete will remove a single network item from a load balancer's access list.
 func Delete(c *gophercloud.ServiceClient, lbID, itemID int) DeleteResult {
 	var res DeleteResult
 	_, res.Err = perigee.Request("DELETE", resourceURL(c, lbID, itemID), perigee.Options{
@@ -109,6 +116,8 @@ func Delete(c *gophercloud.ServiceClient, lbID, itemID int) DeleteResult {
 	return res
 }
 
+// DeleteAll will delete the entire contents of a load balancer's access list,
+// effectively resetting it and allowing all traffic.
 func DeleteAll(c *gophercloud.ServiceClient, lbID int) DeleteResult {
 	var res DeleteResult
 	_, res.Err = perigee.Request("DELETE", rootURL(c, lbID), perigee.Options{
