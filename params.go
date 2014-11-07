@@ -23,6 +23,12 @@ var (
 	Disabled EnabledState = &iFalse
 )
 
+// IntToPointer is a function for converting integers into integer pointers.
+// This is useful when passing in options to operations.
+func IntToPointer(i int) *int {
+	return &i
+}
+
 /*
 MaybeString is an internal function to be used by request methods in individual
 resource packages.
