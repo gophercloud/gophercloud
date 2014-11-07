@@ -10,6 +10,7 @@ const (
 	path           = "loadbalancers"
 	protocolsPath  = "protocols"
 	algorithmsPath = "algorithms"
+	logPath        = "connectionlogging"
 )
 
 func resourceURL(c *gophercloud.ServiceClient, id int) string {
@@ -26,4 +27,8 @@ func protocolsURL(c *gophercloud.ServiceClient) string {
 
 func algorithmsURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL(path, algorithmsPath)
+}
+
+func loggingURL(c *gophercloud.ServiceClient, id int) string {
+	return c.ServiceURL(path, strconv.Itoa(id), logPath)
 }

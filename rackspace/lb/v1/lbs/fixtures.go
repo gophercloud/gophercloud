@@ -378,3 +378,55 @@ func mockListAlgorithmsResponse(t *testing.T) {
 			`)
 	})
 }
+
+func mockGetLoggingResponse(t *testing.T, id int) {
+	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id)+"/connectionlogging", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "connectionLogging": {
+    "enabled": true
+  }
+}
+			`)
+	})
+}
+
+func mockEnableLoggingResponse(t *testing.T, id int) {
+	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id)+"/connectionlogging", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+   "connectionLogging":{
+      "enabled":true
+   }
+}
+		`)
+
+		w.WriteHeader(http.StatusOK)
+	})
+}
+
+func mockDisableLoggingResponse(t *testing.T, id int) {
+	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id)+"/connectionlogging", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+	"connectionLogging":{
+			"enabled":false
+	}
+}
+		`)
+
+		w.WriteHeader(http.StatusOK)
+	})
+}

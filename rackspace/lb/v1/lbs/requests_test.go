@@ -286,3 +286,14 @@ func TestListAlgorithms(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, count)
 }
+
+func TestIsLoggingEnabled(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockGetLoggingResponse(t, id1)
+
+	res, err := IsLoggingEnabled(client.ServiceClient(), id1)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, res)
+}
