@@ -334,3 +334,31 @@ func TestDeleteErrorPage(t *testing.T) {
 	err := DeleteErrorPage(client.ServiceClient(), id1).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestGetStats(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockGetStatsResponse(t, id1)
+
+	content, err := GetStats(client.ServiceClient(), id1).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &Stats{
+		ConnectTimeout:        10,
+		ConnectError:          20,
+		ConnectFailure:        30,
+		DataTimedOut:          40,
+		KeepAliveTimedOut:     50,
+		MaxConnections:        60,
+		CurrentConnections:    40,
+		SSLConnectTimeout:     10,
+		SSLConnectError:       20,
+		SSLConnectFailure:     30,
+		SSLDataTimedOut:       40,
+		SSLKeepAliveTimedOut:  50,
+		SSLMaxConnections:     60,
+		SSLCurrentConnections: 40,
+	}
+	th.AssertDeepEquals(t, expected, content)
+}

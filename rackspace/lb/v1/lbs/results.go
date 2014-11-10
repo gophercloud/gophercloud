@@ -308,3 +308,70 @@ func (r ErrorPageResult) Extract() (*ErrorPage, error) {
 
 	return &response.ErrorPage, err
 }
+
+// Stats represents all the key information about a load balancer's usage.
+type Stats struct {
+	// The number of connections closed by this load balancer because its
+	// ConnectTimeout interval was exceeded.
+	ConnectTimeout int `mapstructure:"connectTimeOut"`
+
+	// The number of transaction or protocol errors for this load balancer.
+	ConnectError int
+
+	// Number of connection failures for this load balancer.
+	ConnectFailure int
+
+	// Number of connections closed by this load balancer because its Timeout
+	// interval was exceeded.
+	DataTimedOut int
+
+	// Number of connections closed by this load balancer because the
+	// 'keepalive_timeout' interval was exceeded.
+	KeepAliveTimedOut int
+
+	// The maximum number of simultaneous TCP connections this load balancer has
+	// processed at any one time.
+	MaxConnections int `mapstructure:"maxConn"`
+
+	// Number of simultaneous connections active at the time of the request.
+	CurrentConnections int `mapstructure:"currentConn"`
+
+	// Number of SSL connections closed by this load balancer because the
+	// ConnectTimeout interval was exceeded.
+	SSLConnectTimeout int `mapstructure:"connectTimeOutSsl"`
+
+	// Number of SSL transaction or protocol erros in this load balancer.
+	SSLConnectError int `mapstructure:"connectErrorSsl"`
+
+	// Number of SSL connection failures in this load balancer.
+	SSLConnectFailure int `mapstructure:"connectFailureSsl"`
+
+	// Number of SSL connections closed by this load balancer because the
+	// Timeout interval was exceeded.
+	SSLDataTimedOut int `mapstructure:"dataTimedOutSsl"`
+
+	// Number of SSL connections closed by this load balancer because the
+	// 'keepalive_timeout' interval was exceeded.
+	SSLKeepAliveTimedOut int `mapstructure:"keepAliveTimedOutSsl"`
+
+	// Maximum number of simultaneous SSL connections this load balancer has
+	// processed a any one time.
+	SSLMaxConnections int `mapstructure:"maxConnSsl"`
+
+	// Number of simultaneous SSL connections active at the time of the request.
+	SSLCurrentConnections int `mapstructure:"currentConnSsl"`
+}
+
+type StatsResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any commonResult as a Stats struct, if possible.
+func (r StatsResult) Extract() (*Stats, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+	res := &Stats{}
+	err := mapstructure.Decode(r.Body, res)
+	return res, err
+}

@@ -481,3 +481,32 @@ func mockDeleteErrorPageResponse(t *testing.T, id int) {
 		w.WriteHeader(http.StatusOK)
 	})
 }
+
+func mockGetStatsResponse(t *testing.T, id int) {
+	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id)+"/stats", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "connectTimeOut": 10,
+  "connectError": 20,
+  "connectFailure": 30,
+  "dataTimedOut": 40,
+  "keepAliveTimedOut": 50,
+  "maxConn": 60,
+  "currentConn": 40,
+  "connectTimeOutSsl": 10,
+  "connectErrorSsl": 20,
+  "connectFailureSsl": 30,
+  "dataTimedOutSsl": 40,
+  "keepAliveTimedOutSsl": 50,
+  "maxConnSsl": 60,
+  "currentConnSsl": 40
+}
+			`)
+	})
+}

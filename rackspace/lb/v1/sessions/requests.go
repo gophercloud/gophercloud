@@ -48,7 +48,7 @@ func Enable(c *gophercloud.ServiceClient, lbID int, opts CreateOptsBuilder) Enab
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res
@@ -75,7 +75,7 @@ func Disable(c *gophercloud.ServiceClient, lbID int) DisableResult {
 
 	_, res.Err = perigee.Request("DELETE", rootURL(c, lbID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res

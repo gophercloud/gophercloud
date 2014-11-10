@@ -453,6 +453,7 @@ func DisableLogging(client *gophercloud.ServiceClient, id int) gophercloud.ErrRe
 	return res
 }
 
+// GetErrorPage will retrieve the current error page for the load balancer.
 func GetErrorPage(client *gophercloud.ServiceClient, id int) ErrorPageResult {
 	var res ErrorPageResult
 
@@ -465,6 +466,8 @@ func GetErrorPage(client *gophercloud.ServiceClient, id int) ErrorPageResult {
 	return res
 }
 
+// SetErrorPage will set the HTML of the load balancer's error page to a
+// specific value.
 func SetErrorPage(client *gophercloud.ServiceClient, id int, html string) ErrorPageResult {
 	var res ErrorPageResult
 
@@ -481,11 +484,25 @@ func SetErrorPage(client *gophercloud.ServiceClient, id int, html string) ErrorP
 	return res
 }
 
+// DeleteErrorPage will delete the current error page for the load balancer.
 func DeleteErrorPage(client *gophercloud.ServiceClient, id int) gophercloud.ErrResult {
 	var res gophercloud.ErrResult
 
 	_, res.Err = perigee.Request("DELETE", errorPageURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
+
+// GetStats will retrieve detailed stats related to the load balancer's usage.
+func GetStats(client *gophercloud.ServiceClient, id int) StatsResult {
+	var res StatsResult
+
+	_, res.Err = perigee.Request("GET", statsURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		Results:     &res.Body,
 		OkCodes:     []int{200},
 	})
 
