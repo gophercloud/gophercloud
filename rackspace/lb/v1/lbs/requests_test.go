@@ -297,3 +297,40 @@ func TestIsLoggingEnabled(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, res)
 }
+
+func TestGetErrorPage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockGetErrorPageResponse(t, id1)
+
+	content, err := GetErrorPage(client.ServiceClient(), id1).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &ErrorPage{Content: "<html>DEFAULT ERROR PAGE</html>"}
+	th.AssertDeepEquals(t, expected, content)
+}
+
+func TestSetErrorPage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockSetErrorPageResponse(t, id1)
+
+	html := "<html>New error page</html>"
+	content, err := SetErrorPage(client.ServiceClient(), id1, html).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &ErrorPage{Content: html}
+	th.AssertDeepEquals(t, expected, content)
+}
+
+func TestDeleteErrorPage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDeleteErrorPageResponse(t, id1)
+
+	err := DeleteErrorPage(client.ServiceClient(), id1).ExtractErr()
+	th.AssertNoErr(t, err)
+}

@@ -273,3 +273,38 @@ func ExtractAlgorithms(page pagination.Page) ([]Algorithm, error) {
 	err := mapstructure.Decode(page.(AlgorithmPage).Body, &resp)
 	return resp.Algorithms, err
 }
+
+// ErrorPage represents the HTML file that is shown to an end user who is
+// attempting to access a load balancer node that is offline/unavailable.
+//
+// During provisioning, every load balancer is configured with a default error
+// page that gets displayed when traffic is requested for an offline node.
+//
+// You can add a single custom error page with an HTTP-based protocol to a load
+// balancer. Page updates override existing content. If a custom error page is
+// deleted, or the load balancer is changed to a non-HTTP protocol, the default
+// error page is restored.
+type ErrorPage struct {
+	Content string
+}
+
+// ErrorPageResult represents the result of an error page operation -
+// specifically getting or creating one.
+type ErrorPageResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any commonResult as an ErrorPage, if possible.
+func (r ErrorPageResult) Extract() (*ErrorPage, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		ErrorPage ErrorPage `mapstructure:"errorpage"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.ErrorPage, err
+}

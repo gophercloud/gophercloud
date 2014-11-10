@@ -452,3 +452,42 @@ func DisableLogging(client *gophercloud.ServiceClient, id int) gophercloud.ErrRe
 
 	return res
 }
+
+func GetErrorPage(client *gophercloud.ServiceClient, id int) ErrorPageResult {
+	var res ErrorPageResult
+
+	_, res.Err = perigee.Request("GET", errorPageURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
+
+func SetErrorPage(client *gophercloud.ServiceClient, id int, html string) ErrorPageResult {
+	var res ErrorPageResult
+
+	type stringMap map[string]string
+	reqBody := map[string]stringMap{"errorpage": stringMap{"content": html}}
+
+	_, res.Err = perigee.Request("PUT", errorPageURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		Results:     &res.Body,
+		ReqBody:     &reqBody,
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
+
+func DeleteErrorPage(client *gophercloud.ServiceClient, id int) gophercloud.ErrResult {
+	var res gophercloud.ErrResult
+
+	_, res.Err = perigee.Request("DELETE", errorPageURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
