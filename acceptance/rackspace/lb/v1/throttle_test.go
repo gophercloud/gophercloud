@@ -11,7 +11,6 @@ import (
 )
 
 func TestThrottle(t *testing.T) {
-	return
 	client := setup(t)
 
 	ids := createLB(t, client, 1)
@@ -35,7 +34,13 @@ func getThrottleConfig(t *testing.T, client *gophercloud.ServiceClient, lbID int
 }
 
 func createThrottleConfig(t *testing.T, client *gophercloud.ServiceClient, lbID int) {
-	opts := throttle.CreateOpts{MaxConnections: 200}
+	opts := throttle.CreateOpts{
+		MaxConnections:    200,
+		MaxConnectionRate: 100,
+		MinConnections:    0,
+		RateInterval:      10,
+	}
+
 	err := throttle.Create(client, lbID, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Enable throttling for %d", lbID)

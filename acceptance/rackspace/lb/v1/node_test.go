@@ -17,7 +17,6 @@ import (
 )
 
 func TestNodes(t *testing.T) {
-	return
 	client := setup(t)
 
 	serverIP := findServer(t)
@@ -35,6 +34,9 @@ func TestNodes(t *testing.T) {
 	listEvents(t, client, lbID)
 
 	deleteNode(t, client, lbID, nodeID)
+
+	waitForLB(client, lbID, lbs.ACTIVE)
+	deleteLB(t, client, lbID)
 }
 
 func findServer(t *testing.T) string {

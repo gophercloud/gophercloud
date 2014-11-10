@@ -433,7 +433,7 @@ func EnableLogging(client *gophercloud.ServiceClient, id int) gophercloud.ErrRes
 	_, res.Err = perigee.Request("PUT", loggingURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res
@@ -447,7 +447,7 @@ func DisableLogging(client *gophercloud.ServiceClient, id int) gophercloud.ErrRe
 	_, res.Err = perigee.Request("PUT", loggingURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res
@@ -509,6 +509,14 @@ func GetStats(client *gophercloud.ServiceClient, id int) StatsResult {
 	return res
 }
 
+// IsContentCached will check to see whether the specified load balancer caches
+// content. When content caching is enabled, recently-accessed files are stored
+// on the load balancer for easy retrieval by web clients. Content caching
+// improves the performance of high traffic web sites by temporarily storing
+// data that was recently accessed. While it's cached, requests for that data
+// are served by the load balancer, which in turn reduces load off the back end
+// nodes. The result is improved response times for those requests and less
+// load on the web server.
 func IsContentCached(client *gophercloud.ServiceClient, id int) (bool, error) {
 	var body interface{}
 
@@ -537,6 +545,7 @@ func toCachingMap(state bool) map[string]map[string]bool {
 	}
 }
 
+// EnableCaching will enable content-caching for the specified load balancer.
 func EnableCaching(client *gophercloud.ServiceClient, id int) gophercloud.ErrResult {
 	reqBody := toCachingMap(true)
 	var res gophercloud.ErrResult
@@ -544,12 +553,13 @@ func EnableCaching(client *gophercloud.ServiceClient, id int) gophercloud.ErrRes
 	_, res.Err = perigee.Request("PUT", cacheURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res
 }
 
+// DisableCaching will disable content-caching for the specified load balancer.
 func DisableCaching(client *gophercloud.ServiceClient, id int) gophercloud.ErrResult {
 	reqBody := toCachingMap(false)
 	var res gophercloud.ErrResult
@@ -557,7 +567,7 @@ func DisableCaching(client *gophercloud.ServiceClient, id int) gophercloud.ErrRe
 	_, res.Err = perigee.Request("PUT", cacheURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res

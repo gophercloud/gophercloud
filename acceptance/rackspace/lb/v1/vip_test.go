@@ -13,7 +13,6 @@ import (
 )
 
 func TestVIPs(t *testing.T) {
-	return
 	client := setup(t)
 
 	ids := createLB(t, client, 1)
@@ -26,6 +25,9 @@ func TestVIPs(t *testing.T) {
 	deleteVIP(t, client, lbID, vipIDs[0])
 
 	bulkDeleteVIPs(t, client, lbID, vipIDs[1:])
+
+	waitForLB(client, lbID, lbs.ACTIVE)
+	deleteLB(t, client, lbID)
 }
 
 func listVIPs(t *testing.T, client *gophercloud.ServiceClient, lbID int) {

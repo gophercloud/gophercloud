@@ -171,6 +171,8 @@ func checkLBLogging(t *testing.T, client *gophercloud.ServiceClient, id int) {
 	th.AssertNoErr(t, err)
 	t.Logf("LB %d log enabled? %s", id, strconv.FormatBool(res))
 
+	waitForLB(client, id, lbs.ACTIVE)
+
 	err = lbs.DisableLogging(client, id).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Disabled logging for LB %d", id)
@@ -195,4 +197,18 @@ func getStats(t *testing.T, client *gophercloud.ServiceClient, id int) {
 	th.AssertNoErr(t, err)
 
 	t.Logf("Stats for LB %d: %#v", id, stats)
+}
+
+func checkCaching(t *testing.T, client *gophercloud.ServiceClient, id int) {
+	err := lbs.EnableCaching(client, id).ExtractErr()
+	th.AssertNoErr(t, err)
+	t.Logf("Enabled caching for LB %d", id)
+
+	res, err := lbs.IsContentCached(client, id)
+	th.AssertNoErr(t, err)
+	t.Logf("Is caching enabled for LB? %s", strconv.FormatBool(res))
+
+	err = lbs.DisableCaching(client, id).ExtractErr()
+	th.AssertNoErr(t, err)
+	t.Logf("Disabled caching for LB %d", id)
 }

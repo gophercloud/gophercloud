@@ -19,6 +19,15 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	// Required - the maximum amount of connections per IP address to allow per LB.
 	MaxConnections int
+
+	// Deprecated as of v1.22.
+	MaxConnectionRate int
+
+	// Deprecated as of v1.22.
+	MinConnections int
+
+	// Deprecated as of v1.22.
+	RateInterval int
 }
 
 // ToCTCreateMap casts a CreateOpts struct to a map.
@@ -30,6 +39,10 @@ func (opts CreateOpts) ToCTCreateMap() (map[string]interface{}, error) {
 	}
 
 	ct["maxConnections"] = opts.MaxConnections
+	ct["maxConnectionRate"] = opts.MaxConnectionRate
+	ct["minConnections"] = opts.MinConnections
+	ct["rateInterval"] = opts.RateInterval
+
 	return map[string]interface{}{"connectionThrottle": ct}, nil
 }
 
@@ -48,7 +61,7 @@ func Create(c *gophercloud.ServiceClient, lbID int, opts CreateOptsBuilder) Crea
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res
@@ -75,7 +88,7 @@ func Delete(c *gophercloud.ServiceClient, lbID int) DeleteResult {
 
 	_, res.Err = perigee.Request("DELETE", rootURL(c, lbID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return res

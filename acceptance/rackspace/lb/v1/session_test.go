@@ -11,7 +11,6 @@ import (
 )
 
 func TestSession(t *testing.T) {
-	return
 	client := setup(t)
 
 	ids := createLB(t, client, 1)

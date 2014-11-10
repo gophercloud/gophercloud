@@ -12,7 +12,6 @@ import (
 )
 
 func TestMonitors(t *testing.T) {
-	return
 	client := setup(t)
 
 	ids := createLB(t, client, 1)
