@@ -128,11 +128,11 @@ func updateLB(t *testing.T, client *gophercloud.ServiceClient, id int) {
 	opts := lbs.UpdateOpts{
 		Name:          tools.RandomString("new_", 5),
 		Protocol:      "TCP",
-		HalfClosed:    lbs.Enabled,
+		HalfClosed:    gophercloud.Enabled,
 		Algorithm:     "RANDOM",
 		Port:          8080,
 		Timeout:       100,
-		HTTPSRedirect: lbs.Disabled,
+		HTTPSRedirect: gophercloud.Disabled,
 	}
 
 	err := lbs.Update(client, id, opts).ExtractErr()

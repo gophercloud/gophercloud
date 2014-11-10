@@ -140,7 +140,7 @@ func getNode(t *testing.T, client *gophercloud.ServiceClient, lbID int, nodeID i
 
 func updateNode(t *testing.T, client *gophercloud.ServiceClient, lbID int, nodeID int) {
 	opts := nodes.UpdateOpts{
-		Weight:    nodes.IntToPointer(10),
+		Weight:    gophercloud.IntToPointer(10),
 		Condition: nodes.DRAINING,
 		Type:      nodes.SECONDARY,
 	}
