@@ -3,6 +3,7 @@
 package v1
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
@@ -14,10 +15,10 @@ import (
 )
 
 func TestLBs(t *testing.T) {
-	return
 	client := setup(t)
 
 	ids := createLB(t, client, 3)
+	id := ids[0]
 
 	listLBProtocols(t, client)
 
@@ -25,11 +26,17 @@ func TestLBs(t *testing.T) {
 
 	listLBs(t, client)
 
-	getLB(t, client, ids[0])
+	getLB(t, client, id)
 
-	updateLB(t, client, ids[0])
+	checkLBLogging(t, client, id)
 
-	deleteLB(t, client, ids[0])
+	checkErrorPage(t, client, id)
+
+	getStats(t, client, id)
+
+	updateLB(t, client, id)
+
+	deleteLB(t, client, id)
 
 	batchDeleteLBs(t, client, ids[1:])
 }
@@ -146,11 +153,46 @@ func updateLB(t *testing.T, client *gophercloud.ServiceClient, id int) {
 func deleteLB(t *testing.T, client *gophercloud.ServiceClient, id int) {
 	err := lbs.Delete(client, id).ExtractErr()
 	th.AssertNoErr(t, err)
-	t.Logf("Deleted %d", id)
+	t.Logf("Deleted LB %d", id)
 }
 
 func batchDeleteLBs(t *testing.T, client *gophercloud.ServiceClient, ids []int) {
 	err := lbs.BulkDelete(client, ids).ExtractErr()
 	th.AssertNoErr(t, err)
-	t.Logf("Deleted %s", intsToStr(ids))
+	t.Logf("Deleted LB %s", intsToStr(ids))
+}
+
+func checkLBLogging(t *testing.T, client *gophercloud.ServiceClient, id int) {
+	err := lbs.EnableLogging(client, id).ExtractErr()
+	th.AssertNoErr(t, err)
+	t.Logf("Enabled logging for LB %d", id)
+
+	res, err := lbs.IsLoggingEnabled(client, id)
+	th.AssertNoErr(t, err)
+	t.Logf("LB %d log enabled? %s", id, strconv.FormatBool(res))
+
+	err = lbs.DisableLogging(client, id).ExtractErr()
+	th.AssertNoErr(t, err)
+	t.Logf("Disabled logging for LB %d", id)
+}
+
+func checkErrorPage(t *testing.T, client *gophercloud.ServiceClient, id int) {
+	content, err := lbs.SetErrorPage(client, id, "<html>New content!</html>").Extract()
+	t.Logf("Set error page for LB %d", id)
+
+	content, err = lbs.GetErrorPage(client, id).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Error page for LB %d: %s", id, content)
+
+	err = lbs.DeleteErrorPage(client, id).ExtractErr()
+	t.Logf("Deleted error page for LB %d", id)
+}
+
+func getStats(t *testing.T, client *gophercloud.ServiceClient, id int) {
+	waitForLB(client, id, lbs.ACTIVE)
+
+	stats, err := lbs.GetStats(client, id).Extract()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Stats for LB %d: %#v", id, stats)
 }
