@@ -13,6 +13,7 @@ const (
 	logPath        = "connectionlogging"
 	epPath         = "errorpage"
 	stPath         = "stats"
+	cachePath      = "contentcaching"
 )
 
 func resourceURL(c *gophercloud.ServiceClient, id int) string {
@@ -41,4 +42,8 @@ func errorPageURL(c *gophercloud.ServiceClient, id int) string {
 
 func statsURL(c *gophercloud.ServiceClient, id int) string {
 	return c.ServiceURL(path, strconv.Itoa(id), stPath)
+}
+
+func cacheURL(c *gophercloud.ServiceClient, id int) string {
+	return c.ServiceURL(path, strconv.Itoa(id), cachePath)
 }

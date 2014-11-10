@@ -421,7 +421,7 @@ func IsLoggingEnabled(client *gophercloud.ServiceClient, id int) (bool, error) {
 
 func toConnLoggingMap(state bool) map[string]map[string]bool {
 	return map[string]map[string]bool{
-		"connectionLogging": map[string]bool{"enabled": false},
+		"connectionLogging": map[string]bool{"enabled": state},
 	}
 }
 
@@ -430,7 +430,7 @@ func EnableLogging(client *gophercloud.ServiceClient, id int) gophercloud.ErrRes
 	reqBody := toConnLoggingMap(true)
 	var res gophercloud.ErrResult
 
-	_, res.Err = perigee.Request("GET", loggingURL(client, id), perigee.Options{
+	_, res.Err = perigee.Request("PUT", loggingURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		OkCodes:     []int{200},
@@ -444,7 +444,7 @@ func DisableLogging(client *gophercloud.ServiceClient, id int) gophercloud.ErrRe
 	reqBody := toConnLoggingMap(false)
 	var res gophercloud.ErrResult
 
-	_, res.Err = perigee.Request("GET", loggingURL(client, id), perigee.Options{
+	_, res.Err = perigee.Request("PUT", loggingURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		OkCodes:     []int{200},
@@ -503,6 +503,60 @@ func GetStats(client *gophercloud.ServiceClient, id int) StatsResult {
 	_, res.Err = perigee.Request("GET", statsURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
+
+func IsContentCached(client *gophercloud.ServiceClient, id int) (bool, error) {
+	var body interface{}
+
+	_, err := perigee.Request("GET", cacheURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		Results:     &body,
+		OkCodes:     []int{200},
+	})
+	if err != nil {
+		return false, err
+	}
+
+	var resp struct {
+		CC struct {
+			Enabled bool `mapstructure:"enabled"`
+		} `mapstructure:"contentCaching"`
+	}
+
+	err = mapstructure.Decode(body, &resp)
+	return resp.CC.Enabled, err
+}
+
+func toCachingMap(state bool) map[string]map[string]bool {
+	return map[string]map[string]bool{
+		"contentCaching": map[string]bool{"enabled": state},
+	}
+}
+
+func EnableCaching(client *gophercloud.ServiceClient, id int) gophercloud.ErrResult {
+	reqBody := toCachingMap(true)
+	var res gophercloud.ErrResult
+
+	_, res.Err = perigee.Request("PUT", cacheURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
+		OkCodes:     []int{200},
+	})
+
+	return res
+}
+
+func DisableCaching(client *gophercloud.ServiceClient, id int) gophercloud.ErrResult {
+	reqBody := toCachingMap(false)
+	var res gophercloud.ErrResult
+
+	_, res.Err = perigee.Request("PUT", cacheURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		ReqBody:     &reqBody,
 		OkCodes:     []int{200},
 	})
 

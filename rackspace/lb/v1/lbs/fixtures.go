@@ -510,3 +510,55 @@ func mockGetStatsResponse(t *testing.T, id int) {
 			`)
 	})
 }
+
+func mockGetCachingResponse(t *testing.T, id int) {
+	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id)+"/contentcaching", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+   "contentCaching": {
+      "enabled": true
+   }
+}
+			`)
+	})
+}
+
+func mockEnableCachingResponse(t *testing.T, id int) {
+	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id)+"/contentcaching", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+   "contentCaching":{
+      "enabled":true
+   }
+}
+		`)
+
+		w.WriteHeader(http.StatusOK)
+	})
+}
+
+func mockDisableCachingResponse(t *testing.T, id int) {
+	th.Mux.HandleFunc("/loadbalancers/"+strconv.Itoa(id)+"/contentcaching", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+	"contentCaching":{
+			"enabled":false
+	}
+}
+		`)
+
+		w.WriteHeader(http.StatusOK)
+	})
+}

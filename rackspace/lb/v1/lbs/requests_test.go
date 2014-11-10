@@ -298,6 +298,26 @@ func TestIsLoggingEnabled(t *testing.T) {
 	th.AssertEquals(t, true, res)
 }
 
+func TestEnablingLogging(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockEnableLoggingResponse(t, id1)
+
+	err := EnableLogging(client.ServiceClient(), id1).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDisablingLogging(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDisableLoggingResponse(t, id1)
+
+	err := DisableLogging(client.ServiceClient(), id1).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
 func TestGetErrorPage(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -361,4 +381,35 @@ func TestGetStats(t *testing.T) {
 		SSLCurrentConnections: 40,
 	}
 	th.AssertDeepEquals(t, expected, content)
+}
+
+func TestIsCached(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockGetCachingResponse(t, id1)
+
+	res, err := IsContentCached(client.ServiceClient(), id1)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, res)
+}
+
+func TestEnablingCaching(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockEnableCachingResponse(t, id1)
+
+	err := EnableCaching(client.ServiceClient(), id1).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDisablingCaching(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDisableCachingResponse(t, id1)
+
+	err := DisableCaching(client.ServiceClient(), id1).ExtractErr()
+	th.AssertNoErr(t, err)
 }
