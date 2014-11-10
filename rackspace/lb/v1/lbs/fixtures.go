@@ -410,7 +410,7 @@ func mockEnableLoggingResponse(t *testing.T, id int) {
 }
 		`)
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
@@ -427,7 +427,7 @@ func mockDisableLoggingResponse(t *testing.T, id int) {
 }
 		`)
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
@@ -542,7 +542,7 @@ func mockEnableCachingResponse(t *testing.T, id int) {
 }
 		`)
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
@@ -559,6 +559,6 @@ func mockDisableCachingResponse(t *testing.T, id int) {
 }
 		`)
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }

@@ -40,12 +40,15 @@ func mockCreateResponse(t *testing.T, lbID int) {
 		th.TestJSONRequest(t, r, `
 {
   "connectionThrottle": {
-    "maxConnections": 200
+    "maxConnectionRate": 0,
+    "maxConnections": 200,
+    "minConnections": 0,
+    "rateInterval": 0
   }
 }
     `)
 
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
@@ -53,6 +56,6 @@ func mockDeleteResponse(t *testing.T, lbID int) {
 	th.Mux.HandleFunc(_rootURL(lbID), func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
