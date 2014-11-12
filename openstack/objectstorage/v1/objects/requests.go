@@ -18,6 +18,10 @@ type ListOptsBuilder interface {
 
 // ListOpts is a structure that holds parameters for listing objects.
 type ListOpts struct {
+	// Full is a true/false value that represents the amount of object information
+	// returned. If Full is set to true, then the content-type, number of bytes, hash
+	// date last modified, and name are returned. If set to false or not set, then
+	// only the object names are returned.
 	Full      bool
 	Limit     int    `q:"limit"`
 	Marker    string `q:"marker"`
@@ -88,7 +92,7 @@ type DownloadOpts struct {
 
 // ToObjectDownloadParams formats a DownloadOpts into a query string and map of
 // headers.
-func (opts ListOpts) ToObjectDownloadParams() (map[string]string, string, error) {
+func (opts DownloadOpts) ToObjectDownloadParams() (map[string]string, string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
 		return nil, "", err
@@ -125,7 +129,7 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 
 	resp, err := perigee.Request("GET", url, perigee.Options{
 		MoreHeaders: h,
-		OkCodes:     []int{200},
+		OkCodes:     []int{200, 304},
 	})
 
 	res.Body = resp.HttpResponse.Body
@@ -146,7 +150,7 @@ type CreateOpts struct {
 	Metadata           map[string]string
 	ContentDisposition string `h:"Content-Disposition"`
 	ContentEncoding    string `h:"Content-Encoding"`
-	ContentLength      int    `h:"Content-Length"`
+	ContentLength      int64  `h:"Content-Length"`
 	ContentType        string `h:"Content-Type"`
 	CopyFrom           string `h:"X-Copy-From"`
 	DeleteAfter        int    `h:"X-Delete-After"`
