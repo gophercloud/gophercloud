@@ -569,8 +569,8 @@ func (opts RescueOpts) ToServerRescueMap() (map[string]interface{}, error) {
 }
 
 // Rescue instructs the provider to place the server into RESCUE mode.
-func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder) ActionResult {
-	var result ActionResult
+func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder) RescueResult {
+	var result RescueResult
 
 	if id == "" {
 		result.Err = fmt.Errorf("ID is required")
@@ -583,6 +583,7 @@ func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder
 	}
 
 	_, result.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
+		Results:     &result.Body,
 		ReqBody:     &reqBody,
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{200},

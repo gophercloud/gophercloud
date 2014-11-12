@@ -54,6 +54,12 @@ type ActionResult struct {
 	gophercloud.ErrResult
 }
 
+// RescueResult represents teh result of a server rescue operation
+type RescueResult struct {
+	ActionResult
+	AdminPass string `mapstructure:"adminPass"`
+}
+
 // Server exposes only the standard OpenStack fields corresponding to a given server on the user's account.
 type Server struct {
 	// ID uniquely identifies this server amongst all other servers, including those not accessible to the current tenant.
