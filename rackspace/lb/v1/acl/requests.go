@@ -7,7 +7,6 @@ import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/rackspace/lb/v1"
 )
 
 // List is the operation responsible for returning a paginated collection of
@@ -96,7 +95,7 @@ func BulkDelete(c *gophercloud.ServiceClient, loadBalancerID int, itemIDs []int)
 	}
 
 	url := rootURL(c, loadBalancerID)
-	url += v1.IDSliceToQueryString("id", itemIDs)
+	url += gophercloud.IDSliceToQueryString("id", itemIDs)
 
 	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),

@@ -6,7 +6,6 @@ import (
 	"github.com/racker/perigee"
 
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/rackspace/lb/v1"
 )
 
 var (
@@ -41,13 +40,13 @@ type UpdateConnectMonitorOpts struct {
 func (opts UpdateConnectMonitorOpts) ToMonitorUpdateMap() (map[string]interface{}, error) {
 	type m map[string]interface{}
 
-	if !v1.WithinRange(opts.AttemptLimit, 1, 10) {
+	if !gophercloud.IntWithinRange(opts.AttemptLimit, 1, 10) {
 		return m{}, errAttemptLimit
 	}
-	if !v1.WithinRange(opts.Delay, 1, 3600) {
+	if !gophercloud.IntWithinRange(opts.Delay, 1, 3600) {
 		return m{}, errDelay
 	}
-	if !v1.WithinRange(opts.Timeout, 1, 300) {
+	if !gophercloud.IntWithinRange(opts.Timeout, 1, 300) {
 		return m{}, errTimeout
 	}
 
@@ -95,13 +94,13 @@ type UpdateHTTPMonitorOpts struct {
 func (opts UpdateHTTPMonitorOpts) ToMonitorUpdateMap() (map[string]interface{}, error) {
 	type m map[string]interface{}
 
-	if !v1.WithinRange(opts.AttemptLimit, 1, 10) {
+	if !gophercloud.IntWithinRange(opts.AttemptLimit, 1, 10) {
 		return m{}, errAttemptLimit
 	}
-	if !v1.WithinRange(opts.Delay, 1, 3600) {
+	if !gophercloud.IntWithinRange(opts.Delay, 1, 3600) {
 		return m{}, errDelay
 	}
-	if !v1.WithinRange(opts.Timeout, 1, 300) {
+	if !gophercloud.IntWithinRange(opts.Timeout, 1, 300) {
 		return m{}, errTimeout
 	}
 	if opts.Type != HTTP && opts.Type != HTTPS {
