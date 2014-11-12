@@ -66,7 +66,7 @@ func (opts CreateOpts) ToAccessListCreateMap() (map[string]interface{}, error) {
 // Create is the operation responsible for adding network items to the access
 // rules for a particular load balancer. If network items already exist, the
 // new item will be appended. A single IP address or subnet range is considered
-// unique, and cannot be duplicated.
+// unique and cannot be duplicated.
 func Create(client *gophercloud.ServiceClient, loadBalancerID int, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 

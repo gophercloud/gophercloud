@@ -112,7 +112,8 @@ type CreateOpts struct {
 	// to help mitigate malicious or abusive traffic to your applications.
 	ConnThrottle *throttle.ConnectionThrottle
 
-	// Optional
+	// Optional - the type of health monitor check to perform to ensure that the
+	// service is performing properly.
 	HealthMonitor *monitors.Monitor
 
 	// Optional - arbitrary information that can be associated with each LB.
@@ -215,7 +216,7 @@ func (opts CreateOpts) ToLBCreateMap() (map[string]interface{}, error) {
 //
 // Once an ID is attained, you can check on the progress of the operation by
 // calling Get and passing in the ID. If the corresponding request cannot be
-// fulfilled due to insufficient or invalid data, a HTTP 400 (Bad Request)
+// fulfilled due to insufficient or invalid data, an HTTP 400 (Bad Request)
 // error response is returned with information regarding the nature of the
 // failure in the body of the response. Failures in the validation process are
 // non-recoverable and require the caller to correct the cause of the failure.
@@ -255,7 +256,7 @@ func Get(c *gophercloud.ServiceClient, id int) GetResult {
 }
 
 // BulkDelete removes all the load balancers referenced in the slice of IDs.
-// Any and all configuration data associated with these load balancers are
+// Any and all configuration data associated with these load balancers is
 // immediately purged and is not recoverable.
 //
 // If one of the items in the list cannot be removed due to its current status,
@@ -298,7 +299,7 @@ type UpdateOptsBuilder interface {
 	ToLBUpdateMap() (map[string]interface{}, error)
 }
 
-// UpdateOpts represent the options for updating an existing load balancer.
+// UpdateOpts represents the options for updating an existing load balancer.
 type UpdateOpts struct {
 	// Optional - new name of the load balancer.
 	Name string
@@ -355,7 +356,7 @@ func (opts UpdateOpts) ToLBUpdateMap() (map[string]interface{}, error) {
 
 // Update is the operation responsible for asynchronously updating the
 // attributes of a specific load balancer. Upon successful validation of the
-// request, the service returns a 202 Accepted response and the load balancer
+// request, the service returns a 202 Accepted response, and the load balancer
 // enters a PENDING_UPDATE state. A user can poll the load balancer with Get to
 // wait for the changes to be applied. When this happens, the load balancer will
 // return to an ACTIVE state.

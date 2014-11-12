@@ -33,8 +33,8 @@ const (
 	DENY  Type = "DENY"
 )
 
-// AccessListPage is the page returned by a pager when traversing over a collection of
-// network items in an access list.
+// AccessListPage is the page returned by a pager for traversing over a
+// collection of network items in an access list.
 type AccessListPage struct {
 	pagination.SinglePageBase
 }
