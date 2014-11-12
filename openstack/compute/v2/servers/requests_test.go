@@ -174,3 +174,23 @@ func TestRevertResize(t *testing.T) {
 	res := RevertResize(client.ServiceClient(), "1234asdf")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestRescue(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "rescue": { "adminPass": "1234567890" } }`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Write(`{ "adminPass": "1234567890" }`)
+	})
+
+	res = Rescue(client.ServiceClient(), "1234asdf", RescueOpts{
+		adminPass: "1234567890",
+	})
+	th.AssertNoErr(t, res.Err)
+	th.AssertEquals(t, "1234567890", res.AdminPass)
+}
