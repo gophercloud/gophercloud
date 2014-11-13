@@ -61,7 +61,7 @@ type RescueResult struct {
 
 func (r RescueResult) Extract() (string, error) {
 	if r.Err != nil {
-		return nil, r.Err
+		return "", r.Err
 	}
 
 	var response struct {
@@ -69,7 +69,7 @@ func (r RescueResult) Extract() (string, error) {
 	}
 
 	err := mapstructure.Decode(r.Body, &response)
-	return &response.AdminPass, err
+	return response.AdminPass, err
 }
 
 // Server exposes only the standard OpenStack fields corresponding to a given server on the user's account.
