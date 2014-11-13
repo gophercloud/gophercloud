@@ -179,7 +179,7 @@ func TestRescue(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleServerRescueSuccesfully(t)
+	HandleServerRescueSuccessfully(t)
 
 	res := Rescue(client.ServiceClient(), "1234asdf", RescueOpts{
 		AdminPass: "1234567890",
