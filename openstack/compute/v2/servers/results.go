@@ -57,7 +57,19 @@ type ActionResult struct {
 // RescueResult represents teh result of a server rescue operation
 type RescueResult struct {
 	ActionResult
-	AdminPass string `mapstructure:"adminPass"`
+}
+
+func (r RescueResult) Extract() (string, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		AdminPass string `mapstructure:"adminPass"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+	return &response.AdminPass, err
 }
 
 // Server exposes only the standard OpenStack fields corresponding to a given server on the user's account.

@@ -192,5 +192,6 @@ func TestRescue(t *testing.T) {
 		AdminPass: "1234567890",
 	})
 	th.AssertNoErr(t, res.Err)
-	th.AssertEquals(t, "1234567890", res.AdminPass)
+	adminPass, _ := res.Extract()
+	th.AssertEquals(t, "1234567890", AdminPass)
 }
