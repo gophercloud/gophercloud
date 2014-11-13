@@ -24,22 +24,22 @@ type UpdateOptsBuilder interface {
 // UpdateOpts is the common options struct used in this package's Update
 // operation.
 type UpdateOpts struct {
-	// Required
+	// Required - consult the SSLTermConfig struct for more info.
 	SecurePort int
 
-	// Required
+	// Required - consult the SSLTermConfig struct for more info.
 	PrivateKey string
 
-	// Required
+	// Required - consult the SSLTermConfig struct for more info.
 	Certificate string
 
-	// Required
+	// Required - consult the SSLTermConfig struct for more info.
 	IntCertificate string
 
-	// Optional
+	// Optional - consult the SSLTermConfig struct for more info.
 	Enabled *bool
 
-	// Optional
+	// Optional - consult the SSLTermConfig struct for more info.
 	SecureTrafficOnly *bool
 }
 
@@ -133,22 +133,22 @@ func ListCerts(c *gophercloud.ServiceClient, lbID int) pagination.Pager {
 	})
 }
 
-// AddCertOptsBuilder is the interface options structs have to satisfy in order
-// to be used in the AddCert operation in this package.
-type AddCertOptsBuilder interface {
-	ToCertAddMap() (map[string]interface{}, error)
+// CreateCertOptsBuilder is the interface options structs have to satisfy in
+// order to be used in the AddCert operation in this package.
+type CreateCertOptsBuilder interface {
+	ToCertCreateMap() (map[string]interface{}, error)
 }
 
-// AddCertOpts represents the options used when adding a new certificate mapping.
-type AddCertOpts struct {
+// CreateCertOpts represents the options used when adding a new certificate mapping.
+type CreateCertOpts struct {
 	HostName       string
 	PrivateKey     string
 	Certificate    string
 	IntCertificate string
 }
 
-// ToCertAddMap will cast an AddCertOpts struct to a map for JSON serialization.
-func (opts AddCertOpts) ToCertAddMap() (map[string]interface{}, error) {
+// ToCertCreateMap will cast an CreateCertOpts struct to a map for JSON serialization.
+func (opts CreateCertOpts) ToCertCreateMap() (map[string]interface{}, error) {
 	cm := make(map[string]interface{})
 
 	if opts.HostName == "" {
@@ -172,14 +172,14 @@ func (opts AddCertOpts) ToCertAddMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"certificateMapping": cm}, nil
 }
 
-// AddCert will add a new SSL certificate and allow an SSL-terminated HTTP
+// CreateCert will add a new SSL certificate and allow an SSL-terminated HTTP
 // load balancer to use it. This feature is useful because it allows multiple
 // certificates to be used. The maximum number of certificates that can be
 // stored per LB is 20.
-func AddCert(c *gophercloud.ServiceClient, lbID int, opts AddCertOptsBuilder) AddCertResult {
-	var res AddCertResult
+func CreateCert(c *gophercloud.ServiceClient, lbID int, opts CreateCertOptsBuilder) CreateCertResult {
+	var res CreateCertResult
 
-	reqBody, err := opts.ToCertAddMap()
+	reqBody, err := opts.ToCertCreateMap()
 	if err != nil {
 		res.Err = err
 		return res

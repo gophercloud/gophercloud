@@ -514,7 +514,7 @@ func GetStats(client *gophercloud.ServiceClient, id int) StatsResult {
 // on the load balancer for easy retrieval by web clients. Content caching
 // improves the performance of high traffic web sites by temporarily storing
 // data that was recently accessed. While it's cached, requests for that data
-// are served by the load balancer, which in turn reduces load off the back end
+// are served by the load balancer, which in turn reduces load off the back-end
 // nodes. The result is improved response times for those requests and less
 // load on the web server.
 func IsContentCached(client *gophercloud.ServiceClient, id int) (bool, error) {

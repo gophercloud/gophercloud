@@ -33,31 +33,31 @@ type Status string
 const (
 	// ACTIVE indicates that the LB is configured properly and ready to serve
 	// traffic to incoming requests via the configured virtual IPs.
-	ACTIVE = "ACTIVE"
+	ACTIVE Status = "ACTIVE"
 
 	// BUILD indicates that the LB is being provisioned for the first time and
 	// configuration is being applied to bring the service online. The service
 	// cannot yet serve incoming requests.
-	BUILD = "BUILD"
+	BUILD Status = "BUILD"
 
 	// PENDINGUPDATE indicates that the LB is online but configuration changes
 	// are being applied to update the service based on a previous request.
-	PENDINGUPDATE = "PENDING_UPDATE"
+	PENDINGUPDATE Status = "PENDING_UPDATE"
 
 	// PENDINGDELETE indicates that the LB is online but configuration changes
 	// are being applied to begin deletion of the service based on a previous
 	// request.
-	PENDINGDELETE = "PENDING_DELETE"
+	PENDINGDELETE Status = "PENDING_DELETE"
 
 	// SUSPENDED indicates that the LB has been taken offline and disabled.
-	SUSPENDED = "SUSPENDED"
+	SUSPENDED Status = "SUSPENDED"
 
 	// ERROR indicates that the system encountered an error when attempting to
 	// configure the load balancer.
-	ERROR = "ERROR"
+	ERROR Status = "ERROR"
 
 	// DELETED indicates that the LB has been deleted.
-	DELETED = "DELETED"
+	DELETED Status = "DELETED"
 )
 
 // Datetime represents the structure of a Created or Updated field.
@@ -110,14 +110,14 @@ type LoadBalancer struct {
 	// nodes. Defaults to 30 seconds with a maximum of 120 seconds.
 	Timeout int
 
-	// TODO
+	// The cluster name.
 	Cluster Cluster
 
 	// Nodes shows all the back-end nodes which are associated with the load
 	// balancer. These are the devices which are delivered traffic.
 	Nodes []nodes.Node
 
-	// TODO
+	// Current connection logging configuration.
 	ConnectionLogging ConnectionLogging
 
 	// SessionPersistence specifies whether multiple requests from clients are
@@ -128,7 +128,7 @@ type LoadBalancer struct {
 	// address to help mitigate malicious or abusive traffic to your applications.
 	ConnectionThrottle throttle.ConnectionThrottle
 
-	// TODO
+	// The source public and private IP addresses.
 	SourceAddrs SourceAddrs `mapstructure:"sourceAddresses"`
 
 	// Represents the access rules for this particular load balancer. IP addresses
@@ -137,7 +137,7 @@ type LoadBalancer struct {
 	AccessList acl.AccessList
 }
 
-// SourceAddrs - temp
+// SourceAddrs represents the source public and private IP addresses.
 type SourceAddrs struct {
 	IPv4Public  string `json:"ipv4Public" mapstructure:"ipv4Public"`
 	IPv4Private string `json:"ipv4Servicenet" mapstructure:"ipv4Servicenet"`
@@ -238,7 +238,7 @@ func (p ProtocolPage) IsEmpty() (bool, error) {
 }
 
 // ExtractProtocols accepts a Page struct, specifically a ProtocolPage struct,
-// and extracts the elements into a slice of LoadBalancer structs. In other
+// and extracts the elements into a slice of Protocol structs. In other
 // words, a generic collection is mapped into a relevant slice.
 func ExtractProtocols(page pagination.Page) ([]Protocol, error) {
 	var resp struct {
@@ -254,7 +254,7 @@ type AlgorithmPage struct {
 	pagination.SinglePageBase
 }
 
-// IsEmpty checks whether a ProtocolPage struct is empty.
+// IsEmpty checks whether an AlgorithmPage struct is empty.
 func (p AlgorithmPage) IsEmpty() (bool, error) {
 	is, err := ExtractAlgorithms(p)
 	if err != nil {
@@ -362,6 +362,7 @@ type Stats struct {
 	SSLCurrentConnections int `mapstructure:"currentConnSsl"`
 }
 
+// StatsResult represents the result of a Stats operation.
 type StatsResult struct {
 	gophercloud.Result
 }

@@ -1,6 +1,6 @@
 /*
-Package lbs provides information and interaction with the Health Monitor API
-resource for the Rackspace Cloud Load Balancer service.
+Package monitors provides information and interaction with the Health Monitor
+API resource for the Rackspace Cloud Load Balancer service.
 
 The load balancing service includes a health monitoring resource that
 periodically checks your back-end nodes to ensure they are responding correctly.

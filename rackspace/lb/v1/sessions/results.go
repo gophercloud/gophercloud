@@ -42,7 +42,7 @@ type GetResult struct {
 	gophercloud.Result
 }
 
-// Extract interprets a GetResult as a SP, if possible.
+// Extract interprets a GetResult as an SP, if possible.
 func (r GetResult) Extract() (*SessionPersistence, error) {
 	if r.Err != nil {
 		return nil, r.Err

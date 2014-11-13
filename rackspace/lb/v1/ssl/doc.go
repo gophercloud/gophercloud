@@ -17,6 +17,6 @@ your chain of certificates matches that of walking up the chain from the domain
 to the CA root.
 
 If used for HTTP to HTTPS redirection, the LoadBalancer's securePort attribute
-must be set to 443 and its secureTrafficOnly attribute must be true.
+must be set to 443, and its secureTrafficOnly attribute must be true.
 */
 package ssl

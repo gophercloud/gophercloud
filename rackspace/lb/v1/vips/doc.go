@@ -1,5 +1,5 @@
 /*
-Package nodes provides information and interaction with the Virtual IP API
+Package vips provides information and interaction with the Virtual IP API
 resource for the Rackspace Cloud Load Balancer service.
 
 A virtual IP (VIP) makes a load balancer accessible by clients. The load

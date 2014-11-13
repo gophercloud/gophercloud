@@ -22,10 +22,10 @@ const (
 // A CONNECT monitor establishes a basic connection to each node on its defined
 // port to ensure that the service is listening properly. The connect monitor
 // is the most basic type of health check and does no post-processing or
-// protocol specific health checks.
+// protocol-specific health checks.
 //
 // HTTP and HTTPS health monitors are generally considered more intelligent and
-// powerful than CONNECT. It is capable of processing a HTTP or HTTPS response
+// powerful than CONNECT. It is capable of processing an HTTP or HTTPS response
 // to determine the condition of a node. It supports the same basic properties
 // as CONNECT and includes additional attributes that are used to evaluate the
 // HTTP response.

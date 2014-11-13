@@ -70,7 +70,7 @@ const (
 // Status indicates whether the node can accept service traffic. If a node is
 // not listening on its port or does not meet the conditions of the defined
 // active health check for the load balancer, then the load balancer does not
-// forward connections and its status is listed as OFFLINE
+// forward connections, and its status is listed as OFFLINE.
 type Status string
 
 const (

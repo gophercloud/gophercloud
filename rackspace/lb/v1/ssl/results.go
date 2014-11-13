@@ -132,8 +132,8 @@ func (r certResult) Extract() (*Certificate, error) {
 	return &response.Cert, err
 }
 
-// AddCertResult represents the result of an AddCert operation.
-type AddCertResult struct {
+// CreateCertResult represents the result of an CreateCert operation.
+type CreateCertResult struct {
 	certResult
 }
 
