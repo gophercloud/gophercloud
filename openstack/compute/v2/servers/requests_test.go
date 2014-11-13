@@ -185,7 +185,7 @@ func TestRescue(t *testing.T) {
 		th.TestJSONRequest(t, r, `{ "rescue": { "adminPass": "1234567890" } }`)
 
 		w.WriteHeader(http.StatusAccepted)
-		w.Write(`{ "adminPass": "1234567890" }`)
+		w.Write([]byte(`{ "adminPass": "1234567890" }`))
 	})
 
 	res := Rescue(client.ServiceClient(), "1234asdf", RescueOpts{
