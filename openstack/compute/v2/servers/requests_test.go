@@ -189,7 +189,7 @@ func TestRescue(t *testing.T) {
 	})
 
 	res = Rescue(client.ServiceClient(), "1234asdf", RescueOpts{
-		adminPass: "1234567890",
+		AdminPass: "1234567890",
 	})
 	th.AssertNoErr(t, res.Err)
 	th.AssertEquals(t, "1234567890", res.AdminPass)
