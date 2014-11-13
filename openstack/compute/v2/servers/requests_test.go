@@ -179,14 +179,7 @@ func TestRescue(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, `{ "rescue": { "adminPass": "1234567890" } }`)
-
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{ "adminPass": "1234567890" }`))
-	})
+	HandleServerRescueSuccesfully(t)
 
 	res := Rescue(client.ServiceClient(), "1234asdf", RescueOpts{
 		AdminPass: "1234567890",

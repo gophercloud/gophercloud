@@ -457,3 +457,14 @@ func HandleRebuildSuccessfully(t *testing.T, response string) {
 		fmt.Fprintf(w, response)
 	})
 }
+
+func HandleServerRescueSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "rescue": { "adminPass": "1234567890" } }`)
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{ "adminPass": "1234567890" }`))
+	})
+}
