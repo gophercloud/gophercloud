@@ -54,7 +54,7 @@ type ActionResult struct {
 	gophercloud.ErrResult
 }
 
-// RescueResult represents teh result of a server rescue operation
+// RescueResult represents the result of a server rescue operation
 type RescueResult struct {
 	ActionResult
 }

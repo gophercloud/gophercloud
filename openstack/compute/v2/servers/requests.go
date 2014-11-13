@@ -554,7 +554,7 @@ type RescueOptsBuilder interface {
 // option.
 type RescueOpts struct {
 	// AdminPass is the desired administrative password for the instance in
-	// RESCUE mode.
+	// RESCUE mode, if it's left blank the server will generate a password.
 	AdminPass string
 }
 
