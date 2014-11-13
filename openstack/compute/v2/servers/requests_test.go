@@ -188,7 +188,7 @@ func TestRescue(t *testing.T) {
 		w.Write(`{ "adminPass": "1234567890" }`)
 	})
 
-	res = Rescue(client.ServiceClient(), "1234asdf", RescueOpts{
+	res := Rescue(client.ServiceClient(), "1234asdf", RescueOpts{
 		AdminPass: "1234567890",
 	})
 	th.AssertNoErr(t, res.Err)
