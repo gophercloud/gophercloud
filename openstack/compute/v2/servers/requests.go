@@ -554,11 +554,11 @@ type RescueOptsBuilder interface {
 // option.
 type RescueOpts struct {
 	// AdminPass is the desired administrative password for the instance in
-	// RESCUE mode, if it's left blank the server will generate a password.
+	// RESCUE mode. If it's left blank, the server will generate a password.
 	AdminPass string
 }
 
-// ToRescueResizeMap formats a RescueOpts as a map that can be used a JSON
+// ToRescueResizeMap formats a RescueOpts as a map that can be used as a JSON
 // request body for the Rescue request.
 func (opts RescueOpts) ToServerRescueMap() (map[string]interface{}, error) {
 	server := make(map[string]interface{})
