@@ -9,6 +9,7 @@ func actionURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("servers", id, "action")
 }
 
+// Start is the operation responsible for starting a Compute server.
 func Start(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var res gophercloud.ErrResult
 
@@ -23,6 +24,7 @@ func Start(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	return res
 }
 
+// Stop is the operation responsible for stopping a Compute server.
 func Stop(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var res gophercloud.ErrResult
 
