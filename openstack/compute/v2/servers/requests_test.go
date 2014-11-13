@@ -184,7 +184,7 @@ func TestRescue(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{ "rescue": { "adminPass": "1234567890" } }`)
 
-		w.WriteHeader(http.StatusAccepted)
+		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{ "adminPass": "1234567890" }`))
 	})
 
