@@ -20,33 +20,53 @@ func mockListLBResponse(t *testing.T) {
 
 		fmt.Fprintf(w, `
 {
-  "loadBalancers": [
-    {
-      "name": "lb-site1",
-      "id": 71,
-      "protocol": "HTTP",
-      "port": 80,
-      "algorithm": "RANDOM",
-      "status": "ACTIVE",
-      "nodeCount": 3,
-      "virtualIps": [
-        {
-          "id": 403,
-          "address": "206.55.130.1",
-          "type": "PUBLIC",
-          "ipVersion": "IPV4"
-        }
-      ],
-      "created": {
-        "time": "2010-11-30T03:23:42Z"
+   "loadBalancers":[
+      {
+         "name":"lb-site1",
+         "id":71,
+         "protocol":"HTTP",
+         "port":80,
+         "algorithm":"RANDOM",
+         "status":"ACTIVE",
+         "nodeCount":3,
+         "virtualIps":[
+            {
+               "id":403,
+               "address":"206.55.130.1",
+               "type":"PUBLIC",
+               "ipVersion":"IPV4"
+            }
+         ],
+         "created":{
+            "time":"2010-11-30T03:23:42Z"
+         },
+         "updated":{
+            "time":"2010-11-30T03:23:44Z"
+         }
       },
-      "updated": {
-        "time": "2010-11-30T03:23:44Z"
+      {
+         "name":"lb-site2",
+         "id":72,
+         "created":{
+            "time":"2011-11-30T03:23:42Z"
+         },
+         "updated":{
+            "time":"2011-11-30T03:23:44Z"
+         }
+      },
+      {
+         "name":"lb-site3",
+         "id":73,
+         "created":{
+            "time":"2012-11-30T03:23:42Z"
+         },
+         "updated":{
+            "time":"2012-11-30T03:23:44Z"
+         }
       }
-    }
-  ]
+   ]
 }
-  `)
+			`)
 	})
 }
 
@@ -122,10 +142,10 @@ func mockCreateLBResponse(t *testing.T) {
       }
     ],
     "created": {
-      "time": "2011-04-13T14:18:07Z"
+      "time": "2010-11-30T03:23:42Z"
     },
     "updated": {
-      "time": "2011-04-13T14:18:07Z"
+      "time": "2010-11-30T03:23:44Z"
     },
     "connectionLogging": {
       "enabled": false

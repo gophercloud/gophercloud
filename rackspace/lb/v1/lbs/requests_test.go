@@ -2,6 +2,7 @@ package lbs
 
 import (
 	"testing"
+	"time"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -16,7 +17,17 @@ import (
 const (
 	id1 = 12345
 	id2 = 67890
+	ts1 = "2010-11-30T03:23:42Z"
+	ts2 = "2010-11-30T03:23:44Z"
 )
+
+func toTime(t *testing.T, str string) time.Time {
+	ts, err := time.Parse(time.RFC3339, str)
+	if err != nil {
+		t.Fatalf("Could not parse time: %s", err.Error())
+	}
+	return ts
+}
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
@@ -48,8 +59,20 @@ func TestList(t *testing.T) {
 						Version: "IPV4",
 					},
 				},
-				Created: Datetime{Time: "2010-11-30T03:23:42Z"},
-				Updated: Datetime{Time: "2010-11-30T03:23:44Z"},
+				Created: Datetime{Time: toTime(t, ts1)},
+				Updated: Datetime{Time: toTime(t, ts2)},
+			},
+			LoadBalancer{
+				ID:      72,
+				Name:    "lb-site2",
+				Created: Datetime{Time: toTime(t, "2011-11-30T03:23:42Z")},
+				Updated: Datetime{Time: toTime(t, "2011-11-30T03:23:44Z")},
+			},
+			LoadBalancer{
+				ID:      73,
+				Name:    "lb-site3",
+				Created: Datetime{Time: toTime(t, "2012-11-30T03:23:42Z")},
+				Updated: Datetime{Time: toTime(t, "2012-11-30T03:23:44Z")},
 			},
 		}
 
@@ -118,8 +141,8 @@ func TestCreate(t *testing.T) {
 				Version: vips.IPV6,
 			},
 		},
-		Created:           Datetime{Time: "2011-04-13T14:18:07Z"},
-		Updated:           Datetime{Time: "2011-04-13T14:18:07Z"},
+		Created:           Datetime{Time: toTime(t, ts1)},
+		Updated:           Datetime{Time: toTime(t, ts2)},
 		ConnectionLogging: ConnectionLogging{Enabled: false},
 	}
 
@@ -192,8 +215,8 @@ func TestGet(t *testing.T) {
 		SessionPersistence: sessions.SessionPersistence{Type: "HTTP_COOKIE"},
 		ConnectionThrottle: throttle.ConnectionThrottle{MaxConnections: 100},
 		Cluster:            Cluster{Name: "c1.dfw1"},
-		Created:            Datetime{Time: "2010-11-30T03:23:42Z"},
-		Updated:            Datetime{Time: "2010-11-30T03:23:44Z"},
+		Created:            Datetime{Time: toTime(t, ts1)},
+		Updated:            Datetime{Time: toTime(t, ts2)},
 		SourceAddrs: SourceAddrs{
 			IPv4Public:  "10.12.99.28",
 			IPv4Private: "10.0.0.0",

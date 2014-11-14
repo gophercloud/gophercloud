@@ -1,6 +1,9 @@
 package lbs
 
 import (
+	"reflect"
+	"time"
+
 	"github.com/mitchellh/mapstructure"
 
 	"github.com/rackspace/gophercloud"
@@ -62,7 +65,7 @@ const (
 
 // Datetime represents the structure of a Created or Updated field.
 type Datetime struct {
-	Time string
+	Time time.Time `mapstructure:"-"`
 }
 
 // LoadBalancer represents a load balancer API resource.
@@ -178,9 +181,35 @@ func ExtractLBs(page pagination.Page) ([]LoadBalancer, error) {
 		LBs []LoadBalancer `mapstructure:"loadBalancers" json:"loadBalancers"`
 	}
 
-	err := mapstructure.Decode(page.(LBPage).Body, &resp)
+	coll := page.(LBPage).Body
+	err := mapstructure.Decode(coll, &resp)
+
+	s := reflect.ValueOf(coll.(map[string]interface{})["loadBalancers"])
+
+	for i := 0; i < s.Len(); i++ {
+		val := (s.Index(i).Interface()).(map[string]interface{})
+
+		ts, err := extractTS(val, "created")
+		if err != nil {
+			return resp.LBs, err
+		}
+		resp.LBs[i].Created.Time = ts
+
+		ts, err = extractTS(val, "updated")
+		if err != nil {
+			return resp.LBs, err
+		}
+		resp.LBs[i].Updated.Time = ts
+	}
 
 	return resp.LBs, err
+}
+
+func extractTS(body map[string]interface{}, key string) (time.Time, error) {
+	val := body[key].(map[string]interface{})
+	ts, err := time.Parse(time.RFC3339, val["time"].(string))
+
+	return ts, err
 }
 
 type commonResult struct {
@@ -198,6 +227,21 @@ func (r commonResult) Extract() (*LoadBalancer, error) {
 	}
 
 	err := mapstructure.Decode(r.Body, &response)
+
+	json := r.Body.(map[string]interface{})
+	lb := json["loadBalancer"].(map[string]interface{})
+
+	ts, err := extractTS(lb, "created")
+	if err != nil {
+		return nil, err
+	}
+	response.LB.Created.Time = ts
+
+	ts, err = extractTS(lb, "updated")
+	if err != nil {
+		return nil, err
+	}
+	response.LB.Updated.Time = ts
 
 	return &response.LB, err
 }
