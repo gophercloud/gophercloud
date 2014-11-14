@@ -135,6 +135,9 @@ type CreateOpts struct {
 	// AdminPass [optional] sets the root user password. If not set, a randomly-generated
 	// password will be created and returned in the response.
 	AdminPass string
+
+	//KeyName [optional] sets key pair name to be used
+	KeyName string
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a CreateOpts.
@@ -165,12 +168,16 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	if opts.AdminPass != "" {
 		server["adminPass"] = opts.AdminPass
 	}
+	if opts.KeyName != "" {
+		server["key_name"] = opts.KeyName
+	}
 
 	if len(opts.SecurityGroups) > 0 {
 		securityGroups := make([]map[string]interface{}, len(opts.SecurityGroups))
 		for i, groupName := range opts.SecurityGroups {
 			securityGroups[i] = map[string]interface{}{"name": groupName}
 		}
+		server["security_groups"] = securityGroups
 	}
 
 	if len(opts.Networks) > 0 {
