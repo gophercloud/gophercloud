@@ -207,9 +207,7 @@ func ExtractLBs(page pagination.Page) ([]LoadBalancer, error) {
 
 func extractTS(body map[string]interface{}, key string) (time.Time, error) {
 	val := body[key].(map[string]interface{})
-	ts, err := time.Parse(time.RFC3339, val["time"].(string))
-
-	return ts, err
+	return time.Parse(time.RFC3339, val["time"].(string))
 }
 
 type commonResult struct {
