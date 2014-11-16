@@ -188,3 +188,79 @@ func TestRescue(t *testing.T) {
 	adminPass, _ := res.Extract()
 	th.AssertEquals(t, "1234567890", adminPass)
 }
+
+func TestGetMetadata(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleMetadataGetSuccessfully(t)
+
+	expected := map[string]string{"foo": "bar"}
+	actual, err := Metadata(client.ServiceClient(), "1234asdf", "foo").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expected, actual)
+}
+
+func TestCreateMetadata(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleMetadataCreateSuccessfully(t)
+
+	expected := map[string]string{"foo": "bar"}
+	actual, err := CreateMetadata(client.ServiceClient(), "1234asdf", MetadataOpts{"foo": "bar"}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expected, actual)
+}
+
+func TestDeleteMetadata(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleMetadataDeleteSuccessfully(t)
+
+	err := DeleteMetadata(client.ServiceClient(), "1234asdf", "foo").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestGetMetadatas(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleMetadatasGetSuccessfully(t)
+
+	expected := map[string]string{"foo": "bar", "this": "that"}
+	actual, err := Metadatas(client.ServiceClient(), "1234asdf").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expected, actual)
+}
+
+func TestCreateMetadatas(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleMetadatasCreateSuccessfully(t)
+
+	expected := map[string]string{"foo": "bar", "this": "that"}
+	actual, err := CreateMetadatas(client.ServiceClient(), "1234asdf", MetadatasOpts{
+		"foo":  "bar",
+		"this": "that",
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expected, actual)
+}
+
+func TestUpdateMetadatas(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleMetadatasUpdateSuccessfully(t)
+
+	expected := map[string]string{"foo": "baz", "this": "those"}
+	actual, err := UpdateMetadatas(client.ServiceClient(), "1234asdf", MetadatasOpts{
+		"foo":  "baz",
+		"this": "those",
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expected, actual)
+}

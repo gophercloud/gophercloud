@@ -54,3 +54,15 @@ func TestActionURL(t *testing.T) {
 	expected := endpoint + "servers/foo/action"
 	th.CheckEquals(t, expected, actual)
 }
+
+func TestMetadataURL(t *testing.T) {
+	actual := metadataURL(endpointClient(), "foo", "bar")
+	expected := endpoint + "servers/foo/metadata/bar"
+	th.CheckEquals(t, expected, actual)
+}
+
+func TestMetadatasURL(t *testing.T) {
+	actual := metadatasURL(endpointClient(), "foo")
+	expected := endpoint + "servers/foo/metadata"
+	th.CheckEquals(t, expected, actual)
+}

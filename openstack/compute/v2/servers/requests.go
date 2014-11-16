@@ -2,6 +2,7 @@ package servers
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 
 	"github.com/racker/perigee"
@@ -559,7 +560,7 @@ type RescueOpts struct {
 	AdminPass string
 }
 
-// ToRescueResizeMap formats a RescueOpts as a map that can be used as a JSON
+// ToServerRescueMap formats a RescueOpts as a map that can be used as a JSON
 // request body for the Rescue request.
 func (opts RescueOpts) ToServerRescueMap() (map[string]interface{}, error) {
 	server := make(map[string]interface{})
@@ -591,4 +592,135 @@ func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder
 	})
 
 	return result
+}
+
+// CreateMetadatasOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type CreateMetadatasOptsBuilder interface {
+	ToMetadatasCreateMap() (map[string]interface{}, error)
+}
+
+// MetadatasOpts is a map that contains key-value pairs.
+type MetadatasOpts map[string]string
+
+// ToMetadatasCreateMap assembles a body for a Create request based on the contents of a MetadatasOpts.
+func (opts MetadatasOpts) ToMetadatasCreateMap() (map[string]interface{}, error) {
+	return map[string]interface{}{"metadata": opts}, nil
+}
+
+// UpdateMetadatasOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type UpdateMetadatasOptsBuilder interface {
+	ToMetadatasUpdateMap() (map[string]interface{}, error)
+}
+
+// ToMetadatasUpdateMap assembles a body for an Update request based on the contents of a MetadatasOpts.
+func (opts MetadatasOpts) ToMetadatasUpdateMap() (map[string]interface{}, error) {
+	return map[string]interface{}{"metadata": opts}, nil
+}
+
+// CreateMetadatas will create multiple new key-value pairs for the given server ID.
+// Note: Using this operation will erase any already-existing metadata and create
+// the new metadata provided. To keep any already-existing metadata, use the
+// UpdateMetadatas or UpdateMetadata function.
+func CreateMetadatas(client *gophercloud.ServiceClient, id string, opts CreateMetadatasOptsBuilder) CreateMetadatasResult {
+	var res CreateMetadatasResult
+	metadatas, err := opts.ToMetadatasCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+	_, res.Err = perigee.Request("PUT", metadatasURL(client, id), perigee.Options{
+		ReqBody:     metadatas,
+		Results:     &res.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+	})
+	return res
+}
+
+// Metadatas requests all the metadata for the given server ID.
+func Metadatas(client *gophercloud.ServiceClient, id string) GetMetadatasResult {
+	var res GetMetadatasResult
+	_, res.Err = perigee.Request("GET", metadatasURL(client, id), perigee.Options{
+		Results:     &res.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+	})
+	return res
+}
+
+// UpdateMetadatas updates (or creates) all the metadata specified by opts for the given server ID.
+// This operation does not affect already-existing metadata that is not specified
+// by opts.
+func UpdateMetadatas(client *gophercloud.ServiceClient, id string, opts UpdateMetadatasOptsBuilder) UpdateMetadatasResult {
+	var res UpdateMetadatasResult
+	metadatas, err := opts.ToMetadatasUpdateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+	_, res.Err = perigee.Request("POST", metadatasURL(client, id), perigee.Options{
+		ReqBody:     metadatas,
+		Results:     &res.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+	})
+	return res
+}
+
+// MetadataOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type MetadataOptsBuilder interface {
+	ToMetadataCreateMap() (map[string]interface{}, string, error)
+}
+
+// MetadataOpts is a map of length one that contains a key-value pair.
+type MetadataOpts map[string]string
+
+// ToMetadataCreateMap assembles a body for a Create request based on the contents of a MetadatasOpts.
+func (opts MetadataOpts) ToMetadataCreateMap() (map[string]interface{}, string, error) {
+	if len(opts) != 1 {
+		return nil, "", errors.New("CreateMetadata operation must have 1 and only 1 key-value pair.")
+	}
+	metadata := map[string]interface{}{"meta": opts}
+	var key string
+	for k := range metadata["meta"].(MetadataOpts) {
+		key = k
+	}
+	return metadata, key, nil
+}
+
+// CreateMetadata will create or update the key-value pair with the given key for the given server ID.
+func CreateMetadata(client *gophercloud.ServiceClient, id string, opts MetadataOptsBuilder) CreateMetadataResult {
+	var res CreateMetadataResult
+	metadata, key, err := opts.ToMetadataCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
+	_, res.Err = perigee.Request("PUT", metadataURL(client, id, key), perigee.Options{
+		ReqBody:     metadata,
+		Results:     &res.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+	})
+	return res
+}
+
+// Metadata requests the key-value pair with the given key for the given server ID.
+func Metadata(client *gophercloud.ServiceClient, id, key string) GetMetadataResult {
+	var res GetMetadataResult
+	_, res.Err = perigee.Request("GET", metadataURL(client, id, key), perigee.Options{
+		Results:     &res.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+	})
+	return res
+}
+
+// DeleteMetadata will delete the key-value pair with the given key for the given server ID.
+func DeleteMetadata(client *gophercloud.ServiceClient, id, key string) DeleteMetadataResult {
+	var res DeleteMetadataResult
+	_, res.Err = perigee.Request("DELETE", metadataURL(client, id, key), perigee.Options{
+		Results:     &res.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+	})
+	return res
 }

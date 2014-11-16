@@ -39,7 +39,7 @@ type UpdateResult struct {
 	serverResult
 }
 
-// DeleteResult temporarily contains the response from an Delete call.
+// DeleteResult temporarily contains the response from a Delete call.
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
@@ -59,6 +59,7 @@ type RescueResult struct {
 	ActionResult
 }
 
+// Extract interprets any RescueResult as an AdminPass, if possible.
 func (r RescueResult) Extract() (string, error) {
 	if r.Err != nil {
 		return "", r.Err
@@ -165,4 +166,72 @@ func ExtractServers(page pagination.Page) ([]Server, error) {
 	}
 	err := mapstructure.Decode(casted, &response)
 	return response.Servers, err
+}
+
+// MetadatasResult contains the result of a call for (potentially) multiple key-value pairs.
+type MetadatasResult struct {
+	gophercloud.Result
+}
+
+// GetMetadatasResult temporarily contains the response from a metadatas Get call.
+type GetMetadatasResult struct {
+	MetadatasResult
+}
+
+// CreateMetadatasResult temporarily contains the response from a metadatas Create call.
+type CreateMetadatasResult struct {
+	MetadatasResult
+}
+
+// UpdateMetadatasResult temporarily contains the response from a metadatas Update call.
+type UpdateMetadatasResult struct {
+	MetadatasResult
+}
+
+// MetadataResult contains the result of a call for individual a single key-value pair.
+type MetadataResult struct {
+	gophercloud.Result
+}
+
+// GetMetadataResult temporarily contains the response from a metadata Get call.
+type GetMetadataResult struct {
+	MetadataResult
+}
+
+// CreateMetadataResult temporarily contains the response from a metadata Create call.
+type CreateMetadataResult struct {
+	MetadataResult
+}
+
+// DeleteMetadataResult temporarily contains the response from a metadata Delete call.
+type DeleteMetadataResult struct {
+	gophercloud.ErrResult
+}
+
+// Extract interprets any MetadatasResult as a Metadatas, if possible.
+func (r MetadatasResult) Extract() (map[string]string, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		Metadatas map[string]string `mapstructure:"metadata"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+	return response.Metadatas, err
+}
+
+// Extract interprets any MetadataResult as a Metadata, if possible.
+func (r MetadataResult) Extract() (map[string]string, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		Metadata map[string]string `mapstructure:"meta"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+	return response.Metadata, err
 }
