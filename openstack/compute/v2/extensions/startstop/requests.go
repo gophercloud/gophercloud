@@ -13,7 +13,7 @@ func actionURL(client *gophercloud.ServiceClient, id string) string {
 func Start(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var res gophercloud.ErrResult
 
-	reqBody := map[string](*interface{}){"os-start": nil}
+	reqBody := map[string]interface{}{"os-start": nil}
 
 	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
@@ -28,7 +28,7 @@ func Start(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 func Stop(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var res gophercloud.ErrResult
 
-	reqBody := map[string](*interface{}){"os-stop": nil}
+	reqBody := map[string]interface{}{"os-stop": nil}
 
 	_, res.Err = perigee.Request("POST", actionURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
