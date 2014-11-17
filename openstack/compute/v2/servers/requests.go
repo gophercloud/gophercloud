@@ -171,6 +171,7 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 		for i, groupName := range opts.SecurityGroups {
 			securityGroups[i] = map[string]interface{}{"name": groupName}
 		}
+		server["security_groups"] = securityGroups
 	}
 
 	if len(opts.Networks) > 0 {
