@@ -1,0 +1,65 @@
+// +build acceptance
+
+package v2
+
+import (
+	"crypto/rand"
+	"crypto/rsa"
+	"testing"
+
+	"github.com/rackspace/gophercloud/acceptance/tools"
+	"github.com/rackspace/gophercloud/openstack/compute/v2/extensions/keypairs"
+	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+	th "github.com/rackspace/gophercloud/testhelper"
+
+	"code.google.com/p/go.crypto/ssh"
+)
+
+func TestCreateServerWithKeyPair(t *testing.T) {
+	client, err := newClient()
+	th.AssertNoErr(t, err)
+
+	if testing.Short() {
+		t.Skip("Skipping test that requires server creation in short mode.")
+	}
+
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2014)
+	publicKey := privateKey.PublicKey
+	pub, err := ssh.NewPublicKey(&publicKey)
+	th.AssertNoErr(t, err)
+	pubBytes := ssh.MarshalAuthorizedKey(pub)
+	pk := string(pubBytes)
+
+	kp, err := keypairs.Create(client, keypairs.CreateOpts{
+		Name:      "gophercloud_test_key_pair",
+		PublicKey: pk,
+	}).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Created key pair: %s\n", kp)
+
+	choices, err := ComputeChoicesFromEnv()
+	th.AssertNoErr(t, err)
+
+	name := tools.RandomString("Gophercloud-", 8)
+	t.Logf("Creating server [%s] with key pair.", name)
+
+	serverCreateOpts := servers.CreateOpts{
+		Name:      name,
+		FlavorRef: choices.FlavorID,
+		ImageRef:  choices.ImageID,
+	}
+
+	server, err := servers.Create(client, keypairs.CreateOptsExt{
+		serverCreateOpts,
+		"gophercloud_test_key_pair",
+	}).Extract()
+	th.AssertNoErr(t, err)
+	defer servers.Delete(client, server.ID)
+	t.Logf("Created server: %+v\n", server)
+
+	t.Logf("Deleting key pair [%s]...", kp.Name)
+	err = keypairs.Delete(client, "gophercloud_test_key_pair").ExtractErr()
+	th.AssertNoErr(t, err)
+
+	t.Logf("Deleting server [%s]...", name)
+}

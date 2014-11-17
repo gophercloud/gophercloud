@@ -45,6 +45,6 @@ func TestBootFromVolume(t *testing.T) {
 	}).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Created server: %+v\n", server)
-	//defer deleteServer(t, client, server)
+	defer servers.Delete(client, server.ID)
 	t.Logf("Deleting server [%s]...", name)
 }
