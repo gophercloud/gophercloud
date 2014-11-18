@@ -23,7 +23,7 @@ func TestCreateServerWithKeyPair(t *testing.T) {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
-	privateKey, err := rsa.GenerateKey(rand.Reader, 2014)
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	publicKey := privateKey.PublicKey
 	pub, err := ssh.NewPublicKey(&publicKey)
 	th.AssertNoErr(t, err)
