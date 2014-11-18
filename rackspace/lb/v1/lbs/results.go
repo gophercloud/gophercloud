@@ -305,7 +305,7 @@ func (p AlgorithmPage) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
-// ExtractAlgorithms accepts a Page struct, specifically a AlgorithmPage struct,
+// ExtractAlgorithms accepts a Page struct, specifically an AlgorithmPage struct,
 // and extracts the elements into a slice of Algorithm structs. In other
 // words, a generic collection is mapped into a relevant slice.
 func ExtractAlgorithms(page pagination.Page) ([]Algorithm, error) {
@@ -397,7 +397,7 @@ type Stats struct {
 	SSLKeepAliveTimedOut int `mapstructure:"keepAliveTimedOutSsl"`
 
 	// Maximum number of simultaneous SSL connections this load balancer has
-	// processed a any one time.
+	// processed at any one time.
 	SSLMaxConnections int `mapstructure:"maxConnSsl"`
 
 	// Number of simultaneous SSL connections active at the time of the request.
