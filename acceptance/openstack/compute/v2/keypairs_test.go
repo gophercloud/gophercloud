@@ -15,6 +15,8 @@ import (
 	"code.google.com/p/go.crypto/ssh"
 )
 
+const keyName = "gophercloud_test_key_pair"
+
 func TestCreateServerWithKeyPair(t *testing.T) {
 	client, err := newClient()
 	th.AssertNoErr(t, err)
@@ -31,7 +33,7 @@ func TestCreateServerWithKeyPair(t *testing.T) {
 	pk := string(pubBytes)
 
 	kp, err := keypairs.Create(client, keypairs.CreateOpts{
-		Name:      "gophercloud_test_key_pair",
+		Name:      keyName,
 		PublicKey: pk,
 	}).Extract()
 	th.AssertNoErr(t, err)
@@ -51,14 +53,21 @@ func TestCreateServerWithKeyPair(t *testing.T) {
 
 	server, err := servers.Create(client, keypairs.CreateOptsExt{
 		serverCreateOpts,
-		"gophercloud_test_key_pair",
+		keyName,
 	}).Extract()
 	th.AssertNoErr(t, err)
 	defer servers.Delete(client, server.ID)
+	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
+		t.Fatalf("Unable to wait for server: %v", err)
+	}
+
+	server, err = servers.Get(client, server.ID).Extract()
 	t.Logf("Created server: %+v\n", server)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, server.KeyName, keyName)
 
 	t.Logf("Deleting key pair [%s]...", kp.Name)
-	err = keypairs.Delete(client, "gophercloud_test_key_pair").ExtractErr()
+	err = keypairs.Delete(client, keyName).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Deleting server [%s]...", name)
