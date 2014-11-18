@@ -123,7 +123,8 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 		optsType = optsType.Elem()
 	}
 
-	var optsSlice []string
+	params := url.Values{}
+
 	if optsValue.Kind() == reflect.Struct {
 		for i := 0; i < optsValue.NumField(); i++ {
 			v := optsValue.Field(i)
@@ -138,11 +139,11 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 				if !isZero(v) {
 					switch v.Kind() {
 					case reflect.String:
-						optsSlice = append(optsSlice, tags[0]+"="+v.String())
+						params.Add(tags[0], v.String())
 					case reflect.Int:
-						optsSlice = append(optsSlice, tags[0]+"="+strconv.FormatInt(v.Int(), 10))
+						params.Add(tags[0], strconv.FormatInt(v.Int(), 10))
 					case reflect.Bool:
-						optsSlice = append(optsSlice, tags[0]+"="+strconv.FormatBool(v.Bool()))
+						params.Add(tags[0], strconv.FormatBool(v.Bool()))
 					}
 				} else {
 					// Otherwise, the field is not set.
@@ -152,18 +153,9 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 					}
 				}
 			}
+		}
 
-		}
-		// URL encode the string for safety.
-		s := strings.Join(optsSlice, "&")
-		if s != "" {
-			s = "?" + s
-		}
-		u, err := url.Parse(s)
-		if err != nil {
-			return nil, err
-		}
-		return u, nil
+		return &url.URL{RawQuery: params.Encode()}, nil
 	}
 	// Return an error if the underlying type of 'opts' isn't a struct.
 	return nil, fmt.Errorf("Options type is not a struct.")
