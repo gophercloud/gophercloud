@@ -26,3 +26,7 @@ func rootRuleURL(c *gophercloud.ServiceClient) string {
 func resourceRuleURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(rulepath, id)
 }
+
+func serverActionURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("servers", id, "action")
+}

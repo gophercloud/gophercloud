@@ -63,7 +63,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) Updat
 		UpdateOpts `json:"security_group"`
 	}{opts}
 
-	_, result.Err = perigee.Request("POST", resourceURL(client, id), perigee.Options{
+	_, result.Err = perigee.Request("PUT", resourceURL(client, id), perigee.Options{
 		Results:     &result.Body,
 		ReqBody:     &reqBody,
 		MoreHeaders: client.AuthenticatedHeaders(),
@@ -165,6 +165,38 @@ func DeleteRule(client *gophercloud.ServiceClient, id string) gophercloud.ErrRes
 	_, result.Err = perigee.Request("DELETE", resourceRuleURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
+	})
+
+	return result
+}
+
+func actionMap(prefix, groupName string) map[string]map[string]string {
+	return map[string]map[string]string{
+		prefix + "SecurityGroup": map[string]string{"name": groupName},
+	}
+}
+
+func AddServerToGroup(client *gophercloud.ServiceClient, serverID, groupName string) gophercloud.ErrResult {
+	var result gophercloud.ErrResult
+
+	_, result.Err = perigee.Request("POST", serverActionURL(client, serverID), perigee.Options{
+		Results:     &result.Body,
+		ReqBody:     actionMap("add", groupName),
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return result
+}
+
+func RemoveServerFromGroup(client *gophercloud.ServiceClient, serverID, groupName string) gophercloud.ErrResult {
+	var result gophercloud.ErrResult
+
+	_, result.Err = perigee.Request("POST", serverActionURL(client, serverID), perigee.Options{
+		Results:     &result.Body,
+		ReqBody:     actionMap("remove", groupName),
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
 	})
 
 	return result

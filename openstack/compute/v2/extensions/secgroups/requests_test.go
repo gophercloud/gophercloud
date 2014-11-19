@@ -207,3 +207,23 @@ func TestDeleteRule(t *testing.T) {
 	err := DeleteRule(client.ServiceClient(), ruleID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestAddServer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockAddServerToGroupResponse(t, serverID)
+
+	err := AddServerToGroup(client.ServiceClient(), serverID, "test").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestRemoveServer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockRemoveServerFromGroupResponse(t, serverID)
+
+	err := RemoveServerFromGroup(client.ServiceClient(), serverID, "test").ExtractErr()
+	th.AssertNoErr(t, err)
+}
