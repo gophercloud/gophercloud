@@ -49,3 +49,15 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 
 	return result
 }
+
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
+	var result GetResult
+
+	_, result.Err = perigee.Request("GET", resourceURL(client, id), perigee.Options{
+		Results:     &result.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return result
+}

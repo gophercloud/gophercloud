@@ -16,15 +16,22 @@ type SecurityGroup struct {
 }
 
 type Rule struct {
-	ID         string
-	FromPort   int     `mapstructure:"from_port"`
-	ToPort     int     `mapstructure:"to_port"`
-	IPProtocol string  `mapstructure:"ip_protocol"`
-	IPRange    IPRange `mapstructure:"ip_range"`
+	ID            string
+	FromPort      int     `mapstructure:"from_port"`
+	ToPort        int     `mapstructure:"to_port"`
+	IPProtocol    string  `mapstructure:"ip_protocol"`
+	IPRange       IPRange `mapstructure:"ip_range"`
+	ParentGroupID string  `mapstructure:"parent_group_id"`
+	Group         Group
 }
 
 type IPRange struct {
 	CIDR string
+}
+
+type Group struct {
+	TenantID string `mapstructure:"tenant_id"`
+	Name     string
 }
 
 // RolePage is a single page of a user Role collection.
@@ -57,6 +64,10 @@ type commonResult struct {
 }
 
 type CreateResult struct {
+	commonResult
+}
+
+type GetResult struct {
 	commonResult
 }
 
