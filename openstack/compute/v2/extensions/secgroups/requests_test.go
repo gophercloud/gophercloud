@@ -108,6 +108,26 @@ func TestCreate(t *testing.T) {
 	th.AssertDeepEquals(t, expected, group)
 }
 
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockUpdateGroupResponse(t, groupID)
+
+	opts := UpdateOpts{Name: "new_name"}
+	group, err := Update(client.ServiceClient(), groupID, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &SecurityGroup{
+		ID:          "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		Name:        "new_name",
+		Description: "something",
+		TenantID:    "openstack",
+		Rules:       []Rule{},
+	}
+	th.AssertDeepEquals(t, expected, group)
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

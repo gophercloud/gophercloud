@@ -25,7 +25,7 @@ func ListByServer(client *gophercloud.ServiceClient, serverID string) pagination
 	return commonList(client, listByServerURL(client, serverID))
 }
 
-type CreateOpts struct {
+type GroupOpts struct {
 	// Optional - the name of your security group. If no value provided, null
 	// will be set.
 	Name string `json:"name,omitempty"`
@@ -35,6 +35,8 @@ type CreateOpts struct {
 	Description string `json:"description,omitempty"`
 }
 
+type CreateOpts GroupOpts
+
 func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	var result CreateResult
 
@@ -43,6 +45,25 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	}{opts}
 
 	_, result.Err = perigee.Request("POST", rootURL(client), perigee.Options{
+		Results:     &result.Body,
+		ReqBody:     &reqBody,
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return result
+}
+
+type UpdateOpts GroupOpts
+
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
+	var result UpdateResult
+
+	reqBody := struct {
+		UpdateOpts `json:"security_group"`
+	}{opts}
+
+	_, result.Err = perigee.Request("POST", resourceURL(client, id), perigee.Options{
 		Results:     &result.Body,
 		ReqBody:     &reqBody,
 		MoreHeaders: client.AuthenticatedHeaders(),

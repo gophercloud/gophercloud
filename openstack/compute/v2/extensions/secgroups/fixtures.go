@@ -81,6 +81,37 @@ func mockCreateGroupResponse(t *testing.T) {
 	})
 }
 
+func mockUpdateGroupResponse(t *testing.T, groupID string) {
+	url := fmt.Sprintf("%s/%s", rootPath, groupID)
+	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+	"security_group": {
+		"name": "new_name"
+	}
+}
+	`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+	"security_group": {
+		"description": "something",
+		"id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		"name": "new_name",
+		"rules": [],
+		"tenant_id": "openstack"
+	}
+}
+`)
+	})
+}
+
 func mockGetGroupsResponse(t *testing.T, groupID string) {
 	url := fmt.Sprintf("%s/%s", rootPath, groupID)
 	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {

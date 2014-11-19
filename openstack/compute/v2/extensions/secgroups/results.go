@@ -71,6 +71,10 @@ type GetResult struct {
 	commonResult
 }
 
+type UpdateResult struct {
+	commonResult
+}
+
 func (r commonResult) Extract() (*SecurityGroup, error) {
 	if r.Err != nil {
 		return nil, r.Err
