@@ -42,3 +42,27 @@ func TestList(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, count)
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockCreateGroupResponse(t)
+
+	opts := CreateOpts{
+		Name:        "test",
+		Description: "something",
+	}
+
+	group, err := Create(client.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &SecurityGroup{
+		ID:          "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		Name:        "test",
+		Description: "something",
+		TenantID:    "openstack",
+		Rules:       []Rule{},
+	}
+	th.AssertDeepEquals(t, expected, group)
+}

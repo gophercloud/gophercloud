@@ -3,6 +3,7 @@ package secgroups
 import (
 	"github.com/mitchellh/mapstructure"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -49,4 +50,26 @@ func ExtractSecurityGroups(page pagination.Page) ([]SecurityGroup, error) {
 
 	err := mapstructure.Decode(casted, &response)
 	return response.SecurityGroups, err
+}
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+type CreateResult struct {
+	commonResult
+}
+
+func (r commonResult) Extract() (*SecurityGroup, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		SecurityGroup SecurityGroup `mapstructure:"security_group"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.SecurityGroup, err
 }
