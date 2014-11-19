@@ -177,3 +177,13 @@ func TestAddRule(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, rule)
 }
+
+func TestDeleteRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDeleteRuleResponse(t, ruleID)
+
+	err := DeleteRule(client.ServiceClient(), ruleID).ExtractErr()
+	th.AssertNoErr(t, err)
+}

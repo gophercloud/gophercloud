@@ -137,3 +137,14 @@ func AddRule(client *gophercloud.ServiceClient, opts AddRuleOpts) AddRuleResult 
 
 	return result
 }
+
+func DeleteRule(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
+	var result gophercloud.ErrResult
+
+	_, result.Err = perigee.Request("DELETE", resourceRuleURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{202},
+	})
+
+	return result
+}
