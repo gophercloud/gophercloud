@@ -84,3 +84,21 @@ func (r commonResult) Extract() (*SecurityGroup, error) {
 
 	return &response.SecurityGroup, err
 }
+
+type AddRuleResult struct {
+	gophercloud.Result
+}
+
+func (r AddRuleResult) Extract() (*Rule, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		Rule Rule `mapstructure:"security_group_rule"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.Rule, err
+}

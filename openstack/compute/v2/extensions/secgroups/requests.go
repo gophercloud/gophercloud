@@ -1,6 +1,8 @@
 package secgroups
 
 import (
+	"errors"
+
 	"github.com/racker/perigee"
 
 	"github.com/rackspace/gophercloud"
@@ -68,6 +70,69 @@ func Delete(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult 
 	_, result.Err = perigee.Request("DELETE", resourceURL(client, id), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
+	})
+
+	return result
+}
+
+type AddRuleOpts struct {
+	// Required - the ID of the group that this rule will be added to.
+	ParentGroupID string `json:"parent_group_id"`
+
+	// Required - the lower bound of the port range that will be opened.
+	FromPort int `json:"from_port"`
+
+	// Required - the upper bound of the port range that will be opened.
+	ToPort int `json:"to_port"`
+
+	// Required - the protocol type that will be allowed, e.g. TCP.
+	IPProtocol string `json:"ip_protocol"`
+
+	// ONLY required if FromGroupID is blank. This represents the IP range that
+	// will be the source of network traffic to your security group. Use
+	// 0.0.0.0/0 to allow all IP addresses.
+	CIDR string `json:"cidr,omitempty"`
+
+	// ONLY required if CIDR is blank. This value represents the ID of a group
+	// that forwards traffic to the parent group. So, instead of accepting
+	// network traffic from an entire IP range, you can instead refine the
+	// inbound source by an existing security group.
+	FromGroupID string `json:"group_id,omitempty"`
+}
+
+func AddRule(client *gophercloud.ServiceClient, opts AddRuleOpts) AddRuleResult {
+	var result AddRuleResult
+
+	if opts.ParentGroupID == "" {
+		result.Err = errors.New("A ParentGroupID must be set")
+		return result
+	}
+	if opts.FromPort == 0 {
+		result.Err = errors.New("A FromPort must be set")
+		return result
+	}
+	if opts.ToPort == 0 {
+		result.Err = errors.New("A ToPort must be set")
+		return result
+	}
+	if opts.IPProtocol == "" {
+		result.Err = errors.New("A IPProtocol must be set")
+		return result
+	}
+	if opts.CIDR == "" && opts.FromGroupID == "" {
+		result.Err = errors.New("A CIDR or FromGroupID must be set")
+		return result
+	}
+
+	reqBody := struct {
+		AddRuleOpts `json:"security_group_rule"`
+	}{opts}
+
+	_, result.Err = perigee.Request("POST", rootRuleURL(client), perigee.Options{
+		Results:     &result.Body,
+		ReqBody:     &reqBody,
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
 	})
 
 	return result

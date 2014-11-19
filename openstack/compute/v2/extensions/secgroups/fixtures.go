@@ -128,3 +128,49 @@ func mockDeleteGroupResponse(t *testing.T, groupID string) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+func mockAddRuleResponse(t *testing.T) {
+	th.Mux.HandleFunc("/os-security-group-rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+  "security_group_rule": {
+    "from_port": 22,
+    "ip_protocol": "TCP",
+    "to_port": 22,
+    "parent_group_id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+    "cidr": "0.0.0.0/0"
+  }
+}	`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "security_group_rule": {
+    "from_port": 22,
+    "group": {},
+    "ip_protocol": "TCP",
+    "to_port": 22,
+    "parent_group_id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+    "ip_range": {
+      "cidr": "0.0.0.0/0"
+    },
+    "id": "f9a97fcf-3a97-47b0-b76f-919136afb7ed"
+  }
+}`)
+	})
+}
+
+func mockDeleteRuleResponse(t *testing.T, ruleID string) {
+	url := fmt.Sprintf("/os-security-group-rules/%s", ruleID)
+	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+}

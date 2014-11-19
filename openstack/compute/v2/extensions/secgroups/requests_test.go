@@ -11,6 +11,7 @@ import (
 const (
 	serverID = "{serverID}"
 	groupID  = "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5"
+	ruleID   = "a4070a0f-5383-454c-872d-58c034bc981b"
 )
 
 func TestList(t *testing.T) {
@@ -145,4 +146,34 @@ func TestDelete(t *testing.T) {
 
 	err := Delete(client.ServiceClient(), groupID).ExtractErr()
 	th.AssertNoErr(t, err)
+}
+
+func TestAddRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockAddRuleResponse(t)
+
+	opts := AddRuleOpts{
+		ParentGroupID: "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		FromPort:      22,
+		ToPort:        22,
+		IPProtocol:    "TCP",
+		CIDR:          "0.0.0.0/0",
+	}
+
+	rule, err := AddRule(client.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &Rule{
+		FromPort:      22,
+		ToPort:        22,
+		Group:         Group{},
+		IPProtocol:    "TCP",
+		ParentGroupID: "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		IPRange:       IPRange{CIDR: "0.0.0.0/0"},
+		ID:            "f9a97fcf-3a97-47b0-b76f-919136afb7ed",
+	}
+
+	th.AssertDeepEquals(t, expected, rule)
 }
