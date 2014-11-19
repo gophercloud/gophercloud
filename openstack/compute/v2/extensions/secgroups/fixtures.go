@@ -11,6 +11,20 @@ import (
 
 const rootPath = "/os-security-groups"
 
+const listGroupsJSON = `
+{
+	"security_groups": [
+		{
+			"description": "default",
+			"id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+			"name": "default",
+			"rules": [],
+			"tenant_id": "openstack"
+		}
+	]
+}
+`
+
 func mockListGroupsResponse(t *testing.T) {
 	th.Mux.HandleFunc(rootPath, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -19,19 +33,20 @@ func mockListGroupsResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
-{
-  "security_groups": [
-    {
-      "description": "default",
-      "id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
-      "name": "default",
-      "rules": [],
-      "tenant_id": "openstack"
-    }
-  ]
+		fmt.Fprintf(w, listGroupsJSON)
+	})
 }
-`)
+
+func mockListGroupsByServerResponse(t *testing.T, serverID string) {
+	url := fmt.Sprintf("%s/servers/%s%s", rootPath, serverID, rootPath)
+	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, listGroupsJSON)
 	})
 }
 

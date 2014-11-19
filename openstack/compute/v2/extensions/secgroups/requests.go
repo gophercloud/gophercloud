@@ -7,12 +7,20 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-func List(client *gophercloud.ServiceClient) pagination.Pager {
+func commonList(client *gophercloud.ServiceClient, url string) pagination.Pager {
 	createPage := func(r pagination.PageResult) pagination.Page {
 		return SecurityGroupPage{pagination.SinglePageBase(r)}
 	}
 
-	return pagination.NewPager(client, rootURL(client), createPage)
+	return pagination.NewPager(client, url, createPage)
+}
+
+func List(client *gophercloud.ServiceClient) pagination.Pager {
+	return commonList(client, rootURL(client))
+}
+
+func ListByServer(client *gophercloud.ServiceClient, serverID string) pagination.Pager {
+	return commonList(client, listByServerURL(client, serverID))
 }
 
 type CreateOpts struct {

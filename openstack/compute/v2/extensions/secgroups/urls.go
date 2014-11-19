@@ -13,3 +13,7 @@ func resourceURL(c *gophercloud.ServiceClient, id string) string {
 func rootURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL(secgrouppath)
 }
+
+func listByServerURL(c *gophercloud.ServiceClient, serverID string) string {
+	return c.ServiceURL(secgrouppath, "servers", serverID, secgrouppath)
+}
