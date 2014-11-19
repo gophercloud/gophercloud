@@ -136,3 +136,13 @@ func TestGet(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, group)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDeleteGroupResponse(t, groupID)
+
+	err := Delete(client.ServiceClient(), groupID).ExtractErr()
+	th.AssertNoErr(t, err)
+}

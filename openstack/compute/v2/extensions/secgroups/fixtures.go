@@ -118,3 +118,13 @@ func mockGetGroupsResponse(t *testing.T, groupID string) {
 			`)
 	})
 }
+
+func mockDeleteGroupResponse(t *testing.T, groupID string) {
+	url := fmt.Sprintf("%s/%s", rootPath, groupID)
+	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
