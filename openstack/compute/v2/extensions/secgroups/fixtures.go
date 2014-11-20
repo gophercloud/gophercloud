@@ -13,15 +13,15 @@ const rootPath = "/os-security-groups"
 
 const listGroupsJSON = `
 {
-	"security_groups": [
-		{
-			"description": "default",
-			"id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
-			"name": "default",
-			"rules": [],
-			"tenant_id": "openstack"
-		}
-	]
+  "security_groups": [
+    {
+      "description": "default",
+      "id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+      "name": "default",
+      "rules": [],
+      "tenant_id": "openstack"
+    }
+  ]
 }
 `
 
@@ -89,9 +89,9 @@ func mockUpdateGroupResponse(t *testing.T, groupID string) {
 
 		th.TestJSONRequest(t, r, `
 {
-	"security_group": {
-		"name": "new_name"
-	}
+  "security_group": {
+    "name": "new_name"
+  }
 }
 	`)
 
@@ -100,13 +100,13 @@ func mockUpdateGroupResponse(t *testing.T, groupID string) {
 
 		fmt.Fprintf(w, `
 {
-	"security_group": {
-		"description": "something",
-		"id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
-		"name": "new_name",
-		"rules": [],
-		"tenant_id": "openstack"
-	}
+  "security_group": {
+    "description": "something",
+    "id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+    "name": "new_name",
+    "rules": [],
+    "tenant_id": "openstack"
+  }
 }
 `)
 	})
@@ -233,9 +233,9 @@ func mockRemoveServerFromGroupResponse(t *testing.T, serverID string) {
 
 		th.TestJSONRequest(t, r, `
 {
-	"removeSecurityGroup": {
-		"name": "test"
-	}
+  "removeSecurityGroup": {
+    "name": "test"
+  }
 }
 	`)
 
