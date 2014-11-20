@@ -17,14 +17,21 @@ func commonList(client *gophercloud.ServiceClient, url string) pagination.Pager 
 	return pagination.NewPager(client, url, createPage)
 }
 
+// List will return a collection of all the security groups for a particular
+// tenant.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	return commonList(client, rootURL(client))
 }
 
+// ListByServer will return a collection of all the security groups which are
+// associated with a particular server.
 func ListByServer(client *gophercloud.ServiceClient, serverID string) pagination.Pager {
 	return commonList(client, listByServerURL(client, serverID))
 }
 
+// GroupOpts is the underlying struct responsible for creating or updating
+// security groups. It therefore represents the mutable attributes of a
+// security group.
 type GroupOpts struct {
 	// Optional - the name of your security group. If no value provided, null
 	// will be set.
@@ -35,8 +42,10 @@ type GroupOpts struct {
 	Description string `json:"description,omitempty"`
 }
 
+// CreateOpts is the struct responsible for creating a security group.
 type CreateOpts GroupOpts
 
+// Create will create a new security group.
 func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	var result CreateResult
 
@@ -54,8 +63,11 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	return result
 }
 
+// UpdateOpts is the struct responsible for updating an existing security group.
 type UpdateOpts GroupOpts
 
+// Update will modify the mutable properties of a security group, notably its
+// name and description.
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
 	var result UpdateResult
 
@@ -73,6 +85,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) Updat
 	return result
 }
 
+// Get will return details for a particular security group.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
 
@@ -85,6 +98,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	return result
 }
 
+// Delete will permanently delete a security group from the project.
 func Delete(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var result gophercloud.ErrResult
 
@@ -96,6 +110,8 @@ func Delete(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult 
 	return result
 }
 
+// AddRuleOpts represents the configuration for adding a new rule to an
+// existing security group.
 type AddRuleOpts struct {
 	// Required - the ID of the group that this rule will be added to.
 	ParentGroupID string `json:"parent_group_id"`
@@ -121,6 +137,9 @@ type AddRuleOpts struct {
 	FromGroupID string `json:"group_id,omitempty"`
 }
 
+// AddRule will add a new rule to an existing security group (whose ID is
+// specified in AddRuleOpts). You have the option of controlling inbound
+// traffic from both an IP range (CIDR) or from another security group.
 func AddRule(client *gophercloud.ServiceClient, opts AddRuleOpts) AddRuleResult {
 	var result AddRuleResult
 
@@ -159,6 +178,7 @@ func AddRule(client *gophercloud.ServiceClient, opts AddRuleOpts) AddRuleResult 
 	return result
 }
 
+// DeleteRule will permanently delete a rule from a security group.
 func DeleteRule(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var result gophercloud.ErrResult
 
@@ -176,6 +196,8 @@ func actionMap(prefix, groupName string) map[string]map[string]string {
 	}
 }
 
+// AddServerToGroup will associate a server and a security group, enforcing the
+// rules of the group on the server.
 func AddServerToGroup(client *gophercloud.ServiceClient, serverID, groupName string) gophercloud.ErrResult {
 	var result gophercloud.ErrResult
 
@@ -189,6 +211,7 @@ func AddServerToGroup(client *gophercloud.ServiceClient, serverID, groupName str
 	return result
 }
 
+// RemoveServerFromGroup will disassociate a server from a security group.
 func RemoveServerFromGroup(client *gophercloud.ServiceClient, serverID, groupName string) gophercloud.ErrResult {
 	var result gophercloud.ErrResult
 
