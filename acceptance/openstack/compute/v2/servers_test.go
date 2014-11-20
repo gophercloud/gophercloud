@@ -418,33 +418,33 @@ func TestServerMetadata(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	metadata, err := servers.UpdateMetadatas(client, server.ID, servers.MetadatasOpts{
+	metadata, err := servers.UpdateMetadata(client, server.ID, servers.MetadataOpts{
 		"foo":  "bar",
 		"this": "that",
 	}).Extract()
 	th.AssertNoErr(t, err)
-	t.Logf("UpdateMetadatas result: %+v\n", metadata)
+	t.Logf("UpdateMetadata result: %+v\n", metadata)
 
-	err = servers.DeleteMetadata(client, server.ID, "foo").ExtractErr()
+	err = servers.DeleteMetadatum(client, server.ID, "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 
-	metadata, err = servers.CreateMetadata(client, server.ID, servers.MetadataOpts{
+	metadata, err = servers.CreateMetadatum(client, server.ID, servers.MetadatumOpts{
 		"foo": "baz",
 	}).Extract()
 	th.AssertNoErr(t, err)
-	t.Logf("CreateMetadata result: %+v\n", metadata)
+	t.Logf("CreateMetadatum result: %+v\n", metadata)
 
-	metadata, err = servers.Metadata(client, server.ID, "foo").Extract()
+	metadata, err = servers.Metadatum(client, server.ID, "foo").Extract()
 	th.AssertNoErr(t, err)
-	t.Logf("Metadata result: %+v\n", metadata)
+	t.Logf("Metadatum result: %+v\n", metadata)
 	th.AssertEquals(t, "baz", metadata["foo"])
 
-	metadata, err = servers.Metadatas(client, server.ID).Extract()
+	metadata, err = servers.Metadata(client, server.ID).Extract()
 	th.AssertNoErr(t, err)
-	t.Logf("Metadatas result: %+v\n", metadata)
+	t.Logf("Metadata result: %+v\n", metadata)
 
-	metadata, err = servers.CreateMetadatas(client, server.ID, servers.MetadatasOpts{}).Extract()
+	metadata, err = servers.CreateMetadata(client, server.ID, servers.MetadataOpts{}).Extract()
 	th.AssertNoErr(t, err)
-	t.Logf("CreateMetadatas result: %+v\n", metadata)
+	t.Logf("CreateMetadata result: %+v\n", metadata)
 	th.AssertDeepEquals(t, map[string]string{}, metadata)
 }

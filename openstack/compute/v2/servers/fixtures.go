@@ -470,8 +470,8 @@ func HandleServerRescueSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleMetadataGetSuccessfully sets up the test server to respond to a metadata Get request.
-func HandleMetadataGetSuccessfully(t *testing.T) {
+// HandleMetadatumGetSuccessfully sets up the test server to respond to a metadatum Get request.
+func HandleMetadatumGetSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/1234asdf/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -483,8 +483,8 @@ func HandleMetadataGetSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleMetadataCreateSuccessfully sets up the test server to respond to a server creation request.
-func HandleMetadataCreateSuccessfully(t *testing.T) {
+// HandleMetadatumCreateSuccessfully sets up the test server to respond to a metadatum Create request.
+func HandleMetadatumCreateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/1234asdf/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -500,8 +500,8 @@ func HandleMetadataCreateSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleMetadataDeleteSuccessfully sets up the test server to respond to a metadata Delete request.
-func HandleMetadataDeleteSuccessfully(t *testing.T) {
+// HandleMetadatumDeleteSuccessfully sets up the test server to respond to a metadatum Delete request.
+func HandleMetadatumDeleteSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/1234asdf/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -510,8 +510,8 @@ func HandleMetadataDeleteSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleMetadatasGetSuccessfully sets up the test server to respond to a metadatas Get request.
-func HandleMetadatasGetSuccessfully(t *testing.T) {
+// HandleMetadataGetSuccessfully sets up the test server to respond to a metadata Get request.
+func HandleMetadataGetSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/1234asdf/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -522,8 +522,8 @@ func HandleMetadatasGetSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleMetadatasCreateSuccessfully sets up the test server to respond to a metadatas Create request.
-func HandleMetadatasCreateSuccessfully(t *testing.T) {
+// HandleMetadataCreateSuccessfully sets up the test server to respond to a metadata Create request.
+func HandleMetadataCreateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/1234asdf/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
@@ -540,8 +540,8 @@ func HandleMetadatasCreateSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleMetadatasUpdateSuccessfully sets up the test server to respond to a metadatas Update request.
-func HandleMetadatasUpdateSuccessfully(t *testing.T) {
+// HandleMetadataUpdateSuccessfully sets up the test server to respond to a metadata Update request.
+func HandleMetadataUpdateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/1234asdf/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

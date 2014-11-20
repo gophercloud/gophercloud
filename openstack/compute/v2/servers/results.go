@@ -168,27 +168,7 @@ func ExtractServers(page pagination.Page) ([]Server, error) {
 	return response.Servers, err
 }
 
-// MetadatasResult contains the result of a call for (potentially) multiple key-value pairs.
-type MetadatasResult struct {
-	gophercloud.Result
-}
-
-// GetMetadatasResult temporarily contains the response from a metadatas Get call.
-type GetMetadatasResult struct {
-	MetadatasResult
-}
-
-// CreateMetadatasResult temporarily contains the response from a metadatas Create call.
-type CreateMetadatasResult struct {
-	MetadatasResult
-}
-
-// UpdateMetadatasResult temporarily contains the response from a metadatas Update call.
-type UpdateMetadatasResult struct {
-	MetadatasResult
-}
-
-// MetadataResult contains the result of a call for individual a single key-value pair.
+// MetadataResult contains the result of a call for (potentially) multiple key-value pairs.
 type MetadataResult struct {
 	gophercloud.Result
 }
@@ -203,23 +183,29 @@ type CreateMetadataResult struct {
 	MetadataResult
 }
 
-// DeleteMetadataResult temporarily contains the response from a metadata Delete call.
-type DeleteMetadataResult struct {
-	gophercloud.ErrResult
+// UpdateMetadataResult temporarily contains the response from a metadata Update call.
+type UpdateMetadataResult struct {
+	MetadataResult
 }
 
-// Extract interprets any MetadatasResult as a Metadatas, if possible.
-func (r MetadatasResult) Extract() (map[string]string, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
+// MetadatumResult contains the result of a call for individual a single key-value pair.
+type MetadatumResult struct {
+	gophercloud.Result
+}
 
-	var response struct {
-		Metadatas map[string]string `mapstructure:"metadata"`
-	}
+// GetMetadatumResult temporarily contains the response from a metadatum Get call.
+type GetMetadatumResult struct {
+	MetadatumResult
+}
 
-	err := mapstructure.Decode(r.Body, &response)
-	return response.Metadatas, err
+// CreateMetadatumResult temporarily contains the response from a metadatum Create call.
+type CreateMetadatumResult struct {
+	MetadatumResult
+}
+
+// DeleteMetadatumResult temporarily contains the response from a metadatum Delete call.
+type DeleteMetadatumResult struct {
+	gophercloud.ErrResult
 }
 
 // Extract interprets any MetadataResult as a Metadata, if possible.
@@ -229,9 +215,23 @@ func (r MetadataResult) Extract() (map[string]string, error) {
 	}
 
 	var response struct {
-		Metadata map[string]string `mapstructure:"meta"`
+		Metadata map[string]string `mapstructure:"metadata"`
 	}
 
 	err := mapstructure.Decode(r.Body, &response)
 	return response.Metadata, err
+}
+
+// Extract interprets any MetadatumResult as a Metadatum, if possible.
+func (r MetadatumResult) Extract() (map[string]string, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		Metadatum map[string]string `mapstructure:"meta"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+	return response.Metadatum, err
 }

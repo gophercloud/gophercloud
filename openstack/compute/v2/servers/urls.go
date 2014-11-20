@@ -30,10 +30,10 @@ func actionURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("servers", id, "action")
 }
 
-func metadataURL(client *gophercloud.ServiceClient, id, key string) string {
+func metadatumURL(client *gophercloud.ServiceClient, id, key string) string {
 	return client.ServiceURL("servers", id, "metadata", key)
 }
 
-func metadatasURL(client *gophercloud.ServiceClient, id string) string {
+func metadataURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("servers", id, "metadata")
 }
