@@ -183,7 +183,7 @@ func AddServerToGroup(client *gophercloud.ServiceClient, serverID, groupName str
 		Results:     &result.Body,
 		ReqBody:     actionMap("add", groupName),
 		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return result
@@ -196,7 +196,7 @@ func RemoveServerFromGroup(client *gophercloud.ServiceClient, serverID, groupNam
 		Results:     &result.Body,
 		ReqBody:     actionMap("remove", groupName),
 		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+		OkCodes:     []int{202},
 	})
 
 	return result
