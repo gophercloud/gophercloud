@@ -402,9 +402,7 @@ func TestServerMetadata(t *testing.T) {
 	t.Parallel()
 
 	choices, err := ComputeChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	client, err := newClient()
 	if err != nil {
