@@ -221,7 +221,7 @@ func mockAddServerToGroupResponse(t *testing.T, serverID string) {
 	`)
 
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
@@ -240,6 +240,6 @@ func mockRemoveServerFromGroupResponse(t *testing.T, serverID string) {
 	`)
 
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
