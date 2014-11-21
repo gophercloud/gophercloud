@@ -178,8 +178,8 @@ type GetMetadataResult struct {
 	MetadataResult
 }
 
-// CreateMetadataResult temporarily contains the response from a metadata Create call.
-type CreateMetadataResult struct {
+// ResetMetadataResult temporarily contains the response from a metadata Reset call.
+type ResetMetadataResult struct {
 	MetadataResult
 }
 

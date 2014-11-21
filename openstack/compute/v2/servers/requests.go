@@ -594,17 +594,17 @@ func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder
 	return result
 }
 
-// CreateMetadataOptsBuilder allows extensions to add additional parameters to the
-// Create request.
-type CreateMetadataOptsBuilder interface {
-	ToMetadataCreateMap() (map[string]interface{}, error)
+// ResetMetadataOptsBuilder allows extensions to add additional parameters to the
+// Reset request.
+type ResetMetadataOptsBuilder interface {
+	ToMetadataResetMap() (map[string]interface{}, error)
 }
 
 // MetadataOpts is a map that contains key-value pairs.
 type MetadataOpts map[string]string
 
-// ToMetadataCreateMap assembles a body for a Create request based on the contents of a MetadataOpts.
-func (opts MetadataOpts) ToMetadataCreateMap() (map[string]interface{}, error) {
+// ToMetadataResetMap assembles a body for a Reset request based on the contents of a MetadataOpts.
+func (opts MetadataOpts) ToMetadataResetMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"metadata": opts}, nil
 }
 
@@ -613,13 +613,13 @@ func (opts MetadataOpts) ToMetadataUpdateMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"metadata": opts}, nil
 }
 
-// CreateMetadata will create multiple new key-value pairs for the given server ID.
+// ResetMetadata will create multiple new key-value pairs for the given server ID.
 // Note: Using this operation will erase any already-existing metadata and create
 // the new metadata provided. To keep any already-existing metadata, use the
 // UpdateMetadatas or UpdateMetadata function.
-func CreateMetadata(client *gophercloud.ServiceClient, id string, opts CreateMetadataOptsBuilder) CreateMetadataResult {
-	var res CreateMetadataResult
-	metadata, err := opts.ToMetadataCreateMap()
+func ResetMetadata(client *gophercloud.ServiceClient, id string, opts ResetMetadataOptsBuilder) ResetMetadataResult {
+	var res ResetMetadataResult
+	metadata, err := opts.ToMetadataResetMap()
 	if err != nil {
 		res.Err = err
 		return res

@@ -443,8 +443,8 @@ func TestServerMetadata(t *testing.T) {
 	th.AssertNoErr(t, err)
 	t.Logf("Metadata result: %+v\n", metadata)
 
-	metadata, err = servers.CreateMetadata(client, server.ID, servers.MetadataOpts{}).Extract()
+	metadata, err = servers.ResetMetadata(client, server.ID, servers.MetadataOpts{}).Extract()
 	th.AssertNoErr(t, err)
-	t.Logf("CreateMetadata result: %+v\n", metadata)
+	t.Logf("ResetMetadata result: %+v\n", metadata)
 	th.AssertDeepEquals(t, map[string]string{}, metadata)
 }

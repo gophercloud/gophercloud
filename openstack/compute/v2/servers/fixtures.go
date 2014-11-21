@@ -522,8 +522,8 @@ func HandleMetadataGetSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleMetadataCreateSuccessfully sets up the test server to respond to a metadata Create request.
-func HandleMetadataCreateSuccessfully(t *testing.T) {
+// HandleMetadataResetSuccessfully sets up the test server to respond to a metadata Create request.
+func HandleMetadataResetSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/1234asdf/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)

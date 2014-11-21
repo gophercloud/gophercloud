@@ -235,14 +235,14 @@ func TestGetMetadata(t *testing.T) {
 	th.AssertDeepEquals(t, expected, actual)
 }
 
-func TestCreateMetadata(t *testing.T) {
+func TestResetMetadata(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleMetadataCreateSuccessfully(t)
+	HandleMetadataResetSuccessfully(t)
 
 	expected := map[string]string{"foo": "bar", "this": "that"}
-	actual, err := CreateMetadata(client.ServiceClient(), "1234asdf", MetadataOpts{
+	actual, err := ResetMetadata(client.ServiceClient(), "1234asdf", MetadataOpts{
 		"foo":  "bar",
 		"this": "that",
 	}).Extract()
