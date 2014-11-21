@@ -45,13 +45,34 @@ type GroupOpts struct {
 // CreateOpts is the struct responsible for creating a security group.
 type CreateOpts GroupOpts
 
+// CreateOptsBuilder builds the create options into a serializable format.
+type CreateOptsBuilder interface {
+	ToSecGroupCreateMap() (map[string]interface{}, error)
+}
+
+// ToSecGroupCreateMap builds the create options into a serializable format.
+func (opts CreateOpts) ToSecGroupCreateMap() (map[string]interface{}, error) {
+	sg := make(map[string]interface{})
+
+	if opts.Name != "" {
+		sg["name"] = opts.Name
+	}
+	if opts.Description != "" {
+		sg["description"] = opts.Description
+	}
+
+	return map[string]interface{}{"security_group": sg}, nil
+}
+
 // Create will create a new security group.
-func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var result CreateResult
 
-	reqBody := struct {
-		CreateOpts `json:"security_group"`
-	}{opts}
+	reqBody, err := opts.ToSecGroupCreateMap()
+	if err != nil {
+		result.Err = err
+		return result
+	}
 
 	_, result.Err = perigee.Request("POST", rootURL(client), perigee.Options{
 		Results:     &result.Body,
@@ -66,14 +87,35 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 // UpdateOpts is the struct responsible for updating an existing security group.
 type UpdateOpts GroupOpts
 
+// UpdateOptsBuilder builds the update options into a serializable format.
+type UpdateOptsBuilder interface {
+	ToSecGroupUpdateMap() (map[string]interface{}, error)
+}
+
+// ToSecGroupUpdateMap builds the update options into a serializable format.
+func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]interface{}, error) {
+	sg := make(map[string]interface{})
+
+	if opts.Name != "" {
+		sg["name"] = opts.Name
+	}
+	if opts.Description != "" {
+		sg["description"] = opts.Description
+	}
+
+	return map[string]interface{}{"security_group": sg}, nil
+}
+
 // Update will modify the mutable properties of a security group, notably its
 // name and description.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var result UpdateResult
 
-	reqBody := struct {
-		UpdateOpts `json:"security_group"`
-	}{opts}
+	reqBody, err := opts.ToSecGroupUpdateMap()
+	if err != nil {
+		result.Err = err
+		return result
+	}
 
 	_, result.Err = perigee.Request("PUT", resourceURL(client, id), perigee.Options{
 		Results:     &result.Body,
@@ -110,9 +152,9 @@ func Delete(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult 
 	return result
 }
 
-// AddRuleOpts represents the configuration for adding a new rule to an
+// CreateRuleOpts represents the configuration for adding a new rule to an
 // existing security group.
-type AddRuleOpts struct {
+type CreateRuleOpts struct {
 	// Required - the ID of the group that this rule will be added to.
 	ParentGroupID string `json:"parent_group_id"`
 
@@ -137,36 +179,57 @@ type AddRuleOpts struct {
 	FromGroupID string `json:"group_id,omitempty"`
 }
 
-// AddRule will add a new rule to an existing security group (whose ID is
-// specified in AddRuleOpts). You have the option of controlling inbound
-// traffic from both an IP range (CIDR) or from another security group.
-func AddRule(client *gophercloud.ServiceClient, opts AddRuleOpts) AddRuleResult {
-	var result AddRuleResult
+// CreateRuleOptsBuilder builds the create rule options into a serializable format.
+type CreateRuleOptsBuilder interface {
+	ToRuleCreateMap() (map[string]interface{}, error)
+}
+
+// ToRuleCreateMap builds the create rule options into a serializable format.
+func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]interface{}, error) {
+	rule := make(map[string]interface{})
 
 	if opts.ParentGroupID == "" {
-		result.Err = errors.New("A ParentGroupID must be set")
-		return result
+		return rule, errors.New("A ParentGroupID must be set")
 	}
 	if opts.FromPort == 0 {
-		result.Err = errors.New("A FromPort must be set")
-		return result
+		return rule, errors.New("A FromPort must be set")
 	}
 	if opts.ToPort == 0 {
-		result.Err = errors.New("A ToPort must be set")
-		return result
+		return rule, errors.New("A ToPort must be set")
 	}
 	if opts.IPProtocol == "" {
-		result.Err = errors.New("A IPProtocol must be set")
-		return result
+		return rule, errors.New("A IPProtocol must be set")
 	}
 	if opts.CIDR == "" && opts.FromGroupID == "" {
-		result.Err = errors.New("A CIDR or FromGroupID must be set")
-		return result
+		return rule, errors.New("A CIDR or FromGroupID must be set")
 	}
 
-	reqBody := struct {
-		AddRuleOpts `json:"security_group_rule"`
-	}{opts}
+	rule["parent_group_id"] = opts.ParentGroupID
+	rule["from_port"] = opts.FromPort
+	rule["to_port"] = opts.ToPort
+	rule["ip_protocol"] = opts.IPProtocol
+
+	if opts.CIDR != "" {
+		rule["cidr"] = opts.CIDR
+	}
+	if opts.FromGroupID != "" {
+		rule["from_group_id"] = opts.FromGroupID
+	}
+
+	return map[string]interface{}{"security_group_rule": rule}, nil
+}
+
+// CreateRule will add a new rule to an existing security group (whose ID is
+// specified in CreateRuleOpts). You have the option of controlling inbound
+// traffic from either an IP range (CIDR) or from another security group.
+func CreateRule(client *gophercloud.ServiceClient, opts CreateRuleOptsBuilder) CreateRuleResult {
+	var result CreateRuleResult
+
+	reqBody, err := opts.ToRuleCreateMap()
+	if err != nil {
+		result.Err = err
+		return result
+	}
 
 	_, result.Err = perigee.Request("POST", rootRuleURL(client), perigee.Options{
 		Results:     &result.Body,

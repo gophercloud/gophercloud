@@ -21,7 +21,7 @@ type SecurityGroup struct {
 	// The rules which determine how this security group operates.
 	Rules []Rule
 
-	// The ID of the tenant to which this security group belongs to.
+	// The ID of the tenant to which this security group belongs.
 	TenantID string `mapstructure:"tenant_id"`
 }
 
@@ -43,7 +43,7 @@ type Rule struct {
 	// The CIDR IP range whose traffic can be received
 	IPRange IPRange `mapstructure:"ip_range"`
 
-	// The security group ID which this rule belongs to
+	// The security group ID to which this rule belongs
 	ParentGroupID string `mapstructure:"parent_group_id"`
 
 	// Not documented.
@@ -106,6 +106,7 @@ type UpdateResult struct {
 	commonResult
 }
 
+// Extract will extract a SecurityGroup struct from most responses.
 func (r commonResult) Extract() (*SecurityGroup, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -120,13 +121,13 @@ func (r commonResult) Extract() (*SecurityGroup, error) {
 	return &response.SecurityGroup, err
 }
 
-// AddRuleResult represents the result when adding rules to a security group.
-type AddRuleResult struct {
+// CreateRuleResult represents the result when adding rules to a security group.
+type CreateRuleResult struct {
 	gophercloud.Result
 }
 
-// Extract will extract a Rule struct from an AddResultRule.
-func (r AddRuleResult) Extract() (*Rule, error) {
+// Extract will extract a Rule struct from a CreateRuleResult.
+func (r CreateRuleResult) Extract() (*Rule, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}

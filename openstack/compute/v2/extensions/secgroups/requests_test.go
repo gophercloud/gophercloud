@@ -174,7 +174,7 @@ func TestAddRule(t *testing.T) {
 
 	mockAddRuleResponse(t)
 
-	opts := AddRuleOpts{
+	opts := CreateRuleOpts{
 		ParentGroupID: "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
 		FromPort:      22,
 		ToPort:        22,
@@ -182,7 +182,7 @@ func TestAddRule(t *testing.T) {
 		CIDR:          "0.0.0.0/0",
 	}
 
-	rule, err := AddRule(client.ServiceClient(), opts).Extract()
+	rule, err := CreateRule(client.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &Rule{

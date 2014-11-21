@@ -87,7 +87,7 @@ func getSecGroup(t *testing.T, client *gophercloud.ServiceClient, id string) {
 }
 
 func addRemoveRules(t *testing.T, client *gophercloud.ServiceClient, id string) {
-	opts := secgroups.AddRuleOpts{
+	opts := secgroups.CreateRuleOpts{
 		ParentGroupID: id,
 		FromPort:      22,
 		ToPort:        22,
@@ -95,7 +95,7 @@ func addRemoveRules(t *testing.T, client *gophercloud.ServiceClient, id string) 
 		CIDR:          "0.0.0.0/0",
 	}
 
-	rule, err := secgroups.AddRule(client, opts).Extract()
+	rule, err := secgroups.CreateRule(client, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	t.Logf("Adding rule %s to group %s", rule.ID, id)
