@@ -397,3 +397,54 @@ func TestActionResizeRevert(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestServerMetadata(t *testing.T) {
+	t.Parallel()
+
+	choices, err := ComputeChoicesFromEnv()
+	th.AssertNoErr(t, err)
+
+	client, err := newClient()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	server, err := createServer(t, client, choices)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer servers.Delete(client, server.ID)
+	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
+		t.Fatal(err)
+	}
+
+	metadata, err := servers.UpdateMetadata(client, server.ID, servers.MetadataOpts{
+		"foo":  "bar",
+		"this": "that",
+	}).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("UpdateMetadata result: %+v\n", metadata)
+
+	err = servers.DeleteMetadatum(client, server.ID, "foo").ExtractErr()
+	th.AssertNoErr(t, err)
+
+	metadata, err = servers.CreateMetadatum(client, server.ID, servers.MetadatumOpts{
+		"foo": "baz",
+	}).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("CreateMetadatum result: %+v\n", metadata)
+
+	metadata, err = servers.Metadatum(client, server.ID, "foo").Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Metadatum result: %+v\n", metadata)
+	th.AssertEquals(t, "baz", metadata["foo"])
+
+	metadata, err = servers.Metadata(client, server.ID).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Metadata result: %+v\n", metadata)
+
+	metadata, err = servers.ResetMetadata(client, server.ID, servers.MetadataOpts{}).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("ResetMetadata result: %+v\n", metadata)
+	th.AssertDeepEquals(t, map[string]string{}, metadata)
+}
