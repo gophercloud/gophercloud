@@ -10,7 +10,7 @@ import (
 // SecurityGroup represents a security group.
 type SecurityGroup struct {
 	// The unique ID of the group.
-	ID string
+	ID int
 
 	// The human-readable name of the group, which needs to be unique.
 	Name string
@@ -29,7 +29,7 @@ type SecurityGroup struct {
 // security group operates and what inbound traffic it allows in.
 type Rule struct {
 	// The unique ID
-	ID string
+	ID int
 
 	// The lower bound of the port range which this security group should open up
 	FromPort int `mapstructure:"from_port"`
@@ -44,7 +44,7 @@ type Rule struct {
 	IPRange IPRange `mapstructure:"ip_range"`
 
 	// The security group ID to which this rule belongs
-	ParentGroupID string `mapstructure:"parent_group_id"`
+	ParentGroupID int `mapstructure:"parent_group_id"`
 
 	// Not documented.
 	Group Group

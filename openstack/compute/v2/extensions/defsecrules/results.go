@@ -8,6 +8,8 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// DefaultRule represents a default rule - which is identical to a
+// normal security rule.
 type DefaultRule secgroups.Rule
 
 // DefaultRulePage is a single page of a DefaultRule collection.

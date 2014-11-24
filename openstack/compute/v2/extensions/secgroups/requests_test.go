@@ -10,8 +10,8 @@ import (
 
 const (
 	serverID = "{serverID}"
-	groupID  = "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5"
-	ruleID   = "a4070a0f-5383-454c-872d-58c034bc981b"
+	groupID  = 1
+	ruleID   = 2
 )
 
 func TestList(t *testing.T) {
@@ -32,7 +32,7 @@ func TestList(t *testing.T) {
 
 		expected := []SecurityGroup{
 			SecurityGroup{
-				ID:          "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+				ID:          groupID,
 				Description: "default",
 				Name:        "default",
 				Rules:       []Rule{},
@@ -67,7 +67,7 @@ func TestListByServer(t *testing.T) {
 
 		expected := []SecurityGroup{
 			SecurityGroup{
-				ID:          "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+				ID:          groupID,
 				Description: "default",
 				Name:        "default",
 				Rules:       []Rule{},
@@ -99,7 +99,7 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := &SecurityGroup{
-		ID:          "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		ID:          groupID,
 		Name:        "test",
 		Description: "something",
 		TenantID:    "openstack",
@@ -119,7 +119,7 @@ func TestUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := &SecurityGroup{
-		ID:          "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		ID:          groupID,
 		Name:        "new_name",
 		Description: "something",
 		TenantID:    "openstack",
@@ -138,7 +138,7 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := &SecurityGroup{
-		ID:          "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		ID:          groupID,
 		Description: "default",
 		Name:        "default",
 		TenantID:    "openstack",
@@ -149,8 +149,8 @@ func TestGet(t *testing.T) {
 				IPProtocol:    "TCP",
 				IPRange:       IPRange{CIDR: "0.0.0.0"},
 				Group:         Group{TenantID: "openstack", Name: "default"},
-				ParentGroupID: "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
-				ID:            "ebe599e2-6b8c-457c-b1ff-a75e48f10923",
+				ParentGroupID: groupID,
+				ID:            ruleID,
 			},
 		},
 	}
@@ -175,7 +175,7 @@ func TestAddRule(t *testing.T) {
 	mockAddRuleResponse(t)
 
 	opts := CreateRuleOpts{
-		ParentGroupID: "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		ParentGroupID: groupID,
 		FromPort:      22,
 		ToPort:        22,
 		IPProtocol:    "TCP",
@@ -190,9 +190,9 @@ func TestAddRule(t *testing.T) {
 		ToPort:        22,
 		Group:         Group{},
 		IPProtocol:    "TCP",
-		ParentGroupID: "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		ParentGroupID: groupID,
 		IPRange:       IPRange{CIDR: "0.0.0.0/0"},
-		ID:            "f9a97fcf-3a97-47b0-b76f-919136afb7ed",
+		ID:            ruleID,
 	}
 
 	th.AssertDeepEquals(t, expected, rule)

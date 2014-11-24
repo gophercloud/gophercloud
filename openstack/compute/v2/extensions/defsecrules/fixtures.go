@@ -3,6 +3,7 @@ package defsecrules
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"testing"
 
 	th "github.com/rackspace/gophercloud/testhelper"
@@ -24,7 +25,7 @@ func mockListRulesResponse(t *testing.T) {
   "security_group_default_rules": [
     {
       "from_port": 80,
-      "id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+      "id": 1,
       "ip_protocol": "TCP",
       "ip_range": {
         "cidr": "10.10.10.0/24"
@@ -65,16 +66,15 @@ func mockCreateRuleResponse(t *testing.T) {
     "ip_range": {
       "cidr": "10.10.12.0/24"
     },
-    "to_port": 80,
-		"id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5"
+    "to_port": 80
   }
 }
 `)
 	})
 }
 
-func mockGetRuleResponse(t *testing.T, ruleID string) {
-	url := rootPath + "/" + ruleID
+func mockGetRuleResponse(t *testing.T, ruleID int) {
+	url := rootPath + "/" + strconv.Itoa(ruleID)
 	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -85,7 +85,7 @@ func mockGetRuleResponse(t *testing.T, ruleID string) {
 		fmt.Fprintf(w, `
 {
   "security_group_default_rule": {
-    "id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+    "id": 1,
     "from_port": 80,
     "to_port": 80,
     "ip_protocol": "TCP",
@@ -98,8 +98,8 @@ func mockGetRuleResponse(t *testing.T, ruleID string) {
 	})
 }
 
-func mockDeleteRuleResponse(t *testing.T, ruleID string) {
-	url := rootPath + "/" + ruleID
+func mockDeleteRuleResponse(t *testing.T, ruleID int) {
+	url := rootPath + "/" + strconv.Itoa(ruleID)
 	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)

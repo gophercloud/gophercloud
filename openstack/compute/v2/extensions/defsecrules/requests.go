@@ -35,7 +35,7 @@ type CreateOpts struct {
 	CIDR string `json:"cidr,omitempty"`
 }
 
-// CreateRuleOptsBuilder builds the create rule options into a serializable format.
+// CreateOptsBuilder builds the create rule options into a serializable format.
 type CreateOptsBuilder interface {
 	ToRuleCreateMap() (map[string]interface{}, error)
 }
@@ -65,6 +65,7 @@ func (opts CreateOpts) ToRuleCreateMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"security_group_default_rule": rule}, nil
 }
 
+// Create is the operation responsible for creating a new default rule.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var result CreateResult
 
@@ -85,7 +86,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 }
 
 // Get will return details for a particular default rule.
-func Get(client *gophercloud.ServiceClient, id string) GetResult {
+func Get(client *gophercloud.ServiceClient, id int) GetResult {
 	var result GetResult
 
 	_, result.Err = perigee.Request("GET", resourceURL(client, id), perigee.Options{
@@ -98,7 +99,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 }
 
 // Delete will permanently delete a default rule from the project.
-func Delete(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
+func Delete(client *gophercloud.ServiceClient, id int) gophercloud.ErrResult {
 	var result gophercloud.ErrResult
 
 	_, result.Err = perigee.Request("DELETE", resourceURL(client, id), perigee.Options{

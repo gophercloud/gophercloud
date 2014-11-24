@@ -1,11 +1,15 @@
 package defsecrules
 
-import "github.com/rackspace/gophercloud"
+import (
+	"strconv"
+
+	"github.com/rackspace/gophercloud"
+)
 
 const rulepath = "os-security-group-default-rules"
 
-func resourceURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL(rulepath, id)
+func resourceURL(c *gophercloud.ServiceClient, id int) string {
+	return c.ServiceURL(rulepath, strconv.Itoa(id))
 }
 
 func rootURL(c *gophercloud.ServiceClient) string {
