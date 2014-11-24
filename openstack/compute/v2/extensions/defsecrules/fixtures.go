@@ -104,6 +104,6 @@ func mockDeleteRuleResponse(t *testing.T, ruleID int) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusAccepted)
+		w.WriteHeader(http.StatusNoContent)
 	})
 }
