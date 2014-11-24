@@ -114,7 +114,11 @@ func TestUpdate(t *testing.T) {
 
 	mockUpdateGroupResponse(t, groupID)
 
-	opts := UpdateOpts{Name: "new_name"}
+	opts := UpdateOpts{
+		Name:        "new_name",
+		Description: "new_desc",
+	}
+
 	group, err := Update(client.ServiceClient(), groupID, opts).Extract()
 	th.AssertNoErr(t, err)
 

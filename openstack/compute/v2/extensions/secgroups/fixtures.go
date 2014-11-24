@@ -90,7 +90,8 @@ func mockUpdateGroupResponse(t *testing.T, groupID int) {
 		th.TestJSONRequest(t, r, `
 {
   "security_group": {
-    "name": "new_name"
+    "name": "new_name",
+		"description": "new_desc"
   }
 }
 	`)

@@ -35,11 +35,11 @@ func ListByServer(client *gophercloud.ServiceClient, serverID string) pagination
 type GroupOpts struct {
 	// Optional - the name of your security group. If no value provided, null
 	// will be set.
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 
 	// Optional - the description of your security group. If no value provided,
 	// null will be set.
-	Description string `json:"description,omitempty"`
+	Description string `json:"description"`
 }
 
 // CreateOpts is the struct responsible for creating a security group.
@@ -50,16 +50,24 @@ type CreateOptsBuilder interface {
 	ToSecGroupCreateMap() (map[string]interface{}, error)
 }
 
+var (
+	errName = errors.New("Name is a required field")
+	errDesc = errors.New("Description is a required field")
+)
+
 // ToSecGroupCreateMap builds the create options into a serializable format.
 func (opts CreateOpts) ToSecGroupCreateMap() (map[string]interface{}, error) {
 	sg := make(map[string]interface{})
 
-	if opts.Name != "" {
-		sg["name"] = opts.Name
+	if opts.Name == "" {
+		return sg, errName
 	}
-	if opts.Description != "" {
-		sg["description"] = opts.Description
+	if opts.Description == "" {
+		return sg, errDesc
 	}
+
+	sg["name"] = opts.Name
+	sg["description"] = opts.Description
 
 	return map[string]interface{}{"security_group": sg}, nil
 }
@@ -96,12 +104,15 @@ type UpdateOptsBuilder interface {
 func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]interface{}, error) {
 	sg := make(map[string]interface{})
 
-	if opts.Name != "" {
-		sg["name"] = opts.Name
+	if opts.Name == "" {
+		return sg, errName
 	}
-	if opts.Description != "" {
-		sg["description"] = opts.Description
+	if opts.Description == "" {
+		return sg, errDesc
 	}
+
+	sg["name"] = opts.Name
+	sg["description"] = opts.Description
 
 	return map[string]interface{}{"security_group": sg}, nil
 }
