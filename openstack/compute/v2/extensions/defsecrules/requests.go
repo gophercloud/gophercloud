@@ -83,3 +83,16 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 
 	return result
 }
+
+// Get will return details for a particular default rule.
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
+	var result GetResult
+
+	_, result.Err = perigee.Request("GET", resourceURL(client, id), perigee.Options{
+		Results:     &result.Body,
+		MoreHeaders: client.AuthenticatedHeaders(),
+		OkCodes:     []int{200},
+	})
+
+	return result
+}

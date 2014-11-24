@@ -9,6 +9,8 @@ import (
 	"github.com/rackspace/gophercloud/testhelper/client"
 )
 
+const ruleID = "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5"
+
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -25,7 +27,7 @@ func TestList(t *testing.T) {
 		expected := []DefaultRule{
 			DefaultRule{
 				FromPort:   80,
-				ID:         "f9a97fcf-3a97-47b0-b76f-919136afb7ed",
+				ID:         ruleID,
 				IPProtocol: "TCP",
 				IPRange:    secgroups.IPRange{CIDR: "10.10.10.0/24"},
 				ToPort:     80,
@@ -58,11 +60,31 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := &DefaultRule{
-		ID:         "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+		ID:         ruleID,
 		FromPort:   80,
 		ToPort:     80,
 		IPProtocol: "TCP",
 		IPRange:    secgroups.IPRange{CIDR: "10.10.12.0/24"},
 	}
+	th.AssertDeepEquals(t, expected, group)
+}
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockGetRuleResponse(t, ruleID)
+
+	group, err := Get(client.ServiceClient(), ruleID).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &DefaultRule{
+		ID:         ruleID,
+		FromPort:   80,
+		ToPort:     80,
+		IPProtocol: "TCP",
+		IPRange:    secgroups.IPRange{CIDR: "10.10.12.0/24"},
+	}
+
 	th.AssertDeepEquals(t, expected, group)
 }

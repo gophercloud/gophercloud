@@ -24,7 +24,7 @@ func mockListRulesResponse(t *testing.T) {
   "security_group_default_rules": [
     {
       "from_port": 80,
-      "id": "f9a97fcf-3a97-47b0-b76f-919136afb7ed",
+      "id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
       "ip_protocol": "TCP",
       "ip_range": {
         "cidr": "10.10.10.0/24"
@@ -70,5 +70,30 @@ func mockCreateRuleResponse(t *testing.T) {
   }
 }
 `)
+	})
+}
+
+func mockGetRuleResponse(t *testing.T, ruleID string) {
+	url := rootPath + "/" + ruleID
+	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "security_group_default_rule": {
+    "id": "b0e0d7dd-2ca4-49a9-ba82-c44a148b66a5",
+    "from_port": 80,
+    "to_port": 80,
+    "ip_protocol": "TCP",
+    "ip_range": {
+      "cidr": "10.10.12.0/24"
+    }
+  }
+}
+			`)
 	})
 }
