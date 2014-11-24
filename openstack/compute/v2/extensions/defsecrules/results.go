@@ -3,6 +3,7 @@ package defsecrules
 import (
 	"github.com/mitchellh/mapstructure"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/compute/v2/extensions/secgroups"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -34,4 +35,33 @@ func ExtractDefaultRules(page pagination.Page) ([]DefaultRule, error) {
 	err := mapstructure.Decode(casted, &response)
 
 	return response.Rules, err
+}
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+// CreateResult represents the result of a create operation.
+type CreateResult struct {
+	commonResult
+}
+
+// GetResult represents the result of a get operation.
+type GetResult struct {
+	commonResult
+}
+
+// Extract will extract a DefaultRule struct from most responses.
+func (r commonResult) Extract() (*DefaultRule, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		Rule DefaultRule `mapstructure:"security_group_default_rule"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.Rule, err
 }
