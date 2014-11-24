@@ -5,10 +5,13 @@ package v2
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
-	"github.com/rackspace/gophercloud/openstack/networking/v2/ports"
-	"github.com/rackspace/gophercloud/openstack/networking/v2/subnets"
+	osNetworks "github.com/rackspace/gophercloud/openstack/networking/v2/networks"
+	osPorts "github.com/rackspace/gophercloud/openstack/networking/v2/ports"
+	osSubnets "github.com/rackspace/gophercloud/openstack/networking/v2/subnets"
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/networking/v2/networks"
+	"github.com/rackspace/gophercloud/rackspace/networking/v2/ports"
+	"github.com/rackspace/gophercloud/rackspace/networking/v2/subnets"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
@@ -42,12 +45,12 @@ func TestPortCRUD(t *testing.T) {
 	}
 	p, err := ports.Get(Client, portID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, p.ID, portID)
+	th.AssertEquals(t, portID, p.ID)
 
 	// Update port
-	p, err = ports.Update(Client, portID, ports.UpdateOpts{Name: "new_port_name"}).Extract()
+	p, err = ports.Update(Client, portID, osPorts.UpdateOpts{Name: "new_port_name"}).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, p.Name, "new_port_name")
+	th.AssertEquals(t, "new_port_name", p.Name)
 
 	// Delete port
 	res := ports.Delete(Client, portID)
@@ -55,30 +58,30 @@ func TestPortCRUD(t *testing.T) {
 }
 
 func createPort(t *testing.T, networkID, subnetID string) string {
-	enable := false
-	opts := ports.CreateOpts{
+	enable := true
+	opts := osPorts.CreateOpts{
 		NetworkID:    networkID,
 		Name:         "my_port",
 		AdminStateUp: &enable,
-		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
+		FixedIPs:     []osPorts.IP{osPorts.IP{SubnetID: subnetID}},
 	}
 	p, err := ports.Create(Client, opts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, p.NetworkID, networkID)
-	th.AssertEquals(t, p.Name, "my_port")
-	th.AssertEquals(t, p.AdminStateUp, false)
+	th.AssertEquals(t, networkID, p.NetworkID)
+	th.AssertEquals(t, "my_port", p.Name)
+	th.AssertEquals(t, true, p.AdminStateUp)
 
 	return p.ID
 }
 
 func listPorts(t *testing.T) {
 	count := 0
-	pager := ports.List(Client, ports.ListOpts{})
+	pager := ports.List(Client, osPorts.ListOpts{})
 	err := pager.EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		t.Logf("--- Page ---")
 
-		portList, err := ports.ExtractPorts(page)
+		portList, err := osPorts.ExtractPorts(page)
 		th.AssertNoErr(t, err)
 
 		for _, p := range portList {
@@ -97,21 +100,17 @@ func listPorts(t *testing.T) {
 }
 
 func createNetwork() (string, error) {
-	res, err := networks.Create(Client, networks.CreateOpts{Name: "tmp_network", AdminStateUp: networks.Up}).Extract()
+	res, err := networks.Create(Client, osNetworks.CreateOpts{Name: "tmp_network", AdminStateUp: osNetworks.Up}).Extract()
 	return res.ID, err
 }
 
 func createSubnet(networkID string) (string, error) {
-	s, err := subnets.Create(Client, subnets.CreateOpts{
+	s, err := subnets.Create(Client, osSubnets.CreateOpts{
 		NetworkID:  networkID,
 		CIDR:       "192.168.199.0/24",
-		IPVersion:  subnets.IPv4,
+		IPVersion:  osSubnets.IPv4,
 		Name:       "my_subnet",
-		EnableDHCP: subnets.Down,
+		EnableDHCP: osSubnets.Down,
 	}).Extract()
 	return s.ID, err
-}
-
-func TestPortBatchCreate(t *testing.T) {
-	// todo
 }
