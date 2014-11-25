@@ -37,13 +37,18 @@ func TestBootFromVolume(t *testing.T) {
 
 	serverCreateOpts := servers.CreateOpts{
 		Name:      name,
-		FlavorRef: "3",
+		FlavorRef: choices.FlavorID,
+		ImageRef:  choices.ImageID,
 	}
 	server, err := bootfromvolume.Create(client, bootfromvolume.CreateOptsExt{
 		serverCreateOpts,
 		bd,
 	}).Extract()
 	th.AssertNoErr(t, err)
+	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
+		t.Fatal(err)
+	}
+
 	t.Logf("Created server: %+v\n", server)
 	defer servers.Delete(client, server.ID)
 	t.Logf("Deleting server [%s]...", name)
