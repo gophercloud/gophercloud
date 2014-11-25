@@ -151,6 +151,25 @@ func mockGetGroupsResponse(t *testing.T, groupID string) {
 	})
 }
 
+func mockGetNumericIDGroupResponse(t *testing.T, groupID int) {
+	url := fmt.Sprintf("%s/%d", rootPath, groupID)
+	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+	"security_group": {
+		"id": 12345
+	}
+}
+			`)
+	})
+}
+
 func mockDeleteGroupResponse(t *testing.T, groupID string) {
 	url := fmt.Sprintf("%s/%s", rootPath, groupID)
 	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {

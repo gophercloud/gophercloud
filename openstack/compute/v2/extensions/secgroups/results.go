@@ -120,7 +120,7 @@ func (r commonResult) Extract() (*SecurityGroup, error) {
 		SecurityGroup SecurityGroup `mapstructure:"security_group"`
 	}
 
-	err := mapstructure.Decode(r.Body, &response)
+	err := mapstructure.WeakDecode(r.Body, &response)
 
 	return &response.SecurityGroup, err
 }

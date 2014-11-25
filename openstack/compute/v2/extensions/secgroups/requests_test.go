@@ -162,6 +162,21 @@ func TestGet(t *testing.T) {
 	th.AssertDeepEquals(t, expected, group)
 }
 
+func TestGetNumericID(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	numericGroupID := 12345
+
+	mockGetNumericIDGroupResponse(t, numericGroupID)
+
+	group, err := Get(client.ServiceClient(), "12345").Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &SecurityGroup{ID: "12345"}
+	th.AssertDeepEquals(t, expected, group)
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
