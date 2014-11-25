@@ -33,12 +33,10 @@ func ListByServer(client *gophercloud.ServiceClient, serverID string) pagination
 // security groups. It therefore represents the mutable attributes of a
 // security group.
 type GroupOpts struct {
-	// Required - the name of your security group. If no value provided, null
-	// will be set.
+	// Required - the name of your security group.
 	Name string `json:"name"`
 
-	// Required - the description of your security group. If no value provided,
-	// null will be set.
+	// Required - the description of your security group.
 	Description string `json:"description"`
 }
 
