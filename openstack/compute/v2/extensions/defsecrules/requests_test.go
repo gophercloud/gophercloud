@@ -9,7 +9,7 @@ import (
 	"github.com/rackspace/gophercloud/testhelper/client"
 )
 
-const ruleID = 1
+const ruleID = "{ruleID}"
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()

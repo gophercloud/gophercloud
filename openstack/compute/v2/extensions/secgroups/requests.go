@@ -119,7 +119,7 @@ func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]interface{}, error) {
 
 // Update will modify the mutable properties of a security group, notably its
 // name and description.
-func Update(client *gophercloud.ServiceClient, id int, opts UpdateOptsBuilder) UpdateResult {
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var result UpdateResult
 
 	reqBody, err := opts.ToSecGroupUpdateMap()
@@ -139,7 +139,7 @@ func Update(client *gophercloud.ServiceClient, id int, opts UpdateOptsBuilder) U
 }
 
 // Get will return details for a particular security group.
-func Get(client *gophercloud.ServiceClient, id int) GetResult {
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
 
 	_, result.Err = perigee.Request("GET", resourceURL(client, id), perigee.Options{
@@ -152,7 +152,7 @@ func Get(client *gophercloud.ServiceClient, id int) GetResult {
 }
 
 // Delete will permanently delete a security group from the project.
-func Delete(client *gophercloud.ServiceClient, id int) gophercloud.ErrResult {
+func Delete(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var result gophercloud.ErrResult
 
 	_, result.Err = perigee.Request("DELETE", resourceURL(client, id), perigee.Options{
@@ -167,7 +167,7 @@ func Delete(client *gophercloud.ServiceClient, id int) gophercloud.ErrResult {
 // existing security group.
 type CreateRuleOpts struct {
 	// Required - the ID of the group that this rule will be added to.
-	ParentGroupID int `json:"parent_group_id"`
+	ParentGroupID string `json:"parent_group_id"`
 
 	// Required - the lower bound of the port range that will be opened.
 	FromPort int `json:"from_port"`
@@ -199,7 +199,7 @@ type CreateRuleOptsBuilder interface {
 func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]interface{}, error) {
 	rule := make(map[string]interface{})
 
-	if opts.ParentGroupID == 0 {
+	if opts.ParentGroupID == "" {
 		return rule, errors.New("A ParentGroupID must be set")
 	}
 	if opts.FromPort == 0 {
@@ -253,7 +253,7 @@ func CreateRule(client *gophercloud.ServiceClient, opts CreateRuleOptsBuilder) C
 }
 
 // DeleteRule will permanently delete a rule from a security group.
-func DeleteRule(client *gophercloud.ServiceClient, id int) gophercloud.ErrResult {
+func DeleteRule(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var result gophercloud.ErrResult
 
 	_, result.Err = perigee.Request("DELETE", resourceRuleURL(client, id), perigee.Options{

@@ -16,7 +16,7 @@ const listGroupsJSON = `
   "security_groups": [
     {
       "description": "default",
-      "id": 1,
+      "id": "{groupID}",
       "name": "default",
       "rules": [],
       "tenant_id": "openstack"
@@ -71,7 +71,7 @@ func mockCreateGroupResponse(t *testing.T) {
 {
   "security_group": {
     "description": "something",
-    "id": 1,
+    "id": "{groupID}",
     "name": "test",
     "rules": [],
     "tenant_id": "openstack"
@@ -81,8 +81,8 @@ func mockCreateGroupResponse(t *testing.T) {
 	})
 }
 
-func mockUpdateGroupResponse(t *testing.T, groupID int) {
-	url := fmt.Sprintf("%s/%d", rootPath, groupID)
+func mockUpdateGroupResponse(t *testing.T, groupID string) {
+	url := fmt.Sprintf("%s/%s", rootPath, groupID)
 	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -103,7 +103,7 @@ func mockUpdateGroupResponse(t *testing.T, groupID int) {
 {
   "security_group": {
     "description": "something",
-    "id": 1,
+    "id": "{groupID}",
     "name": "new_name",
     "rules": [],
     "tenant_id": "openstack"
@@ -113,8 +113,8 @@ func mockUpdateGroupResponse(t *testing.T, groupID int) {
 	})
 }
 
-func mockGetGroupsResponse(t *testing.T, groupID int) {
-	url := fmt.Sprintf("%s/%d", rootPath, groupID)
+func mockGetGroupsResponse(t *testing.T, groupID string) {
+	url := fmt.Sprintf("%s/%s", rootPath, groupID)
 	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -126,7 +126,7 @@ func mockGetGroupsResponse(t *testing.T, groupID int) {
 {
   "security_group": {
     "description": "default",
-    "id": 1,
+    "id": "{groupID}",
     "name": "default",
     "rules": [
       {
@@ -137,11 +137,11 @@ func mockGetGroupsResponse(t *testing.T, groupID int) {
         },
         "ip_protocol": "TCP",
         "to_port": 85,
-        "parent_group_id": 1,
+        "parent_group_id": "{groupID}",
         "ip_range": {
 						"cidr": "0.0.0.0"
 				},
-        "id": 2
+        "id": "{ruleID}"
       }
     ],
     "tenant_id": "openstack"
@@ -151,8 +151,8 @@ func mockGetGroupsResponse(t *testing.T, groupID int) {
 	})
 }
 
-func mockDeleteGroupResponse(t *testing.T, groupID int) {
-	url := fmt.Sprintf("%s/%d", rootPath, groupID)
+func mockDeleteGroupResponse(t *testing.T, groupID string) {
+	url := fmt.Sprintf("%s/%s", rootPath, groupID)
 	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
@@ -172,7 +172,7 @@ func mockAddRuleResponse(t *testing.T) {
     "from_port": 22,
     "ip_protocol": "TCP",
     "to_port": 22,
-    "parent_group_id": 1,
+    "parent_group_id": "{groupID}",
     "cidr": "0.0.0.0/0"
   }
 }	`)
@@ -187,18 +187,18 @@ func mockAddRuleResponse(t *testing.T) {
     "group": {},
     "ip_protocol": "TCP",
     "to_port": 22,
-    "parent_group_id": 1,
+    "parent_group_id": "{groupID}",
     "ip_range": {
       "cidr": "0.0.0.0/0"
     },
-    "id": 2
+    "id": "{ruleID}"
   }
 }`)
 	})
 }
 
-func mockDeleteRuleResponse(t *testing.T, ruleID int) {
-	url := fmt.Sprintf("/os-security-group-rules/%d", ruleID)
+func mockDeleteRuleResponse(t *testing.T, ruleID string) {
+	url := fmt.Sprintf("/os-security-group-rules/%s", ruleID)
 	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)

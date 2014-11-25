@@ -9,8 +9,10 @@ import (
 
 // SecurityGroup represents a security group.
 type SecurityGroup struct {
-	// The unique ID of the group.
-	ID int
+	// The unique ID of the group. If Neutron is installed, this ID will be
+	// represented as a string UUID; if Neutron is not installed, it will be a
+	// numeric ID. For the sake of consistency, we always cast it to a string.
+	ID string
 
 	// The human-readable name of the group, which needs to be unique.
 	Name string
@@ -28,8 +30,10 @@ type SecurityGroup struct {
 // Rule represents a security group rule, a policy which determines how a
 // security group operates and what inbound traffic it allows in.
 type Rule struct {
-	// The unique ID
-	ID int
+	// The unique ID. If Neutron is installed, this ID will be
+	// represented as a string UUID; if Neutron is not installed, it will be a
+	// numeric ID. For the sake of consistency, we always cast it to a string.
+	ID string
 
 	// The lower bound of the port range which this security group should open up
 	FromPort int `mapstructure:"from_port"`
@@ -44,7 +48,7 @@ type Rule struct {
 	IPRange IPRange `mapstructure:"ip_range"`
 
 	// The security group ID to which this rule belongs
-	ParentGroupID int `mapstructure:"parent_group_id"`
+	ParentGroupID string `mapstructure:"parent_group_id"`
 
 	// Not documented.
 	Group Group

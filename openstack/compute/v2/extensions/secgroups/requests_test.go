@@ -10,8 +10,8 @@ import (
 
 const (
 	serverID = "{serverID}"
-	groupID  = 1
-	ruleID   = 2
+	groupID  = "{groupID}"
+	ruleID   = "{ruleID}"
 )
 
 func TestList(t *testing.T) {
