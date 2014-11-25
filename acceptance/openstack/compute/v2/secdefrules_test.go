@@ -25,7 +25,7 @@ func TestSecDefRules(t *testing.T) {
 	deleteDefRule(t, client, id)
 }
 
-func createDefRule(t *testing.T, client *gophercloud.ServiceClient) int {
+func createDefRule(t *testing.T, client *gophercloud.ServiceClient) string {
 	opts := dsr.CreateOpts{
 		FromPort:   tools.RandomInt(80, 89),
 		ToPort:     tools.RandomInt(90, 99),
@@ -57,16 +57,16 @@ func listDefRules(t *testing.T, client *gophercloud.ServiceClient) {
 	th.AssertNoErr(t, err)
 }
 
-func getDefRule(t *testing.T, client *gophercloud.ServiceClient, id int) {
+func getDefRule(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	rule, err := dsr.Get(client, id).Extract()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Getting rule %d: %#v", id, rule)
+	t.Logf("Getting rule %s: %#v", id, rule)
 }
 
-func deleteDefRule(t *testing.T, client *gophercloud.ServiceClient, id int) {
+func deleteDefRule(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	err := dsr.Delete(client, id).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Deleted rule %d", id)
+	t.Logf("Deleted rule %s", id)
 }

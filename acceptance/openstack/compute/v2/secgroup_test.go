@@ -41,7 +41,7 @@ func TestSecGroups(t *testing.T) {
 	deleteSecGroup(t, client, groupID)
 }
 
-func createSecGroup(t *testing.T, client *gophercloud.ServiceClient) int {
+func createSecGroup(t *testing.T, client *gophercloud.ServiceClient) string {
 	opts := secgroups.CreateOpts{
 		Name:        tools.RandomString("secgroup_", 5),
 		Description: "something",
@@ -71,7 +71,7 @@ func listSecGroups(t *testing.T, client *gophercloud.ServiceClient) {
 	th.AssertNoErr(t, err)
 }
 
-func updateSecGroup(t *testing.T, client *gophercloud.ServiceClient, id int, newName string) {
+func updateSecGroup(t *testing.T, client *gophercloud.ServiceClient, id, newName string) {
 	opts := secgroups.UpdateOpts{
 		Name:        newName,
 		Description: tools.RandomString("dec_", 10),
@@ -82,14 +82,14 @@ func updateSecGroup(t *testing.T, client *gophercloud.ServiceClient, id int, new
 	t.Logf("Updated %s's name to %s", group.ID, group.Name)
 }
 
-func getSecGroup(t *testing.T, client *gophercloud.ServiceClient, id int) {
+func getSecGroup(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	group, err := secgroups.Get(client, id).Extract()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Getting %d: %#v", id, group)
+	t.Logf("Getting %s: %#v", id, group)
 }
 
-func addRemoveRules(t *testing.T, client *gophercloud.ServiceClient, id int) {
+func addRemoveRules(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	opts := secgroups.CreateRuleOpts{
 		ParentGroupID: id,
 		FromPort:      22,
@@ -101,12 +101,12 @@ func addRemoveRules(t *testing.T, client *gophercloud.ServiceClient, id int) {
 	rule, err := secgroups.CreateRule(client, opts).Extract()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Adding rule %d to group %d", rule.ID, id)
+	t.Logf("Adding rule %s to group %s", rule.ID, id)
 
 	err = secgroups.DeleteRule(client, rule.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Deleted rule %d from group %d", rule.ID, id)
+	t.Logf("Deleted rule %s from group %s", rule.ID, id)
 }
 
 func findServer(t *testing.T, client *gophercloud.ServiceClient) (string, bool) {
@@ -169,9 +169,9 @@ func removeServerFromSecGroup(t *testing.T, client *gophercloud.ServiceClient, s
 	t.Logf("Removing group %s from server %s", groupName, serverID)
 }
 
-func deleteSecGroup(t *testing.T, client *gophercloud.ServiceClient, id int) {
+func deleteSecGroup(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	err := secgroups.Delete(client, id).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	t.Logf("Deleted group %d", id)
+	t.Logf("Deleted group %s", id)
 }
