@@ -34,7 +34,7 @@ func ExtractDefaultRules(page pagination.Page) ([]DefaultRule, error) {
 		Rules []DefaultRule `mapstructure:"security_group_default_rules"`
 	}
 
-	err := mapstructure.Decode(casted, &response)
+	err := mapstructure.WeakDecode(casted, &response)
 
 	return response.Rules, err
 }
@@ -63,7 +63,7 @@ func (r commonResult) Extract() (*DefaultRule, error) {
 		Rule DefaultRule `mapstructure:"security_group_default_rule"`
 	}
 
-	err := mapstructure.Decode(r.Body, &response)
+	err := mapstructure.WeakDecode(r.Body, &response)
 
 	return &response.Rule, err
 }

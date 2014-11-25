@@ -87,7 +87,8 @@ func ExtractSecurityGroups(page pagination.Page) ([]SecurityGroup, error) {
 		SecurityGroups []SecurityGroup `mapstructure:"security_groups"`
 	}
 
-	err := mapstructure.Decode(casted, &response)
+	err := mapstructure.WeakDecode(casted, &response)
+
 	return response.SecurityGroups, err
 }
 
@@ -140,7 +141,7 @@ func (r CreateRuleResult) Extract() (*Rule, error) {
 		Rule Rule `mapstructure:"security_group_rule"`
 	}
 
-	err := mapstructure.Decode(r.Body, &response)
+	err := mapstructure.WeakDecode(r.Body, &response)
 
 	return &response.Rule, err
 }
