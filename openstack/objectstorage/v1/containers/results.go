@@ -3,6 +3,7 @@ package containers
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -96,9 +97,39 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 	}
 }
 
+// GetHeader represents the headers returned in the response from a Get request.
+type GetHeader struct {
+	BytesUsed     int64     `json:"X-Account-Bytes-Used"`
+	ContentLength int64     `json:"Content-Length"`
+	ContentType   string    `json:"Content-Type"`
+	Date          time.Time `mapstructure:"-" json:"-"`
+	ObjectCount   int64     `json:"X-Account-Object-Count"`
+	TransID       string    `json:"X-Trans-Id"`
+}
+
 // GetResult represents the result of a get operation.
 type GetResult struct {
 	gophercloud.HeaderResult
+}
+
+// Extract will return a struct of headers returned from a call to Get. To obtain
+// a map of headers, call the ExtractHeader method on the GetResult.
+func (gr GetResult) Extract() (GetHeader, error) {
+	var gh GetHeader
+
+	if err := mapstructure.Decode(gr.Header, &gh); err != nil {
+		return gh, err
+	}
+
+	if date, ok := gr.Header["Date"]; ok && len(date) > 0 {
+		t, err := time.Parse(time.RFC1123, gr.Header["Date"][0])
+		if err != nil {
+			return gh, err
+		}
+		gh.Date = t
+	}
+
+	return gh, nil
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -117,11 +148,47 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 	return metadata, nil
 }
 
+// CreateHeader represents the headers returned in the response from a Create request.
+type CreateHeader struct {
+	ContentLength int64     `json:"Content-Length"`
+	ContentType   string    `json:"Content-Type"`
+	Date          time.Time `mapstructure:"-" json:"-"`
+	TransID       string    `json:"X-Trans-Id"`
+}
+
 // CreateResult represents the result of a create operation. To extract the
 // the headers from the HTTP response, you can invoke the 'ExtractHeader'
 // method on the result struct.
 type CreateResult struct {
 	gophercloud.HeaderResult
+}
+
+// Extract will return a struct of headers returned from a call to Create. To obtain
+// a map of headers, call the ExtractHeader method on the CreateResult.
+func (cr CreateResult) Extract() (CreateHeader, error) {
+	var ch CreateHeader
+
+	if err := mapstructure.Decode(cr.Header, &ch); err != nil {
+		return ch, err
+	}
+
+	if date, ok := cr.Header["Date"]; ok && len(date) > 0 {
+		t, err := time.Parse(time.RFC1123, cr.Header["Date"][0])
+		if err != nil {
+			return ch, err
+		}
+		ch.Date = t
+	}
+
+	return ch, nil
+}
+
+// UpdateHeader represents the headers returned in the response from a Update request.
+type UpdateHeader struct {
+	ContentLength int64     `json:"Content-Length"`
+	ContentType   string    `json:"Content-Type"`
+	Date          time.Time `mapstructure:"-" json:"-"`
+	TransID       string    `json:"X-Trans-Id"`
 }
 
 // UpdateResult represents the result of an update operation. To extract the
@@ -131,9 +198,57 @@ type UpdateResult struct {
 	gophercloud.HeaderResult
 }
 
+// Extract will return a struct of headers returned from a call to Update. To obtain
+// a map of headers, call the ExtractHeader method on the UpdateResult.
+func (ur UpdateResult) Extract() (UpdateHeader, error) {
+	var uh UpdateHeader
+
+	if err := mapstructure.Decode(ur.Header, &uh); err != nil {
+		return uh, err
+	}
+
+	if date, ok := ur.Header["Date"]; ok && len(date) > 0 {
+		t, err := time.Parse(time.RFC1123, ur.Header["Date"][0])
+		if err != nil {
+			return uh, err
+		}
+		uh.Date = t
+	}
+
+	return uh, nil
+}
+
+// DeleteHeader represents the headers returned in the response from a Delete request.
+type DeleteHeader struct {
+	ContentLength int64     `json:"Content-Length"`
+	ContentType   string    `json:"Content-Type"`
+	Date          time.Time `mapstructure:"-" json:"-"`
+	TransID       string    `json:"X-Trans-Id"`
+}
+
 // DeleteResult represents the result of a delete operation. To extract the
 // the headers from the HTTP response, you can invoke the 'ExtractHeader'
 // method on the result struct.
 type DeleteResult struct {
 	gophercloud.HeaderResult
+}
+
+// Extract will return a struct of headers returned from a call to Delete. To obtain
+// a map of headers, call the ExtractHeader method on the DeleteResult.
+func (dr DeleteResult) Extract() (DeleteHeader, error) {
+	var dh DeleteHeader
+
+	if err := mapstructure.Decode(dr.Header, &dh); err != nil {
+		return dh, err
+	}
+
+	if date, ok := dr.Header["Date"]; ok && len(date) > 0 {
+		t, err := time.Parse(time.RFC1123, dr.Header["Date"][0])
+		if err != nil {
+			return dh, err
+		}
+		dh.Date = t
+	}
+
+	return dh, nil
 }

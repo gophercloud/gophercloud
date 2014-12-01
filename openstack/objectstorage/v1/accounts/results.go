@@ -2,7 +2,6 @@ package accounts
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 	"time"
 
@@ -54,7 +53,7 @@ func (ur UpdateResult) Extract() (UpdateHeader, error) {
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
 	BytesUsed      int64     `json:"X-Account-Bytes-Used"`
-	ContainerCount int       `json:"X-Accound-Container-Count"`
+	ContainerCount int       `json:"X-Account-Container-Count"`
 	ContentLength  int64     `json:"Content-Length"`
 	ContentType    string    `json:"Content-Type"`
 	Date           time.Time `mapstructure:"-" json:"-"`
@@ -70,19 +69,19 @@ type GetResult struct {
 // Extract will return a struct of headers returned from a call to Get. To obtain
 // a map of headers, call the ExtractHeader method on the GetResult.
 func (gr GetResult) Extract() (GetHeader, error) {
-	fmt.Printf("raw response header: %+v\n", gr.Header)
-
 	var gh GetHeader
 
 	if err := mapstructure.Decode(gr.Header, &gh); err != nil {
 		return gh, err
 	}
 
-	t, err := time.Parse(time.RFC1123, gr.Header["Date"][0])
-	if err != nil {
-		return gh, err
+	if date, ok := gr.Header["Date"]; ok && len(date) > 0 {
+		t, err := time.Parse(time.RFC1123, gr.Header["Date"][0])
+		if err != nil {
+			return gh, err
+		}
+		gh.Date = t
 	}
-	gh.Date = t
 
 	return gh, nil
 }
