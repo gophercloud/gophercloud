@@ -165,3 +165,14 @@ func NewLBV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*
 	}
 	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
 }
+
+// NewNetworkV2 creates a ServiceClient that can be used to access the Rackspace
+// Networking v2 API.
+func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("network")
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
+}
