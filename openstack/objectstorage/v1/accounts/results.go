@@ -1,7 +1,6 @@
 package accounts
 
 import (
-	"encoding/json"
 	"strings"
 	"time"
 
@@ -16,10 +15,10 @@ type UpdateResult struct {
 
 // UpdateHeader represents the headers returned in the response from an Update request.
 type UpdateHeader struct {
-	ContentLength string    `json:"Content-Length"`
-	ContentType   []string  `json:"Content-Type"`
-	Date          time.Time `json:"-"`
-	TransID       string    `json:"X-Trans_ID"`
+	ContentLength string    `mapstructure:"Content-Length"`
+	ContentType   string    `mapstructure:"Content-Type"`
+	Date          time.Time `mapstructure:"-"`
+	TransID       string    `mapstructure:"X-Trans_ID"`
 }
 
 // Extract will return a struct of headers returned from a call to Get. To obtain
@@ -30,35 +29,30 @@ func (ur UpdateResult) Extract() (UpdateHeader, error) {
 		return uh, ur.Err
 	}
 
-	b, err := json.Marshal(ur.Header)
-	if err != nil {
+	if err := mapstructure.Decode(ur.Header, &uh); err != nil {
 		return uh, err
 	}
 
-	err = json.Unmarshal(b, &uh)
-	if err != nil {
-		return uh, err
+	if date, ok := ur.Header["Date"]; ok && len(date) > 0 {
+		t, err := time.Parse(time.RFC1123, ur.Header["Date"][0])
+		if err != nil {
+			return uh, err
+		}
+		uh.Date = t
 	}
-
-	date, err := time.Parse(time.RFC1123, ur.Header["Date"][0])
-	if err != nil {
-		return uh, err
-	}
-
-	uh.Date = date
 
 	return uh, nil
 }
 
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
-	BytesUsed      int64     `json:"X-Account-Bytes-Used"`
-	ContainerCount int       `json:"X-Account-Container-Count"`
-	ContentLength  int64     `json:"Content-Length"`
-	ContentType    string    `json:"Content-Type"`
-	Date           time.Time `mapstructure:"-" json:"-"`
-	ObjectCount    int64     `json:"X-Account-Object-Count"`
-	TransID        string    `json:"X-Trans-Id"`
+	BytesUsed      int64     `mapstructure:"X-Account-Bytes-Used"`
+	ContainerCount int       `mapstructure:"X-Account-Container-Count"`
+	ContentLength  int64     `mapstructure:"Content-Length"`
+	ContentType    string    `mapstructure:"Content-Type"`
+	Date           time.Time `mapstructure:"-"`
+	ObjectCount    int64     `mapstructure:"X-Account-Object-Count"`
+	TransID        string    `mapstructure:"X-Trans-Id"`
 }
 
 // GetResult is returned from a call to the Get function.
@@ -70,6 +64,9 @@ type GetResult struct {
 // a map of headers, call the ExtractHeader method on the GetResult.
 func (gr GetResult) Extract() (GetHeader, error) {
 	var gh GetHeader
+	if gr.Err != nil {
+		return gh, gr.Err
+	}
 
 	if err := mapstructure.Decode(gr.Header, &gh); err != nil {
 		return gh, err
