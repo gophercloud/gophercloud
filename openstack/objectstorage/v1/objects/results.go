@@ -139,7 +139,7 @@ func (dr DownloadResult) Extract() (DownloadHeader, error) {
 		return dh, dr.Err
 	}
 
-	if err := mapstructure.Decode(dr.Header, &dh); err != nil {
+	if err := gophercloud.DecodeHeader(dr.Header, &dh); err != nil {
 		return dh, err
 	}
 
@@ -207,7 +207,7 @@ func (gr GetResult) Extract() (GetHeader, error) {
 		return gh, gr.Err
 	}
 
-	if err := mapstructure.Decode(gr.Header, &gh); err != nil {
+	if err := gophercloud.DecodeHeader(gr.Header, &gh); err != nil {
 		return gh, err
 	}
 
@@ -269,7 +269,7 @@ func (cr CreateResult) Extract() (CreateHeader, error) {
 		return ch, cr.Err
 	}
 
-	if err := mapstructure.Decode(cr.Header, &ch); err != nil {
+	if err := gophercloud.DecodeHeader(cr.Header, &ch); err != nil {
 		return ch, err
 	}
 
@@ -313,7 +313,7 @@ func (ur UpdateResult) Extract() (UpdateHeader, error) {
 		return uh, ur.Err
 	}
 
-	if err := mapstructure.Decode(ur.Header, &uh); err != nil {
+	if err := gophercloud.DecodeHeader(ur.Header, &uh); err != nil {
 		return uh, err
 	}
 
@@ -349,7 +349,7 @@ func (dr DeleteResult) Extract() (DeleteHeader, error) {
 		return dh, dr.Err
 	}
 
-	if err := mapstructure.Decode(dr.Header, &dh); err != nil {
+	if err := gophercloud.DecodeHeader(dr.Header, &dh); err != nil {
 		return dh, err
 	}
 
@@ -389,7 +389,7 @@ func (cr CopyResult) Extract() (CopyHeader, error) {
 		return ch, cr.Err
 	}
 
-	if err := mapstructure.Decode(cr.Header, &ch); err != nil {
+	if err := gophercloud.DecodeHeader(cr.Header, &ch); err != nil {
 		return ch, err
 	}
 

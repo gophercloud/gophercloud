@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 )
 
@@ -29,7 +28,7 @@ func (ur UpdateResult) Extract() (UpdateHeader, error) {
 		return uh, ur.Err
 	}
 
-	if err := mapstructure.Decode(ur.Header, &uh); err != nil {
+	if err := gophercloud.DecodeHeader(ur.Header, &uh); err != nil {
 		return uh, err
 	}
 
@@ -68,7 +67,7 @@ func (gr GetResult) Extract() (GetHeader, error) {
 		return gh, gr.Err
 	}
 
-	if err := mapstructure.Decode(gr.Header, &gh); err != nil {
+	if err := gophercloud.DecodeHeader(gr.Header, &gh); err != nil {
 		return gh, err
 	}
 

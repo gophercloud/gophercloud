@@ -17,7 +17,10 @@ func TestAccounts(t *testing.T) {
 
 	// Update an account's metadata.
 	updateres := accounts.Update(client, accounts.UpdateOpts{Metadata: metadata})
-	th.AssertNoErr(t, updateres.Err)
+	t.Logf("Update Account Response: %+v\n", updateres)
+	updateHeaders, err := updateres.Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Update Account Response Headers: %+v\n", updateHeaders)
 
 	// Defer the deletion of the metadata set above.
 	defer func() {

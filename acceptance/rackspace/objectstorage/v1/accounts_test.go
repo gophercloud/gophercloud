@@ -14,8 +14,9 @@ func TestAccounts(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	updateres := raxAccounts.Update(c, raxAccounts.UpdateOpts{Metadata: map[string]string{"white": "mountains"}})
-	th.AssertNoErr(t, updateres.Err)
-	t.Logf("Headers from Update Account request: %+v\n", updateres.Header)
+	updateHeaders, err := updateres.Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Update Account Response Headers: %+v\n", updateHeaders)
 	defer func() {
 		updateres = raxAccounts.Update(c, raxAccounts.UpdateOpts{Metadata: map[string]string{"white": ""}})
 		th.AssertNoErr(t, updateres.Err)
