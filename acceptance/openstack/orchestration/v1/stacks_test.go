@@ -1,0 +1,97 @@
+// +build acceptance
+
+package v1
+
+import (
+	"testing"
+
+	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/orchestration/v1/stacks"
+	"github.com/rackspace/gophercloud/pagination"
+	th "github.com/rackspace/gophercloud/testhelper"
+)
+
+const template = `
+{
+		"heat_template_version": "2013-05-23",
+		"description": "Simple template to test heat commands",
+		"parameters": {
+				"flavor": {
+						"default": "m1.tiny",
+						"type": "string"
+				}
+		},
+		"resources": {
+				"hello_world": {
+						"type":"OS::Nova::Server",
+						"properties": {
+								"key_name": "heat_key",
+								"flavor": {
+										"get_param": "flavor"
+								},
+								"image": "ad091b52-742f-469e-8f3c-fd81cadf0743",
+								"user_data": "#!/bin/bash -xv\necho \"hello world\" &gt; /root/hello-world.txt\n"
+						}
+				}
+		}
+}
+`
+
+func TestStacks(t *testing.T) {
+	// Create a provider client for making the HTTP requests.
+	// See common.go in this directory for more information.
+	client := newClient(t)
+
+	stackName1 := "gophercloud-test-stack-2"
+	createOpts := stacks.CreateOpts{
+		Name:     stackName1,
+		Template: template,
+		Timeout:  5,
+	}
+	stack, err := stacks.Create(client, createOpts).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Created stack: %+v\n", stack)
+	defer func() {
+		err := stacks.Delete(client, stackName1, stack.ID).ExtractErr()
+		th.AssertNoErr(t, err)
+		t.Logf("Deleted stack (%s)", stackName1)
+	}()
+	err = gophercloud.WaitFor(60, func() (bool, error) {
+		stack, err = stacks.Get(client, stackName1, stack.ID).Extract()
+		if err != nil {
+			return false, err
+		}
+		if stack.Status == "CREATE_COMPLETE" {
+			return true, nil
+		}
+		return false, nil
+	})
+	/*
+		adoptOpts := stacks.AdoptOpts{}
+		stack, err := stacks.Adopt(client, adoptOpts).Extract()
+		th.AssertNoErr(t, err)
+		t.Logf("Adopted stack: %+v\n", stack)
+	*/
+
+	updateOpts := stacks.UpdateOpts{
+		Template: template,
+		Timeout:  20,
+	}
+	err = stacks.Update(client, stackName1, stack.ID, updateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+	t.Logf("Updated stack")
+
+	err = stacks.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
+		stackList, err := stacks.ExtractStacks(page)
+		th.AssertNoErr(t, err)
+
+		t.Logf("Got stack list: %+v\n", stackList)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	stack, err = stacks.Get(client, stackName1, stack.ID).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Got stack: %+v\n", stack)
+}
