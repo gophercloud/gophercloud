@@ -176,10 +176,6 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts represent the options for updating an existing node.
 type UpdateOpts struct {
-	// Optional - the IP address or CIDR for this back-end node. It can either be
-	// a private IP (ServiceNet) or a public IP.
-	Address string
-
 	// Optional - the condition of the node. See the consts in Results.go.
 	Condition Condition
 
@@ -194,9 +190,6 @@ type UpdateOpts struct {
 func (opts UpdateOpts) ToNodeUpdateMap() (map[string]interface{}, error) {
 	node := make(map[string]interface{})
 
-	if opts.Address != "" {
-		node["address"] = opts.Address
-	}
 	if opts.Condition != "" {
 		node["condition"] = opts.Condition
 	}
