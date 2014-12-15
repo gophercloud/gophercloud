@@ -99,12 +99,16 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
-	BytesUsed     int64     `mapstructure:"X-Account-Bytes-Used"`
-	ContentLength int64     `mapstructure:"Content-Length"`
-	ContentType   string    `mapstructure:"Content-Type"`
-	Date          time.Time `mapstructure:"-"`
-	ObjectCount   int64     `mapstructure:"X-Account-Object-Count"`
-	TransID       string    `mapstructure:"X-Trans-Id"`
+	AcceptRanges     string    `mapstructure:"Accept-Ranges"`
+	BytesUsed        int64     `mapstructure:"X-Account-Bytes-Used"`
+	ContentLength    int64     `mapstructure:"Content-Length"`
+	ContentType      string    `mapstructure:"Content-Type"`
+	Date             time.Time `mapstructure:"-"`
+	ObjectCount      int64     `mapstructure:"X-Container-Object-Count"`
+	Read             string    `mapstructure:"X-Container-Read"`
+	TransID          string    `mapstructure:"X-Trans-Id"`
+	VersionsLocation string    `mapstructure:"X-Versions-Location"`
+	Write            string    `mapstructure:"X-Container-Write"`
 }
 
 // GetResult represents the result of a get operation.
