@@ -57,11 +57,11 @@ func TestStacks(t *testing.T) {
 		t.Logf("Deleted stack (%s)", stackName1)
 	}()
 	err = gophercloud.WaitFor(60, func() (bool, error) {
-		stack, err = stacks.Get(client, stackName1, stack.ID).Extract()
+		getStack, err := stacks.Get(client, stackName1, stack.ID).Extract()
 		if err != nil {
 			return false, err
 		}
-		if stack.Status == "CREATE_COMPLETE" {
+		if getStack.Status == "CREATE_COMPLETE" {
 			return true, nil
 		}
 		return false, nil
@@ -91,7 +91,7 @@ func TestStacks(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 
-	stack, err = stacks.Get(client, stackName1, stack.ID).Extract()
+	getStack, err := stacks.Get(client, stackName1, stack.ID).Extract()
 	th.AssertNoErr(t, err)
-	t.Logf("Got stack: %+v\n", stack)
+	t.Logf("Got stack: %+v\n", getStack)
 }
