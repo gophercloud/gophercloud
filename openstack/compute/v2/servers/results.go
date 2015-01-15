@@ -23,13 +23,8 @@ func (r serverResult) Extract() (*Server, error) {
 	}
 
 	config := &mapstructure.DecoderConfig{
-		DecodeHook: func(from reflect.Kind, to reflect.Kind, data interface{}) (interface{}, error) {
-			if (from == reflect.String) && (to == reflect.Map) {
-				return map[string]interface{}{}, nil
-			}
-			return data, nil
-		},
-		Result: &response,
+		DecodeHook: toMapFromString,
+		Result:     &response,
 	}
 	decoder, err := mapstructure.NewDecoder(config)
 	if err != nil {
@@ -186,13 +181,8 @@ func ExtractServers(page pagination.Page) ([]Server, error) {
 	}
 
 	config := &mapstructure.DecoderConfig{
-		DecodeHook: func(from reflect.Kind, to reflect.Kind, data interface{}) (interface{}, error) {
-			if (from == reflect.String) && (to == reflect.Map) {
-				return map[string]interface{}{}, nil
-			}
-			return data, nil
-		},
-		Result: &response,
+		DecodeHook: toMapFromString,
+		Result:     &response,
 	}
 	decoder, err := mapstructure.NewDecoder(config)
 	if err != nil {
@@ -271,4 +261,11 @@ func (r MetadatumResult) Extract() (map[string]string, error) {
 
 	err := mapstructure.Decode(r.Body, &response)
 	return response.Metadatum, err
+}
+
+func toMapFromString(from reflect.Kind, to reflect.Kind, data interface{}) (interface{}, error) {
+	if (from == reflect.String) && (to == reflect.Map) {
+		return map[string]interface{}{}, nil
+	}
+	return data, nil
 }
