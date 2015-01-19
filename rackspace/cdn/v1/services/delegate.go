@@ -10,13 +10,13 @@ import (
 // List returns a Pager which allows you to iterate over a collection of
 // CDN services. It accepts a ListOpts struct, which allows for pagination via
 // marker and limit.
-func List(c *gophercloud.ServiceClient, opts os.ListOpts) pagination.Pager {
+func List(c *gophercloud.ServiceClient, opts os.ListOptsBuilder) pagination.Pager {
 	return os.List(c, opts)
 }
 
 // Create accepts a CreateOpts struct and creates a new CDN service using the
 // values provided.
-func Create(c *gophercloud.ServiceClient, opts os.CreateOpts) os.CreateResult {
+func Create(c *gophercloud.ServiceClient, opts os.CreateOptsBuilder) os.CreateResult {
 	return os.Create(c, opts)
 }
 
@@ -27,7 +27,7 @@ func Get(c *gophercloud.ServiceClient, id string) os.GetResult {
 
 // Update accepts a UpdateOpts struct and updates an existing CDN service using
 // the values provided.
-func Update(c *gophercloud.ServiceClient, id string, opts os.UpdateOpts) os.UpdateResult {
+func Update(c *gophercloud.ServiceClient, id string, opts os.UpdateOptsBuilder) os.UpdateResult {
 	return os.Update(c, id, opts)
 }
 
