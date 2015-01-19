@@ -199,7 +199,7 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 // extensions decorate or modify the common logic, it is useful for them to
 // satisfy a basic interface in order for them to be used.
 type UpdateOptsBuilder interface {
-	ToCDNServiceUpdateMap() (map[string]interface{}, error)
+	ToCDNServiceUpdateMap() ([]map[string]interface{}, error)
 }
 
 // Op represents an update operation.
@@ -231,8 +231,8 @@ type UpdateOpt struct {
 }
 
 // ToCDNServiceUpdateMap casts an UpdateOpts struct to a map.
-func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]UpdateOpt, error) {
-	s := make([]UpdateOpt, len(opts))
+func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error) {
+	s := make([]map[string]interface{}, len(opts))
 
 	for i, opt := range opts {
 		if opt.Op == "" {
@@ -244,7 +244,7 @@ func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]UpdateOpt, error) {
 		if opt.Op != Remove && opt.Value == nil {
 			return nil, no("Value")
 		}
-		s[i] = opt
+		s[i] = interface{}(opt).(map[string]interface{})
 	}
 
 	return s, nil
