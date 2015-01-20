@@ -75,7 +75,7 @@ type CreateOpts struct {
 	// length for flavor_id is 1. The maximum length is 256.
 	FlavorID string
 	// OPTIONAL. Specifies the TTL rules for the assets under this service. Supports wildcards for fine-grained control.
-	Caching []Cache
+	Caching []CacheRule
 	// OPTIONAL. Specifies the restrictions that define who can access assets (content from the CDN cache).
 	Restrictions []Restriction
 }

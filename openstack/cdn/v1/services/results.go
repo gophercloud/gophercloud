@@ -38,22 +38,22 @@ type Origin struct {
 	Rules []OriginRule `mapstructure:"rules"`
 }
 
-// CacheRule specifies a rule that determines if a TTL should be applied to an asset.
-type CacheRule struct {
+// TTLRule specifies a rule that determines if a TTL should be applied to an asset.
+type TTLRule struct {
 	// Specifies the name of this rule.
 	Name string `mapstructure:"name"`
 	// Specifies the request URL this rule should match for this TTL to be used. Regex is supported.
 	RequestURL string `mapstructure:"request_url"`
 }
 
-// Cache specifies the TTL rules for the assets under this service.
-type Cache struct {
+// CacheRule specifies the TTL rules for the assets under this service.
+type CacheRule struct {
 	// Specifies the name of this caching rule. Note: 'default' is a reserved name used for the default TTL setting.
 	Name string `mapstructure:"name"`
 	// Specifies the TTL to apply.
 	TTL int `mapstructure:"ttl"`
 	// Specifies a collection of rules that determine if this TTL should be applied to an asset.
-	Rules []CacheRule `mapstructure:"rules"`
+	Rules []TTLRule `mapstructure:"rules"`
 }
 
 // RestrictionRule specifies a rule that determines if this restriction should be applied to an asset.
@@ -90,7 +90,7 @@ type Service struct {
 	// Specifies a list of origin domains or IP addresses where the original assets are stored.
 	Origins []Origin `mapstructure:"origins"`
 	// Specifies the TTL rules for the assets under this service. Supports wildcards for fine grained control.
-	Caching []Cache `mapstructure:"caching"`
+	Caching []CacheRule `mapstructure:"caching"`
 	// Specifies the restrictions that define who can access assets (content from the CDN cache).
 	Restrictions []Restriction `mapstructure:"restrictions"`
 	// Specifies the CDN provider flavor ID to use. For a list of flavors, see the operation to list the available flavors.
