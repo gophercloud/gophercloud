@@ -1,6 +1,8 @@
 package services
 
 import (
+	"strings"
+
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -106,7 +108,7 @@ func (opts CreateOpts) ToCDNServiceCreateMap() (map[string]interface{}, error) {
 		if origin.Origin == "" {
 			return nil, no("Origins[].Origin")
 		}
-		if origin.Rules == nil && len(opts.Origins) > 1{
+		if origin.Rules == nil && len(opts.Origins) > 1 {
 			return nil, no("Origins[].Rules")
 		}
 		for _, rule := range origin.Rules {
@@ -185,10 +187,20 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	return res
 }
 
-// Get retrieves a specific service based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
+// Get retrieves a specific service based on its URL or its unique ID. For
+// example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
+// "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
+// are valid options for idOrURL.
+func Get(c *gophercloud.ServiceClient, idOrURL string) GetResult {
+	var url string
+	if strings.Contains(idOrURL, "/") {
+		url = idOrURL
+	} else {
+		url = getURL(c, idOrURL)
+	}
+
 	var res GetResult
-	_, res.Err = perigee.Request("GET", getURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("GET", url, perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		Results:     &res.Body,
 		OkCodes:     []int{200},
@@ -247,8 +259,8 @@ func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error)
 			return nil, no("Value")
 		}
 		s[i] = map[string]interface{}{
-			"op":opt.Op,
-			"path": opt.Path,
+			"op":    opt.Op,
+			"path":  opt.Path,
 			"value": opt.Value,
 		}
 	}
@@ -257,17 +269,26 @@ func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error)
 }
 
 // Update accepts a UpdateOpts struct and updates an existing CDN service using
-// the values provided.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var res UpdateResult
+// the values provided. idOrURL can be either the service's URL or its ID. For
+// example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
+// "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
+// are valid options for idOrURL.
+func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOptsBuilder) UpdateResult {
+	var url string
+	if strings.Contains(idOrURL, "/") {
+		url = idOrURL
+	} else {
+		url = updateURL(c, idOrURL)
+	}
 
+	var res UpdateResult
 	reqBody, err := opts.ToCDNServiceUpdateMap()
 	if err != nil {
 		res.Err = err
 		return res
 	}
 
-	resp, err := perigee.Request("PATCH", updateURL(c, id), perigee.Options{
+	resp, err := perigee.Request("PATCH", url, perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		OkCodes:     []int{202},
@@ -277,10 +298,20 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) Upd
 	return res
 }
 
-// Delete accepts a unique ID and deletes the CDN service associated with it.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
+// Delete accepts a service's ID or its URL and deletes the CDN service
+// associated with it. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
+// "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
+// are valid options for idOrURL.
+func Delete(c *gophercloud.ServiceClient, idOrURL string) DeleteResult {
+	var url string
+	if strings.Contains(idOrURL, "/") {
+		url = idOrURL
+	} else {
+		url = deleteURL(c, idOrURL)
+	}
+
 	var res DeleteResult
-	_, res.Err = perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
