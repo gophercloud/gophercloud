@@ -7,7 +7,7 @@ import (
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
-func TestGetContainer(t *testing.T) {
+func TestGetHomeDocument(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
@@ -35,7 +35,7 @@ func TestGetContainer(t *testing.T) {
 	th.CheckDeepEquals(t, expected, *actual)
 }
 
-func TestPingContainer(t *testing.T) {
+func TestPing(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandlePingSuccessfully(t)
