@@ -106,7 +106,7 @@ func (opts CreateOpts) ToCDNServiceCreateMap() (map[string]interface{}, error) {
 		if origin.Origin == "" {
 			return nil, no("Origins[].Origin")
 		}
-		if origin.Rules == nil {
+		if origin.Rules == nil && len(opts.Origins) > 1{
 			return nil, no("Origins[].Rules")
 		}
 		for _, rule := range origin.Rules {
@@ -175,11 +175,13 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	}
 
 	// Send request to API
-	_, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
+	resp, err := perigee.Request("POST", createURL(c), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		OkCodes:     []int{202},
 	})
+	res.Header = resp.HttpResponse.Header
+	res.Err = err
 	return res
 }
 
@@ -221,13 +223,13 @@ type UpdateOpts []UpdateOpt
 // to a service can be submitted at the same time. See UpdateOpts.
 type UpdateOpt struct {
 	// Specifies the update operation to perform.
-	Op Op
+	Op Op `json:"op"`
 	// Specifies the JSON Pointer location within the service's JSON representation
 	// of the service parameter being added, replaced or removed.
-	Path string
+	Path string `json:"path"`
 	// Specifies the actual value to be added or replaced. It is not required for
 	// the remove operation.
-	Value map[string]interface{}
+	Value map[string]interface{} `json:"value,omitempty"`
 }
 
 // ToCDNServiceUpdateMap casts an UpdateOpts struct to a map.
@@ -244,7 +246,11 @@ func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error)
 		if opt.Op != Remove && opt.Value == nil {
 			return nil, no("Value")
 		}
-		s[i] = interface{}(opt).(map[string]interface{})
+		s[i] = map[string]interface{}{
+			"op":opt.Op,
+			"path": opt.Path,
+			"value": opt.Value,
+		}
 	}
 
 	return s, nil
@@ -261,11 +267,13 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) Upd
 		return res
 	}
 
-	_, res.Err = perigee.Request("PATCH", updateURL(c, id), perigee.Options{
+	resp, err := perigee.Request("PATCH", updateURL(c, id), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		OkCodes:     []int{202},
 	})
+	res.Header = resp.HttpResponse.Header
+	res.Err = err
 	return res
 }
 
