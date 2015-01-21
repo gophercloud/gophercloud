@@ -1,75 +1,76 @@
 package services
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 // Domain represents a domain used by users to access their website.
 type Domain struct {
 	// Specifies the domain used to access the assets on their website, for which
 	// a CNAME is given to the CDN provider.
-	Domain string `mapstructure:"domain"`
+	Domain string `mapstructure:"domain" json:"domain"`
 	// Specifies the protocol used to access the assets on this domain. Only "http"
 	// or "https" are currently allowed. The default is "http".
-	Protocol string `mapstructure:"protocol"`
+	Protocol string `mapstructure:"protocol" json:"protocol,omitempty"`
 }
 
 // OriginRule represents a rule that defines when an origin should be accessed.
 type OriginRule struct {
 	// Specifies the name of this rule.
-	Name string `mapstructure:"name"`
+	Name string `mapstructure:"name" json:"name"`
 	// Specifies the request URL this rule should match for this origin to be used. Regex is supported.
-	RequestURL string `mapstructure:"request_url"`
+	RequestURL string `mapstructure:"request_url" json:"request_url"`
 }
 
 // Origin specifies a list of origin domains or IP addresses where the original assets are stored.
 type Origin struct {
 	// Specifies the URL or IP address to pull origin content from.
-	Origin string `mapstructure:"origin"`
+	Origin string `mapstructure:"origin" json:"origin"`
 	// Specifies the port used to access the origin. The default is port 80.
-	Port int `mapstructure:"port"`
+	Port int `mapstructure:"port" json:"port,omitempty"`
 	// Specifies whether or not to use HTTPS to access the origin. The default
 	// is false.
-	SSL bool `mapstructure:"ssl"`
+	SSL bool `mapstructure:"ssl" json:"ssl"`
 	// Specifies a collection of rules that define the conditions when this origin
 	// should be accessed. If there is more than one origin, the rules parameter is required.
-	Rules []OriginRule `mapstructure:"rules"`
+	Rules []OriginRule `mapstructure:"rules" json:"rules,omitempty"`
 }
 
 // TTLRule specifies a rule that determines if a TTL should be applied to an asset.
 type TTLRule struct {
 	// Specifies the name of this rule.
-	Name string `mapstructure:"name"`
+	Name string `mapstructure:"name" json:"name"`
 	// Specifies the request URL this rule should match for this TTL to be used. Regex is supported.
-	RequestURL string `mapstructure:"request_url"`
+	RequestURL string `mapstructure:"request_url" json:"request_url"`
 }
 
 // CacheRule specifies the TTL rules for the assets under this service.
 type CacheRule struct {
 	// Specifies the name of this caching rule. Note: 'default' is a reserved name used for the default TTL setting.
-	Name string `mapstructure:"name"`
+	Name string `mapstructure:"name" json:"name"`
 	// Specifies the TTL to apply.
-	TTL int `mapstructure:"ttl"`
+	TTL int `mapstructure:"ttl" json:"ttl"`
 	// Specifies a collection of rules that determine if this TTL should be applied to an asset.
-	Rules []TTLRule `mapstructure:"rules"`
+	Rules []TTLRule `mapstructure:"rules" json:"rules,omitempty"`
 }
 
 // RestrictionRule specifies a rule that determines if this restriction should be applied to an asset.
 type RestrictionRule struct {
 	// Specifies the name of this rule.
-	Name string `mapstructure:"name"`
+	Name string `mapstructure:"name" json:"name"`
 	// Specifies the http host that requests must come from.
-	Referrer string `mapstructure:"referrer"`
+	Referrer string `mapstructure:"referrer" json:"referrer,omitempty"`
 }
 
 // Restriction specifies a restriction that defines who can access assets (content from the CDN cache).
 type Restriction struct {
 	// Specifies the name of this restriction.
-	Name string `mapstructure:"name"`
+	Name string `mapstructure:"name" json:"name"`
 	// Specifies a collection of rules that determine if this TTL should be applied to an asset.
-	Rules []RestrictionRule `mapstructure:"rules"`
+	Rules []RestrictionRule `mapstructure:"rules" json:"rules"`
 }
 
 // Error specifies an error that occurred during the previous service action.
@@ -92,7 +93,7 @@ type Service struct {
 	// Specifies the TTL rules for the assets under this service. Supports wildcards for fine grained control.
 	Caching []CacheRule `mapstructure:"caching"`
 	// Specifies the restrictions that define who can access assets (content from the CDN cache).
-	Restrictions []Restriction `mapstructure:"restrictions"`
+	Restrictions []Restriction `mapstructure:"restrictions" json:"restrictions,omitempty"`
 	// Specifies the CDN provider flavor ID to use. For a list of flavors, see the operation to list the available flavors.
 	FlavorID string `mapstructure:"flavor_id"`
 	// Specifies the current status of the service.
@@ -132,26 +133,28 @@ func (r ServicePage) LastMarker() (string, error) {
 
 // ExtractServices is a function that takes a ListResult and returns the services' information.
 func ExtractServices(page pagination.Page) ([]Service, error) {
-	untyped := page.(ServicePage).Body.([]interface{})
-	results := make([]Service, len(untyped))
-	for index, each := range untyped {
-		service := each.(map[string]interface{})
-		err := mapstructure.Decode(service, &results[index])
-		if err != nil {
-			return results, err
-		}
+	var response struct {
+		Services []Service `mapstructure:"services"`
 	}
-	return results, nil
+
+	err := mapstructure.Decode(page.(ServicePage).Body, &response)
+	return response.Services, err
 }
 
 // CreateResult represents the result of a Create operation.
 type CreateResult struct {
-	gophercloud.HeaderResult
+	gophercloud.Result
 }
 
 // Extract is a method that extracts the location of a newly created service.
-func (cr CreateResult) Extract() string {
-	return cr.Header["Location"][0]
+func (r CreateResult) Extract() (string, error) {
+	if r.Err != nil {
+		return "", r.Err
+	}
+	if l, ok := r.Header["Location"]; ok && len(l) > 0 {
+		return l[0], nil
+	}
+	return "", nil
 }
 
 // GetResult represents the result of a get operation.
@@ -174,12 +177,18 @@ func (r GetResult) Extract() (*Service, error) {
 
 // UpdateResult represents the result of a Update operation.
 type UpdateResult struct {
-	gophercloud.HeaderResult
+	gophercloud.Result
 }
 
 // Extract is a method that extracts the location of an updated service.
-func (ur UpdateResult) Extract() string {
-	return ur.Header["Location"][0]
+func (r UpdateResult) Extract() (string, error) {
+	if r.Err != nil {
+		return "", r.Err
+	}
+	if l, ok := r.Header["Location"]; ok && len(l) > 0 {
+		return l[0], nil
+	}
+	return "", nil
 }
 
 // DeleteResult represents the result of a Delete operation.
