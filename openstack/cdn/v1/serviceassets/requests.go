@@ -1,6 +1,8 @@
 package serviceassets
 
 import (
+	"strings"
+
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 )
@@ -29,11 +31,20 @@ func (opts DeleteOpts) ToCDNAssetDeleteParams() (string, error) {
 	return q.String(), nil
 }
 
-// Delete accepts a unique ID and deletes the CDN service asset associated with
-// it.
-func Delete(c *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) DeleteResult {
+// Delete accepts a unique service ID or URL and deletes the CDN service asset associated with
+// it. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
+// "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
+// are valid options for idOrURL.
+func Delete(c *gophercloud.ServiceClient, idOrURL string, opts DeleteOptsBuilder) DeleteResult {
+	var url string
+	if strings.Contains(idOrURL, "/") {
+		url = idOrURL
+	} else {
+		url = deleteURL(c, idOrURL)
+	}
+
 	var res DeleteResult
-	_, res.Err = perigee.Request("DELETE", deleteURL(c, id), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{202},
 	})
