@@ -80,7 +80,7 @@ func TestCreateObjectWithoutContentType(t *testing.T) {
 	os.HandleCreateTypelessObjectSuccessfully(t)
 
 	content := bytes.NewBufferString("The sky was the color of television, tuned to a dead channel.")
-	res := Create(fake.ServiceClient(), "testContainer", "testObject", content, &CreateOpts{})
+	res := Create(fake.ServiceClient(), "testContainer", "testObject", content, &os.CreateOpts{})
 	th.AssertNoErr(t, res.Err)
 }
 
