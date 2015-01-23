@@ -24,6 +24,7 @@ func Ping(c *gophercloud.ServiceClient) PingResult {
 	_, res.Err = perigee.Request("GET", pingURL(c), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		OkCodes:     []int{204},
+		OmitAccept:  true,
 	})
 	return res
 }
