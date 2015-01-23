@@ -12,3 +12,4 @@ after_success:
   - go get github.com/mattn/goveralls
   - export PATH=$PATH:$HOME/gopath/bin/
   - goveralls 2k7PTU3xa474Hymwgdj6XjqenNfGTNkO8
+sudo: false
