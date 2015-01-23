@@ -205,14 +205,20 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		url += query
 	}
 
-	contentType := h["Content-Type"]
-
-	resp, err := perigee.Request("PUT", url, perigee.Options{
-		ContentType: contentType,
+	popts := perigee.Options{
 		ReqBody:     content,
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202},
-	})
+	}
+
+	if contentType, explicit := h["Content-Type"]; explicit {
+		popts.ContentType = contentType
+		delete(h, "Content-Type")
+	} else {
+		popts.OmitContentType = true
+	}
+
+	resp, err := perigee.Request("PUT", url, popts)
 	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
