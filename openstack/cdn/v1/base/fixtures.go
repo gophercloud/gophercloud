@@ -48,7 +48,6 @@ func HandlePingSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
