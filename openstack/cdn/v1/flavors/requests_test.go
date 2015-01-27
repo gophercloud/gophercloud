@@ -33,7 +33,7 @@ func TestList(t *testing.T) {
             Provider: "Fastly",
             Links: []gophercloud.Link{
               gophercloud.Link{
-                Href: "http: //www.fastly.com",
+                Href: "http://www.fastly.com",
                 Rel: "provider_url",
               },
             },
