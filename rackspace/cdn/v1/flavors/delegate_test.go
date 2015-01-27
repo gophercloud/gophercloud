@@ -54,10 +54,7 @@ func TestList(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
+	th.CheckEquals(t, 1, count)
 }
 
 func TestGet(t *testing.T) {
