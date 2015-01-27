@@ -1,7 +1,8 @@
 package base
 
 import (
-	"github.com/mitchellh/mapstructure"
+	"errors"
+
 	"github.com/rackspace/gophercloud"
 )
 
@@ -19,13 +20,13 @@ func (r GetResult) Extract() (*HomeDocument, error) {
 		return nil, r.Err
 	}
 
-	var res struct {
-		HomeDocument *HomeDocument `mapstructure:"resources"`
+	submap, ok := r.Body.(map[string]interface{})["resources"]
+	if !ok {
+		return nil, errors.New("Unexpected HomeDocument structure")
 	}
+	casted := HomeDocument(submap.(map[string]interface{}))
 
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res.HomeDocument, err
+	return &casted, nil
 }
 
 // PingResult represents the result of a Ping operation.

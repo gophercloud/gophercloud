@@ -16,21 +16,19 @@ func TestGetHomeDocument(t *testing.T) {
 	th.CheckNoErr(t, err)
 
 	expected := HomeDocument{
-		"rel/cdn": `{
+		"rel/cdn": map[string]interface{}{
         "href-template": "services{?marker,limit}",
-        "href-vars": {
+        "href-vars": map[string]interface{}{
             "marker": "param/marker",
-            "limit": "param/limit"
+            "limit": "param/limit",
         },
-        "hints": {
-            "allow": [
-                "GET"
-            ],
-            "formats": {
-                "application/json": {}
-            }
-        }
-    }`,
+        "hints": map[string]interface{}{
+            "allow": []string{"GET"},
+            "formats": map[string]interface{}{
+                "application/json": map[string]interface{}{},
+            },
+        },
+    },
 	}
 	th.CheckDeepEquals(t, expected, *actual)
 }
