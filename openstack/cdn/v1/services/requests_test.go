@@ -292,7 +292,7 @@ func TestGet(t *testing.T) {
   th.AssertDeepEquals(t, expected, actual)
 }
 
-func TestUpdate(t *testing.T) {
+func TestSuccessfulUpdate(t *testing.T) {
   th.SetupHTTP()
   defer th.TeardownHTTP()
 
@@ -320,6 +320,36 @@ func TestUpdate(t *testing.T) {
   actual, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", updateOpts).Extract()
   th.AssertNoErr(t, err)
   th.AssertEquals(t, expected, actual)
+}
+
+func TestUnsuccessfulUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleUpdateCDNServiceSuccessfully(t)
+
+	updateOpts := UpdateOpts{
+		UpdateOpt{
+			Op: "Foo",
+			Path: "/origins/0",
+			Value: map[string]interface{}{
+				"origin": "44.33.22.11",
+				"port": 80,
+				"ssl": false,
+			},
+		},
+		UpdateOpt{
+			Op: Add,
+			Path: "/domains/0",
+			Value: map[string]interface{}{
+				"domain": "added.mocksite4.com",
+			},
+		},
+	}
+	_, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", updateOpts).Extract()
+	if err == nil {
+		t.Errorf("Expected error during TestUnsuccessfulUpdate but didn't get one.")
+	}
 }
 
 func TestDelete(t *testing.T) {

@@ -28,7 +28,7 @@ func HandleListCDNFlavorsSuccessfully(t *testing.T) {
                         "provider": "Fastly",
                         "links": [
                             {
-                                "href": "http: //www.fastly.com",
+                                "href": "http://www.fastly.com",
                                 "rel": "provider_url"
                             }
                         ]

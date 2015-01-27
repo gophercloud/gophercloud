@@ -34,7 +34,7 @@ func TestList(t *testing.T) {
 						Provider: "Fastly",
 						Links: []gophercloud.Link{
 							gophercloud.Link{
-								Href: "http: //www.fastly.com",
+								Href: "http://www.fastly.com",
 								Rel:  "provider_url",
 							},
 						},
@@ -54,10 +54,7 @@ func TestList(t *testing.T) {
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
+	th.CheckEquals(t, 1, count)
 }
 
 func TestGet(t *testing.T) {
