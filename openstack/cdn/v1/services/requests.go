@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/racker/perigee"
@@ -249,6 +250,9 @@ func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error)
 	s := make([]map[string]interface{}, len(opts))
 
 	for i, opt := range opts {
+		if opt.Op != Add && opt.Op != Remove && opt.Op != Replace {
+			return nil, fmt.Errorf("Invalid Op: %v", opt.Op)
+		}
 		if opt.Op == "" {
 			return nil, no("Op")
 		}
