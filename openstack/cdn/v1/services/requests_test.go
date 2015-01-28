@@ -298,32 +298,50 @@ func TestSuccessfulUpdate(t *testing.T) {
 	HandleUpdateCDNServiceSuccessfully(t)
 
 	expected := "https://www.poppycdn.io/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
-	ops := UpdateOpts{
-		// Append a single Domain
-		Append{Value: Domain{Domain: "appended.mocksite4.com"}},
-		// Insert a single Domain
-		Insertion{
-			Index: 4,
-			Value: Domain{Domain: "inserted.mocksite4.com"},
-		},
-		// Bulk addition
-		Append{
-			Value: DomainList{
-				Domain{Domain: "bulkadded1.mocksite4.com"},
-				Domain{Domain: "bulkadded2.mocksite4.com"},
+	updateOpts := UpdateOpts{
+		UpdateOpt{
+			Op:   Replace,
+			Path: "/origins/0",
+			Value: map[string]interface{}{
+				"origin": "44.33.22.11",
+				"port":   80,
+				"ssl":    false,
 			},
 		},
-		// Replace a single Origin
-		Replacement{
-			Index: 2,
-			Value: Origin{Origin: "44.33.22.11", Port: 80, SSL: false},
+		UpdateOpt{
+			Op:   Add,
+			Path: "/domains/0",
+			Value: map[string]interface{}{
+				"domain": "added.mocksite4.com",
+			},
 		},
-		// Bulk replace Origins
-		Replacement{
-			Index: 0, // Ignored
-			Value: OriginList{
-				Origin{Origin: "44.33.22.11", Port: 80, SSL: false},
-				Origin{Origin: "55.44.33.22", Port: 443, SSL: true},
+	}
+	actual, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expected, actual)
+}
+
+func TestUnsuccessfulUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleUpdateCDNServiceSuccessfully(t)
+
+	updateOpts := UpdateOpts{
+		UpdateOpt{
+			Op:   "Foo",
+			Path: "/origins/0",
+			Value: map[string]interface{}{
+				"origin": "44.33.22.11",
+				"port":   80,
+				"ssl":    false,
+			},
+		},
+		UpdateOpt{
+			Op:   Add,
+			Path: "/domains/0",
+			Value: map[string]interface{}{
+				"domain": "added.mocksite4.com",
 			},
 		},
 		// Remove a single CacheRule
