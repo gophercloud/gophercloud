@@ -275,6 +275,12 @@ type value interface {
 	appropriatePath() Path
 }
 
+// Patch represents a single update to an existing Service. Multiple updates to a service can be
+// submitted at the same time.
+type Patch interface {
+	ToCDNServiceUpdateMap() map[string]interface{}
+}
+
 // ToCDNServiceUpdateMap casts an UpdateOpts struct to a map.
 func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error) {
 	s := make([]map[string]interface{}, len(opts))
