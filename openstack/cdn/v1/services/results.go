@@ -17,6 +17,19 @@ type Domain struct {
 	Protocol string `mapstructure:"protocol" json:"protocol,omitempty"`
 }
 
+func (d Domain) toPatchValue() map[string]interface{} {
+	r := make(map[string]interface{})
+	r["domain"] = d.Domain
+	if d.Protocol != "" {
+		r["protocol"] = d.Protocol
+	}
+	return r
+}
+
+func (d Domain) appropriatePath() Path {
+	return PathDomains
+}
+
 // OriginRule represents a rule that defines when an origin should be accessed.
 type OriginRule struct {
 	// Specifies the name of this rule.
@@ -39,6 +52,24 @@ type Origin struct {
 	Rules []OriginRule `mapstructure:"rules" json:"rules,omitempty"`
 }
 
+func (o Origin) toPatchValue() map[string]interface{} {
+	r := make(map[string]interface{})
+	r["origin"] = o.Origin
+	r["port"] = o.Port
+	r["ssl"] = o.SSL
+	r["rules"] = make([]map[string]interface{}, len(o.Rules))
+	for index, rule := range o.Rules {
+		submap := r["rules"].([]map[string]interface{})[index]
+		submap["name"] = rule.Name
+		submap["request_url"] = rule.RequestURL
+	}
+	return r
+}
+
+func (o Origin) appropriatePath() Path {
+	return PathOrigins
+}
+
 // TTLRule specifies a rule that determines if a TTL should be applied to an asset.
 type TTLRule struct {
 	// Specifies the name of this rule.
@@ -55,6 +86,23 @@ type CacheRule struct {
 	TTL int `mapstructure:"ttl" json:"ttl"`
 	// Specifies a collection of rules that determine if this TTL should be applied to an asset.
 	Rules []TTLRule `mapstructure:"rules" json:"rules,omitempty"`
+}
+
+func (c CacheRule) toPatchValue() map[string]interface{} {
+	r := make(map[string]interface{})
+	r["name"] = c.Name
+	r["ttl"] = c.TTL
+	r["rules"] = make([]map[string]interface{}, len(c.Rules))
+	for index, rule := range c.Rules {
+		submap := r["rules"].([]map[string]interface{})[index]
+		submap["name"] = rule.Name
+		submap["request_url"] = rule.RequestURL
+	}
+	return r
+}
+
+func (c CacheRule) appropriatePath() Path {
+	return PathCaching
 }
 
 // RestrictionRule specifies a rule that determines if this restriction should be applied to an asset.

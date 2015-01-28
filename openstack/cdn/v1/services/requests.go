@@ -270,6 +270,11 @@ type UpdateOpt struct {
 	Value map[string]interface{} `json:"value,omitempty"`
 }
 
+type value interface {
+	toPatchValue() map[string]interface{}
+	appropriatePath() Path
+}
+
 // ToCDNServiceUpdateMap casts an UpdateOpts struct to a map.
 func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error) {
 	s := make([]map[string]interface{}, len(opts))
