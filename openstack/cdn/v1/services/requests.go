@@ -229,6 +229,31 @@ var (
 	Replace Op = "replace"
 )
 
+// Path is a JSON pointer location that indicates which service parameter is being added, replaced,
+// or removed.
+type Path struct {
+	baseElement string
+}
+
+func (p Path) renderDash() string {
+	return fmt.Sprintf("/%s/-", p.baseElement)
+}
+
+func (p Path) renderIndex(index int64) string {
+	return fmt.Sprintf("/%s/%d", p.baseElement, index)
+}
+
+var (
+	// PathDomains indicates that an update operation is to be performed on a Domain.
+	PathDomains = Path{baseElement: "domains"}
+
+	// PathOrigins indicates that an update operation is to be performed on an Origin.
+	PathOrigins = Path{baseElement: "origins"}
+
+	// PathCaching indicates that an update operation is to be performed on a CacheRule.
+	PathCaching = Path{baseElement: "caching"}
+)
+
 // UpdateOpts represents the attributes used when updating an existing CDN service.
 type UpdateOpts []UpdateOpt
 
