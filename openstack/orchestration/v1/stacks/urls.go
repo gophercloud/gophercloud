@@ -33,23 +33,3 @@ func previewURL(c *gophercloud.ServiceClient) string {
 func abandonURL(c *gophercloud.ServiceClient, name, id string) string {
 	return c.ServiceURL("stacks", name, id, "abandon")
 }
-
-func createSnapshotURL(c *gophercloud.ServiceClient, stackName, stackID string) string {
-	return c.ServiceURL("stacks", stackName, stackID, "snapshots")
-}
-
-func listSnapshotsURL(c *gophercloud.ServiceClient, stackName, stackID string) string {
-	return createSnapshotURL(c, stackName, stackID)
-}
-
-func getSnapshotURL(c *gophercloud.ServiceClient, stackName, stackID, snapshotID string) string {
-	return c.ServiceURL("stacks", stackName, stackID, "snapshots", snapshotID)
-}
-
-func restoreSnapshotURL(c *gophercloud.ServiceClient, stackName, stackID, snapshotID string) string {
-	return getSnapshotURL(c, stackName, stackID, snapshotID)
-}
-
-func deleteSnapshotURL(c *gophercloud.ServiceClient, stackName, stackID, snapshotID string) string {
-	return getSnapshotURL(c, stackName, stackID, snapshotID)
-}
