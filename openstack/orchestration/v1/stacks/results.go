@@ -8,7 +8,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-type CreateStack struct {
+type CreatedStack struct {
 	ID    string             `mapstructure:"id"`
 	Links []gophercloud.Link `mapstructure:"links"`
 }
@@ -23,7 +23,7 @@ func (r CreateResult) Extract() (*CreateStack, error) {
 	}
 
 	var res struct {
-		Stack *CreateStack `json:"stack"`
+		Stack *CreateStack `mapstructure:"stack"`
 	}
 
 	if err := mapstructure.Decode(r.Body, &res); err != nil {
@@ -36,6 +36,8 @@ func (r CreateResult) Extract() (*CreateStack, error) {
 type AdoptResult struct {
 	gophercloud.Result
 }
+
+
 
 // StackPage is a pagination.Pager that is returned from a call to the List function.
 type StackPage struct {
@@ -51,14 +53,14 @@ func (r StackPage) IsEmpty() (bool, error) {
 	return len(stacks) == 0, nil
 }
 
-type ListStack struct {
+type ListedStack struct {
 	CreationTime time.Time          `mapstructure:"-"`
 	Description  string             `mapstructure:"description"`
 	ID           string             `mapstructure:"id"`
 	Links        []gophercloud.Link `mapstructure:"links"`
 	Name         string             `mapstructure:"stack_name"`
 	Status       string             `mapstructure:"stack_status"`
-	StausReason  string             `mapstructure:"stack_status_reason"`
+	StatusReason string             `mapstructure:"stack_status_reason"`
 	UpdatedTime  time.Time          `mapstructure:"-"`
 }
 
@@ -66,14 +68,33 @@ type ListStack struct {
 // over a stacks.List call.
 func ExtractStacks(page pagination.Page) ([]ListStack, error) {
 	var res struct {
-		Stacks []ListStack `json:"stacks"`
+		Stacks []ListStack `mapstructure:"stacks"`
 	}
 
 	err := mapstructure.Decode(page.(StackPage).Body, &res)
-	return res.Stacks, err
+	if err != nil {
+		return nil, err
+	}
+
+	rawStacks := (((page.(StackPage).Body).(map[string]interface{}))["stacks"]).([]interface{})
+	for i := range rawStacks {
+		creationTime, err := time.Parse(time.RFC3339, ((rawStacks[i]).(map[string]interface{}))["creation_time"].(string))
+		if err != nil {
+			return res.Stacks, err
+		}
+		res.Stacks[i].CreationTime = creationTime
+
+		updatedTime, err := time.Parse(time.RFC3339, ((rawStacks[i]).(map[string]interface{}))["updated_time"].(string))
+		if err != nil {
+			return res.Stacks, err
+		}
+		res.Stacks[i].UpdatedTime = updatedTime
+	}
+
+	return res.Stacks, nil
 }
 
-type GetStack struct {
+type RetrievedStack struct {
 	Capabilities        []interface{}       `mapstructure:"capabilities"`
 	CreationTime        time.Time           `mapstructure:"-"`
 	Description         string              `mapstructure:"description"`
@@ -101,7 +122,7 @@ func (r GetResult) Extract() (*GetStack, error) {
 	}
 
 	var res struct {
-		Stack *GetStack `json:"stack"`
+		Stack *GetStack `mapstructure:"stack"`
 	}
 
 	config := &mapstructure.DecoderConfig{
@@ -146,7 +167,7 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
-type PreviewStack struct {
+type PreviewedStack struct {
 	Capabilities        []interface{}       `mapstructure:"capabilities"`
 	CreationTime        time.Time           `mapstructure:"-"`
 	Description         string              `mapstructure:"description"`
@@ -174,7 +195,7 @@ func (r PreviewResult) Extract() (*PreviewStack, error) {
 	}
 
 	var res struct {
-		Stack *PreviewStack `json:"stack"`
+		Stack *PreviewStack `mapstructure:"stack"`
 	}
 
 	config := &mapstructure.DecoderConfig{
@@ -211,7 +232,7 @@ func (r PreviewResult) Extract() (*PreviewStack, error) {
 	return res.Stack, err
 }
 
-type AbandonStack struct {
+type AbandonedStack struct {
 }
 
 type AbandonResult struct {
