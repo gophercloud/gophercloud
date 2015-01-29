@@ -15,7 +15,7 @@ func TestServiceAsset(t *testing.T) {
 	client := newClient(t)
 
 	t.Log("Creating Service")
-	loc := testServiceCreate(t, client)
+	loc := testServiceCreate(t, client, "test-site-2")
 	t.Logf("Created service at location: %s", loc)
 
 	t.Log("Deleting Service Assets")
