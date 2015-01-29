@@ -299,57 +299,23 @@ func TestSuccessfulUpdate(t *testing.T) {
 	os.HandleUpdateCDNServiceSuccessfully(t)
 
 	expected := "https://www.poppycdn.io/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
-	updateOpts := os.UpdateOpts{
-		os.UpdateOpt{
-			Op:   os.Replace,
-			Path: "/origins/0",
-			Value: map[string]interface{}{
-				"origin": "44.33.22.11",
-				"port":   80,
-				"ssl":    false,
+	ops := []os.Patch{
+		os.Replacement{
+			Value: os.Origin{
+				Origin: "44.33.22.11",
+				Port:   80,
+				SSL:    false,
 			},
+			Index: 0,
 		},
-		os.UpdateOpt{
-			Op:   os.Add,
-			Path: "/domains/0",
-			Value: map[string]interface{}{
-				"domain": "added.mocksite4.com",
-			},
+		os.Addition{
+			Value: os.Domain{Domain: "added.mocksite4.com"},
 		},
 	}
-	actual, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", updateOpts).Extract()
+
+	actual, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", ops).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, expected, actual)
-}
-
-func TestUnsuccessfulUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	os.HandleUpdateCDNServiceSuccessfully(t)
-
-	updateOpts := os.UpdateOpts{
-		os.UpdateOpt{
-			Op: "Foo",
-			Path: "/origins/0",
-			Value: map[string]interface{}{
-				"origin": "44.33.22.11",
-				"port": 80,
-				"ssl": false,
-				},
-			},
-		os.UpdateOpt{
-			Op: os.Add,
-			Path: "/domains/0",
-			Value: map[string]interface{}{
-				"domain": "added.mocksite4.com",
-			},
-		},
-	}
-	_, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", updateOpts).Extract()
-	if err == nil {
-		t.Errorf("Expected error during TestUnsuccessfulUpdate but didn't get one.")
-	}
 }
 
 func TestDelete(t *testing.T) {
