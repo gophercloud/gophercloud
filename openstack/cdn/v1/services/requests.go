@@ -235,7 +235,7 @@ var (
 )
 
 type value interface {
-	toPatchValue() map[string]interface{}
+	toPatchValue() interface{}
 	appropriatePath() Path
 }
 

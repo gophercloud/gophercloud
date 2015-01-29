@@ -17,7 +17,7 @@ type Domain struct {
 	Protocol string `mapstructure:"protocol" json:"protocol,omitempty"`
 }
 
-func (d Domain) toPatchValue() map[string]interface{} {
+func (d Domain) toPatchValue() interface{} {
 	r := make(map[string]interface{})
 	r["domain"] = d.Domain
 	if d.Protocol != "" {
@@ -27,6 +27,21 @@ func (d Domain) toPatchValue() map[string]interface{} {
 }
 
 func (d Domain) appropriatePath() Path {
+	return PathDomains
+}
+
+// DomainList provides a useful way to perform bulk operations in a single Patch.
+type DomainList []Domain
+
+func (list DomainList) toPatchValue() interface{} {
+	r := make([]interface{}, len(list))
+	for i, domain := range list {
+		r[i] = domain.toPatchValue()
+	}
+	return r
+}
+
+func (list DomainList) appropriatePath() Path {
 	return PathDomains
 }
 
@@ -52,7 +67,7 @@ type Origin struct {
 	Rules []OriginRule `mapstructure:"rules" json:"rules,omitempty"`
 }
 
-func (o Origin) toPatchValue() map[string]interface{} {
+func (o Origin) toPatchValue() interface{} {
 	r := make(map[string]interface{})
 	r["origin"] = o.Origin
 	r["port"] = o.Port
@@ -69,6 +84,21 @@ func (o Origin) toPatchValue() map[string]interface{} {
 }
 
 func (o Origin) appropriatePath() Path {
+	return PathOrigins
+}
+
+// OriginList provides a useful way to perform bulk operations in a single Patch.
+type OriginList []Domain
+
+func (list OriginList) toPatchValue() interface{} {
+	r := make([]interface{}, len(list))
+	for i, origin := range list {
+		r[i] = origin.toPatchValue()
+	}
+	return r
+}
+
+func (list OriginList) appropriatePath() Path {
 	return PathOrigins
 }
 
@@ -90,7 +120,7 @@ type CacheRule struct {
 	Rules []TTLRule `mapstructure:"rules" json:"rules,omitempty"`
 }
 
-func (c CacheRule) toPatchValue() map[string]interface{} {
+func (c CacheRule) toPatchValue() interface{} {
 	r := make(map[string]interface{})
 	r["name"] = c.Name
 	r["ttl"] = c.TTL
@@ -104,6 +134,21 @@ func (c CacheRule) toPatchValue() map[string]interface{} {
 }
 
 func (c CacheRule) appropriatePath() Path {
+	return PathCaching
+}
+
+// CacheRuleList provides a useful way to perform bulk operations in a single Patch.
+type CacheRuleList []Domain
+
+func (list CacheRuleList) toPatchValue() interface{} {
+	r := make([]interface{}, len(list))
+	for i, rule := range list {
+		r[i] = rule.toPatchValue()
+	}
+	return r
+}
+
+func (list CacheRuleList) appropriatePath() Path {
 	return PathCaching
 }
 
