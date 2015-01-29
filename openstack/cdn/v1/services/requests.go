@@ -281,6 +281,55 @@ type Patch interface {
 	ToCDNServiceUpdateMap() map[string]interface{}
 }
 
+// Addition is a Patch that requests the addition of one or more values (Domains, Origins, or
+// CacheRules) to a Service. Pass it to the Update function as part of the Patch slice.
+type Addition struct {
+	Value value
+}
+
+// ToCDNServiceUpdateMap converts an Addition into a request body fragment suitable for the
+// Update call.
+func (a Addition) ToCDNServiceUpdateMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":    "add",
+		"path":  a.Value.appropriatePath().renderDash(),
+		"value": a.Value.toPatchValue(),
+	}
+}
+
+// Replacement is a Patch that alters a specific service parameter (Domain, Origin, or CacheRule)
+// in-place by index. Pass it to the Update function as part of the Patch slice.
+type Replacement struct {
+	Value value
+	Index int64
+}
+
+// ToCDNServiceUpdateMap converts a Replacement into a request body fragment suitable for the
+// Update call.
+func (r Replacement) ToCDNServiceUpdateMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":    "replace",
+		"path":  r.Value.appropriatePath().renderIndex(r.Index),
+		"value": r.Value.toPatchValue(),
+	}
+}
+
+// Removal is a Patch that requests the removal of a service parameter (Domain, Origin, or
+// CacheRule) by index. Pass it to the Update function as part of the Patch slice.
+type Removal struct {
+	Path  Path
+	Index int64
+}
+
+// ToCDNServiceUpdateMap converts a Removal into a request body fragment suitable for the
+// Update call.
+func (r Removal) ToCDNServiceUpdateMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":   "remove",
+		"path": r.Path.renderIndex(r.Index),
+	}
+}
+
 // ToCDNServiceUpdateMap casts an UpdateOpts struct to a map.
 func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error) {
 	s := make([]map[string]interface{}, len(opts))
