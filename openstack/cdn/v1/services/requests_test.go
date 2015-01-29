@@ -298,7 +298,7 @@ func TestSuccessfulUpdate(t *testing.T) {
 	HandleUpdateCDNServiceSuccessfully(t)
 
 	expected := "https://www.poppycdn.io/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
-	ops := []Patch{
+	ops := UpdateOpts{
 		// Append a single Domain
 		Append{Value: Domain{Domain: "appended.mocksite4.com"}},
 		// Insert a single Domain

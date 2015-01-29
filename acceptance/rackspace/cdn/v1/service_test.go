@@ -16,7 +16,7 @@ func TestService(t *testing.T) {
 	client := newClient(t)
 
 	t.Log("Creating Service")
-	loc := testServiceCreate(t, client)
+	loc := testServiceCreate(t, client, "test-site-1")
 	t.Logf("Created service at location: %s", loc)
 
 	defer testServiceDelete(t, client, loc)
@@ -31,17 +31,17 @@ func TestService(t *testing.T) {
 	testServiceList(t, client)
 }
 
-func testServiceCreate(t *testing.T, client *gophercloud.ServiceClient) string {
+func testServiceCreate(t *testing.T, client *gophercloud.ServiceClient, name string) string {
 	createOpts := os.CreateOpts{
-		Name: "gophercloud-test-service",
+		Name: name,
 		Domains: []os.Domain{
 			os.Domain{
-				Domain: "www.gophercloud-test-service.com",
+				Domain: "www." + name + ".com",
 			},
 		},
 		Origins: []os.Origin{
 			os.Origin{
-				Origin: "gophercloud-test-service.com",
+				Origin: name + ".com",
 				Port:   80,
 				SSL:    false,
 			},
@@ -60,7 +60,7 @@ func testServiceGet(t *testing.T, client *gophercloud.ServiceClient, id string) 
 }
 
 func testServiceUpdate(t *testing.T, client *gophercloud.ServiceClient, id string) {
-	opts := []os.Patch{
+	opts := os.UpdateOpts{
 		os.Append{
 			Value: os.Domain{Domain: "newDomain.com", Protocol: "http"},
 		},
