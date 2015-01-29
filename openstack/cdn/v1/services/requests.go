@@ -215,6 +215,10 @@ type Path struct {
 	baseElement string
 }
 
+func (p Path) renderRoot() string {
+	return "/" + p.baseElement
+}
+
 func (p Path) renderDash() string {
 	return fmt.Sprintf("/%s/-", p.baseElement)
 }
@@ -237,6 +241,7 @@ var (
 type value interface {
 	toPatchValue() interface{}
 	appropriatePath() Path
+	renderRootOr(func(p Path) string) string
 }
 
 // Patch represents a single update to an existing Service. Multiple updates to a service can be
@@ -258,7 +263,7 @@ type Insertion struct {
 func (i Insertion) ToCDNServiceUpdateMap() map[string]interface{} {
 	return map[string]interface{}{
 		"op":    "add",
-		"path":  i.Value.appropriatePath().renderIndex(i.Index),
+		"path":  i.Value.renderRootOr(func(p Path) string { return p.renderIndex(i.Index) }),
 		"value": i.Value.toPatchValue(),
 	}
 }
@@ -276,7 +281,7 @@ type Append struct {
 func (a Append) ToCDNServiceUpdateMap() map[string]interface{} {
 	return map[string]interface{}{
 		"op":    "add",
-		"path":  a.Value.appropriatePath().renderDash(),
+		"path":  a.Value.renderRootOr(func(p Path) string { return p.renderDash() }),
 		"value": a.Value.toPatchValue(),
 	}
 }
@@ -293,7 +298,7 @@ type Replacement struct {
 func (r Replacement) ToCDNServiceUpdateMap() map[string]interface{} {
 	return map[string]interface{}{
 		"op":    "replace",
-		"path":  r.Value.appropriatePath().renderIndex(r.Index),
+		"path":  r.Value.renderRootOr(func(p Path) string { return p.renderIndex(r.Index) }),
 		"value": r.Value.toPatchValue(),
 	}
 }

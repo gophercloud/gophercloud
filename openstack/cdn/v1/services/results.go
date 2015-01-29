@@ -30,6 +30,10 @@ func (d Domain) appropriatePath() Path {
 	return PathDomains
 }
 
+func (d Domain) renderRootOr(render func(p Path) string) string {
+	return render(d.appropriatePath())
+}
+
 // DomainList provides a useful way to perform bulk operations in a single Patch.
 type DomainList []Domain
 
@@ -43,6 +47,10 @@ func (list DomainList) toPatchValue() interface{} {
 
 func (list DomainList) appropriatePath() Path {
 	return PathDomains
+}
+
+func (list DomainList) renderRootOr(_ func(p Path) string) string {
+	return list.appropriatePath().renderRoot()
 }
 
 // OriginRule represents a rule that defines when an origin should be accessed.
@@ -87,6 +95,10 @@ func (o Origin) appropriatePath() Path {
 	return PathOrigins
 }
 
+func (o Origin) renderRootOr(render func(p Path) string) string {
+	return render(o.appropriatePath())
+}
+
 // OriginList provides a useful way to perform bulk operations in a single Patch.
 type OriginList []Domain
 
@@ -100,6 +112,10 @@ func (list OriginList) toPatchValue() interface{} {
 
 func (list OriginList) appropriatePath() Path {
 	return PathOrigins
+}
+
+func (list OriginList) renderRootOr(_ func(p Path) string) string {
+	return list.appropriatePath().renderRoot()
 }
 
 // TTLRule specifies a rule that determines if a TTL should be applied to an asset.
@@ -137,6 +153,10 @@ func (c CacheRule) appropriatePath() Path {
 	return PathCaching
 }
 
+func (c CacheRule) renderRootOr(render func(p Path) string) string {
+	return render(c.appropriatePath())
+}
+
 // CacheRuleList provides a useful way to perform bulk operations in a single Patch.
 type CacheRuleList []Domain
 
@@ -150,6 +170,10 @@ func (list CacheRuleList) toPatchValue() interface{} {
 
 func (list CacheRuleList) appropriatePath() Path {
 	return PathCaching
+}
+
+func (list CacheRuleList) renderRootOr(_ func(p Path) string) string {
+	return list.appropriatePath().renderRoot()
 }
 
 // RestrictionRule specifies a rule that determines if this restriction should be applied to an asset.
