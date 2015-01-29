@@ -344,6 +344,15 @@ func HandleUpdateCDNServiceSuccessfully(t *testing.T) {
 				{
 					"op": "remove",
 					"path": "/caching/8"
+				},
+				{
+					"op": "remove",
+					"path": "/caching"
+				},
+				{
+					"op": "replace",
+					"path": "/name",
+					"value": "differentServiceName"
 				}
     ]
    `)

@@ -332,6 +332,15 @@ func TestSuccessfulUpdate(t *testing.T) {
 			Index: 8,
 			Path:  os.PathCaching,
 		},
+		// Bulk removal
+		os.Removal{
+			All:  true,
+			Path: os.PathCaching,
+		},
+		// Service name replacement
+		os.NameReplacement{
+			NewName: "differentServiceName",
+		},
 	}
 
 	actual, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", ops).Extract()

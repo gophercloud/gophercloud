@@ -303,20 +303,40 @@ func (r Replacement) ToCDNServiceUpdateMap() map[string]interface{} {
 	}
 }
 
+// NameReplacement specifically updates the Service name. Pass it to the Update function as part
+// of the Patch slice.
+type NameReplacement struct {
+	NewName string
+}
+
+// ToCDNServiceUpdateMap converts a NameReplacement into a request body fragment suitable for the
+// Update call.
+func (r NameReplacement) ToCDNServiceUpdateMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":    "replace",
+		"path":  "/name",
+		"value": r.NewName,
+	}
+}
+
 // Removal is a Patch that requests the removal of a service parameter (Domain, Origin, or
 // CacheRule) by index. Pass it to the Update function as part of the Patch slice.
 type Removal struct {
 	Path  Path
 	Index int64
+	All   bool
 }
 
 // ToCDNServiceUpdateMap converts a Removal into a request body fragment suitable for the
 // Update call.
 func (r Removal) ToCDNServiceUpdateMap() map[string]interface{} {
-	return map[string]interface{}{
-		"op":   "remove",
-		"path": r.Path.renderIndex(r.Index),
+	result := map[string]interface{}{"op": "remove"}
+	if r.All {
+		result["path"] = r.Path.renderRoot()
+	} else {
+		result["path"] = r.Path.renderIndex(r.Index)
 	}
+	return result
 }
 
 // Update accepts a slice of Patch operations (Insertion, Append, Replacement or Removal) and
