@@ -254,22 +254,6 @@ var (
 	PathCaching = Path{baseElement: "caching"}
 )
 
-// UpdateOpts represents the attributes used when updating an existing CDN service.
-type UpdateOpts []UpdateOpt
-
-// UpdateOpt represents a single update to an existing service. Multiple updates
-// to a service can be submitted at the same time. See UpdateOpts.
-type UpdateOpt struct {
-	// Specifies the update operation to perform.
-	Op Op `json:"op"`
-	// Specifies the JSON Pointer location within the service's JSON representation
-	// of the service parameter being added, replaced or removed.
-	Path string `json:"path"`
-	// Specifies the actual value to be added or replaced. It is not required for
-	// the remove operation.
-	Value map[string]interface{} `json:"value,omitempty"`
-}
-
 type value interface {
 	toPatchValue() map[string]interface{}
 	appropriatePath() Path
@@ -328,33 +312,6 @@ func (r Removal) ToCDNServiceUpdateMap() map[string]interface{} {
 		"op":   "remove",
 		"path": r.Path.renderIndex(r.Index),
 	}
-}
-
-// ToCDNServiceUpdateMap casts an UpdateOpts struct to a map.
-func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error) {
-	s := make([]map[string]interface{}, len(opts))
-
-	for i, opt := range opts {
-		if opt.Op != Add && opt.Op != Remove && opt.Op != Replace {
-			return nil, fmt.Errorf("Invalid Op: %v", opt.Op)
-		}
-		if opt.Op == "" {
-			return nil, no("Op")
-		}
-		if opt.Path == "" {
-			return nil, no("Path")
-		}
-		if opt.Op != Remove && opt.Value == nil {
-			return nil, no("Value")
-		}
-		s[i] = map[string]interface{}{
-			"op":    opt.Op,
-			"path":  opt.Path,
-			"value": opt.Value,
-		}
-	}
-
-	return s, nil
 }
 
 // Update accepts a slice of Patch operations (Addition, Replacement or Removal) and updates an
