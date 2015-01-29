@@ -245,15 +245,35 @@ type Patch interface {
 	ToCDNServiceUpdateMap() map[string]interface{}
 }
 
-// Addition is a Patch that requests the addition of one or more values (Domains, Origins, or
-// CacheRules) to a Service. Pass it to the Update function as part of the Patch slice.
-type Addition struct {
+// Insertion is a Patch that requests the addition of a value (Domain, Origin, or CacheRule) to
+// a Service at a fixed index. Use an Append instead to append the new value to the end of its
+// collection. Pass it to the Update function as part of the Patch slice.
+type Insertion struct {
+	Index int64
 	Value value
 }
 
-// ToCDNServiceUpdateMap converts an Addition into a request body fragment suitable for the
+// ToCDNServiceUpdateMap converts an Insertion into a request body fragment suitable for the
 // Update call.
-func (a Addition) ToCDNServiceUpdateMap() map[string]interface{} {
+func (i Insertion) ToCDNServiceUpdateMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":    "add",
+		"path":  i.Value.appropriatePath().renderIndex(i.Index),
+		"value": i.Value.toPatchValue(),
+	}
+}
+
+// Append is a Patch that requests the addition of a value (Domain, Origin, or CacheRule) to a
+// Service at the end of its respective collection. Use an Insertion instead to insert the value
+// at a fixed index within the collection. Pass this to the Update function as part of its
+// Patch slice.
+type Append struct {
+	Value value
+}
+
+// ToCDNServiceUpdateMap converts an Append into a request body fragment suitable for the
+// Update call.
+func (a Append) ToCDNServiceUpdateMap() map[string]interface{} {
 	return map[string]interface{}{
 		"op":    "add",
 		"path":  a.Value.appropriatePath().renderDash(),
@@ -294,9 +314,9 @@ func (r Removal) ToCDNServiceUpdateMap() map[string]interface{} {
 	}
 }
 
-// Update accepts a slice of Patch operations (Addition, Replacement or Removal) and updates an
-// existing CDN service using the values provided. idOrURL can be either the service's URL or its
-// ID. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
+// Update accepts a slice of Patch operations (Insertion, Append, Replacement or Removal) and
+// updates an existing CDN service using the values provided. idOrURL can be either the service's
+// URL or its ID. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
 func Update(c *gophercloud.ServiceClient, idOrURL string, patches []Patch) UpdateResult {

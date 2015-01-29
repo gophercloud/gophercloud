@@ -307,7 +307,7 @@ func TestSuccessfulUpdate(t *testing.T) {
 			},
 			Index: 0,
 		},
-		Addition{
+		Append{
 			Value: Domain{Domain: "added.mocksite4.com"},
 		},
 	}
