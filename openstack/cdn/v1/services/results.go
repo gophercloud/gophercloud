@@ -100,7 +100,7 @@ func (o Origin) renderRootOr(render func(p Path) string) string {
 }
 
 // OriginList provides a useful way to perform bulk operations in a single Patch.
-type OriginList []Domain
+type OriginList []Origin
 
 func (list OriginList) toPatchValue() interface{} {
 	r := make([]interface{}, len(list))
@@ -158,7 +158,7 @@ func (c CacheRule) renderRootOr(render func(p Path) string) string {
 }
 
 // CacheRuleList provides a useful way to perform bulk operations in a single Patch.
-type CacheRuleList []Domain
+type CacheRuleList []CacheRule
 
 func (list CacheRuleList) toPatchValue() interface{} {
 	r := make([]interface{}, len(list))

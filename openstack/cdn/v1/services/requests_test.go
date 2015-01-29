@@ -299,16 +299,37 @@ func TestSuccessfulUpdate(t *testing.T) {
 
 	expected := "https://www.poppycdn.io/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 	ops := []Patch{
-		Replacement{
-			Value: Origin{
-				Origin: "44.33.22.11",
-				Port:   80,
-				SSL:    false,
-			},
-			Index: 0,
+		// Append a single Domain
+		Append{Value: Domain{Domain: "appended.mocksite4.com"}},
+		// Insert a single Domain
+		Insertion{
+			Index: 4,
+			Value: Domain{Domain: "inserted.mocksite4.com"},
 		},
+		// Bulk addition
 		Append{
-			Value: Domain{Domain: "added.mocksite4.com"},
+			Value: DomainList{
+				Domain{Domain: "bulkadded1.mocksite4.com"},
+				Domain{Domain: "bulkadded2.mocksite4.com"},
+			},
+		},
+		// Replace a single Origin
+		Replacement{
+			Index: 2,
+			Value: Origin{Origin: "44.33.22.11", Port: 80, SSL: false},
+		},
+		// Bulk replace Origins
+		Replacement{
+			Index: 0, // Ignored
+			Value: OriginList{
+				Origin{Origin: "44.33.22.11", Port: 80, SSL: false},
+				Origin{Origin: "55.44.33.22", Port: 443, SSL: true},
+			},
+		},
+		// Remove a single CacheRule
+		Removal{
+			Index: 8,
+			Path:  PathCaching,
 		},
 	}
 
