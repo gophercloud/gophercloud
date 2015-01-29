@@ -420,7 +420,7 @@ func Abandon(c *gophercloud.ServiceClient, stackName, stackID string) AbandonRes
 	var res AbandonResult
 
 	// Send request to API
-	_, res.Err = perigee.Request("POST", previewURL(c), perigee.Options{
+	_, res.Err = perigee.Request("POST", abandonURL(c, stackName, stackID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		Results:     &res.Body,
 		OkCodes:     []int{200},
