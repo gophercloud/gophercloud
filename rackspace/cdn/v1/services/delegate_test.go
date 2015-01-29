@@ -299,57 +299,53 @@ func TestSuccessfulUpdate(t *testing.T) {
 	os.HandleUpdateCDNServiceSuccessfully(t)
 
 	expected := "https://www.poppycdn.io/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
-	updateOpts := os.UpdateOpts{
-		os.UpdateOpt{
-			Op:   os.Replace,
-			Path: "/origins/0",
-			Value: map[string]interface{}{
-				"origin": "44.33.22.11",
-				"port":   80,
-				"ssl":    false,
+	ops := []os.Patch{
+		// Append a single Domain
+		os.Append{Value: os.Domain{Domain: "appended.mocksite4.com"}},
+		// Insert a single Domain
+		os.Insertion{
+			Index: 4,
+			Value: os.Domain{Domain: "inserted.mocksite4.com"},
+		},
+		// Bulk addition
+		os.Append{
+			Value: os.DomainList{
+				os.Domain{Domain: "bulkadded1.mocksite4.com"},
+				os.Domain{Domain: "bulkadded2.mocksite4.com"},
 			},
 		},
-		os.UpdateOpt{
-			Op:   os.Add,
-			Path: "/domains/0",
-			Value: map[string]interface{}{
-				"domain": "added.mocksite4.com",
+		// Replace a single Origin
+		os.Replacement{
+			Index: 2,
+			Value: os.Origin{Origin: "44.33.22.11", Port: 80, SSL: false},
+		},
+		// Bulk replace Origins
+		os.Replacement{
+			Index: 0, // Ignored
+			Value: os.OriginList{
+				os.Origin{Origin: "44.33.22.11", Port: 80, SSL: false},
+				os.Origin{Origin: "55.44.33.22", Port: 443, SSL: true},
 			},
+		},
+		// Remove a single CacheRule
+		os.Removal{
+			Index: 8,
+			Path:  os.PathCaching,
+		},
+		// Bulk removal
+		os.Removal{
+			All:  true,
+			Path: os.PathCaching,
+		},
+		// Service name replacement
+		os.NameReplacement{
+			NewName: "differentServiceName",
 		},
 	}
-	actual, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", updateOpts).Extract()
+
+	actual, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", ops).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, expected, actual)
-}
-
-func TestUnsuccessfulUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	os.HandleUpdateCDNServiceSuccessfully(t)
-
-	updateOpts := os.UpdateOpts{
-		os.UpdateOpt{
-			Op: "Foo",
-			Path: "/origins/0",
-			Value: map[string]interface{}{
-				"origin": "44.33.22.11",
-				"port": 80,
-				"ssl": false,
-				},
-			},
-		os.UpdateOpt{
-			Op: os.Add,
-			Path: "/domains/0",
-			Value: map[string]interface{}{
-				"domain": "added.mocksite4.com",
-			},
-		},
-	}
-	_, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", updateOpts).Extract()
-	if err == nil {
-		t.Errorf("Expected error during TestUnsuccessfulUpdate but didn't get one.")
-	}
 }
 
 func TestDelete(t *testing.T) {

@@ -209,75 +209,142 @@ func Get(c *gophercloud.ServiceClient, idOrURL string) GetResult {
 	return res
 }
 
-// UpdateOptsBuilder is the interface options structs have to satisfy in order
-// to be used in the main Update operation in this package. Since many
-// extensions decorate or modify the common logic, it is useful for them to
-// satisfy a basic interface in order for them to be used.
-type UpdateOptsBuilder interface {
-	ToCDNServiceUpdateMap() ([]map[string]interface{}, error)
+// Path is a JSON pointer location that indicates which service parameter is being added, replaced,
+// or removed.
+type Path struct {
+	baseElement string
 }
 
-// Op represents an update operation.
-type Op string
+func (p Path) renderRoot() string {
+	return "/" + p.baseElement
+}
+
+func (p Path) renderDash() string {
+	return fmt.Sprintf("/%s/-", p.baseElement)
+}
+
+func (p Path) renderIndex(index int64) string {
+	return fmt.Sprintf("/%s/%d", p.baseElement, index)
+}
 
 var (
-	// Add is a constant used for performing a "add" operation when updating.
-	Add Op = "add"
-	// Remove is a constant used for performing a "remove" operation when updating.
-	Remove Op = "remove"
-	// Replace is a constant used for performing a "replace" operation when updating.
-	Replace Op = "replace"
+	// PathDomains indicates that an update operation is to be performed on a Domain.
+	PathDomains = Path{baseElement: "domains"}
+
+	// PathOrigins indicates that an update operation is to be performed on an Origin.
+	PathOrigins = Path{baseElement: "origins"}
+
+	// PathCaching indicates that an update operation is to be performed on a CacheRule.
+	PathCaching = Path{baseElement: "caching"}
 )
 
-// UpdateOpts represents the attributes used when updating an existing CDN service.
-type UpdateOpts []UpdateOpt
-
-// UpdateOpt represents a single update to an existing service. Multiple updates
-// to a service can be submitted at the same time. See UpdateOpts.
-type UpdateOpt struct {
-	// Specifies the update operation to perform.
-	Op Op `json:"op"`
-	// Specifies the JSON Pointer location within the service's JSON representation
-	// of the service parameter being added, replaced or removed.
-	Path string `json:"path"`
-	// Specifies the actual value to be added or replaced. It is not required for
-	// the remove operation.
-	Value map[string]interface{} `json:"value,omitempty"`
+type value interface {
+	toPatchValue() interface{}
+	appropriatePath() Path
+	renderRootOr(func(p Path) string) string
 }
 
-// ToCDNServiceUpdateMap casts an UpdateOpts struct to a map.
-func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error) {
-	s := make([]map[string]interface{}, len(opts))
+// Patch represents a single update to an existing Service. Multiple updates to a service can be
+// submitted at the same time.
+type Patch interface {
+	ToCDNServiceUpdateMap() map[string]interface{}
+}
 
-	for i, opt := range opts {
-		if opt.Op != Add && opt.Op != Remove && opt.Op != Replace {
-			return nil, fmt.Errorf("Invalid Op: %v", opt.Op)
-		}
-		if opt.Op == "" {
-			return nil, no("Op")
-		}
-		if opt.Path == "" {
-			return nil, no("Path")
-		}
-		if opt.Op != Remove && opt.Value == nil {
-			return nil, no("Value")
-		}
-		s[i] = map[string]interface{}{
-			"op":    opt.Op,
-			"path":  opt.Path,
-			"value": opt.Value,
-		}
+// Insertion is a Patch that requests the addition of a value (Domain, Origin, or CacheRule) to
+// a Service at a fixed index. Use an Append instead to append the new value to the end of its
+// collection. Pass it to the Update function as part of the Patch slice.
+type Insertion struct {
+	Index int64
+	Value value
+}
+
+// ToCDNServiceUpdateMap converts an Insertion into a request body fragment suitable for the
+// Update call.
+func (i Insertion) ToCDNServiceUpdateMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":    "add",
+		"path":  i.Value.renderRootOr(func(p Path) string { return p.renderIndex(i.Index) }),
+		"value": i.Value.toPatchValue(),
 	}
-
-	return s, nil
 }
 
-// Update accepts a UpdateOpts struct and updates an existing CDN service using
-// the values provided. idOrURL can be either the service's URL or its ID. For
-// example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
+// Append is a Patch that requests the addition of a value (Domain, Origin, or CacheRule) to a
+// Service at the end of its respective collection. Use an Insertion instead to insert the value
+// at a fixed index within the collection. Pass this to the Update function as part of its
+// Patch slice.
+type Append struct {
+	Value value
+}
+
+// ToCDNServiceUpdateMap converts an Append into a request body fragment suitable for the
+// Update call.
+func (a Append) ToCDNServiceUpdateMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":    "add",
+		"path":  a.Value.renderRootOr(func(p Path) string { return p.renderDash() }),
+		"value": a.Value.toPatchValue(),
+	}
+}
+
+// Replacement is a Patch that alters a specific service parameter (Domain, Origin, or CacheRule)
+// in-place by index. Pass it to the Update function as part of the Patch slice.
+type Replacement struct {
+	Value value
+	Index int64
+}
+
+// ToCDNServiceUpdateMap converts a Replacement into a request body fragment suitable for the
+// Update call.
+func (r Replacement) ToCDNServiceUpdateMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":    "replace",
+		"path":  r.Value.renderRootOr(func(p Path) string { return p.renderIndex(r.Index) }),
+		"value": r.Value.toPatchValue(),
+	}
+}
+
+// NameReplacement specifically updates the Service name. Pass it to the Update function as part
+// of the Patch slice.
+type NameReplacement struct {
+	NewName string
+}
+
+// ToCDNServiceUpdateMap converts a NameReplacement into a request body fragment suitable for the
+// Update call.
+func (r NameReplacement) ToCDNServiceUpdateMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":    "replace",
+		"path":  "/name",
+		"value": r.NewName,
+	}
+}
+
+// Removal is a Patch that requests the removal of a service parameter (Domain, Origin, or
+// CacheRule) by index. Pass it to the Update function as part of the Patch slice.
+type Removal struct {
+	Path  Path
+	Index int64
+	All   bool
+}
+
+// ToCDNServiceUpdateMap converts a Removal into a request body fragment suitable for the
+// Update call.
+func (r Removal) ToCDNServiceUpdateMap() map[string]interface{} {
+	result := map[string]interface{}{"op": "remove"}
+	if r.All {
+		result["path"] = r.Path.renderRoot()
+	} else {
+		result["path"] = r.Path.renderIndex(r.Index)
+	}
+	return result
+}
+
+// Update accepts a slice of Patch operations (Insertion, Append, Replacement or Removal) and
+// updates an existing CDN service using the values provided. idOrURL can be either the service's
+// URL or its ID. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
-func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOptsBuilder) UpdateResult {
+func Update(c *gophercloud.ServiceClient, idOrURL string, patches []Patch) UpdateResult {
 	var url string
 	if strings.Contains(idOrURL, "/") {
 		url = idOrURL
@@ -285,11 +352,9 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOptsBuilder
 		url = updateURL(c, idOrURL)
 	}
 
-	var res UpdateResult
-	reqBody, err := opts.ToCDNServiceUpdateMap()
-	if err != nil {
-		res.Err = err
-		return res
+	reqBody := make([]map[string]interface{}, len(patches))
+	for i, patch := range patches {
+		reqBody[i] = patch.ToCDNServiceUpdateMap()
 	}
 
 	resp, err := perigee.Request("PATCH", url, perigee.Options{
@@ -297,9 +362,10 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOptsBuilder
 		ReqBody:     &reqBody,
 		OkCodes:     []int{202},
 	})
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
-	return res
+	var result UpdateResult
+	result.Header = resp.HttpResponse.Header
+	result.Err = err
+	return result
 }
 
 // Delete accepts a service's ID or its URL and deletes the CDN service

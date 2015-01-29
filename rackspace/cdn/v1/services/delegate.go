@@ -27,8 +27,8 @@ func Get(c *gophercloud.ServiceClient, id string) os.GetResult {
 
 // Update accepts a UpdateOpts struct and updates an existing CDN service using
 // the values provided.
-func Update(c *gophercloud.ServiceClient, id string, opts os.UpdateOptsBuilder) os.UpdateResult {
-	return os.Update(c, id, opts)
+func Update(c *gophercloud.ServiceClient, id string, patches []os.Patch) os.UpdateResult {
+	return os.Update(c, id, patches)
 }
 
 // Delete accepts a unique ID and deletes the CDN service associated with it.

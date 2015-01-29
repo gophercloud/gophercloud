@@ -17,6 +17,42 @@ type Domain struct {
 	Protocol string `mapstructure:"protocol" json:"protocol,omitempty"`
 }
 
+func (d Domain) toPatchValue() interface{} {
+	r := make(map[string]interface{})
+	r["domain"] = d.Domain
+	if d.Protocol != "" {
+		r["protocol"] = d.Protocol
+	}
+	return r
+}
+
+func (d Domain) appropriatePath() Path {
+	return PathDomains
+}
+
+func (d Domain) renderRootOr(render func(p Path) string) string {
+	return render(d.appropriatePath())
+}
+
+// DomainList provides a useful way to perform bulk operations in a single Patch.
+type DomainList []Domain
+
+func (list DomainList) toPatchValue() interface{} {
+	r := make([]interface{}, len(list))
+	for i, domain := range list {
+		r[i] = domain.toPatchValue()
+	}
+	return r
+}
+
+func (list DomainList) appropriatePath() Path {
+	return PathDomains
+}
+
+func (list DomainList) renderRootOr(_ func(p Path) string) string {
+	return list.appropriatePath().renderRoot()
+}
+
 // OriginRule represents a rule that defines when an origin should be accessed.
 type OriginRule struct {
 	// Specifies the name of this rule.
@@ -39,6 +75,49 @@ type Origin struct {
 	Rules []OriginRule `mapstructure:"rules" json:"rules,omitempty"`
 }
 
+func (o Origin) toPatchValue() interface{} {
+	r := make(map[string]interface{})
+	r["origin"] = o.Origin
+	r["port"] = o.Port
+	r["ssl"] = o.SSL
+	if len(o.Rules) > 0 {
+		r["rules"] = make([]map[string]interface{}, len(o.Rules))
+		for index, rule := range o.Rules {
+			submap := r["rules"].([]map[string]interface{})[index]
+			submap["name"] = rule.Name
+			submap["request_url"] = rule.RequestURL
+		}
+	}
+	return r
+}
+
+func (o Origin) appropriatePath() Path {
+	return PathOrigins
+}
+
+func (o Origin) renderRootOr(render func(p Path) string) string {
+	return render(o.appropriatePath())
+}
+
+// OriginList provides a useful way to perform bulk operations in a single Patch.
+type OriginList []Origin
+
+func (list OriginList) toPatchValue() interface{} {
+	r := make([]interface{}, len(list))
+	for i, origin := range list {
+		r[i] = origin.toPatchValue()
+	}
+	return r
+}
+
+func (list OriginList) appropriatePath() Path {
+	return PathOrigins
+}
+
+func (list OriginList) renderRootOr(_ func(p Path) string) string {
+	return list.appropriatePath().renderRoot()
+}
+
 // TTLRule specifies a rule that determines if a TTL should be applied to an asset.
 type TTLRule struct {
 	// Specifies the name of this rule.
@@ -55,6 +134,46 @@ type CacheRule struct {
 	TTL int `mapstructure:"ttl" json:"ttl"`
 	// Specifies a collection of rules that determine if this TTL should be applied to an asset.
 	Rules []TTLRule `mapstructure:"rules" json:"rules,omitempty"`
+}
+
+func (c CacheRule) toPatchValue() interface{} {
+	r := make(map[string]interface{})
+	r["name"] = c.Name
+	r["ttl"] = c.TTL
+	r["rules"] = make([]map[string]interface{}, len(c.Rules))
+	for index, rule := range c.Rules {
+		submap := r["rules"].([]map[string]interface{})[index]
+		submap["name"] = rule.Name
+		submap["request_url"] = rule.RequestURL
+	}
+	return r
+}
+
+func (c CacheRule) appropriatePath() Path {
+	return PathCaching
+}
+
+func (c CacheRule) renderRootOr(render func(p Path) string) string {
+	return render(c.appropriatePath())
+}
+
+// CacheRuleList provides a useful way to perform bulk operations in a single Patch.
+type CacheRuleList []CacheRule
+
+func (list CacheRuleList) toPatchValue() interface{} {
+	r := make([]interface{}, len(list))
+	for i, rule := range list {
+		r[i] = rule.toPatchValue()
+	}
+	return r
+}
+
+func (list CacheRuleList) appropriatePath() Path {
+	return PathCaching
+}
+
+func (list CacheRuleList) renderRootOr(_ func(p Path) string) string {
+	return list.appropriatePath().renderRoot()
 }
 
 // RestrictionRule specifies a rule that determines if this restriction should be applied to an asset.
