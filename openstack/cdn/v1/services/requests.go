@@ -209,26 +209,6 @@ func Get(c *gophercloud.ServiceClient, idOrURL string) GetResult {
 	return res
 }
 
-// UpdateOptsBuilder is the interface options structs have to satisfy in order
-// to be used in the main Update operation in this package. Since many
-// extensions decorate or modify the common logic, it is useful for them to
-// satisfy a basic interface in order for them to be used.
-type UpdateOptsBuilder interface {
-	ToCDNServiceUpdateMap() ([]map[string]interface{}, error)
-}
-
-// Op represents an update operation.
-type Op string
-
-var (
-	// Add is a constant used for performing a "add" operation when updating.
-	Add Op = "add"
-	// Remove is a constant used for performing a "remove" operation when updating.
-	Remove Op = "remove"
-	// Replace is a constant used for performing a "replace" operation when updating.
-	Replace Op = "replace"
-)
-
 // Path is a JSON pointer location that indicates which service parameter is being added, replaced,
 // or removed.
 type Path struct {
