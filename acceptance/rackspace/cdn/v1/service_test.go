@@ -60,17 +60,13 @@ func testServiceGet(t *testing.T, client *gophercloud.ServiceClient, id string) 
 }
 
 func testServiceUpdate(t *testing.T, client *gophercloud.ServiceClient, id string) {
-	updateOpts := os.UpdateOpts{
-		os.UpdateOpt{
-			Op:   os.Add,
-			Path: "/domains/-",
-			Value: map[string]interface{}{
-				"domain":   "newDomain.com",
-				"protocol": "http",
-			},
+	opts := []os.Patch{
+		os.Append{
+			Value: os.Domain{Domain: "newDomain.com", Protocol: "http"},
 		},
 	}
-	loc, err := services.Update(client, id, updateOpts).Extract()
+
+	loc, err := services.Update(client, id, opts).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Successfully updated service at location: %s", loc)
 }
