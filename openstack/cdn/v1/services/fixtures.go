@@ -170,10 +170,10 @@ func HandleListCDNServiceSuccessfully(t *testing.T) {
 // HandleCreateCDNServiceSuccessfully creates an HTTP handler at `/services` on the test handler mux
 // that responds with a `Create` response.
 func HandleCreateCDNServiceSuccessfully(t *testing.T) {
-  th.Mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
-    th.TestMethod(t, r, "POST")
-    th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-    th.TestJSONRequest(t, r, `
+	th.Mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, `
       {
         "name": "mywebsite.com",
         "domains": [
@@ -212,21 +212,21 @@ func HandleCreateCDNServiceSuccessfully(t *testing.T) {
         "flavor_id": "cdn"
       }
    `)
-   w.Header().Add("Location", "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0")
-   w.WriteHeader(http.StatusAccepted)
-  })
+		w.Header().Add("Location", "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0")
+		w.WriteHeader(http.StatusAccepted)
+	})
 }
 
 // HandleGetCDNServiceSuccessfully creates an HTTP handler at `/services/{id}` on the test handler mux
 // that responds with a `Get` response.
 func HandleGetCDNServiceSuccessfully(t *testing.T) {
-  th.Mux.HandleFunc("/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", func(w http.ResponseWriter, r *http.Request) {
-    th.TestMethod(t, r, "GET")
-    th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+	th.Mux.HandleFunc("/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-    fmt.Fprintf(w, `
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
     {
         "id": "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0",
         "name": "mywebsite.com",
@@ -299,16 +299,16 @@ func HandleGetCDNServiceSuccessfully(t *testing.T) {
         ]
     }
     `)
-  })
+	})
 }
 
 // HandleUpdateCDNServiceSuccessfully creates an HTTP handler at `/services/{id}` on the test handler mux
 // that responds with a `Update` response.
 func HandleUpdateCDNServiceSuccessfully(t *testing.T) {
-  th.Mux.HandleFunc("/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", func(w http.ResponseWriter, r *http.Request) {
-    th.TestMethod(t, r, "PATCH")
-    th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-    th.TestJSONRequest(t, r, `
+	th.Mux.HandleFunc("/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, `
       [
         {
             "op": "replace",
@@ -321,22 +321,22 @@ func HandleUpdateCDNServiceSuccessfully(t *testing.T) {
         },
         {
             "op": "add",
-            "path": "/domains/0",
+            "path": "/domains/-",
             "value": {"domain": "added.mocksite4.com"}
         }
     ]
    `)
-   w.Header().Add("Location", "https://www.poppycdn.io/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0")
-   w.WriteHeader(http.StatusAccepted)
-  })
+		w.Header().Add("Location", "https://www.poppycdn.io/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0")
+		w.WriteHeader(http.StatusAccepted)
+	})
 }
 
 // HandleDeleteCDNServiceSuccessfully creates an HTTP handler at `/services/{id}` on the test handler mux
 // that responds with a `Delete` response.
 func HandleDeleteCDNServiceSuccessfully(t *testing.T) {
-  th.Mux.HandleFunc("/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", func(w http.ResponseWriter, r *http.Request) {
-    th.TestMethod(t, r, "DELETE")
-    th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-    w.WriteHeader(http.StatusAccepted)
-  })
+	th.Mux.HandleFunc("/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusAccepted)
+	})
 }
