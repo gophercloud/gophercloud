@@ -357,12 +357,12 @@ func (opts UpdateOpts) ToCDNServiceUpdateMap() ([]map[string]interface{}, error)
 	return s, nil
 }
 
-// Update accepts a UpdateOpts struct and updates an existing CDN service using
-// the values provided. idOrURL can be either the service's URL or its ID. For
-// example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
+// Update accepts a slice of Patch operations (Addition, Replacement or Removal) and updates an
+// existing CDN service using the values provided. idOrURL can be either the service's URL or its
+// ID. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
-func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOptsBuilder) UpdateResult {
+func Update(c *gophercloud.ServiceClient, idOrURL string, patches []Patch) UpdateResult {
 	var url string
 	if strings.Contains(idOrURL, "/") {
 		url = idOrURL
@@ -370,11 +370,9 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOptsBuilder
 		url = updateURL(c, idOrURL)
 	}
 
-	var res UpdateResult
-	reqBody, err := opts.ToCDNServiceUpdateMap()
-	if err != nil {
-		res.Err = err
-		return res
+	reqBody := make([]map[string]interface{}, len(patches))
+	for i, patch := range patches {
+		reqBody[i] = patch.ToCDNServiceUpdateMap()
 	}
 
 	resp, err := perigee.Request("PATCH", url, perigee.Options{
@@ -382,9 +380,10 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOptsBuilder
 		ReqBody:     &reqBody,
 		OkCodes:     []int{202},
 	})
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
-	return res
+	var result UpdateResult
+	result.Header = resp.HttpResponse.Header
+	result.Err = err
+	return result
 }
 
 // Delete accepts a service's ID or its URL and deletes the CDN service
