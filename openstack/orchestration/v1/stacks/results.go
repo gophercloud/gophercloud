@@ -17,13 +17,13 @@ type CreateResult struct {
 	gophercloud.Result
 }
 
-func (r CreateResult) Extract() (*CreateStack, error) {
+func (r CreateResult) Extract() (*CreatedStack, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
 
 	var res struct {
-		Stack *CreateStack `mapstructure:"stack"`
+		Stack *CreatedStack `mapstructure:"stack"`
 	}
 
 	if err := mapstructure.Decode(r.Body, &res); err != nil {
@@ -36,8 +36,6 @@ func (r CreateResult) Extract() (*CreateStack, error) {
 type AdoptResult struct {
 	gophercloud.Result
 }
-
-
 
 // StackPage is a pagination.Pager that is returned from a call to the List function.
 type StackPage struct {
@@ -66,9 +64,9 @@ type ListedStack struct {
 
 // ExtractStacks extracts and returns a slice of Stacks. It is used while iterating
 // over a stacks.List call.
-func ExtractStacks(page pagination.Page) ([]ListStack, error) {
+func ExtractStacks(page pagination.Page) ([]ListedStack, error) {
 	var res struct {
-		Stacks []ListStack `mapstructure:"stacks"`
+		Stacks []ListedStack `mapstructure:"stacks"`
 	}
 
 	err := mapstructure.Decode(page.(StackPage).Body, &res)
@@ -116,13 +114,13 @@ type GetResult struct {
 	gophercloud.Result
 }
 
-func (r GetResult) Extract() (*GetStack, error) {
+func (r GetResult) Extract() (*RetrievedStack, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
 
 	var res struct {
-		Stack *GetStack `mapstructure:"stack"`
+		Stack *RetrievedStack `mapstructure:"stack"`
 	}
 
 	config := &mapstructure.DecoderConfig{
@@ -189,13 +187,13 @@ type PreviewResult struct {
 	gophercloud.Result
 }
 
-func (r PreviewResult) Extract() (*PreviewStack, error) {
+func (r PreviewResult) Extract() (*PreviewedStack, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
 
 	var res struct {
-		Stack *PreviewStack `mapstructure:"stack"`
+		Stack *PreviewedStack `mapstructure:"stack"`
 	}
 
 	config := &mapstructure.DecoderConfig{
