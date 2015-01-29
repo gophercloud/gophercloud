@@ -57,11 +57,13 @@ func (o Origin) toPatchValue() map[string]interface{} {
 	r["origin"] = o.Origin
 	r["port"] = o.Port
 	r["ssl"] = o.SSL
-	r["rules"] = make([]map[string]interface{}, len(o.Rules))
-	for index, rule := range o.Rules {
-		submap := r["rules"].([]map[string]interface{})[index]
-		submap["name"] = rule.Name
-		submap["request_url"] = rule.RequestURL
+	if len(o.Rules) > 0 {
+		r["rules"] = make([]map[string]interface{}, len(o.Rules))
+		for index, rule := range o.Rules {
+			submap := r["rules"].([]map[string]interface{})[index]
+			submap["name"] = rule.Name
+			submap["request_url"] = rule.RequestURL
+		}
 	}
 	return r
 }
