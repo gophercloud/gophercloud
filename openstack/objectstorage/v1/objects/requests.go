@@ -444,7 +444,7 @@ type CreateTempURLOpts struct {
 	// Method is the HTTP method to allow for users of the temp URL. Valid values
 	// are "GET" and "POST".
 	Method HTTPMethod
-	// TTL is the amount of time the temp URL should be active (in seconds).
+	// TTL is the number of seconds the temp URL should be active.
 	TTL int
 }
 
