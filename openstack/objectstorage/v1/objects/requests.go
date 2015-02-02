@@ -1,12 +1,16 @@
 package objects
 
 import (
+	"crypto/hmac"
+	"crypto/sha1"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/objectstorage/v1/accounts"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -423,4 +427,45 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	res.Header = resp.HttpResponse.Header
 	res.Err = err
 	return res
+}
+
+// HTTPMethod represents an HTTP method string (e.g. "GET").
+type HTTPMethod string
+
+var (
+	// GET represents an HTTP "GET" method.
+	GET HTTPMethod = "GET"
+	// POST represents an HTTP "POST" method.
+	POST HTTPMethod = "POST"
+)
+
+// CreateTempURLOpts are options for creating a temporary URL for an object.
+type CreateTempURLOpts struct {
+	// Method is the HTTP method to allow for users of the temp URL. Valid values
+	// are "GET" and "POST".
+	Method HTTPMethod
+	// TTL is the amount of time the temp URL should be active (in seconds).
+	TTL int
+}
+
+// CreateTempURL is a function for creating a temporary URL for an object. It
+// allows users to have "GET" or "POST" access to a particular tenant's object
+// for a limited amount of time.
+func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName string, opts CreateTempURLOpts) (string, error) {
+	duration := time.Duration(opts.TTL) * time.Second
+	expiry := time.Now().Add(duration).Unix()
+	getHeader, err := accounts.Get(c, nil).Extract()
+	if err != nil {
+		return "", err
+	}
+	secretKey := []byte(getHeader.TempURLKey)
+	url := getURL(c, containerName, objectName)
+	splitPath := strings.Split(url, "/v1/")
+	baseURL, objectPath := splitPath[0], splitPath[1]
+	objectPath = "/v1/" + objectPath
+	body := fmt.Sprintf("%s\n%d\n%s", opts.Method, expiry, objectPath)
+	hash := hmac.New(sha1.New, secretKey)
+	hash.Write([]byte(body))
+	hexsum := fmt.Sprintf("%x", hash.Sum(nil))
+	return fmt.Sprintf("%s%s?temp_url_sig=%s&temp_url_expires=%d", baseURL, objectPath, hexsum, expiry), nil
 }
