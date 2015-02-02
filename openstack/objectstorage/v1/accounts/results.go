@@ -52,6 +52,8 @@ type GetHeader struct {
 	Date           time.Time `mapstructure:"-"`
 	ObjectCount    int64     `mapstructure:"X-Account-Object-Count"`
 	TransID        string    `mapstructure:"X-Trans-Id"`
+	TempURLKey     string    `mapstructure:"X-Account-Meta-Temp-URL-Key"`
+	TempURLKey2    string    `mapstructure:"X-Account-Meta-Temp-URL-Key-2"`
 }
 
 // GetResult is returned from a call to the Get function.
