@@ -136,6 +136,12 @@ type CreateOpts struct {
 	// AdminPass [optional] sets the root user password. If not set, a randomly-generated
 	// password will be created and returned in the response.
 	AdminPass string
+
+	// AccessIPv4 [optional] specifies an IPv4 address for the instance.
+	AccessIPv4 string
+
+	// AccessIPv6 [optional] specifies an IPv6 address for the instance.
+	AccessIPv6 string
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a CreateOpts.
@@ -165,6 +171,12 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	}
 	if opts.AdminPass != "" {
 		server["adminPass"] = opts.AdminPass
+	}
+	if opts.AccessIPv4 != "" {
+		server["accessIPv4"] = opts.AccessIPv4
+	}
+	if opts.AccessIPv6 != "" {
+		server["accessIPv6"] = opts.AccessIPv6
 	}
 
 	if len(opts.SecurityGroups) > 0 {
