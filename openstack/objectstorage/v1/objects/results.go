@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"strconv"
 	"strings"
 	"time"
 
@@ -117,7 +118,7 @@ type DownloadHeader struct {
 	ContentLength      int64     `mapstructure:"Content-Length"`
 	ContentType        string    `mapstructure:"Content-Type"`
 	Date               time.Time `mapstructure:"-"`
-	DeleteAt           int       `mapstructure:"X-Delete-At"`
+	DeleteAt           time.Time `mapstructure:"-"`
 	ETag               string    `mapstructure:"Etag"`
 	LastModified       time.Time `mapstructure:"-"`
 	ObjectManifest     string    `mapstructure:"X-Object-Manifest"`
@@ -144,7 +145,7 @@ func (dr DownloadResult) Extract() (DownloadHeader, error) {
 	}
 
 	if date, ok := dr.Header["Date"]; ok && len(date) > 0 {
-		t, err := time.Parse(time.RFC1123, dr.Header["Date"][0])
+		t, err := time.Parse(time.RFC1123, date[0])
 		if err != nil {
 			return dh, err
 		}
@@ -152,11 +153,19 @@ func (dr DownloadResult) Extract() (DownloadHeader, error) {
 	}
 
 	if date, ok := dr.Header["Last-Modified"]; ok && len(date) > 0 {
-		t, err := time.Parse(time.RFC1123, dr.Header["Last-Modified"][0])
+		t, err := time.Parse(time.RFC1123, date[0])
 		if err != nil {
 			return dh, err
 		}
 		dh.LastModified = t
+	}
+
+	if date, ok := dr.Header["X-Delete-At"]; ok && len(date) > 0 {
+		unix, err := strconv.ParseInt(date[0], 10, 64)
+		if err != nil {
+			return dh, err
+		}
+		dh.DeleteAt = time.Unix(unix, 0)
 	}
 
 	return dh, nil
@@ -186,7 +195,7 @@ type GetHeader struct {
 	ContentLength      int64     `mapstructure:"Content-Length"`
 	ContentType        string    `mapstructure:"Content-Type"`
 	Date               time.Time `mapstructure:"-"`
-	DeleteAt           int       `mapstructure:"X-Delete-At"`
+	DeleteAt           time.Time `mapstructure:"-"`
 	ETag               string    `mapstructure:"Etag"`
 	LastModified       time.Time `mapstructure:"-"`
 	ObjectManifest     string    `mapstructure:"X-Object-Manifest"`
@@ -225,6 +234,14 @@ func (gr GetResult) Extract() (GetHeader, error) {
 			return gh, err
 		}
 		gh.LastModified = t
+	}
+
+	if date, ok := gr.Header["X-Delete-At"]; ok && len(date) > 0 {
+		unix, err := strconv.ParseInt(date[0], 10, 64)
+		if err != nil {
+			return gh, err
+		}
+		gh.DeleteAt = time.Unix(unix, 0)
 	}
 
 	return gh, nil
