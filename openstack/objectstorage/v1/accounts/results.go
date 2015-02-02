@@ -17,7 +17,7 @@ type UpdateHeader struct {
 	ContentLength string    `mapstructure:"Content-Length"`
 	ContentType   string    `mapstructure:"Content-Type"`
 	Date          time.Time `mapstructure:"-"`
-	TransID       string    `mapstructure:"X-Trans-ID"`
+	TransID       string    `mapstructure:"X-Trans-Id"`
 }
 
 // Extract will return a struct of headers returned from a call to Get. To obtain
