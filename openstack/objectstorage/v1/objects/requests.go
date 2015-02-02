@@ -441,17 +441,24 @@ var (
 
 // CreateTempURLOpts are options for creating a temporary URL for an object.
 type CreateTempURLOpts struct {
-	// Method is the HTTP method to allow for users of the temp URL. Valid values
+	// (REQUIRED) Method is the HTTP method to allow for users of the temp URL. Valid values
 	// are "GET" and "POST".
 	Method HTTPMethod
-	// TTL is the number of seconds the temp URL should be active.
+	// (REQUIRED) TTL is the number of seconds the temp URL should be active.
 	TTL int
+	// (Optional) Split is the string on which to split the object URL. Since only
+	// the object path is used in the hash, the object URL needs to be parsed. If
+	// empty, the default OpenStack URL split point will be used ("/v1/").
+	Split string
 }
 
 // CreateTempURL is a function for creating a temporary URL for an object. It
 // allows users to have "GET" or "POST" access to a particular tenant's object
 // for a limited amount of time.
 func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName string, opts CreateTempURLOpts) (string, error) {
+	if opts.Split == "" {
+		opts.Split = "/v1/"
+	}
 	duration := time.Duration(opts.TTL) * time.Second
 	expiry := time.Now().Add(duration).Unix()
 	getHeader, err := accounts.Get(c, nil).Extract()
@@ -460,9 +467,9 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 	}
 	secretKey := []byte(getHeader.TempURLKey)
 	url := getURL(c, containerName, objectName)
-	splitPath := strings.Split(url, "/v1/")
+	splitPath := strings.Split(url, opts.Split)
 	baseURL, objectPath := splitPath[0], splitPath[1]
-	objectPath = "/v1/" + objectPath
+	objectPath = opts.Split + objectPath
 	body := fmt.Sprintf("%s\n%d\n%s", opts.Method, expiry, objectPath)
 	hash := hmac.New(sha1.New, secretKey)
 	hash.Write([]byte(body))
