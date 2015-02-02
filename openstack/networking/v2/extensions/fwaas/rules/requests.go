@@ -6,15 +6,20 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// ListOpts allows the filtering and sorting of paginated collections through
+// the API. Filtering is achieved by passing in struct field values that map to
+// the Firewall rule attributes you want to see returned. SortKey allows you to
+// sort by a particular firewall rule attribute. SortDir sets the direction, and is
+// either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
 	TenantID             string `q:"tenant_id"`
 	Name                 string `q:"name"`
 	Description          string `q:"description"`
 	Protocol             string `q:"protocol"`
 	Action               string `q:"action"`
-	IpVersion            int    `q:"ip_version"`
-	SourceIpAddress      string `q:"source_ip_address"`
-	DestinationIpAddress string `q:"destination_ip_address"`
+	IPVersion            int    `q:"ip_version"`
+	SourceIPAddress      string `q:"source_ip_address"`
+	DestinationIPAddress string `q:"destination_ip_address"`
 	SourcePort           string `q:"source_port"`
 	DestinationPort      string `q:"destination_port"`
 	Enabled              bool   `q:"enabled"`
@@ -44,51 +49,52 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 
 // CreateOpts contains all the values needed to create a new firewall rule.
 type CreateOpts struct {
-	// Only required if the caller has an admin role and wants to create a firewall rule
-	// for another tenant.
-	TenantId             string
+	// Mandatory
+	Protocol string
+	Action   string
+	// Optional
+	TenantID             string
 	Name                 string
 	Description          string
-	Protocol             string
-	Action               string
-	IpVersion            int
-	SourceIpAddress      string
-	DestinationIpAddress string
+	IPVersion            *int
+	SourceIPAddress      string
+	DestinationIPAddress string
 	SourcePort           string
 	DestinationPort      string
-	Shared               bool
-	Enabled              bool
+	Shared               *bool
+	Enabled              *bool
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new firewall rule
 func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
+
 	type rule struct {
-		TenantId             string `json:"tenant_id,omitempty"`
-		Name                 string `json:"name,omitempty"`
-		Description          string `json:"description,omitempty"`
+		TenantID             string `json:"tenant_id,omitempty"`
+		Name                 string `json:"name"`
+		Description          string `json:"description"`
 		Protocol             string `json:"protocol"`
 		Action               string `json:"action"`
-		IpVersion            int    `json:"ip_version,omitempty"`
-		SourceIpAddress      string `json:"source_ip_address,omitempty"`
-		DestinationIpAddress string `json:"destination_ip_address,omitempty"`
+		IPVersion            *int   `json:"ip_version,omitempty"`
+		SourceIPAddress      string `json:"source_ip_address,omitempty"`
+		DestinationIPAddress string `json:"destination_ip_address,omitempty"`
 		SourcePort           string `json:"source_port,omitempty"`
 		DestinationPort      string `json:"destination_port,omitempty"`
-		Shared               bool   `json:"shared,omitempty"`
-		Enabled              bool   `json:"enabled,omitempty"`
+		Shared               *bool  `json:"shared,omitempty"`
+		Enabled              *bool  `json:"enabled,omitempty"`
 	}
 	type request struct {
 		Rule rule `json:"firewall_rule"`
 	}
 
 	reqBody := request{Rule: rule{
-		TenantId:             opts.TenantId,
+		TenantID:             opts.TenantID,
 		Name:                 opts.Name,
 		Description:          opts.Description,
 		Protocol:             opts.Protocol,
 		Action:               opts.Action,
-		IpVersion:            opts.IpVersion,
-		SourceIpAddress:      opts.SourceIpAddress,
-		DestinationIpAddress: opts.DestinationIpAddress,
+		IPVersion:            opts.IPVersion,
+		SourceIPAddress:      opts.SourceIPAddress,
+		DestinationIPAddress: opts.DestinationIPAddress,
 		SourcePort:           opts.SourcePort,
 		DestinationPort:      opts.DestinationPort,
 		Shared:               opts.Shared,
@@ -122,13 +128,13 @@ type UpdateOpts struct {
 	Description          string
 	Protocol             string
 	Action               string
-	IpVersion            int
-	SourceIpAddress      string
-	DestinationIpAddress string
+	IPVersion            *int
+	SourceIPAddress      string
+	DestinationIPAddress string
 	SourcePort           string
 	DestinationPort      string
-	Shared               bool
-	Enabled              bool
+	Shared               *bool
+	Enabled              *bool
 }
 
 // Update allows firewall policies to be updated.
@@ -136,15 +142,15 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 	type rule struct {
 		Name                 string `json:"name"`
 		Description          string `json:"description"`
-		Protocol             string `json:"protocol,omitempty"`
-		Action               string `json:"action,omitempty"`
-		IpVersion            int    `json:"ip_version,omitempty"`
-		SourceIpAddress      string `json:"source_ip_address,omitempty"`
-		DestinationIpAddress string `json:"destination_ip_address,omitempty"`
-		SourcePort           string `json:"source_port,omitempty"`
-		DestinationPort      string `json:"destination_port,omitempty"`
-		Shared               bool   `json:"shared,omitempty"`
-		Enabled              bool   `json:"enabled,omitempty"`
+		Protocol             string `json:"protocol"`
+		Action               string `json:"action"`
+		IPVersion            *int   `json:"ip_version,omitempty"`
+		SourceIPAddress      string `json:"source_ip_address"`
+		DestinationIPAddress string `json:"destination_ip_address"`
+		SourcePort           string `json:"source_port"`
+		DestinationPort      string `json:"destination_port"`
+		Shared               *bool  `json:"shared,omitempty"`
+		Enabled              *bool  `json:"enabled,omitempty"`
 	}
 	type request struct {
 		Rule rule `json:"firewall_rule"`
@@ -155,9 +161,9 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 		Description:          opts.Description,
 		Protocol:             opts.Protocol,
 		Action:               opts.Action,
-		IpVersion:            opts.IpVersion,
-		SourceIpAddress:      opts.SourceIpAddress,
-		DestinationIpAddress: opts.DestinationIpAddress,
+		IPVersion:            opts.IPVersion,
+		SourceIPAddress:      opts.SourceIPAddress,
+		DestinationIPAddress: opts.DestinationIPAddress,
 		SourcePort:           opts.SourcePort,
 		DestinationPort:      opts.DestinationPort,
 		Shared:               opts.Shared,
@@ -171,6 +177,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
 		OkCodes:     []int{200},
+		DumpReqJson: true,
 	})
 
 	return res

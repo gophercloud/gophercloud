@@ -6,19 +6,20 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// Rule represents a firewall rule
 type Rule struct {
-	Id                   string `json:"id"`
-	Name                 string `json:"name,omitempty"`
-	Description          string `json:"description,omitempty"`
-	Protocol             string `json:"protocol"`
-	Action               string `json:"action"`
-	IpVersion            int    `json:"ip_version,omitempty"`
-	SourceIpAddress      string `json:"source_ip_address,omitempty"`
-	DestinationIpAddress string `json:"destination_ip_address,omitempty"`
-	SourcePort           string `json:"source_port,omitempty"`
-	DestinationPort      string `json:"destination_port,omitempty"`
-	Shared               bool   `json:"shared,omitempty"`
-	Enabled              bool   `json:"enabled,omitempty"`
+	ID                   string `json:"id" mapstructure:"id"`
+	Name                 string `json:"name,omitempty" mapstructure:"name"`
+	Description          string `json:"description,omitempty" mapstructure:"description"`
+	Protocol             string `json:"protocol" mapstructure:"protocol"`
+	Action               string `json:"action" mapstructure:"action"`
+	IPVersion            int    `json:"ip_version,omitempty" mapstructure:"ip_version"`
+	SourceIPAddress      string `json:"source_ip_address,omitempty" mapstructure:"source_ip_address"`
+	DestinationIPAddress string `json:"destination_ip_address,omitempty" mapstructure:"destination_ip_address"`
+	SourcePort           string `json:"source_port,omitempty" mapstructure:"source_port"`
+	DestinationPort      string `json:"destination_port,omitempty" mapstructure:"destination_port"`
+	Shared               bool   `json:"shared,omitempty" mapstructure:"shared"`
+	Enabled              bool   `json:"enabled,omitempty" mapstructure:"enabled"`
 }
 
 // RulePage is the page returned by a pager when traversing over a
