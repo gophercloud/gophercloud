@@ -16,7 +16,7 @@ func Create(client *gophercloud.ServiceClient, opts os.CreateOptsBuilder) os.Cre
 	return os.Create(client, opts)
 }
 
-// Update requests an existing server to be updated with the supplied options
+// Update requests an existing server to be updated with the supplied options.
 func Update(client *gophercloud.ServiceClient, id string, opts os.UpdateOptsBuilder) os.UpdateResult {
 	return os.Update(client, id, opts)
 }
