@@ -7,12 +7,12 @@ import (
 )
 
 type Firewall struct {
-	Id           string `json:"id"`
-	Name         string `json:"name"`
-	Description  string `json:"description"`
-	AdminStateUp bool   `json:"admin_state_up"`
-	Status       string `json:"status"`
-	PolicyId     string `json:"firewall_policy_id"`
+	ID           string `json:"id" mapstructure:"id"`
+	Name         string `json:"name" mapstructure:"name"`
+	Description  string `json:"description" mapstructure:"description"`
+	AdminStateUp bool   `json:"admin_state_up" mapstructure:"admin_state_up"`
+	Status       string `json:"status" mapstructure:"status"`
+	PolicyID     string `json:"firewall_policy_id" mapstructure:"firewall_policy_id"`
 }
 
 type commonResult struct {

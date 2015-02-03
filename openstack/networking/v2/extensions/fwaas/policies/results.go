@@ -7,7 +7,7 @@ import (
 )
 
 type Policy struct {
-	Id          string   `json:"id"`
+	ID          string   `json:"id"`
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
 	Rules       []string `json:"firewall_rules,omitempty" mapstructure:"firewall_rules"`

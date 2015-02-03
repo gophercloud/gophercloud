@@ -12,7 +12,7 @@ type ListOpts struct {
 	Description  string `q:"description"`
 	AdminStateUp bool   `q:"admin_state_up"`
 	Shared       bool   `q:"shared"`
-	PolicyId     string `q:"policy_id"`
+	PolicyID     string `q:"firewall_policy_id"`
 	ID           string `q:"id"`
 	Limit        int    `q:"limit"`
 	Marker       string `q:"marker"`
@@ -41,33 +41,33 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 type CreateOpts struct {
 	// Only required if the caller has an admin role and wants to create a firewall
 	// for another tenant.
-	TenantId     string
+	TenantID     string
 	Name         string
 	Description  string
 	AdminStateUp bool
 	Shared       bool
-	PolicyId     string
+	PolicyID     string
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new firewall
 func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	type firewall struct {
-		TenantId     string `json:"tenant_id,omitempty"`
+		TenantID     string `json:"tenant_id,omitempty"`
 		Name         string `json:"name,omitempty"`
 		Description  string `json:"description,omitempty"`
 		AdminStateUp bool   `json:"admin_state_up,omitempty"`
-		PolicyId     string `json:"firewall_policy_id"`
+		PolicyID     string `json:"firewall_policy_id"`
 	}
 	type request struct {
 		Firewall firewall `json:"firewall"`
 	}
 
 	reqBody := request{Firewall: firewall{
-		TenantId:     opts.TenantId,
+		TenantID:     opts.TenantID,
 		Name:         opts.Name,
 		Description:  opts.Description,
 		AdminStateUp: opts.AdminStateUp,
-		PolicyId:     opts.PolicyId,
+		PolicyID:     opts.PolicyID,
 	}}
 
 	var res CreateResult
@@ -98,7 +98,7 @@ type UpdateOpts struct {
 	Description  string
 	AdminStateUp bool
 	Status       string
-	PolicyId     string
+	PolicyID     string
 }
 
 // Update allows firewalls to be updated.
@@ -107,7 +107,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 		Name         string `json:"name"`
 		Description  string `json:"description"`
 		AdminStateUp bool   `json:"admin_state_up,omitempty"`
-		PolicyId     string `json:"firewall_policy_id,omitempty"`
+		PolicyID     string `json:"firewall_policy_id,omitempty"`
 	}
 	type request struct {
 		Firewall firewall `json:"firewall"`
@@ -117,7 +117,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 		Name:         opts.Name,
 		Description:  opts.Description,
 		AdminStateUp: opts.AdminStateUp,
-		PolicyId:     opts.PolicyId,
+		PolicyID:     opts.PolicyID,
 	}}
 
 	// Send request to API
