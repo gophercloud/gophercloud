@@ -8,6 +8,15 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+type Rollback *bool
+
+var (
+	disable          = true
+	Disable Rollback = &disable
+	enable           = false
+	Enable  Rollback = &enable
+)
+
 // CreateOptsBuilder is the interface options structs have to satisfy in order
 // to be used in the main Create operation in this package. Since many
 // extensions decorate or modify the common logic, it is useful for them to
@@ -82,9 +91,10 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 		s["parameters"] = opts.Parameters
 	}
 
-	if opts.Timeout != 0 {
-		s["timeout_mins"] = opts.Timeout
+	if opts.Timeout == 0 {
+		return nil, errors.New("Required field 'Timeout' not provided.")
 	}
+	s["timeout_mins"] = opts.Timeout
 
 	return s, nil
 }
