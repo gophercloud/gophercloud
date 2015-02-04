@@ -34,7 +34,7 @@ func (r CreateResult) Extract() (*CreatedStack, error) {
 }
 
 type AdoptResult struct {
-	gophercloud.Result
+	CreateResult
 }
 
 // StackPage is a pagination.Pager that is returned from a call to the List function.

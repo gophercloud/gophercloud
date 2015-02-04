@@ -131,15 +131,39 @@ type AdoptOptsBuilder interface {
 // AdoptOpts is the common options struct used in this package's Adopt
 // operation.
 type AdoptOpts struct {
-	AdoptStackData  string
+	// (REQUIRED) Existing resources data represented as a string to add to the
+	// new stack. Data returned by Abandon could be provided as AdoptsStackData.
+	AdoptStackData string
+	// (REQUIRED) The name of the stack. It must start with an alphabetic character.
+	Name string
+	// (REQUIRED) The timeout for stack creation in minutes.
+	Timeout int
+	// (OPTIONAL; REQUIRED IF Template IS EMPTY) The URL of the template to instantiate.
+	// This value is ignored if Template is supplied inline.
+	TemplateURL string
+	// (OPTIONAL; REQUIRED IF TemplateURL IS EMPTY) A template to instantiate. The value
+	// is a stringified version of the JSON/YAML template. Since the template will likely
+	// be located in a file, one way to set this variable is by using ioutil.ReadFile:
+	// import "io/ioutil"
+	// var opts stacks.CreateOpts
+	// b, err := ioutil.ReadFile("path/to/you/template/file.json")
+	// if err != nil {
+	//   // handle error...
+	// }
+	// opts.Template = string(b)
+	Template string
+	// (OPTIONAL) Enables or disables deletion of all stack resources when a stack
+	// creation fails. Default is true, meaning all resources are not deleted when
+	// stack creation fails.
 	DisableRollback *bool
-	Environment     string
-	Files           map[string]interface{}
-	Name            string
-	Parameters      map[string]string
-	Template        string
-	TemplateURL     string
-	Timeout         int
+	// (OPTIONAL) A stringified JSON environment for the stack.
+	Environment string
+	// (OPTIONAL) A map that maps file names to file contents. It can also be used
+	// to pass provider template contents. Example:
+	// Files: `{"myfile": "#!/bin/bash\necho 'Hello world' > /root/testfile.txt"}`
+	Files map[string]interface{}
+	// (OPTIONAL) User-defined parameters to pass to the template.
+	Parameters map[string]string
 }
 
 // ToStackAdoptMap casts a CreateOpts struct to a map.
@@ -178,17 +202,18 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 		s["parameters"] = opts.Parameters
 	}
 
-	if opts.Timeout != 0 {
-		s["timeout_mins"] = opts.Timeout
+	if opts.Timeout == 0 {
+		return nil, errors.New("Required field 'Timeout' not provided.")
 	}
+	s["timeout_mins"] = opts.Timeout
 
 	return map[string]interface{}{"stack": s}, nil
 }
 
 // Adopt accepts an AdoptOpts struct and creates a new stack using the resources
 // from another stack.
-func Adopt(c *gophercloud.ServiceClient, opts AdoptOptsBuilder) CreateResult {
-	var res CreateResult
+func Adopt(c *gophercloud.ServiceClient, opts AdoptOptsBuilder) AdoptResult {
+	var res AdoptResult
 
 	reqBody, err := opts.ToStackAdoptMap()
 	if err != nil {
