@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	os "github.com/rackspace/gophercloud/openstack/orchestration/v1/stacks"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
@@ -333,4 +334,23 @@ func TestAdoptStack(t *testing.T) {
 
 	expected := CreateExpected
 	th.AssertDeepEquals(t, expected, actual)
+}
+
+func TestListStack(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	os.HandleListSuccessfully(t, os.FullListOutput)
+
+	count := 0
+	err := List(fake.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := os.ExtractStacks(page)
+		th.AssertNoErr(t, err)
+
+		th.CheckDeepEquals(t, os.ListExpected, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
 }

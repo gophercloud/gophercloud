@@ -3,6 +3,7 @@ package stacks
 import (
 	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack/orchestration/v1/stacks"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // Create accepts an os.CreateOpts struct and creates a new stack using the values
@@ -15,4 +16,9 @@ func Create(c *gophercloud.ServiceClient, opts os.CreateOptsBuilder) os.CreateRe
 // resources using the values provided.
 func Adopt(c *gophercloud.ServiceClient, opts os.AdoptOptsBuilder) os.AdoptResult {
 	return os.Adopt(c, opts)
+}
+
+// List accepts an os.ListOpts struct and lists stacks based on the options provided.
+func List(c *gophercloud.ServiceClient, opts os.ListOptsBuilder) pagination.Pager {
+	return os.List(c, opts)
 }
