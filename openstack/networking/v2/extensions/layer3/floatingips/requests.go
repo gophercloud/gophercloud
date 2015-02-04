@@ -53,7 +53,6 @@ type CreateOpts struct {
 
 var (
 	errFloatingNetworkIDRequired = fmt.Errorf("A NetworkID is required")
-	errPortIDRequired            = fmt.Errorf("A PortID is required")
 )
 
 // Create accepts a CreateOpts struct and uses the values provided to create a
@@ -88,16 +87,12 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 		res.Err = errFloatingNetworkIDRequired
 		return res
 	}
-	if opts.PortID == "" {
-		res.Err = errPortIDRequired
-		return res
-	}
 
 	// Define structures
 	type floatingIP struct {
 		FloatingNetworkID string `json:"floating_network_id"`
 		FloatingIP        string `json:"floating_ip_address,omitempty"`
-		PortID            string `json:"port_id"`
+		PortID            string `json:"port_id,omitempty"`
 		FixedIP           string `json:"fixed_ip_address,omitempty"`
 		TenantID          string `json:"tenant_id,omitempty"`
 	}
