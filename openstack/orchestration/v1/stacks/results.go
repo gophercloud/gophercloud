@@ -76,17 +76,23 @@ func ExtractStacks(page pagination.Page) ([]ListedStack, error) {
 
 	rawStacks := (((page.(StackPage).Body).(map[string]interface{}))["stacks"]).([]interface{})
 	for i := range rawStacks {
-		creationTime, err := time.Parse(time.RFC3339, ((rawStacks[i]).(map[string]interface{}))["creation_time"].(string))
-		if err != nil {
-			return res.Stacks, err
-		}
-		res.Stacks[i].CreationTime = creationTime
+		thisStack := (rawStacks[i]).(map[string]interface{})
 
-		updatedTime, err := time.Parse(time.RFC3339, ((rawStacks[i]).(map[string]interface{}))["updated_time"].(string))
-		if err != nil {
-			return res.Stacks, err
+		if t, ok := thisStack["creation_time"].(string); ok && t != "" {
+			creationTime, err := time.Parse(time.RFC3339, t)
+			if err != nil {
+				return res.Stacks, err
+			}
+			res.Stacks[i].CreationTime = creationTime
 		}
-		res.Stacks[i].UpdatedTime = updatedTime
+
+		if t, ok := thisStack["updated_time"].(string); ok && t != "" {
+			updatedTime, err := time.Parse(time.RFC3339, t)
+			if err != nil {
+				return res.Stacks, err
+			}
+			res.Stacks[i].UpdatedTime = updatedTime
+		}
 	}
 
 	return res.Stacks, nil
