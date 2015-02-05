@@ -32,3 +32,8 @@ func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts os.Upd
 func Delete(c *gophercloud.ServiceClient, stackName, stackID string) os.DeleteResult {
 	return os.Delete(c, stackName, stackID)
 }
+
+// Preview provides a preview of a stack based on the options provided.
+func Preview(c *gophercloud.ServiceClient, opts os.PreviewOptsBuilder) os.PreviewResult {
+	return os.Preview(c, opts)
+}
