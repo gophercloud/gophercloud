@@ -442,3 +442,18 @@ func TestPreviewStack(t *testing.T) {
 	expected := os.PreviewExpected
 	th.AssertDeepEquals(t, expected, actual)
 }
+
+func TestAbandonStack(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	os.HandleAbandonSuccessfully(t)
+
+	//actual, err := Abandon(fake.ServiceClient(), "postman_stack", "16ef0584-4458-41eb-87c8-0dc8d5f66c87").Extract()
+	//th.AssertNoErr(t, err)
+	res := Abandon(fake.ServiceClient(), "postman_stack", "16ef0584-4458-41eb-87c8-0dc8d5f66c87") //.Extract()
+	th.AssertNoErr(t, res.Err)
+	t.Logf("actual: %+v", res)
+
+	//expected := os.AbandonExpected
+	//th.AssertDeepEquals(t, expected, actual)
+}

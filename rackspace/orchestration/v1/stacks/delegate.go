@@ -37,3 +37,8 @@ func Delete(c *gophercloud.ServiceClient, stackName, stackID string) os.DeleteRe
 func Preview(c *gophercloud.ServiceClient, opts os.PreviewOptsBuilder) os.PreviewResult {
 	return os.Preview(c, opts)
 }
+
+// Abandon abandons a stack, keeping the resources available.
+func Abandon(c *gophercloud.ServiceClient, stackName, stackID string) os.AbandonResult {
+	return os.Abandon(c, stackName, stackID)
+}
