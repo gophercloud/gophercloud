@@ -225,3 +225,16 @@ func HandleUpdateSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+// HandleDeleteSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87`
+// on the test handler mux that responds with an `Delete` response.
+func HandleDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

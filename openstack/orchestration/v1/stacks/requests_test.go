@@ -162,3 +162,12 @@ func TestUpdateStack(t *testing.T) {
 	err := Update(fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada", updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestDeleteStack(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfully(t)
+
+	err := Delete(fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada").ExtractErr()
+	th.AssertNoErr(t, err)
+}
