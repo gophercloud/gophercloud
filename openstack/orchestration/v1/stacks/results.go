@@ -8,15 +8,19 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// CreatedStack represents the object extracted from a Create operation.
 type CreatedStack struct {
 	ID    string             `mapstructure:"id"`
 	Links []gophercloud.Link `mapstructure:"links"`
 }
 
+// CreateResult represents the result of a Create operation.
 type CreateResult struct {
 	gophercloud.Result
 }
 
+// Extract returns a pointer to a CreatedStack object and is called after a
+// Create operation.
 func (r CreateResult) Extract() (*CreatedStack, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -33,6 +37,8 @@ func (r CreateResult) Extract() (*CreatedStack, error) {
 	return res.Stack, nil
 }
 
+// AdoptResult represents the result of an Adopt operation. AdoptResult has the
+// same form as CreateResult.
 type AdoptResult struct {
 	CreateResult
 }
@@ -51,6 +57,7 @@ func (r StackPage) IsEmpty() (bool, error) {
 	return len(stacks) == 0, nil
 }
 
+// ListedStack represents an element in the slice extracted from a List operation.
 type ListedStack struct {
 	CreationTime time.Time          `mapstructure:"-"`
 	Description  string             `mapstructure:"description"`
@@ -62,7 +69,7 @@ type ListedStack struct {
 	UpdatedTime  time.Time          `mapstructure:"-"`
 }
 
-// ExtractStacks extracts and returns a slice of Stacks. It is used while iterating
+// ExtractStacks extracts and returns a slice of ListedStack. It is used while iterating
 // over a stacks.List call.
 func ExtractStacks(page pagination.Page) ([]ListedStack, error) {
 	var res struct {
@@ -98,28 +105,32 @@ func ExtractStacks(page pagination.Page) ([]ListedStack, error) {
 	return res.Stacks, nil
 }
 
+// RetrievedStack represents the object extracted from a Get operation.
 type RetrievedStack struct {
-	Capabilities        []interface{}       `mapstructure:"capabilities"`
-	CreationTime        time.Time           `mapstructure:"-"`
-	Description         string              `mapstructure:"description"`
-	DisableRollback     bool                `mapstructure:"disable_rollback"`
-	ID                  string              `mapstructure:"id"`
-	Links               []gophercloud.Link  `mapstructure:"links"`
-	NotificationTopics  []interface{}       `mapstructure:"notification_topics"`
-	Outputs             []map[string]string `mapstructure:"outputs"`
-	Parameters          map[string]string   `mapstructure:"parameters"`
-	Name                string              `mapstructure:"stack_name"`
-	Status              string              `mapstructure:"stack_status"`
-	StausReason         string              `mapstructure:"stack_status_reason"`
-	TemplateDescription string              `mapstructure:"template_description"`
-	Timeout             int                 `mapstructure:"timeout_mins"`
-	UpdatedTime         time.Time           `mapstructure:"-"`
+	Capabilities        []interface{}            `mapstructure:"capabilities"`
+	CreationTime        time.Time                `mapstructure:"-"`
+	Description         string                   `mapstructure:"description"`
+	DisableRollback     bool                     `mapstructure:"disable_rollback"`
+	ID                  string                   `mapstructure:"id"`
+	Links               []gophercloud.Link       `mapstructure:"links"`
+	NotificationTopics  []interface{}            `mapstructure:"notification_topics"`
+	Outputs             []map[string]interface{} `mapstructure:"outputs"`
+	Parameters          map[string]string        `mapstructure:"parameters"`
+	Name                string                   `mapstructure:"stack_name"`
+	Status              string                   `mapstructure:"stack_status"`
+	StatusReason        string                   `mapstructure:"stack_status_reason"`
+	TemplateDescription string                   `mapstructure:"template_description"`
+	Timeout             int                      `mapstructure:"timeout_mins"`
+	UpdatedTime         time.Time                `mapstructure:"-"`
 }
 
+// GetResult represents the result of a Get operation.
 type GetResult struct {
 	gophercloud.Result
 }
 
+// Extract returns a pointer to a RetrievedStack object and is called after a
+// Get operation.
 func (r GetResult) Extract() (*RetrievedStack, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -163,10 +174,12 @@ func (r GetResult) Extract() (*RetrievedStack, error) {
 	return res.Stack, err
 }
 
+// UpdateResult represents the result of a Update operation.
 type UpdateResult struct {
 	gophercloud.ErrResult
 }
 
+// DeleteResult represents the result of a Delete operation.
 type DeleteResult struct {
 	gophercloud.ErrResult
 }

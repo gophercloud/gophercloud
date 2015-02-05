@@ -140,3 +140,88 @@ func HandleListSuccessfully(t *testing.T, output string) {
 		}
 	})
 }
+
+// GetExpected represents the expected object from a Get request.
+var GetExpected = &RetrievedStack{
+	DisableRollback: true,
+	Description:     "Simple template to test heat commands",
+	Parameters: map[string]string{
+		"flavor":         "m1.tiny",
+		"OS::stack_name": "postman_stack",
+		"OS::stack_id":   "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
+	},
+	StatusReason: "Stack CREATE completed successfully",
+	Name:         "postman_stack",
+	Outputs:      []map[string]interface{}{},
+	CreationTime: time.Date(2015, 2, 3, 20, 7, 39, 0, time.UTC),
+	Links: []gophercloud.Link{
+		gophercloud.Link{
+			Href: "http://166.76.160.117:8004/v1/98606384f58d4ad0b3db7d0d779549ac/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87",
+			Rel:  "self",
+		},
+	},
+	Capabilities:        []interface{}{},
+	NotificationTopics:  []interface{}{},
+	Status:              "CREATE_COMPLETE",
+	ID:                  "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
+	TemplateDescription: "Simple template to test heat commands",
+}
+
+// GetOutput represents the response body from a Get request.
+const GetOutput = `
+{
+  "stack": {
+    "disable_rollback": true,
+    "description": "Simple template to test heat commands",
+    "parameters": {
+      "flavor": "m1.tiny",
+      "OS::stack_name": "postman_stack",
+      "OS::stack_id": "16ef0584-4458-41eb-87c8-0dc8d5f66c87"
+    },
+    "stack_status_reason": "Stack CREATE completed successfully",
+    "stack_name": "postman_stack",
+    "outputs": [],
+    "creation_time": "2015-02-03T20:07:39Z",
+    "links": [
+    {
+      "href": "http://166.76.160.117:8004/v1/98606384f58d4ad0b3db7d0d779549ac/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87",
+      "rel": "self"
+    }
+    ],
+    "capabilities": [],
+    "notification_topics": [],
+    "timeout_mins": null,
+    "stack_status": "CREATE_COMPLETE",
+    "updated_time": null,
+    "id": "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
+    "template_description": "Simple template to test heat commands"
+  }
+}
+`
+
+// HandleGetSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87`
+// on the test handler mux that responds with a `Get` response.
+func HandleGetSuccessfully(t *testing.T, output string) {
+	th.Mux.HandleFunc("/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, output)
+	})
+}
+
+// HandleUpdateSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87`
+// on the test handler mux that responds with an `Update` response.
+func HandleUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
