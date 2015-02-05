@@ -22,3 +22,8 @@ func Adopt(c *gophercloud.ServiceClient, opts os.AdoptOptsBuilder) os.AdoptResul
 func List(c *gophercloud.ServiceClient, opts os.ListOptsBuilder) pagination.Pager {
 	return os.List(c, opts)
 }
+
+// Update accepts an os.UpdateOpts struct and updates a stack based on the options provided.
+func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts os.UpdateOptsBuilder) os.UpdateResult {
+	return os.Update(c, stackName, stackID, opts)
+}
