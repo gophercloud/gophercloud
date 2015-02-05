@@ -8,13 +8,16 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// Rollback is used to specify whether or not a stack can be rolled back.
 type Rollback *bool
 
 var (
-	disable          = true
+	disable = true
+	// Disable is used to specify that a stack cannot be rolled back.
 	Disable Rollback = &disable
 	enable           = false
-	Enable  Rollback = &enable
+	// Enable is used to specify that a stack can be rolled back.
+	Enable Rollback = &enable
 )
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -517,7 +520,7 @@ func Abandon(c *gophercloud.ServiceClient, stackName, stackID string) AbandonRes
 	var res AbandonResult
 
 	// Send request to API
-	_, res.Err = perigee.Request("POST", abandonURL(c, stackName, stackID), perigee.Options{
+	_, res.Err = perigee.Request("DELETE", abandonURL(c, stackName, stackID), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		Results:     &res.Body,
 		OkCodes:     []int{200},

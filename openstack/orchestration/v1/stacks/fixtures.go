@@ -227,7 +227,7 @@ func HandleUpdateSuccessfully(t *testing.T) {
 }
 
 // HandleDeleteSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87`
-// on the test handler mux that responds with an `Delete` response.
+// on the test handler mux that responds with a `Delete` response.
 func HandleDeleteSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/stacks/gophercloud-test-stack-2/db6977b2-27aa-4775-9ae7-6213212d4ada", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
@@ -265,7 +265,7 @@ var PreviewExpected = &PreviewedStack{
 }
 
 // HandlePreviewSuccessfully creates an HTTP handler at `/stacks/preview`
-// on the test handler mux that responds with an `Preview` response.
+// on the test handler mux that responds with a `Preview` response.
 func HandlePreviewSuccessfully(t *testing.T, output string) {
 	th.Mux.HandleFunc("/stacks/preview", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
@@ -275,5 +275,101 @@ func HandlePreviewSuccessfully(t *testing.T, output string) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, output)
+	})
+}
+
+// AbandonExpected represents the expected object from an Abandon request.
+var AbandonExpected = &AbandonedStack{
+	Status: "COMPLETE",
+	Name:   "postman_stack",
+	Template: `
+  {
+    "heat_template_version": "2013-05-23",
+    "description": "Simple template to test heat commands",
+    "parameters": {
+      "flavor": {
+        "default": "m1.tiny",
+        "type": "string"
+      }
+    },
+    "resources": {
+      "hello_world": {
+        "type": "OS::Nova::Server",
+        "properties": {
+          "key_name": "heat_key",
+          "flavor": {
+            "get_param": "flavor"
+          },
+          "image": "ad091b52-742f-469e-8f3c-fd81cadf0743",
+          "user_data": "#!/bin/bash -xv\necho \"hello world\" &gt; /root/hello-world.txt\n"
+        }
+      }
+    }
+  }`,
+	Action: "CREATE",
+	ID:     "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
+	Resources: map[string]interface{}{
+		"hello_world": map[string]interface{}{
+			"status":      "COMPLETE",
+			"name":        "hello_world",
+			"resource_id": "8a310d36-46fc-436f-8be4-37a696b8ac63",
+			"action":      "CREATE",
+			"type":        "OS::Nova::Server",
+		},
+	},
+}
+
+// AbandonOutput represents the response body from an Abandon request.
+const AbandonOutput = `
+{
+  "status": "COMPLETE",
+  "name": "postman_stack",
+  "template": {
+    "heat_template_version": "2013-05-23",
+    "description": "Simple template to test heat commands",
+    "parameters": {
+      "flavor": {
+        "default": "m1.tiny",
+        "type": "string"
+      }
+    },
+    "resources": {
+      "hello_world": {
+        "type": "OS::Nova::Server",
+        "properties": {
+          "key_name": "heat_key",
+          "flavor": {
+            "get_param": "flavor"
+          },
+          "image": "ad091b52-742f-469e-8f3c-fd81cadf0743",
+          "user_data": "#!/bin/bash -xv\necho \"hello world\" &gt; /root/hello-world.txt\n"
+        }
+      }
+    }
+  },
+  "action": "CREATE",
+  "id": "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
+  "resources": {
+    "hello_world": {
+      "status": "COMPLETE",
+      "name": "hello_world",
+      "resource_id": "8a310d36-46fc-436f-8be4-37a696b8ac63",
+      "action": "CREATE",
+      "type": "OS::Nova::Server",
+    }
+  }
+}`
+
+// HandleAbandonSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87/abandon`
+// on the test handler mux that responds with an `Abandon` response.
+func HandleAbandonSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87/abandon", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, AbandonOutput)
 	})
 }

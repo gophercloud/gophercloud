@@ -253,9 +253,33 @@ func (r PreviewResult) Extract() (*PreviewedStack, error) {
 	return res.Stack, err
 }
 
+// AbandonedStack represents the result of an Abandon operation.
 type AbandonedStack struct {
+	Status    string                 `mapstructure:"status"`
+	Name      string                 `mapstructure:"name"`
+	Template  string                 `mapstructure:"template"`
+	Action    string                 `mapstructure:"action"`
+	ID        string                 `mapstructure:"id"`
+	Resources map[string]interface{} `mapstructure:"resources"`
 }
 
+// AbandonResult represents the result of an Abandon operation.
 type AbandonResult struct {
 	gophercloud.Result
+}
+
+// Extract returns a pointer to an AbandonedStack object and is called after an
+// Abandon operation.
+func (r AbandonResult) Extract() (*AbandonedStack, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res AbandonedStack
+
+	if err := mapstructure.Decode(r.Body, &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
