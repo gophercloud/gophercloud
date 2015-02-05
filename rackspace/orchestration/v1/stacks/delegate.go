@@ -27,3 +27,8 @@ func List(c *gophercloud.ServiceClient, opts os.ListOptsBuilder) pagination.Page
 func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts os.UpdateOptsBuilder) os.UpdateResult {
 	return os.Update(c, stackName, stackID, opts)
 }
+
+// Delete deletes a stack based on the stack name and stack ID provided.
+func Delete(c *gophercloud.ServiceClient, stackName, stackID string) os.DeleteResult {
+	return os.Delete(c, stackName, stackID)
+}
