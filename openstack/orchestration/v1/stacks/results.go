@@ -184,28 +184,32 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// PreviewedStack represents the result of a Preview operation.
 type PreviewedStack struct {
-	Capabilities        []interface{}       `mapstructure:"capabilities"`
-	CreationTime        time.Time           `mapstructure:"-"`
-	Description         string              `mapstructure:"description"`
-	DisableRollback     bool                `mapstructure:"disable_rollback"`
-	ID                  string              `mapstructure:"id"`
-	Links               []gophercloud.Link  `mapstructure:"links"`
-	Name                string              `mapstructure:"stack_name"`
-	NotificationTopics  []interface{}       `mapstructure:"notification_topics"`
-	Parameters          map[string]string   `mapstructure:"parameters"`
-	Resources           []map[string]string `mapstructure:"resources"`
-	Status              string              `mapstructure:"stack_status"`
-	StausReason         string              `mapstructure:"stack_status_reason"`
-	TemplateDescription string              `mapstructure:"template_description"`
-	Timeout             int                 `mapstructure:"timeout_mins"`
-	UpdatedTime         time.Time           `mapstructure:"-"`
+	Capabilities        []interface{}            `mapstructure:"capabilities"`
+	CreationTime        time.Time                `mapstructure:"-"`
+	Description         string                   `mapstructure:"description"`
+	DisableRollback     bool                     `mapstructure:"disable_rollback"`
+	ID                  string                   `mapstructure:"id"`
+	Links               []gophercloud.Link       `mapstructure:"links"`
+	Name                string                   `mapstructure:"stack_name"`
+	NotificationTopics  []interface{}            `mapstructure:"notification_topics"`
+	Parameters          map[string]string        `mapstructure:"parameters"`
+	Resources           []map[string]interface{} `mapstructure:"resources"`
+	Status              string                   `mapstructure:"stack_status"`
+	StatusReason        string                   `mapstructure:"stack_status_reason"`
+	TemplateDescription string                   `mapstructure:"template_description"`
+	Timeout             int                      `mapstructure:"timeout_mins"`
+	UpdatedTime         time.Time                `mapstructure:"-"`
 }
 
+// PreviewResult represents the result of a Preview operation.
 type PreviewResult struct {
 	gophercloud.Result
 }
 
+// Extract returns a pointer to a PreviewedStack object and is called after a
+// Preview operation.
 func (r PreviewResult) Extract() (*PreviewedStack, error) {
 	if r.Err != nil {
 		return nil, r.Err

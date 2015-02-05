@@ -238,3 +238,42 @@ func HandleDeleteSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
+
+// GetExpected represents the expected object from a Get request.
+var PreviewExpected = &PreviewedStack{
+	DisableRollback: true,
+	Description:     "Simple template to test heat commands",
+	Parameters: map[string]string{
+		"flavor":         "m1.tiny",
+		"OS::stack_name": "postman_stack",
+		"OS::stack_id":   "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
+	},
+	StatusReason: "Stack CREATE completed successfully",
+	Name:         "postman_stack",
+	CreationTime: time.Date(2015, 2, 3, 20, 7, 39, 0, time.UTC),
+	Links: []gophercloud.Link{
+		gophercloud.Link{
+			Href: "http://166.76.160.117:8004/v1/98606384f58d4ad0b3db7d0d779549ac/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87",
+			Rel:  "self",
+		},
+	},
+	Capabilities:        []interface{}{},
+	NotificationTopics:  []interface{}{},
+	Status:              "CREATE_COMPLETE",
+	ID:                  "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
+	TemplateDescription: "Simple template to test heat commands",
+}
+
+// HandlePreviewSuccessfully creates an HTTP handler at `/stacks/preview`
+// on the test handler mux that responds with an `Preview` response.
+func HandlePreviewSuccessfully(t *testing.T, output string) {
+	th.Mux.HandleFunc("/stacks/preview", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, output)
+	})
+}

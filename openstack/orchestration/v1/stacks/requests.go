@@ -49,7 +49,7 @@ type CreateOpts struct {
 	// (OPTIONAL) Enables or disables deletion of all stack resources when a stack
 	// creation fails. Default is true, meaning all resources are not deleted when
 	// stack creation fails.
-	DisableRollback *bool
+	DisableRollback Rollback
 	// (OPTIONAL) A stringified JSON environment for the stack.
 	Environment string
 	// (OPTIONAL) A map that maps file names to file contents. It can also be used
@@ -155,7 +155,7 @@ type AdoptOpts struct {
 	// (OPTIONAL) Enables or disables deletion of all stack resources when a stack
 	// creation fails. Default is true, meaning all resources are not deleted when
 	// stack creation fails.
-	DisableRollback *bool
+	DisableRollback Rollback
 	// (OPTIONAL) A stringified JSON environment for the stack.
 	Environment string
 	// (OPTIONAL) A map that maps file names to file contents. It can also be used
@@ -322,12 +322,30 @@ type UpdateOptsBuilder interface {
 // UpdateOpts contains the common options struct used in this package's Update
 // operation.
 type UpdateOpts struct {
-	Environment string
-	Files       map[string]interface{}
-	Parameters  map[string]string
-	Template    string
+	// (REQUIRED) The timeout for stack creation in minutes.
+	Timeout int
+	// (OPTIONAL; REQUIRED IF Template IS EMPTY) The URL of the template to instantiate.
+	// This value is ignored if Template is supplied inline.
 	TemplateURL string
-	Timeout     int
+	// (OPTIONAL; REQUIRED IF TemplateURL IS EMPTY) A template to instantiate. The value
+	// is a stringified version of the JSON/YAML template. Since the template will likely
+	// be located in a file, one way to set this variable is by using ioutil.ReadFile:
+	// import "io/ioutil"
+	// var opts stacks.CreateOpts
+	// b, err := ioutil.ReadFile("path/to/you/template/file.json")
+	// if err != nil {
+	//   // handle error...
+	// }
+	// opts.Template = string(b)
+	Template string
+	// (OPTIONAL) A stringified JSON environment for the stack.
+	Environment string
+	// (OPTIONAL) A map that maps file names to file contents. It can also be used
+	// to pass provider template contents. Example:
+	// Files: `{"myfile": "#!/bin/bash\necho 'Hello world' > /root/testfile.txt"}`
+	Files map[string]interface{}
+	// (OPTIONAL) User-defined parameters to pass to the template.
+	Parameters map[string]string
 }
 
 // ToStackUpdateMap casts a CreateOpts struct to a map.
@@ -402,14 +420,36 @@ type PreviewOptsBuilder interface {
 // PreviewOpts contains the common options struct used in this package's Preview
 // operation.
 type PreviewOpts struct {
-	DisableRollback *bool
-	Environment     string
-	Files           map[string]interface{}
-	Name            string
-	Parameters      map[string]string
-	Template        string
-	TemplateURL     string
-	Timeout         int
+	// (REQUIRED) The name of the stack. It must start with an alphabetic character.
+	Name string
+	// (REQUIRED) The timeout for stack creation in minutes.
+	Timeout int
+	// (OPTIONAL; REQUIRED IF Template IS EMPTY) The URL of the template to instantiate.
+	// This value is ignored if Template is supplied inline.
+	TemplateURL string
+	// (OPTIONAL; REQUIRED IF TemplateURL IS EMPTY) A template to instantiate. The value
+	// is a stringified version of the JSON/YAML template. Since the template will likely
+	// be located in a file, one way to set this variable is by using ioutil.ReadFile:
+	// import "io/ioutil"
+	// var opts stacks.CreateOpts
+	// b, err := ioutil.ReadFile("path/to/you/template/file.json")
+	// if err != nil {
+	//   // handle error...
+	// }
+	// opts.Template = string(b)
+	Template string
+	// (OPTIONAL) Enables or disables deletion of all stack resources when a stack
+	// creation fails. Default is true, meaning all resources are not deleted when
+	// stack creation fails.
+	DisableRollback Rollback
+	// (OPTIONAL) A stringified JSON environment for the stack.
+	Environment string
+	// (OPTIONAL) A map that maps file names to file contents. It can also be used
+	// to pass provider template contents. Example:
+	// Files: `{"myfile": "#!/bin/bash\necho 'Hello world' > /root/testfile.txt"}`
+	Files map[string]interface{}
+	// (OPTIONAL) User-defined parameters to pass to the template.
+	Parameters map[string]string
 }
 
 // ToStackPreviewMap casts a PreviewOpts struct to a map.
