@@ -30,3 +30,8 @@ func Metadata(c *gophercloud.ServiceClient, stackName, stackID, resourceName str
 func ListTypes(c *gophercloud.ServiceClient) pagination.Pager {
 	return os.ListTypes(c)
 }
+
+// Schema retreives the schema for the given resource type.
+func Schema(c *gophercloud.ServiceClient, resourceType string) os.SchemaResult {
+	return os.Schema(c, resourceType)
+}

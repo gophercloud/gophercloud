@@ -184,3 +184,27 @@ func ExtractResourceTypes(page pagination.Page) ([]string, error) {
 	err := mapstructure.Decode(page.(ResourceTypePage).Body, &response)
 	return response.ResourceTypes, err
 }
+
+type TypeSchema struct {
+	Attributes   map[string]interface{} `mapstructure:"attributes"`
+	Properties   map[string]interface{} `mapstrucutre:"properties"`
+	ResourceType string                 `mapstructure:"resource_type"`
+}
+
+type SchemaResult struct {
+	gophercloud.Result
+}
+
+func (r SchemaResult) Extract() (*TypeSchema, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res TypeSchema
+
+	if err := mapstructure.Decode(r.Body, &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}

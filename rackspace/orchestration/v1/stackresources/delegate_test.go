@@ -82,3 +82,15 @@ func TestListResourceTypes(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, 1, count)
 }
+
+func TestGetResourceSchema(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	os.HandleGetSchemaSuccessfully(t, os.GetSchemaOutput)
+
+	actual, err := Schema(fake.ServiceClient(), "OS::Heat::AResourceName").Extract()
+	th.AssertNoErr(t, err)
+
+	expected := os.GetSchemaExpected
+	th.AssertDeepEquals(t, expected, actual)
+}

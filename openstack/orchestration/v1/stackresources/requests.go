@@ -102,3 +102,16 @@ func ListTypes(client *gophercloud.ServiceClient) pagination.Pager {
 
 	return pagination.NewPager(client, url, createPageFn)
 }
+
+// Schema retreives the schema for the given resource type.
+func Schema(c *gophercloud.ServiceClient, resourceType string) SchemaResult {
+	var res SchemaResult
+
+	// Send request to API
+	_, res.Err = perigee.Request("GET", schemaURL(c, resourceType), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+	return res
+}
