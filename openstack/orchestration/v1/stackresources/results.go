@@ -37,9 +37,10 @@ func (r FindResult) Extract() ([]Resource, error) {
 		return nil, err
 	}
 
-	resources := r.Body.(map[string]interface{})["resources"].([]map[string]interface{})
+	resources := r.Body.(map[string]interface{})["resources"].([]interface{})
 
-	for i, resource := range resources {
+	for i, resourceRaw := range resources {
+		resource := resourceRaw.(map[string]interface{})
 		if date, ok := resource["updated_time"]; ok && date != nil {
 			t, err := time.Parse(time.RFC3339, date.(string))
 			if err != nil {
@@ -91,6 +92,20 @@ func ExtractResources(page pagination.Page) ([]Resource, error) {
 		Resources []Resource `mapstructure:"resources"`
 	}
 	err := mapstructure.Decode(casted, &response)
+
+	resources := casted.(map[string]interface{})["resources"].([]interface{})
+
+	for i, resourceRaw := range resources {
+		resource := resourceRaw.(map[string]interface{})
+		if date, ok := resource["updated_time"]; ok && date != nil {
+			t, err := time.Parse(time.RFC3339, date.(string))
+			if err != nil {
+				return nil, err
+			}
+			response.Resources[i].UpdatedTime = t
+		}
+	}
+
 	return response.Resources, err
 }
 
@@ -142,4 +157,30 @@ func (r MetadataResult) Extract() (map[string]string, error) {
 	}
 
 	return res.Meta, nil
+}
+
+// ResourceTypePage abstracts the raw results of making a ListTypes() request against the API.
+// As OpenStack extensions may freely alter the response bodies of structures returned to the client, you may only safely access the
+// data provided through the ExtractResourceTypes call.
+type ResourceTypePage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty returns true if a ResourceTypePage contains no resource types.
+func (r ResourceTypePage) IsEmpty() (bool, error) {
+	rts, err := ExtractResourceTypes(r)
+	if err != nil {
+		return true, err
+	}
+	return len(rts) == 0, nil
+}
+
+// ExtractResourceTypes extracts and returns resource types.
+func ExtractResourceTypes(page pagination.Page) ([]string, error) {
+	var response struct {
+		ResourceTypes []string `mapstructure:"resource_types"`
+	}
+
+	err := mapstructure.Decode(page.(ResourceTypePage).Body, &response)
+	return response.ResourceTypes, err
 }

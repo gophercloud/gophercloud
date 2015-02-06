@@ -14,7 +14,7 @@ func Find(c *gophercloud.ServiceClient, stackName string) FindResult {
 	_, res.Err = perigee.Request("GET", findURL(c, stackName), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		Results:     &res.Body,
-		OkCodes:     []int{302},
+		OkCodes:     []int{200},
 	})
 	return res
 }
@@ -90,4 +90,15 @@ func Metadata(c *gophercloud.ServiceClient, stackName, stackID, resourceName str
 		OkCodes:     []int{200},
 	})
 	return res
+}
+
+// ListTypes makes a request against the API to list resource types.
+func ListTypes(client *gophercloud.ServiceClient) pagination.Pager {
+	url := listTypesURL(client)
+
+	createPageFn := func(r pagination.PageResult) pagination.Page {
+		return ResourceTypePage{pagination.SinglePageBase(r)}
+	}
+
+	return pagination.NewPager(client, url, createPageFn)
 }
