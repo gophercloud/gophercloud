@@ -299,68 +299,25 @@ func TestSuccessfulUpdate(t *testing.T) {
 
 	expected := "https://www.poppycdn.io/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 	updateOpts := UpdateOpts{
-		UpdateOpt{
-			Op:   Replace,
-			Path: "/origins/0",
-			Value: map[string]interface{}{
-				"origin": "44.33.22.11",
-				"port":   80,
-				"ssl":    false,
+		Replacement{
+			Value: OriginList{
+				Origin{
+					Origin: "44.33.22.11",
+					Port:   80,
+					SSL:    false,
+				},
 			},
+			Index: 0,
 		},
-		UpdateOpt{
-			Op:   Add,
-			Path: "/domains/0",
-			Value: map[string]interface{}{
-				"domain": "added.mocksite4.com",
+		Append{
+			Value: DomainList{
+				Domain{
+					Domain: "added.mocksite4.com",
+				},
 			},
 		},
 	}
 	actual, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", updateOpts).Extract()
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, expected, actual)
-}
-
-func TestUnsuccessfulUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	HandleUpdateCDNServiceSuccessfully(t)
-
-	updateOpts := UpdateOpts{
-		UpdateOpt{
-			Op:   "Foo",
-			Path: "/origins/0",
-			Value: map[string]interface{}{
-				"origin": "44.33.22.11",
-				"port":   80,
-				"ssl":    false,
-			},
-		},
-		UpdateOpt{
-			Op:   Add,
-			Path: "/domains/0",
-			Value: map[string]interface{}{
-				"domain": "added.mocksite4.com",
-			},
-		},
-		// Remove a single CacheRule
-		Removal{
-			Index: 8,
-			Path:  PathCaching,
-		},
-		// Bulk removal
-		Removal{
-			All:  true,
-			Path: PathCaching,
-		},
-		// Service name replacement
-		NameReplacement{
-			NewName: "differentServiceName",
-		},
-	}
-
-	actual, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", ops).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, expected, actual)
 }
