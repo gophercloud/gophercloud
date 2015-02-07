@@ -36,7 +36,6 @@ func TestCreate(t *testing.T) {
 	actual, err := Create(client.ServiceClient(), serverId, CreateOpts{
 		Device:   "/dev/vdc",
 		VolumeID: "a26887c6-c47b-4654-abb5-dfadf7d3f804",
-		ServerID: serverId,
 	}).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedVolumeAttachment, actual)

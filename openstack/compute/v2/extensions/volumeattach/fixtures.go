@@ -116,7 +116,6 @@ func HandleCreateSuccessfully(t *testing.T) {
 {
   "volumeAttachment": {
     "volumeId": "a26887c6-c47b-4654-abb5-dfadf7d3f804",
-		"serverId": "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
     "device": "/dev/vdc"
   }
 }

@@ -14,7 +14,6 @@ type CreateOptsExt struct {
 	servers.CreateOptsBuilder
 	Device   string `json:"device"`
 	VolumeID string `json:"volumeId"`
-	ServerID string `json:"serverId"`
 }
 
 // ToServerCreateMap adds the volume_id, device, and optionally server_id to
@@ -28,7 +27,6 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 	serverMap := base["server"].(map[string]interface{})
 	serverMap["device"] = opts.Device
 	serverMap["volume_id"] = opts.VolumeID
-	serverMap["server_id"] = opts.ServerID
 
 	return base, nil
 }
@@ -53,9 +51,6 @@ type CreateOpts struct {
 
 	// VolumeID is the ID of the volume to attach to the instance
 	VolumeID string
-
-	// ServerID is the ID of the server that the volume will be attached to
-	ServerID string
 }
 
 // ToVolumeAttachmentCreateMap constructs a request body from CreateOpts.
@@ -64,13 +59,8 @@ func (opts CreateOpts) ToVolumeAttachmentCreateMap() (map[string]interface{}, er
 		return nil, errors.New("Missing field required for volume attachment creation: VolumeID")
 	}
 
-	if opts.ServerID == "" {
-		return nil, errors.New("Missing field required for volume attachment creation: ServerID")
-	}
-
 	volumeAttachment := make(map[string]interface{})
 	volumeAttachment["volumeId"] = opts.VolumeID
-	volumeAttachment["serverId"] = opts.ServerID
 	if opts.Device != "" {
 		volumeAttachment["device"] = opts.Device
 	}
