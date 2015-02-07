@@ -101,6 +101,10 @@ func TestAttachVolume(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
+	defer func() {
+		servers.Delete(computeClient, server.ID)
+		t.Logf("Server deleted.")
+	}()
 
 	if err = waitForStatus(computeClient, server, "ACTIVE"); err != nil {
 		t.Fatalf("Unable to wait for server: %v", err)
@@ -110,18 +114,12 @@ func TestAttachVolume(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create volume: %v", err)
 	}
-
-	createVolumeAttachment(t, computeClient, blockClient, server.ID, volume.ID)
-
-	defer func() {
-		servers.Delete(computeClient, server.ID)
-		t.Logf("Server deleted.")
-	}()
-
 	defer func() {
 		err = volumes.Delete(blockClient, volume.ID).ExtractErr()
 		th.AssertNoErr(t, err)
 		t.Logf("Volume deleted.")
 	}()
+
+	createVolumeAttachment(t, computeClient, blockClient, server.ID, volume.ID)
 
 }
