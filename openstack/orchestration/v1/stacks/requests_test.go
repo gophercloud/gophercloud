@@ -216,6 +216,7 @@ func TestPreviewStack(t *testing.T) {
 	th.AssertDeepEquals(t, expected, actual)
 }
 
+/*
 func TestAbandonStack(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -227,3 +228,4 @@ func TestAbandonStack(t *testing.T) {
 	expected := AbandonExpected
 	th.AssertDeepEquals(t, expected, actual)
 }
+*/
