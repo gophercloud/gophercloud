@@ -115,3 +115,16 @@ func Schema(c *gophercloud.ServiceClient, resourceType string) SchemaResult {
 	})
 	return res
 }
+
+// Template retreives the template representation for the given resource type.
+func Template(c *gophercloud.ServiceClient, resourceType string) TemplateResult {
+	var res TemplateResult
+
+	// Send request to API
+	_, res.Err = perigee.Request("GET", templateURL(c, resourceType), perigee.Options{
+		MoreHeaders: c.AuthenticatedHeaders(),
+		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+	return res
+}

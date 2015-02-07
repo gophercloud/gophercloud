@@ -93,3 +93,15 @@ func TestGetResourceSchema(t *testing.T) {
 	expected := GetSchemaExpected
 	th.AssertDeepEquals(t, expected, actual)
 }
+
+func TestGetResourceTemplate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetTemplateSuccessfully(t, GetTemplateOutput)
+
+	actual, err := Template(fake.ServiceClient(), "OS::Heat::AResourceName").Extract()
+	th.AssertNoErr(t, err)
+
+	expected := GetTemplateExpected
+	th.AssertDeepEquals(t, expected, actual)
+}

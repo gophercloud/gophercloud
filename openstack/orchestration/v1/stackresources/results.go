@@ -208,3 +208,28 @@ func (r SchemaResult) Extract() (*TypeSchema, error) {
 
 	return &res, nil
 }
+
+type TypeTemplate struct {
+	HeatTemplateFormatVersion string
+	Outputs                   map[string]interface{}
+	Parameters                map[string]interface{}
+	Resources                 map[string]interface{}
+}
+
+type TemplateResult struct {
+	gophercloud.Result
+}
+
+func (r TemplateResult) Extract() (*TypeTemplate, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var res TypeTemplate
+
+	if err := mapstructure.Decode(r.Body, &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}

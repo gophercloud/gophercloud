@@ -35,3 +35,8 @@ func ListTypes(c *gophercloud.ServiceClient) pagination.Pager {
 func Schema(c *gophercloud.ServiceClient, resourceType string) os.SchemaResult {
 	return os.Schema(c, resourceType)
 }
+
+// Template retreives the template representation for the given resource type.
+func Template(c *gophercloud.ServiceClient, resourceType string) os.TemplateResult {
+	return os.Template(c, resourceType)
+}
