@@ -5,31 +5,8 @@ import (
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
 	"github.com/rackspace/gophercloud/pagination"
 )
-
-// CreateOptsExt adds a VolumeAttachment option to the base CreateOpts.
-type CreateOptsExt struct {
-	servers.CreateOptsBuilder
-	Device   string `json:"device"`
-	VolumeID string `json:"volumeId"`
-}
-
-// ToServerCreateMap adds the volume_id, device, and optionally server_id to
-// the base server creation options.
-func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
-	base, err := opts.CreateOptsBuilder.ToServerCreateMap()
-	if err != nil {
-		return nil, err
-	}
-
-	serverMap := base["server"].(map[string]interface{})
-	serverMap["device"] = opts.Device
-	serverMap["volume_id"] = opts.VolumeID
-
-	return base, nil
-}
 
 // List returns a Pager that allows you to iterate over a collection of VolumeAttachments.
 func List(client *gophercloud.ServiceClient, serverId string) pagination.Pager {
