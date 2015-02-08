@@ -7,9 +7,12 @@ import (
 )
 
 type Policy struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
+	ID          string   `json:"id" mapstructure:"id"`
+	Name        string   `json:"name" mapstructure:"name"`
+	Description string   `json:"description" mapstructure:"description"`
+	TenantID    string   `json:"tenant_id" mapstructure:"tenant_id"`
+	Audited     bool     `json:"audited" mapstructure:"audited"`
+	Shared      bool     `json:"shared" mapstructure:"shared"`
 	Rules       []string `json:"firewall_rules,omitempty" mapstructure:"firewall_rules"`
 }
 
