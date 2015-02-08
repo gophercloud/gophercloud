@@ -20,6 +20,9 @@ type Rule struct {
 	DestinationPort      string `json:"destination_port,omitempty" mapstructure:"destination_port"`
 	Shared               bool   `json:"shared,omitempty" mapstructure:"shared"`
 	Enabled              bool   `json:"enabled,omitempty" mapstructure:"enabled"`
+	PolicyID             string `json:"firewall_policy_id" mapstructure:"firewall_policy_id"`
+	Position             int    `json:"position" mapstructure:"position"`
+	TenantID             string `json:"tenant_id" mapstructure:"tenant_id"`
 }
 
 // RulePage is the page returned by a pager when traversing over a

@@ -44,31 +44,45 @@ type CreateOpts struct {
 	TenantID     string
 	Name         string
 	Description  string
-	AdminStateUp bool
-	Shared       bool
+	AdminStateUp *bool
+	Shared       *bool
 	PolicyID     string
+}
+
+// ToPolicyCreateMap casts a CreateOpts struct to a map.
+func (opts CreateOpts) ToPolicyCreateMap() map[string]interface{} {
+	p := make(map[string]interface{})
+
+	if opts.TenantID != "" {
+		p["tenant_id"] = opts.TenantID
+	}
+	if opts.Name != "" {
+		p["name"] = opts.Name
+	}
+	if opts.Description != "" {
+		p["description"] = opts.Description
+	}
+	if opts.Shared != nil {
+		p["shared"] = *opts.Shared
+	}
+	if opts.AdminStateUp != nil {
+		p["admin_state_up"] = *opts.AdminStateUp
+	}
+	if opts.PolicyID != "" {
+		p["firewall_policy_id"] = opts.PolicyID
+	}
+
+	return p
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new firewall
 func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	type firewall struct {
-		TenantID     string `json:"tenant_id,omitempty"`
-		Name         string `json:"name,omitempty"`
-		Description  string `json:"description,omitempty"`
-		AdminStateUp bool   `json:"admin_state_up,omitempty"`
-		PolicyID     string `json:"firewall_policy_id"`
-	}
+
 	type request struct {
-		Firewall firewall `json:"firewall"`
+		Firewall map[string]interface{} `json:"firewall"`
 	}
 
-	reqBody := request{Firewall: firewall{
-		TenantID:     opts.TenantID,
-		Name:         opts.Name,
-		Description:  opts.Description,
-		AdminStateUp: opts.AdminStateUp,
-		PolicyID:     opts.PolicyID,
-	}}
+	reqBody := request{Firewall: opts.ToPolicyCreateMap()}
 
 	var res CreateResult
 	_, res.Err = perigee.Request("POST", rootURL(c), perigee.Options{
@@ -94,31 +108,44 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 // UpdateOpts contains the values used when updating a firewall.
 type UpdateOpts struct {
 	// Name of the firewall.
-	Name         string
-	Description  string
-	AdminStateUp bool
-	Status       string
+	Name         *string
+	Description  *string
+	AdminStateUp *bool
+	Shared       *bool
 	PolicyID     string
+}
+
+// ToPolicyUpdateMap casts a CreateOpts struct to a map.
+func (opts UpdateOpts) ToPolicyUpdateMap() map[string]interface{} {
+	p := make(map[string]interface{})
+
+	if opts.Name != nil {
+		p["name"] = *opts.Name
+	}
+	if opts.Description != nil {
+		p["description"] = *opts.Description
+	}
+	if opts.Shared != nil {
+		p["shared"] = *opts.Shared
+	}
+	if opts.AdminStateUp != nil {
+		p["admin_state_up"] = *opts.AdminStateUp
+	}
+	if opts.PolicyID != "" {
+		p["firewall_policy_id"] = opts.PolicyID
+	}
+
+	return p
 }
 
 // Update allows firewalls to be updated.
 func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
-	type firewall struct {
-		Name         string `json:"name"`
-		Description  string `json:"description"`
-		AdminStateUp bool   `json:"admin_state_up,omitempty"`
-		PolicyID     string `json:"firewall_policy_id,omitempty"`
-	}
+
 	type request struct {
-		Firewall firewall `json:"firewall"`
+		Firewall map[string]interface{} `json:"firewall"`
 	}
 
-	reqBody := request{Firewall: firewall{
-		Name:         opts.Name,
-		Description:  opts.Description,
-		AdminStateUp: opts.AdminStateUp,
-		PolicyID:     opts.PolicyID,
-	}}
+	reqBody := request{Firewall: opts.ToPolicyUpdateMap()}
 
 	// Send request to API
 	var res UpdateResult

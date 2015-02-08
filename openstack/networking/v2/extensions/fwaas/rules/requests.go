@@ -49,14 +49,14 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 
 // CreateOpts contains all the values needed to create a new firewall rule.
 type CreateOpts struct {
-	// Mandatory
+	// Mandatory for create
 	Protocol string
 	Action   string
 	// Optional
 	TenantID             string
 	Name                 string
 	Description          string
-	IPVersion            *int
+	IPVersion            int
 	SourceIPAddress      string
 	DestinationIPAddress string
 	SourcePort           string
@@ -65,41 +65,55 @@ type CreateOpts struct {
 	Enabled              *bool
 }
 
+// ToRuleCreateMap casts a CreateOpts struct to a map.
+func (opts CreateOpts) ToRuleCreateMap() map[string]interface{} {
+	r := make(map[string]interface{})
+
+	r["protocol"] = opts.Protocol
+	r["action"] = opts.Action
+
+	if opts.TenantID != "" {
+		r["tenant_id"] = opts.TenantID
+	}
+	if opts.Name != "" {
+		r["name"] = opts.Name
+	}
+	if opts.Description != "" {
+		r["description"] = opts.Description
+	}
+	if opts.IPVersion != 0 {
+		r["ip_version"] = opts.IPVersion
+	}
+	if opts.SourceIPAddress != "" {
+		r["source_ip_address"] = opts.SourceIPAddress
+	}
+	if opts.DestinationIPAddress != "" {
+		r["destination_ip_address"] = opts.DestinationIPAddress
+	}
+	if opts.SourcePort != "" {
+		r["source_port"] = opts.SourcePort
+	}
+	if opts.DestinationPort != "" {
+		r["destination_port"] = opts.DestinationPort
+	}
+	if opts.Shared != nil {
+		r["shared"] = *opts.Shared
+	}
+	if opts.Enabled != nil {
+		r["enabled"] = *opts.Enabled
+	}
+
+	return r
+}
+
 // Create accepts a CreateOpts struct and uses the values to create a new firewall rule
 func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 
-	type rule struct {
-		TenantID             string `json:"tenant_id,omitempty"`
-		Name                 string `json:"name"`
-		Description          string `json:"description"`
-		Protocol             string `json:"protocol"`
-		Action               string `json:"action"`
-		IPVersion            *int   `json:"ip_version,omitempty"`
-		SourceIPAddress      string `json:"source_ip_address,omitempty"`
-		DestinationIPAddress string `json:"destination_ip_address,omitempty"`
-		SourcePort           string `json:"source_port,omitempty"`
-		DestinationPort      string `json:"destination_port,omitempty"`
-		Shared               *bool  `json:"shared,omitempty"`
-		Enabled              *bool  `json:"enabled,omitempty"`
-	}
 	type request struct {
-		Rule rule `json:"firewall_rule"`
+		Rule map[string]interface{} `json:"firewall_rule"`
 	}
 
-	reqBody := request{Rule: rule{
-		TenantID:             opts.TenantID,
-		Name:                 opts.Name,
-		Description:          opts.Description,
-		Protocol:             opts.Protocol,
-		Action:               opts.Action,
-		IPVersion:            opts.IPVersion,
-		SourceIPAddress:      opts.SourceIPAddress,
-		DestinationIPAddress: opts.DestinationIPAddress,
-		SourcePort:           opts.SourcePort,
-		DestinationPort:      opts.DestinationPort,
-		Shared:               opts.Shared,
-		Enabled:              opts.Enabled,
-	}}
+	reqBody := request{Rule: opts.ToRuleCreateMap()}
 
 	var res CreateResult
 	_, res.Err = perigee.Request("POST", rootURL(c), perigee.Options{
@@ -123,52 +137,90 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 }
 
 // UpdateOpts contains the values used when updating a firewall rule.
+// Optional
 type UpdateOpts struct {
-	Name                 string
-	Description          string
 	Protocol             string
 	Action               string
-	IPVersion            *int
-	SourceIPAddress      string
-	DestinationIPAddress string
-	SourcePort           string
-	DestinationPort      string
+	Name                 *string
+	Description          *string
+	IPVersion            int
+	SourceIPAddress      *string
+	DestinationIPAddress *string
+	SourcePort           *string
+	DestinationPort      *string
 	Shared               *bool
 	Enabled              *bool
 }
 
-// Update allows firewall policies to be updated.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
-	type rule struct {
-		Name                 string `json:"name"`
-		Description          string `json:"description"`
-		Protocol             string `json:"protocol"`
-		Action               string `json:"action"`
-		IPVersion            *int   `json:"ip_version,omitempty"`
-		SourceIPAddress      string `json:"source_ip_address"`
-		DestinationIPAddress string `json:"destination_ip_address"`
-		SourcePort           string `json:"source_port"`
-		DestinationPort      string `json:"destination_port"`
-		Shared               *bool  `json:"shared,omitempty"`
-		Enabled              *bool  `json:"enabled,omitempty"`
+// ToRuleUpdateMap casts a UpdateOpts struct to a map.
+func (opts UpdateOpts) ToRuleUpdateMap() map[string]interface{} {
+	r := make(map[string]interface{})
+
+	if opts.Protocol != "" {
+		r["protocol"] = opts.Protocol
 	}
-	type request struct {
-		Rule rule `json:"firewall_rule"`
+	if opts.Action != "" {
+		r["action"] = opts.Action
+	}
+	if opts.Name != nil {
+		r["name"] = *opts.Name
+	}
+	if opts.Description != nil {
+		r["description"] = *opts.Description
+	}
+	if opts.IPVersion != 0 {
+		r["ip_version"] = opts.IPVersion
+	}
+	if opts.SourceIPAddress != nil {
+		s := *opts.SourceIPAddress
+		if s == "" {
+			r["source_ip_address"] = nil
+		} else {
+			r["source_ip_address"] = s
+		}
+	}
+	if opts.DestinationIPAddress != nil {
+		s := *opts.DestinationIPAddress
+		if s == "" {
+			r["destination_ip_address"] = nil
+		} else {
+			r["destination_ip_address"] = s
+		}
+	}
+	if opts.SourcePort != nil {
+		s := *opts.SourcePort
+		if s == "" {
+			r["source_port"] = nil
+		} else {
+			r["source_port"] = s
+		}
+	}
+	if opts.DestinationPort != nil {
+		s := *opts.DestinationPort
+		if s == "" {
+			r["destination_port"] = nil
+		} else {
+			r["destination_port"] = s
+		}
+	}
+	if opts.Shared != nil {
+		r["shared"] = *opts.Shared
+	}
+	if opts.Enabled != nil {
+		r["enabled"] = *opts.Enabled
 	}
 
-	reqBody := request{Rule: rule{
-		Name:                 opts.Name,
-		Description:          opts.Description,
-		Protocol:             opts.Protocol,
-		Action:               opts.Action,
-		IPVersion:            opts.IPVersion,
-		SourceIPAddress:      opts.SourceIPAddress,
-		DestinationIPAddress: opts.DestinationIPAddress,
-		SourcePort:           opts.SourcePort,
-		DestinationPort:      opts.DestinationPort,
-		Shared:               opts.Shared,
-		Enabled:              opts.Enabled,
-	}}
+	return r
+}
+
+// Update allows firewall policies to be updated.
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
+
+	type request struct {
+		Rule map[string]interface{} `json:"firewall_rule"`
+	}
+
+	reqBody := request{Rule: opts.ToRuleUpdateMap()}
 
 	// Send request to API
 	var res UpdateResult

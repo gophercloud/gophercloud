@@ -13,6 +13,7 @@ type Firewall struct {
 	AdminStateUp bool   `json:"admin_state_up" mapstructure:"admin_state_up"`
 	Status       string `json:"status" mapstructure:"status"`
 	PolicyID     string `json:"firewall_policy_id" mapstructure:"firewall_policy_id"`
+	TenantID     string `json:"tenant_id" mapstructure:"tenant_id"`
 }
 
 type commonResult struct {
