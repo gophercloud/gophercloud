@@ -257,7 +257,7 @@ func (r PreviewResult) Extract() (*PreviewedStack, error) {
 type AbandonedStack struct {
 	Status    string                 `mapstructure:"status"`
 	Name      string                 `mapstructure:"name"`
-	Template  string                 `mapstructure:"template"`
+	Template  map[string]interface{} `mapstructure:"template"`
 	Action    string                 `mapstructure:"action"`
 	ID        string                 `mapstructure:"id"`
 	Resources map[string]interface{} `mapstructure:"resources"`
