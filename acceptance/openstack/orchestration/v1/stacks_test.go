@@ -3,6 +3,7 @@
 package v1
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
@@ -40,12 +41,6 @@ func TestStacks(t *testing.T) {
 		}
 		return false, nil
 	})
-	/*
-		adoptOpts := stacks.AdoptOpts{}
-		stack, err := stacks.Adopt(client, adoptOpts).Extract()
-		th.AssertNoErr(t, err)
-		t.Logf("Adopted stack: %+v\n", stack)
-	*/
 
 	updateOpts := stacks.UpdateOpts{
 		Template: template,
@@ -53,6 +48,17 @@ func TestStacks(t *testing.T) {
 	}
 	err = stacks.Update(client, stackName1, stack.ID, updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
+	err = gophercloud.WaitFor(60, func() (bool, error) {
+		getStack, err := stacks.Get(client, stackName1, stack.ID).Extract()
+		if err != nil {
+			return false, err
+		}
+		if getStack.Status == "UPDATE_COMPLETE" {
+			return true, nil
+		}
+		return false, nil
+	})
+
 	t.Logf("Updated stack")
 
 	err = stacks.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
@@ -68,4 +74,11 @@ func TestStacks(t *testing.T) {
 	getStack, err := stacks.Get(client, stackName1, stack.ID).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Got stack: %+v\n", getStack)
+
+	abandonedStack, err := stacks.Abandon(client, stackName1, stack.ID).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Abandonded stack %+v\n", abandonedStack)
+
+	abandonedStackBytes, err := json.Marshal(*abandonedStack)
+	th.AssertNoErr(t, err)
 }
