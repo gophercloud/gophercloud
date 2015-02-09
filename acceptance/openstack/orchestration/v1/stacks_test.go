@@ -3,7 +3,6 @@
 package v1
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
@@ -78,7 +77,5 @@ func TestStacks(t *testing.T) {
 	abandonedStack, err := stacks.Abandon(client, stackName1, stack.ID).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Abandonded stack %+v\n", abandonedStack)
-
-	abandonedStackBytes, err := json.Marshal(*abandonedStack)
 	th.AssertNoErr(t, err)
 }

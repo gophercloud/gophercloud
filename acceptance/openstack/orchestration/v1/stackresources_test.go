@@ -43,27 +43,7 @@ func TestStackResources(t *testing.T) {
 		return false, nil
 	})
 
-	var resourceName string
-	pager := stackresources.List(client, stackName, stack.ID, stackresources.ListOpts{})
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		resources, err := stackresources.ExtractResources(page)
-		if err != nil {
-			return false, err
-		}
-
-		t.Logf("%+v\n", resources)
-
-		resourceName = resources[0].Name
-
-		return true, nil
-	})
-
-	/*
-		resource, err := stackresources.Find(client, stackName).Extract()
-		th.AssertNoErr(t, err)
-		t.Logf("Got stack resource: %+v\n", resource)
-	*/
-
+	resourceName := "hello_world"
 	resource, err := stackresources.Get(client, stackName, stack.ID, resourceName).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Got stack resource: %+v\n", resource)
@@ -72,4 +52,11 @@ func TestStackResources(t *testing.T) {
 	th.AssertNoErr(t, err)
 	t.Logf("Got stack resource metadata: %+v\n", metadata)
 
+	err = stackresources.List(client, stackName, stack.ID, stackresources.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		resources, err := stackresources.ExtractResources(page)
+		th.AssertNoErr(t, err)
+		t.Logf("resources: %+v\n", resources)
+		return false, nil
+	})
+	th.AssertNoErr(t, err)
 }
