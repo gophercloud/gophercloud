@@ -348,36 +348,6 @@ func TestSuccessfulUpdate(t *testing.T) {
 	th.AssertEquals(t, expected, actual)
 }
 
-func TestUnsuccessfulUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	os.HandleUpdateCDNServiceSuccessfully(t)
-
-	updateOpts := os.UpdateOpts{
-		os.UpdateOpt{
-			Op:   "Foo",
-			Path: "/origins/0",
-			Value: map[string]interface{}{
-				"origin": "44.33.22.11",
-				"port":   80,
-				"ssl":    false,
-			},
-		},
-		os.UpdateOpt{
-			Op:   os.Add,
-			Path: "/domains/0",
-			Value: map[string]interface{}{
-				"domain": "added.mocksite4.com",
-			},
-		},
-	}
-	_, err := Update(fake.ServiceClient(), "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0", updateOpts).Extract()
-	if err == nil {
-		t.Errorf("Expected error during TestUnsuccessfulUpdate but didn't get one.")
-	}
-}
-
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

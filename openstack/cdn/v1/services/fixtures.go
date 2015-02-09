@@ -311,14 +311,48 @@ func HandleUpdateCDNServiceSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, `
       [
 				{
-					"op": "replace",
-					"path": "/origins",
-					"value": [{"origin": "44.33.22.11", "port": 80, "ssl": false}]
+					"op": "add",
+					"path": "/domains/-",
+					"value": {"domain": "appended.mocksite4.com"}
+				},
+				{
+					"op": "add",
+					"path": "/domains/4",
+					"value": {"domain": "inserted.mocksite4.com"}
 				},
 				{
 					"op": "add",
 					"path": "/domains",
-					"value": [{"domain": "appended.mocksite4.com"}]
+					"value": [
+						{"domain": "bulkadded1.mocksite4.com"},
+						{"domain": "bulkadded2.mocksite4.com"}
+					]
+				},
+				{
+					"op": "replace",
+					"path": "/origins/2",
+					"value": {"origin": "44.33.22.11", "port": 80, "ssl": false}
+				},
+				{
+					"op": "replace",
+					"path": "/origins",
+					"value": [
+						{"origin": "44.33.22.11", "port": 80, "ssl": false},
+						{"origin": "55.44.33.22", "port": 443, "ssl": true}
+					]
+				},
+				{
+					"op": "remove",
+					"path": "/caching/8"
+				},
+				{
+					"op": "remove",
+					"path": "/caching"
+				},
+				{
+					"op": "replace",
+					"path": "/name",
+					"value": "differentServiceName"
 				}
     ]
    `)
