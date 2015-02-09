@@ -113,6 +113,12 @@ func ExtractEvents(page pagination.Page) ([]Event, error) {
 	return res.Res, nil
 }
 
+// ExtractResourceEvents interprets the results of a single page from a
+// ListResourceEvents() call, producing a slice of Event entities.
+func ExtractResourceEvents(page pagination.Page) ([]Event, error) {
+	return ExtractEvents(page)
+}
+
 // GetResult represents the result of a Get operation.
 type GetResult struct {
 	gophercloud.Result
