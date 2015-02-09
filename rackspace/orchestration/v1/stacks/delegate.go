@@ -23,6 +23,11 @@ func List(c *gophercloud.ServiceClient, opts os.ListOptsBuilder) pagination.Page
 	return os.List(c, opts)
 }
 
+// Get retreives a stack based on the stack name and stack ID.
+func Get(c *gophercloud.ServiceClient, stackName, stackID string) os.GetResult {
+	return os.Get(c, stackName, stackID)
+}
+
 // Update accepts an os.UpdateOpts struct and updates a stack based on the options provided.
 func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts os.UpdateOptsBuilder) os.UpdateResult {
 	return os.Update(c, stackName, stackID, opts)
