@@ -60,7 +60,9 @@ func List(client *gophercloud.ServiceClient, stackName, stackID string, opts Lis
 	}
 
 	createPageFn := func(r pagination.PageResult) pagination.Page {
-		return ResourcePage{pagination.MarkerPageBase{PageResult: r}}
+		p := ResourcePage{pagination.MarkerPageBase{PageResult: r}}
+		p.MarkerPageBase.Owner = p
+		return p
 	}
 
 	return pagination.NewPager(client, url, createPageFn)

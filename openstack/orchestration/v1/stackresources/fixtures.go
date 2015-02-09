@@ -140,6 +140,8 @@ func HandleListSuccessfully(t *testing.T, output string) {
 		switch marker {
 		case "":
 			fmt.Fprintf(w, output)
+		case "49181cd6-169a-4130-9455-31185bbfc5bf":
+			fmt.Fprintf(w, `{"resources":[]}`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
 		}
