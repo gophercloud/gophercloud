@@ -11,6 +11,7 @@ import (
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
+// FindExpected represents the expected object from a Find request.
 var FindExpected = []Resource{
 	Resource{
 		Name: "hello_world",
@@ -34,6 +35,7 @@ var FindExpected = []Resource{
 	},
 }
 
+// FindOutput represents the response body from a Find request.
 const FindOutput = `
 {
   "resources": [
@@ -74,6 +76,7 @@ func HandleFindSuccessfully(t *testing.T, output string) {
 	})
 }
 
+// ListExpected represents the expected object from a List request.
 var ListExpected = []Resource{
 	Resource{
 		Name: "hello_world",
@@ -97,6 +100,7 @@ var ListExpected = []Resource{
 	},
 }
 
+// ListOutput represents the response body from a List request.
 const ListOutput = `{
   "resources": [
   {
@@ -142,6 +146,7 @@ func HandleListSuccessfully(t *testing.T, output string) {
 	})
 }
 
+// GetExpected represents the expected object from a Get request.
 var GetExpected = &Resource{
 	Name: "wordpress_instance",
 	Links: []gophercloud.Link{
@@ -163,6 +168,7 @@ var GetExpected = &Resource{
 	Type:         "OS::Nova::Server",
 }
 
+// GetOutput represents the response body from a Get request.
 const GetOutput = `
 {
   "resource": {
@@ -202,11 +208,13 @@ func HandleGetSuccessfully(t *testing.T, output string) {
 	})
 }
 
+// MetadataExpected represents the expected object from a Metadata request.
 var MetadataExpected = map[string]string{
 	"number": "7",
 	"animal": "auk",
 }
 
+// MetadataOutput represents the response body from a Metadata request.
 const MetadataOutput = `
 {
     "metadata": {
@@ -229,6 +237,7 @@ func HandleMetadataSuccessfully(t *testing.T, output string) {
 	})
 }
 
+// ListTypesExpected represents the expected object from a ListTypes request.
 var ListTypesExpected = []string{
 	"OS::Nova::Server",
 	"OS::Heat::RandomString",
@@ -240,6 +249,7 @@ var ListTypesExpected = []string{
 	"OS::Nova::KeyPair",
 }
 
+// ListTypesOutput represents the response body from a ListTypes request.
 const ListTypesOutput = `
 {
   "resource_types": [
@@ -268,6 +278,7 @@ func HandleListTypesSuccessfully(t *testing.T, output string) {
 	})
 }
 
+// GetSchemaExpected represents the expected object from a Schema request.
 var GetSchemaExpected = &TypeSchema{
 	Attributes: map[string]interface{}{
 		"an_attribute": map[string]interface{}{
@@ -285,6 +296,7 @@ var GetSchemaExpected = &TypeSchema{
 	ResourceType: "OS::Heat::AResourceName",
 }
 
+// GetSchemaOutput represents the response body from a Schema request.
 const GetSchemaOutput = `
 {
   "attributes": {
@@ -317,6 +329,7 @@ func HandleGetSchemaSuccessfully(t *testing.T, output string) {
 	})
 }
 
+// GetTemplateExpected represents the expected object from a Template request.
 var GetTemplateExpected = &TypeTemplate{
 	HeatTemplateFormatVersion: "2012-12-12",
 	Outputs: map[string]interface{}{
@@ -368,6 +381,7 @@ var GetTemplateExpected = &TypeTemplate{
 	},
 }
 
+// GetTemplateOutput represents the response body from a Template request.
 const GetTemplateOutput = `
 {
   "HeatTemplateFormatVersion": "2012-12-12",

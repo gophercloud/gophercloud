@@ -8,6 +8,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// Resource represents a stack resource.
 type Resource struct {
 	Links        []gophercloud.Link `mapstructure:"links"`
 	LogicalID    string             `mapstructure:"logical_resource_id"`
@@ -20,10 +21,13 @@ type Resource struct {
 	UpdatedTime  time.Time          `mapstructure:"-"`
 }
 
+// FindResult represents the result of a Find operation.
 type FindResult struct {
 	gophercloud.Result
 }
 
+// Extract returns a slice of Resource objects and is called after a
+// Find operation.
 func (r FindResult) Extract() ([]Resource, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -106,10 +110,13 @@ func ExtractResources(page pagination.Page) ([]Resource, error) {
 	return response.Resources, err
 }
 
+// GetResult represents the result of a Get operation.
 type GetResult struct {
 	gophercloud.Result
 }
 
+// Extract returns a pointer to a Resource object and is called after a
+// Get operation.
 func (r GetResult) Extract() (*Resource, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -136,10 +143,13 @@ func (r GetResult) Extract() (*Resource, error) {
 	return res.Res, nil
 }
 
+// MetadataResult represents the result of a Metadata operation.
 type MetadataResult struct {
 	gophercloud.Result
 }
 
+// Extract returns a map object and is called after a
+// Metadata operation.
 func (r MetadataResult) Extract() (map[string]string, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -182,16 +192,20 @@ func ExtractResourceTypes(page pagination.Page) ([]string, error) {
 	return response.ResourceTypes, err
 }
 
+// TypeSchema represents a stack resource schema.
 type TypeSchema struct {
 	Attributes   map[string]interface{} `mapstructure:"attributes"`
 	Properties   map[string]interface{} `mapstrucutre:"properties"`
 	ResourceType string                 `mapstructure:"resource_type"`
 }
 
+// SchemaResult represents the result of a Schema operation.
 type SchemaResult struct {
 	gophercloud.Result
 }
 
+// Extract returns a pointer to a TypeSchema object and is called after a
+// Schema operation.
 func (r SchemaResult) Extract() (*TypeSchema, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -206,6 +220,7 @@ func (r SchemaResult) Extract() (*TypeSchema, error) {
 	return &res, nil
 }
 
+// TypeTemplate represents a stack resource template.
 type TypeTemplate struct {
 	HeatTemplateFormatVersion string
 	Outputs                   map[string]interface{}
@@ -213,10 +228,13 @@ type TypeTemplate struct {
 	Resources                 map[string]interface{}
 }
 
+// TemplateResult represents the result of a Template operation.
 type TemplateResult struct {
 	gophercloud.Result
 }
 
+// Extract returns a pointer to a TypeTemplate object and is called after a
+// Template operation.
 func (r TemplateResult) Extract() (*TypeTemplate, error) {
 	if r.Err != nil {
 		return nil, r.Err
