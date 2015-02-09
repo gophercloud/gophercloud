@@ -285,6 +285,8 @@ func (r AbandonResult) Extract() (*AbandonedStack, error) {
 	return &res, nil
 }
 
+// String converts an AbandonResult to a string. This is useful to when passing
+// the result of an Abandon operation to an AdoptOpts AdoptStackData field.
 func (r AbandonResult) String() (string, error) {
 	out, err := json.Marshal(r)
 	if err != nil {
