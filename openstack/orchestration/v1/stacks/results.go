@@ -1,6 +1,7 @@
 package stacks
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -282,4 +283,12 @@ func (r AbandonResult) Extract() (*AbandonedStack, error) {
 	}
 
 	return &res, nil
+}
+
+func (r AbandonResult) String() (string, error) {
+	out, err := json.Marshal(r)
+	if err != nil {
+		return "", err
+	}
+	return string(out), nil
 }
