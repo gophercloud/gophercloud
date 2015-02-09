@@ -74,6 +74,7 @@ func HandleGetSuccessfully(t *testing.T, output string) {
 	})
 }
 
+// ValidateExpected represents the expected object from a Validate request.
 var ValidateExpected = &ValidatedTemplate{
 	Description: "Simple template to test heat commands",
 	Parameters: map[string]interface{}{
@@ -87,6 +88,7 @@ var ValidateExpected = &ValidatedTemplate{
 	},
 }
 
+// ValidateOutput represents the response body from a Validate request.
 const ValidateOutput = `
 {
 	"Description": "Simple template to test heat commands",
