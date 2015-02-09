@@ -57,31 +57,28 @@ func (r FindResult) Extract() ([]Resource, error) {
 // As OpenStack extensions may freely alter the response bodies of structures returned to the client, you may only safely access the
 // data provided through the ExtractResources call.
 type ResourcePage struct {
-	pagination.LinkedPageBase
+	pagination.MarkerPageBase
 }
 
 // IsEmpty returns true if a page contains no Server results.
-func (page ResourcePage) IsEmpty() (bool, error) {
-	resources, err := ExtractResources(page)
+func (r ResourcePage) IsEmpty() (bool, error) {
+	resources, err := ExtractResources(r)
 	if err != nil {
 		return true, err
 	}
 	return len(resources) == 0, nil
 }
 
-// NextPageURL uses the response's embedded link reference to navigate to the next page of results.
-func (page ResourcePage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"servers_links"`
-	}
-
-	var r resp
-	err := mapstructure.Decode(page.Body, &r)
+// LastMarker returns the last container name in a ListResult.
+func (r ResourcePage) LastMarker() (string, error) {
+	resources, err := ExtractResources(r)
 	if err != nil {
 		return "", err
 	}
-
-	return gophercloud.ExtractNextURL(r.Links)
+	if len(resources) == 0 {
+		return "", nil
+	}
+	return resources[len(resources)-1].PhysicalID, nil
 }
 
 // ExtractResources interprets the results of a single page from a List() call, producing a slice of Resource entities.
