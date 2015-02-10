@@ -27,12 +27,20 @@ type Instance struct {
 	Volume   Volume
 }
 
-// CreateResult represents the result of a Create operation.
-type CreateResult struct {
+type commonResult struct {
 	gophercloud.Result
 }
 
-func (r CreateResult) Extract() (*Instance, error) {
+// CreateResult represents the result of a Create operation.
+type CreateResult struct {
+	commonResult
+}
+
+type GetResult struct {
+	commonResult
+}
+
+func (r commonResult) Extract() (*Instance, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}

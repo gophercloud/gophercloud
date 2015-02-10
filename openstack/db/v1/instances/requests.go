@@ -197,3 +197,18 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 
 	return pagination.NewPager(client, baseURL(client), createPageFn)
 }
+
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
+	var res GetResult
+
+	resp, err := perigee.Request("GET", resourceURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+
+	res.Header = resp.HttpResponse.Header
+	res.Err = err
+
+	return res
+}
