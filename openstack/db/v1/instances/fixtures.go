@@ -146,3 +146,11 @@ func HandleGetInstanceSuccessfully(t *testing.T, id string) {
 		fmt.Fprintf(w, singleInstanceJson)
 	})
 }
+
+func HandleDeleteInstanceSuccessfully(t *testing.T, id string) {
+	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}

@@ -40,6 +40,10 @@ type GetResult struct {
 	commonResult
 }
 
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 func (r commonResult) Extract() (*Instance, error) {
 	if r.Err != nil {
 		return nil, r.Err

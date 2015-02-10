@@ -120,3 +120,13 @@ func TestGetInstance(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, instance, expectedInstance)
 }
+
+func TestDeleteInstance(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleDeleteInstanceSuccessfully(t, instanceID)
+
+	res := Delete(fake.ServiceClient(), instanceID)
+	th.AssertNoErr(t, res.Err)
+}
