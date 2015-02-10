@@ -226,3 +226,18 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 
 	return res
 }
+
+func EnableRootUser(client *gophercloud.ServiceClient, id string) UserRootResult {
+	var res UserRootResult
+
+	resp, err := perigee.Request("POST", userRootURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+
+	res.Header = resp.HttpResponse.Header
+	res.Err = err
+
+	return res
+}

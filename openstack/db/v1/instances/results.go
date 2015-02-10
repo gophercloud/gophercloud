@@ -27,6 +27,11 @@ type Instance struct {
 	Volume   Volume
 }
 
+type User struct {
+	Name     string
+	Password string
+}
+
 type commonResult struct {
 	gophercloud.Result
 }
@@ -94,4 +99,22 @@ func ExtractInstances(page pagination.Page) ([]Instance, error) {
 	err := mapstructure.Decode(casted, &response)
 
 	return response.Instances, err
+}
+
+type UserRootResult struct {
+	gophercloud.Result
+}
+
+func (r UserRootResult) Extract() (*User, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		User User `mapstructure:"user"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.User, err
 }
