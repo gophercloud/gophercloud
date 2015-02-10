@@ -112,3 +112,19 @@ func Delete(client *gophercloud.ServiceClient, id string) os.DeleteResult {
 func EnableRootUser(client *gophercloud.ServiceClient, id string) os.UserRootResult {
 	return os.EnableRootUser(client, id)
 }
+
+func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
+	return os.IsRootEnabled(client, id)
+}
+
+func RestartService(client *gophercloud.ServiceClient, id string) os.ActionResult {
+	return os.RestartService(client, id)
+}
+
+func ResizeInstance(client *gophercloud.ServiceClient, id, flavorRef string) os.ActionResult {
+	return os.ResizeInstance(client, id, flavorRef)
+}
+
+func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) os.ActionResult {
+	return os.ResizeVolume(client, id, size)
+}

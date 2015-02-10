@@ -98,3 +98,36 @@ func TestEnableRootUser(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, user)
 }
+
+func TestRestartService(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	os.HandleRestartSuccessfully(t, instanceID)
+
+	res := RestartService(fake.ServiceClient(), instanceID)
+
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestResizeInstance(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	os.HandleResizeInstanceSuccessfully(t, instanceID)
+
+	res := ResizeInstance(fake.ServiceClient(), instanceID, "2")
+
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestResizeVolume(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	os.HandleResizeVolSuccessfully(t, instanceID)
+
+	res := ResizeVolume(fake.ServiceClient(), instanceID, 4)
+
+	th.AssertNoErr(t, res.Err)
+}
