@@ -104,3 +104,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	return GetResult{os.Get(client, id)}
 }
+
+func Delete(client *gophercloud.ServiceClient, id string) os.DeleteResult {
+	return os.Delete(client, id)
+}
