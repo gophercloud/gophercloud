@@ -53,3 +53,22 @@ type GetResult struct {
 func (r GetResult) Extract() (*Instance, error) {
 	return commonExtract(r.Err, r.Body)
 }
+
+type ConfigResult struct {
+	gophercloud.Result
+}
+
+func (r ConfigResult) Extract() (map[string]string, error) {
+	if err != nil {
+		return nil, err
+	}
+
+	var response struct {
+		Instance struct {
+			Config map[string]string `mapstructure:"configuration"`
+		} `mapstructure:"instance"`
+	}
+
+	err = mapstructure.Decode(body, &response)
+	return &response.Instance, err
+}

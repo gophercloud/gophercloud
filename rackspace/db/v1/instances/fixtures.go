@@ -104,3 +104,63 @@ func HandleGetInstanceSuccessfully(t *testing.T, id string) {
 		fmt.Fprintf(w, singleInstanceJson)
 	})
 }
+
+func HandleGetConfigSuccessfully(t *testing.T, id string) {
+	th.Mux.HandleFunc("/instances/"+id+"/configuration", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+
+		fmt.Fprintf(w, `
+{
+  "instance": {
+    "configuration": {
+      "basedir": "/usr",
+      "connect_timeout": "15",
+      "datadir": "/var/lib/mysql",
+      "default_storage_engine": "innodb",
+      "innodb_buffer_pool_instances": "1",
+      "innodb_buffer_pool_size": "175M",
+      "innodb_checksum_algorithm": "crc32",
+      "innodb_data_file_path": "ibdata1:10M:autoextend",
+      "innodb_file_per_table": "1",
+      "innodb_io_capacity": "200",
+      "innodb_log_file_size": "256M",
+      "innodb_log_files_in_group": "2",
+      "innodb_open_files": "8192",
+      "innodb_thread_concurrency": "0",
+      "join_buffer_size": "1M",
+      "key_buffer_size": "50M",
+      "local-infile": "0",
+      "log-error": "/var/log/mysql/mysqld.log",
+      "max_allowed_packet": "16M",
+      "max_connect_errors": "10000",
+      "max_connections": "40",
+      "max_heap_table_size": "16M",
+      "myisam-recover": "BACKUP",
+      "open_files_limit": "8192",
+      "performance_schema": "off",
+      "pid_file": "/var/run/mysqld/mysqld.pid",
+      "port": "3306",
+      "query_cache_limit": "1M",
+      "query_cache_size": "8M",
+      "query_cache_type": "1",
+      "read_buffer_size": "256K",
+      "read_rnd_buffer_size": "1M",
+      "server_id": "1",
+      "skip-external-locking": "1",
+      "skip_name_resolve": "1",
+      "sort_buffer_size": "256K",
+      "table_open_cache": "4096",
+      "thread_stack": "192K",
+      "tmp_table_size": "16M",
+      "tmpdir": "/var/tmp",
+      "user": "mysql",
+      "wait_timeout": "3600"
+    }
+  }
+}
+`)
+	})
+}
