@@ -118,3 +118,7 @@ func (r UserRootResult) Extract() (*User, error) {
 
 	return &response.User, err
 }
+
+type ActionResult struct {
+	gophercloud.ErrResult
+}

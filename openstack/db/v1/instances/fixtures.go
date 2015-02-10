@@ -174,3 +174,30 @@ func HandleIsRootEnabledSuccessfully(t *testing.T, id string) {
 		fmt.Fprintf(w, `{"rootEnabled":true}`)
 	})
 }
+
+func HandleRestartSuccessfully(t *testing.T, id string) {
+	th.Mux.HandleFunc("/instances/"+id+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, `{"restart": true}`)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func HandleResizeInstanceSuccessfully(t *testing.T, id string) {
+	th.Mux.HandleFunc("/instances/"+id+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, `{"resize": {"flavorRef": "2"}}`)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func HandleResizeVolSuccessfully(t *testing.T, id string) {
+	th.Mux.HandleFunc("/instances/"+id+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, `{"resize": {"volume": {"size": 4}}}`)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}

@@ -253,3 +253,60 @@ func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
 
 	return res.Body.(map[string]interface{})["rootEnabled"] == true, err
 }
+
+func RestartService(client *gophercloud.ServiceClient, id string) ActionResult {
+	var res ActionResult
+
+	resp, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		ReqBody:     map[string]bool{"restart": true},
+		OkCodes:     []int{202},
+	})
+
+	res.Header = resp.HttpResponse.Header
+	res.Err = err
+
+	return res
+}
+
+func ResizeInstance(client *gophercloud.ServiceClient, id, flavorRef string) ActionResult {
+	var res ActionResult
+
+	reqBody := map[string]map[string]string{
+		"resize": map[string]string{
+			"flavorRef": flavorRef,
+		},
+	}
+
+	resp, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		ReqBody:     reqBody,
+		OkCodes:     []int{202},
+	})
+
+	res.Header = resp.HttpResponse.Header
+	res.Err = err
+
+	return res
+}
+
+func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) ActionResult {
+	var res ActionResult
+
+	reqBody := map[string]map[string]map[string]int{
+		"resize": map[string]map[string]int{
+			"volume": map[string]int{"size": size},
+		},
+	}
+
+	resp, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		ReqBody:     reqBody,
+		OkCodes:     []int{202},
+	})
+
+	res.Header = resp.HttpResponse.Header
+	res.Err = err
+
+	return res
+}
