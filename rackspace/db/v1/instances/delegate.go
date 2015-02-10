@@ -223,6 +223,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 	resp, err := perigee.Request("POST", createURL(client), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
+		Results:     &res.Body,
 		OkCodes:     []int{200},
 	})
 

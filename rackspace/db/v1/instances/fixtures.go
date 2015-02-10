@@ -54,11 +54,35 @@ func HandleCreateInstanceSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, `
 {
   "instance": {
-    "flavorRef": 1,
-    "name": "json_restore",
-    "restorePoint": {
-      "backupRef": "61f12fef-edb1-4561-8122-e7c00ef26a82"
+    "created": "2014-02-13T21:47:13",
+    "datastore": {
+      "type": "mysql",
+      "version": "5.6"
     },
+    "flavor": {
+      "id": "1",
+      "links": [
+        {
+          "href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1",
+          "rel": "self"
+        },
+        {
+          "href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1",
+          "rel": "bookmark"
+        }
+      ]
+    },
+		"links": [
+			{
+				"href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1",
+				"rel": "self"
+			}
+		],
+    "hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.rackspaceclouddb.com",
+    "id": "d4603f69-ec7e-4e9b-803f-600b9205576f",
+    "name": "json_rack_instance",
+    "status": "BUILD",
+    "updated": "2014-02-13T21:47:13",
     "volume": {
       "size": 2
     }
