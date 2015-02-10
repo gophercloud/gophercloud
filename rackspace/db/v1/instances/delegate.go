@@ -92,11 +92,19 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"instance": instance}, nil
 }
 
-// Create will provision a new Database instance.
+// Create asynchronously provisions a new database instance. It requires the
+// user to specify a flavor and a volume size. The API service then provisions
+// the instance with the requested flavor and sets up a volume of the specified
+// size, which is the storage for the database instance.
+//
+// Although this call only allows the creation of 1 instance per request, you
+// can create an instance with multiple databases and users. The default
+// binding for a MySQL instance is port 3306.
 func Create(client *gophercloud.ServiceClient, opts os.CreateOptsBuilder) CreateResult {
 	return CreateResult{os.Create(client, opts)}
 }
 
+// List retrieves the status and information for all database instances.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	return os.List(client)
 }
