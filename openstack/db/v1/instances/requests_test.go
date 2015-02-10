@@ -143,3 +143,15 @@ func TestEnableRootUser(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, user)
 }
+
+func TestIsRootEnabled(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleIsRootEnabledSuccessfully(t, instanceID)
+
+	isEnabled, err := IsRootEnabled(fake.ServiceClient(), instanceID)
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, isEnabled)
+}

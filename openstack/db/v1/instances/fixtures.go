@@ -164,3 +164,13 @@ func HandleEnableRootUserSuccessfully(t *testing.T, id string) {
 		fmt.Fprintf(w, `{"user":{"name":"root","password":"secretsecret"}}`)
 	})
 }
+
+func HandleIsRootEnabledSuccessfully(t *testing.T, id string) {
+	th.Mux.HandleFunc("/instances/"+id+"/root", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `{"rootEnabled":true}`)
+	})
+}

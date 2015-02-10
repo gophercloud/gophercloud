@@ -241,3 +241,15 @@ func EnableRootUser(client *gophercloud.ServiceClient, id string) UserRootResult
 
 	return res
 }
+
+func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
+	var res gophercloud.Result
+
+	_, err := perigee.Request("GET", userRootURL(client, id), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		Results:     &res.Body,
+		OkCodes:     []int{200},
+	})
+
+	return res.Body.(map[string]interface{})["rootEnabled"] == true, err
+}
