@@ -11,9 +11,9 @@ func TestGetConfig(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleGetConfigSuccessfully(t)
+	HandleGetConfigSuccessfully(t, instanceID)
 
-	config, err := GetConfig(fake.ServiceClient(), opts).Extract()
+	config, err := GetDefaultConfig(fake.ServiceClient(), instanceID).Extract()
 
 	expected := map[string]string{
 		"basedir":                      "/usr",
@@ -62,4 +62,15 @@ func TestGetConfig(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, config)
+}
+
+func TestAssociateWithConfigGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleAssociateGroupSuccessfully(t, instanceID)
+
+	configGroupID := "{configGroupID}"
+	res := AssociateWithConfigGroup(fake.ServiceClient(), instanceID, configGroupID)
+	th.AssertNoErr(t, res.Err)
 }

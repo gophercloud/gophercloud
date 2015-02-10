@@ -10,6 +10,10 @@ func createURL(c *gophercloud.ServiceClient) string {
 	return baseURL(c)
 }
 
-func configURL(c *gophercloud.ServiceClient) string {
+func resourceURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("instances", id)
+}
+
+func configURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("instances", id, "configuration")
 }

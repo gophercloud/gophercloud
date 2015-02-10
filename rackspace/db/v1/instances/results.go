@@ -59,8 +59,8 @@ type ConfigResult struct {
 }
 
 func (r ConfigResult) Extract() (map[string]string, error) {
-	if err != nil {
-		return nil, err
+	if r.Err != nil {
+		return nil, r.Err
 	}
 
 	var response struct {
@@ -69,6 +69,10 @@ func (r ConfigResult) Extract() (map[string]string, error) {
 		} `mapstructure:"instance"`
 	}
 
-	err = mapstructure.Decode(body, &response)
-	return &response.Instance, err
+	err := mapstructure.Decode(r.Body, &response)
+	return response.Instance.Config, err
+}
+
+type UpdateResult struct {
+	gophercloud.ErrResult
 }

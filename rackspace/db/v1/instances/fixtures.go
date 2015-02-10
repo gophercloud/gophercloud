@@ -164,3 +164,16 @@ func HandleGetConfigSuccessfully(t *testing.T, id string) {
 `)
 	})
 }
+
+func HandleAssociateGroupSuccessfully(t *testing.T, id string) {
+	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, `{"instance": {"configuration": "{configGroupID}"}}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+
+		fmt.Fprintf(w, singleInstanceJson)
+	})
+}
