@@ -85,3 +85,16 @@ func TestDeleteInstance(t *testing.T) {
 	res := Delete(fake.ServiceClient(), instanceID)
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestEnableRootUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	os.HandleEnableRootUserSuccessfully(t, instanceID)
+
+	expected := &os.User{Name: "root", Password: "secretsecret"}
+
+	user, err := EnableRootUser(fake.ServiceClient(), instanceID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expected, user)
+}

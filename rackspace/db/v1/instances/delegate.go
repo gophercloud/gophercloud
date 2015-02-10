@@ -108,3 +108,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 func Delete(client *gophercloud.ServiceClient, id string) os.DeleteResult {
 	return os.Delete(client, id)
 }
+
+func EnableRootUser(client *gophercloud.ServiceClient, id string) os.UserRootResult {
+	return os.EnableRootUser(client, id)
+}
