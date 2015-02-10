@@ -3,30 +3,32 @@ package instances
 import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
-	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 )
 
-type Datastore struct {
-	Type    string
-	Version string
+type Flavor struct {
+	ID    string
+	Links []gophercloud.Link
+}
+
+type Volume struct {
+	Size int
 }
 
 type Instance struct {
-	Created   string //time.Time
-	Updated   string //time.Time
-	Datastore Datastore
-	Flavor    os.Flavor
-	Hostname  string
-	ID        string
-	Links     []gophercloud.Link
-	Name      string
-	Status    string
-	Volume    os.Volume
+	Created  string //time.Time
+	Updated  string //time.Time
+	Flavor   Flavor
+	Hostname string
+	ID       string
+	Links    []gophercloud.Link
+	Name     string
+	Status   string
+	Volume   Volume
 }
 
 // CreateResult represents the result of a Create operation.
 type CreateResult struct {
-	os.CreateResult
+	gophercloud.Result
 }
 
 func (r CreateResult) Extract() (*Instance, error) {

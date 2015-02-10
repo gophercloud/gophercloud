@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
@@ -17,16 +18,16 @@ func TestCreate(t *testing.T) {
 	opts := CreateOpts{
 		Name:      "json_rack_instance",
 		FlavorRef: "1",
-		Databases: DatabasesOpts{
-			DatabaseOpts{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
-			DatabaseOpts{Name: "nextround"},
+		Databases: os.DatabasesOpts{
+			os.DatabaseOpts{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
+			os.DatabaseOpts{Name: "nextround"},
 		},
-		Users: UsersOpts{
-			UserOpts{
+		Users: os.UsersOpts{
+			os.UserOpts{
 				Name:     "demouser",
 				Password: "demopassword",
-				Databases: DatabasesOpts{
-					DatabaseOpts{Name: "sampledb"},
+				Databases: os.DatabasesOpts{
+					os.DatabaseOpts{Name: "sampledb"},
 				},
 			},
 		},
@@ -40,7 +41,7 @@ func TestCreate(t *testing.T) {
 		Created:   "2014-02-13T21:47:13",
 		Updated:   "2014-02-13T21:47:13",
 		Datastore: Datastore{Type: "mysql", Version: "5.6"},
-		Flavor: Flavor{
+		Flavor: os.Flavor{
 			ID: "1",
 			Links: []gophercloud.Link{
 				gophercloud.Link{Href: "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1", Rel: "self"},
@@ -54,7 +55,7 @@ func TestCreate(t *testing.T) {
 		},
 		Name:   "json_rack_instance",
 		Status: "BUILD",
-		Volume: Volume{Size: 2},
+		Volume: os.Volume{Size: 2},
 	}
 
 	th.AssertNoErr(t, err)
