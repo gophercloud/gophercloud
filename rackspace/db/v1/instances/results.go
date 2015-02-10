@@ -24,21 +24,32 @@ type Instance struct {
 	Volume    os.Volume
 }
 
-// CreateResult represents the result of a Create operation.
-type CreateResult struct {
-	os.CreateResult
-}
-
-func (r CreateResult) Extract() (*Instance, error) {
-	if r.Err != nil {
-		return nil, r.Err
+func commonExtract(err error, body interface{}) (*Instance, error) {
+	if err != nil {
+		return nil, err
 	}
 
 	var response struct {
 		Instance Instance `mapstructure:"instance"`
 	}
 
-	err := mapstructure.Decode(r.Body, &response)
-
+	err = mapstructure.Decode(body, &response)
 	return &response.Instance, err
+}
+
+// CreateResult represents the result of a Create operation.
+type CreateResult struct {
+	os.CreateResult
+}
+
+func (r CreateResult) Extract() (*Instance, error) {
+	return commonExtract(r.Err, r.Body)
+}
+
+type GetResult struct {
+	os.GetResult
+}
+
+func (r GetResult) Extract() (*Instance, error) {
+	return commonExtract(r.Err, r.Body)
 }

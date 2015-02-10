@@ -3,6 +3,7 @@ package instances
 import (
 	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // DatastoreOpts represents the configuration for how an instance stores data.
@@ -94,4 +95,12 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 // Create will provision a new Database instance.
 func Create(client *gophercloud.ServiceClient, opts os.CreateOptsBuilder) CreateResult {
 	return CreateResult{os.Create(client, opts)}
+}
+
+func List(client *gophercloud.ServiceClient) pagination.Pager {
+	return os.List(client)
+}
+
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
+	return GetResult{os.Get(client, id)}
 }
