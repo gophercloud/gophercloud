@@ -5,6 +5,7 @@ import (
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // CreateOptsBuilder is the top-level interface for create options.
@@ -176,7 +177,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 		return res
 	}
 
-	resp, err := perigee.Request("POST", createURL(client), perigee.Options{
+	resp, err := perigee.Request("POST", baseURL(client), perigee.Options{
 		MoreHeaders: client.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
 		Results:     &res.Body,
@@ -187,4 +188,12 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 	res.Err = err
 
 	return res
+}
+
+func List(client *gophercloud.ServiceClient) pagination.Pager {
+	createPageFn := func(r pagination.PageResult) pagination.Page {
+		return InstancePage{pagination.LinkedPageBase{PageResult: r}}
+	}
+
+	return pagination.NewPager(client, baseURL(client), createPageFn)
 }

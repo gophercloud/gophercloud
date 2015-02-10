@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
@@ -57,4 +58,51 @@ func TestCreate(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, instance)
+}
+
+func TestInstanceList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleListInstanceSuccessfully(t)
+
+	expectedInstance := Instance{
+		Flavor: Flavor{
+			ID: "1",
+			Links: []gophercloud.Link{
+				gophercloud.Link{Href: "https://openstack.example.com/v1.0/1234/flavors/1", Rel: "self"},
+				gophercloud.Link{Href: "https://openstack.example.com/flavors/1", Rel: "bookmark"},
+			},
+		},
+		ID: "8fb081af-f237-44f5-80cc-b46be1840ca9",
+		Links: []gophercloud.Link{
+			gophercloud.Link{Href: "https://openstack.example.com/v1.0/1234/instances/8fb081af-f237-44f5-80cc-b46be1840ca9", Rel: "self"},
+		},
+		Name:   "xml_rack_instance",
+		Status: "ACTIVE",
+		Volume: Volume{Size: 2},
+	}
+
+	pages := 0
+	err := List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := ExtractInstances(page)
+		if err != nil {
+			return false, err
+		}
+
+		if len(actual) != 1 {
+			t.Fatalf("Expected 1 DB instance, got %d", len(actual))
+		}
+		th.CheckDeepEquals(t, expectedInstance, actual[0])
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+
+	if pages != 1 {
+		t.Errorf("Expected 1 page, saw %d", pages)
+	}
 }

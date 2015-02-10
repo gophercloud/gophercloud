@@ -90,3 +90,50 @@ func HandleCreateInstanceSuccessfully(t *testing.T) {
 `)
 	})
 }
+
+func HandleListInstanceSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/instances", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+
+		fmt.Fprintf(w, `
+{
+  "instances": [
+    {
+      "name": "xml_rack_instance",
+      "status": "ACTIVE",
+      "volume": {
+        "size": 2
+      },
+      "flavor": {
+        "id": "1",
+        "links": [
+          {
+            "href": "https://openstack.example.com/v1.0/1234/flavors/1",
+            "rel": "self"
+          },
+          {
+            "href": "https://openstack.example.com/flavors/1",
+            "rel": "bookmark"
+          }
+        ]
+      },
+      "id": "8fb081af-f237-44f5-80cc-b46be1840ca9",
+      "links": [
+        {
+          "href": "https://openstack.example.com/v1.0/1234/instances/8fb081af-f237-44f5-80cc-b46be1840ca9",
+          "rel": "self"
+        },
+        {
+          "href": "https://openstack.example.com/instances/8fb081af-f237-44f5-80cc-b46be1840ca9",
+          "rel": "bookmark"
+        }
+      ]
+    }
+  ]
+}
+`)
+	})
+}
