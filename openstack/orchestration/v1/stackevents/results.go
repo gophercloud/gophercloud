@@ -10,15 +10,24 @@ import (
 
 // Event represents a stack event.
 type Event struct {
-	ResourceName         string                 `mapstructure:"resource_name"`
-	Time                 time.Time              `mapstructure:"-"`
-	Links                []gophercloud.Link     `mapstructure:"links"`
-	LogicalResourceID    string                 `mapstructure:"logical_resource_id"`
-	ResourceStatusReason string                 `mapstructure:"resource_status_reason"`
-	ResourceStatus       string                 `mapstructure:"resource_status"`
-	PhysicalResourceID   string                 `mapstructure:"physical_resource_id"`
-	ID                   string                 `mapstructure:"id"`
-	ResourceProperties   map[string]interface{} `mapstructure:"resource_properties"`
+	// The name of the resource for which the event occurred.
+	ResourceName string `mapstructure:"resource_name"`
+	// The time the event occurred.
+	Time time.Time `mapstructure:"-"`
+	// The URLs to the event.
+	Links []gophercloud.Link `mapstructure:"links"`
+	// The logical ID of the stack resource.
+	LogicalResourceID string `mapstructure:"logical_resource_id"`
+	// The reason of the status of the event.
+	ResourceStatusReason string `mapstructure:"resource_status_reason"`
+	// The status of the event.
+	ResourceStatus string `mapstructure:"resource_status"`
+	// The physical ID of the stack resource.
+	PhysicalResourceID string `mapstructure:"physical_resource_id"`
+	// The event ID.
+	ID string `mapstructure:"id"`
+	// Properties of the stack resource.
+	ResourceProperties map[string]interface{} `mapstructure:"resource_properties"`
 }
 
 // FindResult represents the result of a Find operation.
