@@ -6,6 +6,24 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// AdminState gives users a solid type to work with for create and update
+// operations. It is recommended that users use the `Up` and `Down` enums.
+type AdminState *bool
+
+// Shared gives users a solid type to work with for create and update
+// operations. It is recommended that users use the `Yes` and `No` enums.
+type Shared *bool
+
+// Convenience vars for AdminStateUp and Shared values.
+var (
+	iTrue             = true
+	iFalse            = false
+	Up     AdminState = &iTrue
+	Down   AdminState = &iFalse
+	Yes    Shared     = &iTrue
+	No     Shared     = &iFalse
+)
+
 type ListOpts struct {
 	TenantID     string `q:"tenant_id"`
 	Name         string `q:"name"`

@@ -133,13 +133,11 @@ func TestCreate(t *testing.T) {
     `)
 	})
 
-	adminStateTrue := true
-
 	options := CreateOpts{
 		TenantID:     "b4eedccc6fb74fa8a7ad6b08382b852b",
 		Name:         "fw",
 		Description:  "OpenStack firewall",
-		AdminStateUp: &adminStateTrue,
+		AdminStateUp: Up,
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
 	_, err := Create(fake.ServiceClient(), options).Extract()
@@ -222,15 +220,13 @@ func TestUpdate(t *testing.T) {
     `)
 	})
 
-	adminStateFalse := false
-
 	name := "fw"
 	description := ""
 
 	options := UpdateOpts{
 		Name:         &name,
 		Description:  &description,
-		AdminStateUp: &adminStateFalse,
+		AdminStateUp: Down,
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
 

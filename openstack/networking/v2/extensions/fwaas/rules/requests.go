@@ -6,6 +6,18 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// Binary gives users a solid type to work with for create and update
+// operations. It is recommended that users use the `Yes` and `No` enums
+type Binary *bool
+
+// Convenience vars for Enabled and Shared values.
+var (
+	iTrue         = true
+	iFalse        = false
+	Yes    Binary = &iTrue
+	No     Binary = &iFalse
+)
+
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the Firewall rule attributes you want to see returned. SortKey allows you to

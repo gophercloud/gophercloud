@@ -261,7 +261,8 @@ func TestUpdate(t *testing.T) {
 		"source_ip_address": null,
 		"source_port": null,
 		"name": "ssh_form_any",
-		"action": "allow"
+		"action": "allow",
+		"enabled": false
 	}
 }
 	`)
@@ -283,7 +284,7 @@ func TestUpdate(t *testing.T) {
 		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
 		"name": "ssh_form_any",
 		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
-		"enabled": true,
+		"enabled": false,
 		"action": "allow",
 		"ip_version": 4,
 		"shared": false
@@ -307,6 +308,7 @@ func TestUpdate(t *testing.T) {
 		SourceIPAddress:      &empty,
 		SourcePort:           &empty,
 		Action:               "allow",
+		Enabled:              No,
 	}
 
 	_, err := Update(fake.ServiceClient(), "f03bd950-6c56-4f5e-a307-45967078f507", options).Extract()

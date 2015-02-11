@@ -150,15 +150,12 @@ func TestCreate(t *testing.T) {
         `)
 	})
 
-	shared := false
-	audited := true
-
 	options := CreateOpts{
 		TenantID:    "9145d91459d248b1b02fdaca97c6a75d",
 		Name:        "policy",
 		Description: "Firewall policy",
-		Shared:      &shared,
-		Audited:     &audited,
+		Shared:      No,
+		Audited:     Yes,
 		Rules: []string{
 			"98a58c87-76be-ae7c-a74e-b77fffb88d95",
 			"11a58c87-76be-ae7c-a74e-b77fffb88a32",
