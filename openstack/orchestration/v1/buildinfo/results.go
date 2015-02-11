@@ -5,7 +5,7 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-// Revision represents the API/Enging revision of a Heat deployment.
+// Revision represents the API/Engine revision of a Heat deployment.
 type Revision struct {
 	Revision string `mapstructure:"revision"`
 }
