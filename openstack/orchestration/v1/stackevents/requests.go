@@ -6,7 +6,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// Find retreives stack events for the given stack name.
+// Find retrieves stack events for the given stack name.
 func Find(c *gophercloud.ServiceClient, stackName string) FindResult {
 	var res FindResult
 
