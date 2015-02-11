@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
@@ -52,9 +53,9 @@ func TestListVersions(t *testing.T) {
 			APIVersion{
 				Status: "CURRENT",
 				ID:     "v1.0",
-				Links: []Link{
-					Link{
-						HRef: "http://23.253.228.211:8000/v1",
+				Links: []gophercloud.Link{
+					gophercloud.Link{
+						Href: "http://23.253.228.211:8000/v1",
 						Rel:  "self",
 					},
 				},

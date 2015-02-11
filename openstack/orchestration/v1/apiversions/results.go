@@ -2,21 +2,16 @@ package apiversions
 
 import (
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
-
-// Link represents the base URL for a particular version.
-type Link struct {
-	HRef string `mapstructure:"href"`
-	Rel  string `mapstructure:"rel"`
-}
 
 // APIVersion represents an API version for Neutron. It contains the status of
 // the API, and its unique ID.
 type APIVersion struct {
-	Status string `mapstructure:"status"`
-	ID     string `mapstructure:"id"`
-	Links  []Link `mapstructure:"links"`
+	Status string             `mapstructure:"status"`
+	ID     string             `mapstructure:"id"`
+	Links  []gophercloud.Link `mapstructure:"links"`
 }
 
 // APIVersionPage is the page returned by a pager when traversing over a
