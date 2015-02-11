@@ -22,7 +22,7 @@ type ListOpts struct {
 	// UUID of the Image at which to set a marker.
 	Marker string `q:"marker"`
 	// The name of the Image.
-	Name string `q:"name:"`
+	Name string `q:"name"`
 	// The name of the Server (in URL format).
 	Server string `q:"server"`
 	// The current status of the Image.
