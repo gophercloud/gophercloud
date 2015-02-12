@@ -61,7 +61,7 @@ type CreateOpts struct {
 }
 
 // ToPolicyCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToPolicyCreateMap() map[string]interface{} {
+func (opts CreateOpts) ToPolicyCreateMap() (map[string]interface{}, error) {
 	p := make(map[string]interface{})
 
 	if opts.TenantID != "" {
@@ -83,19 +83,19 @@ func (opts CreateOpts) ToPolicyCreateMap() map[string]interface{} {
 		p["firewall_rules"] = opts.Rules
 	}
 
-	return p
+	return map[string]interface{}{"firewall_policy": p}, nil
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new firewall policy
 func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
+	var res CreateResult
 
-	type request struct {
-		Policy map[string]interface{} `json:"firewall_policy"`
+	reqBody, err := opts.ToPolicyCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
 	}
 
-	reqBody := request{Policy: opts.ToPolicyCreateMap()}
-
-	var res CreateResult
 	_, res.Err = perigee.Request("POST", rootURL(c), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
@@ -127,7 +127,7 @@ type UpdateOpts struct {
 }
 
 // ToPolicyUpdateMap casts a CreateOpts struct to a map.
-func (opts UpdateOpts) ToPolicyUpdateMap() map[string]interface{} {
+func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
 	p := make(map[string]interface{})
 
 	if opts.Name != nil {
@@ -146,20 +146,20 @@ func (opts UpdateOpts) ToPolicyUpdateMap() map[string]interface{} {
 		p["firewall_rules"] = opts.Rules
 	}
 
-	return p
+	return map[string]interface{}{"firewall_policy": p}, nil
 }
 
 // Update allows firewall policies to be updated.
 func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
+	var res UpdateResult
 
-	type request struct {
-		Policy map[string]interface{} `json:"firewall_policy"`
+	reqBody, err := opts.ToPolicyUpdateMap()
+	if err != nil {
+		res.Err = err
+		return res
 	}
 
-	reqBody := request{Policy: opts.ToPolicyUpdateMap()}
-
 	// Send request to API
-	var res UpdateResult
 	_, res.Err = perigee.Request("PUT", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,

@@ -78,7 +78,15 @@ type CreateOpts struct {
 }
 
 // ToRuleCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToRuleCreateMap() map[string]interface{} {
+func (opts CreateOpts) ToRuleCreateMap() (map[string]interface{}, error) {
+	if opts.Protocol == "" {
+		return nil, errProtocolRequired
+	}
+
+	if opts.Action == "" {
+		return nil, errActionRequired
+	}
+
 	r := make(map[string]interface{})
 
 	r["protocol"] = opts.Protocol
@@ -115,19 +123,19 @@ func (opts CreateOpts) ToRuleCreateMap() map[string]interface{} {
 		r["enabled"] = *opts.Enabled
 	}
 
-	return r
+	return map[string]interface{}{"firewall_rule": r}, nil
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new firewall rule
 func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
+	var res CreateResult
 
-	type request struct {
-		Rule map[string]interface{} `json:"firewall_rule"`
+	reqBody, err := opts.ToRuleCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
 	}
 
-	reqBody := request{Rule: opts.ToRuleCreateMap()}
-
-	var res CreateResult
 	_, res.Err = perigee.Request("POST", rootURL(c), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
@@ -165,7 +173,7 @@ type UpdateOpts struct {
 }
 
 // ToRuleUpdateMap casts a UpdateOpts struct to a map.
-func (opts UpdateOpts) ToRuleUpdateMap() map[string]interface{} {
+func (opts UpdateOpts) ToRuleUpdateMap() (map[string]interface{}, error) {
 	r := make(map[string]interface{})
 
 	if opts.Protocol != "" {
@@ -222,20 +230,20 @@ func (opts UpdateOpts) ToRuleUpdateMap() map[string]interface{} {
 		r["enabled"] = *opts.Enabled
 	}
 
-	return r
+	return map[string]interface{}{"firewall_rule": r}, nil
 }
 
 // Update allows firewall policies to be updated.
 func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
+	var res UpdateResult
 
-	type request struct {
-		Rule map[string]interface{} `json:"firewall_rule"`
+	reqBody, err := opts.ToRuleUpdateMap()
+	if err != nil {
+		res.Err = err
+		return res
 	}
 
-	reqBody := request{Rule: opts.ToRuleUpdateMap()}
-
 	// Send request to API
-	var res UpdateResult
 	_, res.Err = perigee.Request("PUT", resourceURL(c, id), perigee.Options{
 		MoreHeaders: c.AuthenticatedHeaders(),
 		ReqBody:     &reqBody,
