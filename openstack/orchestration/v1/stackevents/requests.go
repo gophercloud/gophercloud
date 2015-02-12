@@ -33,6 +33,28 @@ type ResourceStatus string
 type ResourceAction string
 
 var (
+	// ResourceStatusInProgress is used to filter a List request by the 'IN_PROGRESS' status.
+	ResourceStatusInProgress ResourceStatus = "IN_PROGRESS"
+	// ResourceStatusComplete is used to filter a List request by the 'COMPLETE' status.
+	ResourceStatusComplete ResourceStatus = "COMPLETE"
+	// ResourceStatusFailed is used to filter a List request by the 'FAILED' status.
+	ResourceStatusFailed ResourceStatus = "FAILED"
+
+	// ResourceActionCreate is used to filter a List request by the 'CREATE' action.
+	ResourceActionCreate ResourceAction = "CREATE"
+	// ResourceActionDelete is used to filter a List request by the 'DELETE' action.
+	ResourceActionDelete ResourceAction = "DELETE"
+	// ResourceActionUpdate is used to filter a List request by the 'UPDATE' action.
+	ResourceActionUpdate ResourceAction = "UPDATE"
+	// ResourceActionRollback is used to filter a List request by the 'ROLLBACK' action.
+	ResourceActionRollback ResourceAction = "ROLLBACK"
+	// ResourceActionSuspend is used to filter a List request by the 'SUSPEND' action.
+	ResourceActionSuspend ResourceAction = "SUSPEND"
+	// ResourceActionResume is used to filter a List request by the 'RESUME' action.
+	ResourceActionResume ResourceAction = "RESUME"
+	// ResourceActionAbandon is used to filter a List request by the 'ABANDON' action.
+	ResourceActionAbandon ResourceAction = "ABANDON"
+
 	// SortAsc is used to sort a list of stacks in ascending order.
 	SortAsc SortDir = "asc"
 	// SortDesc is used to sort a list of stacks in descending order.
@@ -62,11 +84,11 @@ type ListOpts struct {
 	// Filters the event list by the specified ResourceAction. You can use this
 	// filter multiple times to filter by multiple resource actions: CREATE, DELETE,
 	// UPDATE, ROLLBACK, SUSPEND, RESUME or ADOPT.
-	ResourceActions []string `q:"resource_action"`
+	ResourceActions []ResourceAction `q:"resource_action"`
 	// Filters the event list by the specified resource_status. You can use this
 	// filter multiple times to filter by multiple resource statuses: IN_PROGRESS,
 	// COMPLETE or FAILED.
-	ResourceStatuses []string `q:"resource_status"`
+	ResourceStatuses []ResourceStatus `q:"resource_status"`
 	// Filters the event list by the specified resource_name. You can use this
 	// filter multiple times to filter by multiple resource names.
 	ResourceNames []string `q:"resource_name"`
