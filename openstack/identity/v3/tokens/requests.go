@@ -1,7 +1,8 @@
 package tokens
 
 import (
-	"github.com/racker/perigee"
+	"net/http"
+
 	"github.com/rackspace/gophercloud"
 )
 
@@ -233,7 +234,7 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 	}
 
 	var result CreateResult
-	var response *perigee.Response
+	var response *http.Response
 	response, result.Err = c.Request("POST", tokenURL(c), gophercloud.RequestOpts{
 		JSONBody:     &req,
 		JSONResponse: &result.Body,
@@ -242,14 +243,14 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 	if result.Err != nil {
 		return result
 	}
-	result.Header = response.HttpResponse.Header
+	result.Header = response.Header
 	return result
 }
 
 // Get validates and retrieves information about another token.
 func Get(c *gophercloud.ServiceClient, token string) GetResult {
 	var result GetResult
-	var response *perigee.Response
+	var response *http.Response
 	response, result.Err = c.Request("GET", tokenURL(c), gophercloud.RequestOpts{
 		MoreHeaders:  subjectTokenHeaders(c, token),
 		JSONResponse: &result.Body,
@@ -258,7 +259,7 @@ func Get(c *gophercloud.ServiceClient, token string) GetResult {
 	if result.Err != nil {
 		return result
 	}
-	result.Header = response.HttpResponse.Header
+	result.Header = response.Header
 	return result
 }
 

@@ -68,7 +68,7 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 		&utils.Version{ID: v30, Priority: 30, Suffix: "/v3/"},
 	}
 
-	chosen, endpoint, err := utils.ChooseVersion(client.IdentityBase, client.IdentityEndpoint, versions)
+	chosen, endpoint, err := utils.ChooseVersion(client, versions)
 	if err != nil {
 		return err
 	}

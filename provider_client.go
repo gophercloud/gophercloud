@@ -59,7 +59,7 @@ type RequestOpts struct {
 
 	// JSONResponse, if provided, will be populated with the contents of the response body parsed as
 	// JSON.
-	JSONResponse *interface{}
+	JSONResponse interface{}
 	// OkCodes contains a list of numeric HTTP status codes that should be interpreted as success. If
 	// the response has a different code, an error will be returned.
 	OkCodes []int

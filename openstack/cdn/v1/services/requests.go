@@ -181,7 +181,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 		JSONBody: &reqBody,
 		OkCodes:  []int{202},
 	})
-	res.Header = resp.HttpResponse.Header
+	res.Header = resp.Header
 	res.Err = err
 	return res
 }
@@ -361,7 +361,7 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) Updat
 		OkCodes:  []int{202},
 	})
 	var result UpdateResult
-	result.Header = resp.HttpResponse.Header
+	result.Header = resp.Header
 	result.Err = err
 	return result
 }
