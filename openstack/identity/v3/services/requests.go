@@ -19,11 +19,10 @@ func Create(client *gophercloud.ServiceClient, serviceType string) CreateResult 
 	req := request{Type: serviceType}
 
 	var result CreateResult
-	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     &req,
-		Results:     &result.Body,
-		OkCodes:     []int{201},
+	_, result.Err = client.Request("POST", listURL(client), gophercloud.RequestOpts{
+		JSONBody:     &req,
+		JSONResponse: &result.Body,
+		OkCodes:      []int{201},
 	})
 	return result
 }

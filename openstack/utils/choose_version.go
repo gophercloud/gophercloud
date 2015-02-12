@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/racker/perigee"
+	"github.com/rackspace/gophercloud"
 )
 
 // Version is a supported API version, corresponding to a vN package within the appropriate service.
@@ -59,9 +59,9 @@ func ChooseVersion(identityBase string, identityEndpoint string, recognized []*V
 	}
 
 	var resp response
-	_, err := perigee.Request("GET", identityBase, perigee.Options{
-		Results: &resp,
-		OkCodes: []int{200, 300},
+	_, err := client.Request("GET", identityBase, gophercloud.RequestOpts{
+		JSONResponse: &resp,
+		OkCodes:      []int{200, 300},
 	})
 
 	if err != nil {

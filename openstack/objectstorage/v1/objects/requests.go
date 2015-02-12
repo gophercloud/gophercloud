@@ -131,7 +131,7 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 		url += query
 	}
 
-	resp, err := perigee.Request("GET", url, perigee.Options{
+	resp, err := c.Request("GET", url, gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{200, 304},
 	})
@@ -275,7 +275,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 	}
 
 	url := copyURL(c, containerName, objectName)
-	resp, err := perigee.Request("COPY", url, perigee.Options{
+	resp, err := c.Request("COPY", url, gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
@@ -318,9 +318,8 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		url += query
 	}
 
-	resp, err := perigee.Request("DELETE", url, perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{204},
+	resp, err := c.Request("DELETE", url, gophercloud.RequestOpts{
+		OkCodes: []int{204},
 	})
 	res.Header = resp.HttpResponse.Header
 	res.Err = err
@@ -363,9 +362,8 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 		url += query
 	}
 
-	resp, err := perigee.Request("HEAD", url, perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{200, 204},
+	resp, err := c.Request("HEAD", url, gophercloud.RequestOpts{
+		OkCodes: []int{200, 204},
 	})
 	res.Header = resp.HttpResponse.Header
 	res.Err = err
@@ -420,7 +418,7 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	}
 
 	url := updateURL(c, containerName, objectName)
-	resp, err := perigee.Request("POST", url, perigee.Options{
+	resp, err := c.Request("POST", url, gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{202},
 	})

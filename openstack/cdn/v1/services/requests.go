@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -178,10 +177,9 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	}
 
 	// Send request to API
-	resp, err := perigee.Request("POST", createURL(c), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		OkCodes:     []int{202},
+	resp, err := c.Request("POST", createURL(c), gophercloud.RequestOpts{
+		JSONBody: &reqBody,
+		OkCodes:  []int{202},
 	})
 	res.Header = resp.HttpResponse.Header
 	res.Err = err
@@ -358,10 +356,9 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) Updat
 		reqBody[i] = patch.ToCDNServiceUpdateMap()
 	}
 
-	resp, err := perigee.Request("PATCH", url, perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		OkCodes:     []int{202},
+	resp, err := c.Request("PATCH", url, gophercloud.RequestOpts{
+		JSONBody: &reqBody,
+		OkCodes:  []int{202},
 	})
 	var result UpdateResult
 	result.Header = resp.HttpResponse.Header

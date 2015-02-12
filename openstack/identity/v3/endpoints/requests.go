@@ -57,11 +57,10 @@ func Create(client *gophercloud.ServiceClient, opts EndpointOpts) CreateResult {
 	reqBody.Endpoint.Region = gophercloud.MaybeString(opts.Region)
 
 	var result CreateResult
-	_, result.Err = perigee.Request("POST", listURL(client), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		Results:     &result.Body,
-		OkCodes:     []int{201},
+	_, result.Err = client.Request("POST", listURL(client), gophercloud.RequestOpts{
+		JSONBody:     &reqBody,
+		JSONResponse: &result.Body,
+		OkCodes:      []int{201},
 	})
 	return result
 }

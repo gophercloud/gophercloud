@@ -177,11 +177,10 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 		AdminStateUp:  opts.AdminStateUp,
 	}}
 
-	_, res.Err = perigee.Request("POST", rootURL(c), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{201},
+	_, res.Err = c.Request("POST", rootURL(c), gophercloud.RequestOpts{
+		JSONBody:     &reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{201},
 	})
 
 	return res

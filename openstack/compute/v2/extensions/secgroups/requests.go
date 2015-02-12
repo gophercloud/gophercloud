@@ -80,11 +80,10 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 		return result
 	}
 
-	_, result.Err = perigee.Request("POST", rootURL(client), perigee.Options{
-		Results:     &result.Body,
-		ReqBody:     &reqBody,
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+	_, result.Err = client.Request("POST", rootURL(client), gophercloud.RequestOpts{
+		JSONResponse: &result.Body,
+		JSONBody:     &reqBody,
+		OkCodes:      []int{200},
 	})
 
 	return result
@@ -240,11 +239,10 @@ func CreateRule(client *gophercloud.ServiceClient, opts CreateRuleOptsBuilder) C
 		return result
 	}
 
-	_, result.Err = perigee.Request("POST", rootRuleURL(client), perigee.Options{
-		Results:     &result.Body,
-		ReqBody:     &reqBody,
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+	_, result.Err = client.Request("POST", rootRuleURL(client), gophercloud.RequestOpts{
+		JSONResponse: &result.Body,
+		JSONBody:     &reqBody,
+		OkCodes:      []int{200},
 	})
 
 	return result
