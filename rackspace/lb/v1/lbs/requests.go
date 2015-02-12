@@ -228,11 +228,10 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 		return res
 	}
 
-	_, res.Err = perigee.Request("POST", rootURL(c), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{202},
+	_, res.Err = c.Request("POST", rootURL(c), gophercloud.RequestOpts{
+		JSONBody:     &reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{202},
 	})
 
 	return res
@@ -272,9 +271,8 @@ func BulkDelete(c *gophercloud.ServiceClient, ids []int) DeleteResult {
 	url := rootURL(c)
 	url += gophercloud.IDSliceToQueryString("id", ids)
 
-	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{202},
+	_, res.Err = c.Request("DELETE", url, gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
 
 	return res

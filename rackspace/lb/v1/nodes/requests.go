@@ -147,9 +147,8 @@ func BulkDelete(c *gophercloud.ServiceClient, loadBalancerID int, nodeIDs []int)
 	url := rootURL(c, loadBalancerID)
 	url += gophercloud.IDSliceToQueryString("id", nodeIDs)
 
-	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{202},
+	_, res.Err = c.Request("DELETE", url, gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
 
 	return res
