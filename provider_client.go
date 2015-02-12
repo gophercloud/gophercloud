@@ -127,9 +127,9 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 	// modify or omit any header.
 
 	if contentType != nil {
-		req.Header.Add("Content-Type", *contentType)
+		req.Header.Set("Content-Type", *contentType)
 	}
-	req.Header.Add("Accept", applicationJSON)
+	req.Header.Set("Accept", applicationJSON)
 
 	for k, v := range client.AuthenticatedHeaders() {
 		req.Header.Add(k, v)
@@ -137,8 +137,9 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 
 	if options.MoreHeaders != nil {
 		for k, v := range options.MoreHeaders {
+			fmt.Printf("Applying header [%s: %v]\n", k, v)
 			if v != "" {
-				req.Header.Add(k, v)
+				req.Header.Set(k, v)
 			} else {
 				req.Header.Del(k)
 			}
