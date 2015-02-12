@@ -324,8 +324,6 @@ type UpdateOptsBuilder interface {
 // UpdateOpts contains the common options struct used in this package's Update
 // operation.
 type UpdateOpts struct {
-	// (REQUIRED) The timeout for stack creation in minutes.
-	Timeout int
 	// (OPTIONAL; REQUIRED IF Template IS EMPTY) The URL of the template to instantiate.
 	// This value is ignored if Template is supplied inline.
 	TemplateURL string
@@ -348,6 +346,8 @@ type UpdateOpts struct {
 	Files map[string]interface{}
 	// (OPTIONAL) User-defined parameters to pass to the template.
 	Parameters map[string]string
+	// (OPTIONAL) The timeout for stack creation in minutes.
+	Timeout int
 }
 
 // ToStackUpdateMap casts a CreateOpts struct to a map.
