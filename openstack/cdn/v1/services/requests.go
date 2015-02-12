@@ -201,10 +201,9 @@ func Get(c *gophercloud.ServiceClient, idOrURL string) GetResult {
 	}
 
 	var res GetResult
-	_, res.Err = perigee.Request("GET", url, perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("GET", url, gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -383,9 +382,8 @@ func Delete(c *gophercloud.ServiceClient, idOrURL string) DeleteResult {
 	}
 
 	var res DeleteResult
-	_, res.Err = perigee.Request("DELETE", url, perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{202},
+	_, res.Err = c.Request("DELETE", url, gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
 	return res
 }
