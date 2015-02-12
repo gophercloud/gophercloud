@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/objectstorage/v1/accounts"
 	"github.com/rackspace/gophercloud/pagination"
@@ -193,7 +192,7 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 	var res CreateResult
 
 	url := createURL(c, containerName, objectName)
-	h := c.AuthenticatedHeaders()
+	h := make(map[string]string)
 
 	if opts != nil {
 		headers, query, err := opts.ToObjectCreateParams()
@@ -209,21 +208,14 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		url += query
 	}
 
-	popts := perigee.Options{
-		ReqBody:     content,
+	ropts := gophercloud.RequestOpts{
+		RawBody:     content,
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202},
 	}
 
-	if contentType, explicit := h["Content-Type"]; explicit {
-		popts.ContentType = contentType
-		delete(h, "Content-Type")
-	} else {
-		popts.OmitContentType = true
-	}
-
-	resp, err := perigee.Request("PUT", url, popts)
-	res.Header = resp.HttpResponse.Header
+	resp, err := c.Request("PUT", url, ropts)
+	res.Header = resp.Header
 	res.Err = err
 	return res
 }
