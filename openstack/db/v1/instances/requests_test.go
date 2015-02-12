@@ -41,7 +41,7 @@ func TestCreate(t *testing.T) {
 	opts := CreateOpts{
 		Name:      "json_rack_instance",
 		FlavorRef: "1",
-		Databases: []db.CreateOpts{
+		Databases: db.BatchCreateOpts{
 			db.CreateOpts{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
 			db.CreateOpts{Name: "nextround"},
 		},
@@ -49,7 +49,7 @@ func TestCreate(t *testing.T) {
 			UserOpts{
 				Name:     "demouser",
 				Password: "demopassword",
-				Databases: []db.CreateOpts{
+				Databases: db.BatchCreateOpts{
 					db.CreateOpts{Name: "sampledb"},
 				},
 			},

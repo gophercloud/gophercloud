@@ -25,7 +25,7 @@ type UserOpts struct {
 
 	// An array of databases that this user will connect to. The `name` field is
 	// the only requirement for each option.
-	Databases []db.CreateOpts
+	Databases db.BatchCreateOpts
 
 	// Specifies the host from which a user is allowed to connect to the database.
 	// Possible values are a string containing an IPv4 address or "%" to allow
@@ -86,7 +86,7 @@ type CreateOpts struct {
 	Name string
 
 	// A slice of database information options.
-	Databases []db.CreateOpts
+	Databases db.BatchCreateOpts
 
 	// A slice of user information options.
 	Users UsersOpts
