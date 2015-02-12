@@ -33,8 +33,6 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	// (REQUIRED) The name of the stack. It must start with an alphabetic character.
 	Name string
-	// (REQUIRED) The timeout for stack creation in minutes.
-	Timeout int
 	// (OPTIONAL; REQUIRED IF Template IS EMPTY) The URL of the template to instantiate.
 	// This value is ignored if Template is supplied inline.
 	TemplateURL string
@@ -61,6 +59,8 @@ type CreateOpts struct {
 	Files map[string]interface{}
 	// (OPTIONAL) User-defined parameters to pass to the template.
 	Parameters map[string]string
+	// (OPTIONAL) The timeout for stack creation in minutes.
+	Timeout int
 }
 
 // ToStackCreateMap casts a CreateOpts struct to a map.
@@ -94,10 +94,9 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 		s["parameters"] = opts.Parameters
 	}
 
-	if opts.Timeout == 0 {
-		return nil, errors.New("Required field 'Timeout' not provided.")
+	if opts.Timeout != 0 {
+		s["timeout_mins"] = opts.Timeout
 	}
-	s["timeout_mins"] = opts.Timeout
 
 	return s, nil
 }
