@@ -3,7 +3,6 @@ package users
 import (
 	"errors"
 
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -104,10 +103,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
 
-	_, result.Err = perigee.Request("GET", ResourceURL(client, id), perigee.Options{
-		Results:     &result.Body,
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+	_, result.Err = client.Request("GET", ResourceURL(client, id), gophercloud.RequestOpts{
+		JSONResponse: &result.Body,
+		OkCodes:      []int{200},
 	})
 
 	return result
@@ -148,11 +146,10 @@ func (opts UpdateOpts) ToUserUpdateMap() map[string]interface{} {
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var result UpdateResult
 
-	_, result.Err = perigee.Request("PUT", ResourceURL(client, id), perigee.Options{
-		Results:     &result.Body,
-		ReqBody:     opts.ToUserUpdateMap(),
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{200},
+	_, result.Err = client.Request("PUT", ResourceURL(client, id), gophercloud.RequestOpts{
+		JSONResponse: &result.Body,
+		JSONBody:     opts.ToUserUpdateMap(),
+		OkCodes:      []int{200},
 	})
 
 	return result
@@ -162,9 +159,8 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var result DeleteResult
 
-	_, result.Err = perigee.Request("DELETE", ResourceURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{204},
+	_, result.Err = client.Request("DELETE", ResourceURL(client, id), gophercloud.RequestOpts{
+		OkCodes: []int{204},
 	})
 
 	return result
