@@ -3,6 +3,7 @@ package instances
 import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/db/v1/users"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -54,15 +55,6 @@ type Instance struct {
 
 	// Information about the attached volume of the instance.
 	Volume Volume
-}
-
-// User represents a database user
-type User struct {
-	// The user name
-	Name string
-
-	// The user password
-	Password string
 }
 
 type commonResult struct {
@@ -154,7 +146,7 @@ func (r UserRootResult) Extract() (*User, error) {
 	}
 
 	var response struct {
-		User User `mapstructure:"user"`
+		User users.User `mapstructure:"user"`
 	}
 
 	err := mapstructure.Decode(r.Body, &response)
