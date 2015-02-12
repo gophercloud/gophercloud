@@ -5,54 +5,13 @@ import (
 
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
+	db "github.com/rackspace/gophercloud/openstack/db/v1/databases"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
 // CreateOptsBuilder is the top-level interface for create options.
 type CreateOptsBuilder interface {
 	ToInstanceCreateMap() (map[string]interface{}, error)
-}
-
-// DatabaseOpts is the struct responsible for configuring a database; often in
-// the context of an instance.
-type DatabaseOpts struct {
-	// Specifies the name of the database. Optional.
-	Name string
-
-	// Set of symbols and encodings. Optional; the default character set is utf8.
-	CharSet string
-
-	// Set of rules for comparing characters in a character set. Optional; the
-	// default value for collate is utf8_general_ci.
-	Collate string
-}
-
-func (opts DatabaseOpts) ToMap() (map[string]string, error) {
-	db := map[string]string{}
-	if opts.Name != "" {
-		db["name"] = opts.Name
-	}
-	if opts.CharSet != "" {
-		db["character_set"] = opts.CharSet
-	}
-	if opts.Collate != "" {
-		db["collate"] = opts.Collate
-	}
-	return db, nil
-}
-
-type DatabasesOpts []DatabaseOpts
-
-func (opts DatabasesOpts) ToMap() ([]map[string]string, error) {
-	var dbs []map[string]string
-	for _, db := range opts {
-		dbMap, err := db.ToMap()
-		if err != nil {
-			return dbs, err
-		}
-		dbs = append(dbs, dbMap)
-	}
-	return dbs, nil
 }
 
 // UserOpts is the struct responsible for configuring a user; often in the
@@ -66,7 +25,7 @@ type UserOpts struct {
 
 	// An array of databases that this user will connect to. The `name` field is
 	// the only requirement for each option.
-	Databases []DatabaseOpts
+	Databases []db.CreateOpts
 
 	// Specifies the host from which a user is allowed to connect to the database.
 	// Possible values are a string containing an IPv4 address or "%" to allow
@@ -127,7 +86,7 @@ type CreateOpts struct {
 	Name string
 
 	// A slice of database information options.
-	Databases DatabasesOpts
+	Databases []db.CreateOpts
 
 	// A slice of user information options.
 	Users UsersOpts
@@ -150,11 +109,11 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 		instance["name"] = opts.Name
 	}
 	if len(opts.Databases) > 0 {
-		dbs, err := opts.Databases.ToMap()
+		dbs, err := opts.Databases.ToDBCreateMap()
 		if err != nil {
 			return nil, err
 		}
-		instance["databases"] = dbs
+		instance["databases"] = dbs["databases"]
 	}
 	if len(opts.Users) > 0 {
 		users, err := opts.Users.ToMap()
@@ -167,7 +126,14 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"instance": instance}, nil
 }
 
-// Create will provision a new Database instance.
+// Create asynchronously provisions a new database instance. It requires the
+// user to specify a flavor and a volume size. The API service then provisions
+// the instance with the requested flavor and sets up a volume of the specified
+// size, which is the storage for the database instance.
+//
+// Although this call only allows the creation of 1 instance per request, you
+// can create an instance with multiple databases and users. The default
+// binding for a MySQL instance is port 3306.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
@@ -190,6 +156,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 	return res
 }
 
+// List retrieves the status and information for all database instances.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	createPageFn := func(r pagination.PageResult) pagination.Page {
 		return InstancePage{pagination.LinkedPageBase{PageResult: r}}
@@ -198,6 +165,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 	return pagination.NewPager(client, baseURL(client), createPageFn)
 }
 
+// Get retrieves the status and information for a specified database instance.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 
@@ -213,6 +181,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	return res
 }
 
+// Delete permanently destroys the database instance.
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
 
@@ -227,6 +196,8 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	return res
 }
 
+// EnableRootUser enables the login from any host for the root user and
+// provides the user with a generated root password.
 func EnableRootUser(client *gophercloud.ServiceClient, id string) UserRootResult {
 	var res UserRootResult
 
@@ -242,6 +213,9 @@ func EnableRootUser(client *gophercloud.ServiceClient, id string) UserRootResult
 	return res
 }
 
+// IsRootEnabled checks an instance to see if root access is enabled. It returns
+// True if root user is enabled for the specified database instance or False
+// otherwise.
 func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
 	var res gophercloud.Result
 
@@ -254,6 +228,9 @@ func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
 	return res.Body.(map[string]interface{})["rootEnabled"] == true, err
 }
 
+// RestartService will restart only the MySQL Instance. Restarting MySQL will
+// erase any dynamic configuration settings that you have made within MySQL.
+// The MySQL service will be unavailable until the instance restarts.
 func RestartService(client *gophercloud.ServiceClient, id string) ActionResult {
 	var res ActionResult
 
@@ -269,6 +246,8 @@ func RestartService(client *gophercloud.ServiceClient, id string) ActionResult {
 	return res
 }
 
+// ResizeInstance changes the memory size of the instance, assuming a valid
+// flavorRef is provided. It will also restart the MySQL service.
 func ResizeInstance(client *gophercloud.ServiceClient, id, flavorRef string) ActionResult {
 	var res ActionResult
 
@@ -290,6 +269,9 @@ func ResizeInstance(client *gophercloud.ServiceClient, id, flavorRef string) Act
 	return res
 }
 
+// ResizeVolume will resize the attached volume for an instance. It supports
+// only increasing the volume size and does not support decreasing the size.
+// The volume size is in gigabytes (GB) and must be an integer.
 func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) ActionResult {
 	var res ActionResult
 

@@ -6,29 +6,62 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// Flavor represents information about a hardware flavor for a database instance.
 type Flavor struct {
-	ID    string
+	// The unique identifier for a flavor.
+	ID string
+
+	// Various links which allow a user to reference the flavor.
 	Links []gophercloud.Link
 }
 
+// Volume represents information about an attached volume for a database instance.
 type Volume struct {
+	// The size in GB of the volume
 	Size int
 }
 
+// Instance represents a remote MySQL instance.
 type Instance struct {
-	Created  string //time.Time
-	Updated  string //time.Time
-	Flavor   Flavor
+	// Indicates the datetime that the instance was created
+	Created string //time.Time
+
+	// Indicates the most recent datetime that the instance was updated.
+	Updated string //time.Time
+
+	// Indicates the hardware flavor the instance uses.
+	Flavor Flavor
+
+	// A DNS-resolvable hostname associated with the database instance (rather
+	// than an IPv4 address). Since the hostname always resolves to the correct
+	// IP address of the database instance, this relieves the user from the task
+	// of maintaining the mapping. Note that although the IP address may likely
+	// change on resizing, migrating, and so forth, the hostname always resolves
+	// to the correct database instance.
 	Hostname string
-	ID       string
-	Links    []gophercloud.Link
-	Name     string
-	Status   string
-	Volume   Volume
+
+	// Indicates the unique identifier for the instance resource.
+	ID string
+
+	// Exposes various links that reference the instance resource.
+	Links []gophercloud.Link
+
+	// The human-readable name of the instance.
+	Name string
+
+	// The build status of the instance.
+	Status string
+
+	// Information about the attached volume of the instance.
+	Volume Volume
 }
 
+// User represents a database user
 type User struct {
-	Name     string
+	// The user name
+	Name string
+
+	// The user password
 	Password string
 }
 
@@ -41,14 +74,17 @@ type CreateResult struct {
 	commonResult
 }
 
+// GetResult represents the result of a Get operation.
 type GetResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a Delete operation.
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// Extract will extract an Instance from various result structs.
 func (r commonResult) Extract() (*Instance, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -63,10 +99,12 @@ func (r commonResult) Extract() (*Instance, error) {
 	return &response.Instance, err
 }
 
+// InstancePage represents a single page of a paginated instance collection.
 type InstancePage struct {
 	pagination.LinkedPageBase
 }
 
+// IsEmpty checks to see whether the collection is empty.
 func (page InstancePage) IsEmpty() (bool, error) {
 	instances, err := ExtractInstances(page)
 	if err != nil {
@@ -75,6 +113,7 @@ func (page InstancePage) IsEmpty() (bool, error) {
 	return len(instances) == 0, nil
 }
 
+// NextPageURL will retrieve the next page URL.
 func (page InstancePage) NextPageURL() (string, error) {
 	type resp struct {
 		Links []gophercloud.Link `mapstructure:"instances_links"`
@@ -89,6 +128,8 @@ func (page InstancePage) NextPageURL() (string, error) {
 	return gophercloud.ExtractNextURL(r.Links)
 }
 
+// ExtractInstances will convert a generic pagination struct into a more
+// relevant slice of Instance structs.
 func ExtractInstances(page pagination.Page) ([]Instance, error) {
 	casted := page.(InstancePage).Body
 
@@ -101,10 +142,12 @@ func ExtractInstances(page pagination.Page) ([]Instance, error) {
 	return response.Instances, err
 }
 
+// UserRootResult represents the result of an operation to enable the root user.
 type UserRootResult struct {
 	gophercloud.Result
 }
 
+// Extract will extract root user information from a UserRootResult.
 func (r UserRootResult) Extract() (*User, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -119,6 +162,9 @@ func (r UserRootResult) Extract() (*User, error) {
 	return &response.User, err
 }
 
+// ActionResult represents the result of action requests, such as: restarting
+// an instance service, resizing its memory allocation, and resizing its
+// attached volume size.
 type ActionResult struct {
 	gophercloud.ErrResult
 }

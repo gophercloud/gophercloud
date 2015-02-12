@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	db "github.com/rackspace/gophercloud/openstack/db/v1/databases"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
@@ -40,16 +41,16 @@ func TestCreate(t *testing.T) {
 	opts := CreateOpts{
 		Name:      "json_rack_instance",
 		FlavorRef: "1",
-		Databases: DatabasesOpts{
-			DatabaseOpts{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
-			DatabaseOpts{Name: "nextround"},
+		Databases: []db.CreateOpts{
+			db.CreateOpts{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
+			db.CreateOpts{Name: "nextround"},
 		},
 		Users: UsersOpts{
 			UserOpts{
 				Name:     "demouser",
 				Password: "demopassword",
-				Databases: DatabasesOpts{
-					DatabaseOpts{Name: "sampledb"},
+				Databases: []db.CreateOpts{
+					db.CreateOpts{Name: "sampledb"},
 				},
 			},
 		},
