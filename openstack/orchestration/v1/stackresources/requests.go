@@ -1,7 +1,6 @@
 package stackresources
 
 import (
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -11,10 +10,9 @@ func Find(c *gophercloud.ServiceClient, stackName string) FindResult {
 	var res FindResult
 
 	// Send request to API
-	_, res.Err = perigee.Request("GET", findURL(c, stackName), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("GET", findURL(c, stackName), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -73,10 +71,9 @@ func Get(c *gophercloud.ServiceClient, stackName, stackID, resourceName string) 
 	var res GetResult
 
 	// Send request to API
-	_, res.Err = perigee.Request("GET", getURL(c, stackName, stackID, resourceName), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("GET", getURL(c, stackName, stackID, resourceName), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -86,10 +83,9 @@ func Metadata(c *gophercloud.ServiceClient, stackName, stackID, resourceName str
 	var res MetadataResult
 
 	// Send request to API
-	_, res.Err = perigee.Request("GET", metadataURL(c, stackName, stackID, resourceName), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("GET", metadataURL(c, stackName, stackID, resourceName), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -110,10 +106,9 @@ func Schema(c *gophercloud.ServiceClient, resourceType string) SchemaResult {
 	var res SchemaResult
 
 	// Send request to API
-	_, res.Err = perigee.Request("GET", schemaURL(c, resourceType), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("GET", schemaURL(c, resourceType), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -123,10 +118,9 @@ func Template(c *gophercloud.ServiceClient, resourceType string) TemplateResult 
 	var res TemplateResult
 
 	// Send request to API
-	_, res.Err = perigee.Request("GET", templateURL(c, resourceType), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("GET", templateURL(c, resourceType), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }

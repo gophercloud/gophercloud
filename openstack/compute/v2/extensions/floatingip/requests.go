@@ -3,7 +3,6 @@ package floatingip
 import (
 	"errors"
 
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -46,11 +45,10 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 		return res
 	}
 
-	_, res.Err = perigee.Request("POST", createURL(client), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = client.Request("POST", createURL(client), gophercloud.RequestOpts{
+		JSONBody:     reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -58,10 +56,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 // Get returns data about a previously created FloatingIP.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, res.Err = perigee.Request("GET", getURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = client.Request("GET", getURL(client, id), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -69,9 +66,8 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 // Delete requests the deletion of a previous allocated FloatingIP.
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = perigee.Request("DELETE", deleteURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("DELETE", deleteURL(client, id), gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
 	return res
 }
@@ -86,10 +82,9 @@ func Associate(client *gophercloud.ServiceClient, serverId, fip string) Associat
 	addFloatingIp["address"] = fip
 	reqBody := map[string]interface{}{"addFloatingIp": addFloatingIp}
 
-	_, res.Err = perigee.Request("POST", associateURL(client, serverId), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     reqBody,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("POST", associateURL(client, serverId), gophercloud.RequestOpts{
+		JSONBody: reqBody,
+		OkCodes:  []int{202},
 	})
 	return res
 }
@@ -102,10 +97,9 @@ func Disassociate(client *gophercloud.ServiceClient, serverId, fip string) Disas
 	removeFloatingIp["address"] = fip
 	reqBody := map[string]interface{}{"removeFloatingIp": removeFloatingIp}
 
-	_, res.Err = perigee.Request("POST", disassociateURL(client, serverId), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     reqBody,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("POST", disassociateURL(client, serverId), gophercloud.RequestOpts{
+		JSONBody: reqBody,
+		OkCodes:  []int{202},
 	})
 	return res
 }

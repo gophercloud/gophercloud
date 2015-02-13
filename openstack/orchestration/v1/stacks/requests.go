@@ -3,7 +3,6 @@ package stacks
 import (
 	"errors"
 
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -113,11 +112,10 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	}
 
 	// Send request to API
-	_, res.Err = perigee.Request("POST", createURL(c), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{201},
+	_, res.Err = c.Request("POST", createURL(c), gophercloud.RequestOpts{
+		JSONBody:     &reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{201},
 	})
 	return res
 }
@@ -224,11 +222,10 @@ func Adopt(c *gophercloud.ServiceClient, opts AdoptOptsBuilder) AdoptResult {
 	}
 
 	// Send request to API
-	_, res.Err = perigee.Request("POST", adoptURL(c), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{201},
+	_, res.Err = c.Request("POST", adoptURL(c), gophercloud.RequestOpts{
+		JSONBody:     &reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{201},
 	})
 	return res
 }
@@ -307,10 +304,9 @@ func Get(c *gophercloud.ServiceClient, stackName, stackID string) GetResult {
 	var res GetResult
 
 	// Send request to API
-	_, res.Err = perigee.Request("GET", getURL(c, stackName, stackID), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("GET", getURL(c, stackName, stackID), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -393,10 +389,9 @@ func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts Update
 	}
 
 	// Send request to API
-	_, res.Err = perigee.Request("PUT", updateURL(c, stackName, stackID), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		OkCodes:     []int{202},
+	_, res.Err = c.Request("PUT", updateURL(c, stackName, stackID), gophercloud.RequestOpts{
+		JSONBody: &reqBody,
+		OkCodes:  []int{202},
 	})
 	return res
 }
@@ -406,9 +401,8 @@ func Delete(c *gophercloud.ServiceClient, stackName, stackID string) DeleteResul
 	var res DeleteResult
 
 	// Send request to API
-	_, res.Err = perigee.Request("DELETE", deleteURL(c, stackName, stackID), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		OkCodes:     []int{204},
+	_, res.Err = c.Request("DELETE", deleteURL(c, stackName, stackID), gophercloud.RequestOpts{
+		OkCodes: []int{204},
 	})
 	return res
 }
@@ -504,11 +498,10 @@ func Preview(c *gophercloud.ServiceClient, opts PreviewOptsBuilder) PreviewResul
 	}
 
 	// Send request to API
-	_, res.Err = perigee.Request("POST", previewURL(c), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("POST", previewURL(c), gophercloud.RequestOpts{
+		JSONBody:     &reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -519,10 +512,9 @@ func Abandon(c *gophercloud.ServiceClient, stackName, stackID string) AbandonRes
 	var res AbandonResult
 
 	// Send request to API
-	_, res.Err = perigee.Request("DELETE", abandonURL(c, stackName, stackID), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("DELETE", abandonURL(c, stackName, stackID), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
