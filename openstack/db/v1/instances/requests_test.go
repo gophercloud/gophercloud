@@ -5,6 +5,7 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	db "github.com/rackspace/gophercloud/openstack/db/v1/databases"
+	"github.com/rackspace/gophercloud/openstack/db/v1/users"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
@@ -45,8 +46,8 @@ func TestCreate(t *testing.T) {
 			db.CreateOpts{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
 			db.CreateOpts{Name: "nextround"},
 		},
-		Users: UsersOpts{
-			UserOpts{
+		Users: users.BatchCreateOpts{
+			users.CreateOpts{
 				Name:     "demouser",
 				Password: "demopassword",
 				Databases: db.BatchCreateOpts{
@@ -138,7 +139,7 @@ func TestEnableRootUser(t *testing.T) {
 
 	HandleEnableRootUserSuccessfully(t, instanceID)
 
-	expected := &User{Name: "root", Password: "secretsecret"}
+	expected := &users.User{Name: "root", Password: "secretsecret"}
 
 	user, err := EnableRootUser(fake.ServiceClient(), instanceID).Extract()
 	th.AssertNoErr(t, err)

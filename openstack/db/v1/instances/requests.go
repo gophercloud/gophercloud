@@ -6,7 +6,7 @@ import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	db "github.com/rackspace/gophercloud/openstack/db/v1/databases"
-	users "github.com/rackspace/gophercloud/openstack/db/v1/databases"
+	"github.com/rackspace/gophercloud/openstack/db/v1/users"
 	"github.com/rackspace/gophercloud/pagination"
 )
 

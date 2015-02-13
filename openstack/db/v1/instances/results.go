@@ -140,7 +140,7 @@ type UserRootResult struct {
 }
 
 // Extract will extract root user information from a UserRootResult.
-func (r UserRootResult) Extract() (*User, error) {
+func (r UserRootResult) Extract() (*users.User, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
