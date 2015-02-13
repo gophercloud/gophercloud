@@ -159,6 +159,9 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 		req.Header.Add(k, v)
 	}
 
+	// Set the User-Agent header
+	req.Header.Set("User-Agent", client.UserAgent.Join())
+
 	if options.MoreHeaders != nil {
 		for k, v := range options.MoreHeaders {
 			fmt.Printf("Applying header [%s: %v]\n", k, v)
@@ -169,9 +172,6 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 			}
 		}
 	}
-
-	// Set user-agent header
-	req.Header.Set("User-Agent", client.UserAgent.Join())
 
 	// Issue the request.
 	resp, err := client.HTTPClient.Do(req)
