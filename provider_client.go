@@ -7,7 +7,31 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
+
+// DefaultUserAgent is the default User-Agent string set in the request header.
+const DefaultUserAgent = "gophercloud/v1.0"
+
+// UserAgent represents a User-Agent header.
+type UserAgent struct {
+	// prepend is the slice of User-Agent strings to prepend to DefaultUserAgent.
+	// All the strings to prepend are accumulated and prepended in the Join method.
+	prepend []string
+}
+
+// Prepend prepends a user-defined string to the default User-Agent string. Users
+// may pass in one or more strings to prepend.
+func (ua *UserAgent) Prepend(s ...string) {
+	ua.prepend = append(s, ua.prepend...)
+}
+
+// Join concatenates all the user-defined User-Agend strings with the default
+// Gophercloud User-Agent string.
+func (ua *UserAgent) Join() string {
+	uaSlice := append(ua.prepend, DefaultUserAgent)
+	return strings.Join(uaSlice, " ")
+}
 
 // ProviderClient stores details that are required to interact with any
 // services within a specific provider's API.
@@ -36,6 +60,9 @@ type ProviderClient struct {
 
 	// HTTPClient allows users to interject arbitrary http, https, or other transit behaviors.
 	HTTPClient http.Client
+
+	// UserAgent represents the User-Agent header in the HTTP request.
+	UserAgent UserAgent
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
@@ -97,7 +124,6 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 
 	// Derive the content body by either encoding an arbitrary object as JSON, or by taking a provided
 	// io.Reader as-is. Default the content-type to application/json.
-
 	if options.JSONBody != nil {
 		if options.RawBody != nil {
 			panic("Please provide only one of JSONBody or RawBody to gophercloud.Request().")
@@ -117,7 +143,6 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 	}
 
 	// Construct the http.Request.
-
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
@@ -125,7 +150,6 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 
 	// Populate the request headers. Apply options.MoreHeaders last, to give the caller the chance to
 	// modify or omit any header.
-
 	if contentType != nil {
 		req.Header.Set("Content-Type", *contentType)
 	}
@@ -134,6 +158,9 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 	for k, v := range client.AuthenticatedHeaders() {
 		req.Header.Add(k, v)
 	}
+
+	// Set the User-Agent header
+	req.Header.Set("User-Agent", client.UserAgent.Join())
 
 	if options.MoreHeaders != nil {
 		for k, v := range options.MoreHeaders {
@@ -147,14 +174,12 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 	}
 
 	// Issue the request.
-
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
 	// Validate the response code, if requested to do so.
-
 	if options.OkCodes != nil {
 		var ok bool
 		for _, code := range options.OkCodes {
@@ -177,7 +202,6 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 	}
 
 	// Parse the response body as JSON, if requested to do so.
-
 	if options.JSONResponse != nil {
 		defer resp.Body.Close()
 		json.NewDecoder(resp.Body).Decode(options.JSONResponse)
