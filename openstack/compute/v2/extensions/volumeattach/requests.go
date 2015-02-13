@@ -3,7 +3,6 @@ package volumeattach
 import (
 	"errors"
 
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -55,11 +54,10 @@ func Create(client *gophercloud.ServiceClient, serverId string, opts CreateOptsB
 		return res
 	}
 
-	_, res.Err = perigee.Request("POST", createURL(client, serverId), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = client.Request("POST", createURL(client, serverId), gophercloud.RequestOpts{
+		JSONBody:     reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -67,10 +65,9 @@ func Create(client *gophercloud.ServiceClient, serverId string, opts CreateOptsB
 // Get returns public data about a previously created VolumeAttachment.
 func Get(client *gophercloud.ServiceClient, serverId, aId string) GetResult {
 	var res GetResult
-	_, res.Err = perigee.Request("GET", getURL(client, serverId, aId), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = client.Request("GET", getURL(client, serverId, aId), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -78,9 +75,8 @@ func Get(client *gophercloud.ServiceClient, serverId, aId string) GetResult {
 // Delete requests the deletion of a previous stored VolumeAttachment from the server.
 func Delete(client *gophercloud.ServiceClient, serverId, aId string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = perigee.Request("DELETE", deleteURL(client, serverId, aId), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("DELETE", deleteURL(client, serverId, aId), gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
 	return res
 }

@@ -3,17 +3,15 @@ package stacktemplates
 import (
 	"fmt"
 
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 )
 
 // Get retreives data for the given stack template.
 func Get(c *gophercloud.ServiceClient, stackName, stackID string) GetResult {
 	var res GetResult
-	_, res.Err = perigee.Request("GET", getURL(c, stackName, stackID), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("GET", getURL(c, stackName, stackID), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -54,11 +52,10 @@ func Validate(c *gophercloud.ServiceClient, opts ValidateOptsBuilder) ValidateRe
 		return res
 	}
 
-	_, res.Err = perigee.Request("POST", validateURL(c), perigee.Options{
-		MoreHeaders: c.AuthenticatedHeaders(),
-		ReqBody:     reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = c.Request("POST", validateURL(c), gophercloud.RequestOpts{
+		JSONBody:     reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
