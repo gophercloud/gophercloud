@@ -216,7 +216,7 @@ func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]interface{}, error) {
 		rule["cidr"] = opts.CIDR
 	}
 	if opts.FromGroupID != "" {
-		rule["from_group_id"] = opts.FromGroupID
+		rule["group_id"] = opts.FromGroupID
 	}
 
 	return map[string]interface{}{"security_group_rule": rule}, nil
