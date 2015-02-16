@@ -20,6 +20,8 @@ type Flavor struct {
 type Volume struct {
 	// The size in GB of the volume
 	Size int
+
+	Used float64
 }
 
 // Instance represents a remote MySQL instance.
