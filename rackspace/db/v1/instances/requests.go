@@ -3,6 +3,7 @@ package instances
 import (
 	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 func GetDefaultConfig(client *gophercloud.ServiceClient, id string) ConfigResult {
@@ -37,4 +38,8 @@ func AssociateWithConfigGroup(client *gophercloud.ServiceClient, instanceID, con
 	res.Err = err
 
 	return res
+}
+
+func ListBackups(client *gophercloud.ServiceClient, instanceID string) pagination.Pager {
+
 }

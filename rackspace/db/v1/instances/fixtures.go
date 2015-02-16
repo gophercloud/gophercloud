@@ -85,7 +85,9 @@ func HandleCreateInstanceSuccessfully(t *testing.T) {
     "volume": {
       "size": 2
     },
-		"restorePoint": "1234567890"
+		"restorePoint": {
+			"backupRef": "1234567890"
+		}
   }
 }
 `)

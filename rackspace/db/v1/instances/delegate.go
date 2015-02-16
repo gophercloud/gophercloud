@@ -86,7 +86,7 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	}
 
 	if opts.RestorePoint != "" {
-		instance["restorePoint"] = opts.RestorePoint
+		instance["restorePoint"] = map[string]string{"backupRef": opts.RestorePoint}
 	}
 
 	return map[string]interface{}{"instance": instance}, nil
