@@ -6,6 +6,12 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+type Datastore struct {
+	Version   string
+	Type      string
+	VersionID string `json:"version_id" mapstructure:"version_id"`
+}
+
 type Backup struct {
 	Description string
 	ID          string
@@ -17,6 +23,7 @@ type Backup struct {
 	Status      string
 	Created     string
 	Updated     string
+	Datastore   Datastore
 }
 
 type CreateResult struct {

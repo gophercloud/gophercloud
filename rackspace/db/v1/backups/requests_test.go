@@ -8,7 +8,7 @@ import (
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
-//const instanceID = "{instanceID}"
+const backupID = "61f12fef-edb1-4561-8122-e7c00ef26a82"
 
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
@@ -36,6 +36,7 @@ func TestCreate(t *testing.T) {
 		Size:        100,
 		Status:      "NEW",
 		Updated:     "2014-02-13T21:47:16",
+		Datastore:   Datastore{Version: "5.1", Type: "MySQL", VersionID: "20000000-0000-0000-0000-000000000002"},
 	}
 
 	th.AssertDeepEquals(t, expected, instance)
@@ -66,6 +67,7 @@ func TestList(t *testing.T) {
 				Size:        0.141026,
 				Status:      "COMPLETED",
 				Updated:     "2014-06-18T21:24:39",
+				Datastore:   Datastore{Version: "5.1", Type: "MySQL", VersionID: "20000000-0000-0000-0000-000000000002"},
 			},
 		}
 
@@ -77,4 +79,40 @@ func TestList(t *testing.T) {
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
+}
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleGetSuccessfully(t, backupID)
+
+	instance, err := Get(fake.ServiceClient(), backupID).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &Backup{
+		Created:     "2014-02-13T21:47:16",
+		Description: "My Backup",
+		ID:          "61f12fef-edb1-4561-8122-e7c00ef26a82",
+		InstanceID:  "d4603f69-ec7e-4e9b-803f-600b9205576f",
+		LocationRef: "",
+		Name:        "snapshot",
+		ParentID:    "",
+		Size:        100,
+		Status:      "NEW",
+		Updated:     "2014-02-13T21:47:16",
+		Datastore:   Datastore{Version: "5.1", Type: "MySQL", VersionID: "20000000-0000-0000-0000-000000000002"},
+	}
+
+	th.AssertDeepEquals(t, expected, instance)
+}
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleDeleteSuccessfully(t, backupID)
+
+	err := Delete(fake.ServiceClient(), backupID).ExtractErr()
+	th.AssertNoErr(t, err)
 }
