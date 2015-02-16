@@ -64,8 +64,9 @@ type ProviderClient struct {
 	// UserAgent represents the User-Agent header in the HTTP request.
 	UserAgent UserAgent
 
-	// AuthOptions is the user-provided options for authentication. These will be
-	// passed to ReauthFunc for re-authenticating if the user requests it.
+	// AuthOptions is the user-provided options for authentication. This will be empty
+	// unless gophercloud.AuthOption.AllowReauth is set to true. This will be
+	// passed to ReauthFunc for re-authenticating when a user's token expires.
 	AuthOptions AuthOptions
 
 	// ReauthFunc is the function used to re-authenticate the user if the request
