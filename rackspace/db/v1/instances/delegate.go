@@ -2,7 +2,9 @@ package instances
 
 import (
 	"github.com/rackspace/gophercloud"
+	osDBs "github.com/rackspace/gophercloud/openstack/db/v1/databases"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
+	osUsers "github.com/rackspace/gophercloud/openstack/db/v1/users"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -34,10 +36,10 @@ type CreateOpts struct {
 	Name string
 
 	// A slice of database information options.
-	Databases os.DatabasesOpts
+	Databases osDBs.BatchCreateOpts
 
 	// A slice of user information options.
-	Users os.UsersOpts
+	Users osUsers.BatchCreateOpts
 
 	// ID of the configuration group to associate with the instance. Optional.
 	ConfigID string

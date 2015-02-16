@@ -4,7 +4,9 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	osDBs "github.com/rackspace/gophercloud/openstack/db/v1/databases"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
+	osUsers "github.com/rackspace/gophercloud/openstack/db/v1/users"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
@@ -41,16 +43,16 @@ func TestCreate(t *testing.T) {
 	opts := CreateOpts{
 		Name:      "json_rack_instance",
 		FlavorRef: "1",
-		Databases: os.DatabasesOpts{
-			os.DatabaseOpts{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
-			os.DatabaseOpts{Name: "nextround"},
+		Databases: osDBs.BatchCreateOpts{
+			osDBs.CreateOpts{CharSet: "utf8", Collate: "utf8_general_ci", Name: "sampledb"},
+			osDBs.CreateOpts{Name: "nextround"},
 		},
-		Users: os.UsersOpts{
-			os.UserOpts{
+		Users: osUsers.BatchCreateOpts{
+			osUsers.CreateOpts{
 				Name:     "demouser",
 				Password: "demopassword",
-				Databases: os.DatabasesOpts{
-					os.DatabaseOpts{Name: "sampledb"},
+				Databases: osDBs.BatchCreateOpts{
+					osDBs.CreateOpts{Name: "sampledb"},
 				},
 			},
 		},
@@ -92,7 +94,7 @@ func TestEnableRootUser(t *testing.T) {
 
 	os.HandleEnableRootUserSuccessfully(t, instanceID)
 
-	expected := &os.User{Name: "root", Password: "secretsecret"}
+	expected := &osUsers.User{Name: "root", Password: "secretsecret"}
 
 	user, err := EnableRootUser(fake.ServiceClient(), instanceID).Extract()
 	th.AssertNoErr(t, err)

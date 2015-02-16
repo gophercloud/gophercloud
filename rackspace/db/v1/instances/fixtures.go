@@ -179,3 +179,36 @@ func HandleAssociateGroupSuccessfully(t *testing.T, id string) {
 		fmt.Fprintf(w, singleInstanceJson)
 	})
 }
+
+func HandleListBackupsSuccessfully(t *testing.T, id string) {
+	th.Mux.HandleFunc("/instances/"+id+"/backups", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+
+		fmt.Fprintf(w, `
+{
+  "backups": [
+    {
+      "status": "COMPLETED",
+      "updated": "2014-06-18T21:24:39",
+      "description": "Backup from Restored Instance",
+      "datastore": {
+        "version": "5.1",
+        "type": "MySQL",
+        "version_id": "20000000-0000-0000-0000-000000000002"
+      },
+      "id": "87972694-4be2-40f5-83f8-501656e0032a",
+      "size": 0.141026,
+      "name": "restored_backup",
+      "created": "2014-06-18T21:23:35",
+      "instance_id": "29af2cd9-0674-48ab-b87a-b160f00208e6",
+      "parent_id": null,
+      "locationRef": "http://localhost/path/to/backup"
+    }
+  ]
+}
+`)
+	})
+}
