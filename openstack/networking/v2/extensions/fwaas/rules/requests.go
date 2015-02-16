@@ -18,6 +18,12 @@ var (
 	No     Binary = &iFalse
 )
 
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToRuleListQuery() (string, error)
+}
+
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the Firewall rule attributes you want to see returned. SortKey allows you to
@@ -42,21 +48,43 @@ type ListOpts struct {
 	SortDir              string `q:"sort_dir"`
 }
 
+// ToRuleListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToRuleListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+	return q.String(), nil
+}
+
 // List returns a Pager which allows you to iterate over a collection of
 // firewall rules. It accepts a ListOpts struct, which allows you to filter
 // and sort the returned collection for greater efficiency.
 //
 // Default policy settings return only those firewall rules that are owned by the
 // tenant who submits the request, unless an admin user submits the request.
-func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	q, err := gophercloud.BuildQueryString(&opts)
-	if err != nil {
-		return pagination.Pager{Err: err}
+func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := rootURL(c)
+
+	if opts != nil {
+		query, err := opts.ToRuleListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
 	}
-	u := rootURL(c) + q.String()
-	return pagination.NewPager(c, u, func(r pagination.PageResult) pagination.Page {
+
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return RulePage{pagination.LinkedPageBase{PageResult: r}}
 	})
+}
+
+// CreateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Create operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
+type CreateOptsBuilder interface {
+	ToRuleCreateMap() (map[string]interface{}, error)
 }
 
 // CreateOpts contains all the values needed to create a new firewall rule.
@@ -127,7 +155,7 @@ func (opts CreateOpts) ToRuleCreateMap() (map[string]interface{}, error) {
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new firewall rule
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
 	reqBody, err := opts.ToRuleCreateMap()
@@ -154,6 +182,14 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 		OkCodes:     []int{200},
 	})
 	return res
+}
+
+// UpdateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Update operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
+type UpdateOptsBuilder interface {
+	ToRuleUpdateMap() (map[string]interface{}, error)
 }
 
 // UpdateOpts contains the values used when updating a firewall rule.
@@ -234,7 +270,7 @@ func (opts UpdateOpts) ToRuleUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update allows firewall policies to be updated.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult
 
 	reqBody, err := opts.ToRuleUpdateMap()
