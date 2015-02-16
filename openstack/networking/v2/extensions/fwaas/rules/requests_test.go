@@ -293,18 +293,16 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	name := "ssh_form_any"
-	description := "ssh rule"
 	destinationIPAddress := "192.168.1.0/24"
 	destinationPort := "22"
 	empty := ""
 
 	options := UpdateOpts{
 		Protocol:             "tcp",
-		Description:          &description,
+		Description:          "ssh rule",
 		DestinationIPAddress: &destinationIPAddress,
 		DestinationPort:      &destinationPort,
-		Name:                 &name,
+		Name:                 "ssh_form_any",
 		SourceIPAddress:      &empty,
 		SourcePort:           &empty,
 		Action:               "allow",

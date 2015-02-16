@@ -39,9 +39,8 @@ func TestFirewallPolicy(t *testing.T) {
 
 	listPolicies(t)
 
-	description := "acceptance test updated"
 	updatePolicy(t, policyID, &policies.UpdateOpts{
-		Description: &description,
+		Description: "acceptance test updated",
 	})
 
 	getPolicy(t, policyID)

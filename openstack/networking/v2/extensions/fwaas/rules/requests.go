@@ -161,8 +161,8 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 type UpdateOpts struct {
 	Protocol             string
 	Action               string
-	Name                 *string
-	Description          *string
+	Name                 string
+	Description          string
 	IPVersion            int
 	SourceIPAddress      *string
 	DestinationIPAddress *string
@@ -182,11 +182,11 @@ func (opts UpdateOpts) ToRuleUpdateMap() (map[string]interface{}, error) {
 	if opts.Action != "" {
 		r["action"] = opts.Action
 	}
-	if opts.Name != nil {
-		r["name"] = *opts.Name
+	if opts.Name != "" {
+		r["name"] = opts.Name
 	}
-	if opts.Description != nil {
-		r["description"] = *opts.Description
+	if opts.Description != "" {
+		r["description"] = opts.Description
 	}
 	if opts.IPVersion != 0 {
 		r["ip_version"] = opts.IPVersion

@@ -38,9 +38,8 @@ func TestFirewall(t *testing.T) {
 
 	listFirewalls(t)
 
-	description := "acceptance test updated"
 	updateFirewall(t, firewallID, &firewalls.UpdateOpts{
-		Description: &description,
+		Description: "acceptance test updated",
 	})
 
 	waitForFirewallToBeActive(t, firewallID)

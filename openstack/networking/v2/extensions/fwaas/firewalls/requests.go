@@ -130,8 +130,8 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 // UpdateOpts contains the values used when updating a firewall.
 type UpdateOpts struct {
 	// Name of the firewall.
-	Name         *string
-	Description  *string
+	Name         string
+	Description  string
 	AdminStateUp *bool
 	Shared       *bool
 	PolicyID     string
@@ -141,11 +141,11 @@ type UpdateOpts struct {
 func (opts UpdateOpts) ToFirewallUpdateMap() (map[string]interface{}, error) {
 	f := make(map[string]interface{})
 
-	if opts.Name != nil {
-		f["name"] = *opts.Name
+	if opts.Name != "" {
+		f["name"] = opts.Name
 	}
-	if opts.Description != nil {
-		f["description"] = *opts.Description
+	if opts.Description != "" {
+		f["description"] = opts.Description
 	}
 	if opts.Shared != nil {
 		f["shared"] = *opts.Shared

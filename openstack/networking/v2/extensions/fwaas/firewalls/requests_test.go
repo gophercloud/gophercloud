@@ -195,7 +195,7 @@ func TestUpdate(t *testing.T) {
 {
     "firewall":{
         "name": "fw",
-        "description": "",
+        "description": "updated fw",
         "admin_state_up":false,
         "firewall_policy_id": "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c"
     }
@@ -220,12 +220,9 @@ func TestUpdate(t *testing.T) {
     `)
 	})
 
-	name := "fw"
-	description := ""
-
 	options := UpdateOpts{
-		Name:         &name,
-		Description:  &description,
+		Name:         "fw",
+		Description:  "updated fw",
 		AdminStateUp: Down,
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
