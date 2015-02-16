@@ -58,6 +58,8 @@ type CreateOpts struct {
 	// - You can create new users or databases if you want, but they cannot be
 	// the same as the ones from the instance that was backed up.
 	RestorePoint string
+
+	ReplicaOf string
 }
 
 func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
@@ -89,6 +91,10 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 
 	if opts.RestorePoint != "" {
 		instance["restorePoint"] = map[string]string{"backupRef": opts.RestorePoint}
+	}
+
+	if opts.ReplicaOf != "" {
+		instance["replica_of"] = opts.ReplicaOf
 	}
 
 	return map[string]interface{}{"instance": instance}, nil

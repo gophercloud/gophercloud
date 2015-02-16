@@ -41,3 +41,15 @@ func ListBackups(client *gophercloud.ServiceClient, instanceID string) paginatio
 	}
 	return pagination.NewPager(client, backupsURL(client, instanceID), pageFn)
 }
+
+func DetachReplica(client *gophercloud.ServiceClient, replicaID string) DetachResult {
+	var res DetachResult
+
+	_, res.Err = perigee.Request("PATCH", resourceURL(client, replicaID), perigee.Options{
+		MoreHeaders: client.AuthenticatedHeaders(),
+		ReqBody:     map[string]interface{}{"instance": map[string]string{"replica_of": "", "slave_of": ""}},
+		OkCodes:     []int{202},
+	})
+
+	return res
+}

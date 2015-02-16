@@ -4,6 +4,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 type Datastore struct {
@@ -47,6 +48,12 @@ type Instance struct {
 
 	// Information about the attached volume of the instance.
 	Volume os.Volume
+
+	IP []string
+
+	ReplicaOf *Instance `mapstructure:"replica_of" json:"replica_of"`
+
+	Replicas []Instance
 }
 
 func commonExtract(err error, body interface{}) (*Instance, error) {
@@ -85,6 +92,10 @@ type ConfigResult struct {
 	gophercloud.Result
 }
 
+type DetachResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract will extract the configuration information (in the form of a map)
 // about a particular instance.
 func (r ConfigResult) Extract() (map[string]string, error) {
@@ -105,4 +116,15 @@ func (r ConfigResult) Extract() (map[string]string, error) {
 // UpdateResult represents the result of an Update operation.
 type UpdateResult struct {
 	gophercloud.ErrResult
+}
+
+func ExtractInstances(page pagination.Page) ([]Instance, error) {
+	casted := page.(os.InstancePage).Body
+
+	var response struct {
+		Instances []Instance `mapstructure:"instances"`
+	}
+
+	err := mapstructure.Decode(casted, &response)
+	return response.Instances, err
 }

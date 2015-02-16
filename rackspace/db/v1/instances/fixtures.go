@@ -96,6 +96,104 @@ func HandleCreateInstanceSuccessfully(t *testing.T) {
 	})
 }
 
+func HandleCreateReplicaSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/instances", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, `
+{
+  "instance": {
+    "volume": {
+      "size": 1
+    },
+    "flavorRef": "9",
+    "name": "t2s1_ALT_GUEST",
+    "replica_of": "6bdca2fc-418e-40bd-a595-62abda61862d"
+  }
+}
+`)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "instance": {
+    "status": "BUILD",
+    "updated": "2014-10-14T18:42:15",
+    "name": "t2s1_ALT_GUEST",
+    "links": [
+      {
+        "href": "https://ord.databases.api.rackspacecloud.com/v1.0/5919009/instances/8367c312-7c40-4a66-aab1-5767478914fc",
+        "rel": "self"
+      },
+      {
+        "href": "https://ord.databases.api.rackspacecloud.com/instances/8367c312-7c40-4a66-aab1-5767478914fc",
+        "rel": "bookmark"
+      }
+    ],
+    "created": "2014-10-14T18:42:15",
+    "id": "8367c312-7c40-4a66-aab1-5767478914fc",
+    "volume": {"size": 1},
+    "flavor": {"id": "9"},
+    "datastore": {
+      "version": "5.6",
+      "type": "mysql"
+    },
+    "replica_of": {"id": "6bdca2fc-418e-40bd-a595-62abda61862d"}
+  }
+}
+`)
+	})
+}
+
+func HandleListReplicasSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/instances", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+
+		fmt.Fprintf(w, `
+{
+	"instances": [
+		{
+			"status": "ACTIVE",
+			"name": "t1s1_ALT_GUEST",
+			"links": [
+				{
+					"href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/instances/3c691f06-bf9a-4618-b7ec-2817ce0cf254",
+					"rel": "self"
+				},
+				{
+					"href": "https://ord.databases.api.rackspacecloud.com/instances/3c691f06-bf9a-4618-b7ec-2817ce0cf254",
+					"rel": "bookmark"
+				}
+			],
+			"ip": [
+				"10.0.0.3"
+			],
+			"id": "3c691f06-bf9a-4618-b7ec-2817ce0cf254",
+			"volume": {
+				"size": 1
+			},
+			"flavor": {
+				"id": "9"
+			},
+			"datastore": {
+				"version": "5.6",
+				"type": "mysql"
+			},
+			"replica_of": {
+				"id": "8b499b45-52d6-402d-b398-f9d8f279c69a"
+			}
+		}
+	]
+}
+`)
+	})
+}
+
 func HandleGetInstanceSuccessfully(t *testing.T, id string) {
 	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -104,6 +202,42 @@ func HandleGetInstanceSuccessfully(t *testing.T, id string) {
 		w.Header().Add("Content-Type", "application/json")
 
 		fmt.Fprintf(w, singleInstanceJson)
+	})
+}
+
+func HandleGetReplicaSuccessfully(t *testing.T, id string) {
+	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+
+		fmt.Fprintf(w, `
+{
+  "instance": {
+    "status": "ACTIVE",
+    "updated": "2014-09-26T19:15:57",
+    "name": "t1_ALT_GUEST",
+    "created": "2014-09-26T19:15:50",
+    "ip": [
+      "10.0.0.2"
+    ],
+    "replicas": [
+			{"id": "3c691f06-bf9a-4618-b7ec-2817ce0cf254"}
+    ],
+    "id": "8b499b45-52d6-402d-b398-f9d8f279c69a",
+    "volume": {
+      "used": 0.54,
+      "size": 1
+    },
+    "flavor": {"id": "9"},
+    "datastore": {
+      "version": "5.6",
+      "type": "mysql"
+    }
+  }
+}
+`)
 	})
 }
 
@@ -210,5 +344,24 @@ func HandleListBackupsSuccessfully(t *testing.T, id string) {
   ]
 }
 `)
+	})
+}
+
+func HandleDetachReplicaSuccessfully(t *testing.T, id string) {
+	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+	"instance": {
+		"replica_of": "",
+		"slave_of": ""
+	}
+}
+`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
