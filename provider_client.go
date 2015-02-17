@@ -64,15 +64,10 @@ type ProviderClient struct {
 	// UserAgent represents the User-Agent header in the HTTP request.
 	UserAgent UserAgent
 
-	// AuthOptions is the user-provided options for authentication. This will be empty
-	// unless gophercloud.AuthOption.AllowReauth is set to true. This will be
-	// passed to ReauthFunc for re-authenticating when a user's token expires.
-	AuthOptions AuthOptions
-
 	// ReauthFunc is the function used to re-authenticate the user if the request
 	// fails with a 401 HTTP response code. This a needed because there may be multiple
 	// authentication functions for different Identity service versions.
-	ReauthFunc func(client *ProviderClient, options AuthOptions) error
+	ReauthFunc func() error
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
@@ -189,9 +184,9 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 		return nil, err
 	}
 
-	if resp.StatusCode == 401 {
-		if client.AuthOptions.AllowReauth {
-			err = client.ReauthFunc(client, client.AuthOptions)
+	if resp.StatusCode == http.StatusUnauthorized {
+		if client.ReauthFunc != nil {
+			err = client.ReauthFunc()
 			if err != nil {
 				return nil, fmt.Errorf("Error trying to re-authenticate: %s", err)
 			}

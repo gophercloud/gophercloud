@@ -49,7 +49,6 @@ func AuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.Provider
 	if err != nil {
 		return nil, err
 	}
-
 	return client, nil
 }
 
@@ -98,8 +97,9 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 	}
 
 	if options.AllowReauth {
-		client.ReauthFunc = AuthenticateV2
-		client.AuthOptions = options
+		client.ReauthFunc = func() error {
+			return AuthenticateV2(client, options)
+		}
 	}
 	client.TokenID = token.ID
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
