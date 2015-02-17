@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/racker/perigee"
+	"github.com/rackspace/gophercloud"
 	base "github.com/rackspace/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/extensions/fwaas/firewalls"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/extensions/fwaas/policies"
@@ -106,7 +106,7 @@ func waitForFirewallToBeDeleted(t *testing.T, firewallID string) {
 	for i := 0; i < 10; i++ {
 		err := firewalls.Get(base.Client, firewallID).Err
 		if err != nil {
-			httpStatus := err.(*perigee.UnexpectedResponseCodeError)
+			httpStatus := err.(*gophercloud.UnexpectedResponseCodeError)
 			if httpStatus.Actual == 404 {
 				return
 			}
