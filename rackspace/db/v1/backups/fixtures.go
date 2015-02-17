@@ -1,12 +1,9 @@
 package backups
 
 import (
-	"fmt"
-	"net/http"
 	"testing"
 
-	th "github.com/rackspace/gophercloud/testhelper"
-	"github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/rackspace/gophercloud/testhelper/fixture"
 )
 
 var singleBackup = `
@@ -31,27 +28,6 @@ var singleBackup = `
 }
 `
 
-func SetupHandler(t *testing.T, url, method, requestBody, responseBody string, status int) {
-	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, method)
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-
-		if requestBody != "" {
-			th.TestJSONRequest(t, r, requestBody)
-		}
-
-		if responseBody != "" {
-			w.Header().Add("Content-Type", "application/json")
-		}
-
-		w.WriteHeader(status)
-
-		if responseBody != "" {
-			fmt.Fprintf(w, responseBody)
-		}
-	})
-}
-
 func HandleCreateSuccessfully(t *testing.T) {
 	requestJSON := `
 {
@@ -63,7 +39,7 @@ func HandleCreateSuccessfully(t *testing.T) {
 }
 `
 
-	SetupHandler(t, "/backups", "POST", requestJSON, singleBackup, 202)
+	fixture.SetupHandler(t, "/backups", "POST", requestJSON, singleBackup, 202)
 }
 
 func HandleListSuccessfully(t *testing.T) {
@@ -91,13 +67,13 @@ func HandleListSuccessfully(t *testing.T) {
 }
 `
 
-	SetupHandler(t, "/backups", "GET", "", responseJSON, 200)
+	fixture.SetupHandler(t, "/backups", "GET", "", responseJSON, 200)
 }
 
 func HandleGetSuccessfully(t *testing.T, backupID string) {
-	SetupHandler(t, "/backups/"+backupID, "GET", "", singleBackup, 200)
+	fixture.SetupHandler(t, "/backups/"+backupID, "GET", "", singleBackup, 200)
 }
 
 func HandleDeleteSuccessfully(t *testing.T, backupID string) {
-	SetupHandler(t, "/backups/"+backupID, "DELETE", "", "", 202)
+	fixture.SetupHandler(t, "/backups/"+backupID, "DELETE", "", "", 202)
 }
