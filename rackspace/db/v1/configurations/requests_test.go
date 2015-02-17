@@ -14,6 +14,14 @@ var (
 	configID = "{configID}"
 	_baseURL = "/configurations"
 	resURL   = _baseURL + "/" + configID
+
+	dsID               = "{datastoreID}"
+	versionID          = "{versionID}"
+	paramID            = "{paramID}"
+	dsParamListURL     = "/datastores/" + dsID + "/versions/" + versionID + "/parameters"
+	dsParamGetURL      = "/datastores/" + dsID + "/versions/" + versionID + "/parameters/" + paramID
+	globalParamListURL = "/datastores/versions/" + versionID + "/parameters"
+	globalParamGetURL  = "/datastores/versions/" + versionID + "/parameters/" + paramID
 )
 
 func TestList(t *testing.T) {
@@ -142,4 +150,98 @@ func TestListInstances(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, pages)
+}
+
+func TestListDSParams(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	fixture.SetupHandler(t, dsParamListURL, "GET", "", listParamsJSON, 200)
+
+	pages := 0
+	err := ListDatastoreParams(fake.ServiceClient(), dsID, versionID).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := ExtractParams(page)
+		if err != nil {
+			return false, err
+		}
+
+		expected := []Param{
+			Param{Max: 1, Min: 0, Name: "innodb_file_per_table", RestartRequired: true, Type: "integer"},
+			Param{Max: 4294967296, Min: 0, Name: "key_buffer_size", RestartRequired: false, Type: "integer"},
+			Param{Max: 65535, Min: 2, Name: "connect_timeout", RestartRequired: false, Type: "integer"},
+			Param{Max: 4294967296, Min: 0, Name: "join_buffer_size", RestartRequired: false, Type: "integer"},
+		}
+
+		th.AssertDeepEquals(t, actual, expected)
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, pages)
+}
+
+func TestGetDSParam(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	fixture.SetupHandler(t, dsParamGetURL, "GET", "", getParamJSON, 200)
+
+	param, err := GetDatastoreParam(fake.ServiceClient(), dsID, versionID, paramID).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &Param{
+		Max: 1, Min: 0, Name: "innodb_file_per_table", RestartRequired: true, Type: "integer",
+	}
+
+	th.AssertDeepEquals(t, expected, param)
+}
+
+func TestListGlobalParams(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	fixture.SetupHandler(t, globalParamListURL, "GET", "", listParamsJSON, 200)
+
+	pages := 0
+	err := ListGlobalParams(fake.ServiceClient(), versionID).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := ExtractParams(page)
+		if err != nil {
+			return false, err
+		}
+
+		expected := []Param{
+			Param{Max: 1, Min: 0, Name: "innodb_file_per_table", RestartRequired: true, Type: "integer"},
+			Param{Max: 4294967296, Min: 0, Name: "key_buffer_size", RestartRequired: false, Type: "integer"},
+			Param{Max: 65535, Min: 2, Name: "connect_timeout", RestartRequired: false, Type: "integer"},
+			Param{Max: 4294967296, Min: 0, Name: "join_buffer_size", RestartRequired: false, Type: "integer"},
+		}
+
+		th.AssertDeepEquals(t, actual, expected)
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, pages)
+}
+
+func TestGetGlobalParam(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	fixture.SetupHandler(t, globalParamGetURL, "GET", "", getParamJSON, 200)
+
+	param, err := GetGlobalParam(fake.ServiceClient(), versionID, paramID).Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &Param{
+		Max: 1, Min: 0, Name: "innodb_file_per_table", RestartRequired: true, Type: "integer",
+	}
+
+	th.AssertDeepEquals(t, expected, param)
 }

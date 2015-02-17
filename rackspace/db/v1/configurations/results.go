@@ -77,3 +77,49 @@ type ReplaceResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+type Param struct {
+	Max             int
+	Min             int
+	Name            string
+	RestartRequired bool `mapstructure:"restart_required" json:"restart_required"`
+	Type            string
+}
+
+type ParamPage struct {
+	pagination.SinglePageBase
+}
+
+func (r ParamPage) IsEmpty() (bool, error) {
+	is, err := ExtractParams(r)
+	if err != nil {
+		return true, err
+	}
+	return len(is) == 0, nil
+}
+
+func ExtractParams(page pagination.Page) ([]Param, error) {
+	casted := page.(ParamPage).Body
+
+	var resp struct {
+		Params []Param `mapstructure:"configuration-parameters" json:"configuration-parameters"`
+	}
+
+	err := mapstructure.Decode(casted, &resp)
+	return resp.Params, err
+}
+
+type ParamResult struct {
+	gophercloud.Result
+}
+
+func (r ParamResult) Extract() (*Param, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var param Param
+
+	err := mapstructure.Decode(r.Body, &param)
+	return &param, err
+}

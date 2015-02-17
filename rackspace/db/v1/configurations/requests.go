@@ -190,6 +190,41 @@ func ListInstances(client *gophercloud.ServiceClient, configID string) paginatio
 	pageFn := func(r pagination.PageResult) pagination.Page {
 		return instances.InstancePage{pagination.LinkedPageBase{PageResult: r}}
 	}
-
 	return pagination.NewPager(client, instancesURL(client, configID), pageFn)
+}
+
+func ListDatastoreParams(client *gophercloud.ServiceClient, datastoreID, versionID string) pagination.Pager {
+	pageFn := func(r pagination.PageResult) pagination.Page {
+		return ParamPage{pagination.SinglePageBase(r)}
+	}
+	return pagination.NewPager(client, listDSParamsURL(client, datastoreID, versionID), pageFn)
+}
+
+func GetDatastoreParam(client *gophercloud.ServiceClient, datastoreID, versionID, paramID string) ParamResult {
+	var res ParamResult
+
+	_, res.Err = client.Request("GET", getDSParamURL(client, datastoreID, versionID, paramID), gophercloud.RequestOpts{
+		OkCodes:      []int{200},
+		JSONResponse: &res.Body,
+	})
+
+	return res
+}
+
+func ListGlobalParams(client *gophercloud.ServiceClient, versionID string) pagination.Pager {
+	pageFn := func(r pagination.PageResult) pagination.Page {
+		return ParamPage{pagination.SinglePageBase(r)}
+	}
+	return pagination.NewPager(client, listGlobalParamsURL(client, versionID), pageFn)
+}
+
+func GetGlobalParam(client *gophercloud.ServiceClient, versionID, paramID string) ParamResult {
+	var res ParamResult
+
+	_, res.Err = client.Request("GET", getGlobalParamURL(client, versionID, paramID), gophercloud.RequestOpts{
+		OkCodes:      []int{200},
+		JSONResponse: &res.Body,
+	})
+
+	return res
 }

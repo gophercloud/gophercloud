@@ -77,6 +77,51 @@ var listInstancesJSON = `
 }
 `
 
+var listParamsJSON = `
+{
+  "configuration-parameters": [
+    {
+      "max": 1,
+      "min": 0,
+      "name": "innodb_file_per_table",
+      "restart_required": true,
+      "type": "integer"
+    },
+    {
+      "max": 4294967296,
+      "min": 0,
+      "name": "key_buffer_size",
+      "restart_required": false,
+      "type": "integer"
+    },
+    {
+      "max": 65535,
+      "min": 2,
+      "name": "connect_timeout",
+      "restart_required": false,
+      "type": "integer"
+    },
+    {
+      "max": 4294967296,
+      "min": 0,
+      "name": "join_buffer_size",
+      "restart_required": false,
+      "type": "integer"
+    }
+  ]
+}
+`
+
+var getParamJSON = `
+{
+  "max": 1,
+  "min": 0,
+  "name": "innodb_file_per_table",
+  "restart_required": true,
+  "type": "integer"
+}
+`
+
 var exampleConfig = Config{
 	Created:              "2014-07-31T18:56:09",
 	DatastoreName:        "mysql",
