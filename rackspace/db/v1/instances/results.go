@@ -5,12 +5,8 @@ import (
 	"github.com/rackspace/gophercloud"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 )
-
-type Datastore struct {
-	Type    string
-	Version string
-}
 
 // Instance represents a remote MySQL instance.
 type Instance struct {
@@ -21,7 +17,7 @@ type Instance struct {
 	Updated string //time.Time
 
 	// Indicates how the instance stores data.
-	Datastore Datastore
+	Datastore datastores.Datastore
 
 	// Indicates the hardware flavor the instance uses.
 	Flavor os.Flavor

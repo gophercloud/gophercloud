@@ -4,13 +4,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 )
-
-type Datastore struct {
-	Version   string
-	Type      string
-	VersionID string `json:"version_id" mapstructure:"version_id"`
-}
 
 type Backup struct {
 	Description string
@@ -23,7 +18,7 @@ type Backup struct {
 	Status      string
 	Created     string
 	Updated     string
-	Datastore   Datastore
+	Datastore   datastores.Datastore
 }
 
 type CreateResult struct {

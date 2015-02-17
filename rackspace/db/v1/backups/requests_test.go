@@ -36,7 +36,11 @@ func TestCreate(t *testing.T) {
 		Size:        100,
 		Status:      "NEW",
 		Updated:     "2014-02-13T21:47:16",
-		Datastore:   Datastore{Version: "5.1", Type: "MySQL", VersionID: "20000000-0000-0000-0000-000000000002"},
+		Datastore: datastores.Datastore{
+			Version:   "5.1",
+			Type:      "MySQL",
+			VersionID: "20000000-0000-0000-0000-000000000002",
+		},
 	}
 
 	th.AssertDeepEquals(t, expected, instance)
@@ -67,7 +71,11 @@ func TestList(t *testing.T) {
 				Size:        0.141026,
 				Status:      "COMPLETED",
 				Updated:     "2014-06-18T21:24:39",
-				Datastore:   Datastore{Version: "5.1", Type: "MySQL", VersionID: "20000000-0000-0000-0000-000000000002"},
+				Datastore: datastores.Datastore{
+					Version:   "5.1",
+					Type:      "MySQL",
+					VersionID: "20000000-0000-0000-0000-000000000002",
+				},
 			},
 		}
 
@@ -101,7 +109,11 @@ func TestGet(t *testing.T) {
 		Size:        100,
 		Status:      "NEW",
 		Updated:     "2014-02-13T21:47:16",
-		Datastore:   Datastore{Version: "5.1", Type: "MySQL", VersionID: "20000000-0000-0000-0000-000000000002"},
+		Datastore: datastores.Datastore{
+			Version:   "5.1",
+			Type:      "MySQL",
+			VersionID: "20000000-0000-0000-0000-000000000002",
+		},
 	}
 
 	th.AssertDeepEquals(t, expected, instance)
