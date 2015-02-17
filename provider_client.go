@@ -63,6 +63,11 @@ type ProviderClient struct {
 
 	// UserAgent represents the User-Agent header in the HTTP request.
 	UserAgent UserAgent
+
+	// ReauthFunc is the function used to re-authenticate the user if the request
+	// fails with a 401 HTTP response code. This a needed because there may be multiple
+	// authentication functions for different Identity service versions.
+	ReauthFunc func() error
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
@@ -177,6 +182,19 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode == http.StatusUnauthorized {
+		if client.ReauthFunc != nil {
+			err = client.ReauthFunc()
+			if err != nil {
+				return nil, fmt.Errorf("Error trying to re-authenticate: %s", err)
+			}
+			resp, err = client.Request(method, url, options)
+			if err != nil {
+				return nil, fmt.Errorf("Successfully re-authenticated, but got error executing request: %s", err)
+			}
+		}
 	}
 
 	// Validate the response code, if requested to do so.

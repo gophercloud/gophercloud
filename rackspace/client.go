@@ -96,6 +96,11 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		return err
 	}
 
+	if options.AllowReauth {
+		client.ReauthFunc = func() error {
+			return AuthenticateV2(client, options)
+		}
+	}
 	client.TokenID = token.ID
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
 		return os.V2EndpointURL(catalog, opts)
