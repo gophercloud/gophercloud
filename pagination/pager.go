@@ -46,6 +46,9 @@ type Pager struct {
 	// Headers supplies additional HTTP headers to populate on each paged request.
 	Headers map[string]string
 
+	// PageType is the type of `Page` the `Extract*` function expects back. This is
+	// needed because a type assertion occurs in each `Extract*` function and it will
+	// fail if the `Page` doesn't have the expected type.
 	PageType Page
 }
 
