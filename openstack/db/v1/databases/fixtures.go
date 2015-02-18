@@ -1,5 +1,16 @@
 package databases
 
+import (
+	"testing"
+
+	"github.com/rackspace/gophercloud/testhelper/fixture"
+)
+
+var (
+	instanceID = "{instanceID}"
+	resURL     = "/instances/" + instanceID + "/databases"
+)
+
 var createDBsReq = `
 {
 	"databases": [
@@ -36,3 +47,15 @@ var listDBsResp = `
 	]
 }
 `
+
+func HandleCreate(t *testing.T) {
+	fixture.SetupHandler(t, resURL, "POST", createDBsReq, "", 202)
+}
+
+func HandleList(t *testing.T) {
+	fixture.SetupHandler(t, resURL, "GET", "", listDBsResp, 200)
+}
+
+func HandleDelete(t *testing.T) {
+	fixture.SetupHandler(t, resURL+"/{dbName}", "DELETE", "", "", 202)
+}

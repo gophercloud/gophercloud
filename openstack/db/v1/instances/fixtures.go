@@ -2,8 +2,10 @@ package instances
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/testhelper/fixture"
 )
 
 const instance = `
@@ -77,6 +79,14 @@ var createReq = `
 `
 
 var (
+	instanceID = "{instanceID}"
+	rootURL    = "/instances"
+	resURL     = rootURL + "/" + instanceID
+	uRootURL   = resURL + "/root"
+	aURL       = resURL + "/action"
+)
+
+var (
 	restartReq   = `{"restart": true}`
 	resizeReq    = `{"resize": {"flavorRef": "2"}}`
 	resizeVolReq = `{"resize": {"volume": {"size": 4}}}`
@@ -108,4 +118,40 @@ var expectedInstance = Instance{
 	Name:   "json_rack_instance",
 	Status: "BUILD",
 	Volume: Volume{Size: 2},
+}
+
+func HandleCreate(t *testing.T) {
+	fixture.SetupHandler(t, rootURL, "POST", createReq, createResp, 200)
+}
+
+func HandleList(t *testing.T) {
+	fixture.SetupHandler(t, rootURL, "GET", "", listInstancesResp, 200)
+}
+
+func HandleGet(t *testing.T) {
+	fixture.SetupHandler(t, resURL, "GET", "", getInstanceResp, 200)
+}
+
+func HandleDelete(t *testing.T) {
+	fixture.SetupHandler(t, resURL, "DELETE", "", "", 202)
+}
+
+func HandleEnableRoot(t *testing.T) {
+	fixture.SetupHandler(t, uRootURL, "POST", "", enableUserResp, 200)
+}
+
+func HandleIsRootEnabled(t *testing.T) {
+	fixture.SetupHandler(t, uRootURL, "GET", "", isUserEnabledResp, 200)
+}
+
+func HandleRestart(t *testing.T) {
+	fixture.SetupHandler(t, aURL, "POST", restartReq, "", 202)
+}
+
+func HandleResize(t *testing.T) {
+	fixture.SetupHandler(t, aURL, "POST", resizeReq, "", 202)
+}
+
+func HandleResizeVol(t *testing.T) {
+	fixture.SetupHandler(t, aURL, "POST", resizeVolReq, "", 202)
 }

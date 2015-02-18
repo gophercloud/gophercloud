@@ -8,21 +8,12 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
-	"github.com/rackspace/gophercloud/testhelper/fixture"
-)
-
-var (
-	instanceID = "{instanceID}"
-	rootURL    = "/instances"
-	resURL     = rootURL + "/" + instanceID
-	uRootURL   = resURL + "/root"
-	aURL       = resURL + "/action"
 )
 
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, rootURL, "POST", createReq, createResp, 200)
+	HandleCreate(t)
 
 	opts := CreateOpts{
 		Name:      "json_rack_instance",
@@ -52,7 +43,7 @@ func TestCreate(t *testing.T) {
 func TestInstanceList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, rootURL, "GET", "", listInstancesResp, 200)
+	HandleList(t)
 
 	pages := 0
 	err := List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
@@ -64,7 +55,6 @@ func TestInstanceList(t *testing.T) {
 		}
 
 		th.CheckDeepEquals(t, []Instance{expectedInstance}, actual)
-
 		return true, nil
 	})
 
@@ -75,7 +65,7 @@ func TestInstanceList(t *testing.T) {
 func TestGetInstance(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL, "GET", "", getInstanceResp, 200)
+	HandleGet(t)
 
 	instance, err := Get(fake.ServiceClient(), instanceID).Extract()
 
@@ -86,7 +76,7 @@ func TestGetInstance(t *testing.T) {
 func TestDeleteInstance(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL, "DELETE", "", "", 202)
+	HandleDelete(t)
 
 	res := Delete(fake.ServiceClient(), instanceID)
 	th.AssertNoErr(t, res.Err)
@@ -95,7 +85,7 @@ func TestDeleteInstance(t *testing.T) {
 func TestEnableRootUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, uRootURL, "POST", "", enableUserResp, 200)
+	HandleEnableRoot(t)
 
 	expected := &users.User{Name: "root", Password: "secretsecret"}
 	user, err := EnableRootUser(fake.ServiceClient(), instanceID).Extract()
@@ -107,7 +97,7 @@ func TestEnableRootUser(t *testing.T) {
 func TestIsRootEnabled(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, uRootURL, "GET", "", isUserEnabledResp, 200)
+	HandleIsRootEnabled(t)
 
 	isEnabled, err := IsRootEnabled(fake.ServiceClient(), instanceID)
 
@@ -118,7 +108,7 @@ func TestIsRootEnabled(t *testing.T) {
 func TestRestartService(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, aURL, "POST", restartReq, "", 202)
+	HandleRestart(t)
 
 	res := RestartService(fake.ServiceClient(), instanceID)
 	th.AssertNoErr(t, res.Err)
@@ -127,7 +117,7 @@ func TestRestartService(t *testing.T) {
 func TestResizeInstance(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, aURL, "POST", resizeReq, "", 202)
+	HandleResize(t)
 
 	res := ResizeInstance(fake.ServiceClient(), instanceID, "2")
 	th.AssertNoErr(t, res.Err)
@@ -136,7 +126,7 @@ func TestResizeInstance(t *testing.T) {
 func TestResizeVolume(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, aURL, "POST", resizeVolReq, "", 202)
+	HandleResizeVol(t)
 
 	res := ResizeVolume(fake.ServiceClient(), instanceID, 4)
 	th.AssertNoErr(t, res.Err)

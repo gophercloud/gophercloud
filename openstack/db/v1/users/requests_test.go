@@ -7,18 +7,12 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
-	"github.com/rackspace/gophercloud/testhelper/fixture"
-)
-
-var (
-	instanceID = "{instanceID}"
-	_rootURL   = "/instances/" + instanceID + "/users"
 )
 
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, _rootURL, "POST", createReq, "", 202)
+	HandleCreate(t)
 
 	opts := BatchCreateOpts{
 		CreateOpts{
@@ -45,7 +39,7 @@ func TestCreate(t *testing.T) {
 func TestUserList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, _rootURL, "GET", "", listResp, 200)
+	HandleList(t)
 
 	expectedUsers := []User{
 		User{
@@ -80,11 +74,11 @@ func TestUserList(t *testing.T) {
 	th.AssertEquals(t, 1, pages)
 }
 
-func TestDeleteInstance(t *testing.T) {
+func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, _rootURL+"/{dbName}", "DELETE", "", "", 202)
+	HandleDelete(t)
 
-	res := Delete(fake.ServiceClient(), instanceID, "{dbName}")
+	res := Delete(fake.ServiceClient(), instanceID, "{userName}")
 	th.AssertNoErr(t, res.Err)
 }
