@@ -3,6 +3,7 @@ package pagination
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"reflect"
 
 	"github.com/rackspace/gophercloud"
@@ -160,11 +161,9 @@ func (p Pager) AllPages() (Page, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		// Set body to value of type `map[string]interface{}`
 		body = reflect.MakeMap(reflect.MapOf(reflect.TypeOf(key), reflect.TypeOf(pagesSlice)))
 		body.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(pagesSlice))
-
 	case []byte:
 		// Iterate over the pages to concatenate the bodies.
 		err := p.EachPage(func(page Page) (bool, error) {
@@ -177,8 +176,7 @@ func (p Pager) AllPages() (Page, error) {
 		if err != nil {
 			return nil, err
 		}
-
-		// Remove the last comma.
+		// Remove the trailing comma.
 		pagesSlice = pagesSlice[:len(pagesSlice)-1]
 		var b []byte
 		// Combine the slice of slices in to a single slice.
@@ -188,7 +186,20 @@ func (p Pager) AllPages() (Page, error) {
 		// Set body to value of type `bytes`.
 		body = reflect.New(reflect.TypeOf(b)).Elem()
 		body.SetBytes(b)
-
+	case []interface{}:
+		// Iterate over the pages to concatenate the bodies.
+		err := p.EachPage(func(page Page) (bool, error) {
+			b := page.GetBody().([]interface{})
+			pagesSlice = append(pagesSlice, b...)
+			return true, nil
+		})
+		if err != nil {
+			return nil, err
+		}
+		body = reflect.MakeSlice(reflect.TypeOf(pagesSlice), len(pagesSlice), len(pagesSlice))
+		for i, s := range pagesSlice {
+			body.Index(i).Set(reflect.ValueOf(s))
+		}
 	default:
 		return nil, fmt.Errorf("Page body has unrecognized type.")
 	}
@@ -199,8 +210,15 @@ func (p Pager) AllPages() (Page, error) {
 	// function is expecting and set the Body of that object to the concatenated
 	// pages.
 	page := reflect.New(reflect.TypeOf(p.PageType))
+	// Set the page body to be the concatenated pages.
 	page.Elem().FieldByName("Body").Set(body)
-
+	// Set any additional headers that were pass along. The `objectstorage` pacakge,
+	// for example, passes a Content-Type header.
+	h := make(http.Header)
+	for k, v := range p.Headers {
+		h.Add(k, v)
+	}
+	page.Elem().FieldByName("Header").Set(reflect.ValueOf(h))
 	// Type assert the page to a Page interface so that the type assertion in the
 	// `Extract*` methods will work.
 	return page.Elem().Interface().(Page), err
