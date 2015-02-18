@@ -6,8 +6,9 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// Database represents a Database API resource.
 type Database struct {
-	// Specifies the name of the MySQL DB.
+	// Specifies the name of the MySQL database.
 	Name string
 
 	// Set of symbols and encodings. The default character set is utf8.
@@ -18,8 +19,14 @@ type Database struct {
 	Collate string
 }
 
+// CreateResult represents the result of a Create operation.
 type CreateResult struct {
 	gophercloud.Result
+}
+
+// DeleteResult represents the result of a Delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
 }
 
 // DBPage represents a single page of a paginated DB collection.
@@ -62,8 +69,4 @@ func ExtractDBs(page pagination.Page) ([]Database, error) {
 
 	err := mapstructure.Decode(casted, &response)
 	return response.Databases, err
-}
-
-type DeleteResult struct {
-	gophercloud.ErrResult
 }

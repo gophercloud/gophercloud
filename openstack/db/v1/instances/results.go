@@ -3,18 +3,10 @@ package instances
 import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	"github.com/rackspace/gophercloud/openstack/db/v1/users"
 	"github.com/rackspace/gophercloud/pagination"
 )
-
-// Flavor represents information about a hardware flavor for a database instance.
-type Flavor struct {
-	// The unique identifier for a flavor.
-	ID string
-
-	// Various links which allow a user to reference the flavor.
-	Links []gophercloud.Link
-}
 
 // Volume represents information about an attached volume for a database instance.
 type Volume struct {
@@ -33,7 +25,7 @@ type Instance struct {
 	Updated string //time.Time
 
 	// Indicates the hardware flavor the instance uses.
-	Flavor Flavor
+	Flavor flavors.Flavor
 
 	// A DNS-resolvable hostname associated with the database instance (rather
 	// than an IPv4 address). Since the hostname always resolves to the correct

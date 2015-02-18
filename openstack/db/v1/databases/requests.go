@@ -7,6 +7,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// CreateOptsBuilder builds create options
 type CreateOptsBuilder interface {
 	ToDBCreateMap() (map[string]interface{}, error)
 }
@@ -14,17 +15,28 @@ type CreateOptsBuilder interface {
 // DatabaseOpts is the struct responsible for configuring a database; often in
 // the context of an instance.
 type CreateOpts struct {
-	// Specifies the name of the database. Optional.
+	// [REQUIRED] Specifies the name of the database. Valid names can be composed
+	// of the following characters: letters (either case); numbers; these
+	// characters '@', '?', '#', ' ' but NEVER beginning a name string; '_' is
+	// permitted anywhere. Prohibited characters that are forbidden include:
+	// single quotes, double quotes, back quotes, semicolons, commas, backslashes,
+	// and forward slashes.
 	Name string
 
-	// Set of symbols and encodings. Optional; the default character set is utf8.
+	// [OPTIONAL] Set of symbols and encodings. The default character set is
+	// "utf8". See http://dev.mysql.com/doc/refman/5.1/en/charset-mysql.html for
+	// supported character sets.
 	CharSet string
 
-	// Set of rules for comparing characters in a character set. Optional; the
-	// default value for collate is utf8_general_ci.
+	// [OPTIONAL] Set of rules for comparing characters in a character set. The
+	// default value for collate is "utf8_general_ci". See
+	// http://dev.mysql.com/doc/refman/5.1/en/charset-mysql.html for supported
+	// collations.
 	Collate string
 }
 
+// ToMap is a helper function to convert individual DB create opt structures
+// into sub-maps.
 func (opts CreateOpts) ToMap() (map[string]string, error) {
 	if opts.Name == "" {
 		return nil, fmt.Errorf("Name is a required field")
@@ -44,8 +56,10 @@ func (opts CreateOpts) ToMap() (map[string]string, error) {
 	return db, nil
 }
 
+// BatchCreateOpts allows for multiple databases to created and modified.
 type BatchCreateOpts []CreateOpts
 
+// ToDBCreateMap renders a JSON map for creating DBs.
 func (opts BatchCreateOpts) ToDBCreateMap() (map[string]interface{}, error) {
 	var dbs []map[string]string
 	for _, db := range opts {
@@ -58,6 +72,8 @@ func (opts BatchCreateOpts) ToDBCreateMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"databases": dbs}, nil
 }
 
+// Create will create a new database within the specified instance. If the
+// specified instance does not exist, a 404 error will be returned.
 func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
@@ -76,6 +92,9 @@ func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOpt
 	return res
 }
 
+// List will list all of the databases for a specified instance. Note: this
+// operation will only return user-defined databases; it will exclude system
+// databases like "mysql", "information_schema", "lost+found" etc.
 func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager {
 	createPageFn := func(r pagination.PageResult) pagination.Page {
 		return DBPage{pagination.LinkedPageBase{PageResult: r}}
@@ -84,6 +103,8 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 	return pagination.NewPager(client, baseURL(client, instanceID), createPageFn)
 }
 
+// Delete will permanently delete the database within a specified instance.
+// All contained data inside the database will also be permanently deleted.
 func Delete(client *gophercloud.ServiceClient, instanceID, dbName string) DeleteResult {
 	var res DeleteResult
 

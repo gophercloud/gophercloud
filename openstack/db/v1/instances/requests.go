@@ -35,6 +35,7 @@ type CreateOpts struct {
 	Users users.BatchCreateOpts
 }
 
+// ToInstanceCreateMap will render a JSON map.
 func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	if opts.Size > 300 || opts.Size < 1 {
 		return nil, fmt.Errorf("Size (GB) must be between 1-300")

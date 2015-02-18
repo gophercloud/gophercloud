@@ -19,7 +19,13 @@ type User struct {
 	Databases []db.Database
 }
 
+// CreateResult represents the result of a create operation.
 type CreateResult struct {
+	gophercloud.ErrResult
+}
+
+// DeleteResult represents the result of a delete operation.
+type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
@@ -64,8 +70,4 @@ func ExtractUsers(page pagination.Page) ([]User, error) {
 	err := mapstructure.Decode(casted, &response)
 
 	return response.Users, err
-}
-
-type DeleteResult struct {
-	gophercloud.ErrResult
 }

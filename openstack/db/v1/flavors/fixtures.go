@@ -26,7 +26,7 @@ const flavor = `
 `
 
 var (
-	flavorID = "{flavorID}"
+	flavorID = 1
 	_baseURL = "/flavors"
 	resURL   = "/flavors/" + flavorID
 )

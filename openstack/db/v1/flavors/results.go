@@ -1,15 +1,10 @@
 package flavors
 
 import (
-	"errors"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
-
-// ErrCannotInterpret is returned by an Extract call if the response body doesn't have the expected structure.
-var ErrCannotInterpet = errors.New("Unable to interpret a response body.")
 
 // GetResult temporarily holds the response from a Get call.
 type GetResult struct {
@@ -32,15 +27,16 @@ func (gr GetResult) Extract() (*Flavor, error) {
 
 // Flavor records represent (virtual) hardware configurations for server resources in a region.
 type Flavor struct {
-	// The Id field contains the flavor's unique identifier.
-	// For example, this identifier will be useful when specifying which hardware configuration to use for a new server instance.
+	// The flavor's unique identifier.
 	ID int `mapstructure:"id"`
 
+	// The RAM capacity for the flavor.
 	RAM int `mapstructure:"ram"`
 
 	// The Name field provides a human-readable moniker for the flavor.
 	Name string `mapstructure:"name"`
 
+	// Links to access the flavor.
 	Links []gophercloud.Link
 }
 
