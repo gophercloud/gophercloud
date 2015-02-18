@@ -6,15 +6,20 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/rackspace/gophercloud/testhelper/fixture"
 )
 
 const instanceID = "{instanceID}"
+
+var (
+	resURL = "/instances/" + instanceID + "/databases"
+)
 
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleCreateDBSuccessfully(t, instanceID)
+	fixture.SetupHandler(t, resURL, "POST", createDBsReq, "", 202)
 
 	opts := BatchCreateOpts{
 		CreateOpts{Name: "testingdb", CharSet: "utf8", Collate: "utf8_general_ci"},
@@ -29,7 +34,7 @@ func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleListDBsSuccessfully(t, instanceID)
+	fixture.SetupHandler(t, resURL, "GET", "", listDBsResp, 200)
 
 	expectedDBs := []Database{
 		Database{Name: "anotherexampledb"},
@@ -64,7 +69,7 @@ func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleDeleteDBSuccessfully(t, instanceID, "{dbName}")
+	fixture.SetupHandler(t, resURL+"/{dbName}", "DELETE", "", "", 202)
 
 	err := Delete(fake.ServiceClient(), instanceID, "{dbName}").ExtractErr()
 	th.AssertNoErr(t, err)

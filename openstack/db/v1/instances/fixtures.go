@@ -2,45 +2,73 @@ package instances
 
 import (
 	"fmt"
-	"net/http"
-	"testing"
 
-	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/rackspace/gophercloud"
 )
 
-const singleInstanceJson = `
+const instance = `
+{
+  "created": "2014-02-13T21:47:13",
+  "datastore": {
+    "type": "mysql",
+    "version": "5.6"
+  },
+  "flavor": {
+    "id": "1",
+    "links": [
+      {
+        "href": "https://my-openstack.com/v1.0/1234/flavors/1",
+        "rel": "self"
+      },
+      {
+        "href": "https://my-openstack.com/v1.0/1234/flavors/1",
+        "rel": "bookmark"
+      }
+    ]
+  },
+  "links": [
+    {
+      "href": "https://my-openstack.com/v1.0/1234/instances/1",
+      "rel": "self"
+    }
+  ],
+  "hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.my-openstack.com",
+  "id": "{instanceID}",
+  "name": "json_rack_instance",
+  "status": "BUILD",
+  "updated": "2014-02-13T21:47:13",
+  "volume": {
+    "size": 2
+  }
+}
+`
+
+var createReq = `
 {
 	"instance": {
-		"created": "2014-02-13T21:47:13",
-		"datastore": {
-			"type": "mysql",
-			"version": "5.6"
-		},
-		"flavor": {
-			"id": "1",
-			"links": [
-				{
-					"href": "https://my-openstack.com/v1.0/1234/flavors/1",
-					"rel": "self"
-				},
-				{
-					"href": "https://my-openstack.com/v1.0/1234/flavors/1",
-					"rel": "bookmark"
-				}
-			]
-		},
-		"links": [
+		"databases": [
 			{
-				"href": "https://my-openstack.com/v1.0/1234/instances/1",
-				"rel": "self"
+				"character_set": "utf8",
+				"collate": "utf8_general_ci",
+				"name": "sampledb"
+			},
+			{
+				"name": "nextround"
 			}
 		],
-		"hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.my-openstack.com",
-		"id": "d4603f69-ec7e-4e9b-803f-600b9205576f",
+		"flavorRef": "1",
 		"name": "json_rack_instance",
-		"status": "BUILD",
-		"updated": "2014-02-13T21:47:13",
+		"users": [
+			{
+				"databases": [
+					{
+						"name": "sampledb"
+					}
+				],
+				"name": "demouser",
+				"password": "demopassword"
+			}
+		],
 		"volume": {
 			"size": 2
 		}
@@ -48,154 +76,36 @@ const singleInstanceJson = `
 }
 `
 
-func HandleCreateInstanceSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/instances", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+var (
+	restartReq   = `{"restart": true}`
+	resizeReq    = `{"resize": {"flavorRef": "2"}}`
+	resizeVolReq = `{"resize": {"volume": {"size": 4}}}`
+)
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+var (
+	createResp        = fmt.Sprintf(`{"instance": %s}`, instance)
+	listInstancesResp = fmt.Sprintf(`{"instances":[%s]}`, instance)
+	getInstanceResp   = createResp
+	enableUserResp    = `{"user":{"name":"root","password":"secretsecret"}}`
+	isUserEnabledResp = `{"rootEnabled":true}`
+)
 
-		th.TestJSONRequest(t, r, `
-{
-  "instance": {
-    "databases": [
-      {
-        "character_set": "utf8",
-        "collate": "utf8_general_ci",
-        "name": "sampledb"
-      },
-      {
-        "name": "nextround"
-      }
-    ],
-    "flavorRef": "1",
-    "name": "json_rack_instance",
-    "users": [
-      {
-        "databases": [
-          {
-            "name": "sampledb"
-          }
-        ],
-        "name": "demouser",
-        "password": "demopassword"
-      }
-    ],
-    "volume": {
-      "size": 2
-    }
-  }
-}
-`)
-
-		fmt.Fprintf(w, singleInstanceJson)
-	})
-}
-
-func HandleListInstanceSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/instances", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-
-		fmt.Fprintf(w, `
-{
-  "instances": [
-    {
-      "name": "xml_rack_instance",
-      "status": "ACTIVE",
-      "volume": {
-        "size": 2
-      },
-      "flavor": {
-        "id": "1",
-        "links": [
-          {
-            "href": "https://openstack.example.com/v1.0/1234/flavors/1",
-            "rel": "self"
-          },
-          {
-            "href": "https://openstack.example.com/flavors/1",
-            "rel": "bookmark"
-          }
-        ]
-      },
-      "id": "8fb081af-f237-44f5-80cc-b46be1840ca9",
-      "links": [
-        {
-          "href": "https://openstack.example.com/v1.0/1234/instances/8fb081af-f237-44f5-80cc-b46be1840ca9",
-          "rel": "self"
-        }
-      ]
-    }
-  ]
-}
-`)
-	})
-}
-
-func HandleGetInstanceSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-
-		fmt.Fprintf(w, singleInstanceJson)
-	})
-}
-
-func HandleDeleteInstanceSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusAccepted)
-	})
-}
-
-func HandleEnableRootUserSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id+"/root", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{"user":{"name":"root","password":"secretsecret"}}`)
-	})
-}
-
-func HandleIsRootEnabledSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id+"/root", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{"rootEnabled":true}`)
-	})
-}
-
-func HandleRestartSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id+"/action", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestJSONRequest(t, r, `{"restart": true}`)
-		w.WriteHeader(http.StatusAccepted)
-	})
-}
-
-func HandleResizeInstanceSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id+"/action", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestJSONRequest(t, r, `{"resize": {"flavorRef": "2"}}`)
-		w.WriteHeader(http.StatusAccepted)
-	})
-}
-
-func HandleResizeVolSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id+"/action", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestJSONRequest(t, r, `{"resize": {"volume": {"size": 4}}}`)
-		w.WriteHeader(http.StatusAccepted)
-	})
+var expectedInstance = Instance{
+	Created: "2014-02-13T21:47:13",
+	Updated: "2014-02-13T21:47:13",
+	Flavor: Flavor{
+		ID: "1",
+		Links: []gophercloud.Link{
+			gophercloud.Link{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "self"},
+			gophercloud.Link{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "bookmark"},
+		},
+	},
+	Hostname: "e09ad9a3f73309469cf1f43d11e79549caf9acf2.my-openstack.com",
+	ID:       instanceID,
+	Links: []gophercloud.Link{
+		gophercloud.Link{Href: "https://my-openstack.com/v1.0/1234/instances/1", Rel: "self"},
+	},
+	Name:   "json_rack_instance",
+	Status: "BUILD",
+	Volume: Volume{Size: 2},
 }

@@ -1,113 +1,31 @@
 package flavors
 
-import (
-	"fmt"
-	"net/http"
-	"testing"
+import "fmt"
 
-	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
+const flavor = `
+{
+	"id": %d,
+	"links": [
+		{
+			"href": "https://openstack.example.com/v1.0/1234/flavors/%d",
+			"rel": "self"
+		},
+		{
+			"href": "https://openstack.example.com/flavors/%d",
+			"rel": "bookmark"
+		}
+	],
+	"name": "%s",
+	"ram": %d
+}
+`
+
+var (
+	flavor1 = fmt.Sprintf(flavor, 1, 1, 1, "m1.tiny", 512)
+	flavor2 = fmt.Sprintf(flavor, 2, 2, 2, "m1.small", 1024)
+	flavor3 = fmt.Sprintf(flavor, 3, 3, 3, "m1.medium", 2048)
+	flavor4 = fmt.Sprintf(flavor, 4, 4, 4, "m1.large", 4096)
+
+	listFlavorsResp = fmt.Sprintf(`{"flavors":[%s, %s, %s, %s]}`, flavor1, flavor2, flavor3, flavor4)
+	getFlavorResp   = fmt.Sprintf(`{"flavor": %s}`, flavor1)
 )
-
-func HandleListFlavorsSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/flavors", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-  "flavors": [
-    {
-      "id": 1,
-      "links": [
-        {
-          "href": "https://openstack.example.com/v1.0/1234/flavors/1",
-          "rel": "self"
-        },
-        {
-          "href": "https://openstack.example.com/flavors/1",
-          "rel": "bookmark"
-        }
-      ],
-      "name": "m1.tiny",
-      "ram": 512
-    },
-    {
-      "id": 2,
-      "links": [
-        {
-          "href": "https://openstack.example.com/v1.0/1234/flavors/2",
-          "rel": "self"
-        },
-        {
-          "href": "https://openstack.example.com/flavors/2",
-          "rel": "bookmark"
-        }
-      ],
-      "name": "m1.small",
-      "ram": 1024
-    },
-    {
-      "id": 3,
-      "links": [
-        {
-          "href": "https://openstack.example.com/v1.0/1234/flavors/3",
-          "rel": "self"
-        },
-        {
-          "href": "https://openstack.example.com/flavors/3",
-          "rel": "bookmark"
-        }
-      ],
-      "name": "m1.medium",
-      "ram": 2048
-    },
-    {
-      "id": 4,
-      "links": [
-        {
-          "href": "https://openstack.example.com/v1.0/1234/flavors/4",
-          "rel": "self"
-        },
-        {
-          "href": "https://openstack.example.com/flavors/4",
-          "rel": "bookmark"
-        }
-      ],
-      "name": "m1.large",
-      "ram": 4096
-    }
-  ]
-}
-`)
-	})
-}
-
-func HandleGetFlavorSuccessfully(t *testing.T, flavorID string) {
-	th.Mux.HandleFunc("/flavors/"+flavorID, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-  "flavor": {
-    "id": 1,
-    "links": [
-      {
-        "href": "https://openstack.example.com/v1.0/1234/flavors/1",
-        "rel": "self"
-      }
-    ],
-    "name": "m1.tiny",
-    "ram": 512
-  }
-}
-`)
-	})
-}

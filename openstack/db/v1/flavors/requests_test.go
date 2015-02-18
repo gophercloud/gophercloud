@@ -7,13 +7,20 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/rackspace/gophercloud/testhelper/fixture"
+)
+
+var (
+	flavorID = "{flavorID}"
+	_baseURL = "/flavors"
+	resURL   = "/flavors/" + flavorID
 )
 
 func TestListFlavors(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleListFlavorsSuccessfully(t)
+	fixture.SetupHandler(t, _baseURL, "GET", "", listFlavorsResp, 200)
 
 	pages := 0
 	err := List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
@@ -78,9 +85,9 @@ func TestGetFlavor(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleGetFlavorSuccessfully(t, "12345")
+	fixture.SetupHandler(t, resURL, "GET", "", getFlavorResp, 200)
 
-	actual, err := Get(fake.ServiceClient(), "12345").Extract()
+	actual, err := Get(fake.ServiceClient(), flavorID).Extract()
 	th.AssertNoErr(t, err)
 
 	expected := &Flavor{
