@@ -140,8 +140,8 @@ func (p Pager) AllPages() (Page, error) {
 		return nil, err
 	}
 
-	// Switch on the page body type. Recognized types are `map[string]interface{}`
-	// and `[]byte`.
+	// Switch on the page body type. Recognized types are `map[string]interface{}`,
+	// `[]byte`, and `[]interface{}`.
 	switch testPage.GetBody().(type) {
 	case map[string]interface{}:
 		// key is the map key for the page body if the body type is `map[string]interface{}`.
@@ -196,6 +196,7 @@ func (p Pager) AllPages() (Page, error) {
 		if err != nil {
 			return nil, err
 		}
+		// Set body to value of type `[]interface{}`
 		body = reflect.MakeSlice(reflect.TypeOf(pagesSlice), len(pagesSlice), len(pagesSlice))
 		for i, s := range pagesSlice {
 			body.Index(i).Set(reflect.ValueOf(s))
