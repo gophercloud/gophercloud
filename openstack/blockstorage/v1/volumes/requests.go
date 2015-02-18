@@ -152,7 +152,9 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	createPage := func(r pagination.PageResult) pagination.Page {
 		return ListResult{pagination.SinglePageBase(r)}
 	}
-	return pagination.NewPager(client, url, createPage)
+	p := pagination.NewPager(client, url, createPage)
+	p.PageType = ListResult{}
+	return p
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
