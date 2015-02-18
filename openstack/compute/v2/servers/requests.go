@@ -73,7 +73,9 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		return ServerPage{pagination.LinkedPageBase{PageResult: r}}
 	}
 
-	return pagination.NewPager(client, url, createPageFn)
+	p := pagination.NewPager(client, url, createPageFn)
+	p.PageType = ServerPage{}
+	return p
 }
 
 // CreateOptsBuilder describes struct types that can be accepted by the Create call.
