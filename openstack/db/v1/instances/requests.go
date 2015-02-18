@@ -3,7 +3,6 @@ package instances
 import (
 	"fmt"
 
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	db "github.com/rackspace/gophercloud/openstack/db/v1/databases"
 	"github.com/rackspace/gophercloud/openstack/db/v1/users"
@@ -87,15 +86,11 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 		return res
 	}
 
-	resp, err := perigee.Request("POST", baseURL(client), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = client.Request("POST", baseURL(client), gophercloud.RequestOpts{
+		JSONBody:     &reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }
@@ -113,14 +108,10 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 
-	resp, err := perigee.Request("GET", resourceURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = client.Request("GET", resourceURL(client, id), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }
@@ -129,13 +120,9 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
 
-	resp, err := perigee.Request("DELETE", resourceURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("DELETE", resourceURL(client, id), gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }
@@ -145,14 +132,10 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 func EnableRootUser(client *gophercloud.ServiceClient, id string) UserRootResult {
 	var res UserRootResult
 
-	resp, err := perigee.Request("POST", userRootURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = client.Request("POST", userRootURL(client, id), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }
@@ -163,10 +146,9 @@ func EnableRootUser(client *gophercloud.ServiceClient, id string) UserRootResult
 func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
 	var res gophercloud.Result
 
-	_, err := perigee.Request("GET", userRootURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, err := client.Request("GET", userRootURL(client, id), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 
 	return res.Body.(map[string]interface{})["rootEnabled"] == true, err
@@ -178,14 +160,10 @@ func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
 func RestartService(client *gophercloud.ServiceClient, id string) ActionResult {
 	var res ActionResult
 
-	resp, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     map[string]bool{"restart": true},
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
+		JSONBody: map[string]bool{"restart": true},
+		OkCodes:  []int{202},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }
@@ -201,14 +179,10 @@ func ResizeInstance(client *gophercloud.ServiceClient, id, flavorRef string) Act
 		},
 	}
 
-	resp, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     reqBody,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
+		JSONBody: reqBody,
+		OkCodes:  []int{202},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }
@@ -225,14 +199,10 @@ func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) Action
 		},
 	}
 
-	resp, err := perigee.Request("POST", actionURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     reqBody,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
+		JSONBody: reqBody,
+		OkCodes:  []int{202},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }

@@ -7,6 +7,7 @@ import (
 	osDBs "github.com/rackspace/gophercloud/openstack/db/v1/databases"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	osUsers "github.com/rackspace/gophercloud/openstack/db/v1/users"
+	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
@@ -16,7 +17,7 @@ var instanceID = "d4603f69-ec7e-4e9b-803f-600b9205576f"
 var expectedInstance = &Instance{
 	Created:   "2014-02-13T21:47:13",
 	Updated:   "2014-02-13T21:47:13",
-	Datastore: Datastore{Type: "mysql", Version: "5.6"},
+	Datastore: datastores.DatastorePartial{Type: "mysql", Version: "5.6"},
 	Flavor: os.Flavor{
 		ID: "1",
 		Links: []gophercloud.Link{

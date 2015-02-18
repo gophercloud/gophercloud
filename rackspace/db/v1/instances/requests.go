@@ -1,7 +1,6 @@
 package instances
 
 import (
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/backups"
@@ -10,10 +9,9 @@ import (
 func GetDefaultConfig(client *gophercloud.ServiceClient, id string) ConfigResult {
 	var res ConfigResult
 
-	_, res.Err = perigee.Request("GET", configURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = client.Request("GET", configURL(client, id), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 
 	return res
@@ -26,10 +24,9 @@ func AssociateWithConfigGroup(client *gophercloud.ServiceClient, instanceID, con
 
 	var res UpdateResult
 
-	_, res.Err = perigee.Request("PUT", resourceURL(client, instanceID), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     map[string]map[string]string{"instance": reqBody},
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("PUT", resourceURL(client, instanceID), gophercloud.RequestOpts{
+		JSONBody: map[string]map[string]string{"instance": reqBody},
+		OkCodes:  []int{202},
 	})
 
 	return res
@@ -45,10 +42,9 @@ func ListBackups(client *gophercloud.ServiceClient, instanceID string) paginatio
 func DetachReplica(client *gophercloud.ServiceClient, replicaID string) DetachResult {
 	var res DetachResult
 
-	_, res.Err = perigee.Request("PATCH", resourceURL(client, replicaID), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     map[string]interface{}{"instance": map[string]string{"replica_of": "", "slave_of": ""}},
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("PATCH", resourceURL(client, replicaID), gophercloud.RequestOpts{
+		JSONBody: map[string]interface{}{"instance": map[string]string{"replica_of": "", "slave_of": ""}},
+		OkCodes:  []int{202},
 	})
 
 	return res

@@ -17,7 +17,7 @@ type Instance struct {
 	Updated string //time.Time
 
 	// Indicates how the instance stores data.
-	Datastore datastores.Datastore
+	Datastore datastores.DatastorePartial
 
 	// Indicates the hardware flavor the instance uses.
 	Flavor os.Flavor

@@ -3,7 +3,6 @@ package databases
 import (
 	"fmt"
 
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -68,15 +67,11 @@ func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOpt
 		return res
 	}
 
-	resp, err := perigee.Request("POST", baseURL(client, instanceID), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("POST", baseURL(client, instanceID), gophercloud.RequestOpts{
+		JSONBody:     &reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{202},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }
@@ -92,14 +87,10 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 func Delete(client *gophercloud.ServiceClient, instanceID, dbName string) DeleteResult {
 	var res DeleteResult
 
-	resp, err := perigee.Request("DELETE", dbURL(client, instanceID, dbName), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("DELETE", dbURL(client, instanceID, dbName), gophercloud.RequestOpts{
+		JSONBody: &res.Body,
+		OkCodes:  []int{202},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }

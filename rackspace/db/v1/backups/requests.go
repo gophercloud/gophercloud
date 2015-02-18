@@ -3,7 +3,6 @@ package backups
 import (
 	"errors"
 
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -49,11 +48,10 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 		return res
 	}
 
-	_, res.Err = perigee.Request("POST", baseURL(client), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		Results:     &res.Body,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("POST", baseURL(client), gophercloud.RequestOpts{
+		JSONBody:     &reqBody,
+		JSONResponse: &res.Body,
+		OkCodes:      []int{202},
 	})
 
 	return res
@@ -96,10 +94,9 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 
-	_, res.Err = perigee.Request("GET", resourceURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = client.Request("GET", resourceURL(client, id), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 
 	return res
@@ -108,9 +105,8 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
 
-	_, res.Err = perigee.Request("DELETE", resourceURL(client, id), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("DELETE", resourceURL(client, id), gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
 
 	return res

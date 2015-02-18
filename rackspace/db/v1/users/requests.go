@@ -1,7 +1,6 @@
 package users
 
 import (
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	db "github.com/rackspace/gophercloud/openstack/db/v1/databases"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/users"
@@ -17,10 +16,9 @@ func ChangePassword(client *gophercloud.ServiceClient, instanceID string, opts o
 		return res
 	}
 
-	_, res.Err = perigee.Request("PUT", baseURL(client, instanceID), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("PUT", baseURL(client, instanceID), gophercloud.RequestOpts{
+		JSONBody: &reqBody,
+		OkCodes:  []int{202},
 	})
 
 	return res
@@ -36,10 +34,9 @@ func Update(client *gophercloud.ServiceClient, instanceID, userName string, opts
 	}
 	reqBody = map[string]interface{}{"user": reqBody}
 
-	_, res.Err = perigee.Request("PUT", userURL(client, instanceID, userName), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("PUT", userURL(client, instanceID, userName), gophercloud.RequestOpts{
+		JSONBody: &reqBody,
+		OkCodes:  []int{202},
 	})
 
 	return res
@@ -48,10 +45,9 @@ func Update(client *gophercloud.ServiceClient, instanceID, userName string, opts
 func Get(client *gophercloud.ServiceClient, instanceID, userName string) GetResult {
 	var res GetResult
 
-	_, res.Err = perigee.Request("GET", userURL(client, instanceID, userName), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		Results:     &res.Body,
-		OkCodes:     []int{200},
+	_, res.Err = client.Request("GET", userURL(client, instanceID, userName), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 
 	return res
@@ -74,10 +70,9 @@ func GrantAccess(client *gophercloud.ServiceClient, instanceID, userName string,
 		return res
 	}
 
-	_, res.Err = perigee.Request("PUT", dbsURL(client, instanceID, userName), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("PUT", dbsURL(client, instanceID, userName), gophercloud.RequestOpts{
+		JSONBody: &reqBody,
+		OkCodes:  []int{202},
 	})
 
 	return res
@@ -86,9 +81,8 @@ func GrantAccess(client *gophercloud.ServiceClient, instanceID, userName string,
 func RevokeAccess(client *gophercloud.ServiceClient, instanceID, userName, dbName string) RevokeAccessResult {
 	var res RevokeAccessResult
 
-	_, res.Err = perigee.Request("DELETE", dbURL(client, instanceID, userName, dbName), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("DELETE", dbURL(client, instanceID, userName, dbName), gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
 
 	return res

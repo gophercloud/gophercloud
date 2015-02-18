@@ -18,7 +18,7 @@ type Backup struct {
 	Status      string
 	Created     string
 	Updated     string
-	Datastore   datastores.Datastore
+	Datastore   datastores.DatastorePartial
 }
 
 type CreateResult struct {

@@ -1,7 +1,6 @@
 package users
 
 import (
-	"github.com/racker/perigee"
 	"github.com/rackspace/gophercloud"
 	db "github.com/rackspace/gophercloud/openstack/db/v1/databases"
 	"github.com/rackspace/gophercloud/pagination"
@@ -77,14 +76,10 @@ func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOpt
 		return res
 	}
 
-	resp, err := perigee.Request("POST", baseURL(client, instanceID), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		ReqBody:     &reqBody,
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("POST", baseURL(client, instanceID), gophercloud.RequestOpts{
+		JSONBody: &reqBody,
+		OkCodes:  []int{202},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }
@@ -100,13 +95,9 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 func Delete(client *gophercloud.ServiceClient, instanceID, userName string) DeleteResult {
 	var res DeleteResult
 
-	resp, err := perigee.Request("DELETE", userURL(client, instanceID, userName), perigee.Options{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{202},
+	_, res.Err = client.Request("DELETE", userURL(client, instanceID, userName), gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
-
-	res.Header = resp.HttpResponse.Header
-	res.Err = err
 
 	return res
 }

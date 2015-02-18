@@ -20,6 +20,12 @@ type Datastore struct {
 	Versions       []Version
 }
 
+type DatastorePartial struct {
+	Version   string
+	Type      string
+	VersionID string `json:"version_id" mapstructure:"version_id"`
+}
+
 type GetResult struct {
 	gophercloud.Result
 }

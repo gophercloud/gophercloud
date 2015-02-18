@@ -7,6 +7,7 @@ import (
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/backups"
+	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
@@ -23,7 +24,7 @@ var expectedReplica = &Instance{
 	ID:        "8367c312-7c40-4a66-aab1-5767478914fc",
 	Volume:    os.Volume{Size: 1},
 	Flavor:    os.Flavor{ID: "9"},
-	Datastore: Datastore{Version: "5.6", Type: "mysql"},
+	Datastore: datastores.DatastorePartial{Version: "5.6", Type: "mysql"},
 	ReplicaOf: &Instance{
 		ID: "6bdca2fc-418e-40bd-a595-62abda61862d",
 	},
@@ -121,7 +122,7 @@ func TestListBackups(t *testing.T) {
 				Size:        0.141026,
 				Status:      "COMPLETED",
 				Updated:     "2014-06-18T21:24:39",
-				Datastore:   backups.Datastore{Version: "5.1", Type: "MySQL", VersionID: "20000000-0000-0000-0000-000000000002"},
+				Datastore:   datastores.DatastorePartial{Version: "5.1", Type: "MySQL", VersionID: "20000000-0000-0000-0000-000000000002"},
 			},
 		}
 
@@ -181,7 +182,7 @@ func TestListReplicas(t *testing.T) {
 				IP:        []string{"10.0.0.3"},
 				Volume:    os.Volume{Size: 1},
 				Flavor:    os.Flavor{ID: "9"},
-				Datastore: Datastore{Version: "5.6", Type: "mysql"},
+				Datastore: datastores.DatastorePartial{Version: "5.6", Type: "mysql"},
 				ReplicaOf: &Instance{
 					ID: "8b499b45-52d6-402d-b398-f9d8f279c69a",
 				},
@@ -226,7 +227,7 @@ func TestGetReplica(t *testing.T) {
 			Size: 1,
 		},
 		Flavor: os.Flavor{ID: "9"},
-		Datastore: Datastore{
+		Datastore: datastores.DatastorePartial{
 			Version: "5.6",
 			Type:    "mysql",
 		},
