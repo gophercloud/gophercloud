@@ -12,7 +12,6 @@ import (
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, "/datastores", "GET", "", listDSResp, 200)
 
 	pages := 0
@@ -37,7 +36,6 @@ func TestList(t *testing.T) {
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, "/datastores/{dsID}", "GET", "", getDSResp, 200)
 
 	ds, err := Get(fake.ServiceClient(), "{dsID}").Extract()
@@ -48,7 +46,6 @@ func TestGet(t *testing.T) {
 func TestListVersions(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, "/datastores/{dsID}/versions", "GET", "", listVersionsResp, 200)
 
 	pages := 0
@@ -73,7 +70,6 @@ func TestListVersions(t *testing.T) {
 func TestGetVersion(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, "/datastores/{dsID}/versions/{versionID}", "GET", "", getVersionResp, 200)
 
 	ds, err := GetVersion(fake.ServiceClient(), "{dsID}", "{versionID}").Extract()

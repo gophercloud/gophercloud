@@ -15,8 +15,7 @@ const instanceID = "{instanceID}"
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleCreateUserSuccessfully(t, instanceID)
+	os.HandleCreate(t)
 
 	opts := os.BatchCreateOpts{
 		os.CreateOpts{
@@ -43,8 +42,7 @@ func TestCreate(t *testing.T) {
 func TestUserList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleListUsersSuccessfully(t, instanceID)
+	os.HandleList(t)
 
 	expectedUsers := []os.User{
 		os.User{
@@ -77,17 +75,13 @@ func TestUserList(t *testing.T) {
 	})
 
 	th.AssertNoErr(t, err)
-
-	if pages != 1 {
-		t.Errorf("Expected 1 page, saw %d", pages)
-	}
+	th.AssertEquals(t, 1, pages)
 }
 
-func TestDeleteInstance(t *testing.T) {
+func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleDeleteUserSuccessfully(t, instanceID, "{userName}")
+	os.HandleDelete(t)
 
 	res := Delete(fake.ServiceClient(), instanceID, "{userName}")
 	th.AssertNoErr(t, res.Err)

@@ -27,7 +27,6 @@ var (
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, _baseURL, "GET", "", listConfigsJSON, 200)
 
 	count := 0
@@ -49,7 +48,6 @@ func TestList(t *testing.T) {
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, resURL, "GET", "", getConfigJSON, 200)
 
 	config, err := Get(fake.ServiceClient(), configID).Extract()
@@ -60,7 +58,6 @@ func TestGet(t *testing.T) {
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, _baseURL, "POST", createReq, createConfigJSON, 201)
 
 	opts := CreateOpts{
@@ -84,7 +81,6 @@ func TestCreate(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, resURL, "PATCH", updateReq, "", 200)
 
 	opts := UpdateOpts{
@@ -100,7 +96,6 @@ func TestUpdate(t *testing.T) {
 func TestReplace(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, resURL, "PUT", updateReq, "", 202)
 
 	opts := UpdateOpts{
@@ -116,7 +111,6 @@ func TestReplace(t *testing.T) {
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, resURL, "DELETE", "", "", 202)
 
 	err := Delete(fake.ServiceClient(), configID).ExtractErr()
@@ -126,7 +120,6 @@ func TestDelete(t *testing.T) {
 func TestListInstances(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, resURL+"/instances", "GET", "", listInstancesJSON, 200)
 
 	expectedInstance := instances.Instance{
@@ -155,7 +148,6 @@ func TestListInstances(t *testing.T) {
 func TestListDSParams(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, dsParamListURL, "GET", "", listParamsJSON, 200)
 
 	pages := 0
@@ -186,7 +178,6 @@ func TestListDSParams(t *testing.T) {
 func TestGetDSParam(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, dsParamGetURL, "GET", "", getParamJSON, 200)
 
 	param, err := GetDatastoreParam(fake.ServiceClient(), dsID, versionID, paramID).Extract()
@@ -202,7 +193,6 @@ func TestGetDSParam(t *testing.T) {
 func TestListGlobalParams(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, globalParamListURL, "GET", "", listParamsJSON, 200)
 
 	pages := 0
@@ -233,7 +223,6 @@ func TestListGlobalParams(t *testing.T) {
 func TestGetGlobalParam(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
 	fixture.SetupHandler(t, globalParamGetURL, "GET", "", getParamJSON, 200)
 
 	param, err := GetGlobalParam(fake.ServiceClient(), versionID, paramID).Extract()

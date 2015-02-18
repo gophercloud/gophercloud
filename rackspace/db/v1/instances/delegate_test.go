@@ -10,9 +10,14 @@ import (
 	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/rackspace/gophercloud/testhelper/fixture"
 )
 
-var instanceID = "d4603f69-ec7e-4e9b-803f-600b9205576f"
+var (
+	instanceID = "{instanceID}"
+	_rootURL   = "/instances"
+	resURL     = "/instances/" + instanceID
+)
 
 var expectedInstance = &Instance{
 	Created:   "2014-02-13T21:47:13",
@@ -38,8 +43,7 @@ var expectedInstance = &Instance{
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleCreateInstanceSuccessfully(t)
+	fixture.SetupHandler(t, _rootURL, "POST", createReq, createResp, 200)
 
 	opts := CreateOpts{
 		Name:      "json_rack_instance",
@@ -70,8 +74,7 @@ func TestCreate(t *testing.T) {
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleGetInstanceSuccessfully(t, instanceID)
+	fixture.SetupHandler(t, resURL, "GET", "", getResp, 200)
 
 	instance, err := Get(fake.ServiceClient(), instanceID).Extract()
 
@@ -82,8 +85,7 @@ func TestGet(t *testing.T) {
 func TestDeleteInstance(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleDeleteInstanceSuccessfully(t, instanceID)
+	os.HandleDelete(t)
 
 	res := Delete(fake.ServiceClient(), instanceID)
 	th.AssertNoErr(t, res.Err)
@@ -92,8 +94,7 @@ func TestDeleteInstance(t *testing.T) {
 func TestEnableRootUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleEnableRootUserSuccessfully(t, instanceID)
+	os.HandleEnableRoot(t)
 
 	expected := &osUsers.User{Name: "root", Password: "secretsecret"}
 
@@ -105,32 +106,26 @@ func TestEnableRootUser(t *testing.T) {
 func TestRestartService(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleRestartSuccessfully(t, instanceID)
+	os.HandleRestart(t)
 
 	res := RestartService(fake.ServiceClient(), instanceID)
-
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestResizeInstance(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleResizeInstanceSuccessfully(t, instanceID)
+	os.HandleResize(t)
 
 	res := ResizeInstance(fake.ServiceClient(), instanceID, "2")
-
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestResizeVolume(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleResizeVolSuccessfully(t, instanceID)
+	os.HandleResizeVol(t)
 
 	res := ResizeVolume(fake.ServiceClient(), instanceID, 4)
-
 	th.AssertNoErr(t, res.Err)
 }

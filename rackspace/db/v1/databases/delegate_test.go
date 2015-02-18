@@ -9,13 +9,18 @@ import (
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
-const instanceID = "{instanceID}"
+var (
+	instanceID = "{instanceID}"
+	rootURL    = "/instances"
+	resURL     = rootURL + "/" + instanceID
+	uRootURL   = resURL + "/root"
+	aURL       = resURL + "/action"
+)
 
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleCreateDBSuccessfully(t, instanceID)
+	os.HandleCreate(t)
 
 	opts := os.BatchCreateOpts{
 		os.CreateOpts{Name: "testingdb", CharSet: "utf8", Collate: "utf8_general_ci"},
@@ -29,8 +34,7 @@ func TestCreate(t *testing.T) {
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleListDBsSuccessfully(t, instanceID)
+	os.HandleList(t)
 
 	expectedDBs := []os.Database{
 		os.Database{Name: "anotherexampledb"},
@@ -50,22 +54,17 @@ func TestList(t *testing.T) {
 		}
 
 		th.CheckDeepEquals(t, expectedDBs, actual)
-
 		return true, nil
 	})
 
 	th.AssertNoErr(t, err)
-
-	if pages != 1 {
-		t.Errorf("Expected 1 page, saw %d", pages)
-	}
+	th.AssertEquals(t, 1, pages)
 }
 
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	os.HandleDeleteDBSuccessfully(t, instanceID, "{dbName}")
+	os.HandleDelete(t)
 
 	err := os.Delete(fake.ServiceClient(), instanceID, "{dbName}").ExtractErr()
 	th.AssertNoErr(t, err)

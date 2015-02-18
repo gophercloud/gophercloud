@@ -1,15 +1,12 @@
 package instances
 
 import (
-	"fmt"
-	"net/http"
-	"testing"
-
-	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/rackspace/gophercloud"
+	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
+	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 )
 
-const singleInstanceJson = `
+const instance = `
 {
   "instance": {
     "created": "2014-02-13T21:47:13",
@@ -37,7 +34,7 @@ const singleInstanceJson = `
       }
     ],
     "hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.rackspaceclouddb.com",
-    "id": "d4603f69-ec7e-4e9b-803f-600b9205576f",
+    "id": "{instanceID}",
     "name": "json_rack_instance",
     "status": "BUILD",
     "updated": "2014-02-13T21:47:13",
@@ -48,15 +45,7 @@ const singleInstanceJson = `
 }
 `
 
-func HandleCreateInstanceSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/instances", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		th.TestJSONRequest(t, r, `
+var createReq = `
 {
   "instance": {
     "databases": [
@@ -85,22 +74,14 @@ func HandleCreateInstanceSuccessfully(t *testing.T) {
     "volume": {
       "size": 2
     },
-		"restorePoint": {
-			"backupRef": "1234567890"
-		}
+    "restorePoint": {
+      "backupRef": "1234567890"
+    }
   }
 }
-`)
+`
 
-		fmt.Fprintf(w, singleInstanceJson)
-	})
-}
-
-func HandleCreateReplicaSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/instances", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestJSONRequest(t, r, `
+var createReplicaReq = `
 {
   "instance": {
     "volume": {
@@ -111,12 +92,9 @@ func HandleCreateReplicaSuccessfully(t *testing.T) {
     "replica_of": "6bdca2fc-418e-40bd-a595-62abda61862d"
   }
 }
-`)
+`
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
+var createReplicaResp = `
 {
   "instance": {
     "status": "BUILD",
@@ -134,85 +112,62 @@ func HandleCreateReplicaSuccessfully(t *testing.T) {
     ],
     "created": "2014-10-14T18:42:15",
     "id": "8367c312-7c40-4a66-aab1-5767478914fc",
-    "volume": {"size": 1},
-    "flavor": {"id": "9"},
+    "volume": {
+      "size": 1
+    },
+    "flavor": {
+      "id": "9"
+    },
     "datastore": {
       "version": "5.6",
       "type": "mysql"
     },
-    "replica_of": {"id": "6bdca2fc-418e-40bd-a595-62abda61862d"}
+    "replica_of": {
+      "id": "6bdca2fc-418e-40bd-a595-62abda61862d"
+    }
   }
 }
-`)
-	})
-}
+`
 
-func HandleListReplicasSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/instances", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-
-		fmt.Fprintf(w, `
+var listReplicasResp = `
 {
-	"instances": [
-		{
-			"status": "ACTIVE",
-			"name": "t1s1_ALT_GUEST",
-			"links": [
-				{
-					"href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/instances/3c691f06-bf9a-4618-b7ec-2817ce0cf254",
-					"rel": "self"
-				},
-				{
-					"href": "https://ord.databases.api.rackspacecloud.com/instances/3c691f06-bf9a-4618-b7ec-2817ce0cf254",
-					"rel": "bookmark"
-				}
-			],
-			"ip": [
-				"10.0.0.3"
-			],
-			"id": "3c691f06-bf9a-4618-b7ec-2817ce0cf254",
-			"volume": {
-				"size": 1
-			},
-			"flavor": {
-				"id": "9"
-			},
-			"datastore": {
-				"version": "5.6",
-				"type": "mysql"
-			},
-			"replica_of": {
-				"id": "8b499b45-52d6-402d-b398-f9d8f279c69a"
-			}
-		}
-	]
+  "instances": [
+    {
+      "status": "ACTIVE",
+      "name": "t1s1_ALT_GUEST",
+      "links": [
+        {
+          "href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/instances/3c691f06-bf9a-4618-b7ec-2817ce0cf254",
+          "rel": "self"
+        },
+        {
+          "href": "https://ord.databases.api.rackspacecloud.com/instances/3c691f06-bf9a-4618-b7ec-2817ce0cf254",
+          "rel": "bookmark"
+        }
+      ],
+      "ip": [
+        "10.0.0.3"
+      ],
+      "id": "3c691f06-bf9a-4618-b7ec-2817ce0cf254",
+      "volume": {
+        "size": 1
+      },
+      "flavor": {
+        "id": "9"
+      },
+      "datastore": {
+        "version": "5.6",
+        "type": "mysql"
+      },
+      "replica_of": {
+        "id": "8b499b45-52d6-402d-b398-f9d8f279c69a"
+      }
+    }
+  ]
 }
-`)
-	})
-}
+`
 
-func HandleGetInstanceSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-
-		fmt.Fprintf(w, singleInstanceJson)
-	})
-}
-
-func HandleGetReplicaSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-
-		fmt.Fprintf(w, `
+var getReplicaResp = `
 {
   "instance": {
     "status": "ACTIVE",
@@ -223,32 +178,36 @@ func HandleGetReplicaSuccessfully(t *testing.T, id string) {
       "10.0.0.2"
     ],
     "replicas": [
-			{"id": "3c691f06-bf9a-4618-b7ec-2817ce0cf254"}
+      {
+        "id": "3c691f06-bf9a-4618-b7ec-2817ce0cf254"
+      }
     ],
     "id": "8b499b45-52d6-402d-b398-f9d8f279c69a",
     "volume": {
       "used": 0.54,
       "size": 1
     },
-    "flavor": {"id": "9"},
+    "flavor": {
+      "id": "9"
+    },
     "datastore": {
       "version": "5.6",
       "type": "mysql"
     }
   }
 }
-`)
-	})
+`
+
+var detachReq = `
+{
+  "instance": {
+    "replica_of": "",
+    "slave_of": ""
+  }
 }
+`
 
-func HandleGetConfigSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id+"/configuration", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-
-		fmt.Fprintf(w, `
+var getConfigResp = `
 {
   "instance": {
     "configuration": {
@@ -297,31 +256,11 @@ func HandleGetConfigSuccessfully(t *testing.T, id string) {
     }
   }
 }
-`)
-	})
-}
+`
 
-func HandleAssociateGroupSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestJSONRequest(t, r, `{"instance": {"configuration": "{configGroupID}"}}`)
+var associateReq = `{"instance": {"configuration": "{configGroupID}"}}`
 
-		w.WriteHeader(http.StatusAccepted)
-		w.Header().Add("Content-Type", "application/json")
-
-		fmt.Fprintf(w, singleInstanceJson)
-	})
-}
-
-func HandleListBackupsSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id+"/backups", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-
-		fmt.Fprintf(w, `
+var listBackupsResp = `
 {
   "backups": [
     {
@@ -343,25 +282,28 @@ func HandleListBackupsSuccessfully(t *testing.T, id string) {
     }
   ]
 }
-`)
-	})
-}
+`
 
-func HandleDetachReplicaSuccessfully(t *testing.T, id string) {
-	th.Mux.HandleFunc("/instances/"+id, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PATCH")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+var (
+	createResp    = instance
+	getResp       = instance
+	associateResp = instance
+)
 
-		th.TestJSONRequest(t, r, `
-{
-	"instance": {
-		"replica_of": "",
-		"slave_of": ""
-	}
-}
-`)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusAccepted)
-	})
+var expectedReplica = &Instance{
+	Status:  "BUILD",
+	Updated: "2014-10-14T18:42:15",
+	Name:    "t2s1_ALT_GUEST",
+	Links: []gophercloud.Link{
+		gophercloud.Link{Rel: "self", Href: "https://ord.databases.api.rackspacecloud.com/v1.0/5919009/instances/8367c312-7c40-4a66-aab1-5767478914fc"},
+		gophercloud.Link{Rel: "bookmark", Href: "https://ord.databases.api.rackspacecloud.com/instances/8367c312-7c40-4a66-aab1-5767478914fc"},
+	},
+	Created:   "2014-10-14T18:42:15",
+	ID:        "8367c312-7c40-4a66-aab1-5767478914fc",
+	Volume:    os.Volume{Size: 1},
+	Flavor:    os.Flavor{ID: "9"},
+	Datastore: datastores.DatastorePartial{Version: "5.6", Type: "mysql"},
+	ReplicaOf: &Instance{
+		ID: "6bdca2fc-418e-40bd-a595-62abda61862d",
+	},
 }

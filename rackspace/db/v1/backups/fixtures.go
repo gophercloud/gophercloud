@@ -1,12 +1,6 @@
 package backups
 
-import (
-	"testing"
-
-	"github.com/rackspace/gophercloud/testhelper/fixture"
-)
-
-var singleBackup = `
+var getResp = `
 {
   "backup": {
     "created": "2014-02-13T21:47:16",
@@ -28,8 +22,7 @@ var singleBackup = `
 }
 `
 
-func HandleCreateSuccessfully(t *testing.T) {
-	requestJSON := `
+var createReq = `
 {
   "backup": {
     "description": "My Backup",
@@ -39,11 +32,9 @@ func HandleCreateSuccessfully(t *testing.T) {
 }
 `
 
-	fixture.SetupHandler(t, "/backups", "POST", requestJSON, singleBackup, 202)
-}
+var createResp = getResp
 
-func HandleListSuccessfully(t *testing.T) {
-	responseJSON := `
+var listResp = `
 {
   "backups": [
     {
@@ -66,14 +57,3 @@ func HandleListSuccessfully(t *testing.T) {
   ]
 }
 `
-
-	fixture.SetupHandler(t, "/backups", "GET", "", responseJSON, 200)
-}
-
-func HandleGetSuccessfully(t *testing.T, backupID string) {
-	fixture.SetupHandler(t, "/backups/"+backupID, "GET", "", singleBackup, 200)
-}
-
-func HandleDeleteSuccessfully(t *testing.T, backupID string) {
-	fixture.SetupHandler(t, "/backups/"+backupID, "DELETE", "", "", 202)
-}

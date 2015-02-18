@@ -10,31 +10,13 @@ import (
 	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/rackspace/gophercloud/testhelper/fixture"
 )
-
-var expectedReplica = &Instance{
-	Status:  "BUILD",
-	Updated: "2014-10-14T18:42:15",
-	Name:    "t2s1_ALT_GUEST",
-	Links: []gophercloud.Link{
-		gophercloud.Link{Rel: "self", Href: "https://ord.databases.api.rackspacecloud.com/v1.0/5919009/instances/8367c312-7c40-4a66-aab1-5767478914fc"},
-		gophercloud.Link{Rel: "bookmark", Href: "https://ord.databases.api.rackspacecloud.com/instances/8367c312-7c40-4a66-aab1-5767478914fc"},
-	},
-	Created:   "2014-10-14T18:42:15",
-	ID:        "8367c312-7c40-4a66-aab1-5767478914fc",
-	Volume:    os.Volume{Size: 1},
-	Flavor:    os.Flavor{ID: "9"},
-	Datastore: datastores.DatastorePartial{Version: "5.6", Type: "mysql"},
-	ReplicaOf: &Instance{
-		ID: "6bdca2fc-418e-40bd-a595-62abda61862d",
-	},
-}
 
 func TestGetConfig(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleGetConfigSuccessfully(t, instanceID)
+	fixture.SetupHandler(t, resURL+"/configuration", "GET", "", getConfigResp, 200)
 
 	config, err := GetDefaultConfig(fake.ServiceClient(), instanceID).Extract()
 
@@ -90,23 +72,21 @@ func TestGetConfig(t *testing.T) {
 func TestAssociateWithConfigGroup(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	fixture.SetupHandler(t, resURL, "PUT", associateReq, associateResp, 202)
 
-	HandleAssociateGroupSuccessfully(t, instanceID)
-
-	configGroupID := "{configGroupID}"
-	res := AssociateWithConfigGroup(fake.ServiceClient(), instanceID, configGroupID)
+	res := AssociateWithConfigGroup(fake.ServiceClient(), instanceID, "{configGroupID}")
 	th.AssertNoErr(t, res.Err)
 }
 
 func TestListBackups(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	fixture.SetupHandler(t, resURL+"/backups", "GET", "", listBackupsResp, 200)
 
-	HandleListBackupsSuccessfully(t, instanceID)
-	count := 0
+	pages := 0
 
-	ListBackups(fake.ServiceClient(), instanceID).EachPage(func(page pagination.Page) (bool, error) {
-		count++
+	err := ListBackups(fake.ServiceClient(), instanceID).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
 		actual, err := backups.ExtractBackups(page)
 		th.AssertNoErr(t, err)
 
@@ -127,20 +107,17 @@ func TestListBackups(t *testing.T) {
 		}
 
 		th.AssertDeepEquals(t, expected, actual)
-
 		return true, nil
 	})
 
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, pages)
 }
 
 func TestCreateReplica(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleCreateReplicaSuccessfully(t)
+	fixture.SetupHandler(t, _rootURL, "POST", createReplicaReq, createReplicaResp, 200)
 
 	opts := CreateOpts{
 		Name:      "t2s1_ALT_GUEST",
@@ -151,15 +128,13 @@ func TestCreateReplica(t *testing.T) {
 
 	replica, err := Create(fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
-
 	th.AssertDeepEquals(t, expectedReplica, replica)
 }
 
 func TestListReplicas(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleListReplicasSuccessfully(t)
+	fixture.SetupHandler(t, _rootURL, "GET", "", listReplicasResp, 200)
 
 	pages := 0
 	err := List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
@@ -195,17 +170,13 @@ func TestListReplicas(t *testing.T) {
 	})
 
 	th.AssertNoErr(t, err)
-
-	if pages != 1 {
-		t.Errorf("Expected 1 page, saw %d", pages)
-	}
+	th.AssertEquals(t, 1, pages)
 }
 
 func TestGetReplica(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleGetReplicaSuccessfully(t, instanceID)
+	fixture.SetupHandler(t, resURL, "GET", "", getReplicaResp, 200)
 
 	replica, err := Get(fake.ServiceClient(), instanceID).Extract()
 	th.AssertNoErr(t, err)
@@ -239,9 +210,8 @@ func TestGetReplica(t *testing.T) {
 func TestDetachReplica(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	fixture.SetupHandler(t, resURL, "PATCH", detachReq, "", 202)
 
-	HandleDetachReplicaSuccessfully(t, "{replicaID}")
-
-	err := DetachReplica(fake.ServiceClient(), "{replicaID}").ExtractErr()
+	err := DetachReplica(fake.ServiceClient(), instanceID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

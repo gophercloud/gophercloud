@@ -8,15 +8,20 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/rackspace/gophercloud/testhelper/fixture"
 )
 
-const userName = "{userName}"
+var (
+	userName = "{userName}"
+	_rootURL = "/instances/" + instanceID + "/users"
+	_userURL = _rootURL + "/" + userName
+	_dbURL   = _userURL + "/databases"
+)
 
 func TestChangeUserPassword(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleChangePasswordSuccessfully(t, instanceID)
+	fixture.SetupHandler(t, _rootURL, "PUT", changePwdReq, "", 202)
 
 	opts := os.BatchCreateOpts{
 		os.CreateOpts{Name: "dbuser1", Password: "newpassword"},
@@ -24,15 +29,13 @@ func TestChangeUserPassword(t *testing.T) {
 	}
 
 	err := ChangePassword(fake.ServiceClient(), instanceID, opts).ExtractErr()
-
 	th.AssertNoErr(t, err)
 }
 
 func TestUpdateUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleUpdateSuccessfully(t, instanceID, userName)
+	fixture.SetupHandler(t, _userURL, "PUT", updateReq, "", 202)
 
 	opts := os.CreateOpts{
 		Name:     "new_username",
@@ -40,15 +43,13 @@ func TestUpdateUser(t *testing.T) {
 	}
 
 	err := Update(fake.ServiceClient(), instanceID, userName, opts).ExtractErr()
-
 	th.AssertNoErr(t, err)
 }
 
 func TestGetUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleGetSuccessfully(t, instanceID, userName)
+	fixture.SetupHandler(t, _userURL, "GET", "", getResp, 200)
 
 	user, err := Get(fake.ServiceClient(), instanceID, userName).Extract()
 
@@ -69,8 +70,7 @@ func TestGetUser(t *testing.T) {
 func TestUserAccessList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleListUserAccessSuccessfully(t, instanceID, userName)
+	fixture.SetupHandler(t, _userURL+"/databases", "GET", "", listUserAccessResp, 200)
 
 	expectedDBs := []db.Database{
 		db.Database{Name: "databaseE"},
@@ -91,22 +91,15 @@ func TestUserAccessList(t *testing.T) {
 	})
 
 	th.AssertNoErr(t, err)
-
-	if pages != 1 {
-		t.Errorf("Expected 1 page, saw %d", pages)
-	}
+	th.AssertEquals(t, 1, pages)
 }
 
 func TestGrantAccess(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	fixture.SetupHandler(t, _dbURL, "PUT", grantUserAccessReq, "", 202)
 
-	HandleGrantUserAccessSuccessfully(t, instanceID, userName)
-
-	opts := db.BatchCreateOpts{
-		db.CreateOpts{Name: "databaseE"},
-	}
-
+	opts := db.BatchCreateOpts{db.CreateOpts{Name: "databaseE"}}
 	err := GrantAccess(fake.ServiceClient(), instanceID, userName, opts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
@@ -114,8 +107,7 @@ func TestGrantAccess(t *testing.T) {
 func TestRevokeAccess(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	HandleRevokeUserAccessSuccessfully(t, instanceID, userName, "{dbName}")
+	fixture.SetupHandler(t, _dbURL+"/{dbName}", "DELETE", "", "", 202)
 
 	err := RevokeAccess(fake.ServiceClient(), instanceID, userName, "{dbName}").ExtractErr()
 	th.AssertNoErr(t, err)
