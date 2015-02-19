@@ -719,3 +719,11 @@ func DeleteMetadatum(client *gophercloud.ServiceClient, id, key string) DeleteMe
 	})
 	return res
 }
+
+// ListAddresses makes a request against the API to list the servers IP addresses.
+func ListAddresses(client *gophercloud.ServiceClient, id string) pagination.Pager {
+	createPageFn := func(r pagination.PageResult) pagination.Page {
+		return AddressPage{pagination.SinglePageBase(r)}
+	}
+	return pagination.NewPager(client, listAddressesURL(client, id), createPageFn)
+}

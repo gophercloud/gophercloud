@@ -264,3 +264,27 @@ func TestUpdateMetadata(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
 }
+
+func TestListAddresses(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAddressListSuccessfully(t)
+
+	expected := ListAddressesExpected
+	pages := 0
+	err := ListAddresses(client.ServiceClient(), "asdfasdfasdf").EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := ExtractAddresses(page)
+		th.AssertNoErr(t, err)
+
+		if len(actual) != 2 {
+			t.Fatalf("Expected 2 servers, got %d", len(actual))
+		}
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 1, pages)
+}
