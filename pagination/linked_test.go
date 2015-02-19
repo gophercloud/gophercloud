@@ -110,7 +110,6 @@ func TestAllPagesLinked(t *testing.T) {
 	pager := createLinked(t)
 	defer testhelper.TeardownHTTP()
 
-	pager.PageType = LinkedPageResult{}
 	page, err := pager.AllPages()
 	testhelper.AssertNoErr(t, err)
 

@@ -74,7 +74,6 @@ func TestAllPagesSingle(t *testing.T) {
 	pager := setupSinglePaged()
 	defer testhelper.TeardownHTTP()
 
-	pager.PageType = SinglePageResult{}
 	page, err := pager.AllPages()
 	testhelper.AssertNoErr(t, err)
 

@@ -46,11 +46,6 @@ type Pager struct {
 
 	// Headers supplies additional HTTP headers to populate on each paged request.
 	Headers map[string]string
-
-	// PageType is the type of `Page` the `Extract*` function expects back. This is
-	// needed because a type assertion occurs in each `Extract*` function, and it will
-	// fail if the `Page` doesn't have the expected type.
-	PageType Page
 }
 
 // NewPager constructs a manually-configured pager.
@@ -129,10 +124,6 @@ func (p Pager) EachPage(handler func(Page) (bool, error)) error {
 // AllPages returns all the pages from a `List` operation in a single page,
 // allowing the user to retrieve all the pages at once.
 func (p Pager) AllPages() (Page, error) {
-	// Having a value of `nil` for `p.PageType` will cause a run-time error.
-	if p.PageType == nil {
-		return nil, fmt.Errorf("Pager field PageType must be set to successfully call pagination.AllPages method.")
-	}
 	// pagesSlice holds all the pages until they get converted into as Page Body.
 	var pagesSlice []interface{}
 	// body will contain the final concatenated Page body.
@@ -143,6 +134,9 @@ func (p Pager) AllPages() (Page, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Store the page type so we can use reflection to create a new mega-page of
+	// that type.
+	pageType := reflect.TypeOf(testPage)
 
 	// Switch on the page body type. Recognized types are `map[string]interface{}`,
 	// `[]byte`, and `[]interface{}`.
@@ -210,11 +204,11 @@ func (p Pager) AllPages() (Page, error) {
 	}
 
 	// Each `Extract*` function is expecting a specific type of page coming back,
-	// otherwise the type assertion in those functions will fail. PageType is needed
+	// otherwise the type assertion in those functions will fail. pageType is needed
 	// to create a type in this method that has the same type that the `Extract*`
 	// function is expecting and set the Body of that object to the concatenated
 	// pages.
-	page := reflect.New(reflect.TypeOf(p.PageType))
+	page := reflect.New(pageType)
 	// Set the page body to be the concatenated pages.
 	page.Elem().FieldByName("Body").Set(body)
 	// Set any additional headers that were pass along. The `objectstorage` pacakge,

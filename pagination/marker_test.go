@@ -116,7 +116,6 @@ func TestAllPagesMarker(t *testing.T) {
 	pager := createMarkerPaged(t)
 	defer testhelper.TeardownHTTP()
 
-	pager.PageType = MarkerPageResult{}
 	page, err := pager.AllPages()
 	testhelper.AssertNoErr(t, err)
 

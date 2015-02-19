@@ -58,7 +58,6 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	}
 
 	pager := pagination.NewPager(c, url, createPage)
-	pager.PageType = ContainerPage{}
 	pager.Headers = headers
 	return pager
 }
