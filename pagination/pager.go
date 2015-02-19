@@ -29,7 +29,7 @@ type Page interface {
 	// IsEmpty returns true if this Page has no items in it.
 	IsEmpty() (bool, error)
 
-	// GetBody returns the Page Body. This is used in the `AllPages`.
+	// GetBody returns the Page Body. This is used in the `AllPages` method.
 	GetBody() interface{}
 }
 
@@ -47,7 +47,7 @@ type Pager struct {
 	Headers map[string]string
 
 	// PageType is the type of `Page` the `Extract*` function expects back. This is
-	// needed because a type assertion occurs in each `Extract*` function and it will
+	// needed because a type assertion occurs in each `Extract*` function, and it will
 	// fail if the `Page` doesn't have the expected type.
 	PageType Page
 }
