@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"strings"
 
 	"github.com/rackspace/gophercloud"
 )
@@ -154,7 +155,7 @@ func (p Pager) AllPages() (Page, error) {
 			b := page.GetBody().(map[string]interface{})
 			for k := range b {
 				// If it's a linked page, we don't want the `links`, we want the other one.
-				if k != "links" {
+				if !strings.HasSuffix(k, "links") {
 					key = k
 				}
 			}
