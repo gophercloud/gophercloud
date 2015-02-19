@@ -45,10 +45,13 @@ type Instance struct {
 	// Information about the attached volume of the instance.
 	Volume os.Volume
 
+	// IP indicates the various IP addresses which allow access.
 	IP []string
 
+	// Indicates whether this instance is a replica of another source instance.
 	ReplicaOf *Instance `mapstructure:"replica_of" json:"replica_of"`
 
+	// Indicates whether this instance is the source of other replica instances.
 	Replicas []Instance
 }
 
@@ -70,6 +73,7 @@ type CreateResult struct {
 	os.CreateResult
 }
 
+// Extract will retrieve an instance from a create result.
 func (r CreateResult) Extract() (*Instance, error) {
 	return commonExtract(r.Err, r.Body)
 }
@@ -84,10 +88,13 @@ func (r GetResult) Extract() (*Instance, error) {
 	return commonExtract(r.Err, r.Body)
 }
 
+// ConfigResult represents the result of getting default configuration for an
+// instance.
 type ConfigResult struct {
 	gophercloud.Result
 }
 
+// DetachResult represents the result of detaching a replica from its source.
 type DetachResult struct {
 	gophercloud.ErrResult
 }
@@ -114,6 +121,7 @@ type UpdateResult struct {
 	gophercloud.ErrResult
 }
 
+// ExtractInstances retrieves a slice of instances from a paginated collection.
 func ExtractInstances(page pagination.Page) ([]Instance, error) {
 	casted := page.(os.InstancePage).Body
 

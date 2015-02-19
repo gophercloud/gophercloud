@@ -15,24 +15,31 @@ type User struct {
 	// The user password
 	Password string
 
+	// Specifies the host from which a user is allowed to connect to the database.
+	// Possible values are a string containing an IPv4 address or "%" to allow
+	// connecting from any host.
 	Host string
 
 	// The databases associated with this user
 	Databases []db.Database
 }
 
+// UpdatePasswordsResult represents the result of changing a user password.
 type UpdatePasswordsResult struct {
 	gophercloud.ErrResult
 }
 
+// UpdateResult represents the result of updating a user.
 type UpdateResult struct {
 	gophercloud.ErrResult
 }
 
+// GetResult represents the result of getting a user.
 type GetResult struct {
 	gophercloud.Result
 }
 
+// Extract will retrieve a User struct from a getresult.
 func (r GetResult) Extract() (*User, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -88,10 +95,12 @@ func ExtractDBs(page pagination.Page) ([]db.Database, error) {
 	return response.DBs, err
 }
 
+// GrantAccessResult represents the result of granting access to a user.
 type GrantAccessResult struct {
 	gophercloud.ErrResult
 }
 
+// RevokeAccessResult represents the result of revoking access to a user.
 type RevokeAccessResult struct {
 	gophercloud.ErrResult
 }
