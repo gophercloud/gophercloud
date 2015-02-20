@@ -138,6 +138,32 @@ func TestCreateDestroyServer(t *testing.T) {
 	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
 		t.Fatalf("Unable to wait for server: %v", err)
 	}
+
+	pager := servers.ListAddresses(client, server.ID)
+	pager.EachPage(func(page pagination.Page) (bool, error) {
+		networks, err := servers.ExtractAddresses(page)
+		if err != nil {
+			return false, err
+		}
+
+		for n, a := range networks {
+			t.Logf("%s: %+v\n", n, a)
+		}
+		return true, nil
+	})
+
+	pager = servers.ListAddressesByNetwork(client, server.ID, "public")
+	pager.EachPage(func(page pagination.Page) (bool, error) {
+		network, err := servers.ExtractNetworkAddresses(page)
+		if err != nil {
+			return false, err
+		}
+
+		for n, a := range network {
+			t.Logf("%s: %+v\n", n, a)
+		}
+		return true, nil
+	})
 }
 
 func TestUpdateServer(t *testing.T) {
