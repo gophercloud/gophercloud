@@ -41,3 +41,7 @@ func metadataURL(client *gophercloud.ServiceClient, id string) string {
 func listAddressesURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("servers", id, "ips")
 }
+
+func listAddressesByNetworkURL(client *gophercloud.ServiceClient, id, network string) string {
+	return client.ServiceURL("servers", id, "ips", network)
+}

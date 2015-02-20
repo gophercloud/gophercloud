@@ -278,14 +278,14 @@ type Address struct {
 	Address string `mapstructure:"addr"`
 }
 
-// AddressPage abstracts the raw results of making a List() request against the API.
+// AddressPage abstracts the raw results of making a ListAddresses() request against the API.
 // As OpenStack extensions may freely alter the response bodies of structures returned
 // to the client, you may only safely access the data provided through the ExtractAddresses call.
 type AddressPage struct {
 	pagination.SinglePageBase
 }
 
-// IsEmpty returns true if an AddressPage contains no addresses.
+// IsEmpty returns true if an AddressPage contains no networks.
 func (r AddressPage) IsEmpty() (bool, error) {
 	addresses, err := ExtractAddresses(r)
 	if err != nil {
@@ -294,7 +294,7 @@ func (r AddressPage) IsEmpty() (bool, error) {
 	return len(addresses) == 0, nil
 }
 
-// ExtractAddresses interprets the results of a single page from a List() call,
+// ExtractAddresses interprets the results of a single page from a ListAddresses() call,
 // producing a map of addresses.
 func ExtractAddresses(page pagination.Page) (map[string][]Address, error) {
 	casted := page.(AddressPage).Body
@@ -309,4 +309,34 @@ func ExtractAddresses(page pagination.Page) (map[string][]Address, error) {
 	}
 
 	return response.Addresses, err
+}
+
+// NetworkAddressPage abstracts the raw results of making a ListAddressesByNetwork() request against the API.
+// As OpenStack extensions may freely alter the response bodies of structures returned
+// to the client, you may only safely access the data provided through the ExtractAddresses call.
+type NetworkAddressPage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty returns true if a NetworkAddressPage contains no addresses.
+func (r NetworkAddressPage) IsEmpty() (bool, error) {
+	addresses, err := ExtractNetworkAddresses(r)
+	if err != nil {
+		return true, err
+	}
+	return len(addresses) == 0, nil
+}
+
+// ExtractNetworkAddresses interprets the results of a single page from a ListAddressesByNetwork() call,
+// producing a map of addresses.
+func ExtractNetworkAddresses(page pagination.Page) (map[string][]Address, error) {
+	casted := page.(NetworkAddressPage).Body
+
+	var response map[string][]Address
+	err := mapstructure.Decode(casted, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, err
 }

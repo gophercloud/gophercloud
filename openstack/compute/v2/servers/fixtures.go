@@ -617,3 +617,39 @@ func HandleAddressListSuccessfully(t *testing.T) {
 		}`)
 	})
 }
+
+// ListNetworkAddressesExpected represents an expected repsonse from a ListAddressesByNetwork request.
+var ListNetworkAddressesExpected = map[string][]Address{
+	"public": []Address{
+		Address{
+			Version: 4,
+			Address: "80.56.136.39",
+		},
+		Address{
+			Version: 6,
+			Address: "2001:4800:790e:510:be76:4eff:fe04:82a8",
+		},
+	},
+}
+
+// HandleNetworkAddressListSuccessfully sets up the test server to respond to a ListAddressesByNetwork request.
+func HandleNetworkAddressListSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/asdfasdfasdf/ips/public", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `{
+			"public": [
+			{
+				"version": 4,
+				"addr": "50.56.176.35"
+				},
+				{
+					"version": 6,
+					"addr": "2001:4800:780e:510:be76:4eff:fe04:84a8"
+				}
+			]
+			}`)
+	})
+}

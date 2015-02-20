@@ -279,7 +279,31 @@ func TestListAddresses(t *testing.T) {
 		th.AssertNoErr(t, err)
 
 		if len(actual) != 2 {
-			t.Fatalf("Expected 2 servers, got %d", len(actual))
+			t.Fatalf("Expected 2 networks, got %d", len(actual))
+		}
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 1, pages)
+}
+
+func TestListAddressesByNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleNetworkAddressListSuccessfully(t)
+
+	expected := ListNetworkAddressesExpected
+	pages := 0
+	err := ListAddressesByNetwork(client.ServiceClient(), "asdfasdfasdf", "public").EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := ExtractNetworkAddresses(page)
+		th.AssertNoErr(t, err)
+
+		if len(actual) != 1 {
+			t.Fatalf("Expected 1 network, got %d", len(actual))
 		}
 		th.CheckDeepEquals(t, expected, actual)
 
