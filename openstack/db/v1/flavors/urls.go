@@ -1,11 +1,13 @@
 package flavors
 
 import (
+	"strconv"
+
 	"github.com/rackspace/gophercloud"
 )
 
-func getURL(client *gophercloud.ServiceClient, id string) string {
-	return client.ServiceURL("flavors", id)
+func getURL(client *gophercloud.ServiceClient, id int) string {
+	return client.ServiceURL("flavors", strconv.Itoa(id))
 }
 
 func listURL(client *gophercloud.ServiceClient) string {

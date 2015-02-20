@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	"github.com/rackspace/gophercloud/testhelper/fixture"
 )
 
@@ -103,8 +104,8 @@ var (
 var expectedInstance = Instance{
 	Created: "2014-02-13T21:47:13",
 	Updated: "2014-02-13T21:47:13",
-	Flavor: Flavor{
-		ID: "1",
+	Flavor: flavors.Flavor{
+		ID: 1,
 		Links: []gophercloud.Link{
 			gophercloud.Link{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "self"},
 			gophercloud.Link{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "bookmark"},
