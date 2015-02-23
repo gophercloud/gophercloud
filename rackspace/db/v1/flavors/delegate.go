@@ -12,6 +12,6 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get retrieves the details for a particular flavor.
-func Get(client *gophercloud.ServiceClient, flavorID int) os.GetResult {
+func Get(client *gophercloud.ServiceClient, flavorID string) os.GetResult {
 	return os.Get(client, flavorID)
 }

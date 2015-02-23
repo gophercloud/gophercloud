@@ -21,7 +21,12 @@ func (gr GetResult) Extract() (*Flavor, error) {
 		Flavor Flavor `mapstructure:"flavor"`
 	}
 
-	err := mapstructure.Decode(gr.Body, &result)
+	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
+		WeaklyTypedInput: true,
+		Result:           &result,
+	})
+
+	err = decoder.Decode(gr.Body)
 	return &result.Flavor, err
 }
 
@@ -76,6 +81,12 @@ func ExtractFlavors(page pagination.Page) ([]Flavor, error) {
 		Flavors []Flavor `mapstructure:"flavors"`
 	}
 
-	err := mapstructure.Decode(casted, &container)
+	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
+		WeaklyTypedInput: true,
+		Result:           &container,
+	})
+
+	err = decoder.Decode(casted)
+
 	return container.Flavors, err
 }

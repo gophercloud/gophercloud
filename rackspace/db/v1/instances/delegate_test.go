@@ -5,6 +5,7 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	osDBs "github.com/rackspace/gophercloud/openstack/db/v1/databases"
+	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	osUsers "github.com/rackspace/gophercloud/openstack/db/v1/users"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
@@ -23,7 +24,7 @@ var expectedInstance = &Instance{
 	Created:   "2014-02-13T21:47:13",
 	Updated:   "2014-02-13T21:47:13",
 	Datastore: datastores.DatastorePartial{Type: "mysql", Version: "5.6"},
-	Flavor: os.Flavor{
+	Flavor: flavors.Flavor{
 		ID: "1",
 		Links: []gophercloud.Link{
 			gophercloud.Link{Href: "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1", Rel: "self"},

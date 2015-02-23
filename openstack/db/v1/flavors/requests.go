@@ -17,7 +17,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get will retrieve information for a specified hardware flavor.
-func Get(client *gophercloud.ServiceClient, id int) GetResult {
+func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var gr GetResult
 
 	_, gr.Err = client.Request("GET", getURL(client, id), gophercloud.RequestOpts{

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/backups"
@@ -156,7 +157,7 @@ func TestListReplicas(t *testing.T) {
 				ID:        "3c691f06-bf9a-4618-b7ec-2817ce0cf254",
 				IP:        []string{"10.0.0.3"},
 				Volume:    os.Volume{Size: 1},
-				Flavor:    os.Flavor{ID: "9"},
+				Flavor:    flavors.Flavor{ID: "9"},
 				Datastore: datastores.DatastorePartial{Version: "5.6", Type: "mysql"},
 				ReplicaOf: &Instance{
 					ID: "8b499b45-52d6-402d-b398-f9d8f279c69a",
@@ -197,7 +198,7 @@ func TestGetReplica(t *testing.T) {
 			Used: 0.54,
 			Size: 1,
 		},
-		Flavor: os.Flavor{ID: "9"},
+		Flavor: flavors.Flavor{ID: "9"},
 		Datastore: datastores.DatastorePartial{
 			Version: "5.6",
 			Type:    "mysql",

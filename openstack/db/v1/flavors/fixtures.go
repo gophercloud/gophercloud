@@ -2,7 +2,6 @@ package flavors
 
 import (
 	"fmt"
-	"strconv"
 	"testing"
 
 	"github.com/rackspace/gophercloud/testhelper/fixture"
@@ -27,9 +26,9 @@ const flavor = `
 `
 
 var (
-	flavorID = 1
+	flavorID = "{flavorID}"
 	_baseURL = "/flavors"
-	resURL   = "/flavors/" + strconv.Itoa(flavorID)
+	resURL   = "/flavors/" + flavorID
 )
 
 var (
