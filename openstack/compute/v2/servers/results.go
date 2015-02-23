@@ -328,8 +328,8 @@ func (r NetworkAddressPage) IsEmpty() (bool, error) {
 }
 
 // ExtractNetworkAddresses interprets the results of a single page from a ListAddressesByNetwork() call,
-// producing a map of addresses.
-func ExtractNetworkAddresses(page pagination.Page) (map[string][]Address, error) {
+// producing a slice of addresses.
+func ExtractNetworkAddresses(page pagination.Page) ([]Address, error) {
 	casted := page.(NetworkAddressPage).Body
 
 	var response map[string][]Address
@@ -338,5 +338,10 @@ func ExtractNetworkAddresses(page pagination.Page) (map[string][]Address, error)
 		return nil, err
 	}
 
-	return response, err
+	var key string
+	for k := range response {
+		key = k
+	}
+
+	return response[key], err
 }

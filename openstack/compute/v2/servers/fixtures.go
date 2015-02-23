@@ -619,16 +619,14 @@ func HandleAddressListSuccessfully(t *testing.T) {
 }
 
 // ListNetworkAddressesExpected represents an expected repsonse from a ListAddressesByNetwork request.
-var ListNetworkAddressesExpected = map[string][]Address{
-	"public": []Address{
-		Address{
-			Version: 4,
-			Address: "80.56.136.39",
-		},
-		Address{
-			Version: 6,
-			Address: "2001:4800:790e:510:be76:4eff:fe04:82a8",
-		},
+var ListNetworkAddressesExpected = []Address{
+	Address{
+		Version: 4,
+		Address: "50.56.176.35",
+	},
+	Address{
+		Version: 6,
+		Address: "2001:4800:780e:510:be76:4eff:fe04:84a8",
 	},
 }
 

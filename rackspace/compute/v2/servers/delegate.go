@@ -82,6 +82,6 @@ func ListAddressesByNetwork(client *gophercloud.ServiceClient, id, network strin
 }
 
 // ExtractNetworkAddresses interprets the results of a single page from a ListAddressesByNetwork() call, producing a map of Address slices.
-func ExtractNetworkAddresses(page pagination.Page) (map[string][]os.Address, error) {
+func ExtractNetworkAddresses(page pagination.Page) ([]os.Address, error) {
 	return os.ExtractNetworkAddresses(page)
 }

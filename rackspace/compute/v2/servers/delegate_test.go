@@ -170,8 +170,8 @@ func TestListAddressesByNetwork(t *testing.T) {
 		actual, err := ExtractNetworkAddresses(page)
 		th.AssertNoErr(t, err)
 
-		if len(actual) != 1 {
-			t.Fatalf("Expected 1 network, got %d", len(actual))
+		if len(actual) != 2 {
+			t.Fatalf("Expected 2 addresses, got %d", len(actual))
 		}
 		th.CheckDeepEquals(t, expected, actual)
 

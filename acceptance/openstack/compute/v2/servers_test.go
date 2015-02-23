@@ -154,13 +154,13 @@ func TestCreateDestroyServer(t *testing.T) {
 
 	pager = servers.ListAddressesByNetwork(client, server.ID, "public")
 	pager.EachPage(func(page pagination.Page) (bool, error) {
-		network, err := servers.ExtractNetworkAddresses(page)
+		addresses, err := servers.ExtractNetworkAddresses(page)
 		if err != nil {
 			return false, err
 		}
 
-		for n, a := range network {
-			t.Logf("%s: %+v\n", n, a)
+		for _, a := range addresses {
+			t.Logf("%+v\n", a)
 		}
 		return true, nil
 	})
