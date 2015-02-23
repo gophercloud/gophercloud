@@ -9,6 +9,7 @@ import (
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
 	"github.com/rackspace/gophercloud/rackspace"
+	"github.com/rackspace/gophercloud/rackspace/db/v1/instances"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
@@ -35,6 +36,7 @@ type context struct {
 	replicaID     string
 	backupID      string
 	configGroupID string
+	users         []string
 }
 
 func newContext(t *testing.T) context {
@@ -63,4 +65,5 @@ func (c context) WaitUntilActive(id string) {
 		}
 		return false, nil
 	})
+	c.AssertNoErr(err)
 }

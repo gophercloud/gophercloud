@@ -9,8 +9,6 @@ import (
 )
 
 func (c context) createReplica() {
-	repl, err := instances.Create(c.client, opts).Extract()
-
 	opts := instances.CreateOpts{
 		FlavorRef: "1",
 		Size:      1,
@@ -18,11 +16,11 @@ func (c context) createReplica() {
 		ReplicaOf: c.instanceID,
 	}
 
-	instance, err := instances.Create(c.client, opts).Extract()
+	repl, err := instances.Create(c.client, opts).Extract()
 	th.AssertNoErr(c.test, err)
 
 	c.Logf("Creating replica of %s. Waiting...", c.instanceID)
-	c.WaitUntilActive(id)
+	c.WaitUntilActive(repl.ID)
 	c.Logf("Created replica %#v", repl)
 
 	c.replicaID = repl.ID
@@ -31,4 +29,5 @@ func (c context) createReplica() {
 func (c context) detachReplica() {
 	err := instances.DetachReplica(c.client, c.replicaID).ExtractErr()
 	c.Logf("Detached replica %s", c.replicaID)
+	c.AssertNoErr(err)
 }

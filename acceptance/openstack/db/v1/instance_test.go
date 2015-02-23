@@ -3,13 +3,16 @@
 package v1
 
 import (
+	"testing"
+
 	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	"github.com/rackspace/gophercloud/pagination"
+	rackspaceInst "github.com/rackspace/gophercloud/rackspace/db/v1/instances"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
-func TestRunner(t *testingT) {
+func TestRunner(t *testing.T) {
 	c := newContext(t)
 
 	// FLAVOR tests
@@ -28,7 +31,7 @@ func TestRunner(t *testingT) {
 	c.resizeVol()
 
 	// DATABASE tests
-	c.createDB()
+	c.createDBs()
 	c.listDBs()
 
 	// USER tests
@@ -38,21 +41,22 @@ func TestRunner(t *testingT) {
 	// TEARDOWN
 	c.deleteUsers()
 	c.deleteDBs()
-	c.deleteInstance(id)
+	c.deleteInstance()
 }
 
 func (c context) createInstance() {
-	opts := instances.CreateOpts{
+	opts := rackspaceInst.CreateOpts{
 		FlavorRef: "1",
 		Size:      1,
 		Name:      tools.RandomString("gopher_db", 5),
+		Datastore: &rackspaceInst.DatastoreOpts{Version: "5.6", Type: "MySQL"},
 	}
 
 	instance, err := instances.Create(c.client, opts).Extract()
 	th.AssertNoErr(c.test, err)
 
-	c.Logf("Restarting %s. Waiting...", id)
-	c.WaitUntilActive(id)
+	c.Logf("Restarting %s. Waiting...", instance.ID)
+	c.WaitUntilActive(instance.ID)
 	c.Logf("Created DB %#v", instance)
 
 	c.instanceID = instance.ID
@@ -65,14 +69,14 @@ func (c context) listInstances() {
 		instanceList, err := instances.ExtractInstances(page)
 		c.AssertNoErr(err)
 
-		for _, n := range networkList {
-			c.Logf("Instance: %#v", instance)
+		for _, i := range instanceList {
+			c.Logf("Instance: %#v", i)
 		}
 
 		return true, nil
 	})
 
-	c.CheckNoErr(err)
+	c.AssertNoErr(err)
 }
 
 func (c context) getInstance() {
@@ -88,7 +92,7 @@ func (c context) deleteInstance() {
 }
 
 func (c context) enableRootUser() {
-	err := instances.EnableRootUser(c.client, c.instanceID).ExtractErr()
+	_, err := instances.EnableRootUser(c.client, c.instanceID).Extract()
 	c.AssertNoErr(err)
 	c.Logf("Enabled root user on %s", c.instanceID)
 }
@@ -101,7 +105,7 @@ func (c context) isRootEnabled() {
 
 func (c context) restartInstance() {
 	id := c.instanceID
-	err := instances.Restart(c.client, id).ExtractErr()
+	err := instances.RestartService(c.client, id).ExtractErr()
 	c.AssertNoErr(err)
 	c.Logf("Restarting %s. Waiting...", id)
 	c.WaitUntilActive(id)
@@ -110,7 +114,7 @@ func (c context) restartInstance() {
 
 func (c context) resizeInstance() {
 	id := c.instanceID
-	err := instances.Resize(c.client, id, "2").ExtractErr()
+	err := instances.ResizeInstance(c.client, id, "2").ExtractErr()
 	c.AssertNoErr(err)
 	c.Logf("Resizing %s. Waiting...", id)
 	c.WaitUntilActive(id)
@@ -119,7 +123,7 @@ func (c context) resizeInstance() {
 
 func (c context) resizeVol() {
 	id := c.instanceID
-	err := instances.ResizeVol(c.client, id, 2).ExtractErr()
+	err := instances.ResizeVolume(c.client, id, 2).ExtractErr()
 	c.AssertNoErr(err)
 	c.Logf("Resizing volume of %s. Waiting...", id)
 	c.WaitUntilActive(id)

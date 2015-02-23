@@ -2,6 +2,7 @@ package instances
 
 import (
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 )
@@ -301,7 +302,7 @@ var expectedReplica = &Instance{
 	Created:   "2014-10-14T18:42:15",
 	ID:        "8367c312-7c40-4a66-aab1-5767478914fc",
 	Volume:    os.Volume{Size: 1},
-	Flavor:    os.Flavor{ID: "9"},
+	Flavor:    flavors.Flavor{ID: "9"},
 	Datastore: datastores.DatastorePartial{Version: "5.6", Type: "mysql"},
 	ReplicaOf: &Instance{
 		ID: "6bdca2fc-418e-40bd-a595-62abda61862d",

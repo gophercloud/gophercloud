@@ -3,6 +3,7 @@ package instances
 import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
@@ -20,7 +21,7 @@ type Instance struct {
 	Datastore datastores.DatastorePartial
 
 	// Indicates the hardware flavor the instance uses.
-	Flavor os.Flavor
+	Flavor flavors.Flavor
 
 	// A DNS-resolvable hostname associated with the database instance (rather
 	// than an IPv4 address). Since the hostname always resolves to the correct

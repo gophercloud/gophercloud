@@ -2,18 +2,24 @@
 
 package v1
 
-import "github.com/rackspace/gophercloud/pagination"
+import (
+	"github.com/rackspace/gophercloud/acceptance/tools"
+	"github.com/rackspace/gophercloud/pagination"
+
+	"github.com/rackspace/gophercloud/rackspace/db/v1/backups"
+	"github.com/rackspace/gophercloud/rackspace/db/v1/instances"
+)
 
 func (c context) createBackup() {
 	opts := backups.CreateOpts{
-		Name:       tools.PrefixString("backup_", 5),
+		Name:       tools.RandomString("backup_", 5),
 		InstanceID: c.instanceID,
 	}
 
-	backup, err := backups.Create(c.client, opts)
+	backup, err := backups.Create(c.client, opts).Extract()
 
 	c.Logf("Created backup %#v", backup)
-	c.AssertNoErr(t, err)
+	c.AssertNoErr(err)
 
 	c.backupID = backup.ID
 }
@@ -27,7 +33,7 @@ func (c context) getBackup() {
 func (c context) listAllBackups() {
 	c.Logf("Listing backups")
 
-	err := backups.List(c.client).EachPage(func(page pagination.Page) (bool, error) {
+	err := backups.List(c.client, nil).EachPage(func(page pagination.Page) (bool, error) {
 		backupList, err := backups.ExtractBackups(page)
 		c.AssertNoErr(err)
 
@@ -38,13 +44,13 @@ func (c context) listAllBackups() {
 		return true, nil
 	})
 
-	c.CheckNoErr(err)
+	c.AssertNoErr(err)
 }
 
 func (c context) listInstanceBackups() {
 	c.Logf("Listing backups for instance %s", c.instanceID)
 
-	err := instances.ListBackups(c.client).EachPage(func(page pagination.Page) (bool, error) {
+	err := instances.ListBackups(c.client, c.instanceID).EachPage(func(page pagination.Page) (bool, error) {
 		backupList, err := backups.ExtractBackups(page)
 		c.AssertNoErr(err)
 
@@ -55,7 +61,7 @@ func (c context) listInstanceBackups() {
 		return true, nil
 	})
 
-	c.CheckNoErr(err)
+	c.AssertNoErr(err)
 }
 
 func (c context) deleteBackup() {

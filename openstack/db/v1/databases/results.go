@@ -21,7 +21,7 @@ type Database struct {
 
 // CreateResult represents the result of a Create operation.
 type CreateResult struct {
-	gophercloud.Result
+	gophercloud.ErrResult
 }
 
 // DeleteResult represents the result of a Delete operation.

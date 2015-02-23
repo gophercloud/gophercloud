@@ -15,11 +15,11 @@ func instancesURL(c *gophercloud.ServiceClient, configID string) string {
 }
 
 func listDSParamsURL(c *gophercloud.ServiceClient, datastoreID, versionID string) string {
-	return c.ServiceURL("datastores", dsID, "versions", versionID, "parameters")
+	return c.ServiceURL("datastores", datastoreID, "versions", versionID, "parameters")
 }
 
 func getDSParamURL(c *gophercloud.ServiceClient, datastoreID, versionID, paramID string) string {
-	return c.ServiceURL("datastores", dsID, "versions", versionID, "parameters", paramID)
+	return c.ServiceURL("datastores", datastoreID, "versions", versionID, "parameters", paramID)
 }
 
 func listGlobalParamsURL(c *gophercloud.ServiceClient, versionID string) string {

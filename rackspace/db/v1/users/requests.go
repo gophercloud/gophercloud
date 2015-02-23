@@ -107,16 +107,9 @@ func GrantAccess(client *gophercloud.ServiceClient, instanceID, userName string,
 
 /*
 RevokeAccess will revoke access for the specified user to one or more databases
-on a specified instance. For example, to remove a user's access to multiple
-databases:
+on a specified instance. For example:
 
-	opts := db.BatchCreateOpts{
-		db.CreateOpts{Name: "database_1"},
-		db.CreateOpts{Name: "database_3"},
-		db.CreateOpts{Name: "database_19"},
-	}
-
-	RevokeAccess(client, "instance_id", "user_name", opts)
+	RevokeAccess(client, "instance_id", "user_name", "db_name")
 */
 func RevokeAccess(client *gophercloud.ServiceClient, instanceID, userName, dbName string) RevokeAccessResult {
 	var res RevokeAccessResult

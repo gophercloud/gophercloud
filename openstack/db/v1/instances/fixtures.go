@@ -105,7 +105,7 @@ var expectedInstance = Instance{
 	Created: "2014-02-13T21:47:13",
 	Updated: "2014-02-13T21:47:13",
 	Flavor: flavors.Flavor{
-		ID: 1,
+		ID: "1",
 		Links: []gophercloud.Link{
 			gophercloud.Link{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "self"},
 			gophercloud.Link{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "bookmark"},

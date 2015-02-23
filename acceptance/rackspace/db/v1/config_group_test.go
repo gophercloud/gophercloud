@@ -3,20 +3,22 @@
 package v1
 
 import (
-	config "github.com/rackspace/gophercloud/openstack/db/v1/configurations"
+	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/pagination"
+	config "github.com/rackspace/gophercloud/rackspace/db/v1/configurations"
+	"github.com/rackspace/gophercloud/rackspace/db/v1/instances"
 )
 
 func (c context) createConfigGrp() {
 	opts := config.CreateOpts{
-		Name: tools.PrefixString("config_", 5),
+		Name: tools.RandomString("config_", 5),
 		Values: map[string]interface{}{
 			"connect_timeout":  300,
 			"join_buffer_size": 900000,
 		},
 	}
 
-	cg, err := config.Create(c.client, opts)
+	cg, err := config.Create(c.client, opts).Extract()
 
 	c.AssertNoErr(err)
 	c.Logf("Created config group %#v", cg)
@@ -25,14 +27,14 @@ func (c context) createConfigGrp() {
 }
 
 func (c context) getConfigGrp() {
-	cg, err := config.Get(c.client, c.configGroupID)
+	cg, err := config.Get(c.client, c.configGroupID).Extract()
 	c.Logf("Getting config group: %#v", cg)
 	c.AssertNoErr(err)
 }
 
 func (c context) updateConfigGrp() {
 	opts := config.UpdateOpts{
-		Name: tools.PrefixString("new_name_", 5),
+		Name: tools.RandomString("new_name_", 5),
 		Values: map[string]interface{}{
 			"connect_timeout": 250,
 		},
@@ -55,7 +57,7 @@ func (c context) replaceConfigGrp() {
 }
 
 func (c context) associateInstanceWithConfigGrp() {
-	err := config.AssociateWithConfigGroup(c.client, c.instanceID, c.configGroupID).ExtractErr()
+	err := instances.AssociateWithConfigGroup(c.client, c.instanceID, c.configGroupID).ExtractErr()
 	c.Logf("Associated instance %s with config group %s", c.instanceID, c.configGroupID)
 	c.AssertNoErr(err)
 }
@@ -67,14 +69,14 @@ func (c context) listConfigGrpInstances() {
 		instanceList, err := instances.ExtractInstances(page)
 		c.AssertNoErr(err)
 
-		for _, n := range networkList {
+		for _, instance := range instanceList {
 			c.Logf("Instance: %#v", instance)
 		}
 
 		return true, nil
 	})
 
-	c.CheckNoErr(err)
+	c.AssertNoErr(err)
 }
 
 func (c context) deleteConfigGrp() {
