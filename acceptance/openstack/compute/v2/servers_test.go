@@ -57,7 +57,6 @@ func networkingClient() (*gophercloud.ServiceClient, error) {
 	}
 
 	return openstack.NewNetworkV2(provider, gophercloud.EndpointOpts{
-		Name:   "neutron",
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }
@@ -74,7 +73,10 @@ func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *Comp
 		t.Fatalf("Unable to create a networking client: %v", err)
 	}
 
-	pager := networks.List(networkingClient, networks.ListOpts{Name: "public", Limit: 1})
+	pager := networks.List(networkingClient, networks.ListOpts{
+		Name:  choices.NetworkName,
+		Limit: 1,
+	})
 	pager.EachPage(func(page pagination.Page) (bool, error) {
 		networks, err := networks.ExtractNetworks(page)
 		if err != nil {
@@ -152,7 +154,7 @@ func TestCreateDestroyServer(t *testing.T) {
 		return true, nil
 	})
 
-	pager = servers.ListAddressesByNetwork(client, server.ID, "public")
+	pager = servers.ListAddressesByNetwork(client, server.ID, choices.NetworkName)
 	pager.EachPage(func(page pagination.Page) (bool, error) {
 		addresses, err := servers.ExtractNetworkAddresses(page)
 		if err != nil {
