@@ -61,13 +61,13 @@ type BatchCreateOpts []CreateOpts
 
 // ToDBCreateMap renders a JSON map for creating DBs.
 func (opts BatchCreateOpts) ToDBCreateMap() (map[string]interface{}, error) {
-	var dbs []map[string]string
-	for _, db := range opts {
+	dbs := make([]map[string]string, len(opts))
+	for i, db := range opts {
 		dbMap, err := db.ToMap()
 		if err != nil {
 			return nil, err
 		}
-		dbs = append(dbs, dbMap)
+		dbs[i] = dbMap
 	}
 	return map[string]interface{}{"databases": dbs}, nil
 }

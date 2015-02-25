@@ -60,10 +60,11 @@ func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
 		user["host"] = opts.Host
 	}
 
-	var dbs []map[string]string
-	for _, db := range opts.Databases {
-		dbs = append(dbs, map[string]string{"name": db.Name})
+	dbs := make([]map[string]string, len(opts.Databases))
+	for i, db := range opts.Databases {
+		dbs[i] = map[string]string{"name": db.Name}
 	}
+
 	if len(dbs) > 0 {
 		user["databases"] = dbs
 	}
@@ -76,13 +77,13 @@ type BatchCreateOpts []CreateOpts
 
 // ToUserCreateMap will generate a JSON map.
 func (opts BatchCreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
-	var users []map[string]interface{}
-	for _, opt := range opts {
+	users := make([]map[string]interface{}, len(opts))
+	for i, opt := range opts {
 		user, err := opt.ToMap()
 		if err != nil {
 			return nil, err
 		}
-		users = append(users, user)
+		users[i] = user
 	}
 	return map[string]interface{}{"users": users}, nil
 }
