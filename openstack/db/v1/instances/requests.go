@@ -174,11 +174,15 @@ func RestartService(client *gophercloud.ServiceClient, id string) ActionResult {
 func ResizeInstance(client *gophercloud.ServiceClient, id, flavorRef string) ActionResult {
 	var res ActionResult
 
-	reqBody := map[string]map[string]string{
-		"resize": map[string]string{
-			"flavorRef": flavorRef,
-		},
+	type resize struct {
+		FlavorRef string `json:"flavorRef"`
 	}
+
+	type req struct {
+		Resize resize `json:"resize"`
+	}
+
+	reqBody := req{Resize: resize{FlavorRef: flavorRef}}
 
 	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
 		JSONBody: reqBody,
@@ -194,11 +198,19 @@ func ResizeInstance(client *gophercloud.ServiceClient, id, flavorRef string) Act
 func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) ActionResult {
 	var res ActionResult
 
-	reqBody := map[string]map[string]map[string]int{
-		"resize": map[string]map[string]int{
-			"volume": map[string]int{"size": size},
-		},
+	type volume struct {
+		Size int `json:"size"`
 	}
+
+	type resize struct {
+		Volume volume `json:"volume"`
+	}
+
+	type req struct {
+		Resize resize `json:"resize"`
+	}
+
+	reqBody := req{Resize: resize{Volume: volume{Size: size}}}
 
 	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
 		JSONBody: reqBody,
