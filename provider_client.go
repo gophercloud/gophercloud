@@ -169,7 +169,6 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 
 	if options.MoreHeaders != nil {
 		for k, v := range options.MoreHeaders {
-			fmt.Printf("Applying header [%s: %v]\n", k, v)
 			if v != "" {
 				req.Header.Set(k, v)
 			} else {
