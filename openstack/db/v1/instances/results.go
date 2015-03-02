@@ -6,6 +6,7 @@ import (
 	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	"github.com/rackspace/gophercloud/openstack/db/v1/users"
 	"github.com/rackspace/gophercloud/pagination"
+	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 )
 
 // Volume represents information about an attached volume for a database instance.
@@ -49,6 +50,9 @@ type Instance struct {
 
 	// Information about the attached volume of the instance.
 	Volume Volume
+
+	// Indicates how the instance stores data.
+	Datastore datastores.DatastorePartial
 }
 
 type commonResult struct {

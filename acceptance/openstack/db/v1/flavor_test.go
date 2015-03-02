@@ -15,7 +15,7 @@ func (c context) listFlavors() {
 		c.AssertNoErr(err)
 
 		for _, f := range flavorList {
-			c.Logf("Flavor: %#v", f)
+			c.Logf("Flavor: ID [%s] Name [%s] RAM [%d]", f.ID, f.Name, f.RAM)
 		}
 
 		return true, nil

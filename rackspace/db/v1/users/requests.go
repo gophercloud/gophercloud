@@ -1,6 +1,8 @@
 package users
 
 import (
+	"errors"
+
 	"github.com/rackspace/gophercloud"
 	db "github.com/rackspace/gophercloud/openstack/db/v1/databases"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/users"
@@ -35,9 +37,52 @@ func ChangePassword(client *gophercloud.ServiceClient, instanceID string, opts o
 	return res
 }
 
+// UpdateOpts is the struct responsible for updating an existing user.
+type UpdateOpts struct {
+	// [OPTIONAL] Specifies a name for the user. Valid names can be composed
+	// of the following characters: letters (either case); numbers; these
+	// characters '@', '?', '#', ' ' but NEVER beginning a name string; '_' is
+	// permitted anywhere. Prohibited characters that are forbidden include:
+	// single quotes, double quotes, back quotes, semicolons, commas, backslashes,
+	// and forward slashes. Spaces at the front or end of a user name are also
+	// not permitted.
+	Name string
+
+	// [OPTIONAL] Specifies a password for the user.
+	Password string
+
+	// [OPTIONAL] Specifies the host from which a user is allowed to connect to
+	// the database. Possible values are a string containing an IPv4 address or
+	// "%" to allow connecting from any host. Optional; the default is "%".
+	Host string
+}
+
+// ToMap is a convenience function for creating sub-maps for individual users.
+func (opts UpdateOpts) ToMap() (map[string]interface{}, error) {
+	if opts.Name == "root" {
+		return nil, errors.New("root is a reserved user name and cannot be used")
+	}
+
+	user := map[string]interface{}{}
+
+	if opts.Name != "" {
+		user["name"] = opts.Name
+	}
+
+	if opts.Password != "" {
+		user["password"] = opts.Password
+	}
+
+	if opts.Host != "" {
+		user["host"] = opts.Host
+	}
+
+	return user, nil
+}
+
 // Update will modify the attributes of a specified user. Attributes that can
 // be updated are: user name, password, and host.
-func Update(client *gophercloud.ServiceClient, instanceID, userName string, opts os.CreateOpts) UpdateResult {
+func Update(client *gophercloud.ServiceClient, instanceID, userName string, opts UpdateOpts) UpdateResult {
 	var res UpdateResult
 
 	reqBody, err := opts.ToMap()

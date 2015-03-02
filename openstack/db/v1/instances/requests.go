@@ -14,6 +14,19 @@ type CreateOptsBuilder interface {
 	ToInstanceCreateMap() (map[string]interface{}, error)
 }
 
+// DatastoreOpts represents the configuration for how an instance stores data.
+type DatastoreOpts struct {
+	Version string
+	Type    string
+}
+
+func (opts DatastoreOpts) ToMap() (map[string]string, error) {
+	return map[string]string{
+		"version": opts.Version,
+		"type":    opts.Type,
+	}, nil
+}
+
 // CreateOpts is the struct responsible for configuring a new database instance.
 type CreateOpts struct {
 	// Either the integer UUID (in string form) of the flavor, or its URI
@@ -33,6 +46,10 @@ type CreateOpts struct {
 
 	// A slice of user information options.
 	Users users.BatchCreateOpts
+
+	// Options to configure the type of datastore the instance will use. This is
+	// optional, and if excluded will default to MySQL.
+	Datastore *DatastoreOpts
 }
 
 // ToInstanceCreateMap will render a JSON map.
@@ -162,7 +179,7 @@ func RestartService(client *gophercloud.ServiceClient, id string) ActionResult {
 	var res ActionResult
 
 	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
-		JSONBody: map[string]bool{"restart": true},
+		JSONBody: map[string]interface{}{"restart": map[string]string{}},
 		OkCodes:  []int{202},
 	})
 

@@ -9,7 +9,7 @@ import (
 	"github.com/rackspace/gophercloud/rackspace/db/v1/instances"
 )
 
-func (c context) createConfigGrp() {
+func (c *context) createConfigGrp() {
 	opts := config.CreateOpts{
 		Name: tools.RandomString("config_", 5),
 		Values: map[string]interface{}{
@@ -26,13 +26,13 @@ func (c context) createConfigGrp() {
 	c.configGroupID = cg.ID
 }
 
-func (c context) getConfigGrp() {
+func (c *context) getConfigGrp() {
 	cg, err := config.Get(c.client, c.configGroupID).Extract()
 	c.Logf("Getting config group: %#v", cg)
 	c.AssertNoErr(err)
 }
 
-func (c context) updateConfigGrp() {
+func (c *context) updateConfigGrp() {
 	opts := config.UpdateOpts{
 		Name: tools.RandomString("new_name_", 5),
 		Values: map[string]interface{}{
@@ -44,7 +44,7 @@ func (c context) updateConfigGrp() {
 	c.AssertNoErr(err)
 }
 
-func (c context) replaceConfigGrp() {
+func (c *context) replaceConfigGrp() {
 	opts := config.UpdateOpts{
 		Values: map[string]interface{}{
 			"expire_logs_days": 7,
@@ -56,13 +56,13 @@ func (c context) replaceConfigGrp() {
 	c.AssertNoErr(err)
 }
 
-func (c context) associateInstanceWithConfigGrp() {
+func (c *context) associateInstanceWithConfigGrp() {
 	err := instances.AssociateWithConfigGroup(c.client, c.instanceID, c.configGroupID).ExtractErr()
 	c.Logf("Associated instance %s with config group %s", c.instanceID, c.configGroupID)
 	c.AssertNoErr(err)
 }
 
-func (c context) listConfigGrpInstances() {
+func (c *context) listConfigGrpInstances() {
 	c.Logf("Listing all instances associated with config group %s", c.configGroupID)
 
 	err := config.ListInstances(c.client, c.configGroupID).EachPage(func(page pagination.Page) (bool, error) {
@@ -79,8 +79,14 @@ func (c context) listConfigGrpInstances() {
 	c.AssertNoErr(err)
 }
 
-func (c context) deleteConfigGrp() {
+func (c *context) deleteConfigGrp() {
 	err := config.Delete(c.client, c.configGroupID).ExtractErr()
 	c.Logf("Deleted config group %s", c.configGroupID)
+	c.AssertNoErr(err)
+}
+
+func (c *context) detachInstanceFromGrp() {
+	err := instances.DetachFromConfigGroup(c.client, c.instanceID).ExtractErr()
+	c.Logf("Detached instance %s from config groups", c.instanceID)
 	c.AssertNoErr(err)
 }

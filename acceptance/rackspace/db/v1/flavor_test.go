@@ -16,7 +16,7 @@ func (c context) listFlavors() {
 		c.AssertNoErr(err)
 
 		for _, f := range flavorList {
-			c.Logf("Flavor: %#v", f)
+			c.Logf("Flavor: ID [%s] Name [%s] RAM [%d]", f.ID, f.Name, f.RAM)
 		}
 
 		return true, nil
@@ -26,7 +26,7 @@ func (c context) listFlavors() {
 }
 
 func (c context) getFlavor() {
-	flavor, err := flavors.Get(c.client, 1).Extract()
+	flavor, err := flavors.Get(c.client, "1").Extract()
 	c.Logf("Getting flavor %s", flavor.ID)
 	c.AssertNoErr(err)
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-func (c context) createDBs() {
+func (c *context) createDBs() {
 	dbs := []string{
 		tools.RandomString("db_", 5),
 		tools.RandomString("db_", 5),
@@ -28,7 +28,7 @@ func (c context) createDBs() {
 	c.DBIDs = dbs
 }
 
-func (c context) listDBs() {
+func (c *context) listDBs() {
 	c.Logf("Listing databases on instance %s", c.instanceID)
 
 	err := db.List(c.client, c.instanceID).EachPage(func(page pagination.Page) (bool, error) {
@@ -45,7 +45,7 @@ func (c context) listDBs() {
 	c.AssertNoErr(err)
 }
 
-func (c context) deleteDBs() {
+func (c *context) deleteDBs() {
 	for _, id := range c.DBIDs {
 		err := db.Delete(c.client, c.instanceID, id).ExtractErr()
 		c.AssertNoErr(err)

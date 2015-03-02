@@ -3,14 +3,16 @@
 package v1
 
 import (
+	"os"
 	"testing"
 
 	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	"github.com/rackspace/gophercloud/pagination"
-	rackspaceInst "github.com/rackspace/gophercloud/rackspace/db/v1/instances"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
+
+const envDSType = "DATASTORE_TYPE_ID"
 
 func TestRunner(t *testing.T) {
 	c := newContext(t)
@@ -20,7 +22,9 @@ func TestRunner(t *testing.T) {
 	c.getFlavor()
 
 	// INSTANCE tests
-	c.createInstance()
+	//c.createInstance()
+	c.instanceID = "dbf901f4-fe23-48b7-8c1d-ee60ec85a660"
+
 	c.listInstances()
 	c.getInstance()
 	c.isRootEnabled()
@@ -45,11 +49,15 @@ func TestRunner(t *testing.T) {
 }
 
 func (c context) createInstance() {
-	opts := rackspaceInst.CreateOpts{
+	if os.Getenv(envDSType) == "" {
+		c.test.Fatalf("%s must be set as an environment var", envDSType)
+	}
+
+	opts := instances.CreateOpts{
 		FlavorRef: "1",
 		Size:      1,
 		Name:      tools.RandomString("gopher_db", 5),
-		Datastore: &rackspaceInst.DatastoreOpts{Version: "5.6", Type: "MySQL"},
+		Datastore: &instances.DatastoreOpts{Type: os.Getenv(envDSType)},
 	}
 
 	instance, err := instances.Create(c.client, opts).Extract()
@@ -57,7 +65,7 @@ func (c context) createInstance() {
 
 	c.Logf("Restarting %s. Waiting...", instance.ID)
 	c.WaitUntilActive(instance.ID)
-	c.Logf("Created DB %#v", instance)
+	c.Logf("Created Instance %s", instance.ID)
 
 	c.instanceID = instance.ID
 }
@@ -70,7 +78,8 @@ func (c context) listInstances() {
 		c.AssertNoErr(err)
 
 		for _, i := range instanceList {
-			c.Logf("Instance: %#v", i)
+			c.Logf("Instance: ID [%s] Name [%s] Status [%s] VolSize [%d] Datastore Type [%s]",
+				i.ID, i.Name, i.Status, i.Volume.Size, i.Datastore.Type)
 		}
 
 		return true, nil
@@ -82,7 +91,7 @@ func (c context) listInstances() {
 func (c context) getInstance() {
 	instance, err := instances.Get(c.client, c.instanceID).Extract()
 	c.AssertNoErr(err)
-	c.Logf("Getting instance: %#v", instance)
+	c.Logf("Getting instance: %s", instance.ID)
 }
 
 func (c context) deleteInstance() {
@@ -100,7 +109,7 @@ func (c context) enableRootUser() {
 func (c context) isRootEnabled() {
 	enabled, err := instances.IsRootEnabled(c.client, c.instanceID)
 	c.AssertNoErr(err)
-	c.Logf("Is root enabled? %s", enabled)
+	c.Logf("Is root enabled? %d", enabled)
 }
 
 func (c context) restartInstance() {

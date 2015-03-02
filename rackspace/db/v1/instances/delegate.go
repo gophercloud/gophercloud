@@ -8,19 +8,6 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// DatastoreOpts represents the configuration for how an instance stores data.
-type DatastoreOpts struct {
-	Version string
-	Type    string
-}
-
-func (opts DatastoreOpts) ToMap() (map[string]string, error) {
-	return map[string]string{
-		"version": opts.Version,
-		"type":    opts.Type,
-	}, nil
-}
-
 // CreateOpts is the struct responsible for configuring a new database instance.
 type CreateOpts struct {
 	// Either the integer UUID (in string form) of the flavor, or its URI
@@ -46,7 +33,7 @@ type CreateOpts struct {
 
 	// Options to configure the type of datastore the instance will use. This is
 	// optional, and if excluded will default to MySQL.
-	Datastore *DatastoreOpts
+	Datastore *os.DatastoreOpts
 
 	// Specifies the backup ID from which to restore the database instance. There
 	// are some things to be aware of before using this field.  When you execute

@@ -10,7 +10,7 @@ import (
 	"github.com/rackspace/gophercloud/rackspace/db/v1/users"
 )
 
-func (c context) createUsers() {
+func (c *context) createUsers() {
 	c.users = []string{
 		tools.RandomString("user_", 5),
 		tools.RandomString("user_", 5),
@@ -44,7 +44,7 @@ func (c context) createUsers() {
 	c.AssertNoErr(err)
 }
 
-func (c context) listUsers() {
+func (c *context) listUsers() {
 	c.Logf("Listing users on instance %s", c.instanceID)
 
 	err := os.List(c.client, c.instanceID).EachPage(func(page pagination.Page) (bool, error) {
@@ -61,7 +61,7 @@ func (c context) listUsers() {
 	c.AssertNoErr(err)
 }
 
-func (c context) deleteUsers() {
+func (c *context) deleteUsers() {
 	for _, id := range c.users {
 		err := users.Delete(c.client, c.instanceID, id).ExtractErr()
 		c.AssertNoErr(err)
@@ -69,7 +69,7 @@ func (c context) deleteUsers() {
 	}
 }
 
-func (c context) changeUserPwd() {
+func (c *context) changeUserPwd() {
 	opts := os.BatchCreateOpts{}
 
 	for _, name := range c.users[:1] {
@@ -81,22 +81,23 @@ func (c context) changeUserPwd() {
 	c.AssertNoErr(err)
 }
 
-func (c context) getUser() {
+func (c *context) getUser() {
 	user, err := users.Get(c.client, c.instanceID, c.users[0]).Extract()
 	c.Logf("Getting user %s", user)
 	c.AssertNoErr(err)
 }
 
-func (c context) updateUser() {
-	opts := os.CreateOpts{Name: tools.RandomString("new_name_", 5)}
+func (c *context) updateUser() {
+	opts := users.UpdateOpts{Name: tools.RandomString("new_name_", 5)}
 	err := users.Update(c.client, c.instanceID, c.users[0], opts).ExtractErr()
 	c.Logf("Updated user %s", c.users[0])
 	c.AssertNoErr(err)
+	c.users[0] = opts.Name
 }
 
-func (c context) listUserAccess() {
+func (c *context) listUserAccess() {
 	err := users.ListAccess(c.client, c.instanceID, c.users[0]).EachPage(func(page pagination.Page) (bool, error) {
-		dbList, err := db.ExtractDBs(page)
+		dbList, err := users.ExtractDBs(page)
 		c.AssertNoErr(err)
 
 		for _, db := range dbList {
@@ -109,14 +110,14 @@ func (c context) listUserAccess() {
 	c.AssertNoErr(err)
 }
 
-func (c context) grantUserAccess() {
+func (c *context) grantUserAccess() {
 	opts := db.BatchCreateOpts{db.CreateOpts{Name: c.DBIDs[0]}}
 	err := users.GrantAccess(c.client, c.instanceID, c.users[0], opts).ExtractErr()
 	c.Logf("Granted access for user %s to DB %s", c.users[0], c.DBIDs[0])
 	c.AssertNoErr(err)
 }
 
-func (c context) revokeUserAccess() {
+func (c *context) revokeUserAccess() {
 	dbName, userName := c.DBIDs[0], c.users[0]
 	err := users.RevokeAccess(c.client, c.instanceID, userName, dbName).ExtractErr()
 	c.Logf("Revoked access for user %s to DB %s", userName, dbName)

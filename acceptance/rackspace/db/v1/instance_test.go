@@ -5,6 +5,7 @@ package v1
 import (
 	"testing"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/instances"
@@ -48,6 +49,7 @@ func TestRunner(t *testing.T) {
 	c.replaceConfigGrp()
 	c.associateInstanceWithConfigGrp()
 	c.listConfigGrpInstances()
+	c.detachInstanceFromGrp()
 	c.deleteConfigGrp()
 
 	// DATABASE tests
@@ -67,10 +69,11 @@ func TestRunner(t *testing.T) {
 	// TEARDOWN
 	c.deleteUsers()
 	c.deleteDBs()
+	c.detachAndDeleteReplica()
 	c.deleteInstance()
 }
 
-func (c context) createInstance() {
+func (c *context) createInstance() {
 	opts := instances.CreateOpts{
 		FlavorRef: "1",
 		Size:      1,
@@ -80,22 +83,23 @@ func (c context) createInstance() {
 	instance, err := instances.Create(c.client, opts).Extract()
 	th.AssertNoErr(c.test, err)
 
-	c.Logf("Restarting %s. Waiting...", instance.ID)
+	c.Logf("Creating %s. Waiting...", instance.ID)
 	c.WaitUntilActive(instance.ID)
-	c.Logf("Created DB %#v", instance.ID)
+	c.Logf("Created instance %s", instance.ID)
 
 	c.instanceID = instance.ID
 }
 
-func (c context) listInstances() {
+func (c *context) listInstances() {
 	c.Logf("Listing instances")
 
 	err := instances.List(c.client).EachPage(func(page pagination.Page) (bool, error) {
 		instanceList, err := instances.ExtractInstances(page)
 		c.AssertNoErr(err)
 
-		for _, instance := range instanceList {
-			c.Logf("Instance: %#v", instance)
+		for _, i := range instanceList {
+			c.Logf("Instance: ID [%s] Name [%s] Status [%s] VolSize [%d] Datastore Type [%s]",
+				i.ID, i.Name, i.Status, i.Volume.Size, i.Datastore.Type)
 		}
 
 		return true, nil
@@ -104,31 +108,31 @@ func (c context) listInstances() {
 	c.AssertNoErr(err)
 }
 
-func (c context) getInstance() {
+func (c *context) getInstance() {
 	instance, err := instances.Get(c.client, c.instanceID).Extract()
 	c.AssertNoErr(err)
 	c.Logf("Getting instance: %#v", instance)
 }
 
-func (c context) deleteInstance() {
+func (c *context) deleteInstance() {
 	err := instances.Delete(c.client, c.instanceID).ExtractErr()
 	c.AssertNoErr(err)
 	c.Logf("Deleted instance %s", c.instanceID)
 }
 
-func (c context) enableRootUser() {
+func (c *context) enableRootUser() {
 	_, err := instances.EnableRootUser(c.client, c.instanceID).Extract()
 	c.AssertNoErr(err)
 	c.Logf("Enabled root user on %s", c.instanceID)
 }
 
-func (c context) isRootEnabled() {
+func (c *context) isRootEnabled() {
 	enabled, err := instances.IsRootEnabled(c.client, c.instanceID)
 	c.AssertNoErr(err)
 	c.Logf("Is root enabled? %s", enabled)
 }
 
-func (c context) restartInstance() {
+func (c *context) restartInstance() {
 	id := c.instanceID
 	err := instances.RestartService(c.client, id).ExtractErr()
 	c.AssertNoErr(err)
@@ -137,7 +141,7 @@ func (c context) restartInstance() {
 	c.Logf("Restarted %s", id)
 }
 
-func (c context) resizeInstance() {
+func (c *context) resizeInstance() {
 	id := c.instanceID
 	err := instances.ResizeInstance(c.client, id, "2").ExtractErr()
 	c.AssertNoErr(err)
@@ -146,7 +150,7 @@ func (c context) resizeInstance() {
 	c.Logf("Resized %s with flavorRef %s", id, "2")
 }
 
-func (c context) resizeVol() {
+func (c *context) resizeVol() {
 	id := c.instanceID
 	err := instances.ResizeVolume(c.client, id, 2).ExtractErr()
 	c.AssertNoErr(err)
@@ -155,8 +159,30 @@ func (c context) resizeVol() {
 	c.Logf("Resized the volume of %s to %d GB", id, 2)
 }
 
-func (c context) getDefaultConfig() {
+func (c *context) getDefaultConfig() {
 	config, err := instances.GetDefaultConfig(c.client, c.instanceID).Extract()
 	c.Logf("Default config group for instance %s: %#v", c.instanceID, config)
 	c.AssertNoErr(err)
+}
+
+func (c *context) detachAndDeleteReplica() {
+	err := instances.DetachReplica(c.client, c.replicaID).ExtractErr()
+	c.AssertNoErr(err)
+	c.Logf("Detached replica %s from instance %s", c.replicaID, c.instanceID)
+
+	err = instances.Delete(c.client, c.replicaID).ExtractErr()
+	c.AssertNoErr(err)
+	c.Logf("Deleted replica %s", c.replicaID)
+
+	// Check that it's deleted
+	err = gophercloud.WaitFor(60, func() (bool, error) {
+		_, err := instances.Get(c.client, c.replicaID).Extract()
+		if casted, ok := err.(*gophercloud.UnexpectedResponseCodeError); ok && casted.Actual == 404 {
+			return true, nil
+		}
+		if err != nil {
+			return false, err
+		}
+		return false, nil
+	})
 }

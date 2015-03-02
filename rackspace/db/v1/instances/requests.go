@@ -39,6 +39,11 @@ func AssociateWithConfigGroup(client *gophercloud.ServiceClient, instanceID, con
 	return res
 }
 
+// DetachFromConfigGroup will detach an instance from all config groups.
+func DetachFromConfigGroup(client *gophercloud.ServiceClient, instanceID string) UpdateResult {
+	return AssociateWithConfigGroup(client, instanceID, "")
+}
+
 // ListBackups will list all the backups for a specified database instance.
 func ListBackups(client *gophercloud.ServiceClient, instanceID string) pagination.Pager {
 	pageFn := func(r pagination.PageResult) pagination.Page {

@@ -43,7 +43,11 @@ func newContext(t *testing.T) context {
 }
 
 func (c context) Logf(msg string, args ...interface{}) {
-	c.test.Logf(msg, args)
+	if len(args) > 0 {
+		c.test.Logf(msg, args...)
+	} else {
+		c.test.Log(msg)
+	}
 }
 
 func (c context) AssertNoErr(err error) {

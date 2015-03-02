@@ -3,25 +3,25 @@
 package v1
 
 import (
-	"os"
 	"testing"
 
 	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack"
+	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/rackspace"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/instances"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
 func newClient(t *testing.T) *gophercloud.ServiceClient {
-	ao, err := openstack.AuthOptionsFromEnv()
+	opts, err := rackspace.AuthOptionsFromEnv()
 	th.AssertNoErr(t, err)
+	opts = tools.OnlyRS(opts)
 
-	client, err := openstack.AuthenticatedClient(ao)
+	client, err := rackspace.AuthenticatedClient(opts)
 	th.AssertNoErr(t, err)
 
 	c, err := rackspace.NewDBV1(client, gophercloud.EndpointOpts{
-		Region: os.Getenv("RS_REGION_NAME"),
+		Region: "IAD",
 	})
 	th.AssertNoErr(t, err)
 
@@ -47,7 +47,11 @@ func newContext(t *testing.T) context {
 }
 
 func (c context) Logf(msg string, args ...interface{}) {
-	c.test.Logf(msg, args)
+	if len(args) > 0 {
+		c.test.Logf(msg, args...)
+	} else {
+		c.test.Log(msg)
+	}
 }
 
 func (c context) AssertNoErr(err error) {

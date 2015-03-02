@@ -104,7 +104,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 	}
 
 	_, res.Err = client.Request("POST", baseURL(client), gophercloud.RequestOpts{
-		OkCodes:      []int{201},
+		OkCodes:      []int{200},
 		JSONBody:     &reqBody,
 		JSONResponse: &res.Body,
 	})
@@ -216,7 +216,9 @@ func Replace(client *gophercloud.ServiceClient, configID string, opts UpdateOpts
 	return res
 }
 
-// Delete will permanently delete a configuration group.
+// Delete will permanently delete a configuration group. Please note that
+// config groups cannot be deleted whilst still attached to running instances -
+// you must detach and then delete them.
 func Delete(client *gophercloud.ServiceClient, configID string) DeleteResult {
 	var res DeleteResult
 

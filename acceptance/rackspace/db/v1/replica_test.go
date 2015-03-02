@@ -8,9 +8,9 @@ import (
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
-func (c context) createReplica() {
+func (c *context) createReplica() {
 	opts := instances.CreateOpts{
-		FlavorRef: "1",
+		FlavorRef: "2",
 		Size:      1,
 		Name:      tools.RandomString("gopher_db", 5),
 		ReplicaOf: c.instanceID,
@@ -26,7 +26,7 @@ func (c context) createReplica() {
 	c.replicaID = repl.ID
 }
 
-func (c context) detachReplica() {
+func (c *context) detachReplica() {
 	err := instances.DetachReplica(c.client, c.replicaID).ExtractErr()
 	c.Logf("Detached replica %s", c.replicaID)
 	c.AssertNoErr(err)
