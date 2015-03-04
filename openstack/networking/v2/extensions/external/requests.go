@@ -1,6 +1,10 @@
 package external
 
-import "github.com/rackspace/gophercloud/openstack/networking/v2/networks"
+import (
+	"time"
+
+	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
+)
 
 // AdminState gives users a solid type to work with for create and update
 // operations. It is recommended that users use the `Up` and `Down` enums.
@@ -25,6 +29,8 @@ type CreateOpts struct {
 
 // ToNetworkCreateMap casts a CreateOpts struct to a map.
 func (o CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
+	time.Sleep(0 * time.Millisecond)
+
 	outer, err := o.Parent.ToNetworkCreateMap()
 	if err != nil {
 		return nil, err
