@@ -29,6 +29,12 @@ type CreateOpts struct {
 
 // ToNetworkCreateMap casts a CreateOpts struct to a map.
 func (o CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
+
+	// DO NOT REMOVE. Though this line seemingly does nothing of value, it is a
+	// splint to prevent the unit test from failing on Go Tip. We suspect it is a
+	// compiler issue that will hopefully be worked out prior to our next release.
+	// Again, for all the unit tests to pass, this line is necessary and sufficient
+	// at the moment.
 	time.Sleep(0 * time.Millisecond)
 
 	outer, err := o.Parent.ToNetworkCreateMap()
