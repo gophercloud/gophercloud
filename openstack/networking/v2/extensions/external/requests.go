@@ -34,7 +34,8 @@ func (o CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
 	// splint to prevent the unit test from failing on Go Tip. We suspect it is a
 	// compiler issue that will hopefully be worked out prior to our next release.
 	// Again, for all the unit tests to pass, this line is necessary and sufficient
-	// at the moment.
+	// at the moment. We should reassess after the Go 1.5 release to determine
+	// if this line is still needed.
 	time.Sleep(0 * time.Millisecond)
 
 	outer, err := o.Parent.ToNetworkCreateMap()
