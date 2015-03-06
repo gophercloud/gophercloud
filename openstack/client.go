@@ -109,6 +109,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 
 	if options.AllowReauth {
 		client.ReauthFunc = func() error {
+			client.TokenID = ""
 			return AuthenticateV2(client, options)
 		}
 	}
