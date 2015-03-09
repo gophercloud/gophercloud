@@ -32,15 +32,6 @@ func TestSecurityGroups(t *testing.T) {
 
 	// get security group
 	getSecGroup(t, groupID)
-
-	// create port with security group
-	//networkID, portID := createSecGroupPort(t, groupID)
-
-	// teardown
-	//defer rsNetworks.Delete(Client, networkID)
-
-	// delete port
-	//defer rsPorts.Delete(Client, portID)
 }
 
 func TestSecurityGroupRules(t *testing.T) {
