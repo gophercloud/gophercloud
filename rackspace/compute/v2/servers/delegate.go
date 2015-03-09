@@ -64,3 +64,24 @@ func WaitForStatus(c *gophercloud.ServiceClient, id, status string, secs int) er
 func ExtractServers(page pagination.Page) ([]os.Server, error) {
 	return os.ExtractServers(page)
 }
+
+// ListAddresses makes a request against the API to list the servers IP addresses.
+func ListAddresses(client *gophercloud.ServiceClient, id string) pagination.Pager {
+	return os.ListAddresses(client, id)
+}
+
+// ExtractAddresses interprets the results of a single page from a ListAddresses() call, producing a map of Address slices.
+func ExtractAddresses(page pagination.Page) (map[string][]os.Address, error) {
+	return os.ExtractAddresses(page)
+}
+
+// ListAddressesByNetwork makes a request against the API to list the servers IP addresses
+// for the given network.
+func ListAddressesByNetwork(client *gophercloud.ServiceClient, id, network string) pagination.Pager {
+	return os.ListAddressesByNetwork(client, id, network)
+}
+
+// ExtractNetworkAddresses interprets the results of a single page from a ListAddressesByNetwork() call, producing a map of Address slices.
+func ExtractNetworkAddresses(page pagination.Page) ([]os.Address, error) {
+	return os.ExtractNetworkAddresses(page)
+}
