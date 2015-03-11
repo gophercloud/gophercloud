@@ -15,13 +15,13 @@
 //
 // For ingress traffic (to an instance)
 //  - Only traffic matched with security group rules are allowed.
-//  - When there is no rule defined, all traffic are dropped.
+//  - When there is no rule defined, all traffic is dropped.
 //
 // For egress traffic (from an instance)
 //  - Only traffic matched with security group rules are allowed.
 //  - When there is no rule defined, all egress traffic are dropped.
 //  - When a new security group is created, rules to allow all egress traffic
-//    are automatically added.
+//    is automatically added.
 //
 // "default security group" is defined for each tenant.
 //  - For the default security group a rule which allows intercommunication
