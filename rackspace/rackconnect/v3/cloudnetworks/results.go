@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/jrperritt/gophercloud"
 	"github.com/mitchellh/mapstructure"
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
