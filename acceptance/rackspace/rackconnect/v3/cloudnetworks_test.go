@@ -13,15 +13,15 @@ import (
 
 func TestCloudNetworks(t *testing.T) {
 	c := newClient(t)
-	cnID := testList(t, c)
-	testGet(t, c, cnID)
+	cnID := testListNetworks(t, c)
+	testGetNetworks(t, c, cnID)
 }
 
-func testList(t *testing.T, c *gophercloud.ServiceClient) string {
+func testListNetworks(t *testing.T, c *gophercloud.ServiceClient) string {
 	allPages, err := cloudnetworks.List(c).AllPages()
 	th.AssertNoErr(t, err)
 	allcn, err := cloudnetworks.ExtractCloudNetworks(allPages)
-	fmt.Printf("Listing all cloud networks: %+v\n", allcn)
+	fmt.Printf("Listing all cloud networks: %+v\n\n", allcn)
 	var cnID string
 	if len(allcn) > 0 {
 		cnID = allcn[0].ID
@@ -29,8 +29,8 @@ func testList(t *testing.T, c *gophercloud.ServiceClient) string {
 	return cnID
 }
 
-func testGet(t *testing.T, c *gophercloud.ServiceClient, id string) {
+func testGetNetworks(t *testing.T, c *gophercloud.ServiceClient, id string) {
 	cn, err := cloudnetworks.Get(c, id).Extract()
 	th.AssertNoErr(t, err)
-	fmt.Printf("Retrieved cloud network: %+v\n", cn)
+	fmt.Printf("Retrieved cloud network: %+v\n\n", cn)
 }
