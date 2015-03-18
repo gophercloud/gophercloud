@@ -44,7 +44,6 @@ func (r CloudNetworkPage) IsEmpty() (bool, error) {
 func ExtractCloudNetworks(page pagination.Page) ([]CloudNetwork, error) {
 	var res []CloudNetwork
 	casted := page.(CloudNetworkPage).Body
-
 	err := mapstructure.Decode(casted, &res)
 
 	var rawNets []interface{}
