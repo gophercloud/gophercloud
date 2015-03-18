@@ -94,27 +94,41 @@ func GetNodeDetails(c *gophercloud.ServiceClient, poolID, nodeID string) GetNode
 	return res
 }
 
-// NodesOpts are options for bulk adding/deleting nodes to LB pools.
-type NodesOpts struct {
+// NodeOpts are options for bulk adding/deleting nodes to LB pools.
+type NodeOpts struct {
 	ServerID string
 	PoolID   string
 }
 
-// CreateNodes adds the cloud servers with the given serverIDs to the corresponding
-// load balancer pools with the given poolIDs.
-func CreateNodes(c *gophercloud.ServiceClient, opts []NodesOpts) CreateNodesResult {
-	var res CreateNodesResult
-	reqBody := make([]map[string]interface{}, len(opts))
-	for i := range opts {
-		reqBody[i] = map[string]interface{}{
+// NodesOpts are a slice of NodeOpts, passed as options for bulk operations.
+type NodesOpts []NodeOpts
+
+// ToLBPoolCreateNodesMap serializes a NodesOpts into a map to send in the request.
+func (o NodesOpts) ToLBPoolCreateNodesMap() ([]map[string]interface{}, error) {
+	m := make([]map[string]interface{}, len(o))
+	for i := range o {
+		m[i] = map[string]interface{}{
 			"cloud_server": map[string]string{
-				"id": opts[i].ServerID,
+				"id": o[i].ServerID,
 			},
 			"load_balancer_pool": map[string]string{
-				"id": opts[i].PoolID,
+				"id": o[i].PoolID,
 			},
 		}
 	}
+	return m, nil
+}
+
+// CreateNodes adds the cloud servers with the given serverIDs to the corresponding
+// load balancer pools with the given poolIDs.
+func CreateNodes(c *gophercloud.ServiceClient, opts NodesOpts) CreateNodesResult {
+	var res CreateNodesResult
+	reqBody, err := opts.ToLBPoolCreateNodesMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
 	_, res.Err = c.Request("POST", createNodesURL(c), gophercloud.RequestOpts{
 		JSONBody:     &reqBody,
 		JSONResponse: &res.Body,
@@ -125,19 +139,14 @@ func CreateNodes(c *gophercloud.ServiceClient, opts []NodesOpts) CreateNodesResu
 
 // DeleteNodes removes the cloud servers with the given serverIDs to the corresponding
 // load balancer pools with the given poolIDs.
-func DeleteNodes(c *gophercloud.ServiceClient, opts []NodesOpts) DeleteNodesResult {
+func DeleteNodes(c *gophercloud.ServiceClient, opts NodesOpts) DeleteNodesResult {
 	var res DeleteNodesResult
-	reqBody := make([]map[string]interface{}, len(opts))
-	for i := range opts {
-		reqBody[i] = map[string]interface{}{
-			"cloud_server": map[string]string{
-				"id": opts[i].ServerID,
-			},
-			"load_balancer_pool": map[string]string{
-				"id": opts[i].PoolID,
-			},
-		}
+	reqBody, err := opts.ToLBPoolCreateNodesMap()
+	if err != nil {
+		res.Err = err
+		return res
 	}
+
 	_, res.Err = c.Request("DELETE", createNodesURL(c), gophercloud.RequestOpts{
 		JSONBody: &reqBody,
 		OkCodes:  []int{204},
@@ -145,8 +154,8 @@ func DeleteNodes(c *gophercloud.ServiceClient, opts []NodesOpts) DeleteNodesResu
 	return res
 }
 
-// ListNodesDetailsForServer returns all load balancer pool nodes that are associated with RackConnect
-// for the given LB pool ID with all their details for the server with the given serverID.
+// ListNodesDetailsForServer is similar to ListNodesDetails but only returns nodes
+// for the given serverID.
 func ListNodesDetailsForServer(c *gophercloud.ServiceClient, serverID string) pagination.Pager {
 	url := listNodesForServerURL(c, serverID)
 	createPage := func(r pagination.PageResult) pagination.Page {

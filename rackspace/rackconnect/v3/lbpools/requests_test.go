@@ -741,12 +741,12 @@ func TestCreateNodes(t *testing.T) {
 		},
 	}
 
-	opts := []NodesOpts{
-		NodesOpts{
+	opts := NodesOpts{
+		NodeOpts{
 			ServerID: "d95ae0c4-6ab8-4873-b82f-f8433840cff2",
 			PoolID:   "d6d3aa7c-dfa5-4e61-96ee-1d54ac1075d2",
 		},
-		NodesOpts{
+		NodeOpts{
 			ServerID: "d95ae0c4-6ab8-4873-b82f-f8433840cff2",
 			PoolID:   "33021100-4abf-4836-9080-465a6d87ab68",
 		},
@@ -788,12 +788,12 @@ func TestDeleteNodes(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	opts := []NodesOpts{
-		NodesOpts{
+	opts := NodesOpts{
+		NodeOpts{
 			ServerID: "d95ae0c4-6ab8-4873-b82f-f8433840cff2",
 			PoolID:   "d6d3aa7c-dfa5-4e61-96ee-1d54ac1075d2",
 		},
-		NodesOpts{
+		NodeOpts{
 			ServerID: "d95ae0c4-6ab8-4873-b82f-f8433840cff2",
 			PoolID:   "33021100-4abf-4836-9080-465a6d87ab68",
 		},
