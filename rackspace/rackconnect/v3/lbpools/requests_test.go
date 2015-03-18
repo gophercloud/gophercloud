@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jrperritt/gophercloud/testhelper/client"
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/rackspace/gophercloud/testhelper/client"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 )
 
