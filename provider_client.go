@@ -196,25 +196,28 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 		}
 	}
 
-	// Validate the response code, if requested to do so.
-	if options.OkCodes != nil {
-		var ok bool
-		for _, code := range options.OkCodes {
-			if resp.StatusCode == code {
-				ok = true
-				break
-			}
+	// Allow default OkCodes if none explicitly set
+	if options.OkCodes == nil {
+		options.OkCodes = defaultOkCodes(method)
+	}
+
+	// Validate the HTTP response status.
+	var ok bool
+	for _, code := range options.OkCodes {
+		if resp.StatusCode == code {
+			ok = true
+			break
 		}
-		if !ok {
-			body, _ := ioutil.ReadAll(resp.Body)
-			resp.Body.Close()
-			return resp, &UnexpectedResponseCodeError{
-				URL:      url,
-				Method:   method,
-				Expected: options.OkCodes,
-				Actual:   resp.StatusCode,
-				Body:     body,
-			}
+	}
+	if !ok {
+		body, _ := ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
+		return resp, &UnexpectedResponseCodeError{
+			URL:      url,
+			Method:   method,
+			Expected: options.OkCodes,
+			Actual:   resp.StatusCode,
+			Body:     body,
 		}
 	}
 
@@ -225,4 +228,19 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 	}
 
 	return resp, nil
+}
+
+func defaultOkCodes(method string) []int {
+	switch {
+	case method == "GET":
+		return []int{200}
+	case method == "POST":
+		return []int{201, 202}
+	case method == "PUT":
+		return []int{201, 202}
+	case method == "DELETE":
+		return []int{202, 204}
+	}
+
+	return []int{}
 }
