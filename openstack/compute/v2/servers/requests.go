@@ -283,6 +283,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	_, result.Err = client.Request("PUT", updateURL(client, id), gophercloud.RequestOpts{
 		JSONResponse: &result.Body,
 		JSONBody:     opts.ToServerUpdateMap(),
+		OkCodes:      []int{200},
 	})
 	return result
 }
@@ -628,6 +629,7 @@ func ResetMetadata(client *gophercloud.ServiceClient, id string, opts ResetMetad
 	_, res.Err = client.Request("PUT", metadataURL(client, id), gophercloud.RequestOpts{
 		JSONBody:     metadata,
 		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -660,6 +662,7 @@ func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMet
 	_, res.Err = client.Request("POST", metadataURL(client, id), gophercloud.RequestOpts{
 		JSONBody:     metadata,
 		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -698,6 +701,7 @@ func CreateMetadatum(client *gophercloud.ServiceClient, id string, opts Metadatu
 	_, res.Err = client.Request("PUT", metadatumURL(client, id, key), gophercloud.RequestOpts{
 		JSONBody:     metadatum,
 		JSONResponse: &res.Body,
+		OkCodes:      []int{200},
 	})
 	return res
 }

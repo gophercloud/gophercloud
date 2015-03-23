@@ -102,7 +102,6 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	_, res.Err = c.Request("POST", rootURL(c), gophercloud.RequestOpts{
 		JSONBody:     &reqBody,
 		JSONResponse: &res.Body,
-		OkCodes:      []int{201},
 	})
 	return res
 }
@@ -112,7 +111,6 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = c.Request("GET", resourceURL(c, id), gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -156,9 +154,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 // Delete will permanently delete a particular pool based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = c.Request("DELETE", resourceURL(c, id), gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
+	_, res.Err = c.Request("DELETE", resourceURL(c, id), gophercloud.RequestOpts{})
 	return res
 }
 
@@ -181,7 +177,6 @@ func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) As
 	_, res.Err = c.Request("POST", associateURL(c, poolID), gophercloud.RequestOpts{
 		JSONBody:     &reqBody,
 		JSONResponse: &res.Body,
-		OkCodes:      []int{201},
 	})
 	return res
 }
@@ -191,8 +186,6 @@ func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) As
 // check for the health of the members of the pool.
 func DisassociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) AssociateResult {
 	var res AssociateResult
-	_, res.Err = c.Request("DELETE", disassociateURL(c, poolID, monitorID), gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
+	_, res.Err = c.Request("DELETE", disassociateURL(c, poolID, monitorID), gophercloud.RequestOpts{})
 	return res
 }

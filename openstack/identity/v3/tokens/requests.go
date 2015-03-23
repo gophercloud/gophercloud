@@ -238,7 +238,6 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 	response, result.Err = c.Request("POST", tokenURL(c), gophercloud.RequestOpts{
 		JSONBody:     &req,
 		JSONResponse: &result.Body,
-		OkCodes:      []int{201},
 	})
 	if result.Err != nil {
 		return result
@@ -281,7 +280,6 @@ func Revoke(c *gophercloud.ServiceClient, token string) RevokeResult {
 	var res RevokeResult
 	_, res.Err = c.Request("DELETE", tokenURL(c), gophercloud.RequestOpts{
 		MoreHeaders: subjectTokenHeaders(c, token),
-		OkCodes:     []int{204},
 	})
 	return res
 }

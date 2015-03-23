@@ -12,7 +12,6 @@ func Find(c *gophercloud.ServiceClient, stackName string) FindResult {
 	// Send request to API
 	_, res.Err = c.Request("GET", findURL(c, stackName), gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
 	})
 	return res
 }

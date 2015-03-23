@@ -45,7 +45,6 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 	}
 
 	_, res.Err = client.Request("POST", createURL(client), gophercloud.RequestOpts{
-		MoreHeaders:  client.AuthenticatedHeaders(),
 		OkCodes:      []int{200, 201},
 		JSONBody:     &reqBody,
 		JSONResponse: &res.Body,
@@ -56,10 +55,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 // Delete will delete the volume type with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = client.Request("DELETE", deleteURL(client, id), gophercloud.RequestOpts{
-		MoreHeaders: client.AuthenticatedHeaders(),
-		OkCodes:     []int{202},
-	})
+	_, res.Err = client.Request("DELETE", deleteURL(client, id), gophercloud.RequestOpts{})
 	return res
 }
 
@@ -68,8 +64,6 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, err := client.Request("GET", getURL(client, id), gophercloud.RequestOpts{
-		MoreHeaders:  client.AuthenticatedHeaders(),
-		OkCodes:      []int{200},
 		JSONResponse: &res.Body,
 	})
 	res.Err = err

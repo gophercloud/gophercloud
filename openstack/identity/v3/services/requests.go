@@ -21,7 +21,6 @@ func Create(client *gophercloud.ServiceClient, serviceType string) CreateResult 
 	_, result.Err = client.Request("POST", listURL(client), gophercloud.RequestOpts{
 		JSONBody:     &req,
 		JSONResponse: &result.Body,
-		OkCodes:      []int{201},
 	})
 	return result
 }
@@ -53,7 +52,6 @@ func Get(client *gophercloud.ServiceClient, serviceID string) GetResult {
 	var result GetResult
 	_, result.Err = client.Request("GET", serviceURL(client, serviceID), gophercloud.RequestOpts{
 		JSONResponse: &result.Body,
-		OkCodes:      []int{200},
 	})
 	return result
 }
@@ -79,8 +77,6 @@ func Update(client *gophercloud.ServiceClient, serviceID string, serviceType str
 // It either deletes all associated endpoints, or fails until all endpoints are deleted.
 func Delete(client *gophercloud.ServiceClient, serviceID string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = client.Request("DELETE", serviceURL(client, serviceID), gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
+	_, res.Err = client.Request("DELETE", serviceURL(client, serviceID), gophercloud.RequestOpts{})
 	return res
 }

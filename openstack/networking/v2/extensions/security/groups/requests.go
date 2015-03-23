@@ -77,7 +77,6 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 	_, res.Err = c.Request("POST", rootURL(c), gophercloud.RequestOpts{
 		JSONBody:     &reqBody,
 		JSONResponse: &res.Body,
-		OkCodes:      []int{201},
 	})
 
 	return res
@@ -88,7 +87,6 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = c.Request("GET", resourceURL(c, id), gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -96,8 +94,6 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 // Delete will permanently delete a particular security group based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = c.Request("DELETE", resourceURL(c, id), gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
+	_, res.Err = c.Request("DELETE", resourceURL(c, id), gophercloud.RequestOpts{})
 	return res
 }

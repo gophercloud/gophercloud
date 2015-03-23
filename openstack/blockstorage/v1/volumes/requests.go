@@ -94,9 +94,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 // Delete will delete the existing Volume with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = client.Request("DELETE", deleteURL(client, id), gophercloud.RequestOpts{
-		OkCodes: []int{202, 204},
-	})
+	_, res.Err = client.Request("DELETE", deleteURL(client, id), gophercloud.RequestOpts{})
 	return res
 }
 
@@ -106,7 +104,6 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = client.Request("GET", getURL(client, id), gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
 	})
 	return res
 }

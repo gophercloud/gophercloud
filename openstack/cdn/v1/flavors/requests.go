@@ -19,7 +19,6 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = c.Request("GET", getURL(c, id), gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
 	})
 	return res
 }

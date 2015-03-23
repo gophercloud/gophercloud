@@ -17,7 +17,6 @@ func List(c *gophercloud.ServiceClient) pagination.Pager {
 func Get(client *gophercloud.ServiceClient, v string) GetResult {
 	var res GetResult
 	_, res.Err = client.Request("GET", getURL(client, v), gophercloud.RequestOpts{
-		OkCodes:      []int{200},
 		JSONResponse: &res.Body,
 	})
 	return res

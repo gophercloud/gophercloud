@@ -78,9 +78,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 // Delete will delete the existing Snapshot with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = client.Request("DELETE", deleteURL(client, id), gophercloud.RequestOpts{
-		OkCodes: []int{202, 204},
-	})
+	_, res.Err = client.Request("DELETE", deleteURL(client, id), gophercloud.RequestOpts{})
 	return res
 }
 
@@ -89,7 +87,6 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = client.Request("GET", getURL(client, id), gophercloud.RequestOpts{
-		OkCodes:      []int{200},
 		JSONResponse: &res.Body,
 	})
 	return res

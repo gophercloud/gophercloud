@@ -88,7 +88,6 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 
 	_, result.Err = client.Request("GET", resourceURL(client, id), gophercloud.RequestOpts{
 		JSONResponse: &result.Body,
-		OkCodes:      []int{200},
 	})
 
 	return result
@@ -98,9 +97,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 func Delete(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var result gophercloud.ErrResult
 
-	_, result.Err = client.Request("DELETE", resourceURL(client, id), gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
+	_, result.Err = client.Request("DELETE", resourceURL(client, id), gophercloud.RequestOpts{})
 
 	return result
 }

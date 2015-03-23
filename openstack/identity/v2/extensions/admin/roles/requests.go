@@ -19,11 +19,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 // ID is a required argument.
 func AddUserRole(client *gophercloud.ServiceClient, tenantID, userID, roleID string) UserRoleResult {
 	var result UserRoleResult
-
-	_, result.Err = client.Request("PUT", userRoleURL(client, tenantID, userID, roleID), gophercloud.RequestOpts{
-		OkCodes: []int{200, 201},
-	})
-
+	_, result.Err = client.Request("PUT", userRoleURL(client, tenantID, userID, roleID), gophercloud.RequestOpts{})
 	return result
 }
 
@@ -32,10 +28,6 @@ func AddUserRole(client *gophercloud.ServiceClient, tenantID, userID, roleID str
 // tenant ID is a required argument.
 func DeleteUserRole(client *gophercloud.ServiceClient, tenantID, userID, roleID string) UserRoleResult {
 	var result UserRoleResult
-
-	_, result.Err = client.Request("DELETE", userRoleURL(client, tenantID, userID, roleID), gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
-
+	_, result.Err = client.Request("DELETE", userRoleURL(client, tenantID, userID, roleID), gophercloud.RequestOpts{})
 	return result
 }

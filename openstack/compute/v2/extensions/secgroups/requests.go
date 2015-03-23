@@ -138,7 +138,6 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 
 	_, result.Err = client.Request("GET", resourceURL(client, id), gophercloud.RequestOpts{
 		JSONResponse: &result.Body,
-		OkCodes:      []int{200},
 	})
 
 	return result
@@ -148,9 +147,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 func Delete(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var result gophercloud.ErrResult
 
-	_, result.Err = client.Request("DELETE", resourceURL(client, id), gophercloud.RequestOpts{
-		OkCodes: []int{202},
-	})
+	_, result.Err = client.Request("DELETE", resourceURL(client, id), gophercloud.RequestOpts{})
 
 	return result
 }
@@ -247,9 +244,7 @@ func CreateRule(client *gophercloud.ServiceClient, opts CreateRuleOptsBuilder) C
 func DeleteRule(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 	var result gophercloud.ErrResult
 
-	_, result.Err = client.Request("DELETE", resourceRuleURL(client, id), gophercloud.RequestOpts{
-		OkCodes: []int{202},
-	})
+	_, result.Err = client.Request("DELETE", resourceRuleURL(client, id), gophercloud.RequestOpts{})
 
 	return result
 }
@@ -268,7 +263,6 @@ func AddServerToGroup(client *gophercloud.ServiceClient, serverID, groupName str
 	_, result.Err = client.Request("POST", serverActionURL(client, serverID), gophercloud.RequestOpts{
 		JSONResponse: &result.Body,
 		JSONBody:     actionMap("add", groupName),
-		OkCodes:      []int{202},
 	})
 
 	return result
@@ -281,7 +275,6 @@ func RemoveServerFromGroup(client *gophercloud.ServiceClient, serverID, groupNam
 	_, result.Err = client.Request("POST", serverActionURL(client, serverID), gophercloud.RequestOpts{
 		JSONResponse: &result.Body,
 		JSONBody:     actionMap("remove", groupName),
-		OkCodes:      []int{202},
 	})
 
 	return result

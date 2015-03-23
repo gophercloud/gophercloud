@@ -67,7 +67,6 @@ func Get(client *gophercloud.ServiceClient, serverId, aId string) GetResult {
 	var res GetResult
 	_, res.Err = client.Request("GET", getURL(client, serverId, aId), gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -75,8 +74,6 @@ func Get(client *gophercloud.ServiceClient, serverId, aId string) GetResult {
 // Delete requests the deletion of a previous stored VolumeAttachment from the server.
 func Delete(client *gophercloud.ServiceClient, serverId, aId string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = client.Request("DELETE", deleteURL(client, serverId, aId), gophercloud.RequestOpts{
-		OkCodes: []int{202},
-	})
+	_, res.Err = client.Request("DELETE", deleteURL(client, serverId, aId), gophercloud.RequestOpts{})
 	return res
 }

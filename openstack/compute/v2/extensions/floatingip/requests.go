@@ -58,7 +58,6 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = client.Request("GET", getURL(client, id), gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -66,9 +65,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 // Delete requests the deletion of a previous allocated FloatingIP.
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = client.Request("DELETE", deleteURL(client, id), gophercloud.RequestOpts{
-		OkCodes: []int{202},
-	})
+	_, res.Err = client.Request("DELETE", deleteURL(client, id), gophercloud.RequestOpts{})
 	return res
 }
 
@@ -84,7 +81,6 @@ func Associate(client *gophercloud.ServiceClient, serverId, fip string) Associat
 
 	_, res.Err = client.Request("POST", associateURL(client, serverId), gophercloud.RequestOpts{
 		JSONBody: reqBody,
-		OkCodes:  []int{202},
 	})
 	return res
 }
@@ -99,7 +95,6 @@ func Disassociate(client *gophercloud.ServiceClient, serverId, fip string) Disas
 
 	_, res.Err = client.Request("POST", disassociateURL(client, serverId), gophercloud.RequestOpts{
 		JSONBody: reqBody,
-		OkCodes:  []int{202},
 	})
 	return res
 }

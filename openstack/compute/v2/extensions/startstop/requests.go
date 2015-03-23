@@ -14,7 +14,6 @@ func Start(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 
 	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
 		JSONBody: reqBody,
-		OkCodes:  []int{202},
 	})
 
 	return res
@@ -28,7 +27,6 @@ func Stop(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
 
 	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
 		JSONBody: reqBody,
-		OkCodes:  []int{202},
 	})
 
 	return res

@@ -81,7 +81,6 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 	_, res.Err = c.Request("GET", getURL(c, id), gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
 	})
 	return res
 }
@@ -138,7 +137,6 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	_, res.Err = c.Request("POST", createURL(c), gophercloud.RequestOpts{
 		JSONBody:     &reqBody,
 		JSONResponse: &res.Body,
-		OkCodes:      []int{201},
 	})
 	return res
 }
@@ -196,8 +194,6 @@ func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuild
 // Delete accepts a unique ID and deletes the network associated with it.
 func Delete(c *gophercloud.ServiceClient, networkID string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = c.Request("DELETE", deleteURL(c, networkID), gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
+	_, res.Err = c.Request("DELETE", deleteURL(c, networkID), gophercloud.RequestOpts{})
 	return res
 }

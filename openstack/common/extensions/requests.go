@@ -10,7 +10,6 @@ func Get(c *gophercloud.ServiceClient, alias string) GetResult {
 	var res GetResult
 	_, res.Err = c.Request("GET", ExtensionURL(c, alias), gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
 	})
 	return res
 }

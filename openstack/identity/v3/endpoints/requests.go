@@ -122,8 +122,6 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 // Delete removes an endpoint from the service catalog.
 func Delete(client *gophercloud.ServiceClient, endpointID string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = client.Request("DELETE", endpointURL(client, endpointID), gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
+	_, res.Err = client.Request("DELETE", endpointURL(client, endpointID), gophercloud.RequestOpts{})
 	return res
 }
