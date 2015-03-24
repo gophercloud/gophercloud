@@ -244,3 +244,57 @@ func defaultOkCodes(method string) []int {
 
 	return []int{}
 }
+
+func (client *ProviderClient) Get(url string, JSONResponse *interface{}, opts *RequestOpts) (*http.Response, error) {
+	if opts == nil {
+		opts = &RequestOpts{}
+	}
+	if JSONResponse != nil {
+		opts.JSONResponse = JSONResponse
+	}
+	return client.Request("GET", url, *opts)
+}
+
+func (client *ProviderClient) Post(url string, JSONBody interface{}, JSONResponse *interface{}, opts *RequestOpts) (*http.Response, error) {
+	if opts == nil {
+		opts = &RequestOpts{}
+	}
+
+	if v, ok := (JSONBody).(io.Reader); ok == true {
+		opts.RawBody = v
+	} else if JSONBody != nil {
+		opts.JSONBody = JSONBody
+	}
+
+	if JSONResponse != nil {
+		opts.JSONResponse = JSONResponse
+	}
+
+	return client.Request("POST", url, *opts)
+}
+
+func (client *ProviderClient) Put(url string, JSONBody interface{}, JSONResponse *interface{}, opts *RequestOpts) (*http.Response, error) {
+	if opts == nil {
+		opts = &RequestOpts{}
+	}
+
+	if v, ok := (JSONBody).(io.Reader); ok == true {
+		opts.RawBody = v
+	} else if JSONBody != nil {
+		opts.JSONBody = JSONBody
+	}
+
+	if JSONResponse != nil {
+		opts.JSONResponse = JSONResponse
+	}
+
+	return client.Request("PUT", url, *opts)
+}
+
+func (client *ProviderClient) Delete(url string, opts *RequestOpts) (*http.Response, error) {
+	if opts == nil {
+		opts = &RequestOpts{}
+	}
+
+	return client.Request("DELETE", url, *opts)
+}
