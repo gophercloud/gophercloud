@@ -17,8 +17,6 @@ func List(c *gophercloud.ServiceClient) pagination.Pager {
 // Get retrieves a specific flavor based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, res.Err = c.Request("GET", getURL(c, id), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-	})
+	_, res.Err = c.Get(getURL(c, id), &res.Body, nil)
 	return res
 }
