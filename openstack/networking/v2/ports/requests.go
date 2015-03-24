@@ -79,9 +79,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // Get retrieves a specific port based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, res.Err = c.Request("GET", getURL(c, id), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-	})
+	_, res.Err = c.Get(getURL(c, id), &res.Body, nil)
 	return res
 }
 
@@ -154,12 +152,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 		return res
 	}
 
-	// Response
-	_, res.Err = c.Request("POST", createURL(c), gophercloud.RequestOpts{
-		JSONBody:     &reqBody,
-		JSONResponse: &res.Body,
-	})
-
+	_, res.Err = c.Post(createURL(c), reqBody, &res.Body, nil)
 	return res
 }
 
@@ -218,10 +211,8 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) Upd
 		return res
 	}
 
-	_, res.Err = c.Request("PUT", updateURL(c, id), gophercloud.RequestOpts{
-		JSONBody:     &reqBody,
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200, 201},
+	_, res.Err = c.Put(updateURL(c, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201},
 	})
 	return res
 }
@@ -229,6 +220,6 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) Upd
 // Delete accepts a unique ID and deletes the port associated with it.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = c.Request("DELETE", deleteURL(c, id), gophercloud.RequestOpts{})
+	_, res.Err = c.Delete(deleteURL(c, id), nil)
 	return res
 }
