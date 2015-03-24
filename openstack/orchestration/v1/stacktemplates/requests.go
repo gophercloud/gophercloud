@@ -51,10 +51,8 @@ func Validate(c *gophercloud.ServiceClient, opts ValidateOptsBuilder) ValidateRe
 		return res
 	}
 
-	_, res.Err = c.Request("POST", validateURL(c), gophercloud.RequestOpts{
-		JSONBody:     reqBody,
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
+	_, res.Err = c.Post(validateURL(c), reqBody, &res.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
 	})
 	return res
 }

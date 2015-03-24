@@ -309,7 +309,7 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		url += query
 	}
 
-	resp, err := c.Request("DELETE", url, gophercloud.RequestOpts{})
+	resp, err := c.Delete(url, nil)
 	res.Header = resp.Header
 	res.Err = err
 	return res

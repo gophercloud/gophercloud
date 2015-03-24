@@ -70,9 +70,8 @@ func Get(c *gophercloud.ServiceClient, stackName, stackID, resourceName string) 
 	var res GetResult
 
 	// Send request to API
-	_, res.Err = c.Request("GET", getURL(c, stackName, stackID, resourceName), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
+	_, res.Err = c.Get(getURL(c, stackName, stackID, resourceName), &res.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
 	})
 	return res
 }
@@ -82,9 +81,8 @@ func Metadata(c *gophercloud.ServiceClient, stackName, stackID, resourceName str
 	var res MetadataResult
 
 	// Send request to API
-	_, res.Err = c.Request("GET", metadataURL(c, stackName, stackID, resourceName), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
+	_, res.Err = c.Get(metadataURL(c, stackName, stackID, resourceName), &res.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
 	})
 	return res
 }
@@ -105,9 +103,8 @@ func Schema(c *gophercloud.ServiceClient, resourceType string) SchemaResult {
 	var res SchemaResult
 
 	// Send request to API
-	_, res.Err = c.Request("GET", schemaURL(c, resourceType), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
+	_, res.Err = c.Get(schemaURL(c, resourceType), &res.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
 	})
 	return res
 }
@@ -117,9 +114,8 @@ func Template(c *gophercloud.ServiceClient, resourceType string) TemplateResult 
 	var res TemplateResult
 
 	// Send request to API
-	_, res.Err = c.Request("GET", templateURL(c, resourceType), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
+	_, res.Err = c.Get(templateURL(c, resourceType), &res.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
 	})
 	return res
 }

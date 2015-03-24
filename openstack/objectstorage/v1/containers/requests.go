@@ -122,7 +122,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 // Delete is a function that deletes a container.
 func Delete(c *gophercloud.ServiceClient, containerName string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = c.Request("DELETE", deleteURL(c, containerName), gophercloud.RequestOpts{})
+	_, res.Err = c.Delete(deleteURL(c, containerName), nil)
 	return res
 }
 
