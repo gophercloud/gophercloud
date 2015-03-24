@@ -8,9 +8,7 @@ import (
 // Get retrieves information for a specific extension using its alias.
 func Get(c *gophercloud.ServiceClient, alias string) GetResult {
 	var res GetResult
-	_, res.Err = c.Request("GET", ExtensionURL(c, alias), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-	})
+	_, res.Err = c.Get(ExtensionURL(c, alias), &res.Body, nil)
 	return res
 }
 

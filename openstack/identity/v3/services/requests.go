@@ -18,10 +18,7 @@ func Create(client *gophercloud.ServiceClient, serviceType string) CreateResult 
 	req := request{Type: serviceType}
 
 	var result CreateResult
-	_, result.Err = client.Request("POST", listURL(client), gophercloud.RequestOpts{
-		JSONBody:     &req,
-		JSONResponse: &result.Body,
-	})
+	_, result.Err = client.Post(listURL(client), req, &result.Body, nil)
 	return result
 }
 
@@ -50,9 +47,7 @@ func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 // Get returns additional information about a service, given its ID.
 func Get(client *gophercloud.ServiceClient, serviceID string) GetResult {
 	var result GetResult
-	_, result.Err = client.Request("GET", serviceURL(client, serviceID), gophercloud.RequestOpts{
-		JSONResponse: &result.Body,
-	})
+	_, result.Err = client.Get(serviceURL(client, serviceID), &result.Body, nil)
 	return result
 }
 
@@ -77,6 +72,6 @@ func Update(client *gophercloud.ServiceClient, serviceID string, serviceType str
 // It either deletes all associated endpoints, or fails until all endpoints are deleted.
 func Delete(client *gophercloud.ServiceClient, serviceID string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = client.Request("DELETE", serviceURL(client, serviceID), gophercloud.RequestOpts{})
+	_, res.Err = client.Delete(serviceURL(client, serviceID), nil)
 	return res
 }
