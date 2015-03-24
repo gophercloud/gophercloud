@@ -60,8 +60,6 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 // Use ExtractImage() to interpret the result as an openstack Image.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var result GetResult
-	_, result.Err = client.Request("GET", getURL(client, id), gophercloud.RequestOpts{
-		JSONResponse: &result.Body,
-	})
+	_, result.Err = client.Get(getURL(client, id), &result.Body, nil)
 	return result
 }
