@@ -260,7 +260,7 @@ func (client *ProviderClient) Post(url string, JSONBody interface{}, JSONRespons
 		opts = &RequestOpts{}
 	}
 
-	if v, ok := (JSONBody).(io.Reader); ok == true {
+	if v, ok := (JSONBody).(io.Reader); ok {
 		opts.RawBody = v
 	} else if JSONBody != nil {
 		opts.JSONBody = JSONBody
