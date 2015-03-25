@@ -22,11 +22,7 @@ func Create(c *gophercloud.ServiceClient, serverID string) CreateResult {
 			"id": serverID,
 		},
 	}
-	_, res.Err = c.Request("POST", createURL(c), gophercloud.RequestOpts{
-		JSONBody:     &reqBody,
-		JSONResponse: &res.Body,
-		OkCodes:      []int{201},
-	})
+	_, res.Err = c.Post(createURL(c), reqBody, &res.Body, nil)
 	return res
 }
 
@@ -42,18 +38,13 @@ func ListForServer(c *gophercloud.ServiceClient, serverID string) pagination.Pag
 // Get retrieves the public IP with the given id.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, res.Err = c.Request("GET", getURL(c, id), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
-	})
+	_, res.Err = c.Get(getURL(c, id), &res.Body, nil)
 	return res
 }
 
 // Delete removes the public IP with the given id.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = c.Request("DELETE", deleteURL(c, id), gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
+	_, res.Err = c.Delete(deleteURL(c, id), nil)
 	return res
 }
