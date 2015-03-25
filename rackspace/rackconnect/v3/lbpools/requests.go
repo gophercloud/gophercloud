@@ -18,10 +18,7 @@ func List(c *gophercloud.ServiceClient) pagination.Pager {
 // based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, res.Err = c.Request("GET", getURL(c, id), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
-	})
+	_, res.Err = c.Get(getURL(c, id), &res.Body, nil)
 	return res
 }
 
@@ -44,11 +41,7 @@ func CreateNode(c *gophercloud.ServiceClient, poolID, serverID string) CreateNod
 			"id": serverID,
 		},
 	}
-	_, res.Err = c.Request("POST", createNodeURL(c, poolID), gophercloud.RequestOpts{
-		JSONBody:     &reqBody,
-		JSONResponse: &res.Body,
-		OkCodes:      []int{201},
-	})
+	_, res.Err = c.Post(createNodeURL(c, poolID), reqBody, &res.Body, nil)
 	return res
 }
 
@@ -66,10 +59,7 @@ func ListNodesDetails(c *gophercloud.ServiceClient, id string) pagination.Pager 
 // based on its unique ID and the LB pool's unique ID.
 func GetNode(c *gophercloud.ServiceClient, poolID, nodeID string) GetNodeResult {
 	var res GetNodeResult
-	_, res.Err = c.Request("GET", nodeURL(c, poolID, nodeID), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
-	})
+	_, res.Err = c.Get(nodeURL(c, poolID, nodeID), &res.Body, nil)
 	return res
 }
 
@@ -77,9 +67,7 @@ func GetNode(c *gophercloud.ServiceClient, poolID, nodeID string) GetNodeResult 
 // given poolID.
 func DeleteNode(c *gophercloud.ServiceClient, poolID, nodeID string) DeleteNodeResult {
 	var res DeleteNodeResult
-	_, res.Err = c.Request("DELETE", deleteNodeURL(c, poolID, nodeID), gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
+	_, res.Err = c.Delete(deleteNodeURL(c, poolID, nodeID), nil)
 	return res
 }
 
@@ -87,10 +75,7 @@ func DeleteNode(c *gophercloud.ServiceClient, poolID, nodeID string) DeleteNodeR
 // ID and the LB pool's unique ID.
 func GetNodeDetails(c *gophercloud.ServiceClient, poolID, nodeID string) GetNodeDetailsResult {
 	var res GetNodeDetailsResult
-	_, res.Err = c.Request("GET", nodeDetailsURL(c, poolID, nodeID), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
-	})
+	_, res.Err = c.Get(nodeDetailsURL(c, poolID, nodeID), &res.Body, nil)
 	return res
 }
 
@@ -129,11 +114,7 @@ func CreateNodes(c *gophercloud.ServiceClient, opts NodesOpts) CreateNodesResult
 		return res
 	}
 
-	_, res.Err = c.Request("POST", createNodesURL(c), gophercloud.RequestOpts{
-		JSONBody:     &reqBody,
-		JSONResponse: &res.Body,
-		OkCodes:      []int{201},
-	})
+	_, res.Err = c.Post(createNodesURL(c), reqBody, &res.Body, nil)
 	return res
 }
 
