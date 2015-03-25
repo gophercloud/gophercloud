@@ -278,7 +278,7 @@ func (client *ProviderClient) Put(url string, JSONBody interface{}, JSONResponse
 		opts = &RequestOpts{}
 	}
 
-	if v, ok := (JSONBody).(io.Reader); ok == true {
+	if v, ok := (JSONBody).(io.Reader); ok {
 		opts.RawBody = v
 	} else if JSONBody != nil {
 		opts.JSONBody = JSONBody
