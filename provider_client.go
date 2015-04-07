@@ -11,7 +11,7 @@ import (
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
-const DefaultUserAgent = "gophercloud/v1.0"
+const DefaultUserAgent = "gophercloud/1.0.0"
 
 // UserAgent represents a User-Agent header.
 type UserAgent struct {
