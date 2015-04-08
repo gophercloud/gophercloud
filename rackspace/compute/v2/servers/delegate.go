@@ -102,3 +102,15 @@ func ListAddressesByNetwork(client *gophercloud.ServiceClient, id, network strin
 func ExtractNetworkAddresses(page pagination.Page) ([]os.Address, error) {
 	return os.ExtractNetworkAddresses(page)
 }
+
+// Metadata requests all the metadata for the given server ID.
+func Metadata(client *gophercloud.ServiceClient, id string) os.GetMetadataResult {
+	return os.Metadata(client, id)
+}
+
+// UpdateMetadata updates (or creates) all the metadata specified by opts for the given server ID.
+// This operation does not affect already-existing metadata that is not specified
+// by opts.
+func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts os.UpdateMetadataOptsBuilder) os.UpdateMetadataResult {
+	return os.UpdateMetadata(client, id, opts)
+}
