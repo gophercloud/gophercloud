@@ -54,6 +54,23 @@ func Rebuild(client *gophercloud.ServiceClient, id string, opts os.RebuildOptsBu
 	return os.Rebuild(client, id, opts)
 }
 
+// Resize instructs the provider to change the flavor of the server.
+// Note that this implies rebuilding it.
+// Unfortunately, one cannot pass rebuild parameters to the resize function.
+// When the resize completes, the server will be in RESIZE_VERIFY state.
+// While in this state, you can explore the use of the new server's configuration.
+// If you like it, call ConfirmResize() to commit the resize permanently.
+// Otherwise, call RevertResize() to restore the old configuration.
+func Resize(client *gophercloud.ServiceClient, id string, opts os.ResizeOpts) os.ActionResult {
+	return os.Resize(client, id, opts)
+}
+
+// ConfirmResize confirms a previous resize operation on a server.
+// See Resize() for more details.
+func ConfirmResize(client *gophercloud.ServiceClient, id string) os.ActionResult {
+	return os.ConfirmResize(client, id)
+}
+
 // WaitForStatus will continually poll a server until it successfully transitions to a specified
 // status. It will do this for at most the number of seconds specified.
 func WaitForStatus(c *gophercloud.ServiceClient, id, status string, secs int) error {
@@ -84,4 +101,16 @@ func ListAddressesByNetwork(client *gophercloud.ServiceClient, id, network strin
 // ExtractNetworkAddresses interprets the results of a single page from a ListAddressesByNetwork() call, producing a map of Address slices.
 func ExtractNetworkAddresses(page pagination.Page) ([]os.Address, error) {
 	return os.ExtractNetworkAddresses(page)
+}
+
+// Metadata requests all the metadata for the given server ID.
+func Metadata(client *gophercloud.ServiceClient, id string) os.GetMetadataResult {
+	return os.Metadata(client, id)
+}
+
+// UpdateMetadata updates (or creates) all the metadata specified by opts for the given server ID.
+// This operation does not affect already-existing metadata that is not specified
+// by opts.
+func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts os.UpdateMetadataOptsBuilder) os.UpdateMetadataResult {
+	return os.UpdateMetadata(client, id, opts)
 }
