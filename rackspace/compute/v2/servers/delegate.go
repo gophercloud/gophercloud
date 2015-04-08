@@ -61,7 +61,7 @@ func Rebuild(client *gophercloud.ServiceClient, id string, opts os.RebuildOptsBu
 // While in this state, you can explore the use of the new server's configuration.
 // If you like it, call ConfirmResize() to commit the resize permanently.
 // Otherwise, call RevertResize() to restore the old configuration.
-func Resize(client *gophercloud.ServiceClient, id string, opts os.ResizeOpts) os.ActionResult {
+func Resize(client *gophercloud.ServiceClient, id string, opts os.ResizeOptsBuilder) os.ActionResult {
 	return os.Resize(client, id, opts)
 }
 
