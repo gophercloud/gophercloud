@@ -65,6 +65,12 @@ func Resize(client *gophercloud.ServiceClient, id string, opts os.ResizeOpts) os
 	return os.Resize(client, id, opts)
 }
 
+// ConfirmResize confirms a previous resize operation on a server.
+// See Resize() for more details.
+func ConfirmResize(client *gophercloud.ServiceClient, id string) os.ActionResult {
+	return os.ConfirmResize(client, id)
+}
+
 // WaitForStatus will continually poll a server until it successfully transitions to a specified
 // status. It will do this for at most the number of seconds specified.
 func WaitForStatus(c *gophercloud.ServiceClient, id, status string, secs int) error {
