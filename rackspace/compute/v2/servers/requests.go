@@ -36,9 +36,10 @@ type CreateOpts struct {
 	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the server.
 	Metadata map[string]string
 
-	// Personality [optional] includes the path and contents of a file to inject into the server at launch.
-	// The maximum size of the file is 255 bytes (decoded).
-	Personality []byte
+	// Personality [optional] includes a list of maps with the path and contents
+	// of a file to inject into the server at launch. Contents should be
+	// base64 encoded. The maximum size of the file is 255 bytes (decoded).
+	Personality []map[string]string
 
 	// ConfigDrive [optional] enables metadata injection through a configuration drive.
 	ConfigDrive bool
@@ -130,9 +131,10 @@ type RebuildOpts struct {
 	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the server.
 	Metadata map[string]string
 
-	// Personality [optional] includes the path and contents of a file to inject into the server at launch.
-	// The maximum size of the file is 255 bytes (decoded).
-	Personality []byte
+	// Personality [optional] includes a list of maps with the path and contents
+	// of a file to inject into the server at launch. Contents should be
+	// base64 encoded. The maximum size of the file is 255 bytes (decoded).
+	Personality []map[string]string
 
 	// Rackspace-specific stuff begins here.
 
