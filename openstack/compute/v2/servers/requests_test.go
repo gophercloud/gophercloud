@@ -1,6 +1,7 @@
 package servers
 
 import (
+	"encoding/base64"
 	"net/http"
 	"testing"
 
@@ -324,4 +325,26 @@ func TestListAddressesByNetwork(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, 1, pages)
+}
+
+func TestMarshalPersonality(t *testing.T) {
+	name := "test"
+	contents := []byte("asdfasdf")
+
+	personality := Personality{
+		File{
+			Path:     name,
+			Contents: contents,
+		},
+	}
+
+	actual := personality.Marshal()
+
+	if actual[0]["path"] != name {
+		t.Fatal("file path incorrect")
+	}
+
+	if actual[0]["contents"] != base64.StdEncoding.EncodeToString(contents) {
+		t.Fatal("file contents incorrect")
+	}
 }

@@ -96,6 +96,35 @@ type Network struct {
 	FixedIP string
 }
 
+// Personality is an array of files that are injected into the server at launch.
+type Personality []File
+
+// Marshal marshals the personality, marshalling each of the files.
+func (p Personality) Marshal() []map[string]string {
+	personality := make([]map[string]string, len(p))
+	for i, file := range p {
+		personality[i] = file.Marshal()
+	}
+
+	return personality
+}
+
+// File is used within CreateOpts and RebuildOpts to inject a file into the server at launch.
+type File struct {
+	// Path of the file
+	Path string `json:"path"`
+	// Contents of the file. Maximum content size is 255 bytes.
+	Contents []byte `json:"contents"`
+}
+
+// Marshal marshals the file, base64 encoding the contents.
+func (f File) Marshal() map[string]string {
+	return map[string]string{
+		"path":     f.Path,
+		"contents": base64.StdEncoding.EncodeToString(f.Contents),
+	}
+}
+
 // CreateOpts specifies server creation parameters.
 type CreateOpts struct {
 	// Name [required] is the name to assign to the newly launched server.
@@ -125,10 +154,9 @@ type CreateOpts struct {
 	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the server.
 	Metadata map[string]string
 
-	// Personality [optional] includes a list of maps with the path and contents
-	// of a file to inject into the server at launch. Contents should be
-	// base64 encoded. The maximum size of the file is 255 bytes (decoded).
-	Personality []map[string]string
+	// Personality [optional] includes files to inject into the server at launch.
+	// Create will base64-encode file contents for you.
+	Personality Personality
 
 	// ConfigDrive [optional] enables metadata injection through a configuration drive.
 	ConfigDrive bool
@@ -155,9 +183,6 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	if opts.UserData != nil {
 		encoded := base64.StdEncoding.EncodeToString(opts.UserData)
 		server["user_data"] = &encoded
-	}
-	if opts.Personality != nil {
-		server["personality"] = opts.Personality
 	}
 	if opts.ConfigDrive {
 		server["config_drive"] = "true"
@@ -201,6 +226,10 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 			}
 		}
 		server["networks"] = networks
+	}
+
+	if len(opts.Personality) > 0 {
+		server["personality"] = opts.Personality.Marshal()
 	}
 
 	return map[string]interface{}{"server": server}, nil
@@ -392,10 +421,9 @@ type RebuildOpts struct {
 	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the server.
 	Metadata map[string]string
 
-	// Personality [optional] includes a list of maps with the path and contents
-	// of a file to inject into the server at launch. Contents should be
-	// base64 encoded. The maximum size of the file is 255 bytes (decoded).
-	Personality []map[string]string
+	// Personality [optional] includes files to inject into the server at launch.
+	// Rebuild will base64-encode file contents for you.
+	Personality Personality
 }
 
 // ToServerRebuildMap formats a RebuildOpts struct into a map for use in JSON
@@ -431,8 +459,8 @@ func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
 		server["metadata"] = opts.Metadata
 	}
 
-	if opts.Personality != nil {
-		server["personality"] = opts.Personality
+	if len(opts.Personality) > 0 {
+		server["personality"] = opts.Personality.Marshal()
 	}
 
 	return map[string]interface{}{"rebuild": server}, nil
