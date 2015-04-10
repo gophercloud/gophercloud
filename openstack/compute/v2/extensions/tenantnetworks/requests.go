@@ -17,9 +17,6 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 // Get returns data about a previously created Network.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	_, res.Err = client.Request("GET", getURL(client, id), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
-	})
+	_, res.Err = client.Get(getURL(client, id), &res.Body, nil)
 	return res
 }
