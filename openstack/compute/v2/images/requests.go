@@ -67,6 +67,6 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 // Delete deletes the specified image ID.
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var result DeleteResult
-	_, result.Err = client.Delete(getURL(client, id), nil)
+	_, result.Err = client.Delete(deleteURL(client, id), nil)
 	return result
 }
