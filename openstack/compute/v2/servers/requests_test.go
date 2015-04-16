@@ -331,7 +331,6 @@ func TestCreateServerImage(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateServerImageSuccessfully(t)
 
-	_, err := CreateServerImage(client.ServiceClient(), "serverimage", CreateServerImageOpts{Name: "test"}).ExtractImageID()
+	_, err := CreateImage(client.ServiceClient(), "serverimage", CreateImageOpts{Name: "test"}).ExtractImageID()
 	th.AssertNoErr(t, err)
-	
 }
