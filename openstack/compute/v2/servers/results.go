@@ -74,6 +74,11 @@ type RescueResult struct {
 	ActionResult
 }
 
+// RescueResult represents the result of a server rescue operation
+type CreateServerImageResult struct {
+	gophercloud.Result
+}
+
 // Extract interprets any RescueResult as an AdminPass, if possible.
 func (r RescueResult) Extract() (string, error) {
 	if r.Err != nil {

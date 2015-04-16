@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -14,7 +15,6 @@ import (
 type ListOptsBuilder interface {
 	ToServerListQuery() (string, error)
 }
-
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the server attributes you want to see returned. Marker and Limit are used
@@ -700,4 +700,69 @@ func ListAddressesByNetwork(client *gophercloud.ServiceClient, id, network strin
 		return NetworkAddressPage{pagination.SinglePageBase(r)}
 	}
 	return pagination.NewPager(client, listAddressesByNetworkURL(client, id, network), createPageFn)
+}
+
+type CreateServerImageOpts struct {
+	// Name [required] of the image/snapshot
+	Name string
+	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the created image.
+	Metadata map[string]string
+}
+
+type CreateServerImageOptsBuilder interface {
+	ToCreateServerImageMap() (map[string]interface{}, error)
+}
+
+// ToServerImageCreateMap formats an ServerImageCreateOpts structure into a request body.
+func (opts CreateServerImageOpts) ToCreateServerImageMap() (map[string]interface{}, error) {
+	var err error
+	img := make(map[string]interface{})
+	if opts.Name == "" {
+		err = fmt.Errorf("Cannot create a server image without a name")
+	}
+	img["name"] = opts.Name
+	if opts.Metadata != nil {
+		img["metadata"] = opts.Metadata
+	}
+	createImage := make(map[string]interface{})
+	createImage["createImage"] = img
+	return createImage, err
+}
+
+// ExtractImageID gets the ID of the newly created server image from the header
+func (res CreateServerImageResult) ExtractImageID() (string, error) {
+	var err error
+	if res.Err != nil {
+		return "", res.Err
+	}
+	// Get the image id from the header
+	rawUrl := res.Header.Get("Location")
+	fmt.Println("RawUrl:", rawUrl)
+	if rawUrl != "" {
+		split := strings.Split(rawUrl, "/")
+		if len(split) > 0 {
+			id := split[len(split)-1]
+			return id, nil
+		}
+	}
+	err = fmt.Errorf("Failed to parse the ID of newly created image")
+	return "", err
+}
+
+// CreateServerImage makes a request against the nova API to schedule an image to be created of the server
+func CreateServerImage(client *gophercloud.ServiceClient, serverId string, opts CreateServerImageOptsBuilder) CreateServerImageResult {
+	var res CreateServerImageResult
+	reqBody, err := opts.ToCreateServerImageMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+	response, err := client.Post(actionURL(client, serverId), reqBody, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	res.Err = err
+	if err == nil {
+		res.Header = response.Header
+	}
+	return res	
 }
