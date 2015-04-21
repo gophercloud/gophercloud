@@ -2,6 +2,7 @@ package servers
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -97,32 +98,26 @@ type Network struct {
 }
 
 // Personality is an array of files that are injected into the server at launch.
-type Personality []File
-
-// Marshal marshals the personality, marshalling each of the files.
-func (p Personality) Marshal() []map[string]string {
-	personality := make([]map[string]string, len(p))
-	for i, file := range p {
-		personality[i] = file.Marshal()
-	}
-
-	return personality
-}
+type Personality []*File
 
 // File is used within CreateOpts and RebuildOpts to inject a file into the server at launch.
 type File struct {
 	// Path of the file
-	Path string `json:"path"`
+	Path string
 	// Contents of the file. Maximum content size is 255 bytes.
-	Contents []byte `json:"contents"`
+	Contents []byte
 }
 
-// Marshal marshals the file, base64 encoding the contents.
-func (f File) Marshal() map[string]string {
-	return map[string]string{
-		"path":     f.Path,
-		"contents": base64.StdEncoding.EncodeToString(f.Contents),
+// MarshalJSON marshals the escaped file, base64 encoding the contents.
+func (f *File) MarshalJSON() ([]byte, error) {
+	file := struct {
+		Path     string `json:"path"`
+		Contents string `json:"contents"`
+	}{
+		Path:     f.Path,
+		Contents: base64.StdEncoding.EncodeToString(f.Contents),
 	}
+	return json.Marshal(file)
 }
 
 // CreateOpts specifies server creation parameters.
@@ -229,7 +224,7 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	}
 
 	if len(opts.Personality) > 0 {
-		server["personality"] = opts.Personality.Marshal()
+		server["personality"] = opts.Personality
 	}
 
 	return map[string]interface{}{"server": server}, nil
@@ -460,7 +455,7 @@ func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
 	}
 
 	if len(opts.Personality) > 0 {
-		server["personality"] = opts.Personality.Marshal()
+		server["personality"] = opts.Personality
 	}
 
 	return map[string]interface{}{"rebuild": server}, nil
