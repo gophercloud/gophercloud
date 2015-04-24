@@ -15,7 +15,6 @@ import (
 type ListOptsBuilder interface {
 	ToServerListQuery() (string, error)
 }
-
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the server attributes you want to see returned. Marker and Limit are used
@@ -723,4 +722,47 @@ func ListAddressesByNetwork(client *gophercloud.ServiceClient, id, network strin
 		return NetworkAddressPage{pagination.SinglePageBase(r)}
 	}
 	return pagination.NewPager(client, listAddressesByNetworkURL(client, id, network), createPageFn)
+}
+
+type CreateImageOpts struct {
+	// Name [required] of the image/snapshot
+	Name string
+	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the created image.
+	Metadata map[string]string
+}
+
+type CreateImageOptsBuilder interface {
+	ToServerCreateImageMap() (map[string]interface{}, error)
+}
+
+// ToServerCreateImageMap formats a CreateImageOpts structure into a request body.
+func (opts CreateImageOpts) ToServerCreateImageMap() (map[string]interface{}, error) {
+	var err error
+	img := make(map[string]interface{})
+	if opts.Name == "" {
+		return nil, fmt.Errorf("Cannot create a server image without a name")
+	}
+	img["name"] = opts.Name
+	if opts.Metadata != nil {
+		img["metadata"] = opts.Metadata
+	}
+	createImage := make(map[string]interface{})
+	createImage["createImage"] = img
+	return createImage, err
+}
+
+// CreateImage makes a request against the nova API to schedule an image to be created of the server
+func CreateImage(client *gophercloud.ServiceClient, serverId string, opts CreateImageOptsBuilder) CreateImageResult {
+	var res CreateImageResult
+	reqBody, err := opts.ToServerCreateImageMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+	response, err := client.Post(actionURL(client, serverId), reqBody, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	res.Err = err
+	res.Header = response.Header
+	return res	
 }
