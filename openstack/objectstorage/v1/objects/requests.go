@@ -188,7 +188,7 @@ func (opts CreateOpts) ToObjectCreateParams() (map[string]string, string, error)
 }
 
 // Create is a function that creates a new object or replaces an existing object.
-func Create(c *gophercloud.ServiceClient, containerName, objectName string, content io.Reader, opts CreateOptsBuilder) CreateResult {
+func Create(c *gophercloud.ServiceClient, containerName, objectName string, content io.ReadSeeker, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
 	url := createURL(c, containerName, objectName)
