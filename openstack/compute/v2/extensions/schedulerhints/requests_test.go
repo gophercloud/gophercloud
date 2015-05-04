@@ -1,0 +1,66 @@
+package schedulerhints
+
+import (
+	"testing"
+
+	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+	th "github.com/rackspace/gophercloud/testhelper"
+)
+
+func TestCreateOpts(t *testing.T) {
+	base := servers.CreateOpts{
+		Name:      "createdserver",
+		ImageRef:  "asdfasdfasdf",
+		FlavorRef: "performance1-1",
+	}
+
+	schedulerHints := SchedulerHints{
+		Group: "101aed42-22d9-4a3e-9ba1-21103b0d1aba",
+		DifferentHost: []string{
+			"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
+			"8c19174f-4220-44f0-824a-cd1eeef10287",
+		},
+		SameHost: []string{
+			"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
+			"8c19174f-4220-44f0-824a-cd1eeef10287",
+		},
+		Query:           []string{">=", "$free_ram_mb", "1024"},
+		TargetCell:      "foobar",
+		BuildNearHostIP: "192.168.1.1/24",
+	}
+
+	ext := CreateOptsExt{
+		CreateOptsBuilder: base,
+		SchedulerHints:    schedulerHints,
+	}
+
+	expected := `
+		{
+			"server": {
+				"name": "createdserver",
+				"imageRef": "asdfasdfasdf",
+				"flavorRef": "performance1-1"
+			},
+			"os:scheduler_hints": {
+				"group": "101aed42-22d9-4a3e-9ba1-21103b0d1aba",
+				"different_host": [
+					"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
+					"8c19174f-4220-44f0-824a-cd1eeef10287"
+				],
+				"same_host": [
+					"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
+					"8c19174f-4220-44f0-824a-cd1eeef10287"
+				],
+				"query": [
+					">=", "$free_ram_mb", "1024"
+				],
+				"target_cell": "foobar",
+				"build_near_host_ip": "192.168.1.1",
+				"cidr": "/24"
+			}
+		}
+	`
+	actual, err := ext.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, expected, actual)
+}
