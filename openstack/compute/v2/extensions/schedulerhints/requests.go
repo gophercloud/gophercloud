@@ -25,7 +25,7 @@ type SchedulerHints struct {
 
 	// Query is a conditional statement that results in compute nodes able to
 	// host the instance.
-	Query []string
+	Query []interface{}
 
 	// TargetCell specifies a cell name where the instance will be placed.
 	TargetCell string
