@@ -15,6 +15,7 @@ import (
 type ListOptsBuilder interface {
 	ToServerListQuery() (string, error)
 }
+
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the server attributes you want to see returned. Marker and Limit are used
@@ -100,6 +101,8 @@ type Network struct {
 type Personality []*File
 
 // File is used within CreateOpts and RebuildOpts to inject a file into the server at launch.
+// File implements the json.Marshaler interface, so when a Create or Rebuild operation is requested,
+// json.Marshal will call File's MarshalJSON method.
 type File struct {
 	// Path of the file
 	Path string
@@ -764,5 +767,5 @@ func CreateImage(client *gophercloud.ServiceClient, serverId string, opts Create
 	})
 	res.Err = err
 	res.Header = response.Header
-	return res	
+	return res
 }
