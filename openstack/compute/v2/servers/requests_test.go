@@ -371,12 +371,3 @@ func TestMarshalPersonality(t *testing.T) {
 		t.Fatal("file contents incorrect")
 	}
 }
-
-func TestCreateServerImage(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleCreateServerImageSuccessfully(t)
-
-	_, err := CreateImage(client.ServiceClient(), "serverimage", CreateImageOpts{Name: "test"}).ExtractImageID()
-	th.AssertNoErr(t, err)
-}
