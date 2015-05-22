@@ -12,12 +12,23 @@ type CreateOpts struct {
 	// Name [required] is the name to assign to the newly launched server.
 	Name string
 
-	// ImageRef [required] is the ID or full URL to the image that contains the server's OS and initial state.
-	// Optional if using the boot-from-volume extension.
+	// ImageRef [optional; required if ImageName is not provided] is the ID or full
+	// URL to the image that contains the server's OS and initial state.
+	// Also optional if using the boot-from-volume extension.
 	ImageRef string
 
-	// FlavorRef [required] is the ID or full URL to the flavor that describes the server's specs.
+	// ImageName [optional; required if ImageRef is not provided] is the name of the
+	// image that contains the server's OS and initial state.
+	// Also optional if using the boot-from-volume extension.
+	ImageName string
+
+	// FlavorRef [optional; required if FlavorName is not provided] is the ID or
+	// full URL to the flavor that describes the server's specs.
 	FlavorRef string
+
+	// FlavorName [optional; required if FlavorRef is not provided] is the name of
+	// the flavor that describes the server's specs.
+	FlavorName string
 
 	// SecurityGroups [optional] lists the names of the security groups to which this server should belong.
 	SecurityGroups []string
@@ -68,7 +79,9 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	base := os.CreateOpts{
 		Name:             opts.Name,
 		ImageRef:         opts.ImageRef,
+		ImageName:        opts.ImageName,
 		FlavorRef:        opts.FlavorRef,
+		FlavorName:       opts.FlavorName,
 		SecurityGroups:   opts.SecurityGroups,
 		UserData:         opts.UserData,
 		AvailabilityZone: opts.AvailabilityZone,
