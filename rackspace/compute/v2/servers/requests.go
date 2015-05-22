@@ -69,7 +69,7 @@ type CreateOpts struct {
 	DiskConfig diskconfig.DiskConfig
 
 	// BlockDevice [optional] will create the server from a volume, which is created from an image,
-	// a snapshot, or an another volume.
+	// a snapshot, or another volume.
 	BlockDevice []bootfromvolume.BlockDevice
 }
 
