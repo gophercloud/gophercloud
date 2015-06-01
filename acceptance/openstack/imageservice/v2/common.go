@@ -3,6 +3,9 @@
 package v2
 
 import (
+	"os"
+	"testing"
+
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
 	th "github.com/rackspace/gophercloud/testhelper"
@@ -15,7 +18,9 @@ func newClient(t *testing.T) *gophercloud.ServiceClient {
 	client, err := openstack.AuthenticatedClient(ao)
 	th.AssertNoErr(t, err)
 
-	c, err := openstack.NewImageServiceV2(client, ???)
+	c, err := openstack.NewImageServiceV2(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
 	th.AssertNoErr(t, err)
 	return c
 }
