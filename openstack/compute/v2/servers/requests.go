@@ -816,3 +816,36 @@ func CreateImage(client *gophercloud.ServiceClient, serverId string, opts Create
 	res.Header = response.Header
 	return res
 }
+
+// IDFromName is a convienience function that returns a server's ID given its name.
+func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
+	serverCount := 0
+	serverID := ""
+	if name == "" {
+		return "", fmt.Errorf("A server name must be provided.")
+	}
+	pager := List(client, nil)
+	pager.EachPage(func(page pagination.Page) (bool, error) {
+		serverList, err := ExtractServers(page)
+		if err != nil {
+			return false, err
+		}
+
+		for _, s := range serverList {
+			if s.Name == name {
+				serverCount++
+				serverID = s.ID
+			}
+		}
+		return true, nil
+	})
+
+	switch serverCount {
+	case 0:
+		return "", fmt.Errorf("Unable to find server: %s", name)
+	case 1:
+		return serverID, nil
+	default:
+		return "", fmt.Errorf("Found %d servers matching %s", serverCount, name)
+	}
+}
