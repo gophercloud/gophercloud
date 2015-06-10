@@ -117,7 +117,9 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	// key_name doesn't actually come from the extension (or at least isn't documented there) so
 	// we need to add it manually.
 	serverMap := res["server"].(map[string]interface{})
-	serverMap["key_name"] = opts.KeyPair
+	if serverMap["key_name"] != "" {
+		serverMap["key_name"] = opts.KeyPair
+	}
 
 	return res, nil
 }
