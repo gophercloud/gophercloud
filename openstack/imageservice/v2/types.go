@@ -2,6 +2,7 @@ package v2
 
 type ImageStatus string
 const (
+	ImageStatusQueued ImageStatus = "queued"
 	ImageStatusActive ImageStatus = "active"
 	// TODO
 )

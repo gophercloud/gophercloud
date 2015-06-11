@@ -21,7 +21,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 		res.Err = err
 		return res
 	}
-	response, err := client.Post(createURL(client), body, &res.Body, nil)
+	_, err = client.Post(createURL(client), body, &res.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
 	// TODO check response..?
 	return res
 }
@@ -29,53 +29,47 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 // CreateOptsBuilder describes struct types that can be accepted by the Create call.
 // The CreateOpts struct in this package does.
 type CreateOptsBuilder interface {
-	// Returns value that implements json.Marshaler
+	// Returns value that can be passed to json.Marshal
 	ToImageCreateMap() (map[string]interface{}, error)
 }
 
 // implements CreateOptsBuilder
 type CreateOpts struct {
 	// Name [required] is the name of the new image.
-	Name string
+	Name *string
 
 	// Id [optional] is the the image ID.
-	Id string
+	Id *string
 
 	// Visibility [optional] defines who can see/use the image.
-	Visibility ImageVisibility
+	Visibility *ImageVisibility
 
 	// Tags [optional] is a set of image tags.
 	Tags []string
 
 	// ContainerFormat [optional] is the format of the
 	// container. Valid values are ami, ari, aki, bare, and ovf.
-	ContainerFormat string
+	ContainerFormat *string
 
 	// DiskFormat [optional] is the format of the disk. If set,
 	// valid values are ami, ari, aki, vhd, vmdk, raw, qcow2, vdi,
 	// and iso.
-	DiskFormat string
+	DiskFormat *string
 
 	// MinDiskGigabytes [optional] is the amount of disk space in
 	// GB that is required to boot the image.
-	MinDiskGigabytes int
+	MinDiskGigabytes *int
 
 	// MinRamMegabytes [optional] is the amount of RAM in MB that
 	// is required to boot the image.
-	MinRamMegabytes int
+	MinRamMegabytes *int
 
 	// protected [optional] is whether the image is not deletable.
-	Protected bool
+	Protected *bool
 
 	// properties [optional] is a set of properties, if any, that
 	// are associated with the image.
 	Properties map[string]string
-}
-
-func setIfNotNil(m map[string]interface{}, k string, v interface{}) {
-	if v != nil {
-		m[k] = v
-	}
 }
 
 // ToImageCreateMap assembles a request body based on the contents of
@@ -83,15 +77,33 @@ func setIfNotNil(m map[string]interface{}, k string, v interface{}) {
 func (opts CreateOpts) ToImageCreateMap() (map[string]interface{}, error) {
 	body := map[string]interface{}{}
 	body["name"] = opts.Name
-	setIfNotNil(body, "id", opts.Id)
-	setIfNotNil(body, "visibility", opts.Visibility)
-	setIfNotNil(body, "tags", opts.Tags)
-	setIfNotNil(body, "container_format", opts.ContainerFormat)
-	setIfNotNil(body, "disk_format", opts.DiskFormat)
-	setIfNotNil(body, "min_disk", opts.MinDiskGigabytes)
-	setIfNotNil(body, "min_ram", opts.MinRamMegabytes)
-	setIfNotNil(body, "protected", opts.Protected)
-	setIfNotNil(body, "properties", opts.Properties)
+	if opts.Id != nil {
+		body["id"] = opts.Id
+	}
+	if opts.Visibility != nil {
+		body["visibility"] = opts.Visibility
+	}
+	if opts.Tags != nil {
+		body["tags"] = opts.Tags
+	}
+	if opts.ContainerFormat != nil {
+		body["container_format"] = opts.ContainerFormat
+	}
+	if opts.DiskFormat != nil {
+		body["disk_format"] = opts.DiskFormat
+	}
+	if opts.MinDiskGigabytes != nil {
+		body["min_disk"] = opts.MinDiskGigabytes
+	}
+	if opts.MinRamMegabytes != nil {
+		body["min_ram"] = opts.MinRamMegabytes
+	}
+	if opts.Protected != nil {
+		body["protected"] = opts.Protected
+	}
+	if opts.Properties != nil {
+		body["properties"] = opts.Properties
+	}
 	return body, nil
 }
 

@@ -16,17 +16,21 @@ func TestCreateImage(t *testing.T) {
 
 	HandleImageCreationSuccessfully(t)
 
+	id := "e7db3b45-8db7-47ad-8109-3fb55c2c24fd"
+	name := "Ubuntu 12.10"
+
 	actualImage, err := Create(fakeclient.ServiceClient(), CreateOpts{
-		Name: "Ubuntu 12.10",
-		Id: "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
+		Id: &id,
+		Name: &name,
 		Tags: []string{"ubuntu", "quantal"},
 	}).Extract()
 
 	th.AssertNoErr(t, err)
 
 	expectedImage := Image{
-		Name: "Ubuntu 12.10",
 		Id: "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
+		Name: "Ubuntu 12.10",
+		Status: ImageStatusQueued,
 		Tags: []string{"ubuntu", "quantal"},
 	}
 

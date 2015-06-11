@@ -13,7 +13,6 @@ import (
 
 func HandleImageCreationSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
-		// TODO
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 		th.TestJSONRequest(t, r, `{
