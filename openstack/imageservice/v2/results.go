@@ -106,7 +106,7 @@ func stringToImageStatus(s string) (ImageStatus, error) {
 	} else if s == "active" {
 		return ImageStatusActive, nil
 	} else {
-		return "", errors.New(fmt.Sprintf("expected \"active\" as image status, but found: \"%s\"", s))
+		return "", errors.New(fmt.Sprintf("expected \"queued\" or \"active\" as image status, but found: \"%s\"", s))
 	}
 }
 
@@ -114,6 +114,28 @@ func extractImageStatusAtKey(m map[string]interface{}, k string) (ImageStatus, e
 	if any, ok := m[k]; ok {
 		if str, ok := any.(string); ok {
 			return stringToImageStatus(str)
+		} else {
+			return "", errors.New(fmt.Sprintf("expected string as \"%s\" value, but found: %#v", k, any))
+		}
+	} else {
+		return "", errors.New(fmt.Sprintf("expected key \"%s\" in map, but this key is not present", k))
+	}
+}
+
+func stringToImageVisibility(s string) (ImageVisibility, error) {
+	if s == "public" {
+		return ImageVisibilityPublic, nil
+	} else if s == "private" {
+		return ImageVisibilityPrivate, nil
+	} else {
+		return "", errors.New(fmt.Sprintf("expected \"public\" or \"private\" as image status, but found: \"%s\"", s))
+	}
+}
+
+func extractImageVisibilityAtKey(m map[string]interface{}, k string) (ImageVisibility, error) {
+	if any, ok := m[k]; ok {
+		if str, ok := any.(string); ok {
+			return stringToImageVisibility(str)
 		} else {
 			return "", errors.New(fmt.Sprintf("expected string as \"%s\" value, but found: %#v", k, any))
 		}
@@ -165,6 +187,10 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 	}
 
 	if image.Protected, err = extractBoolAtKey(body, "protected"); err != nil {
+		return nil, err
+	}
+
+	if image.Visibility, err = extractImageVisibilityAtKey(body, "visibility"); err != nil {
 		return nil, err
 	}
 	

@@ -38,6 +38,8 @@ func TestCreateImage(t *testing.T) {
 		DiskFormat: "qcow2",
 
 		Owner: "b4eedccc6fb74fa8a7ad6b08382b852b",
+
+		Visibility: ImageVisibilityPrivate,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
