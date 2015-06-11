@@ -30,8 +30,14 @@ func TestCreateImage(t *testing.T) {
 	expectedImage := Image{
 		Id: "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
 		Name: "Ubuntu 12.10",
-		Status: ImageStatusQueued,
 		Tags: []string{"ubuntu", "quantal"},
+		
+		Status: ImageStatusQueued,
+		
+		ContainerFormat: "bare",
+		DiskFormat: "qcow2",
+
+		Owner: "b4eedccc6fb74fa8a7ad6b08382b852b",
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -50,8 +56,9 @@ func TestGetImage(t *testing.T) {
 	expectedImage := Image{
 		Id: "1bea47ed-f6a9-463b-b423-14b9cca9ad27",
 		Name: "cirros-0.3.2-x86_64-disk",
-		Status: ImageStatusActive,
 		Tags: []string{},
+
+		Status: ImageStatusActive,
 
 		ContainerFormat: "bare",
 		DiskFormat: "qcow2",

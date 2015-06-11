@@ -49,11 +49,27 @@ type CreateResult struct {
 	gophercloud.ErrResult
 }
 
+func asBool(any interface{}) (bool, error) {
+	if b, ok := any.(bool); ok {
+		return b, nil
+	} else {
+		return false, errors.New(fmt.Sprintf("expected bool value, but found: %#v", any))
+	}
+}
+
 func asString(any interface{}) (string, error) {
 	if str, ok := any.(string); ok {
 		return str, nil
 	} else {
 		return "", errors.New(fmt.Sprintf("expected string value, but found: %#v", any))
+	}
+}
+
+func extractBoolAtKey(m map[string]interface{}, k string) (bool, error) {
+	if any, ok := m[k]; ok {
+		return asBool(any)
+	} else {
+		return false, errors.New(fmt.Sprintf("expected key \"%s\" in map, but this key is not present", k))
 	}
 }
 
@@ -136,6 +152,22 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 		return nil, err
 	}
 
+	if image.ContainerFormat, err = extractStringAtKey(body, "container_format"); err != nil {
+		return nil, err
+	}
+	
+	if image.DiskFormat, err = extractStringAtKey(body, "disk_format"); err != nil {
+		return nil, err
+	}
+
+	if image.Owner, err = extractStringAtKey(body, "owner"); err != nil {
+		return nil, err
+	}
+
+	if image.Protected, err = extractBoolAtKey(body, "protected"); err != nil {
+		return nil, err
+	}
+	
 	return &image, nil
 }
 
