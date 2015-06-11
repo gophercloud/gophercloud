@@ -21,18 +21,18 @@ type Image struct {
 	
 	Tags []string
 	
-	ContainerFormat string `mapstructure:"container_format"`
-	DiskFormat string `mapstructure:"disk_format"`
+	ContainerFormat string
+	DiskFormat string
 	
 	MinDiskGigabytes int `mapstructure:"min_disk"`
 	MinRamMegabytes int `mapstructure:"min_ram"`
 	
-	Owner string `mapstructure:"owner"`
+	Owner string
 	
-	Protected bool `mapstructure:"protected"`
-	Visibility ImageVisibility `mapstructure:"visibility"`
+	Protected bool
+	Visibility ImageVisibility
 
-	Checksum string `mapstructure:"checksum"`
+	Checksum *string `mapstructure:"checksum"`
 	SizeBytes int `mapstructure:"size"`
 	
 	Metadata map[string]string `mapstructure:"metadata"`
@@ -65,6 +65,18 @@ func asString(any interface{}) (string, error) {
 	}
 }
 
+func asNoneableString(any interface{}) (*string, error) {
+	if str, ok := any.(string); ok {
+		if str == "None" {
+			return nil, nil
+		} else {
+			return &str, nil
+		}
+	} else {
+		return nil, errors.New(fmt.Sprintf("expected string value, but found: %#v", any))
+	}
+}
+
 func extractBoolAtKey(m map[string]interface{}, k string) (bool, error) {
 	if any, ok := m[k]; ok {
 		return asBool(any)
@@ -78,6 +90,14 @@ func extractStringAtKey(m map[string]interface{}, k string) (string, error) {
 		return asString(any)
 	} else {
 		return "", errors.New(fmt.Sprintf("expected key \"%s\" in map, but this key is not present", k))
+	}
+}
+
+func extractNoneableStringAtKey(m map[string]interface{}, k string) (*string, error) {
+	if any, ok := m[k]; ok {
+		return asNoneableString(any)
+	} else {
+		return nil, errors.New(fmt.Sprintf("expected key \"%s\" in map, but this key is not present", k))
 	}
 }
 
@@ -191,6 +211,10 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 	}
 
 	if image.Visibility, err = extractImageVisibilityAtKey(body, "visibility"); err != nil {
+		return nil, err
+	}
+
+	if image.Checksum, err = extractNoneableStringAtKey(body, "checksum"); err != nil {
 		return nil, err
 	}
 	

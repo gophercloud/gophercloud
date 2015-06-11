@@ -55,6 +55,8 @@ func TestGetImage(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 
+	checksum := "64d7c1cd2b6f60c92c14662941cb7913"
+
 	expectedImage := Image{
 		Id: "1bea47ed-f6a9-463b-b423-14b9cca9ad27",
 		Name: "cirros-0.3.2-x86_64-disk",
@@ -73,7 +75,7 @@ func TestGetImage(t *testing.T) {
 		Protected: false,
 		Visibility: ImageVisibilityPublic,
 
-		Checksum: "64d7c1cd2b6f60c92c14662941cb7913",
+		Checksum: &checksum,
 		SizeBytes: 13167616,
 	}
 
