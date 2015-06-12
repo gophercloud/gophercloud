@@ -3,7 +3,6 @@ package v2
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	
 	"github.com/rackspace/gophercloud"
 	//"github.com/rackspace/gophercloud/pagination"
@@ -101,7 +100,15 @@ func asNoneableInteger(any interface{}) (*int, error) {
 			return nil, errors.New(fmt.Sprintf("expected \"None\" or integer value, but found unexpected string: \"%s\"", s))
 		}
 	} else {
-		return nil, errors.New(fmt.Sprintf("expected \"None\" or integer value, but found: %#v of type %s", any, reflect.TypeOf(any)))
+		return nil, errors.New(fmt.Sprintf("expected \"None\" or integer value, but found: %T(%#v)", any, any))
+	}
+}
+
+func asMapStringString(any interface{}) (map[string]string, error) {
+	if mss, ok := any.(map[string]string); ok {
+		return mss, nil
+	} else {
+		return nil, errors.New(fmt.Sprintf("expected map[string]string, but found: %#v", any))
 	}
 }
 
@@ -208,6 +215,14 @@ func extractImageVisibilityAtKey(m map[string]interface{}, k string) (ImageVisib
 	}
 }
 
+func extractMapStringStringAtKeyOptional(m map[string]interface{}, k string, ifMissing map[string]string) (map[string]string, error) {
+	if any, ok := m[k]; ok {
+		return asMapStringString(any)
+	} else {
+		return ifMissing, nil
+	}
+}
+
 func extractImage(res gophercloud.ErrResult) (*Image, error) {
 	if res.Err != nil {
 		return nil, res.Err
@@ -274,6 +289,10 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 		return nil, err
 	}
 
+	if image.Metadata, err = extractMapStringStringAtKeyOptional(body, "metadata", make(map[string]string)); err != nil {
+		return nil, err
+	}
+	
 	// TODO Metadata map[string]string `mapstructure:"metadata"`
 	// TODO Properties map[string]string `mapstructure:"properties"`
 

@@ -40,6 +40,8 @@ func TestCreateImage(t *testing.T) {
 		Owner: "b4eedccc6fb74fa8a7ad6b08382b852b",
 
 		Visibility: ImageVisibilityPrivate,
+
+		Metadata: make(map[string]string),
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -78,6 +80,8 @@ func TestGetImage(t *testing.T) {
 
 		Checksum: &checksum,
 		SizeBytes: &sizebytes,
+
+		Metadata: make(map[string]string),
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
