@@ -292,9 +292,10 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 	if image.Metadata, err = extractMapStringStringAtKeyOptional(body, "metadata", make(map[string]string)); err != nil {
 		return nil, err
 	}
-	
-	// TODO Metadata map[string]string `mapstructure:"metadata"`
-	// TODO Properties map[string]string `mapstructure:"properties"`
+
+	if image.Properties, err = extractMapStringStringAtKeyOptional(body, "properies", make(map[string]string)); err != nil {
+		return nil, err
+	}	
 
 	return &image, nil
 }

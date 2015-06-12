@@ -42,6 +42,7 @@ func TestCreateImage(t *testing.T) {
 		Visibility: ImageVisibilityPrivate,
 
 		Metadata: make(map[string]string),
+		Properties: make(map[string]string),
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -82,6 +83,7 @@ func TestGetImage(t *testing.T) {
 		SizeBytes: &sizebytes,
 
 		Metadata: make(map[string]string),
+		Properties: make(map[string]string),
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
