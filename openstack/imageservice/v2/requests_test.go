@@ -56,6 +56,7 @@ func TestGetImage(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	checksum := "64d7c1cd2b6f60c92c14662941cb7913"
+	sizebytes := 13167616
 
 	expectedImage := Image{
 		Id: "1bea47ed-f6a9-463b-b423-14b9cca9ad27",
@@ -76,7 +77,7 @@ func TestGetImage(t *testing.T) {
 		Visibility: ImageVisibilityPublic,
 
 		Checksum: &checksum,
-		SizeBytes: 13167616,
+		SizeBytes: &sizebytes,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)

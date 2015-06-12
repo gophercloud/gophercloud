@@ -3,6 +3,7 @@ package v2
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	
 	"github.com/rackspace/gophercloud"
 	//"github.com/rackspace/gophercloud/pagination"
@@ -33,7 +34,7 @@ type Image struct {
 	Visibility ImageVisibility
 
 	Checksum *string `mapstructure:"checksum"`
-	SizeBytes int `mapstructure:"size"`
+	SizeBytes *int `mapstructure:"size"`
 	
 	Metadata map[string]string `mapstructure:"metadata"`
 	Properties map[string]string `mapstructure:"properties"`
@@ -57,6 +58,16 @@ func asBool(any interface{}) (bool, error) {
 	}
 }
 
+func asInt(any interface{}) (int, error) {
+	// FIXME integers decoded as float64s
+	if f, ok := any.(float64); ok {
+		i := int(f)
+		return i, nil
+	} else {
+		return 0, errors.New(fmt.Sprintf("expected int value, but found: %#v", any))
+	}
+}
+
 func asString(any interface{}) (string, error) {
 	if str, ok := any.(string); ok {
 		return str, nil
@@ -77,11 +88,36 @@ func asNoneableString(any interface{}) (*string, error) {
 	}
 }
 
+func asNoneableInteger(any interface{}) (*int, error) {
+	// FIXME problem here is that provider_client.go uses: json.NewDecoder(resp.Body).Decode(options.JSONResponse)
+	// which apparently converts integers in JSON to float64 values
+	if f, ok := any.(float64); ok {
+		i := int(f)
+		return &i, nil
+	} else if s, ok := any.(string); ok {
+		if s == "None" {
+			return nil, nil
+		} else {
+			return nil, errors.New(fmt.Sprintf("expected \"None\" or integer value, but found unexpected string: \"%s\"", s))
+		}
+	} else {
+		return nil, errors.New(fmt.Sprintf("expected \"None\" or integer value, but found: %#v of type %s", any, reflect.TypeOf(any)))
+	}
+}
+
 func extractBoolAtKey(m map[string]interface{}, k string) (bool, error) {
 	if any, ok := m[k]; ok {
 		return asBool(any)
 	} else {
 		return false, errors.New(fmt.Sprintf("expected key \"%s\" in map, but this key is not present", k))
+	}
+}
+
+func extractIntAtKey(m map[string]interface{}, k string) (int, error) {
+	if any, ok := m[k]; ok {
+		return asInt(any)
+	} else {
+		return 0, errors.New(fmt.Sprintf("expected key \"%s\" in map, but this key is not present", k))
 	}
 }
 
@@ -96,6 +132,14 @@ func extractStringAtKey(m map[string]interface{}, k string) (string, error) {
 func extractNoneableStringAtKey(m map[string]interface{}, k string) (*string, error) {
 	if any, ok := m[k]; ok {
 		return asNoneableString(any)
+	} else {
+		return nil, errors.New(fmt.Sprintf("expected key \"%s\" in map, but this key is not present", k))
+	}
+}
+
+func extractNoneableIntegerAtKey(m map[string]interface{}, k string) (*int, error) {
+	if any, ok := m[k]; ok {
+		return asNoneableInteger(any)
 	} else {
 		return nil, errors.New(fmt.Sprintf("expected key \"%s\" in map, but this key is not present", k))
 	}
@@ -177,7 +221,7 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 	var image Image
 
 	var err error
-	
+
 	if image.Id, err = extractStringAtKey(body, "id"); err != nil {
 		return nil, err
 	}
@@ -202,6 +246,14 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 		return nil, err
 	}
 
+	if image.MinDiskGigabytes, err = extractIntAtKey(body, "min_disk"); err != nil {
+		return nil, err
+	}
+
+	if image.MinRamMegabytes, err = extractIntAtKey(body, "min_ram"); err != nil {
+		return nil, err
+	}
+	
 	if image.Owner, err = extractStringAtKey(body, "owner"); err != nil {
 		return nil, err
 	}
@@ -217,7 +269,14 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 	if image.Checksum, err = extractNoneableStringAtKey(body, "checksum"); err != nil {
 		return nil, err
 	}
-	
+
+	if image.SizeBytes, err = extractNoneableIntegerAtKey(body, "size"); err != nil {
+		return nil, err
+	}
+
+	// TODO Metadata map[string]string `mapstructure:"metadata"`
+	// TODO Properties map[string]string `mapstructure:"properties"`
+
 	return &image, nil
 }
 
