@@ -109,7 +109,9 @@ func (opts CreateOpts) ToImageCreateMap() (map[string]interface{}, error) {
 
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
-	_, res.Err = client.Delete(deleteURL(client, id), nil)
+	_, res.Err = client.Delete(deleteURL(client, id), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
 	return res
 }
 

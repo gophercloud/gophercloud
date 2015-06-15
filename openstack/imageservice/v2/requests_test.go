@@ -88,3 +88,13 @@ func TestGetImage(t *testing.T) {
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
 }
+
+func TestDeleteImage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleImageDeleteSuccessfully(t)
+
+	Delete(fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27")
+	// TODO
+}

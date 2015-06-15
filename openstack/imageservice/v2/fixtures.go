@@ -80,3 +80,12 @@ func HandleImageGetSuccessfully(t *testing.T) {
 		}`)
 	})
 }
+
+func HandleImageDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

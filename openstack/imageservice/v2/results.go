@@ -6,8 +6,6 @@ import (
 	
 	"github.com/rackspace/gophercloud"
 	//"github.com/rackspace/gophercloud/pagination"
-
-	"github.com/mitchellh/mapstructure"
 )
 
 // does not include the literal image data; just metadata.
@@ -24,19 +22,19 @@ type Image struct {
 	ContainerFormat string
 	DiskFormat string
 	
-	MinDiskGigabytes int `mapstructure:"min_disk"`
-	MinRamMegabytes int `mapstructure:"min_ram"`
+	MinDiskGigabytes int
+	MinRamMegabytes int
 	
 	Owner string
 	
 	Protected bool
 	Visibility ImageVisibility
 
-	Checksum *string `mapstructure:"checksum"`
-	SizeBytes *int `mapstructure:"size"`
+	Checksum *string
+	SizeBytes *int
 	
-	Metadata map[string]string `mapstructure:"metadata"`
-	Properties map[string]string `mapstructure:"properties"`
+	Metadata map[string]string
+	Properties map[string]string
 }
 
 // implements pagination.Page<Image>, pagination.MarkerPage
@@ -298,19 +296,6 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 	}	
 
 	return &image, nil
-}
-
-// The response to `POST /images` follows the same schema as `GET /images/:id`.
-func extractImageOld(res gophercloud.ErrResult) (*Image, error) {
-	if res.Err != nil {
-		return nil, res.Err
-	}
-
-	var image Image
-
-	err := mapstructure.Decode(res.Body, &image)
-	
-	return &image, err
 }
 
 func (c CreateResult) Extract() (*Image, error) {
