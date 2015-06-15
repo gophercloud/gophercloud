@@ -330,3 +330,7 @@ type UpdateResult struct {
 func (u UpdateResult) Extract() (*Image, error) {
 	return extractImage(u.ErrResult)
 }
+
+type PutImageDataResult struct {
+	gophercloud.ErrResult
+}

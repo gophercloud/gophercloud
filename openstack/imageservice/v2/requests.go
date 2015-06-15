@@ -1,6 +1,8 @@
 package v2
 
 import (
+	"io"
+
 	"github.com/rackspace/gophercloud"
 	//"github.com/rackspace/gophercloud/pagination"
 )
@@ -180,3 +182,16 @@ func (r ReplaceImageTags) ToImagePatchMap() map[string]interface{} {
 	m["value"] = r.NewTags
 	return m
 }
+
+func PutImageData(client *gophercloud.ServiceClient, id string, data io.ReadSeeker) PutImageDataResult {
+	var res PutImageDataResult
+
+	_, res.Err = client.Put(imageDataURL(client, id), data, nil, &gophercloud.RequestOpts{
+		MoreHeaders: map[string]string{"Content-Type": "application/octet-stream"},
+		OkCodes: []int{204},
+	})
+
+	return res
+}
+
+// TODO func GetImageData
