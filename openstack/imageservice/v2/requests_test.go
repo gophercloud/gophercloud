@@ -30,6 +30,8 @@ func TestCreateImage(t *testing.T) {
 	container_format := "bare"
 	disk_format := "qcow2"
 	owner := "b4eedccc6fb74fa8a7ad6b08382b852b"
+	min_disk_gigabytes := 0
+	min_ram_megabytes := 0
 
 	expectedImage := Image{
 		Id: "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
@@ -41,6 +43,9 @@ func TestCreateImage(t *testing.T) {
 		ContainerFormat: &container_format,
 		DiskFormat: &disk_format,
 
+		MinDiskGigabytes: &min_disk_gigabytes,
+		MinRamMegabytes: &min_ram_megabytes,
+		
 		Owner: &owner,
 
 		Visibility: ImageVisibilityPrivate,
@@ -144,6 +149,9 @@ func TestUpdateImage(t *testing.T) {
 
 		DiskFormat: nil,
 		ContainerFormat: nil,
+
+		Metadata: make(map[string]string),
+		Properties: make(map[string]string),
 	}
 	
 	th.AssertDeepEquals(t, &expectedImage, actualImage)

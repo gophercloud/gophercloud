@@ -213,6 +213,14 @@ func extractImageVisibilityAtKey(m map[string]interface{}, k string) (ImageVisib
 	}
 }
 
+func extractBoolAtKeyOptional(m map[string]interface{}, k string, ifMissing bool) (bool, error) {
+	if any, ok := m[k]; ok {
+		return asBool(any)
+	} else {
+		return ifMissing, nil
+	}
+}
+
 func extractMapStringStringAtKeyOptional(m map[string]interface{}, k string, ifMissing map[string]string) (map[string]string, error) {
 	if any, ok := m[k]; ok {
 		return asMapStringString(any)
@@ -271,7 +279,8 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 		return nil, err
 	}
 
-	if image.Protected, err = extractBoolAtKey(body, "protected"); err != nil {
+	// FIXME should this key actually be optional? Is a missing key equivalent to "protected": false ?
+	if image.Protected, err = extractBoolAtKeyOptional(body, "protected", false); err != nil {
 		return nil, err
 	}
 
