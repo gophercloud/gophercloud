@@ -19,13 +19,13 @@ type Image struct {
 	
 	Tags []string
 	
-	ContainerFormat string
-	DiskFormat string
+	ContainerFormat *string
+	DiskFormat *string
 	
-	MinDiskGigabytes int
-	MinRamMegabytes int
+	MinDiskGigabytes *int
+	MinRamMegabytes *int
 	
-	Owner string
+	Owner *string
 	
 	Protected bool
 	Visibility ImageVisibility
@@ -251,23 +251,23 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 		return nil, err
 	}
 
-	if image.ContainerFormat, err = extractStringAtKey(body, "container_format"); err != nil {
+	if image.ContainerFormat, err = extractNoneableStringAtKey(body, "container_format"); err != nil {
 		return nil, err
 	}
 	
-	if image.DiskFormat, err = extractStringAtKey(body, "disk_format"); err != nil {
+	if image.DiskFormat, err = extractNoneableStringAtKey(body, "disk_format"); err != nil {
 		return nil, err
 	}
 
-	if image.MinDiskGigabytes, err = extractIntAtKey(body, "min_disk"); err != nil {
+	if image.MinDiskGigabytes, err = extractNoneableIntegerAtKey(body, "min_disk"); err != nil {
 		return nil, err
 	}
 
-	if image.MinRamMegabytes, err = extractIntAtKey(body, "min_ram"); err != nil {
+	if image.MinRamMegabytes, err = extractNoneableIntegerAtKey(body, "min_ram"); err != nil {
 		return nil, err
 	}
 	
-	if image.Owner, err = extractStringAtKey(body, "owner"); err != nil {
+	if image.Owner, err = extractNoneableStringAtKey(body, "owner"); err != nil {
 		return nil, err
 	}
 
@@ -291,7 +291,7 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 		return nil, err
 	}
 
-	if image.Properties, err = extractMapStringStringAtKeyOptional(body, "properies", make(map[string]string)); err != nil {
+	if image.Properties, err = extractMapStringStringAtKeyOptional(body, "properties", make(map[string]string)); err != nil {
 		return nil, err
 	}	
 
@@ -316,4 +316,8 @@ func (c GetResult) Extract() (*Image, error) {
 
 type UpdateResult struct {
 	gophercloud.ErrResult
+}
+
+func (u UpdateResult) Extract() (*Image, error) {
+	return extractImage(u.ErrResult)
 }

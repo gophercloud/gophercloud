@@ -27,6 +27,10 @@ func TestCreateImage(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 
+	container_format := "bare"
+	disk_format := "qcow2"
+	owner := "b4eedccc6fb74fa8a7ad6b08382b852b"
+
 	expectedImage := Image{
 		Id: "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
 		Name: "Ubuntu 12.10",
@@ -34,10 +38,10 @@ func TestCreateImage(t *testing.T) {
 		
 		Status: ImageStatusQueued,
 		
-		ContainerFormat: "bare",
-		DiskFormat: "qcow2",
+		ContainerFormat: &container_format,
+		DiskFormat: &disk_format,
 
-		Owner: "b4eedccc6fb74fa8a7ad6b08382b852b",
+		Owner: &owner,
 
 		Visibility: ImageVisibilityPrivate,
 
@@ -59,7 +63,12 @@ func TestGetImage(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	checksum := "64d7c1cd2b6f60c92c14662941cb7913"
-	sizebytes := 13167616
+	size_bytes := 13167616
+	container_format := "bare"
+	disk_format := "qcow2"
+	min_disk_gigabytes := 0
+	min_ram_megabytes := 0
+	owner := "5ef70662f8b34079a6eddb8da9d75fe8"
 
 	expectedImage := Image{
 		Id: "1bea47ed-f6a9-463b-b423-14b9cca9ad27",
@@ -68,19 +77,19 @@ func TestGetImage(t *testing.T) {
 
 		Status: ImageStatusActive,
 
-		ContainerFormat: "bare",
-		DiskFormat: "qcow2",
+		ContainerFormat: &container_format,
+		DiskFormat: &disk_format,
 
-		MinDiskGigabytes: 0,
-		MinRamMegabytes: 0,
+		MinDiskGigabytes: &min_disk_gigabytes,
+		MinRamMegabytes: &min_ram_megabytes,
 
-		Owner: "5ef70662f8b34079a6eddb8da9d75fe8",
+		Owner: &owner,
 
 		Protected: false,
 		Visibility: ImageVisibilityPublic,
 
 		Checksum: &checksum,
-		SizeBytes: &sizebytes,
+		SizeBytes: &size_bytes,
 
 		Metadata: make(map[string]string),
 		Properties: make(map[string]string),
@@ -97,4 +106,45 @@ func TestDeleteImage(t *testing.T) {
 
 	Delete(fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27")
 	// TODO
+}
+
+func TestUpdateImage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleImageUpdateSuccessfully(t)
+
+	actualImage, err := Update(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", UpdateOpts{
+		ReplaceImageName{NewName: "Fedora 17"},
+		ReplaceImageTags{NewTags: []string{"fedora", "beefy"}, },
+	}).Extract()
+
+	th.AssertNoErr(t, err)
+
+	sizebytes := 2254249
+	checksum := "2cec138d7dae2aa59038ef8c9aec2390"
+
+	expectedImage := Image{
+		Id: "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		Name: "Fedora 17",
+		Status: ImageStatusActive,
+		Visibility: ImageVisibilityPublic,
+
+		SizeBytes: &sizebytes,
+		Checksum: &checksum,
+
+		Tags: []string{
+			"fedora",
+			"beefy",
+		},
+
+		Owner: nil,
+		MinRamMegabytes: nil,
+		MinDiskGigabytes: nil,
+
+		DiskFormat: nil,
+		ContainerFormat: nil,
+	}
+	
+	th.AssertDeepEquals(t, &expectedImage, actualImage)
 }

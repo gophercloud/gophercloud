@@ -89,3 +89,52 @@ func HandleImageDeleteSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
+
+func HandleImageUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+
+		th.TestJSONRequest(t, r, `[
+			{
+				"op": "replace",
+				"path": "/name",
+				"value": "Fedora 17"
+			},
+			{
+				"op": "replace",
+				"path": "/tags",
+				"value": [
+					"fedora",
+					"beefy"
+				]
+			}
+		]`)
+
+		w.WriteHeader(http.StatusOK)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `{
+			"id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+			"name": "Fedora 17",
+			"status": "active",
+			"visibility": "public",
+			"size": 2254249,
+			"checksum": "2cec138d7dae2aa59038ef8c9aec2390",
+			"tags": [
+				"fedora",
+				"beefy"
+			],
+			"created_at": "2012-08-10T19:23:50Z",
+			"updated_at": "2012-08-12T11:11:33Z",
+			"self": "/v2/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+			"file": "/v2/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/file",
+			"schema": "/v2/schemas/image",
+			"owner": "None",
+			"min_ram": "None",
+			"min_disk": "None",
+			"disk_format": "None",
+			"virtual_size": "None",
+			"container_format": "None"
+		}`)
+	})
+}

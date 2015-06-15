@@ -160,7 +160,7 @@ type ReplaceImageName struct {
 	NewName string
 }
 
-func (r *ReplaceImageName) ToImagePatchMap() map[string]interface{} {
+func (r ReplaceImageName) ToImagePatchMap() map[string]interface{} {
 	m := map[string]interface{}{}
 	m["op"] = "replace"
 	m["path"] = "/name"
@@ -168,9 +168,15 @@ func (r *ReplaceImageName) ToImagePatchMap() map[string]interface{} {
 	return m
 }
 
-// Things implementing Patch can also implement UpdateOptsBuilder.
-// Unfortunately we have to specify each of these manually.
+// implements Patch
+type ReplaceImageTags struct {
+	NewTags []string
+}
 
-func (r *ReplaceImageName) ToImageUpdateMap() map[string]interface{} {
-	return r.ToImagePatchMap()
+func (r ReplaceImageTags) ToImagePatchMap() map[string]interface{} {
+	m := map[string]interface{}{}
+	m["op"] = "replace"
+	m["path"] = "/tags"
+	m["value"] = r.NewTags
+	return m
 }
