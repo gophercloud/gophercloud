@@ -4,6 +4,7 @@ package v2
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -138,3 +139,20 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 		}`)
 	})
 }
+
+func HandlePutImageDataSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/file", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+
+		b, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("Unable to read request body: %v", err)
+		}
+
+		th.AssertByteArrayEquals(t, []byte{5,3,7,24}, b)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+

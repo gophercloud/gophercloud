@@ -1,9 +1,7 @@
 package v2
 
-// TODO
-// compare with openstack/compute/v2/servers/requests_test.go
-
 import (
+	"io"
 	"testing"
 
 	th "github.com/rackspace/gophercloud/testhelper"
@@ -155,4 +153,64 @@ func TestUpdateImage(t *testing.T) {
 	}
 	
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
+}
+
+func TestPutImageData(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandlePutImageDataSuccessfully(t)
+
+	PutImageData(
+		fakeclient.ServiceClient(),
+		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		readSeekerOfBytes([]byte{5,3,7,24}))
+
+	// TODO
+}
+
+func readSeekerOfBytes(bs []byte) io.ReadSeeker {
+	return &RS{bs: bs}
+}
+
+// implements io.ReadSeeker
+type RS struct {
+	bs []byte
+	offset int
+}
+
+func (rs *RS) Read(p []byte) (int, error) {
+	leftToRead := len(rs.bs) - rs.offset
+	
+	if 0 < leftToRead {
+		bytesToWrite := min(leftToRead, len(p))
+		for i := 0; i < bytesToWrite; i++ {
+			p[i] = rs.bs[rs.offset]
+			rs.offset++
+		}
+		return bytesToWrite, nil
+	} else {
+		return 0, io.EOF
+	}
+}
+
+func min(a int, b int) int {
+	if a < b {
+		return a
+	} else {
+		return b
+	}
+}
+
+func (rs *RS) Seek(offset int64, whence int) (int64, error) {
+	var offsetInt int = int(offset)
+	if whence == 0 {
+		rs.offset = offsetInt
+	} else if whence == 1 {
+		rs.offset = rs.offset + offsetInt
+	} else if whence == 2 {
+		rs.offset = len(rs.bs) - offsetInt
+	}
+
+	return int64(rs.offset), nil
 }
