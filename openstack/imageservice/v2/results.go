@@ -3,6 +3,7 @@ package v2
 import (
 	"errors"
 	"fmt"
+	"io"
 	
 	"github.com/rackspace/gophercloud"
 	//"github.com/rackspace/gophercloud/pagination"
@@ -333,4 +334,16 @@ func (u UpdateResult) Extract() (*Image, error) {
 
 type PutImageDataResult struct {
 	gophercloud.ErrResult
+}
+
+type GetImageDataResult struct {
+	gophercloud.ErrResult
+}
+
+func (g GetImageDataResult) Extract() (io.Reader, error) {
+	if r, ok := g.Body.(io.Reader); ok {
+		return r, nil
+	} else {
+		return nil, errors.New(fmt.Sprintf("Expected io.Reader but got: %T(%#v)", g.Body))
+	}
 }

@@ -156,3 +156,14 @@ func HandlePutImageDataSuccessfully(t *testing.T) {
 	})
 }
 
+func HandleGetImageDataSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/file", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+
+		w.WriteHeader(http.StatusOK)
+		
+		_, err := w.Write([]byte{34,87,0,23,23,23,56,255,254,0})
+		th.AssertNoErr(t, err)
+	})
+}

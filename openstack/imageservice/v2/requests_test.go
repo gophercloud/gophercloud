@@ -1,7 +1,10 @@
 package v2
 
 import (
+	"errors"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"testing"
 
 	th "github.com/rackspace/gophercloud/testhelper"
@@ -210,7 +213,26 @@ func (rs *RS) Seek(offset int64, whence int) (int64, error) {
 		rs.offset = rs.offset + offsetInt
 	} else if whence == 2 {
 		rs.offset = len(rs.bs) - offsetInt
+	} else {
+		return 0, errors.New(fmt.Sprintf("For parameter `whence`, expected value in {0,1,2} but got: %#v", whence))
 	}
 
 	return int64(rs.offset), nil
+}
+
+func TestGetImageData(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleGetImageDataSuccessfully(t)
+
+	rdr, err := GetImageData(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea").Extract()
+	
+	th.AssertNoErr(t, err)
+
+	bs, err := ioutil.ReadAll(rdr)
+
+	th.AssertNoErr(t, err)
+
+	th.AssertByteArrayEquals(t, []byte{34,87,0,23,23,23,56,255,254,0}, bs)
 }

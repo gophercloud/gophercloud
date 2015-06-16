@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"net/http"
 	"io"
 
 	"github.com/rackspace/gophercloud"
@@ -194,4 +195,15 @@ func PutImageData(client *gophercloud.ServiceClient, id string, data io.ReadSeek
 	return res
 }
 
-// TODO func GetImageData
+func GetImageData(client *gophercloud.ServiceClient, id string) GetImageDataResult {
+	var res GetImageDataResult
+
+	var resp *http.Response
+	resp, res.Err = client.Get(imageDataURL(client, id), nil, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+
+	res.Body = resp.Body
+
+	return res
+}
