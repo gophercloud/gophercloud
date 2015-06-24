@@ -119,10 +119,12 @@ func Create(client *gophercloud.ServiceClient, loadBalancerID int, opts CreateOp
 		return res
 	}
 
-	pr, err := pagination.PageResultFrom(resp)
-	if err != nil {
-		res.Err = err
-		return res
+	pr := pagination.PageResult{
+		Result: gophercloud.Result{
+			Body:   res.Body,
+			Header: resp.Header,
+		},
+		URL: *resp.Request.URL,
 	}
 
 	return CreateResult{pagination.SinglePageBase(pr)}
