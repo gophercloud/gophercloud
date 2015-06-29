@@ -192,7 +192,7 @@ func Delete(c *gophercloud.ServiceClient, networkID string) DeleteResult {
 	return res
 }
 
-// IDFromName is a convienience function that returns a network's ID given its name.
+// IDFromName is a convenience function that returns a network's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
 	networkCount := 0
 	networkID := ""
