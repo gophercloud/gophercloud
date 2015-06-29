@@ -237,7 +237,7 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	return res
 }
 
-// IDFromName is a convienience function that returns a subnet's ID given its name.
+// IDFromName is a convenience function that returns a subnet's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
 	subnetCount := 0
 	subnetID := ""
