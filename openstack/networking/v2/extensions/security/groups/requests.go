@@ -92,7 +92,7 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	return res
 }
 
-// IDFromName is a convienience function that returns a security group's ID given its name.
+// IDFromName is a convenience function that returns a security group's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
 	securityGroupCount := 0
 	securityGroupID := ""
