@@ -91,3 +91,36 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	_, res.Err = c.Delete(resourceURL(c, id), nil)
 	return res
 }
+
+// IDFromName is a convienience function that returns a securitygroup's ID given its name.
+func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
+	securityGroupCount := 0
+	securityGroupID := ""
+	if name == "" {
+		return "", fmt.Errorf("A network name must be provided.")
+	}
+	pager := List(client, ListOpts{})
+	pager.EachPage(func(page pagination.Page) (bool, error) {
+		securityGroupList, err := ExtractGroups(page)
+		if err != nil {
+			return false, err
+		}
+
+		for _, s := range securityGroupList {
+			if s.Name == name {
+				securityGroupCount++
+				securityGroupID = s.ID
+			}
+		}
+		return true, nil
+	})
+
+	switch securityGroupCount {
+	case 0:
+		return "", fmt.Errorf("Unable to find network: %s", name)
+	case 1:
+		return securityGroupID, nil
+	default:
+		return "", fmt.Errorf("Found %d networks matching %s", securityGroupCount, name)
+	}
+}
