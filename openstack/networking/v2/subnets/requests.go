@@ -242,7 +242,7 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 	subnetCount := 0
 	subnetID := ""
 	if name == "" {
-		return "", fmt.Errorf("A network name must be provided.")
+		return "", fmt.Errorf("A subnet name must be provided.")
 	}
 	pager := List(client, nil)
 	pager.EachPage(func(page pagination.Page) (bool, error) {
@@ -262,10 +262,10 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 
 	switch subnetCount {
 	case 0:
-		return "", fmt.Errorf("Unable to find network: %s", name)
+		return "", fmt.Errorf("Unable to find subnet: %s", name)
 	case 1:
 		return subnetID, nil
 	default:
-		return "", fmt.Errorf("Found %d networks matching %s", subnetCount, name)
+		return "", fmt.Errorf("Found %d subnets matching %s", subnetCount, name)
 	}
 }
