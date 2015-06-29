@@ -231,7 +231,7 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 	portCount := 0
 	portID := ""
 	if name == "" {
-		return "", fmt.Errorf("A network name must be provided.")
+		return "", fmt.Errorf("A port name must be provided.")
 	}
 	pager := List(client, nil)
 	pager.EachPage(func(page pagination.Page) (bool, error) {
@@ -251,10 +251,10 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 
 	switch portCount {
 	case 0:
-		return "", fmt.Errorf("Unable to find network: %s", name)
+		return "", fmt.Errorf("Unable to find port: %s", name)
 	case 1:
 		return portID, nil
 	default:
-		return "", fmt.Errorf("Found %d networks matching %s", portCount, name)
+		return "", fmt.Errorf("Found %d ports matching %s", portCount, name)
 	}
 }
