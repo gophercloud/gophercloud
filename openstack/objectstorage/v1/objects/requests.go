@@ -2,9 +2,11 @@ package objects
 
 import (
 	"crypto/hmac"
+	"crypto/md5"
 	"crypto/sha1"
 	"fmt"
 	"io"
+	"net/http"
 	"strings"
 	"time"
 
@@ -214,11 +216,30 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		MoreHeaders: h,
 	}
 
-	resp, err := c.Request("PUT", url, ropts)
-	if resp != nil {
-		res.Header = resp.Header
+	doUpload := func() (*http.Response, error) {
+		resp, err := c.Request("PUT", url, ropts)
+		if resp != nil {
+			res.Header = resp.Header
+		}
+		return resp, err
 	}
-	res.Err = err
+
+	hash := md5.New()
+	io.Copy(hash, content)
+	localChecksum := hash.Sum(nil)
+
+	for i := 1; i <= 3; i++ {
+		resp, err := doUpload()
+		if resp.Header.Get("ETag") == fmt.Sprintf("%x", localChecksum) {
+			res.Err = err
+			break
+		}
+		if i == 3 {
+			res.Err = fmt.Errorf("Local checksum does not match API ETag header")
+			return res
+		}
+	}
+
 	return res
 }
 
