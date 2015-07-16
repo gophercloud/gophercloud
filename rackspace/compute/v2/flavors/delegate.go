@@ -41,8 +41,3 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	_, res.Err = client.Get(getURL(client, id), &res.Body, nil)
 	return res
 }
-
-// ExtractFlavors interprets a page of List results as Flavors.
-func ExtractFlavors(page pagination.Page) ([]os.Flavor, error) {
-	return os.ExtractFlavors(page)
-}

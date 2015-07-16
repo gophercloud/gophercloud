@@ -5,6 +5,8 @@ import (
 
 	"github.com/jrperritt/gophercloud"
 	"github.com/mitchellh/mapstructure"
+	os "github.com/rackspace/gophercloud/openstack/compute/v2/flavors"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // ExtraSpecs provide additional information about the flavor.
@@ -76,4 +78,27 @@ func defaulter(from, to reflect.Kind, v interface{}) (interface{}, error) {
 		return 0, nil
 	}
 	return v, nil
+}
+
+// ExtractFlavors provides access to the list of flavors in a page acquired from the List operation.
+func ExtractFlavors(page pagination.Page) ([]Flavor, error) {
+	casted := page.(os.FlavorPage).Body
+	var container struct {
+		Flavors []Flavor `mapstructure:"flavors"`
+	}
+
+	cfg := &mapstructure.DecoderConfig{
+		DecodeHook: defaulter,
+		Result:     &container,
+	}
+	decoder, err := mapstructure.NewDecoder(cfg)
+	if err != nil {
+		return container.Flavors, err
+	}
+	err = decoder.Decode(casted)
+	if err != nil {
+		return container.Flavors, err
+	}
+
+	return container.Flavors, nil
 }
