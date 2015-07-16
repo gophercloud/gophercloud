@@ -2,9 +2,11 @@ package objects
 
 import (
 	"crypto/hmac"
+	"crypto/md5"
 	"crypto/sha1"
 	"fmt"
 	"io"
+	"net/http"
 	"strings"
 	"time"
 
@@ -188,7 +190,8 @@ func (opts CreateOpts) ToObjectCreateParams() (map[string]string, string, error)
 	return h, q.String(), nil
 }
 
-// Create is a function that creates a new object or replaces an existing object.
+// Create is a function that creates a new object or replaces an existing object. If the returned response's ETag
+// header fails to match the local checksum, the failed request will automatically be retried up to a maximum of 3 times.
 func Create(c *gophercloud.ServiceClient, containerName, objectName string, content io.ReadSeeker, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
@@ -214,11 +217,30 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		MoreHeaders: h,
 	}
 
-	resp, err := c.Request("PUT", url, ropts)
-	if resp != nil {
-		res.Header = resp.Header
+	doUpload := func() (*http.Response, error) {
+		resp, err := c.Request("PUT", url, ropts)
+		if resp != nil {
+			res.Header = resp.Header
+		}
+		return resp, err
 	}
-	res.Err = err
+
+	hash := md5.New()
+	io.Copy(hash, content)
+	localChecksum := hash.Sum(nil)
+
+	for i := 1; i <= 3; i++ {
+		resp, err := doUpload()
+		if resp.Header.Get("ETag") == fmt.Sprintf("%x", localChecksum) {
+			res.Err = err
+			break
+		}
+		if i == 3 {
+			res.Err = fmt.Errorf("Local checksum does not match API ETag header")
+			return res
+		}
+	}
+
 	return res
 }
 
