@@ -190,8 +190,8 @@ func (opts CreateOpts) ToObjectCreateParams() (map[string]string, string, error)
 	return h, q.String(), nil
 }
 
-// Create is a function that creates a new object or replaces an existing object. Failed requests 
-// will automatically be retried up to a maximum of 3 times for added robustness.
+// Create is a function that creates a new object or replaces an existing object. If the returned response's ETag
+// header fails to match the local checksum, the failed request will automatically be retried up to a maximum of 3 times.
 func Create(c *gophercloud.ServiceClient, containerName, objectName string, content io.ReadSeeker, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
 
