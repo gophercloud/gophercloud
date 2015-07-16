@@ -10,11 +10,11 @@ import (
 // ExtraSpecs provide additional information about the flavor.
 type ExtraSpecs struct {
 	// The number of data disks
-	NumDataDisks uint `mapstructure:"number_of_data_disks"`
+	NumDataDisks int `mapstructure:"number_of_data_disks"`
 	// The flavor class
 	Class string `mapstructure:"class"`
 	// Relative measure of disk I/O performance from 0-99, where higher is faster
-	DiskIOIndex uint   `mapstructure:"disk_io_index"`
+	DiskIOIndex int    `mapstructure:"disk_io_index"`
 	PolicyClass string `mapstructure:"policy_class"`
 }
 
