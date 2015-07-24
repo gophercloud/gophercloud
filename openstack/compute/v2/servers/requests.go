@@ -49,6 +49,9 @@ type ListOpts struct {
 
 	// Integer value for the limit of values to return.
 	Limit int `q:"limit"`
+
+	// Bool to show all tenants
+	AllTenants bool `q:"all_tenants"`
 }
 
 // ToServerListQuery formats a ListOpts into a query string.
