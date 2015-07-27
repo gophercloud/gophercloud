@@ -1,6 +1,10 @@
 package v2
 
-import "github.com/rackspace/gophercloud"
+import (
+	"strings"
+
+	"github.com/rackspace/gophercloud"
+)
 
 // `listURL` is a pure function. `listURL(c)` is a URL for which a GET
 // request will respond with a list of images in the service `c`.
@@ -69,4 +73,10 @@ func reactivateImageURL(c *gophercloud.ServiceClient, imageID string) string {
 
 func deactivateImageURL(c *gophercloud.ServiceClient, imageID string) string {
 	return c.ServiceURL("images", imageID, "actions", "deactivate")
+}
+
+// builds next page full url based on current url
+func nextPageURL(currentURL string, next string) string {
+	base := currentURL[:strings.Index(currentURL, "/images")]
+	return base + next
 }

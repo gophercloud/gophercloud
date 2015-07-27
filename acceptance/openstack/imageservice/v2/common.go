@@ -1,4 +1,4 @@
-// +build acceptance
+// +build acceptance imageservice
 
 package v2
 
@@ -12,14 +12,32 @@ import (
 )
 
 func newClient(t *testing.T) *gophercloud.ServiceClient {
-	ao, err := openstack.AuthOptionsFromEnv()
+
+	authURL := os.Getenv("OS_AUTH_URL")
+	username := os.Getenv("OS_USERNAME")
+	password := os.Getenv("OS_PASSWORD")
+	tenantName := os.Getenv("OS_TENANT_NAME")
+	domainName := os.Getenv("OS_DOMAIN_NAME")
+
+	t.Logf("Credentials used: OS_AUTH_URL='%s' OS_USERNAME='%s' OS_PASSWORD='*****' OS_TENANT_NAME='%s' OS_TENANT_NAME='%s' \n",
+		authURL, username, tenantName, domainName)
+
+	client, err := openstack.NewClient(authURL)
 	th.AssertNoErr(t, err)
 
-	client, err := openstack.AuthenticatedClient(ao)
+	ao := gophercloud.AuthOptions{
+		Username:   username,
+		Password:   password,
+		TenantName: tenantName,
+		DomainName: domainName,
+	}
+
+	err = openstack.AuthenticateV3(client, ao)
 	th.AssertNoErr(t, err)
+	t.Logf("Token is %v", client.TokenID)
 
 	c, err := openstack.NewImageServiceV2(client, gophercloud.EndpointOpts{
-		Region: os.Getenv("OS_REGION_NAME"),
+		Region: "RegionOne",
 	})
 	th.AssertNoErr(t, err)
 	return c
