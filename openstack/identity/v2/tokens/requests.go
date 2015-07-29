@@ -54,9 +54,9 @@ func (auth AuthOptions) ToTokenCreateMap() (map[string]interface{}, error) {
 		} else {
 			return nil, ErrPasswordRequired
 		}
-	} else if auth.Token != "" {
+	} else if auth.TokenID != "" {
 		authMap["token"] = map[string]interface{}{
-			"id": auth.Token,
+			"id": auth.TokenID,
 		}
 	} else {
 		return nil, fmt.Errorf("You must provide either username/password or tenantID/token values.")

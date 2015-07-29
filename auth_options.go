@@ -44,7 +44,7 @@ type AuthOptions struct {
 	// possible.  This setting defaults to false.
 	AllowReauth bool
 
-	// Token allows users to authenticate (possibly as another user) with an
-	// authentication token.
-	Token string
+	// TokenID allows users to authenticate (possibly as another user) with an
+	// authentication token ID.
+	TokenID string
 }
