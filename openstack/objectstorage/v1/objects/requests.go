@@ -1,6 +1,7 @@
 package objects
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/sha1"
@@ -9,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack/objectstorage/v1/accounts"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/jrperritt/rack/internal/github.com/rackspace/gophercloud"
+	"github.com/jrperritt/rack/internal/github.com/rackspace/gophercloud/openstack/objectstorage/v1/accounts"
+	"github.com/jrperritt/rack/internal/github.com/rackspace/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the List
@@ -211,15 +212,18 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		url += query
 	}
 
+	var contentBuffer *bytes.Buffer
+	contentReader := io.TeeReader(content, contentBuffer)
+
 	hash := md5.New()
-	io.Copy(hash, content)
+	io.Copy(hash, contentReader)
 	localChecksum := hash.Sum(nil)
 	fmt.Printf("localChecksum: %s", fmt.Sprintf("%x", localChecksum))
 
 	h["ETag"] = fmt.Sprintf("%x", localChecksum)
 
 	ropts := gophercloud.RequestOpts{
-		RawBody:     content,
+		RawBody:     strings.NewReader(contentBuffer.String()),
 		MoreHeaders: h,
 	}
 
