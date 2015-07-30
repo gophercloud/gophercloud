@@ -6,7 +6,6 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
-	"net/http"
 	"strings"
 	"time"
 
@@ -212,26 +211,23 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		url += query
 	}
 
-	ropts := gophercloud.RequestOpts{
-		RawBody:     content,
-		MoreHeaders: h,
-	}
-
-	doUpload := func() (*http.Response, error) {
-		resp, err := c.Request("PUT", url, ropts)
-		if resp != nil {
-			res.Header = resp.Header
-		}
-		return resp, err
-	}
-
 	hash := md5.New()
 	io.Copy(hash, content)
 	localChecksum := hash.Sum(nil)
 	fmt.Printf("localChecksum: %s", fmt.Sprintf("%x", localChecksum))
 
+	h["ETag"] = fmt.Sprintf("%x", localChecksum)
+
+	ropts := gophercloud.RequestOpts{
+		RawBody:     content,
+		MoreHeaders: h,
+	}
+
 	for i := 1; i <= 3; i++ {
-		resp, err := doUpload()
+		resp, err := c.Request("PUT", url, ropts)
+		if resp != nil {
+			res.Header = resp.Header
+		}
 		fmt.Printf("ETag: %s", resp.Header.Get("ETag"))
 		if resp.Header.Get("ETag") == fmt.Sprintf("%x", localChecksum) {
 			res.Err = err
