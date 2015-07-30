@@ -1,12 +1,12 @@
 package objects
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/sha1"
 	"fmt"
 	"io"
-	"net/http"
 	"strings"
 	"time"
 
@@ -212,25 +212,28 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		url += query
 	}
 
+	hash := md5.New()
+
+	contentBuffer := bytes.NewBuffer([]byte{})
+	_, err := io.Copy(contentBuffer, io.TeeReader(content, hash))
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
+	localChecksum := hash.Sum(nil)
+	h["ETag"] = fmt.Sprintf("%x", localChecksum)
+
 	ropts := gophercloud.RequestOpts{
-		RawBody:     content,
+		RawBody:     strings.NewReader(contentBuffer.String()),
 		MoreHeaders: h,
 	}
 
-	doUpload := func() (*http.Response, error) {
+	for i := 1; i <= 3; i++ {
 		resp, err := c.Request("PUT", url, ropts)
 		if resp != nil {
 			res.Header = resp.Header
 		}
-		return resp, err
-	}
-
-	hash := md5.New()
-	io.Copy(hash, content)
-	localChecksum := hash.Sum(nil)
-
-	for i := 1; i <= 3; i++ {
-		resp, err := doUpload()
 		if resp.Header.Get("ETag") == fmt.Sprintf("%x", localChecksum) {
 			res.Err = err
 			break
