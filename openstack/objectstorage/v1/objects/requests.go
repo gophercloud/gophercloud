@@ -212,14 +212,16 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		url += query
 	}
 
-	var contentBuffer *bytes.Buffer
-	contentReader := io.TeeReader(content, contentBuffer)
-
 	hash := md5.New()
-	io.Copy(hash, contentReader)
-	localChecksum := hash.Sum(nil)
-	fmt.Printf("localChecksum: %s", fmt.Sprintf("%x", localChecksum))
 
+	contentBuffer := bytes.NewBuffer([]byte{})
+	_, err := io.Copy(contentBuffer, io.TeeReader(content, hash))
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
+	localChecksum := hash.Sum(nil)
 	h["ETag"] = fmt.Sprintf("%x", localChecksum)
 
 	ropts := gophercloud.RequestOpts{
@@ -232,7 +234,6 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		if resp != nil {
 			res.Header = resp.Header
 		}
-		fmt.Printf("ETag: %s", resp.Header.Get("ETag"))
 		if resp.Header.Get("ETag") == fmt.Sprintf("%x", localChecksum) {
 			res.Err = err
 			break
