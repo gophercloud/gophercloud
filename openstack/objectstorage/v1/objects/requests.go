@@ -228,9 +228,11 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 	hash := md5.New()
 	io.Copy(hash, content)
 	localChecksum := hash.Sum(nil)
+	fmt.Printf("localChecksum: %s", fmt.Sprintf("%x", localChecksum))
 
 	for i := 1; i <= 3; i++ {
 		resp, err := doUpload()
+		fmt.Printf("ETag: %s", resp.Header.Get("ETag"))
 		if resp.Header.Get("ETag") == fmt.Sprintf("%x", localChecksum) {
 			res.Err = err
 			break
