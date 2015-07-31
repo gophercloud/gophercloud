@@ -233,10 +233,10 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		resp, err := c.Request("PUT", url, ropts)
 		if resp != nil {
 			res.Header = resp.Header
-		}
-		if resp.Header.Get("ETag") == fmt.Sprintf("%x", localChecksum) {
-			res.Err = err
-			break
+			if resp.Header.Get("ETag") == fmt.Sprintf("%x", localChecksum) {
+				res.Err = err
+				break
+			}
 		}
 		if i == 3 {
 			res.Err = fmt.Errorf("Local checksum does not match API ETag header")
