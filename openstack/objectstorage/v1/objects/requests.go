@@ -240,6 +240,7 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 			res.Err = err
 			return res
 		}
+		res.Err = fmt.Errorf("Local checksum does not match API ETag header")
 	}
 
 	return res
