@@ -3,7 +3,7 @@ package flavors
 import (
 	"reflect"
 
-	"github.com/jrperritt/gophercloud"
+	"github.com/rackspace/gophercloud"
 	"github.com/mitchellh/mapstructure"
 	os "github.com/rackspace/gophercloud/openstack/compute/v2/flavors"
 	"github.com/rackspace/gophercloud/pagination"
