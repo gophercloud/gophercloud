@@ -22,7 +22,7 @@ type listResult struct {
 	gophercloud.Result
 }
 
-// Extract interprets any serverResult as a Server, if possible.
+// Extract interprets any listResult as an array of MeterListResult
 func (r listResult) Extract() (*[]MeterListResult, error) {
 	if r.Err != nil {
 		return nil, r.Err

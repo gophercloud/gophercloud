@@ -1,6 +1,10 @@
 package meters
 
-import "github.com/rackspace/gophercloud"
+import (
+	"fmt"
+
+	"github.com/rackspace/gophercloud"
+)
 
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
@@ -82,7 +86,8 @@ func MeterStatistics(client *gophercloud.ServiceClient, n string, opts MeterStat
 		url += query
 	}
 
-	_, err = client.Get(url, &res.Body, &gophercloud.RequestOpts{})
+	b, err := client.Get(url, &res.Body, &gophercloud.RequestOpts{})
+	fmt.Printf("%+v\n%+v\n", res, b)
 
 	return
 }
