@@ -2,6 +2,7 @@ package meters
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/rackspace/gophercloud"
 )
@@ -28,20 +29,21 @@ func (opts ListOpts) ToMeterListQuery() (string, error) {
 }
 
 // List makes a request against the API to list meters accessible to you.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) (res listResult, err error) {
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) listResult {
+	var res listResult
 	url := listURL(client)
 
 	if opts != nil {
 		query, err := opts.ToMeterListQuery()
 		if err != nil {
-			return res, err
+			res.Err = err
+			return res
 		}
 		url += query
 	}
 
-	_, err = client.Get(url, &res.Body, &gophercloud.RequestOpts{})
-
-	return
+	_, res.Err = client.Get(url, &res.Body, &gophercloud.RequestOpts{})
+	return res
 }
 
 // StatisticsOptsBuilder allows extensions to add additional parameters to the
@@ -75,19 +77,21 @@ func (opts MeterStatisticsOpts) ToMeterStatisticsQuery() (string, error) {
 }
 
 // List makes a request against the API to list meters accessible to you.
-func MeterStatistics(client *gophercloud.ServiceClient, n string, opts MeterStatisticsOptsBuilder) (res statisticsResult, err error) {
+func MeterStatistics(client *gophercloud.ServiceClient, n string, opts MeterStatisticsOptsBuilder) statisticsResult {
+	var res statisticsResult
 	url := statisticsURL(client, n)
 
 	if opts != nil {
 		query, err := opts.ToMeterStatisticsQuery()
 		if err != nil {
-			return res, err
+			res.Err = err
+			return res
 		}
 		url += query
 	}
 
-	b, err := client.Get(url, &res.Body, &gophercloud.RequestOpts{})
+	var b *http.Response
+	b, res.Err = client.Get(url, &res.Body, &gophercloud.RequestOpts{})
 	fmt.Printf("%+v\n%+v\n", res, b)
-
-	return
+	return res
 }

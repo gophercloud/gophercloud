@@ -23,7 +23,7 @@ type listResult struct {
 }
 
 // Extract interprets any listResult as an array of MeterListResult
-func (r listResult) Extract() (*[]MeterListResult, error) {
+func (r listResult) Extract() ([]MeterListResult, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
@@ -44,7 +44,7 @@ func (r listResult) Extract() (*[]MeterListResult, error) {
 		return nil, err
 	}
 
-	return &response, nil
+	return response, nil
 }
 
 type MeterStatisticsResult struct {
@@ -67,7 +67,7 @@ type statisticsResult struct {
 }
 
 // Extract interprets any serverResult as a Server, if possible.
-func (r statisticsResult) Extract() (*[]MeterStatisticsResult, error) {
+func (r statisticsResult) Extract() ([]MeterStatisticsResult, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
@@ -88,7 +88,7 @@ func (r statisticsResult) Extract() (*[]MeterStatisticsResult, error) {
 		return nil, err
 	}
 
-	return &response, nil
+	return response, nil
 }
 
 func toMapFromString(from reflect.Kind, to reflect.Kind, data interface{}) (interface{}, error) {
