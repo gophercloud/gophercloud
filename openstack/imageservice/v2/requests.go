@@ -180,6 +180,53 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	return res
 }
 
+// CreateMember for specific image
+//
+// Preconditions
+//    The specified images must exist.
+//    You can only add a new member to an image which 'visibility' attribute is private.
+//    You must be the owner of the specified image.
+// Synchronous Postconditions
+//    With correct permissions, you can see the member status of the image as pending through API calls.
+//
+// More details here: http://developer.openstack.org/api-ref-image-v2.html#createImageMember-v2
+func CreateMember(client *gophercloud.ServiceClient, id string, member string) CreateMemberResult {
+	var res CreateMemberResult
+	body := map[string]interface{}{}
+	body["member"] = member
+
+	response, err := client.Post(imageMembersURL(client, id), body, &res.Body,
+		&gophercloud.RequestOpts{OkCodes: []int{200, 409, 403}})
+
+	//some problems in http stack or lower
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
+	// membership conflict
+	if response.StatusCode == 409 {
+		res.Err = fmt.Errorf("Given tenant '%s' is already member for image '%s'.", member, id)
+		return res
+	}
+
+	// visibility conflict
+	if response.StatusCode == 403 {
+		res.Err = fmt.Errorf("You can only add a new member to an image "+
+			"which 'visibility' attribute is private (image '%s')", id)
+		return res
+	}
+
+	return res
+}
+
+// ListMembers returns list of members for specifed image id
+func ListMembers(client *gophercloud.ServiceClient, id string) ListMembersResult {
+	var res ListMembersResult
+	_, res.Err = client.Get(listMembersURL(client, id), &res.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	return res
+}
+
 // Update implements image updated request
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var res UpdateResult

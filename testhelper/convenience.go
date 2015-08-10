@@ -276,12 +276,14 @@ func isByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byte) b
 	return bytes.Equal(expectedBytes, actualBytes)
 }
 
+// AssertByteArrayEquals a convenience function for checking whether two byte arrays are equal
 func AssertByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byte) {
 	if !isByteArrayEquals(t, expectedBytes, actualBytes) {
 		logFatal(t, "The bytes differed.")
 	}
 }
 
+// CheckByteArrayEquals a convenience function for silent checking whether two byte arrays are equal
 func CheckByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byte) {
 	if !isByteArrayEquals(t, expectedBytes, actualBytes) {
 		logError(t, "The bytes differed.")
@@ -350,6 +352,13 @@ func CheckJSONEquals(t *testing.T, expectedJSON string, actual interface{}) {
 func AssertNoErr(t *testing.T, e error) {
 	if e != nil {
 		logFatal(t, fmt.Sprintf("unexpected error %s", yellow(e.Error())))
+	}
+}
+
+// AssertNotNil is a convenience function for checking whether given value is not nil
+func AssertNotNil(t *testing.T, actual interface{}) {
+	if actual == nil || !reflect.ValueOf(actual).Elem().IsValid() {
+		logFatal(t, fmt.Sprintf("Not nil expexted, but was %v", actual))
 	}
 }
 
