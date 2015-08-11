@@ -5,8 +5,10 @@ package v2
 import (
 	"bytes"
 	"io/ioutil"
+	"os"
 	"testing"
 
+	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/acceptance/tools"
 	images "github.com/rackspace/gophercloud/openstack/imageservice/v2"
 	"github.com/rackspace/gophercloud/pagination"
@@ -138,6 +140,96 @@ func TestUpdateImage(t *testing.T) {
 	client := newClient(t)
 
 	//creating image
+	image := createTestImage(t, client)
+
+	t.Logf("Image tags %v", image.Tags)
+
+	tags := []string{"acceptance-testing"}
+	updatedImage, err := images.Update(client, image.ID, images.UpdateOpts{
+		images.ReplaceImageTags{
+			NewTags: tags}}).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Received tags '%v'", tags)
+	th.AssertDeepEquals(t, updatedImage.Tags, tags)
+}
+
+func TestImageMemberCreateListDelete(t *testing.T) {
+	client := newClient(t)
+
+	//creating image
+	image := createTestImage(t, client)
+	defer deleteImage(t, client, image)
+
+	//creating member
+	member, err := images.CreateMember(client, image.ID, "tenant").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertNotNil(t, member)
+
+	//listing member
+	var members *[]images.ImageMember
+	members, err = images.ListMembers(client, image.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertNotNil(t, members)
+	th.AssertEquals(t, 1, len(*members))
+
+	t.Logf("Members after adding one %v", members)
+
+	//checking just created member
+	m := (*members)[0]
+	th.AssertEquals(t, "pending", m.Status)
+	th.AssertEquals(t, "tenant", m.MemberID)
+
+	//deleting member
+	deleteResult := images.DeleteMember(client, image.ID, "tenant")
+	th.AssertNoErr(t, deleteResult.Err)
+
+	//listing member
+	members, err = images.ListMembers(client, image.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertNotNil(t, members)
+	th.AssertEquals(t, 0, len(*members))
+
+	t.Logf("Members after deleting one %v", members)
+}
+
+func TestImageMemberDetailsAndUpdate(t *testing.T) {
+	// getting current tenant id
+	memberTenantID := os.Getenv("OS_TENANT_ID")
+	if memberTenantID == "" {
+		t.Fatalf("Please define OS_TENANT_ID for image member updating test was '%s'", memberTenantID)
+	}
+
+	client := newClient(t)
+
+	//creating image
+	image := createTestImage(t, client)
+	defer deleteImage(t, client, image)
+
+	//creating member
+	member, err := images.CreateMember(client, image.ID, memberTenantID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertNotNil(t, member)
+
+	//checking image member details
+	member, err = images.ShowMemberDetails(client, image.ID, memberTenantID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertNotNil(t, member)
+
+	th.AssertEquals(t, memberTenantID, member.MemberID)
+	th.AssertEquals(t, "pending", member.Status)
+
+	t.Logf("Updating image's %s member status for tenant %s to 'accepted' ", image.ID, memberTenantID)
+
+	//updating image
+	member, err = images.UpdateMember(client, image.ID, memberTenantID, "accepted").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertNotNil(t, member)
+	th.AssertEquals(t, "accepted", member.Status)
+
+}
+
+func createTestImage(t *testing.T, client *gophercloud.ServiceClient) images.Image {
+	//creating image
 	imageName := tools.RandomString("ACCPT", 16)
 	containerFormat := "ami"
 	createResult := images.Create(client, images.CreateOpts{Name: &imageName,
@@ -152,14 +244,11 @@ func TestUpdateImage(t *testing.T) {
 	image, err = images.Get(client, image.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, image.Status, images.ImageStatusQueued)
+	return *image
+}
 
-	t.Logf("Image tags %v", image.Tags)
-
-	tags := []string{"acceptance-testing"}
-	updatedImage, err := images.Update(client, image.ID, images.UpdateOpts{
-		images.ReplaceImageTags{
-			NewTags: tags}}).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Received tags '%v'", tags)
-	th.AssertDeepEquals(t, updatedImage.Tags, tags)
+func deleteImage(t *testing.T, client *gophercloud.ServiceClient, image images.Image) {
+	//deteting image
+	deleteResult := images.Delete(client, image.ID)
+	th.AssertNoErr(t, deleteResult.Err)
 }

@@ -221,6 +221,7 @@ func CreateMember(client *gophercloud.ServiceClient, id string, member string) C
 }
 
 // ListMembers returns list of members for specifed image id
+// More details: http://developer.openstack.org/api-ref-image-v2.html#listImageMembers-v2
 func ListMembers(client *gophercloud.ServiceClient, id string) ListMembersResult {
 	var res ListMembersResult
 	_, res.Err = client.Get(listMembersURL(client, id), &res.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
@@ -239,6 +240,47 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	return res
 }
 
+// ShowMemberDetails Shows image member details.
+// More details: http://developer.openstack.org/api-ref-image-v2.html#getImageMember-v2
+func ShowMemberDetails(client *gophercloud.ServiceClient, imageID string, memberID string) MemberDetailsResult {
+	var res MemberDetailsResult
+	_, res.Err = client.Get(imageMemberURL(client, imageID, memberID), &res.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	return res
+}
+
+// DeleteMember Deletes membership for given image.
+// Callee should be image owner
+// More details: http://developer.openstack.org/api-ref-image-v2.html#deleteImageMember-v2
+func DeleteMember(client *gophercloud.ServiceClient, imageID string, memberID string) MemberDeleteResult {
+	var res MemberDeleteResult
+	response, err := client.Delete(imageMemberURL(client, imageID, memberID), &gophercloud.RequestOpts{OkCodes: []int{204, 403}})
+
+	//some problems in http stack or lower
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
+	// Callee is not owner of specified image
+	if response.StatusCode == 403 {
+		res.Err = fmt.Errorf("You must be the owner of the specified image. "+
+			"(image '%s')", imageID)
+		return res
+	}
+	return res
+}
+
+// UpdateMember fuction updates member
+// More details: http://developer.openstack.org/api-ref-image-v2.html#updateImageMember-v2
+func UpdateMember(client *gophercloud.ServiceClient, imageID string, memberID string, status string) MemberUpdateResult {
+	var res MemberUpdateResult
+	body := map[string]interface{}{}
+	body["status"] = status
+	_, res.Err = client.Put(imageMemberURL(client, imageID, memberID), body, &res.Body,
+		&gophercloud.RequestOpts{OkCodes: []int{200}})
+	return res
+}
+
 // UpdateOptsBuilder implemets UpdateOptsBuilder
 type UpdateOptsBuilder interface {
 	// returns value implementing json.Marshaler which when marshaled matches the patch schema:
@@ -249,7 +291,7 @@ type UpdateOptsBuilder interface {
 // UpdateOpts implements UpdateOpts
 type UpdateOpts []Patch
 
-// ToImageUpdateMap TODO
+// ToImageUpdateMap builder
 func (opts UpdateOpts) ToImageUpdateMap() []interface{} {
 	m := make([]interface{}, len(opts))
 	for i, patch := range opts {
@@ -265,12 +307,26 @@ type Patch interface {
 	ToImagePatchMap() map[string]interface{}
 }
 
+// UpdateVisibility updated visibility
+type UpdateVisibility struct {
+	Visibility ImageVisibility
+}
+
+// ToImagePatchMap builder
+func (u UpdateVisibility) ToImagePatchMap() map[string]interface{} {
+	m := map[string]interface{}{}
+	m["op"] = "relace"
+	m["path"] = "/visibility"
+	m["value"] = u.Visibility
+	return m
+}
+
 // ReplaceImageName implements Patch
 type ReplaceImageName struct {
 	NewName string
 }
 
-// ToImagePatchMap TODO
+// ToImagePatchMap builder
 func (r ReplaceImageName) ToImagePatchMap() map[string]interface{} {
 	m := map[string]interface{}{}
 	m["op"] = "replace"
@@ -284,7 +340,7 @@ type ReplaceImageTags struct {
 	NewTags []string
 }
 
-// ToImagePatchMap TODO
+// ToImagePatchMap builder
 func (r ReplaceImageTags) ToImagePatchMap() map[string]interface{} {
 	m := map[string]interface{}{}
 	m["op"] = "replace"

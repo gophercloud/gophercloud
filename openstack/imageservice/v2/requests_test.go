@@ -193,8 +193,8 @@ func TestDeleteImage(t *testing.T) {
 
 	HandleImageDeleteSuccessfully(t)
 
-	Delete(fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27")
-	// TODO
+	result := Delete(fakeclient.ServiceClient(), "1bea47ed-f6a9-463b-b423-14b9cca9ad27")
+	th.AssertNoErr(t, result.Err)
 }
 
 func TestUpdateImage(t *testing.T) {
@@ -337,6 +337,7 @@ func TestCreateMemberSuccessfully(t *testing.T) {
 	}, *im)
 
 }
+
 func TestCreateMemberMemberConflict(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -397,4 +398,79 @@ func TestMemberListEmpty(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertNotNil(t, images)
 	th.AssertEquals(t, 0, len(*images))
+}
+
+func TestShowMemberDetails(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleImageMemberDetails(t)
+	md, err := ShowMemberDetails(fakeclient.ServiceClient(),
+		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		"8989447062e04a818baf9e073fd04fa7").Extract()
+
+	th.AssertNoErr(t, err)
+	th.AssertNotNil(t, md)
+
+	th.AssertDeepEquals(t, ImageMember{
+		CreatedAt: "2013-11-26T07:21:21Z",
+		ImageID:   "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		MemberID:  "8989447062e04a818baf9e073fd04fa7",
+		Schema:    "/v2/schemas/member",
+		Status:    "pending",
+		UpdatedAt: "2013-11-26T07:21:21Z",
+	}, *md)
+}
+
+func TestDeleteMember(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	counter := HandleImageMemberDeleteSuccessfully(t)
+
+	result := DeleteMember(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		"8989447062e04a818baf9e073fd04fa7")
+	th.AssertEquals(t, 1, counter.Counter)
+	th.AssertNoErr(t, result.Err)
+}
+
+func TestDeleteMemberByNonOwner(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	counter := HandleImageMemberDeleteByNonOwner(t)
+
+	result := DeleteMember(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		"8989447062e04a818baf9e073fd04fa7")
+	th.AssertEquals(t, 1, counter.Counter)
+
+	if result.Err == nil {
+		t.Fatalf("Expected error in result defined (Err: %v)", result.Err)
+	}
+
+	message := result.Err.Error()
+	if !strings.Contains(message, "You must be the owner of the specified image") {
+		t.Fatalf("Wrong error message: %s", message)
+	}
+}
+
+func TestMemberUpdateSuccessfully(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	counter := HandleImageMemberUpdate(t)
+	im, err := UpdateMember(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		"8989447062e04a818baf9e073fd04fa7", "accepted").Extract()
+	th.AssertEquals(t, 1, counter.Counter)
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, ImageMember{
+		CreatedAt: "2013-11-26T07:21:21Z",
+		ImageID:   "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		MemberID:  "8989447062e04a818baf9e073fd04fa7",
+		Schema:    "/v2/schemas/member",
+		Status:    "accepted",
+		UpdatedAt: "2013-11-26T07:21:21Z",
+	}, *im)
+
 }

@@ -450,3 +450,32 @@ func (lm ListMembersResult) Extract() (*[]ImageMember, error) {
 	err := mapstructure.Decode(casted, &results)
 	return &results.ImageMembers, err
 }
+
+// MemberDetailsResult model
+type MemberDetailsResult struct {
+	gophercloud.ErrResult
+}
+
+// Extract returns image member details
+func (md MemberDetailsResult) Extract() (*ImageMember, error) {
+	if md.Err != nil {
+		return nil, md.Err
+	}
+	casted := md.Body.(map[string]interface{})
+
+	var results ImageMember
+
+	err := mapstructure.Decode(casted, &results)
+	return &results, err
+
+}
+
+// MemberDeleteResult model
+type MemberDeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// MemberUpdateResult model
+type MemberUpdateResult struct {
+	CreateMemberResult
+}

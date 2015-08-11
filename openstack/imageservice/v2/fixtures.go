@@ -447,3 +447,79 @@ func HandleImageMemberEmptyList(t *testing.T) {
 		}`)
 	})
 }
+
+// HandleImageMemberDetails setup
+func HandleImageMemberDetails(t *testing.T) {
+	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members/8989447062e04a818baf9e073fd04fa7", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `{
+		    "status": "pending",
+		    "created_at": "2013-11-26T07:21:21Z",
+		    "updated_at": "2013-11-26T07:21:21Z",
+		    "image_id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		    "member_id": "8989447062e04a818baf9e073fd04fa7",
+		    "schema": "/v2/schemas/member"
+		}`)
+	})
+}
+
+// HandleImageMemberDeleteSuccessfully setup
+func HandleImageMemberDeleteSuccessfully(t *testing.T) *CallsCounter {
+	var counter CallsCounter
+	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members/8989447062e04a818baf9e073fd04fa7", func(w http.ResponseWriter, r *http.Request) {
+		counter.Counter = counter.Counter + 1
+
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+	return &counter
+}
+
+// HandleImageMemberDeleteByNonOwner setup
+func HandleImageMemberDeleteByNonOwner(t *testing.T) *CallsCounter {
+	var counter CallsCounter
+	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members/8989447062e04a818baf9e073fd04fa7", func(w http.ResponseWriter, r *http.Request) {
+		counter.Counter = counter.Counter + 1
+
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+
+		w.WriteHeader(http.StatusForbidden)
+	})
+	return &counter
+}
+
+// HandleImageMemberUpdate setup
+func HandleImageMemberUpdate(t *testing.T) *CallsCounter {
+	var counter CallsCounter
+	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members/8989447062e04a818baf9e073fd04fa7", func(w http.ResponseWriter, r *http.Request) {
+		counter.Counter = counter.Counter + 1
+
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+
+		th.TestJSONRequest(t, r, `{"status": "accepted"}`)
+
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `{
+		    "status": "accepted",
+		    "created_at": "2013-11-26T07:21:21Z",
+		    "updated_at": "2013-11-26T07:21:21Z",
+		    "image_id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		    "member_id": "8989447062e04a818baf9e073fd04fa7",
+		    "schema": "/v2/schemas/member"
+		}`)
+	})
+	return &counter
+}
+
+// CallsCounter for checking if request handler was called at all
+type CallsCounter struct {
+	Counter int
+}

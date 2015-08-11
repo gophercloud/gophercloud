@@ -14,5 +14,5 @@ func endpointClient() *gophercloud.ServiceClient {
 }
 
 func TestListURL(t *testing.T) {
-	th.AssertEquals(t, endpoint + "images", listURL(endpointClient()))
+	th.AssertEquals(t, endpoint+"images", listURL(endpointClient()))
 }
