@@ -335,6 +335,20 @@ func (r ReplaceImageName) ToImagePatchMap() map[string]interface{} {
 	return m
 }
 
+// ReplaceImageChecksum implements Patch
+type ReplaceImageChecksum struct {
+	Checksum string
+}
+
+// ReplaceImageChecksum builder
+func (rc ReplaceImageChecksum) ReplaceImageChecksum() map[string]interface{} {
+	m := map[string]interface{}{}
+	m["op"] = "replace"
+	m["path"] = "/checksum"
+	m["value"] = rc.Checksum
+	return m
+}
+
 // ReplaceImageTags implements Patch
 type ReplaceImageTags struct {
 	NewTags []string
