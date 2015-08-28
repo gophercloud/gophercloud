@@ -3,6 +3,7 @@ package openstack
 import (
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/rackspace/gophercloud"
 	tokens2 "github.com/rackspace/gophercloud/openstack/identity/v2/tokens"
@@ -64,8 +65,8 @@ func AuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.Provider
 // Authenticate or re-authenticate against the most recent identity service supported at the provided endpoint.
 func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
 	versions := []*utils.Version{
-		&utils.Version{ID: v20, Priority: 20, Suffix: "/v2.0/"},
-		&utils.Version{ID: v30, Priority: 30, Suffix: "/v3/"},
+		{ID: v20, Priority: 20, Suffix: "/v2.0/"},
+		{ID: v30, Priority: 30, Suffix: "/v3/"},
 	}
 
 	chosen, endpoint, err := utils.ChooseVersion(client, versions)
@@ -195,6 +196,40 @@ func NewIdentityV3(client *gophercloud.ProviderClient) *gophercloud.ServiceClien
 		ProviderClient: client,
 		Endpoint:       v3Endpoint,
 	}
+}
+
+func NewIdentityAdminV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("identity")
+	eo.Availability = gophercloud.AvailabilityAdmin
+
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+
+	// Force using v2 API
+	if strings.Contains(url, "/v3") {
+		url = strings.Replace(url, "/v3", "/v2.0", -1)
+	}
+
+	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
+}
+
+func NewIdentityAdminV3(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("identity")
+	eo.Availability = gophercloud.AvailabilityAdmin
+
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+
+	// Force using v3 API
+	if strings.Contains(url, "/v2.0") {
+		url = strings.Replace(url, "/v2.0", "/v3", -1)
+	}
+
+	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
 }
 
 // NewObjectStorageV1 creates a ServiceClient that may be used with the v1 object storage package.
