@@ -165,6 +165,8 @@ func TestImageMemberCreateListDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertNotNil(t, member)
 
+	t.Logf("Member has been created for image %s", image.ID)
+
 	//listing member
 	var members *[]images.ImageMember
 	members, err = images.ListMembers(client, image.ID).Extract()
@@ -244,6 +246,17 @@ func createTestImage(t *testing.T, client *gophercloud.ServiceClient) images.Ima
 	image, err = images.Get(client, image.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, image.Status, images.ImageStatusQueued)
+
+	//uploading image data
+	data := []byte{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	putImageResult := images.PutImageData(client, image.ID, bytes.NewReader(data))
+	th.AssertNoErr(t, putImageResult.Err)
+
+	//checking status
+	image, err = images.Get(client, image.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, image.Status, images.ImageStatusActive)
+	th.AssertEquals(t, *image.SizeBytes, 9)
 	return *image
 }
 

@@ -17,11 +17,12 @@ func newClient(t *testing.T) *gophercloud.ServiceClient {
 	username := os.Getenv("OS_USERNAME")
 	password := os.Getenv("OS_PASSWORD")
 	tenantName := os.Getenv("OS_TENANT_NAME")
+	tenantID := os.Getenv("OS_TENANT_ID")
 	domainName := os.Getenv("OS_DOMAIN_NAME")
 	regionName := os.Getenv("OS_REGION_NAME")
 
-	t.Logf("Credentials used: OS_AUTH_URL='%s' OS_USERNAME='%s' OS_PASSWORD='*****' OS_TENANT_NAME='%s' OS_TENANT_NAME='%s' OS_REGION_NAME='%s' \n",
-		authURL, username, tenantName, domainName, regionName)
+	t.Logf("Credentials used: OS_AUTH_URL='%s' OS_USERNAME='%s' OS_PASSWORD='*****' OS_TENANT_NAME='%s' OS_TENANT_NAME='%s' OS_REGION_NAME='%s' OS_TENANT_ID='%s' \n",
+		authURL, username, tenantName, domainName, regionName, tenantID)
 
 	client, err := openstack.NewClient(authURL)
 	th.AssertNoErr(t, err)
@@ -30,6 +31,7 @@ func newClient(t *testing.T) *gophercloud.ServiceClient {
 		Username:   username,
 		Password:   password,
 		TenantName: tenantName,
+		TenantID:   tenantID,
 		DomainName: domainName,
 	}
 
