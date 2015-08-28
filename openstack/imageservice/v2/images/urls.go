@@ -1,4 +1,4 @@
-package v2
+package images
 
 import (
 	"strings"
@@ -52,20 +52,6 @@ var deleteTagURL = imageTagURL
 func imageMembersURL(c *gophercloud.ServiceClient, imageID string) string {
 	return c.ServiceURL("images", imageID, "members")
 }
-
-var listMembersURL = imageMembersURL
-
-var createMemberURL = imageMembersURL
-
-func imageMemberURL(c *gophercloud.ServiceClient, imageID string, memberID string) string {
-	return c.ServiceURL("images", imageID, "members", memberID)
-}
-
-var getMemberURL = imageMemberURL
-
-var updateMemberURL = imageMemberURL
-
-var deleteMemberURL = imageMemberURL
 
 func reactivateImageURL(c *gophercloud.ServiceClient, imageID string) string {
 	return c.ServiceURL("images", imageID, "actions", "reactivate")

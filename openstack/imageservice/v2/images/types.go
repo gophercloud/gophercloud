@@ -1,4 +1,4 @@
-package v2
+package images
 
 // ImageStatus image statuses
 //http://docs.openstack.org/developer/glance/statuses.html

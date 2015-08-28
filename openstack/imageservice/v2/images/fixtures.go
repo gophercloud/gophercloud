@@ -1,6 +1,4 @@
-package v2
-
-// TODO
+package images
 
 import (
 	"fmt"
