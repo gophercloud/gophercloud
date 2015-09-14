@@ -48,7 +48,7 @@ func (r FindResult) Extract() ([]Resource, error) {
 	for i, resourceRaw := range resources {
 		resource := resourceRaw.(map[string]interface{})
 		if date, ok := resource["updated_time"]; ok && date != nil {
-			t, err := time.Parse(time.RFC3339, date.(string))
+			t, err := time.Parse(gophercloud.STACK_TIME_FMT, date.(string))
 			if err != nil {
 				return nil, err
 			}
@@ -109,7 +109,7 @@ func ExtractResources(page pagination.Page) ([]Resource, error) {
 	for i, resourceRaw := range resources {
 		resource := resourceRaw.(map[string]interface{})
 		if date, ok := resource["updated_time"]; ok && date != nil {
-			t, err := time.Parse(time.RFC3339, date.(string))
+			t, err := time.Parse(gophercloud.STACK_TIME_FMT, date.(string))
 			if err != nil {
 				return nil, err
 			}
@@ -143,7 +143,7 @@ func (r GetResult) Extract() (*Resource, error) {
 	resource := r.Body.(map[string]interface{})["resource"].(map[string]interface{})
 
 	if date, ok := resource["updated_time"]; ok && date != nil {
-		t, err := time.Parse(time.RFC3339, date.(string))
+		t, err := time.Parse(gophercloud.STACK_TIME_FMT, date.(string))
 		if err != nil {
 			return nil, err
 		}
