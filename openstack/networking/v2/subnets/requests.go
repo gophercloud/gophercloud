@@ -202,10 +202,10 @@ func (opts UpdateOpts) ToSubnetUpdateMap() (map[string]interface{}, error) {
 	if opts.GatewayIP != "" {
 		s["gateway_ip"] = opts.GatewayIP
 	}
-	if len(opts.DNSNameservers) != 0 {
+	if opts.DNSNameservers != nil {
 		s["dns_nameservers"] = opts.DNSNameservers
 	}
-	if len(opts.HostRoutes) != 0 {
+	if opts.HostRoutes != nil {
 		s["host_routes"] = opts.HostRoutes
 	}
 
