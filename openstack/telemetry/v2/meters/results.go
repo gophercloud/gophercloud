@@ -8,14 +8,14 @@ import (
 )
 
 type MeterListResult struct {
-	MeterId    string `json:"meter_id"`
+	MeterId    string `mapstructure:"meter_id"`
 	Name       string `json:"name"`
-	ProjectId  string `json:"project_id"`
-	ResourceId string `json:"resource_id"`
+	ProjectId  string `mapstructure:"project_id"`
+	ResourceId string `mapstructure:"resource_id"`
 	Source     string `json:"source"`
 	Type       string `json:"type"`
 	Unit       string `json:"user"`
-	UserId     string `json:"user_id"`
+	UserId     string `mapstructure:"user_id"`
 }
 
 type listResult struct {
@@ -51,13 +51,13 @@ type MeterStatisticsResult struct {
 	Avg           float32 `json:"avg"`
 	Count         int     `json:"count"`
 	Duration      float32 `json:"duration"`
-	DurationEnd   string  `json:"duration_end"`
-	DurationStart string  `json:"duration_start"`
+	DurationEnd   string  `mapstructure:"duration_end"`
+	DurationStart string  `mapstructure:"duration_start"`
 	Max           float32 `json:"max"`
 	Min           float32 `json:"min"`
 	Period        int     `json:"user_id"`
-	PeriodEnd     string  `json:"period_end"`
-	PeriodStart   string  `json:"period_start"`
+	PeriodEnd     string  `mapstructure:"period_end"`
+	PeriodStart   string  `mapstructure:"period_start"`
 	Sum           float32 `json:"sum"`
 	Unit          string  `json:"unit"`
 }

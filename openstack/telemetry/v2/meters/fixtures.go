@@ -4,7 +4,6 @@ package meters
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"testing"
 
@@ -16,7 +15,7 @@ import (
 const MeterListBody = `
 [
     {
-        "meter_id": "YmQ5NDMxYzEtOGQ2OS00YWQzLTgwM2EtOGQ0YTZiODlmZDM2K2luc3RhbmNl\n",
+        "meter_id": "YmQ5NDMxYzEtOGQ2OS00YWQzLTgwM2EtOGQ0YTZiODlmZDM2K2luc3RhbmNl",
         "name": "instance",
         "project_id": "35b17138-b364-4e6a-a131-8f3099c5be68",
         "resource_id": "bd9431c1-8d69-4ad3-803a-8d4a6b89fd36",
@@ -30,10 +29,10 @@ const MeterListBody = `
 		"name": "cpu_util",
 		"resource_id": "5b88239b-8ba1-44ff-a154-978cbda23479",
 		"source": "region2",
-		"meter_id": "NWI4ODIzOWAtOGJhMS00NGZhLWExNTQtOTc4Y2JkYTIzNDc5K2NwdV91dGls\n",
+		"meter_id": "NWI4ODIzOWAtOGJhMS00NGZhLWExNTQtOTc4Y2JkYTIzNDc5K2NwdV91dGls",
 		"project_id": "69e6e7c4ed8b434e92feacbf3d4891fd",
 		"type": "gauge",
-		"unit": "%"
+		"unit": "%%"
 	}
 ]
 `
@@ -90,7 +89,7 @@ const MeterStatisticsBody = `
         "period_start": "2015-07-17T16:43:31",
         "avg": 1.5856751105737468,
         "groupby": null,
-        "unit": "%"
+        "unit": "%%"
     }
 ]
 `
@@ -136,7 +135,7 @@ var (
 		Unit:          "GiB",
 	}
 
-	// StatisticsDerp is a MeterStatisticsResult struct that should correspond to the first result in *[]MeterStatisticsResult.
+	// StatisticsDerp is a MeterStatisticsResult struct that should correspond to the second result in *[]MeterStatisticsResult.
 	StatisticsDerp = MeterStatisticsResult{
 		Avg:           1.5856751105737468,
 		Count:         28162,
@@ -186,6 +185,5 @@ func HandleMeterStatisticsSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, MeterStatisticsBody)
-		log.Printf("%s\n", MeterStatisticsBody)
 	})
 }

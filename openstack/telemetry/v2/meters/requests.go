@@ -1,9 +1,6 @@
 package meters
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/rackspace/gophercloud"
 )
 
@@ -90,8 +87,6 @@ func MeterStatistics(client *gophercloud.ServiceClient, n string, opts MeterStat
 		url += query
 	}
 
-	var b *http.Response
-	b, res.Err = client.Get(url, &res.Body, &gophercloud.RequestOpts{})
-	fmt.Printf("%+v\n%+v\n", res, b)
+	_, res.Err = client.Get(url, &res.Body, &gophercloud.RequestOpts{})
 	return res
 }
