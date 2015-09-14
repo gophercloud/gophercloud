@@ -45,6 +45,9 @@ type CreateOpts struct {
 	// Required. Human-readable name for the VIP. Does not have to be unique.
 	Name string
 
+	// Required for admins. Indicates the owner of the VIP.
+	TenantID string
+
 	// Optional. Describes the security group.
 	Description string
 }
@@ -62,6 +65,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 
 	type secgroup struct {
 		Name        string `json:"name"`
+		TenantID    string `json:"tenant_id,omitempty"`
 		Description string `json:"description,omitempty"`
 	}
 
@@ -71,6 +75,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 
 	reqBody := request{SecGroup: secgroup{
 		Name:        opts.Name,
+		TenantID:    opts.TenantID,
 		Description: opts.Description,
 	}}
 
