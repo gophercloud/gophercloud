@@ -51,6 +51,11 @@ type IP struct {
 	IPAddress string `mapstructure:"ip_address" json:"ip_address,omitempty"`
 }
 
+type AddressPair struct {
+	IPAddress  string `mapstructure:"ip_address" json:"ip_address,omitempty"`
+	MACAddress string `mapstructure:"mac_address" json:"mac_address"`
+}
+
 // Port represents a Neutron port. See package documentation for a top-level
 // description of what this is.
 type Port struct {
