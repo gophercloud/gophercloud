@@ -754,9 +754,7 @@ func Metadatum(client *gophercloud.ServiceClient, id, key string) GetMetadatumRe
 // DeleteMetadatum will delete the key-value pair with the given key for the given server ID.
 func DeleteMetadatum(client *gophercloud.ServiceClient, id, key string) DeleteMetadatumResult {
 	var res DeleteMetadatumResult
-	_, res.Err = client.Delete(metadatumURL(client, id, key), &gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-	})
+	_, res.Err = client.Delete(metadatumURL(client, id, key), nil)
 	return res
 }
 

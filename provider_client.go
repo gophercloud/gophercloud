@@ -227,7 +227,9 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 	// Parse the response body as JSON, if requested to do so.
 	if options.JSONResponse != nil {
 		defer resp.Body.Close()
-		json.NewDecoder(resp.Body).Decode(options.JSONResponse)
+		if err := json.NewDecoder(resp.Body).Decode(options.JSONResponse); err != nil {
+			return nil, err
+		}
 	}
 
 	return resp, nil
