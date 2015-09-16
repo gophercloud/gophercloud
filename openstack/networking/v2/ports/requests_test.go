@@ -284,6 +284,12 @@ func TestUpdate(t *testing.T) {
                 "ip_address": "10.0.0.3"
             }
         ],
+        "allowed_address_pairs": [
+          {
+            "ip_address": "10.0.0.4",
+            "mac_address": "fa:16:3e:c9:cb:f0"
+          }
+        ],
         "id": "65c0ee9f-d634-4522-8954-51021b570b0d",
         "security_groups": [
             "f0ac4394-7e4a-4409-9701-ba8be283dbc3"
@@ -311,6 +317,9 @@ func TestUpdate(t *testing.T) {
 	th.AssertEquals(t, s.Name, "new_port_name")
 	th.AssertDeepEquals(t, s.FixedIPs, []IP{
 		IP{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
+	})
+	th.AssertDeepEquals(t, s.AllowedAddressPairs, []AddressPair{
+		AddressPair{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
 	})
 	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
 }
