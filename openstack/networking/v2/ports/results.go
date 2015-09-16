@@ -82,7 +82,7 @@ type Port struct {
 	SecurityGroups []string `mapstructure:"security_groups" json:"security_groups"`
 	// Identifies the device (e.g., virtual server) using this port.
 	DeviceID string `mapstructure:"device_id" json:"device_id"`
-	// Identies the list of IP addresses the port will recognize/accept
+	// Identifies the list of IP addresses the port will recognize/accept
 	AllowedAddressPairs []AddressPair `mapstructure:"allowed_address_pairs" json:"allowed_address_pairs"`
 }
 
