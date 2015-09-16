@@ -5,8 +5,18 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// RoleAssignmentsOpts allows you to query the RoleAssignments method.
-type RoleAssignmentsOpts struct {
+// ListAssignmentsOptsBuilder allows extensions to add additional parameters to
+// the ListAssignments request.
+type ListAssignmentsOptsBuilder interface {
+	ToRolesListAssignmentsQuery() (string, error)
+}
+
+// ListAssignmentsOpts allows you to query the ListAssignments method.
+// Specify one of or a combination of GroupId, RoleId, ScopeDomainId, ScopeProjectId,
+// and/or UserId to search for roles assigned to corresponding entities.
+// Effective lists effective assignments at the user, project, and domain level,
+// allowing for the effects of group membership.
+type ListAssignmentsOpts struct {
 	GroupId        string `q:"group.id"`
 	RoleId         string `q:"role.id"`
 	ScopeDomainId  string `q:"scope.domain.id"`
@@ -15,17 +25,26 @@ type RoleAssignmentsOpts struct {
 	Effective      bool   `q:"effective"`
 }
 
-// RoleAssignments enumerates the roles assigned to a specified resource.
-func RoleAssignments(client *gophercloud.ServiceClient, opts RoleAssignmentsOpts) pagination.Pager {
-	u := roleAssignmentsURL(client)
+// ToRolesListAssignmentsQuery formats a ListAssignmentsOpts into a query string.
+func (opts ListAssignmentsOpts) ToRolesListAssignmentsQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+	return q.String(), nil
+}
+
+// ListAssignments enumerates the roles assigned to a specified resource.
+func ListAssignments(client *gophercloud.ServiceClient, opts ListAssignmentsOptsBuilder) pagination.Pager {
+	url := listAssignmentsURL(client)
+	query, err := opts.ToRolesListAssignmentsQuery()
 	if err != nil {
 		return pagination.Pager{Err: err}
 	}
-	u += q.String()
+	url += query
 	createPage := func(r pagination.PageResult) pagination.Page {
 		return RoleAssignmentsPage{pagination.LinkedPageBase{PageResult: r}}
 	}
 
-	return pagination.NewPager(client, u, createPage)
+	return pagination.NewPager(client, url, createPage)
 }

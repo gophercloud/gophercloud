@@ -67,7 +67,7 @@ func TestListSinglePage(t *testing.T) {
 	})
 
 	count := 0
-	err := RoleAssignments(client.ServiceClient(), RoleAssignmentsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := ListAssignments(client.ServiceClient(), ListAssignmentsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractRoleAssignments(page)
 		if err != nil {
@@ -76,16 +76,16 @@ func TestListSinglePage(t *testing.T) {
 
 		expected := []RoleAssignment{
 			RoleAssignment{
-				Role:  &Role{ID: "123456"},
-				Scope: &Scope{Domain: &Domain{ID: "161718"}},
-				User:  &User{ID: "313233"},
-				Group: nil,
+				Role:  Role{ID: "123456"},
+				Scope: Scope{Domain: Domain{ID: "161718"}},
+				User:  User{ID: "313233"},
+				Group: Group{},
 			},
 			RoleAssignment{
-				Role:  &Role{ID: "123456"},
-				Scope: &Scope{Project: &Project{ID: "456789"}},
-				User:  &User{ID: "313233"},
-				Group: nil,
+				Role:  Role{ID: "123456"},
+				Scope: Scope{Project: Project{ID: "456789"}},
+				User:  User{ID: "313233"},
+				Group: Group{},
 			},
 		}
 

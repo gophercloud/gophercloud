@@ -8,10 +8,10 @@ import (
 
 // RoleAssignment is the result of a role assignments query.
 type RoleAssignment struct {
-	Role  *Role  `json:"role,omitempty"`
-	Scope *Scope `json:"scope,omitempty"`
-	User  *User  `json:"user,omitempty"`
-	Group *Group `json:"group,omitempty"`
+	Role  Role  `json:"role,omitempty"`
+	Scope Scope `json:"scope,omitempty"`
+	User  User  `json:"user,omitempty"`
+	Group Group `json:"group,omitempty"`
 }
 
 type Role struct {
@@ -19,8 +19,8 @@ type Role struct {
 }
 
 type Scope struct {
-	Domain  *Domain  `json:"domain,omitempty"`
-	Project *Project `json:"domain,omitempty"`
+	Domain  Domain  `json:"domain,omitempty"`
+	Project Project `json:"domain,omitempty"`
 }
 
 type Domain struct {
@@ -51,6 +51,23 @@ func (p RoleAssignmentsPage) IsEmpty() (bool, error) {
 		return true, err
 	}
 	return len(roleAssignments) == 0, nil
+}
+
+// NextPageURL uses the response's embedded link reference to navigate to the next page of results.
+func (page RoleAssignmentsPage) NextPageURL() (string, error) {
+	type resp struct {
+		Links struct {
+			Next string `mapstructure:"next"`
+		} `mapstructure:"links"`
+	}
+
+	var r resp
+	err := mapstructure.Decode(page.Body, &r)
+	if err != nil {
+		return "", err
+	}
+
+	return r.Links.Next, nil
 }
 
 // ExtractRoleAssignments extracts a slice of RoleAssignments from a Collection acquired from List.
