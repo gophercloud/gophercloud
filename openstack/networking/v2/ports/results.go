@@ -19,7 +19,6 @@ func (r commonResult) Extract() (*Port, error) {
 	var res struct {
 		Port *Port `json:"port"`
 	}
-
 	err := mapstructure.Decode(r.Body, &res)
 
 	return res.Port, err
@@ -83,6 +82,8 @@ type Port struct {
 	SecurityGroups []string `mapstructure:"security_groups" json:"security_groups"`
 	// Identifies the device (e.g., virtual server) using this port.
 	DeviceID string `mapstructure:"device_id" json:"device_id"`
+	// Identies the list of IP addresses the port will recognize/accept
+	AllowedAddressPairs []AddressPair `mapstructure:"allowed_address_pairs" json:"allowed_address_pairs"`
 }
 
 // PortPage is the page returned by a pager when traversing over a collection

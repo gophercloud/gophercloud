@@ -49,11 +49,15 @@ func TestPortCRUD(t *testing.T) {
 		Name: "new_port_name",
 		AllowedAddressPairs: []ports.AddressPair{
 			ports.AddressPair{IPAddress: "192.168.199.201"},
-			},
+		},
 	}
 	p, err = ports.Update(Client, portID, updateOpts).Extract()
+
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, p.Name, "new_port_name")
+
+	updatedPort, err := ports.Get(Client, portID).Extract()
+	th.AssertEquals(t, updatedPort.AllowedAddressPairs[0].IPAddress, "192.168.199.201")
 
 	// Delete port
 	res := ports.Delete(Client, portID)
@@ -88,8 +92,8 @@ func listPorts(t *testing.T) {
 		th.AssertNoErr(t, err)
 
 		for _, p := range portList {
-			t.Logf("Port: ID [%s] Name [%s] Status [%s] MAC addr [%s] Fixed IPs [%#v] Security groups [%#v]",
-				p.ID, p.Name, p.Status, p.MACAddress, p.FixedIPs, p.SecurityGroups)
+			t.Logf("Port: ID [%s] Name [%s] Status [%s] MAC addr [%s] Fixed IPs [%#v] Security groups [%#v] Allowed Address Pairs [%#v]",
+				p.ID, p.Name, p.Status, p.MACAddress, p.FixedIPs, p.SecurityGroups, p.AllowedAddressPairs)
 		}
 
 		return true, nil
