@@ -278,7 +278,6 @@ func GetByIPPort(
 		return true, nil
 	})
 
-	// TODO: When found is nil, return an error
 	if found == nil {
 		return nil, errors.New("Unable to get node by IP and Port")
 	}
