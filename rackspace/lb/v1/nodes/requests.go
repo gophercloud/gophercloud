@@ -250,8 +250,8 @@ func ListEvents(client *gophercloud.ServiceClient, loadBalancerID int, opts List
 	})
 }
 
-// FindNodeByIPPort locates a load balancer node by IP and port.
-func FindNodeByIPPort(
+// GetByIPPort locates a load balancer node by IP and port.
+func GetByIPPort(
 	client *gophercloud.ServiceClient,
 	loadBalancerID int,
 	address string,
