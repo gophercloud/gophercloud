@@ -2,6 +2,7 @@ package stacks
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -60,6 +61,8 @@ type CreateOpts struct {
 	Parameters map[string]string
 	// (OPTIONAL) The timeout for stack creation in minutes.
 	Timeout int
+	// (OPTIONAL) A list of tags to assosciate with the Stack
+	Tags []string
 }
 
 // ToStackCreateMap casts a CreateOpts struct to a map.
@@ -97,6 +100,9 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 		s["timeout_mins"] = opts.Timeout
 	}
 
+	if opts.Tags != nil {
+		s["tags"] = strings.Join(opts.Tags, ",")
+	}
 	return s, nil
 }
 
@@ -197,12 +203,12 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 		s["parameters"] = opts.Parameters
 	}
 
-	if opts.Timeout == 0 {
-		return nil, errors.New("Required field 'Timeout' not provided.")
+	if opts.Timeout != 0 {
+		s["timeout"] = opts.Timeout
 	}
 	s["timeout_mins"] = opts.Timeout
 
-	return map[string]interface{}{"stack": s}, nil
+	return s, nil
 }
 
 // Adopt accepts an AdoptOpts struct and creates a new stack using the resources
@@ -329,6 +335,8 @@ type UpdateOpts struct {
 	Parameters map[string]string
 	// (OPTIONAL) The timeout for stack creation in minutes.
 	Timeout int
+	// (OPTIONAL) A list of tags to assosciate with the Stack
+	Tags []string
 }
 
 // ToStackUpdateMap casts a CreateOpts struct to a map.
@@ -357,6 +365,10 @@ func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 
 	if opts.Timeout != 0 {
 		s["timeout_mins"] = opts.Timeout
+	}
+
+	if opts.Tags != nil {
+		s["tags"] = strings.Join(opts.Tags, ",")
 	}
 
 	return s, nil
