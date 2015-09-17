@@ -249,3 +249,36 @@ func ListEvents(client *gophercloud.ServiceClient, loadBalancerID int, opts List
 		return NodeEventPage{pagination.SinglePageBase(r)}
 	})
 }
+
+// FindNodeByIPPort locates a load balancer node by IP and port.
+func FindNodeByIPPort(
+	client *gophercloud.ServiceClient,
+	loadBalancerID int,
+	address string,
+	port int,
+) (*Node, error) {
+
+	// nil until found
+	var found *Node
+
+	List(client, loadBalancerID, nil).EachPage(func(page pagination.Page) (bool, error) {
+		lbNodes, err := ExtractNodes(page)
+		if err != nil {
+			return false, err
+		}
+
+		for _, trialNode := range lbNodes {
+			if trialNode.Address == address && trialNode.Port == port {
+				found = &trialNode
+				return false, nil
+			}
+
+		}
+
+		return true, nil
+	})
+
+	// TODO: When found is nil, return an error
+
+	return found, nil
+}
