@@ -32,29 +32,41 @@ func (e *Environment) Validate() error {
 	return nil
 }
 
-// Parse environment file to resolve the urls of the resources
+// Parse environment file to resolve the URL's of the resources. This is done by
+// reading from the `Resource Registry` section, which is why the function is
+// named GetRRFileContents.
 func GetRRFileContents(e *Environment, ignoreIf igFunc) error {
+	// initialize environment if empty
 	if e.Files == nil {
 		e.Files = make(map[string]string)
 	}
 	if e.fileMaps == nil {
 		e.fileMaps = make(map[string]string)
 	}
+
+	// get the resource registry
 	rr := e.Parsed["resource_registry"]
+
 	// search the resource registry for URLs
 	switch rr.(type) {
+	// process further only if the resource registry is a map
 	case map[string]interface{}, map[interface{}]interface{}:
 		rr_map, err := toStringKeys(rr)
 		if err != nil {
 			return err
 		}
+		// the resource registry might contain a base URL for the resource. If
+		// such a field is present, use it. Otherwise, use the default base URL.
 		var baseURL string
 		if val, ok := rr_map["base_url"]; ok {
 			baseURL = val.(string)
 		} else {
 			baseURL = e.baseURL
 		}
-		// use a fake template to fetch contents from URLs
+
+		// The contents of the resource may be located in a remote file, which
+		// will be a template. Instantiate a temporary template to manage the
+		// contents.
 		tempTemplate := new(Template)
 		tempTemplate.baseURL = baseURL
 		tempTemplate.client = e.client
@@ -65,6 +77,7 @@ func GetRRFileContents(e *Environment, ignoreIf igFunc) error {
 		// check the `resources` section (if it exists) for more URLs
 		if val, ok := rr_map["resources"]; ok {
 			switch val.(type) {
+			// process further only if the contents are a map
 			case map[string]interface{}, map[interface{}]interface{}:
 				resources_map, err := toStringKeys(val)
 				if err != nil {
@@ -89,11 +102,11 @@ func GetRRFileContents(e *Environment, ignoreIf igFunc) error {
 							return err
 						}
 					}
-
 				}
-
 			}
 		}
+		// if the resource registry contained any URL's, store them. This can
+		// then be passed as parameter to api calls to Heat api.
 		e.Files = tempTemplate.Files
 		return nil
 	default:

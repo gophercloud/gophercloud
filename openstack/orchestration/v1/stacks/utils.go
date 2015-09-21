@@ -14,10 +14,14 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Client is an interface that expects a Get method similar to http.Get. This
+// is needed for unit testing, since we can mock an http client. Thus, the
+// client will usually be an http.Client EXCEPT in unit tests.
 type Client interface {
 	Get(string) (*http.Response, error)
 }
 
+// Base structure for both Template and Environment
 type TE struct {
 	// Bin stores the contents of the template or environment.
 	Bin []byte
@@ -38,8 +42,10 @@ type TE struct {
 	client Client
 }
 
+// Fetch fetches the contents of a TE from its URL. Once a TE structure has a
+// URL, call the fetch method to fetch the contents.
 func (t *TE) Fetch() error {
-	// get baseURL if not already defined
+	// if the baseURL is not provided, use the current directors as the base URL
 	if t.baseURL == "" {
 		u, err := getBasePath()
 		if err != nil {
@@ -47,19 +53,26 @@ func (t *TE) Fetch() error {
 		}
 		t.baseURL = u
 	}
+
+	// if the contents are already present, do nothing.
 	if t.Bin != nil {
-		// already have contents
 		return nil
 	}
+
+	// get a fqdn from the URL using the baseURL of the template. For local files,
+	// the URL's will have the `file` scheme.
 	u, err := gophercloud.NormalizePathURL(t.baseURL, t.URL)
 	if err != nil {
 		return err
 	}
 	t.URL = u
+
 	// get an HTTP client if none present
 	if t.client == nil {
 		t.client = getHTTPClient()
 	}
+
+	// use the client to fetch the contents of the template
 	resp, err := t.client.Get(t.URL)
 	if err != nil {
 		return err
@@ -73,7 +86,7 @@ func (t *TE) Fetch() error {
 	return nil
 }
 
-// get the basepath of the template
+// get the basepath of the template.
 func getBasePath() (string, error) {
 	basePath, err := filepath.Abs(".")
 	if err != nil {
@@ -86,14 +99,15 @@ func getBasePath() (string, error) {
 	return u, nil
 }
 
-// get a an HTTP client to retrieve URLs
+// get a an HTTP client to retrieve URL's. This client allows the use of `file`
+// scheme since we may need to fetch templates from users filesystem
 func getHTTPClient() Client {
 	transport := &http.Transport{}
 	transport.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
 	return &http.Client{Transport: transport}
 }
 
-// parse the contents and validate
+// Parse will parse the contents and then validate. The contents MUST be either JSON or YAML.
 func (t *TE) Parse() error {
 	if err := t.Fetch(); err != nil {
 		return err
@@ -106,11 +120,13 @@ func (t *TE) Parse() error {
 	return t.Validate()
 }
 
-// base Validate method, always returns true
+// base Validate method, always returns nil
 func (t *TE) Validate() error {
 	return nil
 }
 
+// igfunc is a parameter used by GetFileContents and GetRRFileContents to check
+// for valid template URL's.
 type igFunc func(string, interface{}) bool
 
 // convert map[interface{}]interface{} to map[string]interface{}
@@ -132,7 +148,8 @@ func toStringKeys(m interface{}) (map[string]interface{}, error) {
 	}
 }
 
-// fix the template reference to files
+// fix the template reference to files by replacing relative URL's by absolute
+// URL's
 func (t *TE) FixFileRefs() {
 	t_str := string(t.Bin)
 	if t.fileMaps == nil {
