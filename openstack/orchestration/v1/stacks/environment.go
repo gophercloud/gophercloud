@@ -35,7 +35,7 @@ func (e *Environment) Validate() error {
 // Parse environment file to resolve the URL's of the resources. This is done by
 // reading from the `Resource Registry` section, which is why the function is
 // named GetRRFileContents.
-func GetRRFileContents(e *Environment, ignoreIf igFunc) error {
+func (e *Environment) GetRRFileContents(ignoreIf igFunc) error {
 	// initialize environment if empty
 	if e.Files == nil {
 		e.Files = make(map[string]string)
@@ -71,10 +71,13 @@ func GetRRFileContents(e *Environment, ignoreIf igFunc) error {
 		tempTemplate.baseURL = baseURL
 		tempTemplate.client = e.client
 
-		if err = GetFileContents(tempTemplate, rr, ignoreIf, false); err != nil {
+		// Fetch the contents of remote resource URL's
+		if err = tempTemplate.GetFileContents(rr, ignoreIf, false); err != nil {
 			return err
 		}
-		// check the `resources` section (if it exists) for more URLs
+		// check the `resources` section (if it exists) for more URL's. Note that
+		// the previous call to GetFileContents was (deliberately) not recursive
+		// as we want more control over where to look for URL's
 		if val, ok := rr_map["resources"]; ok {
 			switch val.(type) {
 			// process further only if the contents are a map
@@ -98,7 +101,7 @@ func GetRRFileContents(e *Environment, ignoreIf igFunc) error {
 							resourceBaseURL = baseURL
 						}
 						tempTemplate.baseURL = resourceBaseURL
-						if err := GetFileContents(tempTemplate, v, ignoreIf, false); err != nil {
+						if err := tempTemplate.GetFileContents(v, ignoreIf, false); err != nil {
 							return err
 						}
 					}

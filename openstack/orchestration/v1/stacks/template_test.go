@@ -114,7 +114,7 @@ resources:
 
 	err = te.Parse()
 	th.AssertNoErr(t, err)
-	err = GetFileContents(te, te.Parsed, ignoreIfTemplate, true)
+	err = te.GetFileContents(te.Parsed, ignoreIfTemplate, true)
 	th.AssertNoErr(t, err)
 	expected_files := map[string]string{
 		"my_nova.yaml": `heat_template_version: 2014-10-16

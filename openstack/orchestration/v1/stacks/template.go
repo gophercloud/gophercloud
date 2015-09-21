@@ -38,7 +38,7 @@ func (t *Template) Validate() error {
 // parameter of the template structure. This is the only way that a user can
 // use child templates that are located in their filesystem; urls located on the
 // web (e.g. on github or swift) can be fetched directly by Heat engine.
-func GetFileContents(t *Template, te interface{}, ignoreIf igFunc, recurse bool) error {
+func (t *Template) GetFileContents(te interface{}, ignoreIf igFunc, recurse bool) error {
 	// initialize template if empty
 	if t.Files == nil {
 		t.Files = make(map[string]string)
@@ -57,7 +57,7 @@ func GetFileContents(t *Template, te interface{}, ignoreIf igFunc, recurse bool)
 			value, ok := v.(string)
 			if !ok {
 				// if the value is not a string, recursively parse that value
-				if err := GetFileContents(t, v, ignoreIf, recurse); err != nil {
+				if err := t.GetFileContents(v, ignoreIf, recurse); err != nil {
 					return err
 				}
 			} else if !ignoreIf(k, value) {
@@ -87,7 +87,7 @@ func GetFileContents(t *Template, te interface{}, ignoreIf igFunc, recurse bool)
 				// required if the child template itself contains references to
 				// other templates
 				if recurse {
-					if err := GetFileContents(childTemplate, childTemplate.Parsed, ignoreIf, recurse); err != nil {
+					if err := childTemplate.GetFileContents(childTemplate.Parsed, ignoreIf, recurse); err != nil {
 						return err
 					}
 				}
@@ -103,7 +103,7 @@ func GetFileContents(t *Template, te interface{}, ignoreIf igFunc, recurse bool)
 	case []interface{}:
 		te_slice := te.([]interface{})
 		for i := range te_slice {
-			if err := GetFileContents(t, te_slice[i], ignoreIf, recurse); err != nil {
+			if err := t.GetFileContents(te_slice[i], ignoreIf, recurse); err != nil {
 				return err
 			}
 		}

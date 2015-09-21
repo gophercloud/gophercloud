@@ -100,7 +100,7 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 
-		if err := GetFileContents(opts.TemplateOpts, opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		if err := opts.TemplateOpts.GetFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 			return nil, err
 		}
 		opts.TemplateOpts.FixFileRefs()
@@ -118,7 +118,7 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.Parse(); err != nil {
 			return nil, err
 		}
-		if err := GetRRFileContents(opts.EnvironmentOpts, ignoreIfEnvironment); err != nil {
+		if err := opts.EnvironmentOpts.GetRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
 		opts.EnvironmentOpts.FixFileRefs()
@@ -250,7 +250,7 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 
-		if err := GetFileContents(opts.TemplateOpts, opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		if err := opts.TemplateOpts.GetFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 			return nil, err
 		}
 		opts.TemplateOpts.FixFileRefs()
@@ -273,7 +273,7 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.Parse(); err != nil {
 			return nil, err
 		}
-		if err := GetRRFileContents(opts.EnvironmentOpts, ignoreIfEnvironment); err != nil {
+		if err := opts.EnvironmentOpts.GetRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
 		opts.EnvironmentOpts.FixFileRefs()
@@ -461,7 +461,7 @@ func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 
-		if err := GetFileContents(opts.TemplateOpts, opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		if err := opts.TemplateOpts.GetFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 			return nil, err
 		}
 		opts.TemplateOpts.FixFileRefs()
@@ -476,7 +476,7 @@ func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.Parse(); err != nil {
 			return nil, err
 		}
-		if err := GetRRFileContents(opts.EnvironmentOpts, ignoreIfEnvironment); err != nil {
+		if err := opts.EnvironmentOpts.GetRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
 		opts.EnvironmentOpts.FixFileRefs()
@@ -607,7 +607,7 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 
-		if err := GetFileContents(opts.TemplateOpts, opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		if err := opts.TemplateOpts.GetFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 			return nil, err
 		}
 		opts.TemplateOpts.FixFileRefs()
@@ -625,7 +625,7 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.Parse(); err != nil {
 			return nil, err
 		}
-		if err := GetRRFileContents(opts.EnvironmentOpts, ignoreIfEnvironment); err != nil {
+		if err := opts.EnvironmentOpts.GetRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
 		opts.EnvironmentOpts.FixFileRefs()
