@@ -114,7 +114,7 @@ resources:
 
 	err = te.Parse()
 	th.AssertNoErr(t, err)
-	err = te.GetFileContents(te.Parsed, ignoreIfTemplate, true)
+	err = te.getFileContents(te.Parsed, ignoreIfTemplate, true)
 	th.AssertNoErr(t, err)
 	expected_files := map[string]string{
 		"my_nova.yaml": `heat_template_version: 2014-10-16
@@ -134,7 +134,7 @@ resources:
       networks:
       - {uuid: 11111111-1111-1111-1111-111111111111}`}
 	th.AssertEquals(t, expected_files["my_nova.yaml"], te.Files[fakeURL])
-	te.FixFileRefs()
+	te.fixFileRefs()
 	expected_parsed := map[string]interface{}{
 		"heat_template_version": "2015-04-30",
 		"resources": map[string]interface{}{

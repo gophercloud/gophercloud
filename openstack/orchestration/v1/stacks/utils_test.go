@@ -17,7 +17,7 @@ func TestTEFixFileRefs(t *testing.T) {
 			"string_to_replace": "london bridge is falling down",
 		},
 	}
-	te.FixFileRefs()
+	te.fixFileRefs()
 	th.AssertEquals(t, string(te.Bin), `london bridge is falling down: my fair lady`)
 }
 

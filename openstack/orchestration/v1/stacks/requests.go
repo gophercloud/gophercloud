@@ -100,10 +100,10 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 
-		if err := opts.TemplateOpts.GetFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 			return nil, err
 		}
-		opts.TemplateOpts.FixFileRefs()
+		opts.TemplateOpts.fixFileRefs()
 		s["template"] = string(opts.TemplateOpts.Bin)
 
 		for k, v := range opts.TemplateOpts.Files {
@@ -118,10 +118,10 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.Parse(); err != nil {
 			return nil, err
 		}
-		if err := opts.EnvironmentOpts.GetRRFileContents(ignoreIfEnvironment); err != nil {
+		if err := opts.EnvironmentOpts.getRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
-		opts.EnvironmentOpts.FixFileRefs()
+		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
 			Files[k] = v
 		}
@@ -250,10 +250,10 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 
-		if err := opts.TemplateOpts.GetFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 			return nil, err
 		}
-		opts.TemplateOpts.FixFileRefs()
+		opts.TemplateOpts.fixFileRefs()
 		s["template"] = string(opts.TemplateOpts.Bin)
 
 		for k, v := range opts.TemplateOpts.Files {
@@ -273,10 +273,10 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.Parse(); err != nil {
 			return nil, err
 		}
-		if err := opts.EnvironmentOpts.GetRRFileContents(ignoreIfEnvironment); err != nil {
+		if err := opts.EnvironmentOpts.getRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
-		opts.EnvironmentOpts.FixFileRefs()
+		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
 			Files[k] = v
 		}
@@ -461,10 +461,10 @@ func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 
-		if err := opts.TemplateOpts.GetFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 			return nil, err
 		}
-		opts.TemplateOpts.FixFileRefs()
+		opts.TemplateOpts.fixFileRefs()
 		s["template"] = string(opts.TemplateOpts.Bin)
 
 		for k, v := range opts.TemplateOpts.Files {
@@ -476,10 +476,10 @@ func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.Parse(); err != nil {
 			return nil, err
 		}
-		if err := opts.EnvironmentOpts.GetRRFileContents(ignoreIfEnvironment); err != nil {
+		if err := opts.EnvironmentOpts.getRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
-		opts.EnvironmentOpts.FixFileRefs()
+		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
 			Files[k] = v
 		}
@@ -607,10 +607,10 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 
-		if err := opts.TemplateOpts.GetFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
 			return nil, err
 		}
-		opts.TemplateOpts.FixFileRefs()
+		opts.TemplateOpts.fixFileRefs()
 		s["template"] = string(opts.TemplateOpts.Bin)
 
 		for k, v := range opts.TemplateOpts.Files {
@@ -625,10 +625,10 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 		if err := opts.EnvironmentOpts.Parse(); err != nil {
 			return nil, err
 		}
-		if err := opts.EnvironmentOpts.GetRRFileContents(ignoreIfEnvironment); err != nil {
+		if err := opts.EnvironmentOpts.getRRFileContents(ignoreIfEnvironment); err != nil {
 			return nil, err
 		}
-		opts.EnvironmentOpts.FixFileRefs()
+		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
 			Files[k] = v
 		}

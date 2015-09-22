@@ -150,7 +150,7 @@ func toStringKeys(m interface{}) (map[string]interface{}, error) {
 
 // fix the template reference to files by replacing relative URL's by absolute
 // URL's
-func (t *TE) FixFileRefs() {
+func (t *TE) fixFileRefs() {
 	t_str := string(t.Bin)
 	if t.fileMaps == nil {
 		return
