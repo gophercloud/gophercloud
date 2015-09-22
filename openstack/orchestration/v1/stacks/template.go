@@ -1,35 +1,38 @@
 package stacks
 
 import (
-	"errors"
 	"fmt"
 	"github.com/rackspace/gophercloud"
 	"reflect"
 	"strings"
 )
 
+// Template is a structure that represents OpenStack Heat templates
 type Template struct {
 	TE
 }
 
+// TemplateFormatVersions is a map containing allowed variations of the template format version
+// Note that this contains the permitted variations of the _keys_ not the values.
 var TemplateFormatVersions = map[string]bool{
 	"HeatTemplateFormatVersion": true,
 	"heat_template_version":     true,
 	"AWSTemplateFormatVersion":  true,
 }
 
+// Validate validates the contents of the Template
 func (t *Template) Validate() error {
 	if t.Parsed == nil {
 		if err := t.Parse(); err != nil {
 			return err
 		}
 	}
-	for key, _ := range t.Parsed {
+	for key := range t.Parsed {
 		if _, ok := TemplateFormatVersions[key]; ok {
 			return nil
 		}
 	}
-	return errors.New(fmt.Sprintf("Template format version not found."))
+	return fmt.Errorf("Template format version not found.")
 }
 
 // GetFileContents recursively parses a template to search for urls. These urls
@@ -49,11 +52,11 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 	switch te.(type) {
 	// if te is a map
 	case map[string]interface{}, map[interface{}]interface{}:
-		te_map, err := toStringKeys(te)
+		teMap, err := toStringKeys(te)
 		if err != nil {
 			return err
 		}
-		for k, v := range te_map {
+		for k, v := range teMap {
 			value, ok := v.(string)
 			if !ok {
 				// if the value is not a string, recursively parse that value
@@ -101,9 +104,9 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 		return nil
 	// if te is a slice, call the function on each element of the slice.
 	case []interface{}:
-		te_slice := te.([]interface{})
-		for i := range te_slice {
-			if err := t.getFileContents(te_slice[i], ignoreIf, recurse); err != nil {
+		teSlice := te.([]interface{})
+		for i := range teSlice {
+			if err := t.getFileContents(teSlice[i], ignoreIf, recurse); err != nil {
 				return err
 			}
 		}
@@ -111,7 +114,7 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 	case string, bool, float64, nil, int:
 		return nil
 	default:
-		return errors.New(fmt.Sprintf("%v: Unrecognized type", reflect.TypeOf(te)))
+		return fmt.Errorf("%v: Unrecognized type", reflect.TypeOf(te))
 
 	}
 	return nil

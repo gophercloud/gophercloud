@@ -76,7 +76,7 @@ func TestIgnoreIfEnvironment(t *testing.T) {
 func TestGetRRFileContents(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	environment_content := `
+	environmentContent := `
 heat_template_version: 2013-05-23
 
 description:
@@ -100,7 +100,7 @@ resources:
       flavor: { get_param: instance_type }
       key_name: { get_param: key_name }`
 
-	db_content := `
+	dbContent := `
 heat_template_version: 2014-10-16
 
 description:
@@ -139,7 +139,7 @@ service_db:
 		th.TestMethod(t, r, "GET")
 		w.Header().Set("Content-Type", "application/jason")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, environment_content)
+		fmt.Fprintf(w, environmentContent)
 	})
 
 	fakeDBURL := strings.Join([]string{baseurl, "my_db.yaml"}, "/")
@@ -151,7 +151,7 @@ service_db:
 		th.TestMethod(t, r, "GET")
 		w.Header().Set("Content-Type", "application/jason")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, db_content)
+		fmt.Fprintf(w, dbContent)
 	})
 
 	client := fakeClient{BaseClient: getHTTPClient()}
@@ -163,14 +163,14 @@ service_db:
 	th.AssertNoErr(t, err)
 	err = env.getRRFileContents(ignoreIfEnvironment)
 	th.AssertNoErr(t, err)
-	expected_env_files_content := "\nheat_template_version: 2013-05-23\n\ndescription:\n  Heat WordPress template to support F18, using only Heat OpenStack-native\n  resource types, and without the requirement for heat-cfntools in the image.\n  WordPress is web software you can use to create a beautiful website or blog.\n  This template installs a single-instance WordPress deployment using a local\n  MySQL database to store the data.\n\nparameters:\n\n  key_name:\n    type: string\n    description : Name of a KeyPair to enable SSH access to the instance\n\nresources:\n  wordpress_instance:\n    type: OS::Nova::Server\n    properties:\n      image: { get_param: image_id }\n      flavor: { get_param: instance_type }\n      key_name: { get_param: key_name }"
-	expected_db_files_content := "\nheat_template_version: 2014-10-16\n\ndescription:\n  Test template for Trove resource capabilities\n\nparameters:\n  db_pass:\n    type: string\n    hidden: true\n    description: Database access password\n    default: secrete\n\nresources:\n\nservice_db:\n  type: OS::Trove::Instance\n  properties:\n    name: trove_test_db\n    datastore_type: mariadb\n    flavor: 1GB Instance\n    size: 10\n    databases:\n    - name: test_data\n    users:\n    - name: kitchen_sink\n      password: { get_param: db_pass }\n      databases: [ test_data ]"
+	expectedEnvFilesContent := "\nheat_template_version: 2013-05-23\n\ndescription:\n  Heat WordPress template to support F18, using only Heat OpenStack-native\n  resource types, and without the requirement for heat-cfntools in the image.\n  WordPress is web software you can use to create a beautiful website or blog.\n  This template installs a single-instance WordPress deployment using a local\n  MySQL database to store the data.\n\nparameters:\n\n  key_name:\n    type: string\n    description : Name of a KeyPair to enable SSH access to the instance\n\nresources:\n  wordpress_instance:\n    type: OS::Nova::Server\n    properties:\n      image: { get_param: image_id }\n      flavor: { get_param: instance_type }\n      key_name: { get_param: key_name }"
+	expectedDBFilesContent := "\nheat_template_version: 2014-10-16\n\ndescription:\n  Test template for Trove resource capabilities\n\nparameters:\n  db_pass:\n    type: string\n    hidden: true\n    description: Database access password\n    default: secrete\n\nresources:\n\nservice_db:\n  type: OS::Trove::Instance\n  properties:\n    name: trove_test_db\n    datastore_type: mariadb\n    flavor: 1GB Instance\n    size: 10\n    databases:\n    - name: test_data\n    users:\n    - name: kitchen_sink\n      password: { get_param: db_pass }\n      databases: [ test_data ]"
 
-	th.AssertEquals(t, expected_env_files_content, env.Files[fakeEnvURL])
-	th.AssertEquals(t, expected_db_files_content, env.Files[fakeDBURL])
+	th.AssertEquals(t, expectedEnvFilesContent, env.Files[fakeEnvURL])
+	th.AssertEquals(t, expectedDBFilesContent, env.Files[fakeDBURL])
 
 	env.fixFileRefs()
-	expected_parsed := map[string]interface{}{
+	expectedParsed := map[string]interface{}{
 		"resource_registry": "2015-04-30",
 		"My::WP::Server":    fakeEnvURL,
 		"resources": map[string]interface{}{
@@ -180,5 +180,5 @@ service_db:
 		},
 	}
 	env.Parse()
-	th.AssertDeepEquals(t, expected_parsed, env.Parsed)
+	th.AssertDeepEquals(t, expectedParsed, env.Parsed)
 }

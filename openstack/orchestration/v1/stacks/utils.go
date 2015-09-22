@@ -2,7 +2,6 @@ package stacks
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -21,7 +20,7 @@ type Client interface {
 	Get(string) (*http.Response, error)
 }
 
-// Base structure for both Template and Environment
+// TE is a base structure for both Template and Environment
 type TE struct {
 	// Bin stores the contents of the template or environment.
 	Bin []byte
@@ -59,7 +58,7 @@ func (t *TE) Fetch() error {
 		return nil
 	}
 
-	// get a fqdn from the URL using the baseURL of the template. For local files,
+	// get a fqdn from the URL using the baseURL of the TE. For local files,
 	// the URL's will have the `file` scheme.
 	u, err := gophercloud.NormalizePathURL(t.baseURL, t.URL)
 	if err != nil {
@@ -72,7 +71,7 @@ func (t *TE) Fetch() error {
 		t.client = getHTTPClient()
 	}
 
-	// use the client to fetch the contents of the template
+	// use the client to fetch the contents of the TE
 	resp, err := t.client.Get(t.URL)
 	if err != nil {
 		return err
@@ -86,7 +85,7 @@ func (t *TE) Fetch() error {
 	return nil
 }
 
-// get the basepath of the template.
+// get the basepath of the TE
 func getBasePath() (string, error) {
 	basePath, err := filepath.Abs(".")
 	if err != nil {
@@ -100,7 +99,7 @@ func getBasePath() (string, error) {
 }
 
 // get a an HTTP client to retrieve URL's. This client allows the use of `file`
-// scheme since we may need to fetch templates from users filesystem
+// scheme since we may need to fetch files from users filesystem
 func getHTTPClient() Client {
 	transport := &http.Transport{}
 	transport.RegisterProtocol("file", http.NewFileTransport(http.Dir("/")))
@@ -114,49 +113,49 @@ func (t *TE) Parse() error {
 	}
 	if jerr := json.Unmarshal(t.Bin, &t.Parsed); jerr != nil {
 		if yerr := yaml.Unmarshal(t.Bin, &t.Parsed); yerr != nil {
-			return errors.New(fmt.Sprintf("Data in neither json nor yaml format."))
+			return fmt.Errorf("Data in neither json nor yaml format.")
 		}
 	}
 	return t.Validate()
 }
 
-// base Validate method, always returns nil
+// Validate validates the contents of TE
 func (t *TE) Validate() error {
 	return nil
 }
 
 // igfunc is a parameter used by GetFileContents and GetRRFileContents to check
-// for valid template URL's.
+// for valid URL's.
 type igFunc func(string, interface{}) bool
 
 // convert map[interface{}]interface{} to map[string]interface{}
 func toStringKeys(m interface{}) (map[string]interface{}, error) {
 	switch m.(type) {
 	case map[string]interface{}, map[interface{}]interface{}:
-		typed_map := make(map[string]interface{})
+		typedMap := make(map[string]interface{})
 		if _, ok := m.(map[interface{}]interface{}); ok {
 			for k, v := range m.(map[interface{}]interface{}) {
-				typed_map[k.(string)] = v
+				typedMap[k.(string)] = v
 			}
 		} else {
-			typed_map = m.(map[string]interface{})
+			typedMap = m.(map[string]interface{})
 		}
-		return typed_map, nil
+		return typedMap, nil
 	default:
-		return nil, errors.New(fmt.Sprintf("Expected a map of type map[string]interface{} or map[interface{}]interface{}, actual type: %v", reflect.TypeOf(m)))
+		return nil, fmt.Errorf("Expected a map of type map[string]interface{} or map[interface{}]interface{}, actual type: %v", reflect.TypeOf(m))
 
 	}
 }
 
-// fix the template reference to files by replacing relative URL's by absolute
+// fix the reference to files by replacing relative URL's by absolute
 // URL's
 func (t *TE) fixFileRefs() {
-	t_str := string(t.Bin)
+	tStr := string(t.Bin)
 	if t.fileMaps == nil {
 		return
 	}
 	for k, v := range t.fileMaps {
-		t_str = strings.Replace(t_str, k, v, -1)
+		tStr = strings.Replace(tStr, k, v, -1)
 	}
-	t.Bin = []byte(t_str)
+	t.Bin = []byte(tStr)
 }

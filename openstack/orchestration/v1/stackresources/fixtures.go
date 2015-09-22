@@ -255,7 +255,7 @@ func HandleMetadataSuccessfully(t *testing.T, output string) {
 }
 
 // ListTypesExpected represents the expected object from a ListTypes request.
-var ListTypesExpected = resourceTypes{
+var ListTypesExpected = ResourceTypes{
 	"OS::Nova::Server",
 	"OS::Heat::RandomString",
 	"OS::Swift::Container",
@@ -267,7 +267,7 @@ var ListTypesExpected = resourceTypes{
 }
 
 // same as above, but sorted
-var SortedListTypesExpected = resourceTypes{
+var SortedListTypesExpected = ResourceTypes{
 	"OS::Cinder::VolumeAttachment",
 	"OS::Heat::RandomString",
 	"OS::Nova::FloatingIP",

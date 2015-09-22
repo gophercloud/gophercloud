@@ -81,7 +81,7 @@ func TestGetFileContents(t *testing.T) {
 	fakeURL := strings.Join([]string{baseurl, "my_nova.yaml"}, "/")
 	urlparsed, err := url.Parse(fakeURL)
 	th.AssertNoErr(t, err)
-	my_nova_content := `heat_template_version: 2014-10-16
+	myNovaContent := `heat_template_version: 2014-10-16
 parameters:
   flavor:
     type: string
@@ -101,7 +101,7 @@ resources:
 		th.TestMethod(t, r, "GET")
 		w.Header().Set("Content-Type", "application/jason")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, my_nova_content)
+		fmt.Fprintf(w, myNovaContent)
 	})
 
 	client := fakeClient{BaseClient: getHTTPClient()}
@@ -116,7 +116,7 @@ resources:
 	th.AssertNoErr(t, err)
 	err = te.getFileContents(te.Parsed, ignoreIfTemplate, true)
 	th.AssertNoErr(t, err)
-	expected_files := map[string]string{
+	expectedFiles := map[string]string{
 		"my_nova.yaml": `heat_template_version: 2014-10-16
 parameters:
   flavor:
@@ -133,9 +133,9 @@ resources:
       image: Debian 7 (Wheezy) (PVHVM)
       networks:
       - {uuid: 11111111-1111-1111-1111-111111111111}`}
-	th.AssertEquals(t, expected_files["my_nova.yaml"], te.Files[fakeURL])
+	th.AssertEquals(t, expectedFiles["my_nova.yaml"], te.Files[fakeURL])
 	te.fixFileRefs()
-	expected_parsed := map[string]interface{}{
+	expectedParsed := map[string]interface{}{
 		"heat_template_version": "2015-04-30",
 		"resources": map[string]interface{}{
 			"my_server": map[string]interface{}{
@@ -144,5 +144,5 @@ resources:
 		},
 	}
 	te.Parse()
-	th.AssertDeepEquals(t, expected_parsed, te.Parsed)
+	th.AssertDeepEquals(t, expectedParsed, te.Parsed)
 }

@@ -206,28 +206,28 @@ func (r ResourceTypePage) IsEmpty() (bool, error) {
 	return len(rts) == 0, nil
 }
 
-// resourceTypes represents the type that holds the result of ExtractResourceTypes.
+// ResourceTypes represents the type that holds the result of ExtractResourceTypes.
 // We define methods on this type to sort it before output
-type resourceTypes []string
+type ResourceTypes []string
 
-func (r resourceTypes) Len() int {
+func (r ResourceTypes) Len() int {
 	return len(r)
 }
 
-func (r resourceTypes) Swap(i, j int) {
+func (r ResourceTypes) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
 }
 
-func (r resourceTypes) Less(i, j int) bool {
+func (r ResourceTypes) Less(i, j int) bool {
 	return r[i] < r[j]
 }
 
 // ExtractResourceTypes extracts and returns resource types.
-func ExtractResourceTypes(page pagination.Page) (resourceTypes, error) {
+func ExtractResourceTypes(page pagination.Page) (ResourceTypes, error) {
 	casted := page.(ResourceTypePage).Body
 
 	var response struct {
-		ResourceTypes resourceTypes `mapstructure:"resource_types"`
+		ResourceTypes ResourceTypes `mapstructure:"resource_types"`
 	}
 
 	if err := mapstructure.Decode(casted, &response); err != nil {

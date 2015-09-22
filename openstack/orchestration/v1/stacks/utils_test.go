@@ -22,18 +22,18 @@ func TestTEFixFileRefs(t *testing.T) {
 }
 
 func TesttoStringKeys(t *testing.T) {
-	var test_1 interface{} = map[interface{}]interface{}{
+	var test1 interface{} = map[interface{}]interface{}{
 		"Adam":  "Smith",
 		"Isaac": "Newton",
 	}
-	result_1, err := toStringKeys(test_1)
+	result1, err := toStringKeys(test1)
 	th.AssertNoErr(t, err)
 
 	expected := map[string]interface{}{
 		"Adam":  "Smith",
 		"Isaac": "Newton",
 	}
-	th.AssertDeepEquals(t, result_1, expected)
+	th.AssertDeepEquals(t, result1, expected)
 }
 
 func TestGetBasePath(t *testing.T) {

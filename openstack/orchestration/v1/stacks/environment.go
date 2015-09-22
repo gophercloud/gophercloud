@@ -1,32 +1,32 @@
 package stacks
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
 
-// an interface to represent stack environments
+// Environment is a structure that represents stack environments
 type Environment struct {
 	TE
 }
 
-// allowed sections in a stack environment file
+// EnvironmentSections is a map containing allowed sections in a stack environment file
 var EnvironmentSections = map[string]bool{
 	"parameters":         true,
 	"parameter_defaults": true,
 	"resource_registry":  true,
 }
 
+// Validate validates the contents of the Environment
 func (e *Environment) Validate() error {
 	if e.Parsed == nil {
 		if err := e.Parse(); err != nil {
 			return err
 		}
 	}
-	for key, _ := range e.Parsed {
+	for key := range e.Parsed {
 		if _, ok := EnvironmentSections[key]; !ok {
-			return errors.New(fmt.Sprintf("Environment has wrong section: %s", key))
+			return fmt.Errorf("Environment has wrong section: %s", key)
 		}
 	}
 	return nil
@@ -51,14 +51,14 @@ func (e *Environment) getRRFileContents(ignoreIf igFunc) error {
 	switch rr.(type) {
 	// process further only if the resource registry is a map
 	case map[string]interface{}, map[interface{}]interface{}:
-		rr_map, err := toStringKeys(rr)
+		rrMap, err := toStringKeys(rr)
 		if err != nil {
 			return err
 		}
 		// the resource registry might contain a base URL for the resource. If
 		// such a field is present, use it. Otherwise, use the default base URL.
 		var baseURL string
-		if val, ok := rr_map["base_url"]; ok {
+		if val, ok := rrMap["base_url"]; ok {
 			baseURL = val.(string)
 		} else {
 			baseURL = e.baseURL
@@ -78,24 +78,24 @@ func (e *Environment) getRRFileContents(ignoreIf igFunc) error {
 		// check the `resources` section (if it exists) for more URL's. Note that
 		// the previous call to GetFileContents was (deliberately) not recursive
 		// as we want more control over where to look for URL's
-		if val, ok := rr_map["resources"]; ok {
+		if val, ok := rrMap["resources"]; ok {
 			switch val.(type) {
 			// process further only if the contents are a map
 			case map[string]interface{}, map[interface{}]interface{}:
-				resources_map, err := toStringKeys(val)
+				resourcesMap, err := toStringKeys(val)
 				if err != nil {
 					return err
 				}
-				for _, v := range resources_map {
+				for _, v := range resourcesMap {
 					switch v.(type) {
 					case map[string]interface{}, map[interface{}]interface{}:
-						resource_map, err := toStringKeys(v)
+						resourceMap, err := toStringKeys(v)
 						if err != nil {
 							return err
 						}
 						var resourceBaseURL string
 						// if base_url for the resource type is defined, use it
-						if val, ok := resource_map["base_url"]; ok {
+						if val, ok := resourceMap["base_url"]; ok {
 							resourceBaseURL = val.(string)
 						} else {
 							resourceBaseURL = baseURL

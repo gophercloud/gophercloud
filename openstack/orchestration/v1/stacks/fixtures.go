@@ -405,6 +405,7 @@ func HandleAbandonSuccessfully(t *testing.T, output string) {
 	})
 }
 
+// ValidJSONTemplate is a valid OpenStack Heat template in JSON format
 const ValidJSONTemplate = `
 {
   "heat_template_version": "2014-10-16",
@@ -429,6 +430,7 @@ const ValidJSONTemplate = `
 }
 `
 
+// ValidJSONTemplateParsed is the expected parsed version of ValidJSONTemplate
 var ValidJSONTemplateParsed = map[string]interface{}{
 	"heat_template_version": "2014-10-16",
 	"parameters": map[string]interface{}{
@@ -451,6 +453,7 @@ var ValidJSONTemplateParsed = map[string]interface{}{
 	},
 }
 
+// ValidYAMLTemplate is a valid OpenStack Heat template in YAML format
 const ValidYAMLTemplate = `
 heat_template_version: 2014-10-16
 parameters:
@@ -468,6 +471,7 @@ resources:
       image: Debian 7 (Wheezy) (PVHVM)
 `
 
+// InvalidTemplateNoVersion is an invalid template as it has no `version` section
 const InvalidTemplateNoVersion = `
 parameters:
   flavor:
@@ -484,6 +488,7 @@ resources:
       image: Debian 7 (Wheezy) (PVHVM)
 `
 
+// ValidJSONEnvironment is a valid environment for a stack in JSON format
 const ValidJSONEnvironment = `
 {
   "parameters": {
@@ -519,6 +524,7 @@ const ValidJSONEnvironment = `
 }
 `
 
+// ValidJSONEnvironmentParsed is the expected parsed version of ValidJSONEnvironment
 var ValidJSONEnvironmentParsed = map[string]interface{}{
 	"parameters": map[string]interface{}{
 		"user_key": "userkey",
@@ -552,6 +558,7 @@ var ValidJSONEnvironmentParsed = map[string]interface{}{
 	},
 }
 
+// ValidYAMLEnvironment is a valid environment for a stack in YAML format
 const ValidYAMLEnvironment = `
 parameters:
   user_key: userkey
@@ -577,6 +584,7 @@ resource_registry:
         hooks: [pre-create, pre-update]
 `
 
+// InvalidEnvironment is an invalid environment as it has an extra section called `resources`
 const InvalidEnvironment = `
 parameters:
   flavor:

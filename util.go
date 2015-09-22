@@ -45,7 +45,7 @@ func NormalizeURL(url string) string {
 	return url
 }
 
-// NormalizeFilePathURL is used to convert rawPath to a fqdn, using basePath as
+// NormalizePathURL is used to convert rawPath to a fqdn, using basePath as
 // a reference in the filesystem, if necessary. basePath is assumed to contain
 // either '.' when first used, or the file:// type fqdn of the parent resource.
 // e.g. myFavScript.yaml => file://opt/lib/myFavScript.yaml
@@ -69,13 +69,14 @@ func NormalizePathURL(basePath, rawPath string) (string, error) {
 		absPathSys = filepath.Join(basePathSys, rawPath)
 		bu.Path = filepath.ToSlash(absPathSys)
 		return bu.String(), nil
-	} else {
-		absPathSys = filepath.Join(basePath, rawPath)
-		u.Path = filepath.ToSlash(absPathSys)
-		if err != nil {
-			return "", err
-		}
-		u.Scheme = "file"
-		return u.String(), nil
 	}
+
+	absPathSys = filepath.Join(basePath, rawPath)
+	u.Path = filepath.ToSlash(absPathSys)
+	if err != nil {
+		return "", err
+	}
+	u.Scheme = "file"
+	return u.String(), nil
+
 }
