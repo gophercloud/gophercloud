@@ -168,7 +168,7 @@ type CreateOpts struct {
 	ObjectManifest     string `h:"X-Object-Manifest"`
 	TransferEncoding   string `h:"Transfer-Encoding"`
 	Expires            string `q:"expires"`
-	MultipartManifest  string `q:"multiple-manifest"`
+	MultipartManifest  string `q:"multipart-manifest"`
 	Signature          string `q:"signature"`
 }
 
