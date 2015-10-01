@@ -237,13 +237,15 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 	}
 	s["stack_name"] = opts.Name
 	Files := make(map[string]string)
-	if opts.TemplateOpts == nil {
+	if opts.AdoptStackData != "" {
+		s["adopt_stack_data"] = opts.AdoptStackData
+	} else if opts.TemplateOpts == nil {
 		if opts.Template != "" {
 			s["template"] = opts.Template
 		} else if opts.TemplateURL != "" {
 			s["template_url"] = opts.TemplateURL
 		} else {
-			return s, errors.New("Either Template or TemplateURL must be provided.")
+			return s, errors.New("One of AdoptStackData, Template, TemplateURL or TemplateOpts must be provided.")
 		}
 	} else {
 		if err := opts.TemplateOpts.Parse(); err != nil {
@@ -260,10 +262,6 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 			Files[k] = v
 		}
 	}
-	if opts.AdoptStackData == "" {
-		return s, errors.New("Required field 'AdoptStackData' not provided.")
-	}
-	s["adopt_stack_data"] = opts.AdoptStackData
 
 	if opts.DisableRollback != nil {
 		s["disable_rollback"] = &opts.DisableRollback
