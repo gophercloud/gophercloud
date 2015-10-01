@@ -95,15 +95,16 @@ type CreateOptsBuilder interface {
 
 // CreateOpts represents the attributes used when creating a new port.
 type CreateOpts struct {
-	NetworkID      string
-	Name           string
-	AdminStateUp   *bool
-	MACAddress     string
-	FixedIPs       interface{}
-	DeviceID       string
-	DeviceOwner    string
-	TenantID       string
-	SecurityGroups []string
+	NetworkID           string
+	Name                string
+	AdminStateUp        *bool
+	MACAddress          string
+	FixedIPs            interface{}
+	DeviceID            string
+	DeviceOwner         string
+	TenantID            string
+	SecurityGroups      []string
+	AllowedAddressPairs interface{}
 }
 
 // ToPortCreateMap casts a CreateOpts struct to a map.
@@ -138,6 +139,9 @@ func (opts CreateOpts) ToPortCreateMap() (map[string]interface{}, error) {
 	}
 	if opts.MACAddress != "" {
 		p["mac_address"] = opts.MACAddress
+	}
+	if opts.AllowedAddressPairs != nil {
+		p["allowed_address_pairs"] = opts.AllowedAddressPairs
 	}
 
 	return map[string]interface{}{"port": p}, nil
