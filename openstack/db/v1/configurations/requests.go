@@ -187,9 +187,8 @@ func Update(client *gophercloud.ServiceClient, configID string, opts UpdateOptsB
 	}
 
 	_, res.Err = client.Request("PATCH", resourceURL(client, configID), gophercloud.RequestOpts{
-		OkCodes:      []int{200},
-		JSONBody:     &reqBody,
-		JSONResponse: &res.Body,
+		OkCodes:  []int{200},
+		JSONBody: &reqBody,
 	})
 
 	return res
@@ -208,9 +207,8 @@ func Replace(client *gophercloud.ServiceClient, configID string, opts UpdateOpts
 	}
 
 	_, res.Err = client.Request("PUT", resourceURL(client, configID), gophercloud.RequestOpts{
-		OkCodes:      []int{202},
-		JSONBody:     &reqBody,
-		JSONResponse: &res.Body,
+		OkCodes:  []int{202},
+		JSONBody: &reqBody,
 	})
 
 	return res

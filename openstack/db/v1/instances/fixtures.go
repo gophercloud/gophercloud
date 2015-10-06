@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
 	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	"github.com/rackspace/gophercloud/testhelper/fixture"
 )
@@ -119,6 +120,10 @@ var expectedInstance = Instance{
 	Name:   "json_rack_instance",
 	Status: "BUILD",
 	Volume: Volume{Size: 2},
+	Datastore: datastores.DatastorePartial{
+		Type:    "mysql",
+		Version: "5.6",
+	},
 }
 
 func HandleCreate(t *testing.T) {

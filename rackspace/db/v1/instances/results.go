@@ -3,10 +3,10 @@ package instances
 import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
 	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 )
 
 // Instance represents a remote MySQL instance.

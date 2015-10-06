@@ -3,8 +3,8 @@ package backups
 import (
 	"testing"
 
+	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 	"github.com/rackspace/gophercloud/testhelper/fixture"

@@ -5,10 +5,10 @@ import (
 
 	"github.com/rackspace/gophercloud"
 	osDBs "github.com/rackspace/gophercloud/openstack/db/v1/databases"
+	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
 	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	osUsers "github.com/rackspace/gophercloud/openstack/db/v1/users"
-	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 	th "github.com/rackspace/gophercloud/testhelper"
 	fake "github.com/rackspace/gophercloud/testhelper/client"
 	"github.com/rackspace/gophercloud/testhelper/fixture"

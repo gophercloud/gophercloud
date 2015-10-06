@@ -84,9 +84,8 @@ func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOpt
 	}
 
 	_, res.Err = client.Request("POST", baseURL(client, instanceID), gophercloud.RequestOpts{
-		JSONBody:     &reqBody,
-		JSONResponse: &res.Body,
-		OkCodes:      []int{202},
+		JSONBody: &reqBody,
+		OkCodes:  []int{202},
 	})
 
 	return res

@@ -37,7 +37,7 @@ func TestUpdateUser(t *testing.T) {
 	defer th.TeardownHTTP()
 	fixture.SetupHandler(t, _userURL, "PUT", updateReq, "", 202)
 
-	opts := os.CreateOpts{
+	opts := UpdateOpts{
 		Name:     "new_username",
 		Password: "new_password",
 	}

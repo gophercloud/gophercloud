@@ -3,10 +3,10 @@ package instances
 import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
 	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	"github.com/rackspace/gophercloud/openstack/db/v1/users"
 	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/rackspace/db/v1/datastores"
 )
 
 // Volume represents information about an attached volume for a database instance.

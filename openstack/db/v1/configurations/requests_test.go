@@ -58,7 +58,7 @@ func TestGet(t *testing.T) {
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, _baseURL, "POST", createReq, createConfigJSON, 201)
+	fixture.SetupHandler(t, _baseURL, "POST", createReq, createConfigJSON, 200)
 
 	opts := CreateOpts{
 		Datastore: &DatastoreOpts{
