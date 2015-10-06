@@ -1,4 +1,4 @@
-// +build acceptance db
+// +build acceptance db rackspace
 
 package v1
 
