@@ -89,7 +89,7 @@ var (
 )
 
 var (
-	restartReq   = `{"restart": true}`
+	restartReq   = `{"restart": {}}`
 	resizeReq    = `{"resize": {"flavorRef": "2"}}`
 	resizeVolReq = `{"resize": {"volume": {"size": 4}}}`
 )

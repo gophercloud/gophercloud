@@ -34,12 +34,12 @@ const singleConfigWithValuesJSON = `
 `
 
 var (
-	listConfigsJSON  = fmt.Sprintf(`{"configurations": [%s]}`, singleConfigJSON)
-	getConfigJSON    = fmt.Sprintf(`{"configuration": %s}`, singleConfigJSON)
-	createConfigJSON = fmt.Sprintf(`{"configuration": %s}`, singleConfigWithValuesJSON)
+	ListConfigsJSON  = fmt.Sprintf(`{"configurations": [%s]}`, singleConfigJSON)
+	GetConfigJSON    = fmt.Sprintf(`{"configuration": %s}`, singleConfigJSON)
+	CreateConfigJSON = fmt.Sprintf(`{"configuration": %s}`, singleConfigWithValuesJSON)
 )
 
-var createReq = `
+var CreateReq = `
 {
   "configuration": {
     "datastore": {
@@ -56,7 +56,7 @@ var createReq = `
 }
 `
 
-var updateReq = `
+var UpdateReq = `
 {
   "configuration": {
     "values": {
@@ -66,7 +66,7 @@ var updateReq = `
 }
 `
 
-var listInstancesJSON = `
+var ListInstancesJSON = `
 {
   "instances": [
     {
@@ -77,7 +77,7 @@ var listInstancesJSON = `
 }
 `
 
-var listParamsJSON = `
+var ListParamsJSON = `
 {
   "configuration-parameters": [
     {
@@ -112,7 +112,7 @@ var listParamsJSON = `
 }
 `
 
-var getParamJSON = `
+var GetParamJSON = `
 {
   "max": 1,
   "min": 0,
@@ -122,7 +122,7 @@ var getParamJSON = `
 }
 `
 
-var exampleConfig = Config{
+var ExampleConfig = Config{
 	Created:              "2014-07-31T18:56:09",
 	DatastoreName:        "mysql",
 	DatastoreVersionID:   "b00000b0-00b0-0b00-00b0-000b000000bb",
@@ -133,7 +133,7 @@ var exampleConfig = Config{
 	Updated:              "2014-07-31T18:56:09",
 }
 
-var exampleConfigWithValues = Config{
+var ExampleConfigWithValues = Config{
 	Created:              "2014-07-31T15:02:52",
 	DatastoreName:        "mysql",
 	DatastoreVersionID:   "b00000b0-00b0-0b00-00b0-000b000000bb",

@@ -108,8 +108,7 @@ func Delete(client *gophercloud.ServiceClient, instanceID, dbName string) Delete
 	var res DeleteResult
 
 	_, res.Err = client.Request("DELETE", dbURL(client, instanceID, dbName), gophercloud.RequestOpts{
-		JSONBody: &res.Body,
-		OkCodes:  []int{202},
+		OkCodes: []int{202},
 	})
 
 	return res

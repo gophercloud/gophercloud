@@ -5,7 +5,6 @@ package v1
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/acceptance/tools"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/instances"
@@ -69,8 +68,12 @@ func TestRunner(t *testing.T) {
 	// TEARDOWN
 	c.deleteUsers()
 	c.deleteDBs()
-	c.detachAndDeleteReplica()
-	c.deleteInstance()
+
+	c.restartInstance()
+	c.WaitUntilActive(c.instanceID)
+
+	c.deleteInstance(c.replicaID)
+	c.deleteInstance(c.instanceID)
 }
 
 func (c *context) createInstance() {
@@ -114,10 +117,10 @@ func (c *context) getInstance() {
 	c.Logf("Getting instance: %#v", instance)
 }
 
-func (c *context) deleteInstance() {
-	err := instances.Delete(c.client, c.instanceID).ExtractErr()
+func (c *context) deleteInstance(id string) {
+	err := instances.Delete(c.client, id).ExtractErr()
 	c.AssertNoErr(err)
-	c.Logf("Deleted instance %s", c.instanceID)
+	c.Logf("Deleted instance %s", id)
 }
 
 func (c *context) enableRootUser() {
@@ -163,26 +166,4 @@ func (c *context) getDefaultConfig() {
 	config, err := instances.GetDefaultConfig(c.client, c.instanceID).Extract()
 	c.Logf("Default config group for instance %s: %#v", c.instanceID, config)
 	c.AssertNoErr(err)
-}
-
-func (c *context) detachAndDeleteReplica() {
-	err := instances.DetachReplica(c.client, c.replicaID).ExtractErr()
-	c.AssertNoErr(err)
-	c.Logf("Detached replica %s from instance %s", c.replicaID, c.instanceID)
-
-	err = instances.Delete(c.client, c.replicaID).ExtractErr()
-	c.AssertNoErr(err)
-	c.Logf("Deleted replica %s", c.replicaID)
-
-	// Check that it's deleted
-	err = gophercloud.WaitFor(60, func() (bool, error) {
-		_, err := instances.Get(c.client, c.replicaID).Extract()
-		if casted, ok := err.(*gophercloud.UnexpectedResponseCodeError); ok && casted.Actual == 404 {
-			return true, nil
-		}
-		if err != nil {
-			return false, err
-		}
-		return false, nil
-	})
 }

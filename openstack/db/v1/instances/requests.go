@@ -179,7 +179,7 @@ func RestartService(client *gophercloud.ServiceClient, id string) ActionResult {
 	var res ActionResult
 
 	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
-		JSONBody: map[string]interface{}{"restart": true},
+		JSONBody: map[string]interface{}{"restart": struct{}{}},
 		OkCodes:  []int{202},
 	})
 

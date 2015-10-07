@@ -4,13 +4,14 @@ package v1
 
 import (
 	"github.com/rackspace/gophercloud/acceptance/tools"
+	os "github.com/rackspace/gophercloud/openstack/db/v1/configurations"
 	"github.com/rackspace/gophercloud/pagination"
 	config "github.com/rackspace/gophercloud/rackspace/db/v1/configurations"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/instances"
 )
 
 func (c *context) createConfigGrp() {
-	opts := config.CreateOpts{
+	opts := os.CreateOpts{
 		Name: tools.RandomString("config_", 5),
 		Values: map[string]interface{}{
 			"connect_timeout":  300,
@@ -33,7 +34,7 @@ func (c *context) getConfigGrp() {
 }
 
 func (c *context) updateConfigGrp() {
-	opts := config.UpdateOpts{
+	opts := os.UpdateOpts{
 		Name: tools.RandomString("new_name_", 5),
 		Values: map[string]interface{}{
 			"connect_timeout": 250,
@@ -45,9 +46,9 @@ func (c *context) updateConfigGrp() {
 }
 
 func (c *context) replaceConfigGrp() {
-	opts := config.UpdateOpts{
+	opts := os.UpdateOpts{
 		Values: map[string]interface{}{
-			"expire_logs_days": 7,
+			"big_tables": 1,
 		},
 	}
 
