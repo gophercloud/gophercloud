@@ -27,7 +27,7 @@ var (
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, _baseURL, "GET", "", listConfigsJSON, 200)
+	fixture.SetupHandler(t, _baseURL, "GET", "", ListConfigsJSON, 200)
 
 	count := 0
 	err := List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
@@ -35,7 +35,7 @@ func TestList(t *testing.T) {
 		actual, err := ExtractConfigs(page)
 		th.AssertNoErr(t, err)
 
-		expected := []Config{exampleConfig}
+		expected := []Config{ExampleConfig}
 		th.AssertDeepEquals(t, expected, actual)
 
 		return true, nil
@@ -48,17 +48,17 @@ func TestList(t *testing.T) {
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL, "GET", "", getConfigJSON, 200)
+	fixture.SetupHandler(t, resURL, "GET", "", GetConfigJSON, 200)
 
 	config, err := Get(fake.ServiceClient(), configID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, &exampleConfig, config)
+	th.AssertDeepEquals(t, &ExampleConfig, config)
 }
 
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, _baseURL, "POST", createReq, createConfigJSON, 200)
+	fixture.SetupHandler(t, _baseURL, "POST", CreateReq, CreateConfigJSON, 200)
 
 	opts := CreateOpts{
 		Datastore: &DatastoreOpts{
@@ -75,13 +75,13 @@ func TestCreate(t *testing.T) {
 
 	config, err := Create(fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, &exampleConfigWithValues, config)
+	th.AssertDeepEquals(t, &ExampleConfigWithValues, config)
 }
 
 func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL, "PATCH", updateReq, "", 200)
+	fixture.SetupHandler(t, resURL, "PATCH", UpdateReq, "", 200)
 
 	opts := UpdateOpts{
 		Values: map[string]interface{}{
@@ -96,7 +96,7 @@ func TestUpdate(t *testing.T) {
 func TestReplace(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL, "PUT", updateReq, "", 202)
+	fixture.SetupHandler(t, resURL, "PUT", UpdateReq, "", 202)
 
 	opts := UpdateOpts{
 		Values: map[string]interface{}{
@@ -120,7 +120,7 @@ func TestDelete(t *testing.T) {
 func TestListInstances(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, resURL+"/instances", "GET", "", listInstancesJSON, 200)
+	fixture.SetupHandler(t, resURL+"/instances", "GET", "", ListInstancesJSON, 200)
 
 	expectedInstance := instances.Instance{
 		ID:   "d4603f69-ec7e-4e9b-803f-600b9205576f",
@@ -148,7 +148,7 @@ func TestListInstances(t *testing.T) {
 func TestListDSParams(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, dsParamListURL, "GET", "", listParamsJSON, 200)
+	fixture.SetupHandler(t, dsParamListURL, "GET", "", ListParamsJSON, 200)
 
 	pages := 0
 	err := ListDatastoreParams(fake.ServiceClient(), dsID, versionID).EachPage(func(page pagination.Page) (bool, error) {
@@ -178,7 +178,7 @@ func TestListDSParams(t *testing.T) {
 func TestGetDSParam(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, dsParamGetURL, "GET", "", getParamJSON, 200)
+	fixture.SetupHandler(t, dsParamGetURL, "GET", "", GetParamJSON, 200)
 
 	param, err := GetDatastoreParam(fake.ServiceClient(), dsID, versionID, paramID).Extract()
 	th.AssertNoErr(t, err)
@@ -193,7 +193,7 @@ func TestGetDSParam(t *testing.T) {
 func TestListGlobalParams(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, globalParamListURL, "GET", "", listParamsJSON, 200)
+	fixture.SetupHandler(t, globalParamListURL, "GET", "", ListParamsJSON, 200)
 
 	pages := 0
 	err := ListGlobalParams(fake.ServiceClient(), versionID).EachPage(func(page pagination.Page) (bool, error) {
@@ -223,7 +223,7 @@ func TestListGlobalParams(t *testing.T) {
 func TestGetGlobalParam(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	fixture.SetupHandler(t, globalParamGetURL, "GET", "", getParamJSON, 200)
+	fixture.SetupHandler(t, globalParamGetURL, "GET", "", GetParamJSON, 200)
 
 	param, err := GetGlobalParam(fake.ServiceClient(), versionID, paramID).Extract()
 	th.AssertNoErr(t, err)
