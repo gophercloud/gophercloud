@@ -14,6 +14,34 @@ import (
 	"github.com/rackspace/gophercloud/testhelper/fixture"
 )
 
+func TestInstanceList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	fixture.SetupHandler(t, "/instances", "GET", "", listInstancesResp, 200)
+
+	opts := &ListOpts{
+		IncludeHA:       false,
+		IncludeReplicas: false,
+	}
+
+	pages := 0
+	err := List(fake.ServiceClient(), opts).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := ExtractInstances(page)
+		if err != nil {
+			return false, err
+		}
+
+		th.CheckDeepEquals(t, []Instance{*expectedInstance}, actual)
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, pages)
+}
+
 func TestGetConfig(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -138,7 +166,7 @@ func TestListReplicas(t *testing.T) {
 	fixture.SetupHandler(t, _rootURL, "GET", "", listReplicasResp, 200)
 
 	pages := 0
-	err := List(fake.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(fake.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := ExtractInstances(page)

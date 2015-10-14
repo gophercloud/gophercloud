@@ -2,9 +2,141 @@ package instances
 
 import (
 	"github.com/rackspace/gophercloud"
+	osDBs "github.com/rackspace/gophercloud/openstack/db/v1/databases"
+	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
+	osUsers "github.com/rackspace/gophercloud/openstack/db/v1/users"
 	"github.com/rackspace/gophercloud/pagination"
 	"github.com/rackspace/gophercloud/rackspace/db/v1/backups"
 )
+
+// CreateOpts is the struct responsible for configuring a new database instance.
+type CreateOpts struct {
+	// Either the integer UUID (in string form) of the flavor, or its URI
+	// reference as specified in the response from the List() call. Required.
+	FlavorRef string
+
+	// Specifies the volume size in gigabytes (GB). The value must be between 1
+	// and 300. Required.
+	Size int
+
+	// Name of the instance to create. The length of the name is limited to
+	// 255 characters and any characters are permitted. Optional.
+	Name string
+
+	// A slice of database information options.
+	Databases osDBs.BatchCreateOpts
+
+	// A slice of user information options.
+	Users osUsers.BatchCreateOpts
+
+	// ID of the configuration group to associate with the instance. Optional.
+	ConfigID string
+
+	// Options to configure the type of datastore the instance will use. This is
+	// optional, and if excluded will default to MySQL.
+	Datastore *os.DatastoreOpts
+
+	// Specifies the backup ID from which to restore the database instance. There
+	// are some things to be aware of before using this field.  When you execute
+	// the Restore Backup operation, a new database instance is created to store
+	// the backup whose ID is specified by the restorePoint attribute. This will
+	// mean that:
+	// - All users, passwords and access that were on the instance at the time of
+	// the backup will be restored along with the databases.
+	// - You can create new users or databases if you want, but they cannot be
+	// the same as the ones from the instance that was backed up.
+	RestorePoint string
+
+	ReplicaOf string
+}
+
+func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
+	instance, err := os.CreateOpts{
+		FlavorRef: opts.FlavorRef,
+		Size:      opts.Size,
+		Name:      opts.Name,
+		Databases: opts.Databases,
+		Users:     opts.Users,
+	}.ToInstanceCreateMap()
+
+	if err != nil {
+		return nil, err
+	}
+
+	instance = instance["instance"].(map[string]interface{})
+
+	if opts.ConfigID != "" {
+		instance["configuration"] = opts.ConfigID
+	}
+
+	if opts.Datastore != nil {
+		ds, err := opts.Datastore.ToMap()
+		if err != nil {
+			return nil, err
+		}
+		instance["datastore"] = ds
+	}
+
+	if opts.RestorePoint != "" {
+		instance["restorePoint"] = map[string]string{"backupRef": opts.RestorePoint}
+	}
+
+	if opts.ReplicaOf != "" {
+		instance["replica_of"] = opts.ReplicaOf
+	}
+
+	return map[string]interface{}{"instance": instance}, nil
+}
+
+// Create asynchronously provisions a new database instance. It requires the
+// user to specify a flavor and a volume size. The API service then provisions
+// the instance with the requested flavor and sets up a volume of the specified
+// size, which is the storage for the database instance.
+//
+// Although this call only allows the creation of 1 instance per request, you
+// can create an instance with multiple databases and users. The default
+// binding for a MySQL instance is port 3306.
+func Create(client *gophercloud.ServiceClient, opts os.CreateOptsBuilder) CreateResult {
+	return CreateResult{os.Create(client, opts)}
+}
+
+// ListOpts specifies all of the query options to be used when returning a list
+// of database instances.
+type ListOpts struct {
+	// IncludeHA includes or excludes High Availability instances from the result set
+	IncludeHA bool `q:"include_ha"`
+
+	// IncludeReplicas includes or excludes Replica instances from the result set
+	IncludeReplicas bool `q:"include_replicas"`
+}
+
+// ToInstanceListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToInstanceListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+	return q.String(), nil
+}
+
+// List retrieves the status and information for all database instances.
+func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
+	url := baseURL(client)
+
+	if opts != nil {
+		query, err := opts.ToInstanceListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
+	createPageFn := func(r pagination.PageResult) pagination.Page {
+		return os.InstancePage{pagination.LinkedPageBase{PageResult: r}}
+	}
+
+	return pagination.NewPager(client, url, createPageFn)
+}
 
 // GetDefaultConfig lists the default configuration settings from the template
 // that was applied to the specified instance. In a sense, this is the vanilla

@@ -3,10 +3,7 @@ package instances
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud"
 	osDBs "github.com/rackspace/gophercloud/openstack/db/v1/databases"
-	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
-	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 	osUsers "github.com/rackspace/gophercloud/openstack/db/v1/users"
 	th "github.com/rackspace/gophercloud/testhelper"
@@ -15,31 +12,9 @@ import (
 )
 
 var (
-	instanceID = "{instanceID}"
-	_rootURL   = "/instances"
-	resURL     = "/instances/" + instanceID
+	_rootURL = "/instances"
+	resURL   = "/instances/" + instanceID
 )
-
-var expectedInstance = &Instance{
-	Created:   "2014-02-13T21:47:13",
-	Updated:   "2014-02-13T21:47:13",
-	Datastore: datastores.DatastorePartial{Type: "mysql", Version: "5.6"},
-	Flavor: flavors.Flavor{
-		ID: "1",
-		Links: []gophercloud.Link{
-			gophercloud.Link{Href: "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1", Rel: "self"},
-			gophercloud.Link{Href: "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1", Rel: "bookmark"},
-		},
-	},
-	Hostname: "e09ad9a3f73309469cf1f43d11e79549caf9acf2.rackspaceclouddb.com",
-	ID:       instanceID,
-	Links: []gophercloud.Link{
-		gophercloud.Link{Href: "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1", Rel: "self"},
-	},
-	Name:   "json_rack_instance",
-	Status: "BUILD",
-	Volume: os.Volume{Size: 2},
-}
 
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()

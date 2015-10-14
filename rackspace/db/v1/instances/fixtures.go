@@ -1,6 +1,8 @@
 package instances
 
 import (
+	"fmt"
+
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
 	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
@@ -9,39 +11,37 @@ import (
 
 const instance = `
 {
-  "instance": {
-    "created": "2014-02-13T21:47:13",
-    "datastore": {
-      "type": "mysql",
-      "version": "5.6"
-    },
-    "flavor": {
-      "id": "1",
-      "links": [
-        {
-          "href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1",
-          "rel": "self"
-        },
-        {
-          "href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1",
-          "rel": "bookmark"
-        }
-      ]
-    },
+  "created": "2014-02-13T21:47:13",
+  "datastore": {
+    "type": "mysql",
+    "version": "5.6"
+  },
+  "flavor": {
+    "id": "1",
     "links": [
       {
         "href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1",
         "rel": "self"
+      },
+      {
+        "href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1",
+        "rel": "bookmark"
       }
-    ],
-    "hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.rackspaceclouddb.com",
-    "id": "{instanceID}",
-    "name": "json_rack_instance",
-    "status": "BUILD",
-    "updated": "2014-02-13T21:47:13",
-    "volume": {
-      "size": 2
+    ]
+  },
+  "links": [
+    {
+      "href": "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1",
+      "rel": "self"
     }
+  ],
+  "hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.rackspaceclouddb.com",
+  "id": "{instanceID}",
+  "name": "json_rack_instance",
+  "status": "BUILD",
+  "updated": "2014-02-13T21:47:13",
+  "volume": {
+    "size": 2
   }
 }
 `
@@ -286,10 +286,34 @@ var listBackupsResp = `
 `
 
 var (
-	createResp    = instance
-	getResp       = instance
-	associateResp = instance
+	createResp        = fmt.Sprintf(`{"instance":%s}`, instance)
+	getResp           = fmt.Sprintf(`{"instance":%s}`, instance)
+	associateResp     = fmt.Sprintf(`{"instance":%s}`, instance)
+	listInstancesResp = fmt.Sprintf(`{"instances":[%s]}`, instance)
 )
+
+var instanceID = "{instanceID}"
+
+var expectedInstance = &Instance{
+	Created:   "2014-02-13T21:47:13",
+	Updated:   "2014-02-13T21:47:13",
+	Datastore: datastores.DatastorePartial{Type: "mysql", Version: "5.6"},
+	Flavor: flavors.Flavor{
+		ID: "1",
+		Links: []gophercloud.Link{
+			gophercloud.Link{Href: "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1", Rel: "self"},
+			gophercloud.Link{Href: "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1", Rel: "bookmark"},
+		},
+	},
+	Hostname: "e09ad9a3f73309469cf1f43d11e79549caf9acf2.rackspaceclouddb.com",
+	ID:       instanceID,
+	Links: []gophercloud.Link{
+		gophercloud.Link{Href: "https://ord.databases.api.rackspacecloud.com/v1.0/1234/flavors/1", Rel: "self"},
+	},
+	Name:   "json_rack_instance",
+	Status: "BUILD",
+	Volume: os.Volume{Size: 2},
+}
 
 var expectedReplica = &Instance{
 	Status:  "BUILD",
