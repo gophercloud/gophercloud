@@ -94,6 +94,48 @@ func TestUserAccessList(t *testing.T) {
 	th.AssertEquals(t, 1, pages)
 }
 
+func TestUserList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	fixture.SetupHandler(t, "/instances/"+instanceID+"/users", "GET", "", listResp, 200)
+
+	expectedUsers := []User{
+		User{
+			Databases: []db.Database{
+				db.Database{Name: "databaseA"},
+			},
+			Name: "dbuser1",
+			Host: "localhost",
+		},
+		User{
+			Databases: []db.Database{
+				db.Database{Name: "databaseB"},
+				db.Database{Name: "databaseC"},
+			},
+			Name: "dbuser2",
+			Host: "localhost",
+		},
+	}
+
+	pages := 0
+	err := List(fake.ServiceClient(), instanceID).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := ExtractUsers(page)
+		if err != nil {
+			return false, err
+		}
+
+		th.CheckDeepEquals(t, expectedUsers, actual)
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, pages)
+}
+
 func TestGrantAccess(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

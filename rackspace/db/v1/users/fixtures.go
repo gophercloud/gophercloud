@@ -43,6 +43,34 @@ var getResp = `
 }
 `
 
+var listResp = `
+{
+"users": [
+  {
+    "name": "dbuser1",
+    "host": "localhost",
+    "databases": [
+      {
+        "name": "databaseA"
+      }
+    ]
+  },
+  {
+    "name": "dbuser2",
+    "host": "localhost",
+    "databases": [
+      {
+        "name": "databaseB"
+      },
+      {
+        "name": "databaseC"
+      }
+    ]
+  }
+]
+}
+`
+
 var (
 	listUserAccessResp = singleDB
 	grantUserAccessReq = singleDB

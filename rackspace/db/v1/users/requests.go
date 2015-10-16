@@ -9,6 +9,15 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// List will list all available users for a specified database instance.
+func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager {
+	createPageFn := func(r pagination.PageResult) pagination.Page {
+		return UserPage{pagination.LinkedPageBase{PageResult: r}}
+	}
+
+	return pagination.NewPager(client, baseURL(client, instanceID), createPageFn)
+}
+
 /*
 ChangePassword changes the password for one or more users. For example, to
 change the respective passwords for two users:
