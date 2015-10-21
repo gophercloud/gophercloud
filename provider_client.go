@@ -192,6 +192,7 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 			if options.RawBody != nil {
 				options.RawBody.Seek(0, 0)
 			}
+			resp.Body.Close()
 			resp, err = client.Request(method, url, options)
 			if err != nil {
 				return nil, fmt.Errorf("Successfully re-authenticated, but got error executing request: %s", err)
