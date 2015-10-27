@@ -74,6 +74,11 @@ type CreateResult struct {
 	gophercloud.Result
 }
 
+// GetResult is the deferred response from a Get call.
+type GetResult struct {
+    gophercloud.Result
+}
+
 // ExtractToken returns the just-created Token from a CreateResult.
 func (result CreateResult) ExtractToken() (*Token, error) {
 	if result.Err != nil {
