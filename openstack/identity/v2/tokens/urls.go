@@ -7,7 +7,7 @@ func CreateURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("tokens")
 }
 
-// CreateGetURL generates the URL used to Validate Tokens.
-func CreateGetURL(client *gophercloud.ServiceClient, token string) string {
-    return client.ServiceURL("tokens", token)
+// GetURL generates the URL used to Validate Tokens.
+func GetURL(client *gophercloud.ServiceClient, token string) string {
+	return client.ServiceURL("tokens", token)
 }
