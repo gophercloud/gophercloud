@@ -17,19 +17,28 @@ type CreateOptsBuilder interface {
 // the volumes.Create function. For more information about these parameters,
 // see the Volume object.
 type CreateOpts struct {
-	// OPTIONAL
-	Availability string
-	// OPTIONAL
+	// The availability zone [OPTIONAL]
+	AvailabilityZone string
+	// ConsistencyGroupID is the ID of a consistency group [OPTINAL]
+	ConsistencyGroupID string
+	// The volume description [OPTIONAL]
 	Description string
-	// OPTIONAL
+	// One or more metadata key and value pairs to associate with the volume [OPTIONAL]
 	Metadata map[string]string
-	// OPTIONAL
+	// The volume name [OPTIONAL]
 	Name string
-	// REQUIRED
+	// The size of the volume, in gibibytes (GiB) [REQUIRED]
 	Size int
-	// OPTIONAL
-	SnapshotID, SourceVolID, ImageID string
-	// OPTIONAL
+	// the ID of the existing volume snapshot [OPTIONAL]
+	SnapshotID string
+	// SourceReplica is a UUID of an existing volume to replicate with [OPTIONAL]
+	SourceReplica string
+	// the ID of the existing volume [OPTIONAL]
+	SourceVolID string
+	// The ID of the image from which you want to create the volume.
+	// Required to create a bootable volume.
+	ImageID string
+	// The associated volume type [OPTIONAL]
 	VolumeType string
 }
 
@@ -43,11 +52,14 @@ func (opts CreateOpts) ToVolumeCreateMap() (map[string]interface{}, error) {
 	}
 	v["size"] = opts.Size
 
-	if opts.Availability != "" {
-		v["availability_zone"] = opts.Availability
+	if opts.AvailabilityZone != "" {
+		v["availability_zone"] = opts.AvailabilityZone
+	}
+	if opts.ConsistencyGroupID != "" {
+		v["consistencygroup_id"] = opts.ConsistencyGroupID
 	}
 	if opts.Description != "" {
-		v["display_description"] = opts.Description
+		v["description"] = opts.Description
 	}
 	if opts.ImageID != "" {
 		v["imageRef"] = opts.ImageID
@@ -56,7 +68,10 @@ func (opts CreateOpts) ToVolumeCreateMap() (map[string]interface{}, error) {
 		v["metadata"] = opts.Metadata
 	}
 	if opts.Name != "" {
-		v["display_name"] = opts.Name
+		v["name"] = opts.Name
+	}
+	if opts.SourceReplica != "" {
+		v["source_replica"] = opts.SourceReplica
 	}
 	if opts.SourceVolID != "" {
 		v["source_volid"] = opts.SourceVolID
@@ -84,7 +99,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 	}
 
 	_, res.Err = client.Post(createURL(client), reqBody, &res.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 201},
+		OkCodes: []int{202},
 	})
 	return res
 }
@@ -173,13 +188,13 @@ func (opts UpdateOpts) ToVolumeUpdateMap() (map[string]interface{}, error) {
 	v := make(map[string]interface{})
 
 	if opts.Description != "" {
-		v["display_description"] = opts.Description
+		v["description"] = opts.Description
 	}
 	if opts.Metadata != nil {
 		v["metadata"] = opts.Metadata
 	}
 	if opts.Name != "" {
-		v["display_name"] = opts.Name
+		v["name"] = opts.Name
 	}
 
 	return map[string]interface{}{"volume": v}, nil

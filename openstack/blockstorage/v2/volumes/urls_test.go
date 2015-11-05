@@ -21,7 +21,7 @@ func TestCreateURL(t *testing.T) {
 
 func TestListURL(t *testing.T) {
 	actual := listURL(endpointClient())
-	expected := endpoint + "volumes"
+	expected := endpoint + "volumes/detail"
 	th.AssertEquals(t, expected, actual)
 }
 

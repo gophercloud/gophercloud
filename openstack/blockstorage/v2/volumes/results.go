@@ -9,29 +9,41 @@ import (
 
 // Volume contains all the information associated with an OpenStack Volume.
 type Volume struct {
-	// Current status of the volume.
-	Status string `mapstructure:"status"`
-
-	// Human-readable display name for the volume.
-	Name string `mapstructure:"display_name"`
-
 	// Instances onto which the volume is attached.
 	Attachments []map[string]interface{} `mapstructure:"attachments"`
 
-	// This parameter is no longer used.
+	// AvailabilityZone is which availability zone the volume is in.
 	AvailabilityZone string `mapstructure:"availability_zone"`
 
 	// Indicates whether this is a bootable volume.
 	Bootable string `mapstructure:"bootable"`
 
+	// ConsistencyGroupID is the consistency group ID.
+	ConsistencyGroupID string `mapstructure:"consistencygroup_id"`
+
 	// The date when this volume was created.
 	CreatedAt string `mapstructure:"created_at"`
 
 	// Human-readable description for the volume.
-	Description string `mapstructure:"display_description"`
+	Description string `mapstructure:"description"`
+
+	// Encrypted denotes if the volume is encrypted.
+	Encrypted bool `mapstructure:"encrypted"`
+
+	// Human-readable display name for the volume.
+	Name string `mapstructure:"name"`
 
 	// The type of volume to create, either SATA or SSD.
 	VolumeType string `mapstructure:"volume_type"`
+
+	// ReplicationDriverData contains data about the replication driver.
+	ReplicationDriverData string `mapstructure:"os-volume-replication:driver_data"`
+
+	// ReplicationExtendedStatus contains extended status about replication.
+	ReplicationExtendedStatus string `mapstructure:"os-volume-replication:extended_status"`
+
+	// ReplicationStatus is the status of replication.
+	ReplicationStatus string `mapstructure:"replication_status"`
 
 	// The ID of the snapshot from which the volume was created
 	SnapshotID string `mapstructure:"snapshot_id"`
@@ -39,14 +51,26 @@ type Volume struct {
 	// The ID of another block storage volume from which the current volume was created
 	SourceVolID string `mapstructure:"source_volid"`
 
+	// Current status of the volume.
+	Status string `mapstructure:"status"`
+
+	// TenantID is the id of the project that owns the volume.
+	TenantID string `mapstructure:"os-vol-tenant-attr:tenant_id"`
+
 	// Arbitrary key-value pairs defined by the user.
 	Metadata map[string]string `mapstructure:"metadata"`
+
+	// Multiattach denotes if the volume is multi-attach capable.
+	Multiattach bool `mapstructure:"multiattach"`
 
 	// Unique identifier for the volume.
 	ID string `mapstructure:"id"`
 
 	// Size of the volume in GB.
 	Size int `mapstructure:"size"`
+
+	// UserID is the id of the user who created the volume.
+	UserID string `mapstructure:"user_id"`
 }
 
 // CreateResult contains the response body and error from a Create request.
