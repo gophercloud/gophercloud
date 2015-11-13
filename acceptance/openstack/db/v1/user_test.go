@@ -16,9 +16,9 @@ func (c context) createUsers() {
 		tools.RandomString("user_", 5),
 	}
 
-	db1 := db.CreateOpts{Name: c.DBIDs[0]}
-	db2 := db.CreateOpts{Name: c.DBIDs[1]}
-	db3 := db.CreateOpts{Name: c.DBIDs[2]}
+	db1 := db.CreateOpts{Name: "db1"}
+	db2 := db.CreateOpts{Name: "db2"}
+	db3 := db.CreateOpts{Name: "db3"}
 
 	opts := u.BatchCreateOpts{
 		u.CreateOpts{

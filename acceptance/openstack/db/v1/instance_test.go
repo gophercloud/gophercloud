@@ -22,17 +22,15 @@ func TestRunner(t *testing.T) {
 	c.getFlavor()
 
 	// INSTANCE tests
-	//c.createInstance()
-	c.instanceID = "dbf901f4-fe23-48b7-8c1d-ee60ec85a660"
-
+	c.createInstance()
 	c.listInstances()
 	c.getInstance()
 	c.isRootEnabled()
 	c.enableRootUser()
 	c.isRootEnabled()
 	c.restartInstance()
-	c.resizeInstance()
-	c.resizeVol()
+	//c.resizeInstance()
+	//c.resizeVol()
 
 	// DATABASE tests
 	c.createDBs()
@@ -54,8 +52,8 @@ func (c context) createInstance() {
 	}
 
 	opts := instances.CreateOpts{
-		FlavorRef: "1",
-		Size:      1,
+		FlavorRef: "2",
+		Size:      5,
 		Name:      tools.RandomString("gopher_db", 5),
 		Datastore: &instances.DatastoreOpts{Type: os.Getenv(envDSType)},
 	}
@@ -123,7 +121,7 @@ func (c context) restartInstance() {
 
 func (c context) resizeInstance() {
 	id := c.instanceID
-	err := instances.ResizeInstance(c.client, id, "2").ExtractErr()
+	err := instances.ResizeInstance(c.client, id, "3").ExtractErr()
 	c.AssertNoErr(err)
 	c.Logf("Resizing %s. Waiting...", id)
 	c.WaitUntilActive(id)
@@ -132,7 +130,7 @@ func (c context) resizeInstance() {
 
 func (c context) resizeVol() {
 	id := c.instanceID
-	err := instances.ResizeVolume(c.client, id, 2).ExtractErr()
+	err := instances.ResizeVolume(c.client, id, 4).ExtractErr()
 	c.AssertNoErr(err)
 	c.Logf("Resizing volume of %s. Waiting...", id)
 	c.WaitUntilActive(id)

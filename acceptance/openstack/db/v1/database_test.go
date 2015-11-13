@@ -3,28 +3,20 @@
 package v1
 
 import (
-	"github.com/rackspace/gophercloud/acceptance/tools"
 	db "github.com/rackspace/gophercloud/openstack/db/v1/databases"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
 func (c context) createDBs() {
-	dbs := []string{
-		tools.RandomString("db_", 5),
-		tools.RandomString("db_", 5),
-		tools.RandomString("db_", 5),
-	}
-
 	opts := db.BatchCreateOpts{
-		db.CreateOpts{Name: dbs[0]},
-		db.CreateOpts{Name: dbs[1]},
-		db.CreateOpts{Name: dbs[2]},
+		db.CreateOpts{Name: "db1"},
+		db.CreateOpts{Name: "db2"},
+		db.CreateOpts{Name: "db3"},
 	}
 
 	err := db.Create(c.client, c.instanceID, opts).ExtractErr()
 	c.AssertNoErr(err)
-	c.Logf("Created three databases on instance %s: %s, %s, %s", c.instanceID, dbs[0], dbs[1], dbs[2])
-	c.DBIDs = dbs
+	c.Logf("Created three databases on instance %s: db1, db2, db3", c.instanceID)
 }
 
 func (c context) listDBs() {
@@ -45,7 +37,7 @@ func (c context) listDBs() {
 }
 
 func (c context) deleteDBs() {
-	for _, id := range c.DBIDs {
+	for _, id := range []string{"db1", "db2", "db3"} {
 		err := db.Delete(c.client, c.instanceID, id).ExtractErr()
 		c.AssertNoErr(err)
 		c.Logf("Deleted DB %s", id)

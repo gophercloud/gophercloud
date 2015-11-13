@@ -96,7 +96,7 @@ func (c *context) createInstance() {
 func (c *context) listInstances() {
 	c.Logf("Listing instances")
 
-	err := instances.List(c.client).EachPage(func(page pagination.Page) (bool, error) {
+	err := instances.List(c.client, nil).EachPage(func(page pagination.Page) (bool, error) {
 		instanceList, err := instances.ExtractInstances(page)
 		c.AssertNoErr(err)
 
