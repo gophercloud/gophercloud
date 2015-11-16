@@ -105,21 +105,21 @@ func TestIsRootEnabled(t *testing.T) {
 	th.AssertEquals(t, true, isEnabled)
 }
 
-func TestRestartService(t *testing.T) {
+func TestRestart(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleRestart(t)
 
-	res := RestartService(fake.ServiceClient(), instanceID)
+	res := Restart(fake.ServiceClient(), instanceID)
 	th.AssertNoErr(t, res.Err)
 }
 
-func TestResizeInstance(t *testing.T) {
+func TestResize(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleResize(t)
 
-	res := ResizeInstance(fake.ServiceClient(), instanceID, "2")
+	res := Resize(fake.ServiceClient(), instanceID, "2")
 	th.AssertNoErr(t, res.Err)
 }
 

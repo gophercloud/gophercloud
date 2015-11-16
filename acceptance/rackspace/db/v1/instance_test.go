@@ -137,7 +137,7 @@ func (c *context) isRootEnabled() {
 
 func (c *context) restartInstance() {
 	id := c.instanceID
-	err := instances.RestartService(c.client, id).ExtractErr()
+	err := instances.Restart(c.client, id).ExtractErr()
 	c.AssertNoErr(err)
 	c.Logf("Restarting %s. Waiting...", id)
 	c.WaitUntilActive(id)
@@ -146,7 +146,7 @@ func (c *context) restartInstance() {
 
 func (c *context) resizeInstance() {
 	id := c.instanceID
-	err := instances.ResizeInstance(c.client, id, "2").ExtractErr()
+	err := instances.Resize(c.client, id, "2").ExtractErr()
 	c.AssertNoErr(err)
 	c.Logf("Resizing %s. Waiting...", id)
 	c.WaitUntilActive(id)

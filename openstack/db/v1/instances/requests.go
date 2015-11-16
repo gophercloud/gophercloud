@@ -172,10 +172,10 @@ func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
 	return res.Body.(map[string]interface{})["rootEnabled"] == true, err
 }
 
-// RestartService will restart only the MySQL Instance. Restarting MySQL will
+// Restart will restart only the MySQL Instance. Restarting MySQL will
 // erase any dynamic configuration settings that you have made within MySQL.
 // The MySQL service will be unavailable until the instance restarts.
-func RestartService(client *gophercloud.ServiceClient, id string) ActionResult {
+func Restart(client *gophercloud.ServiceClient, id string) ActionResult {
 	var res ActionResult
 
 	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
@@ -186,9 +186,9 @@ func RestartService(client *gophercloud.ServiceClient, id string) ActionResult {
 	return res
 }
 
-// ResizeInstance changes the memory size of the instance, assuming a valid
+// Resize changes the memory size of the instance, assuming a valid
 // flavorRef is provided. It will also restart the MySQL service.
-func ResizeInstance(client *gophercloud.ServiceClient, id, flavorRef string) ActionResult {
+func Resize(client *gophercloud.ServiceClient, id, flavorRef string) ActionResult {
 	var res ActionResult
 
 	type resize struct {
