@@ -1,23 +1,31 @@
 package configurations
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
-const singleConfigJSON = `
+var (
+	timestamp  = "2015-11-12T14:22:42Z"
+	timeVal, _ = time.Parse(time.RFC3339, timestamp)
+)
+
+var singleConfigJSON = `
 {
-  "created": "2014-07-31T18:56:09",
+  "created": "` + timestamp + `",
   "datastore_name": "mysql",
   "datastore_version_id": "b00000b0-00b0-0b00-00b0-000b000000bb",
   "datastore_version_name": "5.6",
   "description": "example_description",
   "id": "005a8bb7-a8df-40ee-b0b7-fc144641abc2",
   "name": "example-configuration-name",
-  "updated": "2014-07-31T18:56:09"
+  "updated": "` + timestamp + `"
 }
 `
 
-const singleConfigWithValuesJSON = `
+var singleConfigWithValuesJSON = `
 {
-  "created": "2014-07-31T15:02:52",
+  "created": "` + timestamp + `",
   "datastore_name": "mysql",
   "datastore_version_id": "b00000b0-00b0-0b00-00b0-000b000000bb",
   "datastore_version_name": "5.6",
@@ -25,7 +33,7 @@ const singleConfigWithValuesJSON = `
   "id": "005a8bb7-a8df-40ee-b0b7-fc144641abc2",
   "instance_count": 0,
   "name": "example-configuration-name",
-  "updated": "2014-07-31T15:02:52",
+  "updated": "` + timestamp + `",
   "values": {
     "collation_server": "latin1_swedish_ci",
     "connect_timeout": 120
@@ -123,25 +131,25 @@ var GetParamJSON = `
 `
 
 var ExampleConfig = Config{
-	Created:              "2014-07-31T18:56:09",
+	Created:              timeVal,
 	DatastoreName:        "mysql",
 	DatastoreVersionID:   "b00000b0-00b0-0b00-00b0-000b000000bb",
 	DatastoreVersionName: "5.6",
 	Description:          "example_description",
 	ID:                   "005a8bb7-a8df-40ee-b0b7-fc144641abc2",
 	Name:                 "example-configuration-name",
-	Updated:              "2014-07-31T18:56:09",
+	Updated:              timeVal,
 }
 
 var ExampleConfigWithValues = Config{
-	Created:              "2014-07-31T15:02:52",
+	Created:              timeVal,
 	DatastoreName:        "mysql",
 	DatastoreVersionID:   "b00000b0-00b0-0b00-00b0-000b000000bb",
 	DatastoreVersionName: "5.6",
 	Description:          "example description",
 	ID:                   "005a8bb7-a8df-40ee-b0b7-fc144641abc2",
 	Name:                 "example-configuration-name",
-	Updated:              "2014-07-31T15:02:52",
+	Updated:              timeVal,
 	Values: map[string]interface{}{
 		"collation_server": "latin1_swedish_ci",
 		"connect_timeout":  120,

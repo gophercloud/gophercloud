@@ -31,7 +31,7 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := &Backup{
-		Created:     "2014-02-13T21:47:16",
+		Created:     timeVal,
 		Description: "My Backup",
 		ID:          "61f12fef-edb1-4561-8122-e7c00ef26a82",
 		InstanceID:  "d4603f69-ec7e-4e9b-803f-600b9205576f",
@@ -40,7 +40,7 @@ func TestCreate(t *testing.T) {
 		ParentID:    "",
 		Size:        100,
 		Status:      "NEW",
-		Updated:     "2014-02-13T21:47:16",
+		Updated:     timeVal,
 		Datastore: datastores.DatastorePartial{
 			Version:   "5.1",
 			Type:      "MySQL",
@@ -65,7 +65,7 @@ func TestList(t *testing.T) {
 
 		expected := []Backup{
 			Backup{
-				Created:     "2014-06-18T21:23:35",
+				Created:     timeVal,
 				Description: "Backup from Restored Instance",
 				ID:          "87972694-4be2-40f5-83f8-501656e0032a",
 				InstanceID:  "29af2cd9-0674-48ab-b87a-b160f00208e6",
@@ -74,7 +74,7 @@ func TestList(t *testing.T) {
 				ParentID:    "",
 				Size:        0.141026,
 				Status:      "COMPLETED",
-				Updated:     "2014-06-18T21:24:39",
+				Updated:     timeVal,
 				Datastore: datastores.DatastorePartial{
 					Version:   "5.1",
 					Type:      "MySQL",
@@ -101,7 +101,7 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := &Backup{
-		Created:     "2014-02-13T21:47:16",
+		Created:     timeVal,
 		Description: "My Backup",
 		ID:          "61f12fef-edb1-4561-8122-e7c00ef26a82",
 		InstanceID:  "d4603f69-ec7e-4e9b-803f-600b9205576f",
@@ -110,7 +110,7 @@ func TestGet(t *testing.T) {
 		ParentID:    "",
 		Size:        100,
 		Status:      "NEW",
-		Updated:     "2014-02-13T21:47:16",
+		Updated:     timeVal,
 		Datastore: datastores.DatastorePartial{
 			Version:   "5.1",
 			Type:      "MySQL",

@@ -1,6 +1,8 @@
 package backups
 
 import (
+	"time"
+
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
@@ -29,8 +31,8 @@ type Backup struct {
 	ParentID    string `json:"parent_id" mapstructure:"parent_id"`
 	Size        float64
 	Status      Status
-	Created     string
-	Updated     string
+	Created     time.Time `mapstructure:"-"`
+	Updated     time.Time `mapstructure:"-"`
 	Datastore   datastores.DatastorePartial
 }
 
@@ -64,6 +66,24 @@ func (r commonResult) Extract() (*Backup, error) {
 	}
 
 	err := mapstructure.Decode(r.Body, &response)
+	val := r.Body.(map[string]interface{})["backup"].(map[string]interface{})
+
+	if t, ok := val["created"].(string); ok && t != "" {
+		creationTime, err := time.Parse(time.RFC3339, t)
+		if err != nil {
+			return &response.Backup, err
+		}
+		response.Backup.Created = creationTime
+	}
+
+	if t, ok := val["updated"].(string); ok && t != "" {
+		updatedTime, err := time.Parse(time.RFC3339, t)
+		if err != nil {
+			return &response.Backup, err
+		}
+		response.Backup.Updated = updatedTime
+	}
+
 	return &response.Backup, err
 }
 
@@ -90,5 +110,32 @@ func ExtractBackups(page pagination.Page) ([]Backup, error) {
 	}
 
 	err := mapstructure.Decode(casted, &resp)
+
+	var vals []interface{}
+	switch (casted).(type) {
+	case interface{}:
+		vals = casted.(map[string]interface{})["backups"].([]interface{})
+	}
+
+	for i, v := range vals {
+		val := v.(map[string]interface{})
+
+		if t, ok := val["created"].(string); ok && t != "" {
+			creationTime, err := time.Parse(time.RFC3339, t)
+			if err != nil {
+				return resp.Backups, err
+			}
+			resp.Backups[i].Created = creationTime
+		}
+
+		if t, ok := val["updated"].(string); ok && t != "" {
+			updatedTime, err := time.Parse(time.RFC3339, t)
+			if err != nil {
+				return resp.Backups, err
+			}
+			resp.Backups[i].Updated = updatedTime
+		}
+	}
+
 	return resp.Backups, err
 }

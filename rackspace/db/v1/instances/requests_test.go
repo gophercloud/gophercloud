@@ -121,7 +121,7 @@ func TestListBackups(t *testing.T) {
 
 		expected := []backups.Backup{
 			backups.Backup{
-				Created:     "2014-06-18T21:23:35",
+				Created:     timeVal,
 				Description: "Backup from Restored Instance",
 				ID:          "87972694-4be2-40f5-83f8-501656e0032a",
 				InstanceID:  "29af2cd9-0674-48ab-b87a-b160f00208e6",
@@ -130,7 +130,7 @@ func TestListBackups(t *testing.T) {
 				ParentID:    "",
 				Size:        0.141026,
 				Status:      "COMPLETED",
-				Updated:     "2014-06-18T21:24:39",
+				Updated:     timeVal,
 				Datastore:   datastores.DatastorePartial{Version: "5.1", Type: "MySQL", VersionID: "20000000-0000-0000-0000-000000000002"},
 			},
 		}
@@ -212,9 +212,9 @@ func TestGetReplica(t *testing.T) {
 
 	expectedReplica := &Instance{
 		Status:  "ACTIVE",
-		Updated: "2014-09-26T19:15:57",
+		Updated: timeVal,
 		Name:    "t1_ALT_GUEST",
-		Created: "2014-09-26T19:15:50",
+		Created: timeVal,
 		IP: []string{
 			"10.0.0.2",
 		},

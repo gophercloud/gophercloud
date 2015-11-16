@@ -1,6 +1,8 @@
 package instances
 
 import (
+	"time"
+
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
@@ -12,10 +14,10 @@ import (
 // Instance represents a remote MySQL instance.
 type Instance struct {
 	// Indicates the datetime that the instance was created
-	Created string //time.Time
+	Created time.Time `mapstructure:"-"`
 
 	// Indicates the most recent datetime that the instance was updated.
-	Updated string //time.Time
+	Updated time.Time `mapstructure:"-"`
 
 	// Indicates how the instance stores data.
 	Datastore datastores.DatastorePartial
@@ -66,6 +68,25 @@ func commonExtract(err error, body interface{}) (*Instance, error) {
 	}
 
 	err = mapstructure.Decode(body, &response)
+
+	val := body.(map[string]interface{})["instance"].(map[string]interface{})
+
+	if t, ok := val["created"].(string); ok && t != "" {
+		creationTime, err := time.Parse(time.RFC3339, t)
+		if err != nil {
+			return &response.Instance, err
+		}
+		response.Instance.Created = creationTime
+	}
+
+	if t, ok := val["updated"].(string); ok && t != "" {
+		updatedTime, err := time.Parse(time.RFC3339, t)
+		if err != nil {
+			return &response.Instance, err
+		}
+		response.Instance.Updated = updatedTime
+	}
+
 	return &response.Instance, err
 }
 
@@ -131,5 +152,32 @@ func ExtractInstances(page pagination.Page) ([]Instance, error) {
 	}
 
 	err := mapstructure.Decode(casted, &response)
+
+	var vals []interface{}
+	switch (casted).(type) {
+	case interface{}:
+		vals = casted.(map[string]interface{})["instances"].([]interface{})
+	}
+
+	for i, v := range vals {
+		val := v.(map[string]interface{})
+
+		if t, ok := val["created"].(string); ok && t != "" {
+			creationTime, err := time.Parse(time.RFC3339, t)
+			if err != nil {
+				return response.Instances, err
+			}
+			response.Instances[i].Created = creationTime
+		}
+
+		if t, ok := val["updated"].(string); ok && t != "" {
+			updatedTime, err := time.Parse(time.RFC3339, t)
+			if err != nil {
+				return response.Instances, err
+			}
+			response.Instances[i].Updated = updatedTime
+		}
+	}
+
 	return response.Instances, err
 }

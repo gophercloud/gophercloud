@@ -1,6 +1,8 @@
 package configurations
 
 import (
+	"time"
+
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
@@ -8,11 +10,11 @@ import (
 
 // Config represents a configuration group API resource.
 type Config struct {
-	Created              string
-	Updated              string
-	DatastoreName        string `mapstructure:"datastore_name"`
-	DatastoreVersionID   string `mapstructure:"datastore_version_id"`
-	DatastoreVersionName string `mapstructure:"datastore_version_name"`
+	Created              time.Time `mapstructure:"-"`
+	Updated              time.Time `mapstructure:"-"`
+	DatastoreName        string    `mapstructure:"datastore_name"`
+	DatastoreVersionID   string    `mapstructure:"datastore_version_id"`
+	DatastoreVersionName string    `mapstructure:"datastore_version_name"`
 	Description          string
 	ID                   string
 	Name                 string
@@ -42,6 +44,33 @@ func ExtractConfigs(page pagination.Page) ([]Config, error) {
 	}
 
 	err := mapstructure.Decode(casted, &resp)
+
+	var vals []interface{}
+	switch (casted).(type) {
+	case interface{}:
+		vals = casted.(map[string]interface{})["configurations"].([]interface{})
+	}
+
+	for i, v := range vals {
+		val := v.(map[string]interface{})
+
+		if t, ok := val["created"].(string); ok && t != "" {
+			creationTime, err := time.Parse(time.RFC3339, t)
+			if err != nil {
+				return resp.Configs, err
+			}
+			resp.Configs[i].Created = creationTime
+		}
+
+		if t, ok := val["updated"].(string); ok && t != "" {
+			updatedTime, err := time.Parse(time.RFC3339, t)
+			if err != nil {
+				return resp.Configs, err
+			}
+			resp.Configs[i].Updated = updatedTime
+		}
+	}
+
 	return resp.Configs, err
 }
 
@@ -60,6 +89,24 @@ func (r commonResult) Extract() (*Config, error) {
 	}
 
 	err := mapstructure.Decode(r.Body, &response)
+	val := r.Body.(map[string]interface{})["configuration"].(map[string]interface{})
+
+	if t, ok := val["created"].(string); ok && t != "" {
+		creationTime, err := time.Parse(time.RFC3339, t)
+		if err != nil {
+			return &response.Config, err
+		}
+		response.Config.Created = creationTime
+	}
+
+	if t, ok := val["updated"].(string); ok && t != "" {
+		updatedTime, err := time.Parse(time.RFC3339, t)
+		if err != nil {
+			return &response.Config, err
+		}
+		response.Config.Updated = updatedTime
+	}
+
 	return &response.Config, err
 }
 

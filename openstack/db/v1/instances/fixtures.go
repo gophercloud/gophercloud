@@ -3,6 +3,7 @@ package instances
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
@@ -10,9 +11,14 @@ import (
 	"github.com/rackspace/gophercloud/testhelper/fixture"
 )
 
-const instance = `
+var (
+	timestamp  = "2015-11-12T14:22:42Z"
+	timeVal, _ = time.Parse(time.RFC3339, timestamp)
+)
+
+var instance = `
 {
-  "created": "2014-02-13T21:47:13",
+  "created": "` + timestamp + `",
   "datastore": {
     "type": "mysql",
     "version": "5.6"
@@ -40,7 +46,7 @@ const instance = `
   "id": "{instanceID}",
   "name": "json_rack_instance",
   "status": "BUILD",
-  "updated": "2014-02-13T21:47:13",
+  "updated": "` + timestamp + `",
   "volume": {
     "size": 2
   }
@@ -103,8 +109,8 @@ var (
 )
 
 var expectedInstance = Instance{
-	Created: "2014-02-13T21:47:13",
-	Updated: "2014-02-13T21:47:13",
+	Created: timeVal,
+	Updated: timeVal,
 	Flavor: flavors.Flavor{
 		ID: "1",
 		Links: []gophercloud.Link{

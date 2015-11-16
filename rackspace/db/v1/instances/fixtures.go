@@ -2,6 +2,7 @@ package instances
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/db/v1/datastores"
@@ -9,9 +10,14 @@ import (
 	os "github.com/rackspace/gophercloud/openstack/db/v1/instances"
 )
 
-const instance = `
+var (
+	timestamp  = "2015-11-12T14:22:42Z"
+	timeVal, _ = time.Parse(time.RFC3339, timestamp)
+)
+
+var instance = `
 {
-  "created": "2014-02-13T21:47:13",
+  "created": "` + timestamp + `",
   "datastore": {
     "type": "mysql",
     "version": "5.6"
@@ -39,7 +45,7 @@ const instance = `
   "id": "{instanceID}",
   "name": "json_rack_instance",
   "status": "BUILD",
-  "updated": "2014-02-13T21:47:13",
+  "updated": "` + timestamp + `",
   "volume": {
     "size": 2
   }
@@ -99,7 +105,7 @@ var createReplicaResp = `
 {
   "instance": {
     "status": "BUILD",
-    "updated": "2014-10-14T18:42:15",
+    "updated": "` + timestamp + `",
     "name": "t2s1_ALT_GUEST",
     "links": [
       {
@@ -111,7 +117,7 @@ var createReplicaResp = `
         "rel": "bookmark"
       }
     ],
-    "created": "2014-10-14T18:42:15",
+    "created": "` + timestamp + `",
     "id": "8367c312-7c40-4a66-aab1-5767478914fc",
     "volume": {
       "size": 1
@@ -172,9 +178,9 @@ var getReplicaResp = `
 {
   "instance": {
     "status": "ACTIVE",
-    "updated": "2014-09-26T19:15:57",
+    "updated": "` + timestamp + `",
     "name": "t1_ALT_GUEST",
-    "created": "2014-09-26T19:15:50",
+    "created": "` + timestamp + `",
     "ip": [
       "10.0.0.2"
     ],
@@ -266,7 +272,7 @@ var listBackupsResp = `
   "backups": [
     {
       "status": "COMPLETED",
-      "updated": "2014-06-18T21:24:39",
+      "updated": "` + timestamp + `",
       "description": "Backup from Restored Instance",
       "datastore": {
         "version": "5.1",
@@ -276,7 +282,7 @@ var listBackupsResp = `
       "id": "87972694-4be2-40f5-83f8-501656e0032a",
       "size": 0.141026,
       "name": "restored_backup",
-      "created": "2014-06-18T21:23:35",
+      "created": "` + timestamp + `",
       "instance_id": "29af2cd9-0674-48ab-b87a-b160f00208e6",
       "parent_id": null,
       "locationRef": "http://localhost/path/to/backup"
@@ -295,8 +301,8 @@ var (
 var instanceID = "{instanceID}"
 
 var expectedInstance = &Instance{
-	Created:   "2014-02-13T21:47:13",
-	Updated:   "2014-02-13T21:47:13",
+	Created:   timeVal,
+	Updated:   timeVal,
 	Datastore: datastores.DatastorePartial{Type: "mysql", Version: "5.6"},
 	Flavor: flavors.Flavor{
 		ID: "1",
@@ -317,13 +323,13 @@ var expectedInstance = &Instance{
 
 var expectedReplica = &Instance{
 	Status:  "BUILD",
-	Updated: "2014-10-14T18:42:15",
+	Updated: timeVal,
 	Name:    "t2s1_ALT_GUEST",
 	Links: []gophercloud.Link{
 		gophercloud.Link{Rel: "self", Href: "https://ord.databases.api.rackspacecloud.com/v1.0/5919009/instances/8367c312-7c40-4a66-aab1-5767478914fc"},
 		gophercloud.Link{Rel: "bookmark", Href: "https://ord.databases.api.rackspacecloud.com/instances/8367c312-7c40-4a66-aab1-5767478914fc"},
 	},
-	Created:   "2014-10-14T18:42:15",
+	Created:   timeVal,
 	ID:        "8367c312-7c40-4a66-aab1-5767478914fc",
 	Volume:    os.Volume{Size: 1},
 	Flavor:    flavors.Flavor{ID: "9"},
