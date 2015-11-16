@@ -24,10 +24,10 @@ type CreateOpts struct {
 	Name string
 
 	// A slice of database information options.
-	Databases osDBs.BatchCreateOpts
+	Databases osDBs.CreateOptsBuilder
 
 	// A slice of user information options.
-	Users osUsers.BatchCreateOpts
+	Users osUsers.CreateOptsBuilder
 
 	// ID of the configuration group to associate with the instance. Optional.
 	ConfigID string

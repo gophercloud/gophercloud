@@ -29,7 +29,7 @@ change the respective passwords for two users:
 
 	ChangePassword(client, "instance_id", opts)
 */
-func ChangePassword(client *gophercloud.ServiceClient, instanceID string, opts os.BatchCreateOpts) UpdatePasswordsResult {
+func ChangePassword(client *gophercloud.ServiceClient, instanceID string, opts os.CreateOptsBuilder) UpdatePasswordsResult {
 	var res UpdatePasswordsResult
 
 	reqBody, err := opts.ToUserCreateMap()
@@ -142,7 +142,7 @@ instance. For example, to add a user to multiple databases:
 
 	GrantAccess(client, "instance_id", "user_name", opts)
 */
-func GrantAccess(client *gophercloud.ServiceClient, instanceID, userName string, opts db.BatchCreateOpts) GrantAccessResult {
+func GrantAccess(client *gophercloud.ServiceClient, instanceID, userName string, opts db.CreateOptsBuilder) GrantAccessResult {
 	var res GrantAccessResult
 
 	reqBody, err := opts.ToDBCreateMap()

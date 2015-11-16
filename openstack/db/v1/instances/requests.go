@@ -42,10 +42,10 @@ type CreateOpts struct {
 	Name string
 
 	// A slice of database information options.
-	Databases db.BatchCreateOpts
+	Databases db.CreateOptsBuilder
 
 	// A slice of user information options.
-	Users users.BatchCreateOpts
+	Users users.CreateOptsBuilder
 
 	// Options to configure the type of datastore the instance will use. This is
 	// optional, and if excluded will default to MySQL.
@@ -69,14 +69,14 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	if opts.Name != "" {
 		instance["name"] = opts.Name
 	}
-	if len(opts.Databases) > 0 {
+	if opts.Databases != nil {
 		dbs, err := opts.Databases.ToDBCreateMap()
 		if err != nil {
 			return nil, err
 		}
 		instance["databases"] = dbs["databases"]
 	}
-	if len(opts.Users) > 0 {
+	if opts.Users != nil {
 		users, err := opts.Users.ToUserCreateMap()
 		if err != nil {
 			return nil, err
