@@ -185,21 +185,10 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		if client.ReauthFunc != nil {
-			// make sure ReauthFunc only exec one time, or will occur endless recursive loop when admin reauth fail
-			execFunc := client.ReauthFunc
-			client.ReauthFunc = nil
-			err = execFunc()
-			client.ReauthFunc = execFunc
+			err = client.ReauthFunc()
 			if err != nil {
 				return nil, fmt.Errorf("Error trying to re-authenticate: %s", err)
 			}
-
-			if options.MoreHeaders != nil {
-				options.MoreHeaders["X-Auth-Token"] = client.TokenID
-			} else {
-				options.MoreHeaders = client.AuthenticatedHeaders()
-			}
-
 			if options.RawBody != nil {
 				options.RawBody.Seek(0, 0)
 			}

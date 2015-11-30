@@ -95,8 +95,5 @@ func Get(client *gophercloud.ServiceClient, token string) GetResult {
 	_, result.Err = client.Get(GetURL(client, token), &result.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 203},
 	})
-	if result.Err != nil {
-		return result
-	}
 	return result
 }

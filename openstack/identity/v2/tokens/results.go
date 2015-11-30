@@ -23,10 +23,17 @@ type Token struct {
 
 	// Tenant provides information about the tenant to which this token grants access.
 	Tenant tenants.Tenant
+}
 
-	// the owner user of token
-	UserName string
-	UserID   string
+// Authorization need user info which can get from token authentication's response
+type Role struct {
+	Name string `mapstructure:"name"`
+}
+type User struct {
+	ID       string `mapstructure:"id"`
+	Name     string `mapstructure:"name"`
+	UserName string `mapstructure:"username"`
+	Roles    []Role `mapstructure:"roles"`
 }
 
 // Endpoint represents a single API endpoint offered by a service.
@@ -78,9 +85,10 @@ type CreateResult struct {
 	gophercloud.Result
 }
 
-// GetResult is the deferred response from a Get call.
+// GetResult is the deferred response from a Get call, which is the same with a Created token.
+// Use ExtractUser() to interpret it as a User.
 type GetResult struct {
-	gophercloud.Result
+	CreateResult
 }
 
 // ExtractToken returns the just-created Token from a CreateResult.
@@ -141,22 +149,15 @@ func createErr(err error) CreateResult {
 	return CreateResult{gophercloud.Result{Err: err}}
 }
 
-// ExtractToken returns the Token from a GetResult.
-func (result GetResult) ExtractToken() (*Token, error) {
+// ExtractUser returns the User from a GetResult.
+func (result GetResult) ExtractUser() (*User, error) {
 	if result.Err != nil {
 		return nil, result.Err
 	}
 
 	var response struct {
 		Access struct {
-			Token struct {
-				Expires string `mapstructure:"expires"`
-				ID      string `mapstructure:"id"`
-			} `mapstructure:"token"`
-			User struct {
-				ID   string `mapstructure:"id"`
-				Name string `mapstructure:"name"`
-			} `mapstructure:"user"`
+			User User `mapstructure:"user"`
 		} `mapstructure:"access"`
 	}
 
@@ -165,15 +166,5 @@ func (result GetResult) ExtractToken() (*Token, error) {
 		return nil, err
 	}
 
-	expiresTs, err := time.Parse(gophercloud.RFC3339Milli, response.Access.Token.Expires)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Token{
-		ID:        response.Access.Token.ID,
-		ExpiresAt: expiresTs,
-		UserID:    response.Access.User.ID,
-		UserName:  response.Access.User.Name,
-	}, nil
+	return &response.Access.User, nil
 }
