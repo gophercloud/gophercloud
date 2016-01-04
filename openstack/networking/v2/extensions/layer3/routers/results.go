@@ -12,6 +12,11 @@ type GatewayInfo struct {
 	NetworkID string `json:"network_id" mapstructure:"network_id"`
 }
 
+type Route struct {
+	NextHop         string `mapstructure:"nexthop" json:"nexthop"`
+	DestinationCIDR string `mapstructure:"destination" json:"destination"`
+}
+
 // Router represents a Neutron router. A router is a logical entity that
 // forwards packets across internal subnets and NATs (network address
 // translation) them on external networks through an appropriate gateway.
@@ -39,6 +44,8 @@ type Router struct {
 	// Owner of the router. Only admin users can specify a tenant identifier
 	// other than its own.
 	TenantID string `json:"tenant_id" mapstructure:"tenant_id"`
+
+	Routes []Route `json:"routes" mapstructure:"routes"`
 }
 
 // RouterPage is the page returned by a pager when traversing over a

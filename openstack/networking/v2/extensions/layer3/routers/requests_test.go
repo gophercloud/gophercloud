@@ -167,6 +167,12 @@ func TestGet(t *testing.T) {
         "external_gateway_info": {
             "network_id": "85d76829-6415-48ff-9c63-5c5ca8c61ac6"
         },
+        "routes": [
+            {
+                "nexthop": "10.1.0.10",
+                "destination": "40.0.1.0/24"
+            }
+        ],
         "name": "router1",
         "admin_state_up": true,
         "tenant_id": "d6554fe62e2f41efbb6e026fad5c1542",
@@ -185,6 +191,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, n.AdminStateUp, true)
 	th.AssertEquals(t, n.TenantID, "d6554fe62e2f41efbb6e026fad5c1542")
 	th.AssertEquals(t, n.ID, "a07eea83-7710-4860-931b-5fe220fae533")
+	th.AssertDeepEquals(t, n.Routes, []Route{Route{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}})
 }
 
 func TestUpdate(t *testing.T) {
@@ -202,7 +209,13 @@ func TestUpdate(t *testing.T) {
 			"name": "new_name",
         "external_gateway_info": {
             "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b"
-        }
+		},
+        "routes": [
+            {
+                "nexthop": "10.1.0.10",
+                "destination": "40.0.1.0/24"
+            }
+        ]
     }
 }
 			`)
@@ -220,20 +233,28 @@ func TestUpdate(t *testing.T) {
         "name": "new_name",
         "admin_state_up": true,
         "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
-        "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e"
+        "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e",
+        "routes": [
+            {
+                "nexthop": "10.1.0.10",
+                "destination": "40.0.1.0/24"
+            }
+        ]
     }
 }
 		`)
 	})
 
 	gwi := GatewayInfo{NetworkID: "8ca37218-28ff-41cb-9b10-039601ea7e6b"}
-	options := UpdateOpts{Name: "new_name", GatewayInfo: &gwi}
+	r := []Route{Route{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}}
+	options := UpdateOpts{Name: "new_name", GatewayInfo: &gwi, Routes: r}
 
 	n, err := Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "new_name")
 	th.AssertDeepEquals(t, n.GatewayInfo, GatewayInfo{NetworkID: "8ca37218-28ff-41cb-9b10-039601ea7e6b"})
+	th.AssertDeepEquals(t, n.Routes, []Route{Route{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}})
 }
 
 func TestDelete(t *testing.T) {

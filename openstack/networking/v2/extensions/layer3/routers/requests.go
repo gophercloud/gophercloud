@@ -97,6 +97,7 @@ type UpdateOpts struct {
 	Name         string
 	AdminStateUp *bool
 	GatewayInfo  *GatewayInfo
+	Routes       []Route
 }
 
 // Update allows routers to be updated. You can update the name, administrative
@@ -109,6 +110,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 		Name         *string      `json:"name,omitempty"`
 		AdminStateUp *bool        `json:"admin_state_up,omitempty"`
 		GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
+		Routes       []Route      `json:"routes,omitempty"`
 	}
 
 	type request struct {
@@ -122,6 +124,10 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 
 	if opts.GatewayInfo != nil {
 		reqBody.Router.GatewayInfo = opts.GatewayInfo
+	}
+
+	if opts.Routes != nil {
+		reqBody.Router.Routes = opts.Routes
 	}
 
 	// Send request to API
