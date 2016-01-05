@@ -78,7 +78,7 @@ func TestAssociate(t *testing.T) {
 		FloatingIP: "10.10.10.2",
 	}
 
-	err := AssociateFloatingIP(client.ServiceClient(), associateOpts).ExtractErr()
+	err := AssociateInstance(client.ServiceClient(), associateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -93,7 +93,7 @@ func TestAssociateFixed(t *testing.T) {
 		FixedIP:    "166.78.185.201",
 	}
 
-	err := AssociateFloatingIP(client.ServiceClient(), associateOpts).ExtractErr()
+	err := AssociateInstance(client.ServiceClient(), associateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -108,7 +108,7 @@ func TestDisassociateDeprecated(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestDisassociateFloatingIP(t *testing.T) {
+func TestDisassociateInstance(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleDisassociateSuccessfully(t)
@@ -118,6 +118,6 @@ func TestDisassociateFloatingIP(t *testing.T) {
 		FloatingIP: "10.10.10.2",
 	}
 
-	err := DisassociateFloatingIP(client.ServiceClient(), associateOpts).ExtractErr()
+	err := DisassociateInstance(client.ServiceClient(), associateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

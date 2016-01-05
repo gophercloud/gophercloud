@@ -100,7 +100,7 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 // association / disassociation
 
 // Associate pairs an allocated floating IP with an instance
-// Deprecated. Use AssociateFloatingIP.
+// Deprecated. Use AssociateInstance.
 func Associate(client *gophercloud.ServiceClient, serverId, fip string) AssociateResult {
 	var res AssociateResult
 
@@ -112,8 +112,8 @@ func Associate(client *gophercloud.ServiceClient, serverId, fip string) Associat
 	return res
 }
 
-// AssociateFloatingIP pairs an allocated floating IP with an instance.
-func AssociateFloatingIP(client *gophercloud.ServiceClient, opts AssociateOpts) AssociateResult {
+// AssociateInstance pairs an allocated floating IP with an instance.
+func AssociateInstance(client *gophercloud.ServiceClient, opts AssociateOpts) AssociateResult {
 	var res AssociateResult
 
 	associateInfo, err := opts.ToAssociateMap()
@@ -138,7 +138,7 @@ func AssociateFloatingIP(client *gophercloud.ServiceClient, opts AssociateOpts) 
 }
 
 // Disassociate decouples an allocated floating IP from an instance
-// Deprecated. Use DisassociateFloatingIP.
+// Deprecated. Use DisassociateInstance.
 func Disassociate(client *gophercloud.ServiceClient, serverId, fip string) DisassociateResult {
 	var res DisassociateResult
 
@@ -150,8 +150,8 @@ func Disassociate(client *gophercloud.ServiceClient, serverId, fip string) Disas
 	return res
 }
 
-// DisassociateFloatingIP decouples an allocated floating IP from an instance
-func DisassociateFloatingIP(client *gophercloud.ServiceClient, opts AssociateOpts) DisassociateResult {
+// DisassociateInstance decouples an allocated floating IP from an instance
+func DisassociateInstance(client *gophercloud.ServiceClient, opts AssociateOpts) DisassociateResult {
 	var res DisassociateResult
 
 	associateInfo, err := opts.ToAssociateMap()

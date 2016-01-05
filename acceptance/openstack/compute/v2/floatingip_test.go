@@ -71,11 +71,11 @@ func associateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, server
 		FloatingIP: fip.IP,
 	}
 
-	err := floatingip.AssociateFloatingIP(client, associateOpts).ExtractErr()
+	err := floatingip.AssociateInstance(client, associateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Associated floating IP %v from instance %v", fip.IP, serverId)
 	defer func() {
-		err = floatingip.DisassociateFloatingIP(client, associateOpts).ExtractErr()
+		err = floatingip.DisassociateInstance(client, associateOpts).ExtractErr()
 		th.AssertNoErr(t, err)
 		t.Logf("Disassociated floating IP %v from instance %v", fip.IP, serverId)
 	}()
@@ -108,11 +108,11 @@ func associateFloatingIPFixed(t *testing.T, client *gophercloud.ServiceClient, s
 		FixedIP:    fixedIP,
 	}
 
-	err = floatingip.AssociateFloatingIP(client, associateOpts).ExtractErr()
+	err = floatingip.AssociateInstance(client, associateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Associated floating IP %v from instance %v with Fixed IP %v", fip.IP, serverId, fixedIP)
 	defer func() {
-		err = floatingip.DisassociateFloatingIP(client, associateOpts).ExtractErr()
+		err = floatingip.DisassociateInstance(client, associateOpts).ExtractErr()
 		th.AssertNoErr(t, err)
 		t.Logf("Disassociated floating IP %v from instance %v with Fixed IP %v", fip.IP, serverId, fixedIP)
 	}()
