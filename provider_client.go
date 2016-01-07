@@ -197,6 +197,8 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 			if err != nil {
 				return nil, fmt.Errorf("Successfully re-authenticated, but got error executing request: %s", err)
 			}
+
+			return resp, nil
 		}
 	}
 
