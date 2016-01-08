@@ -257,6 +257,52 @@ func TestUpdate(t *testing.T) {
 	th.AssertDeepEquals(t, n.Routes, []Route{Route{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}})
 }
 
+func TestAllRoutesRemoved(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "router": {
+        "routes": []
+    }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "router": {
+        "status": "ACTIVE",
+        "external_gateway_info": {
+            "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b"
+        },
+        "name": "name",
+        "admin_state_up": true,
+        "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
+        "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e",
+        "routes": []
+    }
+}
+		`)
+	})
+
+	r := []Route{}
+	options := UpdateOpts{Routes: r}
+
+	n, err := Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, n.Routes, []Route{})
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

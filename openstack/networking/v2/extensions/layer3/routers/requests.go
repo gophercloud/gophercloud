@@ -110,7 +110,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 		Name         *string      `json:"name,omitempty"`
 		AdminStateUp *bool        `json:"admin_state_up,omitempty"`
 		GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
-		Routes       []Route      `json:"routes,omitempty"`
+		Routes       []Route      `json:"routes"`
 	}
 
 	type request struct {
