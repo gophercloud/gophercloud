@@ -1,6 +1,8 @@
 package instances
 
 import (
+	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -142,16 +144,22 @@ func (page InstancePage) NextPageURL() (string, error) {
 func ExtractInstances(page pagination.Page) ([]Instance, error) {
 	casted := page.(InstancePage).Body
 
-	var response struct {
+	var resp struct {
 		Instances []Instance `mapstructure:"instances"`
 	}
 
-	err := mapstructure.Decode(casted, &response)
+	if err := mapstructure.Decode(casted, &resp); err != nil {
+		return nil, err
+	}
 
 	var vals []interface{}
-	switch (casted).(type) {
-	case interface{}:
+	switch casted.(type) {
+	case map[string]interface{}:
 		vals = casted.(map[string]interface{})["instances"].([]interface{})
+	case map[string][]interface{}:
+		vals = casted.(map[string][]interface{})["instances"]
+	default:
+		return resp.Instances, fmt.Errorf("Unknown type: %v", reflect.TypeOf(casted))
 	}
 
 	for i, v := range vals {
@@ -160,21 +168,21 @@ func ExtractInstances(page pagination.Page) ([]Instance, error) {
 		if t, ok := val["created"].(string); ok && t != "" {
 			creationTime, err := time.Parse(time.RFC3339, t)
 			if err != nil {
-				return response.Instances, err
+				return resp.Instances, err
 			}
-			response.Instances[i].Created = creationTime
+			resp.Instances[i].Created = creationTime
 		}
 
 		if t, ok := val["updated"].(string); ok && t != "" {
 			updatedTime, err := time.Parse(time.RFC3339, t)
 			if err != nil {
-				return response.Instances, err
+				return resp.Instances, err
 			}
-			response.Instances[i].Updated = updatedTime
+			resp.Instances[i].Updated = updatedTime
 		}
 	}
 
-	return response.Instances, err
+	return resp.Instances, nil
 }
 
 // UserRootResult represents the result of an operation to enable the root user.

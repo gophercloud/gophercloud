@@ -1,6 +1,8 @@
 package configurations
 
 import (
+	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -43,12 +45,18 @@ func ExtractConfigs(page pagination.Page) ([]Config, error) {
 		Configs []Config `mapstructure:"configurations" json:"configurations"`
 	}
 
-	err := mapstructure.Decode(casted, &resp)
+	if err := mapstructure.Decode(casted, &resp); err != nil {
+		return nil, err
+	}
 
 	var vals []interface{}
-	switch (casted).(type) {
-	case interface{}:
+	switch casted.(type) {
+	case map[string]interface{}:
 		vals = casted.(map[string]interface{})["configurations"].([]interface{})
+	case map[string][]interface{}:
+		vals = casted.(map[string][]interface{})["configurations"]
+	default:
+		return resp.Configs, fmt.Errorf("Unknown type: %v", reflect.TypeOf(casted))
 	}
 
 	for i, v := range vals {
@@ -71,7 +79,7 @@ func ExtractConfigs(page pagination.Page) ([]Config, error) {
 		}
 	}
 
-	return resp.Configs, err
+	return resp.Configs, nil
 }
 
 type commonResult struct {

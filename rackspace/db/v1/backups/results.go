@@ -1,6 +1,8 @@
 package backups
 
 import (
+	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -109,12 +111,18 @@ func ExtractBackups(page pagination.Page) ([]Backup, error) {
 		Backups []Backup `mapstructure:"backups" json:"backups"`
 	}
 
-	err := mapstructure.Decode(casted, &resp)
+	if err := mapstructure.Decode(casted, &resp); err != nil {
+		return nil, err
+	}
 
 	var vals []interface{}
-	switch (casted).(type) {
-	case interface{}:
+	switch casted.(type) {
+	case map[string]interface{}:
 		vals = casted.(map[string]interface{})["backups"].([]interface{})
+	case map[string][]interface{}:
+		vals = casted.(map[string][]interface{})["backups"]
+	default:
+		return resp.Backups, fmt.Errorf("Unknown type: %v", reflect.TypeOf(casted))
 	}
 
 	for i, v := range vals {
@@ -137,5 +145,5 @@ func ExtractBackups(page pagination.Page) ([]Backup, error) {
 		}
 	}
 
-	return resp.Backups, err
+	return resp.Backups, nil
 }
