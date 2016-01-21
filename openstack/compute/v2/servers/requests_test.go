@@ -78,6 +78,15 @@ func TestDeleteServer(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
+func TestForceDeleteServer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerForceDeletionSuccessfully(t)
+
+	res := ForceDelete(client.ServiceClient(), "asdfasdfasdf")
+	th.AssertNoErr(t, res.Err)
+}
+
 func TestGetServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
