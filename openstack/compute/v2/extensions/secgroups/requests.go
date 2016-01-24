@@ -2,7 +2,7 @@ package secgroups
 
 import (
 	"errors"
-    "strings"
+	"strings"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/pagination"
