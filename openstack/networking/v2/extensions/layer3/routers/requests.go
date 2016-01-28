@@ -18,6 +18,7 @@ type ListOpts struct {
 	AdminStateUp *bool  `q:"admin_state_up"`
 	Status       string `q:"status"`
 	TenantID     string `q:"tenant_id"`
+	RouterType   string `q:"router_type"`
 	Limit        int    `q:"limit"`
 	Marker       string `q:"marker"`
 	SortKey      string `q:"sort_key"`
@@ -47,6 +48,7 @@ type CreateOpts struct {
 	Name         string
 	AdminStateUp *bool
 	TenantID     string
+	DriverOpts   map[string]string
 	GatewayInfo  *GatewayInfo
 }
 
@@ -59,26 +61,36 @@ type CreateOpts struct {
 // an external network (it is external if its `router:external' field is set to
 // true).
 func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	type router struct {
-		Name         *string      `json:"name,omitempty"`
-		AdminStateUp *bool        `json:"admin_state_up,omitempty"`
-		TenantID     *string      `json:"tenant_id,omitempty"`
-		GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
-	}
 
 	type request struct {
-		Router router `json:"router"`
+		Router map[string]interface{} `json:"router"`
 	}
 
-	reqBody := request{Router: router{
-		Name:         gophercloud.MaybeString(opts.Name),
-		AdminStateUp: opts.AdminStateUp,
-		TenantID:     gophercloud.MaybeString(opts.TenantID),
-	}}
+	routerMap := make(map[string]interface{})
+
+	if gophercloud.MaybeString(opts.Name) != nil {
+		routerMap["name"] = opts.Name
+	}
+
+	if opts.AdminStateUp != nil {
+		routerMap["admin_state_up"] = opts.AdminStateUp
+	}
+
+	if gophercloud.MaybeString(opts.TenantID) != nil {
+		routerMap["tenant_id"] = opts.TenantID
+	}
 
 	if opts.GatewayInfo != nil {
-		reqBody.Router.GatewayInfo = opts.GatewayInfo
+		routerMap["external_gateway_info"] = opts.GatewayInfo
 	}
+
+	if opts.DriverOpts != nil {
+		for k, v := range opts.DriverOpts {
+			routerMap[k] = v
+		}
+	}
+
+	reqBody := request{Router: routerMap}
 
 	var res CreateResult
 	_, res.Err = c.Post(rootURL(c), reqBody, &res.Body, nil)
