@@ -37,7 +37,6 @@ func TestList(t *testing.T) {
             "name": "second_routers",
             "admin_state_up": true,
             "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
-						"router_type": "shared",
             "id": "7177abc4-5ae9-4bb7-b0d4-89e94a4abf3b"
         },
         {
@@ -48,7 +47,6 @@ func TestList(t *testing.T) {
             "name": "router1",
             "admin_state_up": true,
             "tenant_id": "33a40233088643acb66ff6eb0ebea679",
-						"router_type": "shared",
             "id": "a9254bdb-2613-4a13-ac4c-adc581fba50d"
         }
     ]
@@ -131,7 +129,6 @@ func TestCreate(t *testing.T) {
         "name": "foo_router",
         "admin_state_up": false,
         "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
-				"router_type": "shared",
         "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e"
     }
 }
@@ -181,7 +178,6 @@ func TestGet(t *testing.T) {
         "name": "router1",
         "admin_state_up": true,
         "tenant_id": "d6554fe62e2f41efbb6e026fad5c1542",
-				"router_type": "shared",
         "id": "a07eea83-7710-4860-931b-5fe220fae533"
     }
 }
@@ -239,7 +235,6 @@ func TestUpdate(t *testing.T) {
         "name": "new_name",
         "admin_state_up": true,
         "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
-				"router_type": "shared",
         "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e",
         "routes": [
             {
@@ -294,7 +289,6 @@ func TestAllRoutesRemoved(t *testing.T) {
         "name": "name",
         "admin_state_up": true,
         "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
-				"router_type": "shared",
         "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e",
         "routes": []
     }

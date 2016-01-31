@@ -18,7 +18,6 @@ type ListOpts struct {
 	AdminStateUp *bool  `q:"admin_state_up"`
 	Status       string `q:"status"`
 	TenantID     string `q:"tenant_id"`
-	RouterType   string `q:"router_type"`
 	Limit        int    `q:"limit"`
 	Marker       string `q:"marker"`
 	SortKey      string `q:"sort_key"`
