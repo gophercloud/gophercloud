@@ -72,7 +72,6 @@ func TestList(t *testing.T) {
 				Name:         "second_routers",
 				ID:           "7177abc4-5ae9-4bb7-b0d4-89e94a4abf3b",
 				TenantID:     "6b96ff0cb17a4b859e1e575d221683d3",
-				RouterType:   "shared",
 			},
 			Router{
 				Status:       "ACTIVE",
@@ -81,7 +80,6 @@ func TestList(t *testing.T) {
 				Name:         "router1",
 				ID:           "a9254bdb-2613-4a13-ac4c-adc581fba50d",
 				TenantID:     "33a40233088643acb66ff6eb0ebea679",
-				RouterType:   "shared",
 			},
 		}
 
