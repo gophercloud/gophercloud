@@ -104,7 +104,7 @@ type CreateOpts struct {
 	DeviceOwner         string
 	TenantID            string
 	SecurityGroups      []string
-	AllowedAddressPairs interface{}
+	AllowedAddressPairs []AddressPair
 }
 
 // ToPortCreateMap casts a CreateOpts struct to a map.
@@ -178,7 +178,7 @@ type UpdateOpts struct {
 	DeviceID            string
 	DeviceOwner         string
 	SecurityGroups      []string
-	AllowedAddressPairs interface{}
+	AllowedAddressPairs []AddressPair
 }
 
 // ToPortUpdateMap casts an UpdateOpts struct to a map.
