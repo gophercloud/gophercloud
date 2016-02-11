@@ -1,21 +1,5 @@
 package gophercloud
 
-import "errors"
-
-var (
-	// ErrServiceNotFound is returned when no service in a service catalog matches
-	// the provided EndpointOpts. This is generally returned by provider service
-	// factory methods like "NewComputeV2()" and can mean that a service is not
-	// enabled for your account.
-	ErrServiceNotFound = errors.New("No suitable service could be found in the service catalog.")
-
-	// ErrEndpointNotFound is returned when no available endpoints match the
-	// provided EndpointOpts. This is also generally returned by provider service
-	// factory methods, and usually indicates that a region was specified
-	// incorrectly.
-	ErrEndpointNotFound = errors.New("No suitable endpoint could be found in the service catalog.")
-)
-
 // Availability indicates to whom a specific service endpoint is accessible:
 // the internet at large, internal networks only, or only to administrators.
 // Different identity services use different terminology for these. Identity v2

@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jrperritt/gophercloud/openstack/compute/v2/images"
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/compute/v2/flavors"
-	"github.com/rackspace/gophercloud/openstack/compute/v2/images"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -130,7 +130,7 @@ func (f *File) MarshalJSON() ([]byte, error) {
 // CreateOpts specifies server creation parameters.
 type CreateOpts struct {
 	// Name [required] is the name to assign to the newly launched server.
-	Name string
+	Name string `b:"name,required"`
 
 	// ImageRef [optional; required if ImageName is not provided] is the ID or full
 	// URL to the image that contains the server's OS and initial state.
@@ -247,6 +247,30 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 		server["personality"] = opts.Personality
 	}
 
+	// If ImageRef isn't provided, use ImageName to ascertain the image ID.
+	if opts.ImageRef == "" {
+		if opts.ImageName == "" {
+			return nil, errors.New("One and only one of ImageRef and ImageName must be provided.")
+		}
+		imageID, err := images.IDFromName(client, opts.ImageName)
+		if err != nil {
+			return nil, err
+		}
+		server["imageRef"] = imageID
+	}
+
+	// If FlavorRef isn't provided, use FlavorName to ascertain the flavor ID.
+	if opts.FlavorRef == "" {
+		if opts.FlavorName == "" {
+			return nil, errors.New("One and only one of FlavorRef and FlavorName must be provided.")
+		}
+		flavorID, err := flavors.IDFromName(client, opts.FlavorName)
+		if err != nil {
+			return nil, err
+		}
+		server["flavorRef"] = flavorID
+	}
+
 	return map[string]interface{}{"server": server}, nil
 }
 
@@ -259,38 +283,6 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 		res.Err = err
 		return res
 	}
-
-	// If ImageRef isn't provided, use ImageName to ascertain the image ID.
-	if reqBody["server"].(map[string]interface{})["imageRef"].(string) == "" {
-		imageName := reqBody["server"].(map[string]interface{})["imageName"].(string)
-		if imageName == "" {
-			res.Err = errors.New("One and only one of ImageRef and ImageName must be provided.")
-			return res
-		}
-		imageID, err := images.IDFromName(client, imageName)
-		if err != nil {
-			res.Err = err
-			return res
-		}
-		reqBody["server"].(map[string]interface{})["imageRef"] = imageID
-	}
-	delete(reqBody["server"].(map[string]interface{}), "imageName")
-
-	// If FlavorRef isn't provided, use FlavorName to ascertain the flavor ID.
-	if reqBody["server"].(map[string]interface{})["flavorRef"].(string) == "" {
-		flavorName := reqBody["server"].(map[string]interface{})["flavorName"].(string)
-		if flavorName == "" {
-			res.Err = errors.New("One and only one of FlavorRef and FlavorName must be provided.")
-			return res
-		}
-		flavorID, err := flavors.IDFromName(client, flavorName)
-		if err != nil {
-			res.Err = err
-			return res
-		}
-		reqBody["server"].(map[string]interface{})["flavorRef"] = flavorID
-	}
-	delete(reqBody["server"].(map[string]interface{}), "flavorName")
 
 	_, res.Err = client.Post(listURL(client), reqBody, &res.Body, nil)
 	return res
@@ -814,14 +806,14 @@ func (opts CreateImageOpts) ToServerCreateImageMap() (map[string]interface{}, er
 }
 
 // CreateImage makes a request against the nova API to schedule an image to be created of the server
-func CreateImage(client *gophercloud.ServiceClient, serverId string, opts CreateImageOptsBuilder) CreateImageResult {
+func CreateImage(client *gophercloud.ServiceClient, serverID string, opts CreateImageOptsBuilder) CreateImageResult {
 	var res CreateImageResult
 	reqBody, err := opts.ToServerCreateImageMap()
 	if err != nil {
 		res.Err = err
 		return res
 	}
-	response, err := client.Post(actionURL(client, serverId), reqBody, nil, &gophercloud.RequestOpts{
+	response, err := client.Post(actionURL(client, serverID), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	res.Err = err

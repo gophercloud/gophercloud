@@ -11,7 +11,7 @@ import (
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
-const DefaultUserAgent = "gophercloud/1.0.0"
+const DefaultUserAgent = "gophercloud/2.0.0"
 
 // UserAgent represents a User-Agent header.
 type UserAgent struct {
@@ -85,38 +85,19 @@ type RequestOpts struct {
 	// content type of the request will default to "application/json" unless overridden by MoreHeaders.
 	// It's an error to specify both a JSONBody and a RawBody.
 	JSONBody interface{}
-	// RawBody contains an io.ReadSeeker that will be consumed by the request directly. No content-type
+	// RawBody contains an io.Reader that will be consumed by the request directly. No content-type
 	// will be set unless one is provided explicitly by MoreHeaders.
-	RawBody io.ReadSeeker
-
+	RawBody io.Reader
 	// JSONResponse, if provided, will be populated with the contents of the response body parsed as
 	// JSON.
 	JSONResponse interface{}
 	// OkCodes contains a list of numeric HTTP status codes that should be interpreted as success. If
 	// the response has a different code, an error will be returned.
 	OkCodes []int
-
 	// MoreHeaders specifies additional HTTP headers to be provide on the request. If a header is
 	// provided with a blank value (""), that header will be *omitted* instead: use this to suppress
 	// the default Accept header or an inferred Content-Type, for example.
 	MoreHeaders map[string]string
-}
-
-// UnexpectedResponseCodeError is returned by the Request method when a response code other than
-// those listed in OkCodes is encountered.
-type UnexpectedResponseCodeError struct {
-	URL      string
-	Method   string
-	Expected []int
-	Actual   int
-	Body     []byte
-}
-
-func (err *UnexpectedResponseCodeError) Error() string {
-	return fmt.Sprintf(
-		"Expected HTTP response code %v when accessing [%s %s], but got %d instead\n%s",
-		err.Expected, err.Method, err.URL, err.Actual, err.Body,
-	)
 }
 
 var applicationJSON = "application/json"
@@ -124,7 +105,7 @@ var applicationJSON = "application/json"
 // Request performs an HTTP request using the ProviderClient's current HTTPClient. An authentication
 // header will automatically be provided.
 func (client *ProviderClient) Request(method, url string, options RequestOpts) (*http.Response, error) {
-	var body io.ReadSeeker
+	var body io.Reader
 	var contentType *string
 
 	// Derive the content body by either encoding an arbitrary object as JSON, or by taking a provided
@@ -192,8 +173,8 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 			if err != nil {
 				return nil, fmt.Errorf("Error trying to re-authenticate: %s", err)
 			}
-			if options.RawBody != nil {
-				options.RawBody.Seek(0, 0)
+			if seeker, ok := options.RawBody.(io.ReadSeeker); ok && options.RawBody != nil {
+				seeker.Seek(0, 0)
 			}
 			resp.Body.Close()
 			resp, err = client.Request(method, url, options)
@@ -221,7 +202,7 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 	if !ok {
 		body, _ := ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
-		return resp, &UnexpectedResponseCodeError{
+		return resp, &ErrUnexpectedResponseCode{
 			URL:      url,
 			Method:   method,
 			Expected: options.OkCodes,

@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+type Opts struct {
+	ServiceClient *ServiceClient
+}
+
 // EnabledState is a convenience type, mostly used in Create and Update
 // operations. Because the zero value of a bool is FALSE, we need to use a
 // pointer instead to indicate zero-ness.
