@@ -16,6 +16,7 @@ type ListOpts struct {
 	ID           string `q:"id"`
 	Name         string `q:"name"`
 	AdminStateUp *bool  `q:"admin_state_up"`
+	Distributed  *bool  `q:"distributed"`
 	Status       string `q:"status"`
 	TenantID     string `q:"tenant_id"`
 	Limit        int    `q:"limit"`
@@ -46,6 +47,7 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 type CreateOpts struct {
 	Name         string
 	AdminStateUp *bool
+	Distributed  *bool
 	TenantID     string
 	DriverOpts   map[string]string
 	GatewayInfo  *GatewayInfo
@@ -73,6 +75,10 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 
 	if opts.AdminStateUp != nil {
 		routerMap["admin_state_up"] = opts.AdminStateUp
+	}
+
+	if opts.Distributed != nil {
+		routerMap["distributed"] = opts.Distributed
 	}
 
 	if gophercloud.MaybeString(opts.TenantID) != nil {
@@ -107,6 +113,7 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 type UpdateOpts struct {
 	Name         string
 	AdminStateUp *bool
+	Distributed  *bool
 	GatewayInfo  *GatewayInfo
 	Routes       []Route
 }
@@ -120,6 +127,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 	type router struct {
 		Name         *string      `json:"name,omitempty"`
 		AdminStateUp *bool        `json:"admin_state_up,omitempty"`
+		Distributed  *bool        `json:"distributed,omitempty"`
 		GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
 		Routes       []Route      `json:"routes"`
 	}
@@ -131,6 +139,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResu
 	reqBody := request{Router: router{
 		Name:         gophercloud.MaybeString(opts.Name),
 		AdminStateUp: opts.AdminStateUp,
+		Distributed:  opts.Distributed,
 	}}
 
 	if opts.GatewayInfo != nil {
