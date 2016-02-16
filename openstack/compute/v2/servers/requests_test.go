@@ -124,6 +124,15 @@ func TestChangeServerAdminPassword(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
+func TestGetPassword(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandlePasswordGetSuccessfully(t)
+
+	res := GetPassword(client.ServiceClient(), "1234asdf")
+	th.AssertNoErr(t, res.Err)
+}
+
 func TestRebootServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
