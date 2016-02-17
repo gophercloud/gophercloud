@@ -1,5 +1,6 @@
 language: go
 install:
+  - go get golang.org/x/crypto/ssh
   - go get -v -tags 'fixtures acceptance' ./...
 go:
   - 1.2
