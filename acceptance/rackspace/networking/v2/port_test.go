@@ -5,14 +5,14 @@ package v2
 import (
 	"testing"
 
-	osNetworks "github.com/rackspace/gophercloud/openstack/networking/v2/networks"
-	osPorts "github.com/rackspace/gophercloud/openstack/networking/v2/ports"
-	osSubnets "github.com/rackspace/gophercloud/openstack/networking/v2/subnets"
-	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/rackspace/networking/v2/networks"
-	"github.com/rackspace/gophercloud/rackspace/networking/v2/ports"
-	"github.com/rackspace/gophercloud/rackspace/networking/v2/subnets"
-	th "github.com/rackspace/gophercloud/testhelper"
+	osNetworks "github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	osPorts "github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
+	osSubnets "github.com/gophercloud/gophercloud/openstack/networking/v2/subnets"
+	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud/rackspace/networking/v2/networks"
+	"github.com/gophercloud/gophercloud/rackspace/networking/v2/ports"
+	"github.com/gophercloud/gophercloud/rackspace/networking/v2/subnets"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestPortCRUD(t *testing.T) {

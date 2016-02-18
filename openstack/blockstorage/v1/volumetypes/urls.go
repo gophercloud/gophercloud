@@ -1,6 +1,6 @@
 package volumetypes
 
-import "github.com/rackspace/gophercloud"
+import "github.com/gophercloud/gophercloud"
 
 func listURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("types")

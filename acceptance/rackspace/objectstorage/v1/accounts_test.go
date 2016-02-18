@@ -5,8 +5,8 @@ package v1
 import (
 	"testing"
 
-	raxAccounts "github.com/rackspace/gophercloud/rackspace/objectstorage/v1/accounts"
-	th "github.com/rackspace/gophercloud/testhelper"
+	raxAccounts "github.com/gophercloud/gophercloud/rackspace/objectstorage/v1/accounts"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestAccounts(t *testing.T) {

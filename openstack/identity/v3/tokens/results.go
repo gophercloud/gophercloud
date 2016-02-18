@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
+	"github.com/gophercloud/gophercloud"
 )
 
 // Endpoint represents a single API endpoint offered by a service.

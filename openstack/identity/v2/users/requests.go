@@ -3,8 +3,8 @@ package users
 import (
 	"errors"
 
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 func List(client *gophercloud.ServiceClient) pagination.Pager {

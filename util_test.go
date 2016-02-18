@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	th "github.com/rackspace/gophercloud/testhelper"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestWaitFor(t *testing.T) {

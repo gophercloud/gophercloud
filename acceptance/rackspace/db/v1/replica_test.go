@@ -3,9 +3,9 @@
 package v1
 
 import (
-	"github.com/rackspace/gophercloud/acceptance/tools"
-	"github.com/rackspace/gophercloud/rackspace/db/v1/instances"
-	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/rackspace/db/v1/instances"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func (c *context) createReplica() {

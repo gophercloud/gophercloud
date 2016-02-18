@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper"
 )
 
 // SinglePage sample and test cases.

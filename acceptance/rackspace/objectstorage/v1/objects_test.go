@@ -6,11 +6,11 @@ import (
 	"bytes"
 	"testing"
 
-	osObjects "github.com/rackspace/gophercloud/openstack/objectstorage/v1/objects"
-	"github.com/rackspace/gophercloud/pagination"
-	raxContainers "github.com/rackspace/gophercloud/rackspace/objectstorage/v1/containers"
-	raxObjects "github.com/rackspace/gophercloud/rackspace/objectstorage/v1/objects"
-	th "github.com/rackspace/gophercloud/testhelper"
+	osObjects "github.com/gophercloud/gophercloud/openstack/objectstorage/v1/objects"
+	"github.com/gophercloud/gophercloud/pagination"
+	raxContainers "github.com/gophercloud/gophercloud/rackspace/objectstorage/v1/containers"
+	raxObjects "github.com/gophercloud/gophercloud/rackspace/objectstorage/v1/objects"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestObjects(t *testing.T) {

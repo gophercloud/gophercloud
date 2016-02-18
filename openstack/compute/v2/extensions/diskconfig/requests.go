@@ -3,7 +3,7 @@ package diskconfig
 import (
 	"errors"
 
-	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
 
 // DiskConfig represents one of the two possible settings for the DiskConfig option when creating,

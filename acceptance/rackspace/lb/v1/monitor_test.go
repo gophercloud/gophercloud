@@ -5,10 +5,10 @@ package v1
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/rackspace/lb/v1/lbs"
-	"github.com/rackspace/gophercloud/rackspace/lb/v1/monitors"
-	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/rackspace/lb/v1/lbs"
+	"github.com/gophercloud/gophercloud/rackspace/lb/v1/monitors"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestMonitors(t *testing.T) {

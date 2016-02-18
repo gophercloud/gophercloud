@@ -3,9 +3,9 @@
 package v1
 
 import (
-	os "github.com/rackspace/gophercloud/openstack/db/v1/flavors"
-	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/rackspace/db/v1/flavors"
+	os "github.com/gophercloud/gophercloud/openstack/db/v1/flavors"
+	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud/rackspace/db/v1/flavors"
 )
 
 func (c context) listFlavors() {

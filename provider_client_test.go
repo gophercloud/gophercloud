@@ -3,7 +3,7 @@ package gophercloud
 import (
 	"testing"
 
-	th "github.com/rackspace/gophercloud/testhelper"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestAuthenticatedHeaders(t *testing.T) {

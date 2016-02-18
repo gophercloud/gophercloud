@@ -5,9 +5,9 @@ package rackspace
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/acceptance/tools"
-	"github.com/rackspace/gophercloud/rackspace"
-	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/rackspace"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestAuthenticatedClient(t *testing.T) {

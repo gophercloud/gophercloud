@@ -5,16 +5,16 @@ package v2
 import (
 	"testing"
 
-	osGroups "github.com/rackspace/gophercloud/openstack/networking/v2/extensions/security/groups"
-	osRules "github.com/rackspace/gophercloud/openstack/networking/v2/extensions/security/rules"
-	osNetworks "github.com/rackspace/gophercloud/openstack/networking/v2/networks"
-	osPorts "github.com/rackspace/gophercloud/openstack/networking/v2/ports"
-	"github.com/rackspace/gophercloud/pagination"
-	rsNetworks "github.com/rackspace/gophercloud/rackspace/networking/v2/networks"
-	rsPorts "github.com/rackspace/gophercloud/rackspace/networking/v2/ports"
-	rsGroups "github.com/rackspace/gophercloud/rackspace/networking/v2/security/groups"
-	rsRules "github.com/rackspace/gophercloud/rackspace/networking/v2/security/rules"
-	th "github.com/rackspace/gophercloud/testhelper"
+	osGroups "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/groups"
+	osRules "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/rules"
+	osNetworks "github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	osPorts "github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
+	"github.com/gophercloud/gophercloud/pagination"
+	rsNetworks "github.com/gophercloud/gophercloud/rackspace/networking/v2/networks"
+	rsPorts "github.com/gophercloud/gophercloud/rackspace/networking/v2/ports"
+	rsGroups "github.com/gophercloud/gophercloud/rackspace/networking/v2/security/groups"
+	rsRules "github.com/gophercloud/gophercloud/rackspace/networking/v2/security/rules"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestSecurityGroups(t *testing.T) {

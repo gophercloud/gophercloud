@@ -5,10 +5,10 @@ package v2
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/rackspace/compute/v2/networks"
-	"github.com/rackspace/gophercloud/rackspace/compute/v2/virtualinterfaces"
-	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud/rackspace/compute/v2/networks"
+	"github.com/gophercloud/gophercloud/rackspace/compute/v2/virtualinterfaces"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestVirtualInterfaces(t *testing.T) {

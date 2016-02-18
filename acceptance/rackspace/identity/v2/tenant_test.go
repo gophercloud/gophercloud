@@ -5,9 +5,9 @@ package v2
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/pagination"
-	rstenants "github.com/rackspace/gophercloud/rackspace/identity/v2/tenants"
-	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/pagination"
+	rstenants "github.com/gophercloud/gophercloud/rackspace/identity/v2/tenants"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestTenants(t *testing.T) {

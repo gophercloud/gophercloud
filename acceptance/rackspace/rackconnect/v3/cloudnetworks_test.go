@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/rackspace/rackconnect/v3/cloudnetworks"
-	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/rackspace/rackconnect/v3/cloudnetworks"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestCloudNetworks(t *testing.T) {

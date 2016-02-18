@@ -3,8 +3,8 @@ package snapshots
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud"
-	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 const endpoint = "http://localhost:57909"

@@ -1,8 +1,8 @@
 package networks
 
 import (
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // List returns a Pager that allows you to iterate over a collection of Network.

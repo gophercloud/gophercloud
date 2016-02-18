@@ -2,9 +2,9 @@ package extensions
 
 import (
 	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	common "github.com/rackspace/gophercloud/openstack/common/extensions"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	common "github.com/gophercloud/gophercloud/openstack/common/extensions"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ExtensionPage is a single page of Extension results.
