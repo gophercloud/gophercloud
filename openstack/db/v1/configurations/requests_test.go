@@ -3,8 +3,8 @@ package configurations
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud/openstack/db/v1/instances"
 	"github.com/gophercloud/gophercloud/pagination"
-	"github.com/gophercloud/gophercloud/rackspace/db/v1/instances"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 	"github.com/gophercloud/gophercloud/testhelper/fixture"
