@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jrperritt/gophercloud/openstack/compute/v2/images"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -183,6 +183,10 @@ type CreateOpts struct {
 
 	// AccessIPv6 [optional] specifies an IPv6 address for the instance.
 	AccessIPv6 string
+
+	// ServiceClient [optional] will allow calls to be made to retrieve an image or
+	// flavor ID by name.
+	ServiceClient *gophercloud.ServiceClient
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a CreateOpts.
@@ -252,7 +256,10 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 		if opts.ImageName == "" {
 			return nil, errors.New("One and only one of ImageRef and ImageName must be provided.")
 		}
-		imageID, err := images.IDFromName(client, opts.ImageName)
+		if opts.ServiceClient == nil {
+			return nil, errors.New("A service client must be provided to find an image ID by name.")
+		}
+		imageID, err := images.IDFromName(opts.ServiceClient, opts.ImageName)
 		if err != nil {
 			return nil, err
 		}
@@ -264,7 +271,10 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 		if opts.FlavorName == "" {
 			return nil, errors.New("One and only one of FlavorRef and FlavorName must be provided.")
 		}
-		flavorID, err := flavors.IDFromName(client, opts.FlavorName)
+		if opts.ServiceClient == nil {
+			return nil, errors.New("A service client must be provided to find a flavor ID by name.")
+		}
+		flavorID, err := flavors.IDFromName(opts.ServiceClient, opts.FlavorName)
 		if err != nil {
 			return nil, err
 		}
