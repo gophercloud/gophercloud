@@ -101,7 +101,7 @@ func ExtractStacks(page pagination.Page) ([]ListedStack, error) {
 		thisStack := (rawStacks[i]).(map[string]interface{})
 
 		if t, ok := thisStack["creation_time"].(string); ok && t != "" {
-			creationTime, err := time.Parse(gophercloud.STACK_TIME_FMT, t)
+			creationTime, err := time.Parse(gophercloud.StackFmtTime, t)
 			if err != nil {
 				return res.Stacks, err
 			}
@@ -109,7 +109,7 @@ func ExtractStacks(page pagination.Page) ([]ListedStack, error) {
 		}
 
 		if t, ok := thisStack["updated_time"].(string); ok && t != "" {
-			updatedTime, err := time.Parse(gophercloud.STACK_TIME_FMT, t)
+			updatedTime, err := time.Parse(gophercloud.StackFmtTime, t)
 			if err != nil {
 				return res.Stacks, err
 			}
@@ -172,7 +172,7 @@ func (r GetResult) Extract() (*RetrievedStack, error) {
 	b := r.Body.(map[string]interface{})["stack"].(map[string]interface{})
 
 	if date, ok := b["creation_time"]; ok && date != nil {
-		t, err := time.Parse(gophercloud.STACK_TIME_FMT, date.(string))
+		t, err := time.Parse(gophercloud.StackFmtTime, date.(string))
 		if err != nil {
 			return nil, err
 		}
@@ -180,7 +180,7 @@ func (r GetResult) Extract() (*RetrievedStack, error) {
 	}
 
 	if date, ok := b["updated_time"]; ok && date != nil {
-		t, err := time.Parse(gophercloud.STACK_TIME_FMT, date.(string))
+		t, err := time.Parse(gophercloud.StackFmtTime, date.(string))
 		if err != nil {
 			return nil, err
 		}
@@ -249,7 +249,7 @@ func (r PreviewResult) Extract() (*PreviewedStack, error) {
 	b := r.Body.(map[string]interface{})["stack"].(map[string]interface{})
 
 	if date, ok := b["creation_time"]; ok && date != nil {
-		t, err := time.Parse(gophercloud.STACK_TIME_FMT, date.(string))
+		t, err := time.Parse(gophercloud.StackFmtTime, date.(string))
 		if err != nil {
 			return nil, err
 		}
@@ -257,7 +257,7 @@ func (r PreviewResult) Extract() (*PreviewedStack, error) {
 	}
 
 	if date, ok := b["updated_time"]; ok && date != nil {
-		t, err := time.Parse(gophercloud.STACK_TIME_FMT, date.(string))
+		t, err := time.Parse(gophercloud.StackFmtTime, date.(string))
 		if err != nil {
 			return nil, err
 		}
