@@ -80,11 +80,12 @@ func TestV2EndpointExact(t *testing.T) {
 }
 
 func TestV2EndpointNone(t *testing.T) {
-	_, err := V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
+	_, actual := V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
 		Type:         "nope",
 		Availability: gophercloud.AvailabilityPublic,
 	})
-	th.CheckEquals(t, gophercloud.ErrEndpointNotFound, err)
+	expected := &gophercloud.ErrEndpointNotFound{}
+	th.CheckEquals(t, expected.Error(), actual.Error())
 }
 
 func TestV2EndpointMultiple(t *testing.T) {
@@ -199,11 +200,12 @@ func TestV3EndpointExact(t *testing.T) {
 }
 
 func TestV3EndpointNone(t *testing.T) {
-	_, err := V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
+	_, actual := V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
 		Type:         "nope",
 		Availability: gophercloud.AvailabilityPublic,
 	})
-	th.CheckEquals(t, gophercloud.ErrEndpointNotFound, err)
+	expected := &gophercloud.ErrEndpointNotFound{}
+	th.CheckEquals(t, expected.Error(), actual.Error())
 }
 
 func TestV3EndpointMultiple(t *testing.T) {

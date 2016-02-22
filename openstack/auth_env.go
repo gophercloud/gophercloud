@@ -17,7 +17,7 @@ var (
 	ErrNoPassword = fmt.Errorf("Environment variable OS_PASSWORD needs to be set.")
 )
 
-// AuthOptions fills out an identity.AuthOptions structure with the settings found on the various OpenStack
+// AuthOptionsFromEnv fills out an identity.AuthOptions structure with the settings found on the various OpenStack
 // OS_* environment variables.  The following variables provide sources of truth: OS_AUTH_URL, OS_USERNAME,
 // OS_PASSWORD, OS_TENANT_ID, and OS_TENANT_NAME.  Of these, OS_USERNAME, OS_PASSWORD, and OS_AUTH_URL must
 // have settings, or an error will result.  OS_TENANT_ID and OS_TENANT_NAME are optional.

@@ -47,7 +47,7 @@ func V2EndpointURL(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpt
 	}
 
 	// Report an error if there were no matching endpoints.
-	return "", gophercloud.ErrEndpointNotFound
+	return "", &gophercloud.ErrEndpointNotFound{}
 }
 
 // V3EndpointURL discovers the endpoint URL for a specific service from a Catalog acquired
@@ -87,5 +87,5 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 	}
 
 	// Report an error if there were no matching endpoints.
-	return "", gophercloud.ErrEndpointNotFound
+	return "", &gophercloud.ErrEndpointNotFound{}
 }
