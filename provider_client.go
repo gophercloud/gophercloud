@@ -160,7 +160,7 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 
 	// Set connection parameter to close the connection immediately when we've got the response
 	req.Close = true
-	
+
 	// Issue the request.
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
@@ -239,7 +239,8 @@ func defaultOkCodes(method string) []int {
 	return []int{}
 }
 
-func (client *ProviderClient) Get(url string, JSONResponse *interface{}, opts *RequestOpts) (*http.Response, error) {
+// Get calls `Request` with the "GET" HTTP verb.
+func (client *ProviderClient) Get(url string, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
 	if opts == nil {
 		opts = &RequestOpts{}
 	}
@@ -249,7 +250,8 @@ func (client *ProviderClient) Get(url string, JSONResponse *interface{}, opts *R
 	return client.Request("GET", url, *opts)
 }
 
-func (client *ProviderClient) Post(url string, JSONBody interface{}, JSONResponse *interface{}, opts *RequestOpts) (*http.Response, error) {
+// Post calls `Request` with the "POST" HTTP verb.
+func (client *ProviderClient) Post(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
 	if opts == nil {
 		opts = &RequestOpts{}
 	}
@@ -267,7 +269,8 @@ func (client *ProviderClient) Post(url string, JSONBody interface{}, JSONRespons
 	return client.Request("POST", url, *opts)
 }
 
-func (client *ProviderClient) Put(url string, JSONBody interface{}, JSONResponse *interface{}, opts *RequestOpts) (*http.Response, error) {
+// Put calls `Request` with the "PUT" HTTP verb.
+func (client *ProviderClient) Put(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
 	if opts == nil {
 		opts = &RequestOpts{}
 	}
@@ -285,7 +288,8 @@ func (client *ProviderClient) Put(url string, JSONBody interface{}, JSONResponse
 	return client.Request("PUT", url, *opts)
 }
 
-func (client *ProviderClient) Patch(url string, JSONBody interface{}, JSONResponse *interface{}, opts *RequestOpts) (*http.Response, error) {
+// Patch calls `Request` with the "PATCH" HTTP verb.
+func (client *ProviderClient) Patch(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
 	if opts == nil {
 		opts = &RequestOpts{}
 	}
@@ -303,6 +307,7 @@ func (client *ProviderClient) Patch(url string, JSONBody interface{}, JSONRespon
 	return client.Request("PATCH", url, *opts)
 }
 
+// Delete calls `Request` with the "DELETE" HTTP verb.
 func (client *ProviderClient) Delete(url string, opts *RequestOpts) (*http.Response, error) {
 	if opts == nil {
 		opts = &RequestOpts{}
