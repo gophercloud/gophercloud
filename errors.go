@@ -4,7 +4,7 @@ import "fmt"
 
 // BaseError is an error type that all other error types embed.
 type BaseError struct {
-	OriginalError string
+	OriginalError error
 	Function      string
 }
 
@@ -14,7 +14,7 @@ func (e *BaseError) Error() string {
 
 // ErrInvalidInput is an error type used for most non-HTTP Gophercloud errors.
 type ErrInvalidInput struct {
-	BaseError
+	*BaseError
 	Argument string
 	Value    interface{}
 }
@@ -26,7 +26,7 @@ func (e *ErrInvalidInput) Error() string {
 // ErrUnexpectedResponseCode is returned by the Request method when a response code other than
 // those listed in OkCodes is encountered.
 type ErrUnexpectedResponseCode struct {
-	BaseError
+	*BaseError
 	URL      string
 	Method   string
 	Expected []int
@@ -41,27 +41,42 @@ func (err *ErrUnexpectedResponseCode) Error() string {
 	)
 }
 
+// ErrDefault400 is the default error type returned on a 400 HTTP response code.
 type ErrDefault400 struct {
 	*ErrUnexpectedResponseCode
 }
+
+// ErrDefault401 is the default error type returned on a 401 HTTP response code.
 type ErrDefault401 struct {
 	*ErrUnexpectedResponseCode
 }
+
+// ErrDefault404 is the default error type returned on a 404 HTTP response code.
 type ErrDefault404 struct {
 	*ErrUnexpectedResponseCode
 }
+
+// ErrDefault405 is the default error type returned on a 405 HTTP response code.
 type ErrDefault405 struct {
 	*ErrUnexpectedResponseCode
 }
+
+// ErrDefault408 is the default error type returned on a 408 HTTP response code.
 type ErrDefault408 struct {
 	*ErrUnexpectedResponseCode
 }
+
+// ErrDefault429 is the default error type returned on a 429 HTTP response code.
 type ErrDefault429 struct {
 	*ErrUnexpectedResponseCode
 }
+
+// ErrDefault500 is the default error type returned on a 500 HTTP response code.
 type ErrDefault500 struct {
 	*ErrUnexpectedResponseCode
 }
+
+// ErrDefault503 is the default error type returned on a 503 HTTP response code.
 type ErrDefault503 struct {
 	*ErrUnexpectedResponseCode
 }
@@ -139,6 +154,7 @@ type Err503er interface {
 	Error503(*ErrUnexpectedResponseCode) error
 }
 
+// ErrTimeOut is the error type returned when an operations times out.
 type ErrTimeOut struct {
 	*BaseError
 }
@@ -147,6 +163,7 @@ func (e *ErrTimeOut) Error() string {
 	return "A time out occurred"
 }
 
+// ErrUnableToReauthenticate is the error type returned when reauthentication fails.
 type ErrUnableToReauthenticate struct {
 	*BaseError
 }
@@ -155,6 +172,8 @@ func (e *ErrUnableToReauthenticate) Error() string {
 	return fmt.Sprintf("Unable to re-authenticate: %s", e.OriginalError)
 }
 
+// ErrErrorAfterReauthentication is the error type returned when reauthentication
+// succeeds, but an error occurs afterword (usually an HTTP error).
 type ErrErrorAfterReauthentication struct {
 	*BaseError
 }
