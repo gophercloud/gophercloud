@@ -12,7 +12,10 @@ env:
 before_install:
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
+  - go get github.com/gotestcover/gotestcover
   - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
 script:
   - script/cibuild
-  - $HOME/gopath/bin/goveralls -service=travis-ci
+after_success:
+  - $HOME/gopath/bin/gotestcover -tags=fixtures -coverprofile=cover.out ./...
+  - $HOME/gopath/bin/goveralls -service=travis-ci -coverprofile=cover.out
