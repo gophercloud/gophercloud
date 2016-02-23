@@ -10,7 +10,7 @@ go:
 env:
 - COVERALLS_TOKEN=2k7PTU3xa474Hymwgdj6XjqenNfGTNkO8
 script: script/cibuild
-after_success:
+before_install:
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
