@@ -1,4 +1,4 @@
-package floatingip
+package floatingips
 
 import "github.com/gophercloud/gophercloud"
 

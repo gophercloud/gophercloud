@@ -1,7 +1,6 @@
 package users
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	db "github.com/gophercloud/gophercloud/openstack/db/v1/databases"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -37,37 +36,28 @@ type UserPage struct {
 // IsEmpty checks to see whether the collection is empty.
 func (page UserPage) IsEmpty() (bool, error) {
 	users, err := ExtractUsers(page)
-	if err != nil {
-		return true, err
-	}
-	return len(users) == 0, nil
+	return len(users) == 0, err
 }
 
 // NextPageURL will retrieve the next page URL.
 func (page UserPage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"users_links"`
+	var s struct {
+		Links []gophercloud.Link `json:"users_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(page.Body, &r)
+	err := page.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // ExtractUsers will convert a generic pagination struct into a more
 // relevant slice of User structs.
 func ExtractUsers(page pagination.Page) ([]User, error) {
-	casted := page.(UserPage).Body
-
-	var response struct {
-		Users []User `mapstructure:"users"`
+	r := page.(UserPage)
+	var s struct {
+		Users []User `json:"users"`
 	}
-
-	err := mapstructure.Decode(casted, &response)
-
-	return response.Users, err
+	err := r.ExtractInto(&s)
+	return s.Users, err
 }

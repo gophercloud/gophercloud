@@ -24,7 +24,7 @@ var instance = `
     "version": "5.6"
   },
   "flavor": {
-    "id": "1",
+    "id": 1,
     "links": [
       {
         "href": "https://my-openstack.com/v1.0/1234/flavors/1",
@@ -112,7 +112,7 @@ var expectedInstance = Instance{
 	Created: timeVal,
 	Updated: timeVal,
 	Flavor: flavors.Flavor{
-		ID: "1",
+		ID: 1,
 		Links: []gophercloud.Link{
 			gophercloud.Link{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "self"},
 			gophercloud.Link{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "bookmark"},

@@ -1,8 +1,6 @@
 package secgroups
 
 import (
-	"github.com/mitchellh/mapstructure"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -24,7 +22,7 @@ type SecurityGroup struct {
 	Rules []Rule
 
 	// The ID of the tenant to which this security group belongs.
-	TenantID string `mapstructure:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 }
 
 // Rule represents a security group rule, a policy which determines how a
@@ -36,19 +34,19 @@ type Rule struct {
 	ID string
 
 	// The lower bound of the port range which this security group should open up
-	FromPort int `mapstructure:"from_port"`
+	FromPort int `json:"from_port"`
 
 	// The upper bound of the port range which this security group should open up
-	ToPort int `mapstructure:"to_port"`
+	ToPort int `json:"to_port"`
 
 	// The IP protocol (e.g. TCP) which the security group accepts
-	IPProtocol string `mapstructure:"ip_protocol"`
+	IPProtocol string `json:"ip_protocol"`
 
 	// The CIDR IP range whose traffic can be received
-	IPRange IPRange `mapstructure:"ip_range"`
+	IPRange IPRange `json:"ip_range"`
 
 	// The security group ID to which this rule belongs
-	ParentGroupID string `mapstructure:"parent_group_id"`
+	ParentGroupID string `json:"parent_group_id"`
 
 	// Not documented.
 	Group Group
@@ -62,7 +60,7 @@ type IPRange struct {
 
 // Group represents a group.
 type Group struct {
-	TenantID string `mapstructure:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 	Name     string
 }
 
@@ -74,22 +72,17 @@ type SecurityGroupPage struct {
 // IsEmpty determines whether or not a page of Security Groups contains any results.
 func (page SecurityGroupPage) IsEmpty() (bool, error) {
 	users, err := ExtractSecurityGroups(page)
-	if err != nil {
-		return false, err
-	}
-	return len(users) == 0, nil
+	return len(users) == 0, err
 }
 
 // ExtractSecurityGroups returns a slice of SecurityGroups contained in a single page of results.
 func ExtractSecurityGroups(page pagination.Page) ([]SecurityGroup, error) {
-	casted := page.(SecurityGroupPage).Body
-	var response struct {
-		SecurityGroups []SecurityGroup `mapstructure:"security_groups"`
+	r := page.(SecurityGroupPage)
+	var s struct {
+		SecurityGroups []SecurityGroup `json:"security_groups"`
 	}
-
-	err := mapstructure.WeakDecode(casted, &response)
-
-	return response.SecurityGroups, err
+	err := r.ExtractInto(&s)
+	return s.SecurityGroups, err
 }
 
 type commonResult struct {
@@ -113,17 +106,11 @@ type UpdateResult struct {
 
 // Extract will extract a SecurityGroup struct from most responses.
 func (r commonResult) Extract() (*SecurityGroup, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		SecurityGroup *SecurityGroup `json:"security_group"`
 	}
-
-	var response struct {
-		SecurityGroup SecurityGroup `mapstructure:"security_group"`
-	}
-
-	err := mapstructure.WeakDecode(r.Body, &response)
-
-	return &response.SecurityGroup, err
+	err := r.ExtractInto(&s)
+	return s.SecurityGroup, err
 }
 
 // CreateRuleResult represents the result when adding rules to a security group.
@@ -133,15 +120,9 @@ type CreateRuleResult struct {
 
 // Extract will extract a Rule struct from a CreateRuleResult.
 func (r CreateRuleResult) Extract() (*Rule, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		Rule *Rule `json:"security_group_rule"`
 	}
-
-	var response struct {
-		Rule Rule `mapstructure:"security_group_rule"`
-	}
-
-	err := mapstructure.WeakDecode(r.Body, &response)
-
-	return &response.Rule, err
+	err := r.ExtractInto(&s)
+	return s.Rule, err
 }

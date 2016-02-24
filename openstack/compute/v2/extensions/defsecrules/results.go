@@ -1,8 +1,6 @@
 package defsecrules
 
 import (
-	"github.com/mitchellh/mapstructure"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/secgroups"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -29,14 +27,12 @@ func (page DefaultRulePage) IsEmpty() (bool, error) {
 // ExtractDefaultRules returns a slice of DefaultRules contained in a single
 // page of results.
 func ExtractDefaultRules(page pagination.Page) ([]DefaultRule, error) {
-	casted := page.(DefaultRulePage).Body
-	var response struct {
-		Rules []DefaultRule `mapstructure:"security_group_default_rules"`
+	r := page.(DefaultRulePage)
+	var s struct {
+		DefaultRules []DefaultRule `json:"security_group_default_rules"`
 	}
-
-	err := mapstructure.WeakDecode(casted, &response)
-
-	return response.Rules, err
+	err := r.ExtractInto(&s)
+	return s.DefaultRules, err
 }
 
 type commonResult struct {
@@ -55,15 +51,9 @@ type GetResult struct {
 
 // Extract will extract a DefaultRule struct from most responses.
 func (r commonResult) Extract() (*DefaultRule, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		DefaultRule DefaultRule `json:"security_group_default_rule"`
 	}
-
-	var response struct {
-		Rule DefaultRule `mapstructure:"security_group_default_rule"`
-	}
-
-	err := mapstructure.WeakDecode(r.Body, &response)
-
-	return &response.Rule, err
+	err := r.ExtractInto(&s)
+	return &s.DefaultRule, err
 }

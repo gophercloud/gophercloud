@@ -1,24 +1,23 @@
 package volumeattach
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// VolumeAttach controls the attachment of a volume to an instance.
+// VolumeAttachment controls the attachment of a volume to an instance.
 type VolumeAttachment struct {
 	// ID is a unique id of the attachment
-	ID string `mapstructure:"id"`
+	ID string `json:"id"`
 
 	// Device is what device the volume is attached as
-	Device string `mapstructure:"device"`
+	Device string `json:"device"`
 
 	// VolumeID is the ID of the attached volume
-	VolumeID string `mapstructure:"volumeId"`
+	VolumeID string `json:"volumeId"`
 
 	// ServerID is the ID of the instance that has the volume attached
-	ServerID string `mapstructure:"serverId"`
+	ServerID string `json:"serverId"`
 }
 
 // VolumeAttachmentsPage stores a single, only page of VolumeAttachments
@@ -36,14 +35,12 @@ func (page VolumeAttachmentsPage) IsEmpty() (bool, error) {
 // ExtractVolumeAttachments interprets a page of results as a slice of
 // VolumeAttachments.
 func ExtractVolumeAttachments(page pagination.Page) ([]VolumeAttachment, error) {
-	casted := page.(VolumeAttachmentsPage).Body
-	var response struct {
-		VolumeAttachments []VolumeAttachment `mapstructure:"volumeAttachments"`
+	r := page.(VolumeAttachmentsPage)
+	var s struct {
+		VolumeAttachments []VolumeAttachment `json:"volumeAttachments"`
 	}
-
-	err := mapstructure.WeakDecode(casted, &response)
-
-	return response.VolumeAttachments, err
+	err := r.ExtractInto(&s)
+	return s.VolumeAttachments, err
 }
 
 type VolumeAttachmentResult struct {
@@ -53,16 +50,11 @@ type VolumeAttachmentResult struct {
 // Extract is a method that attempts to interpret any VolumeAttachment resource
 // response as a VolumeAttachment struct.
 func (r VolumeAttachmentResult) Extract() (*VolumeAttachment, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		VolumeAttachment *VolumeAttachment `json:"volumeAttachment"`
 	}
-
-	var res struct {
-		VolumeAttachment *VolumeAttachment `json:"volumeAttachment" mapstructure:"volumeAttachment"`
-	}
-
-	err := mapstructure.Decode(r.Body, &res)
-	return res.VolumeAttachment, err
+	err := r.ExtractInto(&s)
+	return s.VolumeAttachment, err
 }
 
 // CreateResult is the response from a Create operation. Call its Extract method to interpret it

@@ -10,7 +10,7 @@ import (
 // List returns a Pager that allows you to iterate over a collection of ServerGroups.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	return pagination.NewPager(client, listURL(client), func(r pagination.PageResult) pagination.Page {
-		return ServerGroupsPage{pagination.SinglePageBase(r)}
+		return ServerGroupPage{pagination.SinglePageBase(r)}
 	})
 }
 

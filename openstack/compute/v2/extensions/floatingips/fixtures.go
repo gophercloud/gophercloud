@@ -1,6 +1,6 @@
 // +build fixtures
 
-package floatingip
+package floatingips
 
 import (
 	"fmt"
@@ -17,14 +17,14 @@ const ListOutput = `
     "floating_ips": [
         {
             "fixed_ip": null,
-            "id": 1,
+            "id": "1",
             "instance_id": null,
             "ip": "10.10.10.1",
             "pool": "nova"
         },
         {
             "fixed_ip": "166.78.185.201",
-            "id": 2,
+            "id": "2",
             "instance_id": "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
             "ip": "10.10.10.2",
             "pool": "nova"
@@ -38,7 +38,7 @@ const GetOutput = `
 {
     "floating_ip": {
         "fixed_ip": "166.78.185.201",
-        "id": 2,
+        "id": "2",
         "instance_id": "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
         "ip": "10.10.10.2",
         "pool": "nova"
@@ -51,7 +51,7 @@ const CreateOutput = `
 {
     "floating_ip": {
         "fixed_ip": null,
-        "id": 1,
+        "id": "1",
         "instance_id": null,
         "ip": "10.10.10.1",
         "pool": "nova"

@@ -1,9 +1,12 @@
 package gophercloud
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"net/http"
 	"reflect"
+	"time"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -33,6 +36,31 @@ type Result struct {
 	// Err is an error that occurred during the operation. It's deferred until
 	// extraction to make it easier to chain the Extract call.
 	Err error
+}
+
+// ExtractInto allows users to provide an object into which `Extract` will extract
+// the `Result.Body`. This would be useful for OpenStack providers that have
+// different fields in the response object than OpenStack proper.
+func (r Result) ExtractInto(to interface{}) error {
+	if r.Err != nil {
+		return r.Err
+	}
+
+	if reader, ok := r.Body.(io.Reader); ok {
+		if readCloser, ok := reader.(io.Closer); ok {
+			defer readCloser.Close()
+		}
+		jsonDecoder := json.NewDecoder(reader)
+		return jsonDecoder.Decode(to)
+	}
+
+	b, err := json.Marshal(r.Body)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(b, to)
+
+	return err
 }
 
 // PrettyPrintJSON creates a string containing the full response body as
@@ -113,6 +141,42 @@ func DecodeHeader(from, to interface{}) error {
 // RFC3339Milli describes a common time format used by some API responses.
 const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
 
+const RFC3339MilliNoZ = "2006-01-02T03:04:05.999999"
+
+type JSONRFC3339Milli time.Time
+
+func (jt *JSONRFC3339Milli) UnmarshalJSON(data []byte) error {
+	b := bytes.NewBuffer(data)
+	dec := json.NewDecoder(b)
+	var s string
+	if err := dec.Decode(&s); err != nil {
+		return err
+	}
+	t, err := time.Parse(RFC3339Milli, s)
+	if err != nil {
+		return err
+	}
+	*jt = JSONRFC3339Milli(t)
+	return nil
+}
+
+type JSONRFC3339MilliNoZ time.Time
+
+func (jt *JSONRFC3339MilliNoZ) UnmarshalJSON(data []byte) error {
+	b := bytes.NewBuffer(data)
+	dec := json.NewDecoder(b)
+	var s string
+	if err := dec.Decode(&s); err != nil {
+		return err
+	}
+	t, err := time.Parse(RFC3339MilliNoZ, s)
+	if err != nil {
+		return err
+	}
+	*jt = JSONRFC3339MilliNoZ(t)
+	return nil
+}
+
 // StackFmtTime is the time format used in Heat (Orchestration).
 const StackFmtTime = "2006-01-02T15:04:05"
 
@@ -125,8 +189,8 @@ used to point to related pages. Usually, the one we care about is the one with
 Rel field set to "next".
 */
 type Link struct {
-	Href string `mapstructure:"href"`
-	Rel  string `mapstructure:"rel"`
+	Href string `json:"href"`
+	Rel  string `json:"rel"`
 }
 
 /*

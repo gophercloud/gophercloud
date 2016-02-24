@@ -1,7 +1,6 @@
 package databases
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -37,36 +36,28 @@ type DBPage struct {
 // IsEmpty checks to see whether the collection is empty.
 func (page DBPage) IsEmpty() (bool, error) {
 	dbs, err := ExtractDBs(page)
-	if err != nil {
-		return true, err
-	}
-	return len(dbs) == 0, nil
+	return len(dbs) == 0, err
 }
 
 // NextPageURL will retrieve the next page URL.
 func (page DBPage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"databases_links"`
+	var s struct {
+		Links []gophercloud.Link `json:"databases_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(page.Body, &r)
+	err := page.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // ExtractDBs will convert a generic pagination struct into a more
 // relevant slice of DB structs.
 func ExtractDBs(page pagination.Page) ([]Database, error) {
-	casted := page.(DBPage).Body
-
-	var response struct {
-		Databases []Database `mapstructure:"databases"`
+	r := page.(DBPage)
+	var s struct {
+		Databases []Database `json:"databases"`
 	}
-
-	err := mapstructure.Decode(casted, &response)
-	return response.Databases, err
+	err := r.ExtractInto(&s)
+	return s.Databases, err
 }

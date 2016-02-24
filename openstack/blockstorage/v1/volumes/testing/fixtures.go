@@ -42,20 +42,33 @@ func MockGetResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `
-{
-    "volume": {
-        "display_name": "vol-001",
-        "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
- 	"attachments": [
-	  {
-            "device": "/dev/vde",
-            "server_id": "a740d24b-dc5b-4d59-ac75-53971c2920ba",
-            "id": "d6da11e5-2ed3-413e-88d8-b772ba62193d",
-            "volume_id": "d6da11e5-2ed3-413e-88d8-b772ba62193d"
-          }
-        ]
-   }
-}
+			{
+			    "volume": {
+			        "id": "521752a6-acf6-4b2d-bc7a-119f9148cd8c",
+			        "display_name": "vol-001",
+			        "display_description": "Another volume.",
+			        "status": "active",
+			        "size": 30,
+			        "volume_type": "289da7f8-6440-407c-9fb4-7db01ec49164",
+			        "metadata": {
+			            "contents": "junk"
+			        },
+			        "availability_zone": "us-east1",
+			        "bootable": "false",
+			        "snapshot_id": null,
+			        "attachments": [
+			            {
+			                "attachment_id": "03987cd1-0ad5-40d1-9b2a-7cc48295d4fa",
+			                "id": "47e9ecc5-4045-4ee3-9a4b-d859d546a0cf",
+			                "volume_id": "6c80f8ac-e3e2-480c-8e6e-f1db92fe4bfe",
+			                "server_id": "d1c4788b-9435-42e2-9b81-29f3be1cd01f",
+			                "host_name": "mitaka",
+			                "device": "/"
+			            }
+			        ],
+			        "created_at": "2012-02-14T20:53:07Z"
+			    }
+			}
       `)
 	})
 }

@@ -54,10 +54,7 @@ func TestListVersions(t *testing.T) {
 	List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractAPIVersions(page)
-		if err != nil {
-			t.Errorf("Failed to extract API versions: %v", err)
-			return false, err
-		}
+		th.AssertNoErr(t, err)
 
 		expected := []APIVersion{
 			APIVersion{
@@ -77,9 +74,7 @@ func TestListVersions(t *testing.T) {
 		return true, nil
 	})
 
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
+	th.AssertEquals(t, 1, count)
 }
 
 func TestAPIInfo(t *testing.T) {
@@ -129,9 +124,7 @@ func TestAPIInfo(t *testing.T) {
 	})
 
 	actual, err := Get(client.ServiceClient(), "v1").Extract()
-	if err != nil {
-		t.Errorf("Failed to extract version: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	expected := APIVersion{
 		ID:      "v1.0",

@@ -1,12 +1,10 @@
 package servers
 
 import (
-	"reflect"
 	"fmt"
-	"path"
 	"net/url"
+	"path"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -17,29 +15,11 @@ type serverResult struct {
 
 // Extract interprets any serverResult as a Server, if possible.
 func (r serverResult) Extract() (*Server, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		Server *Server `json:"server"`
 	}
-
-	var response struct {
-		Server Server `mapstructure:"server"`
-	}
-
-	config := &mapstructure.DecoderConfig{
-		DecodeHook: toMapFromString,
-		Result:     &response,
-	}
-	decoder, err := mapstructure.NewDecoder(config)
-	if err != nil {
-		return nil, err
-	}
-
-	err = decoder.Decode(r.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return &response.Server, nil
+	err := r.ExtractInto(&s)
+	return s.Server, err
 }
 
 // CreateResult temporarily contains the response from a Create call.
@@ -92,40 +72,35 @@ func (res CreateImageResult) ExtractImageID() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("Failed to parse the image id: %s", err.Error())
 	}
-	imageId := path.Base(u.Path)
-	if imageId == "." || imageId == "/" {
+	imageID := path.Base(u.Path)
+	if imageID == "." || imageID == "/" {
 		return "", fmt.Errorf("Failed to parse the ID of newly created image: %s", u)
 	}
-	return imageId, nil
+	return imageID, nil
 }
 
 // Extract interprets any RescueResult as an AdminPass, if possible.
 func (r RescueResult) Extract() (string, error) {
-	if r.Err != nil {
-		return "", r.Err
+	var s struct {
+		AdminPass string `json:"adminPass"`
 	}
-
-	var response struct {
-		AdminPass string `mapstructure:"adminPass"`
-	}
-
-	err := mapstructure.Decode(r.Body, &response)
-	return response.AdminPass, err
+	err := r.ExtractInto(&s)
+	return s.AdminPass, err
 }
 
 // Server exposes only the standard OpenStack fields corresponding to a given server on the user's account.
 type Server struct {
 	// ID uniquely identifies this server amongst all other servers, including those not accessible to the current tenant.
-	ID string
+	ID string `json:"id"`
 
 	// TenantID identifies the tenant owning this server resource.
-	TenantID string `mapstructure:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 
 	// UserID uniquely identifies the user account owning the tenant.
-	UserID string `mapstructure:"user_id"`
+	UserID string `json:"user_id"`
 
 	// Name contains the human-readable name for the server.
-	Name string
+	Name string `json:"name"`
 
 	// Updated and Created contain ISO-8601 timestamps of when the state of the server last changed, and when it was created.
 	Updated string
@@ -159,14 +134,14 @@ type Server struct {
 	Links []interface{}
 
 	// KeyName indicates which public key was injected into the server on launch.
-	KeyName string `json:"key_name" mapstructure:"key_name"`
+	KeyName string `json:"key_name"`
 
 	// AdminPass will generally be empty ("").  However, it will contain the administrative password chosen when provisioning a new server without a set AdminPass setting in the first place.
 	// Note that this is the ONLY time this field will be valid.
-	AdminPass string `json:"adminPass" mapstructure:"adminPass"`
+	AdminPass string `json:"adminPass"`
 
 	// SecurityGroups includes the security groups that this instance has applied to it
-	SecurityGroups []map[string]interface{} `json:"security_groups" mapstructure:"security_groups"`
+	SecurityGroups []map[string]interface{} `json:"security_groups"`
 }
 
 // ServerPage abstracts the raw results of making a List() request against the API.
@@ -179,47 +154,29 @@ type ServerPage struct {
 // IsEmpty returns true if a page contains no Server results.
 func (page ServerPage) IsEmpty() (bool, error) {
 	servers, err := ExtractServers(page)
-	if err != nil {
-		return true, err
-	}
-	return len(servers) == 0, nil
+	return len(servers) == 0, err
 }
 
 // NextPageURL uses the response's embedded link reference to navigate to the next page of results.
 func (page ServerPage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"servers_links"`
+	var s struct {
+		Links []gophercloud.Link `json:"servers_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(page.Body, &r)
+	err := page.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // ExtractServers interprets the results of a single page from a List() call, producing a slice of Server entities.
 func ExtractServers(page pagination.Page) ([]Server, error) {
-	casted := page.(ServerPage).Body
-
-	var response struct {
-		Servers []Server `mapstructure:"servers"`
+	r := page.(ServerPage)
+	var s struct {
+		Servers []Server `json:"servers"`
 	}
-
-	config := &mapstructure.DecoderConfig{
-		DecodeHook: toMapFromString,
-		Result:     &response,
-	}
-	decoder, err := mapstructure.NewDecoder(config)
-	if err != nil {
-		return nil, err
-	}
-
-	err = decoder.Decode(casted)
-
-	return response.Servers, err
+	err := r.ExtractInto(&s)
+	return s.Servers, err
 }
 
 // MetadataResult contains the result of a call for (potentially) multiple key-value pairs.
@@ -264,43 +221,26 @@ type DeleteMetadatumResult struct {
 
 // Extract interprets any MetadataResult as a Metadata, if possible.
 func (r MetadataResult) Extract() (map[string]string, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		Metadata map[string]string `json:"metadata"`
 	}
-
-	var response struct {
-		Metadata map[string]string `mapstructure:"metadata"`
-	}
-
-	err := mapstructure.Decode(r.Body, &response)
-	return response.Metadata, err
+	err := r.ExtractInto(&s)
+	return s.Metadata, err
 }
 
 // Extract interprets any MetadatumResult as a Metadatum, if possible.
 func (r MetadatumResult) Extract() (map[string]string, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		Metadatum map[string]string `json:"meta"`
 	}
-
-	var response struct {
-		Metadatum map[string]string `mapstructure:"meta"`
-	}
-
-	err := mapstructure.Decode(r.Body, &response)
-	return response.Metadatum, err
-}
-
-func toMapFromString(from reflect.Kind, to reflect.Kind, data interface{}) (interface{}, error) {
-	if (from == reflect.String) && (to == reflect.Map) {
-		return map[string]interface{}{}, nil
-	}
-	return data, nil
+	err := r.ExtractInto(&s)
+	return s.Metadatum, err
 }
 
 // Address represents an IP address.
 type Address struct {
-	Version int    `mapstructure:"version"`
-	Address string `mapstructure:"addr"`
+	Version int    `json:"version"`
+	Address string `json:"addr"`
 }
 
 // AddressPage abstracts the raw results of making a ListAddresses() request against the API.
@@ -313,27 +253,18 @@ type AddressPage struct {
 // IsEmpty returns true if an AddressPage contains no networks.
 func (r AddressPage) IsEmpty() (bool, error) {
 	addresses, err := ExtractAddresses(r)
-	if err != nil {
-		return true, err
-	}
-	return len(addresses) == 0, nil
+	return len(addresses) == 0, err
 }
 
 // ExtractAddresses interprets the results of a single page from a ListAddresses() call,
 // producing a map of addresses.
 func ExtractAddresses(page pagination.Page) (map[string][]Address, error) {
-	casted := page.(AddressPage).Body
-
-	var response struct {
-		Addresses map[string][]Address `mapstructure:"addresses"`
+	r := page.(AddressPage)
+	var s struct {
+		Addresses map[string][]Address `json:"addresses"`
 	}
-
-	err := mapstructure.Decode(casted, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.Addresses, err
+	err := r.ExtractInto(&s)
+	return s.Addresses, err
 }
 
 // NetworkAddressPage abstracts the raw results of making a ListAddressesByNetwork() request against the API.
@@ -346,27 +277,23 @@ type NetworkAddressPage struct {
 // IsEmpty returns true if a NetworkAddressPage contains no addresses.
 func (r NetworkAddressPage) IsEmpty() (bool, error) {
 	addresses, err := ExtractNetworkAddresses(r)
-	if err != nil {
-		return true, err
-	}
-	return len(addresses) == 0, nil
+	return len(addresses) == 0, err
 }
 
 // ExtractNetworkAddresses interprets the results of a single page from a ListAddressesByNetwork() call,
 // producing a slice of addresses.
 func ExtractNetworkAddresses(page pagination.Page) ([]Address, error) {
-	casted := page.(NetworkAddressPage).Body
-
-	var response map[string][]Address
-	err := mapstructure.Decode(casted, &response)
+	r := page.(NetworkAddressPage)
+	var s map[string][]Address
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return nil, err
 	}
 
 	var key string
-	for k := range response {
+	for k := range s {
 		key = k
 	}
 
-	return response[key], err
+	return s[key], err
 }

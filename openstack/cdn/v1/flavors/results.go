@@ -1,7 +1,6 @@
 package flavors
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -10,20 +9,20 @@ import (
 type Provider struct {
 	// Specifies the name of the provider. The name must not exceed 64 bytes in
 	// length and is limited to unicode, digits, underscores, and hyphens.
-	Provider string `mapstructure:"provider"`
+	Provider string `json:"provider"`
 	// Specifies a list with an href where rel is provider_url.
-	Links []gophercloud.Link `mapstructure:"links"`
+	Links []gophercloud.Link `json:"links"`
 }
 
 // Flavor represents a mapping configuration to a CDN provider.
 type Flavor struct {
 	// Specifies the name of the flavor. The name must not exceed 64 bytes in
 	// length and is limited to unicode, digits, underscores, and hyphens.
-	ID string `mapstructure:"id"`
+	ID string `json:"id"`
 	// Specifies the list of providers mapped to this flavor.
-	Providers []Provider `mapstructure:"providers"`
+	Providers []Provider `json:"providers"`
 	// Specifies the self-navigating JSON document paths.
-	Links []gophercloud.Link `mapstructure:"links"`
+	Links []gophercloud.Link `json:"links"`
 }
 
 // FlavorPage is the page returned by a pager when traversing over a
@@ -44,12 +43,12 @@ func (r FlavorPage) IsEmpty() (bool, error) {
 // ExtractFlavors extracts and returns Flavors. It is used while iterating over
 // a flavors.List call.
 func ExtractFlavors(page pagination.Page) ([]Flavor, error) {
-	var response struct {
+	r := page.(FlavorPage)
+	var s struct {
 		Flavors []Flavor `json:"flavors"`
 	}
-
-	err := mapstructure.Decode(page.(FlavorPage).Body, &response)
-	return response.Flavors, err
+	err := r.ExtractInto(&s)
+	return s.Flavors, err
 }
 
 // GetResult represents the result of a get operation.
@@ -59,13 +58,7 @@ type GetResult struct {
 
 // Extract is a function that extracts a flavor from a GetResult.
 func (r GetResult) Extract() (*Flavor, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-
-	var res Flavor
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return &res, err
+	var s Flavor
+	err := r.ExtractInto(&s)
+	return &s, err
 }

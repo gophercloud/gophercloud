@@ -1,7 +1,6 @@
-package floatingip
+package floatingips
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -9,29 +8,29 @@ import (
 // A FloatingIP is an IP that can be associated with an instance
 type FloatingIP struct {
 	// ID is a unique ID of the Floating IP
-	ID string `mapstructure:"id"`
+	ID string `json:"id"`
 
 	// FixedIP is the IP of the instance related to the Floating IP
-	FixedIP string `mapstructure:"fixed_ip,omitempty"`
+	FixedIP string `json:"fixed_ip,omitempty"`
 
 	// InstanceID is the ID of the instance that is using the Floating IP
-	InstanceID string `mapstructure:"instance_id"`
+	InstanceID string `json:"instance_id"`
 
 	// IP is the actual Floating IP
-	IP string `mapstructure:"ip"`
+	IP string `json:"ip"`
 
 	// Pool is the pool of floating IPs that this floating IP belongs to
-	Pool string `mapstructure:"pool"`
+	Pool string `json:"pool"`
 }
 
-// FloatingIPsPage stores a single, only page of FloatingIPs
+// FloatingIPPage stores a single, only page of FloatingIPs
 // results from a List call.
-type FloatingIPsPage struct {
+type FloatingIPPage struct {
 	pagination.SinglePageBase
 }
 
 // IsEmpty determines whether or not a FloatingIPsPage is empty.
-func (page FloatingIPsPage) IsEmpty() (bool, error) {
+func (page FloatingIPPage) IsEmpty() (bool, error) {
 	va, err := ExtractFloatingIPs(page)
 	return len(va) == 0, err
 }
@@ -39,16 +38,15 @@ func (page FloatingIPsPage) IsEmpty() (bool, error) {
 // ExtractFloatingIPs interprets a page of results as a slice of
 // FloatingIPs.
 func ExtractFloatingIPs(page pagination.Page) ([]FloatingIP, error) {
-	casted := page.(FloatingIPsPage).Body
-	var response struct {
-		FloatingIPs []FloatingIP `mapstructure:"floating_ips"`
+	r := page.(FloatingIPPage)
+	var s struct {
+		FloatingIPs []FloatingIP `json:"floating_ips"`
 	}
-
-	err := mapstructure.WeakDecode(casted, &response)
-
-	return response.FloatingIPs, err
+	err := r.ExtractInto(&s)
+	return s.FloatingIPs, err
 }
 
+// FloatingIPResult is the raw result from a FloatingIP request.
 type FloatingIPResult struct {
 	gophercloud.Result
 }
@@ -56,16 +54,11 @@ type FloatingIPResult struct {
 // Extract is a method that attempts to interpret any FloatingIP resource
 // response as a FloatingIP struct.
 func (r FloatingIPResult) Extract() (*FloatingIP, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		FloatingIP *FloatingIP `json:"floating_ip"`
 	}
-
-	var res struct {
-		FloatingIP *FloatingIP `json:"floating_ip" mapstructure:"floating_ip"`
-	}
-
-	err := mapstructure.WeakDecode(r.Body, &res)
-	return res.FloatingIP, err
+	err := r.ExtractInto(&s)
+	return s.FloatingIP, err
 }
 
 // CreateResult is the response from a Create operation. Call its Extract method to interpret it

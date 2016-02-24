@@ -195,9 +195,7 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 
 	server["name"] = opts.Name
 	server["imageRef"] = opts.ImageRef
-	server["imageName"] = opts.ImageName
 	server["flavorRef"] = opts.FlavorRef
-	server["flavorName"] = opts.FlavorName
 
 	if opts.UserData != nil {
 		encoded := base64.StdEncoding.EncodeToString(opts.UserData)
@@ -503,9 +501,12 @@ func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
 		return server, err
 	}
 
-	server["name"] = opts.Name
 	server["adminPass"] = opts.AdminPass
 	server["imageRef"] = opts.ImageID
+
+	if opts.Name != "" {
+		server["name"] = opts.Name
+	}
 
 	if opts.AccessIPv4 != "" {
 		server["accessIPv4"] = opts.AccessIPv4

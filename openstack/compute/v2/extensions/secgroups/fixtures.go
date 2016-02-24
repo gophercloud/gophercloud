@@ -163,7 +163,7 @@ func mockGetNumericIDGroupResponse(t *testing.T, groupID int) {
 		fmt.Fprintf(w, `
 {
 	"security_group": {
-		"id": 12345
+		"id": "12345"
 	}
 }
 			`)
