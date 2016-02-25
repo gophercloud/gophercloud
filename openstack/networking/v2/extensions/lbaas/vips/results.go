@@ -1,7 +1,6 @@
 package vips
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -23,10 +22,10 @@ import (
 //              same member of the pool.
 type SessionPersistence struct {
 	// The type of persistence mode
-	Type string `mapstructure:"type" json:"type"`
+	Type string `json:"type"`
 
 	// Name of cookie if persistence mode is set appropriately
-	CookieName string `mapstructure:"cookie_name" json:"cookie_name,omitempty"`
+	CookieName string `json:"cookie_name,omitempty"`
 }
 
 // VirtualIP is the primary load balancing configuration object that specifies
@@ -36,49 +35,49 @@ type SessionPersistence struct {
 // server", a "vserver" or a "listener".
 type VirtualIP struct {
 	// The unique ID for the VIP.
-	ID string `mapstructure:"id" json:"id"`
+	ID string `json:"id"`
 
 	// Owner of the VIP. Only an admin user can specify a tenant ID other than its own.
-	TenantID string `mapstructure:"tenant_id" json:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 
 	// Human-readable name for the VIP. Does not have to be unique.
-	Name string `mapstructure:"name" json:"name"`
+	Name string `json:"name"`
 
 	// Human-readable description for the VIP.
-	Description string `mapstructure:"description" json:"description"`
+	Description string `json:"description"`
 
 	// The ID of the subnet on which to allocate the VIP address.
-	SubnetID string `mapstructure:"subnet_id" json:"subnet_id"`
+	SubnetID string `json:"subnet_id"`
 
 	// The IP address of the VIP.
-	Address string `mapstructure:"address" json:"address"`
+	Address string `json:"address"`
 
 	// The protocol of the VIP address. A valid value is TCP, HTTP, or HTTPS.
-	Protocol string `mapstructure:"protocol" json:"protocol"`
+	Protocol string `json:"protocol"`
 
 	// The port on which to listen to client traffic that is associated with the
 	// VIP address. A valid value is from 0 to 65535.
-	ProtocolPort int `mapstructure:"protocol_port" json:"protocol_port"`
+	ProtocolPort int `json:"protocol_port"`
 
 	// The ID of the pool with which the VIP is associated.
-	PoolID string `mapstructure:"pool_id" json:"pool_id"`
+	PoolID string `json:"pool_id"`
 
 	// The ID of the port which belongs to the load balancer
-	PortID string `mapstructure:"port_id" json:"port_id"`
+	PortID string `json:"port_id"`
 
 	// Indicates whether connections in the same session will be processed by the
 	// same pool member or not.
-	Persistence SessionPersistence `mapstructure:"session_persistence" json:"session_persistence"`
+	Persistence SessionPersistence `json:"session_persistence"`
 
 	// The maximum number of connections allowed for the VIP. Default is -1,
 	// meaning no limit.
-	ConnLimit int `mapstructure:"connection_limit" json:"connection_limit"`
+	ConnLimit int `json:"connection_limit"`
 
 	// The administrative state of the VIP. A valid value is true (UP) or false (DOWN).
-	AdminStateUp bool `mapstructure:"admin_state_up" json:"admin_state_up"`
+	AdminStateUp bool `json:"admin_state_up"`
 
 	// The status of the VIP. Indicates whether the VIP is operational.
-	Status string `mapstructure:"status" json:"status"`
+	Status string `json:"status"`
 }
 
 // VIPPage is the page returned by a pager when traversing over a
@@ -90,40 +89,33 @@ type VIPPage struct {
 // NextPageURL is invoked when a paginated collection of routers has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (p VIPPage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"vips_links"`
+func (page VIPPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"vips_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(p.Body, &r)
+	err := page.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
-// IsEmpty checks whether a RouterPage struct is empty.
-func (p VIPPage) IsEmpty() (bool, error) {
-	is, err := ExtractVIPs(p)
-	if err != nil {
-		return true, nil
-	}
-	return len(is) == 0, nil
+// IsEmpty checks whether a VIPPage struct is empty.
+func (page VIPPage) IsEmpty() (bool, error) {
+	is, err := ExtractVIPs(page)
+	return len(is) == 0, err
 }
 
 // ExtractVIPs accepts a Page struct, specifically a VIPPage struct,
 // and extracts the elements into a slice of VirtualIP structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractVIPs(page pagination.Page) ([]VirtualIP, error) {
-	var resp struct {
-		VIPs []VirtualIP `mapstructure:"vips" json:"vips"`
+	r := page.(VIPPage)
+	var s struct {
+		VIPs []VirtualIP `json:"vips"`
 	}
-
-	err := mapstructure.Decode(page.(VIPPage).Body, &resp)
-
-	return resp.VIPs, err
+	err := r.ExtractInto(&s)
+	return s.VIPs, err
 }
 
 type commonResult struct {
@@ -132,17 +124,11 @@ type commonResult struct {
 
 // Extract is a function that accepts a result and extracts a router.
 func (r commonResult) Extract() (*VirtualIP, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		VirtualIP *VirtualIP `json:"vip" json:"vip"`
 	}
-
-	var res struct {
-		VirtualIP *VirtualIP `mapstructure:"vip" json:"vip"`
-	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res.VirtualIP, err
+	err := r.ExtractInto(&s)
+	return s.VirtualIP, err
 }
 
 // CreateResult represents the result of a create operation.

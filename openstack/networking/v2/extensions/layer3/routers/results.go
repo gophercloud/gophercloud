@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -9,12 +8,13 @@ import (
 // GatewayInfo represents the information of an external gateway for any
 // particular network router.
 type GatewayInfo struct {
-	NetworkID string `json:"network_id" mapstructure:"network_id"`
+	NetworkID string `json:"network_id"`
 }
 
+// Route is a possible route in a router.
 type Route struct {
-	NextHop         string `mapstructure:"nexthop" json:"nexthop"`
-	DestinationCIDR string `mapstructure:"destination" json:"destination"`
+	NextHop         string `json:"nexthop"`
+	DestinationCIDR string `json:"destination"`
 }
 
 // Router represents a Neutron router. A router is a logical entity that
@@ -27,28 +27,28 @@ type Route struct {
 // interface is added to the subnet's network.
 type Router struct {
 	// Indicates whether or not a router is currently operational.
-	Status string `json:"status" mapstructure:"status"`
+	Status string `json:"status"`
 
 	// Information on external gateway for the router.
-	GatewayInfo GatewayInfo `json:"external_gateway_info" mapstructure:"external_gateway_info"`
+	GatewayInfo GatewayInfo `json:"external_gateway_info"`
 
 	// Administrative state of the router.
-	AdminStateUp bool `json:"admin_state_up" mapstructure:"admin_state_up"`
+	AdminStateUp bool `json:"admin_state_up"`
 
 	// Whether router is disitrubted or not..
-	Distributed bool `json:"distributed" mapstructure:"distributed"`
+	Distributed bool `json:"distributed"`
 
 	// Human readable name for the router. Does not have to be unique.
-	Name string `json:"name" mapstructure:"name"`
+	Name string `json:"name"`
 
 	// Unique identifier for the router.
-	ID string `json:"id" mapstructure:"id"`
+	ID string `json:"id"`
 
 	// Owner of the router. Only admin users can specify a tenant identifier
 	// other than its own.
-	TenantID string `json:"tenant_id" mapstructure:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 
-	Routes []Route `json:"routes" mapstructure:"routes"`
+	Routes []Route `json:"routes"`
 }
 
 // RouterPage is the page returned by a pager when traversing over a
@@ -60,40 +60,33 @@ type RouterPage struct {
 // NextPageURL is invoked when a paginated collection of routers has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (p RouterPage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"routers_links"`
+func (page RouterPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"routers_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(p.Body, &r)
+	err := page.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty checks whether a RouterPage struct is empty.
-func (p RouterPage) IsEmpty() (bool, error) {
-	is, err := ExtractRouters(p)
-	if err != nil {
-		return true, nil
-	}
-	return len(is) == 0, nil
+func (page RouterPage) IsEmpty() (bool, error) {
+	is, err := ExtractRouters(page)
+	return len(is) == 0, err
 }
 
 // ExtractRouters accepts a Page struct, specifically a RouterPage struct,
 // and extracts the elements into a slice of Router structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractRouters(page pagination.Page) ([]Router, error) {
-	var resp struct {
-		Routers []Router `mapstructure:"routers" json:"routers"`
+	r := page.(RouterPage)
+	var s struct {
+		Routers []Router `json:"routers"`
 	}
-
-	err := mapstructure.Decode(page.(RouterPage).Body, &resp)
-
-	return resp.Routers, err
+	err := r.ExtractInto(&s)
+	return s.Routers, err
 }
 
 type commonResult struct {
@@ -102,17 +95,11 @@ type commonResult struct {
 
 // Extract is a function that accepts a result and extracts a router.
 func (r commonResult) Extract() (*Router, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-
-	var res struct {
+	var s struct {
 		Router *Router `json:"router"`
 	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res.Router, err
+	err := r.ExtractInto(&s)
+	return s.Router, err
 }
 
 // CreateResult represents the result of a create operation.
@@ -140,16 +127,16 @@ type DeleteResult struct {
 // interface.
 type InterfaceInfo struct {
 	// The ID of the subnet which this interface is associated with.
-	SubnetID string `json:"subnet_id" mapstructure:"subnet_id"`
+	SubnetID string `json:"subnet_id"`
 
 	// The ID of the port that is a part of the subnet.
-	PortID string `json:"port_id" mapstructure:"port_id"`
+	PortID string `json:"port_id"`
 
 	// The UUID of the interface.
-	ID string `json:"id" mapstructure:"id"`
+	ID string `json:"id"`
 
 	// Owner of the interface.
-	TenantID string `json:"tenant_id" mapstructure:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 }
 
 // InterfaceResult represents the result of interface operations, such as
@@ -160,12 +147,7 @@ type InterfaceResult struct {
 
 // Extract is a function that accepts a result and extracts an information struct.
 func (r InterfaceResult) Extract() (*InterfaceInfo, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-
-	var res *InterfaceInfo
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res, err
+	var s InterfaceInfo
+	err := r.ExtractInto(&s)
+	return &s, err
 }

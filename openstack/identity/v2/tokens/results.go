@@ -3,7 +3,6 @@ package tokens
 import (
 	"time"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/identity/v2/tenants"
 )
@@ -25,15 +24,17 @@ type Token struct {
 	Tenant tenants.Tenant
 }
 
-// Authorization need user info which can get from token authentication's response
+// Role is a role for a user.
 type Role struct {
-	Name string `mapstructure:"name"`
+	Name string `json:"name"`
 }
+
+// User is an OpenStack user.
 type User struct {
-	ID       string `mapstructure:"id"`
-	Name     string `mapstructure:"name"`
-	UserName string `mapstructure:"username"`
-	Roles    []Role `mapstructure:"roles"`
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	UserName string `json:"username"`
+	Roles    []Role `json:"roles"`
 }
 
 // Endpoint represents a single API endpoint offered by a service.
@@ -45,14 +46,14 @@ type User struct {
 //
 // In all cases, fields which aren't supported by the provider and service combined will assume a zero-value ("").
 type Endpoint struct {
-	TenantID    string `mapstructure:"tenantId"`
-	PublicURL   string `mapstructure:"publicURL"`
-	InternalURL string `mapstructure:"internalURL"`
-	AdminURL    string `mapstructure:"adminURL"`
-	Region      string `mapstructure:"region"`
-	VersionID   string `mapstructure:"versionId"`
-	VersionInfo string `mapstructure:"versionInfo"`
-	VersionList string `mapstructure:"versionList"`
+	TenantID    string `json:"tenantId"`
+	PublicURL   string `json:"publicURL"`
+	InternalURL string `json:"internalURL"`
+	AdminURL    string `json:"adminURL"`
+	Region      string `json:"region"`
+	VersionID   string `json:"versionId"`
+	VersionInfo string `json:"versionInfo"`
+	VersionList string `json:"versionList"`
 }
 
 // CatalogEntry provides a type-safe interface to an Identity API V2 service catalog listing.
@@ -63,15 +64,15 @@ type Endpoint struct {
 // Otherwise, you'll tie the representation of the service to a specific provider.
 type CatalogEntry struct {
 	// Name will contain the provider-specified name for the service.
-	Name string `mapstructure:"name"`
+	Name string `json:"name"`
 
 	// Type will contain a type string if OpenStack defines a type for the service.
 	// Otherwise, for provider-specific services, the provider may assign their own type strings.
-	Type string `mapstructure:"type"`
+	Type string `json:"type"`
 
 	// Endpoints will let the caller iterate over all the different endpoints that may exist for
 	// the service.
-	Endpoints []Endpoint `mapstructure:"endpoints"`
+	Endpoints []Endpoint `json:"endpoints"`
 }
 
 // ServiceCatalog provides a view into the service catalog from a previous, successful authentication.
@@ -92,56 +93,43 @@ type GetResult struct {
 }
 
 // ExtractToken returns the just-created Token from a CreateResult.
-func (result CreateResult) ExtractToken() (*Token, error) {
-	if result.Err != nil {
-		return nil, result.Err
-	}
-
-	var response struct {
+func (r CreateResult) ExtractToken() (*Token, error) {
+	var s struct {
 		Access struct {
 			Token struct {
-				Expires string         `mapstructure:"expires"`
-				ID      string         `mapstructure:"id"`
-				Tenant  tenants.Tenant `mapstructure:"tenant"`
-			} `mapstructure:"token"`
-		} `mapstructure:"access"`
+				Expires string         `json:"expires"`
+				ID      string         `json:"id"`
+				Tenant  tenants.Tenant `json:"tenant"`
+			} `json:"token"`
+		} `json:"access"`
 	}
 
-	err := mapstructure.Decode(result.Body, &response)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return nil, err
 	}
 
-	expiresTs, err := time.Parse(gophercloud.RFC3339Milli, response.Access.Token.Expires)
+	expiresTs, err := time.Parse(gophercloud.RFC3339Milli, s.Access.Token.Expires)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Token{
-		ID:        response.Access.Token.ID,
+		ID:        s.Access.Token.ID,
 		ExpiresAt: expiresTs,
-		Tenant:    response.Access.Token.Tenant,
+		Tenant:    s.Access.Token.Tenant,
 	}, nil
 }
 
 // ExtractServiceCatalog returns the ServiceCatalog that was generated along with the user's Token.
-func (result CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
-	if result.Err != nil {
-		return nil, result.Err
-	}
-
-	var response struct {
+func (r CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
+	var s struct {
 		Access struct {
-			Entries []CatalogEntry `mapstructure:"serviceCatalog"`
-		} `mapstructure:"access"`
+			Entries []CatalogEntry `json:"serviceCatalog"`
+		} `json:"access"`
 	}
-
-	err := mapstructure.Decode(result.Body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	return &ServiceCatalog{Entries: response.Access.Entries}, nil
+	err := r.ExtractInto(&s)
+	return &ServiceCatalog{Entries: s.Access.Entries}, err
 }
 
 // createErr quickly packs an error in a CreateResult.
@@ -150,21 +138,12 @@ func createErr(err error) CreateResult {
 }
 
 // ExtractUser returns the User from a GetResult.
-func (result GetResult) ExtractUser() (*User, error) {
-	if result.Err != nil {
-		return nil, result.Err
-	}
-
-	var response struct {
+func (r GetResult) ExtractUser() (*User, error) {
+	var s struct {
 		Access struct {
-			User User `mapstructure:"user"`
-		} `mapstructure:"access"`
+			User User `json:"user"`
+		} `json:"access"`
 	}
-
-	err := mapstructure.Decode(result.Body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	return &response.Access.User, nil
+	err := r.ExtractInto(&s)
+	return &s.Access.User, err
 }

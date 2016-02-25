@@ -3,8 +3,6 @@ package services
 import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
-
-	"github.com/mitchellh/mapstructure"
 )
 
 type commonResult struct {
@@ -14,17 +12,11 @@ type commonResult struct {
 // Extract interprets a GetResult, CreateResult or UpdateResult as a concrete Service.
 // An error is returned if the original call or the extraction failed.
 func (r commonResult) Extract() (*Service, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		Service *Service `json:"service"`
 	}
-
-	var res struct {
-		Service `json:"service"`
-	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return &res.Service, err
+	err := r.ExtractInto(&s)
+	return s.Service, err
 }
 
 // CreateResult is the deferred result of a Create call.
@@ -63,18 +55,15 @@ type ServicePage struct {
 // IsEmpty returns true if the page contains no results.
 func (p ServicePage) IsEmpty() (bool, error) {
 	services, err := ExtractServices(p)
-	if err != nil {
-		return true, err
-	}
-	return len(services) == 0, nil
+	return len(services) == 0, err
 }
 
 // ExtractServices extracts a slice of Services from a Collection acquired from List.
 func ExtractServices(page pagination.Page) ([]Service, error) {
-	var response struct {
-		Services []Service `mapstructure:"services"`
+	r := page.(ServicePage)
+	var s struct {
+		Services []Service `json:"services"`
 	}
-
-	err := mapstructure.Decode(page.(ServicePage).Body, &response)
-	return response.Services, err
+	err := r.ExtractInto(&s)
+	return s.Services, err
 }

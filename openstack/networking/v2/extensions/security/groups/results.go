@@ -1,7 +1,6 @@
 package groups
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/rules"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -21,11 +20,11 @@ type SecGroup struct {
 
 	// A slice of security group rules that dictate the permitted behaviour for
 	// traffic entering and leaving the group.
-	Rules []rules.SecGroupRule `json:"security_group_rules" mapstructure:"security_group_rules"`
+	Rules []rules.SecGroupRule `json:"security_group_rules"`
 
 	// Owner of the security group. Only admin users can specify a TenantID
 	// other than their own.
-	TenantID string `json:"tenant_id" mapstructure:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 }
 
 // SecGroupPage is the page returned by a pager when traversing over a
@@ -37,40 +36,34 @@ type SecGroupPage struct {
 // NextPageURL is invoked when a paginated collection of security groups has
 // reached the end of a page and the pager seeks to traverse over a new one. In
 // order to do this, it needs to construct the next page's URL.
-func (p SecGroupPage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"security_groups_links"`
+func (page SecGroupPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"security_groups_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(p.Body, &r)
+	err := page.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
 
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty checks whether a SecGroupPage struct is empty.
-func (p SecGroupPage) IsEmpty() (bool, error) {
-	is, err := ExtractGroups(p)
-	if err != nil {
-		return true, nil
-	}
-	return len(is) == 0, nil
+func (page SecGroupPage) IsEmpty() (bool, error) {
+	is, err := ExtractGroups(page)
+	return len(is) == 0, err
 }
 
 // ExtractGroups accepts a Page struct, specifically a SecGroupPage struct,
 // and extracts the elements into a slice of SecGroup structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractGroups(page pagination.Page) ([]SecGroup, error) {
-	var resp struct {
-		SecGroups []SecGroup `mapstructure:"security_groups" json:"security_groups"`
+	r := page.(SecGroupPage)
+	var s struct {
+		SecGroups []SecGroup `json:"security_groups"`
 	}
-
-	err := mapstructure.Decode(page.(SecGroupPage).Body, &resp)
-
-	return resp.SecGroups, err
+	err := r.ExtractInto(&s)
+	return s.SecGroups, err
 }
 
 type commonResult struct {
@@ -79,17 +72,11 @@ type commonResult struct {
 
 // Extract is a function that accepts a result and extracts a security group.
 func (r commonResult) Extract() (*SecGroup, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		SecGroup *SecGroup `json:"security_group"`
 	}
-
-	var res struct {
-		SecGroup *SecGroup `mapstructure:"security_group" json:"security_group"`
-	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res.SecGroup, err
+	err := r.ExtractInto(&s)
+	return s.SecGroup, err
 }
 
 // CreateResult represents the result of a create operation.

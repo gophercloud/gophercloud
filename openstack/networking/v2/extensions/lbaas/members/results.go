@@ -1,7 +1,6 @@
 package members
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -15,20 +14,20 @@ type Member struct {
 	Weight int
 
 	// The administrative state of the member, which is up (true) or down (false).
-	AdminStateUp bool `json:"admin_state_up" mapstructure:"admin_state_up"`
+	AdminStateUp bool `json:"admin_state_up"`
 
 	// Owner of the member. Only an administrative user can specify a tenant ID
 	// other than its own.
-	TenantID string `json:"tenant_id" mapstructure:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 
 	// The pool to which the member belongs.
-	PoolID string `json:"pool_id" mapstructure:"pool_id"`
+	PoolID string `json:"pool_id"`
 
 	// The IP address of the member.
 	Address string
 
 	// The port on which the application is hosted.
-	ProtocolPort int `json:"protocol_port" mapstructure:"protocol_port"`
+	ProtocolPort int `json:"protocol_port"`
 
 	// The unique ID for the member.
 	ID string
@@ -43,43 +42,33 @@ type MemberPage struct {
 // NextPageURL is invoked when a paginated collection of members has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (p MemberPage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"members_links"`
+func (page MemberPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"members_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(p.Body, &r)
+	err := page.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty checks whether a MemberPage struct is empty.
-func (p MemberPage) IsEmpty() (bool, error) {
-	is, err := ExtractMembers(p)
-	if err != nil {
-		return true, nil
-	}
-	return len(is) == 0, nil
+func (page MemberPage) IsEmpty() (bool, error) {
+	is, err := ExtractMembers(page)
+	return len(is) == 0, err
 }
 
 // ExtractMembers accepts a Page struct, specifically a MemberPage struct,
 // and extracts the elements into a slice of Member structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractMembers(page pagination.Page) ([]Member, error) {
-	var resp struct {
-		Members []Member `mapstructure:"members" json:"members"`
+	r := page.(MemberPage)
+	var s struct {
+		Members []Member `json:"members"`
 	}
-
-	err := mapstructure.Decode(page.(MemberPage).Body, &resp)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.Members, nil
+	err := r.ExtractInto(&s)
+	return s.Members, err
 }
 
 type commonResult struct {
@@ -88,17 +77,11 @@ type commonResult struct {
 
 // Extract is a function that accepts a result and extracts a router.
 func (r commonResult) Extract() (*Member, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-
-	var res struct {
+	var s struct {
 		Member *Member `json:"member"`
 	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res.Member, err
+	err := r.ExtractInto(&s)
+	return s.Member, err
 }
 
 // CreateResult represents the result of a create operation.

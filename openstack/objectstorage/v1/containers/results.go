@@ -3,24 +3,21 @@ package containers
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
-
-	"github.com/mitchellh/mapstructure"
 )
 
 // Container represents a container resource.
 type Container struct {
 	// The total number of bytes stored in the container.
-	Bytes int `json:"bytes" mapstructure:"bytes"`
+	Bytes int `json:"bytes"`
 
 	// The total number of objects stored in the container.
-	Count int `json:"count" mapstructure:"count"`
+	Count int `json:"count"`
 
 	// The name of the container.
-	Name string `json:"name" mapstructure:"name"`
+	Name string `json:"name"`
 }
 
 // ContainerPage is the page returned by a pager when traversing over a
@@ -29,13 +26,10 @@ type ContainerPage struct {
 	pagination.MarkerPageBase
 }
 
-// IsEmpty returns true if a ListResult contains no container names.
+//IsEmpty returns true if a ListResult contains no container names.
 func (r ContainerPage) IsEmpty() (bool, error) {
 	names, err := ExtractNames(r)
-	if err != nil {
-		return true, err
-	}
-	return len(names) == 0, nil
+	return len(names) == 0, err
 }
 
 // LastMarker returns the last container name in a ListResult.
@@ -51,17 +45,10 @@ func (r ContainerPage) LastMarker() (string, error) {
 }
 
 // ExtractInfo is a function that takes a ListResult and returns the containers' information.
-func ExtractInfo(page pagination.Page) ([]Container, error) {
-	untyped := page.(ContainerPage).Body.([]interface{})
-	results := make([]Container, len(untyped))
-	for index, each := range untyped {
-		container := each.(map[string]interface{})
-		err := mapstructure.Decode(container, &results[index])
-		if err != nil {
-			return results, err
-		}
-	}
-	return results, nil
+func ExtractInfo(r pagination.Page) ([]Container, error) {
+	var s []Container
+	err := (r.(ContainerPage)).ExtractInto(&s)
+	return s, err
 }
 
 // ExtractNames is a function that takes a ListResult and returns the containers' names.
@@ -99,16 +86,16 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
-	AcceptRanges     string    `mapstructure:"Accept-Ranges"`
-	BytesUsed        int64     `mapstructure:"X-Account-Bytes-Used"`
-	ContentLength    int64     `mapstructure:"Content-Length"`
-	ContentType      string    `mapstructure:"Content-Type"`
-	Date             time.Time `mapstructure:"-"`
-	ObjectCount      int64     `mapstructure:"X-Container-Object-Count"`
-	Read             string    `mapstructure:"X-Container-Read"`
-	TransID          string    `mapstructure:"X-Trans-Id"`
-	VersionsLocation string    `mapstructure:"X-Versions-Location"`
-	Write            string    `mapstructure:"X-Container-Write"`
+	AcceptRanges     string                  `json:"Accept-Ranges"`
+	BytesUsed        string                  `json:"X-Account-Bytes-Used"`
+	ContentLength    string                  `json:"Content-Length"`
+	ContentType      string                  `json:"Content-Type"`
+	Date             gophercloud.JSONRFC1123 `json:"Date"`
+	ObjectCount      string                  `json:"X-Container-Object-Count"`
+	Read             string                  `json:"X-Container-Read"`
+	TransID          string                  `json:"X-Trans-Id"`
+	VersionsLocation string                  `json:"X-Versions-Location"`
+	Write            string                  `json:"X-Container-Write"`
 }
 
 // GetResult represents the result of a get operation.
@@ -118,35 +105,20 @@ type GetResult struct {
 
 // Extract will return a struct of headers returned from a call to Get. To obtain
 // a map of headers, call the ExtractHeader method on the GetResult.
-func (gr GetResult) Extract() (GetHeader, error) {
-	var gh GetHeader
-	if gr.Err != nil {
-		return gh, gr.Err
-	}
-
-	if err := gophercloud.DecodeHeader(gr.Header, &gh); err != nil {
-		return gh, err
-	}
-
-	if date, ok := gr.Header["Date"]; ok && len(date) > 0 {
-		t, err := time.Parse(time.RFC1123, gr.Header["Date"][0])
-		if err != nil {
-			return gh, err
-		}
-		gh.Date = t
-	}
-
-	return gh, nil
+func (r GetResult) Extract() (*GetHeader, error) {
+	var s *GetHeader
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
 // and returns the custom metadata associated with the container.
-func (gr GetResult) ExtractMetadata() (map[string]string, error) {
-	if gr.Err != nil {
-		return nil, gr.Err
+func (r GetResult) ExtractMetadata() (map[string]string, error) {
+	if r.Err != nil {
+		return nil, r.Err
 	}
 	metadata := make(map[string]string)
-	for k, v := range gr.Header {
+	for k, v := range r.Header {
 		if strings.HasPrefix(k, "X-Container-Meta-") {
 			key := strings.TrimPrefix(k, "X-Container-Meta-")
 			metadata[key] = v[0]
@@ -157,10 +129,10 @@ func (gr GetResult) ExtractMetadata() (map[string]string, error) {
 
 // CreateHeader represents the headers returned in the response from a Create request.
 type CreateHeader struct {
-	ContentLength int64     `mapstructure:"Content-Length"`
-	ContentType   string    `mapstructure:"Content-Type"`
-	Date          time.Time `mapstructure:"-"`
-	TransID       string    `mapstructure:"X-Trans-Id"`
+	ContentLength string                  `json:"Content-Length"`
+	ContentType   string                  `json:"Content-Type"`
+	Date          gophercloud.JSONRFC1123 `json:"Date"`
+	TransID       string                  `json:"X-Trans-Id"`
 }
 
 // CreateResult represents the result of a create operation. To extract the
@@ -172,33 +144,18 @@ type CreateResult struct {
 
 // Extract will return a struct of headers returned from a call to Create. To obtain
 // a map of headers, call the ExtractHeader method on the CreateResult.
-func (cr CreateResult) Extract() (CreateHeader, error) {
-	var ch CreateHeader
-	if cr.Err != nil {
-		return ch, cr.Err
-	}
-
-	if err := gophercloud.DecodeHeader(cr.Header, &ch); err != nil {
-		return ch, err
-	}
-
-	if date, ok := cr.Header["Date"]; ok && len(date) > 0 {
-		t, err := time.Parse(time.RFC1123, cr.Header["Date"][0])
-		if err != nil {
-			return ch, err
-		}
-		ch.Date = t
-	}
-
-	return ch, nil
+func (r CreateResult) Extract() (*CreateHeader, error) {
+	var s *CreateHeader
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // UpdateHeader represents the headers returned in the response from a Update request.
 type UpdateHeader struct {
-	ContentLength int64     `mapstructure:"Content-Length"`
-	ContentType   string    `mapstructure:"Content-Type"`
-	Date          time.Time `mapstructure:"-"`
-	TransID       string    `mapstructure:"X-Trans-Id"`
+	ContentLength string                  `json:"Content-Length"`
+	ContentType   string                  `json:"Content-Type"`
+	Date          gophercloud.JSONRFC1123 `json:"Date"`
+	TransID       string                  `json:"X-Trans-Id"`
 }
 
 // UpdateResult represents the result of an update operation. To extract the
@@ -210,33 +167,18 @@ type UpdateResult struct {
 
 // Extract will return a struct of headers returned from a call to Update. To obtain
 // a map of headers, call the ExtractHeader method on the UpdateResult.
-func (ur UpdateResult) Extract() (UpdateHeader, error) {
-	var uh UpdateHeader
-	if ur.Err != nil {
-		return uh, ur.Err
-	}
-
-	if err := gophercloud.DecodeHeader(ur.Header, &uh); err != nil {
-		return uh, err
-	}
-
-	if date, ok := ur.Header["Date"]; ok && len(date) > 0 {
-		t, err := time.Parse(time.RFC1123, ur.Header["Date"][0])
-		if err != nil {
-			return uh, err
-		}
-		uh.Date = t
-	}
-
-	return uh, nil
+func (r UpdateResult) Extract() (*UpdateHeader, error) {
+	var s *UpdateHeader
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // DeleteHeader represents the headers returned in the response from a Delete request.
 type DeleteHeader struct {
-	ContentLength int64     `mapstructure:"Content-Length"`
-	ContentType   string    `mapstructure:"Content-Type"`
-	Date          time.Time `mapstructure:"-"`
-	TransID       string    `mapstructure:"X-Trans-Id"`
+	ContentLength string                  `json:"Content-Length"`
+	ContentType   string                  `json:"Content-Type"`
+	Date          gophercloud.JSONRFC1123 `json:"Date"`
+	TransID       string                  `json:"X-Trans-Id"`
 }
 
 // DeleteResult represents the result of a delete operation. To extract the
@@ -248,23 +190,8 @@ type DeleteResult struct {
 
 // Extract will return a struct of headers returned from a call to Delete. To obtain
 // a map of headers, call the ExtractHeader method on the DeleteResult.
-func (dr DeleteResult) Extract() (DeleteHeader, error) {
-	var dh DeleteHeader
-	if dr.Err != nil {
-		return dh, dr.Err
-	}
-
-	if err := gophercloud.DecodeHeader(dr.Header, &dh); err != nil {
-		return dh, err
-	}
-
-	if date, ok := dr.Header["Date"]; ok && len(date) > 0 {
-		t, err := time.Parse(time.RFC1123, dr.Header["Date"][0])
-		if err != nil {
-			return dh, err
-		}
-		dh.Date = t
-	}
-
-	return dh, nil
+func (r DeleteResult) Extract() (*DeleteHeader, error) {
+	var s *DeleteHeader
+	err := r.ExtractInto(&s)
+	return s, err
 }

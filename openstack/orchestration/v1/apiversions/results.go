@@ -1,7 +1,6 @@
 package apiversions
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -9,9 +8,9 @@ import (
 // APIVersion represents an API version for Neutron. It contains the status of
 // the API, and its unique ID.
 type APIVersion struct {
-	Status string             `mapstructure:"status"`
-	ID     string             `mapstructure:"id"`
-	Links  []gophercloud.Link `mapstructure:"links"`
+	Status string             `json:"status"`
+	ID     string             `json:"id"`
+	Links  []gophercloud.Link `json:"links"`
 }
 
 // APIVersionPage is the page returned by a pager when traversing over a
@@ -23,20 +22,15 @@ type APIVersionPage struct {
 // IsEmpty checks whether an APIVersionPage struct is empty.
 func (r APIVersionPage) IsEmpty() (bool, error) {
 	is, err := ExtractAPIVersions(r)
-	if err != nil {
-		return true, err
-	}
-	return len(is) == 0, nil
+	return len(is) == 0, err
 }
 
 // ExtractAPIVersions takes a collection page, extracts all of the elements,
 // and returns them a slice of APIVersion structs. It is effectively a cast.
-func ExtractAPIVersions(page pagination.Page) ([]APIVersion, error) {
-	var resp struct {
-		Versions []APIVersion `mapstructure:"versions"`
+func ExtractAPIVersions(r pagination.Page) ([]APIVersion, error) {
+	var s struct {
+		APIVersions []APIVersion `json:"versions"`
 	}
-
-	err := mapstructure.Decode(page.(APIVersionPage).Body, &resp)
-
-	return resp.Versions, err
+	err := (r.(APIVersionPage)).ExtractInto(&s)
+	return s.APIVersions, err
 }

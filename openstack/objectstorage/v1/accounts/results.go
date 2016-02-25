@@ -2,7 +2,6 @@ package accounts
 
 import (
 	"strings"
-	"time"
 
 	"github.com/gophercloud/gophercloud"
 )
@@ -14,46 +13,31 @@ type UpdateResult struct {
 
 // UpdateHeader represents the headers returned in the response from an Update request.
 type UpdateHeader struct {
-	ContentLength string    `mapstructure:"Content-Length"`
-	ContentType   string    `mapstructure:"Content-Type"`
-	Date          time.Time `mapstructure:"-"`
-	TransID       string    `mapstructure:"X-Trans-Id"`
+	ContentLength string                  `json:"Content-Length"`
+	ContentType   string                  `json:"Content-Type"`
+	Date          gophercloud.JSONRFC1123 `json:"Date"`
+	TransID       string                  `json:"X-Trans-Id"`
 }
 
 // Extract will return a struct of headers returned from a call to Get. To obtain
 // a map of headers, call the ExtractHeader method on the GetResult.
-func (ur UpdateResult) Extract() (UpdateHeader, error) {
-	var uh UpdateHeader
-	if ur.Err != nil {
-		return uh, ur.Err
-	}
-
-	if err := gophercloud.DecodeHeader(ur.Header, &uh); err != nil {
-		return uh, err
-	}
-
-	if date, ok := ur.Header["Date"]; ok && len(date) > 0 {
-		t, err := time.Parse(time.RFC1123, ur.Header["Date"][0])
-		if err != nil {
-			return uh, err
-		}
-		uh.Date = t
-	}
-
-	return uh, nil
+func (ur UpdateResult) Extract() (*UpdateHeader, error) {
+	var uh *UpdateHeader
+	err := ur.ExtractInto(&uh)
+	return uh, err
 }
 
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
-	BytesUsed      int64     `mapstructure:"X-Account-Bytes-Used"`
-	ContainerCount int       `mapstructure:"X-Account-Container-Count"`
-	ContentLength  int64     `mapstructure:"Content-Length"`
-	ContentType    string    `mapstructure:"Content-Type"`
-	Date           time.Time `mapstructure:"-"`
-	ObjectCount    int64     `mapstructure:"X-Account-Object-Count"`
-	TransID        string    `mapstructure:"X-Trans-Id"`
-	TempURLKey     string    `mapstructure:"X-Account-Meta-Temp-URL-Key"`
-	TempURLKey2    string    `mapstructure:"X-Account-Meta-Temp-URL-Key-2"`
+	BytesUsed      string                  `json:"X-Account-Bytes-Used"`
+	ContainerCount string                  `json:"X-Account-Container-Count"`
+	ContentLength  string                  `json:"Content-Length"`
+	ContentType    string                  `json:"Content-Type"`
+	Date           gophercloud.JSONRFC1123 `json:"Date"`
+	ObjectCount    string                  `json:"X-Account-Object-Count"`
+	TransID        string                  `json:"X-Trans-Id"`
+	TempURLKey     string                  `json:"X-Account-Meta-Temp-URL-Key"`
+	TempURLKey2    string                  `json:"X-Account-Meta-Temp-URL-Key-2"`
 }
 
 // GetResult is returned from a call to the Get function.
@@ -63,25 +47,10 @@ type GetResult struct {
 
 // Extract will return a struct of headers returned from a call to Get. To obtain
 // a map of headers, call the ExtractHeader method on the GetResult.
-func (gr GetResult) Extract() (GetHeader, error) {
-	var gh GetHeader
-	if gr.Err != nil {
-		return gh, gr.Err
-	}
-
-	if err := gophercloud.DecodeHeader(gr.Header, &gh); err != nil {
-		return gh, err
-	}
-
-	if date, ok := gr.Header["Date"]; ok && len(date) > 0 {
-		t, err := time.Parse(time.RFC1123, gr.Header["Date"][0])
-		if err != nil {
-			return gh, err
-		}
-		gh.Date = t
-	}
-
-	return gh, nil
+func (gr GetResult) Extract() (*GetHeader, error) {
+	var gh *GetHeader
+	err := gr.ExtractInto(&gh)
+	return gh, err
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)

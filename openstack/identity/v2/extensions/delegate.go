@@ -1,7 +1,6 @@
 package extensions
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	common "github.com/gophercloud/gophercloud/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -24,16 +23,15 @@ func (page ExtensionPage) IsEmpty() (bool, error) {
 // ExtractExtensions accepts a Page struct, specifically an ExtensionPage struct, and extracts the
 // elements into a slice of Extension structs.
 func ExtractExtensions(page pagination.Page) ([]common.Extension, error) {
+	r := page.(ExtensionPage)
 	// Identity v2 adds an intermediate "values" object.
-
-	var resp struct {
+	var s struct {
 		Extensions struct {
-			Values []common.Extension `mapstructure:"values"`
-		} `mapstructure:"extensions"`
+			Values []common.Extension `json:"values"`
+		} `json:"extensions"`
 	}
-
-	err := mapstructure.Decode(page.(ExtensionPage).Body, &resp)
-	return resp.Extensions.Values, err
+	err := r.ExtractInto(&s)
+	return s.Extensions.Values, err
 }
 
 // Get retrieves information for a specific extension using its alias.

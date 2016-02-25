@@ -1,8 +1,6 @@
 package users
 
 import (
-	"github.com/mitchellh/mapstructure"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -25,7 +23,7 @@ type User struct {
 	Email string
 
 	// The ID of the tenant to which this user belongs.
-	TenantID string `mapstructure:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 }
 
 // Role assigns specific responsibilities to users, allowing them to accomplish
@@ -51,41 +49,33 @@ type RolePage struct {
 // IsEmpty determines whether or not a page of Tenants contains any results.
 func (page UserPage) IsEmpty() (bool, error) {
 	users, err := ExtractUsers(page)
-	if err != nil {
-		return false, err
-	}
-	return len(users) == 0, nil
+	return len(users) == 0, err
 }
 
 // ExtractUsers returns a slice of Tenants contained in a single page of results.
 func ExtractUsers(page pagination.Page) ([]User, error) {
-	casted := page.(UserPage).Body
-	var response struct {
-		Users []User `mapstructure:"users"`
+	r := page.(UserPage)
+	var s struct {
+		Users []User `json:"users"`
 	}
-
-	err := mapstructure.Decode(casted, &response)
-	return response.Users, err
+	err := r.ExtractInto(&s)
+	return s.Users, err
 }
 
 // IsEmpty determines whether or not a page of Tenants contains any results.
 func (page RolePage) IsEmpty() (bool, error) {
 	users, err := ExtractRoles(page)
-	if err != nil {
-		return false, err
-	}
-	return len(users) == 0, nil
+	return len(users) == 0, err
 }
 
 // ExtractRoles returns a slice of Roles contained in a single page of results.
 func ExtractRoles(page pagination.Page) ([]Role, error) {
-	casted := page.(RolePage).Body
-	var response struct {
-		Roles []Role `mapstructure:"roles"`
+	r := page.(RolePage)
+	var s struct {
+		Roles []Role `json:"roles"`
 	}
-
-	err := mapstructure.Decode(casted, &response)
-	return response.Roles, err
+	err := r.ExtractInto(&s)
+	return s.Roles, err
 }
 
 type commonResult struct {
@@ -94,17 +84,11 @@ type commonResult struct {
 
 // Extract interprets any commonResult as a User, if possible.
 func (r commonResult) Extract() (*User, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		User *User `json:"user"`
 	}
-
-	var response struct {
-		User User `mapstructure:"user"`
-	}
-
-	err := mapstructure.Decode(r.Body, &response)
-
-	return &response.User, err
+	err := r.ExtractInto(&s)
+	return s.User, err
 }
 
 // CreateResult represents the result of a Create operation

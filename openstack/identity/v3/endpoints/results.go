@@ -1,7 +1,6 @@
 package endpoints
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -13,17 +12,11 @@ type commonResult struct {
 // Extract interprets a GetResult, CreateResult or UpdateResult as a concrete Endpoint.
 // An error is returned if the original call or the extraction failed.
 func (r commonResult) Extract() (*Endpoint, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		Endpoint *Endpoint `json:"endpoint"`
 	}
-
-	var res struct {
-		Endpoint `json:"endpoint"`
-	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return &res.Endpoint, err
+	err := r.ExtractInto(&s)
+	return s.Endpoint, err
 }
 
 // CreateResult is the deferred result of a Create call.
@@ -48,12 +41,12 @@ type DeleteResult struct {
 
 // Endpoint describes the entry point for another service's API.
 type Endpoint struct {
-	ID           string                   `mapstructure:"id" json:"id"`
-	Availability gophercloud.Availability `mapstructure:"interface" json:"interface"`
-	Name         string                   `mapstructure:"name" json:"name"`
-	Region       string                   `mapstructure:"region" json:"region"`
-	ServiceID    string                   `mapstructure:"service_id" json:"service_id"`
-	URL          string                   `mapstructure:"url" json:"url"`
+	ID           string                   `json:"id"`
+	Availability gophercloud.Availability `json:"interface"`
+	Name         string                   `json:"name"`
+	Region       string                   `json:"region"`
+	ServiceID    string                   `json:"service_id"`
+	URL          string                   `json:"url"`
 }
 
 // EndpointPage is a single page of Endpoint results.
@@ -64,19 +57,15 @@ type EndpointPage struct {
 // IsEmpty returns true if no Endpoints were returned.
 func (p EndpointPage) IsEmpty() (bool, error) {
 	es, err := ExtractEndpoints(p)
-	if err != nil {
-		return true, err
-	}
-	return len(es) == 0, nil
+	return len(es) == 0, err
 }
 
 // ExtractEndpoints extracts an Endpoint slice from a Page.
 func ExtractEndpoints(page pagination.Page) ([]Endpoint, error) {
-	var response struct {
-		Endpoints []Endpoint `mapstructure:"endpoints"`
+	r := page.(EndpointPage)
+	var s struct {
+		Endpoints []Endpoint `json:"endpoints"`
 	}
-
-	err := mapstructure.Decode(page.(EndpointPage).Body, &response)
-
-	return response.Endpoints, err
+	err := r.ExtractInto(&s)
+	return s.Endpoints, err
 }

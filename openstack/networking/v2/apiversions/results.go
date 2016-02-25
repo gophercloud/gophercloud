@@ -1,15 +1,14 @@
 package apiversions
 
 import (
-	"github.com/mitchellh/mapstructure"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // APIVersion represents an API version for Neutron. It contains the status of
 // the API, and its unique ID.
 type APIVersion struct {
-	Status string `mapstructure:"status" json:"status"`
-	ID     string `mapstructure:"id" json:"id"`
+	Status string `son:"status"`
+	ID     string `json:"id"`
 }
 
 // APIVersionPage is the page returned by a pager when traversing over a
@@ -21,29 +20,24 @@ type APIVersionPage struct {
 // IsEmpty checks whether an APIVersionPage struct is empty.
 func (r APIVersionPage) IsEmpty() (bool, error) {
 	is, err := ExtractAPIVersions(r)
-	if err != nil {
-		return true, err
-	}
-	return len(is) == 0, nil
+	return len(is) == 0, err
 }
 
 // ExtractAPIVersions takes a collection page, extracts all of the elements,
 // and returns them a slice of APIVersion structs. It is effectively a cast.
-func ExtractAPIVersions(page pagination.Page) ([]APIVersion, error) {
-	var resp struct {
-		Versions []APIVersion `mapstructure:"versions"`
+func ExtractAPIVersions(r pagination.Page) ([]APIVersion, error) {
+	var s struct {
+		Versions []APIVersion `json:"versions"`
 	}
-
-	err := mapstructure.Decode(page.(APIVersionPage).Body, &resp)
-
-	return resp.Versions, err
+	err := (r.(APIVersionPage)).ExtractInto(&s)
+	return s.Versions, err
 }
 
 // APIVersionResource represents a generic API resource. It contains the name
 // of the resource and its plural collection name.
 type APIVersionResource struct {
-	Name       string `mapstructure:"name" json:"name"`
-	Collection string `mapstructure:"collection" json:"collection"`
+	Name       string `json:"name"`
+	Collection string `json:"collection"`
 }
 
 // APIVersionResourcePage is a concrete type which embeds the common
@@ -56,22 +50,17 @@ type APIVersionResourcePage struct {
 // APIVersionResourcePage is empty or not.
 func (r APIVersionResourcePage) IsEmpty() (bool, error) {
 	is, err := ExtractVersionResources(r)
-	if err != nil {
-		return true, err
-	}
-	return len(is) == 0, nil
+	return len(is) == 0, err
 }
 
 // ExtractVersionResources accepts a Page struct, specifically a
 // APIVersionResourcePage struct, and extracts the elements into a slice of
 // APIVersionResource structs. In other words, the collection is mapped into
 // a relevant slice.
-func ExtractVersionResources(page pagination.Page) ([]APIVersionResource, error) {
-	var resp struct {
-		APIVersionResources []APIVersionResource `mapstructure:"resources"`
+func ExtractVersionResources(r pagination.Page) ([]APIVersionResource, error) {
+	var s struct {
+		APIVersionResources []APIVersionResource `json:"resources"`
 	}
-
-	err := mapstructure.Decode(page.(APIVersionResourcePage).Body, &resp)
-
-	return resp.APIVersionResources, err
+	err := (r.(APIVersionResourcePage)).ExtractInto(&s)
+	return s.APIVersionResources, err
 }
