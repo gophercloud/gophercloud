@@ -151,11 +151,12 @@ const RFC3339MilliNoZ = "2006-01-02T03:04:05.999999"
 type JSONRFC3339MilliNoZ time.Time
 
 func (jt *JSONRFC3339MilliNoZ) UnmarshalJSON(data []byte) error {
-	b := bytes.NewBuffer(data)
-	dec := json.NewDecoder(b)
 	var s string
-	if err := dec.Decode(&s); err != nil {
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
+	}
+	if s == "" {
+		return nil
 	}
 	t, err := time.Parse(RFC3339MilliNoZ, s)
 	if err != nil {
@@ -168,11 +169,12 @@ func (jt *JSONRFC3339MilliNoZ) UnmarshalJSON(data []byte) error {
 type JSONRFC1123 time.Time
 
 func (jt *JSONRFC1123) UnmarshalJSON(data []byte) error {
-	b := bytes.NewBuffer(data)
-	dec := json.NewDecoder(b)
 	var s string
-	if err := dec.Decode(&s); err != nil {
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
+	}
+	if s == "" {
+		return nil
 	}
 	t, err := time.Parse(time.RFC1123, s)
 	if err != nil {
@@ -185,13 +187,13 @@ func (jt *JSONRFC1123) UnmarshalJSON(data []byte) error {
 type JSONUnix time.Time
 
 func (jt *JSONUnix) UnmarshalJSON(data []byte) error {
-	b := bytes.NewBuffer(data)
-	dec := json.NewDecoder(b)
 	var s string
-	if err := dec.Decode(&s); err != nil {
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-
+	if s == "" {
+		return nil
+	}
 	unix, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		return err
@@ -207,10 +209,8 @@ const RFC3339NoZ = "2006-01-02T15:04:05"
 type JSONRFC3339NoZ time.Time
 
 func (jt *JSONRFC3339NoZ) UnmarshalJSON(data []byte) error {
-	b := bytes.NewBuffer(data)
-	dec := json.NewDecoder(b)
 	var s string
-	if err := dec.Decode(&s); err != nil {
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
 	if s == "" {
