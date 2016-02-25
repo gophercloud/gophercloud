@@ -5,10 +5,8 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"reflect"
+	"strconv"
 	"time"
-
-	"github.com/mitchellh/mapstructure"
 )
 
 /*
@@ -109,39 +107,27 @@ type HeaderResult struct {
 // ExtractHeader will return the http.Header and error from the HeaderResult.
 //
 //   header, err := objects.Create(client, "my_container", objects.CreateOpts{}).ExtractHeader()
-func (hr HeaderResult) ExtractHeader() (http.Header, error) {
-	return hr.Header, hr.Err
-}
-
-// DecodeHeader is a function that decodes a header (usually of type map[string]interface{}) to
-// another type (usually a struct). This function is used by the objectstorage package to give
-// users access to response headers without having to query a map. A DecodeHookFunction is used,
-// because OpenStack-based clients return header values as arrays (Go slices).
-func DecodeHeader(from, to interface{}) error {
-	config := &mapstructure.DecoderConfig{
-		DecodeHook: func(from, to reflect.Kind, data interface{}) (interface{}, error) {
-			if from == reflect.Slice {
-				return data.([]string)[0], nil
-			}
-			return data, nil
-		},
-		Result:           to,
-		WeaklyTypedInput: true,
+func (r HeaderResult) ExtractInto(to interface{}) error {
+	if r.Err != nil {
+		return r.Err
 	}
-	decoder, err := mapstructure.NewDecoder(config)
+
+	tmpHeaderMap := map[string]string{}
+	for k, v := range r.Header {
+		tmpHeaderMap[k] = v[0]
+	}
+
+	b, err := json.Marshal(tmpHeaderMap)
 	if err != nil {
 		return err
 	}
-	if err := decoder.Decode(from); err != nil {
-		return err
-	}
-	return nil
+	err = json.Unmarshal(b, to)
+
+	return err
 }
 
 // RFC3339Milli describes a common time format used by some API responses.
 const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
-
-const RFC3339MilliNoZ = "2006-01-02T03:04:05.999999"
 
 type JSONRFC3339Milli time.Time
 
@@ -160,6 +146,8 @@ func (jt *JSONRFC3339Milli) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+const RFC3339MilliNoZ = "2006-01-02T03:04:05.999999"
+
 type JSONRFC3339MilliNoZ time.Time
 
 func (jt *JSONRFC3339MilliNoZ) UnmarshalJSON(data []byte) error {
@@ -177,8 +165,64 @@ func (jt *JSONRFC3339MilliNoZ) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type JSONRFC1123 time.Time
+
+func (jt *JSONRFC1123) UnmarshalJSON(data []byte) error {
+	b := bytes.NewBuffer(data)
+	dec := json.NewDecoder(b)
+	var s string
+	if err := dec.Decode(&s); err != nil {
+		return err
+	}
+	t, err := time.Parse(time.RFC1123, s)
+	if err != nil {
+		return err
+	}
+	*jt = JSONRFC1123(t)
+	return nil
+}
+
+type JSONUnix time.Time
+
+func (jt *JSONUnix) UnmarshalJSON(data []byte) error {
+	b := bytes.NewBuffer(data)
+	dec := json.NewDecoder(b)
+	var s string
+	if err := dec.Decode(&s); err != nil {
+		return err
+	}
+
+	unix, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return err
+	}
+	t = time.Unix(unix, 0)
+	*jt = JSONUnix(t)
+	return nil
+}
+
 // StackFmtTime is the time format used in Heat (Orchestration).
-const StackFmtTime = "2006-01-02T15:04:05"
+const RFC3339NoZ = "2006-01-02T15:04:05"
+
+type JSONRFC3339NoZ time.Time
+
+func (jt *JSONRFC3339NoZ) UnmarshalJSON(data []byte) error {
+	b := bytes.NewBuffer(data)
+	dec := json.NewDecoder(b)
+	var s string
+	if err := dec.Decode(&s); err != nil {
+		return err
+	}
+	if s == "" {
+		return nil
+	}
+	t, err := time.Parse(RFC3339NoZ, s)
+	if err != nil {
+		return err
+	}
+	*jt = JSONRFC3339NoZ(t)
+	return nil
+}
 
 /*
 Link is an internal type to be used in packages of collection resources that are
