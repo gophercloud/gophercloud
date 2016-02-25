@@ -1,5 +1,10 @@
 package pagination
 
+import (
+	"fmt"
+	"reflect"
+)
+
 // MarkerPage is a stricter Page interface that describes additional functionality required for use with NewMarkerPager.
 // For convenience, embed the MarkedPageBase struct.
 type MarkerPage interface {
@@ -31,6 +36,13 @@ func (current MarkerPageBase) NextPageURL() (string, error) {
 	currentURL.RawQuery = q.Encode()
 
 	return currentURL.String(), nil
+}
+
+func (current MarkerPageBase) IsEmpty() (bool, error) {
+	if b, ok := current.Body.([]interface{}); ok {
+		return len(b) == 0, nil
+	}
+	return true, fmt.Errorf("Error while checking if MarkerPageBase was empty: expected []interface type for Body bot got %+v", reflect.TypeOf(current.Body))
 }
 
 // GetBody returns the linked page's body. This method is needed to satisfy the

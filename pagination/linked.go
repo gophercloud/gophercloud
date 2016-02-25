@@ -1,6 +1,9 @@
 package pagination
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 // LinkedPageBase may be embedded to implement a page that provides navigational "Next" and "Previous" links within its result.
 type LinkedPageBase struct {
@@ -58,6 +61,13 @@ func (current LinkedPageBase) NextPageURL() (string, error) {
 			return url, nil
 		}
 	}
+}
+
+func (current LinkedPageBase) IsEmpty() (bool, error) {
+	if b, ok := current.Body.([]interface{}); ok {
+		return len(b) == 0, nil
+	}
+	return true, fmt.Errorf("Error while checking if LinkedPageBase was empty: expected []interface type for Body bot got %+v", reflect.TypeOf(current.Body))
 }
 
 // GetBody returns the linked page's body. This method is needed to satisfy the
