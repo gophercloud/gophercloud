@@ -32,12 +32,11 @@ func (r ConfigPage) IsEmpty() (bool, error) {
 }
 
 // ExtractConfigs will retrieve a slice of Config structs from a page.
-func ExtractConfigs(page pagination.Page) ([]Config, error) {
-	r := page.(ConfigPage)
+func ExtractConfigs(r pagination.Page) ([]Config, error) {
 	var s struct {
 		Configs []Config `json:"configurations"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(ConfigPage)).ExtractInto(&s)
 	return s.Configs, err
 }
 
@@ -100,12 +99,11 @@ func (r ParamPage) IsEmpty() (bool, error) {
 }
 
 // ExtractParams will retrieve a slice of Param structs from a page.
-func ExtractParams(page pagination.Page) ([]Param, error) {
-	r := page.(ParamPage)
+func ExtractParams(r pagination.Page) ([]Param, error) {
 	var s struct {
 		Params []Param `json:"configuration-parameters"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(ParamPage)).ExtractInto(&s)
 	return s.Params, err
 }
 
@@ -117,7 +115,7 @@ type ParamResult struct {
 
 // Extract will retrieve a param from an operation result.
 func (r ParamResult) Extract() (*Param, error) {
-	var s Param
+	var s *Param
 	err := r.ExtractInto(&s)
-	return &s, err
+	return s, err
 }

@@ -18,20 +18,16 @@ type DefaultRulePage struct {
 // IsEmpty determines whether or not a page of default rules contains any results.
 func (page DefaultRulePage) IsEmpty() (bool, error) {
 	users, err := ExtractDefaultRules(page)
-	if err != nil {
-		return false, err
-	}
-	return len(users) == 0, nil
+	return len(users) == 0, err
 }
 
 // ExtractDefaultRules returns a slice of DefaultRules contained in a single
 // page of results.
-func ExtractDefaultRules(page pagination.Page) ([]DefaultRule, error) {
-	r := page.(DefaultRulePage)
+func ExtractDefaultRules(r pagination.Page) ([]DefaultRule, error) {
 	var s struct {
 		DefaultRules []DefaultRule `json:"security_group_default_rules"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(DefaultRulePage)).ExtractInto(&s)
 	return s.DefaultRules, err
 }
 

@@ -35,34 +35,33 @@ type Group struct {
 	ID string `json:"id,omitempty"`
 }
 
-// RoleAssignmentsPage is a single page of RoleAssignments results.
-type RoleAssignmentsPage struct {
+// RoleAssignmentPage is a single page of RoleAssignments results.
+type RoleAssignmentPage struct {
 	pagination.LinkedPageBase
 }
 
 // IsEmpty returns true if the page contains no results.
-func (p RoleAssignmentsPage) IsEmpty() (bool, error) {
-	roleAssignments, err := ExtractRoleAssignments(p)
+func (r RoleAssignmentPage) IsEmpty() (bool, error) {
+	roleAssignments, err := ExtractRoleAssignments(r)
 	return len(roleAssignments) == 0, err
 }
 
 // NextPageURL uses the response's embedded link reference to navigate to the next page of results.
-func (page RoleAssignmentsPage) NextPageURL() (string, error) {
+func (r RoleAssignmentPage) NextPageURL() (string, error) {
 	var s struct {
 		Links struct {
 			Next string `json:"next"`
 		} `json:"links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	return s.Links.Next, err
 }
 
 // ExtractRoleAssignments extracts a slice of RoleAssignments from a Collection acquired from List.
-func ExtractRoleAssignments(page pagination.Page) ([]RoleAssignment, error) {
-	r := page.(RoleAssignmentsPage)
+func ExtractRoleAssignments(r pagination.Page) ([]RoleAssignment, error) {
 	var s struct {
 		RoleAssignments []RoleAssignment `json:"role_assignments"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(RoleAssignmentPage)).ExtractInto(&s)
 	return s.RoleAssignments, err
 }

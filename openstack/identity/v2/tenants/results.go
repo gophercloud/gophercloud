@@ -26,17 +26,17 @@ type TenantPage struct {
 }
 
 // IsEmpty determines whether or not a page of Tenants contains any results.
-func (page TenantPage) IsEmpty() (bool, error) {
-	tenants, err := ExtractTenants(page)
+func (r TenantPage) IsEmpty() (bool, error) {
+	tenants, err := ExtractTenants(r)
 	return len(tenants) == 0, err
 }
 
 // NextPageURL extracts the "next" link from the tenants_links section of the result.
-func (page TenantPage) NextPageURL() (string, error) {
+func (r TenantPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"tenants_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -44,11 +44,10 @@ func (page TenantPage) NextPageURL() (string, error) {
 }
 
 // ExtractTenants returns a slice of Tenants contained in a single page of results.
-func ExtractTenants(page pagination.Page) ([]Tenant, error) {
-	r := page.(TenantPage)
+func ExtractTenants(r pagination.Page) ([]Tenant, error) {
 	var s struct {
 		Tenants []Tenant `json:"tenants"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(TenantPage)).ExtractInto(&s)
 	return s.Tenants, err
 }

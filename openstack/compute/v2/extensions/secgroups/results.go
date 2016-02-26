@@ -76,12 +76,11 @@ func (page SecurityGroupPage) IsEmpty() (bool, error) {
 }
 
 // ExtractSecurityGroups returns a slice of SecurityGroups contained in a single page of results.
-func ExtractSecurityGroups(page pagination.Page) ([]SecurityGroup, error) {
-	r := page.(SecurityGroupPage)
+func ExtractSecurityGroups(r pagination.Page) ([]SecurityGroup, error) {
 	var s struct {
 		SecurityGroups []SecurityGroup `json:"security_groups"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(SecurityGroupPage)).ExtractInto(&s)
 	return s.SecurityGroups, err
 }
 

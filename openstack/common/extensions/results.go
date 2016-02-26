@@ -38,20 +38,16 @@ type ExtensionPage struct {
 // IsEmpty checks whether an ExtensionPage struct is empty.
 func (r ExtensionPage) IsEmpty() (bool, error) {
 	is, err := ExtractExtensions(r)
-	if err != nil {
-		return true, err
-	}
-	return len(is) == 0, nil
+	return len(is) == 0, err
 }
 
 // ExtractExtensions accepts a Page struct, specifically an ExtensionPage struct, and extracts the
 // elements into a slice of Extension structs.
 // In other words, a generic collection is mapped into a relevant slice.
-func ExtractExtensions(page pagination.Page) ([]Extension, error) {
-	r := page.(ExtensionPage)
+func ExtractExtensions(r pagination.Page) ([]Extension, error) {
 	var s struct {
 		Extensions []Extension `json:"extensions"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(ExtensionPage)).ExtractInto(&s)
 	return s.Extensions, err
 }

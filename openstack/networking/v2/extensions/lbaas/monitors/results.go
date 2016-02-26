@@ -70,11 +70,11 @@ type MonitorPage struct {
 // NextPageURL is invoked when a paginated collection of monitors has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (page MonitorPage) NextPageURL() (string, error) {
+func (r MonitorPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"health_monitors_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -83,20 +83,19 @@ func (page MonitorPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a PoolPage struct is empty.
-func (page MonitorPage) IsEmpty() (bool, error) {
-	is, err := ExtractMonitors(page)
+func (r MonitorPage) IsEmpty() (bool, error) {
+	is, err := ExtractMonitors(r)
 	return len(is) == 0, err
 }
 
 // ExtractMonitors accepts a Page struct, specifically a MonitorPage struct,
 // and extracts the elements into a slice of Monitor structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractMonitors(page pagination.Page) ([]Monitor, error) {
-	r := page.(MonitorPage)
+func ExtractMonitors(r pagination.Page) ([]Monitor, error) {
 	var s struct {
 		Monitors []Monitor `json:"health_monitors"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(MonitorPage)).ExtractInto(&s)
 	return s.Monitors, err
 }
 

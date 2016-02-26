@@ -64,11 +64,11 @@ type PoolPage struct {
 // NextPageURL is invoked when a paginated collection of pools has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (page PoolPage) NextPageURL() (string, error) {
+func (r PoolPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"pools_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -76,20 +76,19 @@ func (page PoolPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a PoolPage struct is empty.
-func (page PoolPage) IsEmpty() (bool, error) {
-	is, err := ExtractPools(page)
+func (r PoolPage) IsEmpty() (bool, error) {
+	is, err := ExtractPools(r)
 	return len(is) == 0, err
 }
 
 // ExtractPools accepts a Page struct, specifically a RouterPage struct,
 // and extracts the elements into a slice of Router structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractPools(page pagination.Page) ([]Pool, error) {
-	r := page.(PoolPage)
+func ExtractPools(r pagination.Page) ([]Pool, error) {
 	var s struct {
 		Pools []Pool `json:"pools"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(PoolPage)).ExtractInto(&s)
 	return s.Pools, err
 }
 

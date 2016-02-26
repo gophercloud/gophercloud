@@ -42,11 +42,11 @@ type MemberPage struct {
 // NextPageURL is invoked when a paginated collection of members has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (page MemberPage) NextPageURL() (string, error) {
+func (r MemberPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"members_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -54,20 +54,19 @@ func (page MemberPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a MemberPage struct is empty.
-func (page MemberPage) IsEmpty() (bool, error) {
-	is, err := ExtractMembers(page)
+func (r MemberPage) IsEmpty() (bool, error) {
+	is, err := ExtractMembers(r)
 	return len(is) == 0, err
 }
 
 // ExtractMembers accepts a Page struct, specifically a MemberPage struct,
 // and extracts the elements into a slice of Member structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractMembers(page pagination.Page) ([]Member, error) {
-	r := page.(MemberPage)
+func ExtractMembers(r pagination.Page) ([]Member, error) {
 	var s struct {
 		Members []Member `json:"members"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(MemberPage)).ExtractInto(&s)
 	return s.Members, err
 }
 

@@ -90,11 +90,11 @@ type PortPage struct {
 // NextPageURL is invoked when a paginated collection of ports has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (page PortPage) NextPageURL() (string, error) {
+func (r PortPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"ports_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -102,19 +102,18 @@ func (page PortPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a PortPage struct is empty.
-func (page PortPage) IsEmpty() (bool, error) {
-	is, err := ExtractPorts(page)
+func (r PortPage) IsEmpty() (bool, error) {
+	is, err := ExtractPorts(r)
 	return len(is) == 0, err
 }
 
 // ExtractPorts accepts a Page struct, specifically a PortPage struct,
 // and extracts the elements into a slice of Port structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractPorts(page pagination.Page) ([]Port, error) {
-	r := page.(PortPage)
+func ExtractPorts(r pagination.Page) ([]Port, error) {
 	var s struct {
 		Ports []Port `json:"ports"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(PortPage)).ExtractInto(&s)
 	return s.Ports, err
 }

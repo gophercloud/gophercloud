@@ -53,12 +53,11 @@ func (r DatastorePage) IsEmpty() (bool, error) {
 
 // ExtractDatastores retrieves a slice of datastore structs from a paginated
 // collection.
-func ExtractDatastores(page pagination.Page) ([]Datastore, error) {
-	r := page.(DatastorePage)
+func ExtractDatastores(r pagination.Page) ([]Datastore, error) {
 	var s struct {
 		Datastores []Datastore `json:"datastores"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(DatastorePage)).ExtractInto(&s)
 	return s.Datastores, err
 }
 
@@ -83,12 +82,11 @@ func (r VersionPage) IsEmpty() (bool, error) {
 }
 
 // ExtractVersions retrieves a slice of versions from a paginated collection.
-func ExtractVersions(page pagination.Page) ([]Version, error) {
-	r := page.(VersionPage)
+func ExtractVersions(r pagination.Page) ([]Version, error) {
 	var s struct {
 		Versions []Version `json:"versions"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(VersionPage)).ExtractInto(&s)
 	return s.Versions, err
 }
 

@@ -176,8 +176,5 @@ func (r AbandonResult) Extract() (*AbandonedStack, error) {
 // the result of an Abandon operation to an AdoptOpts AdoptStackData field.
 func (r AbandonResult) String() (string, error) {
 	out, err := json.Marshal(r)
-	if err != nil {
-		return "", err
-	}
-	return string(out), nil
+	return string(out), err
 }

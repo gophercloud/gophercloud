@@ -72,11 +72,11 @@ type NetworkPage struct {
 // NextPageURL is invoked when a paginated collection of networks has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (page NetworkPage) NextPageURL() (string, error) {
+func (r NetworkPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"networks_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -84,19 +84,18 @@ func (page NetworkPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a NetworkPage struct is empty.
-func (page NetworkPage) IsEmpty() (bool, error) {
-	is, err := ExtractNetworks(page)
+func (r NetworkPage) IsEmpty() (bool, error) {
+	is, err := ExtractNetworks(r)
 	return len(is) == 0, err
 }
 
 // ExtractNetworks accepts a Page struct, specifically a NetworkPage struct,
 // and extracts the elements into a slice of Network structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractNetworks(page pagination.Page) ([]Network, error) {
-	r := page.(NetworkPage)
+func ExtractNetworks(r pagination.Page) ([]Network, error) {
 	var s struct {
 		Networks []Network `json:"networks"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(NetworkPage)).ExtractInto(&s)
 	return s.Networks, err
 }

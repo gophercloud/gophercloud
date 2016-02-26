@@ -47,21 +47,21 @@ type GetResult struct {
 
 // Extract will return a struct of headers returned from a call to Get. To obtain
 // a map of headers, call the ExtractHeader method on the GetResult.
-func (gr GetResult) Extract() (*GetHeader, error) {
-	var gh *GetHeader
-	err := gr.ExtractInto(&gh)
-	return gh, err
+func (r GetResult) Extract() (*GetHeader, error) {
+	var s *GetHeader
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
 // and returns the custom metatdata associated with the account.
-func (gr GetResult) ExtractMetadata() (map[string]string, error) {
-	if gr.Err != nil {
-		return nil, gr.Err
+func (r GetResult) ExtractMetadata() (map[string]string, error) {
+	if r.Err != nil {
+		return nil, r.Err
 	}
 
 	metadata := make(map[string]string)
-	for k, v := range gr.Header {
+	for k, v := range r.Header {
 		if strings.HasPrefix(k, "X-Account-Meta-") {
 			key := strings.TrimPrefix(k, "X-Account-Meta-")
 			metadata[key] = v[0]

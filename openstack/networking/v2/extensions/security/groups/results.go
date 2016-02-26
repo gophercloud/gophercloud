@@ -36,11 +36,11 @@ type SecGroupPage struct {
 // NextPageURL is invoked when a paginated collection of security groups has
 // reached the end of a page and the pager seeks to traverse over a new one. In
 // order to do this, it needs to construct the next page's URL.
-func (page SecGroupPage) NextPageURL() (string, error) {
+func (r SecGroupPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"security_groups_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -49,20 +49,19 @@ func (page SecGroupPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a SecGroupPage struct is empty.
-func (page SecGroupPage) IsEmpty() (bool, error) {
-	is, err := ExtractGroups(page)
+func (r SecGroupPage) IsEmpty() (bool, error) {
+	is, err := ExtractGroups(r)
 	return len(is) == 0, err
 }
 
 // ExtractGroups accepts a Page struct, specifically a SecGroupPage struct,
 // and extracts the elements into a slice of SecGroup structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractGroups(page pagination.Page) ([]SecGroup, error) {
-	r := page.(SecGroupPage)
+func ExtractGroups(r pagination.Page) ([]SecGroup, error) {
 	var s struct {
 		SecGroups []SecGroup `json:"security_groups"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(SecGroupPage)).ExtractInto(&s)
 	return s.SecGroups, err
 }
 

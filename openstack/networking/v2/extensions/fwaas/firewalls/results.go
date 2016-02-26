@@ -38,11 +38,11 @@ type FirewallPage struct {
 // NextPageURL is invoked when a paginated collection of firewalls has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (page FirewallPage) NextPageURL() (string, error) {
+func (r FirewallPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"firewalls_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -50,19 +50,19 @@ func (page FirewallPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a FirewallPage struct is empty.
-func (page FirewallPage) IsEmpty() (bool, error) {
-	is, err := ExtractFirewalls(page)
+func (r FirewallPage) IsEmpty() (bool, error) {
+	is, err := ExtractFirewalls(r)
 	return len(is) == 0, err
 }
 
 // ExtractFirewalls accepts a Page struct, specifically a RouterPage struct,
 // and extracts the elements into a slice of Router structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractFirewalls(page pagination.Page) ([]Firewall, error) {
+func ExtractFirewalls(r pagination.Page) ([]Firewall, error) {
 	var s struct {
 		Firewalls []Firewall `json:"firewalls" json:"firewalls"`
 	}
-	err := (page.(FirewallPage)).ExtractInto(&s)
+	err := (r.(FirewallPage)).ExtractInto(&s)
 	return s.Firewalls, err
 }
 

@@ -161,8 +161,5 @@ func (r TemplateResult) Extract() ([]byte, error) {
 		return nil, r.Err
 	}
 	template, err := json.MarshalIndent(r.Body, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-	return template, nil
+	return template, err
 }

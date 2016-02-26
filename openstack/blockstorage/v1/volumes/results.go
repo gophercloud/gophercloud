@@ -74,12 +74,11 @@ func (r VolumePage) IsEmpty() (bool, error) {
 }
 
 // ExtractVolumes extracts and returns Volumes. It is used while iterating over a volumes.List call.
-func ExtractVolumes(page pagination.Page) ([]Volume, error) {
-	r := page.(VolumePage)
+func ExtractVolumes(r pagination.Page) ([]Volume, error) {
 	var s struct {
 		Volumes []Volume `json:"volumes"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(VolumePage)).ExtractInto(&s)
 	return s.Volumes, err
 }
 

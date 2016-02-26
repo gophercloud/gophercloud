@@ -114,7 +114,9 @@ func (r HeaderResult) ExtractInto(to interface{}) error {
 
 	tmpHeaderMap := map[string]string{}
 	for k, v := range r.Header {
-		tmpHeaderMap[k] = v[0]
+		if len(v) > 0 {
+			tmpHeaderMap[k] = v[0]
+		}
 	}
 
 	b, err := json.Marshal(tmpHeaderMap)
@@ -203,7 +205,7 @@ func (jt *JSONUnix) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// StackFmtTime is the time format used in Heat (Orchestration).
+// RFC3339NoZ is the time format used in Heat (Orchestration).
 const RFC3339NoZ = "2006-01-02T15:04:05"
 
 type JSONRFC3339NoZ time.Time

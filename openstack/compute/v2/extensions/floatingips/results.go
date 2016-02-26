@@ -37,12 +37,11 @@ func (page FloatingIPPage) IsEmpty() (bool, error) {
 
 // ExtractFloatingIPs interprets a page of results as a slice of
 // FloatingIPs.
-func ExtractFloatingIPs(page pagination.Page) ([]FloatingIP, error) {
-	r := page.(FloatingIPPage)
+func ExtractFloatingIPs(r pagination.Page) ([]FloatingIP, error) {
 	var s struct {
 		FloatingIPs []FloatingIP `json:"floating_ips"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(FloatingIPPage)).ExtractInto(&s)
 	return s.FloatingIPs, err
 }
 

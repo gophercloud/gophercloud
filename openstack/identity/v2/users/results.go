@@ -47,34 +47,32 @@ type RolePage struct {
 }
 
 // IsEmpty determines whether or not a page of Tenants contains any results.
-func (page UserPage) IsEmpty() (bool, error) {
-	users, err := ExtractUsers(page)
+func (r UserPage) IsEmpty() (bool, error) {
+	users, err := ExtractUsers(r)
 	return len(users) == 0, err
 }
 
 // ExtractUsers returns a slice of Tenants contained in a single page of results.
-func ExtractUsers(page pagination.Page) ([]User, error) {
-	r := page.(UserPage)
+func ExtractUsers(r pagination.Page) ([]User, error) {
 	var s struct {
 		Users []User `json:"users"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(UserPage)).ExtractInto(&s)
 	return s.Users, err
 }
 
 // IsEmpty determines whether or not a page of Tenants contains any results.
-func (page RolePage) IsEmpty() (bool, error) {
-	users, err := ExtractRoles(page)
+func (r RolePage) IsEmpty() (bool, error) {
+	users, err := ExtractRoles(r)
 	return len(users) == 0, err
 }
 
 // ExtractRoles returns a slice of Roles contained in a single page of results.
-func ExtractRoles(page pagination.Page) ([]Role, error) {
-	r := page.(RolePage)
+func ExtractRoles(r pagination.Page) ([]Role, error) {
 	var s struct {
 		Roles []Role `json:"roles"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(RolePage)).ExtractInto(&s)
 	return s.Roles, err
 }
 

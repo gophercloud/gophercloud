@@ -34,20 +34,16 @@ type FlavorPage struct {
 // IsEmpty returns true if a FlavorPage contains no Flavors.
 func (r FlavorPage) IsEmpty() (bool, error) {
 	flavors, err := ExtractFlavors(r)
-	if err != nil {
-		return true, err
-	}
-	return len(flavors) == 0, nil
+	return len(flavors) == 0, err
 }
 
 // ExtractFlavors extracts and returns Flavors. It is used while iterating over
 // a flavors.List call.
-func ExtractFlavors(page pagination.Page) ([]Flavor, error) {
-	r := page.(FlavorPage)
+func ExtractFlavors(r pagination.Page) ([]Flavor, error) {
 	var s struct {
 		Flavors []Flavor `json:"flavors"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(FlavorPage)).ExtractInto(&s)
 	return s.Flavors, err
 }
 
@@ -58,7 +54,7 @@ type GetResult struct {
 
 // Extract is a function that extracts a flavor from a GetResult.
 func (r GetResult) Extract() (*Flavor, error) {
-	var s Flavor
+	var s *Flavor
 	err := r.ExtractInto(&s)
-	return &s, err
+	return s, err
 }

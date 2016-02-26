@@ -72,11 +72,10 @@ func (page ImagePage) NextPageURL() (string, error) {
 }
 
 // ExtractImages converts a page of List results into a slice of usable Image structs.
-func ExtractImages(page pagination.Page) ([]Image, error) {
-	r := page.(ImagePage)
+func ExtractImages(r pagination.Page) ([]Image, error) {
 	var s struct {
 		Images []Image `json:"images"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(ImagePage)).ExtractInto(&s)
 	return s.Images, err
 }

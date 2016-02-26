@@ -43,7 +43,7 @@ func ListAssignments(client *gophercloud.ServiceClient, opts ListAssignmentsOpts
 	}
 	url += query
 	createPage := func(r pagination.PageResult) pagination.Page {
-		return RoleAssignmentsPage{pagination.LinkedPageBase{PageResult: r}}
+		return RoleAssignmentPage{pagination.LinkedPageBase{PageResult: r}}
 	}
 
 	return pagination.NewPager(client, url, createPage)

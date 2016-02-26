@@ -230,10 +230,7 @@ type ServicePage struct {
 // IsEmpty returns true if a ListResult contains no services.
 func (r ServicePage) IsEmpty() (bool, error) {
 	services, err := ExtractServices(r)
-	if err != nil {
-		return true, err
-	}
-	return len(services) == 0, nil
+	return len(services) == 0, err
 }
 
 // LastMarker returns the last service in a ListResult.
@@ -249,12 +246,11 @@ func (r ServicePage) LastMarker() (string, error) {
 }
 
 // ExtractServices is a function that takes a ListResult and returns the services' information.
-func ExtractServices(page pagination.Page) ([]Service, error) {
-	r := page.(ServicePage)
+func ExtractServices(r pagination.Page) ([]Service, error) {
 	var s struct {
 		Services []Service `json:"services"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(ServicePage)).ExtractInto(&s)
 	return s.Services, err
 }
 

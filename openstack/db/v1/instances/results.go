@@ -109,12 +109,11 @@ func (page InstancePage) NextPageURL() (string, error) {
 
 // ExtractInstances will convert a generic pagination struct into a more
 // relevant slice of Instance structs.
-func ExtractInstances(page pagination.Page) ([]Instance, error) {
-	r := page.(InstancePage)
+func ExtractInstances(r pagination.Page) ([]Instance, error) {
 	var s struct {
 		Instances []Instance `json:"instances"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(InstancePage)).ExtractInto(&s)
 	return s.Instances, err
 }
 

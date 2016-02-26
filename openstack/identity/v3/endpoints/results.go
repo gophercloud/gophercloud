@@ -55,17 +55,16 @@ type EndpointPage struct {
 }
 
 // IsEmpty returns true if no Endpoints were returned.
-func (p EndpointPage) IsEmpty() (bool, error) {
-	es, err := ExtractEndpoints(p)
+func (r EndpointPage) IsEmpty() (bool, error) {
+	es, err := ExtractEndpoints(r)
 	return len(es) == 0, err
 }
 
 // ExtractEndpoints extracts an Endpoint slice from a Page.
-func ExtractEndpoints(page pagination.Page) ([]Endpoint, error) {
-	r := page.(EndpointPage)
+func ExtractEndpoints(r pagination.Page) ([]Endpoint, error) {
 	var s struct {
 		Endpoints []Endpoint `json:"endpoints"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(EndpointPage)).ExtractInto(&s)
 	return s.Endpoints, err
 }

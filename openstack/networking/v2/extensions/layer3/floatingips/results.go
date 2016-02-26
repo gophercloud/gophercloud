@@ -78,11 +78,11 @@ type FloatingIPPage struct {
 // NextPageURL is invoked when a paginated collection of floating IPs has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (page FloatingIPPage) NextPageURL() (string, error) {
+func (r FloatingIPPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"floatingips_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -90,19 +90,18 @@ func (page FloatingIPPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a NetworkPage struct is empty.
-func (page FloatingIPPage) IsEmpty() (bool, error) {
-	is, err := ExtractFloatingIPs(page)
+func (r FloatingIPPage) IsEmpty() (bool, error) {
+	is, err := ExtractFloatingIPs(r)
 	return len(is) == 0, err
 }
 
 // ExtractFloatingIPs accepts a Page struct, specifically a FloatingIPPage struct,
 // and extracts the elements into a slice of FloatingIP structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractFloatingIPs(page pagination.Page) ([]FloatingIP, error) {
-	r := page.(FloatingIPPage)
+func ExtractFloatingIPs(r pagination.Page) ([]FloatingIP, error) {
 	var s struct {
 		FloatingIPs []FloatingIP `json:"floatingips"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(FloatingIPPage)).ExtractInto(&s)
 	return s.FloatingIPs, err
 }

@@ -26,12 +26,11 @@ func (r APIVersionPage) IsEmpty() (bool, error) {
 
 // ExtractAPIVersions takes a collection page, extracts all of the elements,
 // and returns them a slice of APIVersion structs. It is effectively a cast.
-func ExtractAPIVersions(page pagination.Page) ([]APIVersion, error) {
-	r := page.(APIVersionPage)
+func ExtractAPIVersions(r pagination.Page) ([]APIVersion, error) {
 	var s struct {
 		Versions []APIVersion `json:"versions"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(APIVersionPage)).ExtractInto(&s)
 	return s.Versions, err
 }
 

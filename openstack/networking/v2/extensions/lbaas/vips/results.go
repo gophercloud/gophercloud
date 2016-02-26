@@ -89,11 +89,11 @@ type VIPPage struct {
 // NextPageURL is invoked when a paginated collection of routers has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (page VIPPage) NextPageURL() (string, error) {
+func (r VIPPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"vips_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -101,20 +101,19 @@ func (page VIPPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a VIPPage struct is empty.
-func (page VIPPage) IsEmpty() (bool, error) {
-	is, err := ExtractVIPs(page)
+func (r VIPPage) IsEmpty() (bool, error) {
+	is, err := ExtractVIPs(r)
 	return len(is) == 0, err
 }
 
 // ExtractVIPs accepts a Page struct, specifically a VIPPage struct,
 // and extracts the elements into a slice of VirtualIP structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractVIPs(page pagination.Page) ([]VirtualIP, error) {
-	r := page.(VIPPage)
+func ExtractVIPs(r pagination.Page) ([]VirtualIP, error) {
 	var s struct {
 		VIPs []VirtualIP `json:"vips"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(VIPPage)).ExtractInto(&s)
 	return s.VIPs, err
 }
 

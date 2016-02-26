@@ -39,15 +39,14 @@ func (page KeyPairPage) IsEmpty() (bool, error) {
 }
 
 // ExtractKeyPairs interprets a page of results as a slice of KeyPairs.
-func ExtractKeyPairs(page pagination.Page) ([]KeyPair, error) {
-	r := page.(KeyPairPage)
+func ExtractKeyPairs(r pagination.Page) ([]KeyPair, error) {
 	type pair struct {
 		KeyPair KeyPair `json:"keypair"`
 	}
 	var s struct {
 		KeyPairs []pair `json:"keypairs"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(KeyPairPage)).ExtractInto(&s)
 	results := make([]KeyPair, len(s.KeyPairs))
 	for i, pair := range s.KeyPairs {
 		results[i] = pair.KeyPair

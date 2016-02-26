@@ -94,11 +94,10 @@ func ExtractUpdate(r networks.UpdateResult) (*NetworkExtAttrs, error) {
 // ExtractList accepts a Page struct, specifically a NetworkPage struct, and
 // extracts the elements into a slice of NetworkExtAttrs structs. In other
 // words, a generic collection is mapped into a relevant slice.
-func ExtractList(page pagination.Page) ([]NetworkExtAttrs, error) {
-	r := page.(networks.NetworkPage)
+func ExtractList(r pagination.Page) ([]NetworkExtAttrs, error) {
 	var s struct {
 		Networks []NetworkExtAttrs `json:"networks" json:"networks"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(networks.NetworkPage)).ExtractInto(&s)
 	return s.Networks, err
 }

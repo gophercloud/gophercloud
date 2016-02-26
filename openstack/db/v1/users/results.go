@@ -53,11 +53,10 @@ func (page UserPage) NextPageURL() (string, error) {
 
 // ExtractUsers will convert a generic pagination struct into a more
 // relevant slice of User structs.
-func ExtractUsers(page pagination.Page) ([]User, error) {
-	r := page.(UserPage)
+func ExtractUsers(r pagination.Page) ([]User, error) {
 	var s struct {
 		Users []User `json:"users"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(UserPage)).ExtractInto(&s)
 	return s.Users, err
 }

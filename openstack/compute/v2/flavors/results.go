@@ -71,11 +71,10 @@ func (page FlavorPage) NextPageURL() (string, error) {
 }
 
 // ExtractFlavors provides access to the list of flavors in a page acquired from the List operation.
-func ExtractFlavors(page pagination.Page) ([]Flavor, error) {
-	r := page.(FlavorPage)
+func ExtractFlavors(r pagination.Page) ([]Flavor, error) {
 	var s struct {
 		Flavors []Flavor `json:"flavors"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(FlavorPage)).ExtractInto(&s)
 	return s.Flavors, err
 }

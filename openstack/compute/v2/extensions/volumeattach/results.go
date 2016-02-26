@@ -20,26 +20,25 @@ type VolumeAttachment struct {
 	ServerID string `json:"serverId"`
 }
 
-// VolumeAttachmentsPage stores a single, only page of VolumeAttachments
+// VolumeAttachmentPage stores a single, only page of VolumeAttachments
 // results from a List call.
-type VolumeAttachmentsPage struct {
+type VolumeAttachmentPage struct {
 	pagination.SinglePageBase
 }
 
 // IsEmpty determines whether or not a VolumeAttachmentsPage is empty.
-func (page VolumeAttachmentsPage) IsEmpty() (bool, error) {
+func (page VolumeAttachmentPage) IsEmpty() (bool, error) {
 	va, err := ExtractVolumeAttachments(page)
 	return len(va) == 0, err
 }
 
 // ExtractVolumeAttachments interprets a page of results as a slice of
 // VolumeAttachments.
-func ExtractVolumeAttachments(page pagination.Page) ([]VolumeAttachment, error) {
-	r := page.(VolumeAttachmentsPage)
+func ExtractVolumeAttachments(r pagination.Page) ([]VolumeAttachment, error) {
 	var s struct {
 		VolumeAttachments []VolumeAttachment `json:"volumeAttachments"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(VolumeAttachmentPage)).ExtractInto(&s)
 	return s.VolumeAttachments, err
 }
 

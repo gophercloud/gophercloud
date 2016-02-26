@@ -61,11 +61,11 @@ type SecGroupRulePage struct {
 // NextPageURL is invoked when a paginated collection of security group rules has
 // reached the end of a page and the pager seeks to traverse over a new one. In
 // order to do this, it needs to construct the next page's URL.
-func (page SecGroupRulePage) NextPageURL() (string, error) {
+func (r SecGroupRulePage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"security_group_rules_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -73,20 +73,19 @@ func (page SecGroupRulePage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a SecGroupRulePage struct is empty.
-func (page SecGroupRulePage) IsEmpty() (bool, error) {
-	is, err := ExtractRules(page)
+func (r SecGroupRulePage) IsEmpty() (bool, error) {
+	is, err := ExtractRules(r)
 	return len(is) == 0, err
 }
 
 // ExtractRules accepts a Page struct, specifically a SecGroupRulePage struct,
 // and extracts the elements into a slice of SecGroupRule structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractRules(page pagination.Page) ([]SecGroupRule, error) {
-	r := page.(SecGroupRulePage)
+func ExtractRules(r pagination.Page) ([]SecGroupRule, error) {
 	var s struct {
 		SecGroupRules []SecGroupRule `json:"security_group_rules"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(SecGroupRulePage)).ExtractInto(&s)
 	return s.SecGroupRules, err
 }
 

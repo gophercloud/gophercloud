@@ -105,12 +105,11 @@ func (page NetworkPage) IsEmpty() (bool, error) {
 }
 
 // ExtractNetworks interprets a page of results as a slice of Networks
-func ExtractNetworks(page pagination.Page) ([]Network, error) {
-	r := page.(NetworkPage)
+func ExtractNetworks(r pagination.Page) ([]Network, error) {
 	var s struct {
 		Networks []Network `json:"networks"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(NetworkPage)).ExtractInto(&s)
 	return s.Networks, err
 }
 

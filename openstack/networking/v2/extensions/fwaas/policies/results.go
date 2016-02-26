@@ -38,11 +38,11 @@ type PolicyPage struct {
 // NextPageURL is invoked when a paginated collection of firewall policies has
 // reached the end of a page and the pager seeks to traverse over a new one.
 // In order to do this, it needs to construct the next page's URL.
-func (page PolicyPage) NextPageURL() (string, error) {
+func (r PolicyPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"firewall_policies_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -50,19 +50,19 @@ func (page PolicyPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a PolicyPage struct is empty.
-func (page PolicyPage) IsEmpty() (bool, error) {
-	is, err := ExtractPolicies(page)
+func (r PolicyPage) IsEmpty() (bool, error) {
+	is, err := ExtractPolicies(r)
 	return len(is) == 0, err
 }
 
 // ExtractPolicies accepts a Page struct, specifically a RouterPage struct,
 // and extracts the elements into a slice of Router structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractPolicies(page pagination.Page) ([]Policy, error) {
+func ExtractPolicies(r pagination.Page) ([]Policy, error) {
 	var s struct {
 		Policies []Policy `json:"firewall_policies"`
 	}
-	err := (page.(PolicyPage)).ExtractInto(&s)
+	err := (r.(PolicyPage)).ExtractInto(&s)
 	return s.Policies, err
 }
 

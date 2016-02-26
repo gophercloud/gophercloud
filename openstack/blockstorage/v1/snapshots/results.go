@@ -74,12 +74,11 @@ func (r SnapshotPage) IsEmpty() (bool, error) {
 }
 
 // ExtractSnapshots extracts and returns Snapshots. It is used while iterating over a snapshots.List call.
-func ExtractSnapshots(page pagination.Page) ([]Snapshot, error) {
-	r := page.(SnapshotPage)
+func ExtractSnapshots(r pagination.Page) ([]Snapshot, error) {
 	var s struct {
 		Snapshots []Snapshot `json:"snapshots"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(SnapshotPage)).ExtractInto(&s)
 	return s.Snapshots, err
 }
 
@@ -93,7 +92,6 @@ func (r UpdateMetadataResult) ExtractMetadata() (map[string]interface{}, error) 
 	if r.Err != nil {
 		return nil, r.Err
 	}
-
 	m := r.Body.(map[string]interface{})["metadata"]
 	return m.(map[string]interface{}), nil
 }

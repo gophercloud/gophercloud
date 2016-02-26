@@ -170,12 +170,11 @@ func (page ServerPage) NextPageURL() (string, error) {
 }
 
 // ExtractServers interprets the results of a single page from a List() call, producing a slice of Server entities.
-func ExtractServers(page pagination.Page) ([]Server, error) {
-	r := page.(ServerPage)
+func ExtractServers(r pagination.Page) ([]Server, error) {
 	var s struct {
 		Servers []Server `json:"servers"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(ServerPage)).ExtractInto(&s)
 	return s.Servers, err
 }
 
@@ -258,12 +257,11 @@ func (r AddressPage) IsEmpty() (bool, error) {
 
 // ExtractAddresses interprets the results of a single page from a ListAddresses() call,
 // producing a map of addresses.
-func ExtractAddresses(page pagination.Page) (map[string][]Address, error) {
-	r := page.(AddressPage)
+func ExtractAddresses(r pagination.Page) (map[string][]Address, error) {
 	var s struct {
 		Addresses map[string][]Address `json:"addresses"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(AddressPage)).ExtractInto(&s)
 	return s.Addresses, err
 }
 
@@ -282,10 +280,9 @@ func (r NetworkAddressPage) IsEmpty() (bool, error) {
 
 // ExtractNetworkAddresses interprets the results of a single page from a ListAddressesByNetwork() call,
 // producing a slice of addresses.
-func ExtractNetworkAddresses(page pagination.Page) ([]Address, error) {
-	r := page.(NetworkAddressPage)
+func ExtractNetworkAddresses(r pagination.Page) ([]Address, error) {
 	var s map[string][]Address
-	err := r.ExtractInto(&s)
+	err := (r.(NetworkAddressPage)).ExtractInto(&s)
 	if err != nil {
 		return nil, err
 	}

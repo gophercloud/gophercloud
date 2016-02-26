@@ -88,11 +88,11 @@ type SubnetPage struct {
 // NextPageURL is invoked when a paginated collection of subnets has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (page SubnetPage) NextPageURL() (string, error) {
+func (r SubnetPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"subnets_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -100,18 +100,18 @@ func (page SubnetPage) NextPageURL() (string, error) {
 }
 
 // IsEmpty checks whether a SubnetPage struct is empty.
-func (page SubnetPage) IsEmpty() (bool, error) {
-	is, err := ExtractSubnets(page)
+func (r SubnetPage) IsEmpty() (bool, error) {
+	is, err := ExtractSubnets(r)
 	return len(is) == 0, err
 }
 
 // ExtractSubnets accepts a Page struct, specifically a SubnetPage struct,
 // and extracts the elements into a slice of Subnet structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractSubnets(page pagination.Page) ([]Subnet, error) {
+func ExtractSubnets(r pagination.Page) ([]Subnet, error) {
 	var s struct {
 		Subnets []Subnet `json:"subnets"`
 	}
-	err := (page.(SubnetPage)).ExtractInto(&s)
+	err := (r.(SubnetPage)).ExtractInto(&s)
 	return s.Subnets, err
 }

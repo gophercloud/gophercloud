@@ -37,12 +37,11 @@ func (page ServerGroupPage) IsEmpty() (bool, error) {
 
 // ExtractServerGroups interprets a page of results as a slice of
 // ServerGroups.
-func ExtractServerGroups(page pagination.Page) ([]ServerGroup, error) {
-	r := page.(ServerGroupPage)
+func ExtractServerGroups(r pagination.Page) ([]ServerGroup, error) {
 	var s struct {
 		ServerGroups []ServerGroup `json:"server_groups"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(ServerGroupPage)).ExtractInto(&s)
 	return s.ServerGroups, err
 }
 

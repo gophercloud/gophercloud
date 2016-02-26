@@ -39,12 +39,11 @@ func (r VolumeTypePage) IsEmpty() (bool, error) {
 }
 
 // ExtractVolumeTypes extracts and returns Volume Types.
-func ExtractVolumeTypes(page pagination.Page) ([]VolumeType, error) {
-	r := page.(VolumeTypePage)
+func ExtractVolumeTypes(r pagination.Page) ([]VolumeType, error) {
 	var s struct {
 		VolumeTypes []VolumeType `json:"volume_types"`
 	}
-	err := r.ExtractInto(&s)
+	err := (r.(VolumeTypePage)).ExtractInto(&s)
 	return s.VolumeTypes, err
 }
 
