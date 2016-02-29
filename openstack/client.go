@@ -3,7 +3,6 @@ package openstack
 import (
 	"fmt"
 	"net/url"
-	"strings"
 
 	"github.com/gophercloud/gophercloud"
 	tokens2 "github.com/gophercloud/gophercloud/openstack/identity/v2/tokens"
@@ -91,7 +90,11 @@ func AuthenticateV2(client *gophercloud.ProviderClient, options gophercloud.Auth
 }
 
 func v2auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions) error {
-	v2Client := NewIdentityV2(client)
+	v2Client, err := NewIdentityV2(client, eo)
+	if err != nil {
+		return err
+	}
+
 	if endpoint != "" {
 		v2Client.Endpoint = endpoint
 	}
@@ -129,7 +132,11 @@ func AuthenticateV3(client *gophercloud.ProviderClient, options gophercloud.Auth
 
 func v3auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions) error {
 	// Override the generated service endpoint with the one returned by the version endpoint.
-	v3Client := NewIdentityV3(client)
+	v3Client, err := NewIdentityV3(client, eo)
+	if err != nil {
+		return err
+	}
+
 	if endpoint != "" {
 		v3Client.Endpoint = endpoint
 	}
@@ -180,57 +187,23 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 }
 
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.
-func NewIdentityV2(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
+func NewIdentityV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	v2Endpoint := client.IdentityBase + "v2.0/"
 
 	return &gophercloud.ServiceClient{
 		ProviderClient: client,
 		Endpoint:       v2Endpoint,
-	}
+	}, nil
 }
 
 // NewIdentityV3 creates a ServiceClient that may be used to access the v3 identity service.
-func NewIdentityV3(client *gophercloud.ProviderClient) *gophercloud.ServiceClient {
+func NewIdentityV3(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	v3Endpoint := client.IdentityBase + "v3/"
 
 	return &gophercloud.ServiceClient{
 		ProviderClient: client,
 		Endpoint:       v3Endpoint,
-	}
-}
-
-func NewIdentityAdminV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	eo.ApplyDefaults("identity")
-	eo.Availability = gophercloud.AvailabilityAdmin
-
-	url, err := client.EndpointLocator(eo)
-	if err != nil {
-		return nil, err
-	}
-
-	// Force using v2 API
-	if strings.Contains(url, "/v3") {
-		url = strings.Replace(url, "/v3", "/v2.0", -1)
-	}
-
-	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
-}
-
-func NewIdentityAdminV3(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	eo.ApplyDefaults("identity")
-	eo.Availability = gophercloud.AvailabilityAdmin
-
-	url, err := client.EndpointLocator(eo)
-	if err != nil {
-		return nil, err
-	}
-
-	// Force using v3 API
-	if strings.Contains(url, "/v2.0") {
-		url = strings.Replace(url, "/v2.0", "/v3", -1)
-	}
-
-	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
+	}, nil
 }
 
 // NewObjectStorageV1 creates a ServiceClient that may be used with the v1 object storage package.
