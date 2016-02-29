@@ -23,6 +23,17 @@ func (e *ErrInvalidInput) Error() string {
 	return fmt.Sprintf("Invalid input provided for argument [%s]: [%+v]", e.Argument, e.Value)
 }
 
+// ErrMissingInput is the error when input is required in a particular
+// situation but not provided by the user
+type ErrMissingInput struct {
+	*BaseError
+	Argument string
+}
+
+func (e *ErrMissingInput) Error() string {
+	return fmt.Sprintf("Missing input for argument [%s]", e.Argument)
+}
+
 // ErrUnexpectedResponseCode is returned by the Request method when a response code other than
 // those listed in OkCodes is encountered.
 type ErrUnexpectedResponseCode struct {
@@ -97,13 +108,15 @@ func (e ErrDefault408) Error() string {
 	return "The server timed out waiting for the request"
 }
 func (e ErrDefault429) Error() string {
-	return "Too many requests have been sent in a given amount of time. Pause requests, wait up to one minute, and try again."
+	return "Too many requests have been sent in a given amount of time. Pause" +
+		" requests, wait up to one minute, and try again."
 }
 func (e ErrDefault500) Error() string {
 	return "Internal Server Error"
 }
 func (e ErrDefault503) Error() string {
-	return "The service is currently unable to handle the request due to a temporary overloading or maintenance. This is a temporary condition. Try again later."
+	return "The service is currently unable to handle the request due to a temporary" +
+		" overloading or maintenance. This is a temporary condition. Try again later."
 }
 
 // Err400er is the interface resource error types implement to override the error message
@@ -204,4 +217,29 @@ type ErrEndpointNotFound struct {
 
 func (e *ErrEndpointNotFound) Error() string {
 	return "No suitable endpoint could be found in the service catalog."
+}
+
+// ErrResourceNotFound is the error when trying to retrieve a resource's
+// ID by name and the resource doesn't exist.
+type ErrResourceNotFound struct {
+	*BaseError
+	Name         string
+	ResourceType string
+}
+
+func (e *ErrResourceNotFound) Error() string {
+	return fmt.Sprintf("Unable to find %s: %s", e.ResourceType, e.Name)
+}
+
+// ErrMultipleResourcesFound is the error when trying to retrieve a resource's
+// ID by name and multiple resources have the user-provided name.
+type ErrMultipleResourcesFound struct {
+	*BaseError
+	Name         string
+	Count        int
+	ResourceType string
+}
+
+func (e *ErrMultipleResourcesFound) Error() string {
+	return fmt.Sprintf("Found %d %s matching %s", e.Count, e.ResourceType, e.Name)
 }
