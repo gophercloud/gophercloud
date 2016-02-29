@@ -3,12 +3,9 @@ package gophercloud
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"runtime"
 	"strings"
 )
 
@@ -172,25 +169,6 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 		return nil, err
 	}
 
-	if resp.StatusCode == http.StatusUnauthorized {
-		if client.ReauthFunc != nil {
-			err = client.ReauthFunc()
-			if err != nil {
-				return nil, fmt.Errorf("Error trying to re-authenticate: %s", err)
-			}
-			if seeker, ok := options.RawBody.(io.ReadSeeker); ok && options.RawBody != nil {
-				seeker.Seek(0, 0)
-			}
-			resp.Body.Close()
-			resp, err = client.Request(method, url, options)
-			if err != nil {
-				return nil, fmt.Errorf("Successfully re-authenticated, but got error executing request: %s", err)
-			}
-
-			return resp, nil
-		}
-	}
-
 	// Allow default OkCodes if none explicitly set
 	if options.OkCodes == nil {
 		options.OkCodes = defaultOkCodes(method)
@@ -204,22 +182,21 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 			break
 		}
 	}
+
 	if !ok {
 		body, _ := ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
-		pc := make([]uintptr, 1) // at least 1 entry needed
-		runtime.Callers(2, pc)
-		f := runtime.FuncForPC(pc[0])
+		//pc := make([]uintptr, 1) // at least 1 entry needed
+		//runtime.Callers(2, pc)
+		//f := runtime.FuncForPC(pc[0])
 		respErr := &ErrUnexpectedResponseCode{
-			BaseError: &BaseError{
-				Function: f.Name(),
-			},
 			URL:      url,
 			Method:   method,
 			Expected: options.OkCodes,
 			Actual:   resp.StatusCode,
 			Body:     body,
 		}
+		respErr.Function = "gophercloud.ProviderClient.Request"
 
 		errType := options.ErrorContext
 		switch resp.StatusCode {
@@ -232,34 +209,26 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 			if client.ReauthFunc != nil {
 				err = client.ReauthFunc()
 				if err != nil {
-					return nil, &ErrUnableToReauthenticate{
-						&BaseError{
-							OriginalError: respErr,
-						},
-					}
+					e := &ErrUnableToReauthenticate{}
+					e.OriginalError = respErr
+					return nil, e
 				}
 				if options.RawBody != nil {
-					seeker, ok := options.RawBody.(io.Seeker)
-					if !ok {
-						return nil, &ErrErrorAfterReauthentication{
-							&BaseError{
-								OriginalError: errors.New("Couldn't seek to beginning of content."),
-							},
-						}
+					if seeker, ok := options.RawBody.(io.Seeker); ok {
+						seeker.Seek(0, 0)
 					}
-					seeker.Seek(0, 0)
 				}
 				resp, err = client.Request(method, url, options)
 				if err != nil {
 					switch err.(type) {
 					case *ErrUnexpectedResponseCode:
-						return nil, &ErrErrorAfterReauthentication{&BaseError{OriginalError: err.(*ErrUnexpectedResponseCode)}}
+						e := &ErrErrorAfterReauthentication{}
+						e.OriginalError = err.(*ErrUnexpectedResponseCode)
+						return nil, e
 					default:
-						return nil, &ErrErrorAfterReauthentication{
-							&BaseError{
-								OriginalError: err,
-							},
-						}
+						e := &ErrErrorAfterReauthentication{}
+						e.OriginalError = err
+						return nil, e
 					}
 				}
 				return resp, nil
