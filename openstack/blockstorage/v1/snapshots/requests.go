@@ -1,8 +1,6 @@
 package snapshots
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -35,7 +33,10 @@ func (opts CreateOpts) ToSnapshotCreateMap() (map[string]interface{}, error) {
 	s := make(map[string]interface{})
 
 	if opts.VolumeID == "" {
-		return nil, fmt.Errorf("Required CreateOpts field 'VolumeID' not set.")
+		err := &gophercloud.ErrMissingInput{}
+		err.Argument = "CreateOpts.VolumeID"
+		err.Function = "snapshots.ToSnapshotCreateMap"
+		return nil, err
 	}
 	s["volume_id"] = opts.VolumeID
 
@@ -174,33 +175,47 @@ func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMet
 
 // IDFromName is a convienience function that returns a snapshot's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	snapshotCount := 0
-	snapshotID := ""
+	count := 0
+	id := ""
 	if name == "" {
-		return "", fmt.Errorf("A snapshot name must be provided.")
+		err := &gophercloud.ErrMissingInput{}
+		err.Function = "snapshots.IDFromName"
+		err.Argument = "name"
+		return "", err
 	}
-	pager := List(client, nil)
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		snapshotList, err := ExtractSnapshots(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, s := range snapshotList {
-			if s.Name == name {
-				snapshotCount++
-				snapshotID = s.ID
-			}
-		}
-		return true, nil
-	})
+	pages, err := List(client, nil).AllPages()
+	if err != nil {
+		return "", err
+	}
 
-	switch snapshotCount {
+	all, err := ExtractSnapshots(pages)
+	if err != nil {
+		return "", err
+	}
+
+	for _, s := range all {
+		if s.Name == name {
+			count++
+			id = s.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find snapshot: %s", name)
+		err := &gophercloud.ErrResourceNotFound{}
+		err.Name = name
+		err.ResourceType = "snapshot"
+		err.Function = "snapshots.IDFromName"
+		return "", err
 	case 1:
-		return snapshotID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d snapshots matching %s", snapshotCount, name)
+		err := &gophercloud.ErrMultipleResourcesFound{}
+		err.Count = count
+		err.Name = name
+		err.ResourceType = "snapshot"
+		err.Function = "snapshots.IDFromName"
+		return "", err
 	}
 }

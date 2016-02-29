@@ -1,8 +1,6 @@
 package volumes
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -39,7 +37,10 @@ func (opts CreateOpts) ToVolumeCreateMap() (map[string]interface{}, error) {
 	v := make(map[string]interface{})
 
 	if opts.Size == 0 {
-		return nil, fmt.Errorf("Required CreateOpts field 'Size' not set.")
+		err := &gophercloud.ErrMissingInput{}
+		err.Argument = "CreateOpts.Size"
+		err.Function = "volumes.ToVolumeCreateMap"
+		return nil, err
 	}
 	v["size"] = opts.Size
 
@@ -204,33 +205,47 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 
 // IDFromName is a convienience function that returns a server's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	volumeCount := 0
-	volumeID := ""
+	count := 0
+	id := ""
 	if name == "" {
-		return "", fmt.Errorf("A volume name must be provided.")
+		err := &gophercloud.ErrMissingInput{}
+		err.Function = "volumes.IDFromName"
+		err.Argument = "name"
+		return "", err
 	}
-	pager := List(client, nil)
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		volumeList, err := ExtractVolumes(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, s := range volumeList {
-			if s.Name == name {
-				volumeCount++
-				volumeID = s.ID
-			}
-		}
-		return true, nil
-	})
+	pages, err := List(client, nil).AllPages()
+	if err != nil {
+		return "", err
+	}
 
-	switch volumeCount {
+	all, err := ExtractVolumes(pages)
+	if err != nil {
+		return "", err
+	}
+
+	for _, s := range all {
+		if s.Name == name {
+			count++
+			id = s.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find volume: %s", name)
+		err := &gophercloud.ErrResourceNotFound{}
+		err.Name = name
+		err.ResourceType = "volume"
+		err.Function = "volumes.IDFromName"
+		return "", err
 	case 1:
-		return volumeID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d volumes matching %s", volumeCount, name)
+		err := &gophercloud.ErrMultipleResourcesFound{}
+		err.Count = count
+		err.Name = name
+		err.ResourceType = "volume"
+		err.Function = "volumes.IDFromName"
+		return "", err
 	}
 }
