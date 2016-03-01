@@ -97,18 +97,31 @@ type RequestOpts struct {
 	// provided with a blank value (""), that header will be *omitted* instead: use this to suppress
 	// the default Accept header or an inferred Content-Type, for example.
 	MoreHeaders map[string]string
-	// ErrorType specifies the resource error type to return if an error is encountered.
+	// ErrorContext specifies the resource error type to return if an error is encountered.
 	// This lets resources override default error messages based on the response status code.
 	ErrorContext error
+}
+
+func (r *RequestOpts) ToRequestOpts() (*RequestOpts, error) {
+	return r, nil
+}
+
+type RequestOptsBuilder interface {
+	ToRequestOpts() (*RequestOpts, error)
 }
 
 var applicationJSON = "application/json"
 
 // Request performs an HTTP request using the ProviderClient's current HTTPClient. An authentication
 // header will automatically be provided.
-func (client *ProviderClient) Request(method, url string, options RequestOpts) (*http.Response, error) {
+func (client *ProviderClient) Request(method, url string, optsBuilder RequestOptsBuilder) (*http.Response, error) {
 	var body io.Reader
 	var contentType *string
+
+	options, err := optsBuilder.ToRequestOpts()
+	if err != nil {
+		return nil, err
+	}
 
 	// Derive the content body by either encoding an arbitrary object as JSON, or by taking a provided
 	// io.ReadSeeker as-is. Default the content-type to application/json.
@@ -312,7 +325,7 @@ func (client *ProviderClient) Get(url string, JSONResponse interface{}, opts *Re
 	if JSONResponse != nil {
 		opts.JSONResponse = JSONResponse
 	}
-	return client.Request("GET", url, *opts)
+	return client.Request("GET", url, opts)
 }
 
 // Post calls `Request` with the "POST" HTTP verb.
@@ -331,7 +344,7 @@ func (client *ProviderClient) Post(url string, JSONBody interface{}, JSONRespons
 		opts.JSONResponse = JSONResponse
 	}
 
-	return client.Request("POST", url, *opts)
+	return client.Request("POST", url, opts)
 }
 
 // Put calls `Request` with the "PUT" HTTP verb.
@@ -350,7 +363,7 @@ func (client *ProviderClient) Put(url string, JSONBody interface{}, JSONResponse
 		opts.JSONResponse = JSONResponse
 	}
 
-	return client.Request("PUT", url, *opts)
+	return client.Request("PUT", url, opts)
 }
 
 // Patch calls `Request` with the "PATCH" HTTP verb.
@@ -369,7 +382,7 @@ func (client *ProviderClient) Patch(url string, JSONBody interface{}, JSONRespon
 		opts.JSONResponse = JSONResponse
 	}
 
-	return client.Request("PATCH", url, *opts)
+	return client.Request("PATCH", url, opts)
 }
 
 // Delete calls `Request` with the "DELETE" HTTP verb.
@@ -378,5 +391,5 @@ func (client *ProviderClient) Delete(url string, opts *RequestOpts) (*http.Respo
 		opts = &RequestOpts{}
 	}
 
-	return client.Request("DELETE", url, *opts)
+	return client.Request("DELETE", url, opts)
 }
