@@ -74,7 +74,7 @@ func (opts ListOpts) ToImageListQuery() (string, error) {
 	return q.String(), nil
 }
 
-// List imlements image list request
+// List implements image list request
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
 
@@ -218,7 +218,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	return res
 }
 
-// UpdateOptsBuilder implemets UpdateOptsBuilder
+// UpdateOptsBuilder implements UpdateOptsBuilder
 type UpdateOptsBuilder interface {
 	// returns value implementing json.Marshaler which when marshaled matches the patch schema:
 	// http://specs.openstack.org/openstack/glance-specs/specs/api/v2/http-patch-image-api-v2.html

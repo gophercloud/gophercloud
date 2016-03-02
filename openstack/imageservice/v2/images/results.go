@@ -378,7 +378,7 @@ func toMapFromString(from reflect.Kind, to reflect.Kind, data interface{}) (inte
 	return data, nil
 }
 
-// ExtractImages interprets the results of a single page from a List() call, producing a slice of Images entities.
+// ExtractImages interprets the results of a single page from a List() call, producing a slice of Image entities.
 func ExtractImages(page pagination.Page) ([]Image, error) {
 	casted := page.(ImagePage).Body
 
