@@ -33,7 +33,7 @@ func TestListImage(t *testing.T) {
 		}
 
 		for _, i := range images {
-			t.Logf("%s\t%s\t%s\t%s\t%v\t\n", i.ID, i.Name, *(i.Owner), *(i.Checksum), i.SizeBytes)
+			t.Logf("%s\t%s\t%s\t%s\t%v\t\n", i.ID, i.Name, i.Owner, i.Checksum, i.SizeBytes)
 			count++
 		}
 
@@ -76,13 +76,13 @@ func TestCreateImage(t *testing.T) {
 
 		Status: ImageStatusQueued,
 
-		ContainerFormat: &containerFormat,
-		DiskFormat:      &diskFormat,
+		ContainerFormat: containerFormat,
+		DiskFormat:      diskFormat,
 
-		MinDiskGigabytes: &minDiskGigabytes,
-		MinRAMMegabytes:  &minRAMMegabytes,
+		MinDiskGigabytes: minDiskGigabytes,
+		MinRAMMegabytes:  minRAMMegabytes,
 
-		Owner: &owner,
+		Owner: owner,
 
 		Visibility: ImageVisibilityPrivate,
 
@@ -123,13 +123,13 @@ func TestCreateImageNulls(t *testing.T) {
 
 		Status: ImageStatusQueued,
 
-		ContainerFormat: &containerFormat,
-		DiskFormat:      &diskFormat,
+		ContainerFormat: containerFormat,
+		DiskFormat:      diskFormat,
 
-		MinDiskGigabytes: &minDiskGigabytes,
-		MinRAMMegabytes:  &minRAMMegabytes,
+		MinDiskGigabytes: minDiskGigabytes,
+		MinRAMMegabytes:  minRAMMegabytes,
 
-		Owner: &owner,
+		Owner: owner,
 
 		Visibility: ImageVisibilityPrivate,
 
@@ -165,19 +165,19 @@ func TestGetImage(t *testing.T) {
 
 		Status: ImageStatusActive,
 
-		ContainerFormat: &containerFormat,
-		DiskFormat:      &diskFormat,
+		ContainerFormat: containerFormat,
+		DiskFormat:      diskFormat,
 
-		MinDiskGigabytes: &minDiskGigabytes,
-		MinRAMMegabytes:  &minRAMMegabytes,
+		MinDiskGigabytes: minDiskGigabytes,
+		MinRAMMegabytes:  minRAMMegabytes,
 
-		Owner: &owner,
+		Owner: owner,
 
 		Protected:  false,
 		Visibility: ImageVisibilityPublic,
 
-		Checksum:  &checksum,
-		SizeBytes: &sizeBytes,
+		Checksum:  checksum,
+		SizeBytes: sizeBytes,
 
 		Metadata:   make(map[string]string),
 		Properties: make(map[string]string),
@@ -218,20 +218,20 @@ func TestUpdateImage(t *testing.T) {
 		Status:     ImageStatusActive,
 		Visibility: ImageVisibilityPublic,
 
-		SizeBytes: &sizebytes,
-		Checksum:  &checksum,
+		SizeBytes: sizebytes,
+		Checksum:  checksum,
 
 		Tags: []string{
 			"fedora",
 			"beefy",
 		},
 
-		Owner:            nil,
-		MinRAMMegabytes:  nil,
-		MinDiskGigabytes: nil,
+		Owner:            "",
+		MinRAMMegabytes:  0,
+		MinDiskGigabytes: 0,
 
-		DiskFormat:      nil,
-		ContainerFormat: nil,
+		DiskFormat:      "",
+		ContainerFormat: "",
 
 		Metadata:   make(map[string]string),
 		Properties: make(map[string]string),

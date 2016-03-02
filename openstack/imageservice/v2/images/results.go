@@ -22,19 +22,19 @@ type Image struct {
 
 	Tags []string
 
-	ContainerFormat *string
-	DiskFormat      *string
+	ContainerFormat string
+	DiskFormat      string
 
-	MinDiskGigabytes *int
-	MinRAMMegabytes  *int
+	MinDiskGigabytes int
+	MinRAMMegabytes  int
 
-	Owner *string
+	Owner string
 
 	Protected  bool
 	Visibility ImageVisibility
 
-	Checksum  *string
-	SizeBytes *int
+	Checksum  string
+	SizeBytes int
 
 	Metadata   map[string]string
 	Properties map[string]string
@@ -68,37 +68,37 @@ func asString(any interface{}, key string) (string, error) {
 	return "", fmt.Errorf("expected string value for key '%s', but found: %#v", key, any)
 }
 
-func asNoneableString(any interface{}, key string) (*string, error) {
+func asNoneableString(any interface{}, key string) (string, error) {
 	// JSON null values could be also returned according to behaviour https://bugs.launchpad.net/glance/+bug/1481512
 	if any == nil {
-		return nil, nil
+		return "", nil
 	}
 	if str, ok := any.(string); ok {
 		if str == "None" || &str == nil {
-			return nil, nil
+			return "", nil
 		}
-		return &str, nil
+		return str, nil
 	}
-	return nil, fmt.Errorf("expected string value for key '%s', but found: %#v", key, any)
+	return "", fmt.Errorf("expected string value for key '%s', but found: %#v", key, any)
 }
 
-func asNoneableInteger(any interface{}, key string) (*int, error) {
+func asNoneableInteger(any interface{}, key string) (int, error) {
 	// FIXME problem here is that provider_client.go uses: json.NewDecoder(resp.Body).Decode(options.JSONResponse)
 	// which apparently converts integers in JSON to float64 values
 	// JSON null values could be also returned according to behaviour https://bugs.launchpad.net/glance/+bug/1481512
 	if any == nil {
-		return nil, nil
+		return 0, nil
 	}
 	if f, ok := any.(float64); ok {
 		i := int(f)
-		return &i, nil
+		return i, nil
 	} else if s, ok := any.(string); ok {
 		if s == "None" {
-			return nil, nil
+			return 0, nil
 		}
-		return nil, fmt.Errorf("expected \"None\" or integer value for key '%s', but found unexpected string: \"%s\"", key, s)
+		return 0, fmt.Errorf("expected \"None\" or integer value for key '%s', but found unexpected string: \"%s\"", key, s)
 	}
-	return nil, fmt.Errorf("expected \"None\" or integer value for key '%s', but found: %T(%#v)", key, any, any)
+	return 0, fmt.Errorf("expected \"None\" or integer value for key '%s', but found: %T(%#v)", key, any, any)
 }
 
 func asMapStringString(any interface{}) (map[string]string, error) {
@@ -129,18 +129,18 @@ func extractStringAtKey(m map[string]interface{}, k string) (string, error) {
 	return "", fmt.Errorf("expected key \"%s\" in map, but this key is not present", k)
 }
 
-func extractNoneableStringAtKey(m map[string]interface{}, k string) (*string, error) {
+func extractNoneableStringAtKey(m map[string]interface{}, k string) (string, error) {
 	if any, ok := m[k]; ok {
 		return asNoneableString(any, k)
 	}
-	return nil, fmt.Errorf("expected key \"%s\" in map, but this key is not present", k)
+	return "", fmt.Errorf("expected key \"%s\" in map, but this key is not present", k)
 }
 
-func extractNoneableIntegerAtKey(m map[string]interface{}, k string) (*int, error) {
+func extractNoneableIntegerAtKey(m map[string]interface{}, k string) (int, error) {
 	if any, ok := m[k]; ok {
 		return asNoneableInteger(any, k)
 	}
-	return nil, fmt.Errorf("expected key \"%s\" in map, but this key is not present", k)
+	return 0, fmt.Errorf("expected key \"%s\" in map, but this key is not present", k)
 }
 
 func extractStringSliceAtKey(m map[string]interface{}, key string) ([]string, error) {
