@@ -84,12 +84,32 @@ func Delete(client *gophercloud.ServiceClient, imageID string, memberID string) 
 	return res
 }
 
-// Update fuction updates member
+// UpdateOptsBuilder allows extensions to add additional attributes to the Update request.
+type UpdateOptsBuilder interface {
+	ToMemberUpdateMap() map[string]interface{}
+}
+
+// UpdateOpts implements UpdateOptsBuilder
+type UpdateOpts struct {
+	Status string
+}
+
+// ToMemberUpdateMap formats an UpdateOpts structure into a request body.
+func (opts UpdateOpts) ToMemberUpdateMap() map[string]interface{} {
+	m := make(map[string]interface{})
+
+	if opts.Status != "" {
+		m["status"] = opts.Status
+	}
+
+	return m
+}
+
+// Update function updates member
 // More details: http://developer.openstack.org/api-ref-image-v2.html#updateImageMember-v2
-func Update(client *gophercloud.ServiceClient, imageID string, memberID string, status string) MemberUpdateResult {
+func Update(client *gophercloud.ServiceClient, imageID string, memberID string, opts UpdateOptsBuilder) MemberUpdateResult {
 	var res MemberUpdateResult
-	body := map[string]interface{}{}
-	body["status"] = status
+	body := opts.ToMemberUpdateMap()
 	_, res.Err = client.Put(imageMemberURL(client, imageID, memberID), body, &res.Body,
 		&gophercloud.RequestOpts{OkCodes: []int{200}})
 	return res
