@@ -68,8 +68,8 @@ func createTestImage(t *testing.T, client *gophercloud.ServiceClient) images.Ima
 
 	//uploading image data
 	data := []byte{1, 2, 3, 4, 5, 6, 7, 8, 9}
-	putImageResult := images.PutImageData(client, image.ID, bytes.NewReader(data))
-	th.AssertNoErr(t, putImageResult.Err)
+	uploadResult := images.Upload(client, image.ID, bytes.NewReader(data))
+	th.AssertNoErr(t, uploadResult.Err)
 
 	//checking status
 	image, err = images.Get(client, image.ID).Extract()

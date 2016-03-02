@@ -300,8 +300,8 @@ func (r ReplaceImageTags) ToImagePatchMap() map[string]interface{} {
 	return m
 }
 
-// PutImageData uploads image file
-func PutImageData(client *gophercloud.ServiceClient, id string, data io.ReadSeeker) PutImageDataResult {
+// Upload uploads image file
+func Upload(client *gophercloud.ServiceClient, id string, data io.ReadSeeker) PutImageDataResult {
 	var res PutImageDataResult
 
 	_, res.Err = client.Put(imageDataURL(client, id), data, nil, &gophercloud.RequestOpts{
@@ -312,8 +312,8 @@ func PutImageData(client *gophercloud.ServiceClient, id string, data io.ReadSeek
 	return res
 }
 
-// GetImageData retrieves file
-func GetImageData(client *gophercloud.ServiceClient, id string) GetImageDataResult {
+// Download retrieves file
+func Download(client *gophercloud.ServiceClient, id string) GetImageDataResult {
 	var res GetImageDataResult
 
 	var resp *http.Response

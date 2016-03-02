@@ -240,13 +240,13 @@ func TestUpdateImage(t *testing.T) {
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
 }
 
-func TestPutImageData(t *testing.T) {
+func TestUpload(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	HandlePutImageDataSuccessfully(t)
 
-	PutImageData(
+	Upload(
 		fakeclient.ServiceClient(),
 		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		readSeekerOfBytes([]byte{5, 3, 7, 24}))
@@ -300,13 +300,13 @@ func (rs *RS) Seek(offset int64, whence int) (int64, error) {
 	return int64(rs.offset), nil
 }
 
-func TestGetImageData(t *testing.T) {
+func TestDownload(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	HandleGetImageDataSuccessfully(t)
 
-	rdr, err := GetImageData(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea").Extract()
+	rdr, err := Download(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea").Extract()
 
 	th.AssertNoErr(t, err)
 
