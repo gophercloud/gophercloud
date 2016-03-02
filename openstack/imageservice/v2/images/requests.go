@@ -114,10 +114,10 @@ type CreateOptsBuilder interface {
 // CreateOpts implements CreateOptsBuilder
 type CreateOpts struct {
 	// Name [required] is the name of the new image.
-	Name *string
+	Name string
 
 	// Id [optional] is the the image ID.
-	ID *string
+	ID string
 
 	// Visibility [optional] defines who can see/use the image.
 	Visibility *ImageVisibility
@@ -127,23 +127,23 @@ type CreateOpts struct {
 
 	// ContainerFormat [optional] is the format of the
 	// container. Valid values are ami, ari, aki, bare, and ovf.
-	ContainerFormat *string
+	ContainerFormat string
 
 	// DiskFormat [optional] is the format of the disk. If set,
 	// valid values are ami, ari, aki, vhd, vmdk, raw, qcow2, vdi,
 	// and iso.
-	DiskFormat *string
+	DiskFormat string
 
 	// MinDiskGigabytes [optional] is the amount of disk space in
 	// GB that is required to boot the image.
-	MinDiskGigabytes *int
+	MinDiskGigabytes int
 
 	// MinRAMMegabytes [optional] is the amount of RAM in MB that
 	// is required to boot the image.
-	MinRAMMegabytes *int
+	MinRAMMegabytes int
 
 	// protected [optional] is whether the image is not deletable.
-	Protected *bool
+	Protected bool
 
 	// properties [optional] is a set of properties, if any, that
 	// are associated with the image.
@@ -154,12 +154,12 @@ type CreateOpts struct {
 // a CreateOpts.
 func (opts CreateOpts) ToImageCreateMap() (map[string]interface{}, error) {
 	body := map[string]interface{}{}
-	if opts.Name == nil {
+	if opts.Name == "" {
 		return body, fmt.Errorf("'Name' field is requered, but is not set (was: %v)'", opts.Name)
 	}
 
 	body["name"] = opts.Name
-	if opts.ID != nil {
+	if opts.ID != "" {
 		body["id"] = opts.ID
 	}
 	if opts.Visibility != nil {
@@ -168,22 +168,22 @@ func (opts CreateOpts) ToImageCreateMap() (map[string]interface{}, error) {
 	if opts.Tags != nil {
 		body["tags"] = opts.Tags
 	}
-	if opts.ContainerFormat != nil {
+	if opts.ContainerFormat != "" {
 		body["container_format"] = opts.ContainerFormat
 	}
-	if opts.DiskFormat != nil {
+	if opts.DiskFormat != "" {
 		body["disk_format"] = opts.DiskFormat
 	}
-	if opts.MinDiskGigabytes != nil {
+	if opts.MinDiskGigabytes != 0 {
 		body["min_disk"] = opts.MinDiskGigabytes
 	}
-	if opts.MinRAMMegabytes != nil {
+	if opts.MinRAMMegabytes != 0 {
 		body["min_ram"] = opts.MinRAMMegabytes
 
 	}
-	if opts.Protected != nil {
-		body["protected"] = opts.Protected
-	}
+
+	body["protected"] = opts.Protected
+
 	if opts.Properties != nil {
 		body["properties"] = opts.Properties
 	}

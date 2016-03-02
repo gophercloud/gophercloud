@@ -159,6 +159,7 @@ func HandleImageCreationSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, `{
 			"id": "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
 			"name": "Ubuntu 12.10",
+			"protected": false,
 			"tags": [
 				"ubuntu",
 				"quantal"
@@ -170,6 +171,7 @@ func HandleImageCreationSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, `{
 			"status": "queued",
 			"name": "Ubuntu 12.10",
+			"protected": false,
 			"tags": ["ubuntu","quantal"],
 			"container_format": "bare",
 			"created_at": "2014-11-11T20:47:55Z",
@@ -200,6 +202,7 @@ func HandleImageCreationSuccessfullyNulls(t *testing.T) {
 		th.TestJSONRequest(t, r, `{
 			"id": "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
 			"name": "Ubuntu 12.10",
+			"protected": false,
 			"tags": [
 				"ubuntu",
 				"quantal"
@@ -211,6 +214,7 @@ func HandleImageCreationSuccessfullyNulls(t *testing.T) {
 		fmt.Fprintf(w, `{
 			"status": "queued",
 			"name": "Ubuntu 12.10",
+			"protected": false,
 			"tags": ["ubuntu","quantal"],
 			"container_format": "bare",
 			"created_at": "2014-11-11T20:47:55Z",

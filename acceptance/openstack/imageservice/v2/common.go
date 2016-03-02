@@ -53,9 +53,9 @@ func createTestImage(t *testing.T, client *gophercloud.ServiceClient) images.Ima
 	//creating image
 	imageName := tools.RandomString("ACCPT", 16)
 	containerFormat := "ami"
-	createResult := images.Create(client, images.CreateOpts{Name: &imageName,
-		ContainerFormat: &containerFormat,
-		DiskFormat:      &containerFormat})
+	createResult := images.Create(client, images.CreateOpts{Name: imageName,
+		ContainerFormat: containerFormat,
+		DiskFormat:      containerFormat})
 	th.AssertNoErr(t, createResult.Err)
 	image, err := createResult.Extract()
 	th.AssertNoErr(t, err)
@@ -75,7 +75,7 @@ func createTestImage(t *testing.T, client *gophercloud.ServiceClient) images.Ima
 	image, err = images.Get(client, image.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, image.Status, images.ImageStatusActive)
-	th.AssertEquals(t, *image.SizeBytes, 9)
+	th.AssertEquals(t, image.SizeBytes, 9)
 	return *image
 }
 

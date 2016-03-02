@@ -56,8 +56,8 @@ func TestCreateImage(t *testing.T) {
 	name := "Ubuntu 12.10"
 
 	actualImage, err := Create(fakeclient.ServiceClient(), CreateOpts{
-		ID:   &id,
-		Name: &name,
+		ID:   id,
+		Name: name,
 		Tags: []string{"ubuntu", "quantal"},
 	}).Extract()
 
@@ -103,8 +103,8 @@ func TestCreateImageNulls(t *testing.T) {
 	name := "Ubuntu 12.10"
 
 	actualImage, err := Create(fakeclient.ServiceClient(), CreateOpts{
-		ID:   &id,
-		Name: &name,
+		ID:   id,
+		Name: name,
 		Tags: []string{"ubuntu", "quantal"},
 	}).Extract()
 
