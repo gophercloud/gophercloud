@@ -60,7 +60,7 @@ type ListMembersResult struct {
 }
 
 // Extract returns list of image members
-func (lm ListMembersResult) Extract() (*[]ImageMember, error) {
+func (lm ListMembersResult) Extract() ([]ImageMember, error) {
 	if lm.Err != nil {
 		return nil, lm.Err
 	}
@@ -71,7 +71,7 @@ func (lm ListMembersResult) Extract() (*[]ImageMember, error) {
 	}
 
 	err := mapstructure.Decode(casted, &results)
-	return &results.ImageMembers, err
+	return results.ImageMembers, err
 }
 
 // MemberDetailsResult model
