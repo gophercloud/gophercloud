@@ -9,6 +9,32 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+type Visibility string
+type MemberStatus string
+type Status string
+
+const (
+	Accepted MemberStatus = "accepted"
+	Pending               = "pending"
+	Rejected              = "rejected"
+	All                   = "all"
+)
+
+const (
+	Public  Visibility = "public"
+	Private            = "private"
+	Shared             = "shared"
+)
+
+const (
+	Queued        Status = "queued"
+	Saving               = "saving"
+	Active               = "active"
+	Killed               = "killed"
+	Deleted              = "deleted"
+	PendingDelete        = "pending_delete"
+)
+
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
@@ -27,16 +53,16 @@ type ListOpts struct {
 	// UUID of the server at which you want to set a marker.
 	Marker string `q:"marker"`
 
-	Name         string `q:"name"`
-	Visibility   string `q:"visibility"`
-	MemberStatus string `q:"member_status"`
-	Owner        string `q:"owner"`
-	Status       string `q:"status"`
-	SizeMin      int64  `q:"size_min"`
-	SizeMax      int64  `q:"size_max"`
-	SortKey      string `q:"sort_key"`
-	SortDir      string `q:"sort_dir"`
-	Tag          string `q:"tag"`
+	Name         string       `q:"name"`
+	Visibility   Visibility   `q:"visibility"`
+	MemberStatus MemberStatus `q:"member_status"`
+	Owner        string       `q:"owner"`
+	Status       Status       `q:"status"`
+	SizeMin      int64        `q:"size_min"`
+	SizeMax      int64        `q:"size_max"`
+	SortKey      string       `q:"sort_key"`
+	SortDir      string       `q:"sort_dir"`
+	Tag          string       `q:"tag"`
 }
 
 // ToImageListQuery formats a ListOpts into a query string.
