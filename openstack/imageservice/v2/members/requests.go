@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // Create member for specific image
@@ -48,10 +49,12 @@ func Create(client *gophercloud.ServiceClient, id string, member string) CreateM
 
 // List members returns list of members for specifed image id
 // More details: http://developer.openstack.org/api-ref-image-v2.html#listImageMembers-v2
-func List(client *gophercloud.ServiceClient, id string) ListMembersResult {
-	var res ListMembersResult
-	_, res.Err = client.Get(listMembersURL(client, id), &res.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
-	return res
+func List(client *gophercloud.ServiceClient, id string) pagination.Pager {
+	createPage := func(r pagination.PageResult) pagination.Page {
+		return MemberPage{pagination.SinglePageBase(r)}
+	}
+
+	return pagination.NewPager(client, listMembersURL(client, id), createPage)
 }
 
 // Get image member details.

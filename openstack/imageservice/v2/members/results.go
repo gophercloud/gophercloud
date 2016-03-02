@@ -5,6 +5,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
 // ImageMember model
@@ -72,6 +73,31 @@ func (lm ListMembersResult) Extract() ([]ImageMember, error) {
 
 	err := mapstructure.Decode(casted, &results)
 	return results.ImageMembers, err
+}
+
+// MemberPage is a single page of Members results.
+type MemberPage struct {
+	pagination.SinglePageBase
+}
+
+// ExtractMembers returns a slice of Members contained in a single page of results.
+func ExtractMembers(page pagination.Page) ([]ImageMember, error) {
+	casted := page.(MemberPage).Body
+	var response struct {
+		ImageMembers []ImageMember `mapstructure:"members"`
+	}
+
+	err := mapstructure.Decode(casted, &response)
+	return response.ImageMembers, err
+}
+
+// IsEmpty determines whether or not a page of Members contains any results.
+func (page MemberPage) IsEmpty() (bool, error) {
+	tenants, err := ExtractMembers(page)
+	if err != nil {
+		return false, err
+	}
+	return len(tenants) == 0, nil
 }
 
 // MemberDetailsResult model
