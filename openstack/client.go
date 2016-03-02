@@ -75,9 +75,9 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 
 	switch chosen.ID {
 	case v20:
-		return v2auth(client, endpoint, options)
+		return v2auth(client, endpoint, options, gophercloud.EndpointOpts{})
 	case v30:
-		return v3auth(client, endpoint, options)
+		return v3auth(client, endpoint, options, gophercloud.EndpointOpts{})
 	default:
 		// The switch statement must be out of date from the versions list.
 		return fmt.Errorf("Unrecognized identity version: %s", chosen.ID)
@@ -85,11 +85,11 @@ func Authenticate(client *gophercloud.ProviderClient, options gophercloud.AuthOp
 }
 
 // AuthenticateV2 explicitly authenticates against the identity v2 endpoint.
-func AuthenticateV2(client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
-	return v2auth(client, "", options)
+func AuthenticateV2(client *gophercloud.ProviderClient, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
+	return v2auth(client, "", options, eo)
 }
 
-func v2auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions) error {
+func v2auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
 	v2Client, err := NewIdentityV2(client, eo)
 	if err != nil {
 		return err
@@ -114,7 +114,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 	if options.AllowReauth {
 		client.ReauthFunc = func() error {
 			client.TokenID = ""
-			return v2auth(client, endpoint, options)
+			return v2auth(client, endpoint, options, eo)
 		}
 	}
 	client.TokenID = token.ID
@@ -126,11 +126,11 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 }
 
 // AuthenticateV3 explicitly authenticates against the identity v3 service.
-func AuthenticateV3(client *gophercloud.ProviderClient, options gophercloud.AuthOptions) error {
-	return v3auth(client, "", options)
+func AuthenticateV3(client *gophercloud.ProviderClient, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
+	return v3auth(client, "", options, eo)
 }
 
-func v3auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions) error {
+func v3auth(client *gophercloud.ProviderClient, endpoint string, options gophercloud.AuthOptions, eo gophercloud.EndpointOpts) error {
 	// Override the generated service endpoint with the one returned by the version endpoint.
 	v3Client, err := NewIdentityV3(client, eo)
 	if err != nil {
@@ -176,7 +176,7 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 	if options.AllowReauth {
 		client.ReauthFunc = func() error {
 			client.TokenID = ""
-			return v3auth(client, endpoint, options)
+			return v3auth(client, endpoint, options, eo)
 		}
 	}
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
@@ -189,20 +189,36 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.
 func NewIdentityV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	v2Endpoint := client.IdentityBase + "v2.0/"
+	/*
+		eo.ApplyDefaults("identity")
+		url, err := client.EndpointLocator(eo)
+		if err != nil {
+			return nil, err
+		}
+	*/
 
 	return &gophercloud.ServiceClient{
 		ProviderClient: client,
 		Endpoint:       v2Endpoint,
+		//Endpoint: url,
 	}, nil
 }
 
 // NewIdentityV3 creates a ServiceClient that may be used to access the v3 identity service.
 func NewIdentityV3(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	v3Endpoint := client.IdentityBase + "v3/"
+	/*
+		eo.ApplyDefaults("identity")
+		url, err := client.EndpointLocator(eo)
+		if err != nil {
+			return nil, err
+		}
+	*/
 
 	return &gophercloud.ServiceClient{
 		ProviderClient: client,
 		Endpoint:       v3Endpoint,
+		//Endpoint: url,
 	}, nil
 }
 

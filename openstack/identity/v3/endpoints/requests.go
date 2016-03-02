@@ -107,7 +107,7 @@ func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointO
 	reqBody.Endpoint.ServiceID = gophercloud.MaybeString(opts.ServiceID)
 
 	var result UpdateResult
-	_, result.Err = client.Request("PATCH", endpointURL(client, endpointID), gophercloud.RequestOpts{
+	_, result.Err = client.Request("PATCH", endpointURL(client, endpointID), &gophercloud.RequestOpts{
 		JSONBody:     &reqBody,
 		JSONResponse: &result.Body,
 		OkCodes:      []int{200},

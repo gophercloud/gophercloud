@@ -110,7 +110,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 		}
 	}
 
-	resp, err := c.Request("PUT", createURL(c, containerName), gophercloud.RequestOpts{
+	resp, err := c.Request("PUT", createURL(c, containerName), &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})
@@ -178,7 +178,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 		}
 	}
 
-	resp, err := c.Request("POST", updateURL(c, containerName), gophercloud.RequestOpts{
+	resp, err := c.Request("POST", updateURL(c, containerName), &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})
@@ -194,7 +194,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 // function.
 func Get(c *gophercloud.ServiceClient, containerName string) GetResult {
 	var res GetResult
-	resp, err := c.Request("HEAD", getURL(c, containerName), gophercloud.RequestOpts{
+	resp, err := c.Request("HEAD", getURL(c, containerName), &gophercloud.RequestOpts{
 		OkCodes: []int{200, 204},
 	})
 	if resp != nil {

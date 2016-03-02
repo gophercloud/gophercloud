@@ -17,7 +17,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 func Get(client *gophercloud.ServiceClient, datastoreID string) GetResult {
 	var res GetResult
 
-	_, res.Err = client.Request("GET", resourceURL(client, datastoreID), gophercloud.RequestOpts{
+	_, res.Err = client.Request("GET", resourceURL(client, datastoreID), &gophercloud.RequestOpts{
 		OkCodes:      []int{200},
 		JSONResponse: &res.Body,
 	})
@@ -38,7 +38,7 @@ func ListVersions(client *gophercloud.ServiceClient, datastoreID string) paginat
 func GetVersion(client *gophercloud.ServiceClient, datastoreID, versionID string) GetVersionResult {
 	var res GetVersionResult
 
-	_, res.Err = client.Request("GET", versionURL(client, datastoreID, versionID), gophercloud.RequestOpts{
+	_, res.Err = client.Request("GET", versionURL(client, datastoreID, versionID), &gophercloud.RequestOpts{
 		OkCodes:      []int{200},
 		JSONResponse: &res.Body,
 	})

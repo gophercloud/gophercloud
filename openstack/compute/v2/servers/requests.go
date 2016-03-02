@@ -759,7 +759,7 @@ func CreateMetadatum(client *gophercloud.ServiceClient, id string, opts Metadatu
 // Metadatum requests the key-value pair with the given key for the given server ID.
 func Metadatum(client *gophercloud.ServiceClient, id, key string) GetMetadatumResult {
 	var res GetMetadatumResult
-	_, res.Err = client.Request("GET", metadatumURL(client, id, key), gophercloud.RequestOpts{
+	_, res.Err = client.Request("GET", metadatumURL(client, id, key), &gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
 	})
 	return res

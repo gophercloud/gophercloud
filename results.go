@@ -48,8 +48,7 @@ func (r Result) ExtractInto(to interface{}) error {
 		if readCloser, ok := reader.(io.Closer); ok {
 			defer readCloser.Close()
 		}
-		jsonDecoder := json.NewDecoder(reader)
-		return jsonDecoder.Decode(to)
+		return json.NewDecoder(reader).Decode(to)
 	}
 
 	b, err := json.Marshal(r.Body)

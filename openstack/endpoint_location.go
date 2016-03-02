@@ -77,6 +77,7 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 					err.Function = "openstack.V3EndpointURL"
 					err.Argument = "Availability"
 					err.Value = opts.Availability
+					return "", err
 				}
 				if (opts.Availability == gophercloud.Availability(endpoint.Interface)) &&
 					(opts.Region == "" || endpoint.Region == opts.Region) {

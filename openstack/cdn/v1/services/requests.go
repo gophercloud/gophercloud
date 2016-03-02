@@ -350,7 +350,7 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) Updat
 		reqBody[i] = patch.ToCDNServiceUpdateMap()
 	}
 
-	resp, err := c.Request("PATCH", url, gophercloud.RequestOpts{
+	resp, err := c.Request("PATCH", url, &gophercloud.RequestOpts{
 		JSONBody: &reqBody,
 		OkCodes:  []int{202},
 	})

@@ -60,7 +60,7 @@ func Update(client *gophercloud.ServiceClient, serviceID string, serviceType str
 	req := request{Type: serviceType}
 
 	var result UpdateResult
-	_, result.Err = client.Request("PATCH", serviceURL(client, serviceID), gophercloud.RequestOpts{
+	_, result.Err = client.Request("PATCH", serviceURL(client, serviceID), &gophercloud.RequestOpts{
 		JSONBody:     &req,
 		JSONResponse: &result.Body,
 		OkCodes:      []int{200},

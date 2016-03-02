@@ -9,7 +9,7 @@ import (
 // Get retreives data for the given stack template.
 func Get(c *gophercloud.ServiceClient, stackName, stackID string) GetResult {
 	var res GetResult
-	_, res.Err = c.Request("GET", getURL(c, stackName, stackID), gophercloud.RequestOpts{
+	_, res.Err = c.Request("GET", getURL(c, stackName, stackID), &gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
 	})
 	return res

@@ -103,7 +103,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 		return res
 	}
 
-	_, res.Err = client.Request("POST", baseURL(client), gophercloud.RequestOpts{
+	_, res.Err = client.Request("POST", baseURL(client), &gophercloud.RequestOpts{
 		OkCodes:      []int{200},
 		JSONBody:     &reqBody,
 		JSONResponse: &res.Body,
@@ -116,7 +116,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 func Get(client *gophercloud.ServiceClient, configID string) GetResult {
 	var res GetResult
 
-	_, res.Err = client.Request("GET", resourceURL(client, configID), gophercloud.RequestOpts{
+	_, res.Err = client.Request("GET", resourceURL(client, configID), &gophercloud.RequestOpts{
 		OkCodes:      []int{200},
 		JSONResponse: &res.Body,
 	})
@@ -186,7 +186,7 @@ func Update(client *gophercloud.ServiceClient, configID string, opts UpdateOptsB
 		return res
 	}
 
-	_, res.Err = client.Request("PATCH", resourceURL(client, configID), gophercloud.RequestOpts{
+	_, res.Err = client.Request("PATCH", resourceURL(client, configID), &gophercloud.RequestOpts{
 		OkCodes:  []int{200},
 		JSONBody: &reqBody,
 	})
@@ -206,7 +206,7 @@ func Replace(client *gophercloud.ServiceClient, configID string, opts UpdateOpts
 		return res
 	}
 
-	_, res.Err = client.Request("PUT", resourceURL(client, configID), gophercloud.RequestOpts{
+	_, res.Err = client.Request("PUT", resourceURL(client, configID), &gophercloud.RequestOpts{
 		OkCodes:  []int{202},
 		JSONBody: &reqBody,
 	})
@@ -220,7 +220,7 @@ func Replace(client *gophercloud.ServiceClient, configID string, opts UpdateOpts
 func Delete(client *gophercloud.ServiceClient, configID string) DeleteResult {
 	var res DeleteResult
 
-	_, res.Err = client.Request("DELETE", resourceURL(client, configID), gophercloud.RequestOpts{
+	_, res.Err = client.Request("DELETE", resourceURL(client, configID), &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 
@@ -256,7 +256,7 @@ func ListDatastoreParams(client *gophercloud.ServiceClient, datastoreID, version
 func GetDatastoreParam(client *gophercloud.ServiceClient, datastoreID, versionID, paramID string) ParamResult {
 	var res ParamResult
 
-	_, res.Err = client.Request("GET", getDSParamURL(client, datastoreID, versionID, paramID), gophercloud.RequestOpts{
+	_, res.Err = client.Request("GET", getDSParamURL(client, datastoreID, versionID, paramID), &gophercloud.RequestOpts{
 		OkCodes:      []int{200},
 		JSONResponse: &res.Body,
 	})
@@ -278,7 +278,7 @@ func ListGlobalParams(client *gophercloud.ServiceClient, versionID string) pagin
 func GetGlobalParam(client *gophercloud.ServiceClient, versionID, paramID string) ParamResult {
 	var res ParamResult
 
-	_, res.Err = client.Request("GET", getGlobalParamURL(client, versionID, paramID), gophercloud.RequestOpts{
+	_, res.Err = client.Request("GET", getGlobalParamURL(client, versionID, paramID), &gophercloud.RequestOpts{
 		OkCodes:      []int{200},
 		JSONResponse: &res.Body,
 	})

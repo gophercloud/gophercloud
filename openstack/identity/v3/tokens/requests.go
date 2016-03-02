@@ -260,7 +260,7 @@ func Get(c *gophercloud.ServiceClient, token string) GetResult {
 
 // Validate determines if a specified token is valid or not.
 func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
-	response, err := c.Request("HEAD", tokenURL(c), gophercloud.RequestOpts{
+	response, err := c.Request("HEAD", tokenURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		OkCodes:     []int{204, 404},
 	})

@@ -8,13 +8,13 @@ type BaseError struct {
 	Function      string
 }
 
-func (e *BaseError) Error() string {
+func (e BaseError) Error() string {
 	return "An error occurred while executing a Gophercloud request."
 }
 
 // ErrInvalidInput is an error type used for most non-HTTP Gophercloud errors.
 type ErrInvalidInput struct {
-	*BaseError
+	BaseError
 	Argument string
 	Value    interface{}
 }
@@ -26,7 +26,7 @@ func (e *ErrInvalidInput) Error() string {
 // ErrMissingInput is the error when input is required in a particular
 // situation but not provided by the user
 type ErrMissingInput struct {
-	*BaseError
+	BaseError
 	Argument string
 }
 
@@ -37,7 +37,7 @@ func (e *ErrMissingInput) Error() string {
 // ErrUnexpectedResponseCode is returned by the Request method when a response code other than
 // those listed in OkCodes is encountered.
 type ErrUnexpectedResponseCode struct {
-	*BaseError
+	BaseError
 	URL      string
 	Method   string
 	Expected []int
@@ -169,7 +169,7 @@ type Err503er interface {
 
 // ErrTimeOut is the error type returned when an operations times out.
 type ErrTimeOut struct {
-	*BaseError
+	BaseError
 }
 
 func (e *ErrTimeOut) Error() string {
@@ -178,7 +178,7 @@ func (e *ErrTimeOut) Error() string {
 
 // ErrUnableToReauthenticate is the error type returned when reauthentication fails.
 type ErrUnableToReauthenticate struct {
-	*BaseError
+	BaseError
 }
 
 func (e *ErrUnableToReauthenticate) Error() string {
@@ -188,7 +188,7 @@ func (e *ErrUnableToReauthenticate) Error() string {
 // ErrErrorAfterReauthentication is the error type returned when reauthentication
 // succeeds, but an error occurs afterword (usually an HTTP error).
 type ErrErrorAfterReauthentication struct {
-	*BaseError
+	BaseError
 }
 
 func (e *ErrErrorAfterReauthentication) Error() string {
@@ -200,7 +200,7 @@ func (e *ErrErrorAfterReauthentication) Error() string {
 // factory methods like "NewComputeV2()" and can mean that a service is not
 // enabled for your account.
 type ErrServiceNotFound struct {
-	*BaseError
+	BaseError
 }
 
 func (e *ErrServiceNotFound) Error() string {
@@ -212,7 +212,7 @@ func (e *ErrServiceNotFound) Error() string {
 // factory methods, and usually indicates that a region was specified
 // incorrectly.
 type ErrEndpointNotFound struct {
-	*BaseError
+	BaseError
 }
 
 func (e *ErrEndpointNotFound) Error() string {
@@ -222,24 +222,27 @@ func (e *ErrEndpointNotFound) Error() string {
 // ErrResourceNotFound is the error when trying to retrieve a resource's
 // ID by name and the resource doesn't exist.
 type ErrResourceNotFound struct {
-	*BaseError
-	Name         string
+	BaseError
+	ID, Name     string
 	ResourceType string
 }
 
 func (e *ErrResourceNotFound) Error() string {
-	return fmt.Sprintf("Unable to find %s: %s", e.ResourceType, e.Name)
+	if e.Name != "" {
+		return fmt.Sprintf("Unable to find %s with name %s", e.ResourceType, e.Name)
+	}
+	return fmt.Sprintf("Unable to find %s with ID %s", e.ResourceType, e.ID)
 }
 
 // ErrMultipleResourcesFound is the error when trying to retrieve a resource's
 // ID by name and multiple resources have the user-provided name.
 type ErrMultipleResourcesFound struct {
-	*BaseError
+	BaseError
 	Name         string
 	Count        int
 	ResourceType string
 }
 
 func (e *ErrMultipleResourcesFound) Error() string {
-	return fmt.Sprintf("Found %d %s matching %s", e.Count, e.ResourceType, e.Name)
+	return fmt.Sprintf("Found %d %ss matching %s", e.Count, e.ResourceType, e.Name)
 }

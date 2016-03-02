@@ -133,7 +133,7 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 		url += query
 	}
 
-	resp, err := c.Request("GET", url, gophercloud.RequestOpts{
+	resp, err := c.Request("GET", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{200, 304},
 	})
@@ -226,7 +226,7 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 		return res
 	}
 
-	ropts := gophercloud.RequestOpts{
+	ropts := &gophercloud.RequestOpts{
 		RawBody:     content,
 		MoreHeaders: h,
 	}
@@ -295,7 +295,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 	}
 
 	url := copyURL(c, containerName, objectName)
-	resp, err := c.Request("COPY", url, gophercloud.RequestOpts{
+	resp, err := c.Request("COPY", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
@@ -384,7 +384,7 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 		url += query
 	}
 
-	resp, err := c.Request("HEAD", url, gophercloud.RequestOpts{
+	resp, err := c.Request("HEAD", url, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 204},
 	})
 	if resp != nil {
@@ -442,7 +442,7 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	}
 
 	url := updateURL(c, containerName, objectName)
-	resp, err := c.Request("POST", url, gophercloud.RequestOpts{
+	resp, err := c.Request("POST", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 	})
 	if resp != nil {

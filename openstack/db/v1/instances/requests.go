@@ -104,7 +104,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateRes
 		return res
 	}
 
-	_, res.Err = client.Request("POST", baseURL(client), gophercloud.RequestOpts{
+	_, res.Err = client.Request("POST", baseURL(client), &gophercloud.RequestOpts{
 		JSONBody:     &reqBody,
 		JSONResponse: &res.Body,
 		OkCodes:      []int{200},
@@ -126,7 +126,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
 
-	_, res.Err = client.Request("GET", resourceURL(client, id), gophercloud.RequestOpts{
+	_, res.Err = client.Request("GET", resourceURL(client, id), &gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
 		OkCodes:      []int{200},
 	})
@@ -138,7 +138,7 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	var res DeleteResult
 
-	_, res.Err = client.Request("DELETE", resourceURL(client, id), gophercloud.RequestOpts{
+	_, res.Err = client.Request("DELETE", resourceURL(client, id), &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 
@@ -150,7 +150,7 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 func EnableRootUser(client *gophercloud.ServiceClient, id string) UserRootResult {
 	var res UserRootResult
 
-	_, res.Err = client.Request("POST", userRootURL(client, id), gophercloud.RequestOpts{
+	_, res.Err = client.Request("POST", userRootURL(client, id), &gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
 		OkCodes:      []int{200},
 	})
@@ -164,7 +164,7 @@ func EnableRootUser(client *gophercloud.ServiceClient, id string) UserRootResult
 func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
 	var res gophercloud.Result
 
-	_, err := client.Request("GET", userRootURL(client, id), gophercloud.RequestOpts{
+	_, err := client.Request("GET", userRootURL(client, id), &gophercloud.RequestOpts{
 		JSONResponse: &res.Body,
 		OkCodes:      []int{200},
 	})
@@ -178,7 +178,7 @@ func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
 func Restart(client *gophercloud.ServiceClient, id string) ActionResult {
 	var res ActionResult
 
-	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
+	_, res.Err = client.Request("POST", actionURL(client, id), &gophercloud.RequestOpts{
 		JSONBody: map[string]interface{}{"restart": struct{}{}},
 		OkCodes:  []int{202},
 	})
@@ -201,7 +201,7 @@ func Resize(client *gophercloud.ServiceClient, id, flavorRef string) ActionResul
 
 	reqBody := req{Resize: resize{FlavorRef: flavorRef}}
 
-	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
+	_, res.Err = client.Request("POST", actionURL(client, id), &gophercloud.RequestOpts{
 		JSONBody: reqBody,
 		OkCodes:  []int{202},
 	})
@@ -229,7 +229,7 @@ func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) Action
 
 	reqBody := req{Resize: resize{Volume: volume{Size: size}}}
 
-	_, res.Err = client.Request("POST", actionURL(client, id), gophercloud.RequestOpts{
+	_, res.Err = client.Request("POST", actionURL(client, id), &gophercloud.RequestOpts{
 		JSONBody: reqBody,
 		OkCodes:  []int{202},
 	})

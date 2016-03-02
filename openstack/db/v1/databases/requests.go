@@ -83,7 +83,7 @@ func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOpt
 		return res
 	}
 
-	_, res.Err = client.Request("POST", baseURL(client, instanceID), gophercloud.RequestOpts{
+	_, res.Err = client.Request("POST", baseURL(client, instanceID), &gophercloud.RequestOpts{
 		JSONBody: &reqBody,
 		OkCodes:  []int{202},
 	})
@@ -107,7 +107,7 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 func Delete(client *gophercloud.ServiceClient, instanceID, dbName string) DeleteResult {
 	var res DeleteResult
 
-	_, res.Err = client.Request("DELETE", dbURL(client, instanceID, dbName), gophercloud.RequestOpts{
+	_, res.Err = client.Request("DELETE", dbURL(client, instanceID, dbName), &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 
