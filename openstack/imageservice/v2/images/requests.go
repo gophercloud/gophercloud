@@ -202,7 +202,7 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 // Get implements image get request
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
 	var res GetResult
-	client.Get(getURL(client, id), &res.Body, nil)
+	_, res.Err = client.Get(getURL(client, id), &res.Body, nil)
 	return res
 }
 
