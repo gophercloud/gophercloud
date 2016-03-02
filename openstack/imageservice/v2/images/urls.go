@@ -25,11 +25,17 @@ func imageURL(c *gophercloud.ServiceClient, imageID string) string {
 // `getURL(c,i)` is a URL for which a GET request will respond with
 // information about the image identified by ID `i` in the service
 // `c`.
-var getURL = imageURL
+func getURL(c *gophercloud.ServiceClient, imageID string) string {
+	return imageURL(c, imageID)
+}
 
-var updateURL = imageURL
+func updateURL(c *gophercloud.ServiceClient, imageID string) string {
+	return imageURL(c, imageID)
+}
 
-var deleteURL = imageURL
+func deleteURL(c *gophercloud.ServiceClient, imageID string) string {
+	return imageURL(c, imageID)
+}
 
 // `imageDataURL(c,i)` is the URL for the binary image data for the
 // image identified by ID `i` in the service `c`.
@@ -37,17 +43,25 @@ func imageDataURL(c *gophercloud.ServiceClient, imageID string) string {
 	return c.ServiceURL("images", imageID, "file")
 }
 
-var getDataURL = imageDataURL
+func getDataURL(c *gophercloud.ServiceClient, imageID string) string {
+	return imageDataURL(c, imageID)
+}
 
-var updateDataURL = imageDataURL
+func updateDataURL(c *gophercloud.ServiceClient, imageID string) string {
+	return imageDataURL(c, imageID)
+}
 
 func imageTagURL(c *gophercloud.ServiceClient, imageID string, tag string) string {
 	return c.ServiceURL("images", imageID, "tags", tag)
 }
 
-var createTagURL = imageTagURL
+func createTagURL(c *gophercloud.ServiceClient, imageID string, tag string) string {
+	return imageTagURL(c, imageID, tag)
+}
 
-var deleteTagURL = imageTagURL
+func deleteTagURL(c *gophercloud.ServiceClient, imageID string, tag string) string {
+	return imageTagURL(c, imageID, tag)
+}
 
 func imageMembersURL(c *gophercloud.ServiceClient, imageID string) string {
 	return c.ServiceURL("images", imageID, "members")

@@ -6,16 +6,26 @@ func imageMembersURL(c *gophercloud.ServiceClient, imageID string) string {
 	return c.ServiceURL("images", imageID, "members")
 }
 
-var listMembersURL = imageMembersURL
+func listMembersURL(c *gophercloud.ServiceClient, imageID string) string {
+	return imageMembersURL(c, imageID)
+}
 
-var createMemberURL = imageMembersURL
+func createMembersURL(c *gophercloud.ServiceClient, imageID string) string {
+	return imageMembersURL(c, imageID)
+}
 
 func imageMemberURL(c *gophercloud.ServiceClient, imageID string, memberID string) string {
 	return c.ServiceURL("images", imageID, "members", memberID)
 }
 
-var getMemberURL = imageMemberURL
+func getMemberURL(c *gophercloud.ServiceClient, imageID string, memberID string) string {
+	return imageMemberURL(c, imageID, memberID)
+}
 
-var updateMemberURL = imageMemberURL
+func updateMemberURL(c *gophercloud.ServiceClient, imageID string, memberID string) string {
+	return imageMemberURL(c, imageID, memberID)
+}
 
-var deleteMemberURL = imageMemberURL
+func deleteMemberURL(c *gophercloud.ServiceClient, imageID string, memberID string) string {
+	return imageMemberURL(c, imageID, memberID)
+}
