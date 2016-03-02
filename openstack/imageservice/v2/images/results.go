@@ -42,7 +42,7 @@ type Image struct {
 
 // CreateResult model
 type CreateResult struct {
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 func asBool(any interface{}) (bool, error) {
@@ -216,7 +216,7 @@ func extractMapStringStringAtKeyOptional(m map[string]interface{}, k string, ifM
 	return ifMissing, nil
 }
 
-func extractImage(res gophercloud.ErrResult) (*Image, error) {
+func extractImage(res gophercloud.Result) (*Image, error) {
 	if res.Err != nil {
 		return nil, res.Err
 	}
@@ -296,42 +296,42 @@ func extractImage(res gophercloud.ErrResult) (*Image, error) {
 
 // Extract build CreateResults from imput Image
 func (c CreateResult) Extract() (*Image, error) {
-	return extractImage(c.ErrResult)
+	return extractImage(c.Result)
 }
 
 //DeleteResult model
 type DeleteResult struct {
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 // GetResult model
 type GetResult struct {
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 // Extract builds GetResult
 func (c GetResult) Extract() (*Image, error) {
-	return extractImage(c.ErrResult)
+	return extractImage(c.Result)
 }
 
 // UpdateResult model
 type UpdateResult struct {
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 // Extract builds UpdateResult
 func (u UpdateResult) Extract() (*Image, error) {
-	return extractImage(u.ErrResult)
+	return extractImage(u.Result)
 }
 
 // PutImageDataResult is model put image respose
 type PutImageDataResult struct {
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 // GetImageDataResult model for image response
 type GetImageDataResult struct {
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 // Extract builds images model from io.Reader

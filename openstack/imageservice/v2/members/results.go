@@ -18,7 +18,7 @@ type ImageMember struct {
 
 // CreateMemberResult result model
 type CreateMemberResult struct {
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 // Extract ImageMember model from request if possible
@@ -35,7 +35,7 @@ func (cm CreateMemberResult) Extract() (*ImageMember, error) {
 
 // ListMembersResult model
 type ListMembersResult struct {
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 // Extract returns list of image members
@@ -55,7 +55,7 @@ func (lm ListMembersResult) Extract() (*[]ImageMember, error) {
 
 // MemberDetailsResult model
 type MemberDetailsResult struct {
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 // Extract returns image member details
@@ -74,7 +74,7 @@ func (md MemberDetailsResult) Extract() (*ImageMember, error) {
 
 // MemberDeleteResult model
 type MemberDeleteResult struct {
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 // MemberUpdateResult model
