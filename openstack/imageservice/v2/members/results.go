@@ -1,19 +1,21 @@
 package members
 
 import (
+	"time"
+
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
 )
 
 // ImageMember model
 type ImageMember struct {
-	CreatedAt string `mapstructure:"created_at"`
-	ImageID   string `mapstructure:"image_id"`
-	MemberID  string `mapstructure:"member_id"`
+	CreatedAt time.Time `mapstructure:"-"`
+	ImageID   string    `mapstructure:"image_id"`
+	MemberID  string    `mapstructure:"member_id"`
 	Schema    string
 	// Status could be one of pending, accepted, reject
 	Status    string
-	UpdatedAt string `mapstructure:"updated_at"`
+	UpdatedAt time.Time `mapstructure:"-"`
 }
 
 // CreateMemberResult result model
@@ -29,8 +31,27 @@ func (cm CreateMemberResult) Extract() (*ImageMember, error) {
 	casted := cm.Body.(map[string]interface{})
 	var results ImageMember
 
-	err := mapstructure.Decode(casted, &results)
-	return &results, err
+	if err := mapstructure.Decode(casted, &results); err != nil {
+		return nil, err
+	}
+
+	if t, ok := casted["created_at"].(string); ok && t != "" {
+		createdAt, err := time.Parse(time.RFC3339, t)
+		if err != nil {
+			return &results, err
+		}
+		results.CreatedAt = createdAt
+	}
+
+	if t, ok := casted["updated_at"].(string); ok && t != "" {
+		updatedAt, err := time.Parse(time.RFC3339, t)
+		if err != nil {
+			return &results, err
+		}
+		results.UpdatedAt = updatedAt
+	}
+
+	return &results, nil
 }
 
 // ListMembersResult model
