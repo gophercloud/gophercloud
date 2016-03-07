@@ -98,20 +98,8 @@ func (r quotaResult) Extract() (*Quota, error) {
 	return res.Quota, err
 }
 
-// CreateResult is the response from a Create operation. Call its Extract method to interpret it
-// as a Quota.
-type CreateResult struct {
-	quotaResult
-}
-
 // GetResult is the response from a Get operation. Call its Extract method to interpret it
 // as a Quota.
 type GetResult struct {
 	quotaResult
-}
-
-// DeleteResult is the response from a Delete operation. Call its Extract method to determine if
-// the call succeeded or failed.
-type DeleteResult struct {
-	gophercloud.ErrResult
 }
