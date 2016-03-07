@@ -1,8 +1,6 @@
 package vips
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -60,13 +58,11 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
-var (
-	errNameRequired         = fmt.Errorf("Name is required")
-	errSubnetIDRequried     = fmt.Errorf("SubnetID is required")
-	errProtocolRequired     = fmt.Errorf("Protocol is required")
-	errProtocolPortRequired = fmt.Errorf("Protocol port is required")
-	errPoolIDRequired       = fmt.Errorf("PoolID is required")
-)
+// CreateOptsBuilder is what types must satisfy to be used as Create
+// options.
+type CreateOptsBuilder interface {
+	ToVIPCreateMap() (map[string]interface{}, error)
+}
 
 // CreateOpts contains all the values needed to create a new virtual IP.
 type CreateOpts struct {
@@ -107,6 +103,72 @@ type CreateOpts struct {
 	AdminStateUp *bool
 }
 
+// ToVIPCreateMap allows CreateOpts to satisfy the CreateOptsBuilder
+// interface
+func (opts CreateOpts) ToVIPCreateMap() (map[string]interface{}, error) {
+	if opts.Name == "" {
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "vips.ToVIPCreateMap"
+		err.Argument = "vips.CreateOpts.Name"
+		return nil, err
+	}
+	if opts.SubnetID == "" {
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "vips.ToVIPCreateMap"
+		err.Argument = "vips.CreateOpts.SubnetID"
+		return nil, err
+	}
+	if opts.Protocol == "" {
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "vips.ToVIPCreateMap"
+		err.Argument = "vips.CreateOpts.Protocol"
+		return nil, err
+	}
+	if opts.ProtocolPort == 0 {
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "vips.ToVIPCreateMap"
+		err.Argument = "vips.CreateOpts.ProtocolPort"
+		return nil, err
+	}
+	if opts.PoolID == "" {
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "vips.ToVIPCreateMap"
+		err.Argument = "vips.CreateOpts.PoolID"
+		return nil, err
+	}
+
+	i := map[string]interface{}{
+		"name":          opts.Name,
+		"subnet_id":     opts.SubnetID,
+		"protocol":      opts.Protocol,
+		"protocol_port": opts.ProtocolPort,
+		"pool_id":       opts.PoolID,
+	}
+	if opts.Description != "" {
+		i["description"] = opts.Description
+	}
+	if opts.TenantID != "" {
+		i["tenant_id"] = opts.TenantID
+	}
+	if opts.Address != "" {
+		i["address"] = opts.Address
+	}
+	if opts.Persistence != nil {
+		i["session_persistence"] = opts.Persistence
+	}
+	if opts.ConnLimit != nil {
+		i["connection_limit"] = opts.ConnLimit
+	}
+	if opts.AdminStateUp != nil {
+		i["admin_state_up"] = opts.AdminStateUp
+	}
+
+	b := make(map[string]interface{})
+	b["vip"] = i
+
+	return b, nil
+}
+
 // Create is an operation which provisions a new virtual IP based on the
 // configuration defined in the CreateOpts struct. Once the request is
 // validated and progress has started on the provisioning process, a
@@ -119,67 +181,16 @@ type CreateOpts struct {
 // Users with an admin role can create VIPs on behalf of other tenants by
 // specifying a TenantID attribute different than their own.
 func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	var res CreateResult
+	var r CreateResult
 
-	// Validate required opts
-	if opts.Name == "" {
-		res.Err = errNameRequired
-		return res
-	}
-	if opts.SubnetID == "" {
-		res.Err = errSubnetIDRequried
-		return res
-	}
-	if opts.Protocol == "" {
-		res.Err = errProtocolRequired
-		return res
-	}
-	if opts.ProtocolPort == 0 {
-		res.Err = errProtocolPortRequired
-		return res
-	}
-	if opts.PoolID == "" {
-		res.Err = errPoolIDRequired
-		return res
+	b, err := opts.ToVIPCreateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
 
-	type vip struct {
-		Name         string              `json:"name"`
-		SubnetID     string              `json:"subnet_id"`
-		Protocol     string              `json:"protocol"`
-		ProtocolPort int                 `json:"protocol_port"`
-		PoolID       string              `json:"pool_id"`
-		Description  *string             `json:"description,omitempty"`
-		TenantID     *string             `json:"tenant_id,omitempty"`
-		Address      *string             `json:"address,omitempty"`
-		Persistence  *SessionPersistence `json:"session_persistence,omitempty"`
-		ConnLimit    *int                `json:"connection_limit,omitempty"`
-		AdminStateUp *bool               `json:"admin_state_up,omitempty"`
-	}
-
-	type request struct {
-		VirtualIP vip `json:"vip"`
-	}
-
-	reqBody := request{VirtualIP: vip{
-		Name:         opts.Name,
-		SubnetID:     opts.SubnetID,
-		Protocol:     opts.Protocol,
-		ProtocolPort: opts.ProtocolPort,
-		PoolID:       opts.PoolID,
-		Description:  gophercloud.MaybeString(opts.Description),
-		TenantID:     gophercloud.MaybeString(opts.TenantID),
-		Address:      gophercloud.MaybeString(opts.Address),
-		ConnLimit:    opts.ConnLimit,
-		AdminStateUp: opts.AdminStateUp,
-	}}
-
-	if opts.Persistence != nil {
-		reqBody.VirtualIP.Persistence = opts.Persistence
-	}
-
-	_, res.Err = c.Post(rootURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return r
 }
 
 // Get retrieves a particular virtual IP based on its unique ID.

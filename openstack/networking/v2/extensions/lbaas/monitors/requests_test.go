@@ -8,6 +8,7 @@ import (
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/jrperritt/gophercloud"
 )
 
 func TestURLs(t *testing.T) {
@@ -251,11 +252,12 @@ func TestUpdate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
    "health_monitor":{
-      "delay": 3,
+      "delay": 30,
       "timeout": 20,
       "max_retries": 10,
       "url_path": "/another_check",
-      "expected_codes": "301"
+      "expected_codes": "301",
+			"admin_state_up": true
    }
 }
 			`)
@@ -268,7 +270,7 @@ func TestUpdate(t *testing.T) {
     "health_monitor": {
         "admin_state_up": true,
         "tenant_id": "4fd44f30292945e481c7b8a0c8908869",
-        "delay": 3,
+        "delay": 30,
         "max_retries": 10,
         "http_method": "GET",
         "timeout": 20,
@@ -287,11 +289,12 @@ func TestUpdate(t *testing.T) {
 	})
 
 	_, err := Update(fake.ServiceClient(), "b05e44b5-81f9-4551-b474-711a722698f7", UpdateOpts{
-		Delay:         3,
+		Delay:         30,
 		Timeout:       20,
 		MaxRetries:    10,
 		URLPath:       "/another_check",
 		ExpectedCodes: "301",
+		AdminStateUp:  gophercloud.Enabled,
 	}).Extract()
 
 	th.AssertNoErr(t, err)

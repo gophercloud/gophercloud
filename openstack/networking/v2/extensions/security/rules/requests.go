@@ -1,8 +1,6 @@
 package rules
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -43,14 +41,6 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
-// Errors
-var (
-	errValidDirectionRequired = fmt.Errorf("A valid Direction is required")
-	errValidEtherTypeRequired = fmt.Errorf("A valid EtherType is required")
-	errSecGroupIDRequired     = fmt.Errorf("A valid SecGroupID is required")
-	errValidProtocolRequired  = fmt.Errorf("A valid Protocol is required")
-)
-
 // Constants useful for CreateOpts
 const (
 	DirIngress   = "ingress"
@@ -61,6 +51,12 @@ const (
 	ProtocolUDP  = "udp"
 	ProtocolICMP = "icmp"
 )
+
+// CreateOptsBuilder is what types must satisfy to be used as Create
+// options.
+type CreateOptsBuilder interface {
+	ToSecGroupRuleCreateMap() (map[string]interface{}, error)
+}
 
 // CreateOpts contains all the values needed to create a new security group rule.
 type CreateOpts struct {
@@ -104,59 +100,75 @@ type CreateOpts struct {
 	TenantID string
 }
 
-// Create is an operation which adds a new security group rule and associates it
-// with an existing security group (whose ID is specified in CreateOpts).
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	var res CreateResult
-
-	// Validate required opts
+// ToSecGroupRuleCreateMap allows CreateOpts to satisfy the CreateOptsBuilder
+// interface
+func (opts CreateOpts) ToSecGroupRuleCreateMap() (map[string]interface{}, error) {
 	if opts.Direction != DirIngress && opts.Direction != DirEgress {
-		res.Err = errValidDirectionRequired
-		return res
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "rules.ToSecGroupRuleCreateMap"
+		err.Argument = "rules.CreateOpts.Direction"
+		return nil, err
 	}
 	if opts.EtherType != Ether4 && opts.EtherType != Ether6 {
-		res.Err = errValidEtherTypeRequired
-		return res
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "rules.ToSecGroupRuleCreateMap"
+		err.Argument = "rules.CreateOpts.EtherType"
+		return nil, err
 	}
 	if opts.SecGroupID == "" {
-		res.Err = errSecGroupIDRequired
-		return res
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "rules.ToSecGroupRuleCreateMap"
+		err.Argument = "rules.CreateOpts.SecGroupID"
+		return nil, err
 	}
 	if opts.Protocol != "" && opts.Protocol != ProtocolTCP && opts.Protocol != ProtocolUDP && opts.Protocol != ProtocolICMP {
-		res.Err = errValidProtocolRequired
-		return res
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "rules.ToSecGroupRuleCreateMap"
+		err.Argument = "rules.CreateOpts.Protocol"
+		return nil, err
 	}
 
-	type secrule struct {
-		Direction      string `json:"direction"`
-		EtherType      string `json:"ethertype"`
-		SecGroupID     string `json:"security_group_id"`
-		PortRangeMax   int    `json:"port_range_max,omitempty"`
-		PortRangeMin   int    `json:"port_range_min,omitempty"`
-		Protocol       string `json:"protocol,omitempty"`
-		RemoteGroupID  string `json:"remote_group_id,omitempty"`
-		RemoteIPPrefix string `json:"remote_ip_prefix,omitempty"`
-		TenantID       string `json:"tenant_id,omitempty"`
+	i := map[string]interface{}{
+		"direction":         opts.Direction,
+		"ethertype":         opts.EtherType,
+		"security_group_id": opts.SecGroupID,
+	}
+	if opts.PortRangeMax != 0 {
+		i["port_range_max"] = opts.PortRangeMax
+	}
+	if opts.PortRangeMin != 0 {
+		i["port_range_min"] = opts.PortRangeMin
+	}
+	if opts.Protocol != "" {
+		i["protocol"] = opts.Protocol
+	}
+	if opts.RemoteGroupID != "" {
+		i["remote_group_id"] = opts.RemoteGroupID
+	}
+	if opts.RemoteIPPrefix != "" {
+		i["remote_ip_prefix"] = opts.RemoteIPPrefix
+	}
+	if opts.TenantID != "" {
+		i["tenant_id"] = opts.TenantID
 	}
 
-	type request struct {
-		SecRule secrule `json:"security_group_rule"`
+	b := make(map[string]interface{})
+	b["security_group_rule"] = i
+	return b, nil
+}
+
+// Create is an operation which adds a new security group rule and associates it
+// with an existing security group (whose ID is specified in CreateOpts).
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
+	var r CreateResult
+
+	b, err := opts.ToSecGroupRuleCreateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
-
-	reqBody := request{SecRule: secrule{
-		Direction:      opts.Direction,
-		EtherType:      opts.EtherType,
-		SecGroupID:     opts.SecGroupID,
-		PortRangeMax:   opts.PortRangeMax,
-		PortRangeMin:   opts.PortRangeMin,
-		Protocol:       opts.Protocol,
-		RemoteGroupID:  opts.RemoteGroupID,
-		RemoteIPPrefix: opts.RemoteIPPrefix,
-		TenantID:       opts.TenantID,
-	}}
-
-	_, res.Err = c.Post(rootURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return r
 }
 
 // Get retrieves a particular security group rule based on its unique ID.

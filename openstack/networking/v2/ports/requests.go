@@ -1,8 +1,6 @@
 package ports
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -236,33 +234,47 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 
 // IDFromName is a convenience function that returns a port's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	portCount := 0
-	portID := ""
+	count := 0
+	id := ""
 	if name == "" {
-		return "", fmt.Errorf("A port name must be provided.")
+		err := &gophercloud.ErrMissingInput{}
+		err.Function = "ports.IDFromName"
+		err.Argument = "name"
+		return "", err
 	}
-	pager := List(client, nil)
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		portList, err := ExtractPorts(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, p := range portList {
-			if p.Name == name {
-				portCount++
-				portID = p.ID
-			}
-		}
-		return true, nil
-	})
+	pages, err := List(client, nil).AllPages()
+	if err != nil {
+		return "", err
+	}
 
-	switch portCount {
+	all, err := ExtractPorts(pages)
+	if err != nil {
+		return "", err
+	}
+
+	for _, s := range all {
+		if s.Name == name {
+			count++
+			id = s.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find port: %s", name)
+		err := &gophercloud.ErrResourceNotFound{}
+		err.Name = name
+		err.ResourceType = "port"
+		err.Function = "ports.IDFromName"
+		return "", err
 	case 1:
-		return portID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d ports matching %s", portCount, name)
+		err := &gophercloud.ErrMultipleResourcesFound{}
+		err.Count = count
+		err.Name = name
+		err.ResourceType = "port"
+		err.Function = "ports.IDFromName"
+		return "", err
 	}
 }

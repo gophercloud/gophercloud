@@ -1,8 +1,6 @@
 package networks
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -194,33 +192,47 @@ func Delete(c *gophercloud.ServiceClient, networkID string) DeleteResult {
 
 // IDFromName is a convenience function that returns a network's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	networkCount := 0
-	networkID := ""
+	count := 0
+	id := ""
 	if name == "" {
-		return "", fmt.Errorf("A network name must be provided.")
+		err := &gophercloud.ErrMissingInput{}
+		err.Function = "networks.IDFromName"
+		err.Argument = "name"
+		return "", err
 	}
-	pager := List(client, nil)
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		networkList, err := ExtractNetworks(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, n := range networkList {
-			if n.Name == name {
-				networkCount++
-				networkID = n.ID
-			}
-		}
-		return true, nil
-	})
+	pages, err := List(client, nil).AllPages()
+	if err != nil {
+		return "", err
+	}
 
-	switch networkCount {
+	all, err := ExtractNetworks(pages)
+	if err != nil {
+		return "", err
+	}
+
+	for _, s := range all {
+		if s.Name == name {
+			count++
+			id = s.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find network: %s", name)
+		err := &gophercloud.ErrResourceNotFound{}
+		err.Name = name
+		err.ResourceType = "network"
+		err.Function = "networks.IDFromName"
+		return "", err
 	case 1:
-		return networkID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d networks matching %s", networkCount, name)
+		err := &gophercloud.ErrMultipleResourcesFound{}
+		err.Count = count
+		err.Name = name
+		err.ResourceType = "network"
+		err.Function = "networks.IDFromName"
+		return "", err
 	}
 }

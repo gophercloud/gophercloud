@@ -1,8 +1,6 @@
 package routers
 
 import (
-	"errors"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -153,13 +151,40 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 	return res
 }
 
-var errInvalidInterfaceOpts = errors.New("When adding a router interface you must provide either a subnet ID or a port ID")
+// InterfaceOptsBuilder is what types must satisfy to be used as AddInterface
+// options.
+type InterfaceOptsBuilder interface {
+	ToInterfaceAddMap() (map[string]interface{}, error)
+}
 
 // InterfaceOpts allow you to work with operations that either add or remote
 // an internal interface from a router.
 type InterfaceOpts struct {
 	SubnetID string
 	PortID   string
+}
+
+// ToInterfaceAddMap allows InterfaceOpts to satisfy the InterfaceOptsBuilder
+// interface
+func (opts InterfaceOpts) ToInterfaceAddMap() (map[string]interface{}, error) {
+	if (opts.SubnetID == "" && opts.PortID == "") || (opts.SubnetID != "" && opts.PortID != "") {
+		err := gophercloud.ErrInvalidInput{}
+		err.Function = "routers.ToInterfaceAddMap"
+		err.Argument = "routers.InterfaceOpts.SubnetID/routers.InterfaceOpts.PortID"
+		err.Info = "When adding a router interface, you must provide one and only" +
+			" one of a subnet ID or a port ID"
+		return nil, err
+	}
+
+	b := make(map[string]interface{})
+	if opts.SubnetID != "" {
+		b["subnet_id"] = opts.SubnetID
+	}
+	if opts.PortID != "" {
+		b["port_id"] = opts.PortID
+	}
+
+	return b, nil
 }
 
 // AddInterface attaches a subnet to an internal router interface. You must
@@ -183,27 +208,28 @@ type InterfaceOpts struct {
 // identifier of a new port created by this operation. After the operation
 // completes, the device ID of the port is set to the router ID, and the
 // device owner attribute is set to `network:router_interface'.
-func AddInterface(c *gophercloud.ServiceClient, id string, opts InterfaceOpts) InterfaceResult {
-	var res InterfaceResult
+func AddInterface(c *gophercloud.ServiceClient, id string, opts InterfaceOptsBuilder) InterfaceResult {
+	var r InterfaceResult
 
-	// Validate
-	if (opts.SubnetID == "" && opts.PortID == "") || (opts.SubnetID != "" && opts.PortID != "") {
-		res.Err = errInvalidInterfaceOpts
-		return res
+	if id == "" {
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "routers.AddInterface"
+		err.Argument = "id"
+		r.Err = err
+		return r
 	}
 
-	type request struct {
-		SubnetID string `json:"subnet_id,omitempty"`
-		PortID   string `json:"port_id,omitempty"`
+	b, err := opts.ToInterfaceAddMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
 
-	body := request{SubnetID: opts.SubnetID, PortID: opts.PortID}
-
-	_, res.Err = c.Put(addInterfaceURL(c, id), body, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(addInterfaceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 
-	return res
+	return r
 }
 
 // RemoveInterface removes an internal router interface, which detaches a

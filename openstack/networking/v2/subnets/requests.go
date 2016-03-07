@@ -1,8 +1,6 @@
 package subnets
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -239,33 +237,47 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 
 // IDFromName is a convenience function that returns a subnet's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	subnetCount := 0
-	subnetID := ""
+	count := 0
+	id := ""
 	if name == "" {
-		return "", fmt.Errorf("A subnet name must be provided.")
+		err := &gophercloud.ErrMissingInput{}
+		err.Function = "subnets.IDFromName"
+		err.Argument = "name"
+		return "", err
 	}
-	pager := List(client, nil)
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		subnetList, err := ExtractSubnets(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, s := range subnetList {
-			if s.Name == name {
-				subnetCount++
-				subnetID = s.ID
-			}
-		}
-		return true, nil
-	})
+	pages, err := List(client, nil).AllPages()
+	if err != nil {
+		return "", err
+	}
 
-	switch subnetCount {
+	all, err := ExtractSubnets(pages)
+	if err != nil {
+		return "", err
+	}
+
+	for _, s := range all {
+		if s.Name == name {
+			count++
+			id = s.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find subnet: %s", name)
+		err := &gophercloud.ErrResourceNotFound{}
+		err.Name = name
+		err.ResourceType = "subnet"
+		err.Function = "subnets.IDFromName"
+		return "", err
 	case 1:
-		return subnetID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d subnets matching %s", subnetCount, name)
+		err := &gophercloud.ErrMultipleResourcesFound{}
+		err.Count = count
+		err.Name = name
+		err.ResourceType = "subnet"
+		err.Function = "subnets.IDFromName"
+		return "", err
 	}
 }

@@ -1,8 +1,6 @@
 package groups
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -36,10 +34,6 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
-var (
-	errNameRequired = fmt.Errorf("Name is required")
-)
-
 // CreateOpts contains all the values needed to create a new security group.
 type CreateOpts struct {
 	// Required. Human-readable name for the VIP. Does not have to be unique.
@@ -59,7 +53,10 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
 
 	// Validate required opts
 	if opts.Name == "" {
-		res.Err = errNameRequired
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "groups.Create"
+		err.Argument = "groups.CreateOpts.Name"
+		res.Err = err
 		return res
 	}
 
@@ -99,33 +96,47 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 
 // IDFromName is a convenience function that returns a security group's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	securityGroupCount := 0
-	securityGroupID := ""
+	count := 0
+	id := ""
 	if name == "" {
-		return "", fmt.Errorf("A security group name must be provided.")
+		err := &gophercloud.ErrMissingInput{}
+		err.Function = "groups.IDFromName"
+		err.Argument = "name"
+		return "", err
 	}
-	pager := List(client, ListOpts{})
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		securityGroupList, err := ExtractGroups(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, s := range securityGroupList {
-			if s.Name == name {
-				securityGroupCount++
-				securityGroupID = s.ID
-			}
-		}
-		return true, nil
-	})
+	pages, err := List(client, ListOpts{}).AllPages()
+	if err != nil {
+		return "", err
+	}
 
-	switch securityGroupCount {
+	all, err := ExtractGroups(pages)
+	if err != nil {
+		return "", err
+	}
+
+	for _, s := range all {
+		if s.Name == name {
+			count++
+			id = s.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find security group: %s", name)
+		err := &gophercloud.ErrResourceNotFound{}
+		err.Name = name
+		err.ResourceType = "group"
+		err.Function = "groups.IDFromName"
+		return "", err
 	case 1:
-		return securityGroupID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d security groups matching %s", securityGroupCount, name)
+		err := &gophercloud.ErrMultipleResourcesFound{}
+		err.Count = count
+		err.Name = name
+		err.ResourceType = "group"
+		err.Function = "groups.IDFromName"
+		return "", err
 	}
 }
