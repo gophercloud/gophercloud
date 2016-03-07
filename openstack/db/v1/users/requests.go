@@ -1,8 +1,6 @@
 package users
 
 import (
-	"errors"
-
 	"github.com/gophercloud/gophercloud"
 	db "github.com/gophercloud/gophercloud/openstack/db/v1/databases"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -42,13 +40,24 @@ type CreateOpts struct {
 func (opts CreateOpts) ToMap() (map[string]interface{}, error) {
 
 	if opts.Name == "root" {
-		return nil, errors.New("root is a reserved user name and cannot be used")
+		err := gophercloud.ErrInvalidInput{}
+		err.Function = "users.ToUserCreateMap"
+		err.Argument = "users.CreateOpts.Name"
+		err.Value = "root"
+		err.Info = "root is a reserved user name and cannot be used"
+		return nil, err
 	}
 	if opts.Name == "" {
-		return nil, errors.New("Name is a required field")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "users.ToUserCreateMap"
+		err.Argument = "users.CreateOpts.Name"
+		return nil, err
 	}
 	if opts.Password == "" {
-		return nil, errors.New("Password is a required field")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "users.ToUserCreateMap"
+		err.Argument = "users.CreateOpts.Password"
+		return nil, err
 	}
 
 	user := map[string]interface{}{

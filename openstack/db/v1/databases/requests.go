@@ -1,8 +1,6 @@
 package databases
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -12,7 +10,7 @@ type CreateOptsBuilder interface {
 	ToDBCreateMap() (map[string]interface{}, error)
 }
 
-// DatabaseOpts is the struct responsible for configuring a database; often in
+// CreateOpts is the struct responsible for configuring a database; often in
 // the context of an instance.
 type CreateOpts struct {
 	// [REQUIRED] Specifies the name of the database. Valid names can be composed
@@ -39,10 +37,17 @@ type CreateOpts struct {
 // into sub-maps.
 func (opts CreateOpts) ToMap() (map[string]string, error) {
 	if opts.Name == "" {
-		return nil, fmt.Errorf("Name is a required field")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "databases.ToMap"
+		err.Argument = "databases.CreateOpts.Name"
 	}
 	if len(opts.Name) > 64 {
-		return nil, fmt.Errorf("Name must be less than 64 chars long")
+		err := gophercloud.ErrInvalidInput{}
+		err.Function = "databases.ToMap"
+		err.Argument = "databases.CreateOpts.Name"
+		err.Value = opts.Name
+		err.Info = "Must be less than 64 chars long"
+		return nil, err
 	}
 
 	db := map[string]string{"name": opts.Name}

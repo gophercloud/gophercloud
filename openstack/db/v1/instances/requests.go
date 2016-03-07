@@ -1,8 +1,6 @@
 package instances
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	db "github.com/gophercloud/gophercloud/openstack/db/v1/databases"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/users"
@@ -20,6 +18,7 @@ type DatastoreOpts struct {
 	Type    string
 }
 
+// ToMap converts a DatastoreOpts to a map[string]string (for a request body)
 func (opts DatastoreOpts) ToMap() (map[string]string, error) {
 	return map[string]string{
 		"version": opts.Version,
@@ -55,10 +54,18 @@ type CreateOpts struct {
 // ToInstanceCreateMap will render a JSON map.
 func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	if opts.Size > 300 || opts.Size < 1 {
-		return nil, fmt.Errorf("Size (GB) must be between 1-300")
+		err := gophercloud.ErrInvalidInput{}
+		err.Function = "instances.ToInstanceCreateMap"
+		err.Argument = "instances.CreateOpts.Size"
+		err.Value = opts.Size
+		err.Info = "Size (GB) must be between 1-300"
+		return nil, err
 	}
 	if opts.FlavorRef == "" {
-		return nil, fmt.Errorf("FlavorRef is a required field")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "instances.ToInstanceCreateMap"
+		err.Argument = "instances.CreateOpts.FlavorRef"
+		return nil, err
 	}
 
 	instance := map[string]interface{}{
@@ -82,6 +89,13 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 		instance["users"] = users["users"]
+	}
+	if opts.Datastore != nil {
+		datastore, err := opts.Datastore.ToMap()
+		if err != nil {
+			return nil, err
+		}
+		instance["datastore"] = datastore
 	}
 
 	return map[string]interface{}{"instance": instance}, nil

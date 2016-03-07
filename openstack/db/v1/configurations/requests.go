@@ -1,8 +1,6 @@
 package configurations
 
 import (
-	"errors"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/instances"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -67,10 +65,16 @@ type CreateOpts struct {
 // ToConfigCreateMap casts a CreateOpts struct into a JSON map.
 func (opts CreateOpts) ToConfigCreateMap() (map[string]interface{}, error) {
 	if opts.Name == "" {
-		return nil, errors.New("Name is a required field")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "configurations.ToConfigCreateMap"
+		err.Argument = "configurations.CreateOpts.Name"
+		return nil, err
 	}
 	if len(opts.Values) == 0 {
-		return nil, errors.New("Values must be a populated map")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "configurations.ToConfigCreateMap"
+		err.Argument = "configurations.CreateOpts.Values"
+		return nil, err
 	}
 
 	config := map[string]interface{}{
