@@ -1,6 +1,6 @@
 // +build fixtures
 
-package quotas
+package quotasets
 
 import (
 	"fmt"
@@ -31,8 +31,8 @@ const GetOutput = `
 
 const FirstTenantID = "555544443333222211110000ffffeeee"
 
-// FirstQuota is the first result in ListOutput.
-var FirstQuota = Quota{
+// FirstQuotaset is the first result in ListOutput.
+var FirstQuota = Quotaset{
 	FixedIps:                 0,
 	FloatingIps:              0,
 	InjectedFileContentBytes: 10240,

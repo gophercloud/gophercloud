@@ -1,3 +1,3 @@
-// Package quotas provides information and interaction with Quotas
+// Package quotasets provides information and interaction with Quotaset
 // extension for the OpenStack Compute service.
-package quotas
+package quotasets

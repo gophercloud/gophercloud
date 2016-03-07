@@ -1,4 +1,4 @@
-package quotas
+package quotasets
 
 import (
 	"testing"

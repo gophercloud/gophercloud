@@ -1,4 +1,4 @@
-package quotas
+package quotasets
 
 import (
 	"github.com/mitchellh/mapstructure"
@@ -6,7 +6,7 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// Quota is a set of operational limits that allow for control of compute usage.
+// Quotaset is a set of operational limits that allow for control of compute usage.
 const sample = `
 {
   "quota_set" : {
@@ -26,7 +26,7 @@ const sample = `
 }
 `
 
-type Quota struct {
+type Quotaset struct {
 	//ID is tenant associated with this quota_set
 	ID string `mapstructure:"id"`
 	//FixedIps is number of fixed ips alloted this quota_set
@@ -55,26 +55,26 @@ type Quota struct {
 	Instances int `mapstructure:"instances"`
 }
 
-// QuotaPage stores a single, only page of Quota results from a List call.
-type QuotaPage struct {
+// QuotasetPage stores a single, only page of Quotaset results from a List call.
+type QuotasetPage struct {
 	pagination.SinglePageBase
 }
 
-// IsEmpty determines whether or not a QuotaPage is empty.
-func (page QuotaPage) IsEmpty() (bool, error) {
-	ks, err := ExtractQuotas(page)
+// IsEmpty determines whether or not a QuotasetsetPage is empty.
+func (page QuotasetPage) IsEmpty() (bool, error) {
+	ks, err := ExtractQuotasets(page)
 	return len(ks) == 0, err
 }
 
-// ExtractQuotas interprets a page of results as a slice of Quotas.
-func ExtractQuotas(page pagination.Page) ([]Quota, error) {
+// ExtractQuotasets interprets a page of results as a slice of Quotasets.
+func ExtractQuotasets(page pagination.Page) ([]Quotaset, error) {
 	var resp struct {
-		Quotas []Quota `mapstructure:"quotas"`
+		Quotasets []Quotaset `mapstructure:"quotas"`
 	}
 
-	err := mapstructure.Decode(page.(QuotaPage).Body, &resp)
-	results := make([]Quota, len(resp.Quotas))
-	for i, q := range resp.Quotas {
+	err := mapstructure.Decode(page.(QuotasetPage).Body, &resp)
+	results := make([]Quotaset, len(resp.Quotasets))
+	for i, q := range resp.Quotasets {
 		results[i] = q
 	}
 	return results, err
@@ -84,22 +84,22 @@ type quotaResult struct {
 	gophercloud.Result
 }
 
-// Extract is a method that attempts to interpret any Quota resource response as a Quota struct.
-func (r quotaResult) Extract() (*Quota, error) {
+// Extract is a method that attempts to interpret any Quotaset resource response as a Quotaset struct.
+func (r quotaResult) Extract() (*Quotaset, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
 
 	var res struct {
-		Quota *Quota `json:"quota_set" mapstructure:"quota_set"`
+		Quotaset *Quotaset `json:"quota_set" mapstructure:"quota_set"`
 	}
 
 	err := mapstructure.Decode(r.Body, &res)
-	return res.Quota, err
+	return res.Quotaset, err
 }
 
 // GetResult is the response from a Get operation. Call its Extract method to interpret it
-// as a Quota.
+// as a Quotaset.
 type GetResult struct {
 	quotaResult
 }

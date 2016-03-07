@@ -1,4 +1,4 @@
-package quotas
+package quotasets
 
 import (
 	th "github.com/rackspace/gophercloud/testhelper"
@@ -12,5 +12,5 @@ func TestGet(t *testing.T) {
 	HandleGetSuccessfully(t)
 	actual, err := Get(client.ServiceClient(), FirstTenantID).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &FirstQuota, actual)
+	th.CheckDeepEquals(t, &FirstQuotaset, actual)
 }
