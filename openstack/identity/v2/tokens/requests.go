@@ -1,10 +1,6 @@
 package tokens
 
-import (
-	"fmt"
-
-	"github.com/gophercloud/gophercloud"
-)
+import "github.com/gophercloud/gophercloud"
 
 // AuthOptionsBuilder describes any argument that may be passed to the Create call.
 type AuthOptionsBuilder interface {
@@ -46,20 +42,26 @@ func (auth AuthOptions) ToTokenCreateMap() (map[string]interface{}, error) {
 	authMap := make(map[string]interface{})
 
 	if auth.Username != "" {
-		if auth.Password != "" {
-			authMap["passwordCredentials"] = map[string]interface{}{
-				"username": auth.Username,
-				"password": auth.Password,
-			}
-		} else {
-			return nil, ErrPasswordRequired
+		if auth.Password == "" {
+			err := gophercloud.ErrMissingInput{}
+			err.Function = "tokens.ToTokenCreateMap"
+			err.Argument = "tokens.AuthOptions.Password"
+			return nil, err
+		}
+		authMap["passwordCredentials"] = map[string]interface{}{
+			"username": auth.Username,
+			"password": auth.Password,
 		}
 	} else if auth.TokenID != "" {
 		authMap["token"] = map[string]interface{}{
 			"id": auth.TokenID,
 		}
 	} else {
-		return nil, fmt.Errorf("You must provide either username/password or tenantID/token values.")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "tokens.ToTokenCreateMap"
+		err.Argument = "tokens.AuthOptions.Username/tokens.AuthOptions.TokenID"
+		err.Info = "You must provide either username/password or tenantID/token values."
+		return nil, err
 	}
 
 	if auth.TenantID != "" {
@@ -89,7 +91,7 @@ func Create(client *gophercloud.ServiceClient, auth AuthOptionsBuilder) CreateRe
 	return result
 }
 
-// Validates and retrieves information for user's token.
+// Get validates and retrieves information for user's token.
 func Get(client *gophercloud.ServiceClient, token string) GetResult {
 	var result GetResult
 	_, result.Err = client.Get(GetURL(client, token), &result.Body, &gophercloud.RequestOpts{

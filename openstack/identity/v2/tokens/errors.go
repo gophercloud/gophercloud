@@ -1,9 +1,6 @@
 package tokens
 
-import (
-	"errors"
-	"fmt"
-)
+import "fmt"
 
 var (
 	// ErrUserIDProvided is returned if you attempt to authenticate with a UserID.
@@ -17,12 +14,6 @@ var (
 
 	// ErrDomainNameProvided is returned if you attempt to authenticate with a DomainName.
 	ErrDomainNameProvided = unacceptedAttributeErr("DomainName")
-
-	// ErrUsernameRequired is returned if you attempt to authenticate without a Username.
-	ErrUsernameRequired = errors.New("You must supply a Username in your AuthOptions.")
-
-	// ErrPasswordRequired is returned if you don't provide a password.
-	ErrPasswordRequired = errors.New("Please supply a Password in your AuthOptions.")
 )
 
 func unacceptedAttributeErr(attribute string) error {

@@ -1,7 +1,6 @@
 package tokens
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
@@ -128,23 +127,28 @@ func TestRequireUsername(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		Password: "thing",
 	}
-
-	tokenPostErr(t, options, fmt.Errorf("You must provide either username/password or tenantID/token values."))
+	expected := gophercloud.ErrMissingInput{}
+	expected.Function = "tokens.ToTokenCreateMap"
+	expected.Argument = "tokens.AuthOptions.Username/tokens.AuthOptions.TokenID"
+	expected.Info = "You must provide either username/password or tenantID/token values."
+	tokenPostErr(t, options, expected)
 }
 
 func TestRequirePassword(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		Username: "me",
 	}
-
-	tokenPostErr(t, options, ErrPasswordRequired)
+	expected := gophercloud.ErrMissingInput{}
+	expected.Function = "tokens.ToTokenCreateMap"
+	expected.Argument = "tokens.AuthOptions.Password"
+	tokenPostErr(t, options, expected)
 }
 
-func tokenGet(t *testing.T, tokenId string) GetResult {
+func tokenGet(t *testing.T, tokenID string) GetResult {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleTokenGet(t, tokenId)
-	return Get(client.ServiceClient(), tokenId)
+	HandleTokenGet(t, tokenID)
+	return Get(client.ServiceClient(), tokenID)
 }
 
 func TestGetWithToken(t *testing.T) {

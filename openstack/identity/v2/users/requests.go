@@ -1,12 +1,11 @@
 package users
 
 import (
-	"errors"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+// List lists the existing users.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	createPage := func(r pagination.PageResult) pagination.Page {
 		return UserPage{pagination.SinglePageBase(r)}
@@ -58,7 +57,11 @@ func (opts CreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
 	m := make(map[string]interface{})
 
 	if opts.Name == "" && opts.Username == "" {
-		return m, errors.New("Either a Name or Username must be provided")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "users.ToUserCreateMap"
+		err.Argument = "users.CreateOpts.Name/users.CreateOpts.Username"
+		err.Info = "Either a Name or Username must be provided"
+		return m, err
 	}
 
 	if opts.Name != "" {
@@ -152,6 +155,7 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	return result
 }
 
+// ListRoles lists the existing roles that can be assigned to users.
 func ListRoles(client *gophercloud.ServiceClient, tenantID, userID string) pagination.Pager {
 	createPage := func(r pagination.PageResult) pagination.Page {
 		return RolePage{pagination.SinglePageBase(r)}
