@@ -1,8 +1,6 @@
 package images
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -75,35 +73,47 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 
 // IDFromName is a convienience function that returns an image's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	imageCount := 0
-	imageID := ""
+	count := 0
+	id := ""
 	if name == "" {
-		return "", fmt.Errorf("An image name must be provided.")
+		err := &gophercloud.ErrMissingInput{}
+		err.Function = "images.IDFromName"
+		err.Argument = "name"
+		return "", err
 	}
-	pager := ListDetail(client, &ListOpts{
-		Name: name,
-	})
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		imageList, err := ExtractImages(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, i := range imageList {
-			if i.Name == name {
-				imageCount++
-				imageID = i.ID
-			}
-		}
-		return true, nil
-	})
+	allPages, err := ListDetail(client, nil).AllPages()
+	if err != nil {
+		return "", err
+	}
 
-	switch imageCount {
+	all, err := ExtractImages(allPages)
+	if err != nil {
+		return "", err
+	}
+
+	for _, f := range all {
+		if f.Name == name {
+			count++
+			id = f.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find image: %s", name)
+		err := &gophercloud.ErrResourceNotFound{}
+		err.Function = "images.IDFromName"
+		err.ResourceType = "image"
+		err.Name = name
+		return "", err
 	case 1:
-		return imageID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d images matching %s", imageCount, name)
+		err := &gophercloud.ErrMultipleResourcesFound{}
+		err.Function = "images.IDFromName"
+		err.ResourceType = "image"
+		err.Name = name
+		err.Count = count
+		return "", err
 	}
 }

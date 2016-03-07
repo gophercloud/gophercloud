@@ -67,6 +67,8 @@ type ProviderClient struct {
 	// fails with a 401 HTTP response code. This a needed because there may be multiple
 	// authentication functions for different Identity service versions.
 	ReauthFunc func() error
+
+	Debug bool
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
@@ -199,10 +201,10 @@ func (client *ProviderClient) Request(method, url string, optsBuilder RequestOpt
 	if !ok {
 		body, _ := ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
-		//pc := make([]uintptr, 1) // at least 1 entry needed
+		//pc := make([]uintptr, 1)
 		//runtime.Callers(2, pc)
 		//f := runtime.FuncForPC(pc[0])
-		respErr := &ErrUnexpectedResponseCode{
+		respErr := ErrUnexpectedResponseCode{
 			URL:      url,
 			Method:   method,
 			Expected: options.OkCodes,
@@ -223,7 +225,7 @@ func (client *ProviderClient) Request(method, url string, optsBuilder RequestOpt
 				err = client.ReauthFunc()
 				if err != nil {
 					e := &ErrUnableToReauthenticate{}
-					e.OriginalError = respErr
+					e.ErrOriginal = respErr
 					return nil, e
 				}
 				if options.RawBody != nil {
@@ -236,11 +238,11 @@ func (client *ProviderClient) Request(method, url string, optsBuilder RequestOpt
 					switch err.(type) {
 					case *ErrUnexpectedResponseCode:
 						e := &ErrErrorAfterReauthentication{}
-						e.OriginalError = err.(*ErrUnexpectedResponseCode)
+						e.ErrOriginal = err.(*ErrUnexpectedResponseCode)
 						return nil, e
 					default:
 						e := &ErrErrorAfterReauthentication{}
-						e.OriginalError = err
+						e.ErrOriginal = err
 						return nil, e
 					}
 				}

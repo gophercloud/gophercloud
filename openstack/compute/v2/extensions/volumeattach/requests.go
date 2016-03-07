@@ -1,8 +1,6 @@
 package volumeattach
 
 import (
-	"errors"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -32,7 +30,10 @@ type CreateOpts struct {
 // ToVolumeAttachmentCreateMap constructs a request body from CreateOpts.
 func (opts CreateOpts) ToVolumeAttachmentCreateMap() (map[string]interface{}, error) {
 	if opts.VolumeID == "" {
-		return nil, errors.New("Missing field required for volume attachment creation: VolumeID")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "volumeattach.ToVolumeAttachmentCreateMap"
+		err.Argument = "volumeattach.CreateOpts.VolumeID"
+		return nil, err
 	}
 
 	volumeAttachment := make(map[string]interface{})

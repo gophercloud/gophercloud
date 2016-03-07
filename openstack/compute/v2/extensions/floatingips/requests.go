@@ -1,8 +1,6 @@
 package floatingips
 
 import (
-	"errors"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -41,7 +39,10 @@ type AssociateOpts struct {
 // ToFloatingIPCreateMap constructs a request body from CreateOpts.
 func (opts CreateOpts) ToFloatingIPCreateMap() (map[string]interface{}, error) {
 	if opts.Pool == "" {
-		return nil, errors.New("Missing field required for floating IP creation: Pool")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "floatingips.ToFloatingIPCreateMap"
+		err.Argument = "floatingips.CreateOpts.Pool"
+		return nil, err
 	}
 
 	return map[string]interface{}{"pool": opts.Pool}, nil
@@ -50,11 +51,17 @@ func (opts CreateOpts) ToFloatingIPCreateMap() (map[string]interface{}, error) {
 // ToAssociateMap constructs a request body from AssociateOpts.
 func (opts AssociateOpts) ToAssociateMap() (map[string]interface{}, error) {
 	if opts.ServerID == "" {
-		return nil, errors.New("Required field missing for floating IP association: ServerID")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "floatingips.ToAssociateMap"
+		err.Argument = "floatingips.AssociateOpts.ServerID"
+		return nil, err
 	}
 
 	if opts.FloatingIP == "" {
-		return nil, errors.New("Required field missing for floating IP association: FloatingIP")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "floatingips.ToAssociateMap"
+		err.Argument = "floatingips.AssociateOpts.FloatingIP"
+		return nil, err
 	}
 
 	associateInfo := map[string]interface{}{

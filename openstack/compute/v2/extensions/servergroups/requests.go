@@ -1,8 +1,6 @@
 package servergroups
 
 import (
-	"errors"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -32,11 +30,17 @@ type CreateOpts struct {
 // ToServerGroupCreateMap constructs a request body from CreateOpts.
 func (opts CreateOpts) ToServerGroupCreateMap() (map[string]interface{}, error) {
 	if opts.Name == "" {
-		return nil, errors.New("Missing field required for server group creation: Name")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "servergroups.ToServerGroupCreateMap"
+		err.Argument = "servergroups.CreateOpts.Name"
+		return nil, err
 	}
 
 	if len(opts.Policies) < 1 {
-		return nil, errors.New("Missing field required for server group creation: Policies")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "servergroups.ToServerGroupCreateMap"
+		err.Argument = "servergroups.CreateOpts.Policies"
+		return nil, err
 	}
 
 	serverGroup := make(map[string]interface{})

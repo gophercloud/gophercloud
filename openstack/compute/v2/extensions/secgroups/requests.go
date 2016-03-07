@@ -1,8 +1,6 @@
 package secgroups
 
 import (
-	"errors"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -46,20 +44,21 @@ type CreateOptsBuilder interface {
 	ToSecGroupCreateMap() (map[string]interface{}, error)
 }
 
-var (
-	errName = errors.New("Name is a required field")
-	errDesc = errors.New("Description is a required field")
-)
-
 // ToSecGroupCreateMap builds the create options into a serializable format.
 func (opts CreateOpts) ToSecGroupCreateMap() (map[string]interface{}, error) {
 	sg := make(map[string]interface{})
 
 	if opts.Name == "" {
-		return sg, errName
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "secgroups.ToSecGroupCreateMap"
+		err.Argument = "secgroups.CreateOpts.Name"
+		return nil, err
 	}
 	if opts.Description == "" {
-		return sg, errDesc
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "secgroups.ToSecGroupCreateMap"
+		err.Argument = "secgroups.CreateOpts.Description"
+		return nil, err
 	}
 
 	sg["name"] = opts.Name
@@ -98,10 +97,16 @@ func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]interface{}, error) {
 	sg := make(map[string]interface{})
 
 	if opts.Name == "" {
-		return sg, errName
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "secgroups.ToSecGroupUpdateMap"
+		err.Argument = "secgroups.UpdateOpts.Name"
+		return nil, err
 	}
 	if opts.Description == "" {
-		return sg, errDesc
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "secgroups.ToSecGroupUpdateMap"
+		err.Argument = "secgroups.UpdateOpts.Description"
+		return nil, err
 	}
 
 	sg["name"] = opts.Name
@@ -176,23 +181,38 @@ type CreateRuleOptsBuilder interface {
 
 // ToRuleCreateMap builds the create rule options into a serializable format.
 func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]interface{}, error) {
-	rule := make(map[string]interface{})
-
 	if opts.ParentGroupID == "" {
-		return rule, errors.New("A ParentGroupID must be set")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "secgroups.ToRuleCreateMap"
+		err.Argument = "secgroups.CreateRuleOpts.ParentGroupID"
+		return nil, err
 	}
 	if opts.FromPort == 0 {
-		return rule, errors.New("A FromPort must be set")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "secgroups.ToRuleCreateMap"
+		err.Argument = "secgroups.CreateRuleOpts.FromPort"
+		return nil, err
 	}
 	if opts.ToPort == 0 {
-		return rule, errors.New("A ToPort must be set")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "secgroups.ToRuleCreateMap"
+		err.Argument = "secgroups.CreateRuleOpts.ToPort"
+		return nil, err
 	}
 	if opts.IPProtocol == "" {
-		return rule, errors.New("A IPProtocol must be set")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "secgroups.ToRuleCreateMap"
+		err.Argument = "secgroups.CreateRuleOpts.IPProtocol"
+		return nil, err
 	}
 	if opts.CIDR == "" && opts.FromGroupID == "" {
-		return rule, errors.New("A CIDR or FromGroupID must be set")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "secgroups.ToRuleCreateMap"
+		err.Argument = "secgroups.CreateRuleOpts.CIDR/secgroups.CreateRuleOpts.FromGroupID"
+		return nil, err
 	}
+
+	rule := make(map[string]interface{})
 
 	rule["parent_group_id"] = opts.ParentGroupID
 	rule["from_port"] = opts.FromPort

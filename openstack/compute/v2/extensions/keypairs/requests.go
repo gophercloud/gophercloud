@@ -1,8 +1,6 @@
 package keypairs
 
 import (
-	"errors"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -58,7 +56,10 @@ type CreateOpts struct {
 // ToKeyPairCreateMap constructs a request body from CreateOpts.
 func (opts CreateOpts) ToKeyPairCreateMap() (map[string]interface{}, error) {
 	if opts.Name == "" {
-		return nil, errors.New("Missing field required for keypair creation: Name")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "keypairs.ToKeyPairCreateMap"
+		err.Argument = "keypairs.CreateOpts.Name"
+		return nil, err
 	}
 
 	keypair := make(map[string]interface{})

@@ -1,8 +1,6 @@
 package defsecrules
 
 import (
-	"errors"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -40,20 +38,32 @@ type CreateOptsBuilder interface {
 
 // ToRuleCreateMap builds the create rule options into a serializable format.
 func (opts CreateOpts) ToRuleCreateMap() (map[string]interface{}, error) {
-	rule := make(map[string]interface{})
-
 	if opts.FromPort == 0 {
-		return rule, errors.New("A FromPort must be set")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "defsecrules.ToRuleCreateMap"
+		err.Argument = "defsecrules.CreateOpts.FromPort"
+		return nil, err
 	}
 	if opts.ToPort == 0 {
-		return rule, errors.New("A ToPort must be set")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "defsecrules.ToRuleCreateMap"
+		err.Argument = "defsecrules.CreateOpts.ToPort"
+		return nil, err
 	}
 	if opts.IPProtocol == "" {
-		return rule, errors.New("A IPProtocol must be set")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "defsecrules.ToRuleCreateMap"
+		err.Argument = "defsecrules.CreateOpts.IPProtocol"
+		return nil, err
 	}
 	if opts.CIDR == "" {
-		return rule, errors.New("A CIDR must be set")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "defsecrules.ToRuleCreateMap"
+		err.Argument = "defsecrules.CreateOpts.CIDR"
+		return nil, err
 	}
+
+	rule := make(map[string]interface{})
 
 	rule["from_port"] = opts.FromPort
 	rule["to_port"] = opts.ToPort

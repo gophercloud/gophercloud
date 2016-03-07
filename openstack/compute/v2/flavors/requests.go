@@ -1,8 +1,6 @@
 package flavors
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -71,33 +69,47 @@ func Get(client *gophercloud.ServiceClient, id string) GetResult {
 
 // IDFromName is a convienience function that returns a flavor's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	flavorCount := 0
-	flavorID := ""
+	count := 0
+	id := ""
 	if name == "" {
-		return "", fmt.Errorf("A flavor name must be provided.")
+		err := &gophercloud.ErrMissingInput{}
+		err.Function = "flavors.IDFromName"
+		err.Argument = "name"
+		return "", err
 	}
-	pager := ListDetail(client, nil)
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		flavorList, err := ExtractFlavors(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, f := range flavorList {
-			if f.Name == name {
-				flavorCount++
-				flavorID = f.ID
-			}
-		}
-		return true, nil
-	})
+	allPages, err := ListDetail(client, nil).AllPages()
+	if err != nil {
+		return "", err
+	}
 
-	switch flavorCount {
+	all, err := ExtractFlavors(allPages)
+	if err != nil {
+		return "", err
+	}
+
+	for _, f := range all {
+		if f.Name == name {
+			count++
+			id = f.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find flavor: %s", name)
+		err := &gophercloud.ErrResourceNotFound{}
+		err.Function = "flavors.IDFromName"
+		err.ResourceType = "flavor"
+		err.Name = name
+		return "", err
 	case 1:
-		return flavorID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d flavors matching %s", flavorCount, name)
+		err := &gophercloud.ErrMultipleResourcesFound{}
+		err.Function = "flavors.IDFromName"
+		err.ResourceType = "flavor"
+		err.Name = name
+		err.Count = count
+		return "", err
 	}
 }

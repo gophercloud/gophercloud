@@ -1,8 +1,7 @@
 package diskconfig
 
 import (
-	"errors"
-
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
 
@@ -22,19 +21,6 @@ const (
 	// to manage the disk configuration. It also results in slightly shorter boot times.
 	Manual DiskConfig = "MANUAL"
 )
-
-// ErrInvalidDiskConfig is returned if an invalid string is specified for a DiskConfig option.
-var ErrInvalidDiskConfig = errors.New("DiskConfig must be either diskconfig.Auto or diskconfig.Manual.")
-
-// Validate ensures that a DiskConfig contains an appropriate value.
-func (config DiskConfig) validate() error {
-	switch config {
-	case Auto, Manual:
-		return nil
-	default:
-		return ErrInvalidDiskConfig
-	}
-}
 
 // CreateOptsExt adds a DiskConfig option to the base CreateOpts.
 type CreateOptsExt struct {
@@ -71,8 +57,11 @@ type RebuildOptsExt struct {
 
 // ToServerRebuildMap adds the diskconfig option to the base server rebuild options.
 func (opts RebuildOptsExt) ToServerRebuildMap() (map[string]interface{}, error) {
-	err := opts.DiskConfig.validate()
-	if err != nil {
+	if opts.DiskConfig != Auto && opts.DiskConfig != Manual {
+		err := gophercloud.ErrInvalidInput{}
+		err.Function = "diskconfig.ToServerRebuildMap"
+		err.Argument = "diskconfig.RebuildOptsExt.DiskConfig"
+		err.Info = "Must be either diskconfig.Auto or diskconfig.Manual"
 		return nil, err
 	}
 
@@ -97,8 +86,11 @@ type ResizeOptsExt struct {
 
 // ToServerResizeMap adds the diskconfig option to the base server creation options.
 func (opts ResizeOptsExt) ToServerResizeMap() (map[string]interface{}, error) {
-	err := opts.DiskConfig.validate()
-	if err != nil {
+	if opts.DiskConfig != Auto && opts.DiskConfig != Manual {
+		err := gophercloud.ErrInvalidInput{}
+		err.Function = "diskconfig.ToServerResizeMap"
+		err.Argument = "diskconfig.ResizeOptsExt.DiskConfig"
+		err.Info = "Must be either diskconfig.Auto or diskconfig.Manual"
 		return nil, err
 	}
 

@@ -1,7 +1,7 @@
 package bootfromvolume
 
 import (
-	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/gophercloud/gophercloud"
@@ -62,7 +62,10 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 	}
 
 	if len(opts.BlockDevice) == 0 {
-		return nil, errors.New("Required fields UUID and SourceType not set.")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "bootfromvolume.ToServerCreateMap"
+		err.Argument = "bootfromvolume.CreateOptsExt.BlockDevice"
+		return nil, err
 	}
 
 	serverMap := base["server"].(map[string]interface{})
@@ -71,7 +74,10 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 
 	for i, bd := range opts.BlockDevice {
 		if string(bd.SourceType) == "" {
-			return nil, errors.New("SourceType must be one of: volume, image, snapshot.")
+			err := gophercloud.ErrMissingInput{}
+			err.Function = "bootfromvolume.ToServerCreateMap"
+			err.Argument = fmt.Sprintf("bootfromvolume.CreateOptsExt.BlockDevice[%d].SourceType", i)
+			return nil, err
 		}
 
 		blockDevice[i] = make(map[string]interface{})
