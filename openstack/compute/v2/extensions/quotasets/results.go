@@ -7,25 +7,6 @@ import (
 )
 
 // QuotaSet is a set of operational limits that allow for control of compute usage.
-const sample = `
-{
-  "quota_set" : {
-	"fixed_ips" : -1,
-	"security_groups" : 10,
-	"id" : "56b6c3eb639e48c691052919e5a60dc3",
-	"injected_files" : 5,
-	"injected_file_path_bytes" : 255,
-	"cores" : 108,
-	"security_group_rules" : 20,
-	"keypairs" : 10,
-	"instances" : 25,
-	"ram" : 204800,
-	"metadata_items" : 128,
-	"injected_file_content_bytes" : 10240
-  }
-}
-`
-
 type QuotaSet struct {
 	//ID is tenant associated with this quota_set
 	ID string `mapstructure:"id"`
