@@ -12,5 +12,5 @@ func TestGet(t *testing.T) {
 	HandleGetSuccessfully(t)
 	actual, err := Get(client.ServiceClient(), FirstTenantID).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &FirstQuotaset, actual)
+	th.CheckDeepEquals(t, &FirstQuotaSet, actual)
 }
