@@ -1,6 +1,7 @@
 package gophercloud
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"reflect"
@@ -9,8 +10,50 @@ import (
 	"time"
 )
 
-type Opts struct {
-	ServiceClient *ServiceClient
+// BuildRequestBody builds a map[string]interface from the given `struct`.
+//
+//
+func BuildRequestBody(opts interface{}) (map[string]interface{}, error) {
+	optsValue := reflect.ValueOf(opts)
+	if optsValue.Kind() == reflect.Ptr {
+		optsValue = optsValue.Elem()
+	}
+
+	optsType := reflect.TypeOf(opts)
+	if optsType.Kind() == reflect.Ptr {
+		optsType = optsType.Elem()
+	}
+
+	optsMap := make(map[string]interface{})
+	if optsValue.Kind() == reflect.Struct {
+
+		for i := 0; i < optsValue.NumField(); i++ {
+			v := optsValue.Field(i)
+			f := optsType.Field(i)
+			requiredTag := f.Tag.Get("required")
+
+			// if the field has a 'required' tag, it can't have a zero-value
+			if requiredTag == "true" && isZero(v) {
+				err := ErrMissingInput{}
+				err.Argument = f.Name
+				return nil, err
+			}
+		}
+
+		b, err := json.Marshal(opts)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(b, &optsMap)
+		if err != nil {
+			return nil, err
+		}
+
+		return optsMap, nil
+	}
+	// Return an error if the underlying type of 'opts' isn't a struct.
+	return nil, fmt.Errorf("Options type is not a struct.")
 }
 
 // EnabledState is a convenience type, mostly used in Create and Update

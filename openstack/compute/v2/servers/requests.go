@@ -127,95 +127,76 @@ func (f *File) MarshalJSON() ([]byte, error) {
 
 // CreateOpts specifies server creation parameters.
 type CreateOpts struct {
-	// Name [required] is the name to assign to the newly launched server.
-	Name string `b:"name,required"`
+	// Name is the name to assign to the newly launched server.
+	Name string `json:"name" required:"true"`
 
 	// ImageRef [optional; required if ImageName is not provided] is the ID or full
 	// URL to the image that contains the server's OS and initial state.
 	// Also optional if using the boot-from-volume extension.
-	ImageRef string
+	ImageRef string `json:"imageRef"`
 
 	// ImageName [optional; required if ImageRef is not provided] is the name of the
 	// image that contains the server's OS and initial state.
 	// Also optional if using the boot-from-volume extension.
-	ImageName string
+	ImageName string `json:"-"`
 
 	// FlavorRef [optional; required if FlavorName is not provided] is the ID or
 	// full URL to the flavor that describes the server's specs.
-	FlavorRef string
+	FlavorRef string `json:"flavorRef"`
 
 	// FlavorName [optional; required if FlavorRef is not provided] is the name of
 	// the flavor that describes the server's specs.
-	FlavorName string
+	FlavorName string `json:"-"`
 
-	// SecurityGroups [optional] lists the names of the security groups to which this server should belong.
-	SecurityGroups []string
+	// SecurityGroups lists the names of the security groups to which this server should belong.
+	SecurityGroups []string `json:"-"`
 
-	// UserData [optional] contains configuration information or scripts to use upon launch.
+	// UserData contains configuration information or scripts to use upon launch.
 	// Create will base64-encode it for you.
-	UserData []byte
+	UserData []byte `json:"-"`
 
-	// AvailabilityZone [optional] in which to launch the server.
-	AvailabilityZone string
+	// AvailabilityZone in which to launch the server.
+	AvailabilityZone string `json:"availability_zone,omitempty"`
 
-	// Networks [optional] dictates how this server will be attached to available networks.
+	// Networks dictates how this server will be attached to available networks.
 	// By default, the server will be attached to all isolated networks for the tenant.
-	Networks []Network
+	Networks []Network `json:"-"`
 
-	// Metadata [optional] contains key-value pairs (up to 255 bytes each) to attach to the server.
-	Metadata map[string]string
+	// Metadata contains key-value pairs (up to 255 bytes each) to attach to the server.
+	Metadata map[string]string `json:"-"`
 
-	// Personality [optional] includes files to inject into the server at launch.
+	// Personality includes files to inject into the server at launch.
 	// Create will base64-encode file contents for you.
-	Personality Personality
+	Personality Personality `json:"-"`
 
-	// ConfigDrive [optional] enables metadata injection through a configuration drive.
-	ConfigDrive bool
+	// ConfigDrive enables metadata injection through a configuration drive.
+	ConfigDrive *bool `json:"config_drive,omitempty"`
 
-	// AdminPass [optional] sets the root user password. If not set, a randomly-generated
+	// AdminPass sets the root user password. If not set, a randomly-generated
 	// password will be created and returned in the rponse.
-	AdminPass string
+	AdminPass string `json:"adminPass,omitempty"`
 
-	// AccessIPv4 [optional] specifies an IPv4 address for the instance.
-	AccessIPv4 string
+	// AccessIPv4 specifies an IPv4 address for the instance.
+	AccessIPv4 string `json:"accessIPv4,omitempty"`
 
-	// AccessIPv6 [optional] specifies an IPv6 address for the instance.
-	AccessIPv6 string
+	// AccessIPv6 pecifies an IPv6 address for the instance.
+	AccessIPv6 string `json:"accessIPv6,omitempty"`
 
-	// ServiceClient [optional] will allow calls to be made to retrieve an image or
+	// ServiceClient will allow calls to be made to retrieve an image or
 	// flavor ID by name.
-	ServiceClient *gophercloud.ServiceClient
+	ServiceClient *gophercloud.ServiceClient `json:"-"`
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a CreateOpts.
 func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
-	server := make(map[string]interface{})
-
-	server["name"] = opts.Name
-	server["imageRef"] = opts.ImageRef
-	server["flavorRef"] = opts.FlavorRef
+	b, err := gophercloud.BuildRequestBody(opts)
+	if err != nil {
+		return nil, err
+	}
 
 	if opts.UserData != nil {
 		encoded := base64.StdEncoding.EncodeToString(opts.UserData)
-		server["user_data"] = &encoded
-	}
-	if opts.ConfigDrive {
-		server["config_drive"] = "true"
-	}
-	if opts.AvailabilityZone != "" {
-		server["availability_zone"] = opts.AvailabilityZone
-	}
-	if opts.Metadata != nil {
-		server["metadata"] = opts.Metadata
-	}
-	if opts.AdminPass != "" {
-		server["adminPass"] = opts.AdminPass
-	}
-	if opts.AccessIPv4 != "" {
-		server["accessIPv4"] = opts.AccessIPv4
-	}
-	if opts.AccessIPv6 != "" {
-		server["accessIPv6"] = opts.AccessIPv6
+		b["user_data"] = &encoded
 	}
 
 	if len(opts.SecurityGroups) > 0 {
@@ -223,7 +204,7 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 		for i, groupName := range opts.SecurityGroups {
 			securityGroups[i] = map[string]interface{}{"name": groupName}
 		}
-		server["security_groups"] = securityGroups
+		b["security_groups"] = securityGroups
 	}
 
 	if len(opts.Networks) > 0 {
@@ -240,11 +221,7 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 				networks[i]["fixed_ip"] = net.FixedIP
 			}
 		}
-		server["networks"] = networks
-	}
-
-	if len(opts.Personality) > 0 {
-		server["personality"] = opts.Personality
+		b["networks"] = networks
 	}
 
 	// If ImageRef isn't provided, use ImageName to ascertain the image ID.
@@ -265,7 +242,7 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		server["imageRef"] = imageID
+		b["imageRef"] = imageID
 	}
 
 	// If FlavorRef isn't provided, use FlavorName to ascertain the flavor ID.
@@ -286,10 +263,10 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		server["flavorRef"] = flavorID
+		b["flavorRef"] = flavorID
 	}
 
-	return map[string]interface{}{"server": server}, nil
+	return map[string]interface{}{"server": b}, nil
 }
 
 // Create requests a server to be provisioned to the user in the current tenant.
@@ -313,15 +290,11 @@ func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
 	return r
 }
 
+// ForceDelete forces the deletion of a server
 func ForceDelete(client *gophercloud.ServiceClient, id string) ActionResult {
-	var req struct {
-		ForceDelete string `json:"forceDelete"`
-	}
-
 	var r ActionResult
-	_, r.Err = client.Post(actionURL(client, id), req, nil, nil)
+	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"forceDelete": ""}, nil, nil)
 	return r
-
 }
 
 // Get requests details on a single server, by ID.
