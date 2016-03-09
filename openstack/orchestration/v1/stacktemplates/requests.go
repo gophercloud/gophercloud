@@ -1,10 +1,6 @@
 package stacktemplates
 
-import (
-	"fmt"
-
-	"github.com/gophercloud/gophercloud"
-)
+import "github.com/gophercloud/gophercloud"
 
 // Get retreives data for the given stack template.
 func Get(c *gophercloud.ServiceClient, stackName, stackID string) GetResult {
@@ -38,7 +34,10 @@ func (opts ValidateOpts) ToStackTemplateValidateMap() (map[string]interface{}, e
 		vo["template_url"] = opts.TemplateURL
 		return vo, nil
 	}
-	return vo, fmt.Errorf("One of Template or TemplateURL is required.")
+	err := gophercloud.ErrMissingInput{}
+	err.Argument = "stacktemplates.ValidateOpts.Template/stacktemplates.ValidateOpts.TemplateURL"
+	err.Info = "One of Template or TemplateURL is required."
+	return nil, err
 }
 
 // Validate validates the given stack template.

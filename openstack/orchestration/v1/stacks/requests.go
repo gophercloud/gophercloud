@@ -1,7 +1,6 @@
 package stacks
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/gophercloud/gophercloud"
@@ -83,7 +82,9 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 	s := make(map[string]interface{})
 
 	if opts.Name == "" {
-		return s, errors.New("Required field 'Name' not provided.")
+		err := gophercloud.ErrMissingInput{}
+		err.Argument = "stacks.CreateOpts.Name"
+		return nil, err
 	}
 	s["stack_name"] = opts.Name
 	Files := make(map[string]string)
@@ -93,7 +94,10 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 		} else if opts.TemplateURL != "" {
 			s["template_url"] = opts.TemplateURL
 		} else {
-			return s, errors.New("Either Template or TemplateURL must be provided.")
+			err := gophercloud.ErrMissingInput{}
+			err.Argument = "stacks.CreateOpts.Template/stacks.CreateOpts.TemplateURL"
+			err.Info = "Either Template or TemplateURL must be provided"
+			return nil, err
 		}
 	} else {
 		if err := opts.TemplateOpts.Parse(); err != nil {
@@ -233,7 +237,9 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 	s := make(map[string]interface{})
 
 	if opts.Name == "" {
-		return s, errors.New("Required field 'Name' not provided.")
+		err := gophercloud.ErrMissingInput{}
+		err.Argument = "stacks.AdoptOpts.Name"
+		return nil, err
 	}
 	s["stack_name"] = opts.Name
 	Files := make(map[string]string)
@@ -245,7 +251,10 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 		} else if opts.TemplateURL != "" {
 			s["template_url"] = opts.TemplateURL
 		} else {
-			return s, errors.New("One of AdoptStackData, Template, TemplateURL or TemplateOpts must be provided.")
+			err := gophercloud.ErrMissingInput{}
+			err.Argument = "stacks.AdoptOpts"
+			err.Info = "One of AdoptStackData, Template, TemplateURL or TemplateOpts must be provided"
+			return nil, err
 		}
 	} else {
 		if err := opts.TemplateOpts.Parse(); err != nil {
@@ -452,7 +461,10 @@ func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 		} else if opts.TemplateURL != "" {
 			s["template_url"] = opts.TemplateURL
 		} else {
-			return s, errors.New("Either Template or TemplateURL must be provided.")
+			err := gophercloud.ErrMissingInput{}
+			err.Argument = "stacks.UpdateOpts"
+			err.Info = "Either Template or TemplateURL must be provided"
+			return nil, err
 		}
 	} else {
 		if err := opts.TemplateOpts.Parse(); err != nil {
@@ -588,7 +600,9 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 	s := make(map[string]interface{})
 
 	if opts.Name == "" {
-		return s, errors.New("Required field 'Name' not provided.")
+		err := gophercloud.ErrMissingInput{}
+		err.Argument = "stacks.PreviewOpts.Name"
+		return nil, err
 	}
 	s["stack_name"] = opts.Name
 	Files := make(map[string]string)
@@ -598,7 +612,10 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 		} else if opts.TemplateURL != "" {
 			s["template_url"] = opts.TemplateURL
 		} else {
-			return s, errors.New("Either Template or TemplateURL must be provided.")
+			err := gophercloud.ErrMissingInput{}
+			err.Argument = "stacks.PreviewOpts"
+			err.Info = "Either Template or TemplateURL must be provided"
+			return nil, err
 		}
 	} else {
 		if err := opts.TemplateOpts.Parse(); err != nil {
