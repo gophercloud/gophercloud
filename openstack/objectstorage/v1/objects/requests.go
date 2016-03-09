@@ -242,7 +242,10 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, cont
 			res.Err = err
 			return res
 		}
-		res.Err = fmt.Errorf("Local checksum does not match API ETag header")
+		err := ErrWrongChecksum{}
+		err.Function = "objects.Create"
+		res.Err = err
+
 	}
 
 	return res
@@ -267,7 +270,10 @@ type CopyOpts struct {
 // ToObjectCopyMap formats a CopyOpts into a map of headers.
 func (opts CopyOpts) ToObjectCopyMap() (map[string]string, error) {
 	if opts.Destination == "" {
-		return nil, fmt.Errorf("Required CopyOpts field 'Destination' not set.")
+		err := gophercloud.ErrMissingInput{}
+		err.Function = "objects.ToObjectCopyMap"
+		err.Argument = "objects.CopyOpts.Destination"
+		return nil, err
 	}
 	h, err := gophercloud.BuildHeaders(opts)
 	if err != nil {
