@@ -3,6 +3,8 @@ package pagination
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/gophercloud/gophercloud"
 )
 
 // MarkerPage is a stricter Page interface that describes additional functionality required for use with NewMarkerPager.
@@ -38,11 +40,15 @@ func (current MarkerPageBase) NextPageURL() (string, error) {
 	return currentURL.String(), nil
 }
 
+// IsEmpty satisifies the IsEmpty method of the Page interface
 func (current MarkerPageBase) IsEmpty() (bool, error) {
 	if b, ok := current.Body.([]interface{}); ok {
 		return len(b) == 0, nil
 	}
-	return true, fmt.Errorf("Error while checking if MarkerPageBase was empty: expected []interface type for Body bot got %+v", reflect.TypeOf(current.Body))
+	err := gophercloud.ErrUnexpectedType{}
+	err.Expected = "[]interface{}"
+	err.Actual = fmt.Sprintf("%v", reflect.TypeOf(current.Body))
+	return true, err
 }
 
 // GetBody returns the linked page's body. This method is needed to satisfy the

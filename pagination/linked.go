@@ -3,6 +3,8 @@ package pagination
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/gophercloud/gophercloud"
 )
 
 // LinkedPageBase may be embedded to implement a page that provides navigational "Next" and "Previous" links within its result.
@@ -31,7 +33,10 @@ func (current LinkedPageBase) NextPageURL() (string, error) {
 
 	submap, ok := current.Body.(map[string]interface{})
 	if !ok {
-		return "", fmt.Errorf("Expected an object, but was %#v", current.Body)
+		err := gophercloud.ErrUnexpectedType{}
+		err.Expected = "map[string]interface{}"
+		err.Actual = fmt.Sprintf("%v", reflect.TypeOf(current.Body))
+		return "", err
 	}
 
 	for {
@@ -45,7 +50,10 @@ func (current LinkedPageBase) NextPageURL() (string, error) {
 		if len(path) > 0 {
 			submap, ok = value.(map[string]interface{})
 			if !ok {
-				return "", fmt.Errorf("Expected an object, but was %#v", value)
+				err := gophercloud.ErrUnexpectedType{}
+				err.Expected = "map[string]interface{}"
+				err.Actual = fmt.Sprintf("%v", reflect.TypeOf(value))
+				return "", err
 			}
 		} else {
 			if value == nil {
@@ -55,7 +63,10 @@ func (current LinkedPageBase) NextPageURL() (string, error) {
 
 			url, ok := value.(string)
 			if !ok {
-				return "", fmt.Errorf("Expected a string, but was %#v", value)
+				err := gophercloud.ErrUnexpectedType{}
+				err.Expected = "string"
+				err.Actual = fmt.Sprintf("%v", reflect.TypeOf(value))
+				return "", err
 			}
 
 			return url, nil
@@ -63,11 +74,15 @@ func (current LinkedPageBase) NextPageURL() (string, error) {
 	}
 }
 
+// IsEmpty satisifies the IsEmpty method of the Page interface
 func (current LinkedPageBase) IsEmpty() (bool, error) {
 	if b, ok := current.Body.([]interface{}); ok {
 		return len(b) == 0, nil
 	}
-	return true, fmt.Errorf("Error while checking if LinkedPageBase was empty: expected []interface type for Body bot got %+v", reflect.TypeOf(current.Body))
+	err := gophercloud.ErrUnexpectedType{}
+	err.Expected = "[]interface{}"
+	err.Actual = fmt.Sprintf("%v", reflect.TypeOf(current.Body))
+	return true, err
 }
 
 // GetBody returns the linked page's body. This method is needed to satisfy the

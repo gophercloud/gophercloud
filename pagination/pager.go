@@ -202,7 +202,10 @@ func (p Pager) AllPages() (Page, error) {
 			body.Index(i).Set(reflect.ValueOf(s))
 		}
 	default:
-		return nil, fmt.Errorf("Page body has unrecognized type.")
+		err := gophercloud.ErrUnexpectedType{}
+		err.Expected = "map[string]interface{}/[]byte/[]interface{}"
+		err.Actual = fmt.Sprintf("%v", reflect.TypeOf(testPage.GetBody()))
+		return nil, err
 	}
 
 	// Each `Extract*` function is expecting a specific type of page coming back,

@@ -244,3 +244,14 @@ type ErrMultipleResourcesFound struct {
 func (e ErrMultipleResourcesFound) Error() string {
 	return fmt.Sprintf("Found %d %ss matching %s", e.Count, e.ResourceType, e.Name)
 }
+
+// ErrUnexpectedType is the error when an unexpected type is encountered
+type ErrUnexpectedType struct {
+	BaseError
+	Expected string
+	Actual   string
+}
+
+func (e ErrUnexpectedType) Error() string {
+	return fmt.Sprintf("Expected %s but got %s", e.Expected, e.Actual)
+}
