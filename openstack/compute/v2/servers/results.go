@@ -70,7 +70,7 @@ func (res CreateImageResult) ExtractImageID() (string, error) {
 	// Get the image id from the header
 	u, err := url.ParseRequestURI(res.Header.Get("Location"))
 	if err != nil {
-		return "", fmt.Errorf("Failed to parse the image id: %s", err.Error())
+		return "", err
 	}
 	imageID := path.Base(u.Path)
 	if imageID == "." || imageID == "/" {
