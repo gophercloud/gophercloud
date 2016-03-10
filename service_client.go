@@ -16,6 +16,8 @@ type ServiceClient struct {
 	// the API version and, like Endpoint, MUST end with a / if set. If not set, the Endpoint is used
 	// as-is, instead.
 	ResourceBase string
+
+	Microversion string
 }
 
 // ResourceBaseURL returns the base URL of any resources used by this service. It MUST end with a /.
