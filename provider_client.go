@@ -104,26 +104,13 @@ type RequestOpts struct {
 	ErrorContext error
 }
 
-func (r *RequestOpts) ToRequestOpts() (*RequestOpts, error) {
-	return r, nil
-}
-
-type RequestOptsBuilder interface {
-	ToRequestOpts() (*RequestOpts, error)
-}
-
 var applicationJSON = "application/json"
 
 // Request performs an HTTP request using the ProviderClient's current HTTPClient. An authentication
 // header will automatically be provided.
-func (client *ProviderClient) Request(method, url string, optsBuilder RequestOptsBuilder) (*http.Response, error) {
+func (client *ProviderClient) Request(method, url string, options *RequestOpts) (*http.Response, error) {
 	var body io.Reader
 	var contentType *string
-
-	options, err := optsBuilder.ToRequestOpts()
-	if err != nil {
-		return nil, err
-	}
 
 	// Derive the content body by either encoding an arbitrary object as JSON, or by taking a provided
 	// io.ReadSeeker as-is. Default the content-type to application/json.
@@ -211,7 +198,7 @@ func (client *ProviderClient) Request(method, url string, optsBuilder RequestOpt
 			Actual:   resp.StatusCode,
 			Body:     body,
 		}
-		respErr.Function = "gophercloud.ProviderClient.Request"
+		//respErr.Function = "gophercloud.ProviderClient.Request"
 
 		errType := options.ErrorContext
 		switch resp.StatusCode {
@@ -317,81 +304,4 @@ func defaultOkCodes(method string) []int {
 	}
 
 	return []int{}
-}
-
-// Get calls `Request` with the "GET" HTTP verb.
-func (client *ProviderClient) Get(url string, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = &RequestOpts{}
-	}
-	if JSONResponse != nil {
-		opts.JSONResponse = JSONResponse
-	}
-	return client.Request("GET", url, opts)
-}
-
-// Post calls `Request` with the "POST" HTTP verb.
-func (client *ProviderClient) Post(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = &RequestOpts{}
-	}
-
-	if v, ok := (JSONBody).(io.ReadSeeker); ok {
-		opts.RawBody = v
-	} else if JSONBody != nil {
-		opts.JSONBody = JSONBody
-	}
-
-	if JSONResponse != nil {
-		opts.JSONResponse = JSONResponse
-	}
-
-	return client.Request("POST", url, opts)
-}
-
-// Put calls `Request` with the "PUT" HTTP verb.
-func (client *ProviderClient) Put(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = &RequestOpts{}
-	}
-
-	if v, ok := (JSONBody).(io.ReadSeeker); ok {
-		opts.RawBody = v
-	} else if JSONBody != nil {
-		opts.JSONBody = JSONBody
-	}
-
-	if JSONResponse != nil {
-		opts.JSONResponse = JSONResponse
-	}
-
-	return client.Request("PUT", url, opts)
-}
-
-// Patch calls `Request` with the "PATCH" HTTP verb.
-func (client *ProviderClient) Patch(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = &RequestOpts{}
-	}
-
-	if v, ok := (JSONBody).(io.ReadSeeker); ok {
-		opts.RawBody = v
-	} else if JSONBody != nil {
-		opts.JSONBody = JSONBody
-	}
-
-	if JSONResponse != nil {
-		opts.JSONResponse = JSONResponse
-	}
-
-	return client.Request("PATCH", url, opts)
-}
-
-// Delete calls `Request` with the "DELETE" HTTP verb.
-func (client *ProviderClient) Delete(url string, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = &RequestOpts{}
-	}
-
-	return client.Request("DELETE", url, opts)
 }

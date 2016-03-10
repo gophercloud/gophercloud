@@ -1,6 +1,10 @@
 package gophercloud
 
-import "strings"
+import (
+	"io"
+	"net/http"
+	"strings"
+)
 
 // ServiceClient stores details required to interact with a specific service API implemented by a provider.
 // Generally, you'll acquire these by calling the appropriate `New` method on a ProviderClient.
@@ -31,4 +35,81 @@ func (client *ServiceClient) ResourceBaseURL() string {
 // ServiceURL constructs a URL for a resource belonging to this provider.
 func (client *ServiceClient) ServiceURL(parts ...string) string {
 	return client.ResourceBaseURL() + strings.Join(parts, "/")
+}
+
+// Get calls `Request` with the "GET" HTTP verb.
+func (client *ServiceClient) Get(url string, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
+	if opts == nil {
+		opts = &RequestOpts{}
+	}
+	if JSONResponse != nil {
+		opts.JSONResponse = JSONResponse
+	}
+	return client.Request("GET", url, opts)
+}
+
+// Post calls `Request` with the "POST" HTTP verb.
+func (client *ServiceClient) Post(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
+	if opts == nil {
+		opts = &RequestOpts{}
+	}
+
+	if v, ok := (JSONBody).(io.Reader); ok {
+		opts.RawBody = v
+	} else if JSONBody != nil {
+		opts.JSONBody = JSONBody
+	}
+
+	if JSONResponse != nil {
+		opts.JSONResponse = JSONResponse
+	}
+
+	return client.Request("POST", url, opts)
+}
+
+// Put calls `Request` with the "PUT" HTTP verb.
+func (client *ServiceClient) Put(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
+	if opts == nil {
+		opts = &RequestOpts{}
+	}
+
+	if v, ok := (JSONBody).(io.Reader); ok {
+		opts.RawBody = v
+	} else if JSONBody != nil {
+		opts.JSONBody = JSONBody
+	}
+
+	if JSONResponse != nil {
+		opts.JSONResponse = JSONResponse
+	}
+
+	return client.Request("PUT", url, opts)
+}
+
+// Patch calls `Request` with the "PATCH" HTTP verb.
+func (client *ServiceClient) Patch(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
+	if opts == nil {
+		opts = &RequestOpts{}
+	}
+
+	if v, ok := (JSONBody).(io.Reader); ok {
+		opts.RawBody = v
+	} else if JSONBody != nil {
+		opts.JSONBody = JSONBody
+	}
+
+	if JSONResponse != nil {
+		opts.JSONResponse = JSONResponse
+	}
+
+	return client.Request("PATCH", url, opts)
+}
+
+// Delete calls `Request` with the "DELETE" HTTP verb.
+func (client *ServiceClient) Delete(url string, opts *RequestOpts) (*http.Response, error) {
+	if opts == nil {
+		opts = &RequestOpts{}
+	}
+
+	return client.Request("DELETE", url, opts)
 }
