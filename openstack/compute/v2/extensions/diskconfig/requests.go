@@ -50,16 +50,14 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 // RebuildOptsExt adds a DiskConfig option to the base RebuildOpts.
 type RebuildOptsExt struct {
 	servers.RebuildOptsBuilder
-
-	// DiskConfig [optional] controls how the rebuilt server's disk is partitioned.
-	DiskConfig DiskConfig
+	// DiskConfig controls how the rebuilt server's disk is partitioned.
+	DiskConfig DiskConfig `json:"OS-DCF:diskConfig,omitempty"`
 }
 
 // ToServerRebuildMap adds the diskconfig option to the base server rebuild options.
 func (opts RebuildOptsExt) ToServerRebuildMap() (map[string]interface{}, error) {
 	if opts.DiskConfig != Auto && opts.DiskConfig != Manual {
 		err := gophercloud.ErrInvalidInput{}
-		err.Function = "diskconfig.ToServerRebuildMap"
 		err.Argument = "diskconfig.RebuildOptsExt.DiskConfig"
 		err.Info = "Must be either diskconfig.Auto or diskconfig.Manual"
 		return nil, err
@@ -88,7 +86,6 @@ type ResizeOptsExt struct {
 func (opts ResizeOptsExt) ToServerResizeMap() (map[string]interface{}, error) {
 	if opts.DiskConfig != Auto && opts.DiskConfig != Manual {
 		err := gophercloud.ErrInvalidInput{}
-		err.Function = "diskconfig.ToServerResizeMap"
 		err.Argument = "diskconfig.ResizeOptsExt.DiskConfig"
 		err.Info = "Must be either diskconfig.Auto or diskconfig.Manual"
 		return nil, err

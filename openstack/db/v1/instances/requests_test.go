@@ -99,7 +99,7 @@ func TestIsRootEnabled(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleIsRootEnabled(t)
 
-	isEnabled, err := IsRootEnabled(fake.ServiceClient(), instanceID)
+	isEnabled, err := IsRootEnabled(fake.ServiceClient(), instanceID).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, isEnabled)

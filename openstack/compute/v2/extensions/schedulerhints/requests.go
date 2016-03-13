@@ -14,33 +14,28 @@ import (
 type SchedulerHints struct {
 	// Group specifies a Server Group to place the instance in.
 	Group string
-
 	// DifferentHost will place the instance on a compute node that does not
 	// host the given instances.
 	DifferentHost []string
-
 	// SameHost will place the instance on a compute node that hosts the given
 	// instances.
 	SameHost []string
-
 	// Query is a conditional statement that results in compute nodes able to
 	// host the instance.
 	Query []interface{}
-
 	// TargetCell specifies a cell name where the instance will be placed.
-	TargetCell string
-
+	TargetCell string `json:"target_cell,omitempty"`
 	// BuildNearHostIP specifies a subnet of compute nodes to host the instance.
 	BuildNearHostIP string
 }
 
-// SchedulerHintsBuilder builds the scheduler hints into a serializable format.
-type SchedulerHintsBuilder interface {
-	ToServerSchedulerHintsMap() (map[string]interface{}, error)
+// CreateOptsBuilder builds the scheduler hints into a serializable format.
+type CreateOptsBuilder interface {
+	ToServerSchedulerHintsCreateMap() (map[string]interface{}, error)
 }
 
 // ToServerSchedulerHintsMap builds the scheduler hints into a serializable format.
-func (opts SchedulerHints) ToServerSchedulerHintsMap() (map[string]interface{}, error) {
+func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interface{}, error) {
 	sh := make(map[string]interface{})
 
 	uuidRegex, _ := regexp.Compile("^[a-z0-9]{8}-[a-z0-9]{4}-[1-5][a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}$")
@@ -48,7 +43,6 @@ func (opts SchedulerHints) ToServerSchedulerHintsMap() (map[string]interface{}, 
 	if opts.Group != "" {
 		if !uuidRegex.MatchString(opts.Group) {
 			err := gophercloud.ErrInvalidInput{}
-			err.Function = "schedulerhints.ToServerSchedulerHintsMap"
 			err.Argument = "schedulerhints.SchedulerHints.Group"
 			err.Value = opts.Group
 			err.Info = "Group must be a UUID"
@@ -61,7 +55,6 @@ func (opts SchedulerHints) ToServerSchedulerHintsMap() (map[string]interface{}, 
 		for _, diffHost := range opts.DifferentHost {
 			if !uuidRegex.MatchString(diffHost) {
 				err := gophercloud.ErrInvalidInput{}
-				err.Function = "schedulerhints.ToServerSchedulerHintsMap"
 				err.Argument = "schedulerhints.SchedulerHints.DifferentHost"
 				err.Value = opts.DifferentHost
 				err.Info = "The hosts must be in UUID format."
@@ -75,7 +68,6 @@ func (opts SchedulerHints) ToServerSchedulerHintsMap() (map[string]interface{}, 
 		for _, sameHost := range opts.SameHost {
 			if !uuidRegex.MatchString(sameHost) {
 				err := gophercloud.ErrInvalidInput{}
-				err.Function = "schedulerhints.ToServerSchedulerHintsMap"
 				err.Argument = "schedulerhints.SchedulerHints.SameHost"
 				err.Value = opts.SameHost
 				err.Info = "The hosts must be in UUID format."
@@ -99,7 +91,6 @@ func (opts SchedulerHints) ToServerSchedulerHintsMap() (map[string]interface{}, 
 	if len(opts.Query) > 0 {
 		if len(opts.Query) < 3 {
 			err := gophercloud.ErrInvalidInput{}
-			err.Function = "schedulerhints.ToServerSchedulerHintsMap"
 			err.Argument = "schedulerhints.SchedulerHints.Query"
 			err.Value = opts.Query
 			err.Info = "Must be a conditional statement in the format of [op,variable,value]"
@@ -115,7 +106,6 @@ func (opts SchedulerHints) ToServerSchedulerHintsMap() (map[string]interface{}, 
 	if opts.BuildNearHostIP != "" {
 		if _, _, err := net.ParseCIDR(opts.BuildNearHostIP); err != nil {
 			err := gophercloud.ErrInvalidInput{}
-			err.Function = "schedulerhints.ToServerSchedulerHintsMap"
 			err.Argument = "schedulerhints.SchedulerHints.BuildNearHostIP"
 			err.Value = opts.BuildNearHostIP
 			err.Info = "Must be a valid subnet in the form 192.168.1.1/24"
@@ -132,9 +122,8 @@ func (opts SchedulerHints) ToServerSchedulerHintsMap() (map[string]interface{}, 
 // CreateOptsExt adds a SchedulerHints option to the base CreateOpts.
 type CreateOptsExt struct {
 	servers.CreateOptsBuilder
-
 	// SchedulerHints provides a set of hints to the scheduler.
-	SchedulerHints SchedulerHintsBuilder
+	SchedulerHints CreateOptsBuilder
 }
 
 // ToServerCreateMap adds the SchedulerHints option to the base server creation options.
@@ -144,7 +133,7 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	schedulerHints, err := opts.SchedulerHints.ToServerSchedulerHintsMap()
+	schedulerHints, err := opts.SchedulerHints.ToServerSchedulerHintsCreateMap()
 	if err != nil {
 		return nil, err
 	}

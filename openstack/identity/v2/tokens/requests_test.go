@@ -1,6 +1,7 @@
 package tokens
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
@@ -12,8 +13,7 @@ func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleTokenPost(t, requestJSON)
-
-	return Create(client.ServiceClient(), AuthOptions{options})
+	return Create(client.ServiceClient(), options)
 }
 
 func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr error) {
@@ -21,15 +21,30 @@ func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr err
 	defer th.TeardownHTTP()
 	HandleTokenPost(t, "")
 
-	actualErr := Create(client.ServiceClient(), AuthOptions{options}).Err
-	th.CheckDeepEquals(t, expectedErr, actualErr)
+	actualErr := Create(client.ServiceClient(), options).Err
+	th.CheckDeepEquals(t, reflect.TypeOf(expectedErr), reflect.TypeOf(actualErr))
+}
+
+func TestCreateWithToken(t *testing.T) {
+	options := gophercloud.AuthOptions{
+		TokenID: "cbc36478b0bd8e67e89469c7749d4127",
+	}
+
+	IsSuccessful(t, tokenPost(t, options, `
+    {
+      "auth": {
+        "token": {
+          "id": "cbc36478b0bd8e67e89469c7749d4127"
+        }
+      }
+    }
+  `))
 }
 
 func TestCreateWithPassword(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "swordfish",
-	}
+	options := gophercloud.AuthOptions{}
+	options.Username = "me"
+	options.Password = "swordfish"
 
 	IsSuccessful(t, tokenPost(t, options, `
     {
@@ -44,11 +59,10 @@ func TestCreateWithPassword(t *testing.T) {
 }
 
 func TestCreateTokenWithTenantID(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "opensesame",
-		TenantID: "fc394f2ab2df4114bde39905f800dc57",
-	}
+	options := gophercloud.AuthOptions{}
+	options.Username = "me"
+	options.Password = "opensesame"
+	options.TenantID = "fc394f2ab2df4114bde39905f800dc57"
 
 	IsSuccessful(t, tokenPost(t, options, `
     {
@@ -64,11 +78,10 @@ func TestCreateTokenWithTenantID(t *testing.T) {
 }
 
 func TestCreateTokenWithTenantName(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username:   "me",
-		Password:   "opensesame",
-		TenantName: "demo",
-	}
+	options := gophercloud.AuthOptions{}
+	options.Username = "me"
+	options.Password = "opensesame"
+	options.TenantName = "demo"
 
 	IsSuccessful(t, tokenPost(t, options, `
     {
@@ -83,63 +96,21 @@ func TestCreateTokenWithTenantName(t *testing.T) {
   `))
 }
 
-func TestProhibitUserID(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		UserID:   "1234",
-		Password: "thing",
-	}
-
-	tokenPostErr(t, options, ErrUserIDProvided)
-}
-
-func TestProhibitAPIKey(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "thing",
-		APIKey:   "123412341234",
-	}
-
-	tokenPostErr(t, options, ErrAPIKeyProvided)
-}
-
-func TestProhibitDomainID(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "thing",
-		DomainID: "1234",
-	}
-
-	tokenPostErr(t, options, ErrDomainIDProvided)
-}
-
-func TestProhibitDomainName(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username:   "me",
-		Password:   "thing",
-		DomainName: "wat",
-	}
-
-	tokenPostErr(t, options, ErrDomainNameProvided)
-}
-
 func TestRequireUsername(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Password: "thing",
-	}
+	options := gophercloud.AuthOptions{}
+	options.Password = "thing"
+
 	expected := gophercloud.ErrMissingInput{}
-	expected.Function = "tokens.ToTokenCreateMap"
 	expected.Argument = "tokens.AuthOptions.Username/tokens.AuthOptions.TokenID"
 	expected.Info = "You must provide either username/password or tenantID/token values."
 	tokenPostErr(t, options, expected)
 }
 
 func TestRequirePassword(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-	}
+	options := gophercloud.AuthOptions{}
+	options.Username = "me"
+
 	expected := gophercloud.ErrMissingInput{}
-	expected.Function = "tokens.ToTokenCreateMap"
 	expected.Argument = "tokens.AuthOptions.Password"
 	tokenPostErr(t, options, expected)
 }

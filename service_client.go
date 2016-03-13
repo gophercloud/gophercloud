@@ -45,6 +45,12 @@ func (client *ServiceClient) Get(url string, JSONResponse interface{}, opts *Req
 	if JSONResponse != nil {
 		opts.JSONResponse = JSONResponse
 	}
+
+	if opts.MoreHeaders == nil {
+		opts.MoreHeaders = make(map[string]string)
+	}
+	opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
+
 	return client.Request("GET", url, opts)
 }
 
@@ -63,6 +69,11 @@ func (client *ServiceClient) Post(url string, JSONBody interface{}, JSONResponse
 	if JSONResponse != nil {
 		opts.JSONResponse = JSONResponse
 	}
+
+	if opts.MoreHeaders == nil {
+		opts.MoreHeaders = make(map[string]string)
+	}
+	opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
 
 	return client.Request("POST", url, opts)
 }
@@ -83,6 +94,11 @@ func (client *ServiceClient) Put(url string, JSONBody interface{}, JSONResponse 
 		opts.JSONResponse = JSONResponse
 	}
 
+	if opts.MoreHeaders == nil {
+		opts.MoreHeaders = make(map[string]string)
+	}
+	opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
+
 	return client.Request("PUT", url, opts)
 }
 
@@ -102,6 +118,11 @@ func (client *ServiceClient) Patch(url string, JSONBody interface{}, JSONRespons
 		opts.JSONResponse = JSONResponse
 	}
 
+	if opts.MoreHeaders == nil {
+		opts.MoreHeaders = make(map[string]string)
+	}
+	opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
+
 	return client.Request("PATCH", url, opts)
 }
 
@@ -110,6 +131,11 @@ func (client *ServiceClient) Delete(url string, opts *RequestOpts) (*http.Respon
 	if opts == nil {
 		opts = &RequestOpts{}
 	}
+
+	if opts.MoreHeaders == nil {
+		opts.MoreHeaders = make(map[string]string)
+	}
+	opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
 
 	return client.Request("DELETE", url, opts)
 }

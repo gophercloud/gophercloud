@@ -117,13 +117,13 @@ func ExtractInstances(r pagination.Page) ([]Instance, error) {
 	return s.Instances, err
 }
 
-// UserRootResult represents the result of an operation to enable the root user.
-type UserRootResult struct {
+// EnableRootUserResult represents the result of an operation to enable the root user.
+type EnableRootUserResult struct {
 	gophercloud.Result
 }
 
 // Extract will extract root user information from a UserRootResult.
-func (r UserRootResult) Extract() (*users.User, error) {
+func (r EnableRootUserResult) Extract() (*users.User, error) {
 	var s struct {
 		User *users.User `json:"user"`
 	}
@@ -136,4 +136,15 @@ func (r UserRootResult) Extract() (*users.User, error) {
 // attached volume size.
 type ActionResult struct {
 	gophercloud.ErrResult
+}
+
+// IsRootEnabledResult is the result of a call to IsRootEnabled. To see if
+// root is enabled, call the type's Extract method.
+type IsRootEnabledResult struct {
+	gophercloud.Result
+}
+
+// Extract is used to extract the data from a IsRootEnabledResult.
+func (r IsRootEnabledResult) Extract() (bool, error) {
+	return r.Body.(map[string]interface{})["rootEnabled"] == true, r.Err
 }

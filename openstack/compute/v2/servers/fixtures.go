@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -349,6 +350,15 @@ var (
 	}
 )
 
+type CreateOptsWithCustomField struct {
+	CreateOpts
+	Foo string `json:"foo,omitempty"`
+}
+
+func (opts CreateOptsWithCustomField) ToServerCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "server")
+}
+
 // HandleServerCreationSuccessfully sets up the test server to respond to a server creation request
 // with a given response.
 func HandleServerCreationSuccessfully(t *testing.T, response string) {
@@ -360,6 +370,27 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 				"name": "derp",
 				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
 				"flavorRef": "1"
+			}
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
+	})
+}
+
+// HandleServerCreationWithCustomFieldSuccessfully sets up the test server to respond to a server creation request
+// with a given response.
+func HandleServerCreationWithCustomFieldSuccessfully(t *testing.T, response string) {
+	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"server": {
+				"name": "derp",
+				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
+				"flavorRef": "1",
+				"foo": "bar"
 			}
 		}`)
 
@@ -399,7 +430,7 @@ func HandleServerDeletionSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleAdminPasswordChangeSuccessfully sets up the test server to respond to a server password
+// HandleServerForceDeletionSuccessfully sets up the test server to respond to a server password
 // change request.
 func HandleServerForceDeletionSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/servers/asdfasdfasdf/action", func(w http.ResponseWriter, r *http.Request) {
@@ -673,4 +704,3 @@ func HandleCreateServerImageSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
-

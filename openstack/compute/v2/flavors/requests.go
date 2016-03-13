@@ -34,10 +34,7 @@ type ListOpts struct {
 // ToFlavorListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToFlavorListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // ListDetail instructs OpenStack to provide a list of flavors.
@@ -52,32 +49,23 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 		}
 		url += query
 	}
-	createPage := func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return FlavorPage{pagination.LinkedPageBase{PageResult: r}}
-	}
-
-	return pagination.NewPager(client, url, createPage)
+	})
 }
 
 // Get instructs OpenStack to provide details on a single flavor, identified by its ID.
 // Use ExtractFlavor to convert its result into a Flavor.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = client.Get(getURL(client, id), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return r
 }
 
 // IDFromName is a convienience function that returns a flavor's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
 	count := 0
 	id := ""
-	if name == "" {
-		err := &gophercloud.ErrMissingInput{}
-		err.Function = "flavors.IDFromName"
-		err.Argument = "name"
-		return "", err
-	}
-
 	allPages, err := ListDetail(client, nil).AllPages()
 	if err != nil {
 		return "", err
@@ -98,7 +86,6 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 	switch count {
 	case 0:
 		err := &gophercloud.ErrResourceNotFound{}
-		err.Function = "flavors.IDFromName"
 		err.ResourceType = "flavor"
 		err.Name = name
 		return "", err
@@ -106,7 +93,6 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 		return id, nil
 	default:
 		err := &gophercloud.ErrMultipleResourcesFound{}
-		err.Function = "flavors.IDFromName"
 		err.ResourceType = "flavor"
 		err.Name = name
 		err.Count = count

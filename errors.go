@@ -4,8 +4,8 @@ import "fmt"
 
 // BaseError is an error type that all other error types embed.
 type BaseError struct {
-	Info     string
-	Function string
+	Info string
+	//Function string
 }
 
 func (e BaseError) Error() string {

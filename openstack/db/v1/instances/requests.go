@@ -14,16 +14,13 @@ type CreateOptsBuilder interface {
 
 // DatastoreOpts represents the configuration for how an instance stores data.
 type DatastoreOpts struct {
-	Version string
-	Type    string
+	Version string `json:"version"`
+	Type    string `json:"type"`
 }
 
 // ToMap converts a DatastoreOpts to a map[string]string (for a request body)
-func (opts DatastoreOpts) ToMap() (map[string]string, error) {
-	return map[string]string{
-		"version": opts.Version,
-		"type":    opts.Type,
-	}, nil
+func (opts DatastoreOpts) ToMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // CreateOpts is the struct responsible for configuring a new database instance.
@@ -31,21 +28,16 @@ type CreateOpts struct {
 	// Either the integer UUID (in string form) of the flavor, or its URI
 	// reference as specified in the response from the List() call. Required.
 	FlavorRef string
-
 	// Specifies the volume size in gigabytes (GB). The value must be between 1
 	// and 300. Required.
 	Size int
-
 	// Name of the instance to create. The length of the name is limited to
 	// 255 characters and any characters are permitted. Optional.
 	Name string
-
 	// A slice of database information options.
 	Databases db.CreateOptsBuilder
-
 	// A slice of user information options.
 	Users users.CreateOptsBuilder
-
 	// Options to configure the type of datastore the instance will use. This is
 	// optional, and if excluded will default to MySQL.
 	Datastore *DatastoreOpts
@@ -55,17 +47,14 @@ type CreateOpts struct {
 func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 	if opts.Size > 300 || opts.Size < 1 {
 		err := gophercloud.ErrInvalidInput{}
-		err.Function = "instances.ToInstanceCreateMap"
 		err.Argument = "instances.CreateOpts.Size"
 		err.Value = opts.Size
 		err.Info = "Size (GB) must be between 1-300"
 		return nil, err
 	}
+
 	if opts.FlavorRef == "" {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "instances.ToInstanceCreateMap"
-		err.Argument = "instances.CreateOpts.FlavorRef"
-		return nil, err
+		return nil, gophercloud.ErrMissingInput{Argument: "instances.CreateOpts.FlavorRef"}
 	}
 
 	instance := map[string]interface{}{
@@ -110,143 +99,79 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 // can create an instance with multiple databases and users. The default
 // binding for a MySQL instance is port 3306.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToInstanceCreateMap()
+	var r CreateResult
+	b, err := opts.ToInstanceCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return r
 	}
-
-	_, res.Err = client.Request("POST", baseURL(client), &gophercloud.RequestOpts{
-		JSONBody:     &reqBody,
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
-	})
-
-	return res
+	_, r.Err = client.Post(baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	return r
 }
 
 // List retrieves the status and information for all database instances.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
-	createPageFn := func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(client, baseURL(client), func(r pagination.PageResult) pagination.Page {
 		return InstancePage{pagination.LinkedPageBase{PageResult: r}}
-	}
-
-	return pagination.NewPager(client, baseURL(client), createPageFn)
+	})
 }
 
 // Get retrieves the status and information for a specified database instance.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-
-	_, res.Err = client.Request("GET", resourceURL(client, id), &gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
-	})
-
-	return res
+	var r GetResult
+	_, r.Err = client.Get(resourceURL(client, id), &r.Body, nil)
+	return r
 }
 
 // Delete permanently destroys the database instance.
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-
-	_, res.Err = client.Request("DELETE", resourceURL(client, id), &gophercloud.RequestOpts{
-		OkCodes: []int{202},
-	})
-
-	return res
+	var r DeleteResult
+	_, r.Err = client.Delete(resourceURL(client, id), nil)
+	return r
 }
 
 // EnableRootUser enables the login from any host for the root user and
 // provides the user with a generated root password.
-func EnableRootUser(client *gophercloud.ServiceClient, id string) UserRootResult {
-	var res UserRootResult
-
-	_, res.Err = client.Request("POST", userRootURL(client, id), &gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
-	})
-
-	return res
+func EnableRootUser(client *gophercloud.ServiceClient, id string) EnableRootUserResult {
+	var r EnableRootUserResult
+	_, r.Err = client.Post(userRootURL(client, id), nil, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	return r
 }
 
 // IsRootEnabled checks an instance to see if root access is enabled. It returns
 // True if root user is enabled for the specified database instance or False
 // otherwise.
-func IsRootEnabled(client *gophercloud.ServiceClient, id string) (bool, error) {
-	var res gophercloud.Result
-
-	_, err := client.Request("GET", userRootURL(client, id), &gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-		OkCodes:      []int{200},
-	})
-
-	return res.Body.(map[string]interface{})["rootEnabled"] == true, err
+func IsRootEnabled(client *gophercloud.ServiceClient, id string) IsRootEnabledResult {
+	var r IsRootEnabledResult
+	_, r.Err = client.Get(userRootURL(client, id), &r.Body, nil)
+	return r
 }
 
 // Restart will restart only the MySQL Instance. Restarting MySQL will
 // erase any dynamic configuration settings that you have made within MySQL.
 // The MySQL service will be unavailable until the instance restarts.
 func Restart(client *gophercloud.ServiceClient, id string) ActionResult {
-	var res ActionResult
-
-	_, res.Err = client.Request("POST", actionURL(client, id), &gophercloud.RequestOpts{
-		JSONBody: map[string]interface{}{"restart": struct{}{}},
-		OkCodes:  []int{202},
-	})
-
-	return res
+	var r ActionResult
+	b := map[string]interface{}{"restart": struct{}{}}
+	_, r.Err = client.Post(actionURL(client, id), &b, nil, nil)
+	return r
 }
 
 // Resize changes the memory size of the instance, assuming a valid
 // flavorRef is provided. It will also restart the MySQL service.
 func Resize(client *gophercloud.ServiceClient, id, flavorRef string) ActionResult {
-	var res ActionResult
-
-	type resize struct {
-		FlavorRef string `json:"flavorRef"`
-	}
-
-	type req struct {
-		Resize resize `json:"resize"`
-	}
-
-	reqBody := req{Resize: resize{FlavorRef: flavorRef}}
-
-	_, res.Err = client.Request("POST", actionURL(client, id), &gophercloud.RequestOpts{
-		JSONBody: reqBody,
-		OkCodes:  []int{202},
-	})
-
-	return res
+	var r ActionResult
+	b := map[string]interface{}{"resize": map[string]string{"flavorRef": flavorRef}}
+	_, r.Err = client.Post(actionURL(client, id), &b, nil, nil)
+	return r
 }
 
 // ResizeVolume will resize the attached volume for an instance. It supports
 // only increasing the volume size and does not support decreasing the size.
 // The volume size is in gigabytes (GB) and must be an integer.
 func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) ActionResult {
-	var res ActionResult
-
-	type volume struct {
-		Size int `json:"size"`
-	}
-
-	type resize struct {
-		Volume volume `json:"volume"`
-	}
-
-	type req struct {
-		Resize resize `json:"resize"`
-	}
-
-	reqBody := req{Resize: resize{Volume: volume{Size: size}}}
-
-	_, res.Err = client.Request("POST", actionURL(client, id), &gophercloud.RequestOpts{
-		JSONBody: reqBody,
-		OkCodes:  []int{202},
-	})
-
-	return res
+	var r ActionResult
+	b := map[string]interface{}{"resize": map[string]interface{}{"volume": map[string]int{"size": size}}}
+	_, r.Err = client.Post(actionURL(client, id), &b, nil, nil)
+	return r
 }

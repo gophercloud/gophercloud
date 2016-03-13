@@ -3,22 +3,21 @@ package services
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/pagination"
-	"github.com/gophercloud/gophercloud/testhelper"
+	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func TestCreateSuccessful(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		testhelper.TestJSONRequest(t, r, `{ "type": "compute" }`)
+	th.Mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "type": "compute" }`)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
@@ -32,32 +31,27 @@ func TestCreateSuccessful(t *testing.T) {
     }`)
 	})
 
-	result, err := Create(client.ServiceClient(), "compute").Extract()
+	expected := &Service{
+		Description: "Here's your service",
+		ID:          "1234",
+		Name:        "InscrutableOpenStackProjectName",
+		Type:        "compute",
+	}
+
+	actual, err := Create(client.ServiceClient(), "compute").Extract()
 	if err != nil {
 		t.Fatalf("Unexpected error from Create: %v", err)
 	}
-
-	if result.Description == nil || *result.Description != "Here's your service" {
-		t.Errorf("Service description was unexpected [%s]", *result.Description)
-	}
-	if result.ID != "1234" {
-		t.Errorf("Service ID was unexpected [%s]", result.ID)
-	}
-	if result.Name != "InscrutableOpenStackProjectName" {
-		t.Errorf("Service name was unexpected [%s]", result.Name)
-	}
-	if result.Type != "compute" {
-		t.Errorf("Service type was unexpected [%s]", result.Type)
-	}
+	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestListSinglePage(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
@@ -92,44 +86,34 @@ func TestListSinglePage(t *testing.T) {
 			return false, err
 		}
 
-		desc0 := "Service One"
-		desc1 := "Service Two"
 		expected := []Service{
 			Service{
-				Description: &desc0,
+				Description: "Service One",
 				ID:          "1234",
 				Name:        "service-one",
 				Type:        "identity",
 			},
 			Service{
-				Description: &desc1,
+				Description: "Service Two",
 				ID:          "9876",
 				Name:        "service-two",
 				Type:        "compute",
 			},
 		}
-
-		if !reflect.DeepEqual(expected, actual) {
-			t.Errorf("Expected %#v, got %#v", expected, actual)
-		}
-
+		th.AssertDeepEquals(t, expected, actual)
 		return true, nil
 	})
-	if err != nil {
-		t.Errorf("Unexpected error while paging: %v", err)
-	}
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 1, count)
 }
 
 func TestGetSuccessful(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
@@ -144,33 +128,27 @@ func TestGetSuccessful(t *testing.T) {
 		`)
 	})
 
-	result, err := Get(client.ServiceClient(), "12345").Extract()
-	if err != nil {
-		t.Fatalf("Error fetching service information: %v", err)
+	actual, err := Get(client.ServiceClient(), "12345").Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &Service{
+		ID:          "12345",
+		Description: "Service One",
+		Name:        "service-one",
+		Type:        "identity",
 	}
 
-	if result.ID != "12345" {
-		t.Errorf("Unexpected service ID: %s", result.ID)
-	}
-	if *result.Description != "Service One" {
-		t.Errorf("Unexpected service description: [%s]", *result.Description)
-	}
-	if result.Name != "service-one" {
-		t.Errorf("Unexpected service name: [%s]", result.Name)
-	}
-	if result.Type != "identity" {
-		t.Errorf("Unexpected service type: [%s]", result.Type)
-	}
+	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestUpdateSuccessful(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "PATCH")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		testhelper.TestJSONRequest(t, r, `{ "type": "lasermagic" }`)
+	th.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "type": "lasermagic" }`)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
@@ -183,27 +161,26 @@ func TestUpdateSuccessful(t *testing.T) {
 		`)
 	})
 
-	result, err := Update(client.ServiceClient(), "12345", "lasermagic").Extract()
-	if err != nil {
-		t.Fatalf("Unable to update service: %v", err)
+	expected := &Service{
+		ID:   "12345",
+		Type: "lasermagic",
 	}
 
-	if result.ID != "12345" {
-		t.Fatalf("Expected ID 12345, was %s", result.ID)
-	}
+	actual, err := Update(client.ServiceClient(), "12345", "lasermagic").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestDeleteSuccessful(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "DELETE")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-
+	th.Mux.HandleFunc("/services/12345", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 
 	res := Delete(client.ServiceClient(), "12345")
-	testhelper.AssertNoErr(t, res.Err)
+	th.AssertNoErr(t, res.Err)
 }

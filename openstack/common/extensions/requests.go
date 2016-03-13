@@ -7,9 +7,9 @@ import (
 
 // Get retrieves information for a specific extension using its alias.
 func Get(c *gophercloud.ServiceClient, alias string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(ExtensionURL(c, alias), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = c.Get(ExtensionURL(c, alias), &r.Body, nil)
+	return r
 }
 
 // List returns a Pager which allows you to iterate over the full collection of extensions.

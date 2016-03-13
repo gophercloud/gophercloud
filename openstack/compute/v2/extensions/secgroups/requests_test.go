@@ -233,7 +233,7 @@ func TestAddServer(t *testing.T) {
 
 	mockAddServerToGroupResponse(t, serverID)
 
-	err := AddServerToGroup(client.ServiceClient(), serverID, "test").ExtractErr()
+	err := AddServer(client.ServiceClient(), serverID, "test").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -243,6 +243,6 @@ func TestRemoveServer(t *testing.T) {
 
 	mockRemoveServerFromGroupResponse(t, serverID)
 
-	err := RemoveServerFromGroup(client.ServiceClient(), serverID, "test").ExtractErr()
+	err := RemoveServer(client.ServiceClient(), serverID, "test").ExtractErr()
 	th.AssertNoErr(t, err)
 }

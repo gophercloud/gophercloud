@@ -14,23 +14,19 @@ type ExtensionPage struct {
 // IsEmpty returns true if the current page contains at least one Extension.
 func (page ExtensionPage) IsEmpty() (bool, error) {
 	is, err := ExtractExtensions(page)
-	if err != nil {
-		return true, err
-	}
-	return len(is) == 0, nil
+	return len(is) == 0, err
 }
 
 // ExtractExtensions accepts a Page struct, specifically an ExtensionPage struct, and extracts the
 // elements into a slice of Extension structs.
 func ExtractExtensions(page pagination.Page) ([]common.Extension, error) {
-	r := page.(ExtensionPage)
 	// Identity v2 adds an intermediate "values" object.
 	var s struct {
 		Extensions struct {
 			Values []common.Extension `json:"values"`
 		} `json:"extensions"`
 	}
-	err := r.ExtractInto(&s)
+	err := page.(ExtensionPage).ExtractInto(&s)
 	return s.Extensions.Values, err
 }
 

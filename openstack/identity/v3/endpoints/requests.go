@@ -5,59 +5,38 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// EndpointOpts contains the subset of Endpoint attributes that should be used to create or update an Endpoint.
-type EndpointOpts struct {
-	Availability gophercloud.Availability
-	Name         string
-	Region       string
-	URL          string
-	ServiceID    string
+type CreateOptsBuilder interface {
+	ToEndpointCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts contains the subset of Endpoint attributes that should be used to create an Endpoint.
+type CreateOpts struct {
+	Availability gophercloud.Availability `json:"interface" required:"true"`
+	Name         string                   `json:"name" required:"true"`
+	Region       string                   `json:"region,omitempty"`
+	URL          string                   `json:"url" required:"true"`
+	ServiceID    string                   `json:"service_id" required:"true"`
+}
+
+func (opts CreateOpts) ToEndpointCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "endpoint")
 }
 
 // Create inserts a new Endpoint into the service catalog.
 // Within EndpointOpts, Region may be omitted by being left as "", but all other fields are required.
-func Create(client *gophercloud.ServiceClient, opts EndpointOpts) CreateResult {
-	// Redefined so that Region can be re-typed as a *string, which can be omitted from the JSON output.
-	type endpoint struct {
-		Interface string  `json:"interface"`
-		Name      string  `json:"name"`
-		Region    *string `json:"region,omitempty"`
-		URL       string  `json:"url"`
-		ServiceID string  `json:"service_id"`
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
+	var r CreateResult
+	b, err := opts.ToEndpointCreateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
+	_, r.Err = client.Post(listURL(client), &b, &r.Body, nil)
+	return r
+}
 
-	type request struct {
-		Endpoint endpoint `json:"endpoint"`
-	}
-
-	// Ensure that EndpointOpts is fully populated.
-	if opts.Availability == "" {
-		return createErr(ErrAvailabilityRequired)
-	}
-	if opts.Name == "" {
-		return createErr(ErrNameRequired)
-	}
-	if opts.URL == "" {
-		return createErr(ErrURLRequired)
-	}
-	if opts.ServiceID == "" {
-		return createErr(ErrServiceIDRequired)
-	}
-
-	// Populate the request body.
-	reqBody := request{
-		Endpoint: endpoint{
-			Interface: string(opts.Availability),
-			Name:      opts.Name,
-			URL:       opts.URL,
-			ServiceID: opts.ServiceID,
-		},
-	}
-	reqBody.Endpoint.Region = gophercloud.MaybeString(opts.Region)
-
-	var result CreateResult
-	_, result.Err = client.Post(listURL(client), reqBody, &result.Body, nil)
-	return result
+type ListOptsBuilder interface {
+	ToEndpointListParams() (string, error)
 }
 
 // ListOpts allows finer control over the endpoints returned by a List call.
@@ -69,55 +48,58 @@ type ListOpts struct {
 	PerPage      int                      `q:"per_page"`
 }
 
-// List enumerates endpoints in a paginated collection, optionally filtered by ListOpts criteria.
-func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	u := listURL(client)
+func (opts ListOpts) ToEndpointListParams() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return pagination.Pager{Err: err}
-	}
-	u += q.String()
-	createPage := func(r pagination.PageResult) pagination.Page {
-		return EndpointPage{pagination.LinkedPageBase{PageResult: r}}
-	}
+	return q.String(), err
+}
 
-	return pagination.NewPager(client, u, createPage)
+// List enumerates endpoints in a paginated collection, optionally filtered by ListOpts criteria.
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	u := listURL(client)
+	if opts != nil {
+		q, err := gophercloud.BuildQueryString(opts)
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		u += q.String()
+	}
+	return pagination.NewPager(client, u, func(r pagination.PageResult) pagination.Page {
+		return EndpointPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+type UpdateOptsBuilder interface {
+	ToEndpointUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contains the subset of Endpoint attributes that should be used to update an Endpoint.
+type UpdateOpts struct {
+	Availability gophercloud.Availability `json:"interface,omitempty"`
+	Name         string                   `json:"name,omitempty"`
+	Region       string                   `json:"region,omitempty"`
+	URL          string                   `json:"url,omitempty"`
+	ServiceID    string                   `json:"service_id,omitempty"`
+}
+
+func (opts UpdateOpts) ToEndpointUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "endpoint")
 }
 
 // Update changes an existing endpoint with new data.
-// All fields are optional in the provided EndpointOpts.
-func Update(client *gophercloud.ServiceClient, endpointID string, opts EndpointOpts) UpdateResult {
-	type endpoint struct {
-		Interface *string `json:"interface,omitempty"`
-		Name      *string `json:"name,omitempty"`
-		Region    *string `json:"region,omitempty"`
-		URL       *string `json:"url,omitempty"`
-		ServiceID *string `json:"service_id,omitempty"`
+func Update(client *gophercloud.ServiceClient, endpointID string, opts UpdateOptsBuilder) UpdateResult {
+	var r UpdateResult
+	b, err := opts.ToEndpointUpdateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
-
-	type request struct {
-		Endpoint endpoint `json:"endpoint"`
-	}
-
-	reqBody := request{Endpoint: endpoint{}}
-	reqBody.Endpoint.Interface = gophercloud.MaybeString(string(opts.Availability))
-	reqBody.Endpoint.Name = gophercloud.MaybeString(opts.Name)
-	reqBody.Endpoint.Region = gophercloud.MaybeString(opts.Region)
-	reqBody.Endpoint.URL = gophercloud.MaybeString(opts.URL)
-	reqBody.Endpoint.ServiceID = gophercloud.MaybeString(opts.ServiceID)
-
-	var result UpdateResult
-	_, result.Err = client.Request("PATCH", endpointURL(client, endpointID), &gophercloud.RequestOpts{
-		JSONBody:     &reqBody,
-		JSONResponse: &result.Body,
-		OkCodes:      []int{200},
-	})
-	return result
+	_, r.Err = client.Patch(endpointURL(client, endpointID), &b, &r.Body, nil)
+	return r
 }
 
 // Delete removes an endpoint from the service catalog.
 func Delete(client *gophercloud.ServiceClient, endpointID string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = client.Delete(endpointURL(client, endpointID), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = client.Delete(endpointURL(client, endpointID), nil)
+	return r
 }

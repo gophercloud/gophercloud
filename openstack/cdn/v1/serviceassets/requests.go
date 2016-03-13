@@ -24,10 +24,7 @@ type DeleteOpts struct {
 // ToCDNAssetDeleteParams formats a DeleteOpts into a query string.
 func (opts DeleteOpts) ToCDNAssetDeleteParams() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // Delete accepts a unique service ID or URL and deletes the CDN service asset associated with
@@ -41,8 +38,15 @@ func Delete(c *gophercloud.ServiceClient, idOrURL string, opts DeleteOptsBuilder
 	} else {
 		url = deleteURL(c, idOrURL)
 	}
-
-	var res DeleteResult
-	_, res.Err = c.Delete(url, nil)
-	return res
+	var r DeleteResult
+	if opts != nil {
+		q, err := opts.ToCDNAssetDeleteParams()
+		if err != nil {
+			r.Err = err
+			return r
+		}
+		url += q
+	}
+	_, r.Err = c.Delete(url, nil)
+	return r
 }

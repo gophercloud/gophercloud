@@ -57,28 +57,16 @@ func TestDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestAssociateDeprecated(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleAssociateSuccessfully(t)
-	serverId := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
-	fip := "10.10.10.2"
-
-	err := Associate(client.ServiceClient(), serverId, fip).ExtractErr()
-	th.AssertNoErr(t, err)
-}
-
 func TestAssociate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleAssociateSuccessfully(t)
 
 	associateOpts := AssociateOpts{
-		ServerID:   "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
 		FloatingIP: "10.10.10.2",
 	}
 
-	err := AssociateInstance(client.ServiceClient(), associateOpts).ExtractErr()
+	err := AssociateInstance(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", associateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -88,23 +76,11 @@ func TestAssociateFixed(t *testing.T) {
 	HandleAssociateFixedSuccessfully(t)
 
 	associateOpts := AssociateOpts{
-		ServerID:   "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
 		FloatingIP: "10.10.10.2",
 		FixedIP:    "166.78.185.201",
 	}
 
-	err := AssociateInstance(client.ServiceClient(), associateOpts).ExtractErr()
-	th.AssertNoErr(t, err)
-}
-
-func TestDisassociateDeprecated(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDisassociateSuccessfully(t)
-	serverId := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
-	fip := "10.10.10.2"
-
-	err := Disassociate(client.ServiceClient(), serverId, fip).ExtractErr()
+	err := AssociateInstance(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", associateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -113,11 +89,10 @@ func TestDisassociateInstance(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDisassociateSuccessfully(t)
 
-	associateOpts := AssociateOpts{
-		ServerID:   "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
+	disassociateOpts := DisassociateOpts{
 		FloatingIP: "10.10.10.2",
 	}
 
-	err := DisassociateInstance(client.ServiceClient(), associateOpts).ExtractErr()
+	err := DisassociateInstance(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", disassociateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

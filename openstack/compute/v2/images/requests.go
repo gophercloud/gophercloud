@@ -32,10 +32,7 @@ type ListOpts struct {
 // ToImageListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToImageListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // ListDetail enumerates the available images.
@@ -48,40 +45,30 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 		}
 		url += query
 	}
-
-	createPage := func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return ImagePage{pagination.LinkedPageBase{PageResult: r}}
-	}
-
-	return pagination.NewPager(client, url, createPage)
+	})
 }
 
 // Get acquires additional detail about a specific image by ID.
 // Use ExtractImage() to interpret the result as an openstack Image.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var result GetResult
-	_, result.Err = client.Get(getURL(client, id), &result.Body, nil)
-	return result
+	var r GetResult
+	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return r
 }
 
 // Delete deletes the specified image ID.
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var result DeleteResult
-	_, result.Err = client.Delete(deleteURL(client, id), nil)
-	return result
+	var r DeleteResult
+	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return r
 }
 
 // IDFromName is a convienience function that returns an image's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
 	count := 0
 	id := ""
-	if name == "" {
-		err := &gophercloud.ErrMissingInput{}
-		err.Function = "images.IDFromName"
-		err.Argument = "name"
-		return "", err
-	}
-
 	allPages, err := ListDetail(client, nil).AllPages()
 	if err != nil {
 		return "", err
@@ -102,7 +89,6 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 	switch count {
 	case 0:
 		err := &gophercloud.ErrResourceNotFound{}
-		err.Function = "images.IDFromName"
 		err.ResourceType = "image"
 		err.Name = name
 		return "", err
@@ -110,7 +96,6 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 		return id, nil
 	default:
 		err := &gophercloud.ErrMultipleResourcesFound{}
-		err.Function = "images.IDFromName"
 		err.ResourceType = "image"
 		err.Name = name
 		err.Count = count

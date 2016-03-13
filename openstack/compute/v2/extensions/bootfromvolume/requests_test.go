@@ -18,10 +18,11 @@ func TestCreateOpts(t *testing.T) {
 		CreateOptsBuilder: base,
 		BlockDevice: []BlockDevice{
 			BlockDevice{
-				UUID:            "123456",
-				SourceType:      Image,
-				DestinationType: "volume",
-				VolumeSize:      10,
+				UUID:                "123456",
+				SourceType:          Image,
+				DestinationType:     "volume",
+				VolumeSize:          10,
+				DeleteOnTermination: false,
 			},
 		},
 	}
@@ -37,9 +38,9 @@ func TestCreateOpts(t *testing.T) {
             "uuid":"123456",
             "source_type":"image",
             "destination_type":"volume",
-            "boot_index": "0",
-            "delete_on_termination": "false",
-            "volume_size": "10"
+            "boot_index": 0,
+            "delete_on_termination": false,
+            "volume_size": 10
           }
         ]
       }
@@ -94,28 +95,28 @@ func TestCreateMultiEphemeralOpts(t *testing.T) {
         "flavorRef": "performance1-1",
         "block_device_mapping_v2":[
           {
-            "boot_index": "0",
-            "delete_on_termination": "true",
+            "boot_index": 0,
+            "delete_on_termination": true,
             "destination_type":"local",
             "source_type":"image",
             "uuid":"123456",
-            "volume_size": "0"
+            "volume_size": 0
           },
           {
-            "boot_index": "-1",
-            "delete_on_termination": "true",
+            "boot_index": -1,
+            "delete_on_termination": true,
             "destination_type":"local",
             "guest_format":"ext4",
             "source_type":"blank",
-            "volume_size": "1"
+            "volume_size": 1
           },
           {
-            "boot_index": "-1",
-            "delete_on_termination": "true",
+            "boot_index": -1,
+            "delete_on_termination": true,
             "destination_type":"local",
             "guest_format":"ext4",
             "source_type":"blank",
-            "volume_size": "1"
+            "volume_size": 1
           }
         ]
       }

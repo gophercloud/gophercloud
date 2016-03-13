@@ -9,7 +9,7 @@ import (
 type Domain struct {
 	// Specifies the domain used to access the assets on their website, for which
 	// a CNAME is given to the CDN provider.
-	Domain string `json:"domain"`
+	Domain string `json:"domain" required:"true"`
 	// Specifies the protocol used to access the assets on this domain. Only "http"
 	// or "https" are currently allowed. The default is "http".
 	Protocol string `json:"protocol,omitempty"`
@@ -54,17 +54,17 @@ func (list DomainList) renderRootOr(_ func(p Path) string) string {
 // OriginRule represents a rule that defines when an origin should be accessed.
 type OriginRule struct {
 	// Specifies the name of this rule.
-	Name string `json:"name"`
+	Name string `json:"name" required:"true"`
 	// Specifies the request URL this rule should match for this origin to be used. Regex is supported.
-	RequestURL string `json:"request_url"`
+	RequestURL string `json:"request_url" required:"true"`
 }
 
 // Origin specifies a list of origin domains or IP addresses where the original assets are stored.
 type Origin struct {
 	// Specifies the URL or IP address to pull origin content from.
-	Origin string `json:"origin"`
+	Origin string `json:"origin" required:"true"`
 	// Specifies the port used to access the origin. The default is port 80.
-	Port int `json:"port"`
+	Port int `json:"port,omitempty"`
 	// Specifies whether or not to use HTTPS to access the origin. The default
 	// is false.
 	SSL bool `json:"ssl"`
@@ -119,17 +119,17 @@ func (list OriginList) renderRootOr(_ func(p Path) string) string {
 // TTLRule specifies a rule that determines if a TTL should be applied to an asset.
 type TTLRule struct {
 	// Specifies the name of this rule.
-	Name string `json:"name"`
+	Name string `json:"name" required:"true"`
 	// Specifies the request URL this rule should match for this TTL to be used. Regex is supported.
-	RequestURL string `json:"request_url"`
+	RequestURL string `json:"request_url" required:"true"`
 }
 
 // CacheRule specifies the TTL rules for the assets under this service.
 type CacheRule struct {
 	// Specifies the name of this caching rule. Note: 'default' is a reserved name used for the default TTL setting.
-	Name string `json:"name"`
+	Name string `json:"name" required:"true"`
 	// Specifies the TTL to apply.
-	TTL int `json:"ttl"`
+	TTL int `json:"ttl,omitempty"`
 	// Specifies a collection of rules that determine if this TTL should be applied to an asset.
 	Rules []TTLRule `json:"rules,omitempty"`
 }
@@ -177,17 +177,17 @@ func (list CacheRuleList) renderRootOr(_ func(p Path) string) string {
 // RestrictionRule specifies a rule that determines if this restriction should be applied to an asset.
 type RestrictionRule struct {
 	// Specifies the name of this rule.
-	Name string `json:"name"`
+	Name string `json:"name" required:"true"`
 	// Specifies the http host that requests must come from.
-	Referrer string `json:"referrer"`
+	Referrer string `json:"referrer,omitempty"`
 }
 
 // Restriction specifies a restriction that defines who can access assets (content from the CDN cache).
 type Restriction struct {
 	// Specifies the name of this restriction.
-	Name string `json:"name"`
+	Name string `json:"name" required:"true"`
 	// Specifies a collection of rules that determine if this TTL should be applied to an asset.
-	Rules []RestrictionRule `json:"rules"`
+	Rules []RestrictionRule `json:"rules,omitempty"`
 }
 
 // Error specifies an error that occurred during the previous service action.

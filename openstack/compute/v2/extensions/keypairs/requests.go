@@ -45,59 +45,43 @@ type CreateOptsBuilder interface {
 
 // CreateOpts specifies keypair creation or import parameters.
 type CreateOpts struct {
-	// Name [required] is a friendly name to refer to this KeyPair in other services.
-	Name string
-
+	// Name is a friendly name to refer to this KeyPair in other services.
+	Name string `json:"name" required:"true"`
 	// PublicKey [optional] is a pregenerated OpenSSH-formatted public key. If provided, this key
 	// will be imported and no new key will be created.
-	PublicKey string
+	PublicKey string `json:"public_key,omitempty"`
 }
 
 // ToKeyPairCreateMap constructs a request body from CreateOpts.
 func (opts CreateOpts) ToKeyPairCreateMap() (map[string]interface{}, error) {
-	if opts.Name == "" {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "keypairs.ToKeyPairCreateMap"
-		err.Argument = "keypairs.CreateOpts.Name"
-		return nil, err
-	}
-
-	keypair := make(map[string]interface{})
-	keypair["name"] = opts.Name
-	if opts.PublicKey != "" {
-		keypair["public_key"] = opts.PublicKey
-	}
-
-	return map[string]interface{}{"keypair": keypair}, nil
+	return gophercloud.BuildRequestBody(opts, "keypair")
 }
 
 // Create requests the creation of a new keypair on the server, or to import a pre-existing
 // keypair.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToKeyPairCreateMap()
+	var r CreateResult
+	b, err := opts.ToKeyPairCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return r
 	}
-
-	_, res.Err = client.Post(createURL(client), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return res
+	return r
 }
 
 // Get returns public data about a previously uploaded KeyPair.
 func Get(client *gophercloud.ServiceClient, name string) GetResult {
-	var res GetResult
-	_, res.Err = client.Get(getURL(client, name), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = client.Get(getURL(client, name), &r.Body, nil)
+	return r
 }
 
 // Delete requests the deletion of a previous stored KeyPair from the server.
 func Delete(client *gophercloud.ServiceClient, name string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = client.Delete(deleteURL(client, name), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = client.Delete(deleteURL(client, name), nil)
+	return r
 }

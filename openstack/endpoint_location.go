@@ -29,7 +29,6 @@ func V2EndpointURL(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpt
 	if len(endpoints) > 1 {
 		err := &ErrMultipleMatchingEndpointsV2{}
 		err.Endpoints = endpoints
-		err.Function = "openstack.V2EndpointURL"
 		return "", err
 	}
 
@@ -44,7 +43,6 @@ func V2EndpointURL(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpt
 			return gophercloud.NormalizeURL(endpoint.AdminURL), nil
 		default:
 			err := &ErrInvalidAvailabilityProvided{}
-			err.Function = "openstack.V2EndpointURL"
 			err.Argument = "Availability"
 			err.Value = opts.Availability
 			return "", err
@@ -74,7 +72,6 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 					opts.Availability != gophercloud.AvailabilityPublic &&
 					opts.Availability != gophercloud.AvailabilityInternal {
 					err := &ErrInvalidAvailabilityProvided{}
-					err.Function = "openstack.V3EndpointURL"
 					err.Argument = "Availability"
 					err.Value = opts.Availability
 					return "", err
@@ -89,10 +86,7 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 
 	// Report an error if the options were ambiguous.
 	if len(endpoints) > 1 {
-		err := &ErrMultipleMatchingEndpointsV3{}
-		err.Endpoints = endpoints
-		err.Function = "openstack.V3EndpointURL"
-		return "", err
+		return "", ErrMultipleMatchingEndpointsV3{Endpoints: endpoints}
 	}
 
 	// Extract the URL from the matching Endpoint.
@@ -102,6 +96,5 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 
 	// Report an error if there were no matching endpoints.
 	err := &gophercloud.ErrEndpointNotFound{}
-	err.Function = "openstack.V3EndpointURL"
 	return "", err
 }

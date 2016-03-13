@@ -163,3 +163,131 @@ func TestQueriesAreEscaped(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, actual)
 }
+
+func TestBuildRequestBody(t *testing.T) {
+	type PasswordCredentials struct {
+		Username string `json:"username" required:"true"`
+		Password string `json:"password" required:"true"`
+	}
+
+	type TokenCredentials struct {
+		ID string `json:"id,omitempty" required:"true"`
+	}
+
+	type orFields struct {
+		Filler int `json:"filler,omitempty"`
+		F1     int `json:"f1,omitempty" or:"F2"`
+		F2     int `json:"f2,omitempty" or:"F1"`
+	}
+
+	// AuthOptions wraps a gophercloud AuthOptions in order to adhere to the AuthOptionsBuilder
+	// interface.
+	type AuthOptions struct {
+		PasswordCredentials `json:"passwordCredentials,omitempty" xor:"TokenCredentials"`
+
+		// The TenantID and TenantName fields are optional for the Identity V2 API.
+		// Some providers allow you to specify a TenantName instead of the TenantId.
+		// Some require both. Your provider's authentication policies will determine
+		// how these fields influence authentication.
+		TenantID   string `json:"tenantId,omitempty"`
+		TenantName string `json:"tenantName,omitempty"`
+
+		// TokenCredentials allows users to authenticate (possibly as another user) with an
+		// authentication token ID.
+		TokenCredentials `json:"token,omitempty" xor:"PasswordCredentials"`
+
+		OrFields orFields `json:"or_fields,omitempty"`
+	}
+
+	var successCases = []struct {
+		opts     AuthOptions
+		expected map[string]interface{}
+	}{
+		{
+			AuthOptions{
+				PasswordCredentials: PasswordCredentials{
+					Username: "me",
+					Password: "swordfish",
+				},
+			},
+			map[string]interface{}{
+				"auth": map[string]interface{}{
+					"passwordCredentials": map[string]interface{}{
+						"password": "swordfish",
+						"username": "me",
+					},
+				},
+			},
+		},
+		{
+			AuthOptions{
+				TokenCredentials: TokenCredentials{
+					ID: "1234567",
+				},
+			},
+			map[string]interface{}{
+				"auth": map[string]interface{}{
+					"token": map[string]interface{}{
+						"id": "1234567",
+					},
+				},
+			},
+		},
+	}
+
+	for _, successCase := range successCases {
+		actual, err := BuildRequestBody(successCase.opts, "auth")
+		th.AssertNoErr(t, err)
+		th.AssertDeepEquals(t, successCase.expected, actual)
+	}
+
+	var failCases = []struct {
+		opts     AuthOptions
+		expected error
+	}{
+		{
+			AuthOptions{
+				TenantID:   "987654321",
+				TenantName: "me",
+			},
+			ErrMissingInput{},
+		},
+		{
+			AuthOptions{
+				TokenCredentials: TokenCredentials{
+					ID: "1234567",
+				},
+				PasswordCredentials: PasswordCredentials{
+					Username: "me",
+					Password: "swordfish",
+				},
+			},
+			ErrMissingInput{},
+		},
+		{
+			AuthOptions{
+				PasswordCredentials: PasswordCredentials{
+					Password: "swordfish",
+				},
+			},
+			ErrMissingInput{},
+		},
+		{
+			AuthOptions{
+				PasswordCredentials: PasswordCredentials{
+					Username: "me",
+					Password: "swordfish",
+				},
+				OrFields: orFields{
+					Filler: 2,
+				},
+			},
+			ErrMissingInput{},
+		},
+	}
+
+	for _, failCase := range failCases {
+		_, err := BuildRequestBody(failCase.opts, "auth")
+		th.AssertDeepEquals(t, reflect.TypeOf(failCase.expected), reflect.TypeOf(err))
+	}
+}

@@ -9,17 +9,12 @@ import (
 type ListOpts struct {
 	// Marker is the ID of the last Tenant on the previous page.
 	Marker string `q:"marker"`
-
 	// Limit specifies the page size.
 	Limit int `q:"limit"`
 }
 
 // List enumerates the Tenants to which the current token has access.
 func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
-	createPage := func(r pagination.PageResult) pagination.Page {
-		return TenantPage{pagination.LinkedPageBase{PageResult: r}}
-	}
-
 	url := listURL(client)
 	if opts != nil {
 		q, err := gophercloud.BuildQueryString(opts)
@@ -28,6 +23,7 @@ func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
 		}
 		url += q.String()
 	}
-
-	return pagination.NewPager(client, url, createPage)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return TenantPage{pagination.LinkedPageBase{PageResult: r}}
+	})
 }

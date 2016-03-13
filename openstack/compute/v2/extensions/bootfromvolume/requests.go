@@ -1,9 +1,6 @@
 package bootfromvolume
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
@@ -12,37 +9,35 @@ import (
 type SourceType string
 
 const (
-	Volume   SourceType = "volume"
+	// Volume SourceType
+	Volume SourceType = "volume"
+	// Snapshot SourceType
 	Snapshot SourceType = "snapshot"
-	Image    SourceType = "image"
-	Blank    SourceType = "blank"
+	// Image SourceType
+	Image SourceType = "image"
+	// Blank SourceType
+	Blank SourceType = "blank"
 )
 
 // BlockDevice is a structure with options for booting a server instance
 // from a volume. The volume may be created from an image, snapshot, or another
 // volume.
 type BlockDevice struct {
-	// BootIndex [optional] is the boot index. It defaults to 0.
+	// SourceType must be one of: "volume", "snapshot", "image".
+	SourceType SourceType `json:"source_type" required:"true"`
+	// UUID is the unique identifier for the volume, snapshot, or image (see above)
+	UUID string `json:"uuid,omitempty"`
+	// BootIndex is the boot index. It defaults to 0.
 	BootIndex int `json:"boot_index"`
-
-	// DeleteOnTermination [optional] specifies whether or not to delete the attached volume
+	// DeleteOnTermination specifies whether or not to delete the attached volume
 	// when the server is deleted. Defaults to `false`.
 	DeleteOnTermination bool `json:"delete_on_termination"`
-
-	// DestinationType [optional] is the type that gets created. Possible values are "volume"
+	// DestinationType is the type that gets created. Possible values are "volume"
 	// and "local".
-	DestinationType string `json:"destination_type"`
-
-	// GuestFormat [optional] specifies the format of the block device.
-	GuestFormat string `json:"guest_format"`
-
-	// SourceType [required] must be one of: "volume", "snapshot", "image".
-	SourceType SourceType `json:"source_type"`
-
-	// UUID [required] is the unique identifier for the volume, snapshot, or image (see above)
-	UUID string `json:"uuid"`
-
-	// VolumeSize [optional] is the size of the volume to create (in gigabytes).
+	DestinationType string `json:"destination_type,omitempty"`
+	// GuestFormat specifies the format of the block device.
+	GuestFormat string `json:"guest_format,omitempty"`
+	// VolumeSize is the size of the volume to create (in gigabytes).
 	VolumeSize int `json:"volume_size"`
 }
 
@@ -63,7 +58,6 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 
 	if len(opts.BlockDevice) == 0 {
 		err := gophercloud.ErrMissingInput{}
-		err.Function = "bootfromvolume.ToServerCreateMap"
 		err.Argument = "bootfromvolume.CreateOptsExt.BlockDevice"
 		return nil, err
 	}
@@ -73,29 +67,11 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 	blockDevice := make([]map[string]interface{}, len(opts.BlockDevice))
 
 	for i, bd := range opts.BlockDevice {
-		if string(bd.SourceType) == "" {
-			err := gophercloud.ErrMissingInput{}
-			err.Function = "bootfromvolume.ToServerCreateMap"
-			err.Argument = fmt.Sprintf("bootfromvolume.CreateOptsExt.BlockDevice[%d].SourceType", i)
+		b, err := gophercloud.BuildRequestBody(bd, "")
+		if err != nil {
 			return nil, err
 		}
-
-		blockDevice[i] = make(map[string]interface{})
-
-		blockDevice[i]["source_type"] = bd.SourceType
-		blockDevice[i]["boot_index"] = strconv.Itoa(bd.BootIndex)
-		blockDevice[i]["delete_on_termination"] = strconv.FormatBool(bd.DeleteOnTermination)
-		blockDevice[i]["volume_size"] = strconv.Itoa(bd.VolumeSize)
-		if bd.UUID != "" {
-			blockDevice[i]["uuid"] = bd.UUID
-		}
-		if bd.DestinationType != "" {
-			blockDevice[i]["destination_type"] = bd.DestinationType
-		}
-		if bd.GuestFormat != "" {
-			blockDevice[i]["guest_format"] = bd.GuestFormat
-		}
-
+		blockDevice[i] = b
 	}
 	serverMap["block_device_mapping_v2"] = blockDevice
 
@@ -104,21 +80,14 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 
 // Create requests the creation of a server from the given block device mapping.
 func Create(client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) servers.CreateResult {
-	var res servers.CreateResult
-
-	reqBody, err := opts.ToServerCreateMap()
+	var r servers.CreateResult
+	b, err := opts.ToServerCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return r
 	}
-
-	// Delete imageName and flavorName that come from ToServerCreateMap().
-	// As of Liberty, Boot From Volume is failing if they are passed.
-	delete(reqBody["server"].(map[string]interface{}), "imageName")
-	delete(reqBody["server"].(map[string]interface{}), "flavorName")
-
-	_, res.Err = client.Post(createURL(client), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
-	return res
+	return r
 }

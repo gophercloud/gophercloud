@@ -15,78 +15,48 @@ type CreateOptsBuilder interface {
 // the snapshots.Create function. For more information about these parameters,
 // see the Snapshot object.
 type CreateOpts struct {
-	// OPTIONAL
-	Description string
-	// OPTIONAL
-	Force bool
-	// OPTIONAL
-	Metadata map[string]interface{}
-	// OPTIONAL
-	Name string
-	// REQUIRED
-	VolumeID string
+	VolumeID    string                 `json:"volume_id" required:"true"`
+	Description string                 `json:"display_description,omitempty"`
+	Force       bool                   `json:"force,omitempty"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	Name        string                 `json:"display_name,omitempty"`
 }
 
 // ToSnapshotCreateMap assembles a request body based on the contents of a
 // CreateOpts.
 func (opts CreateOpts) ToSnapshotCreateMap() (map[string]interface{}, error) {
-	s := make(map[string]interface{})
-
-	if opts.VolumeID == "" {
-		err := &gophercloud.ErrMissingInput{}
-		err.Argument = "CreateOpts.VolumeID"
-		err.Function = "snapshots.ToSnapshotCreateMap"
-		return nil, err
-	}
-	s["volume_id"] = opts.VolumeID
-
-	if opts.Description != "" {
-		s["display_description"] = opts.Description
-	}
-	if opts.Force == true {
-		s["force"] = opts.Force
-	}
-	if opts.Metadata != nil {
-		s["metadata"] = opts.Metadata
-	}
-	if opts.Name != "" {
-		s["display_name"] = opts.Name
-	}
-
-	return map[string]interface{}{"snapshot": s}, nil
+	return gophercloud.BuildRequestBody(opts, "snapshot")
 }
 
 // Create will create a new Snapshot based on the values in CreateOpts. To
 // extract the Snapshot object from the response, call the Extract method on the
 // CreateResult.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToSnapshotCreateMap()
+	var r CreateResult
+	b, err := opts.ToSnapshotCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return r
 	}
-
-	_, res.Err = client.Post(createURL(client), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
-	return res
+	return r
 }
 
 // Delete will delete the existing Snapshot with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = client.Delete(deleteURL(client, id), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return r
 }
 
 // Get retrieves the Snapshot with the provided ID. To extract the Snapshot
 // object from the response, call the Extract method on the GetResult.
 func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = client.Get(getURL(client, id), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return r
 }
 
 // ListOptsBuilder allows extensions to add additional parameters to the List
@@ -106,10 +76,7 @@ type ListOpts struct {
 // ToSnapshotListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToSnapshotListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List returns Snapshots optionally limited by the conditions provided in
@@ -123,11 +90,9 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		}
 		url += query
 	}
-
-	createPage := func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return SnapshotPage{pagination.SinglePageBase(r)}
-	}
-	return pagination.NewPager(client, url, createPage)
+	})
 }
 
 // UpdateMetadataOptsBuilder allows extensions to add additional parameters to
@@ -140,50 +105,35 @@ type UpdateMetadataOptsBuilder interface {
 // object is passed to the snapshots.Update function. For more information
 // about the parameters, see the Snapshot object.
 type UpdateMetadataOpts struct {
-	Metadata map[string]interface{}
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // ToSnapshotUpdateMetadataMap assembles a request body based on the contents of
 // an UpdateMetadataOpts.
 func (opts UpdateMetadataOpts) ToSnapshotUpdateMetadataMap() (map[string]interface{}, error) {
-	v := make(map[string]interface{})
-
-	if opts.Metadata != nil {
-		v["metadata"] = opts.Metadata
-	}
-
-	return v, nil
+	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // UpdateMetadata will update the Snapshot with provided information. To
 // extract the updated Snapshot from the response, call the ExtractMetadata
 // method on the UpdateMetadataResult.
 func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) UpdateMetadataResult {
-	var res UpdateMetadataResult
-
-	reqBody, err := opts.ToSnapshotUpdateMetadataMap()
+	var r UpdateMetadataResult
+	b, err := opts.ToSnapshotUpdateMetadataMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return r
 	}
-
-	_, res.Err = client.Put(updateMetadataURL(client, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Put(updateMetadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return res
+	return r
 }
 
 // IDFromName is a convienience function that returns a snapshot's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
 	count := 0
 	id := ""
-	if name == "" {
-		err := &gophercloud.ErrMissingInput{}
-		err.Function = "snapshots.IDFromName"
-		err.Argument = "name"
-		return "", err
-	}
-
 	pages, err := List(client, nil).AllPages()
 	if err != nil {
 		return "", err
@@ -203,19 +153,10 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 
 	switch count {
 	case 0:
-		err := &gophercloud.ErrResourceNotFound{}
-		err.Name = name
-		err.ResourceType = "snapshot"
-		err.Function = "snapshots.IDFromName"
-		return "", err
+		return "", gophercloud.ErrResourceNotFound{Name: name, ResourceType: "snapshot"}
 	case 1:
 		return id, nil
 	default:
-		err := &gophercloud.ErrMultipleResourcesFound{}
-		err.Count = count
-		err.Name = name
-		err.ResourceType = "snapshot"
-		err.Function = "snapshots.IDFromName"
-		return "", err
+		return "", gophercloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "snapshot"}
 	}
 }
