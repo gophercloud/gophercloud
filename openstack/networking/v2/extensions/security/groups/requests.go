@@ -34,77 +34,55 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+type CreateOptsBuilder interface {
+	ToSecGroupCreateMap() (map[string]interface{}, error)
+}
+
 // CreateOpts contains all the values needed to create a new security group.
 type CreateOpts struct {
 	// Required. Human-readable name for the VIP. Does not have to be unique.
-	Name string
-
+	Name string `json:"name" required:"true"`
 	// Required for admins. Indicates the owner of the VIP.
-	TenantID string
-
+	TenantID string `json:"tenant_id,omitempty"`
 	// Optional. Describes the security group.
-	Description string
+	Description string `json:"description,omitempty"`
+}
+
+func (opts CreateOpts) ToSecGroupCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "security_group")
 }
 
 // Create is an operation which provisions a new security group with default
 // security group rules for the IPv4 and IPv6 ether types.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	var res CreateResult
-
-	// Validate required opts
-	if opts.Name == "" {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "groups.Create"
-		err.Argument = "groups.CreateOpts.Name"
-		res.Err = err
-		return res
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
+	var r CreateResult
+	b, err := opts.ToSubnetCreateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
-
-	type secgroup struct {
-		Name        string `json:"name"`
-		TenantID    string `json:"tenant_id,omitempty"`
-		Description string `json:"description,omitempty"`
-	}
-
-	type request struct {
-		SecGroup secgroup `json:"security_group"`
-	}
-
-	reqBody := request{SecGroup: secgroup{
-		Name:        opts.Name,
-		TenantID:    opts.TenantID,
-		Description: opts.Description,
-	}}
-
-	_, res.Err = c.Post(rootURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return r
 }
 
 // Get retrieves a particular security group based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(resourceURL(c, id), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return r
 }
 
 // Delete will permanently delete a particular security group based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(resourceURL(c, id), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return r
 }
 
 // IDFromName is a convenience function that returns a security group's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
 	count := 0
 	id := ""
-	if name == "" {
-		err := &gophercloud.ErrMissingInput{}
-		err.Function = "groups.IDFromName"
-		err.Argument = "name"
-		return "", err
-	}
-
 	pages, err := List(client, ListOpts{}).AllPages()
 	if err != nil {
 		return "", err
@@ -124,19 +102,10 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 
 	switch count {
 	case 0:
-		err := &gophercloud.ErrResourceNotFound{}
-		err.Name = name
-		err.ResourceType = "group"
-		err.Function = "groups.IDFromName"
-		return "", err
+		return "", gophercloud.ErrResourceNotFound{Name: name, ResourceType: "security group"}
 	case 1:
 		return id, nil
 	default:
-		err := &gophercloud.ErrMultipleResourcesFound{}
-		err.Count = count
-		err.Name = name
-		err.ResourceType = "group"
-		err.Function = "groups.IDFromName"
-		return "", err
+		return "", gophercloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "security group"}
 	}
 }

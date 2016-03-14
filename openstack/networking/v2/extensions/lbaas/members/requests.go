@@ -42,82 +42,78 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+type CreateOptsBuilder interface {
+	ToLBMemberCreateMap() (map[string]interface{}, error)
+}
+
 // CreateOpts contains all the values needed to create a new pool member.
 type CreateOpts struct {
+	// The IP address of the member.
+	Address string `json:"address" required:"true"`
+	// The port on which the application is hosted.
+	ProtocolPort int `json:"protocol_port" required:"true"`
+	// The pool to which this member will belong.
+	PoolID string `json:"pool_id" required:"true"`
 	// Only required if the caller has an admin role and wants to create a pool
 	// for another tenant.
-	TenantID string
+	TenantID string `json:"tenant_id,omitempty" required:"true"`
+}
 
-	// Required. The IP address of the member.
-	Address string
-
-	// Required. The port on which the application is hosted.
-	ProtocolPort int
-
-	// Required. The pool to which this member will belong.
-	PoolID string
+func (opts CreateOpts) ToLBMemberCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "member")
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new
 // load balancer pool member.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	type member struct {
-		TenantID     string `json:"tenant_id,omitempty"`
-		ProtocolPort int    `json:"protocol_port"`
-		Address      string `json:"address"`
-		PoolID       string `json:"pool_id"`
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
+	var r CreateResult
+	b, err := opts.ToLBMemberCreateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
-	type request struct {
-		Member member `json:"member"`
-	}
-
-	reqBody := request{Member: member{
-		Address:      opts.Address,
-		TenantID:     opts.TenantID,
-		ProtocolPort: opts.ProtocolPort,
-		PoolID:       opts.PoolID,
-	}}
-
-	var res CreateResult
-	_, res.Err = c.Post(rootURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return r
 }
 
 // Get retrieves a particular pool member based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(resourceURL(c, id), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return r
+}
+
+type UpdateOptsBuilder interface {
+	ToLBMemberUpdateMap() (map[string]interface{}, error)
 }
 
 // UpdateOpts contains the values used when updating a pool member.
 type UpdateOpts struct {
 	// The administrative state of the member, which is up (true) or down (false).
-	AdminStateUp bool
+	AdminStateUp bool `json:"admin_state_up,omitempty"`
+}
+
+func (opts UpdateOpts) ToLBMemberUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "member")
 }
 
 // Update allows members to be updated.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
-	type member struct {
-		AdminStateUp bool `json:"admin_state_up"`
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
+	var r UpdateResult
+	b, err := opts.ToLBMemberUpdateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
-	type request struct {
-		Member member `json:"member"`
-	}
-
-	reqBody := request{Member: member{AdminStateUp: opts.AdminStateUp}}
-
-	// Send request to API
-	var res UpdateResult
-	_, res.Err = c.Put(resourceURL(c, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
-	return res
+	return r
 }
 
 // Delete will permanently delete a particular member based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(resourceURL(c, id), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return r
 }

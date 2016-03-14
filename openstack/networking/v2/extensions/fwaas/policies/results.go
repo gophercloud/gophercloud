@@ -85,3 +85,13 @@ type DeleteResult struct {
 type CreateResult struct {
 	commonResult
 }
+
+// InsertRuleResult represents the result of an InsertRule operation.
+type InsertRuleResult struct {
+	commonResult
+}
+
+// RemoveRuleResult represents the result of a RemoveRule operation.
+type RemoveRuleResult struct {
+	commonResult
+}

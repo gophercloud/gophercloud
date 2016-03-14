@@ -43,112 +43,112 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+// LBMethod is a type used for possible load balancing methods
+type LBMethod string
+
+// LBProtocol is a type used for possible load balancing protocols
+type LBProtocol string
+
 // Supported attributes for create/update operations.
 const (
-	LBMethodRoundRobin       = "ROUND_ROBIN"
-	LBMethodLeastConnections = "LEAST_CONNECTIONS"
+	LBMethodRoundRobin       LBMethod = "ROUND_ROBIN"
+	LBMethodLeastConnections LBMethod = "LEAST_CONNECTIONS"
 
-	ProtocolTCP   = "TCP"
-	ProtocolHTTP  = "HTTP"
-	ProtocolHTTPS = "HTTPS"
+	ProtocolTCP   LBProtocol = "TCP"
+	ProtocolHTTP  LBProtocol = "HTTP"
+	ProtocolHTTPS LBProtocol = "HTTPS"
 )
+
+// CreateOptsBuilder is the interface types must satisfy to be used as options
+// for the Create function
+type CreateOptsBuilder interface {
+	ToLBPoolCreateMap() (map[string]interface{}, error)
+}
 
 // CreateOpts contains all the values needed to create a new pool.
 type CreateOpts struct {
+	// Name of the pool.
+	Name string `json:"name" required:"true"`
+	// The protocol used by the pool members, you can use either
+	// ProtocolTCP, ProtocolHTTP, or ProtocolHTTPS.
+	Protocol LBProtocol `json:"protocol" required:"true"`
 	// Only required if the caller has an admin role and wants to create a pool
 	// for another tenant.
-	TenantID string
-
-	// Required. Name of the pool.
-	Name string
-
-	// Required. The protocol used by the pool members, you can use either
-	// ProtocolTCP, ProtocolHTTP, or ProtocolHTTPS.
-	Protocol string
-
+	TenantID string `json:"tenant_id,omitempty"`
 	// The network on which the members of the pool will be located. Only members
 	// that are on this network can be added to the pool.
-	SubnetID string
-
+	SubnetID string `json:"subnet_id,omitempty"`
 	// The algorithm used to distribute load between the members of the pool. The
 	// current specification supports LBMethodRoundRobin and
 	// LBMethodLeastConnections as valid values for this attribute.
-	LBMethod string
+	LBMethod LBMethod `json:"lb_method" required:"true"`
 }
 
-// Create accepts a CreateOpts struct and uses the values to create a new
+// ToLBPoolCreateMap allows CreateOpts to satisfy the CreateOptsBuilder interface
+func (opts CreateOpts) ToLBPoolCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "pool")
+}
+
+// Create accepts a CreateOptsBuilder and uses the values to create a new
 // load balancer pool.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	type pool struct {
-		Name     string `json:"name"`
-		TenantID string `json:"tenant_id,omitempty"`
-		Protocol string `json:"protocol"`
-		SubnetID string `json:"subnet_id"`
-		LBMethod string `json:"lb_method"`
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
+	var r CreateResult
+	b, err := opts.ToLBPoolCreateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
-	type request struct {
-		Pool pool `json:"pool"`
-	}
-
-	reqBody := request{Pool: pool{
-		Name:     opts.Name,
-		TenantID: opts.TenantID,
-		Protocol: opts.Protocol,
-		SubnetID: opts.SubnetID,
-		LBMethod: opts.LBMethod,
-	}}
-
-	var res CreateResult
-	_, res.Err = c.Post(rootURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return r
 }
 
 // Get retrieves a particular pool based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(resourceURL(c, id), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return r
+}
+
+// UpdateOptsBuilder is the interface types must satisfy to be used as options
+// for the Update function
+type UpdateOptsBuilder interface {
+	ToLBPoolUpdateMap() (map[string]interface{}, error)
 }
 
 // UpdateOpts contains the values used when updating a pool.
 type UpdateOpts struct {
-	// Required. Name of the pool.
-	Name string
-
+	// Name of the pool.
+	Name string `json:"name,omitempty"`
 	// The algorithm used to distribute load between the members of the pool. The
 	// current specification supports LBMethodRoundRobin and
 	// LBMethodLeastConnections as valid values for this attribute.
-	LBMethod string
+	LBMethod LBMethod `json:"lb_method,omitempty"`
+}
+
+// ToLBPoolUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder interface
+func (opts UpdateOpts) ToLBPoolUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "pool")
 }
 
 // Update allows pools to be updated.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
-	type pool struct {
-		Name     string `json:"name,"`
-		LBMethod string `json:"lb_method"`
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
+	var r UpdateResult
+	b, err := opts.ToLBPoolUpdateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
-	type request struct {
-		Pool pool `json:"pool"`
-	}
-
-	reqBody := request{Pool: pool{
-		Name:     opts.Name,
-		LBMethod: opts.LBMethod,
-	}}
-
-	// Send request to API
-	var res UpdateResult
-	_, res.Err = c.Put(resourceURL(c, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return res
+	return r
 }
 
 // Delete will permanently delete a particular pool based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(resourceURL(c, id), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return r
 }
 
 // AssociateMonitor will associate a health monitor with a particular pool.
@@ -157,25 +157,17 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 // member can be deactivated (status set to INACTIVE) if any of health monitors
 // finds it unhealthy.
 func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) AssociateResult {
-	type hm struct {
-		ID string `json:"id"`
-	}
-	type request struct {
-		Monitor hm `json:"health_monitor"`
-	}
-
-	reqBody := request{hm{ID: monitorID}}
-
-	var res AssociateResult
-	_, res.Err = c.Post(associateURL(c, poolID), reqBody, &res.Body, nil)
-	return res
+	var r AssociateResult
+	b := map[string]interface{}{"health_monitor": map[string]string{"id": monitorID}}
+	_, r.Err = c.Post(associateURL(c, poolID), b, &r.Body, nil)
+	return r
 }
 
 // DisassociateMonitor will disassociate a health monitor with a particular
 // pool. When dissociation is successful, the health monitor will no longer
 // check for the health of the members of the pool.
 func DisassociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) AssociateResult {
-	var res AssociateResult
-	_, res.Err = c.Delete(disassociateURL(c, poolID, monitorID), nil)
-	return res
+	var r AssociateResult
+	_, r.Err = c.Delete(disassociateURL(c, poolID, monitorID), nil)
+	return r
 }

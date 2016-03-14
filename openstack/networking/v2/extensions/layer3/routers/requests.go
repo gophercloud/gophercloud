@@ -40,14 +40,22 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+type CreateOptsBuilder interface {
+	ToRouterCreateMap() (map[string]interface{}, error)
+}
+
 // CreateOpts contains all the values needed to create a new router. There are
 // no required values.
 type CreateOpts struct {
-	Name         string
-	AdminStateUp *bool
-	Distributed  *bool
-	TenantID     string
-	GatewayInfo  *GatewayInfo
+	Name         string       `json:"name,omitempty"`
+	AdminStateUp *bool        `json:"admin_state_up,omitempty"`
+	Distributed  *bool        `json:"distributed,omitempty"`
+	TenantID     string       `json:"tenant_id,omitempty"`
+	GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
+}
+
+func (opts CreateOpts) ToRouterCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "router")
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new
@@ -58,49 +66,39 @@ type CreateOpts struct {
 // GatewayInfo struct. The external gateway for the router must be plugged into
 // an external network (it is external if its `router:external' field is set to
 // true).
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	type router struct {
-		Name         *string      `json:"name,omitempty"`
-		AdminStateUp *bool        `json:"admin_state_up,omitempty"`
-		Distributed  *bool        `json:"distributed,omitempty"`
-		TenantID     *string      `json:"tenant_id,omitempty"`
-		GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
+	var r CreateResult
+	b, err := opts.ToRouterCreateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
-
-	type request struct {
-		Router router `json:"router"`
-	}
-
-	reqBody := request{Router: router{
-		Name:         gophercloud.MaybeString(opts.Name),
-		AdminStateUp: opts.AdminStateUp,
-		Distributed:  opts.Distributed,
-		TenantID:     gophercloud.MaybeString(opts.TenantID),
-	}}
-
-	if opts.GatewayInfo != nil {
-		reqBody.Router.GatewayInfo = opts.GatewayInfo
-	}
-
-	var res CreateResult
-	_, res.Err = c.Post(rootURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return r
 }
 
 // Get retrieves a particular router based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(resourceURL(c, id), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return r
+}
+
+type UpdateOptsBuilder interface {
+	ToRouterUpdateMap() (map[string]interface{}, error)
 }
 
 // UpdateOpts contains the values used when updating a router.
 type UpdateOpts struct {
-	Name         string
-	AdminStateUp *bool
-	Distributed  *bool
-	GatewayInfo  *GatewayInfo
-	Routes       []Route
+	Name         string       `json:"name,omitempty"`
+	AdminStateUp *bool        `json:"admin_state_up,omitempty"`
+	Distributed  *bool        `json:"distributed,omitempty"`
+	GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
+	Routes       []Route      `json:"routes,omitempty"`
+}
+
+func (opts UpdateOpts) ToRouterUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "router")
 }
 
 // Update allows routers to be updated. You can update the name, administrative
@@ -108,83 +106,43 @@ type UpdateOpts struct {
 // external gateway for a router, see Create. This operation does not enable
 // the update of router interfaces. To do this, use the AddInterface and
 // RemoveInterface functions.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
-	type router struct {
-		Name         *string      `json:"name,omitempty"`
-		AdminStateUp *bool        `json:"admin_state_up,omitempty"`
-		Distributed  *bool        `json:"distributed,omitempty"`
-		GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
-		Routes       []Route      `json:"routes"`
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
+	var r UpdateResult
+	b, err := opts.ToRouterUpdateMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
-
-	type request struct {
-		Router router `json:"router"`
-	}
-
-	reqBody := request{Router: router{
-		Name:         gophercloud.MaybeString(opts.Name),
-		AdminStateUp: opts.AdminStateUp,
-		Distributed:  opts.Distributed,
-	}}
-
-	if opts.GatewayInfo != nil {
-		reqBody.Router.GatewayInfo = opts.GatewayInfo
-	}
-
-	if opts.Routes != nil {
-		reqBody.Router.Routes = opts.Routes
-	}
-
-	// Send request to API
-	var res UpdateResult
-	_, res.Err = c.Put(resourceURL(c, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
-	return res
+	return r
 }
 
 // Delete will permanently delete a particular router based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(resourceURL(c, id), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return r
 }
 
-// InterfaceOptsBuilder is what types must satisfy to be used as AddInterface
+// AddInterfaceOptsBuilder is what types must satisfy to be used as AddInterface
 // options.
-type InterfaceOptsBuilder interface {
-	ToInterfaceAddMap() (map[string]interface{}, error)
+type AddInterfaceOptsBuilder interface {
+	ToRouterAddInterfaceMap() (map[string]interface{}, error)
 }
 
-// InterfaceOpts allow you to work with operations that either add or remote
+// AddInterfaceOpts allow you to work with operations that either add
 // an internal interface from a router.
-type InterfaceOpts struct {
-	SubnetID string
-	PortID   string
+type AddInterfaceOpts struct {
+	SubnetID string `json:"subnet_id" xor:"PortID"`
+	PortID   string `json:"port_id" xor:"SubnetID"`
 }
 
-// ToInterfaceAddMap allows InterfaceOpts to satisfy the InterfaceOptsBuilder
+// ToRouterAddInterfaceMap allows InterfaceOpts to satisfy the InterfaceOptsBuilder
 // interface
-func (opts InterfaceOpts) ToInterfaceAddMap() (map[string]interface{}, error) {
-	if (opts.SubnetID == "" && opts.PortID == "") || (opts.SubnetID != "" && opts.PortID != "") {
-		err := gophercloud.ErrInvalidInput{}
-		err.Function = "routers.ToInterfaceAddMap"
-		err.Argument = "routers.InterfaceOpts.SubnetID/routers.InterfaceOpts.PortID"
-		err.Info = "When adding a router interface, you must provide one and only" +
-			" one of a subnet ID or a port ID"
-		return nil, err
-	}
-
-	b := make(map[string]interface{})
-	if opts.SubnetID != "" {
-		b["subnet_id"] = opts.SubnetID
-	}
-	if opts.PortID != "" {
-		b["port_id"] = opts.PortID
-	}
-
-	return b, nil
+func (opts AddInterfaceOpts) ToRouterAddInterfaceMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // AddInterface attaches a subnet to an internal router interface. You must
@@ -208,28 +166,36 @@ func (opts InterfaceOpts) ToInterfaceAddMap() (map[string]interface{}, error) {
 // identifier of a new port created by this operation. After the operation
 // completes, the device ID of the port is set to the router ID, and the
 // device owner attribute is set to `network:router_interface'.
-func AddInterface(c *gophercloud.ServiceClient, id string, opts InterfaceOptsBuilder) InterfaceResult {
+func AddInterface(c *gophercloud.ServiceClient, id string, opts AddInterfaceOptsBuilder) InterfaceResult {
 	var r InterfaceResult
-
-	if id == "" {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "routers.AddInterface"
-		err.Argument = "id"
-		r.Err = err
-		return r
-	}
-
-	b, err := opts.ToInterfaceAddMap()
+	b, err := opts.ToRouterAddInterfaceMap()
 	if err != nil {
 		r.Err = err
 		return r
 	}
-
 	_, r.Err = c.Put(addInterfaceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
 	return r
+}
+
+// RemoveInterfaceOptsBuilder is what types must satisfy to be used as RemoveInterface
+// options.
+type RemoveInterfaceOptsBuilder interface {
+	ToRouterRemoveInterfaceMap() (map[string]interface{}, error)
+}
+
+// RemoveInterfaceOpts allow you to work with operations that either add or remote
+// an internal interface from a router.
+type RemoveInterfaceOpts struct {
+	SubnetID string `json:"subnet_id" or:"PortID"`
+	PortID   string `json:"port_id" or:"SubnetID"`
+}
+
+// ToRouterRemoveInterfaceMap allows RemoveInterfaceOpts to satisfy the RemoveInterfaceOptsBuilder
+// interface
+func (opts RemoveInterfaceOpts) ToRouterRemoveInterfaceMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // RemoveInterface removes an internal router interface, which detaches a
@@ -245,19 +211,15 @@ func AddInterface(c *gophercloud.ServiceClient, id string, opts InterfaceOptsBui
 // visible to you, the operation will fail and a 404 Not Found error will be
 // returned. After this operation completes, the port connecting the router
 // with the subnet is removed from the subnet for the network.
-func RemoveInterface(c *gophercloud.ServiceClient, id string, opts InterfaceOpts) InterfaceResult {
-	var res InterfaceResult
-
-	type request struct {
-		SubnetID string `json:"subnet_id,omitempty"`
-		PortID   string `json:"port_id,omitempty"`
+func RemoveInterface(c *gophercloud.ServiceClient, id string, opts RemoveInterfaceOptsBuilder) InterfaceResult {
+	var r InterfaceResult
+	b, err := opts.ToRouterRemoveInterfaceMap()
+	if err != nil {
+		r.Err = err
+		return r
 	}
-
-	body := request{SubnetID: opts.SubnetID, PortID: opts.PortID}
-
-	_, res.Err = c.Put(removeInterfaceURL(c, id), body, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(removeInterfaceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
-	return res
+	return r
 }

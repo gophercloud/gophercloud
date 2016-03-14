@@ -5,19 +5,6 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// AdminState gives users a solid type to work with for create and update
-// operations. It is recommended that users use the `Up` and `Down` enums.
-type AdminState *bool
-
-// Convenience vars for AdminStateUp values.
-var (
-	iTrue  = true
-	iFalse = false
-
-	Up   AdminState = &iTrue
-	Down AdminState = &iFalse
-)
-
 // NetworkExtAttrs represents an extended form of a Network with additional fields.
 type NetworkExtAttrs struct {
 	// UUID for the network

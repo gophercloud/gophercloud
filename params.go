@@ -166,6 +166,17 @@ var (
 	Disabled EnabledState = &iFalse
 )
 
+// IPVersion is a type for the possible IP address versions. Valid instances
+// are IPv4 and IPv6
+type IPVersion int
+
+const (
+	// IPv4 is used for IP version 4 addresses
+	IPv4 IPVersion = 4
+	// IPv6 is used for IP version 6 addresses
+	IPv6 IPVersion = 6
+)
+
 // IntToPointer is a function for converting integers into integer pointers.
 // This is useful when passing in options to operations.
 func IntToPointer(i int) *int {

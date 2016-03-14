@@ -5,26 +5,6 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// AdminState gives users a solid type to work with for create and update
-// operations. It is recommended that users use the `Up` and `Down` enums.
-type AdminState *bool
-
-// Convenience vars for AdminStateUp values.
-var (
-	iTrue  = true
-	iFalse = false
-
-	Up   AdminState = &iTrue
-	Down AdminState = &iFalse
-)
-
-type networkOpts struct {
-	AdminStateUp *bool
-	Name         string
-	Shared       *bool
-	TenantID     string
-}
-
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
@@ -52,10 +32,7 @@ type ListOpts struct {
 // ToNetworkListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToNetworkListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -70,7 +47,6 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		}
 		url += query
 	}
-
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return NetworkPage{pagination.LinkedPageBase{PageResult: r}}
 	})
@@ -78,9 +54,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 
 // Get retrieves a specific network based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(getURL(c, id), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return r
 }
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -91,28 +67,17 @@ type CreateOptsBuilder interface {
 	ToNetworkCreateMap() (map[string]interface{}, error)
 }
 
-// CreateOpts is the common options struct used in this package's Create
-// operation.
-type CreateOpts networkOpts
+// CreateOpts satisfies the CreateOptsBuilder interface
+type CreateOpts struct {
+	AdminStateUp *bool  `json:"admin_state_up,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Shared       *bool  `json:"shared,omitempty"`
+	TenantID     string `json:"tenant_id,omitempty"`
+}
 
 // ToNetworkCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
-	n := make(map[string]interface{})
-
-	if opts.AdminStateUp != nil {
-		n["admin_state_up"] = &opts.AdminStateUp
-	}
-	if opts.Name != "" {
-		n["name"] = opts.Name
-	}
-	if opts.Shared != nil {
-		n["shared"] = &opts.Shared
-	}
-	if opts.TenantID != "" {
-		n["tenant_id"] = opts.TenantID
-	}
-
-	return map[string]interface{}{"network": n}, nil
+	return gophercloud.BuildRequestBody(opts, "network")
 }
 
 // Create accepts a CreateOpts struct and creates a new network using the values
@@ -123,16 +88,14 @@ func (opts CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
 // network. An admin user, however, has the option of specifying another tenant
 // ID in the CreateOpts struct.
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToNetworkCreateMap()
+	var r CreateResult
+	b, err := opts.ToNetworkCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return r
 	}
-
-	_, res.Err = c.Post(createURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
+	return r
 }
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -143,64 +106,44 @@ type UpdateOptsBuilder interface {
 	ToNetworkUpdateMap() (map[string]interface{}, error)
 }
 
-// UpdateOpts is the common options struct used in this package's Update
-// operation.
-type UpdateOpts networkOpts
+// UpdateOpts satisfies the UpdateOptsBuilder interface
+type UpdateOpts struct {
+	AdminStateUp *bool  `json:"admin_state_up,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Shared       *bool  `json:"shared,omitempty"`
+}
 
 // ToNetworkUpdateMap casts a UpdateOpts struct to a map.
 func (opts UpdateOpts) ToNetworkUpdateMap() (map[string]interface{}, error) {
-	n := make(map[string]interface{})
-
-	if opts.AdminStateUp != nil {
-		n["admin_state_up"] = &opts.AdminStateUp
-	}
-	if opts.Name != "" {
-		n["name"] = opts.Name
-	}
-	if opts.Shared != nil {
-		n["shared"] = &opts.Shared
-	}
-
-	return map[string]interface{}{"network": n}, nil
+	return gophercloud.BuildRequestBody(opts, "network")
 }
 
 // Update accepts a UpdateOpts struct and updates an existing network using the
 // values provided. For more information, see the Create function.
 func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuilder) UpdateResult {
-	var res UpdateResult
-
-	reqBody, err := opts.ToNetworkUpdateMap()
+	var r UpdateResult
+	b, err := opts.ToNetworkUpdateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return r
 	}
-
-	// Send request to API
-	_, res.Err = c.Put(updateURL(c, networkID), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(updateURL(c, networkID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
-
-	return res
+	return r
 }
 
 // Delete accepts a unique ID and deletes the network associated with it.
 func Delete(c *gophercloud.ServiceClient, networkID string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(deleteURL(c, networkID), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = c.Delete(deleteURL(c, networkID), nil)
+	return r
 }
 
 // IDFromName is a convenience function that returns a network's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
 	count := 0
 	id := ""
-	if name == "" {
-		err := &gophercloud.ErrMissingInput{}
-		err.Function = "networks.IDFromName"
-		err.Argument = "name"
-		return "", err
-	}
-
 	pages, err := List(client, nil).AllPages()
 	if err != nil {
 		return "", err
@@ -220,19 +163,10 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 
 	switch count {
 	case 0:
-		err := &gophercloud.ErrResourceNotFound{}
-		err.Name = name
-		err.ResourceType = "network"
-		err.Function = "networks.IDFromName"
-		return "", err
+		return "", gophercloud.ErrResourceNotFound{Name: name, ResourceType: "network"}
 	case 1:
 		return id, nil
 	default:
-		err := &gophercloud.ErrMultipleResourcesFound{}
-		err.Count = count
-		err.Name = name
-		err.ResourceType = "network"
-		err.Function = "networks.IDFromName"
-		return "", err
+		return "", gophercloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "network"}
 	}
 }

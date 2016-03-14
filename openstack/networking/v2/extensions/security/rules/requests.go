@@ -41,12 +41,13 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+type RuleDirection string
+type RuleProtocol string
+
 // Constants useful for CreateOpts
 const (
 	DirIngress   = "ingress"
 	DirEgress    = "egress"
-	Ether4       = "IPv4"
-	Ether6       = "IPv6"
 	ProtocolTCP  = "tcp"
 	ProtocolUDP  = "udp"
 	ProtocolICMP = "icmp"
@@ -62,106 +63,46 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	// Required. Must be either "ingress" or "egress": the direction in which the
 	// security group rule is applied.
-	Direction string
-
+	Direction RuleDirection `json:"direction" required:"true"`
 	// Required. Must be "IPv4" or "IPv6", and addresses represented in CIDR must
 	// match the ingress or egress rules.
-	EtherType string
-
+	EtherType gophercloud.IPVersion `json:"ethertype" required:"true"`
 	// Required. The security group ID to associate with this security group rule.
-	SecGroupID string
-
+	SecGroupID string `json:"security_group_id" required:"true"`
 	// Optional. The maximum port number in the range that is matched by the
 	// security group rule. The PortRangeMin attribute constrains the PortRangeMax
 	// attribute. If the protocol is ICMP, this value must be an ICMP type.
-	PortRangeMax int
-
+	PortRangeMax int `json:"port_range_max,omitempty"`
 	// Optional. The minimum port number in the range that is matched by the
 	// security group rule. If the protocol is TCP or UDP, this value must be
 	// less than or equal to the value of the PortRangeMax attribute. If the
 	// protocol is ICMP, this value must be an ICMP type.
-	PortRangeMin int
-
+	PortRangeMin int `json:"port_range_min,omitempty"`
 	// Optional. The protocol that is matched by the security group rule. Valid
 	// values are "tcp", "udp", "icmp" or an empty string.
-	Protocol string
-
+	Protocol RuleProtocol `json:"protocol,omitempty"`
 	// Optional. The remote group ID to be associated with this security group
 	// rule. You can specify either RemoteGroupID or RemoteIPPrefix.
-	RemoteGroupID string
-
+	RemoteGroupID string `json:"remote_group_id,omitempty"`
 	// Optional. The remote IP prefix to be associated with this security group
 	// rule. You can specify either RemoteGroupID or RemoteIPPrefix. This
 	// attribute matches the specified IP prefix as the source IP address of the
 	// IP packet.
-	RemoteIPPrefix string
-
+	RemoteIPPrefix string `json:"remote_ip_prefix,omitempty"`
 	// Required for admins. Indicates the owner of the VIP.
-	TenantID string
+	TenantID string `json:"tenant_id,omitempty"`
 }
 
 // ToSecGroupRuleCreateMap allows CreateOpts to satisfy the CreateOptsBuilder
 // interface
 func (opts CreateOpts) ToSecGroupRuleCreateMap() (map[string]interface{}, error) {
-	if opts.Direction != DirIngress && opts.Direction != DirEgress {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "rules.ToSecGroupRuleCreateMap"
-		err.Argument = "rules.CreateOpts.Direction"
-		return nil, err
-	}
-	if opts.EtherType != Ether4 && opts.EtherType != Ether6 {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "rules.ToSecGroupRuleCreateMap"
-		err.Argument = "rules.CreateOpts.EtherType"
-		return nil, err
-	}
-	if opts.SecGroupID == "" {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "rules.ToSecGroupRuleCreateMap"
-		err.Argument = "rules.CreateOpts.SecGroupID"
-		return nil, err
-	}
-	if opts.Protocol != "" && opts.Protocol != ProtocolTCP && opts.Protocol != ProtocolUDP && opts.Protocol != ProtocolICMP {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "rules.ToSecGroupRuleCreateMap"
-		err.Argument = "rules.CreateOpts.Protocol"
-		return nil, err
-	}
-
-	i := map[string]interface{}{
-		"direction":         opts.Direction,
-		"ethertype":         opts.EtherType,
-		"security_group_id": opts.SecGroupID,
-	}
-	if opts.PortRangeMax != 0 {
-		i["port_range_max"] = opts.PortRangeMax
-	}
-	if opts.PortRangeMin != 0 {
-		i["port_range_min"] = opts.PortRangeMin
-	}
-	if opts.Protocol != "" {
-		i["protocol"] = opts.Protocol
-	}
-	if opts.RemoteGroupID != "" {
-		i["remote_group_id"] = opts.RemoteGroupID
-	}
-	if opts.RemoteIPPrefix != "" {
-		i["remote_ip_prefix"] = opts.RemoteIPPrefix
-	}
-	if opts.TenantID != "" {
-		i["tenant_id"] = opts.TenantID
-	}
-
-	b := make(map[string]interface{})
-	b["security_group_rule"] = i
-	return b, nil
+	return gophercloud.BuildRequestBody(opts, "security_group_rule")
 }
 
 // Create is an operation which adds a new security group rule and associates it
 // with an existing security group (whose ID is specified in CreateOpts).
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var r CreateResult
-
 	b, err := opts.ToSecGroupRuleCreateMap()
 	if err != nil {
 		r.Err = err
@@ -173,14 +114,14 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 
 // Get retrieves a particular security group rule based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(resourceURL(c, id), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return r
 }
 
 // Delete will permanently delete a particular security group rule based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(resourceURL(c, id), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return r
 }

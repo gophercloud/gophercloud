@@ -42,18 +42,20 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 		return pagination.Pager{Err: err}
 	}
 	u := rootURL(c) + q.String()
-
 	return pagination.NewPager(c, u, func(r pagination.PageResult) pagination.Page {
 		return MonitorPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
+// MonitorType is the type for all the types of LB monitors
+type MonitorType string
+
 // Constants that represent approved monitoring types.
 const (
-	TypePING  = "PING"
-	TypeTCP   = "TCP"
-	TypeHTTP  = "HTTP"
-	TypeHTTPS = "HTTPS"
+	TypePING  MonitorType = "PING"
+	TypeTCP   MonitorType = "TCP"
+	TypeHTTP  MonitorType = "HTTP"
+	TypeHTTPS MonitorType = "HTTPS"
 )
 
 // CreateOptsBuilder is what types must satisfy to be used as Create
@@ -64,126 +66,54 @@ type CreateOptsBuilder interface {
 
 // CreateOpts contains all the values needed to create a new health monitor.
 type CreateOpts struct {
-	// Required for admins. Indicates the owner of the VIP.
-	TenantID string
-
 	// Required. The type of probe, which is PING, TCP, HTTP, or HTTPS, that is
 	// sent by the load balancer to verify the member state.
-	Type string
-
+	Type MonitorType `json:"type" required:"true"`
 	// Required. The time, in seconds, between sending probes to members.
-	Delay int
-
+	Delay int `json:"delay" required:"true"`
 	// Required. Maximum number of seconds for a monitor to wait for a ping reply
 	// before it times out. The value must be less than the delay value.
-	Timeout int
-
+	Timeout int `json:"timeout" required:"true"`
 	// Required. Number of permissible ping failures before changing the member's
 	// status to INACTIVE. Must be a number between 1 and 10.
-	MaxRetries int
-
+	MaxRetries int `json:"max_retries" required:"true"`
 	// Required for HTTP(S) types. URI path that will be accessed if monitor type
 	// is HTTP or HTTPS.
-	URLPath string
-
+	URLPath string `json:"url_path,omitempty"`
 	// Required for HTTP(S) types. The HTTP method used for requests by the
 	// monitor. If this attribute is not specified, it defaults to "GET".
-	HTTPMethod string
-
+	HTTPMethod string `json:"http_method,omitempty"`
 	// Required for HTTP(S) types. Expected HTTP codes for a passing HTTP(S)
 	// monitor. You can either specify a single status like "200", or a range
 	// like "200-202".
-	ExpectedCodes string
-
-	AdminStateUp *bool
+	ExpectedCodes string `json:"expected_codes,omitempty"`
+	// Required for admins. Indicates the owner of the VIP.
+	TenantID     string `json:"tenant_id,omitempty"`
+	AdminStateUp *bool  `json:"admin_state_up,omitempty"`
 }
 
 // ToLBMonitorCreateMap allows CreateOpts to satisfy the CreateOptsBuilder
 // interface
 func (opts CreateOpts) ToLBMonitorCreateMap() (map[string]interface{}, error) {
-	allowed := map[string]bool{TypeHTTP: true, TypeHTTPS: true, TypeTCP: true, TypePING: true}
-	if opts.Type == "" || allowed[opts.Type] == false {
-		err := gophercloud.ErrInvalidInput{}
-		err.Function = "monitors.ToLBMonitorCreateMap"
-		err.Argument = "monitors.CreateOpts.Type"
-		err.Info = "Supported values are PING, TCP, HTTP and HTTPS"
-		return nil, err
-	}
-	if opts.Delay == 0 {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "monitors.ToLBMonitorCreateMap"
-		err.Argument = "monitors.CreateOpts.Delay"
-		return nil, err
-	}
-	if opts.Timeout == 0 {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "monitors.ToLBMonitorCreateMap"
-		err.Argument = "monitors.CreateOpts.Timeout"
-		return nil, err
-	}
-	if opts.MaxRetries == 0 {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "monitors.ToLBMonitorCreateMap"
-		err.Argument = "monitors.CreateOpts.MaxRetries"
-		return nil, err
-	}
-
 	if opts.Type == TypeHTTP || opts.Type == TypeHTTPS {
 		if opts.URLPath == "" {
 			err := gophercloud.ErrMissingInput{}
-			err.Function = "monitors.ToLBMonitorCreateMap"
 			err.Argument = "monitors.CreateOpts.URLPath"
 			return nil, err
 		}
 		if opts.ExpectedCodes == "" {
 			err := gophercloud.ErrMissingInput{}
-			err.Function = "monitors.ToLBMonitorCreateMap"
 			err.Argument = "monitors.CreateOpts.ExpectedCodes"
 			return nil, err
 		}
 	}
 	if opts.Delay < opts.Timeout {
 		err := gophercloud.ErrInvalidInput{}
-		err.Function = "monitors.ToLBMonitorCreateMap"
 		err.Argument = "monitors.CreateOpts.Delay/monitors.CreateOpts.Timeout"
 		err.Info = "Delay must be greater than or equal to timeout"
 		return nil, err
 	}
-
-	i := map[string]interface{}{
-		"type":    opts.Type,
-		"delay":   opts.Delay,
-		"timeout": opts.Timeout,
-	}
-
-	if opts.MaxRetries != 0 {
-		i["max_retries"] = opts.MaxRetries
-	}
-
-	if opts.TenantID != "" {
-		i["tenant_id"] = opts.TenantID
-	}
-
-	if opts.URLPath != "" {
-		i["url_path"] = opts.URLPath
-	}
-
-	if opts.ExpectedCodes != "" {
-		i["expected_codes"] = opts.ExpectedCodes
-	}
-
-	if opts.HTTPMethod != "" {
-		i["http_method"] = opts.HTTPMethod
-	}
-
-	if opts.AdminStateUp != nil {
-		i["admin_state_up"] = &opts.AdminStateUp
-	}
-
-	b := make(map[string]interface{})
-	b["health_monitor"] = i
-
-	return b, nil
+	return gophercloud.BuildRequestBody(opts, "health_monitor")
 }
 
 // Create is an operation which provisions a new health monitor. There are
@@ -202,22 +132,20 @@ func (opts CreateOpts) ToLBMonitorCreateMap() (map[string]interface{}, error) {
 //
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var r CreateResult
-
 	b, err := opts.ToLBMonitorCreateMap()
 	if err != nil {
 		r.Err = err
 		return r
 	}
-
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
 	return r
 }
 
 // Get retrieves a particular health monitor based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(resourceURL(c, id), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return r
 }
 
 // UpdateOptsBuilder is what types must satisfy to be used as Update
@@ -230,31 +158,25 @@ type UpdateOptsBuilder interface {
 // Attributes not listed here but appear in CreateOpts are immutable and cannot
 // be updated.
 type UpdateOpts struct {
-	// Required. The time, in seconds, between sending probes to members.
-	Delay int
-
-	// Required. Maximum number of seconds for a monitor to wait for a ping reply
+	// The time, in seconds, between sending probes to members.
+	Delay int `json:"delay,omitempty"`
+	// Maximum number of seconds for a monitor to wait for a ping reply
 	// before it times out. The value must be less than the delay value.
-	Timeout int
-
-	// Required. Number of permissible ping failures before changing the member's
+	Timeout int `json:"timeout,omitempty"`
+	// Number of permissible ping failures before changing the member's
 	// status to INACTIVE. Must be a number between 1 and 10.
-	MaxRetries int
-
-	// Required for HTTP(S) types. URI path that will be accessed if monitor type
+	MaxRetries int `json:"max_retries,omitempty"`
+	// URI path that will be accessed if monitor type
 	// is HTTP or HTTPS.
-	URLPath string
-
-	// Required for HTTP(S) types. The HTTP method used for requests by the
+	URLPath string `json:"url_path,omitempty"`
+	// The HTTP method used for requests by the
 	// monitor. If this attribute is not specified, it defaults to "GET".
-	HTTPMethod string
-
-	// Required for HTTP(S) types. Expected HTTP codes for a passing HTTP(S)
+	HTTPMethod string `json:"http_method,omitempty"`
+	// Expected HTTP codes for a passing HTTP(S)
 	// monitor. You can either specify a single status like "200", or a range
 	// like "200-202".
-	ExpectedCodes string
-
-	AdminStateUp *bool
+	ExpectedCodes string `json:"expected_codes,omitempty"`
+	AdminStateUp  *bool  `json:"admin_state_up,omitempty"`
 }
 
 // ToLBMonitorUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder
@@ -262,71 +184,31 @@ type UpdateOpts struct {
 func (opts UpdateOpts) ToLBMonitorUpdateMap() (map[string]interface{}, error) {
 	if opts.Delay > 0 && opts.Timeout > 0 && opts.Delay < opts.Timeout {
 		err := gophercloud.ErrInvalidInput{}
-		err.Function = "monitors.ToLBMonitorCreateMap"
 		err.Argument = "monitors.CreateOpts.Delay/monitors.CreateOpts.Timeout"
 		err.Value = fmt.Sprintf("%d/%d", opts.Delay, opts.Timeout)
 		err.Info = "Delay must be greater than or equal to timeout"
 		return nil, err
 	}
-
-	i := map[string]interface{}{
-		"delay":       opts.Delay,
-		"timeout":     opts.Timeout,
-		"max_retries": opts.MaxRetries,
-	}
-
-	if opts.URLPath != "" {
-		i["url_path"] = opts.URLPath
-	}
-
-	if opts.ExpectedCodes != "" {
-		i["expected_codes"] = opts.ExpectedCodes
-	}
-
-	if opts.HTTPMethod != "" {
-		i["http_method"] = opts.HTTPMethod
-	}
-
-	if opts.AdminStateUp != nil {
-		i["admin_state_up"] = *opts.AdminStateUp
-	}
-
-	b := make(map[string]interface{})
-	b["health_monitor"] = i
-
-	fmt.Printf("b: %+v\n", b)
-
-	return b, nil
+	return gophercloud.BuildRequestBody(opts, "health_monitor")
 }
 
 // Update is an operation which modifies the attributes of the specified monitor.
 func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
 	var r UpdateResult
-
-	if id == "" {
-		err := gophercloud.ErrMissingInput{}
-		err.Function = "monitors.Update"
-		err.Argument = "id"
-		r.Err = err
-		return r
-	}
-
 	b, err := opts.ToLBMonitorUpdateMap()
 	if err != nil {
 		r.Err = err
 		return r
 	}
-
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
-
 	return r
 }
 
 // Delete will permanently delete a particular monitor based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(resourceURL(c, id), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return r
 }

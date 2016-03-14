@@ -5,19 +5,6 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// AdminState gives users a solid type to work with for create and update
-// operations. It is recommended that users use the `Up` and `Down` enums.
-type AdminState *bool
-
-// Convenience vars for AdminStateUp values.
-var (
-	iTrue  = true
-	iFalse = false
-
-	Up   AdminState = &iTrue
-	Down AdminState = &iFalse
-)
-
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
@@ -48,10 +35,7 @@ type ListOpts struct {
 // ToPortListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToPortListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -70,7 +54,6 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		}
 		url += query
 	}
-
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return PortPage{pagination.LinkedPageBase{PageResult: r}}
 	})
@@ -78,9 +61,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 
 // Get retrieves a specific port based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(getURL(c, id), &res.Body, nil)
-	return res
+	var r GetResult
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return r
 }
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -93,71 +76,34 @@ type CreateOptsBuilder interface {
 
 // CreateOpts represents the attributes used when creating a new port.
 type CreateOpts struct {
-	NetworkID           string
-	Name                string
-	AdminStateUp        *bool
-	MACAddress          string
-	FixedIPs            interface{}
-	DeviceID            string
-	DeviceOwner         string
-	TenantID            string
-	SecurityGroups      []string
-	AllowedAddressPairs []AddressPair
+	NetworkID           string        `json:"network_id" required:"true"`
+	Name                string        `json:"name,omitempty"`
+	AdminStateUp        *bool         `json:"admin_state_up,omitempty"`
+	MACAddress          string        `json:"mac_address,omitempty"`
+	FixedIPs            interface{}   `json:"fixed_ips,omitempty"`
+	DeviceID            string        `json:"device_id,omitempty"`
+	DeviceOwner         string        `json:"device_owner,omitempty"`
+	TenantID            string        `json:"tenant_id,omitempty"`
+	SecurityGroups      []string      `json:"security_groups,omitempty"`
+	AllowedAddressPairs []AddressPair `json:"allowed_address_pairs,omitempty"`
 }
 
 // ToPortCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToPortCreateMap() (map[string]interface{}, error) {
-	p := make(map[string]interface{})
-
-	if opts.NetworkID == "" {
-		return nil, errNetworkIDRequired
-	}
-	p["network_id"] = opts.NetworkID
-
-	if opts.DeviceID != "" {
-		p["device_id"] = opts.DeviceID
-	}
-	if opts.DeviceOwner != "" {
-		p["device_owner"] = opts.DeviceOwner
-	}
-	if opts.FixedIPs != nil {
-		p["fixed_ips"] = opts.FixedIPs
-	}
-	if opts.SecurityGroups != nil {
-		p["security_groups"] = opts.SecurityGroups
-	}
-	if opts.TenantID != "" {
-		p["tenant_id"] = opts.TenantID
-	}
-	if opts.AdminStateUp != nil {
-		p["admin_state_up"] = &opts.AdminStateUp
-	}
-	if opts.Name != "" {
-		p["name"] = opts.Name
-	}
-	if opts.MACAddress != "" {
-		p["mac_address"] = opts.MACAddress
-	}
-	if opts.AllowedAddressPairs != nil {
-		p["allowed_address_pairs"] = opts.AllowedAddressPairs
-	}
-
-	return map[string]interface{}{"port": p}, nil
+	return gophercloud.BuildRequestBody(opts, "port")
 }
 
 // Create accepts a CreateOpts struct and creates a new network using the values
 // provided. You must remember to provide a NetworkID value.
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToPortCreateMap()
+	var r CreateResult
+	b, err := opts.ToPortCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return r
 	}
-
-	_, res.Err = c.Post(createURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
+	return r
 }
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -170,79 +116,46 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts represents the attributes used when updating an existing port.
 type UpdateOpts struct {
-	Name                string
-	AdminStateUp        *bool
-	FixedIPs            interface{}
-	DeviceID            string
-	DeviceOwner         string
-	SecurityGroups      []string
-	AllowedAddressPairs []AddressPair
+	Name                string        `json:"name,omitempty"`
+	AdminStateUp        *bool         `json:"admin_state_up,omitempty"`
+	FixedIPs            interface{}   `json:"fixed_ips,omitempty"`
+	DeviceID            string        `json:"device_id,omitempty"`
+	DeviceOwner         string        `json:"device_owner,omitempty"`
+	SecurityGroups      []string      `json:"security_groups,omitempty"`
+	AllowedAddressPairs []AddressPair `json:"allowed_address_pairs,omitempty"`
 }
 
 // ToPortUpdateMap casts an UpdateOpts struct to a map.
 func (opts UpdateOpts) ToPortUpdateMap() (map[string]interface{}, error) {
-	p := make(map[string]interface{})
-
-	if opts.DeviceID != "" {
-		p["device_id"] = opts.DeviceID
-	}
-	if opts.DeviceOwner != "" {
-		p["device_owner"] = opts.DeviceOwner
-	}
-	if opts.FixedIPs != nil {
-		p["fixed_ips"] = opts.FixedIPs
-	}
-	if opts.SecurityGroups != nil {
-		p["security_groups"] = opts.SecurityGroups
-	}
-	if opts.AdminStateUp != nil {
-		p["admin_state_up"] = &opts.AdminStateUp
-	}
-	if opts.Name != "" {
-		p["name"] = opts.Name
-	}
-	if opts.AllowedAddressPairs != nil {
-		p["allowed_address_pairs"] = opts.AllowedAddressPairs
-	}
-
-	return map[string]interface{}{"port": p}, nil
+	return gophercloud.BuildRequestBody(opts, "port")
 }
 
 // Update accepts a UpdateOpts struct and updates an existing port using the
 // values provided.
 func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var res UpdateResult
-
-	reqBody, err := opts.ToPortUpdateMap()
+	var r UpdateResult
+	b, err := opts.ToPortUpdateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return r
 	}
-
-	_, res.Err = c.Put(updateURL(c, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(updateURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
-	return res
+	return r
 }
 
 // Delete accepts a unique ID and deletes the port associated with it.
 func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(deleteURL(c, id), nil)
-	return res
+	var r DeleteResult
+	_, r.Err = c.Delete(deleteURL(c, id), nil)
+	return r
 }
 
 // IDFromName is a convenience function that returns a port's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
 	count := 0
 	id := ""
-	if name == "" {
-		err := &gophercloud.ErrMissingInput{}
-		err.Function = "ports.IDFromName"
-		err.Argument = "name"
-		return "", err
-	}
-
 	pages, err := List(client, nil).AllPages()
 	if err != nil {
 		return "", err
@@ -262,19 +175,10 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 
 	switch count {
 	case 0:
-		err := &gophercloud.ErrResourceNotFound{}
-		err.Name = name
-		err.ResourceType = "port"
-		err.Function = "ports.IDFromName"
-		return "", err
+		return "", gophercloud.ErrResourceNotFound{Name: name, ResourceType: "port"}
 	case 1:
 		return id, nil
 	default:
-		err := &gophercloud.ErrMultipleResourcesFound{}
-		err.Count = count
-		err.Name = name
-		err.ResourceType = "port"
-		err.Function = "ports.IDFromName"
-		return "", err
+		return "", gophercloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "port"}
 	}
 }
