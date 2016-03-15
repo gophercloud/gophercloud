@@ -1,9 +1,6 @@
 package stacks
 
-import (
-	"fmt"
-	"strings"
-)
+import "strings"
 
 // Environment is a structure that represents stack environments
 type Environment struct {
@@ -26,7 +23,7 @@ func (e *Environment) Validate() error {
 	}
 	for key := range e.Parsed {
 		if _, ok := EnvironmentSections[key]; !ok {
-			return fmt.Errorf("Environment has wrong section: %s", key)
+			return ErrInvalidEnvironment{Section: key}
 		}
 	}
 	return nil

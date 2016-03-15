@@ -113,7 +113,7 @@ func (t *TE) Parse() error {
 	}
 	if jerr := json.Unmarshal(t.Bin, &t.Parsed); jerr != nil {
 		if yerr := yaml.Unmarshal(t.Bin, &t.Parsed); yerr != nil {
-			return fmt.Errorf("Data in neither json nor yaml format.")
+			return ErrInvalidDataFormat{}
 		}
 	}
 	return t.Validate()
@@ -142,8 +142,7 @@ func toStringKeys(m interface{}) (map[string]interface{}, error) {
 		}
 		return typedMap, nil
 	default:
-		return nil, fmt.Errorf("Expected a map of type map[string]interface{} or map[interface{}]interface{}, actual type: %v", reflect.TypeOf(m))
-
+		return nil, gophercloud.ErrUnexpectedType{Expected: "map[string]interface{}/map[interface{}]interface{}", Actual: fmt.Sprintf("%v", reflect.TypeOf(m))}
 	}
 }
 

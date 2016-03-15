@@ -7,12 +7,9 @@ import (
 
 // Find retrieves stack events for the given stack name.
 func Find(c *gophercloud.ServiceClient, stackName string) FindResult {
-	var res FindResult
-
-	_, res.Err = c.Request("GET", findURL(c, stackName), &gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-	})
-	return res
+	var r FindResult
+	_, r.Err = c.Get(findURL(c, stackName), &r.Body, nil)
+	return r
 }
 
 // SortDir is a type for specifying in which direction to sort a list of events.
@@ -102,16 +99,12 @@ type ListOpts struct {
 // ToStackEventListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToStackEventListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List makes a request against the API to list resources for the given stack.
 func List(client *gophercloud.ServiceClient, stackName, stackID string, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client, stackName, stackID)
-
 	if opts != nil {
 		query, err := opts.ToStackEventListQuery()
 		if err != nil {
@@ -119,14 +112,11 @@ func List(client *gophercloud.ServiceClient, stackName, stackID string, opts Lis
 		}
 		url += query
 	}
-
-	createPageFn := func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		p := EventPage{pagination.MarkerPageBase{PageResult: r}}
 		p.MarkerPageBase.Owner = p
 		return p
-	}
-
-	return pagination.NewPager(client, url, createPageFn)
+	})
 }
 
 // ListResourceEventsOptsBuilder allows extensions to add additional parameters to the
@@ -166,16 +156,12 @@ type ListResourceEventsOpts struct {
 // ToResourceEventListQuery formats a ListResourceEventsOpts into a query string.
 func (opts ListResourceEventsOpts) ToResourceEventListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // ListResourceEvents makes a request against the API to list resources for the given stack.
 func ListResourceEvents(client *gophercloud.ServiceClient, stackName, stackID, resourceName string, opts ListResourceEventsOptsBuilder) pagination.Pager {
 	url := listResourceEventsURL(client, stackName, stackID, resourceName)
-
 	if opts != nil {
 		query, err := opts.ToResourceEventListQuery()
 		if err != nil {
@@ -183,21 +169,18 @@ func ListResourceEvents(client *gophercloud.ServiceClient, stackName, stackID, r
 		}
 		url += query
 	}
-
-	createPageFn := func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		p := EventPage{pagination.MarkerPageBase{PageResult: r}}
 		p.MarkerPageBase.Owner = p
 		return p
-	}
-
-	return pagination.NewPager(client, url, createPageFn)
+	})
 }
 
 // Get retreives data for the given stack resource.
 func Get(c *gophercloud.ServiceClient, stackName, stackID, resourceName, eventID string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(getURL(c, stackName, stackID, resourceName, eventID), &res.Body, &gophercloud.RequestOpts{
+	var r GetResult
+	_, r.Err = c.Get(getURL(c, stackName, stackID, resourceName, eventID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return res
+	return r
 }

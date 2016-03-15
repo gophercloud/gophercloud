@@ -200,12 +200,16 @@ type CreateHeader struct {
 
 // CreateResult represents the result of a create operation.
 type CreateResult struct {
+	checksum string
 	gophercloud.HeaderResult
 }
 
 // Extract will return a struct of headers returned from a call to Create. To obtain
 // a map of headers, call the ExtractHeader method on the CreateResult.
 func (r CreateResult) Extract() (*CreateHeader, error) {
+	//if r.Header.Get("ETag") != fmt.Sprintf("%x", localChecksum) {
+	//	return nil, ErrWrongChecksum{}
+	//}
 	var s *CreateHeader
 	err := r.ExtractInto(&s)
 	return s, err
