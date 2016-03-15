@@ -10,7 +10,7 @@ import (
 // and optional fields, with the addition of the External field.
 type CreateOpts struct {
 	networks.CreateOpts
-	External *bool `json:"router:extenal,omitempty"`
+	External *bool `json:"router:external,omitempty"`
 }
 
 // ToNetworkCreateMap casts a CreateOpts struct to a map.
@@ -22,8 +22,8 @@ func (opts CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
 // resources. It embeds networks.UpdateOpts and so inherits all of its required
 // and optional fields, with the addition of the External field.
 type UpdateOpts struct {
-	Parent   networks.UpdateOpts
-	External *bool `json:"router:extenal,omitempty"`
+	networks.UpdateOpts
+	External *bool `json:"router:external,omitempty"`
 }
 
 // ToNetworkUpdateMap casts an UpdateOpts struct to a map.

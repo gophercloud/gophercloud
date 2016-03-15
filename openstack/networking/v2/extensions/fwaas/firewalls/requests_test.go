@@ -8,6 +8,7 @@ import (
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/jrperritt/gophercloud"
 )
 
 func TestURLs(t *testing.T) {
@@ -137,7 +138,7 @@ func TestCreate(t *testing.T) {
 		TenantID:     "b4eedccc6fb74fa8a7ad6b08382b852b",
 		Name:         "fw",
 		Description:  "OpenStack firewall",
-		AdminStateUp: Up,
+		AdminStateUp: gophercloud.Enabled,
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
 	_, err := Create(fake.ServiceClient(), options).Extract()
@@ -223,7 +224,7 @@ func TestUpdate(t *testing.T) {
 	options := UpdateOpts{
 		Name:         "fw",
 		Description:  "updated fw",
-		AdminStateUp: Down,
+		AdminStateUp: gophercloud.Disabled,
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
 

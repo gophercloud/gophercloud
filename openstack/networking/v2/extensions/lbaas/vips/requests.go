@@ -126,11 +126,11 @@ type UpdateOptsBuilder interface {
 // be updated.
 type UpdateOpts struct {
 	// Human-readable name for the VIP. Does not have to be unique.
-	Name string `json:"name" required:"true"`
+	Name *string `json:"name,omitempty"`
 	// The ID of the pool with which the VIP is associated.
-	PoolID string `json:"pool_id" required:"true"`
+	PoolID *string `json:"pool_id,omitempty"`
 	// Human-readable description for the VIP.
-	Description string `json:"description"`
+	Description *string `json:"description,omitempty"`
 	// Omit this field to prevent session persistence.
 	Persistence *SessionPersistence `json:"session_persistence,omitempty"`
 	// The maximum number of connections allowed for the VIP.

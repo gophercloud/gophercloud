@@ -310,7 +310,7 @@ func TestDisassociate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "floatingip": {
-      "port_id": null
+      "port_id": ""
     }
 }
       `)

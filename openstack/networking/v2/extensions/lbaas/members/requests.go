@@ -90,7 +90,7 @@ type UpdateOptsBuilder interface {
 // UpdateOpts contains the values used when updating a pool member.
 type UpdateOpts struct {
 	// The administrative state of the member, which is up (true) or down (false).
-	AdminStateUp bool `json:"admin_state_up,omitempty"`
+	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 }
 
 func (opts UpdateOpts) ToLBMemberUpdateMap() (map[string]interface{}, error) {

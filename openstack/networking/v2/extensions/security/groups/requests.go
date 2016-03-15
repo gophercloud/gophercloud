@@ -56,7 +56,7 @@ func (opts CreateOpts) ToSecGroupCreateMap() (map[string]interface{}, error) {
 // security group rules for the IPv4 and IPv6 ether types.
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var r CreateResult
-	b, err := opts.ToSubnetCreateMap()
+	b, err := opts.ToSecGroupCreateMap()
 	if err != nil {
 		r.Err = err
 		return r

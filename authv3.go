@@ -38,7 +38,7 @@ type UserV3 struct {
 	ID       string    `json:"id,omitempty" xor:"Name"`
 	Name     string    `json:"name,omitempty" xor:"ID"`
 	Password string    `json:"password" required:"true"`
-	Domain   *DomainV3 `json:"domain,omitempty" not:"Domain.ID,Domain.Name"`
+	Domain   *DomainV3 `json:"domain,omitempty"`
 }
 
 type PasswordCredentialsV3 struct {

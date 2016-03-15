@@ -113,6 +113,9 @@ type AdoptOpts struct {
 	AdoptStackData string `json:"adopt_stack_data" required:"true"`
 	// The name of the stack. It must start with an alphabetic character.
 	Name string `json:"stack_name" required:"true"`
+	// A structure that contains either the template file or url. Call the
+	// associated methods to extract the information relevant to send in a create request.
+	TemplateOpts *Template `json:"-" required:"true"`
 	// The timeout for stack creation in minutes.
 	Timeout int `json:"timeout_mins,omitempty"`
 	// A structure that contains either the template file or url. Call the
@@ -135,23 +138,20 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
+	if err := opts.TemplateOpts.Parse(); err != nil {
+		return nil, err
+	}
+
+	if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		return nil, err
+	}
+	opts.TemplateOpts.fixFileRefs()
+	b["template"] = string(opts.TemplateOpts.Bin)
+
 	files := make(map[string]string)
-
-	/*
-		if err := opts.TemplateOpts.Parse(); err != nil {
-			return nil, err
-		}
-
-		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
-			return nil, err
-		}
-		opts.TemplateOpts.fixFileRefs()
-		b["template"] = string(opts.TemplateOpts.Bin)
-
-		for k, v := range opts.TemplateOpts.Files {
-			files[k] = v
-		}
-	*/
+	for k, v := range opts.TemplateOpts.Files {
+		files[k] = v
+	}
 
 	if opts.EnvironmentOpts != nil {
 		if err := opts.EnvironmentOpts.Parse(); err != nil {

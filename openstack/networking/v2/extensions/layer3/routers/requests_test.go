@@ -353,7 +353,7 @@ func TestAddInterface(t *testing.T) {
 `)
 	})
 
-	opts := InterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
+	opts := AddInterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
 	res, err := AddInterface(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 
@@ -364,11 +364,11 @@ func TestAddInterface(t *testing.T) {
 }
 
 func TestAddInterfaceRequiredOpts(t *testing.T) {
-	_, err := AddInterface(fake.ServiceClient(), "foo", InterfaceOpts{}).Extract()
+	_, err := AddInterface(fake.ServiceClient(), "foo", AddInterfaceOpts{}).Extract()
 	if err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	_, err = AddInterface(fake.ServiceClient(), "foo", InterfaceOpts{SubnetID: "bar", PortID: "baz"}).Extract()
+	_, err = AddInterface(fake.ServiceClient(), "foo", AddInterfaceOpts{SubnetID: "bar", PortID: "baz"}).Extract()
 	if err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -402,7 +402,7 @@ func TestRemoveInterface(t *testing.T) {
 `)
 	})
 
-	opts := InterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
+	opts := RemoveInterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
 	res, err := RemoveInterface(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 

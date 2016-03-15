@@ -94,7 +94,7 @@ type UpdateOpts struct {
 	AdminStateUp *bool        `json:"admin_state_up,omitempty"`
 	Distributed  *bool        `json:"distributed,omitempty"`
 	GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
-	Routes       []Route      `json:"routes,omitempty"`
+	Routes       []Route      `json:"routes"`
 }
 
 func (opts UpdateOpts) ToRouterUpdateMap() (map[string]interface{}, error) {
@@ -135,8 +135,8 @@ type AddInterfaceOptsBuilder interface {
 // AddInterfaceOpts allow you to work with operations that either add
 // an internal interface from a router.
 type AddInterfaceOpts struct {
-	SubnetID string `json:"subnet_id" xor:"PortID"`
-	PortID   string `json:"port_id" xor:"SubnetID"`
+	SubnetID string `json:"subnet_id,omitempty" xor:"PortID"`
+	PortID   string `json:"port_id,omitempty" xor:"SubnetID"`
 }
 
 // ToRouterAddInterfaceMap allows InterfaceOpts to satisfy the InterfaceOptsBuilder
@@ -188,8 +188,8 @@ type RemoveInterfaceOptsBuilder interface {
 // RemoveInterfaceOpts allow you to work with operations that either add or remote
 // an internal interface from a router.
 type RemoveInterfaceOpts struct {
-	SubnetID string `json:"subnet_id" or:"PortID"`
-	PortID   string `json:"port_id" or:"SubnetID"`
+	SubnetID string `json:"subnet_id,omitempty" or:"PortID"`
+	PortID   string `json:"port_id,omitempty" or:"SubnetID"`
 }
 
 // ToRouterRemoveInterfaceMap allows RemoveInterfaceOpts to satisfy the RemoveInterfaceOptsBuilder

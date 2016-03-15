@@ -8,7 +8,7 @@ import (
 // Find retrieves stack resources for the given stack name.
 func Find(c *gophercloud.ServiceClient, stackName string) FindResult {
 	var r FindResult
-	_, res.Err = c.Get(findURL(c, stackName), &res.Body, nil)
+	_, r.Err = c.Get(findURL(c, stackName), &r.Body, nil)
 	return r
 }
 

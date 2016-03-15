@@ -5,18 +5,6 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// Binary gives users a solid type to work with for create and update
-// operations. It is recommended that users use the `Yes` and `No` enums
-type Binary *bool
-
-// Convenience vars for Enabled and Shared values.
-var (
-	iTrue         = true
-	iFalse        = false
-	Yes    Binary = &iTrue
-	No     Binary = &iFalse
-)
-
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
@@ -136,17 +124,17 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts contains the values used when updating a firewall rule.
 type UpdateOpts struct {
-	Protocol             string                `json:"protocol,omitempty"`
-	Action               string                `json:"action,omitempty"`
-	Name                 string                `json:"name,omitempty"`
-	Description          string                `json:"description,omitempty"`
-	IPVersion            gophercloud.IPVersion `json:"ip_version,omitempty"`
-	SourceIPAddress      string                `json:"source_ip_address,omitempty"`
-	DestinationIPAddress string                `json:"destination_ip_address,omitempty"`
-	SourcePort           string                `json:"source_port,omitempty"`
-	DestinationPort      string                `json:"destination_port,omitempty"`
-	Shared               *bool                 `json:"shared,omitempty"`
-	Enabled              *bool                 `json:"enabled,omitempty"`
+	Protocol             *string                `json:"protocol,omitempty"`
+	Action               *string                `json:"action,omitempty"`
+	Name                 *string                `json:"name,omitempty"`
+	Description          *string                `json:"description,omitempty"`
+	IPVersion            *gophercloud.IPVersion `json:"ip_version,omitempty"`
+	SourceIPAddress      *string                `json:"source_ip_address,omitempty"`
+	DestinationIPAddress *string                `json:"destination_ip_address,omitempty"`
+	SourcePort           *string                `json:"source_port,omitempty"`
+	DestinationPort      *string                `json:"destination_port,omitempty"`
+	Shared               *bool                  `json:"shared,omitempty"`
+	Enabled              *bool                  `json:"enabled,omitempty"`
 }
 
 // ToRuleUpdateMap casts a UpdateOpts struct to a map.

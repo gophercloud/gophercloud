@@ -43,14 +43,17 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 
 type RuleDirection string
 type RuleProtocol string
+type RuleEtherType string
 
 // Constants useful for CreateOpts
 const (
-	DirIngress   = "ingress"
-	DirEgress    = "egress"
-	ProtocolTCP  = "tcp"
-	ProtocolUDP  = "udp"
-	ProtocolICMP = "icmp"
+	DirIngress   RuleDirection = "ingress"
+	DirEgress    RuleDirection = "egress"
+	ProtocolTCP  RuleProtocol  = "tcp"
+	ProtocolUDP  RuleProtocol  = "udp"
+	ProtocolICMP RuleProtocol  = "icmp"
+	EtherType4   RuleEtherType = "IPv4"
+	EtherType6   RuleEtherType = "IPv6"
 )
 
 // CreateOptsBuilder is what types must satisfy to be used as Create
@@ -66,7 +69,7 @@ type CreateOpts struct {
 	Direction RuleDirection `json:"direction" required:"true"`
 	// Required. Must be "IPv4" or "IPv6", and addresses represented in CIDR must
 	// match the ingress or egress rules.
-	EtherType gophercloud.IPVersion `json:"ethertype" required:"true"`
+	EtherType RuleEtherType `json:"ethertype" required:"true"`
 	// Required. The security group ID to associate with this security group rule.
 	SecGroupID string `json:"security_group_id" required:"true"`
 	// Optional. The maximum port number in the range that is matched by the

@@ -155,7 +155,7 @@ func TestCreate(t *testing.T) {
 	opts := CreateOpts{
 		Direction:     "ingress",
 		PortRangeMin:  80,
-		EtherType:     "IPv4",
+		EtherType:     EtherType4,
 		PortRangeMax:  80,
 		Protocol:      "tcp",
 		RemoteGroupID: "85cc3048-abc3-43cc-89b3-377341426ac5",
@@ -166,19 +166,19 @@ func TestCreate(t *testing.T) {
 }
 
 func TestRequiredCreateOpts(t *testing.T) {
-	res := Create(fake.ServiceClient(), CreateOpts{Direction: "something"})
+	res := Create(fake.ServiceClient(), CreateOpts{Direction: DirIngress})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = Create(fake.ServiceClient(), CreateOpts{Direction: DirIngress, EtherType: "something"})
+	res = Create(fake.ServiceClient(), CreateOpts{Direction: DirIngress, EtherType: EtherType4})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = Create(fake.ServiceClient(), CreateOpts{Direction: DirIngress, EtherType: Ether4})
+	res = Create(fake.ServiceClient(), CreateOpts{Direction: DirIngress, EtherType: EtherType4})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = Create(fake.ServiceClient(), CreateOpts{Direction: DirIngress, EtherType: Ether4, SecGroupID: "something", Protocol: "foo"})
+	res = Create(fake.ServiceClient(), CreateOpts{Direction: DirIngress, EtherType: EtherType4, SecGroupID: "something", Protocol: "foo"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
