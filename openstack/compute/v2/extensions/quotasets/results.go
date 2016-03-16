@@ -12,7 +12,7 @@ type QuotaSet struct {
 	ID string `mapstructure:"id"`
 	//FixedIps is number of fixed ips alloted this quota_set
 	FixedIps int `mapstructure:"fixed_ips"`
-	// FloatingIps is number of floatinh ips alloted this quota_set
+	// FloatingIps is number of floating ips alloted this quota_set
 	FloatingIps int `mapstructure:"floating_ips"`
 	// InjectedFileContentBytes is content bytes allowed for each injected file
 	InjectedFileContentBytes int `mapstructure:"injected_file_content_bytes"`
