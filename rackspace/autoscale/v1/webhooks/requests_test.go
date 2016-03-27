@@ -1,0 +1,46 @@
+package webhooks
+
+import (
+	"testing"
+
+	"github.com/rackspace/gophercloud/pagination"
+	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/rackspace/gophercloud/testhelper/client"
+)
+
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleWebhookListSuccessfully(t)
+
+	groupID := "10eb3219-1b12-4b34-b1e4-e10ee4f24c65"
+	policyID := "2b48d247-0282-4b9d-8775-5c4b67e8e649"
+
+	pages := 0
+	pager := List(client.ServiceClient(), groupID, policyID)
+
+	err := pager.EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		webhooks, err := ExtractWebhooks(page)
+
+		if err != nil {
+			return false, err
+		}
+
+		if len(webhooks) != 2 {
+			t.Fatalf("Expected 2 policies, got %d", len(webhooks))
+		}
+
+		th.CheckDeepEquals(t, FirstWebhook, webhooks[0])
+		th.CheckDeepEquals(t, SecondWebhook, webhooks[1])
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+
+	if pages != 1 {
+		t.Errorf("Expected 1 page, saw %d", pages)
+	}
+}
