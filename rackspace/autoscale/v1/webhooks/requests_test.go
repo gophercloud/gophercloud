@@ -8,13 +8,15 @@ import (
 	"github.com/rackspace/gophercloud/testhelper/client"
 )
 
+const (
+	groupID  = "10eb3219-1b12-4b34-b1e4-e10ee4f24c65"
+	policyID = "2b48d247-0282-4b9d-8775-5c4b67e8e649"
+)
+
 func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleWebhookListSuccessfully(t)
-
-	groupID := "10eb3219-1b12-4b34-b1e4-e10ee4f24c65"
-	policyID := "2b48d247-0282-4b9d-8775-5c4b67e8e649"
 
 	pages := 0
 	pager := List(client.ServiceClient(), groupID, policyID)
@@ -43,4 +45,29 @@ func TestList(t *testing.T) {
 	if pages != 1 {
 		t.Errorf("Expected 1 page, saw %d", pages)
 	}
+}
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleWebhookCreateSuccessfully(t)
+
+	client := client.ServiceClient()
+	opts := CreateOpts{
+		{
+			Name: "first hook",
+		},
+		{
+			Name: "second hook",
+			Metadata: map[string]string{
+				"notes": "a note about this webhook",
+			},
+		},
+	}
+
+	webhooks, err := Create(client, groupID, policyID, opts).ExtractWebhooks()
+
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, FirstWebhook, webhooks[0])
+	th.CheckDeepEquals(t, SecondWebhook, webhooks[1])
 }

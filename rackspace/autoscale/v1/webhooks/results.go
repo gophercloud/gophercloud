@@ -11,6 +11,23 @@ type webhookResult struct {
 	gophercloud.Result
 }
 
+// CreateResult represents the result of a create operation. Multiple webhooks
+// can be created in a single call, so the result should be treated as a typical
+// pagination Page.  ExtractWebhooks() can be used to extract a slice of
+// Webhooks from a single page.
+type CreateResult struct {
+	pagination.SinglePageBase
+}
+
+// ExtractWebhooks extracts a slice of Webhooks from a CreateResult.
+func (res CreateResult) ExtractWebhooks() ([]Webhook, error) {
+	if res.Err != nil {
+		return nil, res.Err
+	}
+
+	return commonExtractWebhooks(res.Body)
+}
+
 // Webhook represents a webhook associted with a scaling policy.
 type Webhook struct {
 	// UUID for the webhook.
@@ -46,13 +63,15 @@ func (page WebhookPage) IsEmpty() (bool, error) {
 // ExtractWebhooks interprets the results of a single page from a List() call,
 // producing a slice of Webhooks.
 func ExtractWebhooks(page pagination.Page) ([]Webhook, error) {
-	casted := page.(WebhookPage).Body
+	return commonExtractWebhooks(page.(WebhookPage).Body)
+}
 
+func commonExtractWebhooks(body interface{}) ([]Webhook, error) {
 	var response struct {
 		Webhooks []Webhook `mapstructure:"webhooks"`
 	}
 
-	err := mapstructure.Decode(casted, &response)
+	err := mapstructure.Decode(body, &response)
 
 	if err != nil {
 		return nil, err

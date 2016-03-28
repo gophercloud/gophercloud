@@ -53,6 +53,24 @@ const WebhookListBody = `
 }
 `
 
+// WebhookCreateBody contains the canned body of a webhooks.Create response.
+const WebhookCreateBody = WebhookListBody
+
+// WebhookCreateRequest contains the canned body of a webhooks.Create request.
+const WebhookCreateRequest = `
+[
+  {
+    "name": "first hook"
+  },
+  {
+    "name": "second hook",
+    "metadata": {
+      "notes": "a note about this webhook"
+    }
+  }
+]
+`
+
 var (
 	// FirstWebhook is a Webhook corresponding to the first result in WebhookListBody.
 	FirstWebhook = Webhook{
@@ -102,5 +120,24 @@ func HandleWebhookListSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 
 		fmt.Fprintf(w, WebhookListBody)
+	})
+}
+
+// HandleWebhookCreateSuccessfully sets up the test server to respond to a webhooks Create request.
+func HandleWebhookCreateSuccessfully(t *testing.T) {
+	path := "/groups/10eb3219-1b12-4b34-b1e4-e10ee4f24c65/policies/2b48d247-0282-4b9d-8775-5c4b67e8e649/webhooks"
+
+	th.Mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		th.TestJSONRequest(t, r, WebhookCreateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, WebhookCreateBody)
 	})
 }
