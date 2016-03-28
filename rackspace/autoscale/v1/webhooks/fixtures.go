@@ -71,6 +71,27 @@ const WebhookCreateRequest = `
 ]
 `
 
+// WebhookGetBody contains the canned body of a webhooks.Get response.
+const WebhookGetBody = `
+{
+  "webhook": {
+    "id": "2bd1822c-58c5-49fd-8b3d-ed44781a58d1",
+    "name": "first hook",
+    "links": [
+      {
+        "href": "https://dfw.autoscale.api.rackspacecloud.com/v1.0/123456/groups/60b15dad-5ea1-43fa-9a12-a1d737b4da07/policies/2b48d247-0282-4b9d-8775-5c4b67e8e649/webhooks/2bd1822c-58c5-49fd-8b3d-ed44781a58d1/",
+        "rel": "self"
+      },
+      {
+        "href": "https://dfw.autoscale.api.rackspacecloud.com/v1.0/execute/1/714c1c17c5e6ea5ef1e710d5ccc62e492575bab5216184d4c27dc0164db1bc06/",
+        "rel": "capability"
+      }
+    ],
+    "metadata": {}
+  }
+}
+`
+
 var (
 	// FirstWebhook is a Webhook corresponding to the first result in WebhookListBody.
 	FirstWebhook = Webhook{
@@ -139,5 +160,23 @@ func HandleWebhookCreateSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 
 		fmt.Fprintf(w, WebhookCreateBody)
+	})
+}
+
+// HandleWebhookGetSuccessfully sets up the test server to respond to a webhooks Get request.
+func HandleWebhookGetSuccessfully(t *testing.T) {
+	groupID := "10eb3219-1b12-4b34-b1e4-e10ee4f24c65"
+	policyID := "2b48d247-0282-4b9d-8775-5c4b67e8e649"
+	webhookID := "2bd1822c-58c5-49fd-8b3d-ed44781a58d1"
+
+	path := fmt.Sprintf("/groups/%s/policies/%s/webhooks/%s", groupID, policyID, webhookID)
+
+	th.Mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+
+		fmt.Fprintf(w, WebhookGetBody)
 	})
 }

@@ -84,3 +84,12 @@ func Create(client *gophercloud.ServiceClient, groupID, policyID string, opts Cr
 	pr := pagination.PageResultFromParsed(resp, res.Body)
 	return CreateResult{pagination.SinglePageBase(pr)}
 }
+
+// Get requests the details of a single webhook with the given ID.
+func Get(client *gophercloud.ServiceClient, groupID, policyID, webhookID string) GetResult {
+	var result GetResult
+
+	_, result.Err = client.Get(getURL(client, groupID, policyID, webhookID), &result.Body, nil)
+
+	return result
+}

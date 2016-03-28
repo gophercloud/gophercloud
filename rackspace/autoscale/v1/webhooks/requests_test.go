@@ -11,6 +11,8 @@ import (
 const (
 	groupID  = "10eb3219-1b12-4b34-b1e4-e10ee4f24c65"
 	policyID = "2b48d247-0282-4b9d-8775-5c4b67e8e649"
+	firstID  = "2bd1822c-58c5-49fd-8b3d-ed44781a58d1" // FirstWebhook
+	secondID = "76711c36-dfbe-4f5e-bea6-cded99690515" // SecondWebhook
 )
 
 func TestList(t *testing.T) {
@@ -70,4 +72,17 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, FirstWebhook, webhooks[0])
 	th.CheckDeepEquals(t, SecondWebhook, webhooks[1])
+}
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleWebhookGetSuccessfully(t)
+
+	client := client.ServiceClient()
+
+	webhook, err := Get(client, groupID, policyID, firstID).Extract()
+
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, FirstWebhook, *webhook)
 }
