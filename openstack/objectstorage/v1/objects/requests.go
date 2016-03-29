@@ -107,15 +107,14 @@ func (opts DownloadOpts) ToObjectDownloadParams() (map[string]string, string, er
 // Download is a function that retrieves the content and metadata for an object.
 // To extract just the content, pass the DownloadResult response to the
 // ExtractContent function.
-func Download(c *gophercloud.ServiceClient, containerName, objectName string, opts DownloadOptsBuilder) DownloadResult {
-	var r DownloadResult
+func Download(c *gophercloud.ServiceClient, containerName, objectName string, opts DownloadOptsBuilder) (r DownloadResult) {
 	url := downloadURL(c, containerName, objectName)
 	h := make(map[string]string)
 	if opts != nil {
 		headers, query, err := opts.ToObjectDownloadParams()
 		if err != nil {
 			r.Err = err
-			return r
+			return
 		}
 		for k, v := range headers {
 			h[k] = v
@@ -132,7 +131,6 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 		r.Body = resp.Body
 	}
 	r.Err = err
-	return r
 }
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
@@ -192,8 +190,7 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 
 // Create is a function that creates a new object or replaces an existing object. If the returned response's ETag
 // header fails to match the local checksum, the failed request will automatically be retried up to a maximum of 3 times.
-func Create(c *gophercloud.ServiceClient, containerName, objectName string, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, containerName, objectName string, opts CreateOptsBuilder) (r CreateResult) {
 	url := createURL(c, containerName, objectName)
 	h := make(map[string]string)
 	var b io.Reader
@@ -201,7 +198,7 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		tmpB, headers, query, err := opts.ToObjectCreateParams()
 		if err != nil {
 			r.Err = err
-			return r
+			return
 		}
 		for k, v := range headers {
 			h[k] = v
@@ -218,7 +215,6 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	if resp != nil {
 		r.Header = resp.Header
 	}
-	return r
 }
 
 // CopyOptsBuilder allows extensions to add additional parameters to the
@@ -250,13 +246,12 @@ func (opts CopyOpts) ToObjectCopyMap() (map[string]string, error) {
 }
 
 // Copy is a function that copies one object to another.
-func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts CopyOptsBuilder) CopyResult {
-	var r CopyResult
+func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts CopyOptsBuilder) (r CopyResult) {
 	h := make(map[string]string)
 	headers, err := opts.ToObjectCopyMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 
 	for k, v := range headers {
@@ -272,7 +267,6 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 		r.Header = resp.Header
 	}
 	r.Err = err
-	return r
 }
 
 // DeleteOptsBuilder allows extensions to add additional parameters to the
@@ -293,14 +287,13 @@ func (opts DeleteOpts) ToObjectDeleteQuery() (string, error) {
 }
 
 // Delete is a function that deletes an object.
-func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts DeleteOptsBuilder) DeleteResult {
-	var r DeleteResult
+func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts DeleteOptsBuilder) (r DeleteResult) {
 	url := deleteURL(c, containerName, objectName)
 	if opts != nil {
 		query, err := opts.ToObjectDeleteQuery()
 		if err != nil {
 			r.Err = err
-			return r
+			return
 		}
 		url += query
 	}
@@ -309,7 +302,6 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		r.Header = resp.Header
 	}
 	r.Err = err
-	return r
 }
 
 // GetOptsBuilder allows extensions to add additional parameters to the
@@ -332,14 +324,13 @@ func (opts GetOpts) ToObjectGetQuery() (string, error) {
 
 // Get is a function that retrieves the metadata of an object. To extract just the custom
 // metadata, pass the GetResult response to the ExtractMetadata function.
-func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts GetOptsBuilder) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts GetOptsBuilder) (r GetResult) {
 	url := getURL(c, containerName, objectName)
 	if opts != nil {
 		query, err := opts.ToObjectGetQuery()
 		if err != nil {
 			r.Err = err
-			return r
+			return
 		}
 		url += query
 	}
@@ -350,7 +341,6 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 		r.Header = resp.Header
 	}
 	r.Err = err
-	return r
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
@@ -384,14 +374,13 @@ func (opts UpdateOpts) ToObjectUpdateMap() (map[string]string, error) {
 }
 
 // Update is a function that creates, updates, or deletes an object's metadata.
-func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts UpdateOptsBuilder) (r UpdateResult) {
 	h := c.AuthenticatedHeaders()
 	if opts != nil {
 		headers, err := opts.ToObjectUpdateMap()
 		if err != nil {
 			r.Err = err
-			return r
+			return
 		}
 
 		for k, v := range headers {
@@ -406,7 +395,6 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		r.Header = resp.Header
 	}
 	r.Err = err
-	return r
 }
 
 // HTTPMethod represents an HTTP method string (e.g. "GET").

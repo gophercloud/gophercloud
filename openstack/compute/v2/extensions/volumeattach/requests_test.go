@@ -41,10 +41,10 @@ func TestList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	fixtures.HandleListSuccessfully(t)
-	serverId := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
+	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
 	count := 0
-	err := List(client.ServiceClient(), serverId).EachPage(func(page pagination.Page) (bool, error) {
+	err := List(client.ServiceClient(), serverID).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractVolumeAttachments(page)
 		th.AssertNoErr(t, err)
@@ -60,9 +60,9 @@ func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	fixtures.HandleCreateSuccessfully(t)
-	serverId := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
+	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
-	actual, err := Create(client.ServiceClient(), serverId, CreateOpts{
+	actual, err := Create(client.ServiceClient(), serverID, CreateOpts{
 		Device:   "/dev/vdc",
 		VolumeID: "a26887c6-c47b-4654-abb5-dfadf7d3f804",
 	}).Extract()
@@ -74,10 +74,10 @@ func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	fixtures.HandleGetSuccessfully(t)
-	aId := "a26887c6-c47b-4654-abb5-dfadf7d3f804"
-	serverId := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
+	aID := "a26887c6-c47b-4654-abb5-dfadf7d3f804"
+	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
-	actual, err := Get(client.ServiceClient(), serverId, aId).Extract()
+	actual, err := Get(client.ServiceClient(), serverID, aID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &SecondVolumeAttachment, actual)
 }
@@ -86,9 +86,9 @@ func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	fixtures.HandleDeleteSuccessfully(t)
-	aId := "a26887c6-c47b-4654-abb5-dfadf7d3f804"
-	serverId := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
+	aID := "a26887c6-c47b-4654-abb5-dfadf7d3f804"
+	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
-	err := Delete(client.ServiceClient(), serverId, aId).ExtractErr()
+	err := Delete(client.ServiceClient(), serverID, aID).ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -97,22 +97,18 @@ func (opts CreateOpts) ToVIPCreateMap() (map[string]interface{}, error) {
 //
 // Users with an admin role can create VIPs on behalf of other tenants by
 // specifying a TenantID attribute different than their own.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
 	b, err := opts.ToVIPCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
-	return r
 }
 
 // Get retrieves a particular virtual IP based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
-	return r
 }
 
 // UpdateOptsBuilder is what types must satisfy to be used as Update
@@ -146,22 +142,18 @@ func (opts UpdateOpts) ToVIPUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update is an operation which modifies the attributes of the specified VIP.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToVIPUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
-	return r
 }
 
 // Delete will permanently delete a particular virtual IP based on its unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var r DeleteResult
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
-	return r
 }

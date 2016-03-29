@@ -32,29 +32,23 @@ func (opts CreateOpts) ToServerGroupCreateMap() (map[string]interface{}, error) 
 }
 
 // Create requests the creation of a new Server Group
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToServerGroupCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // Get returns data about a previously created ServerGroup.
-func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
-	return r
 }
 
 // Delete requests the deletion of a previously allocated ServerGroup.
-func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var r DeleteResult
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
-	return r
 }

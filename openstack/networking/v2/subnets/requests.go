@@ -59,10 +59,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific subnet based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
-	return r
 }
 
 // IPVersion is the IP address version for the subnet. Valid instances are
@@ -104,15 +102,13 @@ func (opts CreateOpts) ToSubnetCreateMap() (map[string]interface{}, error) {
 
 // Create accepts a CreateOpts struct and creates a new subnet using the values
 // provided. You must remember to provide a valid NetworkID, CIDR and IP version.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToSubnetCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
-	return r
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
@@ -137,24 +133,20 @@ func (opts UpdateOpts) ToSubnetUpdateMap() (map[string]interface{}, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing subnet using the
 // values provided.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToSubnetUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Put(updateURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
-	return r
 }
 
 // Delete accepts a unique ID and deletes the subnet associated with it.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var r DeleteResult
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(deleteURL(c, id), nil)
-	return r
 }
 
 // IDFromName is a convenience function that returns a subnet's ID given its name.

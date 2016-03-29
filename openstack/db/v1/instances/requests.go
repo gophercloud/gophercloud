@@ -98,15 +98,13 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 // Although this call only allows the creation of 1 instance per request, you
 // can create an instance with multiple databases and users. The default
 // binding for a MySQL instance is port 3306.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToInstanceCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
-	return r
 }
 
 // List retrieves the status and information for all database instances.
@@ -117,61 +115,47 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Get retrieves the status and information for a specified database instance.
-func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(resourceURL(client, id), &r.Body, nil)
-	return r
 }
 
 // Delete permanently destroys the database instance.
-func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var r DeleteResult
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(resourceURL(client, id), nil)
-	return r
 }
 
 // EnableRootUser enables the login from any host for the root user and
 // provides the user with a generated root password.
-func EnableRootUser(client *gophercloud.ServiceClient, id string) EnableRootUserResult {
-	var r EnableRootUserResult
+func EnableRootUser(client *gophercloud.ServiceClient, id string) (r EnableRootUserResult) {
 	_, r.Err = client.Post(userRootURL(client, id), nil, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
-	return r
 }
 
 // IsRootEnabled checks an instance to see if root access is enabled. It returns
 // True if root user is enabled for the specified database instance or False
 // otherwise.
-func IsRootEnabled(client *gophercloud.ServiceClient, id string) IsRootEnabledResult {
-	var r IsRootEnabledResult
+func IsRootEnabled(client *gophercloud.ServiceClient, id string) (r IsRootEnabledResult) {
 	_, r.Err = client.Get(userRootURL(client, id), &r.Body, nil)
-	return r
 }
 
 // Restart will restart only the MySQL Instance. Restarting MySQL will
 // erase any dynamic configuration settings that you have made within MySQL.
 // The MySQL service will be unavailable until the instance restarts.
-func Restart(client *gophercloud.ServiceClient, id string) ActionResult {
-	var r ActionResult
+func Restart(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 	b := map[string]interface{}{"restart": struct{}{}}
 	_, r.Err = client.Post(actionURL(client, id), &b, nil, nil)
-	return r
 }
 
 // Resize changes the memory size of the instance, assuming a valid
 // flavorRef is provided. It will also restart the MySQL service.
-func Resize(client *gophercloud.ServiceClient, id, flavorRef string) ActionResult {
-	var r ActionResult
+func Resize(client *gophercloud.ServiceClient, id, flavorRef string) (r ActionResult) {
 	b := map[string]interface{}{"resize": map[string]string{"flavorRef": flavorRef}}
 	_, r.Err = client.Post(actionURL(client, id), &b, nil, nil)
-	return r
 }
 
 // ResizeVolume will resize the attached volume for an instance. It supports
 // only increasing the volume size and does not support decreasing the size.
 // The volume size is in gigabytes (GB) and must be an integer.
-func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) ActionResult {
-	var r ActionResult
+func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) (r ActionResult) {
 	b := map[string]interface{}{"resize": map[string]interface{}{"volume": map[string]int{"size": size}}}
 	_, r.Err = client.Post(actionURL(client, id), &b, nil, nil)
-	return r
 }

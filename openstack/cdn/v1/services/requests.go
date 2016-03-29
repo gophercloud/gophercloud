@@ -77,49 +77,34 @@ type CreateOpts struct {
 
 // ToCDNServiceCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToCDNServiceCreateMap() (map[string]interface{}, error) {
-
-	/*
-		for _, origin := range opts.Origins {
-			if origin.Rules == nil && len(opts.Origins) > 1 {
-				return nil, no("Origins[].Rules")
-			}
-		}
-	*/
-
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // Create accepts a CreateOpts struct and creates a new CDN service using the
 // values provided.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToCDNServiceCreateMap()
 	if err != nil {
 		r.Err = err
 		return r
 	}
-	// Send request to API
 	resp, err := c.Post(createURL(c), &b, nil, nil)
 	r.Header = resp.Header
 	r.Err = err
-	return r
 }
 
 // Get retrieves a specific service based on its URL or its unique ID. For
 // example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
-func Get(c *gophercloud.ServiceClient, idOrURL string) GetResult {
+func Get(c *gophercloud.ServiceClient, idOrURL string) (r GetResult) {
 	var url string
 	if strings.Contains(idOrURL, "/") {
 		url = idOrURL
 	} else {
 		url = getURL(c, idOrURL)
 	}
-
-	var r GetResult
 	_, r.Err = c.Get(url, &r.Body, nil)
-	return r
 }
 
 // Path is a JSON pointer location that indicates which service parameter is being added, replaced,
@@ -260,7 +245,7 @@ type UpdateOpts []Patch
 // URL or its ID. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
-func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) UpdateResult {
+func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) (r UpdateResult) {
 	var url string
 	if strings.Contains(idOrURL, "/") {
 		url = idOrURL
@@ -277,25 +262,20 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) Updat
 		JSONBody: &b,
 		OkCodes:  []int{202},
 	})
-	var r UpdateResult
 	r.Header = resp.Header
 	r.Err = err
-	return r
 }
 
 // Delete accepts a service's ID or its URL and deletes the CDN service
 // associated with it. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
-func Delete(c *gophercloud.ServiceClient, idOrURL string) DeleteResult {
+func Delete(c *gophercloud.ServiceClient, idOrURL string) (r DeleteResult) {
 	var url string
 	if strings.Contains(idOrURL, "/") {
 		url = idOrURL
 	} else {
 		url = deleteURL(c, idOrURL)
 	}
-
-	var r DeleteResult
 	_, r.Err = c.Delete(url, nil)
-	return r
 }

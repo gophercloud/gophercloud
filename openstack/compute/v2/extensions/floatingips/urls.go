@@ -24,14 +24,14 @@ func deleteURL(c *gophercloud.ServiceClient, id string) string {
 	return getURL(c, id)
 }
 
-func serverURL(c *gophercloud.ServiceClient, serverId string) string {
-	return c.ServiceURL("servers/" + serverId + "/action")
+func serverURL(c *gophercloud.ServiceClient, serverID string) string {
+	return c.ServiceURL("servers/" + serverID + "/action")
 }
 
-func associateURL(c *gophercloud.ServiceClient, serverId string) string {
-	return serverURL(c, serverId)
+func associateURL(c *gophercloud.ServiceClient, serverID string) string {
+	return serverURL(c, serverID)
 }
 
-func disassociateURL(c *gophercloud.ServiceClient, serverId string) string {
-	return serverURL(c, serverId)
+func disassociateURL(c *gophercloud.ServiceClient, serverID string) string {
+	return serverURL(c, serverID)
 }

@@ -42,6 +42,7 @@ func ExtractVolumeAttachments(r pagination.Page) ([]VolumeAttachment, error) {
 	return s.VolumeAttachments, err
 }
 
+// VolumeAttachmentResult is the result from a volume attachment operation.
 type VolumeAttachmentResult struct {
 	gophercloud.Result
 }

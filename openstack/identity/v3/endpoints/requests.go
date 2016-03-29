@@ -24,15 +24,13 @@ func (opts CreateOpts) ToEndpointCreateMap() (map[string]interface{}, error) {
 
 // Create inserts a new Endpoint into the service catalog.
 // Within EndpointOpts, Region may be omitted by being left as "", but all other fields are required.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToEndpointCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(listURL(client), &b, &r.Body, nil)
-	return r
 }
 
 type ListOptsBuilder interface {
@@ -86,20 +84,16 @@ func (opts UpdateOpts) ToEndpointUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update changes an existing endpoint with new data.
-func Update(client *gophercloud.ServiceClient, endpointID string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(client *gophercloud.ServiceClient, endpointID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToEndpointUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Patch(endpointURL(client, endpointID), &b, &r.Body, nil)
-	return r
 }
 
 // Delete removes an endpoint from the service catalog.
-func Delete(client *gophercloud.ServiceClient, endpointID string) DeleteResult {
-	var r DeleteResult
+func Delete(client *gophercloud.ServiceClient, endpointID string) (r DeleteResult) {
 	_, r.Err = client.Delete(endpointURL(client, endpointID), nil)
-	return r
 }

@@ -259,38 +259,30 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests a server to be provisioned to the user in the current tenant.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	reqBody, err := opts.ToServerCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(listURL(client), reqBody, &r.Body, nil)
-	return r
 }
 
 // Delete requests that a server previously provisioned be removed from your account.
-func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var r DeleteResult
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
-	return r
 }
 
 // ForceDelete forces the deletion of a server
-func ForceDelete(client *gophercloud.ServiceClient, id string) ActionResult {
-	var r ActionResult
+func ForceDelete(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"forceDelete": ""}, nil, nil)
-	return r
 }
 
 // Get requests details on a single server, by ID.
-func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 203},
 	})
-	return r
 }
 
 // UpdateOptsBuilder allows extensions to add additional attributes to the Update request.
@@ -318,29 +310,25 @@ func (opts UpdateOpts) ToServerUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update requests that various attributes of the indicated server be changed.
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToServerUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // ChangeAdminPassword alters the administrator or root password for a specified server.
-func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword string) ActionResult {
-	var r ActionResult
+func ChangeAdminPassword(client *gophercloud.ServiceClient, id, newPassword string) (r ActionResult) {
 	b := map[string]interface{}{
 		"changePassword": map[string]string{
 			"adminPass": newPassword,
 		},
 	}
 	_, r.Err = client.Post(actionURL(client, id), b, nil, nil)
-	return r
 }
 
 // RebootMethod describes the mechanisms by which a server reboot can be requested.
@@ -382,15 +370,13 @@ func (opts *RebootOpts) ToServerRebootMap() (map[string]interface{}, error) {
 //
 // SoftReboot (aka OSReboot) simply tells the OS to rtart under its own procedur.
 // E.g., in Linux, asking it to enter runlevel 6, or executing "sudo shutdown -r now", or by asking Windows to rtart the machine.
-func Reboot(client *gophercloud.ServiceClient, id string, opts RebootOptsBuilder) ActionResult {
-	var r ActionResult
+func Reboot(client *gophercloud.ServiceClient, id string, opts RebootOptsBuilder) (r ActionResult) {
 	b, err := opts.ToServerRebootMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(actionURL(client, id), b, nil, nil)
-	return r
 }
 
 // RebuildOptsBuilder is an interface that allows extensions to override the
@@ -453,15 +439,13 @@ func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
 
 // Rebuild will reprovision the server according to the configuration options
 // provided in the RebuildOpts struct.
-func Rebuild(client *gophercloud.ServiceClient, id string, opts RebuildOptsBuilder) RebuildResult {
-	var r RebuildResult
+func Rebuild(client *gophercloud.ServiceClient, id string, opts RebuildOptsBuilder) (r RebuildResult) {
 	b, err := opts.ToServerRebuildMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, nil)
-	return r
 }
 
 // ResizeOptsBuilder is an interface that allows extensions to override the default structure of
@@ -489,33 +473,27 @@ func (opts ResizeOpts) ToServerResizeMap() (map[string]interface{}, error) {
 // While in this state, you can explore the use of the new server's configuration.
 // If you like it, call ConfirmResize() to commit the rize permanently.
 // Otherwise, call RevertResize() to rtore the old configuration.
-func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder) ActionResult {
-	var r ActionResult
+func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder) (r ActionResult) {
 	b, err := opts.ToServerResizeMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(actionURL(client, id), b, nil, nil)
-	return r
 }
 
 // ConfirmResize confirms a previous rize operation on a server.
 // See Resize() for more details.
-func ConfirmResize(client *gophercloud.ServiceClient, id string) ActionResult {
-	var r ActionResult
+func ConfirmResize(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"confirmResize": nil}, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201, 202, 204},
 	})
-	return r
 }
 
 // RevertResize cancels a previous rize operation on a server.
 // See Resize() for more details.
-func RevertResize(client *gophercloud.ServiceClient, id string) ActionResult {
-	var r ActionResult
+func RevertResize(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"revertResize": nil}, nil, nil)
-	return r
 }
 
 // RescueOptsBuilder is an interface that allows extensions to override the
@@ -539,17 +517,15 @@ func (opts RescueOpts) ToServerRescueMap() (map[string]interface{}, error) {
 }
 
 // Rescue instructs the provider to place the server into RESCUE mode.
-func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder) RescueResult {
-	var r RescueResult
+func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder) (r RescueResult) {
 	b, err := opts.ToServerRescueMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // ResetMetadataOptsBuilder allows extensions to add additional parameters to the
@@ -575,24 +551,20 @@ func (opts MetadataOpts) ToMetadataUpdateMap() (map[string]interface{}, error) {
 // Note: Using this operation will erase any already-existing metadata and create
 // the new metadata provided. To keep any already-existing metadata, use the
 // UpdateMetadatas or UpdateMetadata function.
-func ResetMetadata(client *gophercloud.ServiceClient, id string, opts ResetMetadataOptsBuilder) ResetMetadataResult {
-	var r ResetMetadataResult
+func ResetMetadata(client *gophercloud.ServiceClient, id string, opts ResetMetadataOptsBuilder) (r ResetMetadataResult) {
 	b, err := opts.ToMetadataResetMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Put(metadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // Metadata requests all the metadata for the given server ID.
-func Metadata(client *gophercloud.ServiceClient, id string) GetMetadataResult {
-	var r GetMetadataResult
+func Metadata(client *gophercloud.ServiceClient, id string) (r GetMetadataResult) {
 	_, r.Err = client.Get(metadataURL(client, id), &r.Body, nil)
-	return r
 }
 
 // UpdateMetadataOptsBuilder allows extensions to add additional parameters to the
@@ -604,17 +576,15 @@ type UpdateMetadataOptsBuilder interface {
 // UpdateMetadata updates (or creates) all the metadata specified by opts for the given server ID.
 // This operation does not affect already-existing metadata that is not specified
 // by opts.
-func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) UpdateMetadataResult {
-	var r UpdateMetadataResult
+func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) (r UpdateMetadataResult) {
 	b, err := opts.ToMetadataUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(metadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // MetadatumOptsBuilder allows extensions to add additional parameters to the
@@ -643,31 +613,25 @@ func (opts MetadatumOpts) ToMetadatumCreateMap() (map[string]interface{}, string
 }
 
 // CreateMetadatum will create or update the key-value pair with the given key for the given server ID.
-func CreateMetadatum(client *gophercloud.ServiceClient, id string, opts MetadatumOptsBuilder) CreateMetadatumResult {
-	var r CreateMetadatumResult
+func CreateMetadatum(client *gophercloud.ServiceClient, id string, opts MetadatumOptsBuilder) (r CreateMetadatumResult) {
 	b, key, err := opts.ToMetadatumCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Put(metadatumURL(client, id, key), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // Metadatum requests the key-value pair with the given key for the given server ID.
-func Metadatum(client *gophercloud.ServiceClient, id, key string) GetMetadatumResult {
-	var r GetMetadatumResult
+func Metadatum(client *gophercloud.ServiceClient, id, key string) (r GetMetadatumResult) {
 	_, r.Err = client.Get(metadatumURL(client, id, key), &r.Body, nil)
-	return r
 }
 
 // DeleteMetadatum will delete the key-value pair with the given key for the given server ID.
-func DeleteMetadatum(client *gophercloud.ServiceClient, id, key string) DeleteMetadatumResult {
-	var r DeleteMetadatumResult
+func DeleteMetadatum(client *gophercloud.ServiceClient, id, key string) (r DeleteMetadatumResult) {
 	_, r.Err = client.Delete(metadatumURL(client, id, key), nil)
-	return r
 }
 
 // ListAddresses makes a request against the API to list the servers IP addresses.
@@ -705,19 +669,17 @@ func (opts CreateImageOpts) ToServerCreateImageMap() (map[string]interface{}, er
 }
 
 // CreateImage makes a request against the nova API to schedule an image to be created of the server
-func CreateImage(client *gophercloud.ServiceClient, id string, opts CreateImageOptsBuilder) CreateImageResult {
-	var r CreateImageResult
+func CreateImage(client *gophercloud.ServiceClient, id string, opts CreateImageOptsBuilder) (r CreateImageResult) {
 	b, err := opts.ToServerCreateImageMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	r.Err = err
 	r.Header = resp.Header
-	return r
 }
 
 // IDFromName is a convienience function that returns a server's ID given its name.

@@ -65,15 +65,13 @@ func (opts BatchCreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
 // instance based on the configuration defined in CreateOpts. If databases are
 // assigned for a particular user, the user will be granted all privileges
 // for those specified databases. "root" is a reserved name and cannot be used.
-func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToUserCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(baseURL(client, instanceID), &b, nil, nil)
-	return r
 }
 
 // List will list all the users associated with a specified database instance,
@@ -86,8 +84,6 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 }
 
 // Delete will permanently delete a user from a specified database instance.
-func Delete(client *gophercloud.ServiceClient, instanceID, userName string) DeleteResult {
-	var r DeleteResult
+func Delete(client *gophercloud.ServiceClient, instanceID, userName string) (r DeleteResult) {
 	_, r.Err = client.Delete(userURL(client, instanceID, userName), nil)
-	return r
 }

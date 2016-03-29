@@ -37,29 +37,23 @@ func (opts CreateOpts) ToRuleCreateMap() (map[string]interface{}, error) {
 }
 
 // Create is the operation responsible for creating a new default rule.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRuleCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(rootURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // Get will return details for a particular default rule.
-func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(resourceURL(client, id), &r.Body, nil)
-	return r
 }
 
 // Delete will permanently delete a default rule from the project.
-func Delete(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
-	var r gophercloud.ErrResult
+func Delete(client *gophercloud.ServiceClient, id string) (r gophercloud.ErrResult) {
 	_, r.Err = client.Delete(resourceURL(client, id), nil)
-	return r
 }

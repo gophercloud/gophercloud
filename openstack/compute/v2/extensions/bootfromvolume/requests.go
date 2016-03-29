@@ -79,15 +79,13 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a server from the given block device mapping.
-func Create(client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) servers.CreateResult {
-	var r servers.CreateResult
+func Create(client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) (r servers.CreateResult) {
 	b, err := opts.ToServerCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
-	return r
 }

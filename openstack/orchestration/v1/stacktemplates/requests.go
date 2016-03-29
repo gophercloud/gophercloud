@@ -3,10 +3,8 @@ package stacktemplates
 import "github.com/gophercloud/gophercloud"
 
 // Get retreives data for the given stack template.
-func Get(c *gophercloud.ServiceClient, stackName, stackID string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, stackName, stackID), &r.Body, nil)
-	return r
 }
 
 // ValidateOptsBuilder describes struct types that can be accepted by the Validate call.
@@ -27,15 +25,13 @@ func (opts ValidateOpts) ToStackTemplateValidateMap() (map[string]interface{}, e
 }
 
 // Validate validates the given stack template.
-func Validate(c *gophercloud.ServiceClient, opts ValidateOptsBuilder) ValidateResult {
-	var r ValidateResult
+func Validate(c *gophercloud.ServiceClient, opts ValidateOptsBuilder) (r ValidateResult) {
 	b, err := opts.ToStackTemplateValidateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(validateURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }

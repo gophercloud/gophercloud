@@ -23,14 +23,13 @@ func (opts GetOpts) ToAccountGetMap() (map[string]string, error) {
 // custom metadata, call the ExtractMetadata method on the GetResult. To extract
 // all the headers that are returned (including the metadata), call the
 // ExtractHeader method on the GetResult.
-func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) (r GetResult) {
 	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToAccountGetMap()
 		if err != nil {
 			r.Err = err
-			return r
+			return
 		}
 		for k, v := range headers {
 			h[k] = v
@@ -44,7 +43,6 @@ func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) GetResult {
 		r.Header = resp.Header
 	}
 	r.Err = err
-	return r
 }
 
 // UpdateOptsBuilder allows extensions to add additional headers to the Update
@@ -77,14 +75,13 @@ func (opts UpdateOpts) ToAccountUpdateMap() (map[string]string, error) {
 
 // Update is a function that creates, updates, or deletes an account's metadata.
 // To extract the headers returned, call the Extract method on the UpdateResult.
-func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) (r UpdateResult) {
 	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToAccountUpdateMap()
 		if err != nil {
 			r.Err = err
-			return r
+			return
 		}
 		for k, v := range headers {
 			h[k] = v
@@ -98,5 +95,4 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) UpdateResult {
 		r.Header = resp.Header
 	}
 	r.Err = err
-	return r
 }

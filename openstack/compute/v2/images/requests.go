@@ -52,17 +52,13 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 
 // Get acquires additional detail about a specific image by ID.
 // Use ExtractImage() to interpret the result as an openstack Image.
-func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
-	return r
 }
 
 // Delete deletes the specified image ID.
-func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var r DeleteResult
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
-	return r
 }
 
 // IDFromName is a convienience function that returns an image's ID given its name.

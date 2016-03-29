@@ -53,10 +53,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retrieves a specific network based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
-	return r
 }
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -87,15 +85,13 @@ func (opts CreateOpts) ToNetworkCreateMap() (map[string]interface{}, error) {
 // The tenant ID that is contained in the URI is the tenant that creates the
 // network. An admin user, however, has the option of specifying another tenant
 // ID in the CreateOpts struct.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToNetworkCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
-	return r
 }
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -120,24 +116,20 @@ func (opts UpdateOpts) ToNetworkUpdateMap() (map[string]interface{}, error) {
 
 // Update accepts a UpdateOpts struct and updates an existing network using the
 // values provided. For more information, see the Create function.
-func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToNetworkUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Put(updateURL(c, networkID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
-	return r
 }
 
 // Delete accepts a unique ID and deletes the network associated with it.
-func Delete(c *gophercloud.ServiceClient, networkID string) DeleteResult {
-	var r DeleteResult
+func Delete(c *gophercloud.ServiceClient, networkID string) (r DeleteResult) {
 	_, r.Err = c.Delete(deleteURL(c, networkID), nil)
-	return r
 }
 
 // IDFromName is a convenience function that returns a network's ID given its name.

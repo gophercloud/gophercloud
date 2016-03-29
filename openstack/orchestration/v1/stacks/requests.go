@@ -86,15 +86,13 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 
 // Create accepts a CreateOpts struct and creates a new stack using the values
 // provided.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToStackCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
-	return r
 }
 
 // AdoptOptsBuilder is the interface options structs have to satisfy in order
@@ -176,15 +174,13 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 
 // Adopt accepts an AdoptOpts struct and creates a new stack using the resources
 // from another stack.
-func Adopt(c *gophercloud.ServiceClient, opts AdoptOptsBuilder) AdoptResult {
-	var r AdoptResult
+func Adopt(c *gophercloud.ServiceClient, opts AdoptOptsBuilder) (r AdoptResult) {
 	b, err := opts.ToStackAdoptMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(adoptURL(c), b, &r.Body, nil)
-	return r
 }
 
 // SortDir is a type for specifying in which direction to sort a list of stacks.
@@ -333,22 +329,18 @@ func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 
 // Update accepts an UpdateOpts struct and updates an existing stack using the values
 // provided.
-func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToStackUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Put(updateURL(c, stackName, stackID), b, nil, nil)
-	return r
 }
 
 // Delete deletes a stack based on the stack name and stack ID.
-func Delete(c *gophercloud.ServiceClient, stackName, stackID string) DeleteResult {
-	var r DeleteResult
+func Delete(c *gophercloud.ServiceClient, stackName, stackID string) (r DeleteResult) {
 	_, r.Err = c.Delete(deleteURL(c, stackName, stackID), nil)
-	return r
 }
 
 // PreviewOptsBuilder is the interface options structs have to satisfy in order
@@ -422,26 +414,22 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 
 // Preview accepts a PreviewOptsBuilder interface and creates a preview of a stack using the values
 // provided.
-func Preview(c *gophercloud.ServiceClient, opts PreviewOptsBuilder) PreviewResult {
-	var r PreviewResult
+func Preview(c *gophercloud.ServiceClient, opts PreviewOptsBuilder) (r PreviewResult) {
 	b, err := opts.ToStackPreviewMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(previewURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // Abandon deletes the stack with the provided stackName and stackID, but leaves its
 // resources intact, and returns data describing the stack and its resources.
-func Abandon(c *gophercloud.ServiceClient, stackName, stackID string) AbandonResult {
-	var r AbandonResult
+func Abandon(c *gophercloud.ServiceClient, stackName, stackID string) (r AbandonResult) {
 	_, r.Err = c.Delete(abandonURL(c, stackName, stackID), &gophercloud.RequestOpts{
 		JSONResponse: &r.Body,
 		OkCodes:      []int{200},
 	})
-	return r
 }

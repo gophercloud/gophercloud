@@ -6,11 +6,9 @@ import (
 )
 
 // Create adds a new service of the requested type to the catalog.
-func Create(client *gophercloud.ServiceClient, serviceType string) CreateResult {
-	var r CreateResult
+func Create(client *gophercloud.ServiceClient, serviceType string) (r CreateResult) {
 	b := map[string]string{"type": serviceType}
 	_, r.Err = client.Post(listURL(client), b, &r.Body, nil)
-	return r
 }
 
 type ListOptsBuilder interface {
@@ -45,24 +43,18 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 }
 
 // Get returns additional information about a service, given its ID.
-func Get(client *gophercloud.ServiceClient, serviceID string) GetResult {
-	var r GetResult
+func Get(client *gophercloud.ServiceClient, serviceID string) (r GetResult) {
 	_, r.Err = client.Get(serviceURL(client, serviceID), &r.Body, nil)
-	return r
 }
 
 // Update changes the service type of an existing service.
-func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) UpdateResult {
-	var r UpdateResult
+func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) (r UpdateResult) {
 	b := map[string]string{"type": serviceType}
 	_, r.Err = client.Patch(serviceURL(client, serviceID), &b, &r.Body, nil)
-	return r
 }
 
 // Delete removes an existing service.
 // It either deletes all associated endpoints, or fails until all endpoints are deleted.
-func Delete(client *gophercloud.ServiceClient, serviceID string) DeleteResult {
-	var r DeleteResult
+func Delete(client *gophercloud.ServiceClient, serviceID string) (r DeleteResult) {
 	_, r.Err = client.Delete(serviceURL(client, serviceID), nil)
-	return r
 }

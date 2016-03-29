@@ -59,29 +59,23 @@ func (opts CreateOpts) ToKeyPairCreateMap() (map[string]interface{}, error) {
 
 // Create requests the creation of a new keypair on the server, or to import a pre-existing
 // keypair.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToKeyPairCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // Get returns public data about a previously uploaded KeyPair.
-func Get(client *gophercloud.ServiceClient, name string) GetResult {
-	var r GetResult
+func Get(client *gophercloud.ServiceClient, name string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, name), &r.Body, nil)
-	return r
 }
 
 // Delete requests the deletion of a previous stored KeyPair from the server.
-func Delete(client *gophercloud.ServiceClient, name string) DeleteResult {
-	var r DeleteResult
+func Delete(client *gophercloud.ServiceClient, name string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, name), nil)
-	return r
 }

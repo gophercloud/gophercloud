@@ -29,17 +29,14 @@ type DatastoreOpts struct {
 
 // CreateOpts is the struct responsible for configuring new configurations.
 type CreateOpts struct {
-	// [REQUIRED] The configuration group name
+	// The configuration group name
 	Name string `json:"name" required:"true"`
-
-	// [REQUIRED] A map of user-defined configuration settings that will define
+	// A map of user-defined configuration settings that will define
 	// how each associated datastore works. Each key/value pair is specific to a
 	// datastore type.
 	Values map[string]interface{} `json:"values" required:"true"`
-
 	// Associates the configuration group with a particular datastore.
 	Datastore *DatastoreOpts `json:"datastore,omitempty"`
-
 	// A human-readable explanation for the group.
 	Description string `json:"description,omitempty"`
 }
@@ -50,22 +47,18 @@ func (opts CreateOpts) ToConfigCreateMap() (map[string]interface{}, error) {
 }
 
 // Create will create a new configuration group.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToConfigCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Post(baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
-	return r
 }
 
 // Get will retrieve the details for a specified configuration group.
-func Get(client *gophercloud.ServiceClient, configID string) GetResult {
-	var r GetResult
+func Get(client *gophercloud.ServiceClient, configID string) (r GetResult) {
 	_, r.Err = client.Get(resourceURL(client, configID), &r.Body, nil)
-	return r
 }
 
 // UpdateOptsBuilder is the top-level interface for casting update options into
@@ -96,38 +89,32 @@ func (opts UpdateOpts) ToConfigUpdateMap() (map[string]interface{}, error) {
 // Update will modify an existing configuration group by performing a merge
 // between new and existing values. If the key already exists, the new value
 // will overwrite. All other keys will remain unaffected.
-func Update(client *gophercloud.ServiceClient, configID string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(client *gophercloud.ServiceClient, configID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToConfigUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Patch(resourceURL(client, configID), &b, nil, nil)
-	return r
 }
 
 // Replace will modify an existing configuration group by overwriting the
 // entire parameter group with the new values provided. Any existing keys not
 // included in UpdateOptsBuilder will be deleted.
-func Replace(client *gophercloud.ServiceClient, configID string, opts UpdateOptsBuilder) ReplaceResult {
-	var r ReplaceResult
+func Replace(client *gophercloud.ServiceClient, configID string, opts UpdateOptsBuilder) (r ReplaceResult) {
 	b, err := opts.ToConfigUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = client.Put(resourceURL(client, configID), &b, nil, nil)
-	return r
 }
 
 // Delete will permanently delete a configuration group. Please note that
 // config groups cannot be deleted whilst still attached to running instances -
 // you must detach and then delete them.
-func Delete(client *gophercloud.ServiceClient, configID string) DeleteResult {
-	var r DeleteResult
+func Delete(client *gophercloud.ServiceClient, configID string) (r DeleteResult) {
 	_, r.Err = client.Delete(resourceURL(client, configID), nil)
-	return r
 }
 
 // ListInstances will list all the instances associated with a particular
@@ -154,10 +141,8 @@ func ListDatastoreParams(client *gophercloud.ServiceClient, datastoreID, version
 // "innodb_file_per_table" configuration param for MySQL datastores. You will
 // need the param's ID first, which can be attained by using the ListDatastoreParams
 // operation.
-func GetDatastoreParam(client *gophercloud.ServiceClient, datastoreID, versionID, paramID string) ParamResult {
-	var r ParamResult
+func GetDatastoreParam(client *gophercloud.ServiceClient, datastoreID, versionID, paramID string) (r ParamResult) {
 	_, r.Err = client.Get(getDSParamURL(client, datastoreID, versionID, paramID), &r.Body, nil)
-	return r
 }
 
 // ListGlobalParams is similar to ListDatastoreParams but does not require a
@@ -170,8 +155,6 @@ func ListGlobalParams(client *gophercloud.ServiceClient, versionID string) pagin
 
 // GetGlobalParam is similar to GetDatastoreParam but does not require a
 // DatastoreID.
-func GetGlobalParam(client *gophercloud.ServiceClient, versionID, paramID string) ParamResult {
-	var r ParamResult
+func GetGlobalParam(client *gophercloud.ServiceClient, versionID, paramID string) (r ParamResult) {
 	_, r.Err = client.Get(getGlobalParamURL(client, versionID, paramID), &r.Body, nil)
-	return r
 }

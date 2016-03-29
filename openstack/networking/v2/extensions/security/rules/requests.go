@@ -104,27 +104,21 @@ func (opts CreateOpts) ToSecGroupRuleCreateMap() (map[string]interface{}, error)
 
 // Create is an operation which adds a new security group rule and associates it
 // with an existing security group (whose ID is specified in CreateOpts).
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToSecGroupRuleCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
-	return r
 }
 
 // Get retrieves a particular security group rule based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
-	return r
 }
 
 // Delete will permanently delete a particular security group rule based on its unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var r DeleteResult
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
-	return r
 }

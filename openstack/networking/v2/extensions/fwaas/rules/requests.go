@@ -96,22 +96,18 @@ func (opts CreateOpts) ToRuleCreateMap() (map[string]interface{}, error) {
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new firewall rule
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRuleCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
-	return r
 }
 
 // Get retrieves a particular firewall rule based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
-	return r
 }
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -143,22 +139,18 @@ func (opts UpdateOpts) ToRuleUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update allows firewall policies to be updated.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToRuleUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // Delete will permanently delete a particular firewall rule based on its unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var r DeleteResult
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
-	return r
 }

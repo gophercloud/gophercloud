@@ -130,22 +130,18 @@ func (opts CreateOpts) ToLBMonitorCreateMap() (map[string]interface{}, error) {
 // CreateOpts{Type: TypeHTTP, Delay: 20, Timeout: 10, MaxRetries: 3,
 //  HttpMethod: "HEAD", ExpectedCodes: "200"}
 //
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToLBMonitorCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
-	return r
 }
 
 // Get retrieves a particular health monitor based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
-	return r
 }
 
 // UpdateOptsBuilder is what types must satisfy to be used as Update
@@ -193,22 +189,18 @@ func (opts UpdateOpts) ToLBMonitorUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update is an operation which modifies the attributes of the specified monitor.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToLBMonitorUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
-	return r
 }
 
 // Delete will permanently delete a particular monitor based on its unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var r DeleteResult
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
-	return r
 }

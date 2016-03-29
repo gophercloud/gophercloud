@@ -14,8 +14,6 @@ func List(c *gophercloud.ServiceClient) pagination.Pager {
 
 // Get will retrieve the volume type with the provided ID. To extract the volume
 // type from the result, call the Extract method on the GetResult.
-func Get(client *gophercloud.ServiceClient, v string) GetResult {
-	var r GetResult
+func Get(client *gophercloud.ServiceClient, v string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, v), &r.Body, nil)
-	return r
 }

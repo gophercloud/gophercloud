@@ -6,10 +6,8 @@ import (
 )
 
 // Find retrieves stack resources for the given stack name.
-func Find(c *gophercloud.ServiceClient, stackName string) FindResult {
-	var r FindResult
+func Find(c *gophercloud.ServiceClient, stackName string) (r FindResult) {
 	_, r.Err = c.Get(findURL(c, stackName), &r.Body, nil)
-	return r
 }
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -47,17 +45,13 @@ func List(client *gophercloud.ServiceClient, stackName, stackID string, opts Lis
 }
 
 // Get retreives data for the given stack resource.
-func Get(c *gophercloud.ServiceClient, stackName, stackID, resourceName string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, stackName, stackID, resourceName string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, stackName, stackID, resourceName), &r.Body, nil)
-	return r
 }
 
 // Metadata retreives the metadata for the given stack resource.
-func Metadata(c *gophercloud.ServiceClient, stackName, stackID, resourceName string) MetadataResult {
-	var r MetadataResult
+func Metadata(c *gophercloud.ServiceClient, stackName, stackID, resourceName string) (r MetadataResult) {
 	_, r.Err = c.Get(metadataURL(c, stackName, stackID, resourceName), &r.Body, nil)
-	return r
 }
 
 // ListTypes makes a request against the API to list resource types.
@@ -68,15 +62,11 @@ func ListTypes(client *gophercloud.ServiceClient) pagination.Pager {
 }
 
 // Schema retreives the schema for the given resource type.
-func Schema(c *gophercloud.ServiceClient, resourceType string) SchemaResult {
-	var r SchemaResult
+func Schema(c *gophercloud.ServiceClient, resourceType string) (r SchemaResult) {
 	_, r.Err = c.Get(schemaURL(c, resourceType), &r.Body, nil)
-	return r
 }
 
 // Template retreives the template representation for the given resource type.
-func Template(c *gophercloud.ServiceClient, resourceType string) TemplateResult {
-	var r TemplateResult
+func Template(c *gophercloud.ServiceClient, resourceType string) (r TemplateResult) {
 	_, r.Err = c.Get(templateURL(c, resourceType), &r.Body, nil)
-	return r
 }

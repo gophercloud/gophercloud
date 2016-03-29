@@ -31,22 +31,20 @@ func (opts DeleteOpts) ToCDNAssetDeleteParams() (string, error) {
 // it. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
-func Delete(c *gophercloud.ServiceClient, idOrURL string, opts DeleteOptsBuilder) DeleteResult {
+func Delete(c *gophercloud.ServiceClient, idOrURL string, opts DeleteOptsBuilder) (r DeleteResult) {
 	var url string
 	if strings.Contains(idOrURL, "/") {
 		url = idOrURL
 	} else {
 		url = deleteURL(c, idOrURL)
 	}
-	var r DeleteResult
 	if opts != nil {
 		q, err := opts.ToCDNAssetDeleteParams()
 		if err != nil {
 			r.Err = err
-			return r
+			return
 		}
 		url += q
 	}
 	_, r.Err = c.Delete(url, nil)
-	return r
 }

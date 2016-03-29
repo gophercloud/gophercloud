@@ -6,10 +6,8 @@ import (
 )
 
 // Find retrieves stack events for the given stack name.
-func Find(c *gophercloud.ServiceClient, stackName string) FindResult {
-	var r FindResult
+func Find(c *gophercloud.ServiceClient, stackName string) (r FindResult) {
 	_, r.Err = c.Get(findURL(c, stackName), &r.Body, nil)
-	return r
 }
 
 // SortDir is a type for specifying in which direction to sort a list of events.
@@ -177,10 +175,6 @@ func ListResourceEvents(client *gophercloud.ServiceClient, stackName, stackID, r
 }
 
 // Get retreives data for the given stack resource.
-func Get(c *gophercloud.ServiceClient, stackName, stackID, resourceName, eventID string) GetResult {
-	var r GetResult
-	_, r.Err = c.Get(getURL(c, stackName, stackID, resourceName, eventID), &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200},
-	})
-	return r
+func Get(c *gophercloud.ServiceClient, stackName, stackID, resourceName, eventID string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, stackName, stackID, resourceName, eventID), &r.Body, nil)
 }

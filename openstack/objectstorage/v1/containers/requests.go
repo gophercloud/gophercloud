@@ -89,14 +89,13 @@ func (opts CreateOpts) ToContainerCreateMap() (map[string]string, error) {
 }
 
 // Create is a function that creates a new container.
-func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsBuilder) (r CreateResult) {
 	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToContainerCreateMap()
 		if err != nil {
 			r.Err = err
-			return r
+			return
 		}
 		for k, v := range headers {
 			h[k] = v
@@ -110,14 +109,11 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 		r.Header = resp.Header
 	}
 	r.Err = err
-	return r
 }
 
 // Delete is a function that deletes a container.
-func Delete(c *gophercloud.ServiceClient, containerName string) DeleteResult {
-	var r DeleteResult
+func Delete(c *gophercloud.ServiceClient, containerName string) (r DeleteResult) {
 	_, r.Err = c.Delete(deleteURL(c, containerName), nil)
-	return r
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
@@ -154,14 +150,13 @@ func (opts UpdateOpts) ToContainerUpdateMap() (map[string]string, error) {
 
 // Update is a function that creates, updates, or deletes a container's
 // metadata.
-func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsBuilder) (r UpdateResult) {
 	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToContainerUpdateMap()
 		if err != nil {
 			r.Err = err
-			return r
+			return
 		}
 
 		for k, v := range headers {
@@ -176,14 +171,12 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 		r.Header = resp.Header
 	}
 	r.Err = err
-	return r
 }
 
 // Get is a function that retrieves the metadata of a container. To extract just
 // the custom metadata, pass the GetResult response to the ExtractMetadata
 // function.
-func Get(c *gophercloud.ServiceClient, containerName string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, containerName string) (r GetResult) {
 	resp, err := c.Request("HEAD", getURL(c, containerName), &gophercloud.RequestOpts{
 		OkCodes: []int{200, 204},
 	})
@@ -191,5 +184,4 @@ func Get(c *gophercloud.ServiceClient, containerName string) GetResult {
 		r.Header = resp.Header
 	}
 	r.Err = err
-	return r
 }

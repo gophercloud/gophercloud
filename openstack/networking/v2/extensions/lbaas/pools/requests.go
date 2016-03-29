@@ -91,22 +91,18 @@ func (opts CreateOpts) ToLBPoolCreateMap() (map[string]interface{}, error) {
 
 // Create accepts a CreateOptsBuilder and uses the values to create a new
 // load balancer pool.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToLBPoolCreateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
-	return r
 }
 
 // Get retrieves a particular pool based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
-	return r
 }
 
 // UpdateOptsBuilder is the interface types must satisfy to be used as options
@@ -131,24 +127,20 @@ func (opts UpdateOpts) ToLBPoolUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update allows pools to be updated.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var r UpdateResult
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToLBPoolUpdateMap()
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return r
 }
 
 // Delete will permanently delete a particular pool based on its unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var r DeleteResult
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
-	return r
 }
 
 // AssociateMonitor will associate a health monitor with a particular pool.
@@ -156,18 +148,14 @@ func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
 // pool and will deactivate these members if they are deemed unhealthy. A
 // member can be deactivated (status set to INACTIVE) if any of health monitors
 // finds it unhealthy.
-func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) AssociateResult {
-	var r AssociateResult
+func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) (r AssociateResult) {
 	b := map[string]interface{}{"health_monitor": map[string]string{"id": monitorID}}
 	_, r.Err = c.Post(associateURL(c, poolID), b, &r.Body, nil)
-	return r
 }
 
 // DisassociateMonitor will disassociate a health monitor with a particular
 // pool. When dissociation is successful, the health monitor will no longer
 // check for the health of the members of the pool.
-func DisassociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) AssociateResult {
-	var r AssociateResult
+func DisassociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) (r AssociateResult) {
 	_, r.Err = c.Delete(disassociateURL(c, poolID, monitorID), nil)
-	return r
 }

@@ -7,15 +7,11 @@ func actionURL(client *gophercloud.ServiceClient, id string) string {
 }
 
 // Start is the operation responsible for starting a Compute server.
-func Start(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
-	var r gophercloud.ErrResult
+func Start(client *gophercloud.ServiceClient, id string) (r gophercloud.ErrResult) {
 	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"os-start": nil}, nil, nil)
-	return r
 }
 
 // Stop is the operation responsible for stopping a Compute server.
-func Stop(client *gophercloud.ServiceClient, id string) gophercloud.ErrResult {
-	var r gophercloud.ErrResult
+func Stop(client *gophercloud.ServiceClient, id string) (r gophercloud.ErrResult) {
 	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"os-stop": nil}, nil, nil)
-	return r
 }
