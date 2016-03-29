@@ -153,3 +153,15 @@ func Update(client *gophercloud.ServiceClient, groupID, policyID, webhookID stri
 
 	return result
 }
+
+// Delete requests the given webhook be permanently deleted.
+func Delete(client *gophercloud.ServiceClient, groupID, policyID, webhookID string) DeleteResult {
+	var result DeleteResult
+
+	url := deleteURL(client, groupID, policyID, webhookID)
+	_, result.Err = client.Delete(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+
+	return result
+}

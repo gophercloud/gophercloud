@@ -53,6 +53,11 @@ type UpdateResult struct {
 	gophercloud.ErrResult
 }
 
+// DeleteResult represents the result of a delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Webhook represents a webhook associted with a scaling policy.
 type Webhook struct {
 	// UUID for the webhook.

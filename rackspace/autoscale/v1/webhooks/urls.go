@@ -17,3 +17,7 @@ func getURL(c *gophercloud.ServiceClient, groupID, policyID, webhookID string) s
 func updateURL(c *gophercloud.ServiceClient, groupID, policyID, webhookID string) string {
 	return getURL(c, groupID, policyID, webhookID)
 }
+
+func deleteURL(c *gophercloud.ServiceClient, groupID, policyID, webhookID string) string {
+	return getURL(c, groupID, policyID, webhookID)
+}

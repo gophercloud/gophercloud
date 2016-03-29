@@ -104,3 +104,14 @@ func TestUpdate(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleWebhookDeleteSuccessfully(t)
+
+	client := client.ServiceClient()
+	err := Delete(client, groupID, policyID, firstID).ExtractErr()
+
+	th.AssertNoErr(t, err)
+}

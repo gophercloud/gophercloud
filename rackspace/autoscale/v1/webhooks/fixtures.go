@@ -205,7 +205,22 @@ func HandleWebhookUpdateSuccessfully(t *testing.T) {
 
 		th.TestJSONRequest(t, r, WebhookUpdateRequest)
 
-		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleWebhookDeleteSuccessfully sets up the test server to respond to a webhooks Delete request.
+func HandleWebhookDeleteSuccessfully(t *testing.T) {
+	groupID := "10eb3219-1b12-4b34-b1e4-e10ee4f24c65"
+	policyID := "2b48d247-0282-4b9d-8775-5c4b67e8e649"
+	webhookID := "2bd1822c-58c5-49fd-8b3d-ed44781a58d1"
+
+	path := fmt.Sprintf("/groups/%s/policies/%s/webhooks/%s", groupID, policyID, webhookID)
+
+	th.Mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
