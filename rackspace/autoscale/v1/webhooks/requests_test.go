@@ -86,3 +86,21 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, FirstWebhook, *webhook)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleWebhookUpdateSuccessfully(t)
+
+	client := client.ServiceClient()
+	opts := UpdateOpts{
+		Name: "updated hook",
+		Metadata: map[string]string{
+			"new-key": "some data",
+		},
+	}
+
+	err := Update(client, groupID, policyID, firstID, opts).ExtractErr()
+
+	th.AssertNoErr(t, err)
+}

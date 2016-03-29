@@ -7,6 +7,10 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+// ErrNoName represents a validation error in which a create or update operation
+// has an empty name field.
+var ErrNoName = errors.New("Webhook name cannot by empty.")
+
 // List returns all webhooks for a scaling policy.
 func List(client *gophercloud.ServiceClient, groupID, policyID string) pagination.Pager {
 	url := listURL(client, groupID, policyID)
@@ -45,7 +49,7 @@ func (opts CreateOpts) ToWebhookCreateMap() ([]map[string]interface{}, error) {
 
 	for _, o := range opts {
 		if o.Name == "" {
-			return nil, errors.New("Cannot create a Webhook without a name.")
+			return nil, ErrNoName
 		}
 
 		hook := make(map[string]interface{})
@@ -90,6 +94,62 @@ func Get(client *gophercloud.ServiceClient, groupID, policyID, webhookID string)
 	var result GetResult
 
 	_, result.Err = client.Get(getURL(client, groupID, policyID, webhookID), &result.Body, nil)
+
+	return result
+}
+
+// UpdateOptsBuilder is the interface responsible for generating the map
+// structure for producing JSON for an Update operation.
+type UpdateOptsBuilder interface {
+	ToWebhookUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents the options for updating an existing webhook.
+//
+// Update operations completely replace the configuration being updated. Empty
+// values in the update are accepted and overwrite previously specified
+// parameters.
+type UpdateOpts struct {
+	// Name of the webhook.
+	Name string `mapstructure:"name" json:"name"`
+
+	// Metadata associated with the webhook.
+	Metadata map[string]string `mapstructure:"metadata" json:"metadata"`
+}
+
+// ToWebhookUpdateMap converts an UpdateOpts struct into a map for use as the
+// request body in an Update request.
+func (opts UpdateOpts) ToWebhookUpdateMap() (map[string]interface{}, error) {
+	if opts.Name == "" {
+		return nil, ErrNoName
+	}
+
+	hook := make(map[string]interface{})
+
+	hook["name"] = opts.Name
+
+	if opts.Metadata != nil {
+		hook["metadata"] = opts.Metadata
+	}
+
+	return hook, nil
+}
+
+// Update requests the configuration of the given webhook be updated.
+func Update(client *gophercloud.ServiceClient, groupID, policyID, webhookID string, opts UpdateOptsBuilder) UpdateResult {
+	var result UpdateResult
+
+	url := updateURL(client, groupID, policyID, webhookID)
+	reqBody, err := opts.ToWebhookUpdateMap()
+
+	if err != nil {
+		result.Err = err
+		return result
+	}
+
+	_, result.Err = client.Put(url, reqBody, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
 
 	return result
 }

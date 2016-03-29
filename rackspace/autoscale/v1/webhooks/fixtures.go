@@ -92,6 +92,16 @@ const WebhookGetBody = `
 }
 `
 
+// WebhookUpdateRequest contains the canned body of a webhooks.Update request.
+const WebhookUpdateRequest = `
+{
+  "name": "updated hook",
+  "metadata": {
+    "new-key": "some data"
+  }
+}
+`
+
 var (
 	// FirstWebhook is a Webhook corresponding to the first result in WebhookListBody.
 	FirstWebhook = Webhook{
@@ -178,5 +188,24 @@ func HandleWebhookGetSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 
 		fmt.Fprintf(w, WebhookGetBody)
+	})
+}
+
+// HandleWebhookUpdateSuccessfully sets up the test server to respond to a webhooks Update request.
+func HandleWebhookUpdateSuccessfully(t *testing.T) {
+	groupID := "10eb3219-1b12-4b34-b1e4-e10ee4f24c65"
+	policyID := "2b48d247-0282-4b9d-8775-5c4b67e8e649"
+	webhookID := "2bd1822c-58c5-49fd-8b3d-ed44781a58d1"
+
+	path := fmt.Sprintf("/groups/%s/policies/%s/webhooks/%s", groupID, policyID, webhookID)
+
+	th.Mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		th.TestJSONRequest(t, r, WebhookUpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
 	})
 }

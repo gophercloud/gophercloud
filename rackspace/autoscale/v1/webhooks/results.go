@@ -34,11 +34,6 @@ type CreateResult struct {
 	pagination.SinglePageBase
 }
 
-// GetResult temporarily contains the response from a Get call.
-type GetResult struct {
-	webhookResult
-}
-
 // ExtractWebhooks extracts a slice of Webhooks from a CreateResult.
 func (res CreateResult) ExtractWebhooks() ([]Webhook, error) {
 	if res.Err != nil {
@@ -46,6 +41,16 @@ func (res CreateResult) ExtractWebhooks() ([]Webhook, error) {
 	}
 
 	return commonExtractWebhooks(res.Body)
+}
+
+// GetResult temporarily contains the response from a Get call.
+type GetResult struct {
+	webhookResult
+}
+
+// UpdateResult represents the result of an update operation.
+type UpdateResult struct {
+	gophercloud.ErrResult
 }
 
 // Webhook represents a webhook associted with a scaling policy.
