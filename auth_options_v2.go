@@ -9,7 +9,7 @@ type TokenCredentialsV2 struct {
 	ID string `json:"id,omitempty" required:"true"`
 }
 
-// AuthOptions wraps a gophercloud AuthOptions in order to adhere to the AuthOptionsBuilder
+// AuthOptionsV2 wraps a gophercloud AuthOptions in order to adhere to the AuthOptionsBuilder
 // interface.
 type AuthOptionsV2 struct {
 	PasswordCredentials *PasswordCredentialsV2 `json:"passwordCredentials,omitempty" xor:"TokenCredentials"`
@@ -24,10 +24,4 @@ type AuthOptionsV2 struct {
 	// TokenCredentials allows users to authenticate (possibly as another user) with an
 	// authentication token ID.
 	TokenCredentials *TokenCredentialsV2 `json:"token,omitempty" xor:"PasswordCredentials"`
-}
-
-// ToTokenV2CreateMap allows AuthOptionsV2 to satisfy the AuthOptionsBuilder
-// interface in the v2 tokens package
-func (opts AuthOptionsV2) ToTokenV2CreateMap() (map[string]interface{}, error) {
-	return BuildRequestBody(opts, "auth")
 }

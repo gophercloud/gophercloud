@@ -4,12 +4,20 @@ import "fmt"
 
 // BaseError is an error type that all other error types embed.
 type BaseError struct {
-	Info string
-	//Function string
+	DefaultErrString string
+	Info             string
 }
 
 func (e BaseError) Error() string {
-	return "An error occurred while executing a Gophercloud request."
+	e.DefaultErrString = "An error occurred while executing a Gophercloud request."
+	return e.choseErrString()
+}
+
+func (e BaseError) choseErrString() string {
+	if e.Info != "" {
+		return e.Info
+	}
+	return e.DefaultErrString
 }
 
 // ErrMissingInput is the error when input is required in a particular
@@ -20,7 +28,8 @@ type ErrMissingInput struct {
 }
 
 func (e ErrMissingInput) Error() string {
-	return fmt.Sprintf("Missing input for argument [%s]", e.Argument)
+	e.DefaultErrString = fmt.Sprintf("Missing input for argument [%s]", e.Argument)
+	return e.choseErrString()
 }
 
 // ErrInvalidInput is an error type used for most non-HTTP Gophercloud errors.
@@ -30,7 +39,8 @@ type ErrInvalidInput struct {
 }
 
 func (e ErrInvalidInput) Error() string {
-	return fmt.Sprintf("Invalid input provided for argument [%s]: [%+v]", e.Argument, e.Value)
+	e.DefaultErrString = fmt.Sprintf("Invalid input provided for argument [%s]: [%+v]", e.Argument, e.Value)
+	return e.choseErrString()
 }
 
 // ErrUnexpectedResponseCode is returned by the Request method when a response code other than
@@ -44,11 +54,12 @@ type ErrUnexpectedResponseCode struct {
 	Body     []byte
 }
 
-func (err ErrUnexpectedResponseCode) Error() string {
-	return fmt.Sprintf(
+func (e ErrUnexpectedResponseCode) Error() string {
+	e.DefaultErrString = fmt.Sprintf(
 		"Expected HTTP response code %v when accessing [%s %s], but got %d instead\n%s",
-		err.Expected, err.Method, err.URL, err.Actual, err.Body,
+		e.Expected, e.Method, e.URL, e.Actual, e.Body,
 	)
+	return e.choseErrString()
 }
 
 // ErrDefault400 is the default error type returned on a 400 HTTP response code.
@@ -172,7 +183,8 @@ type ErrTimeOut struct {
 }
 
 func (e ErrTimeOut) Error() string {
-	return "A time out occurred"
+	e.DefaultErrString = "A time out occurred"
+	return e.choseErrString()
 }
 
 // ErrUnableToReauthenticate is the error type returned when reauthentication fails.
@@ -182,7 +194,8 @@ type ErrUnableToReauthenticate struct {
 }
 
 func (e ErrUnableToReauthenticate) Error() string {
-	return fmt.Sprintf("Unable to re-authenticate: %s", e.ErrOriginal)
+	e.DefaultErrString = fmt.Sprintf("Unable to re-authenticate: %s", e.ErrOriginal)
+	return e.choseErrString()
 }
 
 // ErrErrorAfterReauthentication is the error type returned when reauthentication
@@ -193,7 +206,8 @@ type ErrErrorAfterReauthentication struct {
 }
 
 func (e ErrErrorAfterReauthentication) Error() string {
-	return fmt.Sprintf("Successfully re-authenticated, but got error executing request: %s", e.ErrOriginal)
+	e.DefaultErrString = fmt.Sprintf("Successfully re-authenticated, but got error executing request: %s", e.ErrOriginal)
+	return e.choseErrString()
 }
 
 // ErrServiceNotFound is returned when no service in a service catalog matches
@@ -205,7 +219,8 @@ type ErrServiceNotFound struct {
 }
 
 func (e ErrServiceNotFound) Error() string {
-	return "No suitable service could be found in the service catalog."
+	e.DefaultErrString = "No suitable service could be found in the service catalog."
+	return e.choseErrString()
 }
 
 // ErrEndpointNotFound is returned when no available endpoints match the
@@ -217,7 +232,8 @@ type ErrEndpointNotFound struct {
 }
 
 func (e ErrEndpointNotFound) Error() string {
-	return "No suitable endpoint could be found in the service catalog."
+	e.DefaultErrString = "No suitable endpoint could be found in the service catalog."
+	return e.choseErrString()
 }
 
 // ErrResourceNotFound is the error when trying to retrieve a resource's
@@ -229,7 +245,8 @@ type ErrResourceNotFound struct {
 }
 
 func (e ErrResourceNotFound) Error() string {
-	return fmt.Sprintf("Unable to find %s with name %s", e.ResourceType, e.Name)
+	e.DefaultErrString = fmt.Sprintf("Unable to find %s with name %s", e.ResourceType, e.Name)
+	return e.choseErrString()
 }
 
 // ErrMultipleResourcesFound is the error when trying to retrieve a resource's
@@ -242,7 +259,8 @@ type ErrMultipleResourcesFound struct {
 }
 
 func (e ErrMultipleResourcesFound) Error() string {
-	return fmt.Sprintf("Found %d %ss matching %s", e.Count, e.ResourceType, e.Name)
+	e.DefaultErrString = fmt.Sprintf("Found %d %ss matching %s", e.Count, e.ResourceType, e.Name)
+	return e.choseErrString()
 }
 
 // ErrUnexpectedType is the error when an unexpected type is encountered
@@ -253,5 +271,6 @@ type ErrUnexpectedType struct {
 }
 
 func (e ErrUnexpectedType) Error() string {
-	return fmt.Sprintf("Expected %s but got %s", e.Expected, e.Actual)
+	e.DefaultErrString = fmt.Sprintf("Expected %s but got %s", e.Expected, e.Actual)
+	return e.choseErrString()
 }

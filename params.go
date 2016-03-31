@@ -33,21 +33,14 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 			f := optsType.Field(i)
 
 			if f.Name != strings.Title(f.Name) {
-				fmt.Printf("Skipping field: %s...\n", f.Name)
+				//fmt.Printf("Skipping field: %s...\n", f.Name)
 				continue
 			}
 
-			fmt.Printf("Starting on field: %s...\n", f.Name)
+			//fmt.Printf("Starting on field: %s...\n", f.Name)
 
 			zero := isZero(v)
-			fmt.Printf("v is zero?: %v\n", zero)
-
-			// if there are 0 tags or if there is only 1 and it's the json tag,
-			// we don't need to do anything for this field
-			//if len(strings.Split(string(f.Tag), " ")) < 2 && f.Tag.Get("json") != "" && zero {
-			//	fmt.Printf("skipping field: %s with tag: %+v\n", f.Name, f.Tag)
-			//	continue
-			//}
+			//fmt.Printf("v is zero?: %v\n", zero)
 
 			// if the field has a required tag that's set to "true"
 			if requiredTag := f.Tag.Get("required"); requiredTag == "true" {

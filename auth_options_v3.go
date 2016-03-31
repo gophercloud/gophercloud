@@ -59,23 +59,3 @@ type AuthOptionsV3 struct {
 	Identity *IdentityCredentialsV3 `json:"identity" required:"true"`
 	Scope    *ScopeV3               `json:"scope,omitempty"`
 }
-
-func (opts AuthOptionsV3) ToTokenV3CreateMap(scope *ScopeOptsV3) (map[string]interface{}, error) {
-	if scope != nil {
-		opts.Scope = &ScopeV3{
-			Domain: &ScopeDomainV3{
-				ID:   scope.DomainID,
-				Name: scope.DomainName,
-			},
-			Project: &ScopeProjectV3{
-				Domain: &ScopeProjectDomainV3{
-					ID:   scope.DomainID,
-					Name: scope.DomainName,
-				},
-				ID:   scope.ProjectID,
-				Name: scope.ProjectName,
-			},
-		}
-	}
-	return BuildRequestBody(opts, "auth")
-}

@@ -20,24 +20,21 @@ func subjectTokenHeaders(c *gophercloud.ServiceClient, subjectToken string) map[
 }
 
 // Create authenticates and either generates a new token, or changes the Scope of an existing token.
-func Create(c *gophercloud.ServiceClient, opts AuthOptionsBuilder, scopeOpts *gophercloud.ScopeOptsV3) CreateResult {
-	var r CreateResult
+func Create(c *gophercloud.ServiceClient, opts AuthOptionsBuilder, scopeOpts *gophercloud.ScopeOptsV3) (r CreateResult) {
 	b, err := opts.ToTokenV3CreateMap(scopeOpts)
 	if err != nil {
 		r.Err = err
-		return r
+		return
 	}
 	var resp *http.Response
 	resp, r.Err = c.Post(tokenURL(c), b, &r.Body, nil)
 	if resp != nil {
 		r.Header = resp.Header
 	}
-	return r
 }
 
 // Get validates and retrieves information about another token.
-func Get(c *gophercloud.ServiceClient, token string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, token string) (r GetResult) {
 	var resp *http.Response
 	resp, r.Err = c.Get(tokenURL(c), &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: subjectTokenHeaders(c, token),
@@ -46,7 +43,6 @@ func Get(c *gophercloud.ServiceClient, token string) GetResult {
 	if resp != nil {
 		r.Header = resp.Header
 	}
-	return r
 }
 
 // Validate determines if a specified token is valid or not.
@@ -63,10 +59,8 @@ func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
 }
 
 // Revoke immediately makes specified token invalid.
-func Revoke(c *gophercloud.ServiceClient, token string) RevokeResult {
-	var r RevokeResult
+func Revoke(c *gophercloud.ServiceClient, token string) (r RevokeResult) {
 	_, r.Err = c.Delete(tokenURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: subjectTokenHeaders(c, token),
 	})
-	return r
 }
