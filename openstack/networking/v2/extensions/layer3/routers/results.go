@@ -48,9 +48,6 @@ type Router struct {
 	// other than its own.
 	TenantID string `json:"tenant_id" mapstructure:"tenant_id"`
 
-	// Whether router is Exclusive or Shared.
-	RouterType string `json:"router_type" mapstructure:"router_type"`
-
 	Routes []Route `json:"routes" mapstructure:"routes"`
 }
 
