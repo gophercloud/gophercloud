@@ -78,15 +78,9 @@ func Create(client *gophercloud.ServiceClient, groupID, policyID string, opts Cr
 		return res
 	}
 
-	resp, err := client.Post(createURL(client, groupID, policyID), reqBody, &res.Body, nil)
+	_, res.Err = client.Post(createURL(client, groupID, policyID), reqBody, &res.Body, nil)
 
-	if err != nil {
-		res.Err = err
-		return res
-	}
-
-	pr := pagination.PageResultFromParsed(resp, res.Body)
-	return CreateResult{pagination.SinglePageBase(pr)}
+	return res
 }
 
 // Get requests the details of a single webhook with the given ID.

@@ -67,7 +67,7 @@ func TestCreate(t *testing.T) {
 		},
 	}
 
-	webhooks, err := Create(client, groupID, policyID, opts).ExtractWebhooks()
+	webhooks, err := Create(client, groupID, policyID, opts).Extract()
 
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, FirstWebhook, webhooks[0])

@@ -26,16 +26,15 @@ func (r webhookResult) Extract() (*Webhook, error) {
 	return &response.Webhook, err
 }
 
-// CreateResult represents the result of a create operation. Multiple webhooks
-// can be created in a single call, so the result should be treated as a typical
-// pagination Page.  ExtractWebhooks() can be used to extract a slice of
-// Webhooks from a single page.
+// CreateResult represents the result of a create operation.
 type CreateResult struct {
-	pagination.SinglePageBase
+	webhookResult
 }
 
-// ExtractWebhooks extracts a slice of Webhooks from a CreateResult.
-func (res CreateResult) ExtractWebhooks() ([]Webhook, error) {
+// Extract extracts a slice of Webhooks from a CreateResult.  Multiple webhooks
+// can be created in a single operation, so the result of a create is always a
+// list of webhooks.
+func (res CreateResult) Extract() ([]Webhook, error) {
 	if res.Err != nil {
 		return nil, res.Err
 	}
