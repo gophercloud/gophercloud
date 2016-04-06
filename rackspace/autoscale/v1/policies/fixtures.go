@@ -24,7 +24,7 @@ const PolicyListBody = `
           "rel": "self"
         }
       ],
-      "changePercent": 3,
+      "changePercent": 3.3,
       "cooldown": 300,
       "type": "webhook",
       "id": "2b48d247-0282-4b9d-8775-5c4b67e8e649"
@@ -59,10 +59,43 @@ const PolicyListBody = `
       },
       "type": "schedule",
       "id": "e785e3e7-af9e-4f3c-99ae-b80a532e1663",
-      "change": 2
+      "desiredCapacity": 2
     }
   ]
 }
+`
+
+// PolicyCreateBody contains the canned body of a policies.Create response.
+const PolicyCreateBody = PolicyListBody
+
+// PolicyCreateRequest contains the canned body of a policies.Create request.
+const PolicyCreateRequest = `
+[
+  {
+    "name": "webhook policy",
+    "changePercent": 3.3,
+    "cooldown": 300,
+    "type": "webhook"
+  },
+  {
+    "cooldown": 0,
+    "name": "one time",
+    "args": {
+      "at": "2020-04-01T23:00:00.000Z"
+    },
+    "type": "schedule",
+    "change": -1
+  },
+  {
+    "cooldown": 0,
+    "name": "sunday afternoon",
+    "args": {
+      "cron": "59 15 * * 0"
+    },
+    "type": "schedule",
+    "desiredCapacity": 2
+  }
+]
 `
 
 var (
@@ -72,7 +105,7 @@ var (
 		Name:          "webhook policy",
 		Type:          Webhook,
 		Cooldown:      300,
-		ChangePercent: 3,
+		ChangePercent: 3.3,
 	}
 
 	// OneTimePolicy is a Policy corresponding to the second result in PolicyListBody.
@@ -80,7 +113,7 @@ var (
 		ID:     "c175c31e-65f9-41de-8b15-918420d3253e",
 		Name:   "one time",
 		Type:   Schedule,
-		Change: -1,
+		Change: float64(-1),
 		Args: map[string]interface{}{
 			"at": "2020-04-01T23:00:00.000Z",
 		},
@@ -88,10 +121,10 @@ var (
 
 	// SundayAfternoonPolicy is a Policy corresponding to the third result in PolicyListBody.
 	SundayAfternoonPolicy = Policy{
-		ID:     "e785e3e7-af9e-4f3c-99ae-b80a532e1663",
-		Name:   "sunday afternoon",
-		Type:   Schedule,
-		Change: 2,
+		ID:              "e785e3e7-af9e-4f3c-99ae-b80a532e1663",
+		Name:            "sunday afternoon",
+		Type:            Schedule,
+		DesiredCapacity: float64(2),
 		Args: map[string]interface{}{
 			"cron": "59 15 * * 0",
 		},
@@ -109,5 +142,24 @@ func HandlePolicyListSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 
 		fmt.Fprintf(w, PolicyListBody)
+	})
+}
+
+// HandlePolicyCreateSuccessfully sets up the test server to respond to a policies Create request.
+func HandlePolicyCreateSuccessfully(t *testing.T) {
+	path := "/groups/10eb3219-1b12-4b34-b1e4-e10ee4f24c65/policies"
+
+	th.Mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		th.TestJSONRequest(t, r, PolicyCreateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, PolicyCreateBody)
 	})
 }

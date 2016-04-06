@@ -11,6 +11,22 @@ type policyResult struct {
 	gophercloud.Result
 }
 
+// CreateResult represents the result of a create operation.
+type CreateResult struct {
+	policyResult
+}
+
+// Extract extracts a slice of Policies from a CreateResult.  Multiple policies
+// can be created in a single operation, so the result of a create is always a
+// list of policies.
+func (res CreateResult) Extract() ([]Policy, error) {
+	if res.Err != nil {
+		return nil, res.Err
+	}
+
+	return commonExtractPolicies(res.Body)
+}
+
 // Policy represents a scaling policy.
 type Policy struct {
 	// UUID for the policy.
@@ -69,13 +85,15 @@ func (page PolicyPage) IsEmpty() (bool, error) {
 // ExtractPolicies interprets the results of a single page from a List() call,
 // producing a slice of Policies.
 func ExtractPolicies(page pagination.Page) ([]Policy, error) {
-	casted := page.(PolicyPage).Body
+	return commonExtractPolicies(page.(PolicyPage).Body)
+}
 
+func commonExtractPolicies(body interface{}) ([]Policy, error) {
 	var response struct {
 		Policies []Policy `mapstructure:"policies"`
 	}
 
-	err := mapstructure.Decode(casted, &response)
+	err := mapstructure.Decode(body, &response)
 
 	if err != nil {
 		return nil, err
