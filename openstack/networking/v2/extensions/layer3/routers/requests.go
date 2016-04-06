@@ -42,6 +42,14 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+// CreateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Create operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
+type CreateOptsBuilder interface {
+	ToRouterCreateMap() (map[string]interface{}, error)
+}
+
 // CreateOpts contains all the values needed to create a new router. There are
 // no required values.
 type CreateOpts struct {
@@ -49,8 +57,34 @@ type CreateOpts struct {
 	AdminStateUp *bool
 	Distributed  *bool
 	TenantID     string
-	DriverOpts   map[string]string
 	GatewayInfo  *GatewayInfo
+}
+
+// ToRouterCreateMap casts a CreateOpts struct to a map.
+func (opts CreateOpts) ToRouterCreateMap() (map[string]interface{}, error) {
+	r := make(map[string]interface{})
+
+	if gophercloud.MaybeString(opts.Name) != nil {
+		r["name"] = opts.Name
+	}
+
+	if opts.AdminStateUp != nil {
+		r["admin_state_up"] = opts.AdminStateUp
+	}
+
+	if opts.Distributed != nil {
+		r["distributed"] = opts.Distributed
+	}
+
+	if gophercloud.MaybeString(opts.TenantID) != nil {
+		r["tenant_id"] = opts.TenantID
+	}
+
+	if opts.GatewayInfo != nil {
+		r["external_gateway_info"] = opts.GatewayInfo
+	}
+
+	return map[string]interface{}{"router": r}, nil
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new
@@ -61,43 +95,15 @@ type CreateOpts struct {
 // GatewayInfo struct. The external gateway for the router must be plugged into
 // an external network (it is external if its `router:external' field is set to
 // true).
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-
-	type request struct {
-		Router map[string]interface{} `json:"router"`
-	}
-
-	routerMap := make(map[string]interface{})
-
-	if gophercloud.MaybeString(opts.Name) != nil {
-		routerMap["name"] = opts.Name
-	}
-
-	if opts.AdminStateUp != nil {
-		routerMap["admin_state_up"] = opts.AdminStateUp
-	}
-
-	if opts.Distributed != nil {
-		routerMap["distributed"] = opts.Distributed
-	}
-
-	if gophercloud.MaybeString(opts.TenantID) != nil {
-		routerMap["tenant_id"] = opts.TenantID
-	}
-
-	if opts.GatewayInfo != nil {
-		routerMap["external_gateway_info"] = opts.GatewayInfo
-	}
-
-	if opts.DriverOpts != nil {
-		for k, v := range opts.DriverOpts {
-			routerMap[k] = v
-		}
-	}
-
-	reqBody := request{Router: routerMap}
-
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
 	var res CreateResult
+
+	reqBody, err := opts.ToRouterCreateMap()
+	if err != nil {
+		res.Err = err
+		return res
+	}
+
 	_, res.Err = c.Post(rootURL(c), reqBody, &res.Body, nil)
 	return res
 }
