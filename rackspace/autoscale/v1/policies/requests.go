@@ -120,3 +120,12 @@ func Create(client *gophercloud.ServiceClient, groupID string, opts CreateOptsBu
 
 	return res
 }
+
+// Get requests the details of a single policy with the given ID.
+func Get(client *gophercloud.ServiceClient, groupID, policyID string) GetResult {
+	var result GetResult
+
+	_, result.Err = client.Get(getURL(client, groupID, policyID), &result.Body, nil)
+
+	return result
+}

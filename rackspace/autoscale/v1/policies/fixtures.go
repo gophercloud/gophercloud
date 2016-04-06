@@ -98,6 +98,25 @@ const PolicyCreateRequest = `
 ]
 `
 
+// PolicyGetBody contains the canned body of a policies.Get response.
+const PolicyGetBody = `
+{
+  "policy": {
+    "name": "webhook policy",
+    "links": [
+      {
+        "href": "https://dfw.autoscale.api.rackspacecloud.com/v1.0/123456/groups/60b15dad-5ea1-43fa-9a12-a1d737b4da07/policies/2b48d247-0282-4b9d-8775-5c4b67e8e649/",
+        "rel": "self"
+      }
+    ],
+    "changePercent": 3.3,
+    "cooldown": 300,
+    "type": "webhook",
+    "id": "2b48d247-0282-4b9d-8775-5c4b67e8e649"
+  }
+}
+`
+
 var (
 	// WebhookPolicy is a Policy corresponding to the first result in PolicyListBody.
 	WebhookPolicy = Policy{
@@ -133,7 +152,7 @@ var (
 
 // HandlePolicyListSuccessfully sets up the test server to respond to a policies List request.
 func HandlePolicyListSuccessfully(t *testing.T) {
-	path := "/groups/10eb3219-1b12-4b34-b1e4-e10ee4f24c65/policies"
+	path := "/groups/60b15dad-5ea1-43fa-9a12-a1d737b4da07/policies"
 
 	th.Mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -147,7 +166,7 @@ func HandlePolicyListSuccessfully(t *testing.T) {
 
 // HandlePolicyCreateSuccessfully sets up the test server to respond to a policies Create request.
 func HandlePolicyCreateSuccessfully(t *testing.T) {
-	path := "/groups/10eb3219-1b12-4b34-b1e4-e10ee4f24c65/policies"
+	path := "/groups/60b15dad-5ea1-43fa-9a12-a1d737b4da07/policies"
 
 	th.Mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
@@ -161,5 +180,22 @@ func HandlePolicyCreateSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 
 		fmt.Fprintf(w, PolicyCreateBody)
+	})
+}
+
+// HandlePolicyGetSuccessfully sets up the test server to respond to a policies Get request.
+func HandlePolicyGetSuccessfully(t *testing.T) {
+	groupID := "60b15dad-5ea1-43fa-9a12-a1d737b4da07"
+	policyID := "2b48d247-0282-4b9d-8775-5c4b67e8e649"
+
+	path := fmt.Sprintf("/groups/%s/policies/%s", groupID, policyID)
+
+	th.Mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+
+		fmt.Fprintf(w, PolicyGetBody)
 	})
 }

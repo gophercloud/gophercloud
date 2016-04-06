@@ -11,6 +11,21 @@ type policyResult struct {
 	gophercloud.Result
 }
 
+// Extract interprets any policyResult as a Policy, if possible.
+func (r policyResult) Extract() (*Policy, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response struct {
+		Policy Policy `mapstructure:"policy"`
+	}
+
+	err := mapstructure.Decode(r.Body, &response)
+
+	return &response.Policy, err
+}
+
 // CreateResult represents the result of a create operation.
 type CreateResult struct {
 	policyResult
@@ -25,6 +40,11 @@ func (res CreateResult) Extract() ([]Policy, error) {
 	}
 
 	return commonExtractPolicies(res.Body)
+}
+
+// GetResult temporarily contains the response from a Get call.
+type GetResult struct {
+	policyResult
 }
 
 // Policy represents a scaling policy.
