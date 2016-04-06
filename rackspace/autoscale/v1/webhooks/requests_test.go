@@ -105,6 +105,21 @@ func TestUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestUpdateNoMetadata(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleWebhookUpdateSuccessfully(t)
+
+	client := client.ServiceClient()
+	opts := UpdateOpts{
+		Name: "updated hook",
+	}
+
+	err := Update(client, groupID, policyID, firstID, opts).ExtractErr()
+
+	th.AssertEquals(t, ErrNoMetadata, err)
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

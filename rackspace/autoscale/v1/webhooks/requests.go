@@ -7,9 +7,11 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
-// ErrNoName represents a validation error in which a create or update operation
-// has an empty name field.
-var ErrNoName = errors.New("Webhook name cannot by empty.")
+// Validation errors returned by create or update operations.
+var (
+	ErrNoName     = errors.New("Webhook name cannot by empty.")
+	ErrNoMetadata = errors.New("Webhook metadata cannot be nil.")
+)
 
 // List returns all webhooks for a scaling policy.
 func List(client *gophercloud.ServiceClient, groupID, policyID string) pagination.Pager {
@@ -118,13 +120,14 @@ func (opts UpdateOpts) ToWebhookUpdateMap() (map[string]interface{}, error) {
 		return nil, ErrNoName
 	}
 
+	if opts.Metadata == nil {
+		return nil, ErrNoMetadata
+	}
+
 	hook := make(map[string]interface{})
 
 	hook["name"] = opts.Name
-
-	if opts.Metadata != nil {
-		hook["metadata"] = opts.Metadata
-	}
+	hook["metadata"] = opts.Metadata
 
 	return hook, nil
 }
