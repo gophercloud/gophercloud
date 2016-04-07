@@ -108,3 +108,24 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, WebhookPolicy, *policy)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandlePolicyUpdateSuccessfully(t)
+
+	client := client.ServiceClient()
+	opts := UpdateOpts{
+		Name:     "updated webhook policy",
+		Type:     Webhook,
+		Cooldown: 600,
+		Adjustment: Adjustment{
+			Type:  ChangePercent,
+			Value: 6.6,
+		},
+	}
+
+	err := Update(client, groupID, webhookPolicyID, opts).ExtractErr()
+
+	th.AssertNoErr(t, err)
+}

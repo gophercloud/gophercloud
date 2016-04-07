@@ -129,3 +129,78 @@ func Get(client *gophercloud.ServiceClient, groupID, policyID string) GetResult 
 
 	return result
 }
+
+// UpdateOptsBuilder is the interface responsible for generating the map
+// structure for producing JSON for an Update operation.
+type UpdateOptsBuilder interface {
+	ToPolicyUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents the options for updating an existing policy.
+//
+// Update operations completely replace the configuration being updated. Empty
+// values in the update are accepted and overwrite previously specified
+// parameters.
+type UpdateOpts struct {
+	// Name [required] is a name for the policy.
+	Name string
+
+	// Type [required] of policy, i.e. either "webhook" or "schedule".
+	Type Type
+
+	// Cooldown [required] period in seconds.  If you don't specify a cooldown,
+	// it will default to zero, and the policy will be configured as such.
+	Cooldown int
+
+	// Adjustment [requried] type and value for the policy.
+	Adjustment Adjustment
+
+	// Additional configuration options for some types of policy.
+	Args map[string]interface{}
+}
+
+// ToPolicyUpdateMap converts an UpdateOpts struct into a map for use as the
+// request body in an Update request.
+func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
+	if opts.Name == "" {
+		return nil, ErrNoName
+	}
+
+	if opts.Type == Schedule && opts.Args == nil {
+		return nil, ErrNoArgs
+	}
+
+	policy := make(map[string]interface{})
+
+	policy["name"] = opts.Name
+	policy["type"] = opts.Type
+	policy["cooldown"] = opts.Cooldown
+
+	// TODO: Function to validate and cast key + value?
+	policy[string(opts.Adjustment.Type)] = opts.Adjustment.Value
+
+	if opts.Args != nil {
+		policy["args"] = opts.Args
+	}
+
+	return policy, nil
+}
+
+// Update requests the configuration of the given policy be updated.
+func Update(client *gophercloud.ServiceClient, groupID, policyID string, opts UpdateOptsBuilder) UpdateResult {
+	var result UpdateResult
+
+	url := updateURL(client, groupID, policyID)
+	reqBody, err := opts.ToPolicyUpdateMap()
+
+	if err != nil {
+		result.Err = err
+		return result
+	}
+
+	_, result.Err = client.Put(url, reqBody, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+
+	return result
+}

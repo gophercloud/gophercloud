@@ -47,6 +47,11 @@ type GetResult struct {
 	policyResult
 }
 
+// UpdateResult represents the result of an update operation.
+type UpdateResult struct {
+	gophercloud.ErrResult
+}
+
 // Policy represents a scaling policy.
 type Policy struct {
 	// UUID for the policy.
