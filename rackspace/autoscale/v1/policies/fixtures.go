@@ -226,3 +226,18 @@ func HandlePolicyUpdateSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
+
+// HandlePolicyDeleteSuccessfully sets up the test server to respond to a policies Delete request.
+func HandlePolicyDeleteSuccessfully(t *testing.T) {
+	groupID := "60b15dad-5ea1-43fa-9a12-a1d737b4da07"
+	policyID := "2b48d247-0282-4b9d-8775-5c4b67e8e649"
+
+	path := fmt.Sprintf("/groups/%s/policies/%s", groupID, policyID)
+
+	th.Mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

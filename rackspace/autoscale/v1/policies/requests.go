@@ -204,3 +204,15 @@ func Update(client *gophercloud.ServiceClient, groupID, policyID string, opts Up
 
 	return result
 }
+
+// Delete requests the given policy be permanently deleted.
+func Delete(client *gophercloud.ServiceClient, groupID, policyID string) DeleteResult {
+	var result DeleteResult
+
+	url := deleteURL(client, groupID, policyID)
+	_, result.Err = client.Delete(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+
+	return result
+}

@@ -52,6 +52,11 @@ type UpdateResult struct {
 	gophercloud.ErrResult
 }
 
+// DeleteResult represents the result of a delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Policy represents a scaling policy.
 type Policy struct {
 	// UUID for the policy.
