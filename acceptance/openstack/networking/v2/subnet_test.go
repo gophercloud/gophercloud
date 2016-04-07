@@ -118,6 +118,22 @@ func TestSubnetCRUD(t *testing.T) {
 	t.Log("Delete subnet with no gateway")
 	res = subnets.Delete(Client, subnetID)
 	th.AssertNoErr(t, res.Err)
+
+	// Create subnet with invalid gateway configuration
+	t.Log("Create subnet with invalid gateway configuration")
+	opts = subnets.CreateOpts{
+		NetworkID:  networkID,
+		CIDR:       "192.168.199.0/24",
+		IPVersion:  subnets.IPv4,
+		Name:       "my_subnet",
+		EnableDHCP: &enable,
+		NoGateway:  true,
+		GatewayIP:  "192.168.199.1",
+	}
+	_, err = subnets.Create(Client, opts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error, got none")
+	}
 }
 
 func TestBatchCreate(t *testing.T) {
