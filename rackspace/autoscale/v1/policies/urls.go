@@ -21,3 +21,7 @@ func updateURL(c *gophercloud.ServiceClient, groupID, policyID string) string {
 func deleteURL(c *gophercloud.ServiceClient, groupID, policyID string) string {
 	return getURL(c, groupID, policyID)
 }
+
+func executeURL(c *gophercloud.ServiceClient, groupID, policyID string) string {
+	return c.ServiceURL("groups", groupID, "policies", policyID, "execute")
+}

@@ -216,3 +216,15 @@ func Delete(client *gophercloud.ServiceClient, groupID, policyID string) DeleteR
 
 	return result
 }
+
+// Execute requests the given policy be executed immediately.
+func Execute(client *gophercloud.ServiceClient, groupID, policyID string) ExecuteResult {
+	var result ExecuteResult
+
+	url := executeURL(client, groupID, policyID)
+	_, result.Err = client.Post(url, nil, &result.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return result
+}

@@ -140,3 +140,14 @@ func TestDelete(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 }
+
+func TestExecute(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandlePolicyExecuteSuccessfully(t)
+
+	client := client.ServiceClient()
+	err := Execute(client, groupID, webhookPolicyID).ExtractErr()
+
+	th.AssertNoErr(t, err)
+}
