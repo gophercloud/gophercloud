@@ -9,8 +9,9 @@ import (
 
 // Validation errors returned by create or update operations.
 var (
-	ErrNoName = errors.New("Policy name cannot by empty.")
-	ErrNoArgs = errors.New("Args cannot be nil for schedule policies.")
+	ErrNoName            = errors.New("Policy name cannot by empty.")
+	ErrNoArgs            = errors.New("Args cannot be nil for schedule policies.")
+	ErrInvalidAdjustment = errors.New("Invalid adjustment type.")
 )
 
 // List returns all scaling policies for a group.
@@ -92,8 +93,9 @@ func (opts CreateOpts) ToPolicyCreateMap() ([]map[string]interface{}, error) {
 		policy["type"] = o.Type
 		policy["cooldown"] = o.Cooldown
 
-		// TODO: Function to validate and cast key + value?
-		policy[string(o.Adjustment.Type)] = o.Adjustment.Value
+		if err := setAdjustment(o.Adjustment, policy); err != nil {
+			return nil, err
+		}
 
 		if o.Args != nil {
 			policy["args"] = o.Args
@@ -176,8 +178,9 @@ func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
 	policy["type"] = opts.Type
 	policy["cooldown"] = opts.Cooldown
 
-	// TODO: Function to validate and cast key + value?
-	policy[string(opts.Adjustment.Type)] = opts.Adjustment.Value
+	if err := setAdjustment(opts.Adjustment, policy); err != nil {
+		return nil, err
+	}
 
 	if opts.Args != nil {
 		policy["args"] = opts.Args
@@ -227,4 +230,22 @@ func Execute(client *gophercloud.ServiceClient, groupID, policyID string) Execut
 	})
 
 	return result
+}
+
+// Validate and set an adjustment on the given request body.
+func setAdjustment(adjustment Adjustment, reqBody map[string]interface{}) error {
+	key := string(adjustment.Type)
+
+	switch adjustment.Type {
+	case ChangePercent:
+		reqBody[key] = adjustment.Value
+
+	case Change, DesiredCapacity:
+		reqBody[key] = int(adjustment.Value)
+
+	default:
+		return ErrInvalidAdjustment
+	}
+
+	return nil
 }
