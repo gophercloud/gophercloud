@@ -56,32 +56,26 @@ func TestCreate(t *testing.T) {
 	client := client.ServiceClient()
 	opts := CreateOpts{
 		{
-			Name:     "webhook policy",
-			Type:     Webhook,
-			Cooldown: 300,
-			Adjustment: Adjustment{
-				Type:  ChangePercent,
-				Value: 3.3,
-			},
+			Name:            "webhook policy",
+			Type:            Webhook,
+			Cooldown:        300,
+			AdjustmentType:  ChangePercent,
+			AdjustmentValue: 3.3,
 		},
 		{
-			Name: "one time",
-			Type: Schedule,
-			Adjustment: Adjustment{
-				Type:  Change,
-				Value: -1,
-			},
+			Name:            "one time",
+			Type:            Schedule,
+			AdjustmentType:  Change,
+			AdjustmentValue: -1,
 			Args: map[string]interface{}{
 				"at": "2020-04-01T23:00:00.000Z",
 			},
 		},
 		{
-			Name: "sunday afternoon",
-			Type: Schedule,
-			Adjustment: Adjustment{
-				Type:  DesiredCapacity,
-				Value: 2,
-			},
+			Name:            "sunday afternoon",
+			Type:            Schedule,
+			AdjustmentType:  DesiredCapacity,
+			AdjustmentValue: 2,
 			Args: map[string]interface{}{
 				"cron": "59 15 * * 0",
 			},
@@ -116,13 +110,11 @@ func TestUpdate(t *testing.T) {
 
 	client := client.ServiceClient()
 	opts := UpdateOpts{
-		Name:     "updated webhook policy",
-		Type:     Webhook,
-		Cooldown: 600,
-		Adjustment: Adjustment{
-			Type:  ChangePercent,
-			Value: 6.6,
-		},
+		Name:            "updated webhook policy",
+		Type:            Webhook,
+		Cooldown:        600,
+		AdjustmentType:  ChangePercent,
+		AdjustmentValue: 6.6,
 	}
 
 	err := Update(client, groupID, webhookPolicyID, opts).ExtractErr()

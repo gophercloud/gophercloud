@@ -31,16 +31,6 @@ type CreateOptsBuilder interface {
 	ToPolicyCreateMap() ([]map[string]interface{}, error)
 }
 
-// Adjustment represents the change in capacity associated with a policy.
-type Adjustment struct {
-	// The type for this adjustment.
-	Type AdjustmentType
-
-	// The value of the adjustment.  For adjustments of type Change or
-	// DesiredCapacity, this will be converted to an integer.
-	Value float64
-}
-
 // AdjustmentType represents the way in which a policy will change a group.
 type AdjustmentType string
 
@@ -66,8 +56,14 @@ type CreateOpt struct {
 	// Cooldown [required] period in seconds.
 	Cooldown int
 
-	// Adjustment [requried] type and value for the policy.
-	Adjustment Adjustment
+	// AdjustmentType [requried] is the method used to change the capacity of
+	// the group, i.e. one of: Change, ChangePercent, or DesiredCapacity.
+	AdjustmentType AdjustmentType
+
+	// AdjustmentValue [required] is the numeric value of the adjustment.  For
+	// adjustments of type Change or DesiredCapacity, this will be converted to
+	// an integer.
+	AdjustmentValue float64
 
 	// Additional configuration options for some types of policy.
 	Args map[string]interface{}
@@ -93,7 +89,9 @@ func (opts CreateOpts) ToPolicyCreateMap() ([]map[string]interface{}, error) {
 		policy["type"] = o.Type
 		policy["cooldown"] = o.Cooldown
 
-		if err := setAdjustment(o.Adjustment, policy); err != nil {
+		err := setAdjustment(o.AdjustmentType, o.AdjustmentValue, policy)
+
+		if err != nil {
 			return nil, err
 		}
 
@@ -154,8 +152,14 @@ type UpdateOpts struct {
 	// it will default to zero, and the policy will be configured as such.
 	Cooldown int
 
-	// Adjustment [requried] type and value for the policy.
-	Adjustment Adjustment
+	// AdjustmentType [requried] is the method used to change the capacity of
+	// the group, i.e. one of: Change, ChangePercent, or DesiredCapacity.
+	AdjustmentType AdjustmentType
+
+	// AdjustmentValue [required] is the numeric value of the adjustment.  For
+	// adjustments of type Change or DesiredCapacity, this will be converted to
+	// an integer.
+	AdjustmentValue float64
 
 	// Additional configuration options for some types of policy.
 	Args map[string]interface{}
@@ -178,7 +182,9 @@ func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
 	policy["type"] = opts.Type
 	policy["cooldown"] = opts.Cooldown
 
-	if err := setAdjustment(opts.Adjustment, policy); err != nil {
+	err := setAdjustment(opts.AdjustmentType, opts.AdjustmentValue, policy)
+
+	if err != nil {
 		return nil, err
 	}
 
@@ -233,15 +239,15 @@ func Execute(client *gophercloud.ServiceClient, groupID, policyID string) Execut
 }
 
 // Validate and set an adjustment on the given request body.
-func setAdjustment(adjustment Adjustment, reqBody map[string]interface{}) error {
-	key := string(adjustment.Type)
+func setAdjustment(t AdjustmentType, v float64, body map[string]interface{}) error {
+	key := string(t)
 
-	switch adjustment.Type {
+	switch t {
 	case ChangePercent:
-		reqBody[key] = adjustment.Value
+		body[key] = v
 
 	case Change, DesiredCapacity:
-		reqBody[key] = int(adjustment.Value)
+		body[key] = int(v)
 
 	default:
 		return ErrInvalidAdjustment
