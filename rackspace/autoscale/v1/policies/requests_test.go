@@ -2,6 +2,7 @@ package policies
 
 import (
 	"testing"
+	"time"
 
 	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
@@ -53,6 +54,7 @@ func TestCreate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandlePolicyCreateSuccessfully(t)
 
+	oneTime := time.Date(2020, time.April, 01, 23, 0, 0, 0, time.UTC)
 	client := client.ServiceClient()
 	opts := CreateOpts{
 		{
@@ -67,18 +69,14 @@ func TestCreate(t *testing.T) {
 			Type:            Schedule,
 			AdjustmentType:  Change,
 			AdjustmentValue: -1,
-			Args: map[string]interface{}{
-				"at": "2020-04-01T23:00:00.000Z",
-			},
+			Schedule:        At(oneTime),
 		},
 		{
 			Name:            "sunday afternoon",
 			Type:            Schedule,
 			AdjustmentType:  DesiredCapacity,
 			AdjustmentValue: 2,
-			Args: map[string]interface{}{
-				"cron": "59 15 * * 0",
-			},
+			Schedule:        Cron("59 15 * * 0"),
 		},
 	}
 

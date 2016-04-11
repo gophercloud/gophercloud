@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	th "github.com/rackspace/gophercloud/testhelper"
 	"github.com/rackspace/gophercloud/testhelper/client"
@@ -81,7 +82,7 @@ const PolicyCreateRequest = `
     "cooldown": 0,
     "name": "one time",
     "args": {
-      "at": "2020-04-01T23:00:00.000Z"
+      "at": "2020-04-01T23:00:00Z"
     },
     "type": "schedule",
     "change": -1
@@ -145,9 +146,7 @@ var (
 		Type:            Schedule,
 		AdjustmentType:  Change,
 		AdjustmentValue: float64(-1),
-		Args: map[string]interface{}{
-			"at": "2020-04-01T23:00:00.000Z",
-		},
+		Schedule:        At(time.Date(2020, time.April, 01, 23, 0, 0, 0, time.UTC)),
 	}
 
 	// SundayAfternoonPolicy is a Policy corresponding to the third result in PolicyListBody.
@@ -157,9 +156,7 @@ var (
 		Type:            Schedule,
 		AdjustmentType:  DesiredCapacity,
 		AdjustmentValue: float64(2),
-		Args: map[string]interface{}{
-			"cron": "59 15 * * 0",
-		},
+		Schedule:        Cron("59 15 * * 0"),
 	}
 )
 

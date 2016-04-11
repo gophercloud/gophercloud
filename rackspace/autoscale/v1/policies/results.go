@@ -1,6 +1,8 @@
 package policies
 
 import (
+	"time"
+
 	"github.com/mitchellh/mapstructure"
 
 	"github.com/rackspace/gophercloud"
@@ -87,6 +89,44 @@ const (
 	DesiredCapacity AdjustmentType = "desiredCapacity"
 )
 
+// ScheduleArgs is implemented by types that can be converted into arguments for
+// policies with type Schedule.
+type ScheduleArgs interface {
+	ToPolicyArgs() (map[string]string, error)
+}
+
+// At satisfies the ScheduleArgs interface and can be used to configure a policy
+// to execute a particular time.
+type At time.Time
+
+// ToPolicyArgs returns a key and value for use in constructing arguments to
+// schedule policies.
+func (at At) ToPolicyArgs() (map[string]string, error) {
+	t := time.Time(at)
+
+	args := make(map[string]string)
+	args["at"] = t.UTC().Format(time.RFC3339)
+
+	return args, nil
+}
+
+// Cron satisfies the ScheduleArgs interface and can be used to configure a
+// policy that executes at regular intervals.
+type Cron string
+
+// ToPolicyArgs returns a key and value for use in constructing arguments to
+// schedule policies.
+func (cron Cron) ToPolicyArgs() (map[string]string, error) {
+	if cron == "" {
+		return nil, ErrEmptyCron
+	}
+
+	args := make(map[string]string)
+	args["cron"] = string(cron)
+
+	return args, nil
+}
+
 // Policy represents a scaling policy.
 type Policy struct {
 	// UUID for the policy.
@@ -107,8 +147,9 @@ type Policy struct {
 	// The numeric value of the adjustment in capacity.
 	AdjustmentValue float64
 
-	// Additional configuration options for some types of policy.
-	Args map[string]interface{}
+	// Arguments determining Schedule policy behavior, or nil for Webhook
+	// policies.
+	Schedule ScheduleArgs
 }
 
 // This is an intermediate representation of the exported Policy type.  The
@@ -126,7 +167,7 @@ type policy struct {
 	DesiredCapacity interface{} `mapstructure:"desiredCapacity"`
 
 	// Additional configuration options for schedule policies.
-	Args map[string]interface{} `mapstructure:"args"`
+	Args map[string]string `mapstructure:"args"`
 }
 
 // Assemble a Policy from the intermediate policy struct.
@@ -138,7 +179,14 @@ func (p policy) toExported() Policy {
 	policy.Type = p.Type
 	policy.Cooldown = p.Cooldown
 
-	policy.Args = p.Args
+	if cron, ok := p.Args["cron"]; ok {
+		policy.Schedule = Cron(cron)
+	} else if at, ok := p.Args["at"]; ok {
+		// Set an At schedule if the "at" argument parses as an RFC3339 time.
+		if t, err := time.Parse(time.RFC3339, at); err == nil {
+			policy.Schedule = At(t)
+		}
+	}
 
 	if v, ok := p.Change.(float64); ok {
 		policy.AdjustmentType = Change

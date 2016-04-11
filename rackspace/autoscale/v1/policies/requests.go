@@ -9,11 +9,12 @@ import (
 
 // Validation errors returned by create or update operations.
 var (
-	ErrNoName            = errors.New("Policy name cannot by empty.")
-	ErrNoArgs            = errors.New("Args cannot be nil for schedule policies.")
+	ErrNoName            = errors.New("Policy name cannot be empty.")
+	ErrNoSchedule        = errors.New("Schedule cannot be nil for schedule policies.")
 	ErrCooldownRange     = errors.New("Cooldown is out of range (0, 86400).")
 	ErrUnknownType       = errors.New("Unknown policy type.")
 	ErrUnknownAdjustment = errors.New("Unknown adjustment type.")
+	ErrEmptyCron         = errors.New("Cron argument cannot be empty.")
 )
 
 // List returns all scaling policies for a group.
@@ -57,8 +58,9 @@ type CreateOpt struct {
 	// an integer.
 	AdjustmentValue float64
 
-	// Additional configuration options for some types of policy.
-	Args map[string]interface{}
+	// Value determining Schedule policy behavior, or nil for Webhook policies.
+	// This should be an appropriately configured Cron or an At value.
+	Schedule ScheduleArgs
 }
 
 // ToPolicyCreateMap converts a slice of CreateOpt structs into a map for use
@@ -71,8 +73,8 @@ func (opts CreateOpts) ToPolicyCreateMap() ([]map[string]interface{}, error) {
 			return nil, ErrNoName
 		}
 
-		if o.Type == Schedule && o.Args == nil {
-			return nil, ErrNoArgs
+		if o.Type == Schedule && o.Schedule == nil {
+			return nil, ErrNoSchedule
 		}
 
 		if ok := validateType(o.Type); !ok {
@@ -95,8 +97,14 @@ func (opts CreateOpts) ToPolicyCreateMap() ([]map[string]interface{}, error) {
 			return nil, err
 		}
 
-		if o.Args != nil {
-			policy["args"] = o.Args
+		if o.Schedule != nil {
+			args, err := o.Schedule.ToPolicyArgs()
+
+			if err != nil {
+				return nil, err
+			}
+
+			policy["args"] = args
 		}
 
 		policies = append(policies, policy)
@@ -161,8 +169,9 @@ type UpdateOpts struct {
 	// an integer.
 	AdjustmentValue float64
 
-	// Additional configuration options for some types of policy.
-	Args map[string]interface{}
+	// Value determining Schedule policy behavior, or nil for Webhook policies.
+	// This should be an appropriately configured Cron or an At value.
+	Schedule ScheduleArgs
 }
 
 // ToPolicyUpdateMap converts an UpdateOpts struct into a map for use as the
@@ -172,8 +181,8 @@ func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
 		return nil, ErrNoName
 	}
 
-	if opts.Type == Schedule && opts.Args == nil {
-		return nil, ErrNoArgs
+	if opts.Type == Schedule && opts.Schedule == nil {
+		return nil, ErrNoSchedule
 	}
 
 	if ok := validateType(opts.Type); !ok {
@@ -196,8 +205,14 @@ func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	if opts.Args != nil {
-		policy["args"] = opts.Args
+	if opts.Schedule != nil {
+		args, err := opts.Schedule.ToPolicyArgs()
+
+		if err != nil {
+			return nil, err
+		}
+
+		policy["args"] = args
 	}
 
 	return policy, nil
