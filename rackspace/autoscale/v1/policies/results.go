@@ -18,12 +18,16 @@ func (r policyResult) Extract() (*Policy, error) {
 	}
 
 	var response struct {
-		Policy Policy `mapstructure:"policy"`
+		Policy policy `mapstructure:"policy"`
 	}
 
-	err := mapstructure.Decode(r.Body, &response)
+	if err := mapstructure.Decode(r.Body, &response); err != nil {
+		return nil, err
+	}
 
-	return &response.Policy, err
+	policy := response.Policy.toExported()
+
+	return &policy, nil
 }
 
 // CreateResult represents the result of a create operation.
@@ -62,33 +66,6 @@ type ExecuteResult struct {
 	gophercloud.ErrResult
 }
 
-// Policy represents a scaling policy.
-type Policy struct {
-	// UUID for the policy.
-	ID string `mapstructure:"id" json:"id"`
-
-	// Name of the policy.
-	Name string `mapstructure:"name" json:"name"`
-
-	// Type of scaling policy.
-	Type Type `mapstructure:"type" json:"type"`
-
-	// Cooldown period, in seconds.
-	Cooldown int `mapstructure:"cooldown" json:"cooldown"`
-
-	// Number of servers added or, if negative, removed.
-	Change interface{} `mapstructure:"change" json:"change"`
-
-	// Percent change to make in the number of servers.
-	ChangePercent interface{} `mapstructure:"changePercent" json:"changePercent"`
-
-	// Desired capacity of the of the associated group.
-	DesiredCapacity interface{} `mapstructure:"desiredCapacity" json:"desiredCapacity"`
-
-	// Additional configuration options for some types of policy.
-	Args map[string]interface{} `mapstructure:"args" json:"args"`
-}
-
 // Type represents a type of scaling policy.
 type Type string
 
@@ -99,6 +76,83 @@ const (
 	// Webhook policies are triggered by HTTP requests.
 	Webhook Type = "webhook"
 )
+
+// AdjustmentType represents the way in which a policy will change a group.
+type AdjustmentType string
+
+// Valid types of adjustments for a policy.
+const (
+	Change          AdjustmentType = "change"
+	ChangePercent   AdjustmentType = "changePercent"
+	DesiredCapacity AdjustmentType = "desiredCapacity"
+)
+
+// Policy represents a scaling policy.
+type Policy struct {
+	// UUID for the policy.
+	ID string
+
+	// Name of the policy.
+	Name string
+
+	// Type of scaling policy.
+	Type Type
+
+	// Cooldown period, in seconds.
+	Cooldown int
+
+	// The type of adjustment in capacity to be made.
+	AdjustmentType AdjustmentType
+
+	// The numeric value of the adjustment in capacity.
+	AdjustmentValue float64
+
+	// Additional configuration options for some types of policy.
+	Args map[string]interface{}
+}
+
+// This is an intermediate representation of the exported Policy type.  The
+// fields in API responses vary by policy type and configuration.  This lets us
+// decode responses then normalize them into a Policy.
+type policy struct {
+	ID       string `mapstructure:"id"`
+	Name     string `mapstructure:"name"`
+	Type     Type   `mapstructure:"type"`
+	Cooldown int    `mapstructure:"cooldown"`
+
+	// The API will respond with exactly one of these omitting the others.
+	Change          interface{} `mapstructure:"change"`
+	ChangePercent   interface{} `mapstructure:"changePercent"`
+	DesiredCapacity interface{} `mapstructure:"desiredCapacity"`
+
+	// Additional configuration options for schedule policies.
+	Args map[string]interface{} `mapstructure:"args"`
+}
+
+// Assemble a Policy from the intermediate policy struct.
+func (p policy) toExported() Policy {
+	policy := Policy{}
+
+	policy.ID = p.ID
+	policy.Name = p.Name
+	policy.Type = p.Type
+	policy.Cooldown = p.Cooldown
+
+	policy.Args = p.Args
+
+	if v, ok := p.Change.(float64); ok {
+		policy.AdjustmentType = Change
+		policy.AdjustmentValue = v
+	} else if v, ok := p.ChangePercent.(float64); ok {
+		policy.AdjustmentType = ChangePercent
+		policy.AdjustmentValue = v
+	} else if v, ok := p.DesiredCapacity.(float64); ok {
+		policy.AdjustmentType = DesiredCapacity
+		policy.AdjustmentValue = v
+	}
+
+	return policy
+}
 
 // PolicyPage is the page returned by a pager when traversing over a collection
 // of scaling policies.
@@ -125,7 +179,7 @@ func ExtractPolicies(page pagination.Page) ([]Policy, error) {
 
 func commonExtractPolicies(body interface{}) ([]Policy, error) {
 	var response struct {
-		Policies []Policy `mapstructure:"policies"`
+		Policies []policy `mapstructure:"policies"`
 	}
 
 	err := mapstructure.Decode(body, &response)
@@ -134,5 +188,11 @@ func commonExtractPolicies(body interface{}) ([]Policy, error) {
 		return nil, err
 	}
 
-	return response.Policies, err
+	policies := make([]Policy, len(response.Policies))
+
+	for i, p := range response.Policies {
+		policies[i] = p.toExported()
+	}
+
+	return policies, nil
 }

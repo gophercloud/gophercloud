@@ -31,16 +31,6 @@ type CreateOptsBuilder interface {
 	ToPolicyCreateMap() ([]map[string]interface{}, error)
 }
 
-// AdjustmentType represents the way in which a policy will change a group.
-type AdjustmentType string
-
-// Valid types of adjustments for a policy.
-const (
-	Change          AdjustmentType = "change"
-	ChangePercent   AdjustmentType = "changePercent"
-	DesiredCapacity AdjustmentType = "desiredCapacity"
-)
-
 // CreateOpts is a slice of CreateOpt structs that allow the user to create
 // multiple policies in a single operation.
 type CreateOpts []CreateOpt

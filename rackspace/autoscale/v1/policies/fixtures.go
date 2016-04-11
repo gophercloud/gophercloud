@@ -130,19 +130,21 @@ const PolicyUpdateRequest = `
 var (
 	// WebhookPolicy is a Policy corresponding to the first result in PolicyListBody.
 	WebhookPolicy = Policy{
-		ID:            "2b48d247-0282-4b9d-8775-5c4b67e8e649",
-		Name:          "webhook policy",
-		Type:          Webhook,
-		Cooldown:      300,
-		ChangePercent: 3.3,
+		ID:              "2b48d247-0282-4b9d-8775-5c4b67e8e649",
+		Name:            "webhook policy",
+		Type:            Webhook,
+		Cooldown:        300,
+		AdjustmentType:  ChangePercent,
+		AdjustmentValue: 3.3,
 	}
 
 	// OneTimePolicy is a Policy corresponding to the second result in PolicyListBody.
 	OneTimePolicy = Policy{
-		ID:     "c175c31e-65f9-41de-8b15-918420d3253e",
-		Name:   "one time",
-		Type:   Schedule,
-		Change: float64(-1),
+		ID:              "c175c31e-65f9-41de-8b15-918420d3253e",
+		Name:            "one time",
+		Type:            Schedule,
+		AdjustmentType:  Change,
+		AdjustmentValue: float64(-1),
 		Args: map[string]interface{}{
 			"at": "2020-04-01T23:00:00.000Z",
 		},
@@ -153,7 +155,8 @@ var (
 		ID:              "e785e3e7-af9e-4f3c-99ae-b80a532e1663",
 		Name:            "sunday afternoon",
 		Type:            Schedule,
-		DesiredCapacity: float64(2),
+		AdjustmentType:  DesiredCapacity,
+		AdjustmentValue: float64(2),
 		Args: map[string]interface{}{
 			"cron": "59 15 * * 0",
 		},
