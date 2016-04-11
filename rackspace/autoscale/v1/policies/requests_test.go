@@ -143,3 +143,28 @@ func TestExecute(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 }
+
+func TestValidateType(t *testing.T) {
+	ok := validateType(Schedule)
+	th.AssertEquals(t, true, ok)
+
+	ok = validateType(Webhook)
+	th.AssertEquals(t, true, ok)
+
+	ok = validateType("BAD")
+	th.AssertEquals(t, false, ok)
+}
+
+func TestValidateCooldown(t *testing.T) {
+	ok := validateCooldown(0)
+	th.AssertEquals(t, true, ok)
+
+	ok = validateCooldown(86400)
+	th.AssertEquals(t, true, ok)
+
+	ok = validateCooldown(-1)
+	th.AssertEquals(t, false, ok)
+
+	ok = validateCooldown(172800)
+	th.AssertEquals(t, false, ok)
+}

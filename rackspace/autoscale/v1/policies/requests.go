@@ -11,7 +11,9 @@ import (
 var (
 	ErrNoName            = errors.New("Policy name cannot by empty.")
 	ErrNoArgs            = errors.New("Args cannot be nil for schedule policies.")
-	ErrInvalidAdjustment = errors.New("Invalid adjustment type.")
+	ErrCooldownRange     = errors.New("Cooldown is out of range (0, 86400).")
+	ErrUnknownType       = errors.New("Unknown policy type.")
+	ErrUnknownAdjustment = errors.New("Unknown adjustment type.")
 )
 
 // List returns all scaling policies for a group.
@@ -71,6 +73,14 @@ func (opts CreateOpts) ToPolicyCreateMap() ([]map[string]interface{}, error) {
 
 		if o.Type == Schedule && o.Args == nil {
 			return nil, ErrNoArgs
+		}
+
+		if ok := validateType(o.Type); !ok {
+			return nil, ErrUnknownType
+		}
+
+		if ok := validateCooldown(o.Cooldown); !ok {
+			return nil, ErrCooldownRange
 		}
 
 		policy := make(map[string]interface{})
@@ -166,6 +176,14 @@ func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
 		return nil, ErrNoArgs
 	}
 
+	if ok := validateType(opts.Type); !ok {
+		return nil, ErrUnknownType
+	}
+
+	if ok := validateCooldown(opts.Cooldown); !ok {
+		return nil, ErrCooldownRange
+	}
+
 	policy := make(map[string]interface{})
 
 	policy["name"] = opts.Name
@@ -240,8 +258,30 @@ func setAdjustment(t AdjustmentType, v float64, body map[string]interface{}) err
 		body[key] = int(v)
 
 	default:
-		return ErrInvalidAdjustment
+		return ErrUnknownAdjustment
 	}
 
 	return nil
+}
+
+func validateType(t Type) (ok bool) {
+	switch t {
+	case Schedule, Webhook:
+		ok = true
+		return
+
+	default:
+		ok = false
+		return
+	}
+}
+
+func validateCooldown(cooldown int) (ok bool) {
+	if cooldown < 0 || cooldown > 86400 {
+		ok = false
+		return
+	}
+
+	ok = true
+	return
 }
