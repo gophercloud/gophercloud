@@ -225,8 +225,8 @@ func TestAddRuleICMPZero(t *testing.T) {
 
 	opts := CreateRuleOpts{
 		ParentGroupID: groupID,
-		FromPort:      80,
-		ToPort:        80,
+		FromPort:      0,
+		ToPort:        0,
 		IPProtocol:    "ICMP",
 		CIDR:          "0.0.0.0/0",
 	}
@@ -235,8 +235,8 @@ func TestAddRuleICMPZero(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := &Rule{
-		FromPort:      80,
-		ToPort:        80,
+		FromPort:      0,
+		ToPort:        0,
 		Group:         Group{},
 		IPProtocol:    "ICMP",
 		ParentGroupID: groupID,

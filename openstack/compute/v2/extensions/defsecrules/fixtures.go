@@ -83,8 +83,8 @@ func mockCreateRuleResponseICMPZero(t *testing.T) {
 {
   "security_group_default_rule": {
     "ip_protocol": "ICMP",
-    "from_port": 80,
-    "to_port": 80,
+    "from_port": 0,
+    "to_port": 0,
     "cidr": "10.10.12.0/24"
   }
 }
@@ -96,13 +96,13 @@ func mockCreateRuleResponseICMPZero(t *testing.T) {
 		fmt.Fprintf(w, `
 {
   "security_group_default_rule": {
-    "from_port": 80,
+    "from_port": 0,
     "id": "{ruleID}",
     "ip_protocol": "ICMP",
     "ip_range": {
       "cidr": "10.10.12.0/24"
     },
-    "to_port": 80
+    "to_port": 0
   }
 }
 `)

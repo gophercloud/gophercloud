@@ -1,6 +1,8 @@
 package defsecrules
 
 import (
+	"strings"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -15,9 +17,9 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 // CreateOpts represents the configuration for adding a new default rule.
 type CreateOpts struct {
 	// The lower bound of the port range that will be opened.s
-	FromPort int `json:"from_port" required:"true"`
+	FromPort int `json:"from_port"`
 	// The upper bound of the port range that will be opened.
-	ToPort int `json:"to_port" required:"true"`
+	ToPort int `json:"to_port"`
 	// The protocol type that will be allowed, e.g. TCP.
 	IPProtocol string `json:"ip_protocol" required:"true"`
 	// ONLY required if FromGroupID is blank. This represents the IP range that
@@ -33,6 +35,12 @@ type CreateOptsBuilder interface {
 
 // ToRuleCreateMap builds the create rule options into a serializable format.
 func (opts CreateOpts) ToRuleCreateMap() (map[string]interface{}, error) {
+	if opts.FromPort == 0 && strings.ToUpper(opts.IPProtocol) != "ICMP" {
+		return nil, gophercloud.ErrMissingInput{Argument: "FromPort"}
+	}
+	if opts.ToPort == 0 && strings.ToUpper(opts.IPProtocol) != "ICMP" {
+		return nil, gophercloud.ErrMissingInput{Argument: "ToPort"}
+	}
 	return gophercloud.BuildRequestBody(opts, "security_group_default_rule")
 }
 

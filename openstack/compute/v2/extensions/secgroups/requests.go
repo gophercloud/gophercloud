@@ -104,9 +104,9 @@ type CreateRuleOpts struct {
 	// the ID of the group that this rule will be added to.
 	ParentGroupID string `json:"parent_group_id" required:"true"`
 	// the lower bound of the port range that will be opened.
-	FromPort int `json:"from_port" required:"true"`
+	FromPort int `json:"from_port"`
 	// the upper bound of the port range that will be opened.
-	ToPort int `json:"to_port" required:"true"`
+	ToPort int `json:"to_port"`
 	// the protocol type that will be allowed, e.g. TCP.
 	IPProtocol string `json:"ip_protocol" required:"true"`
 	// ONLY required if FromGroupID is blank. This represents the IP range that

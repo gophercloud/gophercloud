@@ -226,9 +226,9 @@ func mockAddRuleResponseICMPZero(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
   "security_group_rule": {
-    "from_port": 80,
+    "from_port": 0,
     "ip_protocol": "ICMP",
-    "to_port": 80,
+    "to_port": 0,
     "parent_group_id": "{groupID}",
     "cidr": "0.0.0.0/0"
   }
@@ -240,10 +240,10 @@ func mockAddRuleResponseICMPZero(t *testing.T) {
 		fmt.Fprintf(w, `
 {
   "security_group_rule": {
-    "from_port": 80,
+    "from_port": 0,
     "group": {},
     "ip_protocol": "ICMP",
-    "to_port": 80,
+    "to_port": 0,
     "parent_group_id": "{groupID}",
     "ip_range": {
       "cidr": "0.0.0.0/0"

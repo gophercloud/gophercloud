@@ -77,8 +77,8 @@ func TestCreateICMPZero(t *testing.T) {
 
 	opts := CreateOpts{
 		IPProtocol: "ICMP",
-		FromPort:   80,
-		ToPort:     80,
+		FromPort:   0,
+		ToPort:     0,
 		CIDR:       "10.10.12.0/24",
 	}
 
@@ -87,8 +87,8 @@ func TestCreateICMPZero(t *testing.T) {
 
 	expected := &DefaultRule{
 		ID:         ruleID,
-		FromPort:   80,
-		ToPort:     80,
+		FromPort:   0,
+		ToPort:     0,
 		IPProtocol: "ICMP",
 		IPRange:    secgroups.IPRange{CIDR: "10.10.12.0/24"},
 	}
