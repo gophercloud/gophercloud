@@ -16,10 +16,10 @@ way than just downloading it. Here are the basic installation instructions:
 2. Move into the directory that houses your local repository:
 
    ```bash
-   cd ${GOPATH}/src/github.com/rackspace/gophercloud
+   cd ${GOPATH}/src/github.com/gophercloud/gophercloud
    ```
 
-3. Fork the `rackspace/gophercloud` repository and update your remote refs. You
+3. Fork the `gophercloud/gophercloud` repository and update your remote refs. You
 will need to rename the `origin` remote branch to `upstream`, and add your
 fork as `origin` instead:
 
@@ -49,12 +49,12 @@ environment variables for acceptance tests - this is documented in our
 
 When working on a new or existing feature, testing will be the backbone of your
 work since it helps uncover and prevent regressions in the codebase. There are
-two types of test we use in gophercloud: unit tests and acceptance tests, which
+two types of test we use in Gophercloud: unit tests and acceptance tests, which
 are both described below.
 
 ### Unit tests
 
-Unit tests are the fine-grained tests that establish and ensure the behaviour
+Unit tests are the fine-grained tests that establish and ensure the behavior
 of individual units of functionality. We usually test on an
 operation-by-operation basis (an operation typically being an API action) with
 the use of mocking to set up explicit expectations. Each operation will set up
@@ -68,7 +68,7 @@ process of testing expectations with assertions:
 import (
   "testing"
 
-  "github.com/rackspace/gophercloud/testhelper"
+  "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestSomething(t *testing.T) {
@@ -94,8 +94,8 @@ Here is a truncated example of mocked HTTP responses:
 import (
 	"testing"
 
-	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func TestGet(t *testing.T) {
@@ -141,7 +141,7 @@ func TestGet(t *testing.T) {
 ### Acceptance tests
 
 As we've already mentioned, unit tests have a very narrow and confined focus -
-they test small units of behaviour. Acceptance tests on the other hand have a
+they test small units of behavior. Acceptance tests on the other hand have a
 far larger scope: they are fully functional tests that test the entire API of a
 service in one fell swoop. They don't care about unit isolation or mocking
 expectations, they instead do a full run-through and consequently test how the
@@ -179,7 +179,9 @@ To run tests for a particular sub-package:
 cd ./path/to/package && go test .
 ```
 
-## Basic style guide
+## Style guide
+
+
 
 We follow the standard formatting recommendations and language idioms set out
 in the [Effective Go](https://golang.org/doc/effective_go.html) guide. It's
@@ -194,7 +196,7 @@ each is described briefly below. Once you've made up your mind and decided on
 your fix, you will need to follow the same basic steps that all submissions are
 required to adhere to:
 
-1. [fork](https://help.github.com/articles/fork-a-repo/) the `rackspace/gophercloud` repository
+1. [fork](https://help.github.com/articles/fork-a-repo/) the `gophercloud/gophercloud` repository
 2. checkout a [new branch](https://github.com/Kunena/Kunena-Forum/wiki/Create-a-new-branch-with-git-and-manage-branches)
 3. submit your branch as a [pull request](https://help.github.com/articles/creating-a-pull-request/)
 
@@ -218,7 +220,7 @@ are:
 
 If you want to start fixing open bugs, we'd really appreciate that! Bug fixing
 is central to any project. The best way to get started is by heading to our
-[bug tracker](https://github.com/rackspace/gophercloud/issues) and finding open
+[bug tracker](https://github.com/gophercloud/gophercloud/issues) and finding open
 bugs that you think nobody is working on. It might be useful to comment on the
 thread to see the current state of the issue and if anybody has made any
 breakthroughs on it so far.
@@ -254,7 +256,7 @@ work. Change-sets which are easily understood and will not negatively impact
 users are more likely to be integrated quickly.
 
 Lastly, if you're seeking to optimize a particular operation, you should try to
-demonstrate a negative performance impact - perhaps using go's inbuilt
+demonstrate a negative performance impact - perhaps using Go's inbuilt
 [benchmark capabilities](http://dave.cheney.net/2013/06/30/how-to-write-benchmarks-in-go).
 
 ### 5. Working on a new feature
