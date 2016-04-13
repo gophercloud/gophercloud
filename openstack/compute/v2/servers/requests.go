@@ -733,10 +733,7 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 }
 
 // GetPassword makes a request against the nova API to get the encrypted administrative password.
-func GetPassword(client *gophercloud.ServiceClient, serverId string) GetPasswordResult {
-	var res GetPasswordResult
-	_, res.Err = client.Request("GET", passwordURL(client, serverId), gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
-	})
-	return res
+func GetPassword(client *gophercloud.ServiceClient, serverId string) (r GetPasswordResult) {
+	_, r.Err = client.Get(passwordURL(client, serverId), &r.Body, nil)
+	return
 }
