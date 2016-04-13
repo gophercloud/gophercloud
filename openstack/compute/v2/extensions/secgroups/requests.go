@@ -101,23 +101,23 @@ func Delete(client *gophercloud.ServiceClient, id string) (r gophercloud.ErrResu
 // CreateRuleOpts represents the configuration for adding a new rule to an
 // existing security group.
 type CreateRuleOpts struct {
-	// Required - the ID of the group that this rule will be added to.
+	// the ID of the group that this rule will be added to.
 	ParentGroupID string `json:"parent_group_id" required:"true"`
-	// Required - the lower bound of the port range that will be opened.
+	// the lower bound of the port range that will be opened.
 	FromPort int `json:"from_port" required:"true"`
-	// Required - the upper bound of the port range that will be opened.
+	// the upper bound of the port range that will be opened.
 	ToPort int `json:"to_port" required:"true"`
-	// Required - the protocol type that will be allowed, e.g. TCP.
+	// the protocol type that will be allowed, e.g. TCP.
 	IPProtocol string `json:"ip_protocol" required:"true"`
 	// ONLY required if FromGroupID is blank. This represents the IP range that
 	// will be the source of network traffic to your security group. Use
 	// 0.0.0.0/0 to allow all IP addresses.
-	CIDR string `json:"cidr,omitempty"`
+	CIDR string `json:"cidr,omitempty" or:"FromGroupID"`
 	// ONLY required if CIDR is blank. This value represents the ID of a group
 	// that forwards traffic to the parent group. So, instead of accepting
 	// network traffic from an entire IP range, you can instead refine the
 	// inbound source by an existing security group.
-	FromGroupID string `json:"group_id,omitempty"`
+	FromGroupID string `json:"group_id,omitempty" or:"CIDR"`
 }
 
 // CreateRuleOptsBuilder builds the create rule options into a serializable format.

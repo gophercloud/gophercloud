@@ -3,6 +3,7 @@ package lbaas
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	base "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas/monitors"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas/pools"
@@ -22,7 +23,7 @@ func SetupTopology(t *testing.T) (string, string) {
 	s, err := subnets.Create(base.Client, subnets.CreateOpts{
 		NetworkID: n.ID,
 		CIDR:      "192.168.199.0/24",
-		IPVersion: subnets.IPv4,
+		IPVersion: gophercloud.IPv4,
 		Name:      "tmp_subnet",
 	}).Extract()
 	th.AssertNoErr(t, err)

@@ -230,6 +230,7 @@ func TestCreate(t *testing.T) {
     "subnet": {
         "network_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
         "ip_version": 4,
+				"gateway_ip": null,
         "cidr": "192.168.199.0/24",
 				"dns_nameservers": ["foo"],
 				"allocation_pools": [
@@ -362,7 +363,6 @@ func TestCreateNoGateway(t *testing.T) {
 		NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a23",
 		IPVersion: 4,
 		CIDR:      "192.168.1.0/24",
-		NoGateway: true,
 		AllocationPools: []AllocationPool{
 			AllocationPool{
 				Start: "192.168.1.2",
@@ -389,60 +389,6 @@ func TestCreateNoGateway(t *testing.T) {
 	th.AssertEquals(t, s.GatewayIP, "")
 	th.AssertEquals(t, s.CIDR, "192.168.1.0/24")
 	th.AssertEquals(t, s.ID, "54d6f61d-db07-451c-9ab3-b9609b6b6f0c")
-}
-
-func TestCreateInvalidGatewayConfig(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/v2.0/subnets", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, `
-{
-    "subnet": {
-        "network_id": "d32019d3-bc6e-4319-9c1d-6722fc136a23",
-        "ip_version": 4,
-        "cidr": "192.168.1.0/24",
-				"gateway_ip": "192.168.1.1",
-				"allocation_pools": [
-						{
-								"start": "192.168.1.2",
-								"end": "192.168.1.254"
-						}
-				]
-    }
-}
-			`)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-	})
-
-	opts := CreateOpts{
-		NetworkID: "d32019d3-bc6e-4319-9c1d-6722fc136a23",
-		IPVersion: 4,
-		CIDR:      "192.168.1.0/24",
-		NoGateway: true,
-		GatewayIP: "192.168.1.1",
-		AllocationPools: []AllocationPool{
-			AllocationPool{
-				Start: "192.168.1.2",
-				End:   "192.168.1.254",
-			},
-		},
-		DNSNameservers: []string{},
-	}
-	_, err := Create(fake.ServiceClient(), opts).Extract()
-	if err == nil {
-		t.Fatalf("Expected an error, got none")
-	}
-
-	if err != errInvalidGatewayConfig {
-		t.Fatalf("Exected errInvalidGateway but got: %s", err)
-	}
 }
 
 func TestRequiredCreateOpts(t *testing.T) {

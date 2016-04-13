@@ -14,7 +14,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 
 // CreateOpts represents the configuration for adding a new default rule.
 type CreateOpts struct {
-	// The lower bound of the port range that will be opened.
+	// The lower bound of the port range that will be opened.s
 	FromPort int `json:"from_port" required:"true"`
 	// The upper bound of the port range that will be opened.
 	ToPort int `json:"to_port" required:"true"`
