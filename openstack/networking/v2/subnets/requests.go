@@ -64,16 +64,6 @@ func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	return
 }
 
-// IPVersion is the IP address version for the subnet. Valid instances are
-// 4 and 6
-type IPVersion int
-
-// Valid IP types
-const (
-	IPv4 IPVersion = 4
-	IPv6 IPVersion = 6
-)
-
 // CreateOptsBuilder is the interface options structs have to satisfy in order
 // to be used in the main Create operation in this package. Since many
 // extensions decorate or modify the common logic, it is useful for them to
@@ -84,16 +74,16 @@ type CreateOptsBuilder interface {
 
 // CreateOpts represents the attributes used when creating a new subnet.
 type CreateOpts struct {
-	NetworkID       string           `json:"network_id" required:"true"`
-	CIDR            string           `json:"cidr" required:"true"`
-	Name            string           `json:"name,omitempty"`
-	TenantID        string           `json:"tenant_id,omitempty"`
-	AllocationPools []AllocationPool `json:"allocation_pools,omitempty"`
-	GatewayIP       string           `json:"gateway_ip,omitempty"`
-	IPVersion       IPVersion        `json:"ip_version,omitempty"`
-	EnableDHCP      *bool            `json:"enable_dhcp,omitempty"`
-	DNSNameservers  []string         `json:"dns_nameservers,omitempty"`
-	HostRoutes      []HostRoute      `json:"host_routes,omitempty"`
+	NetworkID       string                `json:"network_id" required:"true"`
+	CIDR            string                `json:"cidr" required:"true"`
+	Name            string                `json:"name,omitempty"`
+	TenantID        string                `json:"tenant_id,omitempty"`
+	AllocationPools []AllocationPool      `json:"allocation_pools,omitempty"`
+	GatewayIP       *string               `json:"gateway_ip"`
+	IPVersion       gophercloud.IPVersion `json:"ip_version,omitempty"`
+	EnableDHCP      *bool                 `json:"enable_dhcp,omitempty"`
+	DNSNameservers  []string              `json:"dns_nameservers,omitempty"`
+	HostRoutes      []HostRoute           `json:"host_routes,omitempty"`
 }
 
 // ToSubnetCreateMap casts a CreateOpts struct to a map.

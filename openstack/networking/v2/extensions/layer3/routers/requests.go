@@ -40,6 +40,10 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+// CreateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Create operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
 type CreateOptsBuilder interface {
 	ToRouterCreateMap() (map[string]interface{}, error)
 }
