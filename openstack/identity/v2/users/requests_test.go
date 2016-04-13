@@ -3,10 +3,10 @@ package users
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
-	"github.com/jrperritt/gophercloud"
 )
 
 func TestList(t *testing.T) {
