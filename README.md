@@ -1,18 +1,12 @@
 # Gophercloud: an OpenStack SDK for Go
-[![Build Status](https://travis-ci.org/rackspace/gophercloud.svg?branch=master)](https://travis-ci.org/rackspace/gophercloud) 
+[![Build Status](https://travis-ci.org/gophercloud/gophercloud.svg?branch=master)](https://travis-ci.org/gophercloud/gophercloud)
 [![Coverage Status](https://coveralls.io/repos/github/gophercloud/gophercloud/badge.svg?branch=master)](https://coveralls.io/github/gophercloud/gophercloud?branch=master)
 
-Gophercloud is a flexible SDK that allows you to consume and work with OpenStack
-clouds in a simple and idiomatic way using golang. Many services are supported,
-including Compute, Block Storage, Object Storage, Networking, and Identity.
-Each service API is backed with getting started guides, code samples, reference
-documentation, unit tests and acceptance tests.
+Gophercloud is an OpenStack Go SDK.
 
 ## Useful links
 
-* [Gophercloud homepage](http://gophercloud.io)
-* [Reference documentation](http://godoc.org/github.com/rackspace/gophercloud)
-* [Getting started guides](http://gophercloud.io/docs)
+* [Reference documentation](http://godoc.org/github.com/gophercloud/gophercloud)
 * [Effective Go](https://golang.org/doc/effective_go.html)
 
 ## How to install
@@ -31,9 +25,9 @@ your projects, such as [godep](https://github.com/tools/godep). Once this is set
 Gophercloud as a dependency like so:
 
 ```bash
-go get github.com/rackspace/gophercloud
+go get github.com/gophercloud/gophercloud
 
-# Edit your code to import relevant packages from "github.com/rackspace/gophercloud"
+# Edit your code to import relevant packages from "github.com/gophercloud/gophercloud"
 
 godep save ./...
 ```
@@ -55,7 +49,6 @@ You will need to retrieve the following:
 
 * username
 * password
-* tenant name or tenant ID
 * a valid Keystone identity URL
 
 For users that have the OpenStack dashboard installed, there's a shortcut. If
@@ -74,9 +67,9 @@ explicitly, or tell Gophercloud to use environment variables:
 
 ```go
 import (
-  "github.com/rackspace/gophercloud"
-  "github.com/rackspace/gophercloud/openstack"
-  "github.com/rackspace/gophercloud/openstack/utils"
+  "github.com/gophercloud/gophercloud"
+  "github.com/gophercloud/gophercloud/openstack"
+  "github.com/gophercloud/gophercloud/openstack/utils"
 )
 
 // Option 1: Pass in the values yourself
@@ -84,7 +77,6 @@ opts := gophercloud.AuthOptions{
   IdentityEndpoint: "https://my-openstack.com:5000/v2.0",
   Username: "{username}",
   Password: "{password}",
-  TenantID: "{tenant_id}",
 }
 
 // Option 2: Use a utility function to retrieve all your environment variables
@@ -120,7 +112,7 @@ in the flavor ID (hardware specification) and image ID (operating system) we're
 interested in:
 
 ```go
-import "github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+import "github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 
 server, err := servers.Create(client, servers.CreateOpts{
   Name:      "My new server!",
@@ -129,11 +121,9 @@ server, err := servers.Create(client, servers.CreateOpts{
 }).Extract()
 ```
 
-If you are unsure about what images and flavors are, you can read our [Compute
-Getting Started guide](http://gophercloud.io/docs/compute). The above code
-sample creates a new server with the parameters, and embodies the new resource
-in the `server` variable (a
-[`servers.Server`](http://godoc.org/github.com/rackspace/gophercloud) struct).
+The above code sample creates a new server with the parameters, and embodies the
+new resource in the `server` variable (a
+[`servers.Server`](http://godoc.org/github.com/gophercloud/gophercloud) struct).
 
 ### Next steps
 
