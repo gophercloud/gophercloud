@@ -99,7 +99,17 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		v2Client.Endpoint = endpoint
 	}
 
-	result := tokens2.Create(v2Client, tokens2.AuthOptions{AuthOptions: options})
+	v2Opts := tokens2.AuthOptions{
+		IdentityEndpoint: options.IdentityEndpoint,
+		Username:         options.Username,
+		Password:         options.Password,
+		TenantID:         options.TenantID,
+		TenantName:       options.TenantName,
+		AllowReauth:      options.AllowReauth,
+		TokenID:          options.TokenID,
+	}
+
+	result := tokens2.Create(v2Client, v2Opts)
 
 	token, err := result.ExtractToken()
 	if err != nil {

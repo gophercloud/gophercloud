@@ -13,7 +13,7 @@ func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string
 	defer th.TeardownHTTP()
 	HandleTokenPost(t, requestJSON)
 
-	return Create(client.ServiceClient(), AuthOptions{options})
+	return Create(client.ServiceClient(), options)
 }
 
 func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr error) {
@@ -21,7 +21,7 @@ func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr err
 	defer th.TeardownHTTP()
 	HandleTokenPost(t, "")
 
-	actualErr := Create(client.ServiceClient(), AuthOptions{options}).Err
+	actualErr := Create(client.ServiceClient(), options).Err
 	th.CheckDeepEquals(t, expectedErr, actualErr)
 }
 

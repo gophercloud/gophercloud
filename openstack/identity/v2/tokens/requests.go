@@ -35,10 +35,16 @@ type AuthOptionsBuilder interface {
 	ToTokenV2CreateMap() (map[string]interface{}, error)
 }
 
-// AuthOptions wraps a gophercloud AuthOptions in order to adhere to the AuthOptionsBuilder
-// interface.
+// AuthOptions are the valid options for Openstack Identity v2 authentication.
+// For field descriptions, see gophercloud.AuthOptions.
 type AuthOptions struct {
-	gophercloud.AuthOptions
+	IdentityEndpoint string `json:"-"`
+	Username         string `json:"username,omitempty"`
+	Password         string `json:"password,omitempty"`
+	TenantID         string `json:"tenantId,omitempty"`
+	TenantName       string `json:"tenantName,omitempty"`
+	AllowReauth      bool   `json:"-"`
+	TokenID          string
 }
 
 // ToTokenV2CreateMap allows AuthOptions to satisfy the AuthOptionsBuilder
