@@ -3,9 +3,10 @@ package users
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
-	"github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/jrperritt/gophercloud"
 )
 
 func TestList(t *testing.T) {
@@ -19,10 +20,7 @@ func TestList(t *testing.T) {
 	err := List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := ExtractUsers(page)
-		if err != nil {
-			t.Errorf("Failed to extract users: %v", err)
-			return false, err
-		}
+		th.AssertNoErr(t, err)
 
 		expected := []User{
 			User{
@@ -42,12 +40,9 @@ func TestList(t *testing.T) {
 				TenantID: "12345",
 			},
 		}
-
 		th.CheckDeepEquals(t, expected, actual)
-
 		return true, nil
 	})
-
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, count)
 }
@@ -61,7 +56,7 @@ func TestCreateUser(t *testing.T) {
 	opts := CreateOpts{
 		Name:     "new_user",
 		TenantID: "12345",
-		Enabled:  Disabled,
+		Enabled:  gophercloud.Disabled,
 		Email:    "new_user@foo.com",
 	}
 
@@ -109,7 +104,7 @@ func TestUpdateUser(t *testing.T) {
 	id := "c39e3de9be2d4c779f1dfd6abacc176d"
 	opts := UpdateOpts{
 		Name:    "new_name",
-		Enabled: Enabled,
+		Enabled: gophercloud.Enabled,
 		Email:   "new_email@foo.com",
 	}
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -24,10 +24,7 @@ type ListOpts struct {
 // ToCDNServiceListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToCDNServiceListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -42,15 +39,11 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		}
 		url += query
 	}
-
-	createPage := func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		p := ServicePage{pagination.MarkerPageBase{PageResult: r}}
 		p.MarkerPageBase.Owner = p
 		return p
-	}
-
-	pager := pagination.NewPager(c, url, createPage)
-	return pager
+	})
 }
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -64,140 +57,56 @@ type CreateOptsBuilder interface {
 // CreateOpts is the common options struct used in this package's Create
 // operation.
 type CreateOpts struct {
-	// REQUIRED. Specifies the name of the service. The minimum length for name is
+	// Specifies the name of the service. The minimum length for name is
 	// 3. The maximum length is 256.
-	Name string
-	// REQUIRED. Specifies a list of domains used by users to access their website.
-	Domains []Domain
-	// REQUIRED. Specifies a list of origin domains or IP addresses where the
+	Name string `json:"name" required:"true"`
+	// Specifies a list of domains used by users to access their website.
+	Domains []Domain `json:"domains" required:"true"`
+	// Specifies a list of origin domains or IP addresses where the
 	// original assets are stored.
-	Origins []Origin
-	// REQUIRED. Specifies the CDN provider flavor ID to use. For a list of
+	Origins []Origin `json:"origins" required:"true"`
+	// Specifies the CDN provider flavor ID to use. For a list of
 	// flavors, see the operation to list the available flavors. The minimum
 	// length for flavor_id is 1. The maximum length is 256.
-	FlavorID string
-	// OPTIONAL. Specifies the TTL rules for the assets under this service. Supports wildcards for fine-grained control.
-	Caching []CacheRule
-	// OPTIONAL. Specifies the restrictions that define who can access assets (content from the CDN cache).
-	Restrictions []Restriction
+	FlavorID string `json:"flavor_id" required:"true"`
+	// Specifies the TTL rules for the assets under this service. Supports wildcards for fine-grained control.
+	Caching []CacheRule `json:"caching,omitempty"`
+	// Specifies the restrictions that define who can access assets (content from the CDN cache).
+	Restrictions []Restriction `json:"restrictions,omitempty"`
 }
 
 // ToCDNServiceCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToCDNServiceCreateMap() (map[string]interface{}, error) {
-	s := make(map[string]interface{})
-
-	if opts.Name == "" {
-		return nil, no("Name")
-	}
-	s["name"] = opts.Name
-
-	if opts.Domains == nil {
-		return nil, no("Domains")
-	}
-	for _, domain := range opts.Domains {
-		if domain.Domain == "" {
-			return nil, no("Domains[].Domain")
-		}
-	}
-	s["domains"] = opts.Domains
-
-	if opts.Origins == nil {
-		return nil, no("Origins")
-	}
-	for _, origin := range opts.Origins {
-		if origin.Origin == "" {
-			return nil, no("Origins[].Origin")
-		}
-		if origin.Rules == nil && len(opts.Origins) > 1 {
-			return nil, no("Origins[].Rules")
-		}
-		for _, rule := range origin.Rules {
-			if rule.Name == "" {
-				return nil, no("Origins[].Rules[].Name")
-			}
-			if rule.RequestURL == "" {
-				return nil, no("Origins[].Rules[].RequestURL")
-			}
-		}
-	}
-	s["origins"] = opts.Origins
-
-	if opts.FlavorID == "" {
-		return nil, no("FlavorID")
-	}
-	s["flavor_id"] = opts.FlavorID
-
-	if opts.Caching != nil {
-		for _, cache := range opts.Caching {
-			if cache.Name == "" {
-				return nil, no("Caching[].Name")
-			}
-			if cache.Rules != nil {
-				for _, rule := range cache.Rules {
-					if rule.Name == "" {
-						return nil, no("Caching[].Rules[].Name")
-					}
-					if rule.RequestURL == "" {
-						return nil, no("Caching[].Rules[].RequestURL")
-					}
-				}
-			}
-		}
-		s["caching"] = opts.Caching
-	}
-
-	if opts.Restrictions != nil {
-		for _, restriction := range opts.Restrictions {
-			if restriction.Name == "" {
-				return nil, no("Restrictions[].Name")
-			}
-			if restriction.Rules != nil {
-				for _, rule := range restriction.Rules {
-					if rule.Name == "" {
-						return nil, no("Restrictions[].Rules[].Name")
-					}
-				}
-			}
-		}
-		s["restrictions"] = opts.Restrictions
-	}
-
-	return s, nil
+	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // Create accepts a CreateOpts struct and creates a new CDN service using the
 // values provided.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToCDNServiceCreateMap()
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToCDNServiceCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return r
 	}
-
-	// Send request to API
-	resp, err := c.Post(createURL(c), &reqBody, nil, nil)
-	res.Header = resp.Header
-	res.Err = err
-	return res
+	resp, err := c.Post(createURL(c), &b, nil, nil)
+	r.Header = resp.Header
+	r.Err = err
+	return
 }
 
 // Get retrieves a specific service based on its URL or its unique ID. For
 // example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
-func Get(c *gophercloud.ServiceClient, idOrURL string) GetResult {
+func Get(c *gophercloud.ServiceClient, idOrURL string) (r GetResult) {
 	var url string
 	if strings.Contains(idOrURL, "/") {
 		url = idOrURL
 	} else {
 		url = getURL(c, idOrURL)
 	}
-
-	var res GetResult
-	_, res.Err = c.Get(url, &res.Body, nil)
-	return res
+	_, r.Err = c.Get(url, &r.Body, nil)
+	return
 }
 
 // Path is a JSON pointer location that indicates which service parameter is being added, replaced,
@@ -251,11 +160,11 @@ type Insertion struct {
 
 // ToCDNServiceUpdateMap converts an Insertion into a request body fragment suitable for the
 // Update call.
-func (i Insertion) ToCDNServiceUpdateMap() map[string]interface{} {
+func (opts Insertion) ToCDNServiceUpdateMap() map[string]interface{} {
 	return map[string]interface{}{
 		"op":    "add",
-		"path":  i.Value.renderRootOr(func(p Path) string { return p.renderIndex(i.Index) }),
-		"value": i.Value.toPatchValue(),
+		"path":  opts.Value.renderRootOr(func(p Path) string { return p.renderIndex(opts.Index) }),
+		"value": opts.Value.toPatchValue(),
 	}
 }
 
@@ -320,16 +229,17 @@ type Removal struct {
 
 // ToCDNServiceUpdateMap converts a Removal into a request body fragment suitable for the
 // Update call.
-func (r Removal) ToCDNServiceUpdateMap() map[string]interface{} {
-	result := map[string]interface{}{"op": "remove"}
-	if r.All {
-		result["path"] = r.Path.renderRoot()
+func (opts Removal) ToCDNServiceUpdateMap() map[string]interface{} {
+	b := map[string]interface{}{"op": "remove"}
+	if opts.All {
+		b["path"] = opts.Path.renderRoot()
 	} else {
-		result["path"] = r.Path.renderIndex(r.Index)
+		b["path"] = opts.Path.renderIndex(opts.Index)
 	}
-	return result
+	return b
 }
 
+// UpdateOpts is a slice of Patches used to update a CDN service
 type UpdateOpts []Patch
 
 // Update accepts a slice of Patch operations (Insertion, Append, Replacement or Removal) and
@@ -337,7 +247,7 @@ type UpdateOpts []Patch
 // URL or its ID. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
-func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) UpdateResult {
+func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) (r UpdateResult) {
 	var url string
 	if strings.Contains(idOrURL, "/") {
 		url = idOrURL
@@ -345,34 +255,31 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) Updat
 		url = updateURL(c, idOrURL)
 	}
 
-	reqBody := make([]map[string]interface{}, len(opts))
+	b := make([]map[string]interface{}, len(opts))
 	for i, patch := range opts {
-		reqBody[i] = patch.ToCDNServiceUpdateMap()
+		b[i] = patch.ToCDNServiceUpdateMap()
 	}
 
-	resp, err := c.Request("PATCH", url, gophercloud.RequestOpts{
-		JSONBody: &reqBody,
+	resp, err := c.Request("PATCH", url, &gophercloud.RequestOpts{
+		JSONBody: &b,
 		OkCodes:  []int{202},
 	})
-	var result UpdateResult
-	result.Header = resp.Header
-	result.Err = err
-	return result
+	r.Header = resp.Header
+	r.Err = err
+	return
 }
 
 // Delete accepts a service's ID or its URL and deletes the CDN service
 // associated with it. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
-func Delete(c *gophercloud.ServiceClient, idOrURL string) DeleteResult {
+func Delete(c *gophercloud.ServiceClient, idOrURL string) (r DeleteResult) {
 	var url string
 	if strings.Contains(idOrURL, "/") {
 		url = idOrURL
 	} else {
 		url = deleteURL(c, idOrURL)
 	}
-
-	var res DeleteResult
-	_, res.Err = c.Delete(url, nil)
-	return res
+	_, r.Err = c.Delete(url, nil)
+	return
 }

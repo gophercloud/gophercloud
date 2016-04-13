@@ -1,6 +1,6 @@
 package accounts
 
-import "github.com/rackspace/gophercloud"
+import "github.com/gophercloud/gophercloud"
 
 // GetOptsBuilder allows extensions to add additional headers to the Get
 // request.
@@ -23,31 +23,27 @@ func (opts GetOpts) ToAccountGetMap() (map[string]string, error) {
 // custom metadata, call the ExtractMetadata method on the GetResult. To extract
 // all the headers that are returned (including the metadata), call the
 // ExtractHeader method on the GetResult.
-func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) GetResult {
-	var res GetResult
-	h := c.AuthenticatedHeaders()
-
+func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) (r GetResult) {
+	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToAccountGetMap()
 		if err != nil {
-			res.Err = err
-			return res
+			r.Err = err
+			return
 		}
-
 		for k, v := range headers {
 			h[k] = v
 		}
 	}
-
-	resp, err := c.Request("HEAD", getURL(c), gophercloud.RequestOpts{
+	resp, err := c.Request("HEAD", getURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{204},
 	})
 	if resp != nil {
-		res.Header = resp.Header
+		r.Header = resp.Header
 	}
-	res.Err = err
-	return res
+	r.Err = err
+	return
 }
 
 // UpdateOptsBuilder allows extensions to add additional headers to the Update
@@ -80,28 +76,25 @@ func (opts UpdateOpts) ToAccountUpdateMap() (map[string]string, error) {
 
 // Update is a function that creates, updates, or deletes an account's metadata.
 // To extract the headers returned, call the Extract method on the UpdateResult.
-func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) UpdateResult {
-	var res UpdateResult
+func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) (r UpdateResult) {
 	h := make(map[string]string)
-
 	if opts != nil {
 		headers, err := opts.ToAccountUpdateMap()
 		if err != nil {
-			res.Err = err
-			return res
+			r.Err = err
+			return
 		}
 		for k, v := range headers {
 			h[k] = v
 		}
 	}
-
-	resp, err := c.Request("POST", updateURL(c), gophercloud.RequestOpts{
+	resp, err := c.Request("POST", updateURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})
 	if resp != nil {
-		res.Header = resp.Header
+		r.Header = resp.Header
 	}
-	res.Err = err
-	return res
+	r.Err = err
+	return
 }

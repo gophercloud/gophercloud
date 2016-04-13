@@ -3,8 +3,8 @@ package diskconfig
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
-	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestCreateOpts(t *testing.T) {
@@ -25,8 +25,6 @@ func TestCreateOpts(t *testing.T) {
 				"name": "createdserver",
 				"imageRef": "asdfasdfasdf",
 				"flavorRef": "performance1-1",
-				"flavorName": "",
-				"imageName": "",
 				"OS-DCF:diskConfig": "MANUAL"
 			}
 		}

@@ -5,8 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper"
 )
 
 // SinglePage sample and test cases.
@@ -23,17 +22,12 @@ func (r SinglePageResult) IsEmpty() (bool, error) {
 	return len(is) == 0, nil
 }
 
-func ExtractSingleInts(page Page) ([]int, error) {
-	var response struct {
-		Ints []int `mapstructure:"ints"`
+func ExtractSingleInts(r Page) ([]int, error) {
+	var s struct {
+		Ints []int `json:"ints"`
 	}
-
-	err := mapstructure.Decode(page.(SinglePageResult).Body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.Ints, nil
+	err := (r.(SinglePageResult)).ExtractInto(&s)
+	return s.Ints, err
 }
 
 func setupSinglePaged() Pager {

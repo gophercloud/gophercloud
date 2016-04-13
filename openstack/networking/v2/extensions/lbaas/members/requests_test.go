@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"testing"
 
-	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/jrperritt/gophercloud"
 )
 
 func TestURLs(t *testing.T) {
@@ -222,7 +223,7 @@ func TestUpdate(t *testing.T) {
     `)
 	})
 
-	options := UpdateOpts{AdminStateUp: false}
+	options := UpdateOpts{AdminStateUp: gophercloud.Disabled}
 
 	_, err := Update(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", options).Extract()
 	th.AssertNoErr(t, err)

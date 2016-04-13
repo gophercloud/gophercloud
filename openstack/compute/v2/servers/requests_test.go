@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
-	"github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func TestListServers(t *testing.T) {
@@ -69,12 +69,39 @@ func TestCreateServer(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestCreateServerWithCustomField(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerCreationWithCustomFieldSuccessfully(t, SingleServerBody)
+
+	actual, err := Create(client.ServiceClient(), CreateOptsWithCustomField{
+		CreateOpts: CreateOpts{
+			Name:      "derp",
+			ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+			FlavorRef: "1",
+		},
+		Foo: "bar",
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+}
+
 func TestDeleteServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleServerDeletionSuccessfully(t)
 
 	res := Delete(client.ServiceClient(), "asdfasdfasdf")
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestForceDeleteServer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerForceDeletionSuccessfully(t)
+
+	res := ForceDelete(client.ServiceClient(), "asdfasdfasdf")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -120,7 +147,9 @@ func TestRebootServer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleRebootSuccessfully(t)
 
-	res := Reboot(client.ServiceClient(), "1234asdf", SoftReboot)
+	res := Reboot(client.ServiceClient(), "1234asdf", &RebootOpts{
+		Type: SoftReboot,
+	})
 	th.AssertNoErr(t, res.Err)
 }
 

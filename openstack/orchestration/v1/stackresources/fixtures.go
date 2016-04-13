@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rackspace/gophercloud"
-	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 // FindExpected represents the expected object from a Find request.
@@ -27,8 +27,8 @@ var FindExpected = []Resource{
 		},
 		LogicalID:    "hello_world",
 		StatusReason: "state changed",
-		UpdatedTime:  time.Date(2015, 2, 5, 21, 33, 11, 0, time.UTC),
-		CreationTime: time.Date(2015, 2, 5, 21, 33, 10, 0, time.UTC),
+		UpdatedTime:  gophercloud.JSONRFC3339NoZ(time.Date(2015, 2, 5, 21, 33, 11, 0, time.UTC)),
+		CreationTime: gophercloud.JSONRFC3339NoZ(time.Date(2015, 2, 5, 21, 33, 10, 0, time.UTC)),
 		RequiredBy:   []interface{}{},
 		Status:       "CREATE_IN_PROGRESS",
 		PhysicalID:   "49181cd6-169a-4130-9455-31185bbfc5bf",
@@ -98,8 +98,8 @@ var ListExpected = []Resource{
 		},
 		LogicalID:    "hello_world",
 		StatusReason: "state changed",
-		UpdatedTime:  time.Date(2015, 2, 5, 21, 33, 11, 0, time.UTC),
-		CreationTime: time.Date(2015, 2, 5, 21, 33, 10, 0, time.UTC),
+		UpdatedTime:  gophercloud.JSONRFC3339NoZ(time.Date(2015, 2, 5, 21, 33, 11, 0, time.UTC)),
+		CreationTime: gophercloud.JSONRFC3339NoZ(time.Date(2015, 2, 5, 21, 33, 10, 0, time.UTC)),
 		RequiredBy:   []interface{}{},
 		Status:       "CREATE_IN_PROGRESS",
 		PhysicalID:   "49181cd6-169a-4130-9455-31185bbfc5bf",
@@ -176,7 +176,7 @@ var GetExpected = &Resource{
 	LogicalID:    "wordpress_instance",
 	Attributes:   map[string]interface{}{"SXSW": "atx"},
 	StatusReason: "state changed",
-	UpdatedTime:  time.Date(2014, 12, 10, 18, 34, 35, 0, time.UTC),
+	UpdatedTime:  gophercloud.JSONRFC3339NoZ(time.Date(2014, 12, 10, 18, 34, 35, 0, time.UTC)),
 	RequiredBy:   []interface{}{},
 	Status:       "CREATE_COMPLETE",
 	PhysicalID:   "00e3a2fe-c65d-403c-9483-4db9930dd194",

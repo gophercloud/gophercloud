@@ -2,11 +2,13 @@ package volumes
 
 import (
 	"testing"
+	"time"
 
-	fixtures "github.com/rackspace/gophercloud/openstack/blockstorage/v1/volumes/testing"
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
-	"github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud"
+	fixtures "github.com/gophercloud/gophercloud/openstack/blockstorage/v1/volumes/testing"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func TestList(t *testing.T) {
@@ -78,12 +80,37 @@ func TestGet(t *testing.T) {
 
 	fixtures.MockGetResponse(t)
 
-	v, err := Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	actual, err := Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, v.Name, "vol-001")
-	th.AssertEquals(t, v.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, v.Attachments[0]["device"], "/dev/vde")
+	expected := &Volume{
+		Status: "active",
+		Name:   "vol-001",
+		Attachments: []map[string]interface{}{
+			{
+				"attachment_id": "03987cd1-0ad5-40d1-9b2a-7cc48295d4fa",
+				"id":            "47e9ecc5-4045-4ee3-9a4b-d859d546a0cf",
+				"volume_id":     "6c80f8ac-e3e2-480c-8e6e-f1db92fe4bfe",
+				"server_id":     "d1c4788b-9435-42e2-9b81-29f3be1cd01f",
+				"host_name":     "mitaka",
+				"device":        "/",
+			},
+		},
+		AvailabilityZone: "us-east1",
+		Bootable:         "false",
+		CreatedAt:        gophercloud.JSONRFC3339Milli(time.Date(2012, 2, 14, 20, 53, 07, 0, time.UTC)),
+		Description:      "Another volume.",
+		VolumeType:       "289da7f8-6440-407c-9fb4-7db01ec49164",
+		SnapshotID:       "",
+		SourceVolID:      "",
+		Metadata: map[string]string{
+			"contents": "junk",
+		},
+		ID:   "521752a6-acf6-4b2d-bc7a-119f9148cd8c",
+		Size: 30,
+	}
+
+	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestCreate(t *testing.T) {

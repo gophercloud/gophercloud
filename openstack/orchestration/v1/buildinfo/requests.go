@@ -1,10 +1,9 @@
 package buildinfo
 
-import "github.com/rackspace/gophercloud"
+import "github.com/gophercloud/gophercloud"
 
 // Get retreives data for the given stack template.
-func Get(c *gophercloud.ServiceClient) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(getURL(c), &res.Body, nil)
-	return res
+func Get(c *gophercloud.ServiceClient) (r GetResult) {
+	_, r.Err = c.Get(getURL(c), &r.Body, nil)
+	return
 }

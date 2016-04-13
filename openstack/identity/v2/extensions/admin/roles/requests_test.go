@@ -3,9 +3,9 @@ package roles
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
-	"github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func TestRole(t *testing.T) {
@@ -41,24 +41,24 @@ func TestRole(t *testing.T) {
 	th.AssertEquals(t, 1, count)
 }
 
-func TestAddUserRole(t *testing.T) {
+func TestAddUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	MockAddUserRoleResponse(t)
 
-	err := AddUserRole(client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
+	err := AddUser(client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
 
 	th.AssertNoErr(t, err)
 }
 
-func TestDeleteUserRole(t *testing.T) {
+func TestDeleteUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	MockDeleteUserRoleResponse(t)
 
-	err := DeleteUserRole(client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
+	err := DeleteUser(client.ServiceClient(), "{tenant_id}", "{user_id}", "{role_id}").ExtractErr()
 
 	th.AssertNoErr(t, err)
 }

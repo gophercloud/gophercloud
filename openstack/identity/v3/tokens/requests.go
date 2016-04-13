@@ -1,27 +1,62 @@
 package tokens
 
-import (
-	"net/http"
-
-	"github.com/rackspace/gophercloud"
-)
+import "github.com/gophercloud/gophercloud"
 
 // Scope allows a created token to be limited to a specific domain or project.
 type Scope struct {
-	ProjectID   string
-	ProjectName string
-	DomainID    string
-	DomainName  string
+	ProjectID   string `json:"scope.project.id,omitempty" not:"ProjectName,DomainID,DomainName"`
+	ProjectName string `json:"scope.project.name,omitempty"`
+	DomainID    string `json:"scope.project.id,omitempty" not:"ProjectName,ProjectID,DomainName"`
+	DomainName  string `json:"scope.project.id,omitempty"`
 }
 
-func subjectTokenHeaders(c *gophercloud.ServiceClient, subjectToken string) map[string]string {
-	h := c.AuthenticatedHeaders()
-	h["X-Subject-Token"] = subjectToken
-	return h
+// AuthOptionsBuilder describes any argument that may be passed to the Create call.
+type AuthOptionsBuilder interface {
+	// ToTokenV3CreateMap assembles the Create request body, returning an error if parameters are
+	// missing or inconsistent.
+	ToTokenV3CreateMap(*Scope) (map[string]interface{}, error)
 }
 
-// Create authenticates and either generates a new token, or changes the Scope of an existing token.
-func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope *Scope) CreateResult {
+type AuthOptions struct {
+	// IdentityEndpoint specifies the HTTP endpoint that is required to work with
+	// the Identity API of the appropriate version. While it's ultimately needed by
+	// all of the identity services, it will often be populated by a provider-level
+	// function.
+	IdentityEndpoint string `json:"-"`
+
+	// Username is required if using Identity V2 API. Consult with your provider's
+	// control panel to discover your account's username. In Identity V3, either
+	// UserID or a combination of Username and DomainID or DomainName are needed.
+	Username string `json:"username,omitempty"`
+	UserID   string `json:"id,omitempty"`
+
+	Password string `json:"password,omitempty"`
+
+	// At most one of DomainID and DomainName must be provided if using Username
+	// with Identity V3. Otherwise, either are optional.
+	DomainID   string `json:"id,omitempty"`
+	DomainName string `json:"name,omitempty"`
+
+	// The TenantID and TenantName fields are optional for the Identity V2 API.
+	// Some providers allow you to specify a TenantName instead of the TenantId.
+	// Some require both. Your provider's authentication policies will determine
+	// how these fields influence authentication.
+	TenantID   string `json:"tenantId,omitempty"`
+	TenantName string `json:"tenantName,omitempty"`
+
+	// AllowReauth should be set to true if you grant permission for Gophercloud to
+	// cache your credentials in memory, and to allow Gophercloud to attempt to
+	// re-authenticate automatically if/when your token expires.  If you set it to
+	// false, it will not cache these settings, but re-authentication will not be
+	// possible.  This setting defaults to false.
+	AllowReauth bool `json:"-"`
+
+	// TokenID allows users to authenticate (possibly as another user) with an
+	// authentication token ID.
+	TokenID string
+}
+
+func (opts AuthOptions) ToTokenV3CreateMap(scope *Scope) (map[string]interface{}, error) {
 	type domainReq struct {
 		ID   *string `json:"id,omitempty"`
 		Name *string `json:"name,omitempty"`
@@ -73,101 +108,98 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 	var req request
 
 	// Test first for unrecognized arguments.
-	if options.APIKey != "" {
-		return createErr(ErrAPIKeyProvided)
+	if opts.TenantID != "" {
+		return nil, ErrTenantIDProvided{}
 	}
-	if options.TenantID != "" {
-		return createErr(ErrTenantIDProvided)
-	}
-	if options.TenantName != "" {
-		return createErr(ErrTenantNameProvided)
+	if opts.TenantName != "" {
+		return nil, ErrTenantNameProvided{}
 	}
 
-	if options.Password == "" {
-		if c.TokenID != "" {
+	if opts.Password == "" {
+		if opts.TokenID != "" {
 			// Because we aren't using password authentication, it's an error to also provide any of the user-based authentication
 			// parameters.
-			if options.Username != "" {
-				return createErr(ErrUsernameWithToken)
+			if opts.Username != "" {
+				return nil, ErrUsernameWithToken{}
 			}
-			if options.UserID != "" {
-				return createErr(ErrUserIDWithToken)
+			if opts.UserID != "" {
+				return nil, ErrUserIDWithToken{}
 			}
-			if options.DomainID != "" {
-				return createErr(ErrDomainIDWithToken)
+			if opts.DomainID != "" {
+				return nil, ErrDomainIDWithToken{}
 			}
-			if options.DomainName != "" {
-				return createErr(ErrDomainNameWithToken)
+			if opts.DomainName != "" {
+				return nil, ErrDomainNameWithToken{}
 			}
 
 			// Configure the request for Token authentication.
 			req.Auth.Identity.Methods = []string{"token"}
 			req.Auth.Identity.Token = &tokenReq{
-				ID: c.TokenID,
+				ID: opts.TokenID,
 			}
 		} else {
 			// If no password or token ID are available, authentication can't continue.
-			return createErr(ErrMissingPassword)
+			return nil, ErrMissingPassword{}
 		}
 	} else {
 		// Password authentication.
 		req.Auth.Identity.Methods = []string{"password"}
 
 		// At least one of Username and UserID must be specified.
-		if options.Username == "" && options.UserID == "" {
-			return createErr(ErrUsernameOrUserID)
+		if opts.Username == "" && opts.UserID == "" {
+			return nil, ErrUsernameOrUserID{}
 		}
 
-		if options.Username != "" {
+		if opts.Username != "" {
 			// If Username is provided, UserID may not be provided.
-			if options.UserID != "" {
-				return createErr(ErrUsernameOrUserID)
+			if opts.UserID != "" {
+				return nil, ErrUsernameOrUserID{}
 			}
 
 			// Either DomainID or DomainName must also be specified.
-			if options.DomainID == "" && options.DomainName == "" {
-				return createErr(ErrDomainIDOrDomainName)
+			if opts.DomainID == "" && opts.DomainName == "" {
+				return nil, ErrDomainIDOrDomainName{}
 			}
 
-			if options.DomainID != "" {
-				if options.DomainName != "" {
-					return createErr(ErrDomainIDOrDomainName)
+			if opts.DomainID != "" {
+				if opts.DomainName != "" {
+					return nil, ErrDomainIDOrDomainName{}
 				}
 
 				// Configure the request for Username and Password authentication with a DomainID.
 				req.Auth.Identity.Password = &passwordReq{
 					User: userReq{
-						Name:     &options.Username,
-						Password: options.Password,
-						Domain:   &domainReq{ID: &options.DomainID},
+						Name:     &opts.Username,
+						Password: opts.Password,
+						Domain:   &domainReq{ID: &opts.DomainID},
 					},
 				}
 			}
 
-			if options.DomainName != "" {
+			if opts.DomainName != "" {
 				// Configure the request for Username and Password authentication with a DomainName.
 				req.Auth.Identity.Password = &passwordReq{
 					User: userReq{
-						Name:     &options.Username,
-						Password: options.Password,
-						Domain:   &domainReq{Name: &options.DomainName},
+						Name:     &opts.Username,
+						Password: opts.Password,
+						Domain:   &domainReq{Name: &opts.DomainName},
 					},
 				}
 			}
 		}
 
-		if options.UserID != "" {
+		if opts.UserID != "" {
 			// If UserID is specified, neither DomainID nor DomainName may be.
-			if options.DomainID != "" {
-				return createErr(ErrDomainIDWithUserID)
+			if opts.DomainID != "" {
+				return nil, ErrDomainIDWithUserID{}
 			}
-			if options.DomainName != "" {
-				return createErr(ErrDomainNameWithUserID)
+			if opts.DomainName != "" {
+				return nil, ErrDomainNameWithUserID{}
 			}
 
 			// Configure the request for UserID and Password authentication.
 			req.Auth.Identity.Password = &passwordReq{
-				User: userReq{ID: &options.UserID, Password: options.Password},
+				User: userReq{ID: &opts.UserID, Password: opts.Password},
 			}
 		}
 	}
@@ -178,10 +210,10 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 			// ProjectName provided: either DomainID or DomainName must also be supplied.
 			// ProjectID may not be supplied.
 			if scope.DomainID == "" && scope.DomainName == "" {
-				return createErr(ErrScopeDomainIDOrDomainName)
+				return nil, ErrScopeDomainIDOrDomainName{}
 			}
 			if scope.ProjectID != "" {
-				return createErr(ErrScopeProjectIDOrProjectName)
+				return nil, ErrScopeProjectIDOrProjectName{}
 			}
 
 			if scope.DomainID != "" {
@@ -206,10 +238,10 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 		} else if scope.ProjectID != "" {
 			// ProjectID provided. ProjectName, DomainID, and DomainName may not be provided.
 			if scope.DomainID != "" {
-				return createErr(ErrScopeProjectIDAlone)
+				return nil, ErrScopeProjectIDAlone{}
 			}
 			if scope.DomainName != "" {
-				return createErr(ErrScopeProjectIDAlone)
+				return nil, ErrScopeProjectIDAlone{}
 			}
 
 			// ProjectID
@@ -219,7 +251,7 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 		} else if scope.DomainID != "" {
 			// DomainID provided. ProjectID, ProjectName, and DomainName may not be provided.
 			if scope.DomainName != "" {
-				return createErr(ErrScopeDomainIDOrDomainName)
+				return nil, ErrScopeDomainIDOrDomainName{}
 			}
 
 			// DomainID
@@ -227,40 +259,56 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 				Domain: &domainReq{ID: &scope.DomainID},
 			}
 		} else if scope.DomainName != "" {
-			return createErr(ErrScopeDomainName)
+			return nil, ErrScopeDomainName{}
 		} else {
-			return createErr(ErrScopeEmpty)
+			return nil, ErrScopeEmpty{}
 		}
 	}
 
-	var result CreateResult
-	var response *http.Response
-	response, result.Err = c.Post(tokenURL(c), req, &result.Body, nil)
-	if result.Err != nil {
-		return result
+	b, err2 := gophercloud.BuildRequestBody(req, "")
+	if err2 != nil {
+		return nil, err2
 	}
-	result.Header = response.Header
-	return result
+	return b, nil
+}
+
+func subjectTokenHeaders(c *gophercloud.ServiceClient, subjectToken string) map[string]string {
+	return map[string]string{
+		"X-Subject-Token": subjectToken,
+	}
+}
+
+// Create authenticates and either generates a new token, or changes the Scope of an existing token.
+func Create(c *gophercloud.ServiceClient, opts AuthOptionsBuilder, scopeOpts *Scope) (r CreateResult) {
+	b, err := opts.ToTokenV3CreateMap(scopeOpts)
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Post(tokenURL(c), b, &r.Body, nil)
+	if resp != nil {
+		r.Err = err
+		r.Header = resp.Header
+	}
+	return
 }
 
 // Get validates and retrieves information about another token.
-func Get(c *gophercloud.ServiceClient, token string) GetResult {
-	var result GetResult
-	var response *http.Response
-	response, result.Err = c.Get(tokenURL(c), &result.Body, &gophercloud.RequestOpts{
+func Get(c *gophercloud.ServiceClient, token string) (r GetResult) {
+	resp, err := c.Get(tokenURL(c), &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		OkCodes:     []int{200, 203},
 	})
-	if result.Err != nil {
-		return result
+	if resp != nil {
+		r.Err = err
+		r.Header = resp.Header
 	}
-	result.Header = response.Header
-	return result
+	return
 }
 
 // Validate determines if a specified token is valid or not.
 func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
-	response, err := c.Request("HEAD", tokenURL(c), gophercloud.RequestOpts{
+	resp, err := c.Request("HEAD", tokenURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: subjectTokenHeaders(c, token),
 		OkCodes:     []int{204, 404},
 	})
@@ -268,14 +316,13 @@ func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
 		return false, err
 	}
 
-	return response.StatusCode == 204, nil
+	return resp.StatusCode == 204, nil
 }
 
 // Revoke immediately makes specified token invalid.
-func Revoke(c *gophercloud.ServiceClient, token string) RevokeResult {
-	var res RevokeResult
-	_, res.Err = c.Delete(tokenURL(c), &gophercloud.RequestOpts{
+func Revoke(c *gophercloud.ServiceClient, token string) (r RevokeResult) {
+	_, r.Err = c.Delete(tokenURL(c), &gophercloud.RequestOpts{
 		MoreHeaders: subjectTokenHeaders(c, token),
 	})
-	return res
+	return
 }

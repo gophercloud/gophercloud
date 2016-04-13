@@ -3,23 +3,22 @@ package endpoints
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
-	"github.com/rackspace/gophercloud/testhelper"
-	"github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func TestCreateSuccessful(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "POST")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		testhelper.TestJSONRequest(t, r, `
+	th.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `
       {
         "endpoint": {
           "interface": "public",
@@ -49,16 +48,14 @@ func TestCreateSuccessful(t *testing.T) {
     `)
 	})
 
-	actual, err := Create(client.ServiceClient(), EndpointOpts{
+	actual, err := Create(client.ServiceClient(), CreateOpts{
 		Availability: gophercloud.AvailabilityPublic,
 		Name:         "the-endiest-of-points",
 		Region:       "underground",
 		URL:          "https://1.2.3.4:9000/",
 		ServiceID:    "asdfasdfasdfasdf",
 	}).Extract()
-	if err != nil {
-		t.Fatalf("Unable to create an endpoint: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	expected := &Endpoint{
 		ID:           "12",
@@ -69,18 +66,16 @@ func TestCreateSuccessful(t *testing.T) {
 		URL:          "https://1.2.3.4:9000/",
 	}
 
-	if !reflect.DeepEqual(actual, expected) {
-		t.Errorf("Expected %#v, was %#v", expected, actual)
-	}
+	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestListEndpoints(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/endpoints", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
@@ -144,26 +139,20 @@ func TestListEndpoints(t *testing.T) {
 				URL:          "https://1.2.3.4:9001/",
 			},
 		}
-
-		if !reflect.DeepEqual(expected, actual) {
-			t.Errorf("Expected %#v, got %#v", expected, actual)
-		}
-
+		th.AssertDeepEquals(t, expected, actual)
 		return true, nil
 	})
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
+	th.AssertEquals(t, 1, count)
 }
 
 func TestUpdateEndpoint(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/endpoints/12", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "PATCH")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		testhelper.TestJSONRequest(t, r, `
+	th.Mux.HandleFunc("/endpoints/12", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `
 		{
 	    "endpoint": {
 	      "name": "renamed",
@@ -189,7 +178,7 @@ func TestUpdateEndpoint(t *testing.T) {
 	`)
 	})
 
-	actual, err := Update(client.ServiceClient(), "12", EndpointOpts{
+	actual, err := Update(client.ServiceClient(), "12", UpdateOpts{
 		Name:   "renamed",
 		Region: "somewhere-else",
 	}).Extract()
@@ -205,22 +194,20 @@ func TestUpdateEndpoint(t *testing.T) {
 		ServiceID:    "asdfasdfasdfasdf",
 		URL:          "https://1.2.3.4:9000/",
 	}
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("Expected %#v, was %#v", expected, actual)
-	}
+	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestDeleteEndpoint(t *testing.T) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-	testhelper.Mux.HandleFunc("/endpoints/34", func(w http.ResponseWriter, r *http.Request) {
-		testhelper.TestMethod(t, r, "DELETE")
-		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+	th.Mux.HandleFunc("/endpoints/34", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 
 	res := Delete(client.ServiceClient(), "34")
-	testhelper.AssertNoErr(t, res.Err)
+	th.AssertNoErr(t, res.Err)
 }

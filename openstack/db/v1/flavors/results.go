@@ -1,9 +1,8 @@
 package flavors
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // GetResult temporarily holds the response from a Get call.
@@ -12,34 +11,24 @@ type GetResult struct {
 }
 
 // Extract provides access to the individual Flavor returned by the Get function.
-func (gr GetResult) Extract() (*Flavor, error) {
-	if gr.Err != nil {
-		return nil, gr.Err
+func (r GetResult) Extract() (*Flavor, error) {
+	var s struct {
+		Flavor *Flavor `json:"flavor"`
 	}
-
-	var result struct {
-		Flavor Flavor `mapstructure:"flavor"`
-	}
-
-	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-		WeaklyTypedInput: true,
-		Result:           &result,
-	})
-
-	err = decoder.Decode(gr.Body)
-	return &result.Flavor, err
+	err := r.ExtractInto(&s)
+	return s.Flavor, err
 }
 
 // Flavor records represent (virtual) hardware configurations for server resources in a region.
 type Flavor struct {
 	// The flavor's unique identifier.
-	ID string `mapstructure:"id"`
+	ID int `json:"id"`
 
 	// The RAM capacity for the flavor.
-	RAM int `mapstructure:"ram"`
+	RAM int `json:"ram"`
 
 	// The Name field provides a human-readable moniker for the flavor.
-	Name string `mapstructure:"name"`
+	Name string `json:"name"`
 
 	// Links to access the flavor.
 	Links []gophercloud.Link
@@ -51,42 +40,28 @@ type FlavorPage struct {
 }
 
 // IsEmpty determines if a page contains any results.
-func (p FlavorPage) IsEmpty() (bool, error) {
-	flavors, err := ExtractFlavors(p)
-	if err != nil {
-		return true, err
-	}
-	return len(flavors) == 0, nil
+func (page FlavorPage) IsEmpty() (bool, error) {
+	flavors, err := ExtractFlavors(page)
+	return len(flavors) == 0, err
 }
 
 // NextPageURL uses the response's embedded link reference to navigate to the next page of results.
-func (p FlavorPage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"flavors_links"`
+func (page FlavorPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"flavors_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(p.Body, &r)
+	err := page.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // ExtractFlavors provides access to the list of flavors in a page acquired from the List operation.
-func ExtractFlavors(page pagination.Page) ([]Flavor, error) {
-	casted := page.(FlavorPage).Body
-	var container struct {
-		Flavors []Flavor `mapstructure:"flavors"`
+func ExtractFlavors(r pagination.Page) ([]Flavor, error) {
+	var s struct {
+		Flavors []Flavor `json:"flavors"`
 	}
-
-	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
-		WeaklyTypedInput: true,
-		Result:           &container,
-	})
-
-	err = decoder.Decode(casted)
-
-	return container.Flavors, err
+	err := (r.(FlavorPage)).ExtractInto(&s)
+	return s.Flavors, err
 }

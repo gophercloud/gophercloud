@@ -1,19 +1,18 @@
 package buildinfo
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
+	"github.com/gophercloud/gophercloud"
 )
 
 // Revision represents the API/Engine revision of a Heat deployment.
 type Revision struct {
-	Revision string `mapstructure:"revision"`
+	Revision string `json:"revision"`
 }
 
 // BuildInfo represents the build information for a Heat deployment.
 type BuildInfo struct {
-	API    Revision `mapstructure:"api"`
-	Engine Revision `mapstructure:"engine"`
+	API    Revision `json:"api"`
+	Engine Revision `json:"engine"`
 }
 
 // GetResult represents the result of a Get operation.
@@ -24,14 +23,7 @@ type GetResult struct {
 // Extract returns a pointer to a BuildInfo object and is called after a
 // Get operation.
 func (r GetResult) Extract() (*BuildInfo, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-
-	var res BuildInfo
-	if err := mapstructure.Decode(r.Body, &res); err != nil {
-		return nil, err
-	}
-
-	return &res, nil
+	var s *BuildInfo
+	err := r.ExtractInto(&s)
+	return s, err
 }

@@ -1,12 +1,11 @@
 package tokens
 
 import (
-	"fmt"
 	"testing"
 
-	"github.com/rackspace/gophercloud"
-	th "github.com/rackspace/gophercloud/testhelper"
-	"github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string) CreateResult {
@@ -14,7 +13,7 @@ func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string
 	defer th.TeardownHTTP()
 	HandleTokenPost(t, requestJSON)
 
-	return Create(client.ServiceClient(), AuthOptions{options})
+	return Create(client.ServiceClient(), options)
 }
 
 func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr error) {
@@ -22,7 +21,7 @@ func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr err
 	defer th.TeardownHTTP()
 	HandleTokenPost(t, "")
 
-	actualErr := Create(client.ServiceClient(), AuthOptions{options}).Err
+	actualErr := Create(client.ServiceClient(), options).Err
 	th.CheckDeepEquals(t, expectedErr, actualErr)
 }
 
@@ -84,60 +83,12 @@ func TestCreateTokenWithTenantName(t *testing.T) {
   `))
 }
 
-func TestProhibitUserID(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		UserID:   "1234",
-		Password: "thing",
-	}
-
-	tokenPostErr(t, options, ErrUserIDProvided)
-}
-
-func TestProhibitAPIKey(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "thing",
-		APIKey:   "123412341234",
-	}
-
-	tokenPostErr(t, options, ErrAPIKeyProvided)
-}
-
-func TestProhibitDomainID(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-		Password: "thing",
-		DomainID: "1234",
-	}
-
-	tokenPostErr(t, options, ErrDomainIDProvided)
-}
-
-func TestProhibitDomainName(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username:   "me",
-		Password:   "thing",
-		DomainName: "wat",
-	}
-
-	tokenPostErr(t, options, ErrDomainNameProvided)
-}
-
 func TestRequireUsername(t *testing.T) {
 	options := gophercloud.AuthOptions{
 		Password: "thing",
 	}
 
-	tokenPostErr(t, options, fmt.Errorf("You must provide either username/password or tenantID/token values."))
-}
-
-func TestRequirePassword(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		Username: "me",
-	}
-
-	tokenPostErr(t, options, ErrPasswordRequired)
+	tokenPostErr(t, options, gophercloud.ErrMissingInput{Argument: "Username"})
 }
 
 func tokenGet(t *testing.T, tokenId string) GetResult {

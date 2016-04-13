@@ -3,7 +3,6 @@ package gophercloud
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -11,7 +10,7 @@ import (
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
-const DefaultUserAgent = "gophercloud/1.0.0"
+const DefaultUserAgent = "gophercloud/2.0.0"
 
 // UserAgent represents a User-Agent header.
 type UserAgent struct {
@@ -68,6 +67,8 @@ type ProviderClient struct {
 	// fails with a 401 HTTP response code. This a needed because there may be multiple
 	// authentication functions for different Identity service versions.
 	ReauthFunc func() error
+
+	Debug bool
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
@@ -85,46 +86,30 @@ type RequestOpts struct {
 	// content type of the request will default to "application/json" unless overridden by MoreHeaders.
 	// It's an error to specify both a JSONBody and a RawBody.
 	JSONBody interface{}
-	// RawBody contains an io.ReadSeeker that will be consumed by the request directly. No content-type
+	// RawBody contains an io.Reader that will be consumed by the request directly. No content-type
 	// will be set unless one is provided explicitly by MoreHeaders.
-	RawBody io.ReadSeeker
-
+	RawBody io.Reader
 	// JSONResponse, if provided, will be populated with the contents of the response body parsed as
 	// JSON.
 	JSONResponse interface{}
 	// OkCodes contains a list of numeric HTTP status codes that should be interpreted as success. If
 	// the response has a different code, an error will be returned.
 	OkCodes []int
-
 	// MoreHeaders specifies additional HTTP headers to be provide on the request. If a header is
 	// provided with a blank value (""), that header will be *omitted* instead: use this to suppress
 	// the default Accept header or an inferred Content-Type, for example.
 	MoreHeaders map[string]string
-}
-
-// UnexpectedResponseCodeError is returned by the Request method when a response code other than
-// those listed in OkCodes is encountered.
-type UnexpectedResponseCodeError struct {
-	URL      string
-	Method   string
-	Expected []int
-	Actual   int
-	Body     []byte
-}
-
-func (err *UnexpectedResponseCodeError) Error() string {
-	return fmt.Sprintf(
-		"Expected HTTP response code %v when accessing [%s %s], but got %d instead\n%s",
-		err.Expected, err.Method, err.URL, err.Actual, err.Body,
-	)
+	// ErrorContext specifies the resource error type to return if an error is encountered.
+	// This lets resources override default error messages based on the response status code.
+	ErrorContext error
 }
 
 var applicationJSON = "application/json"
 
 // Request performs an HTTP request using the ProviderClient's current HTTPClient. An authentication
 // header will automatically be provided.
-func (client *ProviderClient) Request(method, url string, options RequestOpts) (*http.Response, error) {
-	var body io.ReadSeeker
+func (client *ProviderClient) Request(method, url string, options *RequestOpts) (*http.Response, error) {
+	var body io.Reader
 	var contentType *string
 
 	// Derive the content body by either encoding an arbitrary object as JSON, or by taking a provided
@@ -177,29 +162,13 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 		}
 	}
 
+	// Set connection parameter to close the connection immediately when we've got the response
+	req.Close = true
+
 	// Issue the request.
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
-	}
-
-	if resp.StatusCode == http.StatusUnauthorized {
-		if client.ReauthFunc != nil {
-			err = client.ReauthFunc()
-			if err != nil {
-				return nil, fmt.Errorf("Error trying to re-authenticate: %s", err)
-			}
-			if options.RawBody != nil {
-				options.RawBody.Seek(0, 0)
-			}
-			resp.Body.Close()
-			resp, err = client.Request(method, url, options)
-			if err != nil {
-				return nil, fmt.Errorf("Successfully re-authenticated, but got error executing request: %s", err)
-			}
-
-			return resp, nil
-		}
 	}
 
 	// Allow default OkCodes if none explicitly set
@@ -215,16 +184,98 @@ func (client *ProviderClient) Request(method, url string, options RequestOpts) (
 			break
 		}
 	}
+
 	if !ok {
 		body, _ := ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
-		return resp, &UnexpectedResponseCodeError{
+		//pc := make([]uintptr, 1)
+		//runtime.Callers(2, pc)
+		//f := runtime.FuncForPC(pc[0])
+		respErr := ErrUnexpectedResponseCode{
 			URL:      url,
 			Method:   method,
 			Expected: options.OkCodes,
 			Actual:   resp.StatusCode,
 			Body:     body,
 		}
+		//respErr.Function = "gophercloud.ProviderClient.Request"
+
+		errType := options.ErrorContext
+		switch resp.StatusCode {
+		case http.StatusBadRequest:
+			err = ErrDefault400{respErr}
+			if error400er, ok := errType.(Err400er); ok {
+				err = error400er.Error400(respErr)
+			}
+		case http.StatusUnauthorized:
+			if client.ReauthFunc != nil {
+				err = client.ReauthFunc()
+				if err != nil {
+					e := &ErrUnableToReauthenticate{}
+					e.ErrOriginal = respErr
+					return nil, e
+				}
+				if options.RawBody != nil {
+					if seeker, ok := options.RawBody.(io.Seeker); ok {
+						seeker.Seek(0, 0)
+					}
+				}
+				resp, err = client.Request(method, url, options)
+				if err != nil {
+					switch err.(type) {
+					case *ErrUnexpectedResponseCode:
+						e := &ErrErrorAfterReauthentication{}
+						e.ErrOriginal = err.(*ErrUnexpectedResponseCode)
+						return nil, e
+					default:
+						e := &ErrErrorAfterReauthentication{}
+						e.ErrOriginal = err
+						return nil, e
+					}
+				}
+				return resp, nil
+			}
+			err = ErrDefault401{respErr}
+			if error401er, ok := errType.(Err401er); ok {
+				err = error401er.Error401(respErr)
+			}
+		case http.StatusNotFound:
+			err = ErrDefault404{respErr}
+			if error404er, ok := errType.(Err404er); ok {
+				err = error404er.Error404(respErr)
+			}
+		case http.StatusMethodNotAllowed:
+			err = ErrDefault405{respErr}
+			if error405er, ok := errType.(Err405er); ok {
+				err = error405er.Error405(respErr)
+			}
+		case http.StatusRequestTimeout:
+			err = ErrDefault408{respErr}
+			if error408er, ok := errType.(Err408er); ok {
+				err = error408er.Error408(respErr)
+			}
+		case 429:
+			err = ErrDefault429{respErr}
+			if error429er, ok := errType.(Err429er); ok {
+				err = error429er.Error429(respErr)
+			}
+		case http.StatusInternalServerError:
+			err = ErrDefault500{respErr}
+			if error500er, ok := errType.(Err500er); ok {
+				err = error500er.Error500(respErr)
+			}
+		case http.StatusServiceUnavailable:
+			err = ErrDefault503{respErr}
+			if error503er, ok := errType.(Err503er); ok {
+				err = error503er.Error503(respErr)
+			}
+		}
+
+		if err == nil {
+			err = respErr
+		}
+
+		return resp, err
 	}
 
 	// Parse the response body as JSON, if requested to do so.
@@ -246,63 +297,11 @@ func defaultOkCodes(method string) []int {
 		return []int{201, 202}
 	case method == "PUT":
 		return []int{201, 202}
+	case method == "PATCH":
+		return []int{200, 204}
 	case method == "DELETE":
 		return []int{202, 204}
 	}
 
 	return []int{}
-}
-
-func (client *ProviderClient) Get(url string, JSONResponse *interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = &RequestOpts{}
-	}
-	if JSONResponse != nil {
-		opts.JSONResponse = JSONResponse
-	}
-	return client.Request("GET", url, *opts)
-}
-
-func (client *ProviderClient) Post(url string, JSONBody interface{}, JSONResponse *interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = &RequestOpts{}
-	}
-
-	if v, ok := (JSONBody).(io.ReadSeeker); ok {
-		opts.RawBody = v
-	} else if JSONBody != nil {
-		opts.JSONBody = JSONBody
-	}
-
-	if JSONResponse != nil {
-		opts.JSONResponse = JSONResponse
-	}
-
-	return client.Request("POST", url, *opts)
-}
-
-func (client *ProviderClient) Put(url string, JSONBody interface{}, JSONResponse *interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = &RequestOpts{}
-	}
-
-	if v, ok := (JSONBody).(io.ReadSeeker); ok {
-		opts.RawBody = v
-	} else if JSONBody != nil {
-		opts.JSONBody = JSONBody
-	}
-
-	if JSONResponse != nil {
-		opts.JSONResponse = JSONResponse
-	}
-
-	return client.Request("PUT", url, *opts)
-}
-
-func (client *ProviderClient) Delete(url string, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = &RequestOpts{}
-	}
-
-	return client.Request("DELETE", url, *opts)
 }

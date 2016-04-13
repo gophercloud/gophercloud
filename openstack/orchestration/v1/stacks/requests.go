@@ -1,23 +1,10 @@
 package stacks
 
 import (
-	"errors"
 	"strings"
 
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
-)
-
-// Rollback is used to specify whether or not a stack can be rolled back.
-type Rollback *bool
-
-var (
-	disable = true
-	// Disable is used to specify that a stack cannot be rolled back.
-	Disable Rollback = &disable
-	enable           = false
-	// Enable is used to specify that a stack can be rolled back.
-	Enable Rollback = &enable
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -31,87 +18,45 @@ type CreateOptsBuilder interface {
 // CreateOpts is the common options struct used in this package's Create
 // operation.
 type CreateOpts struct {
-	// (REQUIRED) The name of the stack. It must start with an alphabetic character.
-	Name string
-	// (REQUIRED) A structure that contains either the template file or url. Call the
+	// The name of the stack. It must start with an alphabetic character.
+	Name string `json:"stack_name" required:"true"`
+	// A structure that contains either the template file or url. Call the
 	// associated methods to extract the information relevant to send in a create request.
-	TemplateOpts *Template
-	// (DEPRECATED): Please use TemplateOpts for providing the template. If
-	// TemplateOpts is provided, TemplateURL will be ignored
-	// (OPTIONAL; REQUIRED IF Template IS EMPTY) The URL of the template to instantiate.
-	// This value is ignored if Template is supplied inline.
-	TemplateURL string
-	// (DEPRECATED): Please use TemplateOpts for providing the template. If
-	// TemplateOpts is provided, Template will be ignored
-	// (OPTIONAL; REQUIRED IF TemplateURL IS EMPTY) A template to instantiate. The value
-	// is a stringified version of the JSON/YAML template. Since the template will likely
-	// be located in a file, one way to set this variable is by using ioutil.ReadFile:
-	// import "io/ioutil"
-	// var opts stacks.CreateOpts
-	// b, err := ioutil.ReadFile("path/to/you/template/file.json")
-	// if err != nil {
-	//   // handle error...
-	// }
-	// opts.Template = string(b)
-	Template string
-	// (OPTIONAL) Enables or disables deletion of all stack resources when a stack
+	TemplateOpts *Template `json:"-" required:"true"`
+	// Enables or disables deletion of all stack resources when a stack
 	// creation fails. Default is true, meaning all resources are not deleted when
 	// stack creation fails.
-	DisableRollback Rollback
-	// (OPTIONAL) A structure that contains details for the environment of the stack.
-	EnvironmentOpts *Environment
-	// (DEPRECATED): Please use EnvironmentOpts to provide Environment data
-	// (OPTIONAL) A stringified JSON environment for the stack.
-	Environment string
-	// (DEPRECATED): Files is automatically determined
-	// by parsing the template and environment passed as TemplateOpts and
-	// EnvironmentOpts respectively.
-	// (OPTIONAL) A map that maps file names to file contents. It can also be used
-	// to pass provider template contents. Example:
-	// Files: `{"myfile": "#!/bin/bash\necho 'Hello world' > /root/testfile.txt"}`
-	Files map[string]interface{}
-	// (OPTIONAL) User-defined parameters to pass to the template.
-	Parameters map[string]string
-	// (OPTIONAL) The timeout for stack creation in minutes.
-	Timeout int
-	// (OPTIONAL) A list of tags to assosciate with the Stack
-	Tags []string
+	DisableRollback *bool `json:"disable_rollback,omitempty"`
+	// A structure that contains details for the environment of the stack.
+	EnvironmentOpts *Environment `json:"-"`
+	// User-defined parameters to pass to the template.
+	Parameters map[string]string `json:"parameters,omitempty"`
+	// The timeout for stack creation in minutes.
+	Timeout int `json:"timeout_mins,omitempty"`
+	// A list of tags to assosciate with the Stack
+	Tags []string `json:"-"`
 }
 
 // ToStackCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
-	s := make(map[string]interface{})
-
-	if opts.Name == "" {
-		return s, errors.New("Required field 'Name' not provided.")
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
 	}
-	s["stack_name"] = opts.Name
-	Files := make(map[string]string)
-	if opts.TemplateOpts == nil {
-		if opts.Template != "" {
-			s["template"] = opts.Template
-		} else if opts.TemplateURL != "" {
-			s["template_url"] = opts.TemplateURL
-		} else {
-			return s, errors.New("Either Template or TemplateURL must be provided.")
-		}
-	} else {
-		if err := opts.TemplateOpts.Parse(); err != nil {
-			return nil, err
-		}
 
-		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
-			return nil, err
-		}
-		opts.TemplateOpts.fixFileRefs()
-		s["template"] = string(opts.TemplateOpts.Bin)
-
-		for k, v := range opts.TemplateOpts.Files {
-			Files[k] = v
-		}
+	if err := opts.TemplateOpts.Parse(); err != nil {
+		return nil, err
 	}
-	if opts.DisableRollback != nil {
-		s["disable_rollback"] = &opts.DisableRollback
+
+	if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		return nil, err
+	}
+	opts.TemplateOpts.fixFileRefs()
+	b["template"] = string(opts.TemplateOpts.Bin)
+
+	files := make(map[string]string)
+	for k, v := range opts.TemplateOpts.Files {
+		files[k] = v
 	}
 
 	if opts.EnvironmentOpts != nil {
@@ -123,50 +68,32 @@ func (opts CreateOpts) ToStackCreateMap() (map[string]interface{}, error) {
 		}
 		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
-			Files[k] = v
+			files[k] = v
 		}
-		s["environment"] = string(opts.EnvironmentOpts.Bin)
-	} else if opts.Environment != "" {
-		s["environment"] = opts.Environment
+		b["environment"] = string(opts.EnvironmentOpts.Bin)
 	}
 
-	if opts.Files != nil {
-		s["files"] = opts.Files
-	} else {
-		s["files"] = Files
-	}
-
-	if opts.DisableRollback != nil {
-		s["disable_rollback"] = &opts.DisableRollback
-	}
-
-	if opts.Parameters != nil {
-		s["parameters"] = opts.Parameters
-	}
-
-	if opts.Timeout != 0 {
-		s["timeout_mins"] = opts.Timeout
+	if len(files) > 0 {
+		b["files"] = files
 	}
 
 	if opts.Tags != nil {
-		s["tags"] = strings.Join(opts.Tags, ",")
+		b["tags"] = strings.Join(opts.Tags, ",")
 	}
-	return s, nil
+
+	return b, nil
 }
 
 // Create accepts a CreateOpts struct and creates a new stack using the values
 // provided.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToStackCreateMap()
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToStackCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	_, res.Err = c.Post(createURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
+	return
 }
 
 // AdoptOptsBuilder is the interface options structs have to satisfy in order
@@ -180,91 +107,49 @@ type AdoptOptsBuilder interface {
 // AdoptOpts is the common options struct used in this package's Adopt
 // operation.
 type AdoptOpts struct {
-	// (REQUIRED) Existing resources data represented as a string to add to the
+	// Existing resources data represented as a string to add to the
 	// new stack. Data returned by Abandon could be provided as AdoptsStackData.
-	AdoptStackData string
-	// (REQUIRED) The name of the stack. It must start with an alphabetic character.
-	Name string
-	// (REQUIRED) The timeout for stack creation in minutes.
-	Timeout int
-	// (REQUIRED) A structure that contains either the template file or url. Call the
+	AdoptStackData string `json:"adopt_stack_data" required:"true"`
+	// The name of the stack. It must start with an alphabetic character.
+	Name string `json:"stack_name" required:"true"`
+	// A structure that contains either the template file or url. Call the
 	// associated methods to extract the information relevant to send in a create request.
-	TemplateOpts *Template
-	// (DEPRECATED): Please use TemplateOpts for providing the template. If
-	// TemplateOpts is provided, TemplateURL will be ignored
-	// (OPTIONAL; REQUIRED IF Template IS EMPTY) The URL of the template to instantiate.
-	// This value is ignored if Template is supplied inline.
-	TemplateURL string
-	// (DEPRECATED): Please use TemplateOpts for providing the template. If
-	// TemplateOpts is provided, Template will be ignored
-	// (OPTIONAL; REQUIRED IF TemplateURL IS EMPTY) A template to instantiate. The value
-	// is a stringified version of the JSON/YAML template. Since the template will likely
-	// be located in a file, one way to set this variable is by using ioutil.ReadFile:
-	// import "io/ioutil"
-	// var opts stacks.CreateOpts
-	// b, err := ioutil.ReadFile("path/to/you/template/file.json")
-	// if err != nil {
-	//   // handle error...
-	// }
-	// opts.Template = string(b)
-	Template string
-	// (OPTIONAL) Enables or disables deletion of all stack resources when a stack
+	TemplateOpts *Template `json:"-" required:"true"`
+	// The timeout for stack creation in minutes.
+	Timeout int `json:"timeout_mins,omitempty"`
+	// A structure that contains either the template file or url. Call the
+	// associated methods to extract the information relevant to send in a create request.
+	//TemplateOpts *Template `json:"-" required:"true"`
+	// Enables or disables deletion of all stack resources when a stack
 	// creation fails. Default is true, meaning all resources are not deleted when
 	// stack creation fails.
-	DisableRollback Rollback
-	// (OPTIONAL) A structure that contains details for the environment of the stack.
-	EnvironmentOpts *Environment
-	// (DEPRECATED): Please use EnvironmentOpts to provide Environment data
-	// (OPTIONAL) A stringified JSON environment for the stack.
-	Environment string
-	// (DEPRECATED): Files is automatically determined
-	// by parsing the template and environment passed as TemplateOpts and
-	// EnvironmentOpts respectively.
-	// (OPTIONAL) A map that maps file names to file contents. It can also be used
-	// to pass provider template contents. Example:
-	// Files: `{"myfile": "#!/bin/bash\necho 'Hello world' > /root/testfile.txt"}`
-	Files map[string]interface{}
-	// (OPTIONAL) User-defined parameters to pass to the template.
-	Parameters map[string]string
+	DisableRollback *bool `json:"disable_rollback,omitempty"`
+	// A structure that contains details for the environment of the stack.
+	EnvironmentOpts *Environment `json:"-"`
+	// User-defined parameters to pass to the template.
+	Parameters map[string]string `json:"parameters,omitempty"`
 }
 
 // ToStackAdoptMap casts a CreateOpts struct to a map.
 func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
-	s := make(map[string]interface{})
-
-	if opts.Name == "" {
-		return s, errors.New("Required field 'Name' not provided.")
-	}
-	s["stack_name"] = opts.Name
-	Files := make(map[string]string)
-	if opts.AdoptStackData != "" {
-		s["adopt_stack_data"] = opts.AdoptStackData
-	} else if opts.TemplateOpts == nil {
-		if opts.Template != "" {
-			s["template"] = opts.Template
-		} else if opts.TemplateURL != "" {
-			s["template_url"] = opts.TemplateURL
-		} else {
-			return s, errors.New("One of AdoptStackData, Template, TemplateURL or TemplateOpts must be provided.")
-		}
-	} else {
-		if err := opts.TemplateOpts.Parse(); err != nil {
-			return nil, err
-		}
-
-		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
-			return nil, err
-		}
-		opts.TemplateOpts.fixFileRefs()
-		s["template"] = string(opts.TemplateOpts.Bin)
-
-		for k, v := range opts.TemplateOpts.Files {
-			Files[k] = v
-		}
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
 	}
 
-	if opts.DisableRollback != nil {
-		s["disable_rollback"] = &opts.DisableRollback
+	if err := opts.TemplateOpts.Parse(); err != nil {
+		return nil, err
+	}
+
+	if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		return nil, err
+	}
+	opts.TemplateOpts.fixFileRefs()
+	b["template"] = string(opts.TemplateOpts.Bin)
+
+	files := make(map[string]string)
+	for k, v := range opts.TemplateOpts.Files {
+		files[k] = v
 	}
 
 	if opts.EnvironmentOpts != nil {
@@ -276,44 +161,28 @@ func (opts AdoptOpts) ToStackAdoptMap() (map[string]interface{}, error) {
 		}
 		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
-			Files[k] = v
+			files[k] = v
 		}
-		s["environment"] = string(opts.EnvironmentOpts.Bin)
-	} else if opts.Environment != "" {
-		s["environment"] = opts.Environment
+		b["environment"] = string(opts.EnvironmentOpts.Bin)
 	}
 
-	if opts.Files != nil {
-		s["files"] = opts.Files
-	} else {
-		s["files"] = Files
+	if len(files) > 0 {
+		b["files"] = files
 	}
 
-	if opts.Parameters != nil {
-		s["parameters"] = opts.Parameters
-	}
-
-	if opts.Timeout != 0 {
-		s["timeout"] = opts.Timeout
-	}
-	s["timeout_mins"] = opts.Timeout
-
-	return s, nil
+	return b, nil
 }
 
 // Adopt accepts an AdoptOpts struct and creates a new stack using the resources
 // from another stack.
-func Adopt(c *gophercloud.ServiceClient, opts AdoptOptsBuilder) AdoptResult {
-	var res AdoptResult
-
-	reqBody, err := opts.ToStackAdoptMap()
+func Adopt(c *gophercloud.ServiceClient, opts AdoptOptsBuilder) (r AdoptResult) {
+	b, err := opts.ToStackAdoptMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	_, res.Err = c.Post(adoptURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(adoptURL(c), b, &r.Body, nil)
+	return
 }
 
 // SortDir is a type for specifying in which direction to sort a list of stacks.
@@ -378,7 +247,6 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		}
 		url += query
 	}
-
 	createPage := func(r pagination.PageResult) pagination.Page {
 		return StackPage{pagination.SinglePageBase(r)}
 	}
@@ -386,10 +254,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retreives a stack based on the stack name and stack ID.
-func Get(c *gophercloud.ServiceClient, stackName, stackID string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(getURL(c, stackName, stackID), &res.Body, nil)
-	return res
+func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, stackName, stackID), &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -401,73 +268,39 @@ type UpdateOptsBuilder interface {
 // UpdateOpts contains the common options struct used in this package's Update
 // operation.
 type UpdateOpts struct {
-	// (REQUIRED) A structure that contains either the template file or url. Call the
+	// A structure that contains either the template file or url. Call the
 	// associated methods to extract the information relevant to send in a create request.
-	TemplateOpts *Template
-	// (DEPRECATED): Please use TemplateOpts for providing the template. If
-	// TemplateOpts is provided, TemplateURL will be ignored
-	// (OPTIONAL; REQUIRED IF Template IS EMPTY) The URL of the template to instantiate.
-	// This value is ignored if Template is supplied inline.
-	TemplateURL string
-	// (DEPRECATED): Please use TemplateOpts for providing the template. If
-	// TemplateOpts is provided, Template will be ignored
-	// (OPTIONAL; REQUIRED IF TemplateURL IS EMPTY) A template to instantiate. The value
-	// is a stringified version of the JSON/YAML template. Since the template will likely
-	// be located in a file, one way to set this variable is by using ioutil.ReadFile:
-	// import "io/ioutil"
-	// var opts stacks.CreateOpts
-	// b, err := ioutil.ReadFile("path/to/you/template/file.json")
-	// if err != nil {
-	//   // handle error...
-	// }
-	// opts.Template = string(b)
-	Template string
-	// (OPTIONAL) A structure that contains details for the environment of the stack.
-	EnvironmentOpts *Environment
-	// (DEPRECATED): Please use EnvironmentOpts to provide Environment data
-	// (OPTIONAL) A stringified JSON environment for the stack.
-	Environment string
-	// (DEPRECATED): Files is automatically determined
-	// by parsing the template and environment passed as TemplateOpts and
-	// EnvironmentOpts respectively.
-	// (OPTIONAL) A map that maps file names to file contents. It can also be used
-	// to pass provider template contents. Example:
-	// Files: `{"myfile": "#!/bin/bash\necho 'Hello world' > /root/testfile.txt"}`
-	Files map[string]interface{}
-	// (OPTIONAL) User-defined parameters to pass to the template.
-	Parameters map[string]string
-	// (OPTIONAL) The timeout for stack creation in minutes.
-	Timeout int
-	// (OPTIONAL) A list of tags to assosciate with the Stack
-	Tags []string
+	TemplateOpts *Template `json:"-" required:"true"`
+	// A structure that contains details for the environment of the stack.
+	EnvironmentOpts *Environment `json:"-"`
+	// User-defined parameters to pass to the template.
+	Parameters map[string]string `json:"parameters,omitempty"`
+	// The timeout for stack creation in minutes.
+	Timeout int `json:"timeout_mins,omitempty"`
+	// A list of tags to assosciate with the Stack
+	Tags []string `json:"-"`
 }
 
 // ToStackUpdateMap casts a CreateOpts struct to a map.
 func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
-	s := make(map[string]interface{})
-	Files := make(map[string]string)
-	if opts.TemplateOpts == nil {
-		if opts.Template != "" {
-			s["template"] = opts.Template
-		} else if opts.TemplateURL != "" {
-			s["template_url"] = opts.TemplateURL
-		} else {
-			return s, errors.New("Either Template or TemplateURL must be provided.")
-		}
-	} else {
-		if err := opts.TemplateOpts.Parse(); err != nil {
-			return nil, err
-		}
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
 
-		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
-			return nil, err
-		}
-		opts.TemplateOpts.fixFileRefs()
-		s["template"] = string(opts.TemplateOpts.Bin)
+	if err := opts.TemplateOpts.Parse(); err != nil {
+		return nil, err
+	}
 
-		for k, v := range opts.TemplateOpts.Files {
-			Files[k] = v
-		}
+	if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		return nil, err
+	}
+	opts.TemplateOpts.fixFileRefs()
+	b["template"] = string(opts.TemplateOpts.Bin)
+
+	files := make(map[string]string)
+	for k, v := range opts.TemplateOpts.Files {
+		files[k] = v
 	}
 
 	if opts.EnvironmentOpts != nil {
@@ -479,54 +312,38 @@ func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 		}
 		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
-			Files[k] = v
+			files[k] = v
 		}
-		s["environment"] = string(opts.EnvironmentOpts.Bin)
-	} else if opts.Environment != "" {
-		s["environment"] = opts.Environment
+		b["environment"] = string(opts.EnvironmentOpts.Bin)
 	}
 
-	if opts.Files != nil {
-		s["files"] = opts.Files
-	} else {
-		s["files"] = Files
-	}
-
-	if opts.Parameters != nil {
-		s["parameters"] = opts.Parameters
-	}
-
-	if opts.Timeout != 0 {
-		s["timeout_mins"] = opts.Timeout
+	if len(files) > 0 {
+		b["files"] = files
 	}
 
 	if opts.Tags != nil {
-		s["tags"] = strings.Join(opts.Tags, ",")
+		b["tags"] = strings.Join(opts.Tags, ",")
 	}
 
-	return s, nil
+	return b, nil
 }
 
 // Update accepts an UpdateOpts struct and updates an existing stack using the values
 // provided.
-func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdateOptsBuilder) UpdateResult {
-	var res UpdateResult
-
-	reqBody, err := opts.ToStackUpdateMap()
+func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToStackUpdateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	_, res.Err = c.Put(updateURL(c, stackName, stackID), reqBody, nil, nil)
-	return res
+	_, r.Err = c.Put(updateURL(c, stackName, stackID), b, nil, nil)
+	return
 }
 
 // Delete deletes a stack based on the stack name and stack ID.
-func Delete(c *gophercloud.ServiceClient, stackName, stackID string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(deleteURL(c, stackName, stackID), nil)
-	return res
+func Delete(c *gophercloud.ServiceClient, stackName, stackID string) (r DeleteResult) {
+	_, r.Err = c.Delete(deleteURL(c, stackName, stackID), nil)
+	return
 }
 
 // PreviewOptsBuilder is the interface options structs have to satisfy in order
@@ -538,85 +355,43 @@ type PreviewOptsBuilder interface {
 // PreviewOpts contains the common options struct used in this package's Preview
 // operation.
 type PreviewOpts struct {
-	// (REQUIRED) The name of the stack. It must start with an alphabetic character.
-	Name string
-	// (REQUIRED) The timeout for stack creation in minutes.
-	Timeout int
-	// (REQUIRED) A structure that contains either the template file or url. Call the
+	// The name of the stack. It must start with an alphabetic character.
+	Name string `json:"stack_name" required:"true"`
+	// The timeout for stack creation in minutes.
+	Timeout int `json:"timeout_mins" required:"true"`
+	// A structure that contains either the template file or url. Call the
 	// associated methods to extract the information relevant to send in a create request.
-	TemplateOpts *Template
-	// (DEPRECATED): Please use TemplateOpts for providing the template. If
-	// TemplateOpts is provided, TemplateURL will be ignored
-	// (OPTIONAL; REQUIRED IF Template IS EMPTY) The URL of the template to instantiate.
-	// This value is ignored if Template is supplied inline.
-	TemplateURL string
-	// (DEPRECATED): Please use TemplateOpts for providing the template. If
-	// TemplateOpts is provided, Template will be ignored
-	// (OPTIONAL; REQUIRED IF TemplateURL IS EMPTY) A template to instantiate. The value
-	// is a stringified version of the JSON/YAML template. Since the template will likely
-	// be located in a file, one way to set this variable is by using ioutil.ReadFile:
-	// import "io/ioutil"
-	// var opts stacks.CreateOpts
-	// b, err := ioutil.ReadFile("path/to/you/template/file.json")
-	// if err != nil {
-	//   // handle error...
-	// }
-	// opts.Template = string(b)
-	Template string
-	// (OPTIONAL) Enables or disables deletion of all stack resources when a stack
+	TemplateOpts *Template `json:"-" required:"true"`
+	// Enables or disables deletion of all stack resources when a stack
 	// creation fails. Default is true, meaning all resources are not deleted when
 	// stack creation fails.
-	DisableRollback Rollback
-	// (OPTIONAL) A structure that contains details for the environment of the stack.
-	EnvironmentOpts *Environment
-	// (DEPRECATED): Please use EnvironmentOpts to provide Environment data
-	// (OPTIONAL) A stringified JSON environment for the stack.
-	Environment string
-	// (DEPRECATED): Files is automatically determined
-	// by parsing the template and environment passed as TemplateOpts and
-	// EnvironmentOpts respectively.
-	// (OPTIONAL) A map that maps file names to file contents. It can also be used
-	// to pass provider template contents. Example:
-	// Files: `{"myfile": "#!/bin/bash\necho 'Hello world' > /root/testfile.txt"}`
-	Files map[string]interface{}
-	// (OPTIONAL) User-defined parameters to pass to the template.
-	Parameters map[string]string
+	DisableRollback *bool `json:"disable_rollback,omitempty"`
+	// A structure that contains details for the environment of the stack.
+	EnvironmentOpts *Environment `json:"-"`
+	// User-defined parameters to pass to the template.
+	Parameters map[string]string `json:"parameters,omitempty"`
 }
 
 // ToStackPreviewMap casts a PreviewOpts struct to a map.
 func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
-	s := make(map[string]interface{})
-
-	if opts.Name == "" {
-		return s, errors.New("Required field 'Name' not provided.")
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
 	}
-	s["stack_name"] = opts.Name
-	Files := make(map[string]string)
-	if opts.TemplateOpts == nil {
-		if opts.Template != "" {
-			s["template"] = opts.Template
-		} else if opts.TemplateURL != "" {
-			s["template_url"] = opts.TemplateURL
-		} else {
-			return s, errors.New("Either Template or TemplateURL must be provided.")
-		}
-	} else {
-		if err := opts.TemplateOpts.Parse(); err != nil {
-			return nil, err
-		}
 
-		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
-			return nil, err
-		}
-		opts.TemplateOpts.fixFileRefs()
-		s["template"] = string(opts.TemplateOpts.Bin)
-
-		for k, v := range opts.TemplateOpts.Files {
-			Files[k] = v
-		}
+	if err := opts.TemplateOpts.Parse(); err != nil {
+		return nil, err
 	}
-	if opts.DisableRollback != nil {
-		s["disable_rollback"] = &opts.DisableRollback
+
+	if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+		return nil, err
+	}
+	opts.TemplateOpts.fixFileRefs()
+	b["template"] = string(opts.TemplateOpts.Bin)
+
+	files := make(map[string]string)
+	for k, v := range opts.TemplateOpts.Files {
+		files[k] = v
 	}
 
 	if opts.EnvironmentOpts != nil {
@@ -628,55 +403,38 @@ func (opts PreviewOpts) ToStackPreviewMap() (map[string]interface{}, error) {
 		}
 		opts.EnvironmentOpts.fixFileRefs()
 		for k, v := range opts.EnvironmentOpts.Files {
-			Files[k] = v
+			files[k] = v
 		}
-		s["environment"] = string(opts.EnvironmentOpts.Bin)
-	} else if opts.Environment != "" {
-		s["environment"] = opts.Environment
+		b["environment"] = string(opts.EnvironmentOpts.Bin)
 	}
 
-	if opts.Files != nil {
-		s["files"] = opts.Files
-	} else {
-		s["files"] = Files
+	if len(files) > 0 {
+		b["files"] = files
 	}
 
-	if opts.Parameters != nil {
-		s["parameters"] = opts.Parameters
-	}
-
-	if opts.Timeout != 0 {
-		s["timeout_mins"] = opts.Timeout
-	}
-
-	return s, nil
+	return b, nil
 }
 
 // Preview accepts a PreviewOptsBuilder interface and creates a preview of a stack using the values
 // provided.
-func Preview(c *gophercloud.ServiceClient, opts PreviewOptsBuilder) PreviewResult {
-	var res PreviewResult
-
-	reqBody, err := opts.ToStackPreviewMap()
+func Preview(c *gophercloud.ServiceClient, opts PreviewOptsBuilder) (r PreviewResult) {
+	b, err := opts.ToStackPreviewMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	// Send request to API
-	_, res.Err = c.Post(previewURL(c), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Post(previewURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return res
+	return
 }
 
 // Abandon deletes the stack with the provided stackName and stackID, but leaves its
 // resources intact, and returns data describing the stack and its resources.
-func Abandon(c *gophercloud.ServiceClient, stackName, stackID string) AbandonResult {
-	var res AbandonResult
-	_, res.Err = c.Delete(abandonURL(c, stackName, stackID), &gophercloud.RequestOpts{
-		JSONResponse: &res.Body,
+func Abandon(c *gophercloud.ServiceClient, stackName, stackID string) (r AbandonResult) {
+	_, r.Err = c.Delete(abandonURL(c, stackName, stackID), &gophercloud.RequestOpts{
+		JSONResponse: &r.Body,
 		OkCodes:      []int{200},
 	})
-	return res
+	return
 }

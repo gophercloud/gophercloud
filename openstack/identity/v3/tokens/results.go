@@ -3,8 +3,7 @@ package tokens
 import (
 	"time"
 
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
+	"github.com/gophercloud/gophercloud"
 )
 
 // Endpoint represents a single API endpoint offered by a service.
@@ -12,10 +11,10 @@ import (
 // If supported, it contains a region specifier, again if provided.
 // The significance of the Region field will depend upon your provider.
 type Endpoint struct {
-	ID        string `mapstructure:"id"`
-	Region    string `mapstructure:"region"`
-	Interface string `mapstructure:"interface"`
-	URL       string `mapstructure:"url"`
+	ID        string `json:"id"`
+	Region    string `json:"region"`
+	Interface string `json:"interface"`
+	URL       string `json:"url"`
 }
 
 // CatalogEntry provides a type-safe interface to an Identity API V3 service catalog listing.
@@ -27,18 +26,18 @@ type Endpoint struct {
 type CatalogEntry struct {
 
 	// Service ID
-	ID string `mapstructure:"id"`
+	ID string `json:"id"`
 
 	// Name will contain the provider-specified name for the service.
-	Name string `mapstructure:"name"`
+	Name string `json:"name"`
 
 	// Type will contain a type string if OpenStack defines a type for the service.
 	// Otherwise, for provider-specific services, the provider may assign their own type strings.
-	Type string `mapstructure:"type"`
+	Type string `json:"type"`
 
 	// Endpoints will let the caller iterate over all the different endpoints that may exist for
 	// the service.
-	Endpoints []Endpoint `mapstructure:"endpoints"`
+	Endpoints []Endpoint `json:"endpoints"`
 }
 
 // ServiceCatalog provides a view into the service catalog from a previous, successful authentication.
@@ -59,14 +58,10 @@ func (r commonResult) Extract() (*Token, error) {
 
 // ExtractToken interprets a commonResult as a Token.
 func (r commonResult) ExtractToken() (*Token, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-
-	var response struct {
+	var s struct {
 		Token struct {
-			ExpiresAt string `mapstructure:"expires_at"`
-		} `mapstructure:"token"`
+			ExpiresAt string `json:"expires_at"`
+		} `json:"token"`
 	}
 
 	var token Token
@@ -74,35 +69,26 @@ func (r commonResult) ExtractToken() (*Token, error) {
 	// Parse the token itself from the stored headers.
 	token.ID = r.Header.Get("X-Subject-Token")
 
-	err := mapstructure.Decode(r.Body, &response)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return nil, err
 	}
 
 	// Attempt to parse the timestamp.
-	token.ExpiresAt, err = time.Parse(gophercloud.RFC3339Milli, response.Token.ExpiresAt)
+	token.ExpiresAt, err = time.Parse(gophercloud.RFC3339Milli, s.Token.ExpiresAt)
 
 	return &token, err
 }
 
 // ExtractServiceCatalog returns the ServiceCatalog that was generated along with the user's Token.
-func (result CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
-	if result.Err != nil {
-		return nil, result.Err
-	}
-
-	var response struct {
+func (r CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
+	var s struct {
 		Token struct {
-			Entries []CatalogEntry `mapstructure:"catalog"`
-		} `mapstructure:"token"`
+			Entries []CatalogEntry `json:"catalog"`
+		} `json:"token"`
 	}
-
-	err := mapstructure.Decode(result.Body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	return &ServiceCatalog{Entries: response.Token.Entries}, nil
+	err := r.ExtractInto(&s)
+	return &ServiceCatalog{Entries: s.Token.Entries}, err
 }
 
 // CreateResult defers the interpretation of a created token.

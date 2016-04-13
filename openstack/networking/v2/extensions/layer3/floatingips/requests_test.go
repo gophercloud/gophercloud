@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestList(t *testing.T) {
@@ -310,7 +310,7 @@ func TestDisassociate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "floatingip": {
-      "port_id": null
+      "port_id": ""
     }
 }
       `)

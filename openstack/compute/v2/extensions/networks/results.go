@@ -1,99 +1,95 @@
 package networks
 
 import (
-	"fmt"
-	"time"
-
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // A Network represents a nova-network that an instance communicates on
 type Network struct {
 	// The Bridge that VIFs on this network are connected to
-	Bridge string `mapstructure:"bridge"`
+	Bridge string `json:"bridge"`
 
 	// BridgeInterface is what interface is connected to the Bridge
-	BridgeInterface string `mapstructure:"bridge_interface"`
+	BridgeInterface string `json:"bridge_interface"`
 
 	// The Broadcast address of the network.
-	Broadcast string `mapstructure:"broadcast"`
+	Broadcast string `json:"broadcast"`
 
 	// CIDR is the IPv4 subnet.
-	CIDR string `mapstructure:"cidr"`
+	CIDR string `json:"cidr"`
 
 	// CIDRv6 is the IPv6 subnet.
-	CIDRv6 string `mapstructure:"cidr_v6"`
+	CIDRv6 string `json:"cidr_v6"`
 
 	// CreatedAt is when the network was created..
-	CreatedAt time.Time `mapstructure:"-"`
+	CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at,omitempty"`
 
 	// Deleted shows if the network has been deleted.
-	Deleted bool `mapstructure:"deleted"`
+	Deleted bool `json:"deleted"`
 
 	// DeletedAt is the time when the network was deleted.
-	DeletedAt time.Time `mapstructure:"-"`
+	DeletedAt gophercloud.JSONRFC3339MilliNoZ `json:"deleted_at,omitempty"`
 
 	// DHCPStart is the start of the DHCP address range.
-	DHCPStart string `mapstructure:"dhcp_start"`
+	DHCPStart string `json:"dhcp_start"`
 
 	// DNS1 is the first DNS server to use through DHCP.
-	DNS1 string `mapstructure:"dns_1"`
+	DNS1 string `json:"dns_1"`
 
 	// DNS2 is the first DNS server to use through DHCP.
-	DNS2 string `mapstructure:"dns_2"`
+	DNS2 string `json:"dns_2"`
 
 	// Gateway is the network gateway.
-	Gateway string `mapstructure:"gateway"`
+	Gateway string `json:"gateway"`
 
 	// Gatewayv6 is the IPv6 network gateway.
-	Gatewayv6 string `mapstructure:"gateway_v6"`
+	Gatewayv6 string `json:"gateway_v6"`
 
 	// Host is the host that the network service is running on.
-	Host string `mapstructure:"host"`
+	Host string `json:"host"`
 
 	// ID is the UUID of the network.
-	ID string `mapstructure:"id"`
+	ID string `json:"id"`
 
 	// Injected determines if network information is injected into the host.
-	Injected bool `mapstructure:"injected"`
+	Injected bool `json:"injected"`
 
 	// Label is the common name that the network has..
-	Label string `mapstructure:"label"`
+	Label string `json:"label"`
 
 	// MultiHost is if multi-host networking is enablec..
-	MultiHost bool `mapstructure:"multi_host"`
+	MultiHost bool `json:"multi_host"`
 
 	// Netmask is the network netmask.
-	Netmask string `mapstructure:"netmask"`
+	Netmask string `json:"netmask"`
 
 	// Netmaskv6 is the IPv6 netmask.
-	Netmaskv6 string `mapstructure:"netmask_v6"`
+	Netmaskv6 string `json:"netmask_v6"`
 
 	// Priority is the network interface priority.
-	Priority int `mapstructure:"priority"`
+	Priority int `json:"priority"`
 
 	// ProjectID is the project associated with this network.
-	ProjectID string `mapstructure:"project_id"`
+	ProjectID string `json:"project_id"`
 
 	// RXTXBase configures bandwidth entitlement.
-	RXTXBase int `mapstructure:"rxtx_base"`
+	RXTXBase int `json:"rxtx_base"`
 
 	// UpdatedAt is the time when the network was last updated.
-	UpdatedAt time.Time `mapstructure:"-"`
+	UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at,omitempty"`
 
 	// VLAN is the vlan this network runs on.
-	VLAN int `mapstructure:"vlan"`
+	VLAN int `json:"vlan"`
 
 	// VPNPrivateAddress is the private address of the CloudPipe VPN.
-	VPNPrivateAddress string `mapstructure:"vpn_private_address"`
+	VPNPrivateAddress string `json:"vpn_private_address"`
 
 	// VPNPublicAddress is the public address of the CloudPipe VPN.
-	VPNPublicAddress string `mapstructure:"vpn_public_address"`
+	VPNPublicAddress string `json:"vpn_public_address"`
 
 	// VPNPublicPort is the port of the CloudPipe VPN.
-	VPNPublicPort int `mapstructure:"vpn_public_port"`
+	VPNPublicPort int `json:"vpn_public_port"`
 }
 
 // NetworkPage stores a single, only page of Networks
@@ -109,52 +105,12 @@ func (page NetworkPage) IsEmpty() (bool, error) {
 }
 
 // ExtractNetworks interprets a page of results as a slice of Networks
-func ExtractNetworks(page pagination.Page) ([]Network, error) {
-	var res struct {
-		Networks []Network `mapstructure:"networks"`
+func ExtractNetworks(r pagination.Page) ([]Network, error) {
+	var s struct {
+		Networks []Network `json:"networks"`
 	}
-
-	err := mapstructure.Decode(page.(NetworkPage).Body, &res)
-
-	var rawNetworks []interface{}
-	body := page.(NetworkPage).Body
-	switch body.(type) {
-	case map[string]interface{}:
-		rawNetworks = body.(map[string]interface{})["networks"].([]interface{})
-	case map[string][]interface{}:
-		rawNetworks = body.(map[string][]interface{})["networks"]
-	default:
-		return res.Networks, fmt.Errorf("Unknown type")
-	}
-
-	for i := range rawNetworks {
-		thisNetwork := rawNetworks[i].(map[string]interface{})
-		if t, ok := thisNetwork["created_at"].(string); ok && t != "" {
-			createdAt, err := time.Parse("2006-01-02 15:04:05.000000", t)
-			if err != nil {
-				return res.Networks, err
-			}
-			res.Networks[i].CreatedAt = createdAt
-		}
-
-		if t, ok := thisNetwork["updated_at"].(string); ok && t != "" {
-			updatedAt, err := time.Parse("2006-01-02 15:04:05.000000", t)
-			if err != nil {
-				return res.Networks, err
-			}
-			res.Networks[i].UpdatedAt = updatedAt
-		}
-
-		if t, ok := thisNetwork["deleted_at"].(string); ok && t != "" {
-			deletedAt, err := time.Parse("2006-01-02 15:04:05.000000", t)
-			if err != nil {
-				return res.Networks, err
-			}
-			res.Networks[i].DeletedAt = deletedAt
-		}
-	}
-
-	return res.Networks, err
+	err := (r.(NetworkPage)).ExtractInto(&s)
+	return s.Networks, err
 }
 
 type NetworkResult struct {
@@ -164,55 +120,11 @@ type NetworkResult struct {
 // Extract is a method that attempts to interpret any Network resource
 // response as a Network struct.
 func (r NetworkResult) Extract() (*Network, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		Network *Network `json:"network"`
 	}
-
-	var res struct {
-		Network *Network `json:"network" mapstructure:"network"`
-	}
-
-	config := &mapstructure.DecoderConfig{
-		Result:           &res,
-		WeaklyTypedInput: true,
-	}
-	decoder, err := mapstructure.NewDecoder(config)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := decoder.Decode(r.Body); err != nil {
-		return nil, err
-	}
-
-	b := r.Body.(map[string]interface{})["network"].(map[string]interface{})
-
-	if t, ok := b["created_at"].(string); ok && t != "" {
-		createdAt, err := time.Parse("2006-01-02 15:04:05.000000", t)
-		if err != nil {
-			return res.Network, err
-		}
-		res.Network.CreatedAt = createdAt
-	}
-
-	if t, ok := b["updated_at"].(string); ok && t != "" {
-		updatedAt, err := time.Parse("2006-01-02 15:04:05.000000", t)
-		if err != nil {
-			return res.Network, err
-		}
-		res.Network.UpdatedAt = updatedAt
-	}
-
-	if t, ok := b["deleted_at"].(string); ok && t != "" {
-		deletedAt, err := time.Parse("2006-01-02 15:04:05.000000", t)
-		if err != nil {
-			return res.Network, err
-		}
-		res.Network.DeletedAt = deletedAt
-	}
-
-	return res.Network, err
-
+	err := r.ExtractInto(&s)
+	return s.Network, err
 }
 
 // GetResult is the response from a Get operation. Call its Extract method to interpret it

@@ -1,23 +1,14 @@
 package openstack
 
 import (
-	"fmt"
 	"os"
 
-	"github.com/rackspace/gophercloud"
+	"github.com/gophercloud/gophercloud"
 )
 
 var nilOptions = gophercloud.AuthOptions{}
 
-// ErrNoAuthUrl, ErrNoUsername, and ErrNoPassword errors indicate of the required OS_AUTH_URL, OS_USERNAME, or OS_PASSWORD
-// environment variables, respectively, remain undefined.  See the AuthOptions() function for more details.
-var (
-	ErrNoAuthURL  = fmt.Errorf("Environment variable OS_AUTH_URL needs to be set.")
-	ErrNoUsername = fmt.Errorf("Environment variable OS_USERNAME needs to be set.")
-	ErrNoPassword = fmt.Errorf("Environment variable OS_PASSWORD needs to be set.")
-)
-
-// AuthOptions fills out an identity.AuthOptions structure with the settings found on the various OpenStack
+// AuthOptionsFromEnv fills out an identity.AuthOptions structure with the settings found on the various OpenStack
 // OS_* environment variables.  The following variables provide sources of truth: OS_AUTH_URL, OS_USERNAME,
 // OS_PASSWORD, OS_TENANT_ID, and OS_TENANT_NAME.  Of these, OS_USERNAME, OS_PASSWORD, and OS_AUTH_URL must
 // have settings, or an error will result.  OS_TENANT_ID and OS_TENANT_NAME are optional.
@@ -32,15 +23,18 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	domainName := os.Getenv("OS_DOMAIN_NAME")
 
 	if authURL == "" {
-		return nilOptions, ErrNoAuthURL
+		err := gophercloud.ErrMissingInput{Argument: "authURL"}
+		return nilOptions, err
 	}
 
 	if username == "" && userID == "" {
-		return nilOptions, ErrNoUsername
+		err := gophercloud.ErrMissingInput{Argument: "username"}
+		return nilOptions, err
 	}
 
 	if password == "" {
-		return nilOptions, ErrNoPassword
+		err := gophercloud.ErrMissingInput{Argument: "password"}
+		return nilOptions, err
 	}
 
 	ao := gophercloud.AuthOptions{

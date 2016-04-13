@@ -6,10 +6,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/rackspace/gophercloud"
 )
 
 func TestList(t *testing.T) {
@@ -174,7 +175,7 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	options := CreateOpts{networks.CreateOpts{Name: "ext_net", AdminStateUp: Up}, true}
+	options := CreateOpts{networks.CreateOpts{Name: "ext_net", AdminStateUp: gophercloud.Enabled}, gophercloud.Enabled}
 	res := networks.Create(fake.ServiceClient(), options)
 
 	n, err := ExtractCreate(res)
@@ -222,7 +223,7 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	options := UpdateOpts{networks.UpdateOpts{Name: "new_name"}, true}
+	options := UpdateOpts{networks.UpdateOpts{Name: "new_name"}, gophercloud.Enabled}
 	res := networks.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
 	n, err := ExtractUpdate(res)
 

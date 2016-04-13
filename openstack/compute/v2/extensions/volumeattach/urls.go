@@ -1,25 +1,25 @@
 package volumeattach
 
-import "github.com/rackspace/gophercloud"
+import "github.com/gophercloud/gophercloud"
 
 const resourcePath = "os-volume_attachments"
 
-func resourceURL(c *gophercloud.ServiceClient, serverId string) string {
-	return c.ServiceURL("servers", serverId, resourcePath)
+func resourceURL(c *gophercloud.ServiceClient, serverID string) string {
+	return c.ServiceURL("servers", serverID, resourcePath)
 }
 
-func listURL(c *gophercloud.ServiceClient, serverId string) string {
-	return resourceURL(c, serverId)
+func listURL(c *gophercloud.ServiceClient, serverID string) string {
+	return resourceURL(c, serverID)
 }
 
-func createURL(c *gophercloud.ServiceClient, serverId string) string {
-	return resourceURL(c, serverId)
+func createURL(c *gophercloud.ServiceClient, serverID string) string {
+	return resourceURL(c, serverID)
 }
 
-func getURL(c *gophercloud.ServiceClient, serverId, aId string) string {
-	return c.ServiceURL("servers", serverId, resourcePath, aId)
+func getURL(c *gophercloud.ServiceClient, serverID, aID string) string {
+	return c.ServiceURL("servers", serverID, resourcePath, aID)
 }
 
-func deleteURL(c *gophercloud.ServiceClient, serverId, aId string) string {
-	return getURL(c, serverId, aId)
+func deleteURL(c *gophercloud.ServiceClient, serverID, aID string) string {
+	return getURL(c, serverID, aID)
 }

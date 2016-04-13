@@ -3,8 +3,8 @@ package schedulerhints
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
-	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestCreateOpts(t *testing.T) {
@@ -39,9 +39,7 @@ func TestCreateOpts(t *testing.T) {
 			"server": {
 				"name": "createdserver",
 				"imageRef": "asdfasdfasdf",
-				"flavorRef": "performance1-1",
-				"flavorName": "",
-				"imageName": ""
+				"flavorRef": "performance1-1"
 			},
 			"os:scheduler_hints": {
 				"group": "101aed42-22d9-4a3e-9ba1-21103b0d1aba",
@@ -99,9 +97,7 @@ func TestCreateOptsWithComplexQuery(t *testing.T) {
 			"server": {
 				"name": "createdserver",
 				"imageRef": "asdfasdfasdf",
-				"flavorRef": "performance1-1",
-				"flavorName": "",
-				"imageName": ""
+				"flavorRef": "performance1-1"
 			},
 			"os:scheduler_hints": {
 				"group": "101aed42-22d9-4a3e-9ba1-21103b0d1aba",

@@ -1,23 +1,8 @@
 package subnets
 
 import (
-	"fmt"
-
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
-)
-
-// AdminState gives users a solid type to work with for create and update
-// operations. It is recommended that users use the `Up` and `Down` enums.
-type AdminState *bool
-
-// Convenience vars for AdminStateUp values.
-var (
-	iTrue  = true
-	iFalse = false
-
-	Up   AdminState = &iTrue
-	Down AdminState = &iFalse
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -49,10 +34,7 @@ type ListOpts struct {
 // ToSubnetListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToSubnetListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -71,23 +53,25 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		}
 		url += query
 	}
-
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return SubnetPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
 // Get retrieves a specific subnet based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(getURL(c, id), &res.Body, nil)
-	return res
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
 }
+
+// IPVersion is the IP address version for the subnet. Valid instances are
+// 4 and 6
+type IPVersion int
 
 // Valid IP types
 const (
-	IPv4 = 4
-	IPv6 = 6
+	IPv4 IPVersion = 4
+	IPv6 IPVersion = 6
 )
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -100,78 +84,33 @@ type CreateOptsBuilder interface {
 
 // CreateOpts represents the attributes used when creating a new subnet.
 type CreateOpts struct {
-	// Required
-	NetworkID string
-	CIDR      string
-	// Optional
-	Name            string
-	TenantID        string
-	AllocationPools []AllocationPool
-	GatewayIP       string
-	IPVersion       int
-	EnableDHCP      *bool
-	DNSNameservers  []string
-	HostRoutes      []HostRoute
+	NetworkID       string           `json:"network_id" required:"true"`
+	CIDR            string           `json:"cidr" required:"true"`
+	Name            string           `json:"name,omitempty"`
+	TenantID        string           `json:"tenant_id,omitempty"`
+	AllocationPools []AllocationPool `json:"allocation_pools,omitempty"`
+	GatewayIP       string           `json:"gateway_ip,omitempty"`
+	IPVersion       IPVersion        `json:"ip_version,omitempty"`
+	EnableDHCP      *bool            `json:"enable_dhcp,omitempty"`
+	DNSNameservers  []string         `json:"dns_nameservers,omitempty"`
+	HostRoutes      []HostRoute      `json:"host_routes,omitempty"`
 }
 
 // ToSubnetCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToSubnetCreateMap() (map[string]interface{}, error) {
-	s := make(map[string]interface{})
-
-	if opts.NetworkID == "" {
-		return nil, errNetworkIDRequired
-	}
-	if opts.CIDR == "" {
-		return nil, errCIDRRequired
-	}
-	if opts.IPVersion != 0 && opts.IPVersion != IPv4 && opts.IPVersion != IPv6 {
-		return nil, errInvalidIPType
-	}
-
-	s["network_id"] = opts.NetworkID
-	s["cidr"] = opts.CIDR
-
-	if opts.EnableDHCP != nil {
-		s["enable_dhcp"] = &opts.EnableDHCP
-	}
-	if opts.Name != "" {
-		s["name"] = opts.Name
-	}
-	if opts.GatewayIP != "" {
-		s["gateway_ip"] = opts.GatewayIP
-	}
-	if opts.TenantID != "" {
-		s["tenant_id"] = opts.TenantID
-	}
-	if opts.IPVersion != 0 {
-		s["ip_version"] = opts.IPVersion
-	}
-	if len(opts.AllocationPools) != 0 {
-		s["allocation_pools"] = opts.AllocationPools
-	}
-	if len(opts.DNSNameservers) != 0 {
-		s["dns_nameservers"] = opts.DNSNameservers
-	}
-	if len(opts.HostRoutes) != 0 {
-		s["host_routes"] = opts.HostRoutes
-	}
-
-	return map[string]interface{}{"subnet": s}, nil
+	return gophercloud.BuildRequestBody(opts, "subnet")
 }
 
 // Create accepts a CreateOpts struct and creates a new subnet using the values
 // provided. You must remember to provide a valid NetworkID, CIDR and IP version.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToSubnetCreateMap()
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToSubnetCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	_, res.Err = c.Post(createURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
@@ -182,90 +121,65 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts represents the attributes used when updating an existing subnet.
 type UpdateOpts struct {
-	Name           string
-	GatewayIP      string
-	DNSNameservers []string
-	HostRoutes     []HostRoute
-	EnableDHCP     *bool
+	Name           string      `json:"name,omitempty"`
+	GatewayIP      string      `json:"gateway_ip,omitempty"`
+	DNSNameservers []string    `json:"dns_nameservers,omitempty"`
+	HostRoutes     []HostRoute `json:"host_routes,omitempty"`
+	EnableDHCP     *bool       `json:"enable_dhcp,omitempty"`
 }
 
 // ToSubnetUpdateMap casts an UpdateOpts struct to a map.
 func (opts UpdateOpts) ToSubnetUpdateMap() (map[string]interface{}, error) {
-	s := make(map[string]interface{})
-
-	if opts.EnableDHCP != nil {
-		s["enable_dhcp"] = &opts.EnableDHCP
-	}
-	if opts.Name != "" {
-		s["name"] = opts.Name
-	}
-	if opts.GatewayIP != "" {
-		s["gateway_ip"] = opts.GatewayIP
-	}
-	if opts.DNSNameservers != nil {
-		s["dns_nameservers"] = opts.DNSNameservers
-	}
-	if opts.HostRoutes != nil {
-		s["host_routes"] = opts.HostRoutes
-	}
-
-	return map[string]interface{}{"subnet": s}, nil
+	return gophercloud.BuildRequestBody(opts, "subnet")
 }
 
 // Update accepts a UpdateOpts struct and updates an existing subnet using the
 // values provided.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var res UpdateResult
-
-	reqBody, err := opts.ToSubnetUpdateMap()
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToSubnetUpdateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	_, res.Err = c.Put(updateURL(c, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(updateURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
-
-	return res
+	return
 }
 
 // Delete accepts a unique ID and deletes the subnet associated with it.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(deleteURL(c, id), nil)
-	return res
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(deleteURL(c, id), nil)
+	return
 }
 
 // IDFromName is a convenience function that returns a subnet's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	subnetCount := 0
-	subnetID := ""
-	if name == "" {
-		return "", fmt.Errorf("A subnet name must be provided.")
+	count := 0
+	id := ""
+	pages, err := List(client, nil).AllPages()
+	if err != nil {
+		return "", err
 	}
-	pager := List(client, nil)
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		subnetList, err := ExtractSubnets(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, s := range subnetList {
-			if s.Name == name {
-				subnetCount++
-				subnetID = s.ID
-			}
-		}
-		return true, nil
-	})
+	all, err := ExtractSubnets(pages)
+	if err != nil {
+		return "", err
+	}
 
-	switch subnetCount {
+	for _, s := range all {
+		if s.Name == name {
+			count++
+			id = s.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find subnet: %s", name)
+		return "", gophercloud.ErrResourceNotFound{Name: name, ResourceType: "subnet"}
 	case 1:
-		return subnetID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d subnets matching %s", subnetCount, name)
+		return "", gophercloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "subnet"}
 	}
 }

@@ -1,10 +1,9 @@
 package extensions
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	common "github.com/rackspace/gophercloud/openstack/common/extensions"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	common "github.com/gophercloud/gophercloud/openstack/common/extensions"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ExtensionPage is a single page of Extension results.
@@ -15,25 +14,20 @@ type ExtensionPage struct {
 // IsEmpty returns true if the current page contains at least one Extension.
 func (page ExtensionPage) IsEmpty() (bool, error) {
 	is, err := ExtractExtensions(page)
-	if err != nil {
-		return true, err
-	}
-	return len(is) == 0, nil
+	return len(is) == 0, err
 }
 
 // ExtractExtensions accepts a Page struct, specifically an ExtensionPage struct, and extracts the
 // elements into a slice of Extension structs.
 func ExtractExtensions(page pagination.Page) ([]common.Extension, error) {
 	// Identity v2 adds an intermediate "values" object.
-
-	var resp struct {
+	var s struct {
 		Extensions struct {
-			Values []common.Extension `mapstructure:"values"`
-		} `mapstructure:"extensions"`
+			Values []common.Extension `json:"values"`
+		} `json:"extensions"`
 	}
-
-	err := mapstructure.Decode(page.(ExtensionPage).Body, &resp)
-	return resp.Extensions.Values, err
+	err := page.(ExtensionPage).ExtractInto(&s)
+	return s.Extensions.Values, err
 }
 
 // Get retrieves information for a specific extension using its alias.

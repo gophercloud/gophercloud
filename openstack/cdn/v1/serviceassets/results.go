@@ -1,6 +1,6 @@
 package serviceassets
 
-import "github.com/rackspace/gophercloud"
+import "github.com/gophercloud/gophercloud"
 
 // DeleteResult represents the result of a Delete operation.
 type DeleteResult struct {

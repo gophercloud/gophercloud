@@ -1,26 +1,8 @@
 package firewalls
 
 import (
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
-)
-
-// AdminState gives users a solid type to work with for create and update
-// operations. It is recommended that users use the `Up` and `Down` enums.
-type AdminState *bool
-
-// Shared gives users a solid type to work with for create and update
-// operations. It is recommended that users use the `Yes` and `No` enums.
-type Shared *bool
-
-// Convenience vars for AdminStateUp and Shared values.
-var (
-	iTrue             = true
-	iFalse            = false
-	Up     AdminState = &iTrue
-	Down   AdminState = &iFalse
-	Yes    Shared     = &iTrue
-	No     Shared     = &iFalse
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -51,10 +33,7 @@ type ListOpts struct {
 // ToFirewallListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToFirewallListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -65,7 +44,6 @@ func (opts ListOpts) ToFirewallListQuery() (string, error) {
 // tenant who submits the request, unless an admin user submits the request.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
-
 	if opts != nil {
 		query, err := opts.ToFirewallListQuery()
 		if err != nil {
@@ -73,7 +51,6 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		}
 		url += query
 	}
-
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return FirewallPage{pagination.LinkedPageBase{PageResult: r}}
 	})
@@ -89,65 +66,36 @@ type CreateOptsBuilder interface {
 
 // CreateOpts contains all the values needed to create a new firewall.
 type CreateOpts struct {
+	PolicyID string `json:"firewall_policy_id" required:"true"`
 	// Only required if the caller has an admin role and wants to create a firewall
 	// for another tenant.
-	TenantID     string
-	Name         string
-	Description  string
-	AdminStateUp *bool
-	Shared       *bool
-	PolicyID     string
+	TenantID     string `json:"tenant_id,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Description  string `json:"description,omitempty"`
+	AdminStateUp *bool  `json:"admin_state_up,omitempty"`
+	Shared       *bool  `json:"shared,omitempty"`
 }
 
 // ToFirewallCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToFirewallCreateMap() (map[string]interface{}, error) {
-	if opts.PolicyID == "" {
-		return nil, errPolicyRequired
-	}
-
-	f := make(map[string]interface{})
-
-	if opts.TenantID != "" {
-		f["tenant_id"] = opts.TenantID
-	}
-	if opts.Name != "" {
-		f["name"] = opts.Name
-	}
-	if opts.Description != "" {
-		f["description"] = opts.Description
-	}
-	if opts.Shared != nil {
-		f["shared"] = *opts.Shared
-	}
-	if opts.AdminStateUp != nil {
-		f["admin_state_up"] = *opts.AdminStateUp
-	}
-	if opts.PolicyID != "" {
-		f["firewall_policy_id"] = opts.PolicyID
-	}
-
-	return map[string]interface{}{"firewall": f}, nil
+	return gophercloud.BuildRequestBody(opts, "firewall")
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new firewall
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToFirewallCreateMap()
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToFirewallCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	_, res.Err = c.Post(rootURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return
 }
 
 // Get retrieves a particular firewall based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(resourceURL(c, id), &res.Body, nil)
-	return res
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -160,57 +108,33 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts contains the values used when updating a firewall.
 type UpdateOpts struct {
-	// Name of the firewall.
-	Name         string
-	Description  string
-	AdminStateUp *bool
-	Shared       *bool
-	PolicyID     string
+	PolicyID     string `json:"firewall_policy_id" required:"true"`
+	Name         string `json:"name,omitempty"`
+	Description  string `json:"description,omitempty"`
+	AdminStateUp *bool  `json:"admin_state_up,omitempty"`
+	Shared       *bool  `json:"shared,omitempty"`
 }
 
 // ToFirewallUpdateMap casts a CreateOpts struct to a map.
 func (opts UpdateOpts) ToFirewallUpdateMap() (map[string]interface{}, error) {
-	f := make(map[string]interface{})
-
-	if opts.Name != "" {
-		f["name"] = opts.Name
-	}
-	if opts.Description != "" {
-		f["description"] = opts.Description
-	}
-	if opts.Shared != nil {
-		f["shared"] = *opts.Shared
-	}
-	if opts.AdminStateUp != nil {
-		f["admin_state_up"] = *opts.AdminStateUp
-	}
-	if opts.PolicyID != "" {
-		f["firewall_policy_id"] = opts.PolicyID
-	}
-
-	return map[string]interface{}{"firewall": f}, nil
+	return gophercloud.BuildRequestBody(opts, "firewall")
 }
 
 // Update allows firewalls to be updated.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var res UpdateResult
-
-	reqBody, err := opts.ToFirewallUpdateMap()
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToFirewallUpdateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	// Send request to API
-	_, res.Err = c.Put(resourceURL(c, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return res
+	return
 }
 
 // Delete will permanently delete a particular firewall based on its unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(resourceURL(c, id), nil)
-	return res
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return
 }

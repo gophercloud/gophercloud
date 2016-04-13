@@ -8,8 +8,9 @@ import (
 	"testing"
 	"time"
 
-	th "github.com/rackspace/gophercloud/testhelper"
-	"github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 // ListOutput is a sample response to a List call.
@@ -22,9 +23,8 @@ const ListOutput = `
             "broadcast": "10.0.0.7",
             "cidr": "10.0.0.0/29",
             "cidr_v6": null,
-            "created_at": "2011-08-15 06:19:19.387525",
+            "created_at": "2011-08-15T06:19:19.387525",
             "deleted": false,
-            "deleted_at": null,
             "dhcp_start": "10.0.0.3",
             "dns1": null,
             "dns2": null,
@@ -40,7 +40,7 @@ const ListOutput = `
             "priority": null,
             "project_id": "1234",
             "rxtx_base": null,
-            "updated_at": "2011-08-16 09:26:13.048257",
+            "updated_at": "2011-08-16T09:26:13.048257",
             "vlan": 100,
             "vpn_private_address": "10.0.0.2",
             "vpn_public_address": "127.0.0.1",
@@ -52,9 +52,8 @@ const ListOutput = `
             "broadcast": "10.0.0.15",
             "cidr": "10.0.0.10/29",
             "cidr_v6": null,
-            "created_at": "2011-08-15 06:19:19.885495",
+            "created_at": "2011-08-15T06:19:19.387525",
             "deleted": false,
-            "deleted_at": null,
             "dhcp_start": "10.0.0.11",
             "dns1": null,
             "dns2": null,
@@ -70,7 +69,6 @@ const ListOutput = `
             "priority": null,
             "project_id": null,
             "rxtx_base": null,
-            "updated_at": null,
             "vlan": 101,
             "vpn_private_address": "10.0.0.10",
             "vpn_public_address": null,
@@ -89,9 +87,8 @@ const GetOutput = `
 			"broadcast": "10.0.0.15",
 			"cidr": "10.0.0.10/29",
 			"cidr_v6": null,
-			"created_at": "2011-08-15 06:19:19.885495",
+			"created_at": "2011-08-15T06:19:19.387525",
 			"deleted": false,
-			"deleted_at": null,
 			"dhcp_start": "10.0.0.11",
 			"dns1": null,
 			"dns2": null,
@@ -107,7 +104,6 @@ const GetOutput = `
 			"priority": null,
 			"project_id": null,
 			"rxtx_base": null,
-			"updated_at": null,
 			"vlan": 101,
 			"vpn_private_address": "10.0.0.10",
 			"vpn_public_address": null,
@@ -124,9 +120,9 @@ var FirstNetwork = Network{
 	Broadcast:         "10.0.0.7",
 	CIDR:              "10.0.0.0/29",
 	CIDRv6:            "",
-	CreatedAt:         time.Date(2011, 8, 15, 6, 19, 19, 387525000, time.UTC),
+	CreatedAt:         gophercloud.JSONRFC3339MilliNoZ(time.Date(2011, 8, 15, 6, 19, 19, 387525000, time.UTC)),
 	Deleted:           false,
-	DeletedAt:         nilTime,
+	DeletedAt:         gophercloud.JSONRFC3339MilliNoZ(nilTime),
 	DHCPStart:         "10.0.0.3",
 	DNS1:              "",
 	DNS2:              "",
@@ -142,7 +138,7 @@ var FirstNetwork = Network{
 	Priority:          0,
 	ProjectID:         "1234",
 	RXTXBase:          0,
-	UpdatedAt:         time.Date(2011, 8, 16, 9, 26, 13, 48257000, time.UTC),
+	UpdatedAt:         gophercloud.JSONRFC3339MilliNoZ(time.Date(2011, 8, 16, 9, 26, 13, 48257000, time.UTC)),
 	VLAN:              100,
 	VPNPrivateAddress: "10.0.0.2",
 	VPNPublicAddress:  "127.0.0.1",
@@ -156,9 +152,9 @@ var SecondNetwork = Network{
 	Broadcast:         "10.0.0.15",
 	CIDR:              "10.0.0.10/29",
 	CIDRv6:            "",
-	CreatedAt:         time.Date(2011, 8, 15, 6, 19, 19, 885495000, time.UTC),
+	CreatedAt:         gophercloud.JSONRFC3339MilliNoZ(time.Date(2011, 8, 15, 6, 19, 19, 387525000, time.UTC)),
 	Deleted:           false,
-	DeletedAt:         nilTime,
+	DeletedAt:         gophercloud.JSONRFC3339MilliNoZ(nilTime),
 	DHCPStart:         "10.0.0.11",
 	DNS1:              "",
 	DNS2:              "",
@@ -174,7 +170,7 @@ var SecondNetwork = Network{
 	Priority:          0,
 	ProjectID:         "",
 	RXTXBase:          0,
-	UpdatedAt:         nilTime,
+	UpdatedAt:         gophercloud.JSONRFC3339MilliNoZ(nilTime),
 	VLAN:              101,
 	VPNPrivateAddress: "10.0.0.10",
 	VPNPublicAddress:  "",

@@ -1,19 +1,19 @@
 package policies
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
+// Policy is a firewall policy.
 type Policy struct {
-	ID          string   `json:"id" mapstructure:"id"`
-	Name        string   `json:"name" mapstructure:"name"`
-	Description string   `json:"description" mapstructure:"description"`
-	TenantID    string   `json:"tenant_id" mapstructure:"tenant_id"`
-	Audited     bool     `json:"audited" mapstructure:"audited"`
-	Shared      bool     `json:"shared" mapstructure:"shared"`
-	Rules       []string `json:"firewall_rules,omitempty" mapstructure:"firewall_rules"`
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	TenantID    string   `json:"tenant_id"`
+	Audited     bool     `json:"audited"`
+	Shared      bool     `json:"shared"`
+	Rules       []string `json:"firewall_rules,omitempty"`
 }
 
 type commonResult struct {
@@ -22,17 +22,11 @@ type commonResult struct {
 
 // Extract is a function that accepts a result and extracts a firewall policy.
 func (r commonResult) Extract() (*Policy, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		Policy *Policy `json:"firewall_policy"`
 	}
-
-	var res struct {
-		Policy *Policy `json:"firewall_policy" mapstructure:"firewall_policy"`
-	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res.Policy, err
+	err := r.ExtractInto(&s)
+	return s.Policy, err
 }
 
 // PolicyPage is the page returned by a pager when traversing over a
@@ -44,40 +38,32 @@ type PolicyPage struct {
 // NextPageURL is invoked when a paginated collection of firewall policies has
 // reached the end of a page and the pager seeks to traverse over a new one.
 // In order to do this, it needs to construct the next page's URL.
-func (p PolicyPage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"firewall_policies_links"`
+func (r PolicyPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"firewall_policies_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(p.Body, &r)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty checks whether a PolicyPage struct is empty.
-func (p PolicyPage) IsEmpty() (bool, error) {
-	is, err := ExtractPolicies(p)
-	if err != nil {
-		return true, nil
-	}
-	return len(is) == 0, nil
+func (r PolicyPage) IsEmpty() (bool, error) {
+	is, err := ExtractPolicies(r)
+	return len(is) == 0, err
 }
 
 // ExtractPolicies accepts a Page struct, specifically a RouterPage struct,
 // and extracts the elements into a slice of Router structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractPolicies(page pagination.Page) ([]Policy, error) {
-	var resp struct {
-		Policies []Policy `mapstructure:"firewall_policies" json:"firewall_policies"`
+func ExtractPolicies(r pagination.Page) ([]Policy, error) {
+	var s struct {
+		Policies []Policy `json:"firewall_policies"`
 	}
-
-	err := mapstructure.Decode(page.(PolicyPage).Body, &resp)
-
-	return resp.Policies, err
+	err := (r.(PolicyPage)).ExtractInto(&s)
+	return s.Policies, err
 }
 
 // GetResult represents the result of a get operation.
@@ -97,5 +83,15 @@ type DeleteResult struct {
 
 // CreateResult represents the result of a create operation.
 type CreateResult struct {
+	commonResult
+}
+
+// InsertRuleResult represents the result of an InsertRule operation.
+type InsertRuleResult struct {
+	commonResult
+}
+
+// RemoveRuleResult represents the result of a RemoveRule operation.
+type RemoveRuleResult struct {
 	commonResult
 }

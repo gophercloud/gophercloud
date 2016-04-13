@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"testing"
 
-	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
-	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/rackspace/gophercloud"
 )
 
 func TestList(t *testing.T) {
@@ -49,7 +50,7 @@ func TestList(t *testing.T) {
             "tenant_id": "26a7980765d0414dbc1fc1f88cdb7e6e",
             "shared": true,
             "id": "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
-            "provider:segmentation_id": 1234567890,
+            "provider:segmentation_id": "1234567890",
             "provider:physical_network": null,
             "provider:network_type": "local"
         }
@@ -187,7 +188,7 @@ func TestCreate(t *testing.T) {
 		`)
 	})
 
-	options := networks.CreateOpts{Name: "sample_network", AdminStateUp: Up}
+	options := networks.CreateOpts{Name: "sample_network", AdminStateUp: gophercloud.Enabled}
 	res := networks.Create(fake.ServiceClient(), options)
 	n, err := ExtractCreate(res)
 
@@ -241,7 +242,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	iTrue := true
-	options := networks.UpdateOpts{Name: "new_network_name", AdminStateUp: Down, Shared: &iTrue}
+	options := networks.UpdateOpts{Name: "new_network_name", AdminStateUp: gophercloud.Disabled, Shared: &iTrue}
 	res := networks.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options)
 	n, err := ExtractUpdate(res)
 

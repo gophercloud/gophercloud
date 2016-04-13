@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"testing"
 
-	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud"
+	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestURLs(t *testing.T) {
@@ -154,8 +155,8 @@ func TestCreate(t *testing.T) {
 		TenantID:    "9145d91459d248b1b02fdaca97c6a75d",
 		Name:        "policy",
 		Description: "Firewall policy",
-		Shared:      No,
-		Audited:     Yes,
+		Shared:      gophercloud.Disabled,
+		Audited:     gophercloud.Enabled,
 		Rules: []string{
 			"98a58c87-76be-ae7c-a74e-b77fffb88d95",
 			"11a58c87-76be-ae7c-a74e-b77fffb88a32",

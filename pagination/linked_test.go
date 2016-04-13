@@ -6,8 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper"
 )
 
 // LinkedPager sample and test cases.
@@ -18,23 +17,15 @@ type LinkedPageResult struct {
 
 func (r LinkedPageResult) IsEmpty() (bool, error) {
 	is, err := ExtractLinkedInts(r)
-	if err != nil {
-		return true, nil
-	}
-	return len(is) == 0, nil
+	return len(is) == 0, err
 }
 
-func ExtractLinkedInts(page Page) ([]int, error) {
-	var response struct {
-		Ints []int `mapstructure:"ints"`
+func ExtractLinkedInts(r Page) ([]int, error) {
+	var s struct {
+		Ints []int `json:"ints"`
 	}
-
-	err := mapstructure.Decode(page.(LinkedPageResult).Body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.Ints, nil
+	err := (r.(LinkedPageResult)).ExtractInto(&s)
+	return s.Ints, err
 }
 
 func createLinked(t *testing.T) Pager {

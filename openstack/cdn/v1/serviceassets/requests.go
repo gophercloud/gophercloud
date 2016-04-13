@@ -3,7 +3,7 @@ package serviceassets
 import (
 	"strings"
 
-	"github.com/rackspace/gophercloud"
+	"github.com/gophercloud/gophercloud"
 )
 
 // DeleteOptsBuilder allows extensions to add additional parameters to the Delete
@@ -24,25 +24,28 @@ type DeleteOpts struct {
 // ToCDNAssetDeleteParams formats a DeleteOpts into a query string.
 func (opts DeleteOpts) ToCDNAssetDeleteParams() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // Delete accepts a unique service ID or URL and deletes the CDN service asset associated with
 // it. For example, both "96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0" and
 // "https://global.cdn.api.rackspacecloud.com/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f0"
 // are valid options for idOrURL.
-func Delete(c *gophercloud.ServiceClient, idOrURL string, opts DeleteOptsBuilder) DeleteResult {
+func Delete(c *gophercloud.ServiceClient, idOrURL string, opts DeleteOptsBuilder) (r DeleteResult) {
 	var url string
 	if strings.Contains(idOrURL, "/") {
 		url = idOrURL
 	} else {
 		url = deleteURL(c, idOrURL)
 	}
-
-	var res DeleteResult
-	_, res.Err = c.Delete(url, nil)
-	return res
+	if opts != nil {
+		q, err := opts.ToCDNAssetDeleteParams()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += q
+	}
+	_, r.Err = c.Delete(url, nil)
+	return
 }

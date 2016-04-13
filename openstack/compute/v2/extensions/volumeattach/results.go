@@ -1,51 +1,48 @@
 package volumeattach
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// VolumeAttach controls the attachment of a volume to an instance.
+// VolumeAttachment controls the attachment of a volume to an instance.
 type VolumeAttachment struct {
 	// ID is a unique id of the attachment
-	ID string `mapstructure:"id"`
+	ID string `json:"id"`
 
 	// Device is what device the volume is attached as
-	Device string `mapstructure:"device"`
+	Device string `json:"device"`
 
 	// VolumeID is the ID of the attached volume
-	VolumeID string `mapstructure:"volumeId"`
+	VolumeID string `json:"volumeId"`
 
 	// ServerID is the ID of the instance that has the volume attached
-	ServerID string `mapstructure:"serverId"`
+	ServerID string `json:"serverId"`
 }
 
-// VolumeAttachmentsPage stores a single, only page of VolumeAttachments
+// VolumeAttachmentPage stores a single, only page of VolumeAttachments
 // results from a List call.
-type VolumeAttachmentsPage struct {
+type VolumeAttachmentPage struct {
 	pagination.SinglePageBase
 }
 
 // IsEmpty determines whether or not a VolumeAttachmentsPage is empty.
-func (page VolumeAttachmentsPage) IsEmpty() (bool, error) {
+func (page VolumeAttachmentPage) IsEmpty() (bool, error) {
 	va, err := ExtractVolumeAttachments(page)
 	return len(va) == 0, err
 }
 
 // ExtractVolumeAttachments interprets a page of results as a slice of
 // VolumeAttachments.
-func ExtractVolumeAttachments(page pagination.Page) ([]VolumeAttachment, error) {
-	casted := page.(VolumeAttachmentsPage).Body
-	var response struct {
-		VolumeAttachments []VolumeAttachment `mapstructure:"volumeAttachments"`
+func ExtractVolumeAttachments(r pagination.Page) ([]VolumeAttachment, error) {
+	var s struct {
+		VolumeAttachments []VolumeAttachment `json:"volumeAttachments"`
 	}
-
-	err := mapstructure.WeakDecode(casted, &response)
-
-	return response.VolumeAttachments, err
+	err := (r.(VolumeAttachmentPage)).ExtractInto(&s)
+	return s.VolumeAttachments, err
 }
 
+// VolumeAttachmentResult is the result from a volume attachment operation.
 type VolumeAttachmentResult struct {
 	gophercloud.Result
 }
@@ -53,16 +50,11 @@ type VolumeAttachmentResult struct {
 // Extract is a method that attempts to interpret any VolumeAttachment resource
 // response as a VolumeAttachment struct.
 func (r VolumeAttachmentResult) Extract() (*VolumeAttachment, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		VolumeAttachment *VolumeAttachment `json:"volumeAttachment"`
 	}
-
-	var res struct {
-		VolumeAttachment *VolumeAttachment `json:"volumeAttachment" mapstructure:"volumeAttachment"`
-	}
-
-	err := mapstructure.Decode(r.Body, &res)
-	return res.VolumeAttachment, err
+	err := r.ExtractInto(&s)
+	return s.VolumeAttachment, err
 }
 
 // CreateResult is the response from a Create operation. Call its Extract method to interpret it

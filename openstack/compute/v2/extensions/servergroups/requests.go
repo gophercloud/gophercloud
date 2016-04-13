@@ -1,16 +1,14 @@
 package servergroups
 
 import (
-	"errors"
-
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // List returns a Pager that allows you to iterate over a collection of ServerGroups.
 func List(client *gophercloud.ServiceClient) pagination.Pager {
 	return pagination.NewPager(client, listURL(client), func(r pagination.PageResult) pagination.Page {
-		return ServerGroupsPage{pagination.SinglePageBase(r)}
+		return ServerGroupPage{pagination.SinglePageBase(r)}
 	})
 }
 
@@ -23,55 +21,37 @@ type CreateOptsBuilder interface {
 // CreateOpts specifies a Server Group allocation request
 type CreateOpts struct {
 	// Name is the name of the server group
-	Name string
-
+	Name string `json:"name" required:"true"`
 	// Policies are the server group policies
-	Policies []string
+	Policies []string `json:"policies" required:"true"`
 }
 
 // ToServerGroupCreateMap constructs a request body from CreateOpts.
 func (opts CreateOpts) ToServerGroupCreateMap() (map[string]interface{}, error) {
-	if opts.Name == "" {
-		return nil, errors.New("Missing field required for server group creation: Name")
-	}
-
-	if len(opts.Policies) < 1 {
-		return nil, errors.New("Missing field required for server group creation: Policies")
-	}
-
-	serverGroup := make(map[string]interface{})
-	serverGroup["name"] = opts.Name
-	serverGroup["policies"] = opts.Policies
-
-	return map[string]interface{}{"server_group": serverGroup}, nil
+	return gophercloud.BuildRequestBody(opts, "server_group")
 }
 
 // Create requests the creation of a new Server Group
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToServerGroupCreateMap()
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToServerGroupCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	_, res.Err = client.Post(createURL(client), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	return res
+	return
 }
 
 // Get returns data about a previously created ServerGroup.
-func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = client.Get(getURL(client, id), &res.Body, nil)
-	return res
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
 }
 
 // Delete requests the deletion of a previously allocated ServerGroup.
-func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = client.Delete(deleteURL(client, id), nil)
-	return res
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
 }

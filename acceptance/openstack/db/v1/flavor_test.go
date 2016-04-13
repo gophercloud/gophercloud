@@ -3,8 +3,8 @@
 package v1
 
 import (
-	"github.com/rackspace/gophercloud/openstack/db/v1/flavors"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud/openstack/db/v1/flavors"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 func (c context) listFlavors() {

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 const rootPath = "/os-security-groups"
@@ -163,7 +163,7 @@ func mockGetNumericIDGroupResponse(t *testing.T, groupID int) {
 		fmt.Fprintf(w, `
 {
 	"security_group": {
-		"id": 12345
+		"id": "12345"
 	}
 }
 			`)

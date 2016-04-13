@@ -1,17 +1,15 @@
 package apiversions
 
 import (
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
-
-	"github.com/mitchellh/mapstructure"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // APIVersion represents an API version for Cinder.
 type APIVersion struct {
-	ID      string `json:"id" mapstructure:"id"`           // unique identifier
-	Status  string `json:"status" mapstructure:"status"`   // current status
-	Updated string `json:"updated" mapstructure:"updated"` // date last updated
+	ID      string `json:"id"`      // unique identifier
+	Status  string `json:"status"`  // current status
+	Updated string `json:"updated"` // date last updated
 }
 
 // APIVersionPage is the page returned by a pager when traversing over a
@@ -23,22 +21,17 @@ type APIVersionPage struct {
 // IsEmpty checks whether an APIVersionPage struct is empty.
 func (r APIVersionPage) IsEmpty() (bool, error) {
 	is, err := ExtractAPIVersions(r)
-	if err != nil {
-		return true, err
-	}
-	return len(is) == 0, nil
+	return len(is) == 0, err
 }
 
 // ExtractAPIVersions takes a collection page, extracts all of the elements,
 // and returns them a slice of APIVersion structs. It is effectively a cast.
-func ExtractAPIVersions(page pagination.Page) ([]APIVersion, error) {
-	var resp struct {
-		Versions []APIVersion `mapstructure:"versions"`
+func ExtractAPIVersions(r pagination.Page) ([]APIVersion, error) {
+	var s struct {
+		Versions []APIVersion `json:"versions"`
 	}
-
-	err := mapstructure.Decode(page.(APIVersionPage).Body, &resp)
-
-	return resp.Versions, err
+	err := (r.(APIVersionPage)).ExtractInto(&s)
+	return s.Versions, err
 }
 
 // GetResult represents the result of a get operation.
@@ -48,11 +41,9 @@ type GetResult struct {
 
 // Extract is a function that accepts a result and extracts an API version resource.
 func (r GetResult) Extract() (*APIVersion, error) {
-	var resp struct {
-		Version *APIVersion `mapstructure:"version"`
+	var s struct {
+		Version *APIVersion `json:"version"`
 	}
-
-	err := mapstructure.Decode(r.Body, &resp)
-
-	return resp.Version, err
+	err := r.ExtractInto(&s)
+	return s.Version, err
 }

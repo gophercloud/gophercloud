@@ -1,11 +1,12 @@
 package gophercloud
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"net/http"
-	"reflect"
-
-	"github.com/mitchellh/mapstructure"
+	"strconv"
+	"time"
 )
 
 /*
@@ -33,6 +34,30 @@ type Result struct {
 	// Err is an error that occurred during the operation. It's deferred until
 	// extraction to make it easier to chain the Extract call.
 	Err error
+}
+
+// ExtractInto allows users to provide an object into which `Extract` will extract
+// the `Result.Body`. This would be useful for OpenStack providers that have
+// different fields in the response object than OpenStack proper.
+func (r Result) ExtractInto(to interface{}) error {
+	if r.Err != nil {
+		return r.Err
+	}
+
+	if reader, ok := r.Body.(io.Reader); ok {
+		if readCloser, ok := reader.(io.Closer); ok {
+			defer readCloser.Close()
+		}
+		return json.NewDecoder(reader).Decode(to)
+	}
+
+	b, err := json.Marshal(r.Body)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(b, to)
+
+	return err
 }
 
 // PrettyPrintJSON creates a string containing the full response body as
@@ -81,40 +106,124 @@ type HeaderResult struct {
 // ExtractHeader will return the http.Header and error from the HeaderResult.
 //
 //   header, err := objects.Create(client, "my_container", objects.CreateOpts{}).ExtractHeader()
-func (hr HeaderResult) ExtractHeader() (http.Header, error) {
-	return hr.Header, hr.Err
-}
-
-// DecodeHeader is a function that decodes a header (usually of type map[string]interface{}) to
-// another type (usually a struct). This function is used by the objectstorage package to give
-// users access to response headers without having to query a map. A DecodeHookFunction is used,
-// because OpenStack-based clients return header values as arrays (Go slices).
-func DecodeHeader(from, to interface{}) error {
-	config := &mapstructure.DecoderConfig{
-		DecodeHook: func(from, to reflect.Kind, data interface{}) (interface{}, error) {
-			if from == reflect.Slice {
-				return data.([]string)[0], nil
-			}
-			return data, nil
-		},
-		Result:           to,
-		WeaklyTypedInput: true,
+func (r HeaderResult) ExtractInto(to interface{}) error {
+	if r.Err != nil {
+		return r.Err
 	}
-	decoder, err := mapstructure.NewDecoder(config)
+
+	tmpHeaderMap := map[string]string{}
+	for k, v := range r.Header {
+		if len(v) > 0 {
+			tmpHeaderMap[k] = v[0]
+		}
+	}
+
+	b, err := json.Marshal(tmpHeaderMap)
 	if err != nil {
 		return err
 	}
-	if err := decoder.Decode(from); err != nil {
-		return err
-	}
-	return nil
+	err = json.Unmarshal(b, to)
+
+	return err
 }
 
 // RFC3339Milli describes a common time format used by some API responses.
 const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
 
-// Time format used in cloud orchestration
-const STACK_TIME_FMT = "2006-01-02T15:04:05"
+type JSONRFC3339Milli time.Time
+
+func (jt *JSONRFC3339Milli) UnmarshalJSON(data []byte) error {
+	b := bytes.NewBuffer(data)
+	dec := json.NewDecoder(b)
+	var s string
+	if err := dec.Decode(&s); err != nil {
+		return err
+	}
+	t, err := time.Parse(RFC3339Milli, s)
+	if err != nil {
+		return err
+	}
+	*jt = JSONRFC3339Milli(t)
+	return nil
+}
+
+const RFC3339MilliNoZ = "2006-01-02T03:04:05.999999"
+
+type JSONRFC3339MilliNoZ time.Time
+
+func (jt *JSONRFC3339MilliNoZ) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	if s == "" {
+		return nil
+	}
+	t, err := time.Parse(RFC3339MilliNoZ, s)
+	if err != nil {
+		return err
+	}
+	*jt = JSONRFC3339MilliNoZ(t)
+	return nil
+}
+
+type JSONRFC1123 time.Time
+
+func (jt *JSONRFC1123) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	if s == "" {
+		return nil
+	}
+	t, err := time.Parse(time.RFC1123, s)
+	if err != nil {
+		return err
+	}
+	*jt = JSONRFC1123(t)
+	return nil
+}
+
+type JSONUnix time.Time
+
+func (jt *JSONUnix) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	if s == "" {
+		return nil
+	}
+	unix, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return err
+	}
+	t = time.Unix(unix, 0)
+	*jt = JSONUnix(t)
+	return nil
+}
+
+// RFC3339NoZ is the time format used in Heat (Orchestration).
+const RFC3339NoZ = "2006-01-02T15:04:05"
+
+type JSONRFC3339NoZ time.Time
+
+func (jt *JSONRFC3339NoZ) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	if s == "" {
+		return nil
+	}
+	t, err := time.Parse(RFC3339NoZ, s)
+	if err != nil {
+		return err
+	}
+	*jt = JSONRFC3339NoZ(t)
+	return nil
+}
 
 /*
 Link is an internal type to be used in packages of collection resources that are
@@ -125,15 +234,15 @@ used to point to related pages. Usually, the one we care about is the one with
 Rel field set to "next".
 */
 type Link struct {
-	Href string `mapstructure:"href"`
-	Rel  string `mapstructure:"rel"`
+	Href string `json:"href"`
+	Rel  string `json:"rel"`
 }
 
 /*
 ExtractNextURL is an internal function useful for packages of collection
 resources that are paginated in a certain way.
 
-It attempts attempts to extract the "next" URL from slice of Link structs, or
+It attempts to extract the "next" URL from slice of Link structs, or
 "" if no such URL is present.
 */
 func ExtractNextURL(links []Link) (string, error) {

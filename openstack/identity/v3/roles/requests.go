@@ -1,8 +1,8 @@
 package roles
 
 import (
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListAssignmentsOptsBuilder allows extensions to add additional parameters to
@@ -17,34 +17,31 @@ type ListAssignmentsOptsBuilder interface {
 // Effective lists effective assignments at the user, project, and domain level,
 // allowing for the effects of group membership.
 type ListAssignmentsOpts struct {
-	GroupId        string `q:"group.id"`
-	RoleId         string `q:"role.id"`
-	ScopeDomainId  string `q:"scope.domain.id"`
-	ScopeProjectId string `q:"scope.project.id"`
-	UserId         string `q:"user.id"`
-	Effective      bool   `q:"effective"`
+	GroupID        string `q:"group.id"`
+	RoleID         string `q:"role.id"`
+	ScopeDomainID  string `q:"scope.domain.id"`
+	ScopeProjectID string `q:"scope.project.id"`
+	UserID         string `q:"user.id"`
+	Effective      *bool  `q:"effective"`
 }
 
 // ToRolesListAssignmentsQuery formats a ListAssignmentsOpts into a query string.
 func (opts ListAssignmentsOpts) ToRolesListAssignmentsQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // ListAssignments enumerates the roles assigned to a specified resource.
 func ListAssignments(client *gophercloud.ServiceClient, opts ListAssignmentsOptsBuilder) pagination.Pager {
 	url := listAssignmentsURL(client)
-	query, err := opts.ToRolesListAssignmentsQuery()
-	if err != nil {
-		return pagination.Pager{Err: err}
+	if opts != nil {
+		query, err := opts.ToRolesListAssignmentsQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
 	}
-	url += query
-	createPage := func(r pagination.PageResult) pagination.Page {
-		return RoleAssignmentsPage{pagination.LinkedPageBase{PageResult: r}}
-	}
-
-	return pagination.NewPager(client, url, createPage)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return RoleAssignmentPage{pagination.LinkedPageBase{PageResult: r}}
+	})
 }

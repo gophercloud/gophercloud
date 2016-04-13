@@ -1,10 +1,8 @@
 package flavors
 
 import (
-	"fmt"
-
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -36,10 +34,7 @@ type ListOpts struct {
 // ToFlavorListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToFlavorListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // ListDetail instructs OpenStack to provide a list of flavors.
@@ -54,50 +49,52 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 		}
 		url += query
 	}
-	createPage := func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return FlavorPage{pagination.LinkedPageBase{PageResult: r}}
-	}
-
-	return pagination.NewPager(client, url, createPage)
+	})
 }
 
 // Get instructs OpenStack to provide details on a single flavor, identified by its ID.
 // Use ExtractFlavor to convert its result into a Flavor.
-func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = client.Get(getURL(client, id), &res.Body, nil)
-	return res
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
 }
 
 // IDFromName is a convienience function that returns a flavor's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	flavorCount := 0
-	flavorID := ""
-	if name == "" {
-		return "", fmt.Errorf("A flavor name must be provided.")
+	count := 0
+	id := ""
+	allPages, err := ListDetail(client, nil).AllPages()
+	if err != nil {
+		return "", err
 	}
-	pager := ListDetail(client, nil)
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		flavorList, err := ExtractFlavors(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, f := range flavorList {
-			if f.Name == name {
-				flavorCount++
-				flavorID = f.ID
-			}
-		}
-		return true, nil
-	})
+	all, err := ExtractFlavors(allPages)
+	if err != nil {
+		return "", err
+	}
 
-	switch flavorCount {
+	for _, f := range all {
+		if f.Name == name {
+			count++
+			id = f.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find flavor: %s", name)
+		err := &gophercloud.ErrResourceNotFound{}
+		err.ResourceType = "flavor"
+		err.Name = name
+		return "", err
 	case 1:
-		return flavorID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d flavors matching %s", flavorCount, name)
+		err := &gophercloud.ErrMultipleResourcesFound{}
+		err.ResourceType = "flavor"
+		err.Name = name
+		err.Count = count
+		return "", err
 	}
 }

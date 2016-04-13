@@ -3,7 +3,7 @@ package databases
 import (
 	"testing"
 
-	"github.com/rackspace/gophercloud/testhelper/fixture"
+	"github.com/gophercloud/gophercloud/testhelper/fixture"
 )
 
 var (

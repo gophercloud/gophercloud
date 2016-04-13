@@ -2,9 +2,10 @@ package stacks
 
 import (
 	"fmt"
-	"github.com/rackspace/gophercloud"
 	"reflect"
 	"strings"
+
+	"github.com/gophercloud/gophercloud"
 )
 
 // Template is a structure that represents OpenStack Heat templates
@@ -27,12 +28,14 @@ func (t *Template) Validate() error {
 			return err
 		}
 	}
+	var invalid string
 	for key := range t.Parsed {
 		if _, ok := TemplateFormatVersions[key]; ok {
 			return nil
 		}
+		invalid = key
 	}
-	return fmt.Errorf("Template format version not found.")
+	return ErrInvalidTemplateFormatVersion{Version: invalid}
 }
 
 // GetFileContents recursively parses a template to search for urls. These urls
@@ -114,8 +117,7 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 	case string, bool, float64, nil, int:
 		return nil
 	default:
-		return fmt.Errorf("%v: Unrecognized type", reflect.TypeOf(te))
-
+		return gophercloud.ErrUnexpectedType{Actual: fmt.Sprintf("%v", reflect.TypeOf(te))}
 	}
 	return nil
 }

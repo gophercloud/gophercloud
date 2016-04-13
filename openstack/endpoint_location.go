@@ -1,11 +1,9 @@
 package openstack
 
 import (
-	"fmt"
-
-	"github.com/rackspace/gophercloud"
-	tokens2 "github.com/rackspace/gophercloud/openstack/identity/v2/tokens"
-	tokens3 "github.com/rackspace/gophercloud/openstack/identity/v3/tokens"
+	"github.com/gophercloud/gophercloud"
+	tokens2 "github.com/gophercloud/gophercloud/openstack/identity/v2/tokens"
+	tokens3 "github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
 )
 
 // V2EndpointURL discovers the endpoint URL for a specific service from a ServiceCatalog acquired
@@ -29,7 +27,9 @@ func V2EndpointURL(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpt
 
 	// Report an error if the options were ambiguous.
 	if len(endpoints) > 1 {
-		return "", fmt.Errorf("Discovered %d matching endpoints: %#v", len(endpoints), endpoints)
+		err := &ErrMultipleMatchingEndpointsV2{}
+		err.Endpoints = endpoints
+		return "", err
 	}
 
 	// Extract the appropriate URL from the matching Endpoint.
@@ -42,12 +42,16 @@ func V2EndpointURL(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpt
 		case gophercloud.AvailabilityAdmin:
 			return gophercloud.NormalizeURL(endpoint.AdminURL), nil
 		default:
-			return "", fmt.Errorf("Unexpected availability in endpoint query: %s", opts.Availability)
+			err := &ErrInvalidAvailabilityProvided{}
+			err.Argument = "Availability"
+			err.Value = opts.Availability
+			return "", err
 		}
 	}
 
 	// Report an error if there were no matching endpoints.
-	return "", gophercloud.ErrEndpointNotFound
+	err := &gophercloud.ErrEndpointNotFound{}
+	return "", err
 }
 
 // V3EndpointURL discovers the endpoint URL for a specific service from a Catalog acquired
@@ -66,7 +70,10 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 				if opts.Availability != gophercloud.AvailabilityAdmin &&
 					opts.Availability != gophercloud.AvailabilityPublic &&
 					opts.Availability != gophercloud.AvailabilityInternal {
-					return "", fmt.Errorf("Unexpected availability in endpoint query: %s", opts.Availability)
+					err := &ErrInvalidAvailabilityProvided{}
+					err.Argument = "Availability"
+					err.Value = opts.Availability
+					return "", err
 				}
 				if (opts.Availability == gophercloud.Availability(endpoint.Interface)) &&
 					(opts.Region == "" || endpoint.Region == opts.Region) {
@@ -78,7 +85,7 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 
 	// Report an error if the options were ambiguous.
 	if len(endpoints) > 1 {
-		return "", fmt.Errorf("Discovered %d matching endpoints: %#v", len(endpoints), endpoints)
+		return "", ErrMultipleMatchingEndpointsV3{Endpoints: endpoints}
 	}
 
 	// Extract the URL from the matching Endpoint.
@@ -87,5 +94,6 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 	}
 
 	// Report an error if there were no matching endpoints.
-	return "", gophercloud.ErrEndpointNotFound
+	err := &gophercloud.ErrEndpointNotFound{}
+	return "", err
 }

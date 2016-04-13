@@ -1,16 +1,15 @@
 package volumetypes
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // VolumeType contains all information associated with an OpenStack Volume Type.
 type VolumeType struct {
-	ExtraSpecs map[string]interface{} `json:"extra_specs" mapstructure:"extra_specs"` // user-defined metadata
-	ID         string                 `json:"id" mapstructure:"id"`                   // unique identifier
-	Name       string                 `json:"name" mapstructure:"name"`               // display name
+	ExtraSpecs map[string]interface{} `json:"extra_specs"` // user-defined metadata
+	ID         string                 `json:"id"`          // unique identifier
+	Name       string                 `json:"name"`        // display name
 }
 
 // CreateResult contains the response body and error from a Create request.
@@ -28,28 +27,24 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
-// ListResult is a pagination.Pager that is returned from a call to the List function.
-type ListResult struct {
+// VolumeTypePage is a pagination.Pager that is returned from a call to the List function.
+type VolumeTypePage struct {
 	pagination.SinglePageBase
 }
 
-// IsEmpty returns true if a ListResult contains no Volume Types.
-func (r ListResult) IsEmpty() (bool, error) {
+// IsEmpty returns true if a VolumeTypePage contains no Volume Types.
+func (r VolumeTypePage) IsEmpty() (bool, error) {
 	volumeTypes, err := ExtractVolumeTypes(r)
-	if err != nil {
-		return true, err
-	}
-	return len(volumeTypes) == 0, nil
+	return len(volumeTypes) == 0, err
 }
 
 // ExtractVolumeTypes extracts and returns Volume Types.
-func ExtractVolumeTypes(page pagination.Page) ([]VolumeType, error) {
-	var response struct {
-		VolumeTypes []VolumeType `mapstructure:"volume_types"`
+func ExtractVolumeTypes(r pagination.Page) ([]VolumeType, error) {
+	var s struct {
+		VolumeTypes []VolumeType `json:"volume_types"`
 	}
-
-	err := mapstructure.Decode(page.(ListResult).Body, &response)
-	return response.VolumeTypes, err
+	err := (r.(VolumeTypePage)).ExtractInto(&s)
+	return s.VolumeTypes, err
 }
 
 type commonResult struct {
@@ -58,15 +53,9 @@ type commonResult struct {
 
 // Extract will get the Volume Type object out of the commonResult object.
 func (r commonResult) Extract() (*VolumeType, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		VolumeType *VolumeType `json:"volume_type"`
 	}
-
-	var res struct {
-		VolumeType *VolumeType `json:"volume_type" mapstructure:"volume_type"`
-	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res.VolumeType, err
+	err := r.ExtractInto(&s)
+	return s.VolumeType, err
 }

@@ -1,25 +1,19 @@
 package services
 
 import (
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
-type response struct {
-	Service Service `json:"service"`
+// Create adds a new service of the requested type to the catalog.
+func Create(client *gophercloud.ServiceClient, serviceType string) (r CreateResult) {
+	b := map[string]string{"type": serviceType}
+	_, r.Err = client.Post(listURL(client), b, &r.Body, nil)
+	return
 }
 
-// Create adds a new service of the requested type to the catalog.
-func Create(client *gophercloud.ServiceClient, serviceType string) CreateResult {
-	type request struct {
-		Type string `json:"type"`
-	}
-
-	req := request{Type: serviceType}
-
-	var result CreateResult
-	_, result.Err = client.Post(listURL(client), req, &result.Body, nil)
-	return result
+type ListOptsBuilder interface {
+	ToServiceListMap() (string, error)
 }
 
 // ListOpts allows you to query the List method.
@@ -29,49 +23,42 @@ type ListOpts struct {
 	Page        int    `q:"page"`
 }
 
-// List enumerates the services available to a specific user.
-func List(client *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
-	u := listURL(client)
+func (opts ListOpts) ToServiceListMap() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return pagination.Pager{Err: err}
-	}
-	u += q.String()
-	createPage := func(r pagination.PageResult) pagination.Page {
-		return ServicePage{pagination.LinkedPageBase{PageResult: r}}
-	}
+	return q.String(), err
+}
 
-	return pagination.NewPager(client, u, createPage)
+// List enumerates the services available to a specific user.
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	u := listURL(client)
+	if opts != nil {
+		q, err := opts.ToServiceListMap()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		u += q
+	}
+	return pagination.NewPager(client, u, func(r pagination.PageResult) pagination.Page {
+		return ServicePage{pagination.LinkedPageBase{PageResult: r}}
+	})
 }
 
 // Get returns additional information about a service, given its ID.
-func Get(client *gophercloud.ServiceClient, serviceID string) GetResult {
-	var result GetResult
-	_, result.Err = client.Get(serviceURL(client, serviceID), &result.Body, nil)
-	return result
+func Get(client *gophercloud.ServiceClient, serviceID string) (r GetResult) {
+	_, r.Err = client.Get(serviceURL(client, serviceID), &r.Body, nil)
+	return
 }
 
 // Update changes the service type of an existing service.
-func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) UpdateResult {
-	type request struct {
-		Type string `json:"type"`
-	}
-
-	req := request{Type: serviceType}
-
-	var result UpdateResult
-	_, result.Err = client.Request("PATCH", serviceURL(client, serviceID), gophercloud.RequestOpts{
-		JSONBody:     &req,
-		JSONResponse: &result.Body,
-		OkCodes:      []int{200},
-	})
-	return result
+func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) (r UpdateResult) {
+	b := map[string]string{"type": serviceType}
+	_, r.Err = client.Patch(serviceURL(client, serviceID), &b, &r.Body, nil)
+	return
 }
 
 // Delete removes an existing service.
 // It either deletes all associated endpoints, or fails until all endpoints are deleted.
-func Delete(client *gophercloud.ServiceClient, serviceID string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = client.Delete(serviceURL(client, serviceID), nil)
-	return res
+func Delete(client *gophercloud.ServiceClient, serviceID string) (r DeleteResult) {
+	_, r.Err = client.Delete(serviceURL(client, serviceID), nil)
+	return
 }

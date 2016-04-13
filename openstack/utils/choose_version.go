@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rackspace/gophercloud"
+	"github.com/gophercloud/gophercloud"
 )
 
 // Version is a supported API version, corresponding to a vN package within the appropriate service.
@@ -59,7 +59,7 @@ func ChooseVersion(client *gophercloud.ProviderClient, recognized []*Version) (*
 	}
 
 	var resp response
-	_, err := client.Request("GET", client.IdentityBase, gophercloud.RequestOpts{
+	_, err := client.Request("GET", client.IdentityBase, &gophercloud.RequestOpts{
 		JSONResponse: &resp,
 		OkCodes:      []int{200, 300},
 	})

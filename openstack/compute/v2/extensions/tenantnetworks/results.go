@@ -1,21 +1,20 @@
 package tenantnetworks
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // A Network represents a nova-network that an instance communicates on
 type Network struct {
 	// CIDR is the IPv4 subnet.
-	CIDR string `mapstructure:"cidr"`
+	CIDR string `json:"cidr"`
 
 	// ID is the UUID of the network.
-	ID string `mapstructure:"id"`
+	ID string `json:"id"`
 
 	// Name is the common name that the network has.
-	Name string `mapstructure:"label"`
+	Name string `json:"label"`
 }
 
 // NetworkPage stores a single, only page of Networks
@@ -31,15 +30,12 @@ func (page NetworkPage) IsEmpty() (bool, error) {
 }
 
 // ExtractNetworks interprets a page of results as a slice of Networks
-func ExtractNetworks(page pagination.Page) ([]Network, error) {
-	networks := page.(NetworkPage).Body
-	var res struct {
-		Networks []Network `mapstructure:"networks"`
+func ExtractNetworks(r pagination.Page) ([]Network, error) {
+	var s struct {
+		Networks []Network `json:"networks"`
 	}
-
-	err := mapstructure.WeakDecode(networks, &res)
-
-	return res.Networks, err
+	err := (r.(NetworkPage)).ExtractInto(&s)
+	return s.Networks, err
 }
 
 type NetworkResult struct {
@@ -49,16 +45,11 @@ type NetworkResult struct {
 // Extract is a method that attempts to interpret any Network resource
 // response as a Network struct.
 func (r NetworkResult) Extract() (*Network, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		Network *Network `json:"network"`
 	}
-
-	var res struct {
-		Network *Network `json:"network" mapstructure:"network"`
-	}
-
-	err := mapstructure.Decode(r.Body, &res)
-	return res.Network, err
+	err := r.ExtractInto(&s)
+	return s.Network, err
 }
 
 // GetResult is the response from a Get operation. Call its Extract method to interpret it

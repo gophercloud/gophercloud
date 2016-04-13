@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/rackspace/gophercloud"
+	"github.com/gophercloud/gophercloud"
 )
 
 var (
@@ -145,7 +145,7 @@ func (p Pager) AllPages() (Page, error) {
 		// key is the map key for the page body if the body type is `map[string]interface{}`.
 		var key string
 		// Iterate over the pages to concatenate the bodies.
-		err := p.EachPage(func(page Page) (bool, error) {
+		err = p.EachPage(func(page Page) (bool, error) {
 			b := page.GetBody().(map[string]interface{})
 			for k := range b {
 				// If it's a linked page, we don't want the `links`, we want the other one.
@@ -164,7 +164,7 @@ func (p Pager) AllPages() (Page, error) {
 		body.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(pagesSlice))
 	case []byte:
 		// Iterate over the pages to concatenate the bodies.
-		err := p.EachPage(func(page Page) (bool, error) {
+		err = p.EachPage(func(page Page) (bool, error) {
 			b := page.GetBody().([]byte)
 			pagesSlice = append(pagesSlice, b)
 			// seperate pages with a comma
@@ -188,7 +188,7 @@ func (p Pager) AllPages() (Page, error) {
 		body.SetBytes(b)
 	case []interface{}:
 		// Iterate over the pages to concatenate the bodies.
-		err := p.EachPage(func(page Page) (bool, error) {
+		err = p.EachPage(func(page Page) (bool, error) {
 			b := page.GetBody().([]interface{})
 			pagesSlice = append(pagesSlice, b...)
 			return true, nil
@@ -202,7 +202,10 @@ func (p Pager) AllPages() (Page, error) {
 			body.Index(i).Set(reflect.ValueOf(s))
 		}
 	default:
-		return nil, fmt.Errorf("Page body has unrecognized type.")
+		err := gophercloud.ErrUnexpectedType{}
+		err.Expected = "map[string]interface{}/[]byte/[]interface{}"
+		err.Actual = fmt.Sprintf("%v", reflect.TypeOf(testPage.GetBody()))
+		return nil, err
 	}
 
 	// Each `Extract*` function is expecting a specific type of page coming back,

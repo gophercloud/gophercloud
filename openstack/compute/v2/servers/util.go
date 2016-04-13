@@ -1,6 +1,6 @@
 package servers
 
-import "github.com/rackspace/gophercloud"
+import "github.com/gophercloud/gophercloud"
 
 // WaitForStatus will continually poll a server until it successfully transitions to a specified
 // status. It will do this for at most the number of seconds specified.

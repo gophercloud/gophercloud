@@ -1,9 +1,8 @@
 package roles
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // Role represents an API role resource.
@@ -27,23 +26,18 @@ type RolePage struct {
 }
 
 // IsEmpty determines whether or not a page of Tenants contains any results.
-func (page RolePage) IsEmpty() (bool, error) {
-	users, err := ExtractRoles(page)
-	if err != nil {
-		return false, err
-	}
-	return len(users) == 0, nil
+func (r RolePage) IsEmpty() (bool, error) {
+	users, err := ExtractRoles(r)
+	return len(users) == 0, err
 }
 
 // ExtractRoles returns a slice of roles contained in a single page of results.
-func ExtractRoles(page pagination.Page) ([]Role, error) {
-	casted := page.(RolePage).Body
-	var response struct {
-		Roles []Role `mapstructure:"roles"`
+func ExtractRoles(r pagination.Page) ([]Role, error) {
+	var s struct {
+		Roles []Role `json:"roles"`
 	}
-
-	err := mapstructure.Decode(casted, &response)
-	return response.Roles, err
+	err := (r.(RolePage)).ExtractInto(&s)
+	return s.Roles, err
 }
 
 // UserRoleResult represents the result of either an AddUserRole or

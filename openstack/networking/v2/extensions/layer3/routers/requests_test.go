@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestURLs(t *testing.T) {
@@ -37,6 +37,7 @@ func TestList(t *testing.T) {
             "name": "second_routers",
             "admin_state_up": true,
             "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
+            "distributed": false,
             "id": "7177abc4-5ae9-4bb7-b0d4-89e94a4abf3b"
         },
         {
@@ -47,6 +48,7 @@ func TestList(t *testing.T) {
             "name": "router1",
             "admin_state_up": true,
             "tenant_id": "33a40233088643acb66ff6eb0ebea679",
+            "distributed": false,
             "id": "a9254bdb-2613-4a13-ac4c-adc581fba50d"
         }
     ]
@@ -69,6 +71,7 @@ func TestList(t *testing.T) {
 				Status:       "ACTIVE",
 				GatewayInfo:  GatewayInfo{NetworkID: ""},
 				AdminStateUp: true,
+				Distributed:  false,
 				Name:         "second_routers",
 				ID:           "7177abc4-5ae9-4bb7-b0d4-89e94a4abf3b",
 				TenantID:     "6b96ff0cb17a4b859e1e575d221683d3",
@@ -77,6 +80,7 @@ func TestList(t *testing.T) {
 				Status:       "ACTIVE",
 				GatewayInfo:  GatewayInfo{NetworkID: "3c5bcddd-6af9-4e6b-9c3e-c153e521cab8"},
 				AdminStateUp: true,
+				Distributed:  false,
 				Name:         "router1",
 				ID:           "a9254bdb-2613-4a13-ac4c-adc581fba50d",
 				TenantID:     "33a40233088643acb66ff6eb0ebea679",
@@ -127,6 +131,7 @@ func TestCreate(t *testing.T) {
         "name": "foo_router",
         "admin_state_up": false,
         "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
+        "distributed": false,
         "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e"
     }
 }
@@ -176,6 +181,7 @@ func TestGet(t *testing.T) {
         "name": "router1",
         "admin_state_up": true,
         "tenant_id": "d6554fe62e2f41efbb6e026fad5c1542",
+        "distributed": false,
         "id": "a07eea83-7710-4860-931b-5fe220fae533"
     }
 }
@@ -233,6 +239,7 @@ func TestUpdate(t *testing.T) {
         "name": "new_name",
         "admin_state_up": true,
         "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
+        "distributed": false,
         "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e",
         "routes": [
             {
@@ -287,6 +294,7 @@ func TestAllRoutesRemoved(t *testing.T) {
         "name": "name",
         "admin_state_up": true,
         "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
+        "distributed": false,
         "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e",
         "routes": []
     }
@@ -345,7 +353,7 @@ func TestAddInterface(t *testing.T) {
 `)
 	})
 
-	opts := InterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
+	opts := AddInterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
 	res, err := AddInterface(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 
@@ -356,11 +364,11 @@ func TestAddInterface(t *testing.T) {
 }
 
 func TestAddInterfaceRequiredOpts(t *testing.T) {
-	_, err := AddInterface(fake.ServiceClient(), "foo", InterfaceOpts{}).Extract()
+	_, err := AddInterface(fake.ServiceClient(), "foo", AddInterfaceOpts{}).Extract()
 	if err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	_, err = AddInterface(fake.ServiceClient(), "foo", InterfaceOpts{SubnetID: "bar", PortID: "baz"}).Extract()
+	_, err = AddInterface(fake.ServiceClient(), "foo", AddInterfaceOpts{SubnetID: "bar", PortID: "baz"}).Extract()
 	if err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -394,7 +402,7 @@ func TestRemoveInterface(t *testing.T) {
 `)
 	})
 
-	opts := InterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
+	opts := RemoveInterfaceOpts{SubnetID: "a2f1f29d-571b-4533-907f-5803ab96ead1"}
 	res, err := RemoveInterface(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", opts).Extract()
 	th.AssertNoErr(t, err)
 

@@ -3,8 +3,8 @@ package accounts
 import (
 	"testing"
 
-	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func TestUpdateAccount(t *testing.T) {
@@ -13,8 +13,8 @@ func TestUpdateAccount(t *testing.T) {
 	HandleUpdateAccountSuccessfully(t)
 
 	options := &UpdateOpts{Metadata: map[string]string{"gophercloud-test": "accounts"}}
-	res := Update(fake.ServiceClient(), options)
-	th.AssertNoErr(t, res.Err)
+	_, err := Update(fake.ServiceClient(), options).Extract()
+	th.AssertNoErr(t, err)
 }
 
 func TestGetAccount(t *testing.T) {
@@ -27,6 +27,6 @@ func TestGetAccount(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 	actualMetadata, _ := res.ExtractMetadata()
 	th.CheckDeepEquals(t, expectedMetadata, actualMetadata)
-	//headers, err := res.Extract()
-	//th.AssertNoErr(t, err)
+	_, err := res.Extract()
+	th.AssertNoErr(t, err)
 }

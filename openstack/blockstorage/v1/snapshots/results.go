@@ -1,52 +1,50 @@
 package snapshots
 
 import (
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
-
-	"github.com/mitchellh/mapstructure"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // Snapshot contains all the information associated with an OpenStack Snapshot.
 type Snapshot struct {
 	// Currect status of the Snapshot.
-	Status string `mapstructure:"status"`
+	Status string `json:"status"`
 
 	// Display name.
-	Name string `mapstructure:"display_name"`
+	Name string `json:"display_name"`
 
 	// Instances onto which the Snapshot is attached.
-	Attachments []string `mapstructure:"attachments"`
+	Attachments []string `json:"attachments"`
 
 	// Logical group.
-	AvailabilityZone string `mapstructure:"availability_zone"`
+	AvailabilityZone string `json:"availability_zone"`
 
 	// Is the Snapshot bootable?
-	Bootable string `mapstructure:"bootable"`
+	Bootable string `json:"bootable"`
 
 	// Date created.
-	CreatedAt string `mapstructure:"created_at"`
+	CreatedAt gophercloud.JSONRFC3339Milli `json:"created_at"`
 
 	// Display description.
-	Description string `mapstructure:"display_discription"`
+	Description string `json:"display_discription"`
 
 	// See VolumeType object for more information.
-	VolumeType string `mapstructure:"volume_type"`
+	VolumeType string `json:"volume_type"`
 
 	// ID of the Snapshot from which this Snapshot was created.
-	SnapshotID string `mapstructure:"snapshot_id"`
+	SnapshotID string `json:"snapshot_id"`
 
 	// ID of the Volume from which this Snapshot was created.
-	VolumeID string `mapstructure:"volume_id"`
+	VolumeID string `json:"volume_id"`
 
 	// User-defined key-value pairs.
-	Metadata map[string]string `mapstructure:"metadata"`
+	Metadata map[string]string `json:"metadata"`
 
 	// Unique identifier.
-	ID string `mapstructure:"id"`
+	ID string `json:"id"`
 
 	// Size of the Snapshot, in GB.
-	Size int `mapstructure:"size"`
+	Size int `json:"size"`
 }
 
 // CreateResult contains the response body and error from a Create request.
@@ -64,28 +62,24 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
-// ListResult is a pagination.Pager that is returned from a call to the List function.
-type ListResult struct {
+// SnapshotPage is a pagination.Pager that is returned from a call to the List function.
+type SnapshotPage struct {
 	pagination.SinglePageBase
 }
 
-// IsEmpty returns true if a ListResult contains no Snapshots.
-func (r ListResult) IsEmpty() (bool, error) {
+// IsEmpty returns true if a SnapshotPage contains no Snapshots.
+func (r SnapshotPage) IsEmpty() (bool, error) {
 	volumes, err := ExtractSnapshots(r)
-	if err != nil {
-		return true, err
-	}
-	return len(volumes) == 0, nil
+	return len(volumes) == 0, err
 }
 
 // ExtractSnapshots extracts and returns Snapshots. It is used while iterating over a snapshots.List call.
-func ExtractSnapshots(page pagination.Page) ([]Snapshot, error) {
-	var response struct {
+func ExtractSnapshots(r pagination.Page) ([]Snapshot, error) {
+	var s struct {
 		Snapshots []Snapshot `json:"snapshots"`
 	}
-
-	err := mapstructure.Decode(page.(ListResult).Body, &response)
-	return response.Snapshots, err
+	err := (r.(SnapshotPage)).ExtractInto(&s)
+	return s.Snapshots, err
 }
 
 // UpdateMetadataResult contains the response body and error from an UpdateMetadata request.
@@ -98,7 +92,6 @@ func (r UpdateMetadataResult) ExtractMetadata() (map[string]interface{}, error) 
 	if r.Err != nil {
 		return nil, r.Err
 	}
-
 	m := r.Body.(map[string]interface{})["metadata"]
 	return m.(map[string]interface{}), nil
 }
@@ -109,15 +102,9 @@ type commonResult struct {
 
 // Extract will get the Snapshot object out of the commonResult object.
 func (r commonResult) Extract() (*Snapshot, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-
-	var res struct {
+	var s struct {
 		Snapshot *Snapshot `json:"snapshot"`
 	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res.Snapshot, err
+	err := r.ExtractInto(&s)
+	return s.Snapshot, err
 }

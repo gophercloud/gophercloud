@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"testing"
 
-	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/jrperritt/gophercloud"
 )
 
 func TestURLs(t *testing.T) {
@@ -258,8 +259,6 @@ func TestUpdate(t *testing.T) {
 		"description": "ssh rule",
 		"destination_ip_address": "192.168.1.0/24",
 		"destination_port": "22",
-		"source_ip_address": null,
-		"source_port": null,
 		"name": "ssh_form_any",
 		"action": "allow",
 		"enabled": false
@@ -275,8 +274,6 @@ func TestUpdate(t *testing.T) {
 	"firewall_rule":{
 		"protocol": "tcp",
 		"description": "ssh rule",
-		"source_port": null,
-		"source_ip_address": null,
 		"destination_ip_address": "192.168.1.0/24",
 		"firewall_policy_id": "e2a5fb51-698c-4898-87e8-f1eee6b50919",
 		"position": 2,
@@ -293,20 +290,21 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	destinationIPAddress := "192.168.1.0/24"
-	destinationPort := "22"
-	empty := ""
+	newProtocol := "tcp"
+	newDescription := "ssh rule"
+	newDestinationIP := "192.168.1.0/24"
+	newDestintionPort := "22"
+	newName := "ssh_form_any"
+	newAction := "allow"
 
 	options := UpdateOpts{
-		Protocol:             "tcp",
-		Description:          "ssh rule",
-		DestinationIPAddress: &destinationIPAddress,
-		DestinationPort:      &destinationPort,
-		Name:                 "ssh_form_any",
-		SourceIPAddress:      &empty,
-		SourcePort:           &empty,
-		Action:               "allow",
-		Enabled:              No,
+		Protocol:             &newProtocol,
+		Description:          &newDescription,
+		DestinationIPAddress: &newDestinationIP,
+		DestinationPort:      &newDestintionPort,
+		Name:                 &newName,
+		Action:               &newAction,
+		Enabled:              gophercloud.Disabled,
 	}
 
 	_, err := Update(fake.ServiceClient(), "f03bd950-6c56-4f5e-a307-45967078f507", options).Extract()

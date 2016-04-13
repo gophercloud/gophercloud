@@ -2,8 +2,8 @@ package stacktemplates
 
 import (
 	"encoding/json"
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
+
+	"github.com/gophercloud/gophercloud"
 )
 
 // GetResult represents the result of a Get operation.
@@ -25,9 +25,9 @@ func (r GetResult) Extract() ([]byte, error) {
 
 // ValidatedTemplate represents the parsed object returned from a Validate request.
 type ValidatedTemplate struct {
-	Description     string                 `mapstructure:"Description"`
-	Parameters      map[string]interface{} `mapstructure:"Parameters"`
-	ParameterGroups map[string]interface{} `mapstructure:"ParameterGroups"`
+	Description     string                 `json:"Description"`
+	Parameters      map[string]interface{} `json:"Parameters"`
+	ParameterGroups map[string]interface{} `json:"ParameterGroups"`
 }
 
 // ValidateResult represents the result of a Validate operation.
@@ -38,14 +38,7 @@ type ValidateResult struct {
 // Extract returns a pointer to a ValidatedTemplate object and is called after a
 // Validate operation.
 func (r ValidateResult) Extract() (*ValidatedTemplate, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-
-	var res ValidatedTemplate
-	if err := mapstructure.Decode(r.Body, &res); err != nil {
-		return nil, err
-	}
-
-	return &res, nil
+	var s *ValidatedTemplate
+	err := r.ExtractInto(&s)
+	return s, err
 }

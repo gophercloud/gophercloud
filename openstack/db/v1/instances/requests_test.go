@@ -3,11 +3,11 @@ package instances
 import (
 	"testing"
 
-	db "github.com/rackspace/gophercloud/openstack/db/v1/databases"
-	"github.com/rackspace/gophercloud/openstack/db/v1/users"
-	"github.com/rackspace/gophercloud/pagination"
-	th "github.com/rackspace/gophercloud/testhelper"
-	fake "github.com/rackspace/gophercloud/testhelper/client"
+	db "github.com/gophercloud/gophercloud/openstack/db/v1/databases"
+	"github.com/gophercloud/gophercloud/openstack/db/v1/users"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func TestCreate(t *testing.T) {
@@ -99,7 +99,7 @@ func TestIsRootEnabled(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleIsRootEnabled(t)
 
-	isEnabled, err := IsRootEnabled(fake.ServiceClient(), instanceID)
+	isEnabled, err := IsRootEnabled(fake.ServiceClient(), instanceID).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, true, isEnabled)

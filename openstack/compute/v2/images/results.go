@@ -1,9 +1,8 @@
 package images
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // GetResult temporarily stores a Get response.
@@ -17,17 +16,12 @@ type DeleteResult struct {
 }
 
 // Extract interprets a GetResult as an Image.
-func (gr GetResult) Extract() (*Image, error) {
-	if gr.Err != nil {
-		return nil, gr.Err
+func (r GetResult) Extract() (*Image, error) {
+	var s struct {
+		Image *Image `json:"image"`
 	}
-
-	var decoded struct {
-		Image Image `mapstructure:"image"`
-	}
-
-	err := mapstructure.Decode(gr.Body, &decoded)
-	return &decoded.Image, err
+	err := r.ExtractInto(&s)
+	return s.Image, err
 }
 
 // Image is used for JSON (un)marshalling.
@@ -62,34 +56,26 @@ type ImagePage struct {
 // IsEmpty returns true if a page contains no Image results.
 func (page ImagePage) IsEmpty() (bool, error) {
 	images, err := ExtractImages(page)
-	if err != nil {
-		return true, err
-	}
-	return len(images) == 0, nil
+	return len(images) == 0, err
 }
 
 // NextPageURL uses the response's embedded link reference to navigate to the next page of results.
 func (page ImagePage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"images_links"`
+	var s struct {
+		Links []gophercloud.Link `json:"images_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(page.Body, &r)
+	err := page.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // ExtractImages converts a page of List results into a slice of usable Image structs.
-func ExtractImages(page pagination.Page) ([]Image, error) {
-	casted := page.(ImagePage).Body
-	var results struct {
-		Images []Image `mapstructure:"images"`
+func ExtractImages(r pagination.Page) ([]Image, error) {
+	var s struct {
+		Images []Image `json:"images"`
 	}
-
-	err := mapstructure.Decode(casted, &results)
-	return results.Images, err
+	err := (r.(ImagePage)).ExtractInto(&s)
+	return s.Images, err
 }

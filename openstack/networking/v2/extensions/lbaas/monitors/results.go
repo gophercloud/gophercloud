@@ -1,9 +1,8 @@
 package monitors
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // Monitor represents a load balancer health monitor. A health monitor is used
@@ -27,7 +26,7 @@ type Monitor struct {
 
 	// Owner of the VIP. Only an administrative user can specify a tenant ID
 	// other than its own.
-	TenantID string `json:"tenant_id" mapstructure:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 
 	// The type of probe sent by the load balancer to verify the member state,
 	// which is PING, TCP, HTTP, or HTTPS.
@@ -42,20 +41,20 @@ type Monitor struct {
 
 	// Number of allowed connection failures before changing the status of the
 	// member to INACTIVE. A valid value is from 1 to 10.
-	MaxRetries int `json:"max_retries" mapstructure:"max_retries"`
+	MaxRetries int `json:"max_retries"`
 
 	// The HTTP method that the monitor uses for requests.
-	HTTPMethod string `json:"http_method" mapstructure:"http_method"`
+	HTTPMethod string `json:"http_method"`
 
 	// The HTTP path of the request sent by the monitor to test the health of a
 	// member. Must be a string beginning with a forward slash (/).
-	URLPath string `json:"url_path" mapstructure:"url_path"`
+	URLPath string `json:"url_path"`
 
 	// Expected HTTP codes for a passing HTTP(S) monitor.
-	ExpectedCodes string `json:"expected_codes" mapstructure:"expected_codes"`
+	ExpectedCodes string `json:"expected_codes"`
 
 	// The administrative state of the health monitor, which is up (true) or down (false).
-	AdminStateUp bool `json:"admin_state_up" mapstructure:"admin_state_up"`
+	AdminStateUp bool `json:"admin_state_up"`
 
 	// The status of the health monitor. Indicates whether the health monitor is
 	// operational.
@@ -71,40 +70,33 @@ type MonitorPage struct {
 // NextPageURL is invoked when a paginated collection of monitors has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
-func (p MonitorPage) NextPageURL() (string, error) {
-	type resp struct {
-		Links []gophercloud.Link `mapstructure:"health_monitors_links"`
+func (r MonitorPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"health_monitors_links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(p.Body, &r)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
 
-	return gophercloud.ExtractNextURL(r.Links)
+	return gophercloud.ExtractNextURL(s.Links)
 }
 
 // IsEmpty checks whether a PoolPage struct is empty.
-func (p MonitorPage) IsEmpty() (bool, error) {
-	is, err := ExtractMonitors(p)
-	if err != nil {
-		return true, nil
-	}
-	return len(is) == 0, nil
+func (r MonitorPage) IsEmpty() (bool, error) {
+	is, err := ExtractMonitors(r)
+	return len(is) == 0, err
 }
 
 // ExtractMonitors accepts a Page struct, specifically a MonitorPage struct,
 // and extracts the elements into a slice of Monitor structs. In other words,
 // a generic collection is mapped into a relevant slice.
-func ExtractMonitors(page pagination.Page) ([]Monitor, error) {
-	var resp struct {
-		Monitors []Monitor `mapstructure:"health_monitors" json:"health_monitors"`
+func ExtractMonitors(r pagination.Page) ([]Monitor, error) {
+	var s struct {
+		Monitors []Monitor `json:"health_monitors"`
 	}
-
-	err := mapstructure.Decode(page.(MonitorPage).Body, &resp)
-
-	return resp.Monitors, err
+	err := (r.(MonitorPage)).ExtractInto(&s)
+	return s.Monitors, err
 }
 
 type commonResult struct {
@@ -113,17 +105,11 @@ type commonResult struct {
 
 // Extract is a function that accepts a result and extracts a monitor.
 func (r commonResult) Extract() (*Monitor, error) {
-	if r.Err != nil {
-		return nil, r.Err
+	var s struct {
+		Monitor *Monitor `json:"health_monitor"`
 	}
-
-	var res struct {
-		Monitor *Monitor `json:"health_monitor" mapstructure:"health_monitor"`
-	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res.Monitor, err
+	err := r.ExtractInto(&s)
+	return s.Monitor, err
 }
 
 // CreateResult represents the result of a create operation.

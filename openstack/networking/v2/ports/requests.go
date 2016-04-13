@@ -1,23 +1,8 @@
 package ports
 
 import (
-	"fmt"
-
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
-)
-
-// AdminState gives users a solid type to work with for create and update
-// operations. It is recommended that users use the `Up` and `Down` enums.
-type AdminState *bool
-
-// Convenience vars for AdminStateUp values.
-var (
-	iTrue  = true
-	iFalse = false
-
-	Up   AdminState = &iTrue
-	Down AdminState = &iFalse
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -50,10 +35,7 @@ type ListOpts struct {
 // ToPortListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToPortListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -72,17 +54,15 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		}
 		url += query
 	}
-
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return PortPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
 // Get retrieves a specific port based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(getURL(c, id), &res.Body, nil)
-	return res
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
 }
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -95,67 +75,33 @@ type CreateOptsBuilder interface {
 
 // CreateOpts represents the attributes used when creating a new port.
 type CreateOpts struct {
-	NetworkID      string
-	Name           string
-	AdminStateUp   *bool
-	MACAddress     string
-	FixedIPs       interface{}
-	DeviceID       string
-	DeviceOwner    string
-	TenantID       string
-	SecurityGroups []string
+	NetworkID           string        `json:"network_id" required:"true"`
+	Name                string        `json:"name,omitempty"`
+	AdminStateUp        *bool         `json:"admin_state_up,omitempty"`
+	MACAddress          string        `json:"mac_address,omitempty"`
+	FixedIPs            interface{}   `json:"fixed_ips,omitempty"`
+	DeviceID            string        `json:"device_id,omitempty"`
+	DeviceOwner         string        `json:"device_owner,omitempty"`
+	TenantID            string        `json:"tenant_id,omitempty"`
+	SecurityGroups      []string      `json:"security_groups,omitempty"`
+	AllowedAddressPairs []AddressPair `json:"allowed_address_pairs,omitempty"`
 }
 
 // ToPortCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToPortCreateMap() (map[string]interface{}, error) {
-	p := make(map[string]interface{})
-
-	if opts.NetworkID == "" {
-		return nil, errNetworkIDRequired
-	}
-	p["network_id"] = opts.NetworkID
-
-	if opts.DeviceID != "" {
-		p["device_id"] = opts.DeviceID
-	}
-	if opts.DeviceOwner != "" {
-		p["device_owner"] = opts.DeviceOwner
-	}
-	if opts.FixedIPs != nil {
-		p["fixed_ips"] = opts.FixedIPs
-	}
-	if opts.SecurityGroups != nil {
-		p["security_groups"] = opts.SecurityGroups
-	}
-	if opts.TenantID != "" {
-		p["tenant_id"] = opts.TenantID
-	}
-	if opts.AdminStateUp != nil {
-		p["admin_state_up"] = &opts.AdminStateUp
-	}
-	if opts.Name != "" {
-		p["name"] = opts.Name
-	}
-	if opts.MACAddress != "" {
-		p["mac_address"] = opts.MACAddress
-	}
-
-	return map[string]interface{}{"port": p}, nil
+	return gophercloud.BuildRequestBody(opts, "port")
 }
 
 // Create accepts a CreateOpts struct and creates a new network using the values
 // provided. You must remember to provide a NetworkID value.
-func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-
-	reqBody, err := opts.ToPortCreateMap()
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToPortCreateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	_, res.Err = c.Post(createURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -168,93 +114,67 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts represents the attributes used when updating an existing port.
 type UpdateOpts struct {
-	Name           string
-	AdminStateUp   *bool
-	FixedIPs       interface{}
-	DeviceID       string
-	DeviceOwner    string
-	SecurityGroups []string
+	Name                string        `json:"name,omitempty"`
+	AdminStateUp        *bool         `json:"admin_state_up,omitempty"`
+	FixedIPs            interface{}   `json:"fixed_ips,omitempty"`
+	DeviceID            string        `json:"device_id,omitempty"`
+	DeviceOwner         string        `json:"device_owner,omitempty"`
+	SecurityGroups      []string      `json:"security_groups,omitempty"`
+	AllowedAddressPairs []AddressPair `json:"allowed_address_pairs,omitempty"`
 }
 
 // ToPortUpdateMap casts an UpdateOpts struct to a map.
 func (opts UpdateOpts) ToPortUpdateMap() (map[string]interface{}, error) {
-	p := make(map[string]interface{})
-
-	if opts.DeviceID != "" {
-		p["device_id"] = opts.DeviceID
-	}
-	if opts.DeviceOwner != "" {
-		p["device_owner"] = opts.DeviceOwner
-	}
-	if opts.FixedIPs != nil {
-		p["fixed_ips"] = opts.FixedIPs
-	}
-	if opts.SecurityGroups != nil {
-		p["security_groups"] = opts.SecurityGroups
-	}
-	if opts.AdminStateUp != nil {
-		p["admin_state_up"] = &opts.AdminStateUp
-	}
-	if opts.Name != "" {
-		p["name"] = opts.Name
-	}
-
-	return map[string]interface{}{"port": p}, nil
+	return gophercloud.BuildRequestBody(opts, "port")
 }
 
 // Update accepts a UpdateOpts struct and updates an existing port using the
 // values provided.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var res UpdateResult
-
-	reqBody, err := opts.ToPortUpdateMap()
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToPortUpdateMap()
 	if err != nil {
-		res.Err = err
-		return res
+		r.Err = err
+		return
 	}
-
-	_, res.Err = c.Put(updateURL(c, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(updateURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
-	return res
+	return
 }
 
 // Delete accepts a unique ID and deletes the port associated with it.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(deleteURL(c, id), nil)
-	return res
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(deleteURL(c, id), nil)
+	return
 }
 
 // IDFromName is a convenience function that returns a port's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	portCount := 0
-	portID := ""
-	if name == "" {
-		return "", fmt.Errorf("A port name must be provided.")
+	count := 0
+	id := ""
+	pages, err := List(client, nil).AllPages()
+	if err != nil {
+		return "", err
 	}
-	pager := List(client, nil)
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		portList, err := ExtractPorts(page)
-		if err != nil {
-			return false, err
-		}
 
-		for _, p := range portList {
-			if p.Name == name {
-				portCount++
-				portID = p.ID
-			}
-		}
-		return true, nil
-	})
+	all, err := ExtractPorts(pages)
+	if err != nil {
+		return "", err
+	}
 
-	switch portCount {
+	for _, s := range all {
+		if s.Name == name {
+			count++
+			id = s.ID
+		}
+	}
+
+	switch count {
 	case 0:
-		return "", fmt.Errorf("Unable to find port: %s", name)
+		return "", gophercloud.ErrResourceNotFound{Name: name, ResourceType: "port"}
 	case 1:
-		return portID, nil
+		return id, nil
 	default:
-		return "", fmt.Errorf("Found %d ports matching %s", portCount, name)
+		return "", gophercloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "port"}
 	}
 }

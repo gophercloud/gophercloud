@@ -1,8 +1,8 @@
 package common
 
 import (
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 const TokenID = client.TokenID

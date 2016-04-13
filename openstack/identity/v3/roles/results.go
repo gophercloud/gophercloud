@@ -1,10 +1,6 @@
 package roles
 
-import (
-	"github.com/rackspace/gophercloud/pagination"
-
-	"github.com/mitchellh/mapstructure"
-)
+import "github.com/gophercloud/gophercloud/pagination"
 
 // RoleAssignment is the result of a role assignments query.
 type RoleAssignment struct {
@@ -20,7 +16,7 @@ type Role struct {
 
 type Scope struct {
 	Domain  Domain  `json:"domain,omitempty"`
-	Project Project `json:"domain,omitempty"`
+	Project Project `json:"project,omitempty"`
 }
 
 type Domain struct {
@@ -39,43 +35,33 @@ type Group struct {
 	ID string `json:"id,omitempty"`
 }
 
-// RoleAssignmentsPage is a single page of RoleAssignments results.
-type RoleAssignmentsPage struct {
+// RoleAssignmentPage is a single page of RoleAssignments results.
+type RoleAssignmentPage struct {
 	pagination.LinkedPageBase
 }
 
 // IsEmpty returns true if the page contains no results.
-func (p RoleAssignmentsPage) IsEmpty() (bool, error) {
-	roleAssignments, err := ExtractRoleAssignments(p)
-	if err != nil {
-		return true, err
-	}
-	return len(roleAssignments) == 0, nil
+func (r RoleAssignmentPage) IsEmpty() (bool, error) {
+	roleAssignments, err := ExtractRoleAssignments(r)
+	return len(roleAssignments) == 0, err
 }
 
 // NextPageURL uses the response's embedded link reference to navigate to the next page of results.
-func (page RoleAssignmentsPage) NextPageURL() (string, error) {
-	type resp struct {
+func (r RoleAssignmentPage) NextPageURL() (string, error) {
+	var s struct {
 		Links struct {
-			Next string `mapstructure:"next"`
-		} `mapstructure:"links"`
+			Next string `json:"next"`
+		} `json:"links"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(page.Body, &r)
-	if err != nil {
-		return "", err
-	}
-
-	return r.Links.Next, nil
+	err := r.ExtractInto(&s)
+	return s.Links.Next, err
 }
 
 // ExtractRoleAssignments extracts a slice of RoleAssignments from a Collection acquired from List.
-func ExtractRoleAssignments(page pagination.Page) ([]RoleAssignment, error) {
-	var response struct {
-		RoleAssignments []RoleAssignment `mapstructure:"role_assignments"`
+func ExtractRoleAssignments(r pagination.Page) ([]RoleAssignment, error) {
+	var s struct {
+		RoleAssignments []RoleAssignment `json:"role_assignments"`
 	}
-
-	err := mapstructure.Decode(page.(RoleAssignmentsPage).Body, &response)
-	return response.RoleAssignments, err
+	err := (r.(RoleAssignmentPage)).ExtractInto(&s)
+	return s.RoleAssignments, err
 }

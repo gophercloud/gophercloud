@@ -1,10 +1,8 @@
 package floatingips
 
 import (
-	"fmt"
-
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOpts allows the filtering and sorting of paginated collections through
@@ -39,20 +37,28 @@ func List(c *gophercloud.ServiceClient, opts ListOpts) pagination.Pager {
 	})
 }
 
+// CreateOptsBuilder is the interface type must satisfy to be used as Create
+// options.
+type CreateOptsBuilder interface {
+	ToFloatingIPCreateMap() (map[string]interface{}, error)
+}
+
 // CreateOpts contains all the values needed to create a new floating IP
 // resource. The only required fields are FloatingNetworkID and PortID which
 // refer to the external network and internal port respectively.
 type CreateOpts struct {
-	FloatingNetworkID string
-	FloatingIP        string
-	PortID            string
-	FixedIP           string
-	TenantID          string
+	FloatingNetworkID string `json:"floating_network_id" required:"true"`
+	FloatingIP        string `json:"floating_ip_address,omitempty"`
+	PortID            string `json:"port_id,omitempty"`
+	FixedIP           string `json:"fixed_ip_address,omitempty"`
+	TenantID          string `json:"tenant_id,omitempty"`
 }
 
-var (
-	errFloatingNetworkIDRequired = fmt.Errorf("A NetworkID is required")
-)
+// ToFloatingIPCreateMap allows CreateOpts to satisfy the CreateOptsBuilder
+// interface
+func (opts CreateOpts) ToFloatingIPCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "floatingip")
+}
 
 // Create accepts a CreateOpts struct and uses the values provided to create a
 // new floating IP resource. You can create floating IPs on external networks
@@ -78,45 +84,26 @@ var (
 // operation will fail and return a 400 error code. If the PortID and FixedIP
 // are already associated with another resource, the operation will fail and
 // returns a 409 error code.
-func Create(c *gophercloud.ServiceClient, opts CreateOpts) CreateResult {
-	var res CreateResult
-
-	// Validate
-	if opts.FloatingNetworkID == "" {
-		res.Err = errFloatingNetworkIDRequired
-		return res
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToFloatingIPCreateMap()
+	if err != nil {
+		r.Err = err
+		return
 	}
-
-	// Define structures
-	type floatingIP struct {
-		FloatingNetworkID string `json:"floating_network_id"`
-		FloatingIP        string `json:"floating_ip_address,omitempty"`
-		PortID            string `json:"port_id,omitempty"`
-		FixedIP           string `json:"fixed_ip_address,omitempty"`
-		TenantID          string `json:"tenant_id,omitempty"`
-	}
-	type request struct {
-		FloatingIP floatingIP `json:"floatingip"`
-	}
-
-	// Populate request body
-	reqBody := request{FloatingIP: floatingIP{
-		FloatingNetworkID: opts.FloatingNetworkID,
-		FloatingIP:        opts.FloatingIP,
-		PortID:            opts.PortID,
-		FixedIP:           opts.FixedIP,
-		TenantID:          opts.TenantID,
-	}}
-
-	_, res.Err = c.Post(rootURL(c), reqBody, &res.Body, nil)
-	return res
+	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return
 }
 
 // Get retrieves a particular floating IP resource based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(resourceURL(c, id), &res.Body, nil)
-	return res
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
+}
+
+// UpdateOptsBuilder is the interface type must satisfy to be used as Update
+// options.
+type UpdateOptsBuilder interface {
+	ToFloatingIPUpdateMap() (map[string]interface{}, error)
 }
 
 // UpdateOpts contains the values used when updating a floating IP resource. The
@@ -124,45 +111,35 @@ func Get(c *gophercloud.ServiceClient, id string) GetResult {
 // linked to. To associate the floating IP with a new internal port, provide its
 // ID. To disassociate the floating IP from all ports, provide an empty string.
 type UpdateOpts struct {
-	PortID string
+	PortID string `json:"port_id"`
+}
+
+// ToFloatingIPUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder
+// interface
+func (opts UpdateOpts) ToFloatingIPUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "floatingip")
 }
 
 // Update allows floating IP resources to be updated. Currently, the only way to
 // "update" a floating IP is to associate it with a new internal port, or
 // disassociated it from all ports. See UpdateOpts for instructions of how to
 // do this.
-func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) UpdateResult {
-	type floatingIP struct {
-		PortID *string `json:"port_id"`
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToFloatingIPUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
 	}
-
-	type request struct {
-		FloatingIP floatingIP `json:"floatingip"`
-	}
-
-	var portID *string
-	if opts.PortID == "" {
-		portID = nil
-	} else {
-		portID = &opts.PortID
-	}
-
-	reqBody := request{FloatingIP: floatingIP{PortID: portID}}
-
-	// Send request to API
-	var res UpdateResult
-	_, res.Err = c.Put(resourceURL(c, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
-	return res
+	return
 }
 
 // Delete will permanently delete a particular floating IP resource. Please
 // ensure this is what you want - you can also disassociate the IP from existing
 // internal ports.
-func Delete(c *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = c.Delete(resourceURL(c, id), nil)
-	return res
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return
 }

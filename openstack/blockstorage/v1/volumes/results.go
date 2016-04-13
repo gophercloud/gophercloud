@@ -1,52 +1,50 @@
 package volumes
 
 import (
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/pagination"
-
-	"github.com/mitchellh/mapstructure"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // Volume contains all the information associated with an OpenStack Volume.
 type Volume struct {
 	// Current status of the volume.
-	Status string `mapstructure:"status"`
+	Status string `json:"status"`
 
 	// Human-readable display name for the volume.
-	Name string `mapstructure:"display_name"`
+	Name string `json:"display_name"`
 
 	// Instances onto which the volume is attached.
-	Attachments []map[string]interface{} `mapstructure:"attachments"`
+	Attachments []map[string]interface{} `json:"attachments"`
 
 	// This parameter is no longer used.
-	AvailabilityZone string `mapstructure:"availability_zone"`
+	AvailabilityZone string `json:"availability_zone"`
 
 	// Indicates whether this is a bootable volume.
-	Bootable string `mapstructure:"bootable"`
+	Bootable string `json:"bootable"`
 
 	// The date when this volume was created.
-	CreatedAt string `mapstructure:"created_at"`
+	CreatedAt gophercloud.JSONRFC3339Milli `json:"created_at"`
 
 	// Human-readable description for the volume.
-	Description string `mapstructure:"display_description"`
+	Description string `json:"display_description"`
 
 	// The type of volume to create, either SATA or SSD.
-	VolumeType string `mapstructure:"volume_type"`
+	VolumeType string `json:"volume_type"`
 
 	// The ID of the snapshot from which the volume was created
-	SnapshotID string `mapstructure:"snapshot_id"`
+	SnapshotID string `json:"snapshot_id"`
 
 	// The ID of another block storage volume from which the current volume was created
-	SourceVolID string `mapstructure:"source_volid"`
+	SourceVolID string `json:"source_volid"`
 
 	// Arbitrary key-value pairs defined by the user.
-	Metadata map[string]string `mapstructure:"metadata"`
+	Metadata map[string]string `json:"metadata"`
 
 	// Unique identifier for the volume.
-	ID string `mapstructure:"id"`
+	ID string `json:"id"`
 
 	// Size of the volume in GB.
-	Size int `mapstructure:"size"`
+	Size int `json:"size"`
 }
 
 // CreateResult contains the response body and error from a Create request.
@@ -64,28 +62,24 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
-// ListResult is a pagination.pager that is returned from a call to the List function.
-type ListResult struct {
+// VolumePage is a pagination.pager that is returned from a call to the List function.
+type VolumePage struct {
 	pagination.SinglePageBase
 }
 
-// IsEmpty returns true if a ListResult contains no Volumes.
-func (r ListResult) IsEmpty() (bool, error) {
+// IsEmpty returns true if a VolumePage contains no Volumes.
+func (r VolumePage) IsEmpty() (bool, error) {
 	volumes, err := ExtractVolumes(r)
-	if err != nil {
-		return true, err
-	}
-	return len(volumes) == 0, nil
+	return len(volumes) == 0, err
 }
 
 // ExtractVolumes extracts and returns Volumes. It is used while iterating over a volumes.List call.
-func ExtractVolumes(page pagination.Page) ([]Volume, error) {
-	var response struct {
+func ExtractVolumes(r pagination.Page) ([]Volume, error) {
+	var s struct {
 		Volumes []Volume `json:"volumes"`
 	}
-
-	err := mapstructure.Decode(page.(ListResult).Body, &response)
-	return response.Volumes, err
+	err := (r.(VolumePage)).ExtractInto(&s)
+	return s.Volumes, err
 }
 
 // UpdateResult contains the response body and error from an Update request.
@@ -99,15 +93,9 @@ type commonResult struct {
 
 // Extract will get the Volume object out of the commonResult object.
 func (r commonResult) Extract() (*Volume, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-
-	var res struct {
+	var s struct {
 		Volume *Volume `json:"volume"`
 	}
-
-	err := mapstructure.Decode(r.Body, &res)
-
-	return res.Volume, err
+	err := r.ExtractInto(&s)
+	return s.Volume, err
 }
