@@ -88,4 +88,5 @@ func Create(client *gophercloud.ServiceClient, opts servers.CreateOptsBuilder) (
 	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
+	return
 }

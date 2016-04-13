@@ -43,6 +43,7 @@ func Get(c *gophercloud.ServiceClient, opts GetOptsBuilder) (r GetResult) {
 		r.Header = resp.Header
 	}
 	r.Err = err
+	return
 }
 
 // UpdateOptsBuilder allows extensions to add additional headers to the Update
@@ -95,4 +96,5 @@ func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) (r UpdateResul
 		r.Header = resp.Header
 	}
 	r.Err = err
+	return
 }

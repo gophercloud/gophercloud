@@ -105,6 +105,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		return
 	}
 	_, r.Err = client.Post(baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	return
 }
 
 // List retrieves the status and information for all database instances.
@@ -117,17 +118,20 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 // Get retrieves the status and information for a specified database instance.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(resourceURL(client, id), &r.Body, nil)
+	return
 }
 
 // Delete permanently destroys the database instance.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(resourceURL(client, id), nil)
+	return
 }
 
 // EnableRootUser enables the login from any host for the root user and
 // provides the user with a generated root password.
 func EnableRootUser(client *gophercloud.ServiceClient, id string) (r EnableRootUserResult) {
 	_, r.Err = client.Post(userRootURL(client, id), nil, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	return
 }
 
 // IsRootEnabled checks an instance to see if root access is enabled. It returns
@@ -135,6 +139,7 @@ func EnableRootUser(client *gophercloud.ServiceClient, id string) (r EnableRootU
 // otherwise.
 func IsRootEnabled(client *gophercloud.ServiceClient, id string) (r IsRootEnabledResult) {
 	_, r.Err = client.Get(userRootURL(client, id), &r.Body, nil)
+	return
 }
 
 // Restart will restart only the MySQL Instance. Restarting MySQL will
@@ -143,6 +148,7 @@ func IsRootEnabled(client *gophercloud.ServiceClient, id string) (r IsRootEnable
 func Restart(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 	b := map[string]interface{}{"restart": struct{}{}}
 	_, r.Err = client.Post(actionURL(client, id), &b, nil, nil)
+	return
 }
 
 // Resize changes the memory size of the instance, assuming a valid
@@ -150,6 +156,7 @@ func Restart(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 func Resize(client *gophercloud.ServiceClient, id, flavorRef string) (r ActionResult) {
 	b := map[string]interface{}{"resize": map[string]string{"flavorRef": flavorRef}}
 	_, r.Err = client.Post(actionURL(client, id), &b, nil, nil)
+	return
 }
 
 // ResizeVolume will resize the attached volume for an instance. It supports
@@ -158,4 +165,5 @@ func Resize(client *gophercloud.ServiceClient, id, flavorRef string) (r ActionRe
 func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) (r ActionResult) {
 	b := map[string]interface{}{"resize": map[string]interface{}{"volume": map[string]int{"size": size}}}
 	_, r.Err = client.Post(actionURL(client, id), &b, nil, nil)
+	return
 }

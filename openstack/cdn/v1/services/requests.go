@@ -91,6 +91,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 	resp, err := c.Post(createURL(c), &b, nil, nil)
 	r.Header = resp.Header
 	r.Err = err
+	return
 }
 
 // Get retrieves a specific service based on its URL or its unique ID. For
@@ -105,6 +106,7 @@ func Get(c *gophercloud.ServiceClient, idOrURL string) (r GetResult) {
 		url = getURL(c, idOrURL)
 	}
 	_, r.Err = c.Get(url, &r.Body, nil)
+	return
 }
 
 // Path is a JSON pointer location that indicates which service parameter is being added, replaced,
@@ -264,6 +266,7 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) (r Up
 	})
 	r.Header = resp.Header
 	r.Err = err
+	return
 }
 
 // Delete accepts a service's ID or its URL and deletes the CDN service
@@ -278,4 +281,5 @@ func Delete(c *gophercloud.ServiceClient, idOrURL string) (r DeleteResult) {
 		url = deleteURL(c, idOrURL)
 	}
 	_, r.Err = c.Delete(url, nil)
+	return
 }

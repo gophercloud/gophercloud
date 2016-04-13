@@ -56,6 +56,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	_, r.Err = client.Post(rootURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // UpdateOpts is the struct responsible for updating an existing security group.
@@ -82,16 +83,19 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	_, r.Err = client.Put(resourceURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // Get will return details for a particular security group.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(resourceURL(client, id), &r.Body, nil)
+	return
 }
 
 // Delete will permanently delete a security group from the project.
 func Delete(client *gophercloud.ServiceClient, id string) (r gophercloud.ErrResult) {
 	_, r.Err = client.Delete(resourceURL(client, id), nil)
+	return
 }
 
 // CreateRuleOpts represents the configuration for adding a new rule to an
@@ -138,11 +142,13 @@ func CreateRule(client *gophercloud.ServiceClient, opts CreateRuleOptsBuilder) (
 	_, r.Err = client.Post(rootRuleURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // DeleteRule will permanently delete a rule from a security group.
 func DeleteRule(client *gophercloud.ServiceClient, id string) (r gophercloud.ErrResult) {
 	_, r.Err = client.Delete(resourceRuleURL(client, id), nil)
+	return
 }
 
 func actionMap(prefix, groupName string) map[string]map[string]string {
@@ -155,9 +161,11 @@ func actionMap(prefix, groupName string) map[string]map[string]string {
 // rules of the group on the server.
 func AddServer(client *gophercloud.ServiceClient, serverID, groupName string) (r gophercloud.ErrResult) {
 	_, r.Err = client.Post(serverActionURL(client, serverID), actionMap("add", groupName), &r.Body, nil)
+	return
 }
 
 // RemoveServer will disassociate a server from a security group.
 func RemoveServer(client *gophercloud.ServiceClient, serverID, groupName string) (r gophercloud.ErrResult) {
 	_, r.Err = client.Post(serverActionURL(client, serverID), actionMap("remove", groupName), &r.Body, nil)
+	return
 }

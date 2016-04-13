@@ -16,4 +16,5 @@ func List(c *gophercloud.ServiceClient) pagination.Pager {
 // type from the result, call the Extract method on the GetResult.
 func Get(client *gophercloud.ServiceClient, v string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, v), &r.Body, nil)
+	return
 }

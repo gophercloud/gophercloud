@@ -1,7 +1,6 @@
 package tokens
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
@@ -13,7 +12,8 @@ func tokenPost(t *testing.T, options gophercloud.AuthOptions, requestJSON string
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleTokenPost(t, requestJSON)
-	return Create(client.ServiceClient(), options)
+
+	return Create(client.ServiceClient(), AuthOptions{options})
 }
 
 func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr error) {
@@ -21,30 +21,15 @@ func tokenPostErr(t *testing.T, options gophercloud.AuthOptions, expectedErr err
 	defer th.TeardownHTTP()
 	HandleTokenPost(t, "")
 
-	actualErr := Create(client.ServiceClient(), options).Err
-	th.CheckDeepEquals(t, reflect.TypeOf(expectedErr), reflect.TypeOf(actualErr))
-}
-
-func TestCreateWithToken(t *testing.T) {
-	options := gophercloud.AuthOptions{
-		TokenID: "cbc36478b0bd8e67e89469c7749d4127",
-	}
-
-	IsSuccessful(t, tokenPost(t, options, `
-    {
-      "auth": {
-        "token": {
-          "id": "cbc36478b0bd8e67e89469c7749d4127"
-        }
-      }
-    }
-  `))
+	actualErr := Create(client.ServiceClient(), AuthOptions{options}).Err
+	th.CheckDeepEquals(t, expectedErr, actualErr)
 }
 
 func TestCreateWithPassword(t *testing.T) {
-	options := gophercloud.AuthOptions{}
-	options.Username = "me"
-	options.Password = "swordfish"
+	options := gophercloud.AuthOptions{
+		Username: "me",
+		Password: "swordfish",
+	}
 
 	IsSuccessful(t, tokenPost(t, options, `
     {
@@ -59,10 +44,11 @@ func TestCreateWithPassword(t *testing.T) {
 }
 
 func TestCreateTokenWithTenantID(t *testing.T) {
-	options := gophercloud.AuthOptions{}
-	options.Username = "me"
-	options.Password = "opensesame"
-	options.TenantID = "fc394f2ab2df4114bde39905f800dc57"
+	options := gophercloud.AuthOptions{
+		Username: "me",
+		Password: "opensesame",
+		TenantID: "fc394f2ab2df4114bde39905f800dc57",
+	}
 
 	IsSuccessful(t, tokenPost(t, options, `
     {
@@ -78,10 +64,11 @@ func TestCreateTokenWithTenantID(t *testing.T) {
 }
 
 func TestCreateTokenWithTenantName(t *testing.T) {
-	options := gophercloud.AuthOptions{}
-	options.Username = "me"
-	options.Password = "opensesame"
-	options.TenantName = "demo"
+	options := gophercloud.AuthOptions{
+		Username:   "me",
+		Password:   "opensesame",
+		TenantName: "demo",
+	}
 
 	IsSuccessful(t, tokenPost(t, options, `
     {
@@ -97,29 +84,18 @@ func TestCreateTokenWithTenantName(t *testing.T) {
 }
 
 func TestRequireUsername(t *testing.T) {
-	options := gophercloud.AuthOptions{}
-	options.Password = "thing"
+	options := gophercloud.AuthOptions{
+		Password: "thing",
+	}
 
-	expected := gophercloud.ErrMissingInput{}
-	expected.Argument = "tokens.AuthOptions.Username/tokens.AuthOptions.TokenID"
-	expected.Info = "You must provide either username/password or tenantID/token values."
-	tokenPostErr(t, options, expected)
+	tokenPostErr(t, options, gophercloud.ErrMissingInput{Argument: "Username"})
 }
 
-func TestRequirePassword(t *testing.T) {
-	options := gophercloud.AuthOptions{}
-	options.Username = "me"
-
-	expected := gophercloud.ErrMissingInput{}
-	expected.Argument = "tokens.AuthOptions.Password"
-	tokenPostErr(t, options, expected)
-}
-
-func tokenGet(t *testing.T, tokenID string) GetResult {
+func tokenGet(t *testing.T, tokenId string) GetResult {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleTokenGet(t, tokenID)
-	return Get(client.ServiceClient(), tokenID)
+	HandleTokenGet(t, tokenId)
+	return Get(client.ServiceClient(), tokenId)
 }
 
 func TestGetWithToken(t *testing.T) {

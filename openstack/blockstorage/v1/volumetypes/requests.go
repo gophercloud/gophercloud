@@ -35,17 +35,20 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
+	return
 }
 
 // Delete will delete the volume type with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
 }
 
 // Get will retrieve the volume type with the provided ID. To extract the volume
 // type from the result, call the Extract method on the GetResult.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
 }
 
 // List returns all volume types.

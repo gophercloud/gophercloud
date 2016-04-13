@@ -15,6 +15,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 // Get will retrieve the details of a specified datastore type.
 func Get(client *gophercloud.ServiceClient, datastoreID string) (r GetResult) {
 	_, r.Err = client.Get(resourceURL(client, datastoreID), &r.Body, nil)
+	return
 }
 
 // ListVersions will list all of the available versions for a specified
@@ -28,4 +29,5 @@ func ListVersions(client *gophercloud.ServiceClient, datastoreID string) paginat
 // GetVersion will retrieve the details of a specified datastore version.
 func GetVersion(client *gophercloud.ServiceClient, datastoreID, versionID string) (r GetVersionResult) {
 	_, r.Err = client.Get(versionURL(client, datastoreID, versionID), &r.Body, nil)
+	return
 }

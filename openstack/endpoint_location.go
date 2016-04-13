@@ -51,7 +51,6 @@ func V2EndpointURL(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpt
 
 	// Report an error if there were no matching endpoints.
 	err := &gophercloud.ErrEndpointNotFound{}
-	err.Function = "openstack.V2EndpointURL"
 	return "", err
 }
 

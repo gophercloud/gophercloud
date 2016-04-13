@@ -58,6 +58,7 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 // Use ExtractFlavor to convert its result into a Flavor.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
 }
 
 // IDFromName is a convienience function that returns a flavor's ID given its name.

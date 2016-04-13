@@ -57,11 +57,13 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	_, r.Err = client.Post(rootURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
+	return
 }
 
 // Get requests details on a single user, either by ID.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(ResourceURL(client, id), &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder allows extensions to add additional attributes to the Update request.
@@ -87,11 +89,13 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	_, r.Err = client.Put(ResourceURL(client, id), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // Delete is the operation responsible for permanently deleting an API user.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(ResourceURL(client, id), nil)
+	return
 }
 
 // ListRoles lists the existing roles that can be assigned to users.

@@ -202,7 +202,7 @@ func (p Pager) AllPages() (Page, error) {
 			body.Index(i).Set(reflect.ValueOf(s))
 		}
 	default:
-		err = gophercloud.ErrUnexpectedType{}
+		err := gophercloud.ErrUnexpectedType{}
 		err.Expected = "map[string]interface{}/[]byte/[]interface{}"
 		err.Actual = fmt.Sprintf("%v", reflect.TypeOf(testPage.GetBody()))
 		return nil, err

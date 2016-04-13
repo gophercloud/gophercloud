@@ -98,11 +98,13 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return
 }
 
 // Get retrieves a particular pool based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder is the interface types must satisfy to be used as options
@@ -136,11 +138,13 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // Delete will permanently delete a particular pool based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return
 }
 
 // AssociateMonitor will associate a health monitor with a particular pool.
@@ -151,6 +155,7 @@ func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) (r AssociateResult) {
 	b := map[string]interface{}{"health_monitor": map[string]string{"id": monitorID}}
 	_, r.Err = c.Post(associateURL(c, poolID), b, &r.Body, nil)
+	return
 }
 
 // DisassociateMonitor will disassociate a health monitor with a particular
@@ -158,4 +163,5 @@ func AssociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) (r
 // check for the health of the members of the pool.
 func DisassociateMonitor(c *gophercloud.ServiceClient, poolID, monitorID string) (r AssociateResult) {
 	_, r.Err = c.Delete(disassociateURL(c, poolID, monitorID), nil)
+	return
 }

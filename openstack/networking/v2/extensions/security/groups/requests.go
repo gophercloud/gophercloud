@@ -61,16 +61,19 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return
 }
 
 // Get retrieves a particular security group based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
 }
 
 // Delete will permanently delete a particular security group based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return
 }
 
 // IDFromName is a convenience function that returns a security group's ID given its name.

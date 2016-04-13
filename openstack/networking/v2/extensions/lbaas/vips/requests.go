@@ -104,11 +104,13 @@ func Create(c *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
 		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return
 }
 
 // Get retrieves a particular virtual IP based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder is what types must satisfy to be used as Update
@@ -151,9 +153,11 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
+	return
 }
 
 // Delete will permanently delete a particular virtual IP based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return
 }

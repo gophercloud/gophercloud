@@ -109,11 +109,13 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 		r.Header = resp.Header
 	}
 	r.Err = err
+	return
 }
 
 // Delete is a function that deletes a container.
 func Delete(c *gophercloud.ServiceClient, containerName string) (r DeleteResult) {
 	_, r.Err = c.Delete(deleteURL(c, containerName), nil)
+	return
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
@@ -171,6 +173,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 		r.Header = resp.Header
 	}
 	r.Err = err
+	return
 }
 
 // Get is a function that retrieves the metadata of a container. To extract just
@@ -184,4 +187,5 @@ func Get(c *gophercloud.ServiceClient, containerName string) (r GetResult) {
 		r.Header = resp.Header
 	}
 	r.Err = err
+	return
 }

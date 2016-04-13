@@ -159,7 +159,20 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		}
 	}
 
-	result := tokens3.Create(v3Client, options, scope)
+	v3Opts := tokens3.AuthOptions{
+		IdentityEndpoint: options.IdentityEndpoint,
+		Username:         options.Username,
+		UserID:           options.UserID,
+		Password:         options.Password,
+		DomainID:         options.DomainID,
+		DomainName:       options.DomainName,
+		TenantID:         options.TenantID,
+		TenantName:       options.TenantName,
+		AllowReauth:      options.AllowReauth,
+		TokenID:          options.TokenID,
+	}
+
+	result := tokens3.Create(v3Client, v3Opts, scope)
 
 	token, err := result.ExtractToken()
 	if err != nil {

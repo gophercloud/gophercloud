@@ -69,6 +69,7 @@ func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOpt
 		return
 	}
 	_, r.Err = client.Post(baseURL(client, instanceID), &b, nil, nil)
+	return
 }
 
 // List will list all of the databases for a specified instance. Note: this
@@ -84,4 +85,5 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 // All contained data inside the database will also be permanently deleted.
 func Delete(client *gophercloud.ServiceClient, instanceID, dbName string) (r DeleteResult) {
 	_, r.Err = client.Delete(dbURL(client, instanceID, dbName), nil)
+	return
 }

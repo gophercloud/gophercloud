@@ -131,6 +131,7 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 		r.Body = resp.Body
 	}
 	r.Err = err
+	return
 }
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
@@ -215,6 +216,7 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	if resp != nil {
 		r.Header = resp.Header
 	}
+	return
 }
 
 // CopyOptsBuilder allows extensions to add additional parameters to the
@@ -267,6 +269,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 		r.Header = resp.Header
 	}
 	r.Err = err
+	return
 }
 
 // DeleteOptsBuilder allows extensions to add additional parameters to the
@@ -302,6 +305,7 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		r.Header = resp.Header
 	}
 	r.Err = err
+	return
 }
 
 // GetOptsBuilder allows extensions to add additional parameters to the
@@ -341,6 +345,7 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 		r.Header = resp.Header
 	}
 	r.Err = err
+	return
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
@@ -395,6 +400,7 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		r.Header = resp.Header
 	}
 	r.Err = err
+	return
 }
 
 // HTTPMethod represents an HTTP method string (e.g. "GET").

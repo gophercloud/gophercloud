@@ -226,7 +226,7 @@ func isUnderlyingStructZero(v reflect.Value) bool {
 var t time.Time
 
 func isZero(v reflect.Value) bool {
-	fmt.Printf("\n\nchecking isZero for value: %+v\n", v)
+	//fmt.Printf("\n\nchecking isZero for value: %+v\n", v)
 	switch v.Kind() {
 	case reflect.Ptr:
 		if v.IsNil() {
@@ -256,7 +256,7 @@ func isZero(v reflect.Value) bool {
 	}
 	// Compare other types directly:
 	z := reflect.Zero(v.Type())
-	fmt.Printf("zero type for value: %+v\n\n\n", z)
+	//fmt.Printf("zero type for value: %+v\n\n\n", z)
 	return v.Interface() == z.Interface()
 }
 

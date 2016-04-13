@@ -44,17 +44,20 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
+	return
 }
 
 // Delete will delete the existing Volume with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
 }
 
 // Get retrieves the Volume with the provided ID. To extract the Volume object
 // from the response, call the Extract method on the GetResult.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
 }
 
 // ListOptsBuilder allows extensions to add additional parameters to the List
@@ -129,6 +132,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	_, r.Err = client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // IDFromName is a convienience function that returns a server's ID given its name.

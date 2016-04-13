@@ -40,17 +40,20 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
+	return
 }
 
 // Delete will delete the existing Snapshot with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
 }
 
 // Get retrieves the Snapshot with the provided ID. To extract the Snapshot
 // object from the response, call the Extract method on the GetResult.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
 }
 
 // ListOptsBuilder allows extensions to add additional parameters to the List
@@ -120,6 +123,7 @@ func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMet
 	_, r.Err = client.Put(updateMetadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // IDFromName is a convienience function that returns a snapshot's ID given its name.

@@ -31,7 +31,7 @@ type ErrMultipleMatchingEndpointsV2 struct {
 	Endpoints []tokens2.Endpoint
 }
 
-func (e *ErrMultipleMatchingEndpointsV2) Error() string {
+func (e ErrMultipleMatchingEndpointsV2) Error() string {
 	return fmt.Sprintf("Discovered %d matching endpoints: %#v", len(e.Endpoints), e.Endpoints)
 }
 
@@ -42,7 +42,7 @@ type ErrMultipleMatchingEndpointsV3 struct {
 	Endpoints []tokens3.Endpoint
 }
 
-func (e *ErrMultipleMatchingEndpointsV3) Error() string {
+func (e ErrMultipleMatchingEndpointsV3) Error() string {
 	return fmt.Sprintf("Discovered %d matching endpoints: %#v", len(e.Endpoints), e.Endpoints)
 }
 
@@ -50,7 +50,7 @@ func (e *ErrMultipleMatchingEndpointsV3) Error() string {
 // found
 type ErrNoAuthURL struct{ gophercloud.ErrInvalidInput }
 
-func (e *ErrNoAuthURL) Error() string {
+func (e ErrNoAuthURL) Error() string {
 	return "Environment variable OS_AUTH_URL needs to be set."
 }
 
@@ -58,7 +58,7 @@ func (e *ErrNoAuthURL) Error() string {
 // found
 type ErrNoUsername struct{ gophercloud.ErrInvalidInput }
 
-func (e *ErrNoUsername) Error() string {
+func (e ErrNoUsername) Error() string {
 	return "Environment variable OS_USERNAME needs to be set."
 }
 
@@ -66,6 +66,6 @@ func (e *ErrNoUsername) Error() string {
 // found
 type ErrNoPassword struct{ gophercloud.ErrInvalidInput }
 
-func (e *ErrNoPassword) Error() string {
+func (e ErrNoPassword) Error() string {
 	return "Environment variable OS_PASSWORD needs to be set."
 }

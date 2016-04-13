@@ -5,6 +5,7 @@ import "github.com/gophercloud/gophercloud"
 // Get retreives data for the given stack template.
 func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, stackName, stackID), &r.Body, nil)
+	return
 }
 
 // ValidateOptsBuilder describes struct types that can be accepted by the Validate call.
@@ -34,4 +35,5 @@ func Validate(c *gophercloud.ServiceClient, opts ValidateOptsBuilder) (r Validat
 	_, r.Err = c.Post(validateURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }

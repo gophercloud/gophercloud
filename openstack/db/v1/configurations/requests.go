@@ -54,11 +54,13 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		return
 	}
 	_, r.Err = client.Post(baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	return
 }
 
 // Get will retrieve the details for a specified configuration group.
 func Get(client *gophercloud.ServiceClient, configID string) (r GetResult) {
 	_, r.Err = client.Get(resourceURL(client, configID), &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder is the top-level interface for casting update options into
@@ -96,6 +98,7 @@ func Update(client *gophercloud.ServiceClient, configID string, opts UpdateOptsB
 		return
 	}
 	_, r.Err = client.Patch(resourceURL(client, configID), &b, nil, nil)
+	return
 }
 
 // Replace will modify an existing configuration group by overwriting the
@@ -108,6 +111,7 @@ func Replace(client *gophercloud.ServiceClient, configID string, opts UpdateOpts
 		return
 	}
 	_, r.Err = client.Put(resourceURL(client, configID), &b, nil, nil)
+	return
 }
 
 // Delete will permanently delete a configuration group. Please note that
@@ -115,6 +119,7 @@ func Replace(client *gophercloud.ServiceClient, configID string, opts UpdateOpts
 // you must detach and then delete them.
 func Delete(client *gophercloud.ServiceClient, configID string) (r DeleteResult) {
 	_, r.Err = client.Delete(resourceURL(client, configID), nil)
+	return
 }
 
 // ListInstances will list all the instances associated with a particular
@@ -143,6 +148,7 @@ func ListDatastoreParams(client *gophercloud.ServiceClient, datastoreID, version
 // operation.
 func GetDatastoreParam(client *gophercloud.ServiceClient, datastoreID, versionID, paramID string) (r ParamResult) {
 	_, r.Err = client.Get(getDSParamURL(client, datastoreID, versionID, paramID), &r.Body, nil)
+	return
 }
 
 // ListGlobalParams is similar to ListDatastoreParams but does not require a
@@ -157,4 +163,5 @@ func ListGlobalParams(client *gophercloud.ServiceClient, versionID string) pagin
 // DatastoreID.
 func GetGlobalParam(client *gophercloud.ServiceClient, versionID, paramID string) (r ParamResult) {
 	_, r.Err = client.Get(getGlobalParamURL(client, versionID, paramID), &r.Body, nil)
+	return
 }

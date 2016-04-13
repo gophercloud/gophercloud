@@ -61,6 +61,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // Get retrieves a specific subnet based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
 }
 
 // IPVersion is the IP address version for the subnet. Valid instances are
@@ -109,6 +110,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		return
 	}
 	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
@@ -142,11 +144,13 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 	_, r.Err = c.Put(updateURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
+	return
 }
 
 // Delete accepts a unique ID and deletes the subnet associated with it.
 func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(deleteURL(c, id), nil)
+	return
 }
 
 // IDFromName is a convenience function that returns a subnet's ID given its name.

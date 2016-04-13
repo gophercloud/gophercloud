@@ -88,11 +88,13 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return
 }
 
 // Get retrieves a particular firewall policy based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -127,11 +129,13 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // Delete will permanently delete a particular firewall policy based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return
 }
 
 type InsertRuleOptsBuilder interface {
@@ -157,6 +161,7 @@ func AddRule(c *gophercloud.ServiceClient, id string, opts InsertRuleOptsBuilder
 	_, r.Err = c.Put(insertURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 func RemoveRule(c *gophercloud.ServiceClient, id, ruleID string) (r RemoveRuleResult) {
@@ -164,4 +169,5 @@ func RemoveRule(c *gophercloud.ServiceClient, id, ruleID string) (r RemoveRuleRe
 	_, r.Err = c.Put(removeURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }

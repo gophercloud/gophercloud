@@ -93,6 +93,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		return
 	}
 	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
+	return
 }
 
 // AdoptOptsBuilder is the interface options structs have to satisfy in order
@@ -181,6 +182,7 @@ func Adopt(c *gophercloud.ServiceClient, opts AdoptOptsBuilder) (r AdoptResult) 
 		return
 	}
 	_, r.Err = c.Post(adoptURL(c), b, &r.Body, nil)
+	return
 }
 
 // SortDir is a type for specifying in which direction to sort a list of stacks.
@@ -252,10 +254,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 }
 
 // Get retreives a stack based on the stack name and stack ID.
-func Get(c *gophercloud.ServiceClient, stackName, stackID string) GetResult {
-	var r GetResult
+func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, stackName, stackID), &r.Body, nil)
-	return r
+	return
 }
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -336,11 +337,13 @@ func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts Update
 		return
 	}
 	_, r.Err = c.Put(updateURL(c, stackName, stackID), b, nil, nil)
+	return
 }
 
 // Delete deletes a stack based on the stack name and stack ID.
 func Delete(c *gophercloud.ServiceClient, stackName, stackID string) (r DeleteResult) {
 	_, r.Err = c.Delete(deleteURL(c, stackName, stackID), nil)
+	return
 }
 
 // PreviewOptsBuilder is the interface options structs have to satisfy in order
@@ -423,6 +426,7 @@ func Preview(c *gophercloud.ServiceClient, opts PreviewOptsBuilder) (r PreviewRe
 	_, r.Err = c.Post(previewURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // Abandon deletes the stack with the provided stackName and stackID, but leaves its
@@ -432,4 +436,5 @@ func Abandon(c *gophercloud.ServiceClient, stackName, stackID string) (r Abandon
 		JSONResponse: &r.Body,
 		OkCodes:      []int{200},
 	})
+	return
 }

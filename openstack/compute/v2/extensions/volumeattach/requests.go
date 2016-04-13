@@ -41,14 +41,17 @@ func Create(client *gophercloud.ServiceClient, serverID string, opts CreateOptsB
 	_, r.Err = client.Post(createURL(client, serverID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // Get returns public data about a previously created VolumeAttachment.
 func Get(client *gophercloud.ServiceClient, serverID, attachmentID string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, serverID, attachmentID), &r.Body, nil)
+	return
 }
 
 // Delete requests the deletion of a previous stored VolumeAttachment from the server.
 func Delete(client *gophercloud.ServiceClient, serverID, attachmentID string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, serverID, attachmentID), nil)
+	return
 }

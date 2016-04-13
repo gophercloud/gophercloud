@@ -55,6 +55,7 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 // Get retrieves a specific network based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
 }
 
 // CreateOptsBuilder is the interface options structs have to satisfy in order
@@ -92,6 +93,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		return
 	}
 	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
+	return
 }
 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
@@ -125,11 +127,13 @@ func Update(c *gophercloud.ServiceClient, networkID string, opts UpdateOptsBuild
 	_, r.Err = c.Put(updateURL(c, networkID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
+	return
 }
 
 // Delete accepts a unique ID and deletes the network associated with it.
 func Delete(c *gophercloud.ServiceClient, networkID string) (r DeleteResult) {
 	_, r.Err = c.Delete(deleteURL(c, networkID), nil)
+	return
 }
 
 // IDFromName is a convenience function that returns a network's ID given its name.

@@ -73,11 +73,13 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return
 }
 
 // Get retrieves a particular router based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
 }
 
 type UpdateOptsBuilder interface {
@@ -111,11 +113,13 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // Delete will permanently delete a particular router based on its unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return
 }
 
 // AddInterfaceOptsBuilder is what types must satisfy to be used as AddInterface
@@ -167,6 +171,7 @@ func AddInterface(c *gophercloud.ServiceClient, id string, opts AddInterfaceOpts
 	_, r.Err = c.Put(addInterfaceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // RemoveInterfaceOptsBuilder is what types must satisfy to be used as RemoveInterface
@@ -210,4 +215,5 @@ func RemoveInterface(c *gophercloud.ServiceClient, id string, opts RemoveInterfa
 	_, r.Err = c.Put(removeInterfaceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }

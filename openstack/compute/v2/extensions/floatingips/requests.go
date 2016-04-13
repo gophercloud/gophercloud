@@ -39,16 +39,19 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // Get returns data about a previously created FloatingIP.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
 }
 
 // Delete requests the deletion of a previous allocated FloatingIP.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
 }
 
 // AssociateOptsBuilder is the interface types must satfisfy to be used as
@@ -78,6 +81,7 @@ func AssociateInstance(client *gophercloud.ServiceClient, serverID string, opts 
 		return
 	}
 	_, r.Err = client.Post(associateURL(client, serverID), b, nil, nil)
+	return
 }
 
 // DisassociateOptsBuilder is the interface types must satfisfy to be used as
@@ -104,4 +108,5 @@ func DisassociateInstance(client *gophercloud.ServiceClient, serverID string, op
 		return
 	}
 	_, r.Err = client.Post(disassociateURL(client, serverID), b, nil, nil)
+	return
 }

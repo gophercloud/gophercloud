@@ -46,14 +46,17 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	_, r.Err = client.Post(rootURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
 }
 
 // Get will return details for a particular default rule.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(resourceURL(client, id), &r.Body, nil)
+	return
 }
 
 // Delete will permanently delete a default rule from the project.
 func Delete(client *gophercloud.ServiceClient, id string) (r gophercloud.ErrResult) {
 	_, r.Err = client.Delete(resourceURL(client, id), nil)
+	return
 }

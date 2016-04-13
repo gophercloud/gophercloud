@@ -72,6 +72,7 @@ func Create(client *gophercloud.ServiceClient, instanceID string, opts CreateOpt
 		return
 	}
 	_, r.Err = client.Post(baseURL(client, instanceID), &b, nil, nil)
+	return
 }
 
 // List will list all the users associated with a specified database instance,
@@ -86,4 +87,5 @@ func List(client *gophercloud.ServiceClient, instanceID string) pagination.Pager
 // Delete will permanently delete a user from a specified database instance.
 func Delete(client *gophercloud.ServiceClient, instanceID, userName string) (r DeleteResult) {
 	_, r.Err = client.Delete(userURL(client, instanceID, userName), nil)
+	return
 }

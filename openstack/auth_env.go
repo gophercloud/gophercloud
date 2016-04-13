@@ -23,23 +23,17 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	domainName := os.Getenv("OS_DOMAIN_NAME")
 
 	if authURL == "" {
-		err := &ErrNoAuthURL{}
-		err.Function = "openstack.AuthOptionsFromEnv"
-		err.Argument = "authURL"
+		err := gophercloud.ErrMissingInput{Argument: "authURL"}
 		return nilOptions, err
 	}
 
 	if username == "" && userID == "" {
-		err := &ErrNoUsername{}
-		err.Function = "openstack.AuthOptionsFromEnv"
-		err.Argument = "username"
+		err := gophercloud.ErrMissingInput{Argument: "username"}
 		return nilOptions, err
 	}
 
 	if password == "" {
-		err := &ErrNoPassword{}
-		err.Function = "openstack.AuthOptionsFromEnv"
-		err.Argument = "password"
+		err := gophercloud.ErrMissingInput{Argument: "password"}
 		return nilOptions, err
 	}
 

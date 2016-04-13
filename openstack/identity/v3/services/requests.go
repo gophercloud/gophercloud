@@ -9,6 +9,7 @@ import (
 func Create(client *gophercloud.ServiceClient, serviceType string) (r CreateResult) {
 	b := map[string]string{"type": serviceType}
 	_, r.Err = client.Post(listURL(client), b, &r.Body, nil)
+	return
 }
 
 type ListOptsBuilder interface {
@@ -45,16 +46,19 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // Get returns additional information about a service, given its ID.
 func Get(client *gophercloud.ServiceClient, serviceID string) (r GetResult) {
 	_, r.Err = client.Get(serviceURL(client, serviceID), &r.Body, nil)
+	return
 }
 
 // Update changes the service type of an existing service.
 func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) (r UpdateResult) {
 	b := map[string]string{"type": serviceType}
 	_, r.Err = client.Patch(serviceURL(client, serviceID), &b, &r.Body, nil)
+	return
 }
 
 // Delete removes an existing service.
 // It either deletes all associated endpoints, or fails until all endpoints are deleted.
 func Delete(client *gophercloud.ServiceClient, serviceID string) (r DeleteResult) {
 	_, r.Err = client.Delete(serviceURL(client, serviceID), nil)
+	return
 }
