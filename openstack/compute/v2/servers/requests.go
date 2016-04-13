@@ -731,3 +731,12 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 		return "", gophercloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "server"}
 	}
 }
+
+// GetPassword makes a request against the nova API to get the encrypted administrative password.
+func GetPassword(client *gophercloud.ServiceClient, serverId string) GetPasswordResult {
+	var res GetPasswordResult
+	_, res.Err = client.Request("GET", passwordURL(client, serverId), gophercloud.RequestOpts{
+		JSONResponse: &res.Body,
+	})
+	return res
+}
