@@ -135,6 +135,21 @@ func TestCreateTokenID(t *testing.T) {
 	`)
 }
 
+func TestCreateNewTokenID(t *testing.T) {
+	authTokenPost(t, gophercloud.AuthOptions{TokenID: "asdf"}, nil, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["token"],
+					"token": {
+						"id": "asdf"
+					}
+				}
+			}
+		}
+	`)
+}
+
 func TestCreateProjectIDScope(t *testing.T) {
 	options := gophercloud.AuthOptions{UserID: "fenris", Password: "g0t0h311"}
 	scope := &Scope{ProjectID: "123456"}
