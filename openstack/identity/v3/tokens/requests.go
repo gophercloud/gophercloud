@@ -96,12 +96,6 @@ func Create(c *gophercloud.ServiceClient, options gophercloud.AuthOptions, scope
 			if options.UserID != "" {
 				return createErr(ErrUserIDWithToken)
 			}
-			if options.DomainID != "" {
-				return createErr(ErrDomainIDWithToken)
-			}
-			if options.DomainName != "" {
-				return createErr(ErrDomainNameWithToken)
-			}
 
 			// Configure the request for Token authentication.
 			req.Auth.Identity.Methods = []string{"token"}
