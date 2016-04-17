@@ -55,7 +55,7 @@ func listPools(t *testing.T) {
 		}
 
 		for _, p := range poolList {
-			t.Logf("Listing pool: ID [%s] Name [%s] Status [%s] LB algorithm [%s]", p.ID, p.Name, p.Status, p.LBMethod)
+			t.Logf("Listing pool: ID [%s] Name [%s] Status [%s] LB algorithm [%s] Provider [%s]", p.ID, p.Name, p.Status, p.LBMethod, p.Provider)
 		}
 
 		return true, nil
