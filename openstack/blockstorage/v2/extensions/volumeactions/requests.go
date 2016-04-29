@@ -4,10 +4,22 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
+// AttachOptsBuilder allows extensions to add additional parameters to the
+// Attach request.
 type AttachOptsBuilder interface {
 	ToVolumeAttachMap() (map[string]interface{}, error)
 }
 
+// AttachMode describes the attachment mode for volumes.
+type AttachMode string
+
+// These constants determine how a volume is attached
+const (
+	ReadOnly  AttachMode = "ro"
+	ReadWrite AttachMode = "rw"
+)
+
+// AttachOpts contains options for attaching a Volume.
 type AttachOpts struct {
 	// The mountpoint of this volume
 	MountPoint string
@@ -16,9 +28,11 @@ type AttachOpts struct {
 	// The hostname of baremetal host, can't set simultaneously with InstanceUUID
 	HostName string
 	// Mount mode of this volume
-	Mode string
+	Mode AttachMode
 }
 
+// ToVolumeAttachMap assembles a request body based on the contents of a
+// AttachOpts.
 func (opts AttachOpts) ToVolumeAttachMap() (map[string]interface{}, error) {
 	v := make(map[string]interface{})
 
@@ -38,6 +52,7 @@ func (opts AttachOpts) ToVolumeAttachMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"os-attach": v}, nil
 }
 
+// Attach will attach a volume based on the values in AttachOpts.
 func Attach(client *gophercloud.ServiceClient, id string, opts AttachOptsBuilder) AttachResult {
 	var res AttachResult
 
@@ -48,12 +63,13 @@ func Attach(client *gophercloud.ServiceClient, id string, opts AttachOptsBuilder
 	}
 
 	_, res.Err = client.Post(attachURL(client, id), reqBody, &res.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 201, 202},
+		OkCodes: []int{202},
 	})
 
 	return res
 }
 
+// Attach will detach a volume based on volume id.
 func Detach(client *gophercloud.ServiceClient, id string) DetachResult {
 	var res DetachResult
 
@@ -61,12 +77,13 @@ func Detach(client *gophercloud.ServiceClient, id string) DetachResult {
 	reqBody := map[string]interface{}{"os-detach": v}
 
 	_, res.Err = client.Post(detachURL(client, id), reqBody, &res.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 201, 202},
+		OkCodes: []int{202},
 	})
 
 	return res
 }
 
+// Reserve will reserve a volume based on volume id.
 func Reserve(client *gophercloud.ServiceClient, id string) ReserveResult {
 	var res ReserveResult
 
@@ -80,6 +97,7 @@ func Reserve(client *gophercloud.ServiceClient, id string) ReserveResult {
 	return res
 }
 
+// Unreserve will unreserve a volume based on volume id.
 func Unreserve(client *gophercloud.ServiceClient, id string) UnreserveResult {
 	var res UnreserveResult
 
@@ -93,21 +111,26 @@ func Unreserve(client *gophercloud.ServiceClient, id string) UnreserveResult {
 	return res
 }
 
+// ConnectorOptsBuilder allows extensions to add additional parameters to the
+// InitializeConnection request.
 type ConnectorOptsBuilder interface {
 	ToConnectorMap() (map[string]interface{}, error)
 }
 
+// ConnectorOpts hosts options for InitializeConnection.
 type ConnectorOpts struct {
 	IP        string
 	Host      string
 	Initiator string
-	Wwpns     string
+	Wwpns     []string
 	Wwnns     string
 	Multipath bool
 	Platform  string
 	OSType    string
 }
 
+// ToConnectorMap assembles a request body based on the contents of a
+// ConnectorOpts.
 func (opts ConnectorOpts) ToConnectorMap() (map[string]interface{}, error) {
 	v := make(map[string]interface{})
 
@@ -120,7 +143,7 @@ func (opts ConnectorOpts) ToConnectorMap() (map[string]interface{}, error) {
 	if opts.Initiator != "" {
 		v["initiator"] = opts.Initiator
 	}
-	if opts.Wwpns != "" {
+	if opts.Wwpns != nil {
 		v["wwpns"] = opts.Wwpns
 	}
 	if opts.Wwnns != "" {
@@ -139,6 +162,7 @@ func (opts ConnectorOpts) ToConnectorMap() (map[string]interface{}, error) {
 	return map[string]interface{}{"connector": v}, nil
 }
 
+// InitializeConnection initializes iscsi connection.
 func InitializeConnection(client *gophercloud.ServiceClient, id string, opts *ConnectorOpts) InitializeConnectionResult {
 	var res InitializeConnectionResult
 
@@ -157,6 +181,7 @@ func InitializeConnection(client *gophercloud.ServiceClient, id string, opts *Co
 	return res
 }
 
+// TerminateConnection terminates iscsi connection.
 func TerminateConnection(client *gophercloud.ServiceClient, id string, opts *ConnectorOpts) TerminateConnectionResult {
 	var res TerminateConnectionResult
 
