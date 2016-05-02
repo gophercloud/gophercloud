@@ -102,21 +102,7 @@ func (page MemberPage) IsEmpty() (bool, error) {
 
 // MemberDetailsResult model
 type MemberDetailsResult struct {
-	gophercloud.Result
-}
-
-// Extract returns image member details
-func (md MemberDetailsResult) Extract() (*ImageMember, error) {
-	if md.Err != nil {
-		return nil, md.Err
-	}
-	casted := md.Body.(map[string]interface{})
-
-	var results ImageMember
-
-	err := mapstructure.Decode(casted, &results)
-	return &results, err
-
+	CreateMemberResult
 }
 
 // MemberDeleteResult model
