@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/jrperritt/gophercloud/testhelper/client"
 	"github.com/rackspace/gophercloud"
 	th "github.com/rackspace/gophercloud/testhelper"
 	"golang.org/x/crypto/ssh"
@@ -96,4 +97,15 @@ KSde3I0ybDz7iS2EtceKB7m4C0slYd+oBkm4efuF00rCOKDwpFq45m0=
 	pwd, err := resp.ExtractPassword(privateKey.(*rsa.PrivateKey))
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "ruZKK0tqxRfYm5t7lSJq", pwd)
+}
+
+func TestListAddressesAllPages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAddressListSuccessfully(t)
+
+	allPages, err := ListAddresses(client.ServiceClient(), "asdfasdfasdf").AllPages()
+	th.AssertNoErr(t, err)
+	_, err = ExtractAddresses(allPages)
+	th.AssertNoErr(t, err)
 }
