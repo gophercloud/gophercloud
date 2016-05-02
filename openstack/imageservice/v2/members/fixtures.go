@@ -38,6 +38,8 @@ func HandleCreateImageMemberInvalidVisibility(t *testing.T) {
 
 		th.TestJSONRequest(t, r, `{"member": "8989447062e04a818baf9e073fd04fa7"}`)
 		w.WriteHeader(http.StatusForbidden)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"members":[]}`)
 	})
 
 }
@@ -51,6 +53,8 @@ func HandleCreateImageMemberConflict(t *testing.T) {
 		th.TestJSONRequest(t, r, `{"member": "8989447062e04a818baf9e073fd04fa7"}`)
 
 		w.WriteHeader(http.StatusConflict)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"members":[]}`)
 	})
 }
 
@@ -60,7 +64,7 @@ func HandleImageMemberList(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 
-		w.WriteHeader(http.StatusOK)
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{
 		    "members": [
 		        {
@@ -91,7 +95,7 @@ func HandleImageMemberEmptyList(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 
-		w.WriteHeader(http.StatusOK)
+		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{
 		    "members": [],
 		    "schema": "/v2/schemas/members"
