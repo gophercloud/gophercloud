@@ -22,11 +22,11 @@ type Image struct {
 
 	Tags []string
 
-	ContainerFormat string
-	DiskFormat      string
+	ContainerFormat string `mapstructure:"container_format"`
+	DiskFormat      string `mapstructure:"disk_format"`
 
-	MinDiskGigabytes int
-	MinRAMMegabytes  int
+	MinDiskGigabytes int `mapstructure:"min_disk"`
+	MinRAMMegabytes  int `mapstructure:"min_ram"`
 
 	Owner string
 
@@ -34,7 +34,7 @@ type Image struct {
 	Visibility ImageVisibility
 
 	Checksum  string
-	SizeBytes int
+	SizeBytes int `mapstructure:"size"`
 
 	Metadata   map[string]string
 	Properties map[string]string
