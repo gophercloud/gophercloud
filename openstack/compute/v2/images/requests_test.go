@@ -37,8 +37,7 @@ func TestListImages(t *testing.T) {
 							"created": "2014-09-23T12:54:52Z",
 							"minDisk": 0,
 							"progress": 100,
-							"minRam": 0,
-							"metadata": {}
+							"minRam": 0
 						},
 						{
 							"status": "ACTIVE",
@@ -49,8 +48,7 @@ func TestListImages(t *testing.T) {
 							"created": "2014-09-23T12:51:42Z",
 							"minDisk": 0,
 							"progress": 100,
-							"minRam": 0,
-							"metadata": {}
+							"minRam": 0
 						}
 					]
 				}
@@ -130,8 +128,7 @@ func TestGetImage(t *testing.T) {
 					"created": "2014-09-23T12:54:52Z",
 					"minDisk": 0,
 					"progress": 100,
-					"minRam": 0,
-					"metadata": {}
+					"minRam": 0
 				}
 			}
 		`)
