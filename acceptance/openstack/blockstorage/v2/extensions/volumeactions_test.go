@@ -25,7 +25,7 @@ func newClient(t *testing.T) (*gophercloud.ServiceClient, error) {
 	})
 }
 
-func TestVolumeActions(t *testing.T) {
+func TestVolumeAttach(t *testing.T) {
 	client, err := newClient(t)
 	th.AssertNoErr(t, err)
 
@@ -44,10 +44,15 @@ func TestVolumeActions(t *testing.T) {
 	err = volumes.WaitForStatus(client, cv.ID, "available", 60)
 	th.AssertNoErr(t, err)
 
+	instanceID := os.Getenv("OS_INSTANCE_ID")
+	if instanceID == "" {
+		t.Fatal("Environment variable OS_INSTANCE_ID is required")
+	}
+
 	_, err = volumeactions.Attach(client, cv.ID, &volumeactions.AttachOpts{
 		MountPoint:   "/mnt",
 		Mode:         "rw",
-		InstanceUUID: "50902f4f-a974-46a0-85e9-7efc5e22dfdd",
+		InstanceUUID: instanceID,
 	}).Extract()
 	th.AssertNoErr(t, err)
 
@@ -55,5 +60,37 @@ func TestVolumeActions(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	_, err = volumeactions.Detach(client, cv.ID).Extract()
+	th.AssertNoErr(t, err)
+}
+
+func TestVolumeReserve(t *testing.T) {
+	client, err := newClient(t)
+	th.AssertNoErr(t, err)
+
+	cv, err := volumes.Create(client, &volumes.CreateOpts{
+		Size: 1,
+		Name: "blockv2-volume",
+	}).Extract()
+	th.AssertNoErr(t, err)
+	defer func() {
+		err = volumes.WaitForStatus(client, cv.ID, "available", 60)
+		th.AssertNoErr(t, err)
+		err = volumes.Delete(client, cv.ID).ExtractErr()
+		th.AssertNoErr(t, err)
+	}()
+
+	err = volumes.WaitForStatus(client, cv.ID, "available", 60)
+	th.AssertNoErr(t, err)
+
+	_, err = volumeactions.Reserve(client, cv.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	err = volumes.WaitForStatus(client, cv.ID, "attaching", 60)
+	th.AssertNoErr(t, err)
+
+	_, err = volumeactions.Unreserve(client, cv.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	err = volumes.WaitForStatus(client, cv.ID, "available", 60)
 	th.AssertNoErr(t, err)
 }
