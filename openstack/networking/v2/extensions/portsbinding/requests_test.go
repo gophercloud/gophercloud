@@ -1,7 +1,6 @@
 package portsbinding
 
 import (
-	"fmt"
 	"testing"
 
 	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
@@ -44,10 +43,9 @@ func TestList(t *testing.T) {
 					DeviceID:       "9ae135f4-b6e0-4dad-9e91-3c223e385824",
 				},
 				VNICType: "normal",
+				HostID:   "devstack",
 			},
 		}
-
-		fmt.Printf("%#v", actual)
 
 		th.CheckDeepEquals(t, expected, actual)
 
@@ -81,8 +79,11 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, n.ID, "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2")
 	th.AssertDeepEquals(t, n.SecurityGroups, []string{})
 	th.AssertEquals(t, n.DeviceID, "5e3898d7-11be-483e-9732-b2f5eccd2b2e")
-	th.AssertEquals(t, n.HostID, "HOST1")
+
+	th.AssertEquals(t, n.HostID, "devstack")
 	th.AssertEquals(t, n.VNICType, "normal")
+	th.AssertEquals(t, n.VIFType, "ovs")
+	th.AssertDeepEquals(t, n.VIFDetails, map[string]interface{}{"port_filter": true, "ovs_hybrid_plug": true})
 }
 
 func TestCreate(t *testing.T) {

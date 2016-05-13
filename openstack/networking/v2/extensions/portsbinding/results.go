@@ -51,12 +51,12 @@ type IP struct {
 // Port represents a Neutron port. See package documentation for a top-level
 // description of what this is.
 type Port struct {
-	ports.Port
+	ports.Port `mapstructure:",squash"`
 	// The ID of the host where the port is allocated
 	HostID string `mapstructure:"binding:host_id" json:"binding:host_id"`
 	// A dictionary that enables the application to pass information about
 	// functions that the Networking API provides.
-	VIFDetails map[string]string `mapstructure:"binding:vif_details" json:"binding:vif_details"`
+	VIFDetails map[string]interface{} `mapstructure:"binding:vif_details" json:"binding:vif_details"`
 	// The VIF type for the port.
 	VIFType string `mapstructure:"binding:vif_type" json:"binding:vif_type"`
 	// The virtual network interface card (vNIC) type that is bound to the
