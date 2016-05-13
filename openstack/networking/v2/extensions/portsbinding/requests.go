@@ -5,6 +5,13 @@ import (
 	"github.com/rackspace/gophercloud/openstack/networking/v2/ports"
 )
 
+// Get retrieves a specific port based on its unique ID.
+func Get(c *gophercloud.ServiceClient, id string) GetResult {
+	var res GetResult
+	_, res.Err = c.Get(getURL(c, id), &res.Body, nil)
+	return res
+}
+
 // CreateOpts represents the attributes used when creating a new
 // port with extended attributes.
 type CreateOpts struct {
@@ -20,13 +27,6 @@ type CreateOpts struct {
 	// host to pass and receive virtual network interface (VIF) port-specific
 	// information to the plug-in
 	Profile map[string]string
-}
-
-// Get retrieves a specific port based on its unique ID.
-func Get(c *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = c.Get(getURL(c, id), &res.Body, nil)
-	return res
 }
 
 // ToPortCreateMap casts a CreateOpts struct to a map.
@@ -68,10 +68,18 @@ func Create(c *gophercloud.ServiceClient, opts ports.CreateOptsBuilder) CreateRe
 
 // UpdateOpts represents the attributes used when updating an existing port.
 type UpdateOpts struct {
+	// UpdateOptsBuilder is the interface options structs have to satisfy in order
+	// to be used in the main Update operation in this package.
 	ports.UpdateOptsBuilder
-	HostID   string
+	// The ID of the host where the port is allocated
+	HostID string
+	// The virtual network interface card (vNIC) type that is bound to the
+	// neutron port
 	VNICType string
-	Profile  map[string]string
+	// A dictionary that enables the application running on the specified
+	// host to pass and receive virtual network interface (VIF) port-specific
+	// information to the plug-in
+	Profile map[string]string
 }
 
 // ToPortUpdateMap casts an UpdateOpts struct to a map.
