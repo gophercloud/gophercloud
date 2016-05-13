@@ -76,12 +76,19 @@ type UpdateOpts struct {
 
 // ToPortUpdateMap casts an UpdateOpts struct to a map.
 func (opts UpdateOpts) ToPortUpdateMap() (map[string]interface{}, error) {
-	p, err := opts.UpdateOptsBuilder.ToPortUpdateMap()
-	if err != nil {
-		return nil, err
+	var port map[string]interface{}
+	if opts.UpdateOptsBuilder != nil {
+		p, err := opts.UpdateOptsBuilder.ToPortUpdateMap()
+		if err != nil {
+			return nil, err
+		}
+
+		port = p["port"].(map[string]interface{})
 	}
 
-	port := p["port"].(map[string]interface{})
+	if port == nil {
+		port = make(map[string]interface{})
+	}
 
 	if opts.HostID != "" {
 		port["binding:host_id"] = opts.HostID
