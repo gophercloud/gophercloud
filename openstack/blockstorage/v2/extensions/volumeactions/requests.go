@@ -62,7 +62,7 @@ func Attach(client *gophercloud.ServiceClient, id string, opts AttachOptsBuilder
 		return res
 	}
 
-	_, res.Err = client.Post(attachURL(client, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, res.Err = client.Post(attachURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 
@@ -76,7 +76,7 @@ func Detach(client *gophercloud.ServiceClient, id string) DetachResult {
 	v := make(map[string]interface{})
 	reqBody := map[string]interface{}{"os-detach": v}
 
-	_, res.Err = client.Post(detachURL(client, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, res.Err = client.Post(detachURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 
@@ -90,7 +90,7 @@ func Reserve(client *gophercloud.ServiceClient, id string) ReserveResult {
 	v := make(map[string]interface{})
 	reqBody := map[string]interface{}{"os-reserve": v}
 
-	_, res.Err = client.Post(reserveURL(client, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, res.Err = client.Post(reserveURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
 
@@ -104,7 +104,7 @@ func Unreserve(client *gophercloud.ServiceClient, id string) UnreserveResult {
 	v := make(map[string]interface{})
 	reqBody := map[string]interface{}{"os-unreserve": v}
 
-	_, res.Err = client.Post(unreserveURL(client, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+	_, res.Err = client.Post(unreserveURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
 
@@ -193,8 +193,8 @@ func TerminateConnection(client *gophercloud.ServiceClient, id string, opts *Con
 
 	reqBody := map[string]interface{}{"os-terminate_connection": connctorMap}
 
-	_, res.Err = client.Post(teminateConnectionURL(client, id), reqBody, &res.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 201, 202},
+	_, res.Err = client.Post(teminateConnectionURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
 
 	return res
