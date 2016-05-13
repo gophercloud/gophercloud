@@ -10,6 +10,7 @@ import (
 	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/ports"
 	"github.com/rackspace/gophercloud/openstack/networking/v2/subnets"
+	"github.com/rackspace/gophercloud/pagination"
 	th "github.com/rackspace/gophercloud/testhelper"
 )
 
@@ -53,9 +54,38 @@ func TestPortBinding(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, p.HostID, newHostID)
 
+	// List ports
+	t.Logf("Listing all ports")
+	listPorts(t)
+
 	// Delete port
 	res := ports.Delete(base.Client, portID)
 	th.AssertNoErr(t, res.Err)
+}
+
+func listPorts(t *testing.T) {
+	count := 0
+	pager := ports.List(base.Client, ports.ListOpts{})
+	err := pager.EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		t.Logf("--- Page ---")
+
+		portList, err := portsbinding.ExtractPorts(page)
+		th.AssertNoErr(t, err)
+
+		for _, p := range portList {
+			t.Logf("Port: ID [%s] Name [%s] HostID [%s] VNICType [%s] VIFType [%s]",
+				p.ID, p.Name, p.HostID, p.VNICType, p.VIFType)
+		}
+
+		return true, nil
+	})
+
+	th.CheckNoErr(t, err)
+
+	if count == 0 {
+		t.Logf("No pages were iterated over when listing ports")
+	}
 }
 
 func createPort(t *testing.T, networkID, subnetID, hostID string) string {
