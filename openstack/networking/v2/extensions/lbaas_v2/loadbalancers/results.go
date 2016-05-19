@@ -3,14 +3,13 @@ package loadbalancers
 import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/networking/v2/extensions/lbaas_v2/listeners"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
 // LoadBalancer is the primary load balancing configuration object that specifies
 // the virtual IP address on which client traffic is received, as well
 // as other details such as the load balancing method to be use, protocol, etc.
-// This entity is sometimes known in LB products under the name of a "virtual
-// server", a "vserver" or a "listener".
 type LoadBalancer struct {
 	// Human-readable description for the Loadbalancer.
 	Description string `mapstructure:"description" json:"description"`
@@ -44,6 +43,12 @@ type LoadBalancer struct {
 
 	// The name of the provider.
 	Provider string `mapstructure:"provider" json:"provider"`
+
+	Listeners []listeners.Listener `mapstructure:"listeners" json:"listeners"`
+}
+
+type StatusTree struct {
+	Loadbalancer *LoadBalancer `mapstructure:"loadbalancer" json:"loadbalancer"`
 }
 
 // LoadbalancerPage is the page returned by a pager when traversing over a
@@ -101,6 +106,19 @@ func (r commonResult) Extract() (*LoadBalancer, error) {
 	}
 	var res struct {
 		LoadBalancer *LoadBalancer `mapstructure:"loadbalancer" json:"loadbalancer"`
+	}
+	err := mapstructure.Decode(r.Body, &res)
+
+	return res.LoadBalancer, err
+}
+
+// Extract is a function that accepts a result and extracts a Loadbalancer.
+func (r commonResult) ExtractStatuses() (*StatusTree, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+	var res struct {
+		LoadBalancer *StatusTree `mapstructure:"statuses" json:"statuses"`
 	}
 	err := mapstructure.Decode(r.Body, &res)
 

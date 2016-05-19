@@ -6,6 +6,10 @@ import (
 	"github.com/rackspace/gophercloud/pagination"
 )
 
+type PoolID struct {
+	ID string `mapstructure:"id" json:"id"`
+}
+
 // Monitor represents a load balancer health monitor. A health monitor is used
 // to determine whether or not back-end members of the VIP's pool are usable
 // for processing a request. A pool can have several health monitors associated
@@ -22,10 +26,13 @@ import (
 // won't participate in its pool's load balancing. In other words, ALL monitors
 // must declare the member to be healthy for it to stay ACTIVE.
 type Monitor struct {
-	// The unique ID for the VIP.
+	// The unique ID for the Monitor.
 	ID string
 
-	// Owner of the VIP. Only an administrative user can specify a tenant ID
+	// The Name of the Monitor.
+	Name string
+
+	// Only an administrative user can specify a tenant ID
 	// other than its own.
 	TenantID string `json:"tenant_id" mapstructure:"tenant_id"`
 
@@ -62,7 +69,10 @@ type Monitor struct {
 	Status string
 
 	// List of pools that are associated with the health monitor.
-	Pools []map[string]interface{} `mapstructure:"pools" json:"pools"`
+	Pools []PoolID `mapstructure:"pools" json:"pools"`
+}
+
+type Pool struct {
 }
 
 // MonitorPage is the page returned by a pager when traversing over a
@@ -76,7 +86,7 @@ type MonitorPage struct {
 // to do this, it needs to construct the next page's URL.
 func (p MonitorPage) NextPageURL() (string, error) {
 	type resp struct {
-		Links []gophercloud.Link `mapstructure:"health_monitors_links"`
+		Links []gophercloud.Link `mapstructure:"healthmonitors_links"`
 	}
 
 	var r resp
@@ -102,7 +112,7 @@ func (p MonitorPage) IsEmpty() (bool, error) {
 // a generic collection is mapped into a relevant slice.
 func ExtractMonitors(page pagination.Page) ([]Monitor, error) {
 	var resp struct {
-		Monitors []Monitor `mapstructure:"health_monitors" json:"health_monitors"`
+		Monitors []Monitor `mapstructure:"healthmonitors" json:"healthmonitors"`
 	}
 
 	err := mapstructure.Decode(page.(MonitorPage).Body, &resp)
@@ -121,7 +131,7 @@ func (r commonResult) Extract() (*Monitor, error) {
 	}
 
 	var res struct {
-		Monitor *Monitor `json:"health_monitor" mapstructure:"health_monitor"`
+		Monitor *Monitor `json:"healthmonitor" mapstructure:"healthmonitor"`
 	}
 
 	err := mapstructure.Decode(r.Body, &res)

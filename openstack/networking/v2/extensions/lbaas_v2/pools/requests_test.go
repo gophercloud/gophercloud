@@ -1,8 +1,6 @@
 package pools
 
 import (
-	"fmt"
-	"net/http"
 	"testing"
 
 	fake "github.com/rackspace/gophercloud/openstack/networking/v2/common"
@@ -17,478 +15,241 @@ func TestURLs(t *testing.T) {
 	th.AssertEquals(t, th.Endpoint()+"v2.0/lbaas/pools", rootURL(fake.ServiceClient()))
 }
 
-func TestList(t *testing.T) {
+func TestListPools(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	HandlePoolListSuccessfully(t)
 
-	th.Mux.HandleFunc("/v2.0/lbaas/pools", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+	pages := 0
+	err := List(fake.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
 
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-   "pools":[
-      {
-         "lb_algorithm":"ROUND_ROBIN",
-         "protocol":"HTTP",
-         "description":"",
-         "health_monitors":[
-            "466c8345-28d8-4f84-a246-e04380b0461d",
-            "5d4b5228-33b0-4e60-b225-9b727c1a20e7"
-         ],
-         "members":[{"id": "53306cda-815d-4354-9fe4-59e09da9c3c5"}],
-         "listeners":[{"id": "2a280670-c202-4b0b-a562-34077415aabf"}],
-         "loadbalancers":[{"id": "79e05663-7f03-45d2-a092-8b94062f22ab"}],
-         "id":"72741b06-df4d-4715-b142-276b6bce75ab",
-         "name":"app_pool",
-         "admin_state_up":true,
-         "subnet_id":"8032909d-47a1-4715-90af-5153ffe39861",
-         "tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
-         "provider": "haproxy"
-      }
-   ]
-}
-			`)
-	})
-
-	count := 0
-
-	List(fake.ServiceClient(), ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
-		count++
 		actual, err := ExtractPools(page)
 		if err != nil {
-			t.Errorf("Failed to extract pools: %v", err)
 			return false, err
 		}
 
-		expected := []Pool{
-			{
-				LBMethod:    "ROUND_ROBIN",
-				Protocol:    "HTTP",
-				Description: "",
-				MonitorIDs: []string{
-					"466c8345-28d8-4f84-a246-e04380b0461d",
-					"5d4b5228-33b0-4e60-b225-9b727c1a20e7",
-				},
-				SubnetID:      "8032909d-47a1-4715-90af-5153ffe39861",
-				TenantID:      "83657cfcdfe44cd5920adaf26c48ceea",
-				AdminStateUp:  true,
-				Name:          "app_pool",
-				Members:       []map[string]interface{}{{"id": "53306cda-815d-4354-9fe4-59e09da9c3c5"}},
-				ID:            "72741b06-df4d-4715-b142-276b6bce75ab",
-				Loadbalancers: []map[string]interface{}{{"id": "79e05663-7f03-45d2-a092-8b94062f22ab"}},
-				Listeners:     []map[string]interface{}{{"id": "2a280670-c202-4b0b-a562-34077415aabf"}},
-				Provider:      "haproxy",
-			},
+		if len(actual) != 2 {
+			t.Fatalf("Expected 2 pools, got %d", len(actual))
 		}
-
-		th.CheckDeepEquals(t, expected, actual)
+		th.CheckDeepEquals(t, PoolWeb, actual[0])
+		th.CheckDeepEquals(t, PoolDb, actual[1])
 
 		return true, nil
 	})
 
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
+	th.AssertNoErr(t, err)
+
+	if pages != 1 {
+		t.Errorf("Expected 1 page, saw %d", pages)
 	}
 }
 
-func TestCreate(t *testing.T) {
+func TestListAllPools(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	HandlePoolListSuccessfully(t)
 
-	th.Mux.HandleFunc("/v2.0/lbaas/pools", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, `
-{
-    "pool": {
-        "lb_algorithm": "ROUND_ROBIN",
-        "protocol": "HTTP",
-        "name": "Example pool",
-        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
-        "loadbalancer_id": "79e05663-7f03-45d2-a092-8b94062f22ab"
-    }
+	allPages, err := List(fake.ServiceClient(), ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := ExtractPools(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, PoolWeb, actual[0])
+	th.CheckDeepEquals(t, PoolDb, actual[1])
 }
-			`)
 
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
+func TestCreatePool(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandlePoolCreationSuccessfully(t, SinglePoolBody)
 
-		fmt.Fprintf(w, `
-{
-    "pool": {
-        "lb_algorithm": "ROUND_ROBIN",
-        "protocol": "HTTP",
-        "description": "",
-        "health_monitors": [],
-        "members": [{}],
-        "id": "69055154-f603-4a28-8951-7cc2d9e54a9a",
-        "name": "Example pool",
-        "admin_state_up": true,
-        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
-        "listeners":[{"id": "2a280670-c202-4b0b-a562-34077415aabf"}],
-        "loadbalancers":[{"id": "79e05663-7f03-45d2-a092-8b94062f22ab"}]
-    }
-}
-		`)
-	})
-
-	options := CreateOpts{
+	actual, err := Create(fake.ServiceClient(), CreateOpts{
 		LBMethod:       LBMethodRoundRobin,
 		Protocol:       "HTTP",
 		Name:           "Example pool",
-		SubnetID:       "1981f108-3c48-48d2-b908-30f7d28532c9",
 		TenantID:       "2ffc6e22aae24e4795f87155d24c896f",
 		LoadbalancerID: "79e05663-7f03-45d2-a092-8b94062f22ab",
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, PoolDb, *actual)
+}
+
+func TestGetPool(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandlePoolGetSuccessfully(t)
+
+	client := fake.ServiceClient()
+	actual, err := Get(client, "c3741b06-df4d-4715-b142-276b6bce75ab").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
 	}
-	p, err := Create(fake.ServiceClient(), options).Extract()
-	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, "ROUND_ROBIN", p.LBMethod)
-	th.AssertEquals(t, "HTTP", p.Protocol)
-	th.AssertEquals(t, "", p.Description)
-	th.AssertDeepEquals(t, []string{}, p.MonitorIDs)
-	th.AssertDeepEquals(t, []map[string]interface{}{{}}, p.Members)
-	th.AssertEquals(t, "69055154-f603-4a28-8951-7cc2d9e54a9a", p.ID)
-	th.AssertEquals(t, "79e05663-7f03-45d2-a092-8b94062f22ab", p.Loadbalancers[0]["id"])
-	th.AssertEquals(t, "Example pool", p.Name)
-	th.AssertEquals(t, "1981f108-3c48-48d2-b908-30f7d28532c9", p.SubnetID)
-	th.AssertEquals(t, "2ffc6e22aae24e4795f87155d24c896f", p.TenantID)
+	th.CheckDeepEquals(t, PoolDb, *actual)
 }
 
-func TestGet(t *testing.T) {
+func TestDeletePool(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	HandlePoolDeletionSuccessfully(t)
 
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-   "pool":{
-      "id":"332abe93-f488-41ba-870b-2ac66be7f853",
-      "tenant_id":"19eaa775-cf5d-49bc-902e-2f85f668d995",
-      "name":"Example pool",
-      "description":"",
-      "protocol":"tcp",
-      "lb_algorithm":"ROUND_ROBIN",
-      "session_persistence":{
-      },
-      "members":[{}],
-      "admin_state_up":true
-   }
-}
-			`)
-	})
-
-	n, err := Get(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853").Extract()
-	th.AssertNoErr(t, err)
-
-	th.AssertEquals(t, n.ID, "332abe93-f488-41ba-870b-2ac66be7f853")
-}
-
-func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, `
-{
-   "pool":{
-      "name": "SuperPool",
-      "lb_algorithm": "LEAST_CONNECTIONS"
-   }
-}
-			`)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-   "pool":{
-      "lb_algorithm":"LEAST_CONNECTIONS",
-      "protocol":"TCP",
-      "description":"",
-      "health_monitors":[],
-      "subnet_id":"8032909d-47a1-4715-90af-5153ffe39861",
-      "tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
-      "admin_state_up":true,
-      "name":"SuperPool",
-      "members":[{}],
-      "id":"61b1f87a-7a21-4ad3-9dda-7f81d249944f"
-   }
-}
-		`)
-	})
-
-	options := UpdateOpts{Name: "SuperPool", LBMethod: LBMethodLeastConnections}
-
-	n, err := Update(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", options).Extract()
-	th.AssertNoErr(t, err)
-
-	th.AssertEquals(t, "SuperPool", n.Name)
-	th.AssertDeepEquals(t, "LEAST_CONNECTIONS", n.LBMethod)
-}
-
-func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusNoContent)
-	})
-
-	res := Delete(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853")
+	res := Delete(fake.ServiceClient(), "c3741b06-df4d-4715-b142-276b6bce75ab")
 	th.AssertNoErr(t, res.Err)
 }
 
-func TestListAssociateMembers(t *testing.T) {
+func TestUpdatePool(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	HandlePoolUpdateSuccessfully(t)
 
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+	client := fake.ServiceClient()
+	actual, err := Update(client, "c3741b06-df4d-4715-b142-276b6bce75ab", UpdateOpts{
+		Name:     "NewPoolName",
+		LBMethod: LBMethodLeastConnections,
+	}).Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Update error: %v", err)
+	}
 
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-   "members":[
-      {
-        "id": "2a280670-c202-4b0b-a562-34077415aabf",
-        "address": "10.0.2.10",
-        "weight": 5,
-        "name": "member1",
-        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
-        "admin_state_up":true,
-        "protocol_port": 80
-      },
-      {
-        "id": "fad389a3-9a4a-4762-a365-8c7038508b5d",
-        "address": "10.0.2.11",
-        "weight": 10,
-        "name": "member2",
-        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
-        "admin_state_up":false,
-        "protocol_port": 80
-      }
-   ]
+	th.CheckDeepEquals(t, PoolUpdated, *actual)
 }
-			`)
-	})
 
-	count := 0
+func TestRequiredPoolCreateOpts(t *testing.T) {
+	res := Create(fake.ServiceClient(), CreateOpts{})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+	res = Create(fake.ServiceClient(), CreateOpts{LBMethod: LBMethod("invalid"), Protocol: ProtocolHTTPS, LoadbalancerID: "69055154-f603-4a28-8951-7cc2d9e54a9a"})
+	if res.Err == nil || res.Err != errValidLBMethodRequired {
+		t.Fatalf("Expected '%s' error, but got '%s'", errValidLBMethodRequired, res.Err)
+	}
+	res = Create(fake.ServiceClient(), CreateOpts{LBMethod: LBMethodRoundRobin, Protocol: Protocol("invalid"), LoadbalancerID: "69055154-f603-4a28-8951-7cc2d9e54a9a"})
+	if res.Err == nil || res.Err != errValidProtocolRequired {
+		t.Fatalf("Expected '%s' error, but got '%s'", errValidProtocolRequired, res.Err)
+	}
+	res = Create(fake.ServiceClient(), CreateOpts{LBMethod: LBMethodRoundRobin, Protocol: ProtocolHTTPS})
+	if res.Err == nil || res.Err != errLoadbalancerOrListenerRequired {
+		t.Fatalf("Expected '%s' error, but got '%s'", errLoadbalancerOrListenerRequired, res.Err)
+	}
+}
 
-	ListAssociateMembers(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", MemberListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
-		count++
+func TestListMembers(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleMemberListSuccessfully(t)
+
+	pages := 0
+	err := ListAssociateMembers(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", MemberListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
 		actual, err := ExtractMembers(page)
 		if err != nil {
-			t.Errorf("Failed to extract members: %v", err)
 			return false, err
 		}
 
-		expected := []Member{
-			{
-				SubnetID:     "1981f108-3c48-48d2-b908-30f7d28532c9",
-				TenantID:     "2ffc6e22aae24e4795f87155d24c896f",
-				AdminStateUp: true,
-				Name:         "member1",
-				ID:           "2a280670-c202-4b0b-a562-34077415aabf",
-				Address:      "10.0.2.10",
-				Weight:       5,
-				ProtocolPort: 80,
-			},
-			{
-				SubnetID:     "1981f108-3c48-48d2-b908-30f7d28532c9",
-				TenantID:     "2ffc6e22aae24e4795f87155d24c896f",
-				AdminStateUp: false,
-				Name:         "member2",
-				ID:           "fad389a3-9a4a-4762-a365-8c7038508b5d",
-				Address:      "10.0.2.11",
-				Weight:       10,
-				ProtocolPort: 80,
-			},
+		if len(actual) != 2 {
+			t.Fatalf("Expected 2 members, got %d", len(actual))
 		}
-
-		th.CheckDeepEquals(t, expected, actual)
+		th.CheckDeepEquals(t, MemberWeb, actual[0])
+		th.CheckDeepEquals(t, MemberDb, actual[1])
 
 		return true, nil
 	})
 
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
+	th.AssertNoErr(t, err)
+
+	if pages != 1 {
+		t.Errorf("Expected 1 page, saw %d", pages)
 	}
 }
 
-func TestCreateAssociateMember(t *testing.T) {
+func TestListAllMembers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	HandleMemberListSuccessfully(t)
 
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, `
-{
-    "member": {
-        "address": "10.0.2.10",
-        "weight": 5,
-        "name": "Example member",
-        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
-        "protocol_port": 80
-    }
+	allPages, err := ListAssociateMembers(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", MemberListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := ExtractMembers(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, MemberWeb, actual[0])
+	th.CheckDeepEquals(t, MemberDb, actual[1])
 }
-			`)
 
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
+func TestCreateMember(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleMemberCreationSuccessfully(t, SingleMemberBody)
 
-		fmt.Fprintf(w, `
-{
-    "member": {
-        "id": "2a280670-c202-4b0b-a562-34077415aabf",
-        "address": "10.0.2.10",
-        "weight": 5,
-        "name": "Example member",
-        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
-        "admin_state_up":true,
-        "protocol_port": 80
-    }
-}
-		`)
-	})
-
-	options := MemberCreateOpts{
-		Name:         "Example member",
+	actual, err := CreateAssociateMember(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", MemberCreateOpts{
+		Name:         "db",
 		SubnetID:     "1981f108-3c48-48d2-b908-30f7d28532c9",
 		TenantID:     "2ffc6e22aae24e4795f87155d24c896f",
-		Address:      "10.0.2.10",
+		Address:      "10.0.2.11",
 		ProtocolPort: 80,
-		Weight:       5,
+		Weight:       10,
+	}).ExtractMember()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, MemberDb, *actual)
+}
+
+func TestRequiredMemberCreateOpts(t *testing.T) {
+	res := CreateAssociateMember(fake.ServiceClient(), "", MemberCreateOpts{})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
 	}
-	p, err := CreateAssociateMember(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", options).ExtractMember()
-	th.AssertNoErr(t, err)
-
-	th.AssertEquals(t, "2a280670-c202-4b0b-a562-34077415aabf", p.ID)
-	th.AssertEquals(t, "Example member", p.Name)
-	th.AssertEquals(t, "1981f108-3c48-48d2-b908-30f7d28532c9", p.SubnetID)
-	th.AssertEquals(t, "2ffc6e22aae24e4795f87155d24c896f", p.TenantID)
+	res = CreateAssociateMember(fake.ServiceClient(), "", MemberCreateOpts{Address: "1.2.3.4", ProtocolPort: 80})
+	if res.Err == nil || res.Err != errPoolIdRequired {
+		t.Fatalf("Expected '%s' error, but got '%s'", errPoolIdRequired, res.Err)
+	}
+	res = CreateAssociateMember(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", MemberCreateOpts{ProtocolPort: 80})
+	if res.Err == nil || res.Err != errAddressRequired {
+		t.Fatalf("Expected '%s' error, but got '%s'", errAddressRequired, res.Err)
+	}
+	res = CreateAssociateMember(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", MemberCreateOpts{Address: "1.2.3.4"})
+	if res.Err == nil || res.Err != errProtocolPortRequired {
+		t.Fatalf("Expected '%s' error, but got '%s'", errProtocolPortRequired, res.Err)
+	}
 }
 
-func TestGetAssociateMember(t *testing.T) {
+func TestGetMember(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
+	HandleMemberGetSuccessfully(t)
 
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members/2a280670-c202-4b0b-a562-34077415aabf", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+	client := fake.ServiceClient()
+	actual, err := GetAssociateMember(client, "332abe93-f488-41ba-870b-2ac66be7f853", "2a280670-c202-4b0b-a562-34077415aabf").ExtractMember()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
 
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-   "member": {
-        "id": "2a280670-c202-4b0b-a562-34077415aabf",
-        "address": "10.0.2.10",
-        "weight": 5,
-        "name": "Example member",
-        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
-        "admin_state_up":true,
-        "protocol_port": 80
-    }
-}
-			`)
-	})
-
-	n, err := GetAssociateMember(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "2a280670-c202-4b0b-a562-34077415aabf").ExtractMember()
-	th.AssertNoErr(t, err)
-
-	th.AssertEquals(t, n.ID, "2a280670-c202-4b0b-a562-34077415aabf")
-}
-
-func TestUpdateAssociateMember(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members/2a280670-c202-4b0b-a562-34077415aabf", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, `
-{
-   "member":{
-      "name": "newMemberName",
-      "weight": 4
-   }
-}
-			`)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-   "member": {
-        "id": "2a280670-c202-4b0b-a562-34077415aabf",
-        "address": "10.0.2.10",
-        "weight": 4,
-        "name": "newMemberName",
-        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
-        "admin_state_up":true,
-        "protocol_port": 80
-    }
-}
-		`)
-	})
-
-	options := MemberUpdateOpts{Name: "newMemberName", Weight: 4}
-
-	n, err := UpdateAssociateMember(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "2a280670-c202-4b0b-a562-34077415aabf", options).ExtractMember()
-	th.AssertNoErr(t, err)
-
-	th.AssertEquals(t, "newMemberName", n.Name)
-	th.AssertDeepEquals(t, 4, n.Weight)
+	th.CheckDeepEquals(t, MemberDb, *actual)
 }
 
 func TestDeleteMember(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members/2a280670-c202-4b0b-a562-34077415aabf", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusNoContent)
-	})
+	HandleMemberDeletionSuccessfully(t)
 
 	res := DeleteMember(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", "2a280670-c202-4b0b-a562-34077415aabf")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestUpdateMember(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleMemberUpdateSuccessfully(t)
+
+	client := fake.ServiceClient()
+	actual, err := UpdateAssociateMember(client, "332abe93-f488-41ba-870b-2ac66be7f853", "2a280670-c202-4b0b-a562-34077415aabf", MemberUpdateOpts{
+		Name:   "newMemberName",
+		Weight: 4,
+	}).ExtractMember()
+	if err != nil {
+		t.Fatalf("Unexpected Update error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, MemberUpdated, *actual)
 }

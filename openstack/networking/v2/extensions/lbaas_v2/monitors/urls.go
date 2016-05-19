@@ -4,7 +4,7 @@ import "github.com/rackspace/gophercloud"
 
 const (
 	rootPath     = "lbaas"
-	resourcePath = "health_monitors"
+	resourcePath = "healthmonitors"
 )
 
 func rootURL(c *gophercloud.ServiceClient) string {

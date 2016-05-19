@@ -3,9 +3,13 @@ package listeners
 import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/networking/v2/extensions/lbaas_v2/pools"
 	"github.com/rackspace/gophercloud/pagination"
-	// "github.com/davecgh/go-spew/spew"
 )
+
+type LoadBalancerID struct {
+	ID string `mapstructure:"id" json:"id"`
+}
 
 // Listener is the primary load balancing configuration object that specifies
 // the loadbalancer and port on which client traffic is received, as well
@@ -33,8 +37,8 @@ type Listener struct {
 	// The UUID of default pool. Must have compatible protocol with listener.
 	DefaultPoolID string `mapstructure:"default_pool_id" json:"default_pool_id"`
 
-	// A list of load balancer objects IDs.
-	Loadbalancers []map[string]interface{} `mapstructure:"loadbalancers" json:"loadbalancers"`
+	// A list of load balancer IDs.
+	Loadbalancers []LoadBalancerID `mapstructure:"loadbalancers" json:"loadbalancers"`
 
 	// The maximum number of connections allowed for the Loadbalancer. Default is -1,
 	// meaning no limit.
@@ -48,6 +52,8 @@ type Listener struct {
 
 	// The administrative state of the Listener. A valid value is true (UP) or false (DOWN).
 	AdminStateUp bool `mapstructure:"admin_state_up" json:"admin_state_up"`
+
+	Pools []pools.Pool `mapstructure:"pools" json:"pools"`
 }
 
 // ListenerPage is the page returned by a pager when traversing over a

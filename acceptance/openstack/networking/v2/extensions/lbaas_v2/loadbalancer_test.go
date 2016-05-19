@@ -73,7 +73,7 @@ func TestLoadbalancers(t *testing.T) {
 	getLoadbalancerWaitActive(t, loadbalancerID)
 
 	// create listener
-	listenerID := createListener(t, "HTTP", 80, loadbalancerID)
+	listenerID := createListener(t, listeners.ProtocolHTTP, 80, loadbalancerID)
 
 	// list listeners
 	listListeners(t)
@@ -91,7 +91,7 @@ func TestLoadbalancers(t *testing.T) {
 	getLoadbalancerWaitActive(t, loadbalancerID)
 
 	// create pool
-	poolID := createPool(t, "HTTP", listenerID, pools.LBMethodRoundRobin)
+	poolID := createPool(t, pools.ProtocolHTTP, listenerID, pools.LBMethodRoundRobin)
 
 	// list pools
 	listPools(t)
@@ -127,7 +127,7 @@ func TestLoadbalancers(t *testing.T) {
 	getLoadbalancerWaitActive(t, loadbalancerID)
 
 	// create monitor
-	monitorID := createMonitor(t, poolID, monitors.TypeHTTP, 10, 10, 3, "/login", "GET", "200")
+	monitorID := createMonitor(t, poolID, monitors.TypePING, 10, 10, 3)
 
 	// list monitors
 	listMonitors(t)
@@ -140,6 +140,29 @@ func TestLoadbalancers(t *testing.T) {
 
 	// get monitor
 	getMonitor(t, monitorID)
+
+	// get loadbalancer statuses tree
+	rawStatusTree, err := loadbalancers.GetStatuses(base.Client, loadbalancerID).ExtractStatuses()
+	if err == nil {
+		// verify statuses tree ID's of relevant objects
+		if rawStatusTree.Loadbalancer.ID != loadbalancerID {
+			t.Errorf("Loadbalancer ID did not match")
+		}
+		if rawStatusTree.Loadbalancer.Listeners[0].ID != listenerID {
+			t.Errorf("Listner ID did not match")
+		}
+		if rawStatusTree.Loadbalancer.Listeners[0].Pools[0].ID != poolID {
+			t.Errorf("Pool ID did not match")
+		}
+		if rawStatusTree.Loadbalancer.Listeners[0].Pools[0].Members[0].ID != memberID {
+			t.Errorf("Member ID did not match")
+		}
+		if rawStatusTree.Loadbalancer.Listeners[0].Pools[0].Monitor.ID != monitorID {
+			t.Errorf("Monitor ID did not match")
+		}
+	} else {
+		t.Errorf("Failed to extract Loadbalancer statuses tree: %v", err)
+	}
 
 	getLoadbalancerWaitActive(t, loadbalancerID)
 	deleteMonitor(t, monitorID)
@@ -244,7 +267,7 @@ func updateLoadbalancer(t *testing.T, loadbalancerID string) {
 }
 
 func listListeners(t *testing.T) {
-	err := listeners.List(base.Client, listeners.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := listeners.List(base.Client, listeners.ListOpts{Name: "tmp_listener"}).EachPage(func(page pagination.Page) (bool, error) {
 		listenerList, err := listeners.ExtractListeners(page)
 		if err != nil {
 			t.Errorf("Failed to extract Listeners: %v", err)
@@ -262,7 +285,7 @@ func listListeners(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func createListener(t *testing.T, protocol string, protocolPort int, loadbalancerID string) string {
+func createListener(t *testing.T, protocol listeners.Protocol, protocolPort int, loadbalancerID string) string {
 	l, err := listeners.Create(base.Client, listeners.CreateOpts{
 		Protocol:       protocol,
 		ProtocolPort:   protocolPort,
@@ -317,7 +340,7 @@ func listPools(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func createPool(t *testing.T, protocol string, listenerID string, lbMethod string) string {
+func createPool(t *testing.T, protocol pools.Protocol, listenerID string, lbMethod pools.LBMethod) string {
 	p, err := pools.Create(base.Client, pools.CreateOpts{
 		LBMethod:   lbMethod,
 		Protocol:   protocol,
@@ -411,17 +434,14 @@ func updateMember(t *testing.T, poolID string, memberID string) {
 	t.Logf("Updated Member, ID [%s], in Pool, ID [%s]", memberID, poolID)
 }
 
-func createMonitor(t *testing.T, poolID string, checkType string, delay int, timeout int,
-	maxRetries int, urlPath string, httpMethod string, expectedCodes string) string {
+func createMonitor(t *testing.T, poolID string, checkType string, delay int, timeout int, maxRetries int) string {
 	m, err := monitors.Create(base.Client, monitors.CreateOpts{
-		PoolID:        poolID,
-		Delay:         delay,
-		Timeout:       timeout,
-		MaxRetries:    maxRetries,
-		Type:          checkType,
-		ExpectedCodes: expectedCodes,
-		URLPath:       expectedCodes,
-		HTTPMethod:    httpMethod,
+		PoolID:     poolID,
+		Name:       "tmp_monitor",
+		Delay:      delay,
+		Timeout:    timeout,
+		MaxRetries: maxRetries,
+		Type:       checkType,
 	}).Extract()
 
 	th.AssertNoErr(t, err)

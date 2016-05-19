@@ -1,9 +1,9 @@
 package pools
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack/networking/v2/extensions/lbaas_v2/monitors"
 	"github.com/rackspace/gophercloud/pagination"
 )
 
@@ -30,6 +30,14 @@ type SessionPersistence struct {
 	CookieName string `mapstructure:"cookie_name" json:"cookie_name,omitempty"`
 }
 
+type LoadBalancerID struct {
+	ID string `mapstructure:"id" json:"id"`
+}
+
+type ListenerID struct {
+	ID string `mapstructure:"id" json:"id"`
+}
+
 // Pool represents a logical set of devices, such as web servers, that you
 // group together to receive and process traffic. The load balancing function
 // chooses a Member of the Pool according to the configured load balancing
@@ -47,13 +55,13 @@ type Pool struct {
 	Description string
 
 	// A list of listeners objects IDs.
-	Listeners []map[string]interface{} `mapstructure:"listeners" json:"listeners"`
+	Listeners []ListenerID `mapstructure:"listeners" json:"listeners"` //[]map[string]interface{}
 
 	// A list of member objects IDs.
-	Members []map[string]interface{} `mapstructure:"members" json:"members"`
+	Members []Member `mapstructure:"members" json:"members"`
 
-	// The IDs of associated monitors which check the health of the Pool.
-	MonitorIDs []string `json:"health_monitors" mapstructure:"health_monitors"`
+	// The ID of associated health monitor.
+	MonitorID string `json:"healthmonitor_id" mapstructure:"healthmonitor_id"`
 
 	// The network on which the members of the Pool will be located. Only members
 	// that are on this network can be added to the Pool.
@@ -69,14 +77,11 @@ type Pool struct {
 	// Pool name. Does not have to be unique.
 	Name string
 
-	// List of member IDs that belong to the Pool.
-	// MemberIDs []string `json:"members" mapstructure:"members"`
-
 	// The unique ID for the Pool.
 	ID string
 
 	// A list of load balancer objects IDs.
-	Loadbalancers []map[string]interface{} `mapstructure:"loadbalancers" json:"loadbalancers"`
+	Loadbalancers []LoadBalancerID `mapstructure:"loadbalancers" json:"loadbalancers"`
 
 	// Indicates whether connections in the same session will be processed by the
 	// same Pool member or not.
@@ -84,6 +89,8 @@ type Pool struct {
 
 	// The provider
 	Provider string
+
+	Monitor monitors.Monitor `mapstructure:"healthmonitor" json:"healthmonitor"`
 }
 
 // PoolPage is the page returned by a pager when traversing over a
@@ -112,7 +119,6 @@ func (p PoolPage) NextPageURL() (string, error) {
 // IsEmpty checks whether a PoolPage struct is empty.
 func (p PoolPage) IsEmpty() (bool, error) {
 	is, err := ExtractPools(p)
-	spew.Dump(err)
 	if err != nil {
 		return true, nil
 	}
@@ -173,7 +179,7 @@ type Member struct {
 	PoolID string `json:"pool_id" mapstructure:"pool_id"`
 
 	// The IP address of the Member.
-	Address string
+	Address string `json:"address" mapstructure:"address"`
 
 	// The port on which the application is hosted.
 	ProtocolPort int `json:"protocol_port" mapstructure:"protocol_port"`
