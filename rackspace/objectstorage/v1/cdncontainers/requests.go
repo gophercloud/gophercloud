@@ -35,7 +35,7 @@ func (opts EnableOpts) ToCDNContainerEnableMap() (map[string]string, error) {
 // Enable is a function that enables/disables a CDN container.
 func Enable(c *gophercloud.ServiceClient, containerName string, opts EnableOptsBuilder) EnableResult {
 	var res EnableResult
-	h := c.AuthenticatedHeaders()
+	h := make(map[string]string)
 
 	if opts != nil {
 		headers, err := opts.ToCDNContainerEnableMap()
