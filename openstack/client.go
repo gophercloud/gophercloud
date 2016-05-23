@@ -3,6 +3,7 @@ package openstack
 import (
 	"fmt"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/rackspace/gophercloud"
@@ -16,6 +17,8 @@ const (
 	v30 = "v3.0"
 )
 
+var VERSION_PATTERN = regexp.MustCompile("/v[1-9]{1}[0-9.]*")
+
 // NewClient prepares an unauthenticated ProviderClient instance.
 // Most users will probably prefer using the AuthenticatedClient function instead.
 // This is useful if you wish to explicitly control the version of the identity service that's used for authentication explicitly,
@@ -25,14 +28,18 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	hadPath := u.Path != ""
-	u.Path, u.RawQuery, u.Fragment = "", "", ""
-	base := u.String()
 
+	u.RawQuery, u.Fragment = "", ""
+
+	// Base is url with path
 	endpoint = gophercloud.NormalizeURL(endpoint)
-	base = gophercloud.NormalizeURL(base)
+	base := gophercloud.NormalizeURL(u.String())
 
-	if hadPath {
+	var location = VERSION_PATTERN.FindStringIndex(base)
+
+	// If version found remove it from base
+	if location != nil {
+		base = base[0:location[0]+1]
 		return &gophercloud.ProviderClient{
 			IdentityBase:     base,
 			IdentityEndpoint: endpoint,

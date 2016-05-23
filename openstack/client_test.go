@@ -159,3 +159,45 @@ func TestAuthenticatedClientV2(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, "01234567890", client.TokenID)
 }
+
+func TestNewClient(t *testing.T) {
+	client, err := NewClient("https://example.com")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "", client.IdentityEndpoint)
+	th.AssertEquals(t, "https://example.com/", client.IdentityBase)
+
+	client, err = NewClient("https://example.com/")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "", client.IdentityEndpoint)
+	th.AssertEquals(t, "https://example.com/", client.IdentityBase)
+
+	client, err = NewClient("https://example.com/v2.0")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "https://example.com/v2.0/", client.IdentityEndpoint)
+	th.AssertEquals(t, "https://example.com/", client.IdentityBase)
+
+	client, err = NewClient("https://example.com/v2.0/")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "https://example.com/v2.0/", client.IdentityEndpoint)
+	th.AssertEquals(t, "https://example.com/", client.IdentityBase)
+
+	client, err = NewClient("https://example.com/foo/bar")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "", client.IdentityEndpoint)
+	th.AssertEquals(t, "https://example.com/foo/bar/", client.IdentityBase)
+
+	client, err = NewClient("https://example.com/foo/bar/")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "", client.IdentityEndpoint)
+	th.AssertEquals(t, "https://example.com/foo/bar/", client.IdentityBase)
+
+	client, err = NewClient("https://example.com/foo/bar/v2.0")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "https://example.com/foo/bar/v2.0/", client.IdentityEndpoint)
+	th.AssertEquals(t, "https://example.com/foo/bar/", client.IdentityBase)
+
+	client, err = NewClient("https://example.com/foo/bar/v2.0/")
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "https://example.com/foo/bar/v2.0/", client.IdentityEndpoint)
+	th.AssertEquals(t, "https://example.com/foo/bar/", client.IdentityBase)
+}
