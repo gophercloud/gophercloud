@@ -85,9 +85,6 @@ func TestCreateImage(t *testing.T) {
 		Owner: owner,
 
 		Visibility: ImageVisibilityPrivate,
-
-		Metadata:   make(map[string]string),
-		Properties: make(map[string]string),
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -132,9 +129,6 @@ func TestCreateImageNulls(t *testing.T) {
 		Owner: owner,
 
 		Visibility: ImageVisibilityPrivate,
-
-		Metadata:   make(map[string]string),
-		Properties: make(map[string]string),
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -178,9 +172,6 @@ func TestGetImage(t *testing.T) {
 
 		Checksum:  checksum,
 		SizeBytes: sizeBytes,
-
-		Metadata:   make(map[string]string),
-		Properties: make(map[string]string),
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -232,9 +223,6 @@ func TestUpdateImage(t *testing.T) {
 
 		DiskFormat:      "",
 		ContainerFormat: "",
-
-		Metadata:   make(map[string]string),
-		Properties: make(map[string]string),
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)

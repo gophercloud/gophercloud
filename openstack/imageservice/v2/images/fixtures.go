@@ -186,9 +186,9 @@ func HandleImageCreationSuccessfully(t *testing.T) {
 			"owner": "b4eedccc6fb74fa8a7ad6b08382b852b",
 			"min_ram": 0,
 			"schema": "/v2/schemas/image",
-			"size": "None",
-			"checksum": "None",
-			"virtual_size": "None"
+			"size": 0,
+			"checksum": "",
+			"virtual_size": 0
 		}`)
 	})
 }
@@ -320,12 +320,12 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 			"self": "/v2/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 			"file": "/v2/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/file",
 			"schema": "/v2/schemas/image",
-			"owner": "None",
-			"min_ram": "None",
-			"min_disk": "None",
-			"disk_format": "None",
-			"virtual_size": "None",
-			"container_format": "None"
+			"owner": "",
+			"min_ram": 0,
+			"min_disk": 0,
+			"disk_format": "",
+			"virtual_size": 0,
+			"container_format": ""
 		}`)
 	})
 }
