@@ -352,5 +352,7 @@ func NewImageServiceV2(client *gophercloud.ProviderClient, eo gophercloud.Endpoi
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
+	return &gophercloud.ServiceClient{ProviderClient: client,
+		Endpoint:     url,
+		ResourceBase: url + "v2/"}, nil
 }
