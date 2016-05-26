@@ -14,29 +14,55 @@ import (
 // Does not include the literal image data; just metadata.
 // returned by listing images, and by fetching a specific image.
 type Image struct {
+	// ID is the image UUID
 	ID string
 
+	// Name is the human-readable display name for the image.
 	Name string
 
+	// Status is the image status. It can be "queued" or "active"
+	// See imageservice/v2/images/type.go
 	Status ImageStatus
 
+	// Tags is a list of image tags. Tags are arbitrarily defined strings
+	// attached to an image.
 	Tags []string
 
+	// ContainerFormat is the format of the container.
+	// Valid values are ami, ari, aki, bare, and ovf.
 	ContainerFormat string `mapstructure:"container_format"`
+
+	// DiskFormat is the format of the disk.
+	// If set, valid values are ami, ari, aki, vhd, vmdk, raw, qcow2, vdi, and iso.
 	DiskFormat      string `mapstructure:"disk_format"`
 
+	// MinDiskGigabytes is the amount of disk space in GB that is required to boot the image.
 	MinDiskGigabytes int `mapstructure:"min_disk"`
+
+	// MinRAMMegabytes [optional] is the amount of RAM in MB that is required to boot the image.
 	MinRAMMegabytes  int `mapstructure:"min_ram"`
 
+	// Owner is the tenant the image belongs to.
 	Owner string
 
+	// Protected is whether the image is deletable or not.
 	Protected  bool
+
+	// Visibility defines who can see/use the image.
 	Visibility ImageVisibility
 
+	// Checksum is the checksum of the data that's associated with the image
 	Checksum  string
+
+	// SizeBytes is the size of the data that's associated with the image.
 	SizeBytes int `mapstructure:"size"`
 
+	// Metadata is a set of metadata associated with the image.
+	// Image metadata allow for meaningfully define the image properties
+	// and tags. See http://docs.openstack.org/developer/glance/metadefs-concepts.html.
 	Metadata   map[string]string
+
+	// Properties is a set of key-value pairs, if any, that are associated with the image.
 	Properties map[string]string
 }
 
