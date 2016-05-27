@@ -73,6 +73,9 @@ type CreateResult struct {
 
 // Extract build CreateResults from imput Image
 func (c CreateResult) Extract() (*Image, error) {
+	if c.Err != nil {
+		return nil, c.Err
+	}
 	var image *Image
 
 	err := mapstructure.Decode(c.Result.Body, &image)
@@ -91,6 +94,9 @@ type GetResult struct {
 
 // Extract builds GetResult
 func (c GetResult) Extract() (*Image, error) {
+	if c.Err != nil {
+		return nil, c.Err
+	}
 	var image *Image
 
 	err := mapstructure.Decode(c.Result.Body, &image)
@@ -104,6 +110,9 @@ type UpdateResult struct {
 
 // Extract builds UpdateResult
 func (u UpdateResult) Extract() (*Image, error) {
+	if u.Err != nil {
+		return nil, u.Err
+	}
 	var image *Image
 
 	err := mapstructure.Decode(u.Result.Body, &image)
