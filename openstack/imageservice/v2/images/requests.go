@@ -185,7 +185,9 @@ func (opts CreateOpts) ToImageCreateMap() (map[string]interface{}, error) {
 	body["protected"] = opts.Protected
 
 	if opts.Properties != nil {
-		body["properties"] = opts.Properties
+		for k, v := range opts.Properties {
+			body[k] = v
+		}
 	}
 	return body, nil
 }
