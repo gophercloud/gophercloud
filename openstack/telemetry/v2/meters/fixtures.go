@@ -95,8 +95,8 @@ const MeterStatisticsBody = `
 `
 
 var (
-	// MeterHerp is a MeterListResult struct that should correspond to the first result in *[]MeterListResult.
-	MeterHerp = MeterListResult{
+	// MeterHerp is a Meter struct that should correspond to the first result in *[]Meter.
+	MeterHerp = Meter{
 		MeterId:    "YmQ5NDMxYzEtOGQ2OS00YWQzLTgwM2EtOGQ0YTZiODlmZDM2K2luc3RhbmNl",
 		Name:       "instance",
 		ProjectId:  "35b17138-b364-4e6a-a131-8f3099c5be68",
@@ -107,8 +107,8 @@ var (
 		UserId:     "efd87807-12d2-4b38-9c70-5f5c2ac427ff",
 	}
 
-	// MeterDerp is a MeterListResult struct that should correspond to the second result in *[]MeterListResult.
-	MeterDerp = MeterListResult{
+	// MeterDerp is a Meter struct that should correspond to the second result in *[]Meter.
+	MeterDerp = Meter{
 		MeterId:    "NWI4ODIzOWAtOGJhMS00NGZhLWExNTQtOTc4Y2JkYTIzNDc5K2NwdV91dGls",
 		Name:       "cpu_util",
 		ProjectId:  "69e6e7c4ed8b434e92feacbf3d4891fd",
@@ -119,8 +119,8 @@ var (
 		UserId:     "7ya0f7a33717400b951037d55b929c53",
 	}
 
-	// StatisticsHerp is a MeterStatisticsResult struct that should correspond to the first result in *[]MeterStatisticsResult.
-	StatisticsHerp = MeterStatisticsResult{
+	// StatisticsHerp is a Statistics struct that should correspond to the first result in *[]Statistics.
+	StatisticsHerp = Statistics{
 		Avg:           4.5,
 		Count:         10,
 		Duration:      300.0,
@@ -135,8 +135,8 @@ var (
 		Unit:          "GiB",
 	}
 
-	// StatisticsDerp is a MeterStatisticsResult struct that should correspond to the second result in *[]MeterStatisticsResult.
-	StatisticsDerp = MeterStatisticsResult{
+	// StatisticsDerp is a Statistics struct that should correspond to the second result in *[]Statistics.
+	StatisticsDerp = Statistics{
 		Avg:           1.5856751105737468,
 		Count:         28162,
 		Duration:      2591694.0,

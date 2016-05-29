@@ -16,7 +16,7 @@ type ListOptsBuilder interface {
 type ListOpts struct {
 }
 
-// ToServerListQuery formats a ListOpts into a query string.
+// ToMeterListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToMeterListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	if err != nil {
@@ -26,8 +26,8 @@ func (opts ListOpts) ToMeterListQuery() (string, error) {
 }
 
 // List makes a request against the API to list meters accessible to you.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) listResult {
-	var res listResult
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) ListResult {
+	var res ListResult
 	url := listURL(client)
 
 	if opts != nil {
@@ -74,8 +74,8 @@ func (opts MeterStatisticsOpts) ToMeterStatisticsQuery() (string, error) {
 }
 
 // List makes a request against the API to list meters accessible to you.
-func MeterStatistics(client *gophercloud.ServiceClient, n string, opts MeterStatisticsOptsBuilder) statisticsResult {
-	var res statisticsResult
+func MeterStatistics(client *gophercloud.ServiceClient, n string, opts MeterStatisticsOptsBuilder) StatisticsResult {
+	var res StatisticsResult
 	url := statisticsURL(client, n)
 
 	if opts != nil {

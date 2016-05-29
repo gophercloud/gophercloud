@@ -7,7 +7,7 @@ import (
 	"github.com/rackspace/gophercloud"
 )
 
-type MeterListResult struct {
+type Meter struct {
 	MeterId    string `mapstructure:"meter_id"`
 	Name       string `json:"name"`
 	ProjectId  string `mapstructure:"project_id"`
@@ -18,17 +18,17 @@ type MeterListResult struct {
 	UserId     string `mapstructure:"user_id"`
 }
 
-type listResult struct {
+type ListResult struct {
 	gophercloud.Result
 }
 
-// Extract interprets any listResult as an array of MeterListResult
-func (r listResult) Extract() ([]MeterListResult, error) {
+// Extract interprets any ListResult as an array of Meter
+func (r ListResult) Extract() ([]Meter, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
 
-	var response []MeterListResult
+	var response []Meter
 
 	config := &mapstructure.DecoderConfig{
 		DecodeHook: toMapFromString,
@@ -47,7 +47,7 @@ func (r listResult) Extract() ([]MeterListResult, error) {
 	return response, nil
 }
 
-type MeterStatisticsResult struct {
+type Statistics struct {
 	Avg           float32 `json:"avg"`
 	Count         int     `json:"count"`
 	Duration      float32 `json:"duration"`
@@ -62,17 +62,17 @@ type MeterStatisticsResult struct {
 	Unit          string  `json:"unit"`
 }
 
-type statisticsResult struct {
+type StatisticsResult struct {
 	gophercloud.Result
 }
 
 // Extract interprets any serverResult as a Server, if possible.
-func (r statisticsResult) Extract() ([]MeterStatisticsResult, error) {
+func (r StatisticsResult) Extract() ([]Statistics, error) {
 	if r.Err != nil {
 		return nil, r.Err
 	}
 
-	var response []MeterStatisticsResult
+	var response []Statistics
 
 	config := &mapstructure.DecoderConfig{
 		DecodeHook: toMapFromString,
