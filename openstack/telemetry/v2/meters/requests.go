@@ -43,6 +43,51 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) ListResult {
 	return res
 }
 
+// ShowOptsBuilder allows extensions to add additional parameters to the
+// Show request.
+type ShowOptsBuilder interface {
+	ToShowQuery() (string, error)
+}
+
+// ShowOpts allows the filtering and sorting of collections through
+// the API. Filtering is achieved by passing in struct field values that map to
+// the server attributes you want to see returned.
+type ShowOpts struct {
+	QueryField string `q:"q.field"`
+	QueryOp    string `q:"q.op"`
+	QueryValue string `q:"q.value"`
+
+	// Optional, maximum number of results to return
+	Limit int `q:"limit"`
+}
+
+// ToMeterShowQuery formats a ShowOpts into a query string.
+func (opts ShowOpts) ToShowQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+	return q.String(), nil
+}
+
+// Show makes a request against the API to show a specific meter
+func Show(client *gophercloud.ServiceClient, meterName string, opts ShowOptsBuilder) ShowResult {
+	var res ShowResult
+	url := showURL(client, meterName)
+
+	if opts != nil {
+		query, err := opts.ToShowQuery()
+		if err != nil {
+			res.Err = err
+			return res
+		}
+		url += query
+	}
+
+	_, res.Err = client.Get(url, &res.Body, &gophercloud.RequestOpts{})
+	return res
+}
+
 // StatisticsOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type MeterStatisticsOptsBuilder interface {

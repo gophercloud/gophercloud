@@ -2,6 +2,7 @@ package meters
 
 import (
 	"reflect"
+	"time"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/rackspace/gophercloud"
@@ -18,6 +19,21 @@ type Meter struct {
 	UserId     string `mapstructure:"user_id"`
 }
 
+type OldSample struct {
+	Name             string            `mapstructure:"counter_name"`
+	Type             string            `mapstructure:"counter_type"`
+	Unit             string            `mapstructure:"counter_unit"`
+	Volume           float32           `mapstructure:"counter_volume"`
+	MessageId        string            `mapstructure:"message_id"`
+	ProjectId        string            `mapstructure:"project_id"`
+	RecordedAt       time.Time         `mapstructure:"recorded_at"`
+	ResourceId       string            `mapstructure:"resource_id"`
+	ResourceMetadata map[string]string `mapstructure:"resource_metadata"`
+	Source           string            `mapstructure:"source"`
+	Timestamp        time.Time         `mapstructure:"timestamp"`
+	UserId           string            `mapstructure:"user_id"`
+}
+
 type ListResult struct {
 	gophercloud.Result
 }
@@ -32,6 +48,34 @@ func (r ListResult) Extract() ([]Meter, error) {
 
 	config := &mapstructure.DecoderConfig{
 		DecodeHook: toMapFromString,
+		Result:     &response,
+	}
+	decoder, err := mapstructure.NewDecoder(config)
+	if err != nil {
+		return nil, err
+	}
+
+	err = decoder.Decode(r.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+type ShowResult struct {
+	gophercloud.Result
+}
+
+func (r ShowResult) Extract() ([]OldSample, error) {
+	if r.Err != nil {
+		return nil, r.Err
+	}
+
+	var response []OldSample
+
+	config := &mapstructure.DecoderConfig{
+		DecodeHook: decoderHooks,
 		Result:     &response,
 	}
 	decoder, err := mapstructure.NewDecoder(config)
@@ -91,9 +135,26 @@ func (r StatisticsResult) Extract() ([]Statistics, error) {
 	return response, nil
 }
 
+func decoderHooks(from reflect.Type, to reflect.Type, data interface{}) (interface{}, error) {
+	if (from.Kind() == reflect.String) && (to.Kind() == reflect.Map) {
+		return toMapFromString(from.Kind(), to.Kind(), data)
+	} else if to == reflect.TypeOf(time.Time{}) && from == reflect.TypeOf("") {
+		return toDateFromString(from, to, data)
+	}
+	return data, nil
+}
 func toMapFromString(from reflect.Kind, to reflect.Kind, data interface{}) (interface{}, error) {
 	if (from == reflect.String) && (to == reflect.Map) {
 		return map[string]interface{}{}, nil
 	}
+	return data, nil
+}
+
+// From https://github.com/mitchellh/mapstructure/issues/41
+func toDateFromString(from reflect.Type, to reflect.Type, data interface{}) (interface{}, error) {
+	if to == reflect.TypeOf(time.Time{}) && from == reflect.TypeOf("") {
+		return time.Parse("2006-01-02T15:04:05.999999999", data.(string))
+	}
+
 	return data, nil
 }

@@ -4,11 +4,11 @@ package meters
 
 import (
 	"fmt"
-	"net/http"
-	"testing"
-
 	th "github.com/rackspace/gophercloud/testhelper"
 	"github.com/rackspace/gophercloud/testhelper/client"
+	"net/http"
+	"testing"
+	"time"
 )
 
 // MeterListBody contains the canned body of a meters.List response.
@@ -117,6 +117,23 @@ var (
 		Type:       "gauge",
 		Unit:       "%",
 		UserId:     "7ya0f7a33717400b951037d55b929c53",
+	}
+
+	ShowHerp = OldSample{
+		Name:       "instance",
+		Type:       "gauge",
+		Unit:       "instance",
+		Volume:     1.0,
+		MessageId:  "5460acce-4fd6-480d-ab18-9735ec7b1996",
+		ProjectId:  "35b17138-b364-4e6a-a131-8f3099c5be68",
+		ResourceId: "bd9431c1-8d69-4ad3-803a-8d4a6b89fd36",
+		ResourceMetadata: map[string]string{
+			"name1": "value1",
+			"name2": "value2",
+		},
+		Source:    "openstack",
+		Timestamp: time.Date(2013, time.November, 21, 12, 33, 8, 323533000, time.UTC),
+		UserId:    "efd87807-12d2-4b38-9c70-5f5c2ac427ff",
 	}
 
 	// StatisticsHerp is a Statistics struct that should correspond to the first result in *[]Statistics.
