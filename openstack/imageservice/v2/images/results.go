@@ -66,13 +66,12 @@ type Image struct {
 	Properties map[string]string
 }
 
-// CreateResult model
-type CreateResult struct {
+type commonResult struct {
 	gophercloud.Result
 }
 
-// Extract build CreateResults from imput Image
-func (c CreateResult) Extract() (*Image, error) {
+// Extract interprets any commonResult as an Image.
+func (c commonResult) Extract() (*Image, error) {
 	if c.Err != nil {
 		return nil, c.Err
 	}
@@ -80,43 +79,26 @@ func (c CreateResult) Extract() (*Image, error) {
 
 	err := mapstructure.Decode(c.Result.Body, &image)
 	return image, err
+}
+
+// CreateResult represents the result of a Create operation
+type CreateResult struct {
+	commonResult
+}
+
+// UpdateResult represents the result of an Update operation
+type UpdateResult struct {
+	commonResult
+}
+
+// GetResult represents the result of a Get operation
+type GetResult struct {
+	commonResult
 }
 
 //DeleteResult model
 type DeleteResult struct {
 	gophercloud.Result
-}
-
-// GetResult model
-type GetResult struct {
-	gophercloud.Result
-}
-
-// Extract builds GetResult
-func (c GetResult) Extract() (*Image, error) {
-	if c.Err != nil {
-		return nil, c.Err
-	}
-	var image *Image
-
-	err := mapstructure.Decode(c.Result.Body, &image)
-	return image, err
-}
-
-// UpdateResult model
-type UpdateResult struct {
-	gophercloud.Result
-}
-
-// Extract builds UpdateResult
-func (u UpdateResult) Extract() (*Image, error) {
-	if u.Err != nil {
-		return nil, u.Err
-	}
-	var image *Image
-
-	err := mapstructure.Decode(u.Result.Body, &image)
-	return image, err
 }
 
 // PutImageDataResult is model put image respose
