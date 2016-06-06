@@ -11,6 +11,7 @@ import (
 )
 
 func TestEnvironmentValidation(t *testing.T) {
+
 	environmentJSON := new(Environment)
 	environmentJSON.Bin = []byte(ValidJSONEnvironment)
 	err := environmentJSON.Validate()
