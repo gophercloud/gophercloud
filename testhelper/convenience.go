@@ -224,6 +224,21 @@ func CheckEquals(t *testing.T, expected, actual interface{}) {
 	}
 }
 
+// AssertErr is a convenience function for checking that an error occurred
+func AssertErr(t *testing.T, e error) {
+	if e == nil {
+		logFatal(t, fmt.Sprintf("expected an error but none occurred"))
+	}
+}
+
+// CheckErr is a convenience function for checking that an error occurred,
+// except with a non-fatal error
+func CheckErr(t *testing.T, e error) {
+	if e == nil {
+		logError(t, fmt.Sprintf("expected an error but none occurred"))
+	}
+}
+
 // AssertDeepEquals - like Equals - performs a comparison - but on more complex
 // structures that requires deeper inspection
 func AssertDeepEquals(t *testing.T, expected, actual interface{}) {

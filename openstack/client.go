@@ -17,7 +17,7 @@ const (
 	v30 = "v3.0"
 )
 
-var VERSION_PATTERN = regexp.MustCompile("/v[1-9]{1}[0-9.]*")
+var VERSION_PATTERN = regexp.MustCompile("/v[1-9]{1}[0-9\\.]{0,2}/")
 
 // NewClient prepares an unauthenticated ProviderClient instance.
 // Most users will probably prefer using the AuthenticatedClient function instead.
@@ -34,16 +34,24 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 	// Base is url with path
 	endpoint = gophercloud.NormalizeURL(endpoint)
 	base := gophercloud.NormalizeURL(u.String())
-
 	var location = VERSION_PATTERN.FindStringIndex(base)
 
-	// If version found remove it from base
 	if location != nil {
-		base = base[0:location[0]+1]
-		return &gophercloud.ProviderClient{
-			IdentityBase:     base,
-			IdentityEndpoint: endpoint,
-		}, nil
+		var version = base[location[0]+1:location[1]-1]
+		switch version {
+		case "v2.0", "v3":
+			// post version suffixes in path are not supported
+			if len(base) > location[1] {
+				return nil, fmt.Errorf("Path suffixes (after version) are not supported.")
+			}
+			// valid version found, strip from base
+			return &gophercloud.ProviderClient{
+				IdentityBase:     base[0:location[0]+1],
+				IdentityEndpoint: endpoint,
+			}, nil
+		default:
+			return nil, fmt.Errorf("Invalid identity endpoint version %v. Supported versions: v2.0, v3", version)
+		}
 	}
 
 	return &gophercloud.ProviderClient{
