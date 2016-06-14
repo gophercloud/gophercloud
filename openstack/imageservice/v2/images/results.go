@@ -64,6 +64,19 @@ type Image struct {
 
 	// Properties is a set of key-value pairs, if any, that are associated with the image.
 	Properties map[string]string
+
+	// CreatedDate is the date when the image has been created.
+	CreatedDate string `mapstructure:"created_at"`
+
+	// LastUpdate is the date when the last change has been made to the image or it's properties.
+	LastUpdate string `mapstructure:"updated_at"`
+
+	// File is the trailing path after the glance endpoint that represent the location
+	// of the image or the path to retrieve it.
+	File string `mapstructure:"file"`
+
+	// Schema is the path to the JSON-schema that represent the image or image entity.
+	Schema string `mapstructure:"schema"`
 }
 
 type commonResult struct {

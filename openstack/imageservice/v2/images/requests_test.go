@@ -68,6 +68,10 @@ func TestCreateImage(t *testing.T) {
 	owner := "b4eedccc6fb74fa8a7ad6b08382b852b"
 	minDiskGigabytes := 0
 	minRAMMegabytes := 0
+	file := actualImage.File
+	createdDate := actualImage.CreatedDate
+	lastUpdate := actualImage.LastUpdate
+	schema := "/v2/schemas/image"
 
 	expectedImage := Image{
 		ID:   "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
@@ -84,7 +88,11 @@ func TestCreateImage(t *testing.T) {
 
 		Owner: owner,
 
-		Visibility: ImageVisibilityPrivate,
+		Visibility:  ImageVisibilityPrivate,
+		File:        file,
+		CreatedDate: createdDate,
+		LastUpdate:  lastUpdate,
+		Schema:      schema,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -112,6 +120,10 @@ func TestCreateImageNulls(t *testing.T) {
 	owner := "b4eedccc6fb74fa8a7ad6b08382b852b"
 	minDiskGigabytes := 0
 	minRAMMegabytes := 0
+	file := actualImage.File
+	createdDate := actualImage.CreatedDate
+	lastUpdate := actualImage.LastUpdate
+	schema := "/v2/schemas/image"
 
 	expectedImage := Image{
 		ID:   "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
@@ -128,7 +140,11 @@ func TestCreateImageNulls(t *testing.T) {
 
 		Owner: owner,
 
-		Visibility: ImageVisibilityPrivate,
+		Visibility:  ImageVisibilityPrivate,
+		File:        file,
+		CreatedDate: createdDate,
+		LastUpdate:  lastUpdate,
+		Schema:      schema,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -151,6 +167,10 @@ func TestGetImage(t *testing.T) {
 	minDiskGigabytes := 0
 	minRAMMegabytes := 0
 	owner := "5ef70662f8b34079a6eddb8da9d75fe8"
+	file := actualImage.File
+	createdDate := actualImage.CreatedDate
+	lastUpdate := actualImage.LastUpdate
+	schema := "/v2/schemas/image"
 
 	expectedImage := Image{
 		ID:   "1bea47ed-f6a9-463b-b423-14b9cca9ad27",
@@ -170,8 +190,12 @@ func TestGetImage(t *testing.T) {
 		Protected:  false,
 		Visibility: ImageVisibilityPublic,
 
-		Checksum:  checksum,
-		SizeBytes: sizeBytes,
+		Checksum:    checksum,
+		SizeBytes:   sizeBytes,
+		File:        file,
+		CreatedDate: createdDate,
+		LastUpdate:  lastUpdate,
+		Schema:      schema,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -202,6 +226,10 @@ func TestUpdateImage(t *testing.T) {
 
 	sizebytes := 2254249
 	checksum := "2cec138d7dae2aa59038ef8c9aec2390"
+	file := actualImage.File
+	createdDate := actualImage.CreatedDate
+	lastUpdate := actualImage.LastUpdate
+	schema := "/v2/schemas/image"
 
 	expectedImage := Image{
 		ID:         "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
@@ -223,6 +251,10 @@ func TestUpdateImage(t *testing.T) {
 
 		DiskFormat:      "",
 		ContainerFormat: "",
+		File:            file,
+		CreatedDate:     createdDate,
+		LastUpdate:      lastUpdate,
+		Schema:          schema,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
