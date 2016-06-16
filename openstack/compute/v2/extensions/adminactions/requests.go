@@ -1,6 +1,10 @@
 package adminactions
 
-import "github.com/rackspace/gophercloud"
+import (
+	"fmt"
+
+	"github.com/rackspace/gophercloud"
+)
 
 func actionURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("servers", id, "action")
@@ -21,12 +25,17 @@ type CreateBackupOpts struct {
 func (opts CreateBackupOpts) ToCreateBackupMap() (map[string]interface{}, error) {
 	backup := make(map[string]interface{})
 
-	if opts.Name != "" {
-		backup["name"] = opts.Name
+	if opts.Name == "" {
+		return nil, fmt.Errorf("CreateBackupOpts.Name cannot be blank.")
 	}
-	if opts.BackupType != "" {
-		backup["backup_type"] = opts.BackupType
+	if opts.BackupType == "" {
+		return nil, fmt.Errorf("CreateBackupOpts.BackupType cannot be blank.")
 	}
+	if opts.Rotation < 0 {
+		return nil, fmt.Errorf("CreateBackupOpts.Rotation must 0 or greater.")
+	}
+	backup["name"] = opts.Name
+	backup["backup_type"] = opts.BackupType
 	backup["rotation"] = opts.Rotation
 
 	return map[string]interface{}{"createBackup": backup}, nil

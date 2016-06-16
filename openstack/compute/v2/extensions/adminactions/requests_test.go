@@ -1,6 +1,7 @@
 package adminactions
 
 import (
+	"fmt"
 	"testing"
 
 	th "github.com/rackspace/gophercloud/testhelper"
@@ -21,6 +22,53 @@ func TestCreateBackup(t *testing.T) {
 		Rotation:   1,
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
+}
+
+func TestCreateBackupNoName(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockCreateBackupResponse(t, serverID)
+
+	err := CreateBackup(client.ServiceClient(), serverID, CreateBackupOpts{
+		BackupType: "daily",
+		Rotation:   1,
+	}).ExtractErr()
+	if err == nil {
+		fmt.Errorf("CreateBackup without a specified Name should throw an Error.")
+	}
+}
+
+func TestCreateBackupNegativeRotation(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockCreateBackupResponse(t, serverID)
+
+	err := CreateBackup(client.ServiceClient(), serverID, CreateBackupOpts{
+		Name:       "Backup 1",
+		BackupType: "daily",
+		Rotation:   -1,
+	}).ExtractErr()
+	if err == nil {
+		fmt.Errorf("CreateBackup without a negative Rotation should throw an Error.")
+	}
+}
+
+func TestCreateBackupNoType(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockCreateBackupResponse(t, serverID)
+
+	err := CreateBackup(client.ServiceClient(), serverID, CreateBackupOpts{
+		Name: "Backup 1",
+
+		Rotation: 1,
+	}).ExtractErr()
+	if err == nil {
+		fmt.Errorf("CreateBackup without a specified BackupType should throw an Error.")
+	}
 }
 
 func TestInjectNetworkInfo(t *testing.T) {
