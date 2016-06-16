@@ -1,14 +1,15 @@
-//// +build fixtures
+// +build fixtures
 
 package meters
 
 import (
 	"fmt"
-	th "github.com/rackspace/gophercloud/testhelper"
-	"github.com/rackspace/gophercloud/testhelper/client"
 	"net/http"
 	"testing"
 	"time"
+
+	th "github.com/rackspace/gophercloud/testhelper"
+	"github.com/rackspace/gophercloud/testhelper/client"
 )
 
 // MeterListBody contains the canned body of a meters.List response.
