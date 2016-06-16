@@ -14,6 +14,15 @@ type ListOptsBuilder interface {
 // the API. Filtering is achieved by passing in struct field values that map to
 // the server attributes you want to see returned.
 type ListOpts struct {
+	QueryField string `q:"q.field"`
+	QueryOp    string `q:"q.op"`
+	QueryValue string `q:"q.value"`
+
+	// ID of the last-seen item from the previous response
+	Marker string `q:"marker"`
+
+	// Optional, maximum number of results to return
+	Limit int `q:"limit"`
 }
 
 // ToMeterListQuery formats a ListOpts into a query string.
@@ -56,6 +65,9 @@ type ShowOpts struct {
 	QueryField string `q:"q.field"`
 	QueryOp    string `q:"q.op"`
 	QueryValue string `q:"q.value"`
+
+	// ID of the last-seen item from the previous response
+	Marker string `q:"marker"`
 
 	// Optional, maximum number of results to return
 	Limit int `q:"limit"`
