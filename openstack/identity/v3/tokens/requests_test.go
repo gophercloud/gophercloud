@@ -135,6 +135,21 @@ func TestCreateTokenID(t *testing.T) {
 	`)
 }
 
+func TestCreateNewTokenID(t *testing.T) {
+	authTokenPost(t, gophercloud.AuthOptions{TokenID: "asdf"}, nil, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["token"],
+					"token": {
+						"id": "asdf"
+					}
+				}
+			}
+		}
+	`)
+}
+
 func TestCreateProjectIDScope(t *testing.T) {
 	options := gophercloud.AuthOptions{UserID: "fenris", Password: "g0t0h311"}
 	scope := &Scope{ProjectID: "123456"}
@@ -296,12 +311,54 @@ func TestCreateFailureTokenIDUserID(t *testing.T) {
 	authTokenPostErr(t, gophercloud.AuthOptions{UserID: "something"}, nil, true, ErrUserIDWithToken)
 }
 
-func TestCreateFailureTokenIDDomainID(t *testing.T) {
-	authTokenPostErr(t, gophercloud.AuthOptions{DomainID: "something"}, nil, true, ErrDomainIDWithToken)
+func TestCreateTokenIDDomainID(t *testing.T) {
+	scope := &Scope{ProjectName: "world-domination", DomainID: "1000"}
+	authTokenPost(t, gophercloud.AuthOptions{DomainID: "something"}, scope, `
+		{
+			"auth": {
+				"identity": {
+					"methods": [
+						"token"
+					],
+					"token": {
+						"id": "12345abcdef"
+					}
+				},
+				"scope": {
+					"project": {
+						"domain": {
+							"id": "1000"
+						},
+						"name": "world-domination"
+					}
+				}
+			}
+		}`)
 }
 
-func TestCreateFailureTokenIDDomainName(t *testing.T) {
-	authTokenPostErr(t, gophercloud.AuthOptions{DomainName: "something"}, nil, true, ErrDomainNameWithToken)
+func TestCreateTokenIDDomainName(t *testing.T) {
+	scope := &Scope{ProjectName: "world-domination", DomainName: "evil-plans"}
+	authTokenPost(t, gophercloud.AuthOptions{DomainName: "something"}, scope, `
+		{
+			"auth": {
+				"identity": {
+					"methods": [
+						"token"
+					],
+					"token": {
+						"id": "12345abcdef"
+					}
+				},
+				"scope": {
+					"project": {
+						"domain": {
+							"name": "evil-plans"
+						},
+						"name": "world-domination"
+					}
+				}
+			}
+		}`)
 }
 
 func TestCreateFailureMissingUser(t *testing.T) {
