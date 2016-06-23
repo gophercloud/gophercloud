@@ -102,8 +102,7 @@ func TestCreateMultiEphemeralOpts(t *testing.T) {
             "delete_on_termination": "true",
             "destination_type":"local",
             "source_type":"image",
-            "uuid":"123456",
-            "volume_size": "0"
+            "uuid":"123456"
           },
           {
             "boot_index": "-1",
