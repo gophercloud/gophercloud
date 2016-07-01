@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
+	"strings"
 
 	"github.com/gophercloud/gophercloud"
 	tokens2 "github.com/gophercloud/gophercloud/openstack/identity/v2/tokens"
@@ -26,7 +27,18 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 		return nil, err
 	}
 	hadPath := u.Path != ""
-	u.Path, u.RawQuery, u.Fragment = "", "", ""
+	u.RawQuery, u.Fragment = "", ""
+
+	if strings.HasSuffix(u.Path, "v3/") {
+
+		u.Path = strings.TrimSuffix(u.Path, "v3/")
+
+	}
+	if strings.HasSuffix(u.Path, "v2.0/") {
+
+		u.Path = strings.TrimSuffix(u.Path, "v2.0/")
+
+	}
 	base := u.String()
 
 	endpoint = gophercloud.NormalizeURL(endpoint)
@@ -298,4 +310,14 @@ func NewDBV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*
 		return nil, err
 	}
 	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
+}
+
+// NewDBV1 creates a ServiceClient that may be used to access the v1 DB service.
+func NewDNSV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("dns")
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url, ResourceBase: url + "v2/"}, nil
 }
