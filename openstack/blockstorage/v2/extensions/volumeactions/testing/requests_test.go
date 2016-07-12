@@ -3,10 +3,10 @@ package testing
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/extensions/volumeactions"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
-	"github.com/jrperritt/gophercloud"
 )
 
 func TestAttach(t *testing.T) {
