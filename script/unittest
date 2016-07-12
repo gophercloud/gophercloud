@@ -2,4 +2,4 @@
 #
 # Run the unit tests.
 
-exec go test -tags fixtures ./... $@
+exec go test ./testing ./.../testing $@

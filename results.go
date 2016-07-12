@@ -147,7 +147,7 @@ func (jt *JSONRFC3339Milli) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-const RFC3339MilliNoZ = "2006-01-02T03:04:05.999999"
+const RFC3339MilliNoZ = "2006-01-02T15:04:05.999999"
 
 type JSONRFC3339MilliNoZ time.Time
 

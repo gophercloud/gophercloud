@@ -82,6 +82,9 @@ type CreateOpts struct {
 	// current specification supports LBMethodRoundRobin and
 	// LBMethodLeastConnections as valid values for this attribute.
 	LBMethod LBMethod `json:"lb_method" required:"true"`
+
+	// The provider of the pool
+	Provider string `json:"provider,omitempty"`
 }
 
 // ToLBPoolCreateMap allows CreateOpts to satisfy the CreateOptsBuilder interface
