@@ -1,9 +1,9 @@
-# Contributing to gophercloud
+# Contributing to Gophercloud
 
 - [Getting started](#getting-started)
 - [Tests](#tests)
 - [Style guide](#basic-style-guide)
-- [5 ways to get involved](#5-ways-to-get-involved)
+- [3 ways to get involved](#5-ways-to-get-involved)
 
 ## Setting up your git workspace
 
@@ -97,6 +97,7 @@ import (
 
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
+  "github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 )
 
 func TestGet(t *testing.T) {
@@ -131,7 +132,7 @@ func TestGet(t *testing.T) {
 	})
 
 	// Call our API operation
-	network, err := Get(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	network, err := networks.Get(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 
 	// Assert no errors and equality
 	th.AssertNoErr(t, err)
