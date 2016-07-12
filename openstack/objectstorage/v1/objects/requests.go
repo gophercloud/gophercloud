@@ -144,6 +144,7 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	Content            io.Reader
 	Metadata           map[string]string
+	CacheControl       string `h:"Cache-Control"`
 	ContentDisposition string `h:"Content-Disposition"`
 	ContentEncoding    string `h:"Content-Encoding"`
 	ContentLength      int64  `h:"Content-Length"`
@@ -380,7 +381,7 @@ func (opts UpdateOpts) ToObjectUpdateMap() (map[string]string, error) {
 
 // Update is a function that creates, updates, or deletes an object's metadata.
 func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts UpdateOptsBuilder) (r UpdateResult) {
-	h := c.AuthenticatedHeaders()
+	h := make(map[string]string)
 	if opts != nil {
 		headers, err := opts.ToObjectUpdateMap()
 		if err != nil {

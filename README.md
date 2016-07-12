@@ -1,4 +1,3 @@
-# WARNING: CURRENTLY NOT SUITABLE FOR CONSUMPTION. API IN FLUX.
 # Gophercloud: an OpenStack SDK for Go
 [![Build Status](https://travis-ci.org/gophercloud/gophercloud.svg?branch=master)](https://travis-ci.org/gophercloud/gophercloud)
 [![Coverage Status](https://coveralls.io/repos/github/gophercloud/gophercloud/badge.svg?branch=master)](https://coveralls.io/github/gophercloud/gophercloud?branch=master)
@@ -126,27 +125,15 @@ The above code sample creates a new server with the parameters, and embodies the
 new resource in the `server` variable (a
 [`servers.Server`](http://godoc.org/github.com/gophercloud/gophercloud) struct).
 
-### Next steps
+## Backwards-Compatibility Guarantees
 
-Cool! You've handled authentication, got your `ProviderClient` and provisioned
-a new server. You're now ready to use more OpenStack services.
-
-* [Getting started with Compute](http://gophercloud.io/docs/compute)
-* [Getting started with Object Storage](http://gophercloud.io/docs/object-storage)
-* [Getting started with Networking](http://gophercloud.io/docs/networking)
-* [Getting started with Block Storage](http://gophercloud.io/docs/block-storage)
-* [Getting started with Identity](http://gophercloud.io/docs/identity)
+None. Vendor it and write tests covering the parts you use.
 
 ## Contributing
 
-Engaging the community and lowering barriers for contributors is something we
-care a lot about. For this reason, we've taken the time to write a [contributing
-guide](./CONTRIBUTING.md) for folks interested in getting involved in our project.
-If you're not sure how you can get involved, feel free to submit an issue or
-[contact us](https://developer.rackspace.com/support/). You don't need to be a
-Go expert - all members of the community are welcome!
+See the [contributing guide](./CONTRIBUTING.md).
 
 ## Help and feedback
 
 If you're struggling with something or have spotted a potential bug, feel free
-to submit an issue to our [bug tracker](/issues) or [contact us directly](https://developer.rackspace.com/support/).
+to submit an issue to our [bug tracker](/issues).

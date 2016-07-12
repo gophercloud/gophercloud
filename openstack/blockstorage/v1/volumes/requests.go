@@ -17,9 +17,9 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	Size         int               `json:"size" required:"true"`
 	Availability string            `json:"availability,omitempty"`
-	Description  string            `json:"description,omitempty"`
+	Description  string            `json:"display_description,omitempty"`
 	Metadata     map[string]string `json:"metadata,omitempty"`
-	Name         string            `json:"name,omitempty"`
+	Name         string            `json:"display_name,omitempty"`
 	SnapshotID   string            `json:"snapshot_id,omitempty"`
 	SourceVolID  string            `json:"source_volid,omitempty"`
 	ImageID      string            `json:"imageRef,omitempty"`
@@ -74,7 +74,7 @@ type ListOpts struct {
 	// List only volumes that contain Metadata.
 	Metadata map[string]string `q:"metadata"`
 	// List only volumes that have Name as the display name.
-	Name string `q:"name"`
+	Name string `q:"display_name"`
 	// List only volumes that have a status of Status.
 	Status string `q:"status"`
 }
@@ -110,8 +110,8 @@ type UpdateOptsBuilder interface {
 // to the volumes.Update function. For more information about the parameters, see
 // the Volume object.
 type UpdateOpts struct {
-	Name        string            `json:"name,omitempty"`
-	Description string            `json:"description,omitempty"`
+	Name        string            `json:"display_name,omitempty"`
+	Description string            `json:"display_description,omitempty"`
 	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 
