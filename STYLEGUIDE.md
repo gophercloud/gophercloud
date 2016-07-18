@@ -11,7 +11,9 @@
   are not good enough. The link(s) should be to a non-`master` branch. For example,
   a pull request implementing the creation of a Neutron v2 subnet might put the
   following link in the description:
+
   https://github.com/openstack/neutron/blob/stable/mitaka/neutron/api/v2/attributes.py#L749
+
   From that link, a reviewer (or user) can verify the fields in the request/response
   objects in the PR.
 
@@ -37,3 +39,30 @@
   own infrastructure and see an example of usage.
 
 - If in doubt, ask in-line on the PR.
+
+### File Structure
+
+- The following should be used in most cases:
+
+  - `requests.go`: contains all the functions that make HTTP requests and the
+    types associated with the HTTP request (parameters for URL, body, etc)
+  - `results.go`: contains all the response objects and their methods
+  - `urls.go`: contains the endpoints to which the requests are made
+
+### Naming
+
+- For methods on a type in `response.go`, the receiver should be named `r` and the
+  variable into which it will be unmarshalled `s`.
+
+- Functions in `requests.go`, with the exception of functions that return a
+  `pagination.Pager`, should be named returns of the name `r`.
+
+- Functions in `requests.go` that accept request bodies should accept as their
+  last parameter an `interface` named `<Action>OptsBuilder` (eg `CreateOptsBuilder`).
+  This `interface` should have at the least a method named `To<Resource><Action>Map`
+  (eg `ToPortCreateMap`).
+
+- Functions in `requests.go` that accept query strings should accept as their
+  last parameter an `interface` named `<Action>OptsBuilder` (eg `ListOptsBuilder`).
+  This `interface` should have at the least a method named `To<Resource><Action>Query`
+  (eg `ToServerListQuery`).
