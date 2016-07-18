@@ -14,6 +14,10 @@ way than just downloading it. Here are the basic installation instructions:
 [README](/README.md#how-to-install) but add `-tags "fixtures acceptance"` to
 get dependencies for unit and acceptance tests.
 
+   ```bash
+   go get -tags "fixtures acceptance" github.com/gophercloud/gophercloud
+   ```
+
 2. Move into the directory that houses your local repository:
 
    ```bash
@@ -26,7 +30,7 @@ fork as `origin` instead:
 
    ```bash
    git remote rename origin upstream
-   git remote add origin git@github.com/<my_username>/gophercloud
+   git remote add origin git@github.com:<my_username>/gophercloud.git
    ```
 
 4. Checkout the latest development branch:
