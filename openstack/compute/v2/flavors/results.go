@@ -1,14 +1,12 @@
 package flavors
 
 import (
-	"errors"
+	"encoding/json"
+	"strconv"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
-
-// ErrCannotInterpret is returned by an Extract call if the response body doesn't have the expected structure.
-var ErrCannotInterpet = errors.New("Unable to interpret a response body.")
 
 // GetResult temporarily holds the response from a Get call.
 type GetResult struct {
@@ -29,22 +27,58 @@ type Flavor struct {
 	// The Id field contains the flavor's unique identifier.
 	// For example, this identifier will be useful when specifying which hardware configuration to use for a new server instance.
 	ID string `json:"id"`
-
 	// The Disk and RA< fields provide a measure of storage space offered by the flavor, in GB and MB, respectively.
 	Disk int `json:"disk"`
 	RAM  int `json:"ram"`
-
 	// The Name field provides a human-readable moniker for the flavor.
-	Name string `json:"name"`
-
+	Name       string  `json:"name"`
 	RxTxFactor float64 `json:"rxtx_factor"`
-
 	// Swap indicates how much space is reserved for swap.
 	// If not provided, this field will be set to 0.
 	Swap int `json:"swap"`
-
 	// VCPUs indicates how many (virtual) CPUs are available for this flavor.
 	VCPUs int `json:"vcpus"`
+}
+
+func (f *Flavor) UnmarshalJSON(b []byte) error {
+	var flavor struct {
+		ID         string      `json:"id"`
+		Disk       int         `json:"disk"`
+		RAM        int         `json:"ram"`
+		Name       string      `json:"name"`
+		RxTxFactor float64     `json:"rxtx_factor"`
+		Swap       interface{} `json:"swap"`
+		VCPUs      int         `json:"vcpus"`
+	}
+	err := json.Unmarshal(b, &flavor)
+	if err != nil {
+		return err
+	}
+
+	f.ID = flavor.ID
+	f.Disk = flavor.Disk
+	f.RAM = flavor.RAM
+	f.Name = flavor.Name
+	f.RxTxFactor = flavor.RxTxFactor
+	f.VCPUs = flavor.VCPUs
+
+	switch t := flavor.Swap.(type) {
+	case float64:
+		f.Swap = int(t)
+	case string:
+		switch t {
+		case "":
+			f.Swap = 0
+		default:
+			swap, err := strconv.ParseFloat(t, 64)
+			if err != nil {
+				return err
+			}
+			f.Swap = int(swap)
+		}
+	}
+
+	return nil
 }
 
 // FlavorPage contains a single page of the response from a List call.
