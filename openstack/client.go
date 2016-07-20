@@ -333,3 +333,17 @@ func NewDBV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*
 	}
 	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
 }
+
+// NewContainerOrchestrationV1 creates a ServiceClient that may be used with the v1 container orchestration package.
+func NewContainerOrchestrationV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	eo.ApplyDefaults("container")
+	url, err := client.EndpointLocator(eo)
+	if err != nil {
+		return nil, err
+	}
+	return &gophercloud.ServiceClient{
+		ProviderClient: client,
+		Endpoint:       url,
+		ResourceBase:   url + "v1/",
+	}, nil
+}
