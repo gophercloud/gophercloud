@@ -49,8 +49,10 @@ func TestAuthenticatedClientV3(t *testing.T) {
 	})
 
 	options := gophercloud.AuthOptions{
-		UserID:           "me",
+		Username:         "me",
 		Password:         "secret",
+		DomainName:       "default",
+		TenantName: 	  "project",
 		IdentityEndpoint: th.Endpoint(),
 	}
 	client, err := openstack.AuthenticatedClient(options)
