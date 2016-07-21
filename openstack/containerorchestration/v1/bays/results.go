@@ -37,6 +37,6 @@ type Bay struct {
 	// The number of nodes in the bay.
 	Nodes int `json:"node_count"`
 
-	// The UUID for the Heat Stack used to generate the bay.
-	StackID string `json:"stack_id"`
+	// The UUID of the baymodel used to generate the bay.
+	BayModelID string `json:"baymodel_id"`
 }

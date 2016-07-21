@@ -61,7 +61,7 @@ func TestGet(t *testing.T) {
 
 	th.AssertEquals(t, n.Status, "CREATE_COMPLETE")
 	th.AssertEquals(t, n.Name, "k8sbay")
-	th.AssertEquals(t, n.StackID, "f8ef771f-1ffa-4ad5-99b8-651bf7669f80")
+	th.AssertEquals(t, n.BayModelID, "5b793604-fc76-4886-a834-ed522812cdcb")
 	th.AssertEquals(t, n.Nodes, 1)
 	th.AssertEquals(t, n.ID, "a56a6cd8-0779-461b-b1eb-26cec904284a")
 }
