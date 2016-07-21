@@ -9,7 +9,6 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
-	"github.com/mitchellh/mapstructure"
 )
 
 type serverResult struct {
@@ -75,20 +74,14 @@ type GetPasswordResult struct {
 // If privateKey == nil the encrypted password is returned and can be decrypted with:
 //   echo '<pwd>' | base64 -D | openssl rsautl -decrypt -inkey <private_key>
 func (r GetPasswordResult) ExtractPassword(privateKey *rsa.PrivateKey) (string, error) {
-
-	if r.Err != nil {
-		return "", r.Err
+	var s struct {
+		Password string `json:"password"`
 	}
-
-	var response struct {
-		Password string `mapstructure:"password"`
+	err := r.ExtractInto(&s)
+	if err == nil && privateKey != nil && s.Password != "" {
+		return decryptPassword(s.Password, privateKey)
 	}
-
-	err := mapstructure.Decode(r.Body, &response)
-	if err == nil && privateKey != nil && response.Password != "" {
-		return decryptPassword(response.Password, privateKey)
-	}
-	return response.Password, err
+	return s.Password, err
 }
 
 func decryptPassword(encryptedPassword string, privateKey *rsa.PrivateKey) (string, error) {
