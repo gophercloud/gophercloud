@@ -35,14 +35,16 @@ func TestListFlavors(t *testing.T) {
 								"name": "m1.tiny",
 								"disk": 1,
 								"ram": 512,
-								"vcpus": 1
+								"vcpus": 1,
+								"swap":""
 							},
 							{
 								"id": "2",
 								"name": "m2.small",
 								"disk": 10,
 								"ram": 1024,
-								"vcpus": 2
+								"vcpus": 2,
+								"swap": 1000
 							}
 						],
 						"flavors_links": [
@@ -70,8 +72,8 @@ func TestListFlavors(t *testing.T) {
 		}
 
 		expected := []flavors.Flavor{
-			{ID: "1", Name: "m1.tiny", Disk: 1, RAM: 512, VCPUs: 1},
-			{ID: "2", Name: "m2.small", Disk: 10, RAM: 1024, VCPUs: 2},
+			{ID: "1", Name: "m1.tiny", Disk: 1, RAM: 512, VCPUs: 1, Swap: 0},
+			{ID: "2", Name: "m2.small", Disk: 10, RAM: 1024, VCPUs: 2, Swap: 1000},
 		}
 
 		if !reflect.DeepEqual(expected, actual) {
@@ -105,7 +107,8 @@ func TestGetFlavor(t *testing.T) {
 					"disk": 1,
 					"ram": 512,
 					"vcpus": 1,
-					"rxtx_factor": 1
+					"rxtx_factor": 1,
+					"swap": ""
 				}
 			}
 		`)
@@ -123,6 +126,7 @@ func TestGetFlavor(t *testing.T) {
 		RAM:        512,
 		VCPUs:      1,
 		RxTxFactor: 1,
+		Swap:       0,
 	}
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected %#v, but was %#v", expected, actual)
