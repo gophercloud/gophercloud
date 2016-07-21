@@ -3,6 +3,7 @@ package openstack
 import (
 	"fmt"
 	"net/url"
+	"reflect"
 
 	"github.com/gophercloud/gophercloud"
 	tokens2 "github.com/gophercloud/gophercloud/openstack/identity/v2/tokens"
@@ -215,37 +216,37 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 
 // NewIdentityV2 creates a ServiceClient that may be used to interact with the v2 identity service.
 func NewIdentityV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	v2Endpoint := client.IdentityBase + "v2.0/"
-	/*
+	endpoint := client.IdentityBase + "v2.0/"
+	var err error
+	if !reflect.DeepEqual(eo, gophercloud.EndpointOpts{}) {
 		eo.ApplyDefaults("identity")
-		url, err := client.EndpointLocator(eo)
+		endpoint, err = client.EndpointLocator(eo)
 		if err != nil {
 			return nil, err
 		}
-	*/
+	}
 
 	return &gophercloud.ServiceClient{
 		ProviderClient: client,
-		Endpoint:       v2Endpoint,
-		//Endpoint: url,
+		Endpoint:       endpoint,
 	}, nil
 }
 
 // NewIdentityV3 creates a ServiceClient that may be used to access the v3 identity service.
 func NewIdentityV3(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	v3Endpoint := client.IdentityBase + "v3/"
-	/*
+	endpoint := client.IdentityBase + "v3/"
+	var err error
+	if !reflect.DeepEqual(eo, gophercloud.EndpointOpts{}) {
 		eo.ApplyDefaults("identity")
-		url, err := client.EndpointLocator(eo)
+		endpoint, err = client.EndpointLocator(eo)
 		if err != nil {
 			return nil, err
 		}
-	*/
+	}
 
 	return &gophercloud.ServiceClient{
 		ProviderClient: client,
-		Endpoint:       v3Endpoint,
-		//Endpoint: url,
+		Endpoint:       endpoint,
 	}, nil
 }
 
