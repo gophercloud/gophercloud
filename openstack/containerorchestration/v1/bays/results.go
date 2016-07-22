@@ -10,9 +10,9 @@ type commonResult struct {
 
 // Extract is a function that accepts a result and extracts a bay resource.
 func (r commonResult) Extract() (*Bay, error) {
-	var bay *Bay
-	err := r.ExtractInto(&bay)
-	return bay, err
+	var s *Bay
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // GetResult represents the result of a get operation.
