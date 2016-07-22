@@ -26,11 +26,12 @@ func TestListServers(t *testing.T) {
 			return false, err
 		}
 
-		if len(actual) != 2 {
-			t.Fatalf("Expected 2 servers, got %d", len(actual))
+		if len(actual) != 3 {
+			t.Fatalf("Expected 3 servers, got %d", len(actual))
 		}
 		th.CheckDeepEquals(t, ServerHerp, actual[0])
 		th.CheckDeepEquals(t, ServerDerp, actual[1])
+		th.CheckDeepEquals(t, ServerMerp, actual[2])
 
 		return true, nil
 	})
