@@ -6,32 +6,56 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
-	"github.com/gophercloud/gophercloud/pagination"
 )
 
-func TestListImages(t *testing.T) {
+func TestImagesList(t *testing.T) {
 	client, err := newClient()
 	if err != nil {
 		t.Fatalf("Unable to create a compute: client: %v", err)
 	}
 
-	t.Logf("ID\tRegion\tName\tStatus\tCreated")
+	allPages, err := images.ListDetail(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to retrieve images: %v", err)
+	}
 
-	pager := images.ListDetail(client, nil)
-	count, pages := 0, 0
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		pages++
-		images, err := images.ExtractImages(page)
-		if err != nil {
-			return false, err
-		}
+	allImages, err := images.ExtractImages(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract image results: %v", err)
+	}
 
-		for _, i := range images {
-			t.Logf("%s\t%s\t%s\t%s", i.ID, i.Name, i.Status, i.Created)
-		}
+	for _, image := range allImages {
+		printImage(t, image)
+	}
+}
 
-		return true, nil
-	})
+func TestImagesGet(t *testing.T) {
+	client, err := newClient()
+	if err != nil {
+		t.Fatalf("Unable to create a compute: client: %v", err)
+	}
 
-	t.Logf("--------\n%d images listed on %d pages.", count, pages)
+	choices, err := ComputeChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	image, err := images.Get(client, choices.ImageID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get image information: %v", err)
+	}
+
+	printImage(t, *image)
+}
+
+func printImage(t *testing.T, image images.Image) {
+	t.Logf("ID: %s", image.ID)
+	t.Logf("Name: %s", image.Name)
+	t.Logf("MinDisk: %d", image.MinDisk)
+	t.Logf("MinRAM: %d", image.MinRAM)
+	t.Logf("Status: %s", image.Status)
+	t.Logf("Progress: %d", image.Progress)
+	t.Logf("Metadata: %#v", image.Metadata)
+	t.Logf("Created: %s", image.Created)
+	t.Logf("Updated: %s", image.Updated)
 }
