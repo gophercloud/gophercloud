@@ -6,38 +6,30 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
-	"github.com/gophercloud/gophercloud/pagination"
 )
 
-func TestListFlavors(t *testing.T) {
+func TestFlavorsList(t *testing.T) {
 	client, err := newClient()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	t.Logf("ID\tRegion\tName\tStatus\tCreated")
+	allPages, err := flavors.ListDetail(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to retrieve flavors: %v", err)
+	}
 
-	pager := flavors.ListDetail(client, nil)
-	count, pages := 0, 0
-	pager.EachPage(func(page pagination.Page) (bool, error) {
-		t.Logf("---")
-		pages++
-		flavors, err := flavors.ExtractFlavors(page)
-		if err != nil {
-			return false, err
-		}
+	allFlavors, err := flavors.ExtractFlavors(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract flavor results: %v", err)
+	}
 
-		for _, f := range flavors {
-			t.Logf("%s\t%s\t%d\t%d\t%d", f.ID, f.Name, f.RAM, f.Disk, f.VCPUs)
-		}
-
-		return true, nil
-	})
-
-	t.Logf("--------\n%d flavors listed on %d pages.", count, pages)
+	for _, flavor := range allFlavors {
+		printFlavor(t, &flavor)
+	}
 }
 
-func TestGetFlavor(t *testing.T) {
+func TestFlavorsGet(t *testing.T) {
 	client, err := newClient()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -53,5 +45,14 @@ func TestGetFlavor(t *testing.T) {
 		t.Fatalf("Unable to get flavor information: %v", err)
 	}
 
-	t.Logf("Flavor: %#v", flavor)
+	printFlavor(t, flavor)
+}
+
+func printFlavor(t *testing.T, flavor *flavors.Flavor) {
+	t.Logf("ID: %s", flavor.ID)
+	t.Logf("Name: %s", flavor.Name)
+	t.Logf("RAM: %d", flavor.RAM)
+	t.Logf("Disk: %d", flavor.Disk)
+	t.Logf("Swap: %d", flavor.Swap)
+	t.Logf("RxTxFactor: %f", flavor.RxTxFactor)
 }
