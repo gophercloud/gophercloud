@@ -29,6 +29,38 @@ func newClient() (*gophercloud.ServiceClient, error) {
 	})
 }
 
+func newIdentityClient() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewIdentityV2(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
+func newBlockClient() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewBlockStorageV1(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
 func waitForStatus(client *gophercloud.ServiceClient, server *servers.Server, status string) error {
 	return tools.WaitFor(func() (bool, error) {
 		latest, err := servers.Get(client, server.ID).Extract()
@@ -39,6 +71,10 @@ func waitForStatus(client *gophercloud.ServiceClient, server *servers.Server, st
 		if latest.Status == status {
 			// Success!
 			return true, nil
+		}
+
+		if latest.Status == "ERROR" {
+			return false, fmt.Errorf("Instance in ERROR state")
 		}
 
 		return false, nil
@@ -57,6 +93,9 @@ type ComputeChoices struct {
 	// from FlavorID.
 	FlavorIDResize string
 
+	// FloatingIPPool contains the name of the pool from where to obtain floating IPs.
+	FloatingIPPoolName string
+
 	// NetworkName is the name of a network to launch the instance on.
 	NetworkName string
 }
@@ -68,6 +107,7 @@ func ComputeChoicesFromEnv() (*ComputeChoices, error) {
 	flavorID := os.Getenv("OS_FLAVOR_ID")
 	flavorIDResize := os.Getenv("OS_FLAVOR_ID_RESIZE")
 	networkName := os.Getenv("OS_NETWORK_NAME")
+	floatingIPPoolName := os.Getenv("OS_POOL_NAME")
 
 	missing := make([]string, 0, 3)
 	if imageID == "" {
@@ -79,8 +119,11 @@ func ComputeChoicesFromEnv() (*ComputeChoices, error) {
 	if flavorIDResize == "" {
 		missing = append(missing, "OS_FLAVOR_ID_RESIZE")
 	}
+	if floatingIPPoolName == "" {
+		missing = append(missing, "OS_POOL_NAME")
+	}
 	if networkName == "" {
-		networkName = "public"
+		networkName = "private"
 	}
 
 	notDistinct := ""
@@ -100,5 +143,5 @@ func ComputeChoicesFromEnv() (*ComputeChoices, error) {
 		return nil, fmt.Errorf(text)
 	}
 
-	return &ComputeChoices{ImageID: imageID, FlavorID: flavorID, FlavorIDResize: flavorIDResize, NetworkName: networkName}, nil
+	return &ComputeChoices{ImageID: imageID, FlavorID: flavorID, FlavorIDResize: flavorIDResize, FloatingIPPoolName: floatingIPPoolName, NetworkName: networkName}, nil
 }
