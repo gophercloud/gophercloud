@@ -22,6 +22,7 @@ type ListOpts struct {
 	TenantID           string `q:"tenant_id"`
 	ProvisioningStatus string `q:"provisioning_status"`
 	VipAddress         string `q:"vip_address"`
+	VipPortID          string `q:"vip_port_id"`
 	VipSubnetID        string `q:"vip_subnet_id"`
 	ID                 string `q:"id"`
 	OperatingStatus    string `q:"operating_status"`
