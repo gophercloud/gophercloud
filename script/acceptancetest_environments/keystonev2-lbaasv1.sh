@@ -1,4 +1,26 @@
 #!/bin/bash
+#
+# This script is useful for creating a devstack environment to run gophercloud
+# acceptance tests on.
+#
+# This can be considered a "legacy" devstack environment since it uses
+# Keystone v2 and LBaaS v1.
+#
+# To run, simply execute this script within a virtual machine.
+#
+# The following OpenStack versions are installed:
+# * OpenStack Mitaka
+# * Keystone v2
+# * Glance v1 and v2
+# * Nova v2 and v2.1
+# * Cinder v1 and v2
+# * Trove v1
+# * Swift v1
+# * Neutron v2
+# * Neutron LBaaS v1.0
+# * Neutron FWaaS v2.0
+#
+# Go 1.6 is also installed.
 
 set -e
 
