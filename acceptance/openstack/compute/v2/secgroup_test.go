@@ -8,188 +8,201 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/secgroups"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestSecGroups(t *testing.T) {
+func TestSecGroupsList(t *testing.T) {
 	client, err := newClient()
-	th.AssertNoErr(t, err)
-
-	serverID, needsDeletion := findServer(t, client)
-
-	groupID := createSecGroup(t, client)
-
-	listSecGroups(t, client)
-
-	newName := tools.RandomString("secgroup_", 5)
-	updateSecGroup(t, client, groupID, newName)
-
-	getSecGroup(t, client, groupID)
-
-	addRemoveRules(t, client, groupID)
-
-	addServerToSecGroup(t, client, serverID, newName)
-
-	removeServerFromSecGroup(t, client, serverID, newName)
-
-	if needsDeletion {
-		servers.Delete(client, serverID)
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	deleteSecGroup(t, client, groupID)
+	allPages, err := secgroups.List(client).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to retrieve security groups: %v", err)
+	}
+
+	allSecGroups, err := secgroups.ExtractSecurityGroups(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract security groups: %v", err)
+	}
+
+	for _, secgroup := range allSecGroups {
+		printSecurityGroup(t, &secgroup)
+	}
 }
 
-func createSecGroup(t *testing.T, client *gophercloud.ServiceClient) string {
-	opts := secgroups.CreateOpts{
+func TestSecGroupsCreate(t *testing.T) {
+	client, err := newClient()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	securityGroup, err := createSecurityGroup(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create security group: %v", err)
+	}
+	defer deleteSecurityGroup(t, client, securityGroup)
+}
+
+func TestSecGroupsUpdate(t *testing.T) {
+	client, err := newClient()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	securityGroup, err := createSecurityGroup(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create security group: %v", err)
+	}
+	defer deleteSecurityGroup(t, client, securityGroup)
+
+	updateOpts := secgroups.UpdateOpts{
+		Name:        tools.RandomString("secgroup_", 4),
+		Description: tools.RandomString("dec_", 10),
+	}
+	updatedSecurityGroup, err := secgroups.Update(client, securityGroup.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update security group: %v", err)
+	}
+
+	t.Logf("Updated %s's name to %s", updatedSecurityGroup.ID, updatedSecurityGroup.Name)
+}
+
+func TestSecGroupsRuleCreate(t *testing.T) {
+	client, err := newClient()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	securityGroup, err := createSecurityGroup(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create security group: %v", err)
+	}
+	defer deleteSecurityGroup(t, client, securityGroup)
+
+	rule, err := createSecurityGroupRule(t, client, securityGroup.ID)
+	if err != nil {
+		t.Fatalf("Unable to create rule: %v", err)
+	}
+	defer deleteSecurityGroupRule(t, client, rule)
+}
+
+func TestSecGroupsAddGroupToServer(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires server creation in short mode.")
+	}
+
+	client, err := newClient()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	choices, err := ComputeChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	server, err := createServer(t, client, choices)
+	if err != nil {
+		t.Fatalf("Unable to create server: %v", err)
+	}
+
+	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
+		t.Fatalf("Unable to wait for server: %v", err)
+	}
+	defer deleteServer(t, client, server)
+
+	securityGroup, err := createSecurityGroup(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create security group: %v", err)
+	}
+	defer deleteSecurityGroup(t, client, securityGroup)
+
+	rule, err := createSecurityGroupRule(t, client, securityGroup.ID)
+	if err != nil {
+		t.Fatalf("Unable to create rule: %v", err)
+	}
+	defer deleteSecurityGroupRule(t, client, rule)
+
+	t.Logf("Adding group %s to server %s", securityGroup.ID, server.ID)
+	err = secgroups.AddServer(client, server.ID, securityGroup.Name).ExtractErr()
+	if err != nil && err.Error() != "EOF" {
+		t.Fatalf("Unable to add group %s to server %s: %s", securityGroup.ID, server.ID, err)
+	}
+
+	t.Logf("Removing group %s from server %s", securityGroup.ID, server.ID)
+	err = secgroups.RemoveServer(client, server.ID, securityGroup.Name).ExtractErr()
+	if err != nil && err.Error() != "EOF" {
+		t.Fatalf("Unable to remove group %s from server %s: %s", securityGroup.ID, server.ID, err)
+	}
+}
+
+func createSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (secgroups.SecurityGroup, error) {
+	createOpts := secgroups.CreateOpts{
 		Name:        tools.RandomString("secgroup_", 5),
 		Description: "something",
 	}
 
-	group, err := secgroups.Create(client, opts).Extract()
-	th.AssertNoErr(t, err)
-
-	t.Logf("Created secgroup %s %s", group.ID, group.Name)
-
-	return group.ID
-}
-
-func listSecGroups(t *testing.T, client *gophercloud.ServiceClient) {
-	err := secgroups.List(client).EachPage(func(page pagination.Page) (bool, error) {
-		secGrpList, err := secgroups.ExtractSecurityGroups(page)
-		th.AssertNoErr(t, err)
-
-		for _, sg := range secGrpList {
-			t.Logf("Listing secgroup %s: Name [%s] Desc [%s] TenantID [%s]", sg.ID,
-				sg.Name, sg.Description, sg.TenantID)
-		}
-
-		return true, nil
-	})
-
-	th.AssertNoErr(t, err)
-}
-
-func updateSecGroup(t *testing.T, client *gophercloud.ServiceClient, id, newName string) {
-	opts := secgroups.UpdateOpts{
-		Name:        newName,
-		Description: tools.RandomString("dec_", 10),
+	securityGroup, err := secgroups.Create(client, createOpts).Extract()
+	if err != nil {
+		return *securityGroup, err
 	}
-	group, err := secgroups.Update(client, id, opts).Extract()
-	th.AssertNoErr(t, err)
 
-	t.Logf("Updated %s's name to %s", group.ID, group.Name)
+	t.Logf("Created security group: %s", securityGroup.ID)
+	return *securityGroup, nil
 }
 
-func getSecGroup(t *testing.T, client *gophercloud.ServiceClient, id string) {
-	group, err := secgroups.Get(client, id).Extract()
-	th.AssertNoErr(t, err)
+func deleteSecurityGroup(t *testing.T, client *gophercloud.ServiceClient, securityGroup secgroups.SecurityGroup) {
+	err := secgroups.Delete(client, securityGroup.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete security group %s: %s", securityGroup.ID, err)
+	}
 
-	t.Logf("Getting %s: %#v", id, group)
+	t.Logf("Deleted security group: %s", securityGroup.ID)
 }
 
-func addRemoveRules(t *testing.T, client *gophercloud.ServiceClient, id string) {
-	opts := secgroups.CreateRuleOpts{
-		ParentGroupID: id,
-		FromPort:      22,
-		ToPort:        22,
+func createSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, securityGroupID string) (secgroups.Rule, error) {
+	createOpts := secgroups.CreateRuleOpts{
+		ParentGroupID: securityGroupID,
+		FromPort:      tools.RandomInt(80, 89),
+		ToPort:        tools.RandomInt(90, 99),
 		IPProtocol:    "TCP",
 		CIDR:          "0.0.0.0/0",
 	}
 
-	rule, err := secgroups.CreateRule(client, opts).Extract()
-	th.AssertNoErr(t, err)
-
-	t.Logf("Adding rule %s to group %s", rule.ID, id)
-
-	err = secgroups.DeleteRule(client, rule.ID).ExtractErr()
-	th.AssertNoErr(t, err)
-
-	t.Logf("Deleted rule %s from group %s", rule.ID, id)
-
-	icmpOpts := secgroups.CreateRuleOpts{
-		ParentGroupID: id,
-		FromPort:      0,
-		ToPort:        0,
-		IPProtocol:    "ICMP",
-		CIDR:          "0.0.0.0/0",
+	rule, err := secgroups.CreateRule(client, createOpts).Extract()
+	if err != nil {
+		return *rule, err
 	}
 
-	icmpRule, err := secgroups.CreateRule(client, icmpOpts).Extract()
-	th.AssertNoErr(t, err)
-
-	t.Logf("Adding ICMP rule %s to group %s", icmpRule.ID, id)
-
-	err = secgroups.DeleteRule(client, icmpRule.ID).ExtractErr()
-	th.AssertNoErr(t, err)
-
-	t.Logf("Deleted ICMP rule %s from group %s", icmpRule.ID, id)
+	t.Logf("Created security group rule: %s", rule.ID)
+	return *rule, nil
 }
 
-func findServer(t *testing.T, client *gophercloud.ServiceClient) (string, bool) {
-	var serverID string
-	var needsDeletion bool
-
-	err := servers.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
-		sList, err := servers.ExtractServers(page)
-		th.AssertNoErr(t, err)
-
-		for _, s := range sList {
-			serverID = s.ID
-			needsDeletion = false
-
-			t.Logf("Found an existing server: ID [%s]", serverID)
-			break
-		}
-
-		return true, nil
-	})
-	th.AssertNoErr(t, err)
-
-	if serverID == "" {
-		t.Log("No server found, creating one")
-
-		choices, err := ComputeChoicesFromEnv()
-		th.AssertNoErr(t, err)
-
-		opts := &servers.CreateOpts{
-			Name:      tools.RandomString("secgroup_test_", 5),
-			ImageRef:  choices.ImageID,
-			FlavorRef: choices.FlavorID,
-		}
-
-		s, err := servers.Create(client, opts).Extract()
-		th.AssertNoErr(t, err)
-		serverID = s.ID
-
-		t.Logf("Created server %s, waiting for it to build", s.ID)
-		err = servers.WaitForStatus(client, serverID, "ACTIVE", 300)
-		th.AssertNoErr(t, err)
-
-		needsDeletion = true
+func deleteSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, rule secgroups.Rule) {
+	err := secgroups.DeleteRule(client, rule.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete rule: %v", err)
 	}
 
-	return serverID, needsDeletion
+	t.Logf("Deleted security group rule: %s", rule.ID)
 }
 
-func addServerToSecGroup(t *testing.T, client *gophercloud.ServiceClient, serverID, groupName string) {
-	err := secgroups.AddServerToGroup(client, serverID, groupName).ExtractErr()
-	th.AssertNoErr(t, err)
+func printSecurityGroup(t *testing.T, securityGroup *secgroups.SecurityGroup) {
+	t.Logf("ID: %s", securityGroup.ID)
+	t.Logf("Name: %s", securityGroup.Name)
+	t.Logf("Description: %s", securityGroup.Description)
+	t.Logf("Tenant ID: %s", securityGroup.TenantID)
+	t.Logf("Rules:")
 
-	t.Logf("Adding group %s to server %s", groupName, serverID)
-}
-
-func removeServerFromSecGroup(t *testing.T, client *gophercloud.ServiceClient, serverID, groupName string) {
-	err := secgroups.RemoveServerFromGroup(client, serverID, groupName).ExtractErr()
-	th.AssertNoErr(t, err)
-
-	t.Logf("Removing group %s from server %s", groupName, serverID)
-}
-
-func deleteSecGroup(t *testing.T, client *gophercloud.ServiceClient, id string) {
-	err := secgroups.Delete(client, id).ExtractErr()
-	th.AssertNoErr(t, err)
-
-	t.Logf("Deleted group %s", id)
+	for _, rule := range securityGroup.Rules {
+		t.Logf("\tID: %s", rule.ID)
+		t.Logf("\tFrom Port: %d", rule.FromPort)
+		t.Logf("\tTo Port: %d", rule.ToPort)
+		t.Logf("\tIP Protocol: %s", rule.IPProtocol)
+		t.Logf("\tIP Range: %s", rule.IPRange.CIDR)
+		t.Logf("\tParent Group ID: %s", rule.ParentGroupID)
+		t.Logf("\tGroup Tenant ID: %s", rule.Group.TenantID)
+		t.Logf("\tGroup Name: %s", rule.Group.Name)
+	}
 }

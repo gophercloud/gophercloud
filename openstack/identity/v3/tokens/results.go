@@ -24,17 +24,13 @@ type Endpoint struct {
 // Note: when looking for the desired service, try, whenever possible, to key off the type field.
 // Otherwise, you'll tie the representation of the service to a specific provider.
 type CatalogEntry struct {
-
 	// Service ID
 	ID string `json:"id"`
-
 	// Name will contain the provider-specified name for the service.
 	Name string `json:"name"`
-
 	// Type will contain a type string if OpenStack defines a type for the service.
 	// Otherwise, for provider-specific services, the provider may assign their own type strings.
 	Type string `json:"type"`
-
 	// Endpoints will let the caller iterate over all the different endpoints that may exist for
 	// the service.
 	Endpoints []Endpoint `json:"endpoints"`
@@ -60,7 +56,7 @@ func (r commonResult) Extract() (*Token, error) {
 func (r commonResult) ExtractToken() (*Token, error) {
 	var s struct {
 		Token struct {
-			ExpiresAt string `json:"expires_at"`
+			ExpiresAt gophercloud.JSONRFC3339Milli `json:"expires_at"`
 		} `json:"token"`
 	}
 
@@ -74,8 +70,7 @@ func (r commonResult) ExtractToken() (*Token, error) {
 		return nil, err
 	}
 
-	// Attempt to parse the timestamp.
-	token.ExpiresAt, err = time.Parse(gophercloud.RFC3339Milli, s.Token.ExpiresAt)
+	token.ExpiresAt = time.Time(s.Token.ExpiresAt)
 
 	return &token, err
 }

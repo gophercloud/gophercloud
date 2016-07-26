@@ -28,15 +28,12 @@ to set them manually.
 |`OS_AUTH_URL`|The identity URL you need to authenticate|
 |`OS_TENANT_NAME`|Your API tenant name|
 |`OS_TENANT_ID`|Your API tenant ID|
-|`RS_USERNAME`|Your Rackspace username|
-|`RS_API_KEY`|Your Rackspace API key|
 
 #### General
 
 |Name|Description|
 |---|---|
 |`OS_REGION_NAME`|The region you want your resources to reside in|
-|`RS_REGION`|Rackspace region you want your resource to reside in|
 
 #### Compute
 
@@ -45,8 +42,8 @@ to set them manually.
 |`OS_IMAGE_ID`|The ID of the image your want your server to be based on|
 |`OS_FLAVOR_ID`|The ID of the flavor you want your server to be based on|
 |`OS_FLAVOR_ID_RESIZE`|The ID of the flavor you want your server to be resized to|
-|`RS_IMAGE_ID`|The ID of the image you want servers to be created with|
-|`RS_FLAVOR_ID`|The ID of the flavor you want your server to be created with|
+|`OS_POOL_NAME`|The Pool from where to obtain Floating IPs|
+|`OS_NETWORK_NAME`|The network to launch instances on|
 
 ### 2. Run the test suite
 
@@ -55,3 +52,30 @@ From the root directory, run:
 ```
 ./script/acceptancetest
 ```
+
+Alternatively, add the following to your `.bashrc`:
+
+```bash
+gophercloudtest() {
+  if [[ -n $1 ]] && [[ -n $2 ]]; then
+    pushd  ~/go/src/github.com/gophercloud/gophercloud
+    go test -v -tags "fixtures acceptance" -run "$1" github.com/gophercloud/gophercloud/acceptance/openstack/$2 | tee ~/gophercloud.log
+    popd
+fi
+}
+```
+
+Then run either groups or individual tests by doing:
+
+```shell
+$ gophercloudtest TestFlavorsList compute/v2
+$ gophercloudtest TestFlavors compute/v2
+$ gophercloudtest Test compute/v2
+```
+
+### 3. Notes
+
+#### Compute Tests
+
+* In order to run the `TestBootFromVolumeMultiEphemeral` test, a flavor with ephemeral disk space must be used.
+* The `TestDefSecRules` tests require a compatible network driver and admin privileges.

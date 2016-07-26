@@ -10,11 +10,11 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
+const ID = "0123456789"
+
 func TestAuthenticatedClientV3(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	const ID = "0123456789"
 
 	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `
@@ -161,4 +161,133 @@ func TestAuthenticatedClientV2(t *testing.T) {
 	client, err := openstack.AuthenticatedClient(options)
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, "01234567890", client.TokenID)
+}
+
+func TestIdentityAdminV3Client(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, `
+			{
+				"versions": {
+					"values": [
+						{
+							"status": "stable",
+							"id": "v3.0",
+							"links": [
+								{ "href": "%s", "rel": "self" }
+							]
+						},
+						{
+							"status": "stable",
+							"id": "v2.0",
+							"links": [
+								{ "href": "%s", "rel": "self" }
+							]
+						}
+					]
+				}
+			}
+		`, th.Endpoint()+"v3/", th.Endpoint()+"v2.0/")
+	})
+
+	th.Mux.HandleFunc("/v3/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("X-Subject-Token", ID)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, `
+	{
+    "token": {
+        "audit_ids": ["VcxU2JYqT8OzfUVvrjEITQ", "qNUTIJntTzO1-XUk5STybw"],
+        "catalog": [
+            {
+                "endpoints": [
+                    {
+                        "id": "39dc322ce86c4111b4f06c2eeae0841b",
+                        "interface": "public",
+                        "region": "RegionOne",
+                        "url": "http://localhost:5000"
+                    },
+                    {
+                        "id": "ec642f27474842e78bf059f6c48f4e99",
+                        "interface": "internal",
+                        "region": "RegionOne",
+                        "url": "http://localhost:5000"
+                    },
+                    {
+                        "id": "c609fc430175452290b62a4242e8a7e8",
+                        "interface": "admin",
+                        "region": "RegionOne",
+                        "url": "http://localhost:35357"
+                    }
+                ],
+                "id": "4363ae44bdf34a3981fde3b823cb9aa2",
+                "type": "identity",
+                "name": "keystone"
+            }
+        ],
+        "expires_at": "2013-02-27T18:30:59.999999Z",
+        "is_domain": false,
+        "issued_at": "2013-02-27T16:30:59.999999Z",
+        "methods": [
+            "password"
+        ],
+        "project": {
+            "domain": {
+                "id": "1789d1",
+                "name": "example.com"
+            },
+            "id": "263fd9",
+            "name": "project-x"
+        },
+        "roles": [
+            {
+                "id": "76e72a",
+                "name": "admin"
+            },
+            {
+                "id": "f4f392",
+                "name": "member"
+            }
+        ],
+        "service_providers": [
+            {
+                "auth_url":"https://example.com:5000/v3/OS-FEDERATION/identity_providers/acme/protocols/saml2/auth",
+                "id": "sp1",
+                "sp_url": "https://example.com:5000/Shibboleth.sso/SAML2/ECP"
+            },
+            {
+                "auth_url":"https://other.example.com:5000/v3/OS-FEDERATION/identity_providers/acme/protocols/saml2/auth",
+                "id": "sp2",
+                "sp_url": "https://other.example.com:5000/Shibboleth.sso/SAML2/ECP"
+            }
+        ],
+        "user": {
+            "domain": {
+                "id": "1789d1",
+                "name": "example.com"
+            },
+            "id": "0ca8f6",
+            "name": "Joe",
+            "password_expires_at": "2016-11-06T15:32:17.000000"
+        }
+    }
+}
+	`)
+	})
+
+	options := gophercloud.AuthOptions{
+		Username:         "me",
+		Password:         "secret",
+		DomainID:         "12345",
+		IdentityEndpoint: th.Endpoint(),
+	}
+	pc, err := openstack.AuthenticatedClient(options)
+	th.AssertNoErr(t, err)
+	sc, err := openstack.NewIdentityV3(pc, gophercloud.EndpointOpts{
+		Availability: gophercloud.AvailabilityAdmin,
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, "http://localhost:35357/", sc.Endpoint)
 }
