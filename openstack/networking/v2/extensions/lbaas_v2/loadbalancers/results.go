@@ -20,6 +20,8 @@ type LoadBalancer struct {
 	ProvisioningStatus string `json:"provisioning_status"`
 	// The IP address of the Loadbalancer.
 	VipAddress string `json:"vip_address"`
+	// The UUID of the port associated with the IP address.
+	VipPortID string `json:"vip_port_id"`
 	// The UUID of the subnet on which to allocate the virtual IP for the Loadbalancer address.
 	VipSubnetID string `json:"vip_subnet_id"`
 	// The unique ID for the LoadBalancer.
