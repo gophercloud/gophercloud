@@ -1,125 +1,126 @@
-// +build acceptance compute servers
+// +build acceptance compute volumeattach
 
 package v2
 
 import (
-	"os"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v1/volumes"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/volumeattach"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
-	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func newBlockClient(t *testing.T) (*gophercloud.ServiceClient, error) {
-	ao, err := openstack.AuthOptionsFromEnv()
-	th.AssertNoErr(t, err)
-
-	client, err := openstack.AuthenticatedClient(ao)
-	th.AssertNoErr(t, err)
-
-	return openstack.NewBlockStorageV1(client, gophercloud.EndpointOpts{
-		Region: os.Getenv("OS_REGION_NAME"),
-	})
-}
-
-func createVAServer(t *testing.T, computeClient *gophercloud.ServiceClient, choices *ComputeChoices) (*servers.Server, error) {
+func TestVolumeAttachAttachment(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
-	name := tools.RandomString("ACPTTEST", 16)
-	t.Logf("Attempting to create server: %s\n", name)
-
-	pwd := tools.MakeNewPassword("")
-
-	server, err := servers.Create(computeClient, servers.CreateOpts{
-		Name:      name,
-		FlavorRef: choices.FlavorID,
-		ImageRef:  choices.ImageID,
-		AdminPass: pwd,
-	}).Extract()
+	client, err := newClient()
 	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
+		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	th.AssertEquals(t, pwd, server.AdminPass)
-
-	return server, err
-}
-
-func createVAVolume(t *testing.T, blockClient *gophercloud.ServiceClient) (*volumes.Volume, error) {
-	volume, err := volumes.Create(blockClient, &volumes.CreateOpts{
-		Size: 1,
-		Name: "gophercloud-test-volume",
-	}).Extract()
-	th.AssertNoErr(t, err)
-	defer func() {
-		err = volumes.WaitForStatus(blockClient, volume.ID, "available", 60)
-		th.AssertNoErr(t, err)
-	}()
-
-	return volume, err
-}
-
-func createVolumeAttachment(t *testing.T, computeClient *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, serverId string, volumeId string) {
-	va, err := volumeattach.Create(computeClient, serverId, &volumeattach.CreateOpts{
-		VolumeID: volumeId,
-	}).Extract()
-	th.AssertNoErr(t, err)
-	defer func() {
-		err = volumes.WaitForStatus(blockClient, volumeId, "in-use", 60)
-		th.AssertNoErr(t, err)
-		err = volumeattach.Delete(computeClient, serverId, va.ID).ExtractErr()
-		th.AssertNoErr(t, err)
-		err = volumes.WaitForStatus(blockClient, volumeId, "available", 60)
-		th.AssertNoErr(t, err)
-	}()
-}
-
-func TestAttachVolume(t *testing.T) {
 	choices, err := ComputeChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	computeClient, err := newClient()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
-
-	blockClient, err := newBlockClient(t)
+	blockClient, err := newBlockClient()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	server, err := createVAServer(t, computeClient, choices)
+	server, err := createServer(t, client, choices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
-	defer func() {
-		servers.Delete(computeClient, server.ID)
-		t.Logf("Server deleted.")
-	}()
 
-	if err = waitForStatus(computeClient, server, "ACTIVE"); err != nil {
+	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
 		t.Fatalf("Unable to wait for server: %v", err)
 	}
+	defer deleteServer(t, client, server)
 
-	volume, err := createVAVolume(t, blockClient)
+	volume, err := createVolume(t, blockClient)
 	if err != nil {
 		t.Fatalf("Unable to create volume: %v", err)
 	}
-	defer func() {
-		err = volumes.Delete(blockClient, volume.ID).ExtractErr()
-		th.AssertNoErr(t, err)
-		t.Logf("Volume deleted.")
-	}()
 
-	createVolumeAttachment(t, computeClient, blockClient, server.ID, volume.ID)
+	if err = volumes.WaitForStatus(blockClient, volume.ID, "available", 60); err != nil {
+		t.Fatalf("Unable to wait for volume: %v", err)
+	}
+	defer deleteVolume(t, blockClient, volume)
 
+	volumeAttachment, err := createVolumeAttachment(t, client, blockClient, server, volume)
+	if err != nil {
+		t.Fatalf("Unable to attach volume: %v", err)
+	}
+	defer deleteVolumeAttachment(t, client, blockClient, server, volumeAttachment)
+
+	printVolumeAttachment(t, volumeAttachment)
+
+}
+
+func createVolume(t *testing.T, blockClient *gophercloud.ServiceClient) (*volumes.Volume, error) {
+	volumeName := tools.RandomString("ACPTTEST", 16)
+	createOpts := volumes.CreateOpts{
+		Size: 1,
+		Name: volumeName,
+	}
+
+	volume, err := volumes.Create(blockClient, createOpts).Extract()
+	if err != nil {
+		return volume, err
+	}
+
+	t.Logf("Created volume: %s", volume.ID)
+	return volume, nil
+}
+
+func deleteVolume(t *testing.T, blockClient *gophercloud.ServiceClient, volume *volumes.Volume) {
+	err := volumes.Delete(blockClient, volume.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete volume: %v", err)
+	}
+
+	t.Logf("Deleted volume: %s", volume.ID)
+}
+
+func createVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, server *servers.Server, volume *volumes.Volume) (*volumeattach.VolumeAttachment, error) {
+	volumeAttachOptions := volumeattach.CreateOpts{
+		VolumeID: volume.ID,
+	}
+
+	t.Logf("Attempting to attach volume %s to server %s", volume.ID, server.ID)
+	volumeAttachment, err := volumeattach.Create(client, server.ID, volumeAttachOptions).Extract()
+	if err != nil {
+		return volumeAttachment, err
+	}
+
+	if err = volumes.WaitForStatus(blockClient, volume.ID, "in-use", 60); err != nil {
+		return volumeAttachment, err
+	}
+
+	return volumeAttachment, nil
+}
+
+func deleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, server *servers.Server, volumeAttachment *volumeattach.VolumeAttachment) {
+
+	err := volumeattach.Delete(client, server.ID, volumeAttachment.VolumeID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to detach volume: %v", err)
+	}
+
+	if err = volumes.WaitForStatus(blockClient, volumeAttachment.ID, "available", 60); err != nil {
+		t.Fatalf("Unable to wait for volume: %v", err)
+	}
+	t.Logf("Deleted volume: %s", volumeAttachment.VolumeID)
+}
+
+func printVolumeAttachment(t *testing.T, volumeAttachment *volumeattach.VolumeAttachment) {
+	t.Logf("ID: %s", volumeAttachment.ID)
+	t.Logf("Device: %s", volumeAttachment.Device)
+	t.Logf("VolumeID: %s", volumeAttachment.VolumeID)
+	t.Logf("ServerID: %s", volumeAttachment.ServerID)
 }
