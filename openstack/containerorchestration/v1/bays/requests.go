@@ -29,7 +29,7 @@ func (opts ListOpts) ToBayListQuery() (string, error) {
 }
 
 // List returns a Pager which allows you to iterate over a collection of
-// bays. It accepts a ListOpts struct, which allows you to sort
+// bays. It accepts a ListOptsBuilder, which allows you to sort
 // the returned collection for greater efficiency.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
