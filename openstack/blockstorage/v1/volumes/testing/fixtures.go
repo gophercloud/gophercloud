@@ -66,7 +66,7 @@ func MockGetResponse(t *testing.T) {
 			                "device": "/"
 			            }
 			        ],
-			        "created_at": "2012-02-14T20:53:07Z"
+			        "created_at": "2012-02-14T20:53:07"
 			    }
 			}
       `)
