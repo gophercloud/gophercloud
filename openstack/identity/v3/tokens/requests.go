@@ -2,6 +2,13 @@ package tokens
 
 import "github.com/gophercloud/gophercloud"
 
+// AuthScopeBuilder describes any argument that may be passed to the Create call.
+type AuthScopeBuilder interface {
+	// ToTokenV3ScopeMap assembles the Scope request body, returning an error if parameters are
+	// missing or inconsistent.
+	ToTokenV3ScopeMap() (map[string]interface{}, error)
+}
+
 // Scope allows a created token to be limited to a specific domain or project.
 type Scope struct {
 	ProjectID   string `json:"scope.project.id,omitempty" not:"ProjectName,DomainID,DomainName"`
@@ -10,11 +17,78 @@ type Scope struct {
 	DomainName  string `json:"scope.project.id,omitempty"`
 }
 
+func (scope *Scope) ToTokenV3ScopeMap() (map[string]interface{}, error) {
+	// Add a "scope" element if a Scope has been provided.
+	if scope != nil {
+		if scope.ProjectName != "" {
+			// ProjectName provided: either DomainID or DomainName must also be supplied.
+			// ProjectID may not be supplied.
+			if scope.DomainID == "" && scope.DomainName == "" {
+				return nil, ErrScopeDomainIDOrDomainName{}
+			}
+			if scope.ProjectID != "" {
+				return nil, ErrScopeProjectIDOrProjectName{}
+			}
+
+			if scope.DomainID != "" {
+				// ProjectName + DomainID
+				return map[string]interface{}{
+					"project": map[string]interface{}{
+						"name":   &scope.ProjectName,
+						"domain": map[string]interface{}{"id": &scope.DomainID},
+					},
+				}, nil
+			}
+
+			if scope.DomainName != "" {
+				// ProjectName + DomainName
+				return map[string]interface{}{
+					"project": map[string]interface{}{
+						"name":   &scope.ProjectName,
+						"domain": map[string]interface{}{"name": &scope.DomainName},
+					},
+				}, nil
+			}
+		} else if scope.ProjectID != "" {
+			// ProjectID provided. ProjectName, DomainID, and DomainName may not be provided.
+			if scope.DomainID != "" {
+				return nil, ErrScopeProjectIDAlone{}
+			}
+			if scope.DomainName != "" {
+				return nil, ErrScopeProjectIDAlone{}
+			}
+
+			// ProjectID
+			return map[string]interface{}{
+				"project": map[string]interface{}{
+					"id": &scope.ProjectID,
+				},
+			}, nil
+		} else if scope.DomainID != "" {
+			// DomainID provided. ProjectID, ProjectName, and DomainName may not be provided.
+			if scope.DomainName != "" {
+				return nil, ErrScopeDomainIDOrDomainName{}
+			}
+
+			// DomainID
+			return map[string]interface{}{
+				"domain": map[string]interface{}{
+					"id": &scope.DomainID,
+				},
+			}, nil
+		} else if scope.DomainName != "" {
+			return nil, ErrScopeDomainName{}
+		}
+		return nil, ErrScopeEmpty{}
+	}
+	return nil, nil
+}
+
 // AuthOptionsBuilder describes any argument that may be passed to the Create call.
 type AuthOptionsBuilder interface {
 	// ToTokenV3CreateMap assembles the Create request body, returning an error if parameters are
 	// missing or inconsistent.
-	ToTokenV3CreateMap(*Scope) (map[string]interface{}, error)
+	ToTokenV3CreateMap(AuthScopeBuilder) (map[string]interface{}, error)
 }
 
 type AuthOptions struct {
@@ -56,7 +130,7 @@ type AuthOptions struct {
 	TokenID string
 }
 
-func (opts AuthOptions) ToTokenV3CreateMap(scope *Scope) (map[string]interface{}, error) {
+func (opts AuthOptions) ToTokenV3CreateMap(scope AuthScopeBuilder) (map[string]interface{}, error) {
 	type domainReq struct {
 		ID   *string `json:"id,omitempty"`
 		Name *string `json:"name,omitempty"`
@@ -204,71 +278,21 @@ func (opts AuthOptions) ToTokenV3CreateMap(scope *Scope) (map[string]interface{}
 		}
 	}
 
-	// Add a "scope" element if a Scope has been provided.
-	if scope != nil {
-		if scope.ProjectName != "" {
-			// ProjectName provided: either DomainID or DomainName must also be supplied.
-			// ProjectID may not be supplied.
-			if scope.DomainID == "" && scope.DomainName == "" {
-				return nil, ErrScopeDomainIDOrDomainName{}
-			}
-			if scope.ProjectID != "" {
-				return nil, ErrScopeProjectIDOrProjectName{}
-			}
-
-			if scope.DomainID != "" {
-				// ProjectName + DomainID
-				req.Auth.Scope = &scopeReq{
-					Project: &projectReq{
-						Name:   &scope.ProjectName,
-						Domain: &domainReq{ID: &scope.DomainID},
-					},
-				}
-			}
-
-			if scope.DomainName != "" {
-				// ProjectName + DomainName
-				req.Auth.Scope = &scopeReq{
-					Project: &projectReq{
-						Name:   &scope.ProjectName,
-						Domain: &domainReq{Name: &scope.DomainName},
-					},
-				}
-			}
-		} else if scope.ProjectID != "" {
-			// ProjectID provided. ProjectName, DomainID, and DomainName may not be provided.
-			if scope.DomainID != "" {
-				return nil, ErrScopeProjectIDAlone{}
-			}
-			if scope.DomainName != "" {
-				return nil, ErrScopeProjectIDAlone{}
-			}
-
-			// ProjectID
-			req.Auth.Scope = &scopeReq{
-				Project: &projectReq{ID: &scope.ProjectID},
-			}
-		} else if scope.DomainID != "" {
-			// DomainID provided. ProjectID, ProjectName, and DomainName may not be provided.
-			if scope.DomainName != "" {
-				return nil, ErrScopeDomainIDOrDomainName{}
-			}
-
-			// DomainID
-			req.Auth.Scope = &scopeReq{
-				Domain: &domainReq{ID: &scope.DomainID},
-			}
-		} else if scope.DomainName != "" {
-			return nil, ErrScopeDomainName{}
-		} else {
-			return nil, ErrScopeEmpty{}
-		}
-	}
-
 	b, err2 := gophercloud.BuildRequestBody(req, "")
 	if err2 != nil {
 		return nil, err2
 	}
+
+	if scope != nil {
+		scopeBody, err := scope.ToTokenV3ScopeMap()
+		if err != nil {
+			return nil, err
+		}
+		if scopeBody != nil {
+			b["auth"].(map[string]interface{})["scope"] = scopeBody
+		}
+	}
+
 	return b, nil
 }
 
@@ -279,7 +303,7 @@ func subjectTokenHeaders(c *gophercloud.ServiceClient, subjectToken string) map[
 }
 
 // Create authenticates and either generates a new token, or changes the Scope of an existing token.
-func Create(c *gophercloud.ServiceClient, opts AuthOptionsBuilder, scopeOpts *Scope) (r CreateResult) {
+func Create(c *gophercloud.ServiceClient, opts AuthOptionsBuilder, scopeOpts AuthScopeBuilder) (r CreateResult) {
 	b, err := opts.ToTokenV3CreateMap(scopeOpts)
 	if err != nil {
 		r.Err = err
