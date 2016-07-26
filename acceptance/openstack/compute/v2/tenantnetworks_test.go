@@ -3,77 +3,35 @@
 package v2
 
 import (
-	"os"
+	"fmt"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/tenantnetworks"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
-	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func getNetworkID(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
+func TestTenantNetworksList(t *testing.T) {
+	client, err := newClient()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
 	allPages, err := tenantnetworks.List(client).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to list networks: %v", err)
 	}
 
-	networkList, err := tenantnetworks.ExtractNetworks(allPages)
+	allTenantNetworks, err := tenantnetworks.ExtractNetworks(allPages)
 	if err != nil {
 		t.Fatalf("Unable to list networks: %v", err)
 	}
 
-	networkID := ""
-	for _, network := range networkList {
-		t.Logf("Network: %v", network)
-		if network.Name == networkName {
-			networkID = network.ID
-		}
+	for _, network := range allTenantNetworks {
+		printTenantNetwork(t, &network)
 	}
-
-	t.Logf("Found network ID for %s: %s\n", networkName, networkID)
-
-	return networkID, nil
 }
 
-func createNetworkServer(t *testing.T, client *gophercloud.ServiceClient, choices *ComputeChoices, networkID string) (*servers.Server, error) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
-
-	name := tools.RandomString("ACPTTEST", 16)
-	t.Logf("Attempting to create server: %s\n", name)
-
-	pwd := tools.MakeNewPassword("")
-
-	networks := make([]servers.Network, 1)
-	networks[0] = servers.Network{
-		UUID: networkID,
-	}
-
-	server, err := servers.Create(client, servers.CreateOpts{
-		Name:      name,
-		FlavorRef: choices.FlavorID,
-		ImageRef:  choices.ImageID,
-		AdminPass: pwd,
-		Networks:  networks,
-	}).Extract()
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
-
-	th.AssertEquals(t, pwd, server.AdminPass)
-
-	return server, err
-}
-
-func TestTenantNetworks(t *testing.T) {
-	networkName := os.Getenv("OS_NETWORK_NAME")
-	if networkName == "" {
-		t.Fatalf("OS_NETWORK_NAME must be set")
-	}
-
+func TestTenantNetworksGet(t *testing.T) {
 	choices, err := ComputeChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
@@ -84,26 +42,41 @@ func TestTenantNetworks(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	networkID, err := getNetworkID(t, client, networkName)
+	networkID, err := getNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
-		t.Fatalf("Unable to get network ID: %v", err)
+		t.Fatal(err)
 	}
 
-	server, err := createNetworkServer(t, client, choices, networkID)
+	network, err := tenantnetworks.Get(client, networkID).Extract()
 	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
-	defer func() {
-		servers.Delete(client, server.ID)
-		t.Logf("Server deleted.")
-	}()
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatalf("Unable to wait for server: %v", err)
+		t.Fatalf("Unable to get network %s: %v", networkID, err)
 	}
 
+	printTenantNetwork(t, network)
+}
+
+func getNetworkIDFromTenantNetworks(t *testing.T, client *gophercloud.ServiceClient, networkName string) (string, error) {
 	allPages, err := tenantnetworks.List(client).AllPages()
-	allNetworks, err := tenantnetworks.ExtractNetworks(allPages)
-	th.AssertNoErr(t, err)
-	t.Logf("Retrieved all %d networks: %+v", len(allNetworks), allNetworks)
+	if err != nil {
+		t.Fatalf("Unable to list networks: %v", err)
+	}
+
+	allTenantNetworks, err := tenantnetworks.ExtractNetworks(allPages)
+	if err != nil {
+		t.Fatalf("Unable to list networks: %v", err)
+	}
+
+	for _, network := range allTenantNetworks {
+		if network.Name == networkName {
+			return network.ID, nil
+		}
+	}
+
+	return "", fmt.Errorf("Failed to obtain network ID for network %s", networkName)
+}
+
+func printTenantNetwork(t *testing.T, network *tenantnetworks.Network) {
+	t.Logf("ID: %s", network.ID)
+	t.Logf("Name: %s", network.Name)
+	t.Logf("CIDR: %s", network.CIDR)
 }

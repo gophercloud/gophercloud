@@ -1,47 +1,53 @@
-// +build acceptance compute extensionss
+// +build acceptance compute extensions
 
 package v2
 
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/openstack/common/extensions"
 )
 
-func TestListExtensions(t *testing.T) {
+func TestExtensionsList(t *testing.T) {
 	client, err := newClient()
-	th.AssertNoErr(t, err)
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
 
-	err = extensions.List(client).EachPage(func(page pagination.Page) (bool, error) {
-		t.Logf("--- Page ---")
+	allPages, err := extensions.List(client).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list extensions: %v", err)
+	}
 
-		exts, err := extensions.ExtractExtensions(page)
-		th.AssertNoErr(t, err)
+	allExtensions, err := extensions.ExtractExtensions(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract extensions: %v", err)
+	}
 
-		for i, ext := range exts {
-			t.Logf("[%02d]    name=[%s]\n", i, ext.Name)
-			t.Logf("       alias=[%s]\n", ext.Alias)
-			t.Logf(" description=[%s]\n", ext.Description)
-		}
-
-		return true, nil
-	})
-	th.AssertNoErr(t, err)
+	for _, extension := range allExtensions {
+		printExtension(t, &extension)
+	}
 }
 
-func TestGetExtension(t *testing.T) {
+func TestExtensionGet(t *testing.T) {
 	client, err := newClient()
-	th.AssertNoErr(t, err)
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
 
-	ext, err := extensions.Get(client, "os-admin-actions").Extract()
-	th.AssertNoErr(t, err)
+	extension, err := extensions.Get(client, "os-admin-actions").Extract()
+	if err != nil {
+		t.Fatalf("Unable to get extension os-admin-actions: %v", err)
+	}
 
-	t.Logf("Extension details:")
-	t.Logf("        name=[%s]\n", ext.Name)
-	t.Logf("   namespace=[%s]\n", ext.Namespace)
-	t.Logf("       alias=[%s]\n", ext.Alias)
-	t.Logf(" description=[%s]\n", ext.Description)
-	t.Logf("     updated=[%s]\n", ext.Updated)
+	printExtension(t, extension)
+}
+
+func printExtension(t *testing.T, extension *extensions.Extension) {
+	t.Logf("Name: %s", extension.Name)
+	t.Logf("Namespace: %s", extension.Namespace)
+	t.Logf("Alias: %s", extension.Alias)
+	t.Logf("Description: %s", extension.Description)
+	t.Logf("Updated: %s", extension.Updated)
+	t.Logf("Links: %v", extension.Links)
 }
