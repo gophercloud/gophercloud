@@ -11,7 +11,7 @@ import (
 )
 
 // HandleCreateTokenWithTrustID verifies that providing certain AuthOptions and Scope results in an expected JSON structure.
-func HandleCreateTokenWithTrustID(t *testing.T, options tokens.AuthOptionsBuilder, scope tokens.AuthScopeBuilder, requestJSON string) {
+func HandleCreateTokenWithTrustID(t *testing.T, options tokens.AuthOptionsBuilder, requestJSON string) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
 
@@ -34,7 +34,7 @@ func HandleCreateTokenWithTrustID(t *testing.T, options tokens.AuthOptionsBuilde
 		}`)
 	})
 
-	_, err := tokens.Create(&client, options, scope).Extract()
+	_, err := tokens.Create(&client, options).Extract()
 	if err != nil {
 		t.Errorf("Create returned an error: %v", err)
 	}

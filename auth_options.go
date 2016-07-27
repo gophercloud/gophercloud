@@ -47,11 +47,11 @@ type AuthOptions struct {
 	// The way to limit the number of attempts is to provide a custom HTTP client to the provider client
 	// and provide a transport that implements the RoundTripper interface and stores the number of failed retries.
 	// For an example of this, see here: https://github.com/rackspace/rack/blob/1.0.0/auth/clients.go#L311
-	AllowReauth bool
+	AllowReauth bool `json:"-"`
 
 	// TokenID allows users to authenticate (possibly as another user) with an
 	// authentication token ID.
-	TokenID string
+	TokenID string `json:"-"`
 }
 
 // ToTokenV2CreateMap allows AuthOptions to satisfy the AuthOptionsBuilder
@@ -85,4 +85,247 @@ func (opts AuthOptions) ToTokenV2CreateMap() (map[string]interface{}, error) {
 	}
 
 	return map[string]interface{}{"auth": authMap}, nil
+}
+
+func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[string]interface{}, error) {
+	type domainReq struct {
+		ID   *string `json:"id,omitempty"`
+		Name *string `json:"name,omitempty"`
+	}
+
+	type projectReq struct {
+		Domain *domainReq `json:"domain,omitempty"`
+		Name   *string    `json:"name,omitempty"`
+		ID     *string    `json:"id,omitempty"`
+	}
+
+	type userReq struct {
+		ID       *string    `json:"id,omitempty"`
+		Name     *string    `json:"name,omitempty"`
+		Password string     `json:"password"`
+		Domain   *domainReq `json:"domain,omitempty"`
+	}
+
+	type passwordReq struct {
+		User userReq `json:"user"`
+	}
+
+	type tokenReq struct {
+		ID string `json:"id"`
+	}
+
+	type identityReq struct {
+		Methods  []string     `json:"methods"`
+		Password *passwordReq `json:"password,omitempty"`
+		Token    *tokenReq    `json:"token,omitempty"`
+	}
+
+	type authReq struct {
+		Identity identityReq `json:"identity"`
+	}
+
+	type request struct {
+		Auth authReq `json:"auth"`
+	}
+
+	// Populate the request structure based on the provided arguments. Create and return an error
+	// if insufficient or incompatible information is present.
+	var req request
+
+	// Test first for unrecognized arguments.
+	if opts.TenantID != "" {
+		return nil, ErrTenantIDProvided{}
+	}
+	if opts.TenantName != "" {
+		return nil, ErrTenantNameProvided{}
+	}
+
+	if opts.Password == "" {
+		if opts.TokenID != "" {
+			// Because we aren't using password authentication, it's an error to also provide any of the user-based authentication
+			// parameters.
+			if opts.Username != "" {
+				return nil, ErrUsernameWithToken{}
+			}
+			if opts.UserID != "" {
+				return nil, ErrUserIDWithToken{}
+			}
+			if opts.DomainID != "" {
+				return nil, ErrDomainIDWithToken{}
+			}
+			if opts.DomainName != "" {
+				return nil, ErrDomainNameWithToken{}
+			}
+
+			// Configure the request for Token authentication.
+			req.Auth.Identity.Methods = []string{"token"}
+			req.Auth.Identity.Token = &tokenReq{
+				ID: opts.TokenID,
+			}
+		} else {
+			// If no password or token ID are available, authentication can't continue.
+			return nil, ErrMissingPassword{}
+		}
+	} else {
+		// Password authentication.
+		req.Auth.Identity.Methods = []string{"password"}
+
+		// At least one of Username and UserID must be specified.
+		if opts.Username == "" && opts.UserID == "" {
+			return nil, ErrUsernameOrUserID{}
+		}
+
+		if opts.Username != "" {
+			// If Username is provided, UserID may not be provided.
+			if opts.UserID != "" {
+				return nil, ErrUsernameOrUserID{}
+			}
+
+			// Either DomainID or DomainName must also be specified.
+			if opts.DomainID == "" && opts.DomainName == "" {
+				return nil, ErrDomainIDOrDomainName{}
+			}
+
+			if opts.DomainID != "" {
+				if opts.DomainName != "" {
+					return nil, ErrDomainIDOrDomainName{}
+				}
+
+				// Configure the request for Username and Password authentication with a DomainID.
+				req.Auth.Identity.Password = &passwordReq{
+					User: userReq{
+						Name:     &opts.Username,
+						Password: opts.Password,
+						Domain:   &domainReq{ID: &opts.DomainID},
+					},
+				}
+			}
+
+			if opts.DomainName != "" {
+				// Configure the request for Username and Password authentication with a DomainName.
+				req.Auth.Identity.Password = &passwordReq{
+					User: userReq{
+						Name:     &opts.Username,
+						Password: opts.Password,
+						Domain:   &domainReq{Name: &opts.DomainName},
+					},
+				}
+			}
+		}
+
+		if opts.UserID != "" {
+			// If UserID is specified, neither DomainID nor DomainName may be.
+			if opts.DomainID != "" {
+				return nil, ErrDomainIDWithUserID{}
+			}
+			if opts.DomainName != "" {
+				return nil, ErrDomainNameWithUserID{}
+			}
+
+			// Configure the request for UserID and Password authentication.
+			req.Auth.Identity.Password = &passwordReq{
+				User: userReq{ID: &opts.UserID, Password: opts.Password},
+			}
+		}
+	}
+
+	b, err := BuildRequestBody(req, "")
+	if err != nil {
+		return nil, err
+	}
+
+	if len(scope) != 0 {
+		b["auth"].(map[string]interface{})["scope"] = scope
+	}
+
+	return b, nil
+}
+
+func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
+
+	var scope struct {
+		ProjectID   string
+		ProjectName string
+		DomainID    string
+		DomainName  string
+	}
+
+	if opts.TenantID != "" {
+		scope.ProjectID = opts.TenantID
+		opts.TenantID = ""
+		opts.TenantName = ""
+	} else {
+		if opts.TenantName != "" {
+			scope.ProjectName = opts.TenantName
+			scope.DomainID = opts.DomainID
+			scope.DomainName = opts.DomainName
+		}
+		opts.TenantName = ""
+	}
+
+	if scope.ProjectName != "" {
+		// ProjectName provided: either DomainID or DomainName must also be supplied.
+		// ProjectID may not be supplied.
+		if scope.DomainID == "" && scope.DomainName == "" {
+			return nil, ErrScopeDomainIDOrDomainName{}
+		}
+		if scope.ProjectID != "" {
+			return nil, ErrScopeProjectIDOrProjectName{}
+		}
+
+		if scope.DomainID != "" {
+			// ProjectName + DomainID
+			return map[string]interface{}{
+				"project": map[string]interface{}{
+					"name":   &scope.ProjectName,
+					"domain": map[string]interface{}{"id": &scope.DomainID},
+				},
+			}, nil
+		}
+
+		if scope.DomainName != "" {
+			// ProjectName + DomainName
+			return map[string]interface{}{
+				"project": map[string]interface{}{
+					"name":   &scope.ProjectName,
+					"domain": map[string]interface{}{"name": &scope.DomainName},
+				},
+			}, nil
+		}
+	} else if scope.ProjectID != "" {
+		// ProjectID provided. ProjectName, DomainID, and DomainName may not be provided.
+		if scope.DomainID != "" {
+			return nil, ErrScopeProjectIDAlone{}
+		}
+		if scope.DomainName != "" {
+			return nil, ErrScopeProjectIDAlone{}
+		}
+
+		// ProjectID
+		return map[string]interface{}{
+			"project": map[string]interface{}{
+				"id": &scope.ProjectID,
+			},
+		}, nil
+	} else if scope.DomainID != "" {
+		// DomainID provided. ProjectID, ProjectName, and DomainName may not be provided.
+		if scope.DomainName != "" {
+			return nil, ErrScopeDomainIDOrDomainName{}
+		}
+
+		// DomainID
+		return map[string]interface{}{
+			"domain": map[string]interface{}{
+				"id": &scope.DomainID,
+			},
+		}, nil
+	} else if scope.DomainName != "" {
+		return nil, ErrScopeDomainName{}
+	}
+
+	return nil, nil
+}
+
+func (opts AuthOptions) CanReauth() bool {
+	return opts.AllowReauth
 }

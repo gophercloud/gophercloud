@@ -8,7 +8,14 @@ import (
 )
 
 func TestCreateUserIDPasswordTrustID(t *testing.T) {
-	HandleCreateTokenWithTrustID(t, tokens.AuthOptions{UserID: "me", Password: "squirrel!"}, trusts.ScopeExt{TrustID: "de0945a"}, `
+	ao := trusts.AuthOptsExt{
+		TrustID: "de0945a",
+		AuthOptionsBuilder: &tokens.AuthOptions{
+			UserID:   "me",
+			Password: "squirrel!",
+		},
+	}
+	HandleCreateTokenWithTrustID(t, ao, `
 		{
 			"auth": {
 				"identity": {
