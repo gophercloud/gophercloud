@@ -39,6 +39,8 @@ func HandleCreateTokenWithTrustID(t *testing.T, options tokens.AuthOptionsBuilde
         "OS-TRUST:trust": {
             "id": "fe0aef",
             "impersonation": false,
+						"redelegated_trust_id": "3ba234",
+						"redelegation_count": 2,
             "links": {
                 "self": "http://example.com/identity/v3/trusts/fe0aef"
             },
@@ -93,6 +95,8 @@ func HandleCreateTokenWithTrustID(t *testing.T, options tokens.AuthOptionsBuilde
 				TrustorUser: trusts.TrustorUser{
 					ID: "bd263c",
 				},
+				RedelegatedTrustID: "3ba234",
+				RedelegationCount:  2,
 			},
 		},
 	}

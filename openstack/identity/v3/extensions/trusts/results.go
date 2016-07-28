@@ -11,10 +11,12 @@ type TrustorUser struct {
 }
 
 type Trust struct {
-	ID            string      `json:"id"`
-	Impersonation bool        `json:"impersonation"`
-	TrusteeUser   TrusteeUser `json:"trustee_user"`
-	TrustorUser   TrustorUser `json:"trustor_user"`
+	ID                 string      `json:"id"`
+	Impersonation      bool        `json:"impersonation"`
+	TrusteeUser        TrusteeUser `json:"trustee_user"`
+	TrustorUser        TrustorUser `json:"trustor_user"`
+	RedelegatedTrustID string      `json:"redelegated_trust_id"`
+	RedelegationCount  int         `json:"redelegation_count"`
 }
 
 type Token struct {
