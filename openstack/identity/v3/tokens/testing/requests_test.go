@@ -423,8 +423,8 @@ func TestGetRequest(t *testing.T) {
 	}
 
 	expected, _ := time.Parse(time.UnixDate, "Fri Aug 29 13:10:01 UTC 2014")
-	if token.ExpiresAt != expected {
-		t.Errorf("Expected expiration time %s, but was %s", expected.Format(time.UnixDate), token.ExpiresAt.Format(time.UnixDate))
+	if token.ExpiresAt != gophercloud.JSONRFC3339Milli(expected) {
+		t.Errorf("Expected expiration time %s, but was %s", expected.Format(time.UnixDate), time.Time(token.ExpiresAt).Format(time.UnixDate))
 	}
 }
 
