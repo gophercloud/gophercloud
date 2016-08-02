@@ -23,10 +23,10 @@ type Snapshot struct {
 	Bootable string `json:"bootable"`
 
 	// Date created.
-	CreatedAt gophercloud.JSONRFC3339Milli `json:"created_at"`
+	CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
 
 	// Display description.
-	Description string `json:"display_discription"`
+	Description string `json:"display_description"`
 
 	// See VolumeType object for more information.
 	VolumeType string `json:"volume_type"`
