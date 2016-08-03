@@ -36,7 +36,7 @@ func authTokenPost(t *testing.T, options gophercloud.AuthOptions, scope *Scope, 
 		}`)
 	})
 
-	_, err := Create(&client, options, scope).Extract()
+	_, err := Create(&client, AuthOptions{options}, scope).Extract()
 	if err != nil {
 		t.Errorf("Create returned an error: %v", err)
 	}
@@ -54,7 +54,7 @@ func authTokenPostErr(t *testing.T, options gophercloud.AuthOptions, scope *Scop
 		client.TokenID = "abcdef123456"
 	}
 
-	_, err := Create(&client, options, scope).Extract()
+	_, err := Create(&client, AuthOptions{options}, scope).Extract()
 	if err == nil {
 		t.Errorf("Create did NOT return an error")
 	}
@@ -277,7 +277,7 @@ func TestCreateExtractsTokenFromResponse(t *testing.T) {
 	})
 
 	options := gophercloud.AuthOptions{UserID: "me", Password: "shhh"}
-	token, err := Create(&client, options, nil).Extract()
+	token, err := Create(&client, AuthOptions{options}, nil).Extract()
 	if err != nil {
 		t.Fatalf("Create returned an error: %v", err)
 	}
