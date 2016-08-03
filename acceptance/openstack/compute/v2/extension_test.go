@@ -5,11 +5,12 @@ package v2
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/common/extensions"
 )
 
 func TestExtensionsList(t *testing.T) {
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
@@ -30,7 +31,7 @@ func TestExtensionsList(t *testing.T) {
 }
 
 func TestExtensionGet(t *testing.T) {
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}

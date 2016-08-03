@@ -5,11 +5,12 @@ package v2
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
 )
 
 func TestImagesList(t *testing.T) {
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute: client: %v", err)
 	}
@@ -25,17 +26,17 @@ func TestImagesList(t *testing.T) {
 	}
 
 	for _, image := range allImages {
-		printImage(t, image)
+		PrintImage(t, image)
 	}
 }
 
 func TestImagesGet(t *testing.T) {
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute: client: %v", err)
 	}
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,17 +46,5 @@ func TestImagesGet(t *testing.T) {
 		t.Fatalf("Unable to get image information: %v", err)
 	}
 
-	printImage(t, *image)
-}
-
-func printImage(t *testing.T, image images.Image) {
-	t.Logf("ID: %s", image.ID)
-	t.Logf("Name: %s", image.Name)
-	t.Logf("MinDisk: %d", image.MinDisk)
-	t.Logf("MinRAM: %d", image.MinRAM)
-	t.Logf("Status: %s", image.Status)
-	t.Logf("Progress: %d", image.Progress)
-	t.Logf("Metadata: %#v", image.Metadata)
-	t.Logf("Created: %s", image.Created)
-	t.Logf("Updated: %s", image.Updated)
+	PrintImage(t, *image)
 }

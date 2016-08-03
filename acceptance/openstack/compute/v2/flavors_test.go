@@ -5,11 +5,12 @@ package v2
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
 )
 
 func TestFlavorsList(t *testing.T) {
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
@@ -25,17 +26,17 @@ func TestFlavorsList(t *testing.T) {
 	}
 
 	for _, flavor := range allFlavors {
-		printFlavor(t, &flavor)
+		PrintFlavor(t, &flavor)
 	}
 }
 
 func TestFlavorsGet(t *testing.T) {
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err :=clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,14 +46,5 @@ func TestFlavorsGet(t *testing.T) {
 		t.Fatalf("Unable to get flavor information: %v", err)
 	}
 
-	printFlavor(t, flavor)
-}
-
-func printFlavor(t *testing.T, flavor *flavors.Flavor) {
-	t.Logf("ID: %s", flavor.ID)
-	t.Logf("Name: %s", flavor.Name)
-	t.Logf("RAM: %d", flavor.RAM)
-	t.Logf("Disk: %d", flavor.Disk)
-	t.Logf("Swap: %d", flavor.Swap)
-	t.Logf("RxTxFactor: %f", flavor.RxTxFactor)
+	PrintFlavor(t, flavor)
 }
