@@ -21,3 +21,12 @@
   }
   res := servers.Reboot(client, server.ID, rebootOpts)
   ```
+
+# Identity
+
+## V3
+
+### Tokens
+
+* `Token.ExpiresAt` is now of type `gophercloud.JSONRFC3339Milli` instead of
+  `time.Time`
