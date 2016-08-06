@@ -36,15 +36,15 @@ func MockListResponse(t *testing.T) {
       "encrypted": false,
       "os-vol-host-attr:host": null,
       "availability_zone": "nova",
-      "attachments": [
-        {
-        "id": "47e9ecc5-4045-4ee3-9a4b-d859d546a0cf",
-        "volume_id": "289da7f8-6440-407c-9fb4-7db01ec49164",
-        "instance_uuid": "d1c4788b-9435-42e2-9b81-29f3be1cd01f",
-        "attached_host": "stack",
-        "mountpoint": "/dev/vdc"
-        }
-      ],
+      "attachments": [{
+        "server_id": "83ec2e3b-4321-422b-8706-a84185f52a0a",
+        "attachment_id": "05551600-a936-4d4a-ba42-79a037c1-c91a",
+        "attached_at": "2016-08-06T14:48:20.000000",
+        "host_name": "foobar",
+        "volume_id": "d6cacb1a-8b59-4c88-ad90-d70ebb82bb75",
+        "device": "/dev/vdc",
+        "id": "d6cacb1a-8b59-4c88-ad90-d70ebb82bb75"
+      }],
       "id": "289da7f8-6440-407c-9fb4-7db01ec49164",
       "size": 75,
       "user_id": "ff1ce52c03ab433aaba9108c2e3ef541",
@@ -112,13 +112,14 @@ func MockGetResponse(t *testing.T) {
     "os-vol-host-attr:host": null,
     "availability_zone": "nova",
     "attachments": [{
-        "attachment_id": "dbce64e3-f3b9-4423-a44f-a2b15deffa1b",
-        "id": "3eafc6f5-ed74-456d-90fb-f253f594dbae",
-        "volume_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
-        "server_id": "d1c4788b-9435-42e2-9b81-29f3be1cd01f",
-        "host_name": "stack",
-        "device": "/dev/vdd"
-        }],
+      "server_id": "83ec2e3b-4321-422b-8706-a84185f52a0a",
+      "attachment_id": "05551600-a936-4d4a-ba42-79a037c1-c91a",
+      "attached_at": "2016-08-06T14:48:20.000000",
+      "host_name": "foobar",
+      "volume_id": "d6cacb1a-8b59-4c88-ad90-d70ebb82bb75",
+      "device": "/dev/vdc",
+      "id": "d6cacb1a-8b59-4c88-ad90-d70ebb82bb75"
+    }],
     "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
     "size": 75,
     "user_id": "ff1ce52c03ab433aaba9108c2e3ef541",
