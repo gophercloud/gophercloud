@@ -6,12 +6,13 @@ import (
 )
 
 type Attachment struct {
-	ID         string                          `json:"id"`
-	VolumeID   string                          `json:"volume_id"`
-	ServerID   string                          `json:"instance_uuid"`
-	HostName   string                          `json:"attached_host"`
-	Device     string                          `json:"mountpoint"`
-	AttachedAt gophercloud.JSONRFC3339MilliNoZ `json:"attach_time"`
+	AttachedAt   gophercloud.JSONRFC3339MilliNoZ `json:"attached_at"`
+	AttachmentID string                          `json:"attachment_id"`
+	Device       string                          `json:"device"`
+	HostName     string                          `json:"host_name"`
+	ID           string                          `json:"id"`
+	ServerID     string                          `json:"server_id"`
+	VolumeID     string                          `json:"volume_id"`
 }
 
 // Volume contains all the information associated with an OpenStack Volume.
