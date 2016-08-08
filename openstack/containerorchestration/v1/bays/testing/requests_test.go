@@ -140,3 +140,66 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, n.Nodes, 1)
 	th.AssertEquals(t, n.ID, "a56a6cd8-0779-461b-b1eb-26cec904284a")
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/bays", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+  "node_count": 2,
+  "baymodel_id": "5b793604-fc76-4886-a834-ed522812cdcb",
+  "name": "mycluster"
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, `
+{
+  "status": "CREATE_IN_PROGRESS",
+  "uuid": "39109e8a-516e-41a4-8b1d-22e9a56e4aa2",
+  "links": [
+    {
+      "href": "http://65.61.151.130:9511/v1/bays/39109e8a-516e-41a4-8b1d-22e9a56e4aa2",
+      "rel": "self"
+    },
+    {
+      "href": "http://65.61.151.130:9511/bays/39109e8a-516e-41a4-8b1d-22e9a56e4aa2",
+      "rel": "bookmark"
+    }
+  ],
+  "stack_id": "f27f1581-fb2e-4033-af93-d2cf19bb8462",
+  "created_at": "2016-08-08T16:45:18+00:00",
+  "api_address": null,
+  "discovery_url": "https://discovery.etcd.io/32ccf12b42e75b6822ac18c2c0391e5f",
+  "updated_at": null,
+  "master_count": 1,
+  "baymodel_id": "5b793604-fc76-4886-a834-ed522812cdcb",
+  "master_addresses": null,
+  "node_count": 2,
+  "node_addresses": null,
+  "status_reason": null,
+  "bay_create_timeout": 60,
+  "name": "mycluster"
+}
+		`)
+	})
+
+	options := bays.CreateOpts{Name: "mycluster", Nodes: 2, BayModelID: "5b793604-fc76-4886-a834-ed522812cdcb"}
+	n, err := bays.Create(fake.ServiceClient(), options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.Status, "CREATE_IN_PROGRESS")
+	th.AssertEquals(t, n.Name, "mycluster")
+	th.AssertEquals(t, n.BayModelID, "5b793604-fc76-4886-a834-ed522812cdcb")
+	th.AssertEquals(t, n.ID, "39109e8a-516e-41a4-8b1d-22e9a56e4aa2")
+	th.AssertEquals(t, n.Masters, 1)
+	th.AssertEquals(t, n.Nodes, 2)
+}

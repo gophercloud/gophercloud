@@ -16,6 +16,11 @@ func (r commonResult) Extract() (*Bay, error) {
 	return s, err
 }
 
+// CreateResult temporarily contains the response from a Create call.
+type CreateResult struct {
+	commonResult
+}
+
 // GetResult represents the result of a get operation.
 type GetResult struct {
 	commonResult

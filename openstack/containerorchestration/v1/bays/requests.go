@@ -50,3 +50,37 @@ func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
 	return
 }
+
+// CreateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Create operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
+type CreateOptsBuilder interface {
+	ToBayCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts satisfies the CreateOptsBuilder interface
+type CreateOpts struct {
+	BayModelID   string `json:"baymodel_id" required:"true"`
+	Name         string `json:"name,omitempty"`
+	Masters      int    `json:"master_count,omitempty"`
+	Nodes        int    `json:"node_count,omitempty"`
+	DiscoveryURL string `json:"discovery_url,omitempty"`
+}
+
+// ToBayCreateMap casts a CreateOpts struct to a map.
+func (opts CreateOpts) ToBayCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// Create accepts a CreateOpts struct and creates a new bay using the values
+// provided.
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToBayCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
+	return
+}
