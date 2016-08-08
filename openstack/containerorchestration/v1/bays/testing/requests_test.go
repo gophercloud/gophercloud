@@ -68,6 +68,7 @@ func TestList(t *testing.T) {
 				Status:     "CREATE_COMPLETE",
 				Name:       "k8sbay",
 				ID:         "a56a6cd8-0779-461b-b1eb-26cec904284a",
+				Masters:    1,
 				Nodes:      1,
 				BayModelID: "5b793604-fc76-4886-a834-ed522812cdcb",
 			},

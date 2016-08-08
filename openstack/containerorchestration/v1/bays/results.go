@@ -35,7 +35,10 @@ type Bay struct {
 	// SNAPSHOT_COMPLETE, CHECK_COMPLETE, ADOPT_COMPLETE.
 	Status string `json:"status"`
 
-	// The number of nodes in the bay.
+	// The number of master nodes in the bay.
+	Masters int `json:"master_count"`
+
+	// The number of host nodes in the bay.
 	Nodes int `json:"node_count"`
 
 	// The UUID of the baymodel used to generate the bay.
