@@ -1,5 +1,3 @@
-// +build acceptance common
-
 package tools
 
 import (

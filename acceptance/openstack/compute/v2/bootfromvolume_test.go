@@ -5,10 +5,8 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
 
 func TestBootFromVolumeSingleVolume(t *testing.T) {
@@ -16,12 +14,12 @@ func TestBootFromVolumeSingleVolume(t *testing.T) {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,16 +32,13 @@ func TestBootFromVolumeSingleVolume(t *testing.T) {
 		},
 	}
 
-	server, err := createBootableVolumeServer(t, client, blockDevices, choices)
+	server, err := CreateBootableVolumeServer(t, client, blockDevices, choices)
 	if err != nil {
 		t.Fatal("Unable to create server: %v", err)
 	}
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatal("Unable to wait for server: %v", err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
-	printServer(t, server)
+	PrintServer(t, server)
 }
 
 func TestBootFromVolumeMultiEphemeral(t *testing.T) {
@@ -51,12 +46,12 @@ func TestBootFromVolumeMultiEphemeral(t *testing.T) {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -88,48 +83,11 @@ func TestBootFromVolumeMultiEphemeral(t *testing.T) {
 		},
 	}
 
-	server, err := createBootableVolumeServer(t, client, blockDevices, choices)
+	server, err := CreateBootableVolumeServer(t, client, blockDevices, choices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatalf("Unable to wait for server: %v", err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
-	printServer(t, server)
-}
-
-func createBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice, choices *ComputeChoices) (*servers.Server, error) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
-
-	networkID, err := getNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
-	if err != nil {
-		t.Fatalf("Failed to obtain network ID: %v", err)
-	}
-
-	name := tools.RandomString("ACPTTEST", 16)
-	t.Logf("Attempting to create bootable volume server: %s", name)
-
-	serverCreateOpts := servers.CreateOpts{
-		Name:      name,
-		FlavorRef: choices.FlavorID,
-		ImageRef:  choices.ImageID,
-		Networks: []servers.Network{
-			servers.Network{UUID: networkID},
-		},
-	}
-
-	server, err := bootfromvolume.Create(client, bootfromvolume.CreateOptsExt{
-		serverCreateOpts,
-		blockDevices,
-	}).Extract()
-
-	if err != nil {
-		return server, err
-	}
-
-	return server, nil
+	PrintServer(t, server)
 }

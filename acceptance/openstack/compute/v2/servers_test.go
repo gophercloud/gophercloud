@@ -5,14 +5,14 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestServersList(t *testing.T) {
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
@@ -28,36 +28,33 @@ func TestServersList(t *testing.T) {
 	}
 
 	for _, server := range allServers {
-		printServer(t, &server)
+		PrintServer(t, &server)
 	}
 }
 
 func TestServersCreateDestroy(t *testing.T) {
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	server, err := createServer(t, client, choices)
+	server, err := CreateServer(t, client, choices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatalf("Unable to wait for server: %v", err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
 	newServer, err := servers.Get(client, server.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve server: %v", err)
 	}
-	printServer(t, newServer)
+	PrintServer(t, newServer)
 
 	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages()
 	if err != nil {
@@ -90,25 +87,21 @@ func TestServersCreateDestroy(t *testing.T) {
 }
 
 func TestServersUpdate(t *testing.T) {
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	server, err := createServer(t, client, choices)
+	server, err := CreateServer(t, client, choices)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatal(err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
 	alternateName := tools.RandomString("ACPTTEST", 16)
 	for alternateName == server.Name {
@@ -143,25 +136,21 @@ func TestServersUpdate(t *testing.T) {
 func TestServersMetadata(t *testing.T) {
 	t.Parallel()
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	server, err := createServer(t, client, choices)
+	server, err := CreateServer(t, client, choices)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatal(err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
 	metadata, err := servers.UpdateMetadata(client, server.ID, servers.MetadataOpts{
 		"foo":  "bar",
@@ -209,25 +198,21 @@ func TestServersMetadata(t *testing.T) {
 func TestServersActionChangeAdminPassword(t *testing.T) {
 	t.Parallel()
 
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	server, err := createServer(t, client, choices)
+	server, err := CreateServer(t, client, choices)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatal(err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
 	randomPassword := tools.MakeNewPassword(server.AdminPass)
 	res := servers.ChangeAdminPassword(client, server.ID, randomPassword)
@@ -235,11 +220,11 @@ func TestServersActionChangeAdminPassword(t *testing.T) {
 		t.Fatal(res.Err)
 	}
 
-	if err = waitForStatus(client, server, "PASSWORD"); err != nil {
+	if err = WaitForComputeStatus(client, server, "PASSWORD"); err != nil {
 		t.Fatal(err)
 	}
 
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
+	if err = WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -247,25 +232,21 @@ func TestServersActionChangeAdminPassword(t *testing.T) {
 func TestServersActionReboot(t *testing.T) {
 	t.Parallel()
 
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	server, err := createServer(t, client, choices)
+	server, err := CreateServer(t, client, choices)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatal(err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
 	rebootOpts := &servers.RebootOpts{
 		Type: servers.SoftReboot,
@@ -277,11 +258,11 @@ func TestServersActionReboot(t *testing.T) {
 		t.Fatalf("Unable to reboot server: %v", res.Err)
 	}
 
-	if err = waitForStatus(client, server, "REBOOT"); err != nil {
+	if err = WaitForComputeStatus(client, server, "REBOOT"); err != nil {
 		t.Fatal(err)
 	}
 
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
+	if err = WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -289,25 +270,21 @@ func TestServersActionReboot(t *testing.T) {
 func TestServersActionRebuild(t *testing.T) {
 	t.Parallel()
 
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	server, err := createServer(t, client, choices)
+	server, err := CreateServer(t, client, choices)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatal(err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to rebuild server %s", server.ID)
 
@@ -326,11 +303,11 @@ func TestServersActionRebuild(t *testing.T) {
 		t.Errorf("Expected rebuilt server ID of [%s]; got [%s]", server.ID, rebuilt.ID)
 	}
 
-	if err = waitForStatus(client, rebuilt, "REBUILD"); err != nil {
+	if err = WaitForComputeStatus(client, rebuilt, "REBUILD"); err != nil {
 		t.Fatal(err)
 	}
 
-	if err = waitForStatus(client, rebuilt, "ACTIVE"); err != nil {
+	if err = WaitForComputeStatus(client, rebuilt, "ACTIVE"); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -338,35 +315,31 @@ func TestServersActionRebuild(t *testing.T) {
 func TestServersActionResizeConfirm(t *testing.T) {
 	t.Parallel()
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	server, err := createServer(t, client, choices)
+	server, err := CreateServer(t, client, choices)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatal(err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to resize server %s", server.ID)
-	resizeServer(t, client, server, choices)
+	ResizeServer(t, client, server, choices)
 
 	t.Logf("Attempting to confirm resize for server %s", server.ID)
 	if res := servers.ConfirmResize(client, server.ID); res.Err != nil {
 		t.Fatal(res.Err)
 	}
 
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
+	if err = WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -374,118 +347,31 @@ func TestServersActionResizeConfirm(t *testing.T) {
 func TestServersActionResizeRevert(t *testing.T) {
 	t.Parallel()
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	server, err := createServer(t, client, choices)
+	server, err := CreateServer(t, client, choices)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatal(err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
 	t.Logf("Attempting to resize server %s", server.ID)
-	resizeServer(t, client, server, choices)
+	ResizeServer(t, client, server, choices)
 
 	t.Logf("Attempting to revert resize for server %s", server.ID)
 	if res := servers.RevertResize(client, server.ID); res.Err != nil {
 		t.Fatal(res.Err)
 	}
 
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
+	if err = WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
 		t.Fatal(err)
 	}
-}
-
-func createServer(t *testing.T, client *gophercloud.ServiceClient, choices *ComputeChoices) (*servers.Server, error) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
-
-	networkID, err := getNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
-	if err != nil {
-		t.Fatalf("Failed to obtain network ID: %v", err)
-	}
-
-	name := tools.RandomString("ACPTTEST", 16)
-	t.Logf("Attempting to create server: %s", name)
-
-	pwd := tools.MakeNewPassword("")
-
-	server, err := servers.Create(client, servers.CreateOpts{
-		Name:      name,
-		FlavorRef: choices.FlavorID,
-		ImageRef:  choices.ImageID,
-		AdminPass: pwd,
-		Networks: []servers.Network{
-			servers.Network{UUID: networkID},
-		},
-		Personality: servers.Personality{
-			&servers.File{
-				Path:     "/etc/test",
-				Contents: []byte("hello world"),
-			},
-		},
-	}).Extract()
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
-
-	th.AssertEquals(t, pwd, server.AdminPass)
-
-	return server, err
-}
-
-func resizeServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server, choices *ComputeChoices) {
-	opts := &servers.ResizeOpts{
-		FlavorRef: choices.FlavorIDResize,
-	}
-	if res := servers.Resize(client, server.ID, opts); res.Err != nil {
-		t.Fatal(res.Err)
-	}
-
-	if err := waitForStatus(client, server, "VERIFY_RESIZE"); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func deleteServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) {
-	err := servers.Delete(client, server.ID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to delete server %s: %s", server.ID, err)
-	}
-
-	t.Logf("Deleted server: %s", server.ID)
-}
-
-func printServer(t *testing.T, server *servers.Server) {
-	t.Logf("ID: %s", server.ID)
-	t.Logf("TenantID: %s", server.TenantID)
-	t.Logf("UserID: %s", server.UserID)
-	t.Logf("Name: %s", server.Name)
-	t.Logf("Updated: %s", server.Updated)
-	t.Logf("Created: %s", server.Created)
-	t.Logf("HostID: %s", server.HostID)
-	t.Logf("Status: %s", server.Status)
-	t.Logf("Progress: %d", server.Progress)
-	t.Logf("AccessIPv4: %s", server.AccessIPv4)
-	t.Logf("AccessIPv6: %s", server.AccessIPv6)
-	t.Logf("Image: %s", server.Image)
-	t.Logf("Flavor: %s", server.Flavor)
-	t.Logf("Addresses: %#v", server.Addresses)
-	t.Logf("Metadata: %#v", server.Metadata)
-	t.Logf("Links: %#v", server.Links)
-	t.Logf("KeyName: %s", server.KeyName)
-	t.Logf("AdminPass: %s", server.AdminPass)
-	t.Logf("SecurityGroups: %#v", server.SecurityGroups)
 }

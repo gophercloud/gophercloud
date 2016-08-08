@@ -6,10 +6,9 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v1/volumes"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/volumeattach"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
 
 func TestVolumeAttachAttachment(t *testing.T) {
@@ -17,30 +16,26 @@ func TestVolumeAttachAttachment(t *testing.T) {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
-	client, err := newClient()
+	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := ComputeChoicesFromEnv()
+	choices, err :=clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	blockClient, err := newBlockClient()
+	blockClient, err := clients.NewBlockStorageV1Client()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	server, err := createServer(t, client, choices)
+	server, err := CreateServer(t, client, choices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
-
-	if err = waitForStatus(client, server, "ACTIVE"); err != nil {
-		t.Fatalf("Unable to wait for server: %v", err)
-	}
-	defer deleteServer(t, client, server)
+	defer DeleteServer(t, client, server)
 
 	volume, err := createVolume(t, blockClient)
 	if err != nil {
@@ -52,13 +47,13 @@ func TestVolumeAttachAttachment(t *testing.T) {
 	}
 	defer deleteVolume(t, blockClient, volume)
 
-	volumeAttachment, err := createVolumeAttachment(t, client, blockClient, server, volume)
+	volumeAttachment, err := CreateVolumeAttachment(t, client, blockClient, server, volume)
 	if err != nil {
 		t.Fatalf("Unable to attach volume: %v", err)
 	}
-	defer deleteVolumeAttachment(t, client, blockClient, server, volumeAttachment)
+	defer DeleteVolumeAttachment(t, client, blockClient, server, volumeAttachment)
 
-	printVolumeAttachment(t, volumeAttachment)
+	PrintVolumeAttachment(t, volumeAttachment)
 
 }
 
@@ -85,42 +80,4 @@ func deleteVolume(t *testing.T, blockClient *gophercloud.ServiceClient, volume *
 	}
 
 	t.Logf("Deleted volume: %s", volume.ID)
-}
-
-func createVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, server *servers.Server, volume *volumes.Volume) (*volumeattach.VolumeAttachment, error) {
-	volumeAttachOptions := volumeattach.CreateOpts{
-		VolumeID: volume.ID,
-	}
-
-	t.Logf("Attempting to attach volume %s to server %s", volume.ID, server.ID)
-	volumeAttachment, err := volumeattach.Create(client, server.ID, volumeAttachOptions).Extract()
-	if err != nil {
-		return volumeAttachment, err
-	}
-
-	if err = volumes.WaitForStatus(blockClient, volume.ID, "in-use", 60); err != nil {
-		return volumeAttachment, err
-	}
-
-	return volumeAttachment, nil
-}
-
-func deleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, server *servers.Server, volumeAttachment *volumeattach.VolumeAttachment) {
-
-	err := volumeattach.Delete(client, server.ID, volumeAttachment.VolumeID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to detach volume: %v", err)
-	}
-
-	if err = volumes.WaitForStatus(blockClient, volumeAttachment.ID, "available", 60); err != nil {
-		t.Fatalf("Unable to wait for volume: %v", err)
-	}
-	t.Logf("Deleted volume: %s", volumeAttachment.VolumeID)
-}
-
-func printVolumeAttachment(t *testing.T, volumeAttachment *volumeattach.VolumeAttachment) {
-	t.Logf("ID: %s", volumeAttachment.ID)
-	t.Logf("Device: %s", volumeAttachment.Device)
-	t.Logf("VolumeID: %s", volumeAttachment.VolumeID)
-	t.Logf("ServerID: %s", volumeAttachment.ServerID)
 }
