@@ -2,14 +2,15 @@ package bays
 
 import "github.com/gophercloud/gophercloud"
 
-func createURL(client *gophercloud.ServiceClient) string {
-	return client.ServiceURL("bays")
+func createURL(c *gophercloud.ServiceClient) string {
+	return c.ServiceURL("bays")
 }
 
-func listURL(client *gophercloud.ServiceClient) string {
-	return client.ServiceURL("bays")
+func listURL(c *gophercloud.ServiceClient) string {
+	return c.ServiceURL("bays")
 }
 
-func getURL(client *gophercloud.ServiceClient, id string) string {
-	return client.ServiceURL("bays", id)
+func getURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("bays", id)
+}
 }
