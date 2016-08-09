@@ -203,3 +203,17 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, b.Masters, 1)
 	th.AssertEquals(t, b.Nodes, 2)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/bays/a56a6cd8-0779-461b-b1eb-26cec904284a", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := bays.Delete(fake.ServiceClient(), "a56a6cd8-0779-461b-b1eb-26cec904284a")
+	th.AssertNoErr(t, res.Err)
+}
