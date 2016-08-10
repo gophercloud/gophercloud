@@ -1,70 +1,57 @@
-// +build acceptance
+// +build acceptance blockstorage
 
 package v1
 
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v1/snapshots"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v1/volumes"
-	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestSnapshots(t *testing.T) {
+func TestSnapshotsList(t *testing.T) {
+	client, err := clients.NewBlockStorageV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create a blockstorage client: %v", err)
+	}
 
-	client, err := newClient(t)
-	th.AssertNoErr(t, err)
+	allPages, err := snapshots.List(client, snapshots.ListOpts{}).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to retrieve snapshots: %v", err)
+	}
 
-	v, err := volumes.Create(client, &volumes.CreateOpts{
-		Name: "gophercloud-test-volume",
-		Size: 1,
-	}).Extract()
-	th.AssertNoErr(t, err)
+	allSnapshots, err := snapshots.ExtractSnapshots(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract snapshots: %v", err)
+	}
 
-	err = volumes.WaitForStatus(client, v.ID, "available", 120)
-	th.AssertNoErr(t, err)
+	for _, snapshot := range allSnapshots {
+		PrintSnapshot(t, &snapshot)
+	}
+}
 
-	t.Logf("Created volume: %v\n", v)
+func TestSnapshotsCreateDelete(t *testing.T) {
+	client, err := clients.NewBlockStorageV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create a blockstorage client: %v", err)
+	}
 
-	ss, err := snapshots.Create(client, &snapshots.CreateOpts{
-		Name:     "gophercloud-test-snapshot",
-		VolumeID: v.ID,
-	}).Extract()
-	th.AssertNoErr(t, err)
+	volume, err := CreateVolume(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create volume: %v", err)
+	}
+	defer DeleteVolume(t, client, volume)
 
-	err = snapshots.WaitForStatus(client, ss.ID, "available", 120)
-	th.AssertNoErr(t, err)
+	snapshot, err := CreateSnapshot(t, client, volume)
+	if err != nil {
+		t.Fatalf("Unable to create snapshot: %v", err)
+	}
+	defer DeleteSnapshotshot(t, client, snapshot)
 
-	t.Logf("Created snapshot: %+v\n", ss)
+	newSnapshot, err := snapshots.Get(client, snapshot.ID).Extract()
+	if err != nil {
+		t.Errorf("Unable to retrieve snapshot: %v", err)
+	}
 
-	err = snapshots.Delete(client, ss.ID).ExtractErr()
-	th.AssertNoErr(t, err)
-
-	err = gophercloud.WaitFor(120, func() (bool, error) {
-		_, err := snapshots.Get(client, ss.ID).Extract()
-		if err != nil {
-			return true, nil
-		}
-
-		return false, nil
-	})
-	th.AssertNoErr(t, err)
-
-	t.Log("Deleted snapshot\n")
-
-	err = volumes.Delete(client, v.ID).ExtractErr()
-	th.AssertNoErr(t, err)
-
-	err = gophercloud.WaitFor(120, func() (bool, error) {
-		_, err := volumes.Get(client, v.ID).Extract()
-		if err != nil {
-			return true, nil
-		}
-
-		return false, nil
-	})
-	th.AssertNoErr(t, err)
-
-	t.Log("Deleted volume\n")
+	PrintSnapshot(t, newSnapshot)
 }
