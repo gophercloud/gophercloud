@@ -1,49 +1,46 @@
-// +build acceptance
+// +build acceptance blockstorage
 
 package v1
 
 import (
 	"testing"
-	"time"
 
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v1/volumetypes"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestVolumeTypes(t *testing.T) {
-	client, err := newClient(t)
-	th.AssertNoErr(t, err)
+func TestVolumeTypesList(t *testing.T) {
+	client, err := clients.NewBlockStorageV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create a blockstorage client: %v", err)
+	}
 
-	vt, err := volumetypes.Create(client, &volumetypes.CreateOpts{
-		ExtraSpecs: map[string]interface{}{
-			"capabilities": "gpu",
-			"priority":     3,
-		},
-		Name: "gophercloud-test-volumeType",
-	}).Extract()
-	th.AssertNoErr(t, err)
-	defer func() {
-		time.Sleep(10000 * time.Millisecond)
-		err = volumetypes.Delete(client, vt.ID).ExtractErr()
-		if err != nil {
-			t.Error(err)
-			return
-		}
-	}()
-	t.Logf("Created volume type: %+v\n", vt)
+	allPages, err := volumetypes.List(client).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to retrieve volume types: %v", err)
+	}
 
-	vt, err = volumetypes.Get(client, vt.ID).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Got volume type: %+v\n", vt)
+	allVolumeTypes, err := volumetypes.ExtractVolumeTypes(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract volume types: %v", err)
+	}
 
-	err = volumetypes.List(client).EachPage(func(page pagination.Page) (bool, error) {
-		volTypes, err := volumetypes.ExtractVolumeTypes(page)
-		if len(volTypes) != 1 {
-			t.Errorf("Expected 1 volume type, got %d", len(volTypes))
-		}
-		t.Logf("Listing volume types: %+v\n", volTypes)
-		return true, err
-	})
-	th.AssertNoErr(t, err)
+	for _, volumeType := range allVolumeTypes {
+		PrintVolumeType(t, &volumeType)
+	}
+}
+
+func TestVolumeTypesCreateDestroy(t *testing.T) {
+	client, err := clients.NewBlockStorageV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create a blockstorage client: %v", err)
+	}
+
+	volumeType, err := CreateVolumeType(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create volume type: %v", err)
+	}
+	defer DeleteVolumeType(t, client, volumeType)
+
+	PrintVolumeType(t, volumeType)
 }
