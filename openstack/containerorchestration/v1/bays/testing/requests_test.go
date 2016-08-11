@@ -141,6 +141,35 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, b.ID, "a56a6cd8-0779-461b-b1eb-26cec904284a")
 }
 
+func TestGetFailed(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/bays/duplicatename", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusConflict)
+		fmt.Fprintf(w, `
+{
+  "errors": [
+    {
+      "status": 409,
+      "code": "client",
+      "links": [],
+      "title": "Multiple bays exist with same name",
+      "detail": "Multiple bays exist with same name. Please use the bay uuid instead.",
+      "request_id": ""
+    }
+  ]
+}
+		`)
+	})
+
+	res := bays.Get(fake.ServiceClient(), "duplicatename")
+
+	th.AssertEquals(t, "Multiple bays exist with same name. Please use the bay uuid instead.", res.Err.Error())
+}
+
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -202,6 +231,37 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, b.ID, "39109e8a-516e-41a4-8b1d-22e9a56e4aa2")
 	th.AssertEquals(t, b.Masters, 1)
 	th.AssertEquals(t, b.Nodes, 2)
+}
+
+func TestCreateFailed(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/bays", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, `
+{
+  "errors": [
+    {
+      "status": 500,
+      "code": "client",
+      "links": [],
+      "title": "Nova is down",
+      "detail": "Nova is down. Try again later.",
+      "request_id": ""
+    }
+  ]
+}
+		`)
+	})
+
+	options := bays.CreateOpts{Name: "mycluster", Nodes: 2, BayModelID: "5b793604-fc76-4886-a834-ed522812cdcb"}
+
+	_, err := bays.Create(fake.ServiceClient(), options).Extract()
+
+	th.AssertEquals(t, "Nova is down. Try again later.", err.Error())
 }
 
 func TestDelete(t *testing.T) {

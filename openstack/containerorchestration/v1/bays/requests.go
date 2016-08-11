@@ -48,7 +48,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 
 // Get retrieves a specific bay based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	ro := &gophercloud.RequestOpts{ErrorContext: &common.ErrorResponse{}}
+	_, r.Err = c.Get(getURL(c, id), &r.Body, ro)
 	return
 }
 
@@ -82,7 +83,9 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
+
+	ro := &gophercloud.RequestOpts{ErrorContext: &common.ErrorResponse{}}
+	_, r.Err = c.Post(createURL(c), b, &r.Body, ro)
 	return
 }
 
