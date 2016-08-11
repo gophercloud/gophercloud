@@ -88,7 +88,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 
 // Delete accepts a unique ID and deletes the bay associated with it.
 func Delete(c *gophercloud.ServiceClient, bayID string) (r DeleteResult) {
-	opts := &gophercloud.RequestOpts{ErrorContext: common.ErrDeleteFailed{}}
-	_, r.Err = c.Delete(deleteURL(c, bayID), opts)
+	ro := &gophercloud.RequestOpts{ErrorContext: &common.ErrorResponse{}}
+	_, r.Err = c.Delete(deleteURL(c, bayID), ro)
 	return
 }

@@ -217,3 +217,32 @@ func TestDelete(t *testing.T) {
 	res := bays.Delete(fake.ServiceClient(), "a56a6cd8-0779-461b-b1eb-26cec904284a")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestDeleteFailed(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/bays/a56a6cd8-0779-461b-b1eb-26cec904284a", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `
+{
+  "errors": [
+    {
+      "status": 400,
+      "code": "client",
+      "links": [],
+      "title": "Bay k8sbay already has an operation in progress",
+      "detail": "Bay k8sbay already has an operation in progress.",
+      "request_id": ""
+    }
+  ]
+}
+		`)
+	})
+
+	res := bays.Delete(fake.ServiceClient(), "a56a6cd8-0779-461b-b1eb-26cec904284a")
+
+	th.AssertEquals(t, "Bay k8sbay already has an operation in progress.", res.Err.Error())
+}
