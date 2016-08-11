@@ -1,5 +1,10 @@
 package common
 
+import (
+	"encoding/json"
+	"github.com/gophercloud/gophercloud"
+)
+
 // ErrorResponse represents failed response
 type ErrorResponse struct {
 	Errors []Error `json:"errors"`
@@ -21,4 +26,21 @@ func (r ErrorResponse) Error() string {
 	}
 
 	return msg
+}
+
+type ErrDeleteFailed struct{}
+
+// Error400 extracts the actual error message from the body of the response
+func (d ErrDeleteFailed) Error400(r gophercloud.ErrUnexpectedResponseCode) error {
+	var s *ErrorResponse
+	err := json.Unmarshal(r.Body, &s)
+	if err != nil {
+		return gophercloud.ErrDefault400{ErrUnexpectedResponseCode: r}
+	}
+
+	return s
+}
+
+func (d ErrDeleteFailed) Error() string {
+	return "Unable to delete bay"
 }

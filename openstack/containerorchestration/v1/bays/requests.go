@@ -1,7 +1,6 @@
 package bays
 
 import (
-	"encoding/json"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/common"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -87,26 +86,9 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 	return
 }
 
-type ErrDeleteFailed struct { }
-
-// Error400 extracts the actual error message from the body of the response
-func (d ErrDeleteFailed) Error400(r gophercloud.ErrUnexpectedResponseCode) error {
-	var s *common.ErrorResponse
-	err := json.Unmarshal(r.Body, &s)
-	if err != nil {
-		return gophercloud.ErrDefault400{ErrUnexpectedResponseCode: r}
-	}
-
-	return s
-}
-
-func (d ErrDeleteFailed) Error() string {
-	return "Unable to delete bay"
-}
-
 // Delete accepts a unique ID and deletes the bay associated with it.
 func Delete(c *gophercloud.ServiceClient, bayID string) (r DeleteResult) {
-	opts := &gophercloud.RequestOpts{ErrorContext: ErrDeleteFailed{}}
+	opts := &gophercloud.RequestOpts{ErrorContext: common.ErrDeleteFailed{}}
 	_, r.Err = c.Delete(deleteURL(c, bayID), opts)
 	return
 }
