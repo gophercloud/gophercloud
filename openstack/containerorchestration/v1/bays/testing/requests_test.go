@@ -168,6 +168,10 @@ func TestGetFailed(t *testing.T) {
 	res := bays.Get(fake.ServiceClient(), "duplicatename")
 
 	th.AssertEquals(t, "Multiple bays exist with same name. Please use the bay uuid instead.", res.Err.Error())
+
+	er, ok := res.Err.(*fake.ErrorResponse)
+	th.AssertEquals(t, true, ok)
+	th.AssertEquals(t, http.StatusConflict, er.Actual)
 }
 
 func TestCreate(t *testing.T) {
@@ -259,9 +263,13 @@ func TestCreateFailed(t *testing.T) {
 
 	options := bays.CreateOpts{Name: "mycluster", Nodes: 2, BayModelID: "5b793604-fc76-4886-a834-ed522812cdcb"}
 
-	_, err := bays.Create(fake.ServiceClient(), options).Extract()
+	res := bays.Create(fake.ServiceClient(), options)
 
-	th.AssertEquals(t, "Nova is down. Try again later.", err.Error())
+	th.AssertEquals(t, "Nova is down. Try again later.", res.Err.Error())
+
+	er, ok := res.Err.(*fake.ErrorResponse)
+	th.AssertEquals(t, true, ok)
+	th.AssertEquals(t, http.StatusInternalServerError, er.Actual)
 }
 
 func TestDelete(t *testing.T) {
@@ -305,4 +313,8 @@ func TestDeleteFailed(t *testing.T) {
 	res := bays.Delete(fake.ServiceClient(), "a56a6cd8-0779-461b-b1eb-26cec904284a")
 
 	th.AssertEquals(t, "Bay k8sbay already has an operation in progress.", res.Err.Error())
+
+	er, ok := res.Err.(*fake.ErrorResponse)
+	th.AssertEquals(t, true, ok)
+	th.AssertEquals(t, http.StatusBadRequest, er.Actual)
 }

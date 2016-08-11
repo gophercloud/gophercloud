@@ -8,6 +8,7 @@ import (
 
 // ErrorResponse represents failed response
 type ErrorResponse struct {
+	gophercloud.ErrUnexpectedResponseCode
 	Errors []Error `json:"errors" required:"true"`
 }
 
@@ -30,6 +31,7 @@ func (e *ErrorResponse) Error() string {
 }
 
 func (e *ErrorResponse) unwrapError(r gophercloud.ErrUnexpectedResponseCode) bool {
+	e.ErrUnexpectedResponseCode = r
 	err := json.Unmarshal(r.Body, &e)
 	return err == nil
 }
