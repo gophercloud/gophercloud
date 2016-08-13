@@ -152,3 +152,76 @@ func NewIdentityV2Client() (*gophercloud.ServiceClient, error) {
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }
+
+// NewIdentityV2AdminClient returns a *ServiceClient for making calls
+// to the Admin Endpoint of the OpenStack Identity v2 API. An error
+// will be returned if authentication or client creation was not possible.
+func NewIdentityV2AdminClient() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewIdentityV2(client, gophercloud.EndpointOpts{
+		Region:       os.Getenv("OS_REGION_NAME"),
+		Availability: gophercloud.AvailabilityAdmin,
+	})
+}
+
+// NewIdentityV2UnauthenticatedClient returns an unauthenticated *ServiceClient
+// for the OpenStack Identity v2 API. An error  will be returned if
+// authentication or client creation was not possible.
+func NewIdentityV2UnauthenticatedClient() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.NewClient(ao.IdentityEndpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewIdentityV2(client, gophercloud.EndpointOpts{})
+}
+
+// NewIdentityV3Client returns a *ServiceClient for making calls
+// to the OpenStack Identity v3 API. An error will be returned
+// if authentication or client creation was not possible.
+func NewIdentityV3Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewIdentityV3(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
+// NewIdentityV3UnauthenticatedClient returns an unauthenticated *ServiceClient
+// for the OpenStack Identity v3 API. An error  will be returned if
+// authentication or client creation was not possible.
+func NewIdentityV3UnauthenticatedClient() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.NewClient(ao.IdentityEndpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewIdentityV3(client, gophercloud.EndpointOpts{})
+}

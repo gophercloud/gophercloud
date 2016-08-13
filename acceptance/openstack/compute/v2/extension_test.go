@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/openstack"
 	"github.com/gophercloud/gophercloud/openstack/common/extensions"
 )
 
@@ -26,7 +27,7 @@ func TestExtensionsList(t *testing.T) {
 	}
 
 	for _, extension := range allExtensions {
-		printExtension(t, &extension)
+		openstack.PrintExtension(t, &extension)
 	}
 }
 
@@ -41,14 +42,5 @@ func TestExtensionGet(t *testing.T) {
 		t.Fatalf("Unable to get extension os-admin-actions: %v", err)
 	}
 
-	printExtension(t, extension)
-}
-
-func printExtension(t *testing.T, extension *extensions.Extension) {
-	t.Logf("Name: %s", extension.Name)
-	t.Logf("Namespace: %s", extension.Namespace)
-	t.Logf("Alias: %s", extension.Alias)
-	t.Logf("Description: %s", extension.Description)
-	t.Logf("Updated: %s", extension.Updated)
-	t.Logf("Links: %v", extension.Links)
+	openstack.PrintExtension(t, extension)
 }

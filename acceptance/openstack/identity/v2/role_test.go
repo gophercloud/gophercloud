@@ -5,54 +5,72 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/identity/v2/extensions/admin/roles"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/openstack/identity/v2/users"
 )
 
-func TestRoles(t *testing.T) {
-	client := authenticatedClient(t)
+func TestRolesAddToUser(t *testing.T) {
+	client, err := clients.NewIdentityV2AdminClient()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v", err)
+	}
 
-	tenantID := findTenant(t, client)
-	userID := createUser(t, client, tenantID)
-	roleID := listRoles(t, client)
+	tenant, err := FindTenant(t, client)
+	if err != nil {
+		t.Fatalf("Unable to get a tenant: %v", err)
+	}
 
-	addUserRole(t, client, tenantID, userID, roleID)
+	role, err := FindRole(t, client)
+	if err != nil {
+		t.Fatalf("Unable to get a role: %v", err)
+	}
 
-	deleteUserRole(t, client, tenantID, userID, roleID)
+	user, err := CreateUser(t, client, tenant)
+	if err != nil {
+		t.Fatalf("Unable to create a user: %v", err)
+	}
+	defer DeleteUser(t, client, user)
 
-	deleteUser(t, client, userID)
+	err = AddUserRole(t, client, tenant, user, role)
+	if err != nil {
+		t.Fatalf("Unable to add role to user: %v", err)
+	}
+	defer DeleteUserRole(t, client, tenant, user, role)
+
+	allPages, err := users.ListRoles(client, tenant.ID, user.ID).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to obtain roles for user: %v", err)
+	}
+
+	allRoles, err := users.ExtractRoles(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract roles: %v", err)
+	}
+
+	t.Logf("Roles of user %s:", user.Name)
+	for _, role := range allRoles {
+		PrintUserRole(t, &role)
+	}
 }
 
-func listRoles(t *testing.T, client *gophercloud.ServiceClient) string {
-	var roleID string
+func TestRolesList(t *testing.T) {
+	client, err := clients.NewIdentityV2AdminClient()
+	if err != nil {
+		t.Fatalf("Unable to create an identity client: %v", err)
+	}
 
-	err := roles.List(client).EachPage(func(page pagination.Page) (bool, error) {
-		roleList, err := roles.ExtractRoles(page)
-		th.AssertNoErr(t, err)
+	allPages, err := roles.List(client).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list all roles: %v", err)
+	}
 
-		for _, role := range roleList {
-			t.Logf("Listing role: ID [%s] Name [%s]", role.ID, role.Name)
-			roleID = role.ID
-		}
+	allRoles, err := roles.ExtractRoles(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract roles: %v", err)
+	}
 
-		return true, nil
-	})
-
-	th.AssertNoErr(t, err)
-
-	return roleID
-}
-
-func addUserRole(t *testing.T, client *gophercloud.ServiceClient, tenantID, userID, roleID string) {
-	err := roles.AddUserRole(client, tenantID, userID, roleID).ExtractErr()
-	th.AssertNoErr(t, err)
-	t.Logf("Added role %s to user %s", roleID, userID)
-}
-
-func deleteUserRole(t *testing.T, client *gophercloud.ServiceClient, tenantID, userID, roleID string) {
-	err := roles.DeleteUserRole(client, tenantID, userID, roleID).ExtractErr()
-	th.AssertNoErr(t, err)
-	t.Logf("Removed role %s from user %s", roleID, userID)
+	for _, r := range allRoles {
+		PrintRole(t, &r)
+	}
 }
