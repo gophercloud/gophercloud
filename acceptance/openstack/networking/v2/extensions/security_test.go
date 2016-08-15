@@ -5,167 +5,89 @@ package extensions
 import (
 	"testing"
 
-	base "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
+	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/groups"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/rules"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestSecurityGroups(t *testing.T) {
-	base.Setup(t)
-	defer base.Teardown()
-
-	// create security group
-	groupID := createSecGroup(t)
-
-	// delete security group
-	defer deleteSecGroup(t, groupID)
-
-	// list security group
-	listSecGroups(t)
-
-	// get security group
-	getSecGroup(t, groupID)
-
-	// create port with security group
-	networkID, portID := createPort(t, groupID)
-
-	// teardown
-	defer deleteNetwork(t, networkID)
-
-	// delete port
-	defer deletePort(t, portID)
-}
-
-func TestSecurityGroupRules(t *testing.T) {
-	base.Setup(t)
-	defer base.Teardown()
-
-	// create security group
-	groupID := createSecGroup(t)
-
-	defer deleteSecGroup(t, groupID)
-
-	// create security group rule
-	ruleID := createSecRule(t, groupID)
-
-	// delete security group rule
-	defer deleteSecRule(t, ruleID)
-
-	// list security group rule
-	listSecRules(t)
-
-	// get security group rule
-	getSecRule(t, ruleID)
-}
-
-func createSecGroup(t *testing.T) string {
-	sg, err := groups.Create(base.Client, groups.CreateOpts{
-		Name:        "new-webservers",
-		Description: "security group for webservers",
-	}).Extract()
-
-	th.AssertNoErr(t, err)
-
-	t.Logf("Created security group %s", sg.ID)
-
-	return sg.ID
-}
-
-func listSecGroups(t *testing.T) {
-	err := groups.List(base.Client, groups.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
-		list, err := groups.ExtractGroups(page)
-		if err != nil {
-			t.Errorf("Failed to extract secgroups: %v", err)
-			return false, err
-		}
-
-		for _, sg := range list {
-			t.Logf("Listing security group: ID [%s] Name [%s]", sg.ID, sg.Name)
-		}
-
-		return true, nil
-	})
-
-	th.AssertNoErr(t, err)
-}
-
-func getSecGroup(t *testing.T, id string) {
-	sg, err := groups.Get(base.Client, id).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Getting security group: ID [%s] Name [%s] Description [%s]", sg.ID, sg.Name, sg.Description)
-}
-
-func createPort(t *testing.T, groupID string) (string, string) {
-	n, err := networks.Create(base.Client, networks.CreateOpts{Name: "tmp_network"}).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Created network %s", n.ID)
-
-	opts := ports.CreateOpts{
-		NetworkID:      n.ID,
-		Name:           "my_port",
-		SecurityGroups: []string{groupID},
+func TestSecurityGroupsList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
 	}
-	p, err := ports.Create(base.Client, opts).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Created port %s with security group %s", p.ID, groupID)
 
-	return n.ID, p.ID
+	listOpts := groups.ListOpts{}
+	allPages, err := groups.List(client, listOpts).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list groups: %v", err)
+	}
+
+	allGroups, err := groups.ExtractGroups(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract groups: %v", err)
+	}
+
+	for _, group := range allGroups {
+		PrintSecurityGroup(t, &group)
+	}
 }
 
-func deleteSecGroup(t *testing.T, groupID string) {
-	res := groups.Delete(base.Client, groupID)
-	th.AssertNoErr(t, res.Err)
-	t.Logf("Deleted security group %s", groupID)
+func TestSecurityGroupsCreateDelete(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	group, err := CreateSecurityGroup(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create security group: %v", err)
+	}
+	defer DeleteSecurityGroup(t, client, group.ID)
+
+	rule, err := CreateSecurityGroupRule(t, client, group.ID)
+	if err != nil {
+		t.Fatalf("Unable to create security group rule: %v", err)
+	}
+	defer DeleteSecurityGroupRule(t, client, rule.ID)
+
+	PrintSecurityGroup(t, group)
 }
 
-func createSecRule(t *testing.T, groupID string) string {
-	r, err := rules.Create(base.Client, rules.CreateOpts{
-		Direction:    "ingress",
-		PortRangeMin: 80,
-		EtherType:    "IPv4",
-		PortRangeMax: 80,
-		Protocol:     "tcp",
-		SecGroupID:   groupID,
-	}).Extract()
+func TestSecurityGroupsPort(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
 
-	th.AssertNoErr(t, err)
+	network, err := networking.CreateNetwork(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create network: %v", err)
+	}
+	defer networking.DeleteNetwork(t, client, network.ID)
 
-	t.Logf("Created security group rule %s", r.ID)
+	subnet, err := networking.CreateSubnet(t, client, network.ID)
+	if err != nil {
+		t.Fatalf("Unable to create subnet: %v", err)
+	}
+	defer networking.DeleteSubnet(t, client, subnet.ID)
 
-	return r.ID
-}
+	group, err := CreateSecurityGroup(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create security group: %v", err)
+	}
+	defer DeleteSecurityGroup(t, client, group.ID)
 
-func listSecRules(t *testing.T) {
-	err := rules.List(base.Client, rules.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
-		list, err := rules.ExtractRules(page)
-		if err != nil {
-			t.Errorf("Failed to extract sec rules: %v", err)
-			return false, err
-		}
+	rule, err := CreateSecurityGroupRule(t, client, group.ID)
+	if err != nil {
+		t.Fatalf("Unable to create security group rule: %v", err)
+	}
+	defer DeleteSecurityGroupRule(t, client, rule.ID)
 
-		for _, r := range list {
-			t.Logf("Listing security rule: ID [%s]", r.ID)
-		}
+	port, err := CreatePortWithSecurityGroup(t, client, network.ID, subnet.ID, group.ID)
+	if err != nil {
+		t.Fatalf("Unable to create port: %v", err)
+	}
+	defer networking.DeletePort(t, client, port.ID)
 
-		return true, nil
-	})
-
-	th.AssertNoErr(t, err)
-}
-
-func getSecRule(t *testing.T, id string) {
-	r, err := rules.Get(base.Client, id).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Getting security rule: ID [%s] Direction [%s] EtherType [%s] Protocol [%s]",
-		r.ID, r.Direction, r.EtherType, r.Protocol)
-}
-
-func deleteSecRule(t *testing.T, id string) {
-	res := rules.Delete(base.Client, id)
-	th.AssertNoErr(t, res.Err)
-	t.Logf("Deleted security rule %s", id)
+	networking.PrintPort(t, port)
 }

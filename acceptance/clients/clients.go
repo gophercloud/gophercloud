@@ -29,6 +29,9 @@ type AcceptanceTestChoices struct {
 
 	// NetworkName is the name of a network to launch the instance on.
 	NetworkName string
+
+	// ExternalNetworkID is the network ID of the external network.
+	ExternalNetworkID string
 }
 
 // AcceptanceTestChoicesFromEnv populates a ComputeChoices struct from environment variables.
@@ -39,6 +42,7 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	flavorIDResize := os.Getenv("OS_FLAVOR_ID_RESIZE")
 	networkName := os.Getenv("OS_NETWORK_NAME")
 	floatingIPPoolName := os.Getenv("OS_POOL_NAME")
+	externalNetworkID := os.Getenv("OS_EXTGW_ID")
 
 	missing := make([]string, 0, 3)
 	if imageID == "" {
@@ -52,6 +56,9 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	}
 	if floatingIPPoolName == "" {
 		missing = append(missing, "OS_POOL_NAME")
+	}
+	if externalNetworkID == "" {
+		missing = append(missing, "OS_EXTGW_ID")
 	}
 	if networkName == "" {
 		networkName = "private"
@@ -74,7 +81,7 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 		return nil, fmt.Errorf(text)
 	}
 
-	return &AcceptanceTestChoices{ImageID: imageID, FlavorID: flavorID, FlavorIDResize: flavorIDResize, FloatingIPPoolName: floatingIPPoolName, NetworkName: networkName}, nil
+	return &AcceptanceTestChoices{ImageID: imageID, FlavorID: flavorID, FlavorIDResize: flavorIDResize, FloatingIPPoolName: floatingIPPoolName, NetworkName: networkName, ExternalNetworkID: externalNetworkID}, nil
 }
 
 // NewBlockStorageV1Client returns a *ServiceClient for making calls
@@ -224,4 +231,23 @@ func NewIdentityV3UnauthenticatedClient() (*gophercloud.ServiceClient, error) {
 	}
 
 	return openstack.NewIdentityV3(client, gophercloud.EndpointOpts{})
+}
+
+// NewNetworkV2Client returns a *ServiceClient for making calls to the
+// OpenStack Networking v2 API. An error will be returned if authentication
+// or client creation was not possible.
+func NewNetworkV2Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewNetworkV2(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
 }

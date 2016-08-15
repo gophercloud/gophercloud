@@ -5,80 +5,59 @@ package fwaas
 import (
 	"testing"
 
-	base "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/rules"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestFirewallRules(t *testing.T) {
-	base.Setup(t)
-	defer base.Teardown()
+func TestRuleList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
 
-	ruleID := createRule(t, &rules.CreateOpts{
-		Name:                 "gophercloud_test",
-		Description:          "acceptance test",
-		Protocol:             "tcp",
-		Action:               "allow",
-		DestinationIPAddress: "192.168.0.0/24",
-		DestinationPort:      "22",
-	})
+	allPages, err := rules.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list rules: %v", err)
+	}
 
-	listRules(t)
+	allRules, err := rules.ExtractRules(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract rules: %v", err)
+	}
 
-	destinationIPAddress := "192.168.1.0/24"
-	destinationPort := ""
-	sourcePort := "1234"
-
-	updateRule(t, ruleID, &rules.UpdateOpts{
-		DestinationIPAddress: &destinationIPAddress,
-		DestinationPort:      &destinationPort,
-		SourcePort:           &sourcePort,
-	})
-
-	getRule(t, ruleID)
-
-	deleteRule(t, ruleID)
+	for _, rule := range allRules {
+		PrintRule(t, &rule)
+	}
 }
 
-func createRule(t *testing.T, opts *rules.CreateOpts) string {
-	r, err := rules.Create(base.Client, *opts).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Created rule: %#v", opts)
-	return r.ID
-}
+func TestRuleCRUD(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
 
-func listRules(t *testing.T) {
-	err := rules.List(base.Client, rules.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
-		ruleList, err := rules.ExtractRules(page)
-		if err != nil {
-			t.Errorf("Failed to extract rules: %v", err)
-			return false, err
-		}
+	rule, err := CreateRule(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create rule: %v", err)
+	}
+	defer DeleteRule(t, client, rule.ID)
 
-		for _, r := range ruleList {
-			t.Logf("Listing rules: ID [%s]", r.ID)
-		}
+	PrintRule(t, rule)
 
-		return true, nil
-	})
-	th.AssertNoErr(t, err)
-}
+	ruleDescription := "Some rule description"
+	updateOpts := rules.UpdateOpts{
+		Description: &ruleDescription,
+	}
 
-func updateRule(t *testing.T, ruleID string, opts *rules.UpdateOpts) {
-	r, err := rules.Update(base.Client, ruleID, *opts).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Updated rule ID [%s]", r.ID)
-}
+	_, err = rules.Update(client, rule.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update rule: %v", err)
+	}
 
-func getRule(t *testing.T, ruleID string) {
-	r, err := rules.Get(base.Client, ruleID).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Getting rule ID [%s]", r.ID)
-}
+	newRule, err := rules.Get(client, rule.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get rule: %v", err)
+	}
 
-func deleteRule(t *testing.T, ruleID string) {
-	res := rules.Delete(base.Client, ruleID)
-	th.AssertNoErr(t, res.Err)
-	t.Logf("Deleted rule %s", ruleID)
+	PrintRule(t, newRule)
 }

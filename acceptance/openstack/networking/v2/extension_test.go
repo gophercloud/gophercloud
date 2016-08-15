@@ -1,45 +1,46 @@
-// +build acceptance networking
+// +build acceptance networking extensions
 
 package v2
 
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/openstack"
+	"github.com/gophercloud/gophercloud/openstack/common/extensions"
 )
 
-func TestListExts(t *testing.T) {
-	Setup(t)
-	defer Teardown()
+func TestExtensionsList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
 
-	pager := extensions.List(Client)
-	err := pager.EachPage(func(page pagination.Page) (bool, error) {
-		t.Logf("--- Page ---")
+	allPages, err := extensions.List(client).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list extensions: %v", err)
+	}
 
-		exts, err := extensions.ExtractExtensions(page)
-		th.AssertNoErr(t, err)
+	allExtensions, err := extensions.ExtractExtensions(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract extensions: %v", err)
+	}
 
-		for _, ext := range exts {
-			t.Logf("Extension: Name [%s] Description [%s]", ext.Name, ext.Description)
-		}
-
-		return true, nil
-	})
-	th.CheckNoErr(t, err)
+	for _, extension := range allExtensions {
+		openstack.PrintExtension(t, &extension)
+	}
 }
 
-func TestGetExt(t *testing.T) {
-	Setup(t)
-	defer Teardown()
+func TestExtensionGet(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
 
-	ext, err := extensions.Get(Client, "service-type").Extract()
-	th.AssertNoErr(t, err)
+	extension, err := extensions.Get(client, "router").Extract()
+	if err != nil {
+		t.Fatalf("Unable to get extension port-security: %v", err)
+	}
 
-	th.AssertEquals(t, ext.Updated, "2013-01-20T00:00:00-00:00")
-	th.AssertEquals(t, ext.Name, "Neutron Service Type Management")
-	th.AssertEquals(t, ext.Namespace, "http://docs.openstack.org/ext/neutron/service-type/api/v1.0")
-	th.AssertEquals(t, ext.Alias, "service-type")
-	th.AssertEquals(t, ext.Description, "API for retrieving service providers for Neutron advanced services")
+	openstack.PrintExtension(t, extension)
 }
