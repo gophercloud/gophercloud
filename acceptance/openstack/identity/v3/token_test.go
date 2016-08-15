@@ -5,38 +5,32 @@ package v3
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack"
-	tokens3 "github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
 )
 
 func TestGetToken(t *testing.T) {
-	// Obtain credentials from the environment.
+	client, err := clients.NewIdentityV3UnauthenticatedClient()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v")
+	}
+
 	ao, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
-		t.Fatalf("Unable to acquire credentials: %v", err)
+		t.Fatalf("Unable to obtain environment auth options: %v", err)
 	}
 
-	// Trim out unused fields. Skip if we don't have a UserID.
-	ao.Username, ao.TenantID, ao.TenantName = "", "", ""
-	if ao.UserID == "" {
-		t.Logf("Skipping identity v3 tests because no OS_USERID is present.")
-		return
+	authOptions := tokens.AuthOptions{
+		Username:   ao.Username,
+		Password:   ao.Password,
+		DomainName: "default",
 	}
 
-	// Create an unauthenticated client.
-	provider, err := openstack.NewClient(ao.IdentityEndpoint)
-	if err != nil {
-		t.Fatalf("Unable to instantiate client: %v", err)
-	}
-
-	// Create a service client.
-	service := openstack.NewIdentityV3(provider)
-
-	// Use the service to create a token.
-	token, err := tokens3.Create(service, ao, nil).Extract()
+	token, err := tokens.Create(client, &authOptions).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get token: %v", err)
 	}
 
-	t.Logf("Acquired token: %s", token.ID)
+	PrintToken(t, token)
 }

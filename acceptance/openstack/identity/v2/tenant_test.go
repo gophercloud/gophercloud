@@ -5,28 +5,27 @@ package v2
 import (
 	"testing"
 
-	tenants2 "github.com/gophercloud/gophercloud/openstack/identity/v2/tenants"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/openstack/identity/v2/tenants"
 )
 
-func TestEnumerateTenants(t *testing.T) {
-	service := authenticatedClient(t)
+func TestTenantsList(t *testing.T) {
+	client, err := clients.NewIdentityV2Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v")
+	}
 
-	t.Logf("Tenants to which your current token grants access:")
-	count := 0
-	err := tenants2.List(service, nil).EachPage(func(page pagination.Page) (bool, error) {
-		t.Logf("--- Page %02d ---", count)
+	allPages, err := tenants.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list tenants: %v", err)
+	}
 
-		tenants, err := tenants2.ExtractTenants(page)
-		th.AssertNoErr(t, err)
-		for i, tenant := range tenants {
-			t.Logf("[%02d] name=[%s] id=[%s] description=[%s] enabled=[%v]",
-				i, tenant.Name, tenant.ID, tenant.Description, tenant.Enabled)
-		}
+	allTenants, err := tenants.ExtractTenants(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract tenants: %v", err)
+	}
 
-		count++
-		return true, nil
-	})
-	th.AssertNoErr(t, err)
+	for _, tenant := range allTenants {
+		PrintTenant(t, &tenant)
+	}
 }
