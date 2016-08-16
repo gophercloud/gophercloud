@@ -52,7 +52,7 @@ func TestAuthenticatedClientV3(t *testing.T) {
 		Username:         "me",
 		Password:         "secret",
 		DomainName:       "default",
-		TenantName: 	  "project",
+		TenantName:       "project",
 		IdentityEndpoint: th.Endpoint(),
 	}
 	client, err := openstack.AuthenticatedClient(options)

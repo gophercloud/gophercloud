@@ -45,6 +45,9 @@ type Bay struct {
 	// SNAPSHOT_COMPLETE, CHECK_COMPLETE, ADOPT_COMPLETE.
 	Status string `json:"status"`
 
+	// Additional information on the bay status, such as why the bay is in a failed state.
+	StatusReason string `json:"status_reason"`
+
 	// The number of master nodes in the bay.
 	Masters int `json:"master_count"`
 

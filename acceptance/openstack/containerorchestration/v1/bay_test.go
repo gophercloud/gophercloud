@@ -3,9 +3,8 @@
 package v1
 
 import (
-	"testing"
-
 	"strconv"
+	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/bays"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -17,12 +16,10 @@ func TestBayCRUDOperations(t *testing.T) {
 	defer Teardown()
 
 	// Create a bay
-	bayModelID := "5b793604-fc76-4886-a834-ed522812cdcb"
-	b, err := bays.Create(Client, bays.CreateOpts{BayModelID: bayModelID}).Extract()
+	b, err := bays.Create(Client, bays.CreateOpts{BayModelID: "kubernetes-dev"}).Extract()
 	th.AssertNoErr(t, err)
 	defer bays.Delete(Client, b.ID)
 	th.AssertEquals(t, "CREATE_IN_PROGRESS", b.Status)
-	th.AssertEquals(t, bayModelID, b.BayModelID)
 	th.AssertEquals(t, 1, b.Masters)
 	th.AssertEquals(t, 1, b.Nodes)
 	bayID := b.ID
@@ -52,7 +49,6 @@ func TestBayCRUDOperations(t *testing.T) {
 	b, err = bays.Get(Client, bayID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, bayName, b.Name)
-	th.AssertEquals(t, bayModelID, b.BayModelID)
 	th.AssertEquals(t, 1, b.Masters)
 	th.AssertEquals(t, 1, b.Nodes)
 }
