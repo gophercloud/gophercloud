@@ -40,79 +40,77 @@ func (e *ErrorResponse) unwrapError(r gophercloud.ErrUnexpectedResponseCode) boo
 func (e *ErrorResponse) Error400(r gophercloud.ErrUnexpectedResponseCode) error {
 	if e.unwrapError(r) {
 		return e
-	} else {
-		return gophercloud.ErrDefault400{ErrUnexpectedResponseCode: r}
 	}
+
+	return gophercloud.ErrDefault400{ErrUnexpectedResponseCode: r}
 }
 
 // Error401 extracts the actual error message from the body of the response
 func (e *ErrorResponse) Error401(r gophercloud.ErrUnexpectedResponseCode) error {
 	if e.unwrapError(r) {
 		return e
-	} else {
-		return gophercloud.ErrDefault401{ErrUnexpectedResponseCode: r}
 	}
+	return gophercloud.ErrDefault401{ErrUnexpectedResponseCode: r}
 }
 
 // Error404 extracts the actual error message from the body of the response
 func (e *ErrorResponse) Error404(r gophercloud.ErrUnexpectedResponseCode) error {
 	if e.unwrapError(r) {
 		return e
-	} else {
-		return gophercloud.ErrDefault404{ErrUnexpectedResponseCode: r}
 	}
+	return gophercloud.ErrDefault404{ErrUnexpectedResponseCode: r}
 }
 
 // Error405 extracts the actual error message from the body of the response
 func (e *ErrorResponse) Error405(r gophercloud.ErrUnexpectedResponseCode) error {
 	if e.unwrapError(r) {
 		return e
-	} else {
-		return gophercloud.ErrDefault405{ErrUnexpectedResponseCode: r}
 	}
+
+	return gophercloud.ErrDefault405{ErrUnexpectedResponseCode: r}
 }
 
 // Error408 extracts the actual error message from the body of the response
 func (e *ErrorResponse) Error408(r gophercloud.ErrUnexpectedResponseCode) error {
 	if e.unwrapError(r) {
 		return e
-	} else {
-		return gophercloud.ErrDefault408{ErrUnexpectedResponseCode: r}
 	}
+
+	return gophercloud.ErrDefault408{ErrUnexpectedResponseCode: r}
 }
 
 // Error409 extracts the actual error message from the body of the response
 func (e *ErrorResponse) Error409(r gophercloud.ErrUnexpectedResponseCode) error {
 	if e.unwrapError(r) {
 		return e
-	} else {
-		return gophercloud.ErrDefault409{ErrUnexpectedResponseCode: r}
 	}
+
+	return gophercloud.ErrDefault409{ErrUnexpectedResponseCode: r}
 }
 
 // Error429 extracts the actual error message from the body of the response
 func (e *ErrorResponse) Error429(r gophercloud.ErrUnexpectedResponseCode) error {
 	if e.unwrapError(r) {
 		return e
-	} else {
-		return gophercloud.ErrDefault429{ErrUnexpectedResponseCode: r}
 	}
+
+	return gophercloud.ErrDefault429{ErrUnexpectedResponseCode: r}
 }
 
 // Error500 extracts the actual error message from the body of the response
 func (e *ErrorResponse) Error500(r gophercloud.ErrUnexpectedResponseCode) error {
 	if e.unwrapError(r) {
 		return e
-	} else {
-		return gophercloud.ErrDefault500{ErrUnexpectedResponseCode: r}
 	}
+
+	return gophercloud.ErrDefault500{ErrUnexpectedResponseCode: r}
 }
 
 // Error503 extracts the actual error message from the body of the response
 func (e *ErrorResponse) Error503(r gophercloud.ErrUnexpectedResponseCode) error {
 	if e.unwrapError(r) {
 		return e
-	} else {
-		return gophercloud.ErrDefault503{ErrUnexpectedResponseCode: r}
 	}
+
+	return gophercloud.ErrDefault503{ErrUnexpectedResponseCode: r}
 }
