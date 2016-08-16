@@ -182,6 +182,8 @@ type CreateOpts struct {
 
 // ToServerCreateMap assembles a request body based on the contents of a CreateOpts.
 func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
+	sc := opts.ServiceClient
+	opts.ServiceClient = nil
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -224,12 +226,12 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 			err.Argument = "ImageRef/ImageName"
 			return nil, err
 		}
-		if opts.ServiceClient == nil {
+		if sc == nil {
 			err := ErrNoClientProvidedForIDByName{}
 			err.Argument = "ServiceClient"
 			return nil, err
 		}
-		imageID, err := images.IDFromName(opts.ServiceClient, opts.ImageName)
+		imageID, err := images.IDFromName(sc, opts.ImageName)
 		if err != nil {
 			return nil, err
 		}
@@ -243,12 +245,12 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 			err.Argument = "FlavorRef/FlavorName"
 			return nil, err
 		}
-		if opts.ServiceClient == nil {
+		if sc == nil {
 			err := ErrNoClientProvidedForIDByName{}
 			err.Argument = "ServiceClient"
 			return nil, err
 		}
-		flavorID, err := flavors.IDFromName(opts.ServiceClient, opts.FlavorName)
+		flavorID, err := flavors.IDFromName(sc, opts.FlavorName)
 		if err != nil {
 			return nil, err
 		}

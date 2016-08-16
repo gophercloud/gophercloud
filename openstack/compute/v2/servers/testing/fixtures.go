@@ -492,6 +492,94 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, response)
 	})
+
+	th.Mux.HandleFunc("/images/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, `
+				{
+					"images": [
+						{
+							"status": "ACTIVE",
+							"updated": "2014-09-23T12:54:56Z",
+							"id": "f3e4a95d-1f4f-4989-97ce-f3a1fb8c04d7",
+							"OS-EXT-IMG-SIZE:size": 476704768,
+							"name": "F17-x86_64-cfntools",
+							"created": "2014-09-23T12:54:52Z",
+							"minDisk": 0,
+							"progress": 100,
+							"minRam": 0
+						},
+						{
+							"status": "ACTIVE",
+							"updated": "2014-09-23T12:51:43Z",
+							"id": "f90f6034-2570-4974-8351-6b49732ef2eb",
+							"OS-EXT-IMG-SIZE:size": 13167616,
+							"name": "cirros-0.3.2-x86_64-disk",
+							"created": "2014-09-23T12:51:42Z",
+							"minDisk": 0,
+							"progress": 100,
+							"minRam": 0
+						}
+					]
+				}
+			`)
+		case "2":
+			fmt.Fprintf(w, `{ "images": [] }`)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
+	})
+
+	th.Mux.HandleFunc("/flavors/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, `
+						{
+							"flavors": [
+								{
+									"id": "1",
+									"name": "m1.tiny",
+									"disk": 1,
+									"ram": 512,
+									"vcpus": 1,
+									"swap":""
+								},
+								{
+									"id": "2",
+									"name": "m2.small",
+									"disk": 10,
+									"ram": 1024,
+									"vcpus": 2,
+									"swap": 1000
+								}
+							],
+							"flavors_links": [
+								{
+									"href": "%s/flavors/detail?marker=2",
+									"rel": "next"
+								}
+							]
+						}
+					`, th.Server.URL)
+		case "2":
+			fmt.Fprintf(w, `{ "flavors": [] }`)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
+	})
 }
 
 // HandleServerCreationWithCustomFieldSuccessfully sets up the test server to respond to a server creation request
