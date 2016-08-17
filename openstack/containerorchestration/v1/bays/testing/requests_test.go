@@ -139,6 +139,9 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "5b793604-fc76-4886-a834-ed522812cdcb", b.BayModelID)
 	th.AssertEquals(t, 1, b.Nodes)
 	th.AssertEquals(t, "a56a6cd8-0779-461b-b1eb-26cec904284a", b.ID)
+	th.AssertEquals(t, "https://172.29.248.18:6443", b.COEEndpoint)
+	th.AssertEquals(t, "172.29.248.18", b.MasterAddresses[0])
+	th.AssertEquals(t, "172.29.248.19", b.NodeAddresses[0])
 }
 
 func TestGetFailed(t *testing.T) {

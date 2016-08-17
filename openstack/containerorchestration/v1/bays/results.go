@@ -53,6 +53,15 @@ type Bay struct {
 
 	// The UUID of the baymodel used to generate the bay.
 	BayModelID string `json:"baymodel_id"`
+
+	// The URL of the COE API.
+	COEEndpoint string `json:"api_address"`
+
+	// The IP addresses of the master nodes.
+	MasterAddresses []string `json:"master_addresses"`
+
+	// The IP addresses of the host nodes.
+	NodeAddresses []string `json:"node_addresses"`
 }
 
 // BayPage is the page returned by a pager when traversing over a
