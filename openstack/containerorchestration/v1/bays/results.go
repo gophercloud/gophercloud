@@ -26,6 +26,11 @@ type GetResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Represents a Container Orchestration Engine Bay, i.e. a cluster
 type Bay struct {
 	// UUID for the bay
@@ -85,19 +90,4 @@ func ExtractBays(r pagination.Page) ([]Bay, error) {
 	}
 	err := (r.(BayPage)).ExtractInto(&s)
 	return s.Bays, err
-}
-
-// DeleteHeader represents the headers returned in the response from a Delete request.
-type DeleteHeader struct {
-	ContentLength string                  `json:"Content-Length"`
-	ContentType   string                  `json:"Content-Type"`
-	Date          gophercloud.JSONRFC1123 `json:"Date"`
-	RequestID     string                  `json:"x-openstack-request-id"`
-}
-
-// DeleteResult represents the result of a delete operation. To extract the
-// the headers from the HTTP response, you can invoke the 'ExtractHeader'
-// method on the result struct.
-type DeleteResult struct {
-	gophercloud.HeaderResult
 }
