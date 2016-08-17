@@ -11,10 +11,10 @@ import (
 // Container represents a container resource.
 type Container struct {
 	// The total number of bytes stored in the container.
-	Bytes int `json:"bytes"`
+	Bytes int64 `json:"bytes"`
 
 	// The total number of objects stored in the container.
-	Count int `json:"count"`
+	Count int64 `json:"count"`
 
 	// The name of the container.
 	Name string `json:"name"`
@@ -87,11 +87,11 @@ func ExtractNames(page pagination.Page) ([]string, error) {
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
 	AcceptRanges     string                  `json:"Accept-Ranges"`
-	BytesUsed        string                  `json:"X-Account-Bytes-Used"`
-	ContentLength    string                  `json:"Content-Length"`
+	BytesUsed        int64                   `json:"X-Account-Bytes-Used"`
+	ContentLength    int64                   `json:"Content-Length"`
 	ContentType      string                  `json:"Content-Type"`
 	Date             gophercloud.JSONRFC1123 `json:"Date"`
-	ObjectCount      string                  `json:"X-Container-Object-Count"`
+	ObjectCount      int64                   `json:"X-Container-Object-Count"`
 	Read             string                  `json:"X-Container-Read"`
 	TransID          string                  `json:"X-Trans-Id"`
 	VersionsLocation string                  `json:"X-Versions-Location"`
@@ -129,7 +129,7 @@ func (r GetResult) ExtractMetadata() (map[string]string, error) {
 
 // CreateHeader represents the headers returned in the response from a Create request.
 type CreateHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"Content-Length"`
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`
@@ -152,7 +152,7 @@ func (r CreateResult) Extract() (*CreateHeader, error) {
 
 // UpdateHeader represents the headers returned in the response from a Update request.
 type UpdateHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"Content-Length"`
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`
@@ -175,7 +175,7 @@ func (r UpdateResult) Extract() (*UpdateHeader, error) {
 
 // DeleteHeader represents the headers returned in the response from a Delete request.
 type DeleteHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"Content-Length"`
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`

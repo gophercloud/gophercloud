@@ -24,7 +24,7 @@ type Object struct {
 	// LastModified is the RFC3339Milli time the object was last modified, represented
 	// as a string. For any given object (obj), this value may be parsed to a time.Time:
 	// lastModified, err := time.Parse(gophercloud.RFC3339Milli, obj.LastModified)
-	LastModified string `json:"last_modified"`
+	LastModified gophercloud.JSONRFC1123 `json:"last_modified"`
 
 	// Name is the unique name for the object.
 	Name string `json:"name"`
@@ -101,7 +101,7 @@ type DownloadHeader struct {
 	AcceptRanges       string                  `json:"Accept-Ranges"`
 	ContentDisposition string                  `json:"Content-Disposition"`
 	ContentEncoding    string                  `json:"Content-Encoding"`
-	ContentLength      string                  `json:"Content-Length"`
+	ContentLength      int64                   `json:"Content-Length"`
 	ContentType        string                  `json:"Content-Type"`
 	Date               gophercloud.JSONRFC1123 `json:"Date"`
 	DeleteAt           gophercloud.JSONUnix    `json:"X-Delete-At"`
@@ -148,7 +148,7 @@ func (r *DownloadResult) ExtractContent() ([]byte, error) {
 type GetHeader struct {
 	ContentDisposition string                  `json:"Content-Disposition"`
 	ContentEncoding    string                  `json:"Content-Encoding"`
-	ContentLength      string                  `json:"Content-Length"`
+	ContentLength      int64                   `json:"Content-Length"`
 	ContentType        string                  `json:"Content-Type"`
 	Date               gophercloud.JSONRFC1123 `json:"Date"`
 	DeleteAt           gophercloud.JSONUnix    `json:"X-Delete-At"`
@@ -190,7 +190,7 @@ func (r GetResult) ExtractMetadata() (map[string]string, error) {
 
 // CreateHeader represents the headers returned in the response from a Create request.
 type CreateHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"Content-Length"`
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	ETag          string                  `json:"Etag"`
@@ -217,7 +217,7 @@ func (r CreateResult) Extract() (*CreateHeader, error) {
 
 // UpdateHeader represents the headers returned in the response from a Update request.
 type UpdateHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"Content-Length"`
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`
@@ -238,7 +238,7 @@ func (r UpdateResult) Extract() (*UpdateHeader, error) {
 
 // DeleteHeader represents the headers returned in the response from a Delete request.
 type DeleteHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"Content-Length"`
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`

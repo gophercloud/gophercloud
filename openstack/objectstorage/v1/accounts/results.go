@@ -13,7 +13,7 @@ type UpdateResult struct {
 
 // UpdateHeader represents the headers returned in the response from an Update request.
 type UpdateHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"Content-Length"`
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`
@@ -29,12 +29,12 @@ func (ur UpdateResult) Extract() (*UpdateHeader, error) {
 
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
-	BytesUsed      string                  `json:"X-Account-Bytes-Used"`
-	ContainerCount string                  `json:"X-Account-Container-Count"`
-	ContentLength  string                  `json:"Content-Length"`
+	BytesUsed      int64                   `json:"X-Account-Bytes-Used"`
+	ContainerCount int64                   `json:"X-Account-Container-Count"`
+	ContentLength  int64                   `json:"Content-Length"`
 	ContentType    string                  `json:"Content-Type"`
 	Date           gophercloud.JSONRFC1123 `json:"Date"`
-	ObjectCount    string                  `json:"X-Account-Object-Count"`
+	ObjectCount    int64                   `json:"X-Account-Object-Count"`
 	TransID        string                  `json:"X-Trans-Id"`
 	TempURLKey     string                  `json:"X-Account-Meta-Temp-URL-Key"`
 	TempURLKey2    string                  `json:"X-Account-Meta-Temp-URL-Key-2"`
