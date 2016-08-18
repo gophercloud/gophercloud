@@ -143,6 +143,7 @@ func TestCreateCredentialsBundle(t *testing.T) {
 		fmt.Fprintf(w, `
 {
   "status": "CREATE_COMPLETE",
+  "container_version": "1.9.1",
   "uuid": "1f085f23-5206-4192-99da-53c0558626ee",
   "links": [
     {
@@ -185,6 +186,7 @@ func TestCreateCredentialsBundle(t *testing.T) {
 		fmt.Fprintf(w, `
 {
   "status": "CREATE_COMPLETE",
+  "container_version": "1.9.1",
   "uuid": "1f085f23-5206-4192-99da-53c0558626ee",
   "links": [
     {
