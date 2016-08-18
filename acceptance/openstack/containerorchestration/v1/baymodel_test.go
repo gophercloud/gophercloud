@@ -5,9 +5,9 @@ package v1
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/baymodels"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/baymodels"
 )
 
 func TestBayModelCRUDOperations(t *testing.T) {
@@ -30,4 +30,15 @@ func TestBayModelCRUDOperations(t *testing.T) {
 		return true, nil
 	})
 	th.CheckNoErr(t, err)
+
+	// Get a baymodel
+	baymodelID := "5b793604-fc76-4886-a834-ed522812cdcb"
+	b, err := baymodels.Get(Client, baymodelID).Extract()
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, baymodelID, b.ID)
+	th.AssertEquals(t, "k8sbaymodel-2", b.Name)
+	th.AssertEquals(t, "kubernetes", b.COE)
+	th.AssertEquals(t, b.ImageID, "fedora-atomic-latest")
+	th.AssertEquals(t, b.FlavorID, "m1.small")
 }

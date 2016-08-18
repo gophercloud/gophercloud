@@ -2,6 +2,7 @@ package baymodels
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/common"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -43,4 +44,11 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return BayModelPage{pagination.LinkedPageBase{PageResult: r}}
 	})
+}
+
+// Get retrieves a specific baymodel based on its unique ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	ro := &gophercloud.RequestOpts{ErrorContext: &common.ErrorResponse{}}
+	_, r.Err = c.Get(getURL(c, id), &r.Body, ro)
+	return
 }
