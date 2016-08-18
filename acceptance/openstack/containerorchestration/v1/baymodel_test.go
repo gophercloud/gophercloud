@@ -39,6 +39,6 @@ func TestBayModelCRUDOperations(t *testing.T) {
 	th.AssertEquals(t, baymodelID, b.ID)
 	th.AssertEquals(t, "k8sbaymodel-2", b.Name)
 	th.AssertEquals(t, "kubernetes", b.COE)
-	th.AssertEquals(t, b.ImageID, "fedora-atomic-latest")
-	th.AssertEquals(t, b.FlavorID, "m1.small")
+	th.AssertEquals(t, "fedora-atomic-latest", b.ImageID)
+	th.AssertEquals(t, "m1.small", b.FlavorID)
 }

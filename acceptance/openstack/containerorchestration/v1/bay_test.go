@@ -5,10 +5,11 @@ package v1
 import (
 	"testing"
 
+	"strconv"
+
 	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/bays"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
-	"strconv"
 )
 
 func TestBayCRUDOperations(t *testing.T) {
@@ -20,10 +21,10 @@ func TestBayCRUDOperations(t *testing.T) {
 	b, err := bays.Create(Client, bays.CreateOpts{BayModelID: bayModelID}).Extract()
 	th.AssertNoErr(t, err)
 	defer bays.Delete(Client, b.ID)
-	th.AssertEquals(t, b.Status, "CREATE_IN_PROGRESS")
-	th.AssertEquals(t, b.BayModelID, bayModelID)
-	th.AssertEquals(t, b.Masters, 1)
-	th.AssertEquals(t, b.Nodes, 1)
+	th.AssertEquals(t, "CREATE_IN_PROGRESS", b.Status)
+	th.AssertEquals(t, bayModelID, b.BayModelID)
+	th.AssertEquals(t, 1, b.Masters)
+	th.AssertEquals(t, 1, b.Nodes)
 	bayID := b.ID
 	bayName := b.Name
 
@@ -50,8 +51,8 @@ func TestBayCRUDOperations(t *testing.T) {
 	}
 	b, err = bays.Get(Client, bayID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, b.Name, bayName)
-	th.AssertEquals(t, b.BayModelID, bayModelID)
-	th.AssertEquals(t, b.Masters, 1)
-	th.AssertEquals(t, b.Nodes, 1)
+	th.AssertEquals(t, bayName, b.Name)
+	th.AssertEquals(t, bayModelID, b.BayModelID)
+	th.AssertEquals(t, 1, b.Masters)
+	th.AssertEquals(t, 1, b.Nodes)
 }
