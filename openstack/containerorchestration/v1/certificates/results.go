@@ -2,6 +2,7 @@ package certificates
 
 import (
 	"encoding/pem"
+
 	"github.com/gophercloud/gophercloud"
 )
 
@@ -52,8 +53,5 @@ type CredentialsBundle struct {
 	Certificate   pem.Block
 	PrivateKey    pem.Block
 	CACertificate pem.Block
-	BashScript    []byte
-	CmdScript     []byte
-	PS1Script     []byte
-	FishScript    []byte
+	Scripts       map[string][]byte
 }

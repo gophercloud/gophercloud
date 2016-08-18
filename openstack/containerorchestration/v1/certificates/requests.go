@@ -10,7 +10,9 @@ import (
 	"errors"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/baymodels"
 	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/bays"
+	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/certificates/scripts"
 	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/common"
 )
 
@@ -114,6 +116,10 @@ func CreateCredentialsBundle(c *gophercloud.ServiceClient, bayID string) (*Crede
 	if err != nil {
 		return nil, err
 	}
+	baymodel, err := baymodels.Get(c, bay.BayModelID).Extract()
+	if err != nil {
+		return nil, err
+	}
 
 	key, cert, err := generateCertificate(c, bay.ID)
 	if err != nil {
@@ -139,6 +145,7 @@ func CreateCredentialsBundle(c *gophercloud.ServiceClient, bayID string) (*Crede
 		},
 		CACertificate: ca.Certificate,
 		COEEndpoint:   bay.COEEndpoint,
+		Scripts:       scripts.Generate(baymodel.COE, bay),
 	}
 
 	return bundle, nil
