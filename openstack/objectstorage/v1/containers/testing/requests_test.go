@@ -2,14 +2,19 @@ package testing
 
 import (
 	"testing"
+	"time"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-var metadata = map[string]string{"gophercloud-test": "containers"}
+var (
+	metadata = map[string]string{"gophercloud-test": "containers"}
+	loc, _   = time.LoadLocation("GMT")
+)
 
 func TestListContainerInfo(t *testing.T) {
 	th.SetupHTTP()
@@ -83,10 +88,17 @@ func TestCreateContainer(t *testing.T) {
 
 	options := containers.CreateOpts{ContentType: "application/json", Metadata: map[string]string{"foo": "bar"}}
 	res := containers.Create(fake.ServiceClient(), "testContainer", options)
-	c, err := res.Extract()
-	th.CheckNoErr(t, err)
 	th.CheckEquals(t, "bar", res.Header["X-Container-Meta-Foo"][0])
-	th.CheckEquals(t, "1234567", c.TransID)
+
+	expected := &containers.CreateHeader{
+		ContentLength: 0,
+		ContentType:   "text/html; charset=UTF-8",
+		Date:          gophercloud.JSONRFC1123(time.Date(2016, time.August, 17, 19, 25, 43, 0, loc)), //Wed, 17 Aug 2016 19:25:43 GMT
+		TransID:       "tx554ed59667a64c61866f1-0058b4ba37",
+	}
+	actual, err := res.Extract()
+	th.CheckNoErr(t, err)
+	th.AssertDeepEquals(t, expected, actual)
 }
 
 func TestDeleteContainer(t *testing.T) {
@@ -113,6 +125,22 @@ func TestGetContainer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetContainerSuccessfully(t)
 
-	_, err := containers.Get(fake.ServiceClient(), "testContainer").ExtractMetadata()
+	res := containers.Get(fake.ServiceClient(), "testContainer")
+	_, err := res.ExtractMetadata()
 	th.CheckNoErr(t, err)
+
+	expected := &containers.GetHeader{
+		AcceptRanges:  "bytes",
+		BytesUsed:     100,
+		ContentLength: 0,
+		ContentType:   "application/json; charset=utf-8",
+		Date:          gophercloud.JSONRFC1123(time.Date(2016, time.August, 17, 19, 25, 43, 0, loc)), //Wed, 17 Aug 2016 19:25:43 GMT
+		ObjectCount:   4,
+		Read:          []string{"test"},
+		TransID:       "tx554ed59667a64c61866f1-0057b4ba37",
+		Write:         []string{"test2", "user4"},
+	}
+	actual, err := res.Extract()
+	th.CheckNoErr(t, err)
+	th.AssertDeepEquals(t, expected, actual)
 }
