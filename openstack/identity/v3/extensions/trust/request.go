@@ -17,6 +17,7 @@ func (ao AuthOptionsExt) ToAuthOptionsV3Map(c *gophercloud.ServiceClient, scope 
         if err != nil {
                 return nil, err
         }
+  authMap = authMap["auth"].(map[string]interface{})
 
 	// Add a "scope" element if a Scope has been provided.
 	if ao.TrustID != "" {
@@ -29,7 +30,7 @@ func (ao AuthOptionsExt) ToAuthOptionsV3Map(c *gophercloud.ServiceClient, scope 
 		} else {
 			return nil, token3.ErrScopeEmpty
 	}
-  return authMap, nil
+  return map[string]interface{}{"auth": authMap}, nil
 }
 
 // AuthenticateV3 explicitly authenticates against the identity v3 service.
