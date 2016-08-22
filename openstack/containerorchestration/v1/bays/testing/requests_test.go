@@ -134,11 +134,11 @@ func TestGet(t *testing.T) {
 	b, err := bays.Get(fake.ServiceClient(), "a56a6cd8-0779-461b-b1eb-26cec904284a").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, b.Status, "CREATE_COMPLETE")
-	th.AssertEquals(t, b.Name, "k8sbay")
-	th.AssertEquals(t, b.BayModelID, "5b793604-fc76-4886-a834-ed522812cdcb")
-	th.AssertEquals(t, b.Nodes, 1)
-	th.AssertEquals(t, b.ID, "a56a6cd8-0779-461b-b1eb-26cec904284a")
+	th.AssertEquals(t, "CREATE_COMPLETE", b.Status)
+	th.AssertEquals(t, "k8sbay", b.Name)
+	th.AssertEquals(t, "5b793604-fc76-4886-a834-ed522812cdcb", b.BayModelID)
+	th.AssertEquals(t, 1, b.Nodes)
+	th.AssertEquals(t, "a56a6cd8-0779-461b-b1eb-26cec904284a", b.ID)
 }
 
 func TestGetFailed(t *testing.T) {
@@ -229,12 +229,12 @@ func TestCreate(t *testing.T) {
 	b, err := bays.Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, b.Status, "CREATE_IN_PROGRESS")
-	th.AssertEquals(t, b.Name, "mycluster")
-	th.AssertEquals(t, b.BayModelID, "5b793604-fc76-4886-a834-ed522812cdcb")
-	th.AssertEquals(t, b.ID, "39109e8a-516e-41a4-8b1d-22e9a56e4aa2")
-	th.AssertEquals(t, b.Masters, 1)
-	th.AssertEquals(t, b.Nodes, 2)
+	th.AssertEquals(t, "CREATE_IN_PROGRESS", b.Status)
+	th.AssertEquals(t, "mycluster", b.Name)
+	th.AssertEquals(t, "5b793604-fc76-4886-a834-ed522812cdcb", b.BayModelID)
+	th.AssertEquals(t, "39109e8a-516e-41a4-8b1d-22e9a56e4aa2", b.ID)
+	th.AssertEquals(t, 1, b.Masters)
+	th.AssertEquals(t, 2, b.Nodes)
 }
 
 func TestCreateFailed(t *testing.T) {

@@ -9,6 +9,11 @@ type commonResult struct {
 	gophercloud.Result
 }
 
+// GetResult represents the result of a get operation.
+type GetResult struct {
+	commonResult
+}
+
 // Extract is a function that accepts a result and extracts a baymodel resource.
 func (r commonResult) Extract() (*BayModel, error) {
 	var s *BayModel
