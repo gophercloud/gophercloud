@@ -22,6 +22,8 @@ func getScriptWriter(coe string) (scriptWriter, error) {
 	switch coe {
 	case "swarm":
 		return &swarmWriter{}, nil
+	case "kubernetes":
+		return &kubernetesWriter{}, nil
 	default:
 		return nil, fmt.Errorf("Unsupported COE: %s", coe)
 	}
