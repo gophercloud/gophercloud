@@ -19,8 +19,7 @@ func TestBayCRUDOperations(t *testing.T) {
 	bayModelID := "5b793604-fc76-4886-a834-ed522812cdcb"
 	b, err := bays.Create(Client, bays.CreateOpts{BayModelID: bayModelID}).Extract()
 	th.AssertNoErr(t, err)
-	// TODO: cleanup after ourselves once DELETE is implemented
-	// defer bays.Delete(Client, b.ID)
+	defer bays.Delete(Client, b.ID)
 	th.AssertEquals(t, b.Status, "CREATE_IN_PROGRESS")
 	th.AssertEquals(t, b.BayModelID, bayModelID)
 	th.AssertEquals(t, b.Masters, 1)

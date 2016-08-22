@@ -26,6 +26,11 @@ type GetResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Represents a Container Orchestration Engine Bay, i.e. a cluster
 type Bay struct {
 	// UUID for the bay
