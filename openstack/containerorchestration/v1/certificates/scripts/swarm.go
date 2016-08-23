@@ -1,11 +1,6 @@
 package scripts
 
-import (
-	"bytes"
-	"html/template"
-
-	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/bays"
-)
+import "github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/bays"
 
 type swarmWriter struct{}
 
@@ -32,7 +27,7 @@ func (w *swarmWriter) getScriptData(bay *bays.Bay) interface{} {
 }
 
 func (w *swarmWriter) buildBashScript(data interface{}) []byte {
-	t := template.Must(template.New("docker.env").Parse(`__CARINA_ENV_SOURCE="$_"
+	template := `__CARINA_ENV_SOURCE="$_"
 if [ -n "$BASH_SOURCE" ]; then
   __CARINA_ENV_SOURCE="${BASH_SOURCE[0]}"
 fi
@@ -43,47 +38,39 @@ export DOCKER_HOST={{.DockerHost}}
 export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH=$DIR
 export DOCKER_VERSION={{.DockerVersion}}
-`))
+`
 
-	var script bytes.Buffer
-	t.Execute(&script, data)
-	return script.Bytes()
+	return compileTemplate("docker.env", template, data)
 }
 
 func (w *swarmWriter) buildCmdScript(data interface{}) []byte {
-	t := template.Must(template.New("docker.cmd").Parse(`set DOCKER_HOST={{.DockerHost}}
+	template := `set DOCKER_HOST={{.DockerHost}}
 set DOCKER_TLS_VERIFY=1
 set DOCKER_CERT_PATH=%~dp0
 set DOCKER_VERSION={{.DockerVersion}}
-  `))
+`
 
-	var script bytes.Buffer
-	t.Execute(&script, data)
-	return script.Bytes()
+	return compileTemplate("docker.cmd", template, data)
 }
 
 func (w *swarmWriter) buildPs1Script(data interface{}) []byte {
-	t := template.Must(template.New("docker.cmd").Parse(`$env:DOCKER_HOST="{{.DockerHost}}"
+	template := `$env:DOCKER_HOST="{{.DockerHost}}"
 $env:DOCKER_TLS_VERIFY=1
 $env:DOCKER_CERT_PATH=$PSScriptRoot
 $env:DOCKER_VERSION="{{.DockerVersion}}"
-`))
+`
 
-	var script bytes.Buffer
-	t.Execute(&script, data)
-	return script.Bytes()
+	return compileTemplate("docker.ps1", template, data)
 }
 
 func (w *swarmWriter) buildFishScript(data interface{}) []byte {
-	t := template.Must(template.New("docker.fish").Parse(`set DIR (dirname (status -f))
+	template := `set DIR (dirname (status -f))
 
 set -x DOCKER_HOST {{.DockerHost}}
 set -x DOCKER_TLS_VERIFY 1
 set -x DOCKER_CERT_PATH $DIR
 set -x DOCKER_VERSION {{.DockerVersion}}
-`))
+`
 
-	var script bytes.Buffer
-	t.Execute(&script, data)
-	return script.Bytes()
+	return compileTemplate("docker.fish", template, data)
 }

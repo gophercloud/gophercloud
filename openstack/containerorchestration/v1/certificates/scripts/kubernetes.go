@@ -1,11 +1,6 @@
 package scripts
 
-import (
-	"bytes"
-	"html/template"
-
-	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/bays"
-)
+import "github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/bays"
 
 type kubernetesWriter struct{}
 
@@ -35,7 +30,7 @@ func (w *kubernetesWriter) getScriptData(bay *bays.Bay) interface{} {
 }
 
 func (w *kubernetesWriter) buildKubernetesConfig(data interface{}) []byte {
-	t := template.Must(template.New("kubectl.config").Parse(`apiVersion: v1
+	template := `apiVersion: v1
 clusters:
 - cluster:
     certificate-authority: ca.pem
@@ -53,15 +48,13 @@ users:
   user:
     client-certificate: cert.pem
     client-key: key.pem
-`))
+`
 
-	var script bytes.Buffer
-	t.Execute(&script, data)
-	return script.Bytes()
+	return compileTemplate("kubectl.config", template, data)
 }
 
 func (w *kubernetesWriter) buildBashScript(data interface{}) []byte {
-	t := template.Must(template.New("kubectl.env").Parse(`__CARINA_ENV_SOURCE="$_"
+	template := `__CARINA_ENV_SOURCE="$_"
 if [ -n "$BASH_SOURCE" ]; then
   __CARINA_ENV_SOURCE="${BASH_SOURCE[0]}"
 fi
@@ -70,41 +63,33 @@ unset __CARINA_ENV_SOURCE 2> /dev/null
 
 export KUBECONFIG=$DIR/kubectl.config
 export DOCKER_VERSION={{.DockerVersion}}
-`))
+`
 
-	var script bytes.Buffer
-	t.Execute(&script, data)
-	return script.Bytes()
+	return compileTemplate("kubectl.env", template, data)
 }
 
 func (w *kubernetesWriter) buildCmdScript(data interface{}) []byte {
-	t := template.Must(template.New("kubectl.cmd").Parse(`set KUBECONFIG=%~dp0\kubectl.config
+	template := `set KUBECONFIG=%~dp0kubectl.config
 set DOCKER_VERSION={{.DockerVersion}}
-  `))
+`
 
-	var script bytes.Buffer
-	t.Execute(&script, data)
-	return script.Bytes()
+	return compileTemplate("kubectl.cmd", template, data)
 }
 
 func (w *kubernetesWriter) buildPs1Script(data interface{}) []byte {
-	t := template.Must(template.New("kubectl.cmd").Parse(`$env:KUBECONFIG=$PSScriptRoot\kubectl.config
+	template := `$env:KUBECONFIG="$PSScriptRoot\kubectl.config"
 $env:DOCKER_VERSION="{{.DockerVersion}}"
-`))
+`
 
-	var script bytes.Buffer
-	t.Execute(&script, data)
-	return script.Bytes()
+	return compileTemplate("kubectl.ps1", template, data)
 }
 
 func (w *kubernetesWriter) buildFishScript(data interface{}) []byte {
-	t := template.Must(template.New("kubectl.fish").Parse(`set DIR (dirname (status -f))
+	template := `set DIR (dirname (status -f))
 
 set -x DOCKER_CERT_PATH $DIR/kubectl.config
 set -x DOCKER_VERSION {{.DockerVersion}}
-`))
+`
 
-	var script bytes.Buffer
-	t.Execute(&script, data)
-	return script.Bytes()
+	return compileTemplate("kubectl.fish", template, data)
 }
