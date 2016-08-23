@@ -21,8 +21,8 @@ func (opts AuthOpts) ToAuthOptsMap() (map[string]string, error) {
 	return gophercloud.BuildHeaders(opts)
 }
 
-// Authenticate performs an authentication request for a Swauth-based user.
-func Authenticate(c *gophercloud.ProviderClient, opts AuthOptsBuilder) (r GetAuthResult) {
+// Auth performs an authentication request for a Swauth-based user.
+func Auth(c *gophercloud.ProviderClient, opts AuthOptsBuilder) (r GetAuthResult) {
 	h := make(map[string]string)
 
 	if opts != nil {
@@ -54,7 +54,7 @@ func Authenticate(c *gophercloud.ProviderClient, opts AuthOptsBuilder) (r GetAut
 // NewObjectStorageV1 creates a Swauth-authenticated *gophercloud.ServiceClient
 // client that can issue ObjectStorage-based API calls.
 func NewObjectStorageV1(pc *gophercloud.ProviderClient, authOpts AuthOpts) (*gophercloud.ServiceClient, error) {
-	auth, err := Authenticate(pc, authOpts).Extract()
+	auth, err := Auth(pc, authOpts).Extract()
 	if err != nil {
 		return nil, err
 	}
