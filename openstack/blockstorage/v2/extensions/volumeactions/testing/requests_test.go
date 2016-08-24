@@ -89,3 +89,17 @@ func TestTerminateConnection(t *testing.T) {
 	err := volumeactions.TerminateConnection(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestExtendSize(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockExtendSizeResponse(t)
+
+	options := &volumeactions.ExtendSizeOpts{
+		NewSize: 3,
+	}
+
+	err := volumeactions.ExtendSize(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	th.AssertNoErr(t, err)
+}

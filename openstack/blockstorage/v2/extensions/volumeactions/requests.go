@@ -172,3 +172,35 @@ func TerminateConnection(client *gophercloud.ServiceClient, id string, opts Term
 	})
 	return
 }
+
+// ExtendSizeOptsBuilder allows extensions to add additional parameters to the
+// ExtendSize request.
+type ExtendSizeOptsBuilder interface {
+	ToVolumeExtendSizeMap() (map[string]interface{}, error)
+}
+
+// ExtendSizeOpts contain options for extending the size of an existing Volume. This object is passed
+// to the volumes.ExtendSize function.
+type ExtendSizeOpts struct {
+	NewSize int `json:"new_size,omitempty"`
+}
+
+// ToVolumeExtendSizeMap assembles a request body based on the contents of an
+// ExtendSizeOpts.
+func (opts ExtendSizeOpts) ToVolumeExtendSizeMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "os-extend")
+}
+
+// ExtendSize will extend the size of the volume based on the provided information.
+// This operation does not return a response body.
+func ExtendSize(client *gophercloud.ServiceClient, id string, opts ExtendSizeOptsBuilder) (r ExtendSizeResult) {
+	b, err := opts.ToVolumeExtendSizeMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(extendSizeURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	return
+}

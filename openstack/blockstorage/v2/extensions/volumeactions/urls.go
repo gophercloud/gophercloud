@@ -25,3 +25,7 @@ func initializeConnectionURL(c *gophercloud.ServiceClient, id string) string {
 func teminateConnectionURL(c *gophercloud.ServiceClient, id string) string {
 	return attachURL(c, id)
 }
+
+func extendSizeURL(c *gophercloud.ServiceClient, id string) string {
+	return attachURL(c, id)
+}

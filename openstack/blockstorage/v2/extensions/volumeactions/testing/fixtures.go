@@ -181,3 +181,26 @@ func MockTerminateConnectionResponse(t *testing.T) {
 			fmt.Fprintf(w, `{}`)
 		})
 }
+
+func MockExtendSizeResponse(t *testing.T) {
+	th.Mux.HandleFunc("/volumes/cd281d77-8217-4830-be95-9528227c105c/action",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "Content-Type", "application/json")
+			th.TestHeader(t, r, "Accept", "application/json")
+			th.TestJSONRequest(t, r, `
+{
+    "os-extend":
+    {
+        "new_size": 3
+    }
+}
+          `)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusAccepted)
+
+			fmt.Fprintf(w, `{}`)
+		})
+}
