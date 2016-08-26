@@ -7,10 +7,65 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumeactions"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
+
+// CreateUploadImage will upload volume it as volume-baked image. An name of new image or err will be
+// returned
+func CreateUploadImage(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) (string, error) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires volume-backed image uploading in short mode.")
+	}
+
+	imageName := tools.RandomString("ACPTTEST", 16)
+	uploadImageOpts := volumeactions.UploadImageOpts{
+		ImageName: imageName,
+		Force:     true,
+	}
+
+	if err := volumeactions.UploadImage(client, volume.ID, uploadImageOpts).ExtractErr(); err != nil {
+		return "", err
+	}
+
+	t.Logf("Uploading volume %s as volume-backed image %s", volume.ID, imageName)
+
+	if err := volumes.WaitForStatus(client, volume.ID, "available", 60); err != nil {
+		return "", err
+	}
+
+	t.Logf("Uploaded volume %s as volume-backed image %s", volume.ID, imageName)
+
+	return imageName, nil
+
+}
+
+// DeleteUploadedImage deletes uploaded image. An error will be returned
+// if the deletion request failed.
+func DeleteUploadedImage(t *testing.T, client *gophercloud.ServiceClient, imageName string) error {
+	if testing.Short() {
+		t.Skip("Skipping test that requires volume-backed image removing in short mode.")
+	}
+
+	t.Logf("Getting image id for image name %s", imageName)
+
+	imageID, err := images.IDFromName(client, imageName)
+	if err != nil {
+		return err
+	}
+
+	t.Logf("Removing image %s", imageID)
+
+	err = images.Delete(client, imageID).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // CreateVolumeAttach will attach a volume to an instance. An error will be
 // returned if the attachment failed.
