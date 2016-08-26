@@ -10,6 +10,10 @@ func detachURL(c *gophercloud.ServiceClient, id string) string {
 	return attachURL(c, id)
 }
 
+func uploadURL(c *gophercloud.ServiceClient, id string) string {
+	return attachURL(c, id)
+}
+
 func reserveURL(c *gophercloud.ServiceClient, id string) string {
 	return attachURL(c, id)
 }
