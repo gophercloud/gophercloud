@@ -56,7 +56,7 @@ type CreateOpts struct {
 	PoolID string `json:"pool_id" required:"true"`
 	// Only required if the caller has an admin role and wants to create a pool
 	// for another tenant.
-	TenantID string `json:"tenant_id,omitempty" required:"true"`
+	TenantID string `json:"tenant_id,omitempty"`
 }
 
 func (opts CreateOpts) ToLBMemberCreateMap() (map[string]interface{}, error) {
