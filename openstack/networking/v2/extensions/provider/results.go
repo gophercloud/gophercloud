@@ -1,6 +1,9 @@
 package provider
 
 import (
+	"encoding/json"
+	"strconv"
+
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -46,6 +49,29 @@ type NetworkExtAttrs struct {
 	// instance, if network_type is vlan, then this is a vlan identifier;
 	// otherwise, if network_type is gre, then this will be a gre key.
 	SegmentationID string `json:"provider:segmentation_id"`
+}
+
+func (n *NetworkExtAttrs) UnmarshalJSON(b []byte) error {
+	type tmp NetworkExtAttrs
+	var networkExtAttrs *struct {
+		tmp
+		SegmentationID interface{} `json:"provider:segmentation_id"`
+	}
+
+	if err := json.Unmarshal(b, &networkExtAttrs); err != nil {
+		return err
+	}
+
+	*n = NetworkExtAttrs(networkExtAttrs.tmp)
+
+	switch t := networkExtAttrs.SegmentationID.(type) {
+	case float64:
+		n.SegmentationID = strconv.FormatFloat(t, 'f', -1, 64)
+	case string:
+		n.SegmentationID = string(t)
+	}
+
+	return nil
 }
 
 // ExtractGet decorates a GetResult struct returned from a networks.Get()
