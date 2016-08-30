@@ -11,6 +11,9 @@ import (
 )
 
 func TestWaitFor(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	err := gophercloud.WaitFor(5, func() (bool, error) {
 		return true, nil
 	})
