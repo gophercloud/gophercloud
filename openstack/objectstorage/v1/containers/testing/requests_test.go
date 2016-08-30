@@ -130,15 +130,14 @@ func TestGetContainer(t *testing.T) {
 	th.CheckNoErr(t, err)
 
 	expected := &containers.GetHeader{
-		AcceptRanges:  "bytes",
-		BytesUsed:     100,
-		ContentLength: 0,
-		ContentType:   "application/json; charset=utf-8",
-		Date:          gophercloud.JSONRFC1123(time.Date(2016, time.August, 17, 19, 25, 43, 0, loc)), //Wed, 17 Aug 2016 19:25:43 GMT
-		ObjectCount:   4,
-		Read:          []string{"test"},
-		TransID:       "tx554ed59667a64c61866f1-0057b4ba37",
-		Write:         []string{"test2", "user4"},
+		AcceptRanges: "bytes",
+		BytesUsed:    100,
+		ContentType:  "application/json; charset=utf-8",
+		Date:         gophercloud.JSONRFC1123(time.Date(2016, time.August, 17, 19, 25, 43, 0, loc)), //Wed, 17 Aug 2016 19:25:43 GMT
+		ObjectCount:  4,
+		Read:         []string{"test"},
+		TransID:      "tx554ed59667a64c61866f1-0057b4ba37",
+		Write:        []string{"test2", "user4"},
 	}
 	actual, err := res.Extract()
 	th.CheckNoErr(t, err)

@@ -141,7 +141,6 @@ func HandleGetContainerSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Set("Accept-Ranges", "bytes")
-		w.Header().Set("Content-Length", "0")
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.Header().Set("Date", "Wed, 17 Aug 2016 19:25:43 GMT")
 		w.Header().Set("X-Container-Bytes-Used", "100")

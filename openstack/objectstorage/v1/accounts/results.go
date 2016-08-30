@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -15,10 +16,10 @@ type UpdateResult struct {
 
 // UpdateHeader represents the headers returned in the response from an Update request.
 type UpdateHeader struct {
-	ContentLength int64                   `json:"Content-Length"`
+	ContentLength int64                   `json:"-"`
 	ContentType   string                  `json:"Content-Type"`
-	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`
+	Date          gophercloud.JSONRFC1123 `json:"Date"`
 }
 
 func (h *UpdateHeader) UnmarshalJSON(b []byte) error {
@@ -57,15 +58,15 @@ func (ur UpdateResult) Extract() (*UpdateHeader, error) {
 
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
-	BytesUsed      int64                   `json:"X-Account-Bytes-Used"`
-	ContainerCount int64                   `json:"X-Account-Container-Count"`
-	ContentLength  int64                   `json:"Content-Length"`
+	BytesUsed      int64                   `json:"-"`
+	ContainerCount int64                   `json:"-"`
+	ContentLength  int64                   `json:"-"`
+	ObjectCount    int64                   `json:"-"`
 	ContentType    string                  `json:"Content-Type"`
-	Date           gophercloud.JSONRFC1123 `json:"Date"`
-	ObjectCount    int64                   `json:"X-Account-Object-Count"`
 	TransID        string                  `json:"X-Trans-Id"`
 	TempURLKey     string                  `json:"X-Account-Meta-Temp-URL-Key"`
 	TempURLKey2    string                  `json:"X-Account-Meta-Temp-URL-Key-2"`
+	Date           gophercloud.JSONRFC1123 `json:"Date"`
 }
 
 func (h *GetHeader) UnmarshalJSON(b []byte) error {
@@ -94,6 +95,7 @@ func (h *GetHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
+	fmt.Println("getHeader: ", getHeader.ContentLength)
 	switch getHeader.ContentLength {
 	case "":
 		h.ContentLength = 0
