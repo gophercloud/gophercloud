@@ -6,6 +6,10 @@ func attachURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("volumes", id, "action")
 }
 
+func beginDetachingURL(c *gophercloud.ServiceClient, id string) string {
+	return attachURL(c, id)
+}
+
 func detachURL(c *gophercloud.ServiceClient, id string) string {
 	return attachURL(c, id)
 }
