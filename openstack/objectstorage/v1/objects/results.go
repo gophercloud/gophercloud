@@ -1,9 +1,11 @@
 package objects
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"strconv"
 	"strings"
 
 	"github.com/gophercloud/gophercloud"
@@ -101,7 +103,7 @@ type DownloadHeader struct {
 	AcceptRanges       string                  `json:"Accept-Ranges"`
 	ContentDisposition string                  `json:"Content-Disposition"`
 	ContentEncoding    string                  `json:"Content-Encoding"`
-	ContentLength      int64                   `json:"Content-Length"`
+	ContentLength      int64                   `json:"-"`
 	ContentType        string                  `json:"Content-Type"`
 	Date               gophercloud.JSONRFC1123 `json:"Date"`
 	DeleteAt           gophercloud.JSONUnix    `json:"X-Delete-At"`
@@ -110,6 +112,32 @@ type DownloadHeader struct {
 	ObjectManifest     string                  `json:"X-Object-Manifest"`
 	StaticLargeObject  bool                    `json:"X-Static-Large-Object"`
 	TransID            string                  `json:"X-Trans-Id"`
+}
+
+func (h *DownloadHeader) UnmarshalJSON(b []byte) error {
+	type tmp DownloadHeader
+	var downloadHeader *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &downloadHeader)
+	if err != nil {
+		return err
+	}
+
+	*h = DownloadHeader(downloadHeader.tmp)
+
+	switch downloadHeader.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(downloadHeader.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // DownloadResult is a *http.Response that is returned from a call to the Download function.
