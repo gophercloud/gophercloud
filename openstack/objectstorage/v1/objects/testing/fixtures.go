@@ -6,10 +6,16 @@ import (
 	"io"
 	"net/http"
 	"testing"
+	"time"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/objects"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
+)
+
+var (
+	loc, _ = time.LoadLocation("GMT")
 )
 
 // HandleDownloadObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
@@ -19,6 +25,7 @@ func HandleDownloadObjectSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
+		w.Header().Set("Date", "Wed, 10 Nov 2009 23:00:00 GMT")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "Successful download with Gophercloud")
 	})
@@ -29,14 +36,14 @@ func HandleDownloadObjectSuccessfully(t *testing.T) {
 var ExpectedListInfo = []objects.Object{
 	{
 		Hash:         "451e372e48e0f6b1114fa0724aa79fa1",
-		LastModified: "2009-11-10 23:00:00 +0000 UTC",
+		LastModified: gophercloud.JSONRFC1123(time.Date(2009, time.November, 10, 23, 0, 0, 0, loc)), //"2009-11-10 23:00:00 +0000 UTC"
 		Bytes:        14,
 		Name:         "goodbye",
 		ContentType:  "application/octet-stream",
 	},
 	{
 		Hash:         "451e372e48e0f6b1114fa0724aa79fa1",
-		LastModified: "2009-11-10 23:00:00 +0000 UTC",
+		LastModified: gophercloud.JSONRFC1123(time.Date(2009, time.November, 10, 23, 0, 0, 0, loc)),
 		Bytes:        14,
 		Name:         "hello",
 		ContentType:  "application/octet-stream",
@@ -63,14 +70,14 @@ func HandleListObjectsInfoSuccessfully(t *testing.T) {
 			fmt.Fprintf(w, `[
       {
         "hash": "451e372e48e0f6b1114fa0724aa79fa1",
-        "last_modified": "2009-11-10 23:00:00 +0000 UTC",
+        "last_modified": "Wed, 10 Nov 2009 23:00:00 GMT",
         "bytes": 14,
         "name": "goodbye",
         "content_type": "application/octet-stream"
       },
       {
         "hash": "451e372e48e0f6b1114fa0724aa79fa1",
-        "last_modified": "2009-11-10 23:00:00 +0000 UTC",
+        "last_modified": "Wed, 10 Nov 2009 23:00:00 GMT",
         "bytes": 14,
         "name": "hello",
         "content_type": "application/octet-stream"

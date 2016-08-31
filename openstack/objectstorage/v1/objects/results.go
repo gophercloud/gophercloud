@@ -1,9 +1,11 @@
 package objects
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"strconv"
 	"strings"
 
 	"github.com/gophercloud/gophercloud"
@@ -24,7 +26,7 @@ type Object struct {
 	// LastModified is the RFC3339Milli time the object was last modified, represented
 	// as a string. For any given object (obj), this value may be parsed to a time.Time:
 	// lastModified, err := time.Parse(gophercloud.RFC3339Milli, obj.LastModified)
-	LastModified string `json:"last_modified"`
+	LastModified gophercloud.JSONRFC1123 `json:"last_modified"`
 
 	// Name is the unique name for the object.
 	Name string `json:"name"`
@@ -101,7 +103,7 @@ type DownloadHeader struct {
 	AcceptRanges       string                  `json:"Accept-Ranges"`
 	ContentDisposition string                  `json:"Content-Disposition"`
 	ContentEncoding    string                  `json:"Content-Encoding"`
-	ContentLength      string                  `json:"Content-Length"`
+	ContentLength      int64                   `json:"-"`
 	ContentType        string                  `json:"Content-Type"`
 	Date               gophercloud.JSONRFC1123 `json:"Date"`
 	DeleteAt           gophercloud.JSONUnix    `json:"X-Delete-At"`
@@ -110,6 +112,32 @@ type DownloadHeader struct {
 	ObjectManifest     string                  `json:"X-Object-Manifest"`
 	StaticLargeObject  bool                    `json:"X-Static-Large-Object"`
 	TransID            string                  `json:"X-Trans-Id"`
+}
+
+func (h *DownloadHeader) UnmarshalJSON(b []byte) error {
+	type tmp DownloadHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = DownloadHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // DownloadResult is a *http.Response that is returned from a call to the Download function.
@@ -148,7 +176,7 @@ func (r *DownloadResult) ExtractContent() ([]byte, error) {
 type GetHeader struct {
 	ContentDisposition string                  `json:"Content-Disposition"`
 	ContentEncoding    string                  `json:"Content-Encoding"`
-	ContentLength      string                  `json:"Content-Length"`
+	ContentLength      int64                   `json:"Content-Length"`
 	ContentType        string                  `json:"Content-Type"`
 	Date               gophercloud.JSONRFC1123 `json:"Date"`
 	DeleteAt           gophercloud.JSONUnix    `json:"X-Delete-At"`
@@ -157,6 +185,32 @@ type GetHeader struct {
 	ObjectManifest     string                  `json:"X-Object-Manifest"`
 	StaticLargeObject  bool                    `json:"X-Static-Large-Object"`
 	TransID            string                  `json:"X-Trans-Id"`
+}
+
+func (h *GetHeader) UnmarshalJSON(b []byte) error {
+	type tmp GetHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = GetHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // GetResult is a *http.Response that is returned from a call to the Get function.
@@ -190,12 +244,38 @@ func (r GetResult) ExtractMetadata() (map[string]string, error) {
 
 // CreateHeader represents the headers returned in the response from a Create request.
 type CreateHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"Content-Length"`
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	ETag          string                  `json:"Etag"`
 	LastModified  gophercloud.JSONRFC1123 `json:"Last-Modified"`
 	TransID       string                  `json:"X-Trans-Id"`
+}
+
+func (h *CreateHeader) UnmarshalJSON(b []byte) error {
+	type tmp CreateHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = CreateHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // CreateResult represents the result of a create operation.
@@ -217,10 +297,36 @@ func (r CreateResult) Extract() (*CreateHeader, error) {
 
 // UpdateHeader represents the headers returned in the response from a Update request.
 type UpdateHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"Content-Length"`
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`
+}
+
+func (h *UpdateHeader) UnmarshalJSON(b []byte) error {
+	type tmp UpdateHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = UpdateHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // UpdateResult represents the result of an update operation.
@@ -238,10 +344,36 @@ func (r UpdateResult) Extract() (*UpdateHeader, error) {
 
 // DeleteHeader represents the headers returned in the response from a Delete request.
 type DeleteHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"Content-Length"`
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`
+}
+
+func (h *DeleteHeader) UnmarshalJSON(b []byte) error {
+	type tmp DeleteHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = DeleteHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // DeleteResult represents the result of a delete operation.
@@ -267,6 +399,32 @@ type CopyHeader struct {
 	ETag                   string                  `json:"Etag"`
 	LastModified           gophercloud.JSONRFC1123 `json:"Last-Modified"`
 	TransID                string                  `json:"X-Trans-Id"`
+}
+
+func (h *CopyHeader) UnmarshalJSON(b []byte) error {
+	type tmp CopyHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = CopyHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // CopyResult represents the result of a copy operation.

@@ -1,6 +1,9 @@
 package accounts
 
 import (
+	"encoding/json"
+	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/gophercloud/gophercloud"
@@ -13,10 +16,36 @@ type UpdateResult struct {
 
 // UpdateHeader represents the headers returned in the response from an Update request.
 type UpdateHeader struct {
-	ContentLength string                  `json:"Content-Length"`
+	ContentLength int64                   `json:"-"`
 	ContentType   string                  `json:"Content-Type"`
-	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`
+	Date          gophercloud.JSONRFC1123 `json:"Date"`
+}
+
+func (h *UpdateHeader) UnmarshalJSON(b []byte) error {
+	type tmp UpdateHeader
+	var updateHeader *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &updateHeader)
+	if err != nil {
+		return err
+	}
+
+	*h = UpdateHeader(updateHeader.tmp)
+
+	switch updateHeader.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(updateHeader.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // Extract will return a struct of headers returned from a call to Get. To obtain
@@ -29,15 +58,75 @@ func (ur UpdateResult) Extract() (*UpdateHeader, error) {
 
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
-	BytesUsed      string                  `json:"X-Account-Bytes-Used"`
-	ContainerCount string                  `json:"X-Account-Container-Count"`
-	ContentLength  string                  `json:"Content-Length"`
+	BytesUsed      int64                   `json:"-"`
+	ContainerCount int64                   `json:"-"`
+	ContentLength  int64                   `json:"-"`
+	ObjectCount    int64                   `json:"-"`
 	ContentType    string                  `json:"Content-Type"`
-	Date           gophercloud.JSONRFC1123 `json:"Date"`
-	ObjectCount    string                  `json:"X-Account-Object-Count"`
 	TransID        string                  `json:"X-Trans-Id"`
 	TempURLKey     string                  `json:"X-Account-Meta-Temp-URL-Key"`
 	TempURLKey2    string                  `json:"X-Account-Meta-Temp-URL-Key-2"`
+	Date           gophercloud.JSONRFC1123 `json:"Date"`
+}
+
+func (h *GetHeader) UnmarshalJSON(b []byte) error {
+	type tmp GetHeader
+	var getHeader *struct {
+		tmp
+		BytesUsed      string `json:"X-Account-Bytes-Used"`
+		ContentLength  string `json:"Content-Length"`
+		ContainerCount string `json:"X-Account-Container-Count"`
+		ObjectCount    string `json:"X-Account-Object-Count"`
+	}
+	err := json.Unmarshal(b, &getHeader)
+	if err != nil {
+		return err
+	}
+
+	*h = GetHeader(getHeader.tmp)
+
+	switch getHeader.BytesUsed {
+	case "":
+		h.BytesUsed = 0
+	default:
+		h.BytesUsed, err = strconv.ParseInt(getHeader.BytesUsed, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	fmt.Println("getHeader: ", getHeader.ContentLength)
+	switch getHeader.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(getHeader.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	switch getHeader.ObjectCount {
+	case "":
+		h.ObjectCount = 0
+	default:
+		h.ObjectCount, err = strconv.ParseInt(getHeader.ObjectCount, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	switch getHeader.ContainerCount {
+	case "":
+		h.ContainerCount = 0
+	default:
+		h.ContainerCount, err = strconv.ParseInt(getHeader.ContainerCount, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // GetResult is returned from a call to the Get function.
