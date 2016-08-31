@@ -116,22 +116,22 @@ type DownloadHeader struct {
 
 func (h *DownloadHeader) UnmarshalJSON(b []byte) error {
 	type tmp DownloadHeader
-	var downloadHeader *struct {
+	var hTmp *struct {
 		tmp
 		ContentLength string `json:"Content-Length"`
 	}
-	err := json.Unmarshal(b, &downloadHeader)
+	err := json.Unmarshal(b, &hTmp)
 	if err != nil {
 		return err
 	}
 
-	*h = DownloadHeader(downloadHeader.tmp)
+	*h = DownloadHeader(hTmp.tmp)
 
-	switch downloadHeader.ContentLength {
+	switch hTmp.ContentLength {
 	case "":
 		h.ContentLength = 0
 	default:
-		h.ContentLength, err = strconv.ParseInt(downloadHeader.ContentLength, 10, 64)
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
 		if err != nil {
 			return err
 		}
@@ -187,6 +187,32 @@ type GetHeader struct {
 	TransID            string                  `json:"X-Trans-Id"`
 }
 
+func (h *GetHeader) UnmarshalJSON(b []byte) error {
+	type tmp GetHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = GetHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // GetResult is a *http.Response that is returned from a call to the Get function.
 type GetResult struct {
 	gophercloud.HeaderResult
@@ -226,6 +252,32 @@ type CreateHeader struct {
 	TransID       string                  `json:"X-Trans-Id"`
 }
 
+func (h *CreateHeader) UnmarshalJSON(b []byte) error {
+	type tmp CreateHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = CreateHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // CreateResult represents the result of a create operation.
 type CreateResult struct {
 	checksum string
@@ -251,6 +303,32 @@ type UpdateHeader struct {
 	TransID       string                  `json:"X-Trans-Id"`
 }
 
+func (h *UpdateHeader) UnmarshalJSON(b []byte) error {
+	type tmp UpdateHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = UpdateHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // UpdateResult represents the result of an update operation.
 type UpdateResult struct {
 	gophercloud.HeaderResult
@@ -270,6 +348,32 @@ type DeleteHeader struct {
 	ContentType   string                  `json:"Content-Type"`
 	Date          gophercloud.JSONRFC1123 `json:"Date"`
 	TransID       string                  `json:"X-Trans-Id"`
+}
+
+func (h *DeleteHeader) UnmarshalJSON(b []byte) error {
+	type tmp DeleteHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = DeleteHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // DeleteResult represents the result of a delete operation.
@@ -295,6 +399,32 @@ type CopyHeader struct {
 	ETag                   string                  `json:"Etag"`
 	LastModified           gophercloud.JSONRFC1123 `json:"Last-Modified"`
 	TransID                string                  `json:"X-Trans-Id"`
+}
+
+func (h *CopyHeader) UnmarshalJSON(b []byte) error {
+	type tmp CopyHeader
+	var hTmp *struct {
+		tmp
+		ContentLength string `json:"Content-Length"`
+	}
+	err := json.Unmarshal(b, &hTmp)
+	if err != nil {
+		return err
+	}
+
+	*h = CopyHeader(hTmp.tmp)
+
+	switch hTmp.ContentLength {
+	case "":
+		h.ContentLength = 0
+	default:
+		h.ContentLength, err = strconv.ParseInt(hTmp.ContentLength, 10, 64)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // CopyResult represents the result of a copy operation.
