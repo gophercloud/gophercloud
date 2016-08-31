@@ -14,6 +14,10 @@ import (
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+var (
+	loc, _ = time.LoadLocation("GMT")
+)
+
 func TestDownloadReader(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
