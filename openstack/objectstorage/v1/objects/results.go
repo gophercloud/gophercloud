@@ -26,7 +26,7 @@ type Object struct {
 	// LastModified is the RFC3339Milli time the object was last modified, represented
 	// as a string. For any given object (obj), this value may be parsed to a time.Time:
 	// lastModified, err := time.Parse(gophercloud.RFC3339Milli, obj.LastModified)
-	LastModified gophercloud.JSONRFC1123 `json:"last_modified"`
+	LastModified gophercloud.JSONRFC3339MilliNoZ `json:"last_modified"`
 
 	// Name is the unique name for the object.
 	Name string `json:"name"`
