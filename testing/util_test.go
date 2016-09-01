@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"errors"
 	"github.com/gophercloud/gophercloud"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -15,6 +16,26 @@ func TestWaitFor(t *testing.T) {
 		return true, nil
 	})
 	th.CheckNoErr(t, err)
+}
+
+func TestWaitForTimeout(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+	err := gophercloud.WaitFor(2, func() (bool, error) {
+		return false, nil
+	})
+	th.AssertEquals(t, "A timeout occurred", err.Error())
+}
+
+func TestWaitForError(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+	err := gophercloud.WaitFor(2, func() (bool, error) {
+		return false, errors.New("Error has been occured")
+	})
+	th.AssertEquals(t, "Error has been occured", err.Error())
 }
 
 func TestNormalizeURL(t *testing.T) {
