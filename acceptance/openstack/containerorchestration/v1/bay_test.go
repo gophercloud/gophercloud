@@ -9,6 +9,11 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/bays"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
+	"strings"
+	"fmt"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/containerorchestration/v1/certificates"
 )
 
 func TestBayCRUDOperations(t *testing.T) {
@@ -51,4 +56,36 @@ func TestBayCRUDOperations(t *testing.T) {
 	th.AssertEquals(t, bayName, b.Name)
 	th.AssertEquals(t, 1, b.Masters)
 	th.AssertEquals(t, 1, b.Nodes)
+
+	// Generate bay credentials bundle
+	b, err = waitForStatus(Client, b, "CREATE_COMPLETE")
+	th.AssertNoErr(t, err)
+	bundle, err := certificates.CreateCredentialsBundle(Client, bayID)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, bayID, bundle.BayID)
+	th.AssertEquals(t, b.COEEndpoint, bundle.COEEndpoint)
+	th.AssertEquals(t, true, bundle.PrivateKey.Bytes != nil)
+	th.AssertEquals(t, true, bundle.Certificate.Bytes != nil)
+	th.AssertEquals(t, true, bundle.CACertificate.Bytes != nil)
+}
+
+func waitForStatus(client *gophercloud.ServiceClient, bay *bays.Bay, status string) (latest *bays.Bay, err error) {
+	err = tools.WaitFor(func() (bool, error) {
+		latest, err = bays.Get(client, bay.ID).Extract()
+		if err != nil {
+			return false, err
+		}
+
+		if latest.Status == status {
+			// Success!
+			return true, nil
+		}
+
+		if strings.HasSuffix(latest.Status, "FAILED") {
+			return false, fmt.Errorf("The bay is in the failed status. %s", latest.StatusReason)
+		}
+
+		return false, nil
+	})
+	return latest, err
 }
