@@ -22,7 +22,7 @@ func TestWaitForTimeout(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
-	err := gophercloud.WaitFor(2, func() (bool, error) {
+	err := gophercloud.WaitFor(1, func() (bool, error) {
 		return false, nil
 	})
 	th.AssertEquals(t, "A timeout occurred", err.Error())
