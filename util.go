@@ -13,17 +13,18 @@ import (
 // Resource packages will wrap this in a more convenient function that's
 // specific to a certain resource, but it can also be useful on its own.
 func WaitFor(timeout int, predicate func() (bool, error)) error {
-				satisfied, err := predicate()
-			if err != nil {
-				return err
-			}
-			if satisfied {
-				return nil
-			}
+	// Check condition
+	satisfied, err := predicate()
+	if err != nil {
+		return err
+	}
+	if satisfied {
+		return nil
+	}
 
 	for {
 		select {
-		case <-time.After(time.Second * timeout):
+		case <-time.After(time.Duration(timeout)):
 			// Check before fail by timeout
 			// If predicate become between last check and timeout
 			satisfied, err := predicate()
