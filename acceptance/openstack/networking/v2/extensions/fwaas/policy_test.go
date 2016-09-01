@@ -5,103 +5,66 @@ package fwaas
 import (
 	"testing"
 
-	base "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/policies"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/rules"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func firewallPolicySetup(t *testing.T) string {
-	base.Setup(t)
-	return createRule(t, &rules.CreateOpts{
-		Protocol: "tcp",
-		Action:   "allow",
-	})
+func TestPolicyList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	allPages, err := policies.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list policies: %v", err)
+	}
+
+	allPolicies, err := policies.ExtractPolicies(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract policies: %v", err)
+	}
+
+	for _, policy := range allPolicies {
+		PrintPolicy(t, &policy)
+	}
 }
 
-func firewallPolicyTeardown(t *testing.T, ruleID string) {
-	defer base.Teardown()
-	deleteRule(t, ruleID)
-}
+func TestPolicyCRUD(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
 
-func TestFirewallPolicy(t *testing.T) {
-	ruleID := firewallPolicySetup(t)
-	defer firewallPolicyTeardown(t, ruleID)
+	rule, err := CreateRule(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create rule: %v", err)
+	}
+	defer DeleteRule(t, client, rule.ID)
 
-	policyID := createPolicy(t, &policies.CreateOpts{
-		Name:        "gophercloud test",
-		Description: "acceptance test",
-		Rules: []string{
-			ruleID,
-		},
-	})
+	PrintRule(t, rule)
 
-	listPolicies(t)
+	policy, err := CreatePolicy(t, client, rule.ID)
+	if err != nil {
+		t.Fatalf("Unable to create policy: %v", err)
+	}
+	defer DeletePolicy(t, client, policy.ID)
 
-	updatePolicy(t, policyID, &policies.UpdateOpts{
-		Description: "acceptance test updated",
-	})
+	PrintPolicy(t, policy)
 
-	getPolicy(t, policyID)
+	updateOpts := policies.UpdateOpts{
+		Description: "Some policy description",
+	}
 
-	removeRuleFromPolicy(t, policyID, ruleID)
+	_, err = policies.Update(client, policy.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update policy: %v", err)
+	}
 
-	addRuleToPolicy(t, policyID, ruleID)
+	newPolicy, err := policies.Get(client, policy.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get policy: %v", err)
+	}
 
-	deletePolicy(t, policyID)
-}
-
-func createPolicy(t *testing.T, opts *policies.CreateOpts) string {
-	p, err := policies.Create(base.Client, *opts).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Created policy: %#v", opts)
-	return p.ID
-}
-
-func listPolicies(t *testing.T) {
-	err := policies.List(base.Client, policies.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
-		policyList, err := policies.ExtractPolicies(page)
-		if err != nil {
-			t.Errorf("Failed to extract policies: %v", err)
-			return false, err
-		}
-
-		for _, p := range policyList {
-			t.Logf("Listing policies: ID [%s]", p.ID)
-		}
-
-		return true, nil
-	})
-	th.AssertNoErr(t, err)
-}
-
-func updatePolicy(t *testing.T, policyID string, opts *policies.UpdateOpts) {
-	p, err := policies.Update(base.Client, policyID, *opts).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Updated policy ID [%s]", p.ID)
-}
-
-func removeRuleFromPolicy(t *testing.T, policyID string, ruleID string) {
-	err := policies.RemoveRule(base.Client, policyID, ruleID)
-	th.AssertNoErr(t, err)
-	t.Logf("Removed rule [%s] from policy ID [%s]", ruleID, policyID)
-}
-
-func addRuleToPolicy(t *testing.T, policyID string, ruleID string) {
-	err := policies.InsertRule(base.Client, policyID, ruleID, "", "")
-	th.AssertNoErr(t, err)
-	t.Logf("Inserted rule [%s] into policy ID [%s]", ruleID, policyID)
-}
-
-func getPolicy(t *testing.T, policyID string) {
-	p, err := policies.Get(base.Client, policyID).Extract()
-	th.AssertNoErr(t, err)
-	t.Logf("Getting policy ID [%s]", p.ID)
-}
-
-func deletePolicy(t *testing.T, policyID string) {
-	res := policies.Delete(base.Client, policyID)
-	th.AssertNoErr(t, res.Err)
-	t.Logf("Deleted policy %s", policyID)
+	PrintPolicy(t, newPolicy)
 }

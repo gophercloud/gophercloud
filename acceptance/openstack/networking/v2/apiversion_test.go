@@ -5,47 +5,48 @@ package v2
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/apiversions"
-	"github.com/gophercloud/gophercloud/pagination"
-	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestListAPIVersions(t *testing.T) {
-	Setup(t)
-	defer Teardown()
+func TestAPIVersionsList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
 
-	pager := apiversions.ListVersions(Client)
-	err := pager.EachPage(func(page pagination.Page) (bool, error) {
-		t.Logf("--- Page ---")
+	allPages, err := apiversions.ListVersions(client).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list api versions: %v", err)
+	}
 
-		versions, err := apiversions.ExtractAPIVersions(page)
-		th.AssertNoErr(t, err)
+	allAPIVersions, err := apiversions.ExtractAPIVersions(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract api versions: %v", err)
+	}
 
-		for _, v := range versions {
-			t.Logf("API Version: ID [%s] Status [%s]", v.ID, v.Status)
-		}
-
-		return true, nil
-	})
-	th.CheckNoErr(t, err)
+	for _, apiVersion := range allAPIVersions {
+		PrintAPIVersion(t, &apiVersion)
+	}
 }
 
-func TestListAPIResources(t *testing.T) {
-	Setup(t)
-	defer Teardown()
+func TestAPIResourcesList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
 
-	pager := apiversions.ListVersionResources(Client, "v2.0")
-	err := pager.EachPage(func(page pagination.Page) (bool, error) {
-		t.Logf("--- Page ---")
+	allPages, err := apiversions.ListVersionResources(client, "v2.0").AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list api version reosources: %v", err)
+	}
 
-		vrs, err := apiversions.ExtractVersionResources(page)
-		th.AssertNoErr(t, err)
+	allVersionResources, err := apiversions.ExtractVersionResources(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract version resources: %v", err)
+	}
 
-		for _, vr := range vrs {
-			t.Logf("Network: Name [%s] Collection [%s]", vr.Name, vr.Collection)
-		}
-
-		return true, nil
-	})
-	th.CheckNoErr(t, err)
+	for _, versionResource := range allVersionResources {
+		PrintVersionResource(t, &versionResource)
+	}
 }
