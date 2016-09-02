@@ -762,7 +762,7 @@ func (opts MigrateOpts) ToServerMigrateMap() (map[string]interface{}, error) {
 }
 
 // Migrate instructs the provider migrate the server.
-func Migrate(client *gophercloud.ServiceClient, id string, opts MigrateOpts) (r MigrateResult) {
+func Migrate(client *gophercloud.ServiceClient, id string, opts *MigrateOpts) (r MigrateResult) {
 	body, err := opts.ToServerMigrateMap()
 	if err != nil {
 		r.Err = err
