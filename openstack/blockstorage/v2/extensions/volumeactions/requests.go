@@ -182,7 +182,8 @@ type ExtendSizeOptsBuilder interface {
 // ExtendSizeOpts contain options for extending the size of an existing Volume. This object is passed
 // to the volumes.ExtendSize function.
 type ExtendSizeOpts struct {
-	NewSize int `json:"new_size,omitempty"`
+	// NewSize is the new size of the volume, in GB
+	NewSize int `json:"new_size" required:"true"`
 }
 
 // ToVolumeExtendSizeMap assembles a request body based on the contents of an
