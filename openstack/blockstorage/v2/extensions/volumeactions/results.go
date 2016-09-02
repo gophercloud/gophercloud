@@ -44,3 +44,8 @@ func (r commonResult) Extract() (map[string]interface{}, error) {
 type InitializeConnectionResult struct {
 	commonResult
 }
+
+// ExtendSizeResult contains the response body and error from an ExtendSize request.
+type ExtendSizeResult struct {
+	gophercloud.ErrResult
+}
