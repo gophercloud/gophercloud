@@ -478,11 +478,11 @@ func (opts ResizeOpts) ToServerResizeMap() (map[string]interface{}, error) {
 
 // Resize instructs the provider to change the flavor of the server.
 // Note that this implies rebuilding it.
-// Unfortunately, one cannot pass rebuild parameters to the rize function.
-// When the rize completes, the server will be in RESIZE_VERIFY state.
+// Unfortunately, one cannot pass rebuild parameters to the resize function.
+// When the resize completes, the server will be in RESIZE_VERIFY state.
 // While in this state, you can explore the use of the new server's configuration.
-// If you like it, call ConfirmResize() to commit the rize permanently.
-// Otherwise, call RevertResize() to rtore the old configuration.
+// If you like it, call ConfirmResize() to commit the resize permanently.
+// Otherwise, call RevertResize() to restore the old configuration.
 func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder) (r ActionResult) {
 	b, err := opts.ToServerResizeMap()
 	if err != nil {
@@ -493,7 +493,7 @@ func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder
 	return
 }
 
-// ConfirmResize confirms a previous rize operation on a server.
+// ConfirmResize confirms a previous resize operation on a server.
 // See Resize() for more details.
 func ConfirmResize(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"confirmResize": nil}, nil, &gophercloud.RequestOpts{
@@ -502,7 +502,7 @@ func ConfirmResize(client *gophercloud.ServiceClient, id string) (r ActionResult
 	return
 }
 
-// RevertResize cancels a previous rize operation on a server.
+// RevertResize cancels a previous resize operation on a server.
 // See Resize() for more details.
 func RevertResize(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"revertResize": nil}, nil, nil)
