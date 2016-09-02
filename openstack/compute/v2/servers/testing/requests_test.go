@@ -435,6 +435,6 @@ func TestMigrate(t *testing.T) {
 	HandleServerMigrateSuccessfully(t)
 
 	res := servers.Migrate(client.ServiceClient(), "1234asdf",
-		servers.MigrateOpts{})
+		&servers.MigrateOpts{})
 	th.CheckNoErr(t, res.Err)
 }
