@@ -734,6 +734,12 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 	}
 }
 
+// GetPassword makes a request against the nova API to get the encrypted administrative password.
+func GetPassword(client *gophercloud.ServiceClient, serverId string) (r GetPasswordResult) {
+	_, r.Err = client.Get(passwordURL(client, serverId), &r.Body, nil)
+	return
+}
+
 // MigrateOptsBuilder is an interface that allows extensions to override the
 // default structure of a Migrate request.
 type MigrateOptsBuilder interface {
@@ -743,25 +749,29 @@ type MigrateOptsBuilder interface {
 // MigrateOpts represents the configuration options used to control a Migrate
 // option.
 type MigrateOpts struct {
-	// Migrate action
 	Migrate *string `json:"migrate"`
 }
 
 // ToServerMigrateMap formats a MigrateOpts as a map that can be used as a JSON
 // request body for the Migrate request.
 func (opts MigrateOpts) ToServerMigrateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "")
+	body := make(map[string]interface{})
+	body["migrate"] = nil
+
+	return body, nil
 }
 
 // Migrate instructs the provider migrate the server.
-func Migrate(client *gophercloud.ServiceClient, id string, opts MigrateOptsBuilder) (r MigrateResult) {
-	b, err := opts.ToServerMigrateMap()
+func Migrate(client *gophercloud.ServiceClient, id string, opts MigrateOpts) (r MigrateResult) {
+	body, err := opts.ToServerMigrateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{202},
-	})
+
+	_, r.Err = client.Post(actionURL(client, id), body, nil,
+		&gophercloud.RequestOpts{
+			OkCodes: []int{202},
+		})
 	return
 }

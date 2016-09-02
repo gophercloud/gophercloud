@@ -70,7 +70,7 @@ type GetPasswordResult struct {
 	gophercloud.Result
 }
 
-// RescueResult represents the result of a server rescue operation
+// MigrateResult represents the result of a server migrate operation
 type MigrateResult struct {
 	gophercloud.Result
 }
