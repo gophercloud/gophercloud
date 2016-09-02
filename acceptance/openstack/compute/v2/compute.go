@@ -591,8 +591,8 @@ func MigrateServer(t *testing.T, client *gophercloud.ServiceClient,
 	if res := servers.Migrate(client, server.ID, opts); res.Err != nil {
 		return res.Err
 	}
-
-	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
+	// After migration instance needs to confirm resize and is not active
+	if err := WaitForComputeStatus(client, server, "VERIFY_RESIZE"); err != nil {
 		return err
 	}
 
