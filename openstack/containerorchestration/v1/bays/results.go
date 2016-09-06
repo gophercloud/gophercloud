@@ -65,6 +65,9 @@ type Bay struct {
 
 	// The IP addresses of the host nodes.
 	NodeAddresses []string `json:"node_addresses"`
+
+	// The version of the Docker client compatible with the bay.
+	ContainerVersion string `json:"container_version"`
 }
 
 // BayPage is the page returned by a pager when traversing over a
