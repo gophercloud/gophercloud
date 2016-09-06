@@ -360,7 +360,7 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 	return server, nil
 }
 
-// CreateVolumeAttachment will attach a volume to a servert. An error will be
+// CreateVolumeAttachment will attach a volume to a server. An error will be
 // returned if the volume failed to attach.
 func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, server *servers.Server, volume *volumes.Volume) (*volumeattach.VolumeAttachment, error) {
 	volumeAttachOptions := volumeattach.CreateOpts{
@@ -465,7 +465,7 @@ func DeleteServerGroup(t *testing.T, client *gophercloud.ServiceClient, serverGr
 
 // DeleteVolumeAttachment will disconnect a volume from an instance. A fatal
 // error will occur if the volume failed to detach. This works best when used
-// as a deferred functino.
+// as a deferred function.
 func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, server *servers.Server, volumeAttachment *volumeattach.VolumeAttachment) {
 
 	err := volumeattach.Delete(client, server.ID, volumeAttachment.VolumeID).ExtractErr()
