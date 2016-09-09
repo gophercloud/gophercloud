@@ -509,3 +509,24 @@ func TestRevokeRequestError(t *testing.T) {
 		t.Errorf("Missing expected error from Revoke")
 	}
 }
+
+func TestNoTokenInResponse(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+
+	client := gophercloud.ServiceClient{
+		ProviderClient: &gophercloud.ProviderClient{},
+		Endpoint:       testhelper.Endpoint(),
+	}
+
+	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, `{}`)
+	})
+
+	options := tokens.AuthOptions{UserID: "me", Password: "squirrel!"}
+	_, err := tokens.Create(&client, &options).Extract()
+	if err == nil {
+		t.Error("Create succeeded with no token returned")
+	}
+}

@@ -1,5 +1,6 @@
 package tokens
 
+import "errors"
 import "github.com/gophercloud/gophercloud"
 
 // Endpoint represents a single API endpoint offered by a service.
@@ -57,6 +58,10 @@ func (r commonResult) ExtractToken() (*Token, error) {
 	err := r.ExtractInto(&s)
 	if err != nil {
 		return nil, err
+	}
+
+	if s.Token == nil {
+		return nil, errors.New("'token' missing in JSON response")
 	}
 
 	// Parse the token itself from the stored headers.
