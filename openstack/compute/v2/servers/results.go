@@ -154,7 +154,7 @@ type Server struct {
 	// Addresses includes a list of all IP addresses assigned to the server, keyed by pool.
 	Addresses map[string]interface{}
 	// Metadata includes a list of all user-specified key-value pairs attached to the server.
-	Metadata map[string]interface{}
+	Metadata map[string]string
 	// Links includes HTTP references to the itself, useful for passing along to other APIs that might want a server reference.
 	Links []interface{}
 	// KeyName indicates which public key was injected into the server on launch.
