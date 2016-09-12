@@ -89,6 +89,24 @@ func TestCreateServerWithCustomField(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestCreateServerWithMetadata(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerCreationWithMetadata(t, SingleServerBody)
+
+	actual, err := servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		Metadata: map[string]string{
+			"abc": "def",
+		},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+}
+
 func TestCreateServerWithImageNameAndFlavorName(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

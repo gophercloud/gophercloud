@@ -156,7 +156,7 @@ type CreateOpts struct {
 	Networks []Network `json:"-"`
 
 	// Metadata contains key-value pairs (up to 255 bytes each) to attach to the server.
-	Metadata map[string]string `json:"-"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 
 	// Personality includes files to inject into the server at launch.
 	// Create will base64-encode file contents for you.

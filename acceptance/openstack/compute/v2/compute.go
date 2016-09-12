@@ -243,6 +243,9 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient, choices *clie
 		Networks: []servers.Network{
 			servers.Network{UUID: networkID},
 		},
+		Metadata: map[string]string{
+			"abc": "def",
+		},
 		Personality: servers.Personality{
 			&servers.File{
 				Path:     "/etc/test",
