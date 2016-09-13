@@ -39,6 +39,8 @@ type BlockDevice struct {
 	GuestFormat string `json:"guest_format,omitempty"`
 	// VolumeSize is the size of the volume to create (in gigabytes).
 	VolumeSize int `json:"volume_size"`
+	// VolumeType specifies type of cinder volume(can be get via `cinder type-list` command)
+	VolumeType string `json:"volume_type,omitempty"`
 }
 
 // CreateOptsExt is a structure that extends the server `CreateOpts` structure

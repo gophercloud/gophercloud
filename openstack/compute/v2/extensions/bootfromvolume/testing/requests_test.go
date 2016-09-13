@@ -24,6 +24,7 @@ func TestCreateOpts(t *testing.T) {
 				DestinationType:     "volume",
 				VolumeSize:          10,
 				DeleteOnTermination: false,
+				VolumeType:	     "fast",
 			},
 		},
 	}
@@ -41,7 +42,8 @@ func TestCreateOpts(t *testing.T) {
             "destination_type":"volume",
             "boot_index": 0,
             "delete_on_termination": false,
-            "volume_size": 10
+            "volume_size": 10,
+            "volume_type": "fast"
           }
         ]
       }

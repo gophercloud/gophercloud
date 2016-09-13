@@ -29,6 +29,8 @@ func TestBootFromVolumeSingleVolume(t *testing.T) {
 			UUID:       choices.ImageID,
 			SourceType: bootfromvolume.Image,
 			VolumeSize: 10,
+			VolumeType: "fast",
+			DestinationType: "volume",
 		},
 	}
 
