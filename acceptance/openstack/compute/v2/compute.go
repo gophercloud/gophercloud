@@ -85,7 +85,6 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 	serverCreateOpts := servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
-		ImageRef:  choices.ImageID,
 		Networks: []servers.Network{
 			servers.Network{UUID: networkID},
 		},
@@ -100,7 +99,13 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 		return server, err
 	}
 
-	return server, nil
+	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
+		return server, err
+	}
+
+	newServer, err := servers.Get(client, server.ID).Extract()
+
+	return newServer, nil
 }
 
 // CreateDefaultRule will create a default security group rule with a
@@ -173,6 +178,53 @@ func CreateKeyPair(t *testing.T, client *gophercloud.ServiceClient) (*keypairs.K
 
 	t.Logf("Created keypair: %s", keyPairName)
 	return keyPair, nil
+}
+
+// CreateMultiEphemeralServer works like CreateServer but is configured with
+// one or more block devices defined by passing in []bootfromvolume.BlockDevice.
+// These block devices act like block devices when booting from a volume but
+// are actually local ephemeral disks.
+// An error will be returned if a server was unable to be created.
+func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice, choices *clients.AcceptanceTestChoices) (*servers.Server, error) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires server creation in short mode.")
+	}
+
+	var server *servers.Server
+
+	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
+	if err != nil {
+		return server, err
+	}
+
+	name := tools.RandomString("ACPTTEST", 16)
+	t.Logf("Attempting to create bootable volume server: %s", name)
+
+	serverCreateOpts := servers.CreateOpts{
+		Name:      name,
+		FlavorRef: choices.FlavorID,
+		ImageRef:  choices.ImageID,
+		Networks: []servers.Network{
+			servers.Network{UUID: networkID},
+		},
+	}
+
+	server, err = bootfromvolume.Create(client, bootfromvolume.CreateOptsExt{
+		serverCreateOpts,
+		blockDevices,
+	}).Extract()
+
+	if err != nil {
+		return server, err
+	}
+
+	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
+		return server, err
+	}
+
+	newServer, err := servers.Get(client, server.ID).Extract()
+
+	return newServer, nil
 }
 
 // CreateSecurityGroup will create a security group with a random name.
@@ -254,7 +306,54 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient, choices *clie
 		return server, err
 	}
 
-	if err = WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
+	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
+		return server, err
+	}
+
+	return server, nil
+}
+
+// CreateServerWithoutImageRef creates a basic instance with a randomly generated name.
+// The flavor of the instance will be the value of the OS_FLAVOR_ID environment variable.
+// The image is intentionally missing to trigger an error.
+// The instance will be launched on the network specified in OS_NETWORK_NAME.
+// An error will be returned if the instance was unable to be created.
+func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices) (*servers.Server, error) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires server creation in short mode.")
+	}
+
+	var server *servers.Server
+
+	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
+	if err != nil {
+		return server, err
+	}
+
+	name := tools.RandomString("ACPTTEST", 16)
+	t.Logf("Attempting to create server: %s", name)
+
+	pwd := tools.MakeNewPassword("")
+
+	server, err = servers.Create(client, servers.CreateOpts{
+		Name:      name,
+		FlavorRef: choices.FlavorID,
+		AdminPass: pwd,
+		Networks: []servers.Network{
+			servers.Network{UUID: networkID},
+		},
+		Personality: servers.Personality{
+			&servers.File{
+				Path:     "/etc/test",
+				Contents: []byte("hello world"),
+			},
+		},
+	}).Extract()
+	if err != nil {
+		return server, err
+	}
+
+	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
 		return server, err
 	}
 
@@ -353,7 +452,7 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 		return server, err
 	}
 
-	if err = WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
+	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
 		return server, err
 	}
 
@@ -373,7 +472,7 @@ func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blo
 		return volumeAttachment, err
 	}
 
-	if err = volumes.WaitForStatus(blockClient, volume.ID, "in-use", 60); err != nil {
+	if err := volumes.WaitForStatus(blockClient, volume.ID, "in-use", 60); err != nil {
 		return volumeAttachment, err
 	}
 
@@ -473,7 +572,7 @@ func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blo
 		t.Fatalf("Unable to detach volume: %v", err)
 	}
 
-	if err = volumes.WaitForStatus(blockClient, volumeAttachment.ID, "available", 60); err != nil {
+	if err := volumes.WaitForStatus(blockClient, volumeAttachment.ID, "available", 60); err != nil {
 		t.Fatalf("Unable to wait for volume: %v", err)
 	}
 	t.Logf("Deleted volume: %s", volumeAttachment.VolumeID)

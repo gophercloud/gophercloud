@@ -3,8 +3,10 @@
 package v2
 
 import (
+	"strings"
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
@@ -83,6 +85,27 @@ func TestServersCreateDestroy(t *testing.T) {
 	t.Logf("Addresses on %s:", choices.NetworkName)
 	for _, address := range allNetworkAddresses {
 		t.Logf("%+v", address)
+	}
+}
+
+func TestServersWithoutImageRef(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	server, err := CreateServerWithoutImageRef(t, client, choices)
+	if err != nil {
+		if err400, ok := err.(*gophercloud.ErrUnexpectedResponseCode); ok {
+			if !strings.Contains("Missing imageRef attribute", string(err400.Body)) {
+				defer DeleteServer(t, client, server)
+			}
+		}
 	}
 }
 

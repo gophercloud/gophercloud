@@ -219,23 +219,21 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 		b["networks"] = networks
 	}
 
-	// If ImageRef isn't provided, use ImageName to ascertain the image ID.
+	// If ImageRef isn't provided, check if ImageName was provided to ascertain
+	// the image ID.
 	if opts.ImageRef == "" {
-		if opts.ImageName == "" {
-			err := ErrNeitherImageIDNorImageNameProvided{}
-			err.Argument = "ImageRef/ImageName"
-			return nil, err
+		if opts.ImageName != "" {
+			if sc == nil {
+				err := ErrNoClientProvidedForIDByName{}
+				err.Argument = "ServiceClient"
+				return nil, err
+			}
+			imageID, err := images.IDFromName(sc, opts.ImageName)
+			if err != nil {
+				return nil, err
+			}
+			b["imageRef"] = imageID
 		}
-		if sc == nil {
-			err := ErrNoClientProvidedForIDByName{}
-			err.Argument = "ServiceClient"
-			return nil, err
-		}
-		imageID, err := images.IDFromName(sc, opts.ImageName)
-		if err != nil {
-			return nil, err
-		}
-		b["imageRef"] = imageID
 	}
 
 	// If FlavorRef isn't provided, use FlavorName to ascertain the flavor ID.
@@ -424,23 +422,21 @@ func (opts RebuildOpts) ToServerRebuildMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	// If ImageRef isn't provided, use ImageName to ascertain the image ID.
+	// If ImageRef isn't provided, check if ImageName was provided to ascertain
+	// the image ID.
 	if opts.ImageID == "" {
-		if opts.ImageName == "" {
-			err := ErrNeitherImageIDNorImageNameProvided{}
-			err.Argument = "ImageRef/ImageName"
-			return nil, err
+		if opts.ImageName != "" {
+			if opts.ServiceClient == nil {
+				err := ErrNoClientProvidedForIDByName{}
+				err.Argument = "ServiceClient"
+				return nil, err
+			}
+			imageID, err := images.IDFromName(opts.ServiceClient, opts.ImageName)
+			if err != nil {
+				return nil, err
+			}
+			b["imageRef"] = imageID
 		}
-		if opts.ServiceClient == nil {
-			err := ErrNoClientProvidedForIDByName{}
-			err.Argument = "ServiceClient"
-			return nil, err
-		}
-		imageID, err := images.IDFromName(opts.ServiceClient, opts.ImageName)
-		if err != nil {
-			return nil, err
-		}
-		b["imageRef"] = imageID
 	}
 
 	return map[string]interface{}{"rebuild": b}, nil
