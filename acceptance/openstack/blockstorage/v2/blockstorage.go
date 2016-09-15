@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
 )
@@ -24,6 +25,35 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 	createOpts := volumes.CreateOpts{
 		Size: 1,
 		Name: volumeName,
+	}
+
+	volume, err := volumes.Create(client, createOpts).Extract()
+	if err != nil {
+		return volume, err
+	}
+
+	err = volumes.WaitForStatus(client, volume.ID, "available", 60)
+	if err != nil {
+		return volume, err
+	}
+
+	return volume, nil
+}
+
+// CreateVolumeFromImage will create a volume from with a random name and size of
+// 1GB. An error will be returned if the volume was unable to be created.
+func CreateVolumeFromImage(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices) (*volumes.Volume, error) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires volume creation in short mode.")
+	}
+
+	volumeName := tools.RandomString("ACPTTEST", 16)
+	t.Logf("Attempting to create volume: %s", volumeName)
+
+	createOpts := volumes.CreateOpts{
+		Size:    1,
+		Name:    volumeName,
+		ImageID: choices.ImageID,
 	}
 
 	volume, err := volumes.Create(client, createOpts).Extract()

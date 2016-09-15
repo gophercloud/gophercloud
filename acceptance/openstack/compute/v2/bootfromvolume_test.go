@@ -6,10 +6,11 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	blockstorage "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v2"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 )
 
-func TestBootFromVolumeSingleVolume(t *testing.T) {
+func TestBootFromImage(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
@@ -26,10 +27,44 @@ func TestBootFromVolumeSingleVolume(t *testing.T) {
 
 	blockDevices := []bootfromvolume.BlockDevice{
 		bootfromvolume.BlockDevice{
-			UUID:                choices.ImageID,
-			SourceType:          bootfromvolume.Image,
+			BootIndex:           0,
 			DeleteOnTermination: true,
-			DestinationType:     "volume",
+			DestinationType:     bootfromvolume.Local,
+			SourceType:          bootfromvolume.Image,
+			UUID:                choices.ImageID,
+		},
+	}
+
+	server, err := CreateBootableVolumeServer(t, client, blockDevices, choices)
+	if err != nil {
+		t.Fatalf("Unable to create server: %v", err)
+	}
+	defer DeleteServer(t, client, server)
+
+	PrintServer(t, server)
+}
+
+func TestBootFromNewVolume(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires server creation in short mode.")
+	}
+
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	blockDevices := []bootfromvolume.BlockDevice{
+		bootfromvolume.BlockDevice{
+			DeleteOnTermination: true,
+			DestinationType:     bootfromvolume.DestinationVolume,
+			SourceType:          bootfromvolume.Image,
+			UUID:                choices.ImageID,
 			VolumeSize:          2,
 		},
 	}
@@ -39,6 +74,49 @@ func TestBootFromVolumeSingleVolume(t *testing.T) {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 	defer DeleteServer(t, client, server)
+
+	PrintServer(t, server)
+}
+
+func TestBootFromExistingVolume(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires server creation in short mode.")
+	}
+
+	computeClient, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	blockStorageClient, err := clients.NewBlockStorageV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a block storage client: %v", err)
+	}
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	volume, err := blockstorage.CreateVolumeFromImage(t, blockStorageClient, choices)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	blockDevices := []bootfromvolume.BlockDevice{
+		bootfromvolume.BlockDevice{
+			DeleteOnTermination: true,
+			DestinationType:     bootfromvolume.DestinationVolume,
+			SourceType:          bootfromvolume.SourceVolume,
+			UUID:                volume.ID,
+		},
+	}
+
+	server, err := CreateBootableVolumeServer(t, computeClient, blockDevices, choices)
+	if err != nil {
+		t.Fatalf("Unable to create server: %v", err)
+	}
+	defer DeleteServer(t, computeClient, server)
 
 	PrintServer(t, server)
 }
@@ -61,26 +139,26 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 	blockDevices := []bootfromvolume.BlockDevice{
 		bootfromvolume.BlockDevice{
 			BootIndex:           0,
-			UUID:                choices.ImageID,
-			SourceType:          bootfromvolume.Image,
-			DestinationType:     "local",
+			DestinationType:     bootfromvolume.Local,
 			DeleteOnTermination: true,
+			SourceType:          bootfromvolume.Image,
+			UUID:                choices.ImageID,
 			VolumeSize:          5,
 		},
 		bootfromvolume.BlockDevice{
 			BootIndex:           -1,
-			SourceType:          bootfromvolume.Blank,
-			DestinationType:     "local",
+			DestinationType:     bootfromvolume.Local,
 			DeleteOnTermination: true,
 			GuestFormat:         "ext4",
+			SourceType:          bootfromvolume.Blank,
 			VolumeSize:          1,
 		},
 		bootfromvolume.BlockDevice{
 			BootIndex:           -1,
-			SourceType:          bootfromvolume.Blank,
-			DestinationType:     "local",
+			DestinationType:     bootfromvolume.Local,
 			DeleteOnTermination: true,
 			GuestFormat:         "ext4",
+			SourceType:          bootfromvolume.Blank,
 			VolumeSize:          1,
 		},
 	}
@@ -90,6 +168,98 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 	defer DeleteServer(t, client, server)
+
+	PrintServer(t, server)
+}
+
+func TestAttachNewVolume(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires server creation in short mode.")
+	}
+
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	blockDevices := []bootfromvolume.BlockDevice{
+		bootfromvolume.BlockDevice{
+			BootIndex:           0,
+			DeleteOnTermination: true,
+			DestinationType:     bootfromvolume.Local,
+			SourceType:          bootfromvolume.Image,
+			UUID:                choices.ImageID,
+		},
+		bootfromvolume.BlockDevice{
+			BootIndex:           1,
+			DeleteOnTermination: true,
+			DestinationType:     bootfromvolume.DestinationVolume,
+			SourceType:          bootfromvolume.Blank,
+			VolumeSize:          2,
+		},
+	}
+
+	server, err := CreateBootableVolumeServer(t, client, blockDevices, choices)
+	if err != nil {
+		t.Fatalf("Unable to create server: %v", err)
+	}
+	defer DeleteServer(t, client, server)
+
+	PrintServer(t, server)
+}
+
+func TestAttachExistingVolume(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping test that requires server creation in short mode.")
+	}
+
+	computeClient, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	blockStorageClient, err := clients.NewBlockStorageV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a block storage client: %v", err)
+	}
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	volume, err := blockstorage.CreateVolume(t, blockStorageClient)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	blockDevices := []bootfromvolume.BlockDevice{
+		bootfromvolume.BlockDevice{
+			BootIndex:           0,
+			DeleteOnTermination: true,
+			DestinationType:     bootfromvolume.Local,
+			SourceType:          bootfromvolume.Image,
+			UUID:                choices.ImageID,
+		},
+		bootfromvolume.BlockDevice{
+			BootIndex:           1,
+			DeleteOnTermination: true,
+			DestinationType:     bootfromvolume.DestinationVolume,
+			SourceType:          bootfromvolume.SourceVolume,
+			UUID:                volume.ID,
+		},
+	}
+
+	server, err := CreateBootableVolumeServer(t, computeClient, blockDevices, choices)
+	if err != nil {
+		t.Fatalf("Unable to create server: %v", err)
+	}
+	defer DeleteServer(t, computeClient, server)
 
 	PrintServer(t, server)
 }
