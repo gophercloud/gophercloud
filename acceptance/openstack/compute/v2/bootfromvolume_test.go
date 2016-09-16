@@ -26,22 +26,24 @@ func TestBootFromVolumeSingleVolume(t *testing.T) {
 
 	blockDevices := []bootfromvolume.BlockDevice{
 		bootfromvolume.BlockDevice{
-			UUID:       choices.ImageID,
-			SourceType: bootfromvolume.Image,
-			VolumeSize: 10,
+			UUID:                choices.ImageID,
+			SourceType:          bootfromvolume.Image,
+			DeleteOnTermination: true,
+			DestinationType:     "volume",
+			VolumeSize:          2,
 		},
 	}
 
 	server, err := CreateBootableVolumeServer(t, client, blockDevices, choices)
 	if err != nil {
-		t.Fatal("Unable to create server: %v", err)
+		t.Fatalf("Unable to create server: %v", err)
 	}
 	defer DeleteServer(t, client, server)
 
 	PrintServer(t, server)
 }
 
-func TestBootFromVolumeMultiEphemeral(t *testing.T) {
+func TestBootFromMultiEphemeralServer(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
@@ -83,7 +85,7 @@ func TestBootFromVolumeMultiEphemeral(t *testing.T) {
 		},
 	}
 
-	server, err := CreateBootableVolumeServer(t, client, blockDevices, choices)
+	server, err := CreateMultiEphemeralServer(t, client, blockDevices, choices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
