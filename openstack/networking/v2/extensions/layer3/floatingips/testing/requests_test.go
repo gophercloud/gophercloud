@@ -293,10 +293,11 @@ func TestAssociate(t *testing.T) {
 	`)
 	})
 
-	ip, err := floatingips.Update(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: "423abc8d-2991-4a55-ba98-2aaea84cc72e"}).Extract()
+	portID := "423abc8d-2991-4a55-ba98-2aaea84cc72e"
+	ip, err := floatingips.Update(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: &portID}).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, "423abc8d-2991-4a55-ba98-2aaea84cc72e", ip.PortID)
+	th.AssertDeepEquals(t, portID, ip.PortID)
 }
 
 func TestDisassociate(t *testing.T) {
@@ -311,7 +312,7 @@ func TestDisassociate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "floatingip": {
-      "port_id": ""
+      "port_id": null
     }
 }
       `)
@@ -334,7 +335,7 @@ func TestDisassociate(t *testing.T) {
     `)
 	})
 
-	ip, err := floatingips.Update(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{}).Extract()
+	ip, err := floatingips.Update(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", floatingips.UpdateOpts{PortID: nil}).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, "", ip.FixedIP)

@@ -42,7 +42,7 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subn
 	createOpts := ports.CreateOpts{
 		NetworkID:    networkID,
 		Name:         portName,
-		AdminStateUp: gophercloud.Disabled,
+		AdminStateUp: gophercloud.Enabled,
 		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
 	}
 
@@ -51,9 +51,18 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subn
 		return port, err
 	}
 
+	if err := WaitForPortToCreate(client, port.ID, 60); err != nil {
+		return port, err
+	}
+
+	newPort, err := ports.Get(client, port.ID).Extract()
+	if err != nil {
+		return newPort, err
+	}
+
 	t.Logf("Successfully created port: %s", portName)
 
-	return port, nil
+	return newPort, nil
 }
 
 // CreateSubnet will create a subnet on the specified Network ID. An error
@@ -179,4 +188,19 @@ func PrintSubnet(t *testing.T, subnet *subnets.Subnet) {
 func PrintVersionResource(t *testing.T, versionResource *apiversions.APIVersionResource) {
 	t.Logf("Name: %s", versionResource.Name)
 	t.Logf("Collection: %s", versionResource.Collection)
+}
+
+func WaitForPortToCreate(client *gophercloud.ServiceClient, portID string, secs int) error {
+	return gophercloud.WaitFor(secs, func() (bool, error) {
+		p, err := ports.Get(client, portID).Extract()
+		if err != nil {
+			return false, err
+		}
+
+		if p.Status == "ACTIVE" || p.Status == "DOWN" {
+			return true, nil
+		}
+
+		return false, nil
+	})
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
 )
 
 // CreateFloatingIP creates a floating IP on a given network and port. An error
@@ -42,7 +43,7 @@ func CreateExternalRouter(t *testing.T, client *gophercloud.ServiceClient) (*rou
 
 	routerName := tools.RandomString("TESTACC-", 8)
 
-	t.Logf("Attempting to create router: %s", routerName)
+	t.Logf("Attempting to create external router: %s", routerName)
 
 	adminStateUp := true
 	gatewayInfo := routers.GatewayInfo{
@@ -57,6 +58,10 @@ func CreateExternalRouter(t *testing.T, client *gophercloud.ServiceClient) (*rou
 
 	router, err = routers.Create(client, createOpts).Extract()
 	if err != nil {
+		return router, err
+	}
+
+	if err := WaitForRouterToCreate(client, router.ID, 60); err != nil {
 		return router, err
 	}
 
@@ -88,9 +93,35 @@ func CreateRouter(t *testing.T, client *gophercloud.ServiceClient, networkID str
 		return router, err
 	}
 
+	if err := WaitForRouterToCreate(client, router.ID, 60); err != nil {
+		return router, err
+	}
+
 	t.Logf("Created router: %s", routerName)
 
 	return router, nil
+}
+
+// CreateRouterInterface will attach a subnet to a router. An error will be
+// returned if the operation fails.
+func CreateRouterInterface(t *testing.T, client *gophercloud.ServiceClient, portID, routerID string) (*routers.InterfaceInfo, error) {
+	t.Logf("Attempting to add port %s to router %s", portID, routerID)
+
+	aiOpts := routers.AddInterfaceOpts{
+		PortID: portID,
+	}
+
+	iface, err := routers.AddInterface(client, routerID, aiOpts).Extract()
+	if err != nil {
+		return iface, err
+	}
+
+	if err := WaitForRouterInterfaceToAttach(client, portID, 60); err != nil {
+		return iface, err
+	}
+
+	t.Logf("Successfully added port %s to router %s", portID, routerID)
+	return iface, nil
 }
 
 // DeleteRouter deletes a router of a specified ID. A fatal error will occur
@@ -103,7 +134,33 @@ func DeleteRouter(t *testing.T, client *gophercloud.ServiceClient, routerID stri
 		t.Fatalf("Error deleting router: %v", err)
 	}
 
+	if err := WaitForRouterToDelete(client, routerID, 60); err != nil {
+		t.Fatalf("Error waiting for router to delete: %v", err)
+	}
+
 	t.Logf("Deleted router: %s", routerID)
+}
+
+// DeleteRouterInterface will detach a subnet to a router. A fatal error will
+// occur if the deletion failed. This works best when used as a deferred
+// function.
+func DeleteRouterInterface(t *testing.T, client *gophercloud.ServiceClient, portID, routerID string) {
+	t.Logf("Attempting to detach port %s from router %s", portID, routerID)
+
+	riOpts := routers.RemoveInterfaceOpts{
+		PortID: portID,
+	}
+
+	_, err := routers.RemoveInterface(client, routerID, riOpts).Extract()
+	if err != nil {
+		t.Fatalf("Failed to detach port %s from router %s", portID, routerID)
+	}
+
+	if err := WaitForRouterInterfaceToDetach(client, portID, 60); err != nil {
+		t.Fatalf("Failed to wait for port %s to detach from router %s", portID, routerID)
+	}
+
+	t.Logf("Successfully detached port %s from router %s", portID, routerID)
 }
 
 // DeleteFloatingIP deletes a floatingIP of a specified ID. A fatal error will
@@ -154,4 +211,74 @@ func PrintRouter(t *testing.T, router *routers.Router) {
 		t.Logf("\tNextHop: %s", route.NextHop)
 		t.Logf("\tDestinationCIDR: %s", route.DestinationCIDR)
 	}
+}
+
+func WaitForRouterToCreate(client *gophercloud.ServiceClient, routerID string, secs int) error {
+	return gophercloud.WaitFor(secs, func() (bool, error) {
+		r, err := routers.Get(client, routerID).Extract()
+		if err != nil {
+			return false, err
+		}
+
+		if r.Status == "ACTIVE" {
+			return true, nil
+		}
+
+		return false, nil
+	})
+}
+
+func WaitForRouterToDelete(client *gophercloud.ServiceClient, routerID string, secs int) error {
+	return gophercloud.WaitFor(secs, func() (bool, error) {
+		_, err := routers.Get(client, routerID).Extract()
+		if err != nil {
+			if _, ok := err.(gophercloud.ErrDefault404); ok {
+				return true, nil
+			}
+
+			return false, err
+		}
+
+		return false, nil
+	})
+}
+
+func WaitForRouterInterfaceToAttach(client *gophercloud.ServiceClient, routerInterfaceID string, secs int) error {
+	return gophercloud.WaitFor(secs, func() (bool, error) {
+		r, err := ports.Get(client, routerInterfaceID).Extract()
+		if err != nil {
+			return false, err
+		}
+
+		if r.Status == "ACTIVE" {
+			return true, nil
+		}
+
+		return false, nil
+	})
+}
+
+func WaitForRouterInterfaceToDetach(client *gophercloud.ServiceClient, routerInterfaceID string, secs int) error {
+	return gophercloud.WaitFor(secs, func() (bool, error) {
+		r, err := ports.Get(client, routerInterfaceID).Extract()
+		if err != nil {
+			if _, ok := err.(gophercloud.ErrDefault404); ok {
+				return true, nil
+			}
+
+			if errCode, ok := err.(gophercloud.ErrUnexpectedResponseCode); ok {
+				if errCode.Actual == 409 {
+					return false, nil
+				}
+			}
+
+			return false, err
+		}
+
+		if r.Status == "ACTIVE" {
+			return true, nil
+		}
+
+		return false, nil
+	})
 }

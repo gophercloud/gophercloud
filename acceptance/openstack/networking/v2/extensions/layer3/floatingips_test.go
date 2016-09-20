@@ -8,7 +8,6 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
 )
 
 func TestLayer3FloatingIPsList(t *testing.T) {
@@ -56,28 +55,22 @@ func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 	}
 	defer DeleteRouter(t, client, router.ID)
 
-	aiOpts := routers.AddInterfaceOpts{
-		SubnetID: subnet.ID,
-	}
-
-	iface, err := routers.AddInterface(client, router.ID, aiOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to add interface to router: %v", err)
-	}
-
-	PrintRouter(t, router)
-	PrintRouterInterface(t, iface)
-
 	port, err := networking.CreatePort(t, client, choices.ExternalNetworkID, subnet.ID)
 	if err != nil {
 		t.Fatalf("Unable to create port: %v", err)
 	}
-	defer networking.DeletePort(t, client, port.ID)
+
+	_, err = CreateRouterInterface(t, client, port.ID, router.ID)
+	if err != nil {
+		t.Fatalf("Unable to create router interface: %v", err)
+	}
+	defer DeleteRouterInterface(t, client, port.ID, router.ID)
 
 	fip, err := CreateFloatingIP(t, client, choices.ExternalNetworkID, port.ID)
 	if err != nil {
 		t.Fatalf("Unable to create floating IP: %v", err)
 	}
+	defer DeleteFloatingIP(t, client, fip.ID)
 
 	newFip, err := floatingips.Get(client, fip.ID).Extract()
 	if err != nil {
@@ -86,14 +79,13 @@ func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 
 	PrintFloatingIP(t, newFip)
 
-	DeleteFloatingIP(t, client, fip.ID)
-
-	riOpts := routers.RemoveInterfaceOpts{
-		SubnetID: subnet.ID,
+	// Disassociate the floating IP
+	updateOpts := floatingips.UpdateOpts{
+		PortID: nil,
 	}
 
-	_, err = routers.RemoveInterface(client, router.ID, riOpts).Extract()
+	newFip, err = floatingips.Update(client, fip.ID, updateOpts).Extract()
 	if err != nil {
-		t.Fatalf("Failed to remove interface from router: %v", err)
+		t.Fatalf("Unable to disassociate floating IP: %v", err)
 	}
 }
