@@ -226,8 +226,8 @@ func CheckEquals(t *testing.T, expected, actual interface{}) {
 
 // Useful to assert err != nil
 func AssertNotEquals(t *testing.T, expected, actual interface{}) {
-	if expected != actual {
-		logError(t, fmt.Sprintf("expected %s but got %s", green(expected), yellow(actual)))
+	if expected == actual {
+		logError(t, fmt.Sprintf("%s equals %s", green(expected), yellow(actual)))
 	}
 }
 

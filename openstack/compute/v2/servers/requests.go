@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
+	"fmt"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
@@ -200,7 +201,7 @@ func setMinMaxCount(opts CreateOpts, request map[string]interface{}) error {
 	}
 
 	// Check min is less than max
-	if opts.MinCount > opts.MaxCount {
+	if opts.MinCount > opts.MaxCount && opts.MaxCount > 0 {
 		if opts.MinCount > opts.MaxCount {
 			err := ErrMinGreaterThanMax{
 				Min: opts.MinCount,
@@ -211,11 +212,11 @@ func setMinMaxCount(opts CreateOpts, request map[string]interface{}) error {
 		}
 	} else {
 		if opts.MinCount > 0 {
-			request["min_count"] = string(opts.MinCount)
+			request["min_count"] = fmt.Sprintf("%d", opts.MinCount)
 		}
 
 		if opts.MaxCount > 0 {
-			request["max_count"] = string(opts.MaxCount)
+			request["max_count"] = fmt.Sprintf("%d", opts.MaxCount)
 		}
 	}
 
