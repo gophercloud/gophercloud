@@ -69,3 +69,20 @@ type ErrServerNotFound struct {
 func (e ErrServerNotFound) Error() string {
 	return fmt.Sprintf("I couldn't find server [%s]", e.ID)
 }
+
+type ErrMinGreaterThanMax struct {
+	Min int
+	Max int
+}
+
+func (err ErrMinGreaterThanMax) Error() string {
+	return fmt.Sprintf("Min %d is greater than Max %d", err.Min, err.Max)
+}
+
+type ErrNegativeValue struct {
+	Value int
+}
+
+func (err ErrNegativeValue) Error() string {
+	return fmt.Sprintf("Count cannot be negative %d", err.Value)
+}

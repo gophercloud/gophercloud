@@ -123,6 +123,53 @@ func TestCreateServerWithImageNameAndFlavorName(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestCreateMultipleServersPositive(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerCreationSuccessfully(t, SingleServerBody)
+
+	actual, err := servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		MaxCount:  2,
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+
+	actual, err = servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		MinCount:  2,
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+}
+
+func TestCreateMultipleServersNegative(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerCreationSuccessfully(t, SingleServerBody)
+
+	_, err := servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		MinCount:  2,
+		MaxCount:  1,
+	}).Extract()
+	th.AssertNotEquals(t, err, nil)
+
+	_, err = servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		MaxCount:  -1,
+	}).Extract()
+	th.AssertNotEquals(t, err, nil)
+}
+
 func TestDeleteServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
