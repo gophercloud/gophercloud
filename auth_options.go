@@ -52,6 +52,8 @@ type AuthOptions struct {
 	// TokenID allows users to authenticate (possibly as another user) with an
 	// authentication token ID.
 	TokenID string `json:"-"`
+
+	InsecureSkipTlsVerify bool
 }
 
 // ToTokenV2CreateMap allows AuthOptions to satisfy the AuthOptionsBuilder

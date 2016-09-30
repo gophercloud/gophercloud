@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
-
+	"crypto/tls"
+	"net/http"
 	"github.com/gophercloud/gophercloud"
 	tokens2 "github.com/gophercloud/gophercloud/openstack/identity/v2/tokens"
 	tokens3 "github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
@@ -53,6 +54,11 @@ func AuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.Provider
 	client, err := NewClient(options.IdentityEndpoint)
 	if err != nil {
 		return nil, err
+	}
+
+	if options.InsecureSkipTlsVerify {
+		tr := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, }
+		client.HTTPClient.Transport = tr
 	}
 
 	err = Authenticate(client, options)
