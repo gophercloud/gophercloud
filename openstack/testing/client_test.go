@@ -162,3 +162,25 @@ func TestAuthenticatedClientV2(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, "01234567890", client.TokenID)
 }
+
+func testAuthenticatedClientFails(t *testing.T, endpoint string) {
+	options := gophercloud.AuthOptions{
+		Username:         "me",
+		Password:         "secret",
+		DomainName:       "default",
+		TenantName:       "project",
+		IdentityEndpoint: endpoint,
+	}
+	_, err := openstack.AuthenticatedClient(options)
+	if err == nil {
+		t.Fatal("expected error but call succeeded")
+	}
+}
+
+func TestAuthenticatedClientV3Fails(t *testing.T) {
+	testAuthenticatedClientFails(t, "http://bad-address.example.com/v3")
+}
+
+func TestAuthenticatedClientV2Fails(t *testing.T) {
+	testAuthenticatedClientFails(t, "http://bad-address.example.com/v2.0")
+}
