@@ -52,7 +52,7 @@ func TestAuthenticatedClientV3(t *testing.T) {
 		Username:         "me",
 		Password:         "secret",
 		DomainName:       "default",
-		TenantName: 	  "project",
+		TenantName:       "project",
 		IdentityEndpoint: th.Endpoint(),
 	}
 	client, err := openstack.AuthenticatedClient(options)
@@ -290,4 +290,26 @@ func TestIdentityAdminV3Client(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, "http://localhost:35357/", sc.Endpoint)
+}
+
+func testAuthenticatedClientFails(t *testing.T, endpoint string) {
+	options := gophercloud.AuthOptions{
+		Username:         "me",
+		Password:         "secret",
+		DomainName:       "default",
+		TenantName:       "project",
+		IdentityEndpoint: endpoint,
+	}
+	_, err := openstack.AuthenticatedClient(options)
+	if err == nil {
+		t.Fatal("expected error but call succeeded")
+	}
+}
+
+func TestAuthenticatedClientV3Fails(t *testing.T) {
+	testAuthenticatedClientFails(t, "http://bad-address.example.com/v3")
+}
+
+func TestAuthenticatedClientV2Fails(t *testing.T) {
+	testAuthenticatedClientFails(t, "http://bad-address.example.com/v2.0")
 }

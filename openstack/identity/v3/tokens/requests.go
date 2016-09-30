@@ -158,8 +158,8 @@ func Create(c *gophercloud.ServiceClient, opts AuthOptionsBuilder) (r CreateResu
 	resp, err := c.Post(tokenURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: map[string]string{"X-Auth-Token": ""},
 	})
+	r.Err = err
 	if resp != nil {
-		r.Err = err
 		r.Header = resp.Header
 	}
 	return
