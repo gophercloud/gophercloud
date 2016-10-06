@@ -79,7 +79,7 @@ type CreateOpts struct {
 	Name            string                `json:"name,omitempty"`
 	TenantID        string                `json:"tenant_id,omitempty"`
 	AllocationPools []AllocationPool      `json:"allocation_pools,omitempty"`
-	GatewayIP       *string               `json:"gateway_ip"`
+	GatewayIP       *string               `json:"gateway_ip,omitempty"`
 	IPVersion       gophercloud.IPVersion `json:"ip_version,omitempty"`
 	EnableDHCP      *bool                 `json:"enable_dhcp,omitempty"`
 	DNSNameservers  []string              `json:"dns_nameservers,omitempty"`
@@ -88,7 +88,16 @@ type CreateOpts struct {
 
 // ToSubnetCreateMap casts a CreateOpts struct to a map.
 func (opts CreateOpts) ToSubnetCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "subnet")
+	b, err := gophercloud.BuildRequestBody(opts, "subnet")
+	if err != nil {
+		return nil, err
+	}
+
+	if m := b["subnet"].(map[string]interface{}); m["gateway_ip"] == "" {
+		m["gateway_ip"] = nil
+	}
+
+	return b, nil
 }
 
 // Create accepts a CreateOpts struct and creates a new subnet using the values
@@ -112,7 +121,7 @@ type UpdateOptsBuilder interface {
 // UpdateOpts represents the attributes used when updating an existing subnet.
 type UpdateOpts struct {
 	Name           string      `json:"name,omitempty"`
-	GatewayIP      string      `json:"gateway_ip,omitempty"`
+	GatewayIP      *string     `json:"gateway_ip,omitempty"`
 	DNSNameservers []string    `json:"dns_nameservers,omitempty"`
 	HostRoutes     []HostRoute `json:"host_routes,omitempty"`
 	EnableDHCP     *bool       `json:"enable_dhcp,omitempty"`
@@ -120,7 +129,16 @@ type UpdateOpts struct {
 
 // ToSubnetUpdateMap casts an UpdateOpts struct to a map.
 func (opts UpdateOpts) ToSubnetUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "subnet")
+	b, err := gophercloud.BuildRequestBody(opts, "subnet")
+	if err != nil {
+		return nil, err
+	}
+
+	if m := b["subnet"].(map[string]interface{}); m["gateway_ip"] == "" {
+		m["gateway_ip"] = nil
+	}
+
+	return b, nil
 }
 
 // Update accepts a UpdateOpts struct and updates an existing subnet using the

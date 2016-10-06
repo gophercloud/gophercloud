@@ -72,14 +72,75 @@ func CreateSubnet(t *testing.T, client *gophercloud.ServiceClient, networkID str
 	subnetOctet := tools.RandomInt(1, 250)
 	subnetCIDR := fmt.Sprintf("192.168.%d.0/24", subnetOctet)
 	subnetGateway := fmt.Sprintf("192.168.%d.1", subnetOctet)
-	iFalse := false
 	createOpts := subnets.CreateOpts{
 		NetworkID:  networkID,
 		CIDR:       subnetCIDR,
 		IPVersion:  4,
 		Name:       subnetName,
-		EnableDHCP: &iFalse,
+		EnableDHCP: gophercloud.Disabled,
 		GatewayIP:  &subnetGateway,
+	}
+
+	t.Logf("Attempting to create subnet: %s", subnetName)
+
+	subnet, err := subnets.Create(client, createOpts).Extract()
+	if err != nil {
+		return subnet, err
+	}
+
+	t.Logf("Successfully created subnet.")
+	return subnet, nil
+}
+
+// CreateSubnetWithDefaultGateway will create a subnet on the specified Network
+// ID and have Neutron set the gateway by default An error will be returned if
+// the subnet could not be created.
+func CreateSubnetWithDefaultGateway(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*subnets.Subnet, error) {
+	subnetName := tools.RandomString("TESTACC-", 8)
+	subnetOctet := tools.RandomInt(1, 250)
+	subnetCIDR := fmt.Sprintf("192.168.%d.0/24", subnetOctet)
+	createOpts := subnets.CreateOpts{
+		NetworkID:  networkID,
+		CIDR:       subnetCIDR,
+		IPVersion:  4,
+		Name:       subnetName,
+		EnableDHCP: gophercloud.Disabled,
+	}
+
+	t.Logf("Attempting to create subnet: %s", subnetName)
+
+	subnet, err := subnets.Create(client, createOpts).Extract()
+	if err != nil {
+		return subnet, err
+	}
+
+	t.Logf("Successfully created subnet.")
+	return subnet, nil
+}
+
+// CreateSubnetWithNoGateway will create a subnet with no gateway on the
+// specified Network ID.  An error will be returned if the subnet could not be
+// created.
+func CreateSubnetWithNoGateway(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*subnets.Subnet, error) {
+	var noGateway = ""
+	subnetName := tools.RandomString("TESTACC-", 8)
+	subnetOctet := tools.RandomInt(1, 250)
+	subnetCIDR := fmt.Sprintf("192.168.%d.0/24", subnetOctet)
+	dhcpStart := fmt.Sprintf("192.168.%d.10", subnetOctet)
+	dhcpEnd := fmt.Sprintf("192.168.%d.200", subnetOctet)
+	createOpts := subnets.CreateOpts{
+		NetworkID:  networkID,
+		CIDR:       subnetCIDR,
+		IPVersion:  4,
+		Name:       subnetName,
+		EnableDHCP: gophercloud.Disabled,
+		GatewayIP:  &noGateway,
+		AllocationPools: []subnets.AllocationPool{
+			{
+				Start: dhcpStart,
+				End:   dhcpEnd,
+			},
+		},
 	}
 
 	t.Logf("Attempting to create subnet: %s", subnetName)
