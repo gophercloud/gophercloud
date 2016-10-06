@@ -17,7 +17,7 @@ type Share struct {
 	// Both DisplayName and Name can be used
 	DisplayName string `json:"display_name,omitempty"`
 	// Indicates whether a share has replicas or not.
-	HasReplicas string `json:"has_replicas"`
+	HasReplicas bool `json:"has_replicas"`
 	// The host name of the share
 	Host string `json:"host"`
 	// The UUID of the share
@@ -27,7 +27,7 @@ type Share struct {
 	// Share links for pagination
 	Links []map[string]string `json:"links"`
 	// Key, value -pairs of custom metadata
-	MetaData []map[string]string `json:"metadata,omitempty"`
+	MetaData map[string]string `json:"metadata,omitempty"`
 	// The name of the share
 	Name string `json:"name,omitempty"`
 	// The UUID of the project to which this share belongs to
