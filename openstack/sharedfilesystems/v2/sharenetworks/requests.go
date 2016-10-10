@@ -123,3 +123,37 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToShareNetworkUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contain options for updating an existing ShareNetwork. This object is passed
+// to the sharenetworks.Update function. For more information about the parameters, see
+// the ShareNetwork object.
+type UpdateOpts struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+// ToShareNetworkUpdateMap assembles a request body based on the contents of an
+// UpdateOpts.
+func (opts UpdateOpts) ToShareNetworkUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "share_network")
+}
+
+// Update will update the ShareNetwork with provided information. To extract the updated
+// ShareNetwork from the response, call the Extract method on the UpdateResult.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToShareNetworkUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
