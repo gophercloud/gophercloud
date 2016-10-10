@@ -223,3 +223,31 @@ func MockFilteredListResponse(t *testing.T) {
 		}
 	})
 }
+
+func MockGetResponse(t *testing.T) {
+	th.Mux.HandleFunc("/share-networks/7f950b52-6141-4a08-bbb5-bb7ffa3ea5fd", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+        {
+            "share_network": {
+                "name": "net_my1",
+                "segmentation_id": null,
+                "created_at": "2015-09-04T14:56:45.000000",
+                "neutron_subnet_id": "53482b62-2c84-4a53-b6ab-30d9d9800d06",
+                "updated_at": null,
+                "id": "7f950b52-6141-4a08-bbb5-bb7ffa3ea5fd",
+                "neutron_net_id": "998b42ee-2cee-4d36-8b95-67b5ca1f2109",
+                "ip_version": null,
+                "nova_net_id": null,
+                "cidr": null,
+                "project_id": "16e1ab15c35a457e9c2b2aa189f544e1",
+                "network_type": null,
+                "description": "descr"
+            }
+        }`)
+	})
+}
