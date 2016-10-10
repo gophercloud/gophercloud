@@ -80,3 +80,8 @@ func (r commonResult) Extract() (*Share, error) {
 type CreateResult struct {
 	commonResult
 }
+
+// DeleteResult contains the delete results
+type DeleteResult struct {
+	gophercloud.ErrResult
+}

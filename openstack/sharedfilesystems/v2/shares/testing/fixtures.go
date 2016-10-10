@@ -10,6 +10,7 @@ import (
 
 const (
 	shareEndpoint = "/shares"
+	shareID       = "011d21e2-fbc3-4e4a-9993-9ea223f73264"
 )
 
 var createRequest = `{
@@ -76,5 +77,14 @@ func MockCreateResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, createResponse)
+	})
+}
+
+// MockDeleteResponse creates a mock delete response
+func MockDeleteResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }

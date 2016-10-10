@@ -21,3 +21,13 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, n.Size, 1)
 	th.AssertEquals(t, n.ShareProto, "NFS")
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteResponse(t)
+
+	result := shares.Delete(client.ServiceClient(), shareID)
+	th.AssertNoErr(t, result.Err)
+}
