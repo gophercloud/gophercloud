@@ -16,6 +16,7 @@ after_success:
 - go get github.com/mattn/goveralls
 - go get golang.org/x/tools/cmd/cover
 - go get github.com/golang/tools/cmd/cover
+- echo $(go list ./...)
 - PKGS=$(go list ./...) PKGS_DELIM=$(echo "$PKGS" | paste -sd "," -) go list -f '{{if  or (len .XTestGoFiles) (len .TestGoFiles)}}go test -covermode count -coverprofile {{.Name}}_{{.Doc}}.coverprofile -coverpkg $PKGS_DELIM {{.ImportPath}}{{end}}' $PKGS
 - gocovmerge `ls *.coverprofile` > cover.out
 - rm *.coverprofile
