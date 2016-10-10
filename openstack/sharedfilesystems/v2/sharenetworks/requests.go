@@ -1,6 +1,9 @@
 package sharenetworks
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
@@ -49,4 +52,51 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
 	return
+}
+
+// ListOptsBuilder allows extensions to add additional parameters to the List
+// request.
+type ListOptsBuilder interface {
+	ToShareNetworkListQuery() (string, error)
+}
+
+// ListOpts holds options for listing ShareNetworks. It is passed to the
+// sharenetworks.List function.
+type ListOpts struct {
+	// The UUID of the project where the share network was created
+	ProjectID string `q:"project_id"`
+	// The neutron network ID
+	NeutronNetID string `q:"neutron_net_id"`
+	// The neutron subnet ID
+	NeutronSubnetID string `q:"neutron_subnet_id"`
+	// The nova network ID
+	NovaNetID string `q:"nova_net_id"`
+	// The network type. A valid value is VLAN, VXLAN, GRE or flat
+	NetworkType string `q:"network_type"`
+	// The Share Network name
+	Name string `q:"name"`
+	// The Share Network description
+	Description string `q:"description"`
+}
+
+// ToShareNetworkListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToShareNetworkListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List returns ShareNetworkss optionally limited by the conditions provided in ListOpts.
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listURL(client)
+	if opts != nil {
+		query, err := opts.ToShareNetworkListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return ShareNetworkPage{pagination.SinglePageBase(r)}
+	})
 }

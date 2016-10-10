@@ -1,6 +1,9 @@
 package sharenetworks
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
 
 // ShareNetwork contains all the information associated with an OpenStack
 // ShareNetwork.
@@ -28,13 +31,34 @@ type ShareNetwork struct {
 	// The Share Network description
 	Description string `json:"description"`
 	// The date and time stamp when the Share Network was created
-	CreatedAt string `json:"created_at"`
+	CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
 	// The date and time stamp when the Share Network was updated
-	UpdatedAt string `json:"updated_at"`
+	UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
 }
 
 type commonResult struct {
 	gophercloud.Result
+}
+
+// ShareNetworkPage is a pagination.pager that is returned from a call to the List function.
+type ShareNetworkPage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty returns true if a ListResult contains no ShareNetworks.
+func (r ShareNetworkPage) IsEmpty() (bool, error) {
+	shareNetworks, err := ExtractShareNetworks(r)
+	return len(shareNetworks) == 0, err
+}
+
+// ExtractShareNetworks extracts and returns ShareNetworks. It is used while
+// iterating over a sharenetworks.List call.
+func ExtractShareNetworks(r pagination.Page) ([]ShareNetwork, error) {
+	var s struct {
+		ShareNetworks []ShareNetwork `json:"share_networks"`
+	}
+	err := (r.(ShareNetworkPage)).ExtractInto(&s)
+	return s.ShareNetworks, err
 }
 
 // Extract will get the ShareNetwork object out of the commonResult object.
