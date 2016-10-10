@@ -15,6 +15,7 @@ script:
 after_success:
 - go get github.com/wadey/gocovmerge
 - go get github.com/mattn/goveralls
+- go get golang.org/x/tools/cmd/cover
 - go get github.com/golang/tools/cmd/cover
 - PKGS=$(go list ./... | grep -v /vendor/) PKGS_DELIM=$(echo "$PKGS" | paste -sd "," -) go list -f '{{if or (len .TestGoFiles) (len .XTestGoFiles)}}go test -covermode count -coverprofile {{.Name}}_{{.Doc}}.coverprofile -coverpkg $PKGS_DELIM {{.ImportPath}}{{end}}' $PKGS 2>&1 | xargs -I {} bash -c {} 2>/dev/null
 - gocovmerge `ls *.coverprofile` > cover.out
