@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for testpkg in $(go list ./testing ./.../testing); do
+  covpkg="${testpkg/"/testing"/}"
+  go test -covermode count -coverprofile "testing_"$covpkg.coverprofile -coverpkg $covpkg $testpkg
+done
