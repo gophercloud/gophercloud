@@ -17,7 +17,7 @@ after_success:
 - go get github.com/mattn/goveralls
 - go get golang.org/x/tools/cmd/cover
 - go get github.com/golang/tools/cmd/cover
-- PKGS=$(go list ./... | grep -v /vendor/) PKGS_DELIM=$(echo "$PKGS" | paste -sd "," -) go list -f '{{if  or (len .XTestGoFiles) (len .TestGoFiles)}}go test -covermode count -coverprofile {{.Name}}_{{.Doc}}.coverprofile -coverpkg $PKGS_DELIM {{.ImportPath}}{{end}}' $PKGS | xargs -I {} bash -c {}
+- PKGS=$(go list ./... | grep -v /vendor/) PKGS_DELIM=$(echo "$PKGS" | paste -sd "," -) go list -f '{{if  or (len .XTestGoFiles) (len .TestGoFiles)}}go test -covermode count -coverprofile {{.Name}}_{{.Doc}}.coverprofile -coverpkg $PKGS_DELIM {{.ImportPath}}{{end}}' $PKGS
 - gocovmerge `ls *.coverprofile` > cover.out
 - rm *.coverprofile
 - $HOME/gopath/bin/goveralls -service=travis-ci -coverprofile=cover.out
