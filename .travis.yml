@@ -21,7 +21,7 @@ after_success:
 - echo $PKGS
 - export PKGS_DELIM=$(echo "$PKGS" | paste -sd "," -)
 - echo $PKGS_DELIM
-- go list -f '{{if  or (len .XTestGoFiles) (len .TestGoFiles)}}go test -covermode count -coverprofile {{.Name}}_{{.Doc}}.coverprofile -coverpkg $PKGS_DELIM {{.ImportPath}}{{end}}' $PKGS
+- go list -f '{{if  or (len .XTestGoFiles) (len .TestGoFiles)}}go test -covermode count -coverprofile {{.Name}}_{{.Doc}}.coverprofile -coverpkg $PKGS_DELIM {{.ImportPath}}{{end}}' $PKGS | xargs -I {} bash -c {}
 - gocovmerge `ls *.coverprofile` > cover.out
 - rm *.coverprofile
 - $HOME/gopath/bin/goveralls -service=travis-ci -coverprofile=cover.out
