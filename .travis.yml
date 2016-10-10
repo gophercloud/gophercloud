@@ -12,8 +12,9 @@ env:
   - PKGS=$(go list ./... | grep -v /vendor/)
   - PKGS_DELIM=$(echo "$PKGS" | paste -sd "," -)
 script:
+- eval "$PKGS"
+- eval "$GOPATH"
 - script/cibuild
--
 after_success:
 - go get github.com/wadey/gocovmerge
 - go get github.com/mattn/goveralls
