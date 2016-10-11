@@ -14,5 +14,5 @@ script:
 after_success:
 - go get github.com/wadey/gocovmerge
 - go get github.com/mattn/goveralls
-- gocovmerge `ls *.coverprofile` > cover.out
+- gocovmerge cover.out
 - $HOME/gopath/bin/goveralls -service=travis-ci -coverprofile=cover.out
