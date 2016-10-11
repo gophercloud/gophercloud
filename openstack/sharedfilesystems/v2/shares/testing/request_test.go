@@ -82,3 +82,41 @@ func TestGet(t *testing.T) {
 		},
 	})
 }
+
+func TestListAllShort(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockListResponse(t)
+	pages, err := shares.List(client.ServiceClient(), &shares.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+	act, err := shares.ExtractShares(pages)
+	th.AssertNoErr(t, err)
+	shortList := []shares.Share{
+		{
+			ID:   "d94a8548-2079-4be0-b21c-0a887acd31ca",
+			Name: "My_share",
+			Links: []map[string]string{
+				{
+					"href": "http://172.18.198.54:8786/v1/16e1ab15c35a457e9c2b2aa189f544e1/shares/d94a8548-2079-4be0-b21c-0a887acd31ca",
+					"rel":  "self",
+				},
+				{
+					"href": "http://172.18.198.54:8786/16e1ab15c35a457e9c2b2aa189f544e1/shares/d94a8548-2079-4be0-b21c-0a887acd31ca",
+					"rel":  "bookmark",
+				},
+			},
+		},
+		{
+			ID:   "406ea93b-32e9-4907-a117-148b3945749f",
+			Name: "Share1",
+			Links: []map[string]string{
+				{
+					"href": "http://172.18.198.54:8786/16e1ab15c35a457e9c2b2aa189f544e1/shares/d94a8548-2079-4be0-b21c-0a887acd31ca",
+					"rel":  "bookmark",
+				},
+			},
+		},
+	}
+	th.CheckDeepEquals(t, shortList, act)
+}

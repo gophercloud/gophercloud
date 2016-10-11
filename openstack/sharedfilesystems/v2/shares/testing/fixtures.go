@@ -141,3 +141,38 @@ func MockGetResponse(t *testing.T) {
 		fmt.Fprintf(w, getResponse)
 	})
 }
+
+var shortListResponse = `{
+	"shares": [{
+		"id": "d94a8548-2079-4be0-b21c-0a887acd31ca",
+		"links": [{
+			"href": "http://172.18.198.54:8786/v1/16e1ab15c35a457e9c2b2aa189f544e1/shares/d94a8548-2079-4be0-b21c-0a887acd31ca",
+			"rel": "self"
+		}, {
+			"href": "http://172.18.198.54:8786/16e1ab15c35a457e9c2b2aa189f544e1/shares/d94a8548-2079-4be0-b21c-0a887acd31ca",
+			"rel": "bookmark"
+		}],
+		"name": "My_share"
+	}, {
+		"id": "406ea93b-32e9-4907-a117-148b3945749f",
+		"links": [{
+			"href": "http://172.18.198.54:8786/v1/16e1ab15c35a457e9c2b2aa189f544e1/shares/406ea93b-32e9-4907-a117-148b3945749f",
+			"rel": "self"
+		}, {
+			"href": "http://172.18.198.54:8786/16e1ab15c35a457e9c2b2aa189f544e1/shares/406ea93b-32e9-4907-a117-148b3945749f",
+			"rel": "bookmark"
+		}],
+		"name": "Share1"
+	}]
+}`
+
+// MockListResponse creates a mock list response
+func MockListResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, shortListResponse)
+	})
+}
