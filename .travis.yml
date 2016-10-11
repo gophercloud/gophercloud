@@ -3,6 +3,8 @@ sudo: false
 install:
 - go get golang.org/x/crypto/ssh
 - go get -v -tags 'fixtures acceptance' ./...
+- go get github.com/wadey/gocovmerge
+- go get github.com/mattn/goveralls
 go:
 - 1.7
 - tip
@@ -12,7 +14,4 @@ env:
 script:
 - ./script/coverage
 after_success:
-- go get github.com/wadey/gocovmerge
-- go get github.com/mattn/goveralls
-- gocovmerge cover.out
 - $HOME/gopath/bin/goveralls -service=travis-ci -coverprofile=cover.out

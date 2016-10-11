@@ -5,5 +5,5 @@ for testpkg in $(go list ./testing ./.../testing); do
   go test -covermode count -coverprofile "testing_"$n.coverprofile -coverpkg $covpkg $testpkg 2>/dev/null
   n=$((n+1))
 done
-ls *.coverprofile > cover.out
+gocovmerge `ls *.coverprofile` > cover.out
 rm *.coverprofile
