@@ -31,3 +31,14 @@ func TestDelete(t *testing.T) {
 	result := shares.Delete(client.ServiceClient(), shareID)
 	th.AssertNoErr(t, result.Err)
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetResponse(t)
+
+	s, err := shares.Get(client.ServiceClient(), shareID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, s.ID, shareID)
+}
