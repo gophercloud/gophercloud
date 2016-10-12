@@ -31,6 +31,17 @@ func CreateShareNetwork(t *testing.T, client *gophercloud.ServiceClient) (*share
 	return shareNetwork, nil
 }
 
+// DeleteShareNetwork will delete a share network. An error will occur if
+// the share network was unable to be deleted.
+func DeleteShareNetwork(t *testing.T, client *gophercloud.ServiceClient, shareNetwork *sharenetworks.ShareNetwork) {
+	err := sharenetworks.Delete(client, shareNetwork.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Failed to delete share network %s: %v", shareNetwork.ID, err)
+	}
+
+	t.Logf("Deleted share network: %s", shareNetwork.ID)
+}
+
 // PrintShareNetwork will print a share network and all of its attributes.
 func PrintShareNetwork(t *testing.T, sharenetwork *sharenetworks.ShareNetwork) {
 	t.Logf("ID: %s", sharenetwork.ID)
