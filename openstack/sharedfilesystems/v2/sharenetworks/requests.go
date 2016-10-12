@@ -19,9 +19,9 @@ type CreateOpts struct {
 	// The UUID of the nova network to set up for share servers
 	NovaNetID string `json:"nova_net_id,omitempty"`
 	// The share network name
-	Name string `json:"name"`
+	Name string `json:"name" required:"true"`
 	// The share network description
-	Description string `json:"description"`
+	Description string `json:"description" required:"true"`
 }
 
 // ToShareNetworkCreateMap assembles a request body based on the contents of a
