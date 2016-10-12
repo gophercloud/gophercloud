@@ -122,6 +122,25 @@ func NewBlockStorageV2Client() (*gophercloud.ServiceClient, error) {
 	})
 }
 
+// NewSharedFileSystemV2Client returns a *ServiceClient for making calls
+// to the OpenStack Shared File System v2 API. An error will be returned
+// if authentication or client creation was not possible.
+func NewSharedFileSystemV2Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewSharedFileSystemV2(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
 // NewComputeV2Client returns a *ServiceClient for making calls
 // to the OpenStack Compute v2 API. An error will be returned
 // if authentication or client creation was not possible.
