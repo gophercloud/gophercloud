@@ -19,7 +19,8 @@ func CreateShareNetwork(t *testing.T, client *gophercloud.ServiceClient) (*share
 	t.Logf("Attempting to create share network: %s", shareNetworkName)
 
 	createOpts := sharenetworks.CreateOpts{
-		Name: shareNetworkName,
+		Name:        shareNetworkName,
+		Description: "This is a shared network",
 	}
 
 	shareNetwork, err := sharenetworks.Create(client, createOpts).Extract()
