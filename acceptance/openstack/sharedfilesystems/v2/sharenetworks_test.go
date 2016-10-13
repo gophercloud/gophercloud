@@ -33,6 +33,47 @@ func TestShareNetworkCreateDestroy(t *testing.T) {
 	defer DeleteShareNetwork(t, client, shareNetwork)
 }
 
+// Create a share network and update the name and description. Get the share
+// network and verify that the name and description have been updated
+func TestShareNetworkUpdate(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create shared file system client: %v", err)
+	}
+
+	shareNetwork, err := CreateShareNetwork(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create share network: %v", err)
+	}
+
+	options := sharenetworks.UpdateOpts{
+		Name:        "NewName",
+		Description: "New share network description",
+	}
+
+	_, err = sharenetworks.Update(client, shareNetwork.ID, options).Extract()
+	if err != nil {
+		t.Errorf("Unable to update shareNetwork: %v", err)
+	}
+
+	newShareNetwork, err := sharenetworks.Get(client, shareNetwork.ID).Extract()
+	if err != nil {
+		t.Errorf("Unable to retrieve shareNetwork: %v", err)
+	}
+
+	if newShareNetwork.Name != options.Name {
+		t.Fatalf("Share network name was expeted to be: %s", options.Name)
+	}
+
+	if newShareNetwork.Description != options.Description {
+		t.Fatalf("Share network description was expeted to be: %s", options.Description)
+	}
+
+	PrintShareNetwork(t, shareNetwork)
+
+	defer DeleteShareNetwork(t, client, shareNetwork)
+}
+
 func TestShareNetworkListDetail(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
