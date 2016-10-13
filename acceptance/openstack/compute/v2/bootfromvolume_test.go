@@ -10,7 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 )
 
-func TestBootFromImage(t *testing.T) {
+func TestBootFromSourceImage(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
@@ -29,8 +29,8 @@ func TestBootFromImage(t *testing.T) {
 		bootfromvolume.BlockDevice{
 			BootIndex:           0,
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.Local,
-			SourceType:          bootfromvolume.Image,
+			DestinationType:     bootfromvolume.DestinationLocal,
+			SourceType:          bootfromvolume.SourceImage,
 			UUID:                choices.ImageID,
 		},
 	}
@@ -63,7 +63,7 @@ func TestBootFromNewVolume(t *testing.T) {
 		bootfromvolume.BlockDevice{
 			DeleteOnTermination: true,
 			DestinationType:     bootfromvolume.DestinationVolume,
-			SourceType:          bootfromvolume.Image,
+			SourceType:          bootfromvolume.SourceImage,
 			UUID:                choices.ImageID,
 			VolumeSize:          2,
 		},
@@ -139,26 +139,26 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 	blockDevices := []bootfromvolume.BlockDevice{
 		bootfromvolume.BlockDevice{
 			BootIndex:           0,
-			DestinationType:     bootfromvolume.Local,
+			DestinationType:     bootfromvolume.DestinationLocal,
 			DeleteOnTermination: true,
-			SourceType:          bootfromvolume.Image,
+			SourceType:          bootfromvolume.SourceImage,
 			UUID:                choices.ImageID,
 			VolumeSize:          5,
 		},
 		bootfromvolume.BlockDevice{
 			BootIndex:           -1,
-			DestinationType:     bootfromvolume.Local,
+			DestinationType:     bootfromvolume.DestinationLocal,
 			DeleteOnTermination: true,
 			GuestFormat:         "ext4",
-			SourceType:          bootfromvolume.Blank,
+			SourceType:          bootfromvolume.SourceBlank,
 			VolumeSize:          1,
 		},
 		bootfromvolume.BlockDevice{
 			BootIndex:           -1,
-			DestinationType:     bootfromvolume.Local,
+			DestinationType:     bootfromvolume.DestinationLocal,
 			DeleteOnTermination: true,
 			GuestFormat:         "ext4",
-			SourceType:          bootfromvolume.Blank,
+			SourceType:          bootfromvolume.SourceBlank,
 			VolumeSize:          1,
 		},
 	}
@@ -191,15 +191,15 @@ func TestAttachNewVolume(t *testing.T) {
 		bootfromvolume.BlockDevice{
 			BootIndex:           0,
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.Local,
-			SourceType:          bootfromvolume.Image,
+			DestinationType:     bootfromvolume.DestinationLocal,
+			SourceType:          bootfromvolume.SourceImage,
 			UUID:                choices.ImageID,
 		},
 		bootfromvolume.BlockDevice{
 			BootIndex:           1,
 			DeleteOnTermination: true,
 			DestinationType:     bootfromvolume.DestinationVolume,
-			SourceType:          bootfromvolume.Blank,
+			SourceType:          bootfromvolume.SourceBlank,
 			VolumeSize:          2,
 		},
 	}
@@ -242,8 +242,8 @@ func TestAttachExistingVolume(t *testing.T) {
 		bootfromvolume.BlockDevice{
 			BootIndex:           0,
 			DeleteOnTermination: true,
-			DestinationType:     bootfromvolume.Local,
-			SourceType:          bootfromvolume.Image,
+			DestinationType:     bootfromvolume.DestinationLocal,
+			SourceType:          bootfromvolume.SourceImage,
 			UUID:                choices.ImageID,
 		},
 		bootfromvolume.BlockDevice{

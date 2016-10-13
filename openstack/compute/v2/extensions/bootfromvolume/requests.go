@@ -16,22 +16,25 @@ type (
 )
 
 const (
-	// Blank SourceType
-	Blank SourceType = "blank"
+	// DestinationLocal DestinationType is for using an ephemeral disk as the
+	// destination.
+	DestinationLocal DestinationType = "local"
 
-	// Volume DestinationType
+	// DestinationVolume DestinationType is for using a volume as the destination.
 	DestinationVolume DestinationType = "volume"
 
-	// Image SourceType
-	Image SourceType = "image"
+	// SourceBlank SourceType is for a "blank" or empty source.
+	SourceBlank SourceType = "blank"
 
-	// Local DestinationType
-	Local DestinationType = "local"
+	// SourceImage SourceType is for using images as the source of a block device.
+	SourceImage SourceType = "image"
 
-	// Snapshot SourceType
-	Snapshot SourceType = "snapshot"
+	// SourceSnapshot SourceType is for using a volume snapshot as the source of
+	// a block device.
+	SourceSnapshot SourceType = "snapshot"
 
-	// Volume SourceType
+	// SourceVolume SourceType is for using a volume as the source of block
+	// device.
 	SourceVolume SourceType = "volume"
 )
 
