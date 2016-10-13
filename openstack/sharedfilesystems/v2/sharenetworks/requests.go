@@ -63,6 +63,8 @@ type ListOptsBuilder interface {
 // ListOpts holds options for listing ShareNetworks. It is passed to the
 // sharenetworks.List function.
 type ListOpts struct {
+	// admin-only option. Set it to true to see all tenant share networks.
+	AllTenants bool `q:"all_tenants"`
 	// The UUID of the project where the share network was created
 	ProjectID string `q:"project_id"`
 	// The neutron network ID
@@ -77,6 +79,14 @@ type ListOpts struct {
 	Name string `q:"name"`
 	// The Share Network description
 	Description string `q:"description"`
+	// The Share Network IP version
+	IPVersion int `q:"ip_version"`
+	// The Share Network segmentation ID
+	SegmentationID int `q:"segmentation_id"`
+	// List all share networks created after the given date
+	CreatedSince string `q:"created_since"`
+	// List all share networks created before the given date
+	CreatedBefore string `q:"created_before"`
 }
 
 // ToShareNetworkListQuery formats a ListOpts into a query string.
