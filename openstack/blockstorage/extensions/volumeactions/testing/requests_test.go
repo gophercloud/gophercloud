@@ -24,6 +24,16 @@ func TestAttach(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestBeginDetaching(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockBeginDetachingResponse(t)
+
+	err := volumeactions.BeginDetaching(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
 func TestDetach(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

@@ -7,6 +7,11 @@ type AttachResult struct {
 	gophercloud.ErrResult
 }
 
+// BeginDetachingResult contains the response body and error from a Get request.
+type BeginDetachingResult struct {
+	gophercloud.ErrResult
+}
+
 // DetachResult contains the response body and error from a Get request.
 type DetachResult struct {
 	gophercloud.ErrResult
