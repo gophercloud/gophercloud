@@ -19,6 +19,15 @@ func TestShareNetworkCreateDestroy(t *testing.T) {
 		t.Fatalf("Unable to create share network: %v", err)
 	}
 
+	newShareNetwork, err := sharenetworks.Get(client, shareNetwork.ID).Extract()
+	if err != nil {
+		t.Errorf("Unable to retrieve shareNetwork: %v", err)
+	}
+
+	if newShareNetwork.Name != shareNetwork.Name {
+		t.Fatalf("Share network name was expeted to be: %s", shareNetwork.Name)
+	}
+
 	PrintShareNetwork(t, shareNetwork)
 
 	defer DeleteShareNetwork(t, client, shareNetwork)
