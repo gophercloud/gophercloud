@@ -55,6 +55,6 @@ func PrintShareNetwork(t *testing.T, sharenetwork *sharenetworks.ShareNetwork) {
 	t.Logf("IP version: %d", sharenetwork.IPVersion)
 	t.Logf("Name: %s", sharenetwork.Name)
 	t.Logf("Description: %s", sharenetwork.Description)
-	t.Logf("Created at: %s", sharenetwork.CreatedAt)
-	t.Logf("Updated at: %s", sharenetwork.UpdatedAt)
+	t.Logf("Created at: %v", sharenetwork.CreatedAt)
+	t.Logf("Updated at: %v", sharenetwork.UpdatedAt)
 }
