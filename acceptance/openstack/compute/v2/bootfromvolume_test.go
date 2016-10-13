@@ -10,7 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 )
 
-func TestBootFromSourceImage(t *testing.T) {
+func TestBootFromImage(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
