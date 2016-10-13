@@ -90,6 +90,10 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 		},
 	}
 
+	if blockDevices[0].SourceType == bootfromvolume.SourceImage && blockDevices[0].DestinationType == bootfromvolume.DestinationLocal {
+		serverCreateOpts.ImageRef = blockDevices[0].UUID
+	}
+
 	server, err = bootfromvolume.Create(client, bootfromvolume.CreateOptsExt{
 		serverCreateOpts,
 		blockDevices,

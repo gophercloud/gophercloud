@@ -5,40 +5,68 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
 
-// SourceType represents the type of medium being used to create the volume.
-type SourceType string
+type (
+	// DestinationType represents the type of medium being used as the
+	// destination of the bootable device.
+	DestinationType string
 
-const (
-	// Volume SourceType
-	Volume SourceType = "volume"
-	// Snapshot SourceType
-	Snapshot SourceType = "snapshot"
-	// Image SourceType
-	Image SourceType = "image"
-	// Blank SourceType
-	Blank SourceType = "blank"
+	// SourceType represents the type of medium being used as the source of the
+	// bootable device.
+	SourceType string
 )
 
-// BlockDevice is a structure with options for booting a server instance
-// from a volume. The volume may be created from an image, snapshot, or another
-// volume.
+const (
+	// DestinationLocal DestinationType is for using an ephemeral disk as the
+	// destination.
+	DestinationLocal DestinationType = "local"
+
+	// DestinationVolume DestinationType is for using a volume as the destination.
+	DestinationVolume DestinationType = "volume"
+
+	// SourceBlank SourceType is for a "blank" or empty source.
+	SourceBlank SourceType = "blank"
+
+	// SourceImage SourceType is for using images as the source of a block device.
+	SourceImage SourceType = "image"
+
+	// SourceSnapshot SourceType is for using a volume snapshot as the source of
+	// a block device.
+	SourceSnapshot SourceType = "snapshot"
+
+	// SourceVolume SourceType is for using a volume as the source of block
+	// device.
+	SourceVolume SourceType = "volume"
+)
+
+// BlockDevice is a structure with options for creating block devices in a
+// server. The block device may be created from an image, snapshot, new volume,
+// or existing volume. The destination may be a new volume, existing volume
+// which will be attached to the instance, ephemeral disk, or boot device.
 type BlockDevice struct {
-	// SourceType must be one of: "volume", "snapshot", "image".
+	// SourceType must be one of: "volume", "snapshot", "image", or "blank".
 	SourceType SourceType `json:"source_type" required:"true"`
-	// UUID is the unique identifier for the volume, snapshot, or image (see above)
+
+	// UUID is the unique identifier for the existing volume, snapshot, or
+	// image (see above).
 	UUID string `json:"uuid,omitempty"`
+
 	// BootIndex is the boot index. It defaults to 0.
 	BootIndex int `json:"boot_index"`
+
 	// DeleteOnTermination specifies whether or not to delete the attached volume
 	// when the server is deleted. Defaults to `false`.
 	DeleteOnTermination bool `json:"delete_on_termination"`
+
 	// DestinationType is the type that gets created. Possible values are "volume"
 	// and "local".
-	DestinationType string `json:"destination_type,omitempty"`
+	DestinationType DestinationType `json:"destination_type,omitempty"`
+
 	// GuestFormat specifies the format of the block device.
 	GuestFormat string `json:"guest_format,omitempty"`
-	// VolumeSize is the size of the volume to create (in gigabytes).
-	VolumeSize int `json:"volume_size"`
+
+	// VolumeSize is the size of the volume to create (in gigabytes). This can be
+	// omitted for existing volumes.
+	VolumeSize int `json:"volume_size,omitempty"`
 }
 
 // CreateOptsExt is a structure that extends the server `CreateOpts` structure
