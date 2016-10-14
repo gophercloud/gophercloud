@@ -82,22 +82,16 @@ type ListOpts struct {
 	AllTenants bool `q:"all_tenants"`
 	// The security service ID
 	ID string `q:"id"`
-	// The UUID of the project where the security service was created
-	ProjectID string `q:"project_id"`
 	// The security service domain
 	Domain string `q:"domain"`
 	// The security service type. A valid value is ldap, kerberos, or active_directory
 	Type string `q:"type"`
 	// The security service name
 	Name string `q:"name"`
-	// The security service description
-	Description string `q:"description"`
 	// The DNS IP address that is used inside the tenant network
 	DNSIP string `q:"dns_ip"`
 	// The security service user or group name that is used by the tenant
 	User string `q:"user"`
-	// The user password, if you specify a user
-	Password string `q:"password"`
 	// The security service host name or IP address
 	Server string `q:"server"`
 	// The ID of the share network using security services
