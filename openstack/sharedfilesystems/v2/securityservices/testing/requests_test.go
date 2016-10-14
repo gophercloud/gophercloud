@@ -148,3 +148,17 @@ func TestFilteredList(t *testing.T) {
 
 	th.CheckDeepEquals(t, expected, actual)
 }
+
+// Verifies that it is possible to get a security service
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetResponse(t)
+
+	n, err := securityservices.Get(client.ServiceClient(), "securityServiceID").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.Name, "SecServ1")
+	th.AssertEquals(t, n.ID, "securityServiceID")
+}
