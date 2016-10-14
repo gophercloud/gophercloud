@@ -19,6 +19,7 @@
 # * Neutron v2
 # * Neutron LBaaS v1.0
 # * Neutron FWaaS v2.0
+# * Manila v2
 #
 # Go 1.6 is also installed.
 
@@ -136,6 +137,9 @@ disable_service horizon
 # Enable Zaqar
 #enable_plugin zaqar https://github.com/openstack/zaqar
 #enable_service zaqar-server
+
+# Enable Manila
+enable_plugin manila https://github.com/openstack/manila
 
 # Automatically download and register a VM image that Heat can launch
 # For more information on Heat and DevStack see
