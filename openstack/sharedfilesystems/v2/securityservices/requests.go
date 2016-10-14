@@ -126,3 +126,37 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToSecurityServiceUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contain options for updating an existing SecurityService. This object is passed
+// to the securityservices.Update function. For more information about the parameters, see
+// the SecurityService object.
+type UpdateOpts struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+// ToSecurityServiceUpdateMap assembles a request body based on the contents of an
+// UpdateOpts.
+func (opts UpdateOpts) ToSecurityServiceUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "security_service")
+}
+
+// Update will update the SecurityService with provided information. To extract the updated
+// SecurityService from the response, call the Extract method on the UpdateResult.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToSecurityServiceUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
