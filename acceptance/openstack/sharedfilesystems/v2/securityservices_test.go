@@ -18,6 +18,15 @@ func TestSecurityServiceCreateDelete(t *testing.T) {
 		t.Fatalf("Unable to create security service: %v", err)
 	}
 
+	newSecurityService, err := securityservices.Get(client, securityService.ID).Extract()
+	if err != nil {
+		t.Errorf("Unable to retrieve the security service: %v", err)
+	}
+
+	if newSecurityService.Name != securityService.Name {
+		t.Fatalf("Security service name was expeted to be: %s", securityService.Name)
+	}
+
 	PrintSecurityService(t, securityService)
 
 	defer DeleteSecurityService(t, client, securityService)
