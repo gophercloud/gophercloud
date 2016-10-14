@@ -44,3 +44,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// Delete will delete the existing ShareNetwork with the provided ID.
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
+}
