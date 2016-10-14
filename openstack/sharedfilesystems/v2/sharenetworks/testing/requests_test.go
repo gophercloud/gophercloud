@@ -236,3 +236,15 @@ func TestUpdateNova(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, v)
 }
+
+// Verifies that it is possible to add a security service to a share network
+func TestAddSecurityService(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockAddSecurityServiceResponse(t)
+
+	options := sharenetworks.AddSecurityServiceOpts{SecurityServiceID: "securityServiceID"}
+	_, err := sharenetworks.AddSecurityService(client.ServiceClient(), "shareNetworkID", options).Extract()
+	th.AssertNoErr(t, err)
+}
