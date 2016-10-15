@@ -32,6 +32,9 @@ type AcceptanceTestChoices struct {
 
 	// ExternalNetworkID is the network ID of the external network.
 	ExternalNetworkID string
+
+	// ShareNetworkID is the Manila Share network ID
+	ShareNetworkID string
 }
 
 // AcceptanceTestChoicesFromEnv populates a ComputeChoices struct from environment variables.
@@ -43,6 +46,7 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	networkName := os.Getenv("OS_NETWORK_NAME")
 	floatingIPPoolName := os.Getenv("OS_POOL_NAME")
 	externalNetworkID := os.Getenv("OS_EXTGW_ID")
+	shareNetworkID := os.Getenv("OS_SHARE_NETWORK_ID")
 
 	missing := make([]string, 0, 3)
 	if imageID == "" {
@@ -63,7 +67,9 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	if networkName == "" {
 		networkName = "private"
 	}
-
+	if shareNetworkID == "" {
+		missing = append(missing, "OS_SHARE_NETWORK_ID")
+	}
 	notDistinct := ""
 	if flavorID == flavorIDResize {
 		notDistinct = "OS_FLAVOR_ID and OS_FLAVOR_ID_RESIZE must be distinct."
@@ -81,7 +87,15 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 		return nil, fmt.Errorf(text)
 	}
 
-	return &AcceptanceTestChoices{ImageID: imageID, FlavorID: flavorID, FlavorIDResize: flavorIDResize, FloatingIPPoolName: floatingIPPoolName, NetworkName: networkName, ExternalNetworkID: externalNetworkID}, nil
+	return &AcceptanceTestChoices{
+		ImageID:            imageID,
+		FlavorID:           flavorID,
+		FlavorIDResize:     flavorIDResize,
+		FloatingIPPoolName: floatingIPPoolName,
+		NetworkName:        networkName,
+		ExternalNetworkID:  externalNetworkID,
+		ShareNetworkID:     shareNetworkID,
+	}, nil
 }
 
 // NewBlockStorageV1Client returns a *ServiceClient for making calls
