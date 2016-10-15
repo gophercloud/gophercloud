@@ -3,6 +3,7 @@ package v2
 import (
 	"encoding/json"
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
 	"testing"
 )
@@ -14,13 +15,17 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share
 		t.Skip("Skipping test that requres share creation in short mode.")
 	}
 
-	// TODO: Need a way to create a share network, which is attached
-	// to the private neutron network.
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatalf("Unable to fetch environment information")
+	}
+
+	t.Logf("Share network id %s", choices.ShareNetworkID)
 	createOpts := shares.CreateOpts{
 		Size:           1,
 		Name:           "My Test Share",
 		ShareProto:     "NFS",
-		ShareNetworkID: "cc92a11e-a108-4a25-96d3-ef9281e93e4e",
+		ShareNetworkID: choices.ShareNetworkID,
 	}
 
 	share, err := shares.Create(client, createOpts).Extract()
