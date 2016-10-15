@@ -45,6 +45,11 @@ to set them manually.
 |`OS_POOL_NAME`|The Pool from where to obtain Floating IPs|
 |`OS_NETWORK_NAME`|The network to launch instances on|
 
+#### Shared file systems
+|Name|Description|
+|---|---|
+|`OS_SHARE_NETWORK_ID`| The share network ID to use when creating shares|
+
 ### 2. Run the test suite
 
 From the root directory, run:
