@@ -67,12 +67,17 @@ func AssociateFloatingIPWithFixedIP(t *testing.T, client *gophercloud.ServiceCli
 // CreateBootableVolumeServer works like CreateServer but is configured with
 // one or more block devices defined by passing in []bootfromvolume.BlockDevice.
 // An error will be returned if a server was unable to be created.
-func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice, choices *clients.AcceptanceTestChoices) (*servers.Server, error) {
+func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -135,7 +140,12 @@ func CreateDefaultRule(t *testing.T, client *gophercloud.ServiceClient) (dsr.Def
 
 // CreateFloatingIP will allocate a floating IP.
 // An error will be returend if one was unable to be allocated.
-func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices) (*floatingips.FloatingIP, error) {
+func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient) (*floatingips.FloatingIP, error) {
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	createOpts := floatingips.CreateOpts{
 		Pool: choices.FloatingIPPoolName,
 	}
@@ -189,12 +199,17 @@ func CreateKeyPair(t *testing.T, client *gophercloud.ServiceClient) (*keypairs.K
 // These block devices act like block devices when booting from a volume but
 // are actually local ephemeral disks.
 // An error will be returned if a server was unable to be created.
-func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice, choices *clients.AcceptanceTestChoices) (*servers.Server, error) {
+func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -274,12 +289,17 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 // The image will be the value of the OS_IMAGE_ID environment variable.
 // The instance will be launched on the network specified in OS_NETWORK_NAME.
 // An error will be returned if the instance was unable to be created.
-func CreateServer(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices) (*servers.Server, error) {
+func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -325,12 +345,17 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient, choices *clie
 // The image is intentionally missing to trigger an error.
 // The instance will be launched on the network specified in OS_NETWORK_NAME.
 // An error will be returned if the instance was unable to be created.
-func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices) (*servers.Server, error) {
+func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -384,12 +409,17 @@ func CreateServerGroup(t *testing.T, client *gophercloud.ServiceClient, policy s
 
 // CreateServerInServerGroup works like CreateServer but places the instance in
 // a specified Server Group.
-func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices, serverGroup *servergroups.ServerGroup) (*servers.Server, error) {
+func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, serverGroup *servergroups.ServerGroup) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -427,12 +457,17 @@ func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, 
 
 // CreateServerWithPublicKey works the same as CreateServer, but additionally
 // configures the server with a specified Key Pair name.
-func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices, keyPairName string) (*servers.Server, error) {
+func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, keyPairName string) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -673,7 +708,12 @@ func ImportPublicKey(t *testing.T, client *gophercloud.ServiceClient, publicKey 
 // ResizeServer performs a resize action on an instance. An error will be
 // returned if the instance failed to resize.
 // The new flavor that the instance will be resized to is specified in OS_FLAVOR_ID_RESIZE.
-func ResizeServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server, choices *clients.AcceptanceTestChoices) error {
+func ResizeServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	opts := &servers.ResizeOpts{
 		FlavorRef: choices.FlavorIDResize,
 	}

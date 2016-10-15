@@ -37,12 +37,7 @@ func TestFloatingIPsCreate(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	floatingIP, err := CreateFloatingIP(t, client, choices)
+	floatingIP, err := CreateFloatingIP(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create floating IP: %v", err)
 	}
@@ -61,18 +56,13 @@ func TestFloatingIPsAssociate(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	server, err := CreateServer(t, client, choices)
+	server, err := CreateServer(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 	defer DeleteServer(t, client, server)
 
-	floatingIP, err := CreateFloatingIP(t, client, choices)
+	floatingIP, err := CreateFloatingIP(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create floating IP: %v", err)
 	}
@@ -111,7 +101,7 @@ func TestFloatingIPsFixedIPAssociate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	server, err := CreateServer(t, client, choices)
+	server, err := CreateServer(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
@@ -122,7 +112,7 @@ func TestFloatingIPsFixedIPAssociate(t *testing.T) {
 		t.Fatalf("Unable to get server %s: %v", server.ID, err)
 	}
 
-	floatingIP, err := CreateFloatingIP(t, client, choices)
+	floatingIP, err := CreateFloatingIP(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create floating IP: %v", err)
 	}

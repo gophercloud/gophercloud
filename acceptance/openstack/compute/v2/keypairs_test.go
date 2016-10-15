@@ -78,11 +78,6 @@ func TestKeypairsServerCreateWithKey(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	publicKey, err := createKey()
 	if err != nil {
 		t.Fatalf("Unable to create public key: %s", err)
@@ -94,7 +89,7 @@ func TestKeypairsServerCreateWithKey(t *testing.T) {
 	}
 	defer DeleteKeyPair(t, client, keyPair)
 
-	server, err := CreateServerWithPublicKey(t, client, choices, keyPair.Name)
+	server, err := CreateServerWithPublicKey(t, client, keyPair.Name)
 	if err != nil {
 		t.Fatalf("Unable to create server: %s", err)
 	}

@@ -97,12 +97,7 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	server, err := CreateServer(t, client, choices)
+	server, err := CreateServer(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
