@@ -170,4 +170,25 @@ echo export OS_EXTGW_ID=$_EXTGW_ID >> openrc
 echo export OS_POOL_NAME="public" >> openrc
 echo export OS_FLAVOR_ID=99 >> openrc
 echo export OS_FLAVOR_ID_RESIZE=98 >> openrc
+
+# Manila share-network needs to be created
+_IDTOVALUE="-F id -f value"
+_NEUTRON_NET_ID=$(neutron net-list --name private $_IDTOVALUE)
+_NEUTRON_IPV4_SUB=$(neutron subnet-list \
+    --ip_version 4 \
+    --network_id "$_NEUTRON_NET_ID" \
+    $_IDTOVALUE)
+
+manila share-network-create \
+    --neutron-net-id "$_NEUTRON_NET_ID" \
+    --neutron-subnet-id "$_NEUTRON_IPV4_SUB" \
+    --name "acc_share_nw"
+
+_SHARE_NETWORK=$(manila share-network-list \
+    --neutron-net-id "$_NEUTRON_NET_ID" \
+    --neutron-subnet-id "$_NEUTRON_IPV4_SUB" \
+    --name "acc_share_nw" \
+    | awk 'FNR == 4 {print $2}')
+
+echo export OS_SHARE_NETWORK_ID="$_SHARE_NETWORK" >> openrc
 source openrc demo
