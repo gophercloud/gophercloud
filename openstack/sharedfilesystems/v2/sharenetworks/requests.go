@@ -80,13 +80,17 @@ type ListOpts struct {
 	// The Share Network description
 	Description string `q:"description"`
 	// The Share Network IP version
-	IPVersion int `q:"ip_version"`
+	IPVersion gophercloud.IPVersion `q:"ip_version"`
 	// The Share Network segmentation ID
 	SegmentationID int `q:"segmentation_id"`
 	// List all share networks created after the given date
 	CreatedSince string `q:"created_since"`
 	// List all share networks created before the given date
 	CreatedBefore string `q:"created_before"`
+	// Limit specifies the page size.
+	Limit int `q:"limit"`
+	// Limit specifies the page number.
+	Offset int `q:"offset"`
 }
 
 // ToShareNetworkListQuery formats a ListOpts into a query string.
@@ -107,6 +111,6 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	}
 
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return ShareNetworkPage{pagination.SinglePageBase(r)}
+		return ShareNetworkPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }

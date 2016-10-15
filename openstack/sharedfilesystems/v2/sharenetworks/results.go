@@ -42,7 +42,7 @@ type commonResult struct {
 
 // ShareNetworkPage is a pagination.pager that is returned from a call to the List function.
 type ShareNetworkPage struct {
-	pagination.SinglePageBase
+	pagination.LinkedPageBase
 }
 
 // IsEmpty returns true if a ListResult contains no ShareNetworks.
