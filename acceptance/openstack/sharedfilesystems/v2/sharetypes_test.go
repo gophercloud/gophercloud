@@ -17,7 +17,7 @@ func TestShareTypeCreateDestroy(t *testing.T) {
 		t.Fatalf("Unable to create share type: %v", err)
 	}
 
-	//TODO: delete share type when the delete is implemented
-
 	PrintShareType(t, shareType)
+
+	defer DeleteShareType(t, client, shareType)
 }
