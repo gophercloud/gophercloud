@@ -137,8 +137,22 @@ type UpdateOptsBuilder interface {
 // to the securityservices.Update function. For more information about the parameters, see
 // the SecurityService object.
 type UpdateOpts struct {
-	Name        string `json:"name,omitempty"`
+	// The security service name
+	Name string `json:"name"`
+	// The security service description
 	Description string `json:"description,omitempty"`
+	// The security service type. A valid value is ldap, kerberos, or active_directory
+	Type string `json:"type,omitempty"`
+	// The DNS IP address that is used inside the tenant network
+	DNSIP string `json:"dns_ip,omitempty"`
+	// The security service user or group name that is used by the tenant
+	User string `json:"user,omitempty"`
+	// The user password, if you specify a user
+	Password string `json:"password,omitempty"`
+	// The security service domain
+	Domain string `json:"domain,omitempty"`
+	// The security service host name or IP address
+	Server string `json:"server,omitempty"`
 }
 
 // ToSecurityServiceUpdateMap assembles a request body based on the contents of an

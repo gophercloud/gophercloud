@@ -111,6 +111,7 @@ func TestSecurityServiceUpdate(t *testing.T) {
 	options := securityservices.UpdateOpts{
 		Name:        "NewName",
 		Description: "New security service description",
+		Type:        "ldap",
 	}
 
 	_, err = securityservices.Update(client, securityService.ID, options).Extract()
@@ -129,6 +130,10 @@ func TestSecurityServiceUpdate(t *testing.T) {
 
 	if newSecurityService.Description != options.Description {
 		t.Fatalf("Security service description was expeted to be: %s", options.Description)
+	}
+
+	if newSecurityService.Type != options.Type {
+		t.Fatalf("Security service type was expected to be: %s", options.Type)
 	}
 
 	PrintSecurityService(t, securityService)
