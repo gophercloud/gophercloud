@@ -92,3 +92,9 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		return ShareTypePage{pagination.SinglePageBase(r)}
 	})
 }
+
+// GetDefault will retrieve the default ShareType.
+func GetDefault(client *gophercloud.ServiceClient) (r GetDefaultResult) {
+	_, r.Err = client.Get(getDefaultURL(client), &r.Body, nil)
+	return
+}

@@ -63,3 +63,8 @@ func ExtractShareTypes(r pagination.Page) ([]ShareType, error) {
 	err := (r.(ShareTypePage)).ExtractInto(&s)
 	return s.ShareTypes, err
 }
+
+// GetDefaultResult contains the response body and error from a Get Default request.
+type GetDefaultResult struct {
+	commonResult
+}
