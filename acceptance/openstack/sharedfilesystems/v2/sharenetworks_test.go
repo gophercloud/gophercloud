@@ -49,6 +49,7 @@ func TestShareNetworkUpdate(t *testing.T) {
 	options := sharenetworks.UpdateOpts{
 		Name:        "NewName",
 		Description: "New share network description",
+		NovaNetID:   "New_nova_network_id",
 	}
 
 	_, err = sharenetworks.Update(client, shareNetwork.ID, options).Extract()
@@ -67,6 +68,10 @@ func TestShareNetworkUpdate(t *testing.T) {
 
 	if newShareNetwork.Description != options.Description {
 		t.Fatalf("Share network description was expeted to be: %s", options.Description)
+	}
+
+	if newShareNetwork.NovaNetID != options.NovaNetID {
+		t.Fatalf("Share network Nova ID was expeted to be: %s", options.NovaNetID)
 	}
 
 	PrintShareNetwork(t, shareNetwork)

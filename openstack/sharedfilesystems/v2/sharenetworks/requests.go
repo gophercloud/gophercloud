@@ -134,8 +134,16 @@ type UpdateOptsBuilder interface {
 // to the sharenetworks.Update function. For more information about the parameters, see
 // the ShareNetwork object.
 type UpdateOpts struct {
-	Name        string `json:"name,omitempty"`
+	// The share network name
+	Name string `json:"name,omitempty"`
+	// The share network description
 	Description string `json:"description,omitempty"`
+	// The UUID of the Neutron network to set up for share servers
+	NeutronNetID string `json:"neutron_net_id,omitempty"`
+	// The UUID of the Neutron subnet to set up for share servers
+	NeutronSubnetID string `json:"neutron_subnet_id,omitempty"`
+	// The UUID of the nova network to set up for share servers
+	NovaNetID string `json:"nova_net_id,omitempty"`
 }
 
 // ToShareNetworkUpdateMap assembles a request body based on the contents of an
