@@ -69,3 +69,34 @@ func TestDelete(t *testing.T) {
 	res := sharetypes.Delete(client.ServiceClient(), "shareTypeID")
 	th.AssertNoErr(t, res.Err)
 }
+
+// Verifies that share types can be listed correctly
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockListResponse(t)
+
+	allPages, err := sharetypes.List(client.ServiceClient(), &sharetypes.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := sharetypes.ExtractShareTypes(allPages)
+	th.AssertNoErr(t, err)
+	expected := []sharetypes.ShareType{
+		{
+			ID:   "be27425c-f807-4500-a056-d00721db45cf",
+			Name: "default",
+			OSShareTypeAccessIsPublic: true,
+			ExtraSpecs:                map[string]interface{}{"snapshot_support": "True", "driver_handles_share_servers": "True"},
+			RequiredExtraSpecs:        map[string]interface{}{"driver_handles_share_servers": "True"},
+		},
+		{
+			ID:   "f015bebe-c38b-4c49-8832-00143b10253b",
+			Name: "d",
+			OSShareTypeAccessIsPublic: true,
+			ExtraSpecs:                map[string]interface{}{"driver_handles_share_servers": "false", "snapshot_support": "True"},
+			RequiredExtraSpecs:        map[string]interface{}{"driver_handles_share_servers": "True"},
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
+}
