@@ -12,7 +12,7 @@ type CreateOptsBuilder interface {
 // passed to the sharetypes.Create function. For more information about
 // these parameters, see the ShareType object.
 type CreateOpts struct {
-	// The share network name
+	// The share type name
 	Name string `json:"name" required:"true"`
 	// Indicates whether a share type is publicly accessible
 	OSShareTypeAccessIsPublic bool `json:"os-share-type-access:is_public"`
