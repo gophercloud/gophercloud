@@ -59,3 +59,13 @@ func TestCreateFails(t *testing.T) {
 		t.Fatal("ErrMissingInput was expected to occur")
 	}
 }
+
+// Verifies that share type deletion works
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteResponse(t)
+	res := sharetypes.Delete(client.ServiceClient(), "shareTypeID")
+	th.AssertNoErr(t, res.Err)
+}
