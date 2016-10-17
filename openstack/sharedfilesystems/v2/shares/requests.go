@@ -124,8 +124,8 @@ func (l ListOpts) ToShareListQuery() (string, error) {
 
 // List returns shares filtered by the conditions provided in ListOpts. If ListOpts
 // is not nil, returns a list of shares with details.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
-	url := listURL(client)
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder, detail bool) pagination.Pager {
+	url := listURL(client, detail)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return SharePage{pagination.SinglePageBase(r)}
 	})
