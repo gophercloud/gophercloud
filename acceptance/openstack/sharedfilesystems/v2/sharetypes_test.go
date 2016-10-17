@@ -43,3 +43,21 @@ func TestShareTypeList(t *testing.T) {
 		PrintShareType(t, &shareType)
 	}
 }
+
+func TestShareTypeGetDefault(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a shared file system client: %v", err)
+	}
+
+	shareType, err := sharetypes.GetDefault(client).Extract()
+	if err != nil {
+		t.Fatalf("Unable to retrieve the default share type: %v", err)
+	}
+
+	if shareType.Name != "default" {
+		t.Fatal("Share type name was expected to be: default")
+	}
+
+	PrintShareType(t, shareType)
+}
