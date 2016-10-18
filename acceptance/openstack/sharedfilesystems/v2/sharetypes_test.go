@@ -61,3 +61,28 @@ func TestShareTypeGetDefault(t *testing.T) {
 
 	PrintShareType(t, shareType)
 }
+
+func TestShareTypeExtraSpecs(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create shared file system client: %v", err)
+	}
+
+	shareType, err := CreateShareType(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create share type: %v", err)
+	}
+
+	extraSpecs, err := sharetypes.GetExtraSpecs(client, shareType.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to retrieve share type: %s", shareType.Name)
+	}
+
+	if extraSpecs.Specs["driver_handles_share_servers"] != "True" {
+		t.Fatal("driver_handles_share_servers was expected to be true")
+	}
+
+	PrintShareType(t, shareType)
+
+	defer DeleteShareType(t, client, shareType)
+}
