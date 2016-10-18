@@ -141,6 +141,20 @@ func TestShareTypeAccess(t *testing.T) {
 		t.Fatal("Share type access is not the same than expected")
 	}
 
+	err = sharetypes.RemoveAccess(client, shareType.ID, options).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to remove an access from a share type: %v", err)
+	}
+
+	access, err = sharetypes.ShowAccess(client, shareType.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to retrieve the access details for a share type: %v", err)
+	}
+
+	if len(access) > 0 {
+		t.Fatalf("No access should be left for the share type: %s", shareType.Name)
+	}
+
 	PrintShareType(t, shareType)
 
 	defer DeleteShareType(t, client, shareType)
