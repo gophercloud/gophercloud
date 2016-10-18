@@ -95,3 +95,8 @@ type GetExtraSpecsResult struct {
 type SetExtraSpecsResult struct {
 	extraSpecsResult
 }
+
+// UnsetExtraSpecsResult contains the response body and error from a Unset Extra Specs request.
+type UnsetExtraSpecsResult struct {
+	gophercloud.ErrResult
+}
