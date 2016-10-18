@@ -37,3 +37,7 @@ func showAccessURL(c *gophercloud.ServiceClient, id string) string {
 func addAccessURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("types", id, "action")
 }
+
+func removeAccessURL(c *gophercloud.ServiceClient, id string) string {
+	return addAccessURL(c, id)
+}

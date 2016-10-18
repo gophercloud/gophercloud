@@ -200,3 +200,18 @@ func TestAddAccess(t *testing.T) {
 	err := sharetypes.AddAccess(client.ServiceClient(), "shareTypeID", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+// Verifies that an access can be removed from a share type
+func TestRemoveAccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockRemoveAccessResponse(t)
+
+	options := &sharetypes.AccessOpts{
+		Project: "e1284adea3ee4d2482af5ed214f3ad90",
+	}
+
+	err := sharetypes.RemoveAccess(client.ServiceClient(), "shareTypeID", options).ExtractErr()
+	th.AssertNoErr(t, err)
+}
