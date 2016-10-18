@@ -149,3 +149,35 @@ func ShowAccess(client *gophercloud.ServiceClient, id string) (r ShowAccessResul
 	_, r.Err = client.Get(showAccessURL(client, id), &r.Body, nil)
 	return
 }
+
+// AddAccessOptsBuilder allows extensions to add additional parameters to the
+// AddAccess
+type AddAccessOptsBuilder interface {
+	ToAddAccessMap() (map[string]interface{}, error)
+}
+
+type AccessOpts struct {
+	// The UUID of the project to which access to the share type is granted.
+	Project string `json:"project"`
+}
+
+// ToAddAccessMap assembles a request body based on the contents of a
+// AccessOpts.
+func (opts AccessOpts) ToAddAccessMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "addProjectAccess")
+}
+
+// AddAccess will add access to a ShareType based on the values
+// in AccessOpts.
+func AddAccess(client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
+	b, err := opts.ToAddAccessMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(addAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 202},
+	})
+	return
+}

@@ -127,3 +127,8 @@ func (r ShowAccessResult) Extract() ([]ShareTypeAccess, error) {
 	err := r.ExtractInto(&s)
 	return s.ShareTypeAccess, err
 }
+
+// AddAccessResult contains the response body and error from a Add Access request.
+type AddAccessResult struct {
+	gophercloud.ErrResult
+}

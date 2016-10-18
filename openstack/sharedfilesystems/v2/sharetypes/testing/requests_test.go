@@ -185,3 +185,18 @@ func TestShowAccess(t *testing.T) {
 
 	th.CheckDeepEquals(t, expected, shareType)
 }
+
+// Verifies that an access can be added to a share type
+func TestAddAccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockAddAccessResponse(t)
+
+	options := &sharetypes.AccessOpts{
+		Project: "e1284adea3ee4d2482af5ed214f3ad90",
+	}
+
+	err := sharetypes.AddAccess(client.ServiceClient(), "shareTypeID", options).ExtractErr()
+	th.AssertNoErr(t, err)
+}
