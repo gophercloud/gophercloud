@@ -95,6 +95,20 @@ func TestShareTypeExtraSpecs(t *testing.T) {
 		t.Fatal("my_new_key was expected to be equal to my_value")
 	}
 
+	err = sharetypes.UnsetExtraSpecs(client, shareType.ID, "my_new_key").ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to unset extra specs for Share type: %s", shareType.Name)
+	}
+
+	extraSpecs, err = sharetypes.GetExtraSpecs(client, shareType.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to retrieve share type: %s", shareType.Name)
+	}
+
+	if _, ok := extraSpecs["my_new_key"]; ok {
+		t.Fatalf("my_new_key was expected to be unset for Share type: %s", shareType.Name)
+	}
+
 	PrintShareType(t, shareType)
 
 	defer DeleteShareType(t, client, shareType)
