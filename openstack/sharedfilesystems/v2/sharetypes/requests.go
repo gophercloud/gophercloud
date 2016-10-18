@@ -143,3 +143,9 @@ func UnsetExtraSpecs(client *gophercloud.ServiceClient, id string, key string) (
 	_, r.Err = client.Delete(unsetExtraSpecsURL(client, id, key), nil)
 	return
 }
+
+// ShowAccess will show access details for an existing ShareType.
+func ShowAccess(client *gophercloud.ServiceClient, id string) (r ShowAccessResult) {
+	_, r.Err = client.Get(showAccessURL(client, id), &r.Body, nil)
+	return
+}

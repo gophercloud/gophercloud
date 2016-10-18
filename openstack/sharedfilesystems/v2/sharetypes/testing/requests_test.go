@@ -161,3 +161,14 @@ func TestUnsetExtraSpecs(t *testing.T) {
 	res := sharetypes.UnsetExtraSpecs(client.ServiceClient(), "shareTypeID", "my_key")
 	th.AssertNoErr(t, res.Err)
 }
+
+// Verifies that it is possible to see the access for a share type
+func TestShowAccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockShowAccessResponse(t)
+
+	_, err := sharetypes.ShowAccess(client.ServiceClient(), "shareTypeID").Extract()
+	th.AssertNoErr(t, err)
+}

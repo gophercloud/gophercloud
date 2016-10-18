@@ -29,3 +29,7 @@ func setExtraSpecsURL(c *gophercloud.ServiceClient, id string) string {
 func unsetExtraSpecsURL(c *gophercloud.ServiceClient, id string, key string) string {
 	return c.ServiceURL("types", id, "extra_specs", key)
 }
+
+func showAccessURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("types", id, "share_type_access")
+}

@@ -100,3 +100,35 @@ type SetExtraSpecsResult struct {
 type UnsetExtraSpecsResult struct {
 	gophercloud.ErrResult
 }
+
+// ShareTypeAccess contains all the information associated with an OpenStack
+// ShareTypeAccess.
+type ShareTypeAccess struct {
+	// The share type ID of the member.
+	ShareTypeID string `json:"share_type_id"`
+	// The UUID of the project for which access to the share type is granted.
+	ProjectID string `json:"project_id"`
+}
+
+type shareTypeAccessResult struct {
+	gophercloud.Result
+}
+
+// ShowAccessResult contains the response body and error from a Show access request.
+type ShowAccessResult struct {
+	shareTypeAccessResult
+}
+
+// ShareTypePage is a pagination.pager that is returned from a call to the List function.
+type ShareTypeAccessPage struct {
+	pagination.SinglePageBase
+}
+
+// Extract will get the ShareTypeAccess objects out of the shareTypeAccessResult object.
+func (r shareTypeAccessResult) Extract() ([]ShareTypeAccess, error) {
+	var s struct {
+		ShareTypeAccess []ShareTypeAccess `json:"share_type_access"`
+	}
+	err := r.ExtractInto(&s)
+	return s.ShareTypeAccess, err
+}
