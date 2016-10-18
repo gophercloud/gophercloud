@@ -98,3 +98,9 @@ func GetDefault(client *gophercloud.ServiceClient) (r GetDefaultResult) {
 	_, r.Err = client.Get(getDefaultURL(client), &r.Body, nil)
 	return
 }
+
+// GetExtraSpecs will retrieve the extra specifications for a given ShareType.
+func GetExtraSpecs(client *gophercloud.ServiceClient, id string) (r GetExtraSpecsResult) {
+	_, r.Err = client.Get(getExtraSpecsURL(client, id), &r.Body, nil)
+	return
+}
