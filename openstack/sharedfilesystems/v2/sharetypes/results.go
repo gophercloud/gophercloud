@@ -119,13 +119,8 @@ type ShowAccessResult struct {
 	shareTypeAccessResult
 }
 
-// ShareTypePage is a pagination.pager that is returned from a call to the List function.
-type ShareTypeAccessPage struct {
-	pagination.SinglePageBase
-}
-
 // Extract will get the ShareTypeAccess objects out of the shareTypeAccessResult object.
-func (r shareTypeAccessResult) Extract() ([]ShareTypeAccess, error) {
+func (r ShowAccessResult) Extract() ([]ShareTypeAccess, error) {
 	var s struct {
 		ShareTypeAccess []ShareTypeAccess `json:"share_type_access"`
 	}
