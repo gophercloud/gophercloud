@@ -177,7 +177,32 @@ func MockGetExtraSpecsResponse(t *testing.T) {
             "extra_specs": {
                 "snapshot_support": "True",
                 "driver_handles_share_servers": "True",
-				"my_custom_extra_spec": "False"
+                "my_custom_extra_spec": "False"
+            }
+        }`)
+	})
+}
+
+func MockSetExtraSpecsResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/shareTypeID/extra_specs", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+        {
+            "extra_specs": {
+                "my_key": "my_value"
+            }
+        }`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, `
+        {
+            "extra_specs": {
+                "my_key": "my_value"
             }
         }`)
 	})
