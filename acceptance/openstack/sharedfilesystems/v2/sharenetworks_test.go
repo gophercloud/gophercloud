@@ -5,6 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/sharenetworks"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 func TestShareNetworkCreateDestroy(t *testing.T) {
@@ -23,13 +24,13 @@ func TestShareNetworkCreateDestroy(t *testing.T) {
 	defer DeleteShareNetwork(t, client, shareNetwork)
 }
 
-func TestShareNetworkList(t *testing.T) {
+func TestShareNetworkListDetail(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
 
-	allPages, err := sharenetworks.List(client, sharenetworks.ListOpts{}).AllPages()
+	allPages, err := sharenetworks.ListDetail(client, sharenetworks.ListOpts{}).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to retrieve share networks: %v", err)
 	}
@@ -68,7 +69,7 @@ func TestShareNetworkListFiltering(t *testing.T) {
 		Name: shareNetwork.Name,
 	}
 
-	allPages, err := sharenetworks.List(client, options).AllPages()
+	allPages, err := sharenetworks.ListDetail(client, options).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to retrieve share networks: %v", err)
 	}
@@ -84,4 +85,44 @@ func TestShareNetworkListFiltering(t *testing.T) {
 		}
 		PrintShareNetwork(t, &listedShareNetwork)
 	}
+}
+
+func TestShareNetworkListPagination(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a shared file system client: %v", err)
+	}
+
+	shareNetwork, err := CreateShareNetwork(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create share network: %v", err)
+	}
+	defer DeleteShareNetwork(t, client, shareNetwork)
+
+	shareNetwork, err = CreateShareNetwork(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create share network: %v", err)
+	}
+	defer DeleteShareNetwork(t, client, shareNetwork)
+
+	count := 0
+
+	err = sharenetworks.ListDetail(client, sharenetworks.ListOpts{Offset: 0, Limit: 1}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		_, err := sharenetworks.ExtractShareNetworks(page)
+		if err != nil {
+			t.Fatalf("Failed to extract share networks: %v", err)
+			return false, err
+		}
+
+		return true, nil
+	})
+	if err != nil {
+		t.Fatalf("Unable to retrieve share networks: %v", err)
+	}
+
+	if count < 2 {
+		t.Fatal("Expected to get at least 2 pages")
+	}
+
 }
