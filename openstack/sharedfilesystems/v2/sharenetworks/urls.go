@@ -10,6 +10,6 @@ func deleteURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("share-networks", id)
 }
 
-func listURL(c *gophercloud.ServiceClient) string {
+func listDetailURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("share-networks", "detail")
 }

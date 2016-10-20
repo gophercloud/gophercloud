@@ -6,6 +6,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/sharenetworks"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -45,16 +46,18 @@ func TestDelete(t *testing.T) {
 }
 
 // Verifies that share networks can be listed correctly
-func TestList(t *testing.T) {
+func TestListDetail(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	MockListResponse(t)
 
-	allPages, err := sharenetworks.List(client.ServiceClient(), &sharenetworks.ListOpts{}).AllPages()
+	allPages, err := sharenetworks.ListDetail(client.ServiceClient(), &sharenetworks.ListOpts{}).AllPages()
+
 	th.AssertNoErr(t, err)
 	actual, err := sharenetworks.ExtractShareNetworks(allPages)
 	th.AssertNoErr(t, err)
+
 	var nilTime time.Time
 	expected := []sharenetworks.ShareNetwork{
 		{
@@ -108,38 +111,30 @@ func TestList(t *testing.T) {
 }
 
 // Verifies that share networks list can be called with query parameters
-func TestFilteredList(t *testing.T) {
+func TestPaginatedListDetail(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	MockFilteredListResponse(t)
 
 	options := &sharenetworks.ListOpts{
-		Description: "descr",
+		Offset: 0,
+		Limit:  1,
 	}
 
-	allPages, err := sharenetworks.List(client.ServiceClient(), options).AllPages()
-	th.AssertNoErr(t, err)
-	actual, err := sharenetworks.ExtractShareNetworks(allPages)
-	th.AssertNoErr(t, err)
-	var nilTime time.Time
-	expected := []sharenetworks.ShareNetwork{
-		{
-			ID:              "32763294-e3d4-456a-998d-60047677c2fb",
-			Name:            "net_my1",
-			CreatedAt:       gophercloud.JSONRFC3339MilliNoZ(time.Date(2015, 9, 4, 14, 57, 13, 0, time.UTC)),
-			Description:     "descr",
-			NetworkType:     "",
-			CIDR:            "",
-			NovaNetID:       "",
-			NeutronNetID:    "998b42ee-2cee-4d36-8b95-67b5ca1f2109",
-			NeutronSubnetID: "53482b62-2c84-4a53-b6ab-30d9d9800d06",
-			IPVersion:       0,
-			SegmentationID:  0,
-			UpdatedAt:       gophercloud.JSONRFC3339MilliNoZ(nilTime),
-			ProjectID:       "16e1ab15c35a457e9c2b2aa189f544e1",
-		},
-	}
+	count := 0
 
-	th.CheckDeepEquals(t, expected, actual)
+	err := sharenetworks.ListDetail(client.ServiceClient(), options).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		_, err := sharenetworks.ExtractShareNetworks(page)
+		if err != nil {
+			t.Errorf("Failed to extract share networks: %v", err)
+			return false, err
+		}
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, count, 3)
 }

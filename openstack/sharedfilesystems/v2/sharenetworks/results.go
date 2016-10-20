@@ -1,6 +1,9 @@
 package sharenetworks
 
 import (
+	"net/url"
+	"strconv"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -42,10 +45,65 @@ type commonResult struct {
 
 // ShareNetworkPage is a pagination.pager that is returned from a call to the List function.
 type ShareNetworkPage struct {
-	pagination.LinkedPageBase
+	pagination.MarkerPageBase
 }
 
-// IsEmpty returns true if a ListResult contains no ShareNetworks.
+// NextPageURL generates the URL for the page of results after this one.
+func (r ShareNetworkPage) NextPageURL() (string, error) {
+	currentURL := r.URL
+	mark, err := r.Owner.LastMarker()
+	if err != nil {
+		return "", err
+	}
+
+	q := currentURL.Query()
+	q.Set("offset", mark)
+	currentURL.RawQuery = q.Encode()
+	return currentURL.String(), nil
+}
+
+// LastMarker returns the last offset in a ListResult.
+func (r ShareNetworkPage) LastMarker() (string, error) {
+	maxInt := strconv.Itoa(int(^uint(0) >> 1))
+	shareNetworks, err := ExtractShareNetworks(r)
+	if err != nil {
+		return maxInt, err
+	}
+	if len(shareNetworks) == 0 {
+		return maxInt, nil
+	}
+
+	u, err := url.Parse(r.URL.String())
+	if err != nil {
+		return maxInt, err
+	}
+	queryParams := u.Query()
+	offset := queryParams.Get("offset")
+	limit := queryParams.Get("limit")
+
+	// Limit is not present, only one page required
+	if limit == "" {
+		return maxInt, nil
+	}
+
+	iOffset := 0
+	if offset != "" {
+		iOffset, err = strconv.Atoi(offset)
+		if err != nil {
+			return maxInt, err
+		}
+	}
+	iLimit, err := strconv.Atoi(limit)
+	if err != nil {
+		return maxInt, err
+	}
+	iOffset = iOffset + iLimit
+	offset = strconv.Itoa(iOffset)
+
+	return offset, nil
+}
+
+// IsEmpty satisifies the IsEmpty method of the Page interface
 func (r ShareNetworkPage) IsEmpty() (bool, error) {
 	shareNetworks, err := ExtractShareNetworks(r)
 	return len(shareNetworks) == 0, err

@@ -99,9 +99,9 @@ func (opts ListOpts) ToShareNetworkListQuery() (string, error) {
 	return q.String(), err
 }
 
-// List returns ShareNetworkss optionally limited by the conditions provided in ListOpts.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
-	url := listURL(client)
+// ListDetail returns ShareNetworks optionally limited by the conditions provided in ListOpts.
+func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listDetailURL(client)
 	if opts != nil {
 		query, err := opts.ToShareNetworkListQuery()
 		if err != nil {
@@ -111,6 +111,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	}
 
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return ShareNetworkPage{pagination.LinkedPageBase{PageResult: r}}
+		p := ShareNetworkPage{pagination.MarkerPageBase{PageResult: r}}
+		p.MarkerPageBase.Owner = p
+		return p
 	})
 }
