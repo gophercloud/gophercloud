@@ -28,3 +28,13 @@ func TestListProjects(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, count, 1)
 }
+
+func TestGetProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetProjectSuccessfully(t)
+
+	actual, err := projects.Get(client.ServiceClient(), "1234", nil).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, RedTeam, *actual)
+}

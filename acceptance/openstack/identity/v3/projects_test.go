@@ -34,3 +34,28 @@ func TestProjectsList(t *testing.T) {
 		PrintProject(t, &project)
 	}
 }
+
+func TestProjectsGet(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v")
+	}
+
+	allPages, err := projects.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list projects: %v", err)
+	}
+
+	allProjects, err := projects.ExtractProjects(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract projects: %v", err)
+	}
+
+	project := allProjects[0]
+	p, err := projects.Get(client, project.ID, nil).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get project: %v", err)
+	}
+
+	PrintProject(t, p)
+}
