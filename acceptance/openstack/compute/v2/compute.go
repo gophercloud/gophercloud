@@ -770,25 +770,8 @@ func  FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet,dest *quotasets.UpdateOp
 
 // PrintServer will print an instance and all of its attributes.
 func PrintServer(t *testing.T, server *servers.Server) {
-	t.Logf("ID: %s", server.ID)
-	t.Logf("TenantID: %s", server.TenantID)
-	t.Logf("UserID: %s", server.UserID)
-	t.Logf("Name: %s", server.Name)
-	t.Logf("Updated: %s", server.Updated)
-	t.Logf("Created: %s", server.Created)
-	t.Logf("HostID: %s", server.HostID)
-	t.Logf("Status: %s", server.Status)
-	t.Logf("Progress: %d", server.Progress)
-	t.Logf("AccessIPv4: %s", server.AccessIPv4)
-	t.Logf("AccessIPv6: %s", server.AccessIPv6)
-	t.Logf("Image: %s", server.Image)
-	t.Logf("Flavor: %s", server.Flavor)
-	t.Logf("Addresses: %#v", server.Addresses)
-	t.Logf("Metadata: %#v", server.Metadata)
-	t.Logf("Links: %#v", server.Links)
-	t.Logf("KeyName: %s", server.KeyName)
-	t.Logf("AdminPass: %s", server.AdminPass)
-	t.Logf("SecurityGroups: %#v", server.SecurityGroups)
+	t.Logf("Server %s", server.ID)
+	t.Logf("%s", tools.DumpResource(server))
 }
 
 // PrintDefaultRule will print a default security group rule and all of its attributes.

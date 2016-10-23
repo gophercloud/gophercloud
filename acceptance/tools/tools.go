@@ -2,8 +2,10 @@ package tools
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"errors"
 	mrand "math/rand"
+	"reflect"
 	"time"
 )
 
@@ -62,4 +64,45 @@ func Elide(value string) string {
 		return value[0:37] + "..."
 	}
 	return value
+}
+
+// DumpResource returns a resource as a readable structure
+func DumpResource(resource interface{}) string {
+	var sf []reflect.StructField
+	v := reflect.ValueOf(resource).Elem()
+	t := v.Type()
+
+	// Loop through all fields of the resource and remove all tags
+	for i := 0; i < v.NumField(); i++ {
+		f := t.Field(i)
+		f.Tag = ""
+		sf = append(sf, f)
+	}
+
+	// Create a new struct with the omitted tags
+	typ := reflect.StructOf(sf)
+	ns := reflect.New(typ).Elem()
+
+	// Loop again, this time copying all values from the old resource to the new
+	for i := 0; i < v.NumField(); i++ {
+		copyField(v.Field(i), ns.Field(i))
+	}
+
+	// Convert the struct into JSON and return
+	s := ns.Addr().Interface()
+	b, _ := json.MarshalIndent(s, "", "  ")
+	return string(b)
+}
+
+// copyField copies the value of the old field to the new field.
+// If the value is a struct, copyField is called recursively.
+func copyField(oldField reflect.Value, newField reflect.Value) {
+	switch oldField.Kind() {
+	case reflect.Struct:
+		for i := 0; i < oldField.NumField(); i++ {
+			copyField(oldField.Field(i), newField.Field(i))
+		}
+	default:
+		newField.Set(oldField)
+	}
 }
