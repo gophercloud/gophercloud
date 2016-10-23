@@ -38,6 +38,18 @@ func CreateProject(t *testing.T, client *gophercloud.ServiceClient, c *projects.
 	return project, nil
 }
 
+// DeleteProject will delete a project by ID. A fatal error will occur if
+// the project ID failed to be deleted. This works best when using it as
+// a deferred function.
+func DeleteProject(t *testing.T, client *gophercloud.ServiceClient, projectID string) {
+	err := projects.Delete(client, projectID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete project %s: %v", projectID, err)
+	}
+
+	t.Logf("Deleted project: %s", projectID)
+}
+
 // PrintEndpoint will print an endpoint and all of its attributes.
 func PrintEndpoint(t *testing.T, endpoint *endpoints.Endpoint) {
 	t.Logf("ID: %s", endpoint.ID)

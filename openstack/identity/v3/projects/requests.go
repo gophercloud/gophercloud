@@ -126,3 +126,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	_, r.Err = client.Post(createURL(client), &b, &r.Body, nil)
 	return
 }
+
+// Delete deletes a project.
+func Delete(client *gophercloud.ServiceClient, projectID string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, projectID), nil)
+	return
+}

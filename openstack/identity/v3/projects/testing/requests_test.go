@@ -53,3 +53,12 @@ func TestCreateProject(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, RedTeam, *actual)
 }
+
+func TestDeleteProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteProjectSuccessfully(t)
+
+	res := projects.Delete(client.ServiceClient(), "1234")
+	th.AssertNoErr(t, res.Err)
+}
