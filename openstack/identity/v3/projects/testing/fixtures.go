@@ -55,6 +55,16 @@ const GetOutput = `
 }
 `
 
+// CreateRequest provides the input to a Create request.
+const CreateRequest = `
+{
+  "project": {
+		"description": "The team that is red",
+		"name": "Red Team"
+  }
+}
+`
+
 // RedTeam is a Project fixture.
 var RedTeam = projects.Project{
 	IsDomain:    false,
@@ -104,6 +114,19 @@ func HandleGetProjectSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleCreateProjectSuccessfully creates an HTTP handler at `/projects` on the
+// test handler mux that tests project creation.
+func HandleCreateProjectSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
+
+		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, GetOutput)
 	})
 }

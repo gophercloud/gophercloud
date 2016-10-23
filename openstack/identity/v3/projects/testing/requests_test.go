@@ -38,3 +38,18 @@ func TestGetProject(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, RedTeam, *actual)
 }
+
+func TestCreateProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateProjectSuccessfully(t)
+
+	createOpts := projects.CreateOpts{
+		Name:        "Red Team",
+		Description: "The team that is red",
+	}
+
+	actual, err := projects.Create(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, RedTeam, *actual)
+}

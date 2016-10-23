@@ -83,3 +83,46 @@ func Get(client *gophercloud.ServiceClient, id string, opts GetOptsBuilder) (r G
 	})
 	return
 }
+
+// CreateOptsBuilder allows extensions to add additional parameters to
+// the Create request.
+type CreateOptsBuilder interface {
+	ToProjectCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts allows you to modify the details included in the Create request.
+type CreateOpts struct {
+	// DomainID is the ID this project will belong under.
+	DomainID string `json:"domain_id,omitempty"`
+
+	// Enabled sets the project status to enabled or disabled.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// IsDomain indicates if this project is a domain.
+	IsDomain *bool `json:"is_domain,omitempty"`
+
+	// Name is the name of the project.
+	Name string `json:"name,required"`
+
+	// ParentID specifies the parent project of this new project.
+	ParentID string `json:"parent_id,omitempty"`
+
+	// Description is the description of the project.
+	Description string `json:"description,omitempty"`
+}
+
+// ToProjectCreateMap formats a CreateOpts into a create request.
+func (opts CreateOpts) ToProjectCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "project")
+}
+
+// Create creates a new Project.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToProjectCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), &b, &r.Body, nil)
+	return
+}

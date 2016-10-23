@@ -59,3 +59,72 @@ func TestProjectsGet(t *testing.T) {
 
 	PrintProject(t, p)
 }
+
+func TestProjectsCRUD(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v")
+	}
+
+	project, err := CreateProject(t, client, nil)
+	if err != nil {
+		t.Fatalf("Unable to create project: %v", err)
+	}
+
+	PrintProject(t, project)
+}
+
+func TestProjectsDomain(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v")
+	}
+
+	var iTrue = true
+	createOpts := projects.CreateOpts{
+		IsDomain: &iTrue,
+	}
+
+	projectDomain, err := CreateProject(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create project: %v", err)
+	}
+
+	PrintProject(t, projectDomain)
+
+	createOpts = projects.CreateOpts{
+		DomainID: projectDomain.ID,
+	}
+
+	project, err := CreateProject(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create project: %v", err)
+	}
+
+	PrintProject(t, project)
+}
+
+func TestProjectsNested(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v")
+	}
+
+	projectMain, err := CreateProject(t, client, nil)
+	if err != nil {
+		t.Fatalf("Unable to create project: %v", err)
+	}
+
+	PrintProject(t, projectMain)
+
+	createOpts := projects.CreateOpts{
+		ParentID: projectMain.ID,
+	}
+
+	project, err := CreateProject(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create project: %v", err)
+	}
+
+	PrintProject(t, project)
+}
