@@ -88,6 +88,7 @@ func TestList(t *testing.T) {
 				Name:        "k8sbaymodel",
 				ID:          "5b793604-fc76-4886-a834-ed522812cdcb",
 				COE:         "kubernetes",
+				ServerType:  "vm",
 				FlavorID:    "m1.small",
 				ImageID:     "fedora-atomic-latest",
 				KeyPairID:   "testkey",
@@ -167,6 +168,7 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "kubernetes-dev", m.Name)
 	th.AssertEquals(t, "kubernetes", m.COE)
+	th.AssertEquals(t, "vm", m.ServerType)
 	th.AssertEquals(t, "m1.small", m.FlavorID)
 	th.AssertEquals(t, "fedora-atomic-latest", m.ImageID)
 	th.AssertEquals(t, "testkey", m.KeyPairID)

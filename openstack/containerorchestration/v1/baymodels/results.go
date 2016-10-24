@@ -32,6 +32,9 @@ type BayModel struct {
 	// The type of container orchestration engine used by the bay.
 	COE string `json:"coe"`
 
+	// The underlying type of the host nodes, such as lxc or vm
+	ServerType string `json:"server_type"`
+
 	// The flavor used by nodes in the bay.
 	FlavorID string `json:"flavor_id"`
 
