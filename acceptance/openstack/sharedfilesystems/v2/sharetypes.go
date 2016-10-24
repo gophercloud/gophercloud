@@ -23,9 +23,9 @@ func CreateShareType(t *testing.T, client *gophercloud.ServiceClient) (*sharetyp
 	}
 
 	createOpts := sharetypes.CreateOpts{
-		Name: shareTypeName,
-		OSShareTypeAccessIsPublic: true,
-		ExtraSpecs:                extraSpecsOps,
+		Name:       shareTypeName,
+		IsPublic:   true,
+		ExtraSpecs: extraSpecsOps,
 	}
 
 	shareType, err := sharetypes.Create(client, createOpts).Extract()
@@ -40,6 +40,6 @@ func CreateShareType(t *testing.T, client *gophercloud.ServiceClient) (*sharetyp
 func PrintShareType(t *testing.T, shareType *sharetypes.ShareType) {
 	t.Logf("Name: %s", shareType.Name)
 	t.Logf("ID: %s", shareType.ID)
-	t.Logf("OS share type access is public: %t", shareType.OSShareTypeAccessIsPublic)
+	t.Logf("OS share type access is public: %t", shareType.IsPublic)
 	t.Logf("Extra specs: %#v", shareType.ExtraSpecs)
 }

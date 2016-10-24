@@ -10,7 +10,7 @@ type ShareType struct {
 	// The Share Type name
 	Name string `json:"name"`
 	// Indicates whether a share type is publicly accessible
-	OSShareTypeAccessIsPublic bool `json:"os-share-type-access:is_public"`
+	IsPublic bool `json:"os-share-type-access:is_public"`
 	// The required extra specifications for the share type
 	RequiredExtraSpecs map[string]interface{} `json:"required_extra_specs"`
 	// The extra specifications for the share type

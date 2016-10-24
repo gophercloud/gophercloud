@@ -16,22 +16,23 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t)
 
+	snapshotSupport := true
 	extraSpecs := sharetypes.ExtraSpecsOpts{
 		DriverHandlesShareServers: true,
-		SnapshotSupport:           true,
+		SnapshotSupport:           &snapshotSupport,
 	}
 
 	options := &sharetypes.CreateOpts{
-		Name: "my_new_share_type",
-		OSShareTypeAccessIsPublic: true,
-		ExtraSpecs:                extraSpecs,
+		Name:       "my_new_share_type",
+		IsPublic:   true,
+		ExtraSpecs: extraSpecs,
 	}
 
 	st, err := sharetypes.Create(client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, st.Name, "my_new_share_type")
-	th.AssertEquals(t, st.OSShareTypeAccessIsPublic, true)
+	th.AssertEquals(t, st.IsPublic, true)
 }
 
 // Verifies that a share type can't be created if the required parameters are missing
@@ -47,7 +48,6 @@ func TestCreateFails(t *testing.T) {
 
 	extraSpecs := sharetypes.ExtraSpecsOpts{
 		DriverHandlesShareServers: true,
-		SnapshotSupport:           true,
 	}
 
 	options = &sharetypes.CreateOpts{
