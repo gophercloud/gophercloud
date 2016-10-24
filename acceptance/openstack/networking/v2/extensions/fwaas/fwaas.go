@@ -78,7 +78,7 @@ func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, e
 
 	createOpts := rules.CreateOpts{
 		Name:                 ruleName,
-		Protocol:             "tcp",
+		Protocol:             rules.ProtocolTCP,
 		Action:               "allow",
 		SourceIPAddress:      sourceAddress,
 		SourcePort:           sourcePort,
