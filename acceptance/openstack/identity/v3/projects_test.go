@@ -73,6 +73,18 @@ func TestProjectsCRUD(t *testing.T) {
 	defer DeleteProject(t, client, project.ID)
 
 	PrintProject(t, project)
+
+	var iFalse bool = false
+	updateOpts := projects.UpdateOpts{
+		Enabled: &iFalse,
+	}
+
+	updatedProject, err := projects.Update(client, project.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update project: %v", err)
+	}
+
+	PrintProject(t, updatedProject)
 }
 
 func TestProjectsDomain(t *testing.T) {
@@ -90,6 +102,7 @@ func TestProjectsDomain(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create project: %v", err)
 	}
+	defer DeleteProject(t, client, projectDomain.ID)
 
 	PrintProject(t, projectDomain)
 
@@ -101,8 +114,19 @@ func TestProjectsDomain(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create project: %v", err)
 	}
+	defer DeleteProject(t, client, project.ID)
 
 	PrintProject(t, project)
+
+	var iFalse = false
+	updateOpts := projects.UpdateOpts{
+		Enabled: &iFalse,
+	}
+
+	_, err = projects.Update(client, projectDomain.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to disable domain: %v")
+	}
 }
 
 func TestProjectsNested(t *testing.T) {
@@ -115,6 +139,7 @@ func TestProjectsNested(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create project: %v", err)
 	}
+	defer DeleteProject(t, client, projectMain.ID)
 
 	PrintProject(t, projectMain)
 
@@ -126,6 +151,7 @@ func TestProjectsNested(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create project: %v", err)
 	}
+	defer DeleteProject(t, client, project.ID)
 
 	PrintProject(t, project)
 }

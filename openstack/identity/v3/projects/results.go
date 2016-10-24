@@ -24,6 +24,11 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// UpdateResult temporarily contains the response from the Update call.
+type UpdateResult struct {
+	projectResult
+}
+
 // Project is a base unit of ownership.
 type Project struct {
 	// IsDomain indicates whether the project is a domain.
