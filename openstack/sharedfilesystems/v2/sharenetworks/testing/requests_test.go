@@ -138,3 +138,33 @@ func TestPaginatedListDetail(t *testing.T) {
 
 	th.AssertEquals(t, count, 3)
 }
+
+// Verifies that it is possible to get a share network
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetResponse(t)
+
+	var nilTime time.Time
+	expected := sharenetworks.ShareNetwork{
+		ID:              "7f950b52-6141-4a08-bbb5-bb7ffa3ea5fd",
+		Name:            "net_my1",
+		CreatedAt:       gophercloud.JSONRFC3339MilliNoZ(time.Date(2015, 9, 4, 14, 56, 45, 0, time.UTC)),
+		Description:     "descr",
+		NetworkType:     "",
+		CIDR:            "",
+		NovaNetID:       "",
+		NeutronNetID:    "998b42ee-2cee-4d36-8b95-67b5ca1f2109",
+		NeutronSubnetID: "53482b62-2c84-4a53-b6ab-30d9d9800d06",
+		IPVersion:       0,
+		SegmentationID:  0,
+		UpdatedAt:       gophercloud.JSONRFC3339MilliNoZ(nilTime),
+		ProjectID:       "16e1ab15c35a457e9c2b2aa189f544e1",
+	}
+
+	n, err := sharenetworks.Get(client.ServiceClient(), "7f950b52-6141-4a08-bbb5-bb7ffa3ea5fd").Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, &expected, n)
+}

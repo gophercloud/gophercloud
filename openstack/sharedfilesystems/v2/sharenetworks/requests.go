@@ -116,3 +116,10 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 		return p
 	})
 }
+
+// Get retrieves the ShareNetwork with the provided ID. To extract the ShareNetwork
+// object from the response, call the Extract method on the GetResult.
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
+}
