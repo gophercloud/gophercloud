@@ -85,3 +85,8 @@ type CreateResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+// GetResult contains the get result
+type GetResult struct {
+	commonResult
+}
