@@ -36,6 +36,17 @@ func CreateShareType(t *testing.T, client *gophercloud.ServiceClient) (*sharetyp
 	return shareType, nil
 }
 
+// DeleteShareType will delete a share type. An error will occur if
+// the share type was unable to be deleted.
+func DeleteShareType(t *testing.T, client *gophercloud.ServiceClient, shareType *sharetypes.ShareType) {
+	err := sharetypes.Delete(client, shareType.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Failed to delete share type %s: %v", shareType.ID, err)
+	}
+
+	t.Logf("Deleted share type: %s", shareType.ID)
+}
+
 // PrintShareType will print a share type and all of its attributes.
 func PrintShareType(t *testing.T, shareType *sharetypes.ShareType) {
 	t.Logf("Name: %s", shareType.Name)
