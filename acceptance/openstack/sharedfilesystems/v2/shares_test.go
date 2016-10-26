@@ -157,7 +157,7 @@ func TestShareListDetailPaginateLimitOffset(t *testing.T) {
 				t.Fatalf("Unexpected number of shares: %d", len(l))
 			}
 
-			count++
+			count += len(l)
 
 			t.Logf("Got %d shares for this page", len(l))
 			for _, share := range l {
