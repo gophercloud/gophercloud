@@ -88,13 +88,14 @@ func TestShareListDetail(t *testing.T) {
 	}
 }
 
-func TestShareListDetailPaginate(t *testing.T) {
+func TestShareListDetailPaginateLimit(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a sharedfs client: %v", err)
 	}
 
-	names := []string{"share_one", "share_two", "share_three"}
+	names := []string{"share_one", "share_two", "share_three",
+		"share_four", "share_five", "share_six"}
 
 	created, err := CreateShares(t, client, names)
 	if err != nil {
@@ -102,11 +103,72 @@ func TestShareListDetailPaginate(t *testing.T) {
 	}
 
 	defer DeleteShares(t, client, created)
+	limit := 2
 
-	err = shares.List(client, &shares.ListOpts{}, true).EachPage(func(page pagination.Page) (bool, error) {
-		l, _ := shares.ExtractShares(page)
-		t.Logf("Got some shares: %+v\n", l)
-		return true, nil
-	})
+	// Lists two shares per page
+	err = shares.List(client, &shares.ListOpts{Offset: 0, Limit: limit}, true).EachPage(
+		func(page pagination.Page) (bool, error) {
+			l, err := shares.ExtractShares(page)
+			if err != nil {
+				t.Fatalf("Failed to extract shares: %v", err)
+			}
+			if len(l) != limit {
+				t.Fatalf("Unexpected number of shares: %d", len(l))
+			}
+			t.Logf("Got %d shares for this page", len(l))
+			for _, share := range l {
+				PrintShare(t, &share)
+			}
+			return true, nil
+		})
+	if err != nil {
+		t.Fatalf("Unable to retrieve shares: %v", err)
+	}
+}
 
+// Lists two shares per page, starting at offset 2. This
+// should result in a total of four shares
+func TestShareListDetailPaginateLimitOffset(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a sharedfs client: %v", err)
+	}
+
+	names := []string{"share_one", "share_two", "share_three",
+		"share_four", "share_five", "share_six"}
+
+	created, err := CreateShares(t, client, names)
+	if err != nil {
+		t.Fatalf("Unable to create a share: %v", err)
+	}
+
+	defer DeleteShares(t, client, created)
+	limit := 2
+	count := 0
+
+	// Lists two shares per page
+	err = shares.List(client, &shares.ListOpts{Offset: limit, Limit: limit}, true).EachPage(
+		func(page pagination.Page) (bool, error) {
+			l, err := shares.ExtractShares(page)
+			if err != nil {
+				t.Fatalf("Failed to extract shares: %v", err)
+			}
+			if len(l) != limit {
+				t.Fatalf("Unexpected number of shares: %d", len(l))
+			}
+
+			count++
+
+			t.Logf("Got %d shares for this page", len(l))
+			for _, share := range l {
+				PrintShare(t, &share)
+			}
+			return true, nil
+		})
+	if err != nil {
+		t.Fatalf("Unable to retrieve shares: %v", err)
+	}
+	if count != 4 {
+		t.Fatalf("Unexpected share count: %d", count)
+	}
 }
