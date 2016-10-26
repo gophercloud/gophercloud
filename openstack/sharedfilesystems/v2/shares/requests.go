@@ -88,6 +88,10 @@ type ListOptsBuilder interface {
 
 // ListOpts is used to filter the List() call
 type ListOpts struct {
+	// Limit can be used to limit the query results
+	Limit int `q:"limit"`
+	// Offset can be used to define the starting point of share listing
+	Offset int `q:"offset"`
 	// Admin-only option to list shares from all tenants
 	AllTenants bool `q:"tenant_id"`
 	// Name of the share
@@ -97,7 +101,7 @@ type ListOpts struct {
 	// ShareServerID is the UUID of the share server
 	ShareServerID string `q:"share_server_id"`
 	// MetaData is key-value-pairs of custom metadata
-	MetaData map[string]string `q:"metadata"`
+	Metadata map[string]string `q:"metadata"`
 	// ShareTypeID is the UUID of the share type
 	ShareTypeID string `q:"share_type_id"`
 	// SortKey defines the sorting key
@@ -111,7 +115,7 @@ type ListOpts struct {
 	// ProjectID is the UUID of the project in which the share belongs to
 	ProjectID string `q:"project_id"`
 	// IsPublic determines the level of visibility of the share
-	IsPublic bool `q:"is_public"`
+	IsPublic *bool `q:"is_public"`
 	// ConsistencyGroupID is the UUID of the consistency group to which the share belongs to
 	ConsistencyGroupID string `q:"consistency_group_id"`
 }
@@ -126,7 +130,17 @@ func (l ListOpts) ToShareListQuery() (string, error) {
 // is not nil, returns a list of shares with details.
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder, detail bool) pagination.Pager {
 	url := listURL(client, detail)
+	if opts != nil {
+		query, err := opts.ToShareListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return SharePage{pagination.SinglePageBase(r)}
+		page := SharePage{pagination.MarkerPageBase{PageResult: r}}
+		page.MarkerPageBase.Owner = page
+		return page
 	})
 }

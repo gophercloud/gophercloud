@@ -88,6 +88,7 @@ func TestListAllShort(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	MockListResponse(t)
+
 	pages, err := shares.List(client.ServiceClient(), &shares.ListOpts{}, false).AllPages()
 	th.AssertNoErr(t, err)
 	act, err := shares.ExtractShares(pages)
