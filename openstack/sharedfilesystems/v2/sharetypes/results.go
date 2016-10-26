@@ -1,6 +1,9 @@
 package sharetypes
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
 
 // ShareType contains all the information associated with an OpenStack
 // ShareType.
@@ -38,4 +41,25 @@ type CreateResult struct {
 // DeleteResult contains the response body and error from a Delete request.
 type DeleteResult struct {
 	gophercloud.ErrResult
+}
+
+// ShareTypePage is a pagination.pager that is returned from a call to the List function.
+type ShareTypePage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty returns true if a ListResult contains no ShareTypes.
+func (r ShareTypePage) IsEmpty() (bool, error) {
+	shareTypes, err := ExtractShareTypes(r)
+	return len(shareTypes) == 0, err
+}
+
+// ExtractShareTypes extracts and returns ShareTypes. It is used while
+// iterating over a sharetypes.List call.
+func ExtractShareTypes(r pagination.Page) ([]ShareType, error) {
+	var s struct {
+		ShareTypes []ShareType `json:"share_types"`
+	}
+	err := (r.(ShareTypePage)).ExtractInto(&s)
+	return s.ShareTypes, err
 }

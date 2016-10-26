@@ -1,6 +1,9 @@
 package sharetypes
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
@@ -53,4 +56,39 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
 	return
+}
+
+// ListOptsBuilder allows extensions to add additional parameters to the List
+// request.
+type ListOptsBuilder interface {
+	ToShareTypeListQuery() (string, error)
+}
+
+// ListOpts holds options for listing ShareTypes. It is passed to the
+// sharetypes.List function.
+type ListOpts struct {
+	// Select if public types, private types, or both should be listed
+	IsPublic string `q:"is_public"`
+}
+
+// ToShareTypeListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToShareTypeListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List returns ShareTypes optionally limited by the conditions provided in ListOpts.
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listURL(client)
+	if opts != nil {
+		query, err := opts.ToShareTypeListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return ShareTypePage{pagination.SinglePageBase(r)}
+	})
 }
