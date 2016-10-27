@@ -169,15 +169,71 @@ func TestGet(t *testing.T) {
 	th.CheckDeepEquals(t, &expected, n)
 }
 
-// Verifies that it is possible to update a share network
-func TestUpdate(t *testing.T) {
+// Verifies that it is possible to update a share network using neutron network
+func TestUpdateNeutron(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockUpdateResponse(t)
+	MockUpdateNeutronResponse(t)
 
-	options := sharenetworks.UpdateOpts{Name: "net_my2"}
+	expected := sharenetworks.ShareNetwork{
+		ID:              "713df749-aac0-4a54-af52-10f6c991e80c",
+		Name:            "net_my2",
+		CreatedAt:       gophercloud.JSONRFC3339MilliNoZ(time.Date(2015, 9, 4, 14, 54, 25, 0, time.UTC)),
+		Description:     "new description",
+		NetworkType:     "",
+		CIDR:            "",
+		NovaNetID:       "",
+		NeutronNetID:    "new-neutron-id",
+		NeutronSubnetID: "new-neutron-subnet-id",
+		IPVersion:       4,
+		SegmentationID:  0,
+		UpdatedAt:       gophercloud.JSONRFC3339MilliNoZ(time.Date(2015, 9, 7, 8, 2, 53, 512184000, time.UTC)),
+		ProjectID:       "16e1ab15c35a457e9c2b2aa189f544e1",
+	}
+
+	options := sharenetworks.UpdateOpts{
+		Name:            "net_my2",
+		Description:     "new description",
+		NeutronNetID:    "new-neutron-id",
+		NeutronSubnetID: "new-neutron-subnet-id",
+	}
+
 	v, err := sharenetworks.Update(client.ServiceClient(), "713df749-aac0-4a54-af52-10f6c991e80c", options).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, "net_my2", v.Name)
+	th.CheckDeepEquals(t, &expected, v)
+}
+
+// Verifies that it is possible to update a share network using nova network
+func TestUpdateNova(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUpdateNovaResponse(t)
+
+	expected := sharenetworks.ShareNetwork{
+		ID:              "713df749-aac0-4a54-af52-10f6c991e80c",
+		Name:            "net_my2",
+		CreatedAt:       gophercloud.JSONRFC3339MilliNoZ(time.Date(2015, 9, 4, 14, 54, 25, 0, time.UTC)),
+		Description:     "new description",
+		NetworkType:     "",
+		CIDR:            "",
+		NovaNetID:       "new-nova-id",
+		NeutronNetID:    "",
+		NeutronSubnetID: "",
+		IPVersion:       4,
+		SegmentationID:  0,
+		UpdatedAt:       gophercloud.JSONRFC3339MilliNoZ(time.Date(2015, 9, 7, 8, 2, 53, 512184000, time.UTC)),
+		ProjectID:       "16e1ab15c35a457e9c2b2aa189f544e1",
+	}
+
+	options := sharenetworks.UpdateOpts{
+		Name:        "net_my2",
+		Description: "new description",
+		NovaNetID:   "new-nova-id",
+	}
+
+	v, err := sharenetworks.Update(client.ServiceClient(), "713df749-aac0-4a54-af52-10f6c991e80c", options).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &expected, v)
 }
