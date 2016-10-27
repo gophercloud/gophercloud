@@ -6,6 +6,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/sharenetworks"
 	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestShareNetworkCreateDestroy(t *testing.T) {
@@ -46,33 +47,35 @@ func TestShareNetworkUpdate(t *testing.T) {
 		t.Fatalf("Unable to create share network: %v", err)
 	}
 
+	expectedShareNetwork, err := sharenetworks.Get(client, shareNetwork.ID).Extract()
+	if err != nil {
+		t.Errorf("Unable to retrieve shareNetwork: %v", err)
+	}
+
 	options := sharenetworks.UpdateOpts{
 		Name:        "NewName",
 		Description: "New share network description",
 		NovaNetID:   "New_nova_network_id",
 	}
 
+	expectedShareNetwork.Name = options.Name
+	expectedShareNetwork.Description = options.Description
+	expectedShareNetwork.NovaNetID = options.NovaNetID
+
 	_, err = sharenetworks.Update(client, shareNetwork.ID, options).Extract()
 	if err != nil {
 		t.Errorf("Unable to update shareNetwork: %v", err)
 	}
 
-	newShareNetwork, err := sharenetworks.Get(client, shareNetwork.ID).Extract()
+	updatedShareNetwork, err := sharenetworks.Get(client, shareNetwork.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve shareNetwork: %v", err)
 	}
 
-	if newShareNetwork.Name != options.Name {
-		t.Fatalf("Share network name was expeted to be: %s", options.Name)
-	}
+	// Update time has to be set in order to get the assert equal to pass
+	expectedShareNetwork.UpdatedAt = updatedShareNetwork.UpdatedAt
 
-	if newShareNetwork.Description != options.Description {
-		t.Fatalf("Share network description was expeted to be: %s", options.Description)
-	}
-
-	if newShareNetwork.NovaNetID != options.NovaNetID {
-		t.Fatalf("Share network Nova ID was expeted to be: %s", options.NovaNetID)
-	}
+	th.CheckDeepEquals(t, expectedShareNetwork, updatedShareNetwork)
 
 	PrintShareNetwork(t, shareNetwork)
 
