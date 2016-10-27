@@ -151,6 +151,7 @@ func MockFilteredListResponse(t *testing.T) {
 
 		r.ParseForm()
 		marker := r.Form.Get("offset")
+		fmt.Println(marker)
 		switch marker {
 		case "":
 			fmt.Fprintf(w, `

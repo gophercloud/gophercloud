@@ -4,7 +4,10 @@ import (
 	"testing"
 	"time"
 
+	"encoding/json"
+	"fmt"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -120,4 +123,32 @@ func TestListAllShort(t *testing.T) {
 		},
 	}
 	th.CheckDeepEquals(t, shortList, act)
+}
+
+func TestListPaginateDetail(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockListDetailResponse(t)
+
+	opts := &shares.ListOpts{
+		Offset: 0,
+		Limit:  1,
+	}
+	count := 0
+	err := shares.List(client.ServiceClient(), opts, true).EachPage(func(page pagination.Page) (bool, error) {
+		s, err := shares.ExtractShares(page)
+		if err != nil {
+			t.Errorf("Unable to extract shares: %v", err)
+			return false, err
+		}
+		for i, share := range s {
+			asJSON, _ := json.MarshalIndent(share, "", " ")
+			fmt.Printf("share %d: \n%s\n", i, asJSON)
+		}
+		count++
+		return true, nil
+	})
+	th.AssertEquals(t, 3, count)
+	th.AssertNoErr(t, err)
 }
