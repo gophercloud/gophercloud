@@ -25,48 +25,48 @@ type Share struct {
 	// Both DisplayName and Name can be used
 	DisplayName string `json:"display_name,omitempty"`
 	// Indicates whether a share has replicas or not.
-	HasReplicas bool `json:"has_replicas,omitempty"`
+	HasReplicas bool `json:"has_replicas"`
 	// The host name of the share
-	Host string `json:"host,omitempty"`
+	Host string `json:"host"`
 	// The UUID of the share
-	ID string `json:"id,omitempty"`
+	ID string `json:"id"`
 	// Indicates the visibility of the share
 	IsPublic bool `json:"is_public,omitempty"`
 	// Share links for pagination
-	Links []map[string]string `json:"links,omitempty"`
+	Links []map[string]string `json:"links"`
 	// Key, value -pairs of custom metadata
 	Metadata map[string]string `json:"metadata,omitempty"`
 	// The name of the share
 	Name string `json:"name,omitempty"`
 	// The UUID of the project to which this share belongs to
-	ProjectID string `json:"project_id,omitempty"`
+	ProjectID string `json:"project_id"`
 	// The share replication type
 	ReplicationType string `json:"replication_type,omitempty"`
 	// The UUID of the share network
-	ShareNetworkID string `json:"share_network_id,omitempty"`
+	ShareNetworkID string `json:"share_network_id"`
 	// The shared file system protocol
-	ShareProto string `json:"share_proto,omitempty"`
+	ShareProto string `json:"share_proto"`
 	// The UUID of the share server
-	ShareServerID string `json:"share_server_id,omitempty"`
+	ShareServerID string `json:"share_server_id"`
 	// The UUID of the share type.
-	ShareType string `json:"share_type,omitempty"`
+	ShareType string `json:"share_type"`
 	// The name of the share type.
-	ShareTypeName string `json:"share_type_name,omitempty"`
+	ShareTypeName string `json:"share_type_name"`
 	// Size of the share in GB
-	Size int `json:"size,omitempty"`
+	Size int `json:"size"`
 	// UUID of the snapshot from which to create the share
-	SnapshotID string `json:"snapshot_id,omitempty"`
+	SnapshotID string `json:"snapshot_id"`
 	// The share status
-	Status string `json:"status,omitempty"`
+	Status string `json:"status"`
 	// The task state, used for share migration
-	TaskState string `json:"task_state,omitempty"`
+	TaskState string `json:"task_state"`
 	// The type of the volume
 	VolumeType string `json:"volume_type,omitempty"`
 	// The UUID of the consistency group this share belongs to
-	ConsistencyGroupID string `json:"consistency_group_id,omitempty"`
+	ConsistencyGroupID string `json:"consistency_group_id"`
 	// Used for filtering backends which either support or do not support share snapshots
-	SnapshotSupport          bool   `json:"snapshot_support,omitempty"`
-	SourceCgsnapshotMemberID string `json:"source_cgsnapshot_member_id,omitempty"`
+	SnapshotSupport          bool   `json:"snapshot_support"`
+	SourceCgsnapshotMemberID string `json:"source_cgsnapshot_member_id"`
 	// Timestamp when the share was created
 	CreatedAt time.Time `json:"-"`
 }
@@ -113,7 +113,6 @@ func (r SharePage) NextPageURL() (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	q := currentURL.Query()
 	q.Set("offset", mark)
 	currentURL.RawQuery = q.Encode()
