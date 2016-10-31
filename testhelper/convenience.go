@@ -1,6 +1,7 @@
 package testhelper
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"path/filepath"
@@ -254,6 +255,24 @@ func CheckDeepEquals(t *testing.T, expected, actual interface{}) {
 			green(expected),
 			yellow(actual))
 	})
+}
+
+func isByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byte) bool {
+	return bytes.Equal(expectedBytes, actualBytes)
+}
+
+// AssertByteArrayEquals a convenience function for checking whether two byte arrays are equal
+func AssertByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byte) {
+	if !isByteArrayEquals(t, expectedBytes, actualBytes) {
+		logFatal(t, "The bytes differed.")
+	}
+}
+
+// CheckByteArrayEquals a convenience function for silent checking whether two byte arrays are equal
+func CheckByteArrayEquals(t *testing.T, expectedBytes []byte, actualBytes []byte) {
+	if !isByteArrayEquals(t, expectedBytes, actualBytes) {
+		logError(t, "The bytes differed.")
+	}
 }
 
 // isJSONEquals is a utility function that implements JSON comparison for AssertJSONEquals and
