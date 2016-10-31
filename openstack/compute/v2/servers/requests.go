@@ -145,7 +145,7 @@ type CreateOpts struct {
 	SecurityGroups []string `json:"-"`
 
 	// UserData contains configuration information or scripts to use upon launch.
-	// Create will base64-encode it for you.
+	// Create will base64-encode it for you, if it isn't already.
 	UserData []byte `json:"-"`
 
 	// AvailabilityZone in which to launch the server.
@@ -190,8 +190,16 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	}
 
 	if opts.UserData != nil {
-		encoded := base64.StdEncoding.EncodeToString(opts.UserData)
-		b["user_data"] = &encoded
+		// Check if we've already got a Base64 encoded string; dont double-encode
+		_, base64DecodeError := base64.StdEncoding.DecodeString(string(opts.UserData))
+
+		if base64DecodeError == nil {
+			preEncoded := string(opts.UserData)
+			b["user_data"] = &preEncoded
+		} else {
+			encoded := base64.StdEncoding.EncodeToString(opts.UserData)
+			b["user_data"] = &encoded
+		}
 	}
 
 	if len(opts.SecurityGroups) > 0 {
