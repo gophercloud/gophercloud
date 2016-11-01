@@ -10,7 +10,7 @@ func listMembersURL(c *gophercloud.ServiceClient, imageID string) string {
 	return imageMembersURL(c, imageID)
 }
 
-func createMembersURL(c *gophercloud.ServiceClient, imageID string) string {
+func createMemberURL(c *gophercloud.ServiceClient, imageID string) string {
 	return imageMembersURL(c, imageID)
 }
 

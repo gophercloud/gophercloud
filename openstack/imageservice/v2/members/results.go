@@ -1,78 +1,49 @@
 package members
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
-	"github.com/mitchellh/mapstructure"
 )
 
-// ImageMember model
-type ImageMember struct {
-	CreatedAt time.Time `mapstructure:"-"`
-	ImageID   string    `mapstructure:"image_id"`
-	MemberID  string    `mapstructure:"member_id"`
-	Schema    string
-	// Status could be one of pending, accepted, reject
-	Status    string
-	UpdatedAt time.Time `mapstructure:"-"`
+// Member model
+type Member struct {
+	CreatedAt time.Time `json:"-"`
+	ImageID   string    `json:"image_id"`
+	MemberID  string    `json:"member_id"`
+	Schema    string    `json:"schema"`
+	Status    string    `json:"status"`
+	UpdatedAt time.Time `json:"-"`
 }
 
-// CreateMemberResult result model
-type CreateMemberResult struct {
-	gophercloud.Result
+func (s *Member) UnmarshalJSON(b []byte) error {
+	type tmp Member
+	var p *struct {
+		tmp
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+	}
+	err := json.Unmarshal(b, &p)
+	if err != nil {
+		return err
+	}
+
+	*s = Member(p.tmp)
+	s.CreatedAt, err = time.Parse(time.RFC3339, p.CreatedAt)
+	if err != nil {
+		return err
+	}
+	s.UpdatedAt, err = time.Parse(time.RFC3339, p.UpdatedAt)
+	return err
 }
 
-// Extract ImageMember model from request if possible
-func (cm CreateMemberResult) Extract() (*ImageMember, error) {
-	if cm.Err != nil {
-		return nil, cm.Err
-	}
-	casted := cm.Body.(map[string]interface{})
-	var results ImageMember
-
-	if err := mapstructure.Decode(casted, &results); err != nil {
-		return nil, err
-	}
-
-	if t, ok := casted["created_at"].(string); ok && t != "" {
-		createdAt, err := time.Parse(time.RFC3339, t)
-		if err != nil {
-			return &results, err
-		}
-		results.CreatedAt = createdAt
-	}
-
-	if t, ok := casted["updated_at"].(string); ok && t != "" {
-		updatedAt, err := time.Parse(time.RFC3339, t)
-		if err != nil {
-			return &results, err
-		}
-		results.UpdatedAt = updatedAt
-	}
-
-	return &results, nil
-}
-
-// ListMembersResult model
-type ListMembersResult struct {
-	gophercloud.Result
-}
-
-// Extract returns list of image members
-func (lm ListMembersResult) Extract() ([]ImageMember, error) {
-	if lm.Err != nil {
-		return nil, lm.Err
-	}
-	casted := lm.Body.(map[string]interface{})
-
-	var results struct {
-		ImageMembers []ImageMember `mapstructure:"members"`
-	}
-
-	err := mapstructure.Decode(casted, &results)
-	return results.ImageMembers, err
+// Extract Member model from request if possible
+func (r commonResult) Extract() (*Member, error) {
+	var s *Member
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // MemberPage is a single page of Members results.
@@ -81,36 +52,40 @@ type MemberPage struct {
 }
 
 // ExtractMembers returns a slice of Members contained in a single page of results.
-func ExtractMembers(page pagination.Page) ([]ImageMember, error) {
-	casted := page.(MemberPage).Body
-	var response struct {
-		ImageMembers []ImageMember `mapstructure:"members"`
+func ExtractMembers(r pagination.Page) ([]Member, error) {
+	var s struct {
+		Members []Member `json:"members"`
 	}
-
-	err := mapstructure.Decode(casted, &response)
-	return response.ImageMembers, err
+	err := r.(MemberPage).ExtractInto(&s)
+	return s.Members, err
 }
 
 // IsEmpty determines whether or not a page of Members contains any results.
-func (page MemberPage) IsEmpty() (bool, error) {
-	tenants, err := ExtractMembers(page)
-	if err != nil {
-		return false, err
-	}
-	return len(tenants) == 0, nil
+func (r MemberPage) IsEmpty() (bool, error) {
+	members, err := ExtractMembers(r)
+	return len(members) == 0, err
 }
 
-// MemberDetailsResult model
-type MemberDetailsResult struct {
-	CreateMemberResult
-}
-
-// MemberDeleteResult model
-type MemberDeleteResult struct {
+type commonResult struct {
 	gophercloud.Result
 }
 
-// MemberUpdateResult model
-type MemberUpdateResult struct {
-	CreateMemberResult
+// CreateResult result model
+type CreateResult struct {
+	commonResult
+}
+
+// DetailsResult model
+type DetailsResult struct {
+	commonResult
+}
+
+// UpdateResult model
+type UpdateResult struct {
+	commonResult
+}
+
+// DeleteResult model
+type DeleteResult struct {
+	gophercloud.ErrResult
 }

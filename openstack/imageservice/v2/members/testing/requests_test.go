@@ -1,7 +1,6 @@
 package testing
 
 import (
-	"strings"
 	"testing"
 	"time"
 
@@ -29,7 +28,7 @@ func TestCreateMemberSuccessfully(t *testing.T) {
 	updatedAt, err := time.Parse(time.RFC3339, updatedAtString)
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, members.ImageMember{
+	th.AssertDeepEquals(t, members.Member{
 		CreatedAt: createdAt,
 		ImageID:   "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		MemberID:  "8989447062e04a818baf9e073fd04fa7",
@@ -38,44 +37,6 @@ func TestCreateMemberSuccessfully(t *testing.T) {
 		UpdatedAt: updatedAt,
 	}, *im)
 
-}
-
-func TestCreateMemberMemberConflict(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	HandleCreateImageMemberConflict(t)
-
-	result := members.Create(fakeclient.ServiceClient(), "da3b75d9-memberConflict",
-		"8989447062e04a818baf9e073fd04fa7")
-
-	if result.Err == nil {
-		t.Fatalf("Expected error in result defined (Err: %v)", result.Err)
-	}
-
-	message := result.Err.Error()
-	if !strings.Contains(message, "is already member for image") {
-		t.Fatalf("Wrong error message: %s", message)
-	}
-
-}
-func TestCreateMemberInvalidVisibility(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	HandleCreateImageMemberInvalidVisibility(t)
-
-	result := members.Create(fakeclient.ServiceClient(), "da3b75d9-invalid-visibility",
-		"8989447062e04a818baf9e073fd04fa7")
-
-	if result.Err == nil {
-		t.Fatalf("Expected error in result defined (Err: %v)", result.Err)
-	}
-
-	message := result.Err.Error()
-	if !strings.Contains(message, "which 'visibility' attribute is private") {
-		t.Fatalf("Wrong error message: %s", message)
-	}
 }
 
 func TestMemberListSuccessfully(t *testing.T) {
@@ -158,7 +119,7 @@ func TestShowMemberDetails(t *testing.T) {
 	updatedAt, err := time.Parse(time.RFC3339, "2013-11-26T07:21:21Z")
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, members.ImageMember{
+	th.AssertDeepEquals(t, members.Member{
 		CreatedAt: createdAt,
 		ImageID:   "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		MemberID:  "8989447062e04a818baf9e073fd04fa7",
@@ -180,26 +141,6 @@ func TestDeleteMember(t *testing.T) {
 	th.AssertNoErr(t, result.Err)
 }
 
-func TestDeleteMemberByNonOwner(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	counter := HandleImageMemberDeleteByNonOwner(t)
-
-	result := members.Delete(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
-		"8989447062e04a818baf9e073fd04fa7")
-	th.AssertEquals(t, 1, counter.Counter)
-
-	if result.Err == nil {
-		t.Fatalf("Expected error in result defined (Err: %v)", result.Err)
-	}
-
-	message := result.Err.Error()
-	if !strings.Contains(message, "You must be the owner of the specified image") {
-		t.Fatalf("Wrong error message: %s", message)
-	}
-}
-
 func TestMemberUpdateSuccessfully(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -219,7 +160,7 @@ func TestMemberUpdateSuccessfully(t *testing.T) {
 	updatedAt, err := time.Parse(time.RFC3339, "2013-11-26T07:21:21Z")
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, members.ImageMember{
+	th.AssertDeepEquals(t, members.Member{
 		CreatedAt: createdAt,
 		ImageID:   "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 		MemberID:  "8989447062e04a818baf9e073fd04fa7",

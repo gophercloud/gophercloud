@@ -1,13 +1,13 @@
 package images
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"reflect"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
-	"github.com/mitchellh/mapstructure"
 )
 
 // Image model
@@ -15,68 +15,101 @@ import (
 // returned by listing images, and by fetching a specific image.
 type Image struct {
 	// ID is the image UUID
-	ID string
+	ID string `json:"id"`
 
 	// Name is the human-readable display name for the image.
-	Name string
+	Name string `json:"name"`
 
 	// Status is the image status. It can be "queued" or "active"
 	// See imageservice/v2/images/type.go
-	Status ImageStatus
+	Status ImageStatus `json:"status"`
 
 	// Tags is a list of image tags. Tags are arbitrarily defined strings
 	// attached to an image.
-	Tags []string
+	Tags []string `json:"tags"`
 
 	// ContainerFormat is the format of the container.
 	// Valid values are ami, ari, aki, bare, and ovf.
-	ContainerFormat string `mapstructure:"container_format"`
+	ContainerFormat string `json:"container_format"`
 
 	// DiskFormat is the format of the disk.
 	// If set, valid values are ami, ari, aki, vhd, vmdk, raw, qcow2, vdi, and iso.
-	DiskFormat string `mapstructure:"disk_format"`
+	DiskFormat string `json:"disk_format"`
 
 	// MinDiskGigabytes is the amount of disk space in GB that is required to boot the image.
-	MinDiskGigabytes int `mapstructure:"min_disk"`
+	MinDiskGigabytes int `json:"min_disk"`
 
 	// MinRAMMegabytes [optional] is the amount of RAM in MB that is required to boot the image.
-	MinRAMMegabytes int `mapstructure:"min_ram"`
+	MinRAMMegabytes int `json:"min_ram"`
 
 	// Owner is the tenant the image belongs to.
-	Owner string
+	Owner string `json:"owner"`
 
 	// Protected is whether the image is deletable or not.
-	Protected bool
+	Protected bool `json:"protected"`
 
 	// Visibility defines who can see/use the image.
-	Visibility ImageVisibility
+	Visibility ImageVisibility `json:"visibility"`
 
 	// Checksum is the checksum of the data that's associated with the image
-	Checksum string
+	Checksum string `json:"checksum"`
 
 	// SizeBytes is the size of the data that's associated with the image.
-	SizeBytes int `mapstructure:"size"`
+	SizeBytes int64 `json:"size"`
 
 	// Metadata is a set of metadata associated with the image.
 	// Image metadata allow for meaningfully define the image properties
 	// and tags. See http://docs.openstack.org/developer/glance/metadefs-concepts.html.
-	Metadata map[string]string
+	Metadata map[string]string `json:"metadata"`
 
 	// Properties is a set of key-value pairs, if any, that are associated with the image.
-	Properties map[string]string
+	Properties map[string]string `json:"properties"`
 
-	// CreatedDate is the date when the image has been created.
-	CreatedDate string `mapstructure:"created_at"`
+	// CreatedAt is the date when the image has been created.
+	CreatedAt time.Time `json:"-"`
 
-	// LastUpdate is the date when the last change has been made to the image or it's properties.
-	LastUpdate string `mapstructure:"updated_at"`
+	// UpdatedAt is the date when the last change has been made to the image or it's properties.
+	UpdatedAt time.Time `json:"-"`
 
 	// File is the trailing path after the glance endpoint that represent the location
 	// of the image or the path to retrieve it.
-	File string `mapstructure:"file"`
+	File string `json:"file"`
 
 	// Schema is the path to the JSON-schema that represent the image or image entity.
-	Schema string `mapstructure:"schema"`
+	Schema string `json:"schema"`
+}
+
+func (s *Image) UnmarshalJSON(b []byte) error {
+	type tmp Image
+	var p *struct {
+		tmp
+		SizeBytes interface{} `json:"size"`
+		CreatedAt string      `json:"created_at"`
+		UpdatedAt string      `json:"updated_at"`
+	}
+	err := json.Unmarshal(b, &p)
+	if err != nil {
+		return err
+	}
+	*s = Image(p.tmp)
+
+	switch t := p.SizeBytes.(type) {
+	case nil:
+		return nil
+	case float32:
+		s.SizeBytes = int64(t)
+	case float64:
+		s.SizeBytes = int64(t)
+	default:
+		return fmt.Errorf("Unknown type for SizeBytes: %v (value: %v)", reflect.TypeOf(t), t)
+	}
+
+	s.CreatedAt, err = time.Parse(time.RFC3339, p.CreatedAt)
+	if err != nil {
+		return err
+	}
+	s.UpdatedAt, err = time.Parse(time.RFC3339, p.UpdatedAt)
+	return err
 }
 
 type commonResult struct {
@@ -84,14 +117,10 @@ type commonResult struct {
 }
 
 // Extract interprets any commonResult as an Image.
-func (c commonResult) Extract() (*Image, error) {
-	if c.Err != nil {
-		return nil, c.Err
-	}
-	var image *Image
-
-	err := mapstructure.Decode(c.Result.Body, &image)
-	return image, err
+func (r commonResult) Extract() (*Image, error) {
+	var s *Image
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // CreateResult represents the result of a Create operation
@@ -111,25 +140,7 @@ type GetResult struct {
 
 //DeleteResult model
 type DeleteResult struct {
-	gophercloud.Result
-}
-
-// PutImageDataResult is model put image respose
-type PutImageDataResult struct {
-	gophercloud.Result
-}
-
-// GetImageDataResult model for image response
-type GetImageDataResult struct {
-	gophercloud.Result
-}
-
-// Extract builds images model from io.Reader
-func (g GetImageDataResult) Extract() (io.Reader, error) {
-	if r, ok := g.Body.(io.Reader); ok {
-		return r, nil
-	}
-	return nil, fmt.Errorf("Expected io.Reader but got: %T(%#v)", g.Body, g.Body)
+	gophercloud.ErrResult
 }
 
 // ImagePage represents page
@@ -138,57 +149,28 @@ type ImagePage struct {
 }
 
 // IsEmpty returns true if a page contains no Images results.
-func (page ImagePage) IsEmpty() (bool, error) {
-	images, err := ExtractImages(page)
-	if err != nil {
-		return true, err
-	}
-	return len(images) == 0, nil
+func (r ImagePage) IsEmpty() (bool, error) {
+	images, err := ExtractImages(r)
+	return len(images) == 0, err
 }
 
 // NextPageURL uses the response's embedded link reference to navigate to the next page of results.
-func (page ImagePage) NextPageURL() (string, error) {
-	type resp struct {
-		Next string `mapstructure:"next"`
+func (r ImagePage) NextPageURL() (string, error) {
+	var s struct {
+		Next string `json:"next"`
 	}
-
-	var r resp
-	err := mapstructure.Decode(page.Body, &r)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-
-	return nextPageURL(page.URL.String(), r.Next), nil
-}
-
-func toMapFromString(from reflect.Kind, to reflect.Kind, data interface{}) (interface{}, error) {
-	if (from == reflect.String) && (to == reflect.Map) {
-		return map[string]interface{}{}, nil
-	}
-	return data, nil
+	return nextPageURL(r.URL.String(), s.Next), nil
 }
 
 // ExtractImages interprets the results of a single page from a List() call, producing a slice of Image entities.
-func ExtractImages(page pagination.Page) ([]Image, error) {
-	casted := page.(ImagePage).Body
-
-	var response struct {
-		Images []Image `mapstructure:"images"`
+func ExtractImages(r pagination.Page) ([]Image, error) {
+	var s struct {
+		Images []Image `json:"images"`
 	}
-
-	config := &mapstructure.DecoderConfig{
-		DecodeHook: toMapFromString,
-		Result:     &response,
-	}
-	decoder, err := mapstructure.NewDecoder(config)
-	if err != nil {
-		return nil, err
-	}
-
-	err = decoder.Decode(casted)
-	if err != nil {
-		fmt.Printf("Error happened %v \n", err)
-	}
-
-	return response.Images, err
+	err := (r.(ImagePage)).ExtractInto(&s)
+	return s.Images, err
 }

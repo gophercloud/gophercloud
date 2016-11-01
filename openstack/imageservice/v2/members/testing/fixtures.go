@@ -30,34 +30,6 @@ func HandleCreateImageMemberSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleCreateImageMemberInvalidVisibility setup for case when visibility=public
-func HandleCreateImageMemberInvalidVisibility(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-invalid-visibility/members", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		th.TestJSONRequest(t, r, `{"member": "8989447062e04a818baf9e073fd04fa7"}`)
-		w.WriteHeader(http.StatusForbidden)
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{"members":[]}`)
-	})
-
-}
-
-// HandleCreateImageMemberConflict setup for case when member is already image member
-func HandleCreateImageMemberConflict(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-memberConflict/members", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		th.TestJSONRequest(t, r, `{"member": "8989447062e04a818baf9e073fd04fa7"}`)
-
-		w.WriteHeader(http.StatusConflict)
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{"members":[]}`)
-	})
-}
-
 // HandleImageMemberList happy path setup
 func HandleImageMemberList(t *testing.T) {
 	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members", func(w http.ResponseWriter, r *http.Request) {
@@ -131,20 +103,6 @@ func HandleImageMemberDeleteSuccessfully(t *testing.T) *CallsCounter {
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
-	})
-	return &counter
-}
-
-// HandleImageMemberDeleteByNonOwner setup
-func HandleImageMemberDeleteByNonOwner(t *testing.T) *CallsCounter {
-	var counter CallsCounter
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members/8989447062e04a818baf9e073fd04fa7", func(w http.ResponseWriter, r *http.Request) {
-		counter.Counter = counter.Counter + 1
-
-		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		w.WriteHeader(http.StatusForbidden)
 	})
 	return &counter
 }

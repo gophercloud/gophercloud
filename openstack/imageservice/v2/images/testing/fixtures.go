@@ -2,7 +2,6 @@ package testing
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -159,7 +158,6 @@ func HandleImageCreationSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, `{
 			"id": "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
 			"name": "Ubuntu 12.10",
-			"protected": false,
 			"tags": [
 				"ubuntu",
 				"quantal"
@@ -202,7 +200,6 @@ func HandleImageCreationSuccessfullyNulls(t *testing.T) {
 		th.TestJSONRequest(t, r, `{
 			"id": "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
 			"name": "Ubuntu 12.10",
-			"protected": false,
 			"tags": [
 				"ubuntu",
 				"quantal"
@@ -328,200 +325,4 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 			"container_format": ""
 		}`)
 	})
-}
-
-// HandlePutImageDataSuccessfully setup
-func HandlePutImageDataSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/file", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		b, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			t.Errorf("Unable to read request body: %v", err)
-		}
-
-		th.AssertByteArrayEquals(t, []byte{5, 3, 7, 24}, b)
-
-		w.WriteHeader(http.StatusNoContent)
-	})
-}
-
-// HandleGetImageDataSuccessfully setup
-func HandleGetImageDataSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/file", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		w.WriteHeader(http.StatusOK)
-
-		_, err := w.Write([]byte{34, 87, 0, 23, 23, 23, 56, 255, 254, 0})
-		th.AssertNoErr(t, err)
-	})
-}
-
-// HandleCreateImageMemberSuccessfully setup
-func HandleCreateImageMemberSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		th.TestJSONRequest(t, r, `{"member": "8989447062e04a818baf9e073fd04fa7"}`)
-
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{
-		    "created_at": "2013-09-20T19:22:19Z",
-		    "image_id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
-		    "member_id": "8989447062e04a818baf9e073fd04fa7",
-		    "schema": "/v2/schemas/member",
-		    "status": "pending",
-		    "updated_at": "2013-09-20T19:25:31Z"
-			}`)
-
-	})
-}
-
-// HandleCreateImageMemberInvalidVisibility setup for case when visibility=public
-func HandleCreateImageMemberInvalidVisibility(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-invalid-visibility/members", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		th.TestJSONRequest(t, r, `{"member": "8989447062e04a818baf9e073fd04fa7"}`)
-		w.WriteHeader(http.StatusForbidden)
-	})
-
-}
-
-// HandleCreateImageMemberConflict setup for case when member is already image member
-func HandleCreateImageMemberConflict(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-memberConflict/members", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		th.TestJSONRequest(t, r, `{"member": "8989447062e04a818baf9e073fd04fa7"}`)
-
-		w.WriteHeader(http.StatusConflict)
-	})
-}
-
-// HandleImageMemberList happy path setup
-func HandleImageMemberList(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{
-		    "members": [
-		        {
-		            "created_at": "2013-10-07T17:58:03Z",
-		            "image_id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
-		            "member_id": "123456789",
-		            "schema": "/v2/schemas/member",
-		            "status": "pending",
-		            "updated_at": "2013-10-07T17:58:03Z"
-		        },
-		        {
-		            "created_at": "2013-10-07T17:58:55Z",
-		            "image_id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
-		            "member_id": "987654321",
-		            "schema": "/v2/schemas/member",
-		            "status": "accepted",
-		            "updated_at": "2013-10-08T12:08:55Z"
-		        }
-		    ],
-		    "schema": "/v2/schemas/members"
-		}`)
-	})
-}
-
-// HandleImageMemberEmptyList happy path setup
-func HandleImageMemberEmptyList(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{
-		    "members": [],
-		    "schema": "/v2/schemas/members"
-		}`)
-	})
-}
-
-// HandleImageMemberDetails setup
-func HandleImageMemberDetails(t *testing.T) {
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members/8989447062e04a818baf9e073fd04fa7", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `{
-		    "status": "pending",
-		    "created_at": "2013-11-26T07:21:21Z",
-		    "updated_at": "2013-11-26T07:21:21Z",
-		    "image_id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
-		    "member_id": "8989447062e04a818baf9e073fd04fa7",
-		    "schema": "/v2/schemas/member"
-		}`)
-	})
-}
-
-// HandleImageMemberDeleteSuccessfully setup
-func HandleImageMemberDeleteSuccessfully(t *testing.T) *CallsCounter {
-	var counter CallsCounter
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members/8989447062e04a818baf9e073fd04fa7", func(w http.ResponseWriter, r *http.Request) {
-		counter.Counter = counter.Counter + 1
-
-		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		w.WriteHeader(http.StatusNoContent)
-	})
-	return &counter
-}
-
-// HandleImageMemberDeleteByNonOwner setup
-func HandleImageMemberDeleteByNonOwner(t *testing.T) *CallsCounter {
-	var counter CallsCounter
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members/8989447062e04a818baf9e073fd04fa7", func(w http.ResponseWriter, r *http.Request) {
-		counter.Counter = counter.Counter + 1
-
-		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		w.WriteHeader(http.StatusForbidden)
-	})
-	return &counter
-}
-
-// HandleImageMemberUpdate setup
-func HandleImageMemberUpdate(t *testing.T) *CallsCounter {
-	var counter CallsCounter
-	th.Mux.HandleFunc("/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/members/8989447062e04a818baf9e073fd04fa7", func(w http.ResponseWriter, r *http.Request) {
-		counter.Counter = counter.Counter + 1
-
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
-
-		th.TestJSONRequest(t, r, `{"status": "accepted"}`)
-
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `{
-		    "status": "accepted",
-		    "created_at": "2013-11-26T07:21:21Z",
-		    "updated_at": "2013-11-26T07:21:21Z",
-		    "image_id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
-		    "member_id": "8989447062e04a818baf9e073fd04fa7",
-		    "schema": "/v2/schemas/member"
-		}`)
-	})
-	return &counter
-}
-
-// CallsCounter for checking if request handler was called at all
-type CallsCounter struct {
-	Counter int
 }

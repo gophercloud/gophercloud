@@ -1,10 +1,6 @@
 package images
 
 import (
-	"fmt"
-	"io"
-	"net/http"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -42,16 +38,12 @@ type ListOpts struct {
 // ToImageListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToImageListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	if err != nil {
-		return "", err
-	}
-	return q.String(), nil
+	return q.String(), err
 }
 
 // List implements image list request
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(c)
-
 	if opts != nil {
 		query, err := opts.ToImageListQuery()
 		if err != nil {
@@ -59,23 +51,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		}
 		url += query
 	}
-
-	createPageFn := func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
 		return ImagePage{pagination.LinkedPageBase{PageResult: r}}
-	}
-	return pagination.NewPager(c, url, createPageFn)
-}
-
-// Create implements create image request
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) CreateResult {
-	var res CreateResult
-	body, err := opts.ToImageCreateMap()
-	if err != nil {
-		res.Err = err
-		return res
-	}
-	_, res.Err = client.Post(createURL(client), body, &res.Body, &gophercloud.RequestOpts{OkCodes: []int{201}})
-	return res
+	})
 }
 
 // CreateOptsBuilder describes struct types that can be accepted by the Create call.
@@ -87,131 +65,114 @@ type CreateOptsBuilder interface {
 
 // CreateOpts implements CreateOptsBuilder
 type CreateOpts struct {
-	// Name [required] is the name of the new image.
-	Name string
+	// Name is the name of the new image.
+	Name string `json:"name" required:"true"`
 
-	// Id [optional] is the the image ID.
-	ID string
+	// Id is the the image ID.
+	ID string `json:"id,omitempty"`
 
-	// Visibility [optional] defines who can see/use the image.
-	Visibility *ImageVisibility
+	// Visibility defines who can see/use the image.
+	Visibility *ImageVisibility `json:"visibility,omitempty"`
 
-	// Tags [optional] is a set of image tags.
-	Tags []string
+	// Tags is a set of image tags.
+	Tags []string `json:"tags,omitempty"`
 
-	// ContainerFormat [optional] is the format of the
+	// ContainerFormat is the format of the
 	// container. Valid values are ami, ari, aki, bare, and ovf.
-	ContainerFormat string
+	ContainerFormat string `json:"container_format,omitempty"`
 
-	// DiskFormat [optional] is the format of the disk. If set,
+	// DiskFormat is the format of the disk. If set,
 	// valid values are ami, ari, aki, vhd, vmdk, raw, qcow2, vdi,
 	// and iso.
-	DiskFormat string
+	DiskFormat string `json:"disk_format,omitempty"`
 
-	// MinDiskGigabytes [optional] is the amount of disk space in
+	// MinDisk is the amount of disk space in
 	// GB that is required to boot the image.
-	MinDiskGigabytes int
+	MinDisk int `json:"min_disk,omitempty"`
 
-	// MinRAMMegabytes [optional] is the amount of RAM in MB that
+	// MinRAM is the amount of RAM in MB that
 	// is required to boot the image.
-	MinRAMMegabytes int
+	MinRAM int `json:"min_ram,omitempty"`
 
-	// protected [optional] is whether the image is not deletable.
-	Protected bool
+	// protected is whether the image is not deletable.
+	Protected *bool `json:"protected,omitempty"`
 
-	// properties [optional] is a set of properties, if any, that
+	// properties is a set of properties, if any, that
 	// are associated with the image.
-	Properties map[string]string
+	Properties map[string]string `json:"-,omitempty"`
 }
 
 // ToImageCreateMap assembles a request body based on the contents of
 // a CreateOpts.
 func (opts CreateOpts) ToImageCreateMap() (map[string]interface{}, error) {
-	body := map[string]interface{}{}
-	if opts.Name == "" {
-		return body, fmt.Errorf("'Name' field is requered, but is not set (was: %v)'", opts.Name)
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
 	}
-
-	body["name"] = opts.Name
-	if opts.ID != "" {
-		body["id"] = opts.ID
-	}
-	if opts.Visibility != nil {
-		body["visibility"] = opts.Visibility
-	}
-	if opts.Tags != nil {
-		body["tags"] = opts.Tags
-	}
-	if opts.ContainerFormat != "" {
-		body["container_format"] = opts.ContainerFormat
-	}
-	if opts.DiskFormat != "" {
-		body["disk_format"] = opts.DiskFormat
-	}
-	if opts.MinDiskGigabytes != 0 {
-		body["min_disk"] = opts.MinDiskGigabytes
-	}
-	if opts.MinRAMMegabytes != 0 {
-		body["min_ram"] = opts.MinRAMMegabytes
-
-	}
-
-	body["protected"] = opts.Protected
 
 	if opts.Properties != nil {
 		for k, v := range opts.Properties {
-			body[k] = v
+			b[k] = v
 		}
 	}
-	return body, nil
+	return b, nil
+}
+
+// Create implements create image request
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToImageCreateMap()
+	if err != nil {
+		r.Err = err
+		return r
+	}
+	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{201}})
+	return
 }
 
 // Delete implements image delete request
-func Delete(client *gophercloud.ServiceClient, id string) DeleteResult {
-	var res DeleteResult
-	_, res.Err = client.Delete(deleteURL(client, id), &gophercloud.RequestOpts{
-		OkCodes: []int{204},
-	})
-	return res
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
 }
 
 // Get implements image get request
-func Get(client *gophercloud.ServiceClient, id string) GetResult {
-	var res GetResult
-	_, res.Err = client.Get(getURL(client, id), &res.Body, nil)
-	return res
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
 }
 
 // Update implements image updated request
-func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) UpdateResult {
-	var res UpdateResult
-	reqBody := opts.ToImageUpdateMap()
-
-	_, res.Err = client.Patch(updateURL(client, id), reqBody, &res.Body, &gophercloud.RequestOpts{
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToImageUpdateMap()
+	if err != nil {
+		r.Err = err
+		return r
+	}
+	_, r.Err = client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes:     []int{200},
 		MoreHeaders: map[string]string{"Content-Type": "application/openstack-images-v2.1-json-patch"},
 	})
-	return res
+	return
 }
 
 // UpdateOptsBuilder implements UpdateOptsBuilder
 type UpdateOptsBuilder interface {
 	// returns value implementing json.Marshaler which when marshaled matches the patch schema:
 	// http://specs.openstack.org/openstack/glance-specs/specs/api/v2/http-patch-image-api-v2.html
-	ToImageUpdateMap() []interface{}
+	ToImageUpdateMap() ([]interface{}, error)
 }
 
 // UpdateOpts implements UpdateOpts
 type UpdateOpts []Patch
 
 // ToImageUpdateMap builder
-func (opts UpdateOpts) ToImageUpdateMap() []interface{} {
+func (opts UpdateOpts) ToImageUpdateMap() ([]interface{}, error) {
 	m := make([]interface{}, len(opts))
 	for i, patch := range opts {
 		patchJSON := patch.ToImagePatchMap()
 		m[i] = patchJSON
 	}
-	return m
+	return m, nil
 }
 
 // Patch represents a single update to an existing image. Multiple updates to an image can be
@@ -227,11 +188,11 @@ type UpdateVisibility struct {
 
 // ToImagePatchMap builder
 func (u UpdateVisibility) ToImagePatchMap() map[string]interface{} {
-	m := map[string]interface{}{}
-	m["op"] = "relace"
-	m["path"] = "/visibility"
-	m["value"] = u.Visibility
-	return m
+	return map[string]interface{}{
+		"op":    "replace",
+		"path":  "/visibility",
+		"value": u.Visibility,
+	}
 }
 
 // ReplaceImageName implements Patch
@@ -241,11 +202,11 @@ type ReplaceImageName struct {
 
 // ToImagePatchMap builder
 func (r ReplaceImageName) ToImagePatchMap() map[string]interface{} {
-	m := map[string]interface{}{}
-	m["op"] = "replace"
-	m["path"] = "/name"
-	m["value"] = r.NewName
-	return m
+	return map[string]interface{}{
+		"op":    "replace",
+		"path":  "/name",
+		"value": r.NewName,
+	}
 }
 
 // ReplaceImageChecksum implements Patch
@@ -254,12 +215,12 @@ type ReplaceImageChecksum struct {
 }
 
 // ReplaceImageChecksum builder
-func (rc ReplaceImageChecksum) ReplaceImageChecksum() map[string]interface{} {
-	m := map[string]interface{}{}
-	m["op"] = "replace"
-	m["path"] = "/checksum"
-	m["value"] = rc.Checksum
-	return m
+func (rc ReplaceImageChecksum) ToImagePatchMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":    "replace",
+		"path":  "/checksum",
+		"value": rc.Checksum,
+	}
 }
 
 // ReplaceImageTags implements Patch
@@ -269,35 +230,9 @@ type ReplaceImageTags struct {
 
 // ToImagePatchMap builder
 func (r ReplaceImageTags) ToImagePatchMap() map[string]interface{} {
-	m := map[string]interface{}{}
-	m["op"] = "replace"
-	m["path"] = "/tags"
-	m["value"] = r.NewTags
-	return m
-}
-
-// Upload uploads image file
-func Upload(client *gophercloud.ServiceClient, id string, data io.ReadSeeker) PutImageDataResult {
-	var res PutImageDataResult
-
-	_, res.Err = client.Put(imageDataURL(client, id), data, nil, &gophercloud.RequestOpts{
-		MoreHeaders: map[string]string{"Content-Type": "application/octet-stream"},
-		OkCodes:     []int{204},
-	})
-
-	return res
-}
-
-// Download retrieves file
-func Download(client *gophercloud.ServiceClient, id string) GetImageDataResult {
-	var res GetImageDataResult
-
-	var resp *http.Response
-	resp, res.Err = client.Get(imageDataURL(client, id), nil, &gophercloud.RequestOpts{
-		OkCodes: []int{200},
-	})
-
-	res.Body = resp.Body
-
-	return res
+	return map[string]interface{}{
+		"op":    "replace",
+		"path":  "/tags",
+		"value": r.NewTags,
+	}
 }

@@ -1,9 +1,6 @@
 package testing
 
 import (
-	"fmt"
-	"io"
-	"io/ioutil"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
@@ -70,8 +67,8 @@ func TestCreateImage(t *testing.T) {
 	minDiskGigabytes := 0
 	minRAMMegabytes := 0
 	file := actualImage.File
-	createdDate := actualImage.CreatedDate
-	lastUpdate := actualImage.LastUpdate
+	createdDate := actualImage.CreatedAt
+	lastUpdate := actualImage.UpdatedAt
 	schema := "/v2/schemas/image"
 
 	expectedImage := images.Image{
@@ -89,11 +86,11 @@ func TestCreateImage(t *testing.T) {
 
 		Owner: owner,
 
-		Visibility:  images.ImageVisibilityPrivate,
-		File:        file,
-		CreatedDate: createdDate,
-		LastUpdate:  lastUpdate,
-		Schema:      schema,
+		Visibility: images.ImageVisibilityPrivate,
+		File:       file,
+		CreatedAt:  createdDate,
+		UpdatedAt:  lastUpdate,
+		Schema:     schema,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -122,8 +119,8 @@ func TestCreateImageNulls(t *testing.T) {
 	minDiskGigabytes := 0
 	minRAMMegabytes := 0
 	file := actualImage.File
-	createdDate := actualImage.CreatedDate
-	lastUpdate := actualImage.LastUpdate
+	createdDate := actualImage.CreatedAt
+	lastUpdate := actualImage.UpdatedAt
 	schema := "/v2/schemas/image"
 
 	expectedImage := images.Image{
@@ -141,11 +138,11 @@ func TestCreateImageNulls(t *testing.T) {
 
 		Owner: owner,
 
-		Visibility:  images.ImageVisibilityPrivate,
-		File:        file,
-		CreatedDate: createdDate,
-		LastUpdate:  lastUpdate,
-		Schema:      schema,
+		Visibility: images.ImageVisibilityPrivate,
+		File:       file,
+		CreatedAt:  createdDate,
+		UpdatedAt:  lastUpdate,
+		Schema:     schema,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -162,15 +159,15 @@ func TestGetImage(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	checksum := "64d7c1cd2b6f60c92c14662941cb7913"
-	sizeBytes := 13167616
+	sizeBytes := int64(13167616)
 	containerFormat := "bare"
 	diskFormat := "qcow2"
 	minDiskGigabytes := 0
 	minRAMMegabytes := 0
 	owner := "5ef70662f8b34079a6eddb8da9d75fe8"
 	file := actualImage.File
-	createdDate := actualImage.CreatedDate
-	lastUpdate := actualImage.LastUpdate
+	createdDate := actualImage.CreatedAt
+	lastUpdate := actualImage.UpdatedAt
 	schema := "/v2/schemas/image"
 
 	expectedImage := images.Image{
@@ -191,12 +188,12 @@ func TestGetImage(t *testing.T) {
 		Protected:  false,
 		Visibility: images.ImageVisibilityPublic,
 
-		Checksum:    checksum,
-		SizeBytes:   sizeBytes,
-		File:        file,
-		CreatedDate: createdDate,
-		LastUpdate:  lastUpdate,
-		Schema:      schema,
+		Checksum:  checksum,
+		SizeBytes: sizeBytes,
+		File:      file,
+		CreatedAt: createdDate,
+		UpdatedAt: lastUpdate,
+		Schema:    schema,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -225,11 +222,11 @@ func TestUpdateImage(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 
-	sizebytes := 2254249
+	sizebytes := int64(2254249)
 	checksum := "2cec138d7dae2aa59038ef8c9aec2390"
 	file := actualImage.File
-	createdDate := actualImage.CreatedDate
-	lastUpdate := actualImage.LastUpdate
+	createdDate := actualImage.CreatedAt
+	lastUpdate := actualImage.UpdatedAt
 	schema := "/v2/schemas/image"
 
 	expectedImage := images.Image{
@@ -253,87 +250,10 @@ func TestUpdateImage(t *testing.T) {
 		DiskFormat:      "",
 		ContainerFormat: "",
 		File:            file,
-		CreatedDate:     createdDate,
-		LastUpdate:      lastUpdate,
+		CreatedAt:       createdDate,
+		UpdatedAt:       lastUpdate,
 		Schema:          schema,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
-}
-
-func TestUpload(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	HandlePutImageDataSuccessfully(t)
-
-	images.Upload(
-		fakeclient.ServiceClient(),
-		"da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
-		readSeekerOfBytes([]byte{5, 3, 7, 24}))
-
-	// TODO
-}
-
-func readSeekerOfBytes(bs []byte) io.ReadSeeker {
-	return &RS{bs: bs}
-}
-
-// implements io.ReadSeeker
-type RS struct {
-	bs     []byte
-	offset int
-}
-
-func (rs *RS) Read(p []byte) (int, error) {
-	leftToRead := len(rs.bs) - rs.offset
-
-	if 0 < leftToRead {
-		bytesToWrite := min(leftToRead, len(p))
-		for i := 0; i < bytesToWrite; i++ {
-			p[i] = rs.bs[rs.offset]
-			rs.offset++
-		}
-		return bytesToWrite, nil
-	}
-	return 0, io.EOF
-}
-
-func min(a int, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func (rs *RS) Seek(offset int64, whence int) (int64, error) {
-	var offsetInt = int(offset)
-	if whence == 0 {
-		rs.offset = offsetInt
-	} else if whence == 1 {
-		rs.offset = rs.offset + offsetInt
-	} else if whence == 2 {
-		rs.offset = len(rs.bs) - offsetInt
-	} else {
-		return 0, fmt.Errorf("For parameter `whence`, expected value in {0,1,2} but got: %#v", whence)
-	}
-
-	return int64(rs.offset), nil
-}
-
-func TestDownload(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	HandleGetImageDataSuccessfully(t)
-
-	rdr, err := images.Download(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea").Extract()
-
-	th.AssertNoErr(t, err)
-
-	bs, err := ioutil.ReadAll(rdr)
-
-	th.AssertNoErr(t, err)
-
-	th.AssertByteArrayEquals(t, []byte{34, 87, 0, 23, 23, 23, 56, 255, 254, 0}, bs)
 }
