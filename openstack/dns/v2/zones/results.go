@@ -21,9 +21,24 @@ func (r commonResult) Extract() (*Zone, error) {
 	return s, err
 }
 
+// CreateResult is the deferred result of a Create call.
+type CreateResult struct {
+	commonResult
+}
+
 // GetResult is the deferred result of a Get call.
 type GetResult struct {
 	commonResult
+}
+
+// UpdateResult is the deferred result of an Update call.
+type UpdateResult struct {
+	commonResult
+}
+
+// DeleteResult is the deferred result of an Delete call.
+type DeleteResult struct {
+	gophercloud.ErrResult
 }
 
 // ZonePage is a single page of Zone results.
