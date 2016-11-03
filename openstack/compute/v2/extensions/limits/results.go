@@ -51,7 +51,8 @@ type Absolute struct {
 	// MaxTotalInstances is the number of instances/servers available to a tenant.
 	MaxTotalInstances int `json:"maxTotalInstances"`
 
-	// MaxTotalRAMSize is the total amount of RAM available to a tenant.
+	// MaxTotalRAMSize is the total amount of RAM available to a tenant measured
+	// in megabytes (MB).
 	MaxTotalRAMSize int `json:"maxTotalRAMSize"`
 
 	// TotalCoresUsed is the number of cores currently in use.
@@ -63,7 +64,7 @@ type Absolute struct {
 	// TotalFloatingIpsUsed is the number of floating IPs in use.
 	TotalFloatingIpsUsed int `json:"totalFloatingIpsUsed"`
 
-	// TotalRAMUsed is the total RAM/memory in use.
+	// TotalRAMUsed is the total RAM/memory in use measured in megabytes (MB).
 	TotalRAMUsed int `json:"totalRAMUsed"`
 
 	// TotalSecurityGroupsUsed is the total number of security groups in use.
