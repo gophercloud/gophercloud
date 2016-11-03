@@ -100,3 +100,22 @@ func TestList(t *testing.T) {
 
 	th.CheckDeepEquals(t, expected, actual)
 }
+
+// Verifies that it is possible to get the default share type
+func TestGetDefault(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetDefaultResponse(t)
+
+	expected := sharetypes.ShareType{
+		ID:                 "be27425c-f807-4500-a056-d00721db45cf",
+		Name:               "default",
+		ExtraSpecs:         map[string]interface{}{"snapshot_support": "True", "driver_handles_share_servers": "True"},
+		RequiredExtraSpecs: map[string]interface{}(nil),
+	}
+
+	actual, err := sharetypes.GetDefault(client.ServiceClient()).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &expected, actual)
+}

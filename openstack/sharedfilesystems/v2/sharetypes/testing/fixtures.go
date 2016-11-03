@@ -133,3 +133,34 @@ func MockListResponse(t *testing.T) {
         }`)
 	})
 }
+
+func MockGetDefaultResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/default", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+        {
+            "volume_type": {
+                "required_extra_specs": null,
+                "extra_specs": {
+                    "snapshot_support": "True",
+                    "driver_handles_share_servers": "True"
+                },
+                "name": "default",
+                "id": "be27425c-f807-4500-a056-d00721db45cf"
+            },
+            "share_type": {
+                "required_extra_specs": null,
+                "extra_specs": {
+                    "snapshot_support": "True",
+                    "driver_handles_share_servers": "True"
+                },
+                "name": "default",
+                "id": "be27425c-f807-4500-a056-d00721db45cf"
+            }
+        }`)
+	})
+}
