@@ -40,27 +40,29 @@ const GetOutput = `
 }
 `
 
-// AbsoluteResult is the result of the limits in GetOutput.
-var AbsoluteResult = limits.Absolute{
-	MaxServerMeta:           128,
-	MaxPersonality:          5,
-	TotalServerGroupsUsed:   0,
-	MaxImageMeta:            128,
-	MaxPersonalitySize:      10240,
-	MaxTotalKeypairs:        100,
-	MaxSecurityGroupRules:   20,
-	MaxServerGroups:         10,
-	TotalCoresUsed:          1,
-	TotalRAMUsed:            2048,
-	TotalInstancesUsed:      1,
-	MaxSecurityGroups:       10,
-	TotalFloatingIpsUsed:    0,
-	MaxTotalCores:           20,
-	MaxServerGroupMembers:   10,
-	MaxTotalFloatingIps:     10,
-	TotalSecurityGroupsUsed: 1,
-	MaxTotalInstances:       10,
-	MaxTotalRAMSize:         51200,
+// LimitsResult is the result of the limits in GetOutput.
+var LimitsResult = limits.Limits{
+	limits.Absolute{
+		MaxServerMeta:           128,
+		MaxPersonality:          5,
+		TotalServerGroupsUsed:   0,
+		MaxImageMeta:            128,
+		MaxPersonalitySize:      10240,
+		MaxTotalKeypairs:        100,
+		MaxSecurityGroupRules:   20,
+		MaxServerGroups:         10,
+		TotalCoresUsed:          1,
+		TotalRAMUsed:            2048,
+		TotalInstancesUsed:      1,
+		MaxSecurityGroups:       10,
+		TotalFloatingIpsUsed:    0,
+		MaxTotalCores:           20,
+		MaxServerGroupMembers:   10,
+		MaxTotalFloatingIps:     10,
+		TotalSecurityGroupsUsed: 1,
+		MaxTotalInstances:       10,
+		MaxTotalRAMSize:         51200,
+	},
 }
 
 const TenantID = "555544443333222211110000ffffeeee"

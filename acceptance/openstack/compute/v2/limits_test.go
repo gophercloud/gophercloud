@@ -16,13 +16,13 @@ func TestLimits(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	absolute, err := limits.Get(client, nil).ExtractAbsolute()
+	limits, err := limits.Get(client, nil).Extract()
 	if err != nil {
-		t.Fatalf("Unable to get absolute limits: %v", err)
+		t.Fatalf("Unable to get limits: %v", err)
 	}
 
 	t.Logf("Limits for scoped user:")
-	t.Logf("%#v", absolute)
+	t.Logf("%#v", limits)
 }
 
 func TestLimitsForTenant(t *testing.T) {
@@ -42,11 +42,11 @@ func TestLimitsForTenant(t *testing.T) {
 		TenantID: tenantID,
 	}
 
-	absolute, err := limits.Get(client, getOpts).ExtractAbsolute()
+	limits, err := limits.Get(client, getOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get absolute limits: %v", err)
 	}
 
 	t.Logf("Limits for tenant %s:", tenantID)
-	t.Logf("%#v", absolute)
+	t.Logf("%#v", limits)
 }

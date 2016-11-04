@@ -17,7 +17,7 @@ func TestGet(t *testing.T) {
 		TenantID: TenantID,
 	}
 
-	actual, err := limits.Get(client.ServiceClient(), getOpts).ExtractAbsolute()
+	actual, err := limits.Get(client.ServiceClient(), getOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &AbsoluteResult, actual)
+	th.CheckDeepEquals(t, &LimitsResult, actual)
 }

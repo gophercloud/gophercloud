@@ -74,23 +74,13 @@ type Absolute struct {
 	TotalServerGroupsUsed int `json:"totalServerGroupsUsed"`
 }
 
-// ExtractLimits interprets a limits result as a Limits.
-func (r GetResult) ExtractLimits() (*Limits, error) {
+// Extract interprets a limits result as a Limits.
+func (r GetResult) Extract() (*Limits, error) {
 	var s struct {
 		Limits *Limits `json:"limits"`
 	}
 	err := r.ExtractInto(&s)
 	return s.Limits, err
-}
-
-// ExtractAbsolute returns the tenant usage and limits data as an Absolute.
-func (r GetResult) ExtractAbsolute() (*Absolute, error) {
-	limits, err := r.ExtractLimits()
-	if err != nil {
-		return &Absolute{}, err
-	}
-
-	return &limits.Absolute, nil
 }
 
 // GetResult is the response from a Get operation. Call its ExtractAbsolute
