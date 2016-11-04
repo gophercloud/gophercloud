@@ -232,7 +232,7 @@ func isZero(v reflect.Value) bool {
 		if v.IsNil() {
 			return true
 		}
-		return isZero(v.Elem())
+		return false
 	case reflect.Func, reflect.Map, reflect.Slice:
 		return v.IsNil()
 	case reflect.Array:
@@ -314,6 +314,12 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 						params.Add(tags[0], strconv.FormatInt(v.Int(), 10))
 					case reflect.Bool:
 						params.Add(tags[0], strconv.FormatBool(v.Bool()))
+					case reflect.Ptr:
+						pv := v.Elem()
+						switch pv.Kind() {
+						case reflect.Bool:
+							params.Add(tags[0], strconv.FormatBool(pv.Bool()))
+						}
 					case reflect.Slice:
 						switch v.Type().Elem() {
 						case reflect.TypeOf(0):
