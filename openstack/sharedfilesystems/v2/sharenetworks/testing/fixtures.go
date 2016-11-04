@@ -251,3 +251,57 @@ func MockGetResponse(t *testing.T) {
         }`)
 	})
 }
+
+func MockUpdateNeutronResponse(t *testing.T) {
+	th.Mux.HandleFunc("/share-networks/713df749-aac0-4a54-af52-10f6c991e80c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+            {
+                "share_network": {
+                    "name": "net_my2",
+                    "segmentation_id": null,
+                    "created_at": "2015-09-04T14:54:25.000000",
+                    "neutron_subnet_id": "new-neutron-subnet-id",
+                    "updated_at": "2015-09-07T08:02:53.512184",
+                    "id": "713df749-aac0-4a54-af52-10f6c991e80c",
+                    "neutron_net_id": "new-neutron-id",
+                    "ip_version": 4,
+                    "nova_net_id": null,
+                    "cidr": null,
+                    "project_id": "16e1ab15c35a457e9c2b2aa189f544e1",
+                    "network_type": null,
+                    "description": "new description"
+                }
+            }
+        `)
+	})
+}
+
+func MockUpdateNovaResponse(t *testing.T) {
+	th.Mux.HandleFunc("/share-networks/713df749-aac0-4a54-af52-10f6c991e80c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+            {
+                "share_network": {
+                    "name": "net_my2",
+                    "segmentation_id": null,
+                    "created_at": "2015-09-04T14:54:25.000000",
+                    "neutron_subnet_id": null,
+                    "updated_at": "2015-09-07T08:02:53.512184",
+                    "id": "713df749-aac0-4a54-af52-10f6c991e80c",
+                    "neutron_net_id": null,
+                    "ip_version": 4,
+                    "nova_net_id": "new-nova-id",
+                    "cidr": null,
+                    "project_id": "16e1ab15c35a457e9c2b2aa189f544e1",
+                    "network_type": null,
+                    "description": "new description"
+                }
+            }
+        `)
+	})
+}
