@@ -35,6 +35,7 @@ func TestMaybeInt(t *testing.T) {
 
 func TestBuildQueryString(t *testing.T) {
 	type testVar string
+	iFalse := false
 	opts := struct {
 		J  int       `q:"j"`
 		R  string    `q:"r,required"`
@@ -42,6 +43,7 @@ func TestBuildQueryString(t *testing.T) {
 		S  []string  `q:"s"`
 		TS []testVar `q:"ts"`
 		TI []int     `q:"ti"`
+		F  *bool     `q:"f"`
 	}{
 		J:  2,
 		R:  "red",
@@ -49,8 +51,9 @@ func TestBuildQueryString(t *testing.T) {
 		S:  []string{"one", "two", "three"},
 		TS: []testVar{"a", "b"},
 		TI: []int{1, 2},
+		F:  &iFalse,
 	}
-	expected := &url.URL{RawQuery: "c=true&j=2&r=red&s=one&s=two&s=three&ti=1&ti=2&ts=a&ts=b"}
+	expected := &url.URL{RawQuery: "c=true&f=false&j=2&r=red&s=one&s=two&s=three&ti=1&ti=2&ts=a&ts=b"}
 	actual, err := gophercloud.BuildQueryString(&opts)
 	if err != nil {
 		t.Errorf("Error building query string: %v", err)
@@ -64,6 +67,7 @@ func TestBuildQueryString(t *testing.T) {
 		S  []string  `q:"s"`
 		TS []testVar `q:"ts"`
 		TI []int     `q:"ti"`
+		F  *bool     `q:"f"`
 	}{
 		J: 2,
 		C: true,
