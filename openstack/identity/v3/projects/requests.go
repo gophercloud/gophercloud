@@ -54,14 +54,14 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // GetOptsBuilder allows extensions to add additional parameters to
 // the Get request.
 type GetOptsBuilder interface {
-	ToGetQuery() (string, error)
+	ToProjectGetQuery() (string, error)
 }
 
 // GetOpts allows you to modify the details included in the Get request.
 type GetOpts struct{}
 
-// ToGetQuery formats a GetOpts into a query string.
-func (opts GetOpts) ToGetQuery() (string, error) {
+// ToProjectGetQuery formats a GetOpts into a query string.
+func (opts GetOpts) ToProjectGetQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
 }
@@ -70,7 +70,7 @@ func (opts GetOpts) ToGetQuery() (string, error) {
 func Get(client *gophercloud.ServiceClient, id string, opts GetOptsBuilder) (r GetResult) {
 	url := getURL(client, id)
 	if opts != nil {
-		query, err := opts.ToGetQuery()
+		query, err := opts.ToProjectGetQuery()
 		if err != nil {
 			r.Err = err
 			return
