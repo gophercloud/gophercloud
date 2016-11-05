@@ -309,15 +309,15 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 				if !isZero(v) {
 				loop:
 					switch v.Kind() {
+					case reflect.Ptr:
+						v = v.Elem()
+						goto loop
 					case reflect.String:
 						params.Add(tags[0], v.String())
 					case reflect.Int:
 						params.Add(tags[0], strconv.FormatInt(v.Int(), 10))
 					case reflect.Bool:
 						params.Add(tags[0], strconv.FormatBool(v.Bool()))
-					case reflect.Ptr:
-						v = v.Elem()
-						goto loop
 					case reflect.Slice:
 						switch v.Type().Elem() {
 						case reflect.TypeOf(0):
