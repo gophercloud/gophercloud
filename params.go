@@ -307,6 +307,7 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 
 				// if the field is set, add it to the slice of query pieces
 				if !isZero(v) {
+				loop:
 					switch v.Kind() {
 					case reflect.String:
 						params.Add(tags[0], v.String())
@@ -315,11 +316,8 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 					case reflect.Bool:
 						params.Add(tags[0], strconv.FormatBool(v.Bool()))
 					case reflect.Ptr:
-						pv := v.Elem()
-						switch pv.Kind() {
-						case reflect.Bool:
-							params.Add(tags[0], strconv.FormatBool(pv.Bool()))
-						}
+						v = v.Elem()
+						goto loop
 					case reflect.Slice:
 						switch v.Type().Elem() {
 						case reflect.TypeOf(0):
