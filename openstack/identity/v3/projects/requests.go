@@ -8,7 +8,7 @@ import (
 // ListOptsBuilder allows extensions to add additional parameters to
 // the List request
 type ListOptsBuilder interface {
-	ToListQuery() (string, error)
+	ToProjectListQuery() (string, error)
 }
 
 // ListOpts allows you to query the List method.
@@ -30,8 +30,8 @@ type ListOpts struct {
 	ParentID string `q:"parent_id"`
 }
 
-// ToListQuery formats a ListOpts into a query string.
-func (opts ListOpts) ToListQuery() (string, error) {
+// ToProjectListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToProjectListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
 }
@@ -40,7 +40,7 @@ func (opts ListOpts) ToListQuery() (string, error) {
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
-		query, err := opts.ToListQuery()
+		query, err := opts.ToProjectListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
