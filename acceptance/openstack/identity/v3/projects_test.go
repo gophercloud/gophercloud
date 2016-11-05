@@ -12,7 +12,7 @@ import (
 func TestProjectsList(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v")
+		t.Fatalf("Unable to obtain an identity client: %v", err)
 	}
 
 	var iTrue bool = true
@@ -38,7 +38,7 @@ func TestProjectsList(t *testing.T) {
 func TestProjectsGet(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v")
+		t.Fatalf("Unable to obtain an identity client: %v", err)
 	}
 
 	allPages, err := projects.List(client, nil).AllPages()
