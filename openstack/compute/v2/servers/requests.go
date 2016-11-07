@@ -190,16 +190,13 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	}
 
 	if opts.UserData != nil {
-		// Check if we've already got a Base64 encoded string; dont double-encode
-		_, base64DecodeError := base64.StdEncoding.DecodeString(string(opts.UserData))
-
-		if base64DecodeError == nil {
-			preEncoded := string(opts.UserData)
-			b["user_data"] = &preEncoded
+		var userData string
+		if _, err := base64.StdEncoding.DecodeString(string(opts.UserData)); err != nil {
+			userData = base64.StdEncoding.EncodeToString(opts.UserData)
 		} else {
-			encoded := base64.StdEncoding.EncodeToString(opts.UserData)
-			b["user_data"] = &encoded
+			userData = string(opts.UserData)
 		}
+		b["user_data"] = &userData
 	}
 
 	if len(opts.SecurityGroups) > 0 {
