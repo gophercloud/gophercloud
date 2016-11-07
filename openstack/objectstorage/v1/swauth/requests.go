@@ -1,6 +1,10 @@
 package swauth
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"strings"
+
+	"github.com/gophercloud/gophercloud"
+)
 
 // AuthOptsBuilder describes struct types that can be accepted by the Auth call.
 // The AuthOpts struct in this package does.
@@ -57,6 +61,10 @@ func NewObjectStorageV1(pc *gophercloud.ProviderClient, authOpts AuthOpts) (*gop
 	auth, err := Auth(pc, authOpts).Extract()
 	if err != nil {
 		return nil, err
+	}
+
+	if !strings.HasSuffix(auth.StorageURL, "/") {
+		auth.StorageURL = auth.StorageURL + "/"
 	}
 
 	swiftClient := &gophercloud.ServiceClient{
