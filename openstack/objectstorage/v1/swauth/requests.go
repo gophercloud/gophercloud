@@ -1,8 +1,6 @@
 package swauth
 
 import (
-	"strings"
-
 	"github.com/gophercloud/gophercloud"
 )
 
@@ -63,13 +61,9 @@ func NewObjectStorageV1(pc *gophercloud.ProviderClient, authOpts AuthOpts) (*gop
 		return nil, err
 	}
 
-	if !strings.HasSuffix(auth.StorageURL, "/") {
-		auth.StorageURL = auth.StorageURL + "/"
-	}
-
 	swiftClient := &gophercloud.ServiceClient{
 		ProviderClient: pc,
-		Endpoint:       auth.StorageURL,
+		Endpoint:       gophercloud.NormalizeURL(auth.StorageURL),
 	}
 
 	swiftClient.TokenID = auth.Token
