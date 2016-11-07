@@ -61,7 +61,7 @@ func NewObjectStorageV1(pc *gophercloud.ProviderClient, authOpts AuthOpts) (*gop
 
 	swiftClient := &gophercloud.ServiceClient{
 		ProviderClient: pc,
-		Endpoint:       auth.StorageURL,
+		Endpoint:       gophercloud.NormalizeURL(auth.StorageURL),
 	}
 
 	swiftClient.TokenID = auth.Token

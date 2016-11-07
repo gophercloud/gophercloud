@@ -12,7 +12,7 @@ import (
 // AuthResult is the expected result of AuthOutput
 var AuthResult = swauth.AuthResult{
 	Token:      "AUTH_tk6223e6071f8f4299aa334b48015484a1",
-	StorageURL: "http://127.0.0.1:8080/v1/AUTH_test",
+	StorageURL: "http://127.0.0.1:8080/v1/AUTH_test/",
 }
 
 // HandleAuthSuccessfully configures the test server to respond to an Auth request.
