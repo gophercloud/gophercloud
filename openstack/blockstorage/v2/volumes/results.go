@@ -1,6 +1,8 @@
 package volumes
 
 import (
+	"encoding/json"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -98,6 +100,22 @@ func (r commonResult) Extract() (*Volume, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.Volume, err
+}
+
+func (r commonResult) ExtractInto(v interface{}) error {
+	var vol map[string]map[string]interface{}
+	err := r.ExtractInto(&vol)
+	if err != nil {
+		return err
+	}
+
+	b, err := json.Marshal(vol["volume"])
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(b, &v)
+	return err
 }
 
 // CreateResult contains the response body and error from a Create request.
