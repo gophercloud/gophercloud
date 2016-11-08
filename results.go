@@ -3,8 +3,10 @@ package gophercloud
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 	"strconv"
 	"time"
 )
@@ -58,6 +60,59 @@ func (r Result) ExtractInto(to interface{}) error {
 	err = json.Unmarshal(b, to)
 
 	return err
+}
+
+func (r Result) extractIntoPtr(to interface{}, label string) error {
+	if r.Err != nil {
+		return r.Err
+	}
+
+	t := reflect.TypeOf(to)
+	if k := t.Kind(); k != reflect.Ptr {
+		return fmt.Errorf("Expected pointer, got %v", k)
+	}
+	t = t.Elem()
+	switch t.Kind() {
+	case reflect.Struct, reflect.Slice:
+	default:
+		return fmt.Errorf("Invalid type: %v", t)
+	}
+
+	var (
+		b   []byte
+		err error
+	)
+
+	switch label {
+	case "":
+		var m interface{}
+		err = r.ExtractInto(&m)
+		if err != nil {
+			return err
+		}
+		b, err = json.Marshal(m)
+	default:
+		var m map[string]interface{}
+		err = r.ExtractInto(&m)
+		if err != nil {
+			return err
+		}
+		b, err = json.Marshal(m[label])
+	}
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(b, &to)
+	return err
+}
+
+func (r Result) ExtractIntoStructPtr(to interface{}, label string) error {
+	return r.extractIntoPtr(to, label)
+}
+
+func (r Result) ExtractIntoSlicePtr(to interface{}, label string) error {
+	return r.extractIntoPtr(to, label)
 }
 
 // PrettyPrintJSON creates a string containing the full response body as
