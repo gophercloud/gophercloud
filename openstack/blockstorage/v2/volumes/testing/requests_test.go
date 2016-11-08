@@ -109,10 +109,7 @@ func TestListAllWithExtensions(t *testing.T) {
 	allPages, err := volumes.List(client.ServiceClient(), &volumes.ListOpts{}).AllPages()
 	th.AssertNoErr(t, err)
 
-	var actual []struct {
-		volumes.Volume
-		tenantattr.VolumeExt
-	}
+	var actual []VolumeWithExt
 	err = volumes.ExtractVolumesInto(allPages, &actual)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 2, len(actual))
