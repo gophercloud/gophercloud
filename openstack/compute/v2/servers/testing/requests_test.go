@@ -107,6 +107,40 @@ func TestCreateServerWithMetadata(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestCreateServerWithUserdataString(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerCreationWithUserdata(t, SingleServerBody)
+
+	actual, err := servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		UserData:  []byte("userdata string"),
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+}
+
+func TestCreateServerWithUserdataEncoded(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerCreationWithUserdata(t, SingleServerBody)
+
+	encoded := base64.StdEncoding.EncodeToString([]byte("userdata string"))
+
+	actual, err := servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		UserData:  []byte(encoded),
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+}
+
 func TestCreateServerWithImageNameAndFlavorName(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
