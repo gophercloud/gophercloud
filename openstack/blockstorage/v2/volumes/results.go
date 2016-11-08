@@ -2,6 +2,8 @@ package volumes
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -98,13 +100,22 @@ func (r commonResult) Extract() (*Volume, error) {
 	var s struct {
 		Volume *Volume `json:"volume"`
 	}
-	err := r.ExtractInto(&s)
+	err := r.Result.ExtractInto(&s)
 	return s.Volume, err
 }
 
 func (r commonResult) ExtractInto(v interface{}) error {
+	t := reflect.TypeOf(v)
+	if k := t.Kind(); k != reflect.Ptr {
+		return fmt.Errorf("Expected pointer to struct, got %v", k)
+	}
+	t = t.Elem()
+	if k := t.Kind(); k != reflect.Struct {
+		return fmt.Errorf("Expected pointer to struct, got %v", k)
+	}
+
 	var vol map[string]map[string]interface{}
-	err := r.ExtractInto(&vol)
+	err := r.Result.ExtractInto(&vol)
 	if err != nil {
 		return err
 	}
