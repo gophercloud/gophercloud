@@ -1,10 +1,6 @@
 package volumes
 
 import (
-	"encoding/json"
-	"fmt"
-	"reflect"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -105,28 +101,11 @@ func (r commonResult) Extract() (*Volume, error) {
 }
 
 func (r commonResult) ExtractInto(v interface{}) error {
-	t := reflect.TypeOf(v)
-	if k := t.Kind(); k != reflect.Ptr {
-		return fmt.Errorf("Expected pointer to struct, got %v", k)
-	}
-	t = t.Elem()
-	if k := t.Kind(); k != reflect.Struct {
-		return fmt.Errorf("Expected pointer to struct, got %v", k)
-	}
+	return r.Result.ExtractIntoStructPtr(v, "volume")
+}
 
-	var vol map[string]map[string]interface{}
-	err := r.Result.ExtractInto(&vol)
-	if err != nil {
-		return err
-	}
-
-	b, err := json.Marshal(vol["volume"])
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(b, &v)
-	return err
+func ExtractVolumesInto(r pagination.Page, v interface{}) error {
+	return r.(VolumePage).Result.ExtractIntoSlicePtr(v, "volumes")
 }
 
 // CreateResult contains the response body and error from a Create request.

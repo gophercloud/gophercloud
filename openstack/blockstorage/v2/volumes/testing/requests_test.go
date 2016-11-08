@@ -12,7 +12,7 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-func TestList(t *testing.T) {
+func TestListWithExtensions(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -93,6 +93,30 @@ func TestList(t *testing.T) {
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
+}
+
+func TestListAllWithExtensions(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockListResponse(t)
+
+	type VolumeWithExt struct {
+		volumes.Volume
+		tenantattr.VolumeExt
+	}
+
+	allPages, err := volumes.List(client.ServiceClient(), &volumes.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+
+	var actual []struct {
+		volumes.Volume
+		tenantattr.VolumeExt
+	}
+	err = volumes.ExtractVolumesInto(allPages, &actual)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 2, len(actual))
+	th.AssertEquals(t, "304dc00909ac4d0da6c62d816bcb3459", actual[0].TenantID)
 }
 
 func TestListAll(t *testing.T) {
