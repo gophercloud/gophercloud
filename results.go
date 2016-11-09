@@ -89,6 +89,8 @@ func (r Result) extractIntoPtr(to interface{}, label string) error {
 // ExtractIntoStructPtr will unmarshal the Result (r) into the provided
 // interface{} (to).
 //
+// NOTE: For internal use only
+//
 // `to` must be a pointer to an underlying struct type
 //
 // If provided, `label` will be filtered out of the response
@@ -108,6 +110,8 @@ func (r Result) ExtractIntoStructPtr(to interface{}, label string) error {
 
 // ExtractIntoSlicePtr will unmarshal the Result (r) into the provided
 // interface{} (to).
+//
+// NOTE: For internal use only
 //
 // `to` must be a pointer to an underlying slice type
 //
