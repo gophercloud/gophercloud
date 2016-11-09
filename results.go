@@ -67,38 +67,17 @@ func (r Result) extractIntoPtr(to interface{}, label string) error {
 		return r.Err
 	}
 
-	t := reflect.TypeOf(to)
-	if k := t.Kind(); k != reflect.Ptr {
-		return fmt.Errorf("Expected pointer, got %v", k)
-	}
-	t = t.Elem()
-	switch t.Kind() {
-	case reflect.Struct, reflect.Slice:
-	default:
-		return fmt.Errorf("Invalid type: %v", t)
+	if label == "" {
+		return r.ExtractInto(&to)
 	}
 
-	var (
-		b   []byte
-		err error
-	)
-
-	switch label {
-	case "":
-		var m interface{}
-		err = r.ExtractInto(&m)
-		if err != nil {
-			return err
-		}
-		b, err = json.Marshal(m)
-	default:
-		var m map[string]interface{}
-		err = r.ExtractInto(&m)
-		if err != nil {
-			return err
-		}
-		b, err = json.Marshal(m[label])
+	var m map[string]interface{}
+	err := r.ExtractInto(&m)
+	if err != nil {
+		return err
 	}
+
+	b, err := json.Marshal(m[label])
 	if err != nil {
 		return err
 	}
@@ -107,12 +86,44 @@ func (r Result) extractIntoPtr(to interface{}, label string) error {
 	return err
 }
 
+// ExtractIntoStructPtr will unmarshal the Result (r) into the provided
+// interface{} (to).
+//
+// `to` must be a pointer to an underlying struct type
+//
+// If provided, `label` will be filtered out of the response
+// body prior to `r` being unmarshalled into `to`.
 func (r Result) ExtractIntoStructPtr(to interface{}, label string) error {
-	return r.extractIntoPtr(to, label)
+	t := reflect.TypeOf(to)
+	if k := t.Kind(); k != reflect.Ptr {
+		return fmt.Errorf("Expected pointer, got %v", k)
+	}
+	switch t.Elem().Kind() {
+	case reflect.Struct:
+		return r.extractIntoPtr(to, label)
+	default:
+		return fmt.Errorf("Expected pointer to struct, got: %v", t)
+	}
 }
 
+// ExtractIntoSlicePtr will unmarshal the Result (r) into the provided
+// interface{} (to).
+//
+// `to` must be a pointer to an underlying slice type
+//
+// If provided, `label` will be filtered out of the response
+// body prior to `r` being unmarshalled into `to`.
 func (r Result) ExtractIntoSlicePtr(to interface{}, label string) error {
-	return r.extractIntoPtr(to, label)
+	t := reflect.TypeOf(to)
+	if k := t.Kind(); k != reflect.Ptr {
+		return fmt.Errorf("Expected pointer, got %v", k)
+	}
+	switch t.Elem().Kind() {
+	case reflect.Slice:
+		return r.extractIntoPtr(to, label)
+	default:
+		return fmt.Errorf("Expected pointer to slice, got: %v", t)
+	}
 }
 
 // PrettyPrintJSON creates a string containing the full response body as
