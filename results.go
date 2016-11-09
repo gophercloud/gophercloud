@@ -63,10 +63,6 @@ func (r Result) ExtractInto(to interface{}) error {
 }
 
 func (r Result) extractIntoPtr(to interface{}, label string) error {
-	if r.Err != nil {
-		return r.Err
-	}
-
 	if label == "" {
 		return r.ExtractInto(&to)
 	}
@@ -96,6 +92,10 @@ func (r Result) extractIntoPtr(to interface{}, label string) error {
 // If provided, `label` will be filtered out of the response
 // body prior to `r` being unmarshalled into `to`.
 func (r Result) ExtractIntoStructPtr(to interface{}, label string) error {
+	if r.Err != nil {
+		return r.Err
+	}
+
 	t := reflect.TypeOf(to)
 	if k := t.Kind(); k != reflect.Ptr {
 		return fmt.Errorf("Expected pointer, got %v", k)
@@ -118,6 +118,10 @@ func (r Result) ExtractIntoStructPtr(to interface{}, label string) error {
 // If provided, `label` will be filtered out of the response
 // body prior to `r` being unmarshalled into `to`.
 func (r Result) ExtractIntoSlicePtr(to interface{}, label string) error {
+	if r.Err != nil {
+		return r.Err
+	}
+
 	t := reflect.TypeOf(to)
 	if k := t.Kind(); k != reflect.Ptr {
 		return fmt.Errorf("Expected pointer, got %v", k)
