@@ -63,8 +63,6 @@ THESE BELONG IN EXTENSIONS:
 ReplicationDriverData string `json:"os-volume-replication:driver_data"`
 // ReplicationExtendedStatus contains extended status about replication.
 ReplicationExtendedStatus string `json:"os-volume-replication:extended_status"`
-// TenantID is the id of the project that owns the volume.
-TenantID string `json:"os-vol-tenant-attr:tenant_id"`
 */
 
 // VolumePage is a pagination.pager that is returned from a call to the List function.
@@ -80,11 +78,9 @@ func (r VolumePage) IsEmpty() (bool, error) {
 
 // ExtractVolumes extracts and returns Volumes. It is used while iterating over a volumes.List call.
 func ExtractVolumes(r pagination.Page) ([]Volume, error) {
-	var s struct {
-		Volumes []Volume `json:"volumes"`
-	}
-	err := (r.(VolumePage)).ExtractInto(&s)
-	return s.Volumes, err
+	var s []Volume
+	err := ExtractVolumesInto(r, &s)
+	return s, err
 }
 
 type commonResult struct {
@@ -93,11 +89,9 @@ type commonResult struct {
 
 // Extract will get the Volume object out of the commonResult object.
 func (r commonResult) Extract() (*Volume, error) {
-	var s struct {
-		Volume *Volume `json:"volume"`
-	}
-	err := r.Result.ExtractInto(&s)
-	return s.Volume, err
+	var s Volume
+	err := r.ExtractInto(&s)
+	return &s, err
 }
 
 func (r commonResult) ExtractInto(v interface{}) error {
