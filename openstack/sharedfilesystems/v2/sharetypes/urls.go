@@ -17,3 +17,7 @@ func listURL(c *gophercloud.ServiceClient) string {
 func getDefaultURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("types", "default")
 }
+
+func getExtraSpecsURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("types", id, "extra_specs")
+}

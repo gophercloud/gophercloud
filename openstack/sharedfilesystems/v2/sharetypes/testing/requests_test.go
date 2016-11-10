@@ -119,3 +119,18 @@ func TestGetDefault(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expected, actual)
 }
+
+// Verifies that it is possible to get the extra specifications for a share type
+func TestGetExtraSpecs(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetExtraSpecsResponse(t)
+
+	st, err := sharetypes.GetExtraSpecs(client.ServiceClient(), "shareTypeID").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, st["snapshot_support"], "True")
+	th.AssertEquals(t, st["driver_handles_share_servers"], "True")
+	th.AssertEquals(t, st["my_custom_extra_spec"], "False")
+}
