@@ -130,7 +130,7 @@ func TestGetExtraSpecs(t *testing.T) {
 	st, err := sharetypes.GetExtraSpecs(client.ServiceClient(), "shareTypeID").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, st.Specs["snapshot_support"], "True")
-	th.AssertEquals(t, st.Specs["driver_handles_share_servers"], "True")
-	th.AssertEquals(t, st.Specs["my_custom_extra_spec"], "False")
+	th.AssertEquals(t, st["snapshot_support"], "True")
+	th.AssertEquals(t, st["driver_handles_share_servers"], "True")
+	th.AssertEquals(t, st["my_custom_extra_spec"], "False")
 }

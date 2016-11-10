@@ -78,7 +78,7 @@ func TestShareTypeExtraSpecs(t *testing.T) {
 		t.Fatalf("Unable to retrieve share type: %s", shareType.Name)
 	}
 
-	if extraSpecs.Specs["driver_handles_share_servers"] != "True" {
+	if extraSpecs["driver_handles_share_servers"] != "True" {
 		t.Fatal("driver_handles_share_servers was expected to be true")
 	}
 
