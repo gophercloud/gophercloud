@@ -91,7 +91,7 @@ func TestShareTypeExtraSpecs(t *testing.T) {
 		t.Fatal("driver_handles_share_servers was expected to be true")
 	}
 
-	if extraSpecs.Specs["my_new_key"] != "my_value" {
+	if extraSpecs["my_new_key"] != "my_value" {
 		t.Fatal("my_new_key was expected to be equal to my_value")
 	}
 

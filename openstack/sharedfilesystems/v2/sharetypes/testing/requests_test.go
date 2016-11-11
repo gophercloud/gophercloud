@@ -149,5 +149,5 @@ func TestSetExtraSpecs(t *testing.T) {
 	es, err := sharetypes.SetExtraSpecs(client.ServiceClient(), "shareTypeID", options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, es.Specs["my_key"], "my_value")
+	th.AssertEquals(t, es["my_key"], "my_value")
 }
