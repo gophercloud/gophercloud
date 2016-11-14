@@ -5,13 +5,14 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumetenants"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-func TestList(t *testing.T) {
+func TestListWithExtensions(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -92,6 +93,27 @@ func TestList(t *testing.T) {
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
+}
+
+func TestListAllWithExtensions(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockListResponse(t)
+
+	type VolumeWithExt struct {
+		volumes.Volume
+		volumetenants.VolumeExt
+	}
+
+	allPages, err := volumes.List(client.ServiceClient(), &volumes.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+
+	var actual []VolumeWithExt
+	err = volumes.ExtractVolumesInto(allPages, &actual)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 2, len(actual))
+	th.AssertEquals(t, "304dc00909ac4d0da6c62d816bcb3459", actual[0].TenantID)
 }
 
 func TestListAll(t *testing.T) {
@@ -213,4 +235,24 @@ func TestUpdate(t *testing.T) {
 	v, err := volumes.Update(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, "vol-002", v.Name)
+}
+
+func TestGetWithExtensions(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetResponse(t)
+
+	var s struct {
+		volumes.Volume
+		volumetenants.VolumeExt
+	}
+	err := volumes.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&s)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "304dc00909ac4d0da6c62d816bcb3459", s.TenantID)
+
+	err = volumes.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(s)
+	if err == nil {
+		t.Errorf("Expected error when providing non-pointer struct")
+	}
 }
