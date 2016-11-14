@@ -138,8 +138,8 @@ type Server struct {
 	// Name contains the human-readable name for the server.
 	Name string `json:"name"`
 	// Updated and Created contain ISO-8601 timestamps of when the state of the server last changed, and when it was created.
-	Updated time.Time `json:"-"`
-	Created time.Time `json:"-"`
+	Updated time.Time `json:"updated"`
+	Created time.Time `json:"created"`
 	HostID  string    `json:"hostid"`
 	// Status contains the current operational status of the server, such as IN_PROGRESS or ACTIVE.
 	Status string `json:"status"`
@@ -172,9 +172,7 @@ func (s *Server) UnmarshalJSON(b []byte) error {
 	type tmp Server
 	var p *struct {
 		tmp
-		Image   interface{} `json:"image"`
-		Updated string      `json:"updated"`
-		Created string      `json:"created"`
+		Image interface{} `json:"image"`
 	}
 	err := json.Unmarshal(b, &p)
 	if err != nil {
@@ -191,17 +189,6 @@ func (s *Server) UnmarshalJSON(b []byte) error {
 		case "":
 			s.Image = nil
 		}
-	}
-
-	if p.Created != "" {
-		s.Created, err = time.Parse(time.RFC3339, p.Created)
-		if err != nil {
-			return err
-		}
-	}
-
-	if p.Updated != "" {
-		s.Updated, err = time.Parse(time.RFC3339, p.Updated)
 	}
 
 	return err
