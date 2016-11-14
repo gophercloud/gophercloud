@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/tenants"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumetenants"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -103,7 +103,7 @@ func TestListAllWithExtensions(t *testing.T) {
 
 	type VolumeWithExt struct {
 		volumes.Volume
-		tenants.VolumeExt
+		volumetenants.VolumeExt
 	}
 
 	allPages, err := volumes.List(client.ServiceClient(), &volumes.ListOpts{}).AllPages()
@@ -245,7 +245,7 @@ func TestGetWithExtensions(t *testing.T) {
 
 	var s struct {
 		volumes.Volume
-		tenants.VolumeExt
+		volumetenants.VolumeExt
 	}
 	err := volumes.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&s)
 	th.AssertNoErr(t, err)

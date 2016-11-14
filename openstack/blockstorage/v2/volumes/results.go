@@ -57,14 +57,6 @@ type Volume struct {
 	Multiattach bool `json:"multiattach"`
 }
 
-/*
-THESE BELONG IN EXTENSIONS:
-// ReplicationDriverData contains data about the replication driver.
-ReplicationDriverData string `json:"os-volume-replication:driver_data"`
-// ReplicationExtendedStatus contains extended status about replication.
-ReplicationExtendedStatus string `json:"os-volume-replication:extended_status"`
-*/
-
 // VolumePage is a pagination.pager that is returned from a call to the List function.
 type VolumePage struct {
 	pagination.SinglePageBase

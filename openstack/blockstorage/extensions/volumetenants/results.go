@@ -1,4 +1,4 @@
-package tenants
+package volumetenants
 
 // An extension to the base Volume object
 type VolumeExt struct {
