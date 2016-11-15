@@ -104,11 +104,17 @@ func (s *Image) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("Unknown type for SizeBytes: %v (value: %v)", reflect.TypeOf(t), t)
 	}
 
-	s.CreatedAt, err = time.Parse(time.RFC3339, p.CreatedAt)
-	if err != nil {
-		return err
+	if p.CreatedAt != "" {
+		s.CreatedAt, err = time.Parse(time.RFC3339, p.CreatedAt)
+		if err != nil {
+			return err
+		}
 	}
-	s.UpdatedAt, err = time.Parse(time.RFC3339, p.UpdatedAt)
+
+	if p.UpdatedAt != "" {
+		s.UpdatedAt, err = time.Parse(time.RFC3339, p.UpdatedAt)
+	}
+
 	return err
 }
 
