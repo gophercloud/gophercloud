@@ -1,7 +1,12 @@
 package tokens
 
-import "errors"
-import "github.com/gophercloud/gophercloud"
+import (
+	"encoding/json"
+	"errors"
+	"time"
+
+	"github.com/gophercloud/gophercloud"
+)
 
 // Endpoint represents a single API endpoint offered by a service.
 // It matches either a public, internal or admin URL.
@@ -110,5 +115,24 @@ type Token struct {
 	// ID is the issued token.
 	ID string `json:"id"`
 	// ExpiresAt is the timestamp at which this token will no longer be accepted.
-	ExpiresAt gophercloud.JSONRFC3339Milli `json:"expires_at"`
+	ExpiresAt time.Time `json:"-"`
+}
+
+func (s *Token) UnmarshalJSON(b []byte) error {
+	type tmp Token
+	var p *struct {
+		tmp
+		ExpiresAt string `json:"expires_at"`
+	}
+	err := json.Unmarshal(b, &p)
+	if err != nil {
+		return err
+	}
+	*s = Token(p.tmp)
+
+	if p.ExpiresAt != "" {
+		s.ExpiresAt, err = time.Parse(gophercloud.RFC3339Milli, p.ExpiresAt)
+	}
+
+	return err
 }
