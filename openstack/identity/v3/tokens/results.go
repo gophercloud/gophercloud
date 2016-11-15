@@ -1,8 +1,6 @@
 package tokens
 
 import (
-	"encoding/json"
-	"errors"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -56,23 +54,16 @@ func (r commonResult) Extract() (*Token, error) {
 
 // ExtractToken interprets a commonResult as a Token.
 func (r commonResult) ExtractToken() (*Token, error) {
-	var s struct {
-		Token *Token `json:"token"`
-	}
-
+	var s Token
 	err := r.ExtractInto(&s)
 	if err != nil {
 		return nil, err
 	}
 
-	if s.Token == nil {
-		return nil, errors.New("'token' missing in JSON response")
-	}
-
 	// Parse the token itself from the stored headers.
-	s.Token.ID = r.Header.Get("X-Subject-Token")
+	s.ID = r.Header.Get("X-Subject-Token")
 
-	return s.Token, err
+	return &s, err
 }
 
 // ExtractServiceCatalog returns the ServiceCatalog that was generated along with the user's Token.
@@ -115,24 +106,9 @@ type Token struct {
 	// ID is the issued token.
 	ID string `json:"id"`
 	// ExpiresAt is the timestamp at which this token will no longer be accepted.
-	ExpiresAt time.Time `json:"-"`
+	ExpiresAt time.Time `json:"expires_at"`
 }
 
-func (s *Token) UnmarshalJSON(b []byte) error {
-	type tmp Token
-	var p *struct {
-		tmp
-		ExpiresAt string `json:"expires_at"`
-	}
-	err := json.Unmarshal(b, &p)
-	if err != nil {
-		return err
-	}
-	*s = Token(p.tmp)
-
-	if p.ExpiresAt != "" {
-		s.ExpiresAt, err = time.Parse(gophercloud.RFC3339Milli, p.ExpiresAt)
-	}
-
-	return err
+func (r commonResult) ExtractInto(v interface{}) error {
+	return r.ExtractIntoStructPtr(v, "token")
 }

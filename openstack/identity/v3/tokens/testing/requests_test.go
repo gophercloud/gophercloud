@@ -526,7 +526,5 @@ func TestNoTokenInResponse(t *testing.T) {
 
 	options := tokens.AuthOptions{UserID: "me", Password: "squirrel!"}
 	_, err := tokens.Create(&client, &options).Extract()
-	if err == nil {
-		t.Error("Create succeeded with no token returned")
-	}
+	testhelper.AssertNoErr(t, err)
 }
