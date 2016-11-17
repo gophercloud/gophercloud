@@ -47,8 +47,8 @@ func (s *SecurityGroup) UnmarshalJSON(b []byte) error {
 	s.TenantID = secgroup.TenantID
 
 	switch t := secgroup.ID.(type) {
-	case int:
-		s.ID = strconv.Itoa(t)
+	case float64:
+		s.ID = strconv.FormatFloat(t, 'f', -1, 64)
 	case string:
 		s.ID = t
 	}
@@ -81,6 +81,44 @@ type Rule struct {
 
 	// Not documented.
 	Group Group
+}
+
+func (r *Rule) UnmarshalJSON(b []byte) error {
+	var rule struct {
+		ID            interface{}
+		FromPort      int         `json:"from_port"`
+		ToPort        int         `json:"to_port"`
+		IPProtocol    string      `json:"ip_protocol"`
+		IPRange       IPRange     `json:"ip_range"`
+		ParentGroupID interface{} `json:"parent_group_id"`
+		Group         Group
+	}
+	err := json.Unmarshal(b, &rule)
+	if err != nil {
+		return err
+	}
+
+	r.FromPort = rule.FromPort
+	r.ToPort = rule.ToPort
+	r.IPProtocol = rule.IPProtocol
+	r.IPRange = rule.IPRange
+	r.Group = rule.Group
+
+	switch t := rule.ID.(type) {
+	case float64:
+		r.ID = strconv.FormatFloat(t, 'f', -1, 64)
+	case string:
+		r.ID = t
+	}
+
+	switch t := rule.ParentGroupID.(type) {
+	case float64:
+		r.ParentGroupID = strconv.FormatFloat(t, 'f', -1, 64)
+	case string:
+		r.ParentGroupID = t
+	}
+
+	return nil
 }
 
 // IPRange represents the IP range whose traffic will be accepted by the
