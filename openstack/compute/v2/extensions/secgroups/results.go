@@ -1,6 +1,9 @@
 package secgroups
 
 import (
+	"encoding/json"
+	"strconv"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -23,6 +26,34 @@ type SecurityGroup struct {
 
 	// The ID of the tenant to which this security group belongs.
 	TenantID string `json:"tenant_id"`
+}
+
+func (s *SecurityGroup) UnmarshalJSON(b []byte) error {
+	var secgroup struct {
+		ID          interface{}
+		Name        string
+		Description string
+		Rules       []Rule
+		TenantID    string `json:"tenant_id"`
+	}
+	err := json.Unmarshal(b, &secgroup)
+	if err != nil {
+		return err
+	}
+
+	s.Name = secgroup.Name
+	s.Description = secgroup.Description
+	s.Rules = secgroup.Rules
+	s.TenantID = secgroup.TenantID
+
+	switch t := secgroup.ID.(type) {
+	case int:
+		s.ID = strconv.Itoa(t)
+	case string:
+		s.ID = t
+	}
+
+	return nil
 }
 
 // Rule represents a security group rule, a policy which determines how a
