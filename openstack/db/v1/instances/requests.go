@@ -23,6 +23,28 @@ func (opts DatastoreOpts) ToMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
+// NetworkOpts is used within CreateOpts to control a new server's network attachments.
+type NetworkOpts struct {
+	// UUID of a nova-network to attach to the newly provisioned server.
+	// Required unless Port is provided.
+	UUID string `json:"net-id,omitempty"`
+
+	// Port of a neutron network to attach to the newly provisioned server.
+	// Required unless UUID is provided.
+	Port string `json:"port-id,omitempty"`
+
+	// V4FixedIP [optional] specifies a fixed IPv4 address to be used on this network.
+	V4FixedIP string `json:"v4-fixed-ip,omitempty"`
+
+	// V6FixedIP [optional] specifies a fixed IPv6 address to be used on this network.
+	V6FixedIP string `json:"v6-fixed-ip,omitempty"`
+}
+
+// ToMap converts a NetworkOpts to a map[string]string (for a request body)
+func (opts NetworkOpts) ToMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
 // CreateOpts is the struct responsible for configuring a new database instance.
 type CreateOpts struct {
 	// Either the integer UUID (in string form) of the flavor, or its URI
@@ -41,6 +63,8 @@ type CreateOpts struct {
 	// Options to configure the type of datastore the instance will use. This is
 	// optional, and if excluded will default to MySQL.
 	Datastore *DatastoreOpts
+	// Networks dictates how this server will be attached to available networks.
+	Networks []NetworkOpts
 }
 
 // ToInstanceCreateMap will render a JSON map.
@@ -85,6 +109,18 @@ func (opts CreateOpts) ToInstanceCreateMap() (map[string]interface{}, error) {
 			return nil, err
 		}
 		instance["datastore"] = datastore
+	}
+
+	if len(opts.Networks) > 0 {
+		networks := make([]map[string]interface{}, len(opts.Networks))
+		for i, net := range opts.Networks {
+			var err error
+			networks[i], err = net.ToMap()
+			if err != nil {
+				return nil, err
+			}
+		}
+		instance["nics"] = networks
 	}
 
 	return map[string]interface{}{"instance": instance}, nil
