@@ -1,6 +1,7 @@
 package instances
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -21,10 +22,10 @@ type Volume struct {
 // Instance represents a remote MySQL instance.
 type Instance struct {
 	// Indicates the datetime that the instance was created
-	Created time.Time `json:"created"`
+	Created time.Time `json:"-"`
 
 	// Indicates the most recent datetime that the instance was updated.
-	Updated time.Time `json:"updated"`
+	Updated time.Time `json:"-"`
 
 	// Indicates the hardware flavor the instance uses.
 	Flavor flavors.Flavor
@@ -54,6 +55,33 @@ type Instance struct {
 
 	// Indicates how the instance stores data.
 	Datastore datastores.DatastorePartial
+}
+
+func (s *Instance) UnmarshalJSON(b []byte) error {
+	type tmp Instance
+	var p *struct {
+		tmp
+		Created string `json:"created"`
+		Updated string `json:"updated"`
+	}
+	err := json.Unmarshal(b, &p)
+	if err != nil {
+		return err
+	}
+	*s = Instance(p.tmp)
+
+	if p.Created != "" {
+		s.Created, err = time.Parse(gophercloud.RFC3339NoZ, p.Created)
+		if err != nil {
+			return err
+		}
+	}
+
+	if p.Updated != "" {
+		s.Updated, err = time.Parse(gophercloud.RFC3339NoZ, p.Updated)
+	}
+
+	return err
 }
 
 type commonResult struct {
