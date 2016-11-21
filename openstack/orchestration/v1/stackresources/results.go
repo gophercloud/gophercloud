@@ -2,6 +2,7 @@ package stackresources
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -9,18 +10,42 @@ import (
 
 // Resource represents a stack resource.
 type Resource struct {
-	Attributes   map[string]interface{}     `json:"attributes"`
-	CreationTime gophercloud.JSONRFC3339NoZ `json:"creation_time"`
-	Description  string                     `json:"description"`
-	Links        []gophercloud.Link         `json:"links"`
-	LogicalID    string                     `json:"logical_resource_id"`
-	Name         string                     `json:"resource_name"`
-	PhysicalID   string                     `json:"physical_resource_id"`
-	RequiredBy   []interface{}              `json:"required_by"`
-	Status       string                     `json:"resource_status"`
-	StatusReason string                     `json:"resource_status_reason"`
-	Type         string                     `json:"resource_type"`
-	UpdatedTime  gophercloud.JSONRFC3339NoZ `json:"updated_time"`
+	Attributes   map[string]interface{} `json:"attributes"`
+	CreationTime time.Time              `json:"-"`
+	Description  string                 `json:"description"`
+	Links        []gophercloud.Link     `json:"links"`
+	LogicalID    string                 `json:"logical_resource_id"`
+	Name         string                 `json:"resource_name"`
+	PhysicalID   string                 `json:"physical_resource_id"`
+	RequiredBy   []interface{}          `json:"required_by"`
+	Status       string                 `json:"resource_status"`
+	StatusReason string                 `json:"resource_status_reason"`
+	Type         string                 `json:"resource_type"`
+	UpdatedTime  time.Time              `json:"-"`
+}
+
+func (r *Resource) UnmarshalJSON(b []byte) error {
+	type tmp Resource
+	var s *struct {
+		tmp
+		CreationTime *gophercloud.JSONRFC3339NoZ `json:"creation_time"`
+		UpdatedTime  *gophercloud.JSONRFC3339NoZ `json:"updated_time"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Resource(s.tmp)
+
+	if s.CreationTime != nil {
+		r.CreationTime = time.Time(*s.CreationTime)
+	}
+
+	if s.UpdatedTime != nil {
+		r.UpdatedTime = time.Time(*s.UpdatedTime)
+	}
+
+	return nil
 }
 
 // FindResult represents the result of a Find operation.

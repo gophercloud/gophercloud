@@ -1,6 +1,9 @@
 package stackevents
 
 import (
+	"encoding/json"
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -10,7 +13,7 @@ type Event struct {
 	// The name of the resource for which the event occurred.
 	ResourceName string `json:"resource_name"`
 	// The time the event occurred.
-	Time gophercloud.JSONRFC3339NoZ `json:"event_time"`
+	Time time.Time `json:"-"`
 	// The URLs to the event.
 	Links []gophercloud.Link `json:"links"`
 	// The logical ID of the stack resource.
@@ -25,6 +28,25 @@ type Event struct {
 	ID string `json:"id"`
 	// Properties of the stack resource.
 	ResourceProperties map[string]interface{} `json:"resource_properties"`
+}
+
+func (r *Event) UnmarshalJSON(b []byte) error {
+	type tmp Event
+	var s *struct {
+		tmp
+		Time *gophercloud.JSONRFC3339NoZ `json:"event_time"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Event(s.tmp)
+
+	if s.Time != nil {
+		r.Time = time.Time(*s.Time)
+	}
+
+	return nil
 }
 
 // FindResult represents the result of a Find operation.

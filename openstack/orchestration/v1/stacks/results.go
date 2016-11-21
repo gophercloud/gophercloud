@@ -2,6 +2,7 @@ package stacks
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -47,15 +48,39 @@ func (r StackPage) IsEmpty() (bool, error) {
 
 // ListedStack represents an element in the slice extracted from a List operation.
 type ListedStack struct {
-	CreationTime gophercloud.JSONRFC3339NoZ `json:"creation_time"`
-	Description  string                     `json:"description"`
-	ID           string                     `json:"id"`
-	Links        []gophercloud.Link         `json:"links"`
-	Name         string                     `json:"stack_name"`
-	Status       string                     `json:"stack_status"`
-	StatusReason string                     `json:"stack_status_reason"`
-	Tags         []string                   `json:"tags"`
-	UpdatedTime  gophercloud.JSONRFC3339NoZ `json:"updated_time"`
+	CreationTime time.Time          `json:"-"`
+	Description  string             `json:"description"`
+	ID           string             `json:"id"`
+	Links        []gophercloud.Link `json:"links"`
+	Name         string             `json:"stack_name"`
+	Status       string             `json:"stack_status"`
+	StatusReason string             `json:"stack_status_reason"`
+	Tags         []string           `json:"tags"`
+	UpdatedTime  time.Time          `json:"-"`
+}
+
+func (r *ListedStack) UnmarshalJSON(b []byte) error {
+	type tmp ListedStack
+	var s *struct {
+		tmp
+		CreationTime *gophercloud.JSONRFC3339NoZ `json:"creation_time"`
+		UpdatedTime  *gophercloud.JSONRFC3339NoZ `json:"updated_time"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = ListedStack(s.tmp)
+
+	if s.CreationTime != nil {
+		r.CreationTime = time.Time(*s.CreationTime)
+	}
+
+	if s.UpdatedTime != nil {
+		r.UpdatedTime = time.Time(*s.UpdatedTime)
+	}
+
+	return nil
 }
 
 // ExtractStacks extracts and returns a slice of ListedStack. It is used while iterating
@@ -70,22 +95,46 @@ func ExtractStacks(r pagination.Page) ([]ListedStack, error) {
 
 // RetrievedStack represents the object extracted from a Get operation.
 type RetrievedStack struct {
-	Capabilities        []interface{}              `json:"capabilities"`
-	CreationTime        gophercloud.JSONRFC3339NoZ `json:"creation_time"`
-	Description         string                     `json:"description"`
-	DisableRollback     bool                       `json:"disable_rollback"`
-	ID                  string                     `json:"id"`
-	Links               []gophercloud.Link         `json:"links"`
-	NotificationTopics  []interface{}              `json:"notification_topics"`
-	Outputs             []map[string]interface{}   `json:"outputs"`
-	Parameters          map[string]string          `json:"parameters"`
-	Name                string                     `json:"stack_name"`
-	Status              string                     `json:"stack_status"`
-	StatusReason        string                     `json:"stack_status_reason"`
-	Tags                []string                   `json:"tags"`
-	TemplateDescription string                     `json:"template_description"`
-	Timeout             int                        `json:"timeout_mins"`
-	UpdatedTime         gophercloud.JSONRFC3339NoZ `json:"updated_time"`
+	Capabilities        []interface{}            `json:"capabilities"`
+	CreationTime        time.Time                `json:"-"`
+	Description         string                   `json:"description"`
+	DisableRollback     bool                     `json:"disable_rollback"`
+	ID                  string                   `json:"id"`
+	Links               []gophercloud.Link       `json:"links"`
+	NotificationTopics  []interface{}            `json:"notification_topics"`
+	Outputs             []map[string]interface{} `json:"outputs"`
+	Parameters          map[string]string        `json:"parameters"`
+	Name                string                   `json:"stack_name"`
+	Status              string                   `json:"stack_status"`
+	StatusReason        string                   `json:"stack_status_reason"`
+	Tags                []string                 `json:"tags"`
+	TemplateDescription string                   `json:"template_description"`
+	Timeout             int                      `json:"timeout_mins"`
+	UpdatedTime         time.Time                `json:"-"`
+}
+
+func (r *RetrievedStack) UnmarshalJSON(b []byte) error {
+	type tmp RetrievedStack
+	var s *struct {
+		tmp
+		CreationTime *gophercloud.JSONRFC3339NoZ `json:"creation_time"`
+		UpdatedTime  *gophercloud.JSONRFC3339NoZ `json:"updated_time"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = RetrievedStack(s.tmp)
+
+	if s.CreationTime != nil {
+		r.CreationTime = time.Time(*s.CreationTime)
+	}
+
+	if s.UpdatedTime != nil {
+		r.UpdatedTime = time.Time(*s.UpdatedTime)
+	}
+
+	return nil
 }
 
 // GetResult represents the result of a Get operation.
@@ -115,19 +164,43 @@ type DeleteResult struct {
 
 // PreviewedStack represents the result of a Preview operation.
 type PreviewedStack struct {
-	Capabilities        []interface{}              `json:"capabilities"`
-	CreationTime        gophercloud.JSONRFC3339NoZ `json:"creation_time"`
-	Description         string                     `json:"description"`
-	DisableRollback     bool                       `json:"disable_rollback"`
-	ID                  string                     `json:"id"`
-	Links               []gophercloud.Link         `json:"links"`
-	Name                string                     `json:"stack_name"`
-	NotificationTopics  []interface{}              `json:"notification_topics"`
-	Parameters          map[string]string          `json:"parameters"`
-	Resources           []interface{}              `json:"resources"`
-	TemplateDescription string                     `json:"template_description"`
-	Timeout             int                        `json:"timeout_mins"`
-	UpdatedTime         gophercloud.JSONRFC3339NoZ `json:"updated_time"`
+	Capabilities        []interface{}      `json:"capabilities"`
+	CreationTime        time.Time          `json:"-"`
+	Description         string             `json:"description"`
+	DisableRollback     bool               `json:"disable_rollback"`
+	ID                  string             `json:"id"`
+	Links               []gophercloud.Link `json:"links"`
+	Name                string             `json:"stack_name"`
+	NotificationTopics  []interface{}      `json:"notification_topics"`
+	Parameters          map[string]string  `json:"parameters"`
+	Resources           []interface{}      `json:"resources"`
+	TemplateDescription string             `json:"template_description"`
+	Timeout             int                `json:"timeout_mins"`
+	UpdatedTime         time.Time          `json:"-"`
+}
+
+func (r *PreviewedStack) UnmarshalJSON(b []byte) error {
+	type tmp PreviewedStack
+	var s *struct {
+		tmp
+		CreationTime *gophercloud.JSONRFC3339NoZ `json:"creation_time"`
+		UpdatedTime  *gophercloud.JSONRFC3339NoZ `json:"updated_time"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = PreviewedStack(s.tmp)
+
+	if s.CreationTime != nil {
+		r.CreationTime = time.Time(*s.CreationTime)
+	}
+
+	if s.UpdatedTime != nil {
+		r.UpdatedTime = time.Time(*s.UpdatedTime)
+	}
+
+	return nil
 }
 
 // PreviewResult represents the result of a Preview operation.
