@@ -1,6 +1,11 @@
 package securityservices
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"encoding/json"
+	"time"
+
+	"github.com/gophercloud/gophercloud"
+)
 
 // SecurityService contains all the information associated with an OpenStack
 // SecurityService.
@@ -28,9 +33,33 @@ type SecurityService struct {
 	// The security service host name or IP address
 	Server string `json:"server"`
 	// The date and time stamp when the security service was created
-	CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+	CreatedAt time.Time `json:"-"`
 	// The date and time stamp when the security service was updated
-	UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+	UpdatedAt time.Time `json:"-"`
+}
+
+func (r *SecurityService) UnmarshalJSON(b []byte) error {
+	type tmp SecurityService
+	var s *struct {
+		tmp
+		CreatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+		UpdatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = SecurityService(s.tmp)
+
+	if s.CreatedAt != nil {
+		r.CreatedAt = time.Time(*s.CreatedAt)
+	}
+
+	if s.UpdatedAt != nil {
+		r.UpdatedAt = time.Time(*s.UpdatedAt)
+	}
+
+	return nil
 }
 
 type commonResult struct {

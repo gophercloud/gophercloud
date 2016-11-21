@@ -1,12 +1,12 @@
 package testing
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"testing"
+	"time"
+
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
-	"testing"
-	"time"
 )
 
 func TestCreate(t *testing.T) {
@@ -57,16 +57,15 @@ func TestGet(t *testing.T) {
 			"project": "my_app",
 			"aim":     "doc",
 		},
-		Status:          "available",
-		Description:     "My custom share London",
-		Host:            "manila2@generic1#GENERIC1",
-		HasReplicas:     false,
-		ReplicationType: "",
-		TaskState:       "",
-		SnapshotSupport: true,
-		Name:            "my_test_share",
-		CreatedAt: gophercloud.JSONRFC3339MilliNoZ(time.Date(
-			2015, time.September, 18, 10, 25, 24, 0, time.UTC)),
+		Status:                   "available",
+		Description:              "My custom share London",
+		Host:                     "manila2@generic1#GENERIC1",
+		HasReplicas:              false,
+		ReplicationType:          "",
+		TaskState:                "",
+		SnapshotSupport:          true,
+		Name:                     "my_test_share",
+		CreatedAt:                time.Date(2015, time.September, 18, 10, 25, 24, 0, time.UTC),
 		ShareProto:               "NFS",
 		VolumeType:               "default",
 		SourceCgsnapshotMemberID: "",

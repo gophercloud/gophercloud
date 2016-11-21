@@ -1,8 +1,10 @@
 package sharenetworks
 
 import (
+	"encoding/json"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -34,9 +36,33 @@ type ShareNetwork struct {
 	// The Share Network description
 	Description string `json:"description"`
 	// The date and time stamp when the Share Network was created
-	CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+	CreatedAt time.Time `json:"-"`
 	// The date and time stamp when the Share Network was updated
-	UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+	UpdatedAt time.Time `json:"-"`
+}
+
+func (r *ShareNetwork) UnmarshalJSON(b []byte) error {
+	type tmp ShareNetwork
+	var s *struct {
+		tmp
+		CreatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+		UpdatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = ShareNetwork(s.tmp)
+
+	if s.CreatedAt != nil {
+		r.CreatedAt = time.Time(*s.CreatedAt)
+	}
+
+	if s.UpdatedAt != nil {
+		r.UpdatedAt = time.Time(*s.UpdatedAt)
+	}
+
+	return nil
 }
 
 type commonResult struct {
