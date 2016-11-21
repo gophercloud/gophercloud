@@ -2,9 +2,9 @@ package accounts
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 )
@@ -16,36 +16,41 @@ type UpdateResult struct {
 
 // UpdateHeader represents the headers returned in the response from an Update request.
 type UpdateHeader struct {
-	ContentLength int64                   `json:"-"`
-	ContentType   string                  `json:"Content-Type"`
-	TransID       string                  `json:"X-Trans-Id"`
-	Date          gophercloud.JSONRFC1123 `json:"Date"`
+	ContentLength int64     `json:"-"`
+	ContentType   string    `json:"Content-Type"`
+	TransID       string    `json:"X-Trans-Id"`
+	Date          time.Time `json:"-"` // gophercloud.JSONRFC1123
 }
 
-func (h *UpdateHeader) UnmarshalJSON(b []byte) error {
+func (s *UpdateHeader) UnmarshalJSON(b []byte) error {
 	type tmp UpdateHeader
-	var updateHeader *struct {
+	var p *struct {
 		tmp
 		ContentLength string `json:"Content-Length"`
+		Date          string `json:"Date"`
 	}
-	err := json.Unmarshal(b, &updateHeader)
+	err := json.Unmarshal(b, &p)
 	if err != nil {
 		return err
 	}
 
-	*h = UpdateHeader(updateHeader.tmp)
+	*s = UpdateHeader(p.tmp)
 
-	switch updateHeader.ContentLength {
+	switch p.ContentLength {
 	case "":
-		h.ContentLength = 0
+		s.ContentLength = 0
 	default:
-		h.ContentLength, err = strconv.ParseInt(updateHeader.ContentLength, 10, 64)
+		s.ContentLength, err = strconv.ParseInt(p.ContentLength, 10, 64)
 		if err != nil {
 			return err
 		}
 	}
 
-	return nil
+	if p.Date != "" {
+		s.Date, err = time.Parse(time.RFC1123, p.Date)
+	}
+
+	return err
 }
 
 // Extract will return a struct of headers returned from a call to Get. To obtain
@@ -58,75 +63,79 @@ func (ur UpdateResult) Extract() (*UpdateHeader, error) {
 
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
-	BytesUsed      int64                   `json:"-"`
-	ContainerCount int64                   `json:"-"`
-	ContentLength  int64                   `json:"-"`
-	ObjectCount    int64                   `json:"-"`
-	ContentType    string                  `json:"Content-Type"`
-	TransID        string                  `json:"X-Trans-Id"`
-	TempURLKey     string                  `json:"X-Account-Meta-Temp-URL-Key"`
-	TempURLKey2    string                  `json:"X-Account-Meta-Temp-URL-Key-2"`
-	Date           gophercloud.JSONRFC1123 `json:"Date"`
+	BytesUsed      int64     `json:"-"`
+	ContainerCount int64     `json:"-"`
+	ContentLength  int64     `json:"-"`
+	ObjectCount    int64     `json:"-"`
+	ContentType    string    `json:"Content-Type"`
+	TransID        string    `json:"X-Trans-Id"`
+	TempURLKey     string    `json:"X-Account-Meta-Temp-URL-Key"`
+	TempURLKey2    string    `json:"X-Account-Meta-Temp-URL-Key-2"`
+	Date           time.Time `json:"-"`
 }
 
-func (h *GetHeader) UnmarshalJSON(b []byte) error {
+func (s *GetHeader) UnmarshalJSON(b []byte) error {
 	type tmp GetHeader
-	var getHeader *struct {
+	var p *struct {
 		tmp
 		BytesUsed      string `json:"X-Account-Bytes-Used"`
 		ContentLength  string `json:"Content-Length"`
 		ContainerCount string `json:"X-Account-Container-Count"`
 		ObjectCount    string `json:"X-Account-Object-Count"`
+		Date           string `json:"Date"`
 	}
-	err := json.Unmarshal(b, &getHeader)
+	err := json.Unmarshal(b, &p)
 	if err != nil {
 		return err
 	}
 
-	*h = GetHeader(getHeader.tmp)
+	*s = GetHeader(p.tmp)
 
-	switch getHeader.BytesUsed {
+	switch p.BytesUsed {
 	case "":
-		h.BytesUsed = 0
+		s.BytesUsed = 0
 	default:
-		h.BytesUsed, err = strconv.ParseInt(getHeader.BytesUsed, 10, 64)
+		s.BytesUsed, err = strconv.ParseInt(p.BytesUsed, 10, 64)
 		if err != nil {
 			return err
 		}
 	}
 
-	fmt.Println("getHeader: ", getHeader.ContentLength)
-	switch getHeader.ContentLength {
+	switch p.ContentLength {
 	case "":
-		h.ContentLength = 0
+		s.ContentLength = 0
 	default:
-		h.ContentLength, err = strconv.ParseInt(getHeader.ContentLength, 10, 64)
+		s.ContentLength, err = strconv.ParseInt(p.ContentLength, 10, 64)
 		if err != nil {
 			return err
 		}
 	}
 
-	switch getHeader.ObjectCount {
+	switch p.ObjectCount {
 	case "":
-		h.ObjectCount = 0
+		s.ObjectCount = 0
 	default:
-		h.ObjectCount, err = strconv.ParseInt(getHeader.ObjectCount, 10, 64)
+		s.ObjectCount, err = strconv.ParseInt(p.ObjectCount, 10, 64)
 		if err != nil {
 			return err
 		}
 	}
 
-	switch getHeader.ContainerCount {
+	switch p.ContainerCount {
 	case "":
-		h.ContainerCount = 0
+		s.ContainerCount = 0
 	default:
-		h.ContainerCount, err = strconv.ParseInt(getHeader.ContainerCount, 10, 64)
+		s.ContainerCount, err = strconv.ParseInt(p.ContainerCount, 10, 64)
 		if err != nil {
 			return err
 		}
 	}
 
-	return nil
+	if p.Date != "" {
+		s.Date, err = time.Parse(time.RFC1123, p.Date)
+	}
+
+	return err
 }
 
 // GetResult is returned from a call to the Get function.

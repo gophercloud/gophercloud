@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/objects"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -47,7 +46,7 @@ func TestDownloadExtraction(t *testing.T) {
 	expected := &objects.DownloadHeader{
 		ContentLength: 36,
 		ContentType:   "text/plain; charset=utf-8",
-		Date:          gophercloud.JSONRFC1123(time.Date(2009, time.November, 10, 23, 0, 0, 0, loc)),
+		Date:          time.Date(2009, time.November, 10, 23, 0, 0, 0, loc),
 	}
 	actual, err := response.Extract()
 	th.AssertNoErr(t, err)
