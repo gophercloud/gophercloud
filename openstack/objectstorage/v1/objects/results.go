@@ -32,23 +32,21 @@ type Object struct {
 	Name string `json:"name"`
 }
 
-func (s *Object) UnmarshalJSON(b []byte) error {
+func (r *Object) UnmarshalJSON(b []byte) error {
 	type tmp Object
-	var p *struct {
+	var s *struct {
 		tmp
-		LastModified string `json:"last_modified"`
+		LastModified gophercloud.JSONRFC3339MilliNoZ `json:"last_modified"`
 	}
 
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
 
-	*s = Object(p.tmp)
+	*r = Object(s.tmp)
 
-	if p.LastModified != "" {
-		s.LastModified, err = time.Parse(gophercloud.RFC3339MilliNoZ, p.LastModified)
-	}
+	r.LastModified = time.Time(s.LastModified)
 
 	return nil
 
@@ -138,12 +136,12 @@ type DownloadHeader struct {
 
 func (r *DownloadHeader) UnmarshalJSON(b []byte) error {
 	type tmp DownloadHeader
-	var s *struct {
+	var s struct {
 		tmp
-		ContentLength string                   `json:"Content-Length"`
-		Date          *gophercloud.JSONRFC1123 `json:"Date"`
-		DeleteAt      *gophercloud.JSONUnix    `json:"X-Delete-At"`
-		LastModified  *gophercloud.JSONRFC1123 `json:"Last-Modified"`
+		ContentLength string                  `json:"Content-Length"`
+		Date          gophercloud.JSONRFC1123 `json:"Date"`
+		DeleteAt      gophercloud.JSONUnix    `json:"X-Delete-At"`
+		LastModified  gophercloud.JSONRFC1123 `json:"Last-Modified"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -162,17 +160,9 @@ func (r *DownloadHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if s.Date != nil {
-		r.Date = time.Time(*s.Date)
-	}
-
-	if s.DeleteAt != nil {
-		r.DeleteAt = time.Time(*s.DeleteAt)
-	}
-
-	if s.LastModified != nil {
-		r.LastModified = time.Time(*s.LastModified)
-	}
+	r.Date = time.Time(s.Date)
+	r.DeleteAt = time.Time(s.DeleteAt)
+	r.LastModified = time.Time(s.LastModified)
 
 	return nil
 }
@@ -226,12 +216,12 @@ type GetHeader struct {
 
 func (r *GetHeader) UnmarshalJSON(b []byte) error {
 	type tmp GetHeader
-	var s *struct {
+	var s struct {
 		tmp
-		ContentLength string                   `json:"Content-Length"`
-		Date          *gophercloud.JSONRFC1123 `json:"Date"`
-		DeleteAt      *gophercloud.JSONUnix    `json:"X-Delete-At"`
-		LastModified  *gophercloud.JSONRFC1123 `json:"Last-Modified"`
+		ContentLength string                  `json:"Content-Length"`
+		Date          gophercloud.JSONRFC1123 `json:"Date"`
+		DeleteAt      gophercloud.JSONUnix    `json:"X-Delete-At"`
+		LastModified  gophercloud.JSONRFC1123 `json:"Last-Modified"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -250,17 +240,9 @@ func (r *GetHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if s.Date != nil {
-		r.Date = time.Time(*s.Date)
-	}
-
-	if s.DeleteAt != nil {
-		r.DeleteAt = time.Time(*s.DeleteAt)
-	}
-
-	if s.LastModified != nil {
-		r.LastModified = time.Time(*s.LastModified)
-	}
+	r.Date = time.Time(s.Date)
+	r.DeleteAt = time.Time(s.DeleteAt)
+	r.LastModified = time.Time(s.LastModified)
 
 	return nil
 }
@@ -306,11 +288,11 @@ type CreateHeader struct {
 
 func (r *CreateHeader) UnmarshalJSON(b []byte) error {
 	type tmp CreateHeader
-	var s *struct {
+	var s struct {
 		tmp
-		ContentLength string                   `json:"Content-Length"`
-		Date          *gophercloud.JSONRFC1123 `json:"Date"`
-		LastModified  *gophercloud.JSONRFC1123 `json:"Last-Modified"`
+		ContentLength string                  `json:"Content-Length"`
+		Date          gophercloud.JSONRFC1123 `json:"Date"`
+		LastModified  gophercloud.JSONRFC1123 `json:"Last-Modified"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -329,13 +311,8 @@ func (r *CreateHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if s.Date != nil {
-		r.Date = time.Time(*s.Date)
-	}
-
-	if s.LastModified != nil {
-		r.LastModified = time.Time(*s.LastModified)
-	}
+	r.Date = time.Time(s.Date)
+	r.LastModified = time.Time(s.LastModified)
 
 	return nil
 }
@@ -367,10 +344,10 @@ type UpdateHeader struct {
 
 func (r *UpdateHeader) UnmarshalJSON(b []byte) error {
 	type tmp UpdateHeader
-	var s *struct {
+	var s struct {
 		tmp
-		ContentLength string                   `json:"Content-Length"`
-		Date          *gophercloud.JSONRFC1123 `json:"Date"`
+		ContentLength string                  `json:"Content-Length"`
+		Date          gophercloud.JSONRFC1123 `json:"Date"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -389,9 +366,7 @@ func (r *UpdateHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if s.Date != nil {
-		r.Date = time.Time(*s.Date)
-	}
+	r.Date = time.Time(s.Date)
 
 	return nil
 }
@@ -419,10 +394,10 @@ type DeleteHeader struct {
 
 func (r *DeleteHeader) UnmarshalJSON(b []byte) error {
 	type tmp DeleteHeader
-	var s *struct {
+	var s struct {
 		tmp
-		ContentLength string                   `json:"Content-Length"`
-		Date          *gophercloud.JSONRFC1123 `json:"Date"`
+		ContentLength string                  `json:"Content-Length"`
+		Date          gophercloud.JSONRFC1123 `json:"Date"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -441,9 +416,7 @@ func (r *DeleteHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if s.Date != nil {
-		r.Date = time.Time(*s.Date)
-	}
+	r.Date = time.Time(s.Date)
 
 	return nil
 }
@@ -477,10 +450,10 @@ func (r *CopyHeader) UnmarshalJSON(b []byte) error {
 	type tmp CopyHeader
 	var s *struct {
 		tmp
-		ContentLength          string                   `json:"Content-Length"`
-		CopiedFromLastModified *gophercloud.JSONRFC1123 `json:"X-Copied-From-Last-Modified"`
-		Date                   *gophercloud.JSONRFC1123 `json:"Date"`
-		LastModified           *gophercloud.JSONRFC1123 `json:"Last-Modified"`
+		ContentLength          string                  `json:"Content-Length"`
+		CopiedFromLastModified gophercloud.JSONRFC1123 `json:"X-Copied-From-Last-Modified"`
+		Date                   gophercloud.JSONRFC1123 `json:"Date"`
+		LastModified           gophercloud.JSONRFC1123 `json:"Last-Modified"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -499,17 +472,9 @@ func (r *CopyHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if s.Date != nil {
-		r.Date = time.Time(*s.Date)
-	}
-
-	if s.CopiedFromLastModified != nil {
-		r.CopiedFromLastModified = time.Time(*s.CopiedFromLastModified)
-	}
-
-	if s.LastModified != nil {
-		r.LastModified = time.Time(*s.LastModified)
-	}
+	r.Date = time.Time(s.Date)
+	r.CopiedFromLastModified = time.Time(s.CopiedFromLastModified)
+	r.LastModified = time.Time(s.LastModified)
 
 	return nil
 }

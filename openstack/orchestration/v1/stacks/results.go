@@ -61,10 +61,10 @@ type ListedStack struct {
 
 func (r *ListedStack) UnmarshalJSON(b []byte) error {
 	type tmp ListedStack
-	var s *struct {
+	var s struct {
 		tmp
-		CreationTime *gophercloud.JSONRFC3339NoZ `json:"creation_time"`
-		UpdatedTime  *gophercloud.JSONRFC3339NoZ `json:"updated_time"`
+		CreationTime gophercloud.JSONRFC3339NoZ `json:"creation_time"`
+		UpdatedTime  gophercloud.JSONRFC3339NoZ `json:"updated_time"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -72,13 +72,8 @@ func (r *ListedStack) UnmarshalJSON(b []byte) error {
 	}
 	*r = ListedStack(s.tmp)
 
-	if s.CreationTime != nil {
-		r.CreationTime = time.Time(*s.CreationTime)
-	}
-
-	if s.UpdatedTime != nil {
-		r.UpdatedTime = time.Time(*s.UpdatedTime)
-	}
+	r.CreationTime = time.Time(s.CreationTime)
+	r.UpdatedTime = time.Time(s.UpdatedTime)
 
 	return nil
 }

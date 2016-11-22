@@ -1,7 +1,5 @@
 package trusts
 
-import "encoding/json"
-
 type TrusteeUser struct {
 	ID string `json:"id"`
 }
@@ -21,8 +19,4 @@ type Trust struct {
 
 type TokenExt struct {
 	Trust Trust `json:"OS-TRUST:trust"`
-}
-
-func (s *TokenExt) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, &s)
 }

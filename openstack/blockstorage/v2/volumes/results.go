@@ -20,9 +20,9 @@ type Attachment struct {
 
 func (s *Attachment) UnmarshalJSON(b []byte) error {
 	type tmp Attachment
-	var p *struct {
+	var p struct {
 		tmp
-		AttachedAt string `json:"attached_at"`
+		AttachedAt *gophercloud.JSONRFC3339MilliNoZ `json:"attached_at"`
 	}
 	err := json.Unmarshal(b, &p)
 	if err != nil {
@@ -30,9 +30,7 @@ func (s *Attachment) UnmarshalJSON(b []byte) error {
 	}
 	*s = Attachment(p.tmp)
 
-	if p.AttachedAt != "" {
-		s.AttachedAt, err = time.Parse(gophercloud.RFC3339MilliNoZ, p.AttachedAt)
-	}
+	s.AttachedAt = time.Time(*p.AttachedAt)
 
 	return err
 }
@@ -81,10 +79,10 @@ type Volume struct {
 
 func (s *Volume) UnmarshalJSON(b []byte) error {
 	type tmp Volume
-	var p *struct {
+	var p struct {
 		tmp
-		CreatedAt string `json:"created_at"`
-		UpdatedAt string `json:"updated_at"`
+		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
 	}
 	err := json.Unmarshal(b, &p)
 	if err != nil {
@@ -92,16 +90,8 @@ func (s *Volume) UnmarshalJSON(b []byte) error {
 	}
 	*s = Volume(p.tmp)
 
-	if p.CreatedAt != "" {
-		s.CreatedAt, err = time.Parse(gophercloud.RFC3339MilliNoZ, p.CreatedAt)
-		if err != nil {
-			return err
-		}
-	}
-
-	if p.UpdatedAt != "" {
-		s.UpdatedAt, err = time.Parse(gophercloud.RFC3339MilliNoZ, p.UpdatedAt)
-	}
+	s.CreatedAt = time.Time(p.CreatedAt)
+	s.UpdatedAt = time.Time(p.UpdatedAt)
 
 	return err
 }

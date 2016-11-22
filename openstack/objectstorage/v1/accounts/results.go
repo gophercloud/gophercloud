@@ -19,15 +19,15 @@ type UpdateHeader struct {
 	ContentLength int64     `json:"-"`
 	ContentType   string    `json:"Content-Type"`
 	TransID       string    `json:"X-Trans-Id"`
-	Date          time.Time `json:"-"` // gophercloud.JSONRFC1123
+	Date          time.Time `json:"-"`
 }
 
 func (s *UpdateHeader) UnmarshalJSON(b []byte) error {
 	type tmp UpdateHeader
 	var p *struct {
 		tmp
-		ContentLength string `json:"Content-Length"`
-		Date          string `json:"Date"`
+		ContentLength string                  `json:"Content-Length"`
+		Date          gophercloud.JSONRFC1123 `json:"Date"`
 	}
 	err := json.Unmarshal(b, &p)
 	if err != nil {
@@ -46,9 +46,7 @@ func (s *UpdateHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if p.Date != "" {
-		s.Date, err = time.Parse(time.RFC1123, p.Date)
-	}
+	s.Date = time.Time(p.Date)
 
 	return err
 }

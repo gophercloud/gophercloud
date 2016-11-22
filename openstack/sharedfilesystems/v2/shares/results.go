@@ -68,9 +68,9 @@ type Share struct {
 
 func (r *Share) UnmarshalJSON(b []byte) error {
 	type tmp Share
-	var s *struct {
+	var s struct {
 		tmp
-		CreatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -78,9 +78,7 @@ func (r *Share) UnmarshalJSON(b []byte) error {
 	}
 	*r = Share(s.tmp)
 
-	if s.CreatedAt != nil {
-		r.CreatedAt = time.Time(*s.CreatedAt)
-	}
+	r.CreatedAt = time.Time(s.CreatedAt)
 
 	return nil
 }

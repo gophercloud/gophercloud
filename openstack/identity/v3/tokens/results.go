@@ -38,7 +38,7 @@ type CatalogEntry struct {
 
 // ServiceCatalog provides a view into the service catalog from a previous, successful authentication.
 type ServiceCatalog struct {
-	Entries []CatalogEntry
+	Entries []CatalogEntry `json:"catalog"`
 }
 
 // commonResult is the deferred result of a Create or a Get call.
@@ -68,13 +68,9 @@ func (r commonResult) ExtractToken() (*Token, error) {
 
 // ExtractServiceCatalog returns the ServiceCatalog that was generated along with the user's Token.
 func (r CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
-	var s struct {
-		Token struct {
-			Entries []CatalogEntry `json:"catalog"`
-		} `json:"token"`
-	}
+	var s ServiceCatalog
 	err := r.ExtractInto(&s)
-	return &ServiceCatalog{Entries: s.Token.Entries}, err
+	return &s, err
 }
 
 // CreateResult defers the interpretation of a created token.

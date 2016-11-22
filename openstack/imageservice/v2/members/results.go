@@ -10,20 +10,18 @@ import (
 
 // Member model
 type Member struct {
-	CreatedAt time.Time `json:"-"`
+	CreatedAt time.Time `json:"created_at"`
 	ImageID   string    `json:"image_id"`
 	MemberID  string    `json:"member_id"`
 	Schema    string    `json:"schema"`
 	Status    string    `json:"status"`
-	UpdatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (s *Member) UnmarshalJSON(b []byte) error {
 	type tmp Member
-	var p *struct {
+	var p struct {
 		tmp
-		CreatedAt string `json:"created_at"`
-		UpdatedAt string `json:"updated_at"`
 	}
 	err := json.Unmarshal(b, &p)
 	if err != nil {
@@ -31,16 +29,6 @@ func (s *Member) UnmarshalJSON(b []byte) error {
 	}
 
 	*s = Member(p.tmp)
-	if p.CreatedAt != "" {
-		s.CreatedAt, err = time.Parse(time.RFC3339, p.CreatedAt)
-		if err != nil {
-			return err
-		}
-	}
-
-	if p.UpdatedAt != "" {
-		s.UpdatedAt, err = time.Parse(time.RFC3339, p.UpdatedAt)
-	}
 
 	return err
 }

@@ -105,12 +105,12 @@ func (s *GetHeader) UnmarshalJSON(b []byte) error {
 	type tmp GetHeader
 	var p *struct {
 		tmp
-		BytesUsed     string `json:"X-Container-Bytes-Used"`
-		ContentLength string `json:"Content-Length"`
-		ObjectCount   string `json:"X-Container-Object-Count"`
-		Write         string `json:"X-Container-Write"`
-		Read          string `json:"X-Container-Read"`
-		Date          string `json:"Date"`
+		BytesUsed     string                  `json:"X-Container-Bytes-Used"`
+		ContentLength string                  `json:"Content-Length"`
+		ObjectCount   string                  `json:"X-Container-Object-Count"`
+		Write         string                  `json:"X-Container-Write"`
+		Read          string                  `json:"X-Container-Read"`
+		Date          gophercloud.JSONRFC1123 `json:"Date"`
 	}
 	err := json.Unmarshal(b, &p)
 	if err != nil {
@@ -152,9 +152,7 @@ func (s *GetHeader) UnmarshalJSON(b []byte) error {
 	s.Read = strings.Split(p.Read, ",")
 	s.Write = strings.Split(p.Write, ",")
 
-	if p.Date != "" {
-		s.Date, err = time.Parse(time.RFC1123, p.Date)
-	}
+	s.Date = time.Time(p.Date)
 
 	return err
 }
@@ -200,8 +198,8 @@ func (s *CreateHeader) UnmarshalJSON(b []byte) error {
 	type tmp CreateHeader
 	var p *struct {
 		tmp
-		ContentLength string `json:"Content-Length"`
-		Date          string `json:"Date"`
+		ContentLength string                  `json:"Content-Length"`
+		Date          gophercloud.JSONRFC1123 `json:"Date"`
 	}
 	err := json.Unmarshal(b, &p)
 	if err != nil {
@@ -220,9 +218,7 @@ func (s *CreateHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if p.Date != "" {
-		s.Date, err = time.Parse(time.RFC1123, p.Date)
-	}
+	s.Date = time.Time(p.Date)
 
 	return err
 }
@@ -254,8 +250,8 @@ func (s *UpdateHeader) UnmarshalJSON(b []byte) error {
 	type tmp UpdateHeader
 	var p *struct {
 		tmp
-		ContentLength string `json:"Content-Length"`
-		Date          string `json:"Date"`
+		ContentLength string                  `json:"Content-Length"`
+		Date          gophercloud.JSONRFC1123 `json:"Date"`
 	}
 	err := json.Unmarshal(b, &p)
 	if err != nil {
@@ -274,9 +270,7 @@ func (s *UpdateHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if p.Date != "" {
-		s.Date, err = time.Parse(time.RFC1123, p.Date)
-	}
+	s.Date = time.Time(p.Date)
 
 	return err
 }
@@ -308,8 +302,8 @@ func (s *DeleteHeader) UnmarshalJSON(b []byte) error {
 	type tmp DeleteHeader
 	var p *struct {
 		tmp
-		ContentLength string `json:"Content-Length"`
-		Date          string `json:"Date"`
+		ContentLength string                  `json:"Content-Length"`
+		Date          gophercloud.JSONRFC1123 `json:"Date"`
 	}
 	err := json.Unmarshal(b, &p)
 	if err != nil {
@@ -328,9 +322,7 @@ func (s *DeleteHeader) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	if p.Date != "" {
-		s.Date, err = time.Parse(time.RFC1123, p.Date)
-	}
+	s.Date = time.Time(p.Date)
 
 	return err
 }

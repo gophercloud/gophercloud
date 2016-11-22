@@ -40,10 +40,10 @@ type SecurityService struct {
 
 func (r *SecurityService) UnmarshalJSON(b []byte) error {
 	type tmp SecurityService
-	var s *struct {
+	var s struct {
 		tmp
-		CreatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
-		UpdatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -51,13 +51,8 @@ func (r *SecurityService) UnmarshalJSON(b []byte) error {
 	}
 	*r = SecurityService(s.tmp)
 
-	if s.CreatedAt != nil {
-		r.CreatedAt = time.Time(*s.CreatedAt)
-	}
-
-	if s.UpdatedAt != nil {
-		r.UpdatedAt = time.Time(*s.UpdatedAt)
-	}
+	r.CreatedAt = time.Time(s.CreatedAt)
+	r.UpdatedAt = time.Time(s.UpdatedAt)
 
 	return nil
 }

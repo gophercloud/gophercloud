@@ -43,10 +43,10 @@ type ShareNetwork struct {
 
 func (r *ShareNetwork) UnmarshalJSON(b []byte) error {
 	type tmp ShareNetwork
-	var s *struct {
+	var s struct {
 		tmp
-		CreatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
-		UpdatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -54,13 +54,8 @@ func (r *ShareNetwork) UnmarshalJSON(b []byte) error {
 	}
 	*r = ShareNetwork(s.tmp)
 
-	if s.CreatedAt != nil {
-		r.CreatedAt = time.Time(*s.CreatedAt)
-	}
-
-	if s.UpdatedAt != nil {
-		r.UpdatedAt = time.Time(*s.UpdatedAt)
-	}
+	r.CreatedAt = time.Time(s.CreatedAt)
+	r.UpdatedAt = time.Time(s.UpdatedAt)
 
 	return nil
 }

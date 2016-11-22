@@ -39,10 +39,12 @@ func authTokenPost(t *testing.T, options tokens.AuthOptions, scope *tokens.Scope
 		options.Scope = *scope
 	}
 
-	_, err := tokens.Create(&client, &options).Extract()
-	if err != nil {
-		t.Errorf("Create returned an error: %v", err)
+	expected := &tokens.Token{
+		ExpiresAt: time.Date(2014, 10, 2, 13, 45, 0, 0, time.UTC),
 	}
+	actual, err := tokens.Create(&client, &options).Extract()
+	testhelper.AssertNoErr(t, err)
+	testhelper.CheckDeepEquals(t, expected, actual)
 }
 
 func authTokenPostErr(t *testing.T, options tokens.AuthOptions, scope *tokens.Scope, includeToken bool, expectedErr error) {

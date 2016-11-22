@@ -32,19 +32,18 @@ type Event struct {
 
 func (r *Event) UnmarshalJSON(b []byte) error {
 	type tmp Event
-	var s *struct {
+	var s struct {
 		tmp
-		Time *gophercloud.JSONRFC3339NoZ `json:"event_time"`
+		Time gophercloud.JSONRFC3339NoZ `json:"event_time"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
+
 	*r = Event(s.tmp)
 
-	if s.Time != nil {
-		r.Time = time.Time(*s.Time)
-	}
+	r.Time = time.Time(s.Time)
 
 	return nil
 }

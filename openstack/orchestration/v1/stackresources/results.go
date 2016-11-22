@@ -28,8 +28,8 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 	type tmp Resource
 	var s *struct {
 		tmp
-		CreationTime *gophercloud.JSONRFC3339NoZ `json:"creation_time"`
-		UpdatedTime  *gophercloud.JSONRFC3339NoZ `json:"updated_time"`
+		CreationTime gophercloud.JSONRFC3339NoZ `json:"creation_time"`
+		UpdatedTime  gophercloud.JSONRFC3339NoZ `json:"updated_time"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -37,13 +37,8 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 	}
 	*r = Resource(s.tmp)
 
-	if s.CreationTime != nil {
-		r.CreationTime = time.Time(*s.CreationTime)
-	}
-
-	if s.UpdatedTime != nil {
-		r.UpdatedTime = time.Time(*s.UpdatedTime)
-	}
+	r.CreationTime = time.Time(s.CreationTime)
+	r.UpdatedTime = time.Time(s.UpdatedTime)
 
 	return nil
 }
