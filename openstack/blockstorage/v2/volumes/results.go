@@ -18,19 +18,19 @@ type Attachment struct {
 	VolumeID     string    `json:"volume_id"`
 }
 
-func (s *Attachment) UnmarshalJSON(b []byte) error {
+func (r *Attachment) UnmarshalJSON(b []byte) error {
 	type tmp Attachment
-	var p struct {
+	var s struct {
 		tmp
 		AttachedAt *gophercloud.JSONRFC3339MilliNoZ `json:"attached_at"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
-	*s = Attachment(p.tmp)
+	*r = Attachment(s.tmp)
 
-	s.AttachedAt = time.Time(*p.AttachedAt)
+	r.AttachedAt = time.Time(*s.AttachedAt)
 
 	return err
 }
@@ -77,21 +77,21 @@ type Volume struct {
 	Multiattach bool `json:"multiattach"`
 }
 
-func (s *Volume) UnmarshalJSON(b []byte) error {
+func (r *Volume) UnmarshalJSON(b []byte) error {
 	type tmp Volume
-	var p struct {
+	var s struct {
 		tmp
 		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
 		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
-	*s = Volume(p.tmp)
+	*r = Volume(s.tmp)
 
-	s.CreatedAt = time.Time(p.CreatedAt)
-	s.UpdatedAt = time.Time(p.UpdatedAt)
+	r.CreatedAt = time.Time(s.CreatedAt)
+	r.UpdatedAt = time.Time(s.UpdatedAt)
 
 	return err
 }

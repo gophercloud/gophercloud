@@ -168,26 +168,26 @@ type Server struct {
 	SecurityGroups []map[string]interface{} `json:"security_groups"`
 }
 
-func (s *Server) UnmarshalJSON(b []byte) error {
+func (r *Server) UnmarshalJSON(b []byte) error {
 	type tmp Server
-	var p *struct {
+	var s *struct {
 		tmp
 		Image interface{} `json:"image"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
 
-	*s = Server(p.tmp)
+	*r = Server(s.tmp)
 
-	switch t := p.Image.(type) {
+	switch t := s.Image.(type) {
 	case map[string]interface{}:
-		s.Image = t
+		r.Image = t
 	case string:
 		switch t {
 		case "":
-			s.Image = nil
+			r.Image = nil
 		}
 	}
 
@@ -202,17 +202,17 @@ type ServerPage struct {
 }
 
 // IsEmpty returns true if a page contains no Server results.
-func (page ServerPage) IsEmpty() (bool, error) {
-	servers, err := ExtractServers(page)
-	return len(servers) == 0, err
+func (r ServerPage) IsEmpty() (bool, error) {
+	s, err := ExtractServers(r)
+	return len(s) == 0, err
 }
 
 // NextPageURL uses the response's embedded link reference to navigate to the next page of results.
-func (page ServerPage) NextPageURL() (string, error) {
+func (r ServerPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"servers_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}

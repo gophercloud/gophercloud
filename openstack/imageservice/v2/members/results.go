@@ -1,7 +1,6 @@
 package members
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -16,21 +15,6 @@ type Member struct {
 	Schema    string    `json:"schema"`
 	Status    string    `json:"status"`
 	UpdatedAt time.Time `json:"updated_at"`
-}
-
-func (s *Member) UnmarshalJSON(b []byte) error {
-	type tmp Member
-	var p struct {
-		tmp
-	}
-	err := json.Unmarshal(b, &p)
-	if err != nil {
-		return err
-	}
-
-	*s = Member(p.tmp)
-
-	return err
 }
 
 // Extract Member model from request if possible

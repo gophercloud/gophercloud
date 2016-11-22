@@ -22,41 +22,41 @@ type UpdateHeader struct {
 	Date          time.Time `json:"-"`
 }
 
-func (s *UpdateHeader) UnmarshalJSON(b []byte) error {
+func (r *UpdateHeader) UnmarshalJSON(b []byte) error {
 	type tmp UpdateHeader
-	var p *struct {
+	var s *struct {
 		tmp
 		ContentLength string                  `json:"Content-Length"`
 		Date          gophercloud.JSONRFC1123 `json:"Date"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
 
-	*s = UpdateHeader(p.tmp)
+	*r = UpdateHeader(s.tmp)
 
-	switch p.ContentLength {
+	switch s.ContentLength {
 	case "":
-		s.ContentLength = 0
+		r.ContentLength = 0
 	default:
-		s.ContentLength, err = strconv.ParseInt(p.ContentLength, 10, 64)
+		r.ContentLength, err = strconv.ParseInt(s.ContentLength, 10, 64)
 		if err != nil {
 			return err
 		}
 	}
 
-	s.Date = time.Time(p.Date)
+	r.Date = time.Time(s.Date)
 
 	return err
 }
 
 // Extract will return a struct of headers returned from a call to Get. To obtain
 // a map of headers, call the ExtractHeader method on the GetResult.
-func (ur UpdateResult) Extract() (*UpdateHeader, error) {
-	var uh *UpdateHeader
-	err := ur.ExtractInto(&uh)
-	return uh, err
+func (r UpdateResult) Extract() (*UpdateHeader, error) {
+	var s *UpdateHeader
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // GetHeader represents the headers returned in the response from a Get request.
@@ -72,9 +72,9 @@ type GetHeader struct {
 	Date           time.Time `json:"-"`
 }
 
-func (s *GetHeader) UnmarshalJSON(b []byte) error {
+func (r *GetHeader) UnmarshalJSON(b []byte) error {
 	type tmp GetHeader
-	var p *struct {
+	var s *struct {
 		tmp
 		BytesUsed      string `json:"X-Account-Bytes-Used"`
 		ContentLength  string `json:"Content-Length"`
@@ -82,55 +82,55 @@ func (s *GetHeader) UnmarshalJSON(b []byte) error {
 		ObjectCount    string `json:"X-Account-Object-Count"`
 		Date           string `json:"Date"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
 
-	*s = GetHeader(p.tmp)
+	*r = GetHeader(s.tmp)
 
-	switch p.BytesUsed {
+	switch s.BytesUsed {
 	case "":
-		s.BytesUsed = 0
+		r.BytesUsed = 0
 	default:
-		s.BytesUsed, err = strconv.ParseInt(p.BytesUsed, 10, 64)
+		r.BytesUsed, err = strconv.ParseInt(s.BytesUsed, 10, 64)
 		if err != nil {
 			return err
 		}
 	}
 
-	switch p.ContentLength {
+	switch s.ContentLength {
 	case "":
-		s.ContentLength = 0
+		r.ContentLength = 0
 	default:
-		s.ContentLength, err = strconv.ParseInt(p.ContentLength, 10, 64)
+		r.ContentLength, err = strconv.ParseInt(s.ContentLength, 10, 64)
 		if err != nil {
 			return err
 		}
 	}
 
-	switch p.ObjectCount {
+	switch s.ObjectCount {
 	case "":
-		s.ObjectCount = 0
+		r.ObjectCount = 0
 	default:
-		s.ObjectCount, err = strconv.ParseInt(p.ObjectCount, 10, 64)
+		r.ObjectCount, err = strconv.ParseInt(s.ObjectCount, 10, 64)
 		if err != nil {
 			return err
 		}
 	}
 
-	switch p.ContainerCount {
+	switch s.ContainerCount {
 	case "":
-		s.ContainerCount = 0
+		r.ContainerCount = 0
 	default:
-		s.ContainerCount, err = strconv.ParseInt(p.ContainerCount, 10, 64)
+		r.ContainerCount, err = strconv.ParseInt(s.ContainerCount, 10, 64)
 		if err != nil {
 			return err
 		}
 	}
 
-	if p.Date != "" {
-		s.Date, err = time.Parse(time.RFC1123, p.Date)
+	if s.Date != "" {
+		r.Date, err = time.Parse(time.RFC1123, s.Date)
 	}
 
 	return err
@@ -149,7 +149,7 @@ func (r GetResult) Extract() (*GetHeader, error) {
 	return s, err
 }
 
-// ExtractMetadata is a function that takes a GetResult (of type *http.Response)
+// ExtractMetadata is a function that takes a GetResult (of type *htts.Response)
 // and returns the custom metatdata associated with the account.
 func (r GetResult) ExtractMetadata() (map[string]string, error) {
 	if r.Err != nil {
