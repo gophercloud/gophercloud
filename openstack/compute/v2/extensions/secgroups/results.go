@@ -28,24 +28,24 @@ type SecurityGroup struct {
 	TenantID string `json:"tenant_id"`
 }
 
-func (s *SecurityGroup) UnmarshalJSON(b []byte) error {
+func (r *SecurityGroup) UnmarshalJSON(b []byte) error {
 	type tmp SecurityGroup
-	var p struct {
+	var s struct {
 		tmp
 		ID interface{} `json:"id"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
 
-	*s = SecurityGroup(p.tmp)
+	*r = SecurityGroup(s.tmp)
 
-	switch t := p.ID.(type) {
+	switch t := s.ID.(type) {
 	case float64:
-		s.ID = strconv.FormatFloat(t, 'f', -1, 64)
+		r.ID = strconv.FormatFloat(t, 'f', -1, 64)
 	case string:
-		s.ID = t
+		r.ID = t
 	}
 
 	return err
@@ -78,32 +78,32 @@ type Rule struct {
 	Group Group
 }
 
-func (s *Rule) UnmarshalJSON(b []byte) error {
+func (r *Rule) UnmarshalJSON(b []byte) error {
 	type tmp Rule
-	var p struct {
+	var s struct {
 		tmp
 		ID            interface{} `json:"id"`
 		ParentGroupID interface{} `json:"parent_group_id"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
 
-	*s = Rule(p.tmp)
+	*r = Rule(s.tmp)
 
-	switch t := p.ID.(type) {
+	switch t := s.ID.(type) {
 	case float64:
-		s.ID = strconv.FormatFloat(t, 'f', -1, 64)
+		r.ID = strconv.FormatFloat(t, 'f', -1, 64)
 	case string:
-		s.ID = t
+		r.ID = t
 	}
 
-	switch t := p.ParentGroupID.(type) {
+	switch t := s.ParentGroupID.(type) {
 	case float64:
-		s.ParentGroupID = strconv.FormatFloat(t, 'f', -1, 64)
+		r.ParentGroupID = strconv.FormatFloat(t, 'f', -1, 64)
 	case string:
-		s.ParentGroupID = t
+		r.ParentGroupID = t
 	}
 
 	return err
