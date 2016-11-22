@@ -13,47 +13,42 @@ type SecurityGroup struct {
 	// The unique ID of the group. If Neutron is installed, this ID will be
 	// represented as a string UUID; if Neutron is not installed, it will be a
 	// numeric ID. For the sake of consistency, we always cast it to a string.
-	ID string
+	ID string `json:"-"`
 
 	// The human-readable name of the group, which needs to be unique.
-	Name string
+	Name string `json:"name"`
 
 	// The human-readable description of the group.
-	Description string
+	Description string `json:"description"`
 
 	// The rules which determine how this security group operates.
-	Rules []Rule
+	Rules []Rule `json:"rules"`
 
 	// The ID of the tenant to which this security group belongs.
 	TenantID string `json:"tenant_id"`
 }
 
 func (s *SecurityGroup) UnmarshalJSON(b []byte) error {
-	var secgroup struct {
-		ID          interface{}
-		Name        string
-		Description string
-		Rules       []Rule
-		TenantID    string `json:"tenant_id"`
+	type tmp SecurityGroup
+	var p struct {
+		tmp
+		ID interface{} `json:"id"`
 	}
-	err := json.Unmarshal(b, &secgroup)
+	err := json.Unmarshal(b, &p)
 	if err != nil {
 		return err
 	}
 
-	s.Name = secgroup.Name
-	s.Description = secgroup.Description
-	s.Rules = secgroup.Rules
-	s.TenantID = secgroup.TenantID
+	*s = SecurityGroup(p.tmp)
 
-	switch t := secgroup.ID.(type) {
+	switch t := p.ID.(type) {
 	case float64:
 		s.ID = strconv.FormatFloat(t, 'f', -1, 64)
 	case string:
 		s.ID = t
 	}
 
-	return nil
+	return err
 }
 
 // Rule represents a security group rule, a policy which determines how a
@@ -62,7 +57,7 @@ type Rule struct {
 	// The unique ID. If Neutron is installed, this ID will be
 	// represented as a string UUID; if Neutron is not installed, it will be a
 	// numeric ID. For the sake of consistency, we always cast it to a string.
-	ID string
+	ID string `json:"-"`
 
 	// The lower bound of the port range which this security group should open up
 	FromPort int `json:"from_port"`
@@ -83,42 +78,35 @@ type Rule struct {
 	Group Group
 }
 
-func (r *Rule) UnmarshalJSON(b []byte) error {
-	var rule struct {
-		ID            interface{}
-		FromPort      int         `json:"from_port"`
-		ToPort        int         `json:"to_port"`
-		IPProtocol    string      `json:"ip_protocol"`
-		IPRange       IPRange     `json:"ip_range"`
+func (s *Rule) UnmarshalJSON(b []byte) error {
+	type tmp Rule
+	var p struct {
+		tmp
+		ID            interface{} `json:"id"`
 		ParentGroupID interface{} `json:"parent_group_id"`
-		Group         Group
 	}
-	err := json.Unmarshal(b, &rule)
+	err := json.Unmarshal(b, &p)
 	if err != nil {
 		return err
 	}
 
-	r.FromPort = rule.FromPort
-	r.ToPort = rule.ToPort
-	r.IPProtocol = rule.IPProtocol
-	r.IPRange = rule.IPRange
-	r.Group = rule.Group
+	*s = Rule(p.tmp)
 
-	switch t := rule.ID.(type) {
+	switch t := p.ID.(type) {
 	case float64:
-		r.ID = strconv.FormatFloat(t, 'f', -1, 64)
+		s.ID = strconv.FormatFloat(t, 'f', -1, 64)
 	case string:
-		r.ID = t
+		s.ID = t
 	}
 
-	switch t := rule.ParentGroupID.(type) {
+	switch t := p.ParentGroupID.(type) {
 	case float64:
-		r.ParentGroupID = strconv.FormatFloat(t, 'f', -1, 64)
+		s.ParentGroupID = strconv.FormatFloat(t, 'f', -1, 64)
 	case string:
-		r.ParentGroupID = t
+		s.ParentGroupID = t
 	}
 
-	return nil
+	return err
 }
 
 // IPRange represents the IP range whose traffic will be accepted by the
