@@ -5,6 +5,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/storagepools"
 	"github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
+	"math"
 	"net/http"
 	"testing"
 )
@@ -45,13 +46,13 @@ const StoragePoolsListBodyDetail = `
             "capabilities": {
                 "driver_version": "1.2.0",
                 "filter_function": null,
-                "free_capacity_gb": 151147.33,
+                "free_capacity_gb": "unknown",
                 "goodness_function": null,
                 "multiattach": false,
                 "reserved_percentage": 0,
                 "storage_protocol": "ceph",
                 "timestamp": "2016-11-24T10:33:43.138628",
-                "total_capacity_gb": 1654487.59,
+                "total_capacity_gb": "infinite",
                 "vendor_name": "Open Source",
                 "volume_backend_name": "cinder.volumes.hdd"
             },
@@ -65,23 +66,23 @@ var (
 	StoragePoolFake1 = storagepools.StoragePool{
 		Name: "rbd:cinder.volumes.ssd@cinder.volumes.ssd#cinder.volumes.ssd",
 		Capabilities: storagepools.Capabilities{
-			DriverVersion: "1.2.0",
-			FreeCapacityGB: 64765.87,
-			StorageProtocol: "ceph",
-			TotalCapacityGB: 787947.93,
-			VendorName: "Open Source",
+			DriverVersion:     "1.2.0",
+			FreeCapacityGB:    64765.87,
+			StorageProtocol:   "ceph",
+			TotalCapacityGB:   787947.93,
+			VendorName:        "Open Source",
 			VolumeBackendName: "cinder.volumes.ssd",
 		},
 	}
 
 	StoragePoolFake2 = storagepools.StoragePool{
-                Name: "rbd:cinder.volumes.hdd@cinder.volumes.hdd#cinder.volumes.hdd",
+		Name: "rbd:cinder.volumes.hdd@cinder.volumes.hdd#cinder.volumes.hdd",
 		Capabilities: storagepools.Capabilities{
-			DriverVersion: "1.2.0",
-			FreeCapacityGB: 151147.33,
-			StorageProtocol: "ceph",
-			TotalCapacityGB: 1654487.59,
-			VendorName: "Open Source",
+			DriverVersion:     "1.2.0",
+			FreeCapacityGB:    0.0,
+			StorageProtocol:   "ceph",
+			TotalCapacityGB:   math.Inf(1),
+			VendorName:        "Open Source",
 			VolumeBackendName: "cinder.volumes.hdd",
 		},
 	}

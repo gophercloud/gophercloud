@@ -15,35 +15,35 @@ type ListResult struct {
 // Minimum iset of driver capabilities only
 // https://github.com/openstack/cinder/blob/master/doc/source/devref/drivers.rst#volume-stats
 type Capabilities struct {
-	DriverVersion string `json:"driver_version"`
-	FreeCapacityGB float64 `json:"-"`
-	StorageProtocol string `json:"storage_protocol"`
-	TotalCapacityGB float64 `json:"-"`
-	VendorName string `json:"vendor_name"`
-	VolumeBackendName string `json:"volume_backend_name"`
+	DriverVersion     string  `json:"driver_version"`
+	FreeCapacityGB    float64 `json:"-"`
+	StorageProtocol   string  `json:"storage_protocol"`
+	TotalCapacityGB   float64 `json:"-"`
+	VendorName        string  `json:"vendor_name"`
+	VolumeBackendName string  `json:"volume_backend_name"`
 }
 
 type StoragePool struct {
-	Name string `json:"name"`
+	Name         string `json:"name"`
 	Capabilities `json:"capabilities"`
 }
 
-func (s *StoragePool) UnmarshalJSON(b []byte) error {
+func (r *StoragePool) UnmarshalJSON(b []byte) error {
 	// Unmarshal the generic stuff
 	type tmp StoragePool
-	var p *struct {
+	var s *struct {
 		tmp
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
-	*s = StoragePool(p.tmp)
+	*r = StoragePool(s.tmp)
 
 	// Unmarshal the more complex things
 	var q *struct {
-		Capabilities struct{
-			FreeCapacityGB interface{} `json:"free_capacity_gb"`
+		Capabilities struct {
+			FreeCapacityGB  interface{} `json:"free_capacity_gb"`
 			TotalCapacityGB interface{} `json:"total_capacity_gb"`
 		} `json:"capabilities"`
 	}
@@ -56,16 +56,16 @@ func (s *StoragePool) UnmarshalJSON(b []byte) error {
 	if q.Capabilities.FreeCapacityGB != nil {
 		switch t := q.Capabilities.FreeCapacityGB.(type) {
 		case float64:
-			s.Capabilities.FreeCapacityGB = q.Capabilities.FreeCapacityGB.(float64)
+			r.Capabilities.FreeCapacityGB = q.Capabilities.FreeCapacityGB.(float64)
 		case int:
-			s.Capabilities.FreeCapacityGB = q.Capabilities.FreeCapacityGB.(float64)
+			r.Capabilities.FreeCapacityGB = q.Capabilities.FreeCapacityGB.(float64)
 		case string:
 			keyword := q.Capabilities.FreeCapacityGB.(string)
 			switch keyword {
 			case "unknown":
-				s.Capabilities.FreeCapacityGB = 0.0
+				r.Capabilities.FreeCapacityGB = 0.0
 			case "infinite":
-				s.Capabilities.FreeCapacityGB = math.Inf(1)
+				r.Capabilities.FreeCapacityGB = math.Inf(1)
 			default:
 				return fmt.Errorf("capabilities.free_capacity_gb: unexpected string %v", keyword)
 			}
@@ -78,16 +78,16 @@ func (s *StoragePool) UnmarshalJSON(b []byte) error {
 	if q.Capabilities.TotalCapacityGB != nil {
 		switch t := q.Capabilities.TotalCapacityGB.(type) {
 		case float64:
-			s.Capabilities.TotalCapacityGB = q.Capabilities.TotalCapacityGB.(float64)
+			r.Capabilities.TotalCapacityGB = q.Capabilities.TotalCapacityGB.(float64)
 		case int:
-			s.Capabilities.TotalCapacityGB = q.Capabilities.TotalCapacityGB.(float64)
+			r.Capabilities.TotalCapacityGB = q.Capabilities.TotalCapacityGB.(float64)
 		case string:
-                        keyword := q.Capabilities.FreeCapacityGB.(string)
+			keyword := q.Capabilities.TotalCapacityGB.(string)
 			switch keyword {
 			case "unknown":
-				s.Capabilities.FreeCapacityGB = 0.0
+				r.Capabilities.TotalCapacityGB = 0.0
 			case "infinite":
-				s.Capabilities.FreeCapacityGB = math.Inf(1)
+				r.Capabilities.TotalCapacityGB = math.Inf(1)
 			default:
 				return fmt.Errorf("capabilities.free_capacity_gb: unexpected string %v", keyword)
 			}
