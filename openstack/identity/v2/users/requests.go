@@ -21,7 +21,7 @@ type CommonOpts struct {
 	Name     string `json:"name,omitempty"`
 	Username string `json:"username,omitempty"`
 	// The ID of the tenant to which you want to assign this user.
-	TenantID string `json:"tenant_id,omitempty"`
+	TenantID string `json:"tenantId,omitempty"`
 	// Indicates whether this user is enabled or not.
 	Enabled *bool `json:"enabled,omitempty"`
 	// The email address of this user.

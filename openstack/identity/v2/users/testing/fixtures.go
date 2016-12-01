@@ -51,7 +51,7 @@ func mockCreateUserResponse(t *testing.T) {
 {
     "user": {
 		    "name": "new_user",
-		    "tenant_id": "12345",
+		    "tenantId": "12345",
 				"enabled": false,
 				"email": "new_user@foo.com"
     }
