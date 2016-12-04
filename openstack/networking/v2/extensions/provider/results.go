@@ -6,7 +6,36 @@ import (
 
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
 )
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+func (r commonResult) Extract() (*NetworkExtAttrs, error) {
+	var s struct {
+		NetworkExtAttrs *NetworkExtAttrs `json:"network"`
+	}
+	err := r.ExtractInto(&s)
+	return s.NetworkExtAttrs, err
+}
+
+type CreateResult struct {
+	commonResult
+}
+
+type GetResult struct {
+	commonResult
+}
+
+type UpdateResult struct {
+	commonResult
+}
+
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
 
 // NetworkExtAttrs represents an extended form of a Network with additional fields.
 type NetworkExtAttrs struct {
@@ -49,6 +78,10 @@ type NetworkExtAttrs struct {
 	// instance, if network_type is vlan, then this is a vlan identifier;
 	// otherwise, if network_type is gre, then this will be a gre key.
 	SegmentationID string `json:"provider:segmentation_id"`
+}
+
+type NetworkPage struct {
+	pagination.LinkedPageBase
 }
 
 func (n *NetworkExtAttrs) UnmarshalJSON(b []byte) error {
@@ -112,5 +145,28 @@ func ExtractList(r pagination.Page) ([]NetworkExtAttrs, error) {
 		Networks []NetworkExtAttrs `json:"networks" json:"networks"`
 	}
 	err := (r.(networks.NetworkPage)).ExtractInto(&s)
+	return s.Networks, err
+}
+func (r NetworkPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"networks_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
+}
+
+func (r NetworkPage) IsEmpty() (bool, error) {
+	is, err := ExtractNetworkExtAttrs(r)
+	return len(is) == 0, err
+}
+
+func ExtractNetworkExtAttrs(r pagination.Page) ([]NetworkExtAttrs, error) {
+	var s struct {
+		Networks []NetworkExtAttrs `json:"networks"`
+	}
+	err := (r.(NetworkPage)).ExtractInto(&s)
 	return s.Networks, err
 }
