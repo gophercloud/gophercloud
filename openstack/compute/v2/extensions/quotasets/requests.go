@@ -73,10 +73,7 @@ type UpdateOptsBuilder interface {
 func (opts UpdateOpts) ToComputeQuotaUpdateMap() (map[string]interface{}, error) {
 
 	quotas, err := gophercloud.BuildRequestBody(opts, "quota_set")
-	if err != nil {
-		return nil, err
-	}
-	return quotas, nil
+	return quotas, err
 }
 
 //Convenience method to fill an UpdateOpts-struct from a QuotaSet-struct
@@ -94,4 +91,6 @@ func (opts *UpdateOpts) FillFromQuotaSet(set *QuotaSet) {
 	opts.Instances = &set.Instances
 	opts.ServerGroups = &set.ServerGroups
 	opts.ServerGroupMembers = &set.ServerGroupMembers
+	opts.MetadataItems = & set.MetadataItems
 }
+

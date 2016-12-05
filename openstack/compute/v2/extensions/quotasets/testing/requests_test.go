@@ -7,6 +7,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 	"github.com/gophercloud/gophercloud"
+	"errors"
 )
 
 func TestGet(t *testing.T) {
@@ -43,4 +44,27 @@ func TestDelete(t *testing.T) {
 	HandleDeleteSuccessfully(t)
 	_, err := quotasets.Delete(client.ServiceClient(), FirstTenantID).Extract()
 	th.AssertNoErr(t, err)
+}
+
+type ErrorUpdateOpts quotasets.UpdateOpts;
+
+func (opts ErrorUpdateOpts) ToComputeQuotaUpdateMap() (map[string]interface{}, error) {
+	return nil, errors.New("This is an error")
+}
+
+func TestErrorInToComputeQuotaUpdateMap(t *testing.T){
+	opts := &ErrorUpdateOpts{}
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandlePutSuccessfully(t)
+	_, err := quotasets.Update(client.ServiceClient(), FirstTenantID, opts).Extract()
+	if err == nil{
+		t.Fatal("Error handling failed")
+	}
+}
+
+func TestFillFromQuotaSetTest(t *testing.T){
+	op := &quotasets.UpdateOpts{}
+	op.FillFromQuotaSet(&FirstQuotaSet)
+	th.AssertJSONEquals(t,QuotaToOptsOutput,op)
 }
