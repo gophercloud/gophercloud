@@ -118,14 +118,16 @@ func TestQuotasetUpdateDelete(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	//Find the ID for the test Tenant
-	tenantid := os.Getenv("OS_TENANT_ID")
-	if tenantid == ""{
-		tenantid, err = getTenantIDByName(t, client, os.Getenv("OS_TENANT_NAME"))
-		if err != nil{
-			t.Fatalf("Id for Tenant named '%' not found. Please set OS_TENANT_ID (or when you have access to the admin api OS_TENANT_NAME) appropriately", os.Getenv("OS_TENANT_NAME"))
-		}
+	idclient, err := clients.NewIdentityV2Client()
+	if err != nil{
+		t.Fatalf("Could not create IdentityClient to look up tenant id!")
 	}
+
+	tenantid, err := getTenantIDByName(t, idclient, os.Getenv("OS_TENANT_NAME"))
+	if err != nil{
+		t.Fatalf("Id for Tenant named '%' not found. Please set OS_TENANT_NAME appropriately", os.Getenv("OS_TENANT_NAME"))
+	}
+	
 
 	//save original quotas
 	orig, err := quotasets.Get(client,tenantid).Extract()
