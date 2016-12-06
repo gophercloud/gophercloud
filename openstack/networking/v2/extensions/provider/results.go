@@ -13,6 +13,7 @@ type commonResult struct {
 	gophercloud.Result
 }
 
+// Extract is a function that accepts a result and extracts a provider network resource.
 func (r commonResult) Extract() (*NetworkExtAttrs, error) {
 	var s struct {
 		NetworkExtAttrs *NetworkExtAttrs `json:"network"`
@@ -21,18 +22,22 @@ func (r commonResult) Extract() (*NetworkExtAttrs, error) {
 	return s.NetworkExtAttrs, err
 }
 
+// CreateResult represents the result of a create operation.
 type CreateResult struct {
 	commonResult
 }
 
+// GetResult represents the result of a get operation.
 type GetResult struct {
 	commonResult
 }
 
+// UpdateResult represents the result of an update operation.
 type UpdateResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a delete operation.
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
@@ -147,6 +152,7 @@ func ExtractList(r pagination.Page) ([]NetworkExtAttrs, error) {
 	err := (r.(networks.NetworkPage)).ExtractInto(&s)
 	return s.Networks, err
 }
+
 func (r NetworkPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"networks_links"`
@@ -163,6 +169,9 @@ func (r NetworkPage) IsEmpty() (bool, error) {
 	return len(is) == 0, err
 }
 
+// ExtractNetworkExtAttrs accepts a Page struct, specifically a NetworkPage struct,
+// and extracts the elements into a slice of NetworkExtAttrs structs. In other words,
+// a generic collection is mapped into a relevant slice.
 func ExtractNetworkExtAttrs(r pagination.Page) ([]NetworkExtAttrs, error) {
 	var s struct {
 		Networks []NetworkExtAttrs `json:"networks"`
