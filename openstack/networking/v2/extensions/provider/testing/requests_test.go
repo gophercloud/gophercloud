@@ -359,11 +359,10 @@ func TestIDFromName(t *testing.T) {
 	client := fake.ServiceClient()
 	expectID := "d32019d3-bc6e-4319-9c1d-6722fc136a22"
 
-	id, err := provider.IDFromName(client, "provider-network")
+	id, err := provider.IDFromName(client, "private-network")
 	if err != nil {
 		t.Errorf("Network %s not found.", id)
-		return "", err
 	}
 
-	th.AssertEquals(t, id, expectID)
+	th.AssertEquals(t, expectID, id)
 }
