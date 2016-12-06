@@ -309,3 +309,61 @@ func TestDelete(t *testing.T) {
 	res := networks.Delete(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestIDFromName(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "networks": [
+        {
+            "status": "ACTIVE",
+            "subnets": [
+                "54d6f61d-db07-451c-9ab3-b9609b6b6f0b"
+            ],
+            "name": "private-network",
+            "admin_state_up": true,
+            "tenant_id": "4fd44f30292945e481c7b8a0c8908869",
+            "shared": true,
+            "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+            "provider:segmentation_id": "2",
+            "provider:physical_network": "8bab8453-1bc9-45af-8c70-f83aa9b50453",
+            "provider:network_type": "vlan"
+        },
+        {
+            "status": "ACTIVE",
+            "subnets": [
+                "08eae331-0402-425a-923c-34f7cfe39c1b"
+            ],
+            "name": "private",
+            "admin_state_up": true,
+            "tenant_id": "26a7980765d0414dbc1fc1f88cdb7e6e",
+            "shared": true,
+            "id": "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
+            "provider:physical_network": "8bab8453-1bc9-45af-8c70-f83aa9b50453",
+            "provider:network_type": "stt"
+        }
+    ]
+}
+			`)
+	})
+
+	client := fake.ServiceClient()
+	expectID := "d32019d3-bc6e-4319-9c1d-6722fc136a22"
+
+	id, err := provider.IDFromName(client, "provider-network")
+	if err != nil {
+		t.Errorf("Network %s not found.", id)
+		return "", err
+	}
+
+	th.AssertEquals(t, id, expectID)
+}
