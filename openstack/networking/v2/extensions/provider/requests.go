@@ -119,7 +119,7 @@ func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) 
 		return "", err
 	}
 
-	all, err := ExtractList(pages)
+	all, err := ExtractNetworkExtAttrs(pages)
 	if err != nil {
 		return "", err
 	}
