@@ -166,7 +166,7 @@ func mockGetNumericIDGroupResponse(t *testing.T, groupID int) {
 		"id": %d
 	}
 }
-			`, groupID)
+		`, groupID)
 	})
 }
 
@@ -191,7 +191,7 @@ func mockGetNumericIDGroupRuleResponse(t *testing.T, groupID int) {
     ]
   }
 }
-			`, groupID, groupID, groupID)
+		`, groupID, groupID, groupID)
 	})
 }
 
