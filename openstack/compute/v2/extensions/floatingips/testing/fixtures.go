@@ -58,6 +58,20 @@ const CreateOutput = `
 }
 `
 
+// CreateOutputWithNumericID is a sample response to a Post call
+// with a legacy nova-network-based numeric ID.
+const CreateOutputWithNumericID = `
+{
+    "floating_ip": {
+        "fixed_ip": null,
+        "id": 1,
+        "instance_id": null,
+        "ip": "10.10.10.1",
+        "pool": "nova"
+    }
+}
+`
+
 // FirstFloatingIP is the first result in ListOutput.
 var FirstFloatingIP = floatingips.FloatingIP{
 	ID:   "1",
@@ -122,6 +136,23 @@ func HandleCreateSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, CreateOutput)
+	})
+}
+
+// HandleCreateWithNumericIDSuccessfully configures the test server to respond to a Create request
+// for a new floating ip
+func HandleCreateWithNumericIDSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/os-floating-ips", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `
+{
+	"pool": "nova"
+}
+`)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, CreateOutputWithNumericID)
 	})
 }
 
