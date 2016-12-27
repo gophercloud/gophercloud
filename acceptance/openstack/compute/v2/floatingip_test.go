@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/floatingips"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
@@ -27,7 +28,7 @@ func TestFloatingIPsList(t *testing.T) {
 	}
 
 	for _, floatingIP := range allFloatingIPs {
-		PrintFloatingIP(t, &floatingIP)
+		tools.PrintResource(t, floatingIP)
 	}
 }
 
@@ -43,7 +44,7 @@ func TestFloatingIPsCreate(t *testing.T) {
 	}
 	defer DeleteFloatingIP(t, client, floatingIP)
 
-	PrintFloatingIP(t, floatingIP)
+	tools.PrintResource(t, floatingIP)
 }
 
 func TestFloatingIPsAssociate(t *testing.T) {
@@ -68,7 +69,7 @@ func TestFloatingIPsAssociate(t *testing.T) {
 	}
 	defer DeleteFloatingIP(t, client, floatingIP)
 
-	PrintFloatingIP(t, floatingIP)
+	tools.PrintResource(t, floatingIP)
 
 	err = AssociateFloatingIP(t, client, floatingIP, server)
 	if err != nil {
@@ -83,7 +84,7 @@ func TestFloatingIPsAssociate(t *testing.T) {
 
 	t.Logf("Floating IP %s is associated with Fixed IP %s", floatingIP.IP, newFloatingIP.FixedIP)
 
-	PrintFloatingIP(t, newFloatingIP)
+	tools.PrintResource(t, newFloatingIP)
 }
 
 func TestFloatingIPsFixedIPAssociate(t *testing.T) {
@@ -118,7 +119,7 @@ func TestFloatingIPsFixedIPAssociate(t *testing.T) {
 	}
 	defer DeleteFloatingIP(t, client, floatingIP)
 
-	PrintFloatingIP(t, floatingIP)
+	tools.PrintResource(t, floatingIP)
 
 	var fixedIP string
 	for _, networkAddresses := range newServer.Addresses[choices.NetworkName].([]interface{}) {
@@ -143,5 +144,5 @@ func TestFloatingIPsFixedIPAssociate(t *testing.T) {
 
 	t.Logf("Floating IP %s is associated with Fixed IP %s", floatingIP.IP, newFloatingIP.FixedIP)
 
-	PrintFloatingIP(t, newFloatingIP)
+	tools.PrintResource(t, newFloatingIP)
 }

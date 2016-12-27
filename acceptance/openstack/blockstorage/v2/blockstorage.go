@@ -84,26 +84,3 @@ func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volum
 
 	t.Logf("Deleted volume: %s", volume.ID)
 }
-
-// PrintVolume will print a volume and all of its attributes.
-func PrintVolume(t *testing.T, volume *volumes.Volume) {
-	t.Logf("ID: %s", volume.ID)
-	t.Logf("Status: %s", volume.Status)
-	t.Logf("Size: %d", volume.Size)
-	t.Logf("AvailabilityZone: %s", volume.AvailabilityZone)
-	t.Logf("CreatedAt: %v", volume.CreatedAt)
-	t.Logf("UpdatedAt: %v", volume.CreatedAt)
-	t.Logf("Attachments: %#v", volume.Attachments)
-	t.Logf("Name: %s", volume.Name)
-	t.Logf("Description: %s", volume.Description)
-	t.Logf("VolumeType: %s", volume.VolumeType)
-	t.Logf("SnapshotID: %s", volume.SnapshotID)
-	t.Logf("SourceVolID: %s", volume.SourceVolID)
-	t.Logf("Metadata: %#v", volume.Metadata)
-	t.Logf("UserID: %s", volume.UserID)
-	t.Logf("Bootable: %s", volume.Bootable)
-	t.Logf("Encrypted: %s", volume.Encrypted)
-	t.Logf("ReplicationStatus: %s", volume.ReplicationStatus)
-	t.Logf("ConsistencyGroupID: %s", volume.ConsistencyGroupID)
-	t.Logf("Multiattach: %t", volume.Multiattach)
-}

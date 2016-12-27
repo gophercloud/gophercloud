@@ -48,7 +48,7 @@ func TestVolumeAttachAttachment(t *testing.T) {
 	}
 	defer DeleteVolumeAttachment(t, client, blockClient, server, volumeAttachment)
 
-	PrintVolumeAttachment(t, volumeAttachment)
+	tools.PrintResource(t, volumeAttachment)
 
 }
 

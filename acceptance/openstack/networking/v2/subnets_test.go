@@ -29,7 +29,7 @@ func TestSubnetsList(t *testing.T) {
 	}
 
 	for _, subnet := range allSubnets {
-		PrintSubnet(t, &subnet)
+		tools.PrintResource(t, subnet)
 	}
 }
 
@@ -53,7 +53,7 @@ func TestSubnetCRUD(t *testing.T) {
 	}
 	defer DeleteSubnet(t, client, subnet.ID)
 
-	PrintSubnet(t, subnet)
+	tools.PrintResource(t, subnet)
 
 	// Update Subnet
 	newSubnetName := tools.RandomString("TESTACC-", 8)
@@ -71,7 +71,7 @@ func TestSubnetCRUD(t *testing.T) {
 		t.Fatalf("Unable to get subnet: %v", err)
 	}
 
-	PrintSubnet(t, newSubnet)
+	tools.PrintResource(t, newSubnet)
 }
 
 func TestSubnetsDefaultGateway(t *testing.T) {
@@ -94,7 +94,7 @@ func TestSubnetsDefaultGateway(t *testing.T) {
 	}
 	defer DeleteSubnet(t, client, subnet.ID)
 
-	PrintSubnet(t, subnet)
+	tools.PrintResource(t, subnet)
 
 	if subnet.GatewayIP == "" {
 		t.Fatalf("A default gateway was not created.")
@@ -135,7 +135,7 @@ func TestSubnetsNoGateway(t *testing.T) {
 	}
 	defer DeleteSubnet(t, client, subnet.ID)
 
-	PrintSubnet(t, subnet)
+	tools.PrintResource(t, subnet)
 
 	if subnet.GatewayIP != "" {
 		t.Fatalf("A gateway exists when it shouldn't.")

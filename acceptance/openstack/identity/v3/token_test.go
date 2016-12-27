@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
 )
@@ -32,5 +33,5 @@ func TestGetToken(t *testing.T) {
 		t.Fatalf("Unable to get token: %v", err)
 	}
 
-	PrintToken(t, token)
+	tools.PrintResource(t, token)
 }

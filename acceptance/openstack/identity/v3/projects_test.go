@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
 )
 
@@ -31,7 +32,7 @@ func TestProjectsList(t *testing.T) {
 	}
 
 	for _, project := range allProjects {
-		PrintProject(t, &project)
+		tools.PrintResource(t, project)
 	}
 }
 

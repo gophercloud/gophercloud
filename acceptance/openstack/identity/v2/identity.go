@@ -9,7 +9,6 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/identity/v2/extensions/admin/roles"
 	"github.com/gophercloud/gophercloud/openstack/identity/v2/tenants"
-	"github.com/gophercloud/gophercloud/openstack/identity/v2/tokens"
 	"github.com/gophercloud/gophercloud/openstack/identity/v2/users"
 )
 
@@ -144,73 +143,4 @@ func UpdateUser(t *testing.T, client *gophercloud.ServiceClient, user *users.Use
 	}
 
 	return newUser, nil
-}
-
-// PrintCatalogEntry will print a catalog entry and all of its attributes.
-func PrintCatalogEntry(t *testing.T, catalogEntry *tokens.CatalogEntry) {
-	t.Logf("Name: %s", catalogEntry.Name)
-	t.Logf("Type: %s", catalogEntry.Type)
-
-	t.Log("Endpoints:")
-	for _, endpoint := range catalogEntry.Endpoints {
-		t.Logf("\tTenantID: %s", endpoint.TenantID)
-		t.Logf("\tPublicURL: %s", endpoint.PublicURL)
-		t.Logf("\tInternalURL: %s", endpoint.InternalURL)
-		t.Logf("\tAdminURL: %s", endpoint.AdminURL)
-		t.Logf("\tRegion: %s", endpoint.Region)
-		t.Logf("\tVersionID: %s", endpoint.VersionID)
-		t.Logf("\tVersionInfo: %s", endpoint.VersionInfo)
-		t.Logf("\tVersionList: %s", endpoint.VersionList)
-	}
-}
-
-// PrintRole will print a role and all of its attributes.
-func PrintRole(t *testing.T, role *roles.Role) {
-	t.Logf("ID: %s", role.ID)
-	t.Logf("Name: %v", role.Name)
-	t.Logf("Description: %s", role.Description)
-	t.Logf("ServiceID: %s", role.ServiceID)
-}
-
-// PrintTenant will print a tenant and all of its attributes.
-func PrintTenant(t *testing.T, tenant *tenants.Tenant) {
-	t.Logf("ID: %s", tenant.ID)
-	t.Logf("Name: %s", tenant.Name)
-	t.Logf("Description: %s", tenant.Description)
-	t.Logf("Enabled: %t", tenant.Enabled)
-}
-
-// PrintToken will print a token and all of its attributes.
-func PrintToken(t *testing.T, token *tokens.Token) {
-	t.Logf("ID: %s", token.ID)
-	t.Logf("ExpiresAt: %v", token.ExpiresAt)
-	t.Logf("TenantID: %s", token.Tenant.ID)
-}
-
-// PrintTokenUser will print the user information of a token and all attributes.
-func PrintTokenUser(t *testing.T, user *tokens.User) {
-	t.Logf("ID: %s", user.ID)
-	t.Logf("Name: %s", user.Name)
-	t.Logf("Username: %s", user.UserName)
-
-	t.Log("Roles")
-	for _, role := range user.Roles {
-		t.Logf("\t%s", role)
-	}
-}
-
-// PrintUser will print a user and all of its attributes.
-func PrintUser(t *testing.T, user *users.User) {
-	t.Logf("ID: %s", user.ID)
-	t.Logf("Name: %s", user.Name)
-	t.Logf("Username: %s", user.Username)
-	t.Logf("Enabled: %t", user.Enabled)
-	t.Logf("Email: %s", user.Email)
-	t.Logf("TenantID: %s", user.TenantID)
-}
-
-// PrintUserRole will print the roles that a user has been granted.
-func PrintUserRole(t *testing.T, role *users.Role) {
-	t.Logf("ID: %s", role.ID)
-	t.Logf("Name: %s", role.Name)
 }

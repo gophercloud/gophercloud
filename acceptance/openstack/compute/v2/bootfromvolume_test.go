@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	blockstorage "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v2"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 )
 
@@ -41,7 +42,7 @@ func TestBootFromImage(t *testing.T) {
 	}
 	defer DeleteServer(t, client, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }
 
 func TestBootFromNewVolume(t *testing.T) {
@@ -75,7 +76,7 @@ func TestBootFromNewVolume(t *testing.T) {
 	}
 	defer DeleteServer(t, client, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }
 
 func TestBootFromExistingVolume(t *testing.T) {
@@ -113,7 +114,7 @@ func TestBootFromExistingVolume(t *testing.T) {
 	}
 	defer DeleteServer(t, computeClient, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }
 
 func TestBootFromMultiEphemeralServer(t *testing.T) {
@@ -164,7 +165,7 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 	}
 	defer DeleteServer(t, client, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }
 
 func TestAttachNewVolume(t *testing.T) {
@@ -205,7 +206,7 @@ func TestAttachNewVolume(t *testing.T) {
 	}
 	defer DeleteServer(t, client, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }
 
 func TestAttachExistingVolume(t *testing.T) {
@@ -256,5 +257,5 @@ func TestAttachExistingVolume(t *testing.T) {
 	}
 	defer DeleteServer(t, computeClient, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }

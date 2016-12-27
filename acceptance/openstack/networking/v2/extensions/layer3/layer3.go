@@ -177,42 +177,6 @@ func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingI
 	t.Logf("Deleted floating IP: %s", floatingIPID)
 }
 
-// PrintFloatingIP prints a floating IP and all of its attributes.
-func PrintFloatingIP(t *testing.T, fip *floatingips.FloatingIP) {
-	t.Logf("ID: %s", fip.ID)
-	t.Logf("FloatingNetworkID: %s", fip.FloatingNetworkID)
-	t.Logf("FloatingIP: %s", fip.FloatingIP)
-	t.Logf("PortID: %s", fip.PortID)
-	t.Logf("FixedIP: %s", fip.FixedIP)
-	t.Logf("TenantID: %s", fip.TenantID)
-	t.Logf("Status: %s", fip.Status)
-}
-
-// PrintRouterInterface prints a router interface and all of its attributes.
-func PrintRouterInterface(t *testing.T, routerInterface *routers.InterfaceInfo) {
-	t.Logf("ID: %s", routerInterface.ID)
-	t.Logf("SubnetID: %s", routerInterface.SubnetID)
-	t.Logf("PortID: %s", routerInterface.PortID)
-	t.Logf("TenantID: %s", routerInterface.TenantID)
-}
-
-// PrintRouter prints a router and all of its attributes.
-func PrintRouter(t *testing.T, router *routers.Router) {
-	t.Logf("ID: %s", router.ID)
-	t.Logf("Status: %s", router.Status)
-	t.Logf("GatewayInfo: %s", router.GatewayInfo)
-	t.Logf("AdminStateUp: %t", router.AdminStateUp)
-	t.Logf("Distributed: %t", router.Distributed)
-	t.Logf("Name: %s", router.Name)
-	t.Logf("TenantID: %s", router.TenantID)
-	t.Logf("Routes:")
-
-	for _, route := range router.Routes {
-		t.Logf("\tNextHop: %s", route.NextHop)
-		t.Logf("\tDestinationCIDR: %s", route.DestinationCIDR)
-	}
-}
-
 func WaitForRouterToCreate(client *gophercloud.ServiceClient, routerID string, secs int) error {
 	return gophercloud.WaitFor(secs, func() (bool, error) {
 		r, err := routers.Get(client, routerID).Extract()

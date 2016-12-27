@@ -8,6 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/quotasets"
 	"github.com/gophercloud/gophercloud/openstack/identity/v2/tenants"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -35,7 +36,7 @@ func TestQuotasetGet(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	PrintQuotaSet(t, quotaSet)
+	tools.PrintResource(t, quotaSet)
 }
 
 func getTenantID(t *testing.T, client *gophercloud.ServiceClient) (string, error) {

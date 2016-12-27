@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/listeners"
 )
 
@@ -26,6 +27,6 @@ func TestListenersList(t *testing.T) {
 	}
 
 	for _, listener := range allListeners {
-		PrintListener(t, &listener)
+		tools.PrintResource(t, listener)
 	}
 }

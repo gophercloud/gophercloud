@@ -27,7 +27,7 @@ func TestPortsList(t *testing.T) {
 	}
 
 	for _, port := range allPorts {
-		PrintPort(t, &port)
+		tools.PrintResource(t, port)
 	}
 }
 
@@ -58,7 +58,7 @@ func TestPortsCRUD(t *testing.T) {
 	}
 	defer DeletePort(t, client, port.ID)
 
-	PrintPort(t, port)
+	tools.PrintResource(t, port)
 
 	// Update port
 	newPortName := tools.RandomString("TESTACC-", 8)
@@ -70,5 +70,5 @@ func TestPortsCRUD(t *testing.T) {
 		t.Fatalf("Could not update port: %v", err)
 	}
 
-	PrintPort(t, newPort)
+	tools.PrintResource(t, newPort)
 }

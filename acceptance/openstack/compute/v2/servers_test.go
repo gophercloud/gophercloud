@@ -30,7 +30,7 @@ func TestServersList(t *testing.T) {
 	}
 
 	for _, server := range allServers {
-		PrintServer(t, &server)
+		tools.PrintResource(t, server)
 	}
 }
 
@@ -56,7 +56,7 @@ func TestServersCreateDestroy(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unable to retrieve server: %v", err)
 	}
-	PrintServer(t, newServer)
+	tools.PrintResource(t, newServer)
 
 	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages()
 	if err != nil {

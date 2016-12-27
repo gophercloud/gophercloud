@@ -6,7 +6,6 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/external"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/provider"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/groups"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/rules"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
@@ -136,45 +135,4 @@ func DeleteSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, ru
 	if err != nil {
 		t.Fatalf("Unable to delete security group rule: %v", err)
 	}
-}
-
-// PrintNetworkExtAttrs prints a network and all of its extra attributes.
-func PrintNetworkExtAttrs(t *testing.T, network *provider.NetworkExtAttrs) {
-	t.Logf("ID: %s", network.ID)
-	t.Logf("Name: %s", network.Name)
-	t.Logf("AdminStateUp: %t", network.AdminStateUp)
-	t.Logf("Status: %s", network.Status)
-	t.Logf("Subnets: %s", network.Subnets)
-	t.Logf("TenantID: %s", network.TenantID)
-	t.Logf("Shared: %t", network.Shared)
-	t.Logf("NetworkType: %s", network.NetworkType)
-	t.Logf("PhysicalNetwork: %s", network.PhysicalNetwork)
-	t.Logf("SegmentationID: %d", network.SegmentationID)
-}
-
-// PrintSecurityGroup will print a security group and all of its attributes.
-func PrintSecurityGroup(t *testing.T, secGroup *groups.SecGroup) {
-	t.Logf("ID: %s", secGroup.ID)
-	t.Logf("Name: %s", secGroup.Name)
-	t.Logf("Description: %s", secGroup.Description)
-	t.Logf("TenantID: %s", secGroup.TenantID)
-	t.Logf("Rules:")
-
-	for _, rule := range secGroup.Rules {
-		PrintSecurityGroupRule(t, &rule)
-	}
-}
-
-// PrintSecurityGroupRule will print a security group rule and all of its attributes.
-func PrintSecurityGroupRule(t *testing.T, rule *rules.SecGroupRule) {
-	t.Logf("ID: %s", rule.ID)
-	t.Logf("Direction: %s", rule.Direction)
-	t.Logf("EtherType: %s", rule.EtherType)
-	t.Logf("SecGroupID: %s", rule.SecGroupID)
-	t.Logf("PortRangeMin: %d", rule.PortRangeMin)
-	t.Logf("PortRangeMax: %d", rule.PortRangeMax)
-	t.Logf("Protocol: %s", rule.Protocol)
-	t.Logf("RemoteGroupID: %s", rule.RemoteGroupID)
-	t.Logf("RemoteIPPrefix: %s", rule.RemoteIPPrefix)
-	t.Logf("TenantID: %s", rule.TenantID)
 }

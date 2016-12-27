@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/servergroups"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
@@ -27,7 +28,7 @@ func TestServergroupsList(t *testing.T) {
 	}
 
 	for _, serverGroup := range allServerGroups {
-		PrintServerGroup(t, &serverGroup)
+		tools.PrintResource(t, serverGroup)
 	}
 }
 
@@ -48,7 +49,7 @@ func TestServergroupsCreate(t *testing.T) {
 		t.Fatalf("Unable to get server group: %v", err)
 	}
 
-	PrintServerGroup(t, serverGroup)
+	tools.PrintResource(t, serverGroup)
 }
 
 func TestServergroupsAffinityPolicy(t *testing.T) {

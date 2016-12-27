@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/keypairs"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
@@ -29,7 +30,7 @@ func TestKeypairsList(t *testing.T) {
 	}
 
 	for _, keypair := range allKeys {
-		PrintKeyPair(t, &keypair)
+		tools.PrintResource(t, keypair)
 	}
 }
 
@@ -45,7 +46,7 @@ func TestKeypairsCreate(t *testing.T) {
 	}
 	defer DeleteKeyPair(t, client, keyPair)
 
-	PrintKeyPair(t, keyPair)
+	tools.PrintResource(t, keyPair)
 }
 
 func TestKeypairsImportPublicKey(t *testing.T) {
@@ -65,7 +66,7 @@ func TestKeypairsImportPublicKey(t *testing.T) {
 	}
 	defer DeleteKeyPair(t, client, keyPair)
 
-	PrintKeyPair(t, keyPair)
+	tools.PrintResource(t, keyPair)
 }
 
 func TestKeypairsServerCreateWithKey(t *testing.T) {

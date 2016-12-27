@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/identity/v2/users"
 )
 
@@ -26,7 +27,7 @@ func TestUsersList(t *testing.T) {
 	}
 
 	for _, user := range allUsers {
-		PrintUser(t, &user)
+		tools.PrintResource(t, user)
 	}
 }
 
@@ -47,12 +48,12 @@ func TestUsersCreateUpdateDelete(t *testing.T) {
 	}
 	defer DeleteUser(t, client, user)
 
-	PrintUser(t, user)
+	tools.PrintResource(t, user)
 
 	newUser, err := UpdateUser(t, client, user)
 	if err != nil {
 		t.Fatalf("Unable to update user: %v", err)
 	}
 
-	PrintUser(t, newUser)
+	tools.PrintResource(t, newUser)
 }
