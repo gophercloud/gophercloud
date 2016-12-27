@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	mrand "math/rand"
+	"testing"
 	"time"
 )
 
@@ -65,8 +66,8 @@ func Elide(value string) string {
 	return value
 }
 
-// DumpResource returns a resource as a readable structure
-func DumpResource(resource interface{}) string {
+// PrintResource returns a resource as a readable structure
+func PrintResource(t *testing.T, resource interface{}) {
 	b, _ := json.MarshalIndent(resource, "", "  ")
-	return string(b)
+	t.Logf(string(b))
 }
