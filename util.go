@@ -2,6 +2,7 @@ package gophercloud
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 	"path/filepath"
 	"strings"
@@ -10,26 +11,58 @@ import (
 
 // WaitFor polls a predicate function, once per second, up to a timeout limit.
 // It usually does this to wait for a resource to transition to a certain state.
+// To handle situations when the predicate response might hang indefinitely,
+// the predicate will be retried every "retry" seconds.
 // Resource packages will wrap this in a more convenient function that's
 // specific to a certain resource, but it can also be useful on its own.
-func WaitFor(timeout int, predicate func() (bool, error)) error {
-	start := time.Now().Second()
-	for {
-		// Force a 1s sleep
-		time.Sleep(1 * time.Second)
+func WaitFor(timeout, retry int, predicate func() (bool, error)) error {
+	type WaitForResult struct {
+		Success bool
+		Error   error
+	}
 
+	start := time.Now().Unix()
+
+	for {
 		// If a timeout is set, and that's been exceeded, shut it down
-		if timeout >= 0 && time.Now().Second()-start >= timeout {
+		if timeout >= 0 && time.Now().Unix()-start >= int64(timeout) {
 			return errors.New("A timeout occurred")
 		}
 
-		// Execute the function
-		satisfied, err := predicate()
-		if err != nil {
-			return err
-		}
-		if satisfied {
-			return nil
+		time.Sleep(1 * time.Second)
+
+		var result WaitForResult
+		ch := make(chan WaitForResult, 1)
+		go func() {
+			defer close(ch)
+			satisfied, err := predicate()
+			result.Success = satisfied
+			result.Error = err
+		}()
+
+		if retry > 0 {
+			select {
+			case <-ch:
+				fmt.Println("tick")
+				if result.Error != nil {
+					return result.Error
+				}
+				if result.Success {
+					return nil
+				}
+			case <-time.After(time.Duration(retry) * time.Second):
+				fmt.Println("tock")
+				continue
+			}
+		} else {
+			<-ch
+			fmt.Println("tick")
+			if result.Error != nil {
+				return result.Error
+			}
+			if result.Success {
+				return nil
+			}
 		}
 	}
 }
