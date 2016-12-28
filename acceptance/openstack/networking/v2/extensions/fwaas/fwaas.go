@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/firewalls"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/policies"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/routerinsertion"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/rules"
 )
 
@@ -22,6 +23,39 @@ func CreateFirewall(t *testing.T, client *gophercloud.ServiceClient, policyID st
 	createOpts := firewalls.CreateOpts{
 		Name:     firewallName,
 		PolicyID: policyID,
+	}
+
+	firewall, err := firewalls.Create(client, createOpts).Extract()
+	if err != nil {
+		return firewall, err
+	}
+
+	t.Logf("Waiting for firewall to become active.")
+	if err := WaitForFirewallState(client, firewall.ID, "ACTIVE", 60); err != nil {
+		return firewall, err
+	}
+
+	t.Logf("Successfully created firewall %s", firewallName)
+
+	return firewall, nil
+}
+
+// CreateFirewallOnRouter will create a Firewall with a random name and a
+// specified policy ID attached to a specified Router. An error will be
+// returned if the firewall could not be created.
+func CreateFirewallOnRouter(t *testing.T, client *gophercloud.ServiceClient, policyID string, routerID string) (*firewalls.Firewall, error) {
+	firewallName := tools.RandomString("TESTACC-", 8)
+
+	t.Logf("Attempting to create firewall %s", firewallName)
+
+	firewallCreateOpts := firewalls.CreateOpts{
+		Name:     firewallName,
+		PolicyID: policyID,
+	}
+
+	createOpts := routerinsertion.CreateOptsExt{
+		firewallCreateOpts,
+		[]string{routerID},
 	}
 
 	firewall, err := firewalls.Create(client, createOpts).Extract()
