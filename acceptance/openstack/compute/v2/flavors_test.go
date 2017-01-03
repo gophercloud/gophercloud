@@ -10,6 +10,7 @@ import (
 )
 
 func TestFlavorsList(t *testing.T) {
+        t.Logf("Default flavors (same as IsPublic set to \"True\"):\t")
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -27,7 +28,28 @@ func TestFlavorsList(t *testing.T) {
 
 	for _, flavor := range allFlavors {
 		PrintFlavor(t, &flavor)
+                t.Logf("\t")
 	}
+
+        publicOptions := [3]string{"True", "False", "None"}
+        for _, publicOption := range publicOptions {
+                t.Logf("Flavors for IsPublic option set to \"%s\":\t", publicOption)
+                allPages, err := flavors.ListDetail(client, flavors.ListOpts{IsPublic: publicOption}).AllPages()
+                if err != nil {
+                        t.Fatalf("Unable to retrieve flavors: %v", err)
+                }
+
+                allFlavors, err := flavors.ExtractFlavors(allPages)
+                if err != nil {
+                        t.Fatalf("Unable to extract flavor results: %v", err)
+                }
+
+                for _, flavor := range allFlavors {
+                        PrintFlavor(t, &flavor)
+                        t.Logf("\t")
+                }
+        }
+
 }
 
 func TestFlavorsGet(t *testing.T) {

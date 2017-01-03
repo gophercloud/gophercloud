@@ -29,6 +29,12 @@ type ListOpts struct {
 
 	// Limit instructs List to refrain from sending excessively large lists of flavors.
 	Limit int `q:"limit"`
+
+        // This value is ternary, which is why it's a string.  The following values are allowed:
+        // "True" (the default):    Returns only public flavors and private flavors associated with that project.
+        // "False" (admin only):    Returns only private flavors, across all projects.
+        // "None" (admin only):     Returns all public and private flavors across all projects.
+        IsPublic string `q:"is_public"`
 }
 
 // ToFlavorListQuery formats a ListOpts into a query string.

@@ -38,6 +38,8 @@ type Flavor struct {
 	Swap int `json:"swap"`
 	// VCPUs indicates how many (virtual) CPUs are available for this flavor.
 	VCPUs int `json:"vcpus"`
+	// IsPublic indicates whether the flavor is public. 
+	IsPublic bool `json:"is_public"`
 }
 
 func (f *Flavor) UnmarshalJSON(b []byte) error {
@@ -49,6 +51,7 @@ func (f *Flavor) UnmarshalJSON(b []byte) error {
 		RxTxFactor float64     `json:"rxtx_factor"`
 		Swap       interface{} `json:"swap"`
 		VCPUs      int         `json:"vcpus"`
+		IsPublic   bool        `json:"is_public"`
 	}
 	err := json.Unmarshal(b, &flavor)
 	if err != nil {
@@ -61,6 +64,7 @@ func (f *Flavor) UnmarshalJSON(b []byte) error {
 	f.Name = flavor.Name
 	f.RxTxFactor = flavor.RxTxFactor
 	f.VCPUs = flavor.VCPUs
+	f.IsPublic = flavor.IsPublic
 
 	switch t := flavor.Swap.(type) {
 	case float64:
