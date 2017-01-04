@@ -11,6 +11,33 @@ type ListOptsBuilder interface {
 	ToFlavorListQuery() (string, error)
 }
 
+// FlavorType maps to OpenStack's Flavor.is_public field. Although the is_public field is boolean, the
+// request options are ternary, which is why FlavorType is a string. The following values are
+// allowed:
+//
+//      Project (the default): Returns only public flavors and private flavors associated with that project.
+//      Private (admin only):  Returns only private flavors, across all projects.
+//      All (admin only):      Returns all public and private flavors across all projects.
+//
+// If no IsPublic argument is supplied in the request, OpenStack treats the FlavorType as Project.
+type FlavorType string
+const (
+        Project FlavorType =  "true"
+        Private FlavorType = "false"
+        All FlavorType = "None"
+)
+func (flavorType FlavorType) String() string {
+    switch flavorType {
+    case Project:
+        return "Project"
+    case Private:
+        return "Private"
+    case All:
+        return "All"
+    }
+    return "Unknown"
+}
+
 // ListOpts helps control the results returned by the List() function.
 // For example, a flavor with a minDisk field of 10 will not be returned if you specify MinDisk set to 20.
 // Typically, software will use the last ID of the previous call to List to set the Marker for the current call.
@@ -30,11 +57,9 @@ type ListOpts struct {
 	// Limit instructs List to refrain from sending excessively large lists of flavors.
 	Limit int `q:"limit"`
 
-        // This value is ternary, which is why it's a string.  The following values are allowed:
-        // "True" (the default):    Returns only public flavors and private flavors associated with that project.
-        // "False" (admin only):    Returns only private flavors, across all projects.
-        // "None" (admin only):     Returns all public and private flavors across all projects.
-        IsPublic string `q:"is_public"`
+        // IsPublic, if provided, instructs List which set of flavors to return. If IsPublic not provided,
+        // flavors for the current project are returned.
+        FlavorType FlavorType `q:"is_public"`
 }
 
 // ToFlavorListQuery formats a ListOpts into a query string.
