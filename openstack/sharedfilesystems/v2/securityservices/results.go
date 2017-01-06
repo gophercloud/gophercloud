@@ -50,3 +50,8 @@ func (r commonResult) Extract() (*SecurityService, error) {
 type CreateResult struct {
 	commonResult
 }
+
+// DeleteResult contains the response body and error from a Delete request.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}

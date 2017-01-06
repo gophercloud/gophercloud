@@ -31,6 +31,17 @@ func CreateSecurityService(t *testing.T, client *gophercloud.ServiceClient) (*se
 	return securityService, nil
 }
 
+// DeleteSecurityService will delete a security service. An error will occur if
+// the security service was unable to be deleted.
+func DeleteSecurityService(t *testing.T, client *gophercloud.ServiceClient, securityService *securityservices.SecurityService) {
+	err := securityservices.Delete(client, securityService.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Failed to delete security service %s: %v", securityService.ID, err)
+	}
+
+	t.Logf("Deleted security service: %s", securityService.ID)
+}
+
 // PrintSecurityService will print a security service and all of its attributes.
 func PrintSecurityService(t *testing.T, securityService *securityservices.SecurityService) {
 	t.Logf("ID: %s", securityService.ID)

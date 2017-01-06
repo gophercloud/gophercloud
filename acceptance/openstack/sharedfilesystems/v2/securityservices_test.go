@@ -6,7 +6,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 )
 
-func TestSecurityServiceCreate(t *testing.T) {
+func TestSecurityServiceCreateDelete(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create shared file system client: %v", err)
@@ -17,7 +17,7 @@ func TestSecurityServiceCreate(t *testing.T) {
 		t.Fatalf("Unable to create security service: %v", err)
 	}
 
-	// TODO: Delete the security service once Delete is supported
-
 	PrintSecurityService(t, securityService)
+
+	defer DeleteSecurityService(t, client, securityService)
 }
