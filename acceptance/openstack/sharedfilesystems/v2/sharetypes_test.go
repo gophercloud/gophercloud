@@ -73,6 +73,15 @@ func TestShareTypeExtraSpecs(t *testing.T) {
 		t.Fatalf("Unable to create share type: %v", err)
 	}
 
+	options := sharetypes.SetExtraSpecsOpts{
+		Specs: map[string]interface{}{"my_new_key": "my_value"},
+	}
+
+	_, err = sharetypes.SetExtraSpecs(client, shareType.ID, options).Extract()
+	if err != nil {
+		t.Fatalf("Unable to set extra specs for Share type: %s", shareType.Name)
+	}
+
 	extraSpecs, err := sharetypes.GetExtraSpecs(client, shareType.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve share type: %s", shareType.Name)
@@ -80,6 +89,10 @@ func TestShareTypeExtraSpecs(t *testing.T) {
 
 	if extraSpecs["driver_handles_share_servers"] != "True" {
 		t.Fatal("driver_handles_share_servers was expected to be true")
+	}
+
+	if extraSpecs["my_new_key"] != "my_value" {
+		t.Fatal("my_new_key was expected to be equal to my_value")
 	}
 
 	PrintShareType(t, shareType)

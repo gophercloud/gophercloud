@@ -104,3 +104,36 @@ func GetExtraSpecs(client *gophercloud.ServiceClient, id string) (r GetExtraSpec
 	_, r.Err = client.Get(getExtraSpecsURL(client, id), &r.Body, nil)
 	return
 }
+
+// SetExtraSpecsOptsBuilder allows extensions to add additional parameters to the
+// SetExtraSpecs request.
+type SetExtraSpecsOptsBuilder interface {
+	ToShareTypeSetExtraSpecsMap() (map[string]interface{}, error)
+}
+
+type SetExtraSpecsOpts struct {
+	// A list of all extra specifications to be added to a ShareType
+	Specs map[string]interface{} `json:"extra_specs"`
+}
+
+// ToShareTypeSetExtraSpecsMap assembles a request body based on the contents of a
+// SetExtraSpecsOpts.
+func (opts SetExtraSpecsOpts) ToShareTypeSetExtraSpecsMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// SetExtraSpecs will set new specifications for a ShareType based on the values
+// in SetExtraSpecsOpts. To extract the extra specifications object from the response,
+// call the Extract method on the SetExtraSpecsResult.
+func SetExtraSpecs(client *gophercloud.ServiceClient, id string, opts SetExtraSpecsOptsBuilder) (r SetExtraSpecsResult) {
+	b, err := opts.ToShareTypeSetExtraSpecsMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(setExtraSpecsURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 202},
+	})
+	return
+}
