@@ -13,9 +13,14 @@ func TestAvailabilityZonesList(t *testing.T) {
 		t.Fatalf("Unable to create shared file system client: %v", err)
 	}
 
-	zones, err := availabilityzones.List(client).Extract()
+	allPages, err := availabilityzones.List(client).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to list availability zones: %v", err)
+	}
+
+	zones, err := availabilityzones.ExtractAvailabilityZones(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract availability zones: %v", err)
 	}
 
 	if len(zones) == 0 {
