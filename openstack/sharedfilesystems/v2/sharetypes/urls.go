@@ -25,3 +25,7 @@ func getExtraSpecsURL(c *gophercloud.ServiceClient, id string) string {
 func setExtraSpecsURL(c *gophercloud.ServiceClient, id string) string {
 	return getExtraSpecsURL(c, id)
 }
+
+func unsetExtraSpecsURL(c *gophercloud.ServiceClient, id string, key string) string {
+	return c.ServiceURL("types", id, "extra_specs", key)
+}

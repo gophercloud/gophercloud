@@ -137,3 +137,9 @@ func SetExtraSpecs(client *gophercloud.ServiceClient, id string, opts SetExtraSp
 	})
 	return
 }
+
+// UnsetExtraSpecs will unset an extra specification for an existing ShareType.
+func UnsetExtraSpecs(client *gophercloud.ServiceClient, id string, key string) (r UnsetExtraSpecsResult) {
+	_, r.Err = client.Delete(unsetExtraSpecsURL(client, id, key), nil)
+	return
+}
