@@ -178,6 +178,29 @@ func TestGetNumericID(t *testing.T) {
 	th.AssertDeepEquals(t, expected, group)
 }
 
+func TestGetNumericRuleID(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	numericGroupID := 12345
+
+	mockGetNumericIDGroupRuleResponse(t, numericGroupID)
+
+	group, err := secgroups.Get(client.ServiceClient(), "12345").Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &secgroups.SecurityGroup{
+		ID: "12345",
+		Rules: []secgroups.Rule{
+			{
+				ParentGroupID: "12345",
+				ID:            "12345",
+			},
+		},
+	}
+	th.AssertDeepEquals(t, expected, group)
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
