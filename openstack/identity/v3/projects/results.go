@@ -19,11 +19,6 @@ type CreateResult struct {
 	projectResult
 }
 
-// createErr quickly wraps an error in a CreateResult.
-func createErr(err error) CreateResult {
-	return CreateResult{projectResult{gophercloud.Result{Err: err}}}
-}
-
 // Project is a base unit of ownership.
 type Project struct {
 	// IsDomain indicates whether the project is a domain.
