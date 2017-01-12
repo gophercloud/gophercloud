@@ -14,6 +14,11 @@ type GetResult struct {
 	projectResult
 }
 
+// CreateResult temporarily contains the reponse from the Create call.
+type CreateResult struct {
+	projectResult
+}
+
 // Project is a base unit of ownership.
 type Project struct {
 	// IsDomain indicates whether the project is a domain.
