@@ -28,3 +28,52 @@ func TestListProjects(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, count, 1)
 }
+
+func TestGetProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetProjectSuccessfully(t)
+
+	actual, err := projects.Get(client.ServiceClient(), "1234", nil).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, RedTeam, *actual)
+}
+
+func TestCreateProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateProjectSuccessfully(t)
+
+	createOpts := projects.CreateOpts{
+		Name:        "Red Team",
+		Description: "The team that is red",
+	}
+
+	actual, err := projects.Create(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, RedTeam, *actual)
+}
+
+func TestDeleteProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteProjectSuccessfully(t)
+
+	res := projects.Delete(client.ServiceClient(), "1234")
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestUpdateProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateProjectSuccessfully(t)
+
+	updateOpts := projects.UpdateOpts{
+		Name:        "Bright Red Team",
+		Description: "The team that is bright red",
+	}
+
+	actual, err := projects.Update(client.ServiceClient(), "1234", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, UpdatedRedTeam, *actual)
+}

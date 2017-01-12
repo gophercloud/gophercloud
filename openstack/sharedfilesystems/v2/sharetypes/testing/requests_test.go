@@ -134,3 +134,30 @@ func TestGetExtraSpecs(t *testing.T) {
 	th.AssertEquals(t, st["driver_handles_share_servers"], "True")
 	th.AssertEquals(t, st["my_custom_extra_spec"], "False")
 }
+
+// Verifies that an extra specs can be added to a share type
+func TestSetExtraSpecs(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockSetExtraSpecsResponse(t)
+
+	options := &sharetypes.SetExtraSpecsOpts{
+		Specs: map[string]interface{}{"my_key": "my_value"},
+	}
+
+	es, err := sharetypes.SetExtraSpecs(client.ServiceClient(), "shareTypeID", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, es["my_key"], "my_value")
+}
+
+// Verifies that an extra specification can be unset for a share type
+func TestUnsetExtraSpecs(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUnsetExtraSpecsResponse(t)
+	res := sharetypes.UnsetExtraSpecs(client.ServiceClient(), "shareTypeID", "my_key")
+	th.AssertNoErr(t, res.Err)
+}

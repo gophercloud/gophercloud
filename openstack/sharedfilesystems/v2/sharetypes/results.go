@@ -90,3 +90,13 @@ func (r extraSpecsResult) Extract() (ExtraSpecs, error) {
 type GetExtraSpecsResult struct {
 	extraSpecsResult
 }
+
+// SetExtraSpecsResult contains the response body and error from a Set Extra Specs request.
+type SetExtraSpecsResult struct {
+	extraSpecsResult
+}
+
+// UnsetExtraSpecsResult contains the response body and error from a Unset Extra Specs request.
+type UnsetExtraSpecsResult struct {
+	gophercloud.ErrResult
+}

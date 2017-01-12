@@ -51,3 +51,14 @@ func TestCreateFails(t *testing.T) {
 		t.Fatal("ErrMissingInput was expected to occur")
 	}
 }
+
+// Verifies that security service deletion works
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteResponse(t)
+
+	res := securityservices.Delete(client.ServiceClient(), "securityServiceID")
+	th.AssertNoErr(t, res.Err)
+}

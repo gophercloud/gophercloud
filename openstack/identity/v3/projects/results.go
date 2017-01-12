@@ -1,8 +1,33 @@
 package projects
 
 import (
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
+
+type projectResult struct {
+	gophercloud.Result
+}
+
+// GetResult temporarily contains the response from the Get call.
+type GetResult struct {
+	projectResult
+}
+
+// CreateResult temporarily contains the reponse from the Create call.
+type CreateResult struct {
+	projectResult
+}
+
+// DeleteResult temporarily contains the response from the Delete call.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// UpdateResult temporarily contains the response from the Update call.
+type UpdateResult struct {
+	projectResult
+}
 
 // Project is a base unit of ownership.
 type Project struct {
@@ -61,4 +86,13 @@ func ExtractProjects(r pagination.Page) ([]Project, error) {
 	}
 	err := (r.(ProjectPage)).ExtractInto(&s)
 	return s.Projects, err
+}
+
+// Extract interprets any projectResults as a Project.
+func (r projectResult) Extract() (*Project, error) {
+	var s struct {
+		Project *Project `json:"project"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Project, err
 }
