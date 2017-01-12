@@ -130,3 +130,14 @@ func HandleCreateProjectSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, GetOutput)
 	})
 }
+
+// HandleDeleteProjectSuccessfully creates an HTTP handler at `/projects` on the
+// test handler mux that tests project deletion.
+func HandleDeleteProjectSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/1234", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

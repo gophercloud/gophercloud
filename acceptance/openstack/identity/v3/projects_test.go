@@ -70,6 +70,7 @@ func TestProjectsCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create project: %v", err)
 	}
+	defer DeleteProject(t, client, project.ID)
 
 	PrintProject(t, project)
 }
