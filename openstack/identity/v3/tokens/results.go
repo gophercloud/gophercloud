@@ -87,13 +87,6 @@ type CreateResult struct {
 	commonResult
 }
 
-// createErr quickly creates a CreateResult that reports an error.
-func createErr(err error) CreateResult {
-	return CreateResult{
-		commonResult: commonResult{Result: gophercloud.Result{Err: err}},
-	}
-}
-
 // GetResult is the deferred response from a Get call.
 type GetResult struct {
 	commonResult
