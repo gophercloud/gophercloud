@@ -61,7 +61,7 @@ var ListExpected = []stacks.ListedStack{
 		},
 		StatusReason: "Stack CREATE completed successfully",
 		Name:         "postman_stack",
-		CreationTime: gophercloud.JSONRFC3339NoZ(time.Date(2015, 2, 3, 20, 7, 39, 0, time.UTC)),
+		CreationTime: time.Date(2015, 2, 3, 20, 7, 39, 0, time.UTC),
 		Status:       "CREATE_COMPLETE",
 		ID:           "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
 		Tags:         []string{"rackspace", "atx"},
@@ -76,8 +76,8 @@ var ListExpected = []stacks.ListedStack{
 		},
 		StatusReason: "Stack successfully updated",
 		Name:         "gophercloud-test-stack-2",
-		CreationTime: gophercloud.JSONRFC3339NoZ(time.Date(2014, 12, 11, 17, 39, 16, 0, time.UTC)),
-		UpdatedTime:  gophercloud.JSONRFC3339NoZ(time.Date(2014, 12, 11, 17, 40, 37, 0, time.UTC)),
+		CreationTime: time.Date(2014, 12, 11, 17, 39, 16, 0, time.UTC),
+		UpdatedTime:  time.Date(2014, 12, 11, 17, 40, 37, 0, time.UTC),
 		Status:       "UPDATE_COMPLETE",
 		ID:           "db6977b2-27aa-4775-9ae7-6213212d4ada",
 		Tags:         []string{"sfo", "satx"},
@@ -158,7 +158,7 @@ var GetExpected = &stacks.RetrievedStack{
 	StatusReason: "Stack CREATE completed successfully",
 	Name:         "postman_stack",
 	Outputs:      []map[string]interface{}{},
-	CreationTime: gophercloud.JSONRFC3339NoZ(time.Date(2015, 2, 3, 20, 7, 39, 0, time.UTC)),
+	CreationTime: time.Date(2015, 2, 3, 20, 7, 39, 0, time.UTC),
 	Links: []gophercloud.Link{
 		{
 			Href: "http://166.76.160.117:8004/v1/98606384f58d4ad0b3db7d0d779549ac/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87",
@@ -256,7 +256,7 @@ var PreviewExpected = &stacks.PreviewedStack{
 		"OS::stack_id":   "16ef0584-4458-41eb-87c8-0dc8d5f66c87",
 	},
 	Name:         "postman_stack",
-	CreationTime: gophercloud.JSONRFC3339NoZ(time.Date(2015, 2, 3, 20, 7, 39, 0, time.UTC)),
+	CreationTime: time.Date(2015, 2, 3, 20, 7, 39, 0, time.UTC),
 	Links: []gophercloud.Link{
 		{
 			Href: "http://166.76.160.117:8004/v1/98606384f58d4ad0b3db7d0d779549ac/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87",

@@ -39,10 +39,12 @@ func authTokenPost(t *testing.T, options tokens.AuthOptions, scope *tokens.Scope
 		options.Scope = *scope
 	}
 
-	_, err := tokens.Create(&client, &options).Extract()
-	if err != nil {
-		t.Errorf("Create returned an error: %v", err)
+	expected := &tokens.Token{
+		ExpiresAt: time.Date(2014, 10, 2, 13, 45, 0, 0, time.UTC),
 	}
+	actual, err := tokens.Create(&client, &options).Extract()
+	testhelper.AssertNoErr(t, err)
+	testhelper.CheckDeepEquals(t, expected, actual)
 }
 
 func authTokenPostErr(t *testing.T, options tokens.AuthOptions, scope *tokens.Scope, includeToken bool, expectedErr error) {
@@ -423,7 +425,7 @@ func TestGetRequest(t *testing.T) {
 	}
 
 	expected, _ := time.Parse(time.UnixDate, "Fri Aug 29 13:10:01 UTC 2014")
-	if token.ExpiresAt != gophercloud.JSONRFC3339Milli(expected) {
+	if token.ExpiresAt != expected {
 		t.Errorf("Expected expiration time %s, but was %s", expected.Format(time.UnixDate), time.Time(token.ExpiresAt).Format(time.UnixDate))
 	}
 }
@@ -526,7 +528,5 @@ func TestNoTokenInResponse(t *testing.T) {
 
 	options := tokens.AuthOptions{UserID: "me", Password: "squirrel!"}
 	_, err := tokens.Create(&client, &options).Extract()
-	if err == nil {
-		t.Error("Create succeeded with no token returned")
-	}
+	testhelper.AssertNoErr(t, err)
 }

@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/objects"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
@@ -32,14 +31,14 @@ func HandleDownloadObjectSuccessfully(t *testing.T) {
 var ExpectedListInfo = []objects.Object{
 	{
 		Hash:         "451e372e48e0f6b1114fa0724aa79fa1",
-		LastModified: gophercloud.JSONRFC3339MilliNoZ(time.Date(2016, time.August, 17, 22, 11, 58, 602650000, time.UTC)), //"2016-08-17T22:11:58.602650"
+		LastModified: time.Date(2016, time.August, 17, 22, 11, 58, 602650000, time.UTC), //"2016-08-17T22:11:58.602650"
 		Bytes:        14,
 		Name:         "goodbye",
 		ContentType:  "application/octet-stream",
 	},
 	{
 		Hash:         "451e372e48e0f6b1114fa0724aa79fa1",
-		LastModified: gophercloud.JSONRFC3339MilliNoZ(time.Date(2016, time.August, 17, 22, 11, 58, 602650000, time.UTC)),
+		LastModified: time.Date(2016, time.August, 17, 22, 11, 58, 602650000, time.UTC),
 		Bytes:        14,
 		Name:         "hello",
 		ContentType:  "application/octet-stream",

@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/accounts"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
@@ -24,7 +23,7 @@ func TestUpdateAccount(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 
 	expected := &accounts.UpdateHeader{
-		Date: gophercloud.JSONRFC1123(time.Date(2014, time.January, 17, 16, 9, 56, 0, loc)), // Fri, 17 Jan 2014 16:09:56 GMT
+		Date: time.Date(2014, time.January, 17, 16, 9, 56, 0, loc), // Fri, 17 Jan 2014 16:09:56 GMT
 	}
 	actual, err := res.Extract()
 	th.AssertNoErr(t, err)
@@ -48,7 +47,7 @@ func TestGetAccount(t *testing.T) {
 		ContainerCount: 2,
 		ObjectCount:    5,
 		BytesUsed:      14,
-		Date:           gophercloud.JSONRFC1123(time.Date(2014, time.January, 17, 16, 9, 56, 0, loc)), // Fri, 17 Jan 2014 16:09:56 GMT
+		Date:           time.Date(2014, time.January, 17, 16, 9, 56, 0, loc), // Fri, 17 Jan 2014 16:09:56 GMT
 	}
 	actual, err := res.Extract()
 	th.AssertNoErr(t, err)

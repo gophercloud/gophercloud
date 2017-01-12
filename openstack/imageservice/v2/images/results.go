@@ -66,10 +66,10 @@ type Image struct {
 	Properties map[string]string `json:"properties"`
 
 	// CreatedAt is the date when the image has been created.
-	CreatedAt time.Time `json:"-"`
+	CreatedAt time.Time `json:"created_at"`
 
 	// UpdatedAt is the date when the last change has been made to the image or it's properties.
-	UpdatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"updated_at"`
 
 	// File is the trailing path after the glance endpoint that represent the location
 	// of the image or the path to retrieve it.
@@ -79,36 +79,29 @@ type Image struct {
 	Schema string `json:"schema"`
 }
 
-func (s *Image) UnmarshalJSON(b []byte) error {
+func (r *Image) UnmarshalJSON(b []byte) error {
 	type tmp Image
-	var p *struct {
+	var s struct {
 		tmp
 		SizeBytes interface{} `json:"size"`
-		CreatedAt string      `json:"created_at"`
-		UpdatedAt string      `json:"updated_at"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
-	*s = Image(p.tmp)
+	*r = Image(s.tmp)
 
-	switch t := p.SizeBytes.(type) {
+	switch t := s.SizeBytes.(type) {
 	case nil:
 		return nil
 	case float32:
-		s.SizeBytes = int64(t)
+		r.SizeBytes = int64(t)
 	case float64:
-		s.SizeBytes = int64(t)
+		r.SizeBytes = int64(t)
 	default:
 		return fmt.Errorf("Unknown type for SizeBytes: %v (value: %v)", reflect.TypeOf(t), t)
 	}
 
-	s.CreatedAt, err = time.Parse(time.RFC3339, p.CreatedAt)
-	if err != nil {
-		return err
-	}
-	s.UpdatedAt, err = time.Parse(time.RFC3339, p.UpdatedAt)
 	return err
 }
 

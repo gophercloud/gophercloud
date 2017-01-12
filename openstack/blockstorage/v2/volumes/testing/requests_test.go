@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumetenants"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -35,7 +34,7 @@ func TestListWithExtensions(t *testing.T) {
 				Attachments: []volumes.Attachment{{
 					ServerID:     "83ec2e3b-4321-422b-8706-a84185f52a0a",
 					AttachmentID: "05551600-a936-4d4a-ba42-79a037c1-c91a",
-					AttachedAt:   gophercloud.JSONRFC3339MilliNoZ(time.Date(2016, 8, 6, 14, 48, 20, 0, time.UTC)),
+					AttachedAt:   time.Date(2016, 8, 6, 14, 48, 20, 0, time.UTC),
 					HostName:     "foobar",
 					VolumeID:     "d6cacb1a-8b59-4c88-ad90-d70ebb82bb75",
 					Device:       "/dev/vdc",
@@ -44,7 +43,7 @@ func TestListWithExtensions(t *testing.T) {
 				AvailabilityZone:   "nova",
 				Bootable:           "false",
 				ConsistencyGroupID: "",
-				CreatedAt:          gophercloud.JSONRFC3339MilliNoZ(time.Date(2015, 9, 17, 3, 35, 3, 0, time.UTC)),
+				CreatedAt:          time.Date(2015, 9, 17, 3, 35, 3, 0, time.UTC),
 				Description:        "",
 				Encrypted:          false,
 				Metadata:           map[string]string{"foo": "bar"},
@@ -67,7 +66,7 @@ func TestListWithExtensions(t *testing.T) {
 				AvailabilityZone:   "nova",
 				Bootable:           "false",
 				ConsistencyGroupID: "",
-				CreatedAt:          gophercloud.JSONRFC3339MilliNoZ(time.Date(2015, 9, 17, 3, 32, 29, 0, time.UTC)),
+				CreatedAt:          time.Date(2015, 9, 17, 3, 32, 29, 0, time.UTC),
 				Description:        "",
 				Encrypted:          false,
 				Metadata:           map[string]string{},
@@ -134,7 +133,7 @@ func TestListAll(t *testing.T) {
 			Attachments: []volumes.Attachment{{
 				ServerID:     "83ec2e3b-4321-422b-8706-a84185f52a0a",
 				AttachmentID: "05551600-a936-4d4a-ba42-79a037c1-c91a",
-				AttachedAt:   gophercloud.JSONRFC3339MilliNoZ(time.Date(2016, 8, 6, 14, 48, 20, 0, time.UTC)),
+				AttachedAt:   time.Date(2016, 8, 6, 14, 48, 20, 0, time.UTC),
 				HostName:     "foobar",
 				VolumeID:     "d6cacb1a-8b59-4c88-ad90-d70ebb82bb75",
 				Device:       "/dev/vdc",
@@ -143,7 +142,7 @@ func TestListAll(t *testing.T) {
 			AvailabilityZone:   "nova",
 			Bootable:           "false",
 			ConsistencyGroupID: "",
-			CreatedAt:          gophercloud.JSONRFC3339MilliNoZ(time.Date(2015, 9, 17, 3, 35, 3, 0, time.UTC)),
+			CreatedAt:          time.Date(2015, 9, 17, 3, 35, 3, 0, time.UTC),
 			Description:        "",
 			Encrypted:          false,
 			Metadata:           map[string]string{"foo": "bar"},
@@ -166,7 +165,7 @@ func TestListAll(t *testing.T) {
 			AvailabilityZone:   "nova",
 			Bootable:           "false",
 			ConsistencyGroupID: "",
-			CreatedAt:          gophercloud.JSONRFC3339MilliNoZ(time.Date(2015, 9, 17, 3, 32, 29, 0, time.UTC)),
+			CreatedAt:          time.Date(2015, 9, 17, 3, 32, 29, 0, time.UTC),
 			Description:        "",
 			Encrypted:          false,
 			Metadata:           map[string]string{},
