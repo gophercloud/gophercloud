@@ -132,3 +132,48 @@ func Delete(client *gophercloud.ServiceClient, projectID string) (r DeleteResult
 	_, r.Err = client.Delete(deleteURL(client, projectID), nil)
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to
+// the Update request.
+type UpdateOptsBuilder interface {
+	ToProjectUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts allows you to modify the details included in the Update request.
+type UpdateOpts struct {
+	// DomainID is the ID this project will belong under.
+	DomainID string `json:"domain_id,omitempty"`
+
+	// Enabled sets the project status to enabled or disabled.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// IsDomain indicates if this project is a domain.
+	IsDomain *bool `json:"is_domain,omitempty"`
+
+	// Name is the name of the project.
+	Name string `json:"name,omitempty"`
+
+	// ParentID specifies the parent project of this new project.
+	ParentID string `json:"parent_id,omitempty"`
+
+	// Description is the description of the project.
+	Description string `json:"description,omitempty"`
+}
+
+// ToUpdateCreateMap formats a UpdateOpts into an update request.
+func (opts UpdateOpts) ToProjectUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "project")
+}
+
+// Update modifies the attributes of a project.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToProjectUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

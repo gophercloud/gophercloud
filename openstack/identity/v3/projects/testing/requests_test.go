@@ -62,3 +62,18 @@ func TestDeleteProject(t *testing.T) {
 	res := projects.Delete(client.ServiceClient(), "1234")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestUpdateProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateProjectSuccessfully(t)
+
+	updateOpts := projects.UpdateOpts{
+		Name:        "Bright Red Team",
+		Description: "The team that is bright red",
+	}
+
+	actual, err := projects.Update(client.ServiceClient(), "1234", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, UpdatedRedTeam, *actual)
+}
