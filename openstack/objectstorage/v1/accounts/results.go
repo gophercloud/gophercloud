@@ -24,7 +24,7 @@ type UpdateHeader struct {
 
 func (r *UpdateHeader) UnmarshalJSON(b []byte) error {
 	type tmp UpdateHeader
-	var s *struct {
+	var s struct {
 		tmp
 		ContentLength string                  `json:"Content-Length"`
 		Date          gophercloud.JSONRFC1123 `json:"Date"`
@@ -74,7 +74,7 @@ type GetHeader struct {
 
 func (r *GetHeader) UnmarshalJSON(b []byte) error {
 	type tmp GetHeader
-	var s *struct {
+	var s struct {
 		tmp
 		BytesUsed      string `json:"X-Account-Bytes-Used"`
 		ContentLength  string `json:"Content-Length"`

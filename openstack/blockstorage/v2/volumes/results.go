@@ -22,7 +22,7 @@ func (r *Attachment) UnmarshalJSON(b []byte) error {
 	type tmp Attachment
 	var s struct {
 		tmp
-		AttachedAt *gophercloud.JSONRFC3339MilliNoZ `json:"attached_at"`
+		AttachedAt gophercloud.JSONRFC3339MilliNoZ `json:"attached_at"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -30,7 +30,7 @@ func (r *Attachment) UnmarshalJSON(b []byte) error {
 	}
 	*r = Attachment(s.tmp)
 
-	r.AttachedAt = time.Time(*s.AttachedAt)
+	r.AttachedAt = time.Time(s.AttachedAt)
 
 	return err
 }

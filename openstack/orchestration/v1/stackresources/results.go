@@ -26,7 +26,7 @@ type Resource struct {
 
 func (r *Resource) UnmarshalJSON(b []byte) error {
 	type tmp Resource
-	var s *struct {
+	var s struct {
 		tmp
 		CreationTime gophercloud.JSONRFC3339NoZ `json:"creation_time"`
 		UpdatedTime  gophercloud.JSONRFC3339NoZ `json:"updated_time"`

@@ -170,7 +170,7 @@ type Server struct {
 
 func (r *Server) UnmarshalJSON(b []byte) error {
 	type tmp Server
-	var s *struct {
+	var s struct {
 		tmp
 		Image interface{} `json:"image"`
 	}

@@ -448,7 +448,7 @@ type CopyHeader struct {
 
 func (r *CopyHeader) UnmarshalJSON(b []byte) error {
 	type tmp CopyHeader
-	var s *struct {
+	var s struct {
 		tmp
 		ContentLength          string                  `json:"Content-Length"`
 		CopiedFromLastModified gophercloud.JSONRFC1123 `json:"X-Copied-From-Last-Modified"`

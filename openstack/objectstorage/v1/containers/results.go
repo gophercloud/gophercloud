@@ -103,7 +103,7 @@ type GetHeader struct {
 
 func (r *GetHeader) UnmarshalJSON(b []byte) error {
 	type tmp GetHeader
-	var s *struct {
+	var s struct {
 		tmp
 		BytesUsed     string                  `json:"X-Container-Bytes-Used"`
 		ContentLength string                  `json:"Content-Length"`
@@ -196,7 +196,7 @@ type CreateHeader struct {
 
 func (r *CreateHeader) UnmarshalJSON(b []byte) error {
 	type tmp CreateHeader
-	var s *struct {
+	var s struct {
 		tmp
 		ContentLength string                  `json:"Content-Length"`
 		Date          gophercloud.JSONRFC1123 `json:"Date"`
@@ -248,7 +248,7 @@ type UpdateHeader struct {
 
 func (r *UpdateHeader) UnmarshalJSON(b []byte) error {
 	type tmp UpdateHeader
-	var s *struct {
+	var s struct {
 		tmp
 		ContentLength string                  `json:"Content-Length"`
 		Date          gophercloud.JSONRFC1123 `json:"Date"`
@@ -300,7 +300,7 @@ type DeleteHeader struct {
 
 func (r *DeleteHeader) UnmarshalJSON(b []byte) error {
 	type tmp DeleteHeader
-	var s *struct {
+	var s struct {
 		tmp
 		ContentLength string                  `json:"Content-Length"`
 		Date          gophercloud.JSONRFC1123 `json:"Date"`

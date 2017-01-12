@@ -79,25 +79,25 @@ type Image struct {
 	Schema string `json:"schema"`
 }
 
-func (s *Image) UnmarshalJSON(b []byte) error {
+func (r *Image) UnmarshalJSON(b []byte) error {
 	type tmp Image
-	var p struct {
+	var s struct {
 		tmp
 		SizeBytes interface{} `json:"size"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
-	*s = Image(p.tmp)
+	*r = Image(s.tmp)
 
-	switch t := p.SizeBytes.(type) {
+	switch t := s.SizeBytes.(type) {
 	case nil:
 		return nil
 	case float32:
-		s.SizeBytes = int64(t)
+		r.SizeBytes = int64(t)
 	case float64:
-		s.SizeBytes = int64(t)
+		r.SizeBytes = int64(t)
 	default:
 		return fmt.Errorf("Unknown type for SizeBytes: %v (value: %v)", reflect.TypeOf(t), t)
 	}
