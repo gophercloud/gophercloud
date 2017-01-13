@@ -57,31 +57,23 @@ type Instance struct {
 	Datastore datastores.DatastorePartial
 }
 
-func (s *Instance) UnmarshalJSON(b []byte) error {
+func (r *Instance) UnmarshalJSON(b []byte) error {
 	type tmp Instance
-	var p *struct {
+	var s struct {
 		tmp
-		Created string `json:"created"`
-		Updated string `json:"updated"`
+		Created gophercloud.JSONRFC3339NoZ `json:"created"`
+		Updated gophercloud.JSONRFC3339NoZ `json:"updated"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
-	*s = Instance(p.tmp)
+	*r = Instance(s.tmp)
 
-	if p.Created != "" {
-		s.Created, err = time.Parse(gophercloud.RFC3339NoZ, p.Created)
-		if err != nil {
-			return err
-		}
-	}
+	r.Created = time.Time(s.Created)
+	r.Updated = time.Time(s.Updated)
 
-	if p.Updated != "" {
-		s.Updated, err = time.Parse(gophercloud.RFC3339NoZ, p.Updated)
-	}
-
-	return err
+	return nil
 }
 
 type commonResult struct {
