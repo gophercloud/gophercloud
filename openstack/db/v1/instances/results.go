@@ -101,26 +101,21 @@ func (r *Instance) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (s *Fault) UnmarshalJSON(b []byte) error {
+func (r *Fault) UnmarshalJSON(b []byte) error {
 	type tmp Fault
-	var p *struct {
+	var s struct {
 		tmp
-		Created string `json:"created"`
+		Created gophercloud.JSONRFC3339NoZ `json:"created"`
 	}
-	err := json.Unmarshal(b, &p)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
-	*s = Fault(p.tmp)
+	*r = Fault(s.tmp)
 
-	if p.Created != "" {
-		s.Created, err = time.Parse(gophercloud.RFC3339NoZ, p.Created)
-		if err != nil {
-			return err
-		}
-	}
+	r.Created = time.Time(s.Created)
 
-	return err
+	return nil
 }
 
 type commonResult struct {
