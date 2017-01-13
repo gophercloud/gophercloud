@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	timestamp  = "2015-11-12T14:22:42Z"
-	timeVal, _ = time.Parse(time.RFC3339, timestamp)
+	timestamp = "2015-11-12T14:22:42"
+	timeVal   = gophercloud.JSONRFC3339NoZ(time.Date(2015, 11, 12, 14, 22, 42, 0, time.UTC))
 )
 
 var instance = `

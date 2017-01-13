@@ -1,8 +1,6 @@
 package instances
 
 import (
-	"time"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/datastores"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/flavors"
@@ -21,10 +19,10 @@ type Volume struct {
 // Instance represents a remote MySQL instance.
 type Instance struct {
 	// Indicates the datetime that the instance was created
-	Created time.Time `json:"created"`
+	Created gophercloud.JSONRFC3339NoZ `json:"created"`
 
 	// Indicates the most recent datetime that the instance was updated.
-	Updated time.Time `json:"updated"`
+	Updated gophercloud.JSONRFC3339NoZ `json:"updated"`
 
 	// Indicates the hardware flavor the instance uses.
 	Flavor flavors.Flavor
