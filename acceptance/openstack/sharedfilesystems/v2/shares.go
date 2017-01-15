@@ -33,7 +33,7 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share
 		return share, err
 	}
 
-	err = shares.WaitForStatus(client, share.ID, "available", 60)
+	err = waitForStatus(client, share.ID, "available", 60)
 	if err != nil {
 		return share, err
 	}
@@ -60,4 +60,19 @@ func PrintShare(t *testing.T, share *shares.Share) {
 	}
 
 	t.Logf("Share %s", string(asJSON))
+}
+
+func waitForStatus(c *gophercloud.ServiceClient, id, status string, secs int) error {
+	return gophercloud.WaitFor(secs, func() (bool, error) {
+		current, err := shares.Get(c, id).Extract()
+		if err != nil {
+			return false, err
+		}
+
+		if current.Status == status {
+			return true, nil
+		}
+
+		return false, nil
+	})
 }
