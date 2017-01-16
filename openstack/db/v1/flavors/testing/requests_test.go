@@ -26,7 +26,7 @@ func TestListFlavors(t *testing.T) {
 
 		expected := []flavors.Flavor{
 			{
-				ID:   1,
+				ID:   "1",
 				Name: "m1.tiny",
 				RAM:  512,
 				Links: []gophercloud.Link{
@@ -35,7 +35,7 @@ func TestListFlavors(t *testing.T) {
 				},
 			},
 			{
-				ID:   2,
+				ID:   "2",
 				Name: "m1.small",
 				RAM:  1024,
 				Links: []gophercloud.Link{
@@ -44,7 +44,7 @@ func TestListFlavors(t *testing.T) {
 				},
 			},
 			{
-				ID:   3,
+				ID:   "3",
 				Name: "m1.medium",
 				RAM:  2048,
 				Links: []gophercloud.Link{
@@ -53,7 +53,7 @@ func TestListFlavors(t *testing.T) {
 				},
 			},
 			{
-				ID:   4,
+				ID:   "4",
 				Name: "m1.large",
 				RAM:  4096,
 				Links: []gophercloud.Link{
@@ -80,7 +80,7 @@ func TestGetFlavor(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := &flavors.Flavor{
-		ID:   1,
+		ID:   "1",
 		Name: "m1.tiny",
 		RAM:  512,
 		Links: []gophercloud.Link{

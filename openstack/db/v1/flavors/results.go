@@ -1,6 +1,7 @@
 package flavors
 
 import (
+	"encoding/json"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -22,7 +23,7 @@ func (r GetResult) Extract() (*Flavor, error) {
 // Flavor records represent (virtual) hardware configurations for server resources in a region.
 type Flavor struct {
 	// The flavor's unique identifier.
-	ID int `json:"id"`
+	ID json.Number `json:"id"`
 
 	// The RAM capacity for the flavor.
 	RAM int `json:"ram"`
