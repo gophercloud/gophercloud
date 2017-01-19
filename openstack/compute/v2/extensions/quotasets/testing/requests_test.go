@@ -63,8 +63,3 @@ func TestErrorInToComputeQuotaUpdateMap(t *testing.T){
 	}
 }
 
-func TestFillFromQuotaSetTest(t *testing.T){
-	op := &quotasets.UpdateOpts{}
-	op.FillFromQuotaSet(&FirstQuotaSet)
-	th.AssertJSONEquals(t,QuotaToOptsOutput,op)
-}

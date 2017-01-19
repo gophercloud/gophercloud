@@ -149,7 +149,7 @@ func TestQuotasetUpdateDelete(t *testing.T) {
 
 
 	restore := quotasets.UpdateOpts{}
-	restore.FillFromQuotaSet(orig)
+	FillUpdateOptsFromQuotaSet(*orig,&restore)
 
 	//restore original quotas
 	res, err = quotasets.Update(client,tenantid,restore).Extract()
@@ -158,4 +158,28 @@ func TestQuotasetUpdateDelete(t *testing.T) {
 	orig.ID = ""
 	th.AssertEquals(t,*orig,*res)
 
+}
+
+// Makes sure that the FillUpdateOptsFromQuotaSet() helper function works properly
+func TestFillFromQuotaSetHelperFunction(t *testing.T){
+	op := &quotasets.UpdateOpts{}
+	expected := `
+	{
+	"fixed_ips": 10,
+	"floating_ips": 10,
+	"injected_file_content_bytes": 10240,
+	"injected_file_path_bytes": 255,
+	"injected_files": 5,
+	"key_pairs": 10,
+	"metadata_items": 128,
+	"ram": 20000,
+	"security_group_rules": 20,
+	"security_groups": 10,
+	"cores": 10,
+	"instances": 4,
+	"server_groups": 2,
+	"server_group_members": 3
+	}`
+	FillUpdateOptsFromQuotaSet(UpdatedQuotas,op)
+	th.AssertJSONEquals(t,expected,op)
 }

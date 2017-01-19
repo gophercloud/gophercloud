@@ -29,26 +29,6 @@ const GetOutput = `
    }
 }
 `
-
-const QuotaToOptsOutput = `
-{
-	"fixed_ips": 0,
-	"floating_ips": 0,
-	"injected_file_content_bytes": 10240,
-	"injected_file_path_bytes": 255,
-	"injected_files": 5,
-	"key_pairs": 10,
-	"metadata_items": 128,
-	"ram": 200000,
-	"security_group_rules": 20,
-	"security_groups": 10,
-	"cores": 200,
-	"instances": 25,
-	"server_groups": 2,
-	"server_group_members": 3
-}
-`
-
 const FirstTenantID = "555544443333222211110000ffffeeee"
 
 // FirstQuotaSet is the first result in ListOutput.

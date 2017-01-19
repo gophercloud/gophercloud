@@ -710,6 +710,24 @@ func WaitForComputeStatus(client *gophercloud.ServiceClient, server *servers.Ser
 	})
 }
 
+//Convenience method to fill an QuotaSet-UpdateOpts-struct from a QuotaSet-struct
+func  FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet,dest *quotasets.UpdateOpts) {
+	dest.FixedIps = &src.FixedIps
+	dest.FloatingIps = &src.FloatingIps
+	dest.InjectedFileContentBytes = &src.InjectedFileContentBytes
+	dest.InjectedFilePathBytes = &src.InjectedFilePathBytes
+	dest.InjectedFiles = &src.InjectedFiles
+	dest.KeyPairs = &src.KeyPairs
+	dest.Ram = &src.Ram
+	dest.SecurityGroupRules = &src.SecurityGroupRules
+	dest.SecurityGroups = &src.SecurityGroups
+	dest.Cores = &src.Cores
+	dest.Instances = &src.Instances
+	dest.ServerGroups = &src.ServerGroups
+	dest.ServerGroupMembers = &src.ServerGroupMembers
+	dest.MetadataItems = &src.MetadataItems
+}
+
 // PrintServer will print an instance and all of its attributes.
 func PrintServer(t *testing.T, server *servers.Server) {
 	t.Logf("ID: %s", server.ID)
