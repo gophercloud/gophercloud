@@ -7,7 +7,6 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/datastores"
-	"github.com/gophercloud/gophercloud/openstack/db/v1/flavors"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/instances"
 	"github.com/gophercloud/gophercloud/testhelper/fixture"
 )
@@ -25,7 +24,7 @@ var instance = `
     "version": "5.6"
   },
   "flavor": {
-    "id": 1,
+    "id": "1",
     "links": [
       {
         "href": "https://my-openstack.com/v1.0/1234/flavors/1",
@@ -112,8 +111,8 @@ var (
 var expectedInstance = instances.Instance{
 	Created: timeVal,
 	Updated: timeVal,
-	Flavor: flavors.Flavor{
-		ID: 1,
+	Flavor: instances.Flavor{
+		ID: "1",
 		Links: []gophercloud.Link{
 			{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "self"},
 			{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "bookmark"},

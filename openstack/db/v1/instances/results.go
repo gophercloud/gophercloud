@@ -6,7 +6,6 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/datastores"
-	"github.com/gophercloud/gophercloud/openstack/db/v1/flavors"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/users"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -19,6 +18,14 @@ type Volume struct {
 	Used float64
 }
 
+// Flavor represents (virtual) hardware configurations for server resources in a region.
+type Flavor struct {
+	// The flavor's unique identifier.
+	ID string
+	// Links to access the flavor.
+	Links []gophercloud.Link
+}
+
 // Instance represents a remote MySQL instance.
 type Instance struct {
 	// Indicates the datetime that the instance was created
@@ -28,7 +35,7 @@ type Instance struct {
 	Updated time.Time `json:"-"`
 
 	// Indicates the hardware flavor the instance uses.
-	Flavor flavors.Flavor
+	Flavor Flavor
 
 	// A DNS-resolvable hostname associated with the database instance (rather
 	// than an IPv4 address). Since the hostname always resolves to the correct
