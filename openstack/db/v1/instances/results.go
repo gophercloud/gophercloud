@@ -45,6 +45,10 @@ type Instance struct {
 	// to the correct database instance.
 	Hostname string
 
+	// The IP addresses associated with the database instance
+	// Is empty if the instance has a hostname
+	IP []string
+
 	// Indicates the unique identifier for the instance resource.
 	ID string
 
