@@ -20,7 +20,7 @@ type QuotaSet struct {
 	// InjectedFiles is injected files allowed for each project
 	InjectedFiles int `json:"injected_files"`
 	// KeyPairs is number of ssh keypairs
-	KeyPairs int `json:"keypairs"`
+	KeyPairs int `json:"key_pairs"`
 	// MetadataItems is number of metadata items allowed for each instance
 	MetadataItems int `json:"metadata_items"`
 	// Ram is megabytes allowed for each instance
@@ -33,6 +33,10 @@ type QuotaSet struct {
 	Cores int `json:"cores"`
 	// Instances is number of instances allowed for each project
 	Instances int `json:"instances"`
+	// Number of ServerGroups allowed for the project
+	ServerGroups int `json:"server_groups"`
+	// Max number of Members for each ServerGroup
+	ServerGroupMembers int `json:"server_group_members"`
 }
 
 // QuotaSetPage stores a single, only page of QuotaSet results from a List call.
@@ -71,5 +75,17 @@ func (r quotaResult) Extract() (*QuotaSet, error) {
 // GetResult is the response from a Get operation. Call its Extract method to interpret it
 // as a QuotaSet.
 type GetResult struct {
+	quotaResult
+}
+
+// UpdateResult is the response from a Update operation. Call its Extract method to interpret it
+// as a QuotaSet.
+type UpdateResult struct {
+	quotaResult
+}
+
+// DeleteResult is the response from a Delete operation. Call its Extract method to interpret it
+// as a QuotaSet.
+type DeleteResult struct {
 	quotaResult
 }
