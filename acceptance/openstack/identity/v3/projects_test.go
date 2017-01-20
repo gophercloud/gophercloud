@@ -58,7 +58,7 @@ func TestProjectsGet(t *testing.T) {
 		t.Fatalf("Unable to get project: %v", err)
 	}
 
-	PrintProject(t, p)
+	tools.PrintResource(t, p)
 }
 
 func TestProjectsCRUD(t *testing.T) {
@@ -73,7 +73,7 @@ func TestProjectsCRUD(t *testing.T) {
 	}
 	defer DeleteProject(t, client, project.ID)
 
-	PrintProject(t, project)
+	tools.PrintResource(t, project)
 
 	var iFalse bool = false
 	updateOpts := projects.UpdateOpts{
@@ -85,7 +85,7 @@ func TestProjectsCRUD(t *testing.T) {
 		t.Fatalf("Unable to update project: %v", err)
 	}
 
-	PrintProject(t, updatedProject)
+	tools.PrintResource(t, updatedProject)
 }
 
 func TestProjectsDomain(t *testing.T) {
@@ -105,7 +105,7 @@ func TestProjectsDomain(t *testing.T) {
 	}
 	defer DeleteProject(t, client, projectDomain.ID)
 
-	PrintProject(t, projectDomain)
+	tools.PrintResource(t, projectDomain)
 
 	createOpts = projects.CreateOpts{
 		DomainID: projectDomain.ID,
@@ -117,7 +117,7 @@ func TestProjectsDomain(t *testing.T) {
 	}
 	defer DeleteProject(t, client, project.ID)
 
-	PrintProject(t, project)
+	tools.PrintResource(t, project)
 
 	var iFalse = false
 	updateOpts := projects.UpdateOpts{
@@ -142,7 +142,7 @@ func TestProjectsNested(t *testing.T) {
 	}
 	defer DeleteProject(t, client, projectMain.ID)
 
-	PrintProject(t, projectMain)
+	tools.PrintResource(t, projectMain)
 
 	createOpts := projects.CreateOpts{
 		ParentID: projectMain.ID,
@@ -154,5 +154,5 @@ func TestProjectsNested(t *testing.T) {
 	}
 	defer DeleteProject(t, client, project.ID)
 
-	PrintProject(t, project)
+	tools.PrintResource(t, project)
 }
