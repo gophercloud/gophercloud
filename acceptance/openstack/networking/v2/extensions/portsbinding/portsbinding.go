@@ -36,22 +36,3 @@ func CreatePortsbinding(t *testing.T, client *gophercloud.ServiceClient, network
 
 	return port, nil
 }
-
-// PrintPortsbinging will print a port and all of its attributes.
-func PrintPortsbinding(t *testing.T, port *portsbinding.Port) {
-	t.Logf("ID: %s", port.ID)
-	t.Logf("NetworkID: %s", port.NetworkID)
-	t.Logf("Name: %s", port.Name)
-	t.Logf("AdminStateUp: %t", port.AdminStateUp)
-	t.Logf("Status: %s", port.Status)
-	t.Logf("MACAddress: %s", port.MACAddress)
-	t.Logf("FixedIPs: %s", port.FixedIPs)
-	t.Logf("TenantID: %s", port.TenantID)
-	t.Logf("DeviceOwner: %s", port.DeviceOwner)
-	t.Logf("SecurityGroups: %s", port.SecurityGroups)
-	t.Logf("DeviceID: %s", port.DeviceID)
-	t.Logf("DeviceOwner: %s", port.DeviceOwner)
-	t.Logf("AllowedAddressPairs: %s", port.AllowedAddressPairs)
-	t.Logf("HostID: %s", port.HostID)
-	t.Logf("VNICType: %s", port.VNICType)
-}

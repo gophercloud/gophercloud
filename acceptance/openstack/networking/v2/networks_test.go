@@ -27,7 +27,7 @@ func TestNetworksList(t *testing.T) {
 	}
 
 	for _, network := range allNetworks {
-		PrintNetwork(t, &network)
+		tools.PrintResource(t, network)
 	}
 }
 
@@ -44,7 +44,7 @@ func TestNetworksCRUD(t *testing.T) {
 	}
 	defer DeleteNetwork(t, client, network.ID)
 
-	PrintNetwork(t, network)
+	tools.PrintResource(t, network)
 
 	newName := tools.RandomString("TESTACC-", 8)
 	updateOpts := &networks.UpdateOpts{
@@ -61,5 +61,5 @@ func TestNetworksCRUD(t *testing.T) {
 		t.Fatalf("Unable to retrieve network: %v", err)
 	}
 
-	PrintNetwork(t, newNetwork)
+	tools.PrintResource(t, newNetwork)
 }

@@ -42,9 +42,14 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 
 // CreateVolumeFromImage will create a volume from with a random name and size of
 // 1GB. An error will be returned if the volume was unable to be created.
-func CreateVolumeFromImage(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices) (*volumes.Volume, error) {
+func CreateVolumeFromImage(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Volume, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires volume creation in short mode.")
+	}
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	volumeName := tools.RandomString("ACPTTEST", 16)
@@ -78,27 +83,4 @@ func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volum
 	}
 
 	t.Logf("Deleted volume: %s", volume.ID)
-}
-
-// PrintVolume will print a volume and all of its attributes.
-func PrintVolume(t *testing.T, volume *volumes.Volume) {
-	t.Logf("ID: %s", volume.ID)
-	t.Logf("Status: %s", volume.Status)
-	t.Logf("Size: %d", volume.Size)
-	t.Logf("AvailabilityZone: %s", volume.AvailabilityZone)
-	t.Logf("CreatedAt: %v", volume.CreatedAt)
-	t.Logf("UpdatedAt: %v", volume.CreatedAt)
-	t.Logf("Attachments: %#v", volume.Attachments)
-	t.Logf("Name: %s", volume.Name)
-	t.Logf("Description: %s", volume.Description)
-	t.Logf("VolumeType: %s", volume.VolumeType)
-	t.Logf("SnapshotID: %s", volume.SnapshotID)
-	t.Logf("SourceVolID: %s", volume.SourceVolID)
-	t.Logf("Metadata: %#v", volume.Metadata)
-	t.Logf("UserID: %s", volume.UserID)
-	t.Logf("Bootable: %s", volume.Bootable)
-	t.Logf("Encrypted: %s", volume.Encrypted)
-	t.Logf("ReplicationStatus: %s", volume.ReplicationStatus)
-	t.Logf("ConsistencyGroupID: %s", volume.ConsistencyGroupID)
-	t.Logf("Multiattach: %t", volume.Multiattach)
 }

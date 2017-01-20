@@ -29,7 +29,7 @@ func TestLayer3RouterList(t *testing.T) {
 	}
 
 	for _, router := range allRouters {
-		PrintRouter(t, &router)
+		tools.PrintResource(t, router)
 	}
 }
 
@@ -45,7 +45,7 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 	}
 	defer DeleteRouter(t, client, router.ID)
 
-	PrintRouter(t, router)
+	tools.PrintResource(t, router)
 
 	newName := tools.RandomString("TESTACC-", 8)
 	updateOpts := routers.UpdateOpts{
@@ -62,7 +62,7 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 		t.Fatalf("Unable to get router: %v", err)
 	}
 
-	PrintRouter(t, newRouter)
+	tools.PrintResource(t, newRouter)
 }
 
 func TestLayer3RouterInterface(t *testing.T) {
@@ -82,7 +82,7 @@ func TestLayer3RouterInterface(t *testing.T) {
 	}
 	defer networking.DeleteSubnet(t, client, subnet.ID)
 
-	networking.PrintSubnet(t, subnet)
+	tools.PrintResource(t, subnet)
 
 	router, err := CreateExternalRouter(t, client)
 	if err != nil {
@@ -99,8 +99,8 @@ func TestLayer3RouterInterface(t *testing.T) {
 		t.Fatalf("Failed to add interface to router: %v", err)
 	}
 
-	PrintRouter(t, router)
-	PrintRouterInterface(t, iface)
+	tools.PrintResource(t, router)
+	tools.PrintResource(t, iface)
 
 	riOpts := routers.RemoveInterfaceOpts{
 		SubnetID: subnet.ID,

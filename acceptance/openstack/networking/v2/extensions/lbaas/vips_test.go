@@ -27,7 +27,7 @@ func TestVIPsList(t *testing.T) {
 	}
 
 	for _, vip := range allVIPs {
-		PrintVIP(t, &vip)
+		tools.PrintResource(t, vip)
 	}
 }
 
@@ -61,7 +61,7 @@ func TestVIPsCRUD(t *testing.T) {
 	}
 	defer DeleteVIP(t, client, vip.ID)
 
-	PrintVIP(t, vip)
+	tools.PrintResource(t, vip)
 
 	connLimit := 100
 	updateOpts := vips.UpdateOpts{
@@ -78,5 +78,5 @@ func TestVIPsCRUD(t *testing.T) {
 		t.Fatalf("Unable to get vip: %v")
 	}
 
-	PrintVIP(t, newVIP)
+	tools.PrintResource(t, newVIP)
 }

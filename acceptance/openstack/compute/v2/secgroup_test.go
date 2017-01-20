@@ -27,7 +27,7 @@ func TestSecGroupsList(t *testing.T) {
 	}
 
 	for _, secgroup := range allSecGroups {
-		PrintSecurityGroup(t, &secgroup)
+		tools.PrintResource(t, secgroup)
 	}
 }
 
@@ -85,6 +85,14 @@ func TestSecGroupsRuleCreate(t *testing.T) {
 		t.Fatalf("Unable to create rule: %v", err)
 	}
 	defer DeleteSecurityGroupRule(t, client, rule)
+
+	newSecurityGroup, err := secgroups.Get(client, securityGroup.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to obtain security group: %v", err)
+	}
+
+	tools.PrintResource(t, newSecurityGroup)
+
 }
 
 func TestSecGroupsAddGroupToServer(t *testing.T) {
@@ -97,12 +105,7 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	server, err := CreateServer(t, client, choices)
+	server, err := CreateServer(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}

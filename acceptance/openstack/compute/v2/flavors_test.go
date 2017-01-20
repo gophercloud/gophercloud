@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
 )
 
@@ -26,7 +27,7 @@ func TestFlavorsList(t *testing.T) {
 	}
 
 	for _, flavor := range allFlavors {
-		PrintFlavor(t, &flavor)
+		tools.PrintResource(t, flavor)
 	}
 }
 
@@ -36,7 +37,7 @@ func TestFlavorsGet(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err :=clients.AcceptanceTestChoicesFromEnv()
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,5 +47,5 @@ func TestFlavorsGet(t *testing.T) {
 		t.Fatalf("Unable to get flavor information: %v", err)
 	}
 
-	PrintFlavor(t, flavor)
+	tools.PrintResource(t, flavor)
 }

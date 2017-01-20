@@ -23,8 +23,6 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/servergroups"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/tenantnetworks"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/volumeattach"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 
 	"golang.org/x/crypto/ssh"
@@ -67,12 +65,17 @@ func AssociateFloatingIPWithFixedIP(t *testing.T, client *gophercloud.ServiceCli
 // CreateBootableVolumeServer works like CreateServer but is configured with
 // one or more block devices defined by passing in []bootfromvolume.BlockDevice.
 // An error will be returned if a server was unable to be created.
-func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice, choices *clients.AcceptanceTestChoices) (*servers.Server, error) {
+func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -135,7 +138,12 @@ func CreateDefaultRule(t *testing.T, client *gophercloud.ServiceClient) (dsr.Def
 
 // CreateFloatingIP will allocate a floating IP.
 // An error will be returend if one was unable to be allocated.
-func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices) (*floatingips.FloatingIP, error) {
+func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient) (*floatingips.FloatingIP, error) {
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	createOpts := floatingips.CreateOpts{
 		Pool: choices.FloatingIPPoolName,
 	}
@@ -189,12 +197,17 @@ func CreateKeyPair(t *testing.T, client *gophercloud.ServiceClient) (*keypairs.K
 // These block devices act like block devices when booting from a volume but
 // are actually local ephemeral disks.
 // An error will be returned if a server was unable to be created.
-func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice, choices *clients.AcceptanceTestChoices) (*servers.Server, error) {
+func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -274,12 +287,17 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 // The image will be the value of the OS_IMAGE_ID environment variable.
 // The instance will be launched on the network specified in OS_NETWORK_NAME.
 // An error will be returned if the instance was unable to be created.
-func CreateServer(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices) (*servers.Server, error) {
+func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -325,12 +343,17 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient, choices *clie
 // The image is intentionally missing to trigger an error.
 // The instance will be launched on the network specified in OS_NETWORK_NAME.
 // An error will be returned if the instance was unable to be created.
-func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices) (*servers.Server, error) {
+func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -384,12 +407,17 @@ func CreateServerGroup(t *testing.T, client *gophercloud.ServiceClient, policy s
 
 // CreateServerInServerGroup works like CreateServer but places the instance in
 // a specified Server Group.
-func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices, serverGroup *servergroups.ServerGroup) (*servers.Server, error) {
+func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, serverGroup *servergroups.ServerGroup) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -427,12 +455,17 @@ func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, 
 
 // CreateServerWithPublicKey works the same as CreateServer, but additionally
 // configures the server with a specified Key Pair name.
-func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, choices *clients.AcceptanceTestChoices, keyPairName string) (*servers.Server, error) {
+func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, keyPairName string) (*servers.Server, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires server creation in short mode.")
 	}
 
 	var server *servers.Server
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
@@ -673,7 +706,12 @@ func ImportPublicKey(t *testing.T, client *gophercloud.ServiceClient, publicKey 
 // ResizeServer performs a resize action on an instance. An error will be
 // returned if the instance failed to resize.
 // The new flavor that the instance will be resized to is specified in OS_FLAVOR_ID_RESIZE.
-func ResizeServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server, choices *clients.AcceptanceTestChoices) error {
+func ResizeServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	opts := &servers.ResizeOpts{
 		FlavorRef: choices.FlavorIDResize,
 	}
@@ -711,7 +749,7 @@ func WaitForComputeStatus(client *gophercloud.ServiceClient, server *servers.Ser
 }
 
 //Convenience method to fill an QuotaSet-UpdateOpts-struct from a QuotaSet-struct
-func  FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet,dest *quotasets.UpdateOpts) {
+func FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet, dest *quotasets.UpdateOpts) {
 	dest.FixedIps = &src.FixedIps
 	dest.FloatingIps = &src.FloatingIps
 	dest.InjectedFileContentBytes = &src.InjectedFileContentBytes
@@ -726,172 +764,4 @@ func  FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet,dest *quotasets.UpdateOp
 	dest.ServerGroups = &src.ServerGroups
 	dest.ServerGroupMembers = &src.ServerGroupMembers
 	dest.MetadataItems = &src.MetadataItems
-}
-
-// PrintServer will print an instance and all of its attributes.
-func PrintServer(t *testing.T, server *servers.Server) {
-	t.Logf("ID: %s", server.ID)
-	t.Logf("TenantID: %s", server.TenantID)
-	t.Logf("UserID: %s", server.UserID)
-	t.Logf("Name: %s", server.Name)
-	t.Logf("Updated: %s", server.Updated)
-	t.Logf("Created: %s", server.Created)
-	t.Logf("HostID: %s", server.HostID)
-	t.Logf("Status: %s", server.Status)
-	t.Logf("Progress: %d", server.Progress)
-	t.Logf("AccessIPv4: %s", server.AccessIPv4)
-	t.Logf("AccessIPv6: %s", server.AccessIPv6)
-	t.Logf("Image: %s", server.Image)
-	t.Logf("Flavor: %s", server.Flavor)
-	t.Logf("Addresses: %#v", server.Addresses)
-	t.Logf("Metadata: %#v", server.Metadata)
-	t.Logf("Links: %#v", server.Links)
-	t.Logf("KeyName: %s", server.KeyName)
-	t.Logf("AdminPass: %s", server.AdminPass)
-	t.Logf("SecurityGroups: %#v", server.SecurityGroups)
-}
-
-// PrintDefaultRule will print a default security group rule and all of its attributes.
-func PrintDefaultRule(t *testing.T, defaultRule *dsr.DefaultRule) {
-	t.Logf("\tID: %s", defaultRule.ID)
-	t.Logf("\tFrom Port: %d", defaultRule.FromPort)
-	t.Logf("\tTo Port: %d", defaultRule.ToPort)
-	t.Logf("\tIP Protocol: %s", defaultRule.IPProtocol)
-	t.Logf("\tIP Range: %s", defaultRule.IPRange.CIDR)
-	t.Logf("\tParent Group ID: %s", defaultRule.ParentGroupID)
-	t.Logf("\tGroup Tenant ID: %s", defaultRule.Group.TenantID)
-	t.Logf("\tGroup Name: %s", defaultRule.Group.Name)
-}
-
-// PrintFlavor will print a flavor and all of its attributes.
-func PrintFlavor(t *testing.T, flavor *flavors.Flavor) {
-	t.Logf("ID: %s", flavor.ID)
-	t.Logf("Name: %s", flavor.Name)
-	t.Logf("RAM: %d", flavor.RAM)
-	t.Logf("Disk: %d", flavor.Disk)
-	t.Logf("Swap: %d", flavor.Swap)
-	t.Logf("RxTxFactor: %f", flavor.RxTxFactor)
-}
-
-// PrintFloatingIP will print a floating IP and all of its attributes.
-func PrintFloatingIP(t *testing.T, floatingIP *floatingips.FloatingIP) {
-	t.Logf("ID: %s", floatingIP.ID)
-	t.Logf("Fixed IP: %s", floatingIP.FixedIP)
-	t.Logf("Instance ID: %s", floatingIP.InstanceID)
-	t.Logf("IP: %s", floatingIP.IP)
-	t.Logf("Pool: %s", floatingIP.Pool)
-}
-
-// PrintImage will print an image and all of its attributes.
-func PrintImage(t *testing.T, image images.Image) {
-	t.Logf("ID: %s", image.ID)
-	t.Logf("Name: %s", image.Name)
-	t.Logf("MinDisk: %d", image.MinDisk)
-	t.Logf("MinRAM: %d", image.MinRAM)
-	t.Logf("Status: %s", image.Status)
-	t.Logf("Progress: %d", image.Progress)
-	t.Logf("Metadata: %#v", image.Metadata)
-	t.Logf("Created: %s", image.Created)
-	t.Logf("Updated: %s", image.Updated)
-}
-
-// PrintKeyPair will print keypair and all of its attributes.
-func PrintKeyPair(t *testing.T, keypair *keypairs.KeyPair) {
-	t.Logf("Name: %s", keypair.Name)
-	t.Logf("Fingerprint: %s", keypair.Fingerprint)
-	t.Logf("Public Key: %s", keypair.PublicKey)
-	t.Logf("Private Key: %s", keypair.PrivateKey)
-	t.Logf("UserID: %s", keypair.UserID)
-}
-
-//  PrintNetwork will print an os-networks based network and all of its attributes.
-func PrintNetwork(t *testing.T, network *networks.Network) {
-	t.Logf("Bridge: %s", network.Bridge)
-	t.Logf("BridgeInterface: %s", network.BridgeInterface)
-	t.Logf("Broadcast: %s", network.Broadcast)
-	t.Logf("CIDR: %s", network.CIDR)
-	t.Logf("CIDRv6: %s", network.CIDRv6)
-	t.Logf("CreatedAt: %v", network.CreatedAt)
-	t.Logf("Deleted: %t", network.Deleted)
-	t.Logf("DeletedAt: %v", network.DeletedAt)
-	t.Logf("DHCPStart: %s", network.DHCPStart)
-	t.Logf("DNS1: %s", network.DNS1)
-	t.Logf("DNS2: %s", network.DNS2)
-	t.Logf("Gateway: %s", network.Gateway)
-	t.Logf("Gatewayv6: %s", network.Gatewayv6)
-	t.Logf("Host: %s", network.Host)
-	t.Logf("ID: %s", network.ID)
-	t.Logf("Injected: %t", network.Injected)
-	t.Logf("Label: %s", network.Label)
-	t.Logf("MultiHost: %t", network.MultiHost)
-	t.Logf("Netmask: %s", network.Netmask)
-	t.Logf("Netmaskv6: %s", network.Netmaskv6)
-	t.Logf("Priority: %d", network.Priority)
-	t.Logf("ProjectID: %s", network.ProjectID)
-	t.Logf("RXTXBase: %d", network.RXTXBase)
-	t.Logf("UpdatedAt: %v", network.UpdatedAt)
-	t.Logf("VLAN: %d", network.VLAN)
-	t.Logf("VPNPrivateAddress: %s", network.VPNPrivateAddress)
-	t.Logf("VPNPublicAddress: %s", network.VPNPublicAddress)
-	t.Logf("VPNPublicPort: %d", network.VPNPublicPort)
-}
-
-//  PrintQuotaSet will print a quota set and all of its attributes.
-func PrintQuotaSet(t *testing.T, quotaSet *quotasets.QuotaSet) {
-	t.Logf("instances: %d\n", quotaSet.Instances)
-	t.Logf("cores: %d\n", quotaSet.Cores)
-	t.Logf("ram: %d\n", quotaSet.Ram)
-	t.Logf("key_pairs: %d\n", quotaSet.KeyPairs)
-	t.Logf("metadata_items: %d\n", quotaSet.MetadataItems)
-	t.Logf("security_groups: %d\n", quotaSet.SecurityGroups)
-	t.Logf("security_group_rules: %d\n", quotaSet.SecurityGroupRules)
-	t.Logf("fixed_ips: %d\n", quotaSet.FixedIps)
-	t.Logf("floating_ips: %d\n", quotaSet.FloatingIps)
-	t.Logf("injected_file_content_bytes: %d\n", quotaSet.InjectedFileContentBytes)
-	t.Logf("injected_file_path_bytes: %d\n", quotaSet.InjectedFilePathBytes)
-	t.Logf("injected_files: %d\n", quotaSet.InjectedFiles)
-}
-
-//  PrintSecurityGroup will print a security group and all of its attributes and rules.
-func PrintSecurityGroup(t *testing.T, securityGroup *secgroups.SecurityGroup) {
-	t.Logf("ID: %s", securityGroup.ID)
-	t.Logf("Name: %s", securityGroup.Name)
-	t.Logf("Description: %s", securityGroup.Description)
-	t.Logf("Tenant ID: %s", securityGroup.TenantID)
-	t.Logf("Rules:")
-
-	for _, rule := range securityGroup.Rules {
-		t.Logf("\tID: %s", rule.ID)
-		t.Logf("\tFrom Port: %d", rule.FromPort)
-		t.Logf("\tTo Port: %d", rule.ToPort)
-		t.Logf("\tIP Protocol: %s", rule.IPProtocol)
-		t.Logf("\tIP Range: %s", rule.IPRange.CIDR)
-		t.Logf("\tParent Group ID: %s", rule.ParentGroupID)
-		t.Logf("\tGroup Tenant ID: %s", rule.Group.TenantID)
-		t.Logf("\tGroup Name: %s", rule.Group.Name)
-	}
-}
-
-// PrintServerGroup will print a server group and all of its attributes.
-func PrintServerGroup(t *testing.T, serverGroup *servergroups.ServerGroup) {
-	t.Logf("ID: %s", serverGroup.ID)
-	t.Logf("Name: %s", serverGroup.Name)
-	t.Logf("Policies: %#v", serverGroup.Policies)
-	t.Logf("Members: %#v", serverGroup.Members)
-	t.Logf("Metadata: %#v", serverGroup.Metadata)
-}
-
-// PrintTenantNetwork will print an os-tenant-networks based network and all of its attributes.
-func PrintTenantNetwork(t *testing.T, network *tenantnetworks.Network) {
-	t.Logf("ID: %s", network.ID)
-	t.Logf("Name: %s", network.Name)
-	t.Logf("CIDR: %s", network.CIDR)
-}
-
-// PrintVolumeAttachment will print a volume attachment and all of its attributes.
-func PrintVolumeAttachment(t *testing.T, volumeAttachment *volumeattach.VolumeAttachment) {
-	t.Logf("ID: %s", volumeAttachment.ID)
-	t.Logf("Device: %s", volumeAttachment.Device)
-	t.Logf("VolumeID: %s", volumeAttachment.VolumeID)
-	t.Logf("ServerID: %s", volumeAttachment.ServerID)
 }

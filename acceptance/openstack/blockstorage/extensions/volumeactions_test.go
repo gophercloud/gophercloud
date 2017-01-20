@@ -23,12 +23,7 @@ func TestVolumeActionsAttachCreateDestroy(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	server, err := compute.CreateServer(t, computeClient, choices)
+	server, err := compute.CreateServer(t, computeClient)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}

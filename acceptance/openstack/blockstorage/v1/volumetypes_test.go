@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v1/volumetypes"
 )
 
@@ -26,7 +27,7 @@ func TestVolumeTypesList(t *testing.T) {
 	}
 
 	for _, volumeType := range allVolumeTypes {
-		PrintVolumeType(t, &volumeType)
+		tools.PrintResource(t, volumeType)
 	}
 }
 
@@ -42,5 +43,5 @@ func TestVolumeTypesCreateDestroy(t *testing.T) {
 	}
 	defer DeleteVolumeType(t, client, volumeType)
 
-	PrintVolumeType(t, volumeType)
+	tools.PrintResource(t, volumeType)
 }
