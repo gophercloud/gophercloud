@@ -1,7 +1,6 @@
 package gophercloud
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"path/filepath"
@@ -10,12 +9,12 @@ import (
 )
 
 // WaitFor polls a predicate function, once per second, up to a timeout limit.
-// It usually does this to wait for a resource to transition to a certain state.
-// To handle situations when the predicate response might hang indefinitely,
-// the predicate will be retried every "retry" seconds.
+// This is useful to wait for a resource to transition to a certain state.
+// To handle situations when the predicate might hang indefinitely, the
+// predicate will be prematurely cancelled after the timeout.
 // Resource packages will wrap this in a more convenient function that's
 // specific to a certain resource, but it can also be useful on its own.
-func WaitFor(timeout, retry int, predicate func() (bool, error)) error {
+func WaitFor(timeout int, predicate func() (bool, error)) error {
 	type WaitForResult struct {
 		Success bool
 		Error   error
@@ -24,15 +23,15 @@ func WaitFor(timeout, retry int, predicate func() (bool, error)) error {
 	start := time.Now().Unix()
 
 	for {
-		// If a timeout is set, and that's been exceeded, shut it down
+		// If a timeout is set, and that's been exceeded, shut it down.
 		if timeout >= 0 && time.Now().Unix()-start >= int64(timeout) {
-			return errors.New("A timeout occurred")
+			return fmt.Errorf("A timeout occurred")
 		}
 
 		time.Sleep(1 * time.Second)
 
 		var result WaitForResult
-		ch := make(chan WaitForResult, 1)
+		ch := make(chan bool, 1)
 		go func() {
 			defer close(ch)
 			satisfied, err := predicate()
@@ -40,29 +39,17 @@ func WaitFor(timeout, retry int, predicate func() (bool, error)) error {
 			result.Error = err
 		}()
 
-		if retry > 0 {
-			select {
-			case <-ch:
-				fmt.Println("tick")
-				if result.Error != nil {
-					return result.Error
-				}
-				if result.Success {
-					return nil
-				}
-			case <-time.After(time.Duration(retry) * time.Second):
-				fmt.Println("tock")
-				continue
-			}
-		} else {
-			<-ch
-			fmt.Println("tick")
+		select {
+		case <-ch:
 			if result.Error != nil {
 				return result.Error
 			}
 			if result.Success {
 				return nil
 			}
+		// If the predicate has not finished by the timeout, cancel it.
+		case <-time.After(time.Duration(timeout) * time.Second):
+			return fmt.Errorf("A timeout occurred")
 		}
 	}
 }
