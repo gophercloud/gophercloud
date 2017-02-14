@@ -342,6 +342,168 @@ func TestUpdate(t *testing.T) {
 	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
 }
 
+func TestRemoveSecurityGroups(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "port": {
+      "name": "new_port_name",
+      "fixed_ips": [
+        {
+          "subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",
+          "ip_address": "10.0.0.3"
+        }
+      ],
+      "allowed_address_pairs": [
+        {
+          "ip_address": "10.0.0.4",
+          "mac_address": "fa:16:3e:c9:cb:f0"
+        }
+      ],
+      "security_groups": []
+    }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "port": {
+        "status": "DOWN",
+        "name": "new_port_name",
+        "admin_state_up": true,
+        "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+        "tenant_id": "d6700c0c9ffa4f1cb322cd4a1f3906fa",
+        "device_owner": "",
+        "mac_address": "fa:16:3e:c9:cb:f0",
+        "fixed_ips": [
+            {
+                "subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",
+                "ip_address": "10.0.0.3"
+            }
+        ],
+        "allowed_address_pairs": [
+          {
+            "ip_address": "10.0.0.4",
+            "mac_address": "fa:16:3e:c9:cb:f0"
+          }
+        ],
+        "id": "65c0ee9f-d634-4522-8954-51021b570b0d",
+        "device_id": ""
+    }
+}
+		`)
+	})
+
+	options := ports.UpdateOpts{
+		Name: "new_port_name",
+		FixedIPs: []ports.IP{
+			{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
+		},
+		SecurityGroups: []string{},
+		AllowedAddressPairs: []ports.AddressPair{
+			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
+		},
+	}
+
+	s, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, s.Name, "new_port_name")
+	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
+	})
+	th.AssertDeepEquals(t, s.AllowedAddressPairs, []ports.AddressPair{
+		{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
+	})
+	th.AssertDeepEquals(t, s.SecurityGroups, []string(nil))
+}
+
+func TestRemoveAllowedAddressPairs(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "port": {
+      "name": "new_port_name",
+      "fixed_ips": [
+        {
+          "subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",
+          "ip_address": "10.0.0.3"
+        }
+      ],
+      "allowed_address_pairs": [],
+      "security_groups": [
+        "f0ac4394-7e4a-4409-9701-ba8be283dbc3"
+      ]
+    }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "port": {
+        "status": "DOWN",
+        "name": "new_port_name",
+        "admin_state_up": true,
+        "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+        "tenant_id": "d6700c0c9ffa4f1cb322cd4a1f3906fa",
+        "device_owner": "",
+        "mac_address": "fa:16:3e:c9:cb:f0",
+        "fixed_ips": [
+            {
+                "subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",
+                "ip_address": "10.0.0.3"
+            }
+        ],
+        "id": "65c0ee9f-d634-4522-8954-51021b570b0d",
+        "security_groups": [
+            "f0ac4394-7e4a-4409-9701-ba8be283dbc3"
+        ],
+        "device_id": ""
+    }
+}
+		`)
+	})
+
+	options := ports.UpdateOpts{
+		Name: "new_port_name",
+		FixedIPs: []ports.IP{
+			{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
+		},
+		SecurityGroups:      []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"},
+		AllowedAddressPairs: []ports.AddressPair{},
+	}
+
+	s, err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, s.Name, "new_port_name")
+	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
+	})
+	th.AssertDeepEquals(t, s.AllowedAddressPairs, []ports.AddressPair(nil))
+	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
