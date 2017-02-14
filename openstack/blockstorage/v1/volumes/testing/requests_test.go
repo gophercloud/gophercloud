@@ -119,7 +119,10 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t)
 
-	options := &volumes.CreateOpts{Size: 75}
+	options := &volumes.CreateOpts{
+		Size:             75,
+		AvailabilityZone: "us-east1",
+	}
 	n, err := volumes.Create(client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
