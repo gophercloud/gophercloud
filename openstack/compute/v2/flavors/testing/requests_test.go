@@ -132,3 +132,55 @@ func TestGetFlavor(t *testing.T) {
 		t.Errorf("Expected %#v, but was %#v", expected, actual)
 	}
 }
+
+func TestCreateFlavor(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/flavors", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `
+			{
+				"flavor": {
+					"id": "1",
+					"name": "m1.tiny",
+					"disk": 1,
+					"ram": 512,
+					"vcpus": 1,
+					"rxtx_factor": 1,
+					"swap": ""
+				}
+			}
+		`)
+	})
+
+	disk := 1
+	opts := &flavors.CreateOpts{
+		ID:         "1",
+		Name:       "m1.tiny",
+		Disk:       &disk,
+		RAM:        512,
+		VCPUs:      1,
+		RxTxFactor: 1.0,
+	}
+	actual, err := flavors.Create(fake.ServiceClient(), opts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to create flavor: %v", err)
+	}
+
+	expected := &flavors.Flavor{
+		ID:         "1",
+		Name:       "m1.tiny",
+		Disk:       1,
+		RAM:        512,
+		VCPUs:      1,
+		RxTxFactor: 1,
+		Swap:       0,
+	}
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %#v, but was %#v", expected, actual)
+	}
+}
