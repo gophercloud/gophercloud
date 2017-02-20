@@ -74,6 +74,3 @@ func (opts UpdateOpts) ToComputeQuotaUpdateMap() (map[string]interface{}, error)
 
 	return gophercloud.BuildRequestBody(opts, "quota_set")
 }
-
-
-
