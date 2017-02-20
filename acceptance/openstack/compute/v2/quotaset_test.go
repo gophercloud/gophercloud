@@ -69,7 +69,7 @@ func getTenantIDByName(t *testing.T, client *gophercloud.ServiceClient, name str
 	}
 
 	for _, tenant := range allTenants {
-		if tenant.Name == name{
+		if tenant.Name == name {
 			return tenant.ID, nil
 		}
 	}
@@ -120,49 +120,47 @@ func TestQuotasetUpdateDelete(t *testing.T) {
 	}
 
 	idclient, err := clients.NewIdentityV2Client()
-	if err != nil{
+	if err != nil {
 		t.Fatalf("Could not create IdentityClient to look up tenant id!")
 	}
 
 	tenantid, err := getTenantIDByName(t, idclient, os.Getenv("OS_TENANT_NAME"))
-	if err != nil{
+	if err != nil {
 		t.Fatalf("Id for Tenant named '%' not found. Please set OS_TENANT_NAME appropriately", os.Getenv("OS_TENANT_NAME"))
 	}
-	
 
 	//save original quotas
-	orig, err := quotasets.Get(client,tenantid).Extract()
-	th.AssertNoErr(t,err)
+	orig, err := quotasets.Get(client, tenantid).Extract()
+	th.AssertNoErr(t, err)
 
 	//Test Update
-	res, err := quotasets.Update(client,tenantid,UpdatQuotaOpts).Extract()
-	th.AssertNoErr(t,err)
-	th.AssertEquals(t,UpdatedQuotas,*res)
+	res, err := quotasets.Update(client, tenantid, UpdatQuotaOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, UpdatedQuotas, *res)
 
 	//Test Delete
-	_,  err = quotasets.Delete(client,tenantid).Extract()
-	th.AssertNoErr(t,err)
+	_, err = quotasets.Delete(client, tenantid).Extract()
+	th.AssertNoErr(t, err)
 	//We dont know the default quotas, so just check if the quotas are not the same as before
-	newres, err := quotasets.Get(client,tenantid).Extract()
-	if newres == res{
+	newres, err := quotasets.Get(client, tenantid).Extract()
+	if newres == res {
 		t.Fatalf("Quotas after delete equal quotas before delete!")
 	}
 
-
 	restore := quotasets.UpdateOpts{}
-	FillUpdateOptsFromQuotaSet(*orig,&restore)
+	FillUpdateOptsFromQuotaSet(*orig, &restore)
 
 	//restore original quotas
-	res, err = quotasets.Update(client,tenantid,restore).Extract()
-	th.AssertNoErr(t,err)
+	res, err = quotasets.Update(client, tenantid, restore).Extract()
+	th.AssertNoErr(t, err)
 
 	orig.ID = ""
-	th.AssertEquals(t,*orig,*res)
+	th.AssertEquals(t, *orig, *res)
 
 }
 
 // Makes sure that the FillUpdateOptsFromQuotaSet() helper function works properly
-func TestFillFromQuotaSetHelperFunction(t *testing.T){
+func TestFillFromQuotaSetHelperFunction(t *testing.T) {
 	op := &quotasets.UpdateOpts{}
 	expected := `
 	{
@@ -181,6 +179,6 @@ func TestFillFromQuotaSetHelperFunction(t *testing.T){
 	"server_groups": 2,
 	"server_group_members": 3
 	}`
-	FillUpdateOptsFromQuotaSet(UpdatedQuotas,op)
-	th.AssertJSONEquals(t,expected,op)
+	FillUpdateOptsFromQuotaSet(UpdatedQuotas, op)
+	th.AssertJSONEquals(t, expected, op)
 }

@@ -2,12 +2,12 @@ package testing
 
 import (
 	"fmt"
-	"net/http"
-	"testing"
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/quotasets"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
-	"github.com/gophercloud/gophercloud"
+	"net/http"
+	"testing"
 )
 
 // GetOutput is a sample response to a Get call.
@@ -45,17 +45,15 @@ var FirstQuotaSet = quotasets.QuotaSet{
 	SecurityGroups:           10,
 	Cores:                    200,
 	Instances:                25,
-	ServerGroups: 			  2,
+	ServerGroups:             2,
 	ServerGroupMembers:       3,
 }
-
 
 //The expected update Body. Is also returned by PUT request
 const UpdateOutput = `{"quota_set":{"cores":200,"fixed_ips":0,"floating_ips":0,"injected_file_content_bytes":10240,"injected_file_path_bytes":255,"injected_files":5,"instances":25,"key_pairs":10,"metadata_items":128,"ram":200000,"security_group_rules":20,"security_groups":10,"server_groups":2,"server_group_members":3}}`
 
 //The expected partialupdate Body. Is also returned by PUT request
 const PartialUpdateBody = `{"quota_set":{"cores":200, "force":true}}`
-
 
 //Result of Quota-update
 var UpdatedQuotaSet = quotasets.UpdateOpts{
@@ -71,7 +69,7 @@ var UpdatedQuotaSet = quotasets.UpdateOpts{
 	SecurityGroups:           gophercloud.IntToPointer(10),
 	Cores:                    gophercloud.IntToPointer(200),
 	Instances:                gophercloud.IntToPointer(25),
-	ServerGroups: 			  gophercloud.IntToPointer(2),
+	ServerGroups:             gophercloud.IntToPointer(2),
 	ServerGroupMembers:       gophercloud.IntToPointer(3),
 }
 
@@ -91,7 +89,7 @@ func HandlePutSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t,r,UpdateOutput)
+		th.TestJSONRequest(t, r, UpdateOutput)
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, UpdateOutput)
 	})
@@ -102,7 +100,7 @@ func HandlePartialPutSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t,r,PartialUpdateBody)
+		th.TestJSONRequest(t, r, PartialUpdateBody)
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, UpdateOutput)
 	})
@@ -113,7 +111,7 @@ func HandleDeleteSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestBody(t,r,"")	
+		th.TestBody(t, r, "")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(202)
 	})

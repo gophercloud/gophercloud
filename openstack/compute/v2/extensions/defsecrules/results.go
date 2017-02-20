@@ -1,6 +1,8 @@
 package defsecrules
 
 import (
+	"encoding/json"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/secgroups"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -9,6 +11,16 @@ import (
 // DefaultRule represents a default rule - which is identical to a
 // normal security rule.
 type DefaultRule secgroups.Rule
+
+func (r *DefaultRule) UnmarshalJSON(b []byte) error {
+	var s secgroups.Rule
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = DefaultRule(s)
+	return nil
+}
 
 // DefaultRulePage is a single page of a DefaultRule collection.
 type DefaultRulePage struct {
