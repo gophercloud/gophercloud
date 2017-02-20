@@ -3,7 +3,6 @@
 set -e
 
 n=1
-fail=false
 for testpkg in $(go list ./testing ./.../testing); do
   covpkg="${testpkg/"/testing"/}"
   go test -covermode count -coverprofile "testing_"$n.coverprofile -coverpkg $covpkg $testpkg 2>/dev/null
