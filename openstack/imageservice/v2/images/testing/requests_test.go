@@ -69,6 +69,9 @@ func TestCreateImage(t *testing.T) {
 	actualImage, err := images.Create(fakeclient.ServiceClient(), images.CreateOpts{
 		ID:   id,
 		Name: name,
+		Properties: map[string]string{
+			"architecture": "x86_64",
+		},
 		Tags: []string{"ubuntu", "quantal"},
 	}).Extract()
 
