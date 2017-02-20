@@ -44,6 +44,23 @@ func TestListImage(t *testing.T) {
 	th.AssertEquals(t, 3, count)
 }
 
+func TestAllPagesImage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleImageListSuccessfully(t)
+
+	t.Logf("Test setup %+v\n", th.Server)
+
+	t.Logf("Id\tName\tOwner\tChecksum\tSizeBytes")
+
+	pages, err := images.List(fakeclient.ServiceClient(), nil).AllPages()
+	th.AssertNoErr(t, err)
+	images, err := images.ExtractImages(pages)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 3, len(images))
+}
+
 func TestCreateImage(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
