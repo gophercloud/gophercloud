@@ -151,7 +151,8 @@ func (p Pager) AllPages() (Page, error) {
 		var key string
 		// Iterate over the pages to concatenate the bodies.
 		err = p.EachPage(func(page Page) (bool, error) {
-			for k, v := range pb {
+			b := page.GetBody().(map[string]interface{})
+			for k, v := range b {
 				// If it's a linked page, we don't want the `links`, we want the other one.
 				if !strings.HasSuffix(k, "links") {
 					switch vt := v.(type) {
@@ -161,8 +162,6 @@ func (p Pager) AllPages() (Page, error) {
 					case []interface{}:
 						key = k
 						pagesSlice = append(pagesSlice, vt...)
-					default:
-						continue
 					}
 				}
 			}
@@ -177,7 +176,8 @@ func (p Pager) AllPages() (Page, error) {
 	case []byte:
 		// Iterate over the pages to concatenate the bodies.
 		err = p.EachPage(func(page Page) (bool, error) {
-			pagesSlice = append(pagesSlice, pb)
+			b := page.GetBody().([]byte)
+			pagesSlice = append(pagesSlice, b)
 			// seperate pages with a comma
 			pagesSlice = append(pagesSlice, []byte{10})
 			return true, nil
@@ -200,7 +200,8 @@ func (p Pager) AllPages() (Page, error) {
 	case []interface{}:
 		// Iterate over the pages to concatenate the bodies.
 		err = p.EachPage(func(page Page) (bool, error) {
-			pagesSlice = append(pagesSlice, pb...)
+			b := page.GetBody().([]interface{})
+			pagesSlice = append(pagesSlice, b...)
 			return true, nil
 		})
 		if err != nil {
