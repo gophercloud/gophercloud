@@ -12,6 +12,33 @@ import (
 	compute "github.com/gophercloud/gophercloud/acceptance/openstack/compute/v2"
 )
 
+func TestVolumeActionsUploadImageDestroy(t *testing.T) {
+	blockClient, err := clients.NewBlockStorageV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a blockstorage client: %v", err)
+	}
+	computeClient, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	volume, err := blockstorage.CreateVolume(t, blockClient)
+	if err != nil {
+		t.Fatalf("Unable to create volume: %v", err)
+	}
+	defer blockstorage.DeleteVolume(t, blockClient, volume)
+
+	imageName, err := CreateUploadImage(t, blockClient, volume)
+	if err != nil {
+		t.Fatalf("Unable to upload volume-backed image: %v", err)
+	}
+
+	err = DeleteUploadedImage(t, computeClient, imageName)
+	if err != nil {
+		t.Fatalf("Unable to delete volume-backed image: %v", err)
+	}
+}
+
 func TestVolumeActionsAttachCreateDestroy(t *testing.T) {
 	blockClient, err := clients.NewBlockStorageV2Client()
 	if err != nil {
