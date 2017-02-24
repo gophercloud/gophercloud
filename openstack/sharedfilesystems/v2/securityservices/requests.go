@@ -85,7 +85,7 @@ type ListOpts struct {
 	// The security service domain
 	Domain string `q:"domain"`
 	// The security service type. A valid value is ldap, kerberos, or active_directory
-	Type string `q:"type"`
+	Type SecurityServiceType `q:"type"`
 	// The security service name
 	Name string `q:"name"`
 	// The DNS IP address that is used inside the tenant network
