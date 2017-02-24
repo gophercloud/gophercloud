@@ -83,8 +83,7 @@ func MockListResponse(t *testing.T) {
                     "user": "demo",
                     "password": "supersecret",
                     "type": "kerberos",
-                    "id": "3c829734-0679-4c17-9637-801da48c0d5f",
-                    "share_networks": []
+                    "id": "3c829734-0679-4c17-9637-801da48c0d5f"
                 },
                 {
                     "status": "new",
@@ -99,8 +98,7 @@ func MockListResponse(t *testing.T) {
                     "user": null,
                     "password": null,
                     "type": "ldap",
-                    "id": "5a1d3a12-34a7-4087-8983-50e9ed03509a",
-                    "share_networks": []
+                    "id": "5a1d3a12-34a7-4087-8983-50e9ed03509a"
                 }
             ]
         }`)
@@ -131,8 +129,7 @@ func MockFilteredListResponse(t *testing.T) {
                     "user": "demo",
                     "password": "supersecret",
                     "type": "kerberos",
-                    "id": "3c829734-0679-4c17-9637-801da48c0d5f",
-                    "share_networks": []
+                    "id": "3c829734-0679-4c17-9637-801da48c0d5f"
                 }
             ]
         }`)

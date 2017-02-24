@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // SecurityService contains all the information associated with an OpenStack
