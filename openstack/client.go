@@ -317,7 +317,10 @@ func NewDNSV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
+	return &gophercloud.ServiceClient{
+		ProviderClient: client,
+		Endpoint:       url,
+		ResourceBase:   url + "v2/"}, nil
 }
 
 // NewImageServiceV2 creates a ServiceClient that may be used to access the v2 image service.
