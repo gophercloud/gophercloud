@@ -2,6 +2,7 @@ package zones
 
 import (
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -59,9 +60,9 @@ type Zone struct {
 	// Description for this zone.
 	Description string `json:"description"`
 	// TTL is the Time to Live for the zone.
-	TTL int `json:"ttl"`
+	TTL int64 `json:"ttl"`
 	// Serial is the current serial number for the zone.
-	Serial json.Number `json:"serial"`
+	Serial int `json:"-"`
 	// Status is the status of the resource.
 	Status string `json:"status"`
 	// Action is the current action in progress on the resource.
@@ -81,6 +82,8 @@ type Zone struct {
 	UpdatedAt time.Time `json:"-"`
 	// TransferredAt is the last time an update was retrieved from the master servers.
 	TransferredAt time.Time `json:"-"`
+	// Links includes HTTP references to the itself, useful for passing along to other APIs that might want a server reference.
+	Links map[string]interface{} `json:"links"`
 }
 
 func (r *Zone) UnmarshalJSON(b []byte) error {
@@ -90,6 +93,7 @@ func (r *Zone) UnmarshalJSON(b []byte) error {
 		CreatedAt     gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
 		UpdatedAt     gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
 		TransferredAt gophercloud.JSONRFC3339MilliNoZ `json:"transferred_at"`
+		Serial        interface{}                     `json:"serial"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -99,7 +103,23 @@ func (r *Zone) UnmarshalJSON(b []byte) error {
 
 	r.CreatedAt = time.Time(s.CreatedAt)
 	r.UpdatedAt = time.Time(s.UpdatedAt)
-	r.TransferredAt = time.Time(s.UpdatedAt)
+	r.TransferredAt = time.Time(s.TransferredAt)
+
+	switch t := s.Serial.(type) {
+	case float64:
+		r.Serial = int(t)
+	case string:
+		switch t {
+		case "":
+			r.Serial = 0
+		default:
+			serial, err := strconv.ParseFloat(t, 64)
+			if err != nil {
+				return err
+			}
+			r.Serial = int(serial)
+		}
+	}
 
 	return err
 }
