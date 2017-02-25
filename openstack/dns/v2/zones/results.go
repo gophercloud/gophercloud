@@ -2,6 +2,8 @@ package zones
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -12,8 +14,8 @@ type commonResult struct {
 
 // Extract interprets a GetResult, CreateResult or UpdateResult as a concrete Zone.
 // An error is returned if the original call or the extraction failed.
-func (r commonResult) Extract() (Zone, error) {
-	var s Zone
+func (r commonResult) Extract() (*Zone, error) {
+	var s *Zone
 	err := r.ExtractInto(&s)
 	return s, err
 }
@@ -44,20 +46,60 @@ func ExtractZones(r pagination.Page) ([]Zone, error) {
 }
 
 type Zone struct {
-	ID            string                          `json:"id,omitempty"`
-	PoolID        string                          `json:"pool_id,omitempty"`
-	ProjectID     string                          `json:"project_id,omitempty"`
-	Name          string                          `json:"name,omitempty"`
-	Email         string                          `json:"email,omitempty"`
-	TTL           int                             `json:"ttl,omitempty"`
-	Serial        json.Number                     `json:"serial,omitempty"`
-	Status        string                          `json:"status,omitempty"`
-	Action        string                          `json:"action,omitempty"`
-	Version       int                             `json:"version,omitempty"`
-	Attributes    map[string]string               `json:"attributes,omitempty"`
-	Type          string                          `json:"type,omitempty"`
-	Masters       []string                        `json:"masters,omitempty"`
-	CreatedAt     gophercloud.JSONRFC3339MilliNoZ `json:"created_at,omitempty"`
-	UpdatedAt     gophercloud.JSONRFC3339MilliNoZ `json:"updated_at,omitempty"`
-	TransferredAt gophercloud.JSONRFC3339MilliNoZ `json:"transferred_at,omitempty"`
+	// ID uniquely identifies this zone amongst all other zones, including those not accessible to the current tenant.
+	ID string `json:"id"`
+	// PoolID is the ID for the pool hosting this zone.
+	PoolID string `json:"pool_id"`
+	// ProjectID identifies the project/tenant owning this resource.
+	ProjectID string `json:"project_id"`
+	// Name is the DNS Name for the zone.
+	Name string `json:"name"`
+	// Email for the zone. Used in SOA records for the zone.
+	Email string `json:"email"`
+	// Description for this zone.
+	Description string `json:"description"`
+	// TTL is the Time to Live for the zone.
+	TTL int `json:"ttl"`
+	// Serial is the current serial number for the zone.
+	Serial json.Number `json:"serial"`
+	// Status is the status of the resource.
+	Status string `json:"status"`
+	// Action is the current action in progress on the resource.
+	Action string `json:"action"`
+	// Version of the resource.
+	Version int `json:"version"`
+	// Attributes for the zone.
+	Attributes map[string]string `json:"attributes"`
+	// Type of zone. Primary is controlled by Designate.
+	// Secondary zones are slaved from another DNS Server.
+	// Defaults to Primary.
+	Type string `json:"type"`
+	// Masters is the servers for slave servers to get DNS information from.
+	Masters []string `json:"masters"`
+	// Created and Updated contain timestamps of when the state of the zone was created and last changed.
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
+	// TransferredAt is the last time an update was retrieved from the master servers.
+	TransferredAt time.Time `json:"-"`
+}
+
+func (r *Zone) UnmarshalJSON(b []byte) error {
+	type tmp Zone
+	var s struct {
+		tmp
+		CreatedAt     gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+		UpdatedAt     gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+		TransferredAt gophercloud.JSONRFC3339MilliNoZ `json:"transferred_at"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Zone(s.tmp)
+
+	r.CreatedAt = time.Time(s.CreatedAt)
+	r.UpdatedAt = time.Time(s.UpdatedAt)
+	r.TransferredAt = time.Time(s.UpdatedAt)
+
+	return err
 }
