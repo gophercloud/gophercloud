@@ -15,6 +15,12 @@ import (
 // List Output is a sample response to a List call.
 const ListOutput = `
 {
+    "links": {
+      "self": "http://example.com:9001/v2/zones"
+    },
+    "metadata": {
+      "total_count": 2
+    },
     "zones": [
         {
             "id": "a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",

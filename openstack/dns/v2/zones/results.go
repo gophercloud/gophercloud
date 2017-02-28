@@ -26,15 +26,15 @@ type GetResult struct {
 	commonResult
 }
 
-// ZonePage is a single page of Zonje results.
+// ZonePage is a single page of Zone results.
 type ZonePage struct {
 	pagination.LinkedPageBase
 }
 
 // IsEmpty returns true if the page contains no results.
-func (p ZonePage) IsEmpty() (bool, error) {
-	services, err := ExtractZones(p)
-	return len(services) == 0, err
+func (r ZonePage) IsEmpty() (bool, error) {
+	s, err := ExtractZones(r)
+	return len(s) == 0, err
 }
 
 // ExtractZones extracts a slice of Services from a Collection acquired from List.
@@ -46,42 +46,61 @@ func ExtractZones(r pagination.Page) ([]Zone, error) {
 	return s.Zones, err
 }
 
+// Zone represents a DNS zone.
 type Zone struct {
 	// ID uniquely identifies this zone amongst all other zones, including those not accessible to the current tenant.
 	ID string `json:"id"`
+
 	// PoolID is the ID for the pool hosting this zone.
 	PoolID string `json:"pool_id"`
+
 	// ProjectID identifies the project/tenant owning this resource.
 	ProjectID string `json:"project_id"`
+
 	// Name is the DNS Name for the zone.
 	Name string `json:"name"`
+
 	// Email for the zone. Used in SOA records for the zone.
 	Email string `json:"email"`
+
 	// Description for this zone.
 	Description string `json:"description"`
+
 	// TTL is the Time to Live for the zone.
 	TTL int64 `json:"ttl"`
+
 	// Serial is the current serial number for the zone.
 	Serial int `json:"-"`
+
 	// Status is the status of the resource.
 	Status string `json:"status"`
+
 	// Action is the current action in progress on the resource.
 	Action string `json:"action"`
+
 	// Version of the resource.
 	Version int `json:"version"`
+
 	// Attributes for the zone.
 	Attributes map[string]string `json:"attributes"`
+
 	// Type of zone. Primary is controlled by Designate.
 	// Secondary zones are slaved from another DNS Server.
 	// Defaults to Primary.
 	Type string `json:"type"`
+
 	// Masters is the servers for slave servers to get DNS information from.
 	Masters []string `json:"masters"`
-	// Created and Updated contain timestamps of when the state of the zone was created and last changed.
+
+	// CreatedAt is the date when the zone was created.
 	CreatedAt time.Time `json:"-"`
+
+	// UpdatedAt is the date when the last change was made to the zone.
 	UpdatedAt time.Time `json:"-"`
+
 	// TransferredAt is the last time an update was retrieved from the master servers.
 	TransferredAt time.Time `json:"-"`
+
 	// Links includes HTTP references to the itself, useful for passing along to other APIs that might want a server reference.
 	Links map[string]interface{} `json:"links"`
 }
