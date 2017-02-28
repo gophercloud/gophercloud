@@ -27,6 +27,18 @@ func TestList(t *testing.T) {
 	th.CheckEquals(t, 1, count)
 }
 
+func TestListAllPages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListSuccessfully(t)
+
+	allPages, err := zones.List(client.ServiceClient()).AllPages()
+	th.AssertNoErr(t, err)
+	allZones, err := zones.ExtractZones(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 2, len(allZones))
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
