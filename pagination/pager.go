@@ -155,10 +155,8 @@ func (p Pager) AllPages() (Page, error) {
 			for k, v := range b {
 				// If it's a linked page, we don't want the `links`, we want the other one.
 				if !strings.HasSuffix(k, "links") {
+					// check the field's type. we only want []interface{} (which is really []map[string]interface{})
 					switch vt := v.(type) {
-					case map[string]interface{}:
-						key = k
-						pagesSlice = append(pagesSlice, vt)
 					case []interface{}:
 						key = k
 						pagesSlice = append(pagesSlice, vt...)
