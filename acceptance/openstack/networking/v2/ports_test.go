@@ -101,7 +101,7 @@ func TestPortsRemoveSecurityGroups(t *testing.T) {
 	}
 	defer DeletePort(t, client, port.ID)
 
-	PrintPort(t, port)
+	tools.PrintResource(t, port)
 
 	// Create a Security Group
 	group, err := extensions.CreateSecurityGroup(t, client)
@@ -128,7 +128,7 @@ func TestPortsRemoveSecurityGroups(t *testing.T) {
 		t.Fatalf("Could not update port: %v", err)
 	}
 
-	PrintPort(t, newPort)
+	tools.PrintResource(t, newPort)
 
 	if len(newPort.SecurityGroups) > 0 {
 		t.Fatalf("Unable to remove security group from port")
@@ -162,7 +162,7 @@ func TestPortsRemoveAddressPair(t *testing.T) {
 	}
 	defer DeletePort(t, client, port.ID)
 
-	PrintPort(t, port)
+	tools.PrintResource(t, port)
 
 	// Add an address pair to the port
 	updateOpts := ports.UpdateOpts{
@@ -184,7 +184,7 @@ func TestPortsRemoveAddressPair(t *testing.T) {
 		t.Fatalf("Could not update port: %v", err)
 	}
 
-	PrintPort(t, newPort)
+	tools.PrintResource(t, newPort)
 
 	if len(newPort.AllowedAddressPairs) > 0 {
 		t.Fatalf("Unable to remove the address pair")
