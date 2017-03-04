@@ -2,10 +2,10 @@ package recordsets
 
 import "github.com/gophercloud/gophercloud"
 
-func listURL(c *gophercloud.ServiceClient, zoneID string) string {
-	return c.ServiceURL("v2/zones", zoneID, "recordsets")
+func baseURL(c *gophercloud.ServiceClient, zoneID string) string {
+	return c.ServiceURL("zones", zoneID, "recordsets")
 }
 
 func rrsetURL(c *gophercloud.ServiceClient, zoneID string, rrsetID string) string {
-	return c.ServiceURL("v2/zones", zoneID, "recordsets", rrsetID)
+	return c.ServiceURL("zones", zoneID, "recordsets", rrsetID)
 }
