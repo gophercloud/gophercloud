@@ -37,7 +37,7 @@ func (opts ListOpts) ToZoneListQuery() (string, error) {
 }
 
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
-	url := listURL(client)
+	url := baseURL(client)
 	if opts != nil {
 		query, err := opts.ToZoneListQuery()
 		if err != nil {
@@ -50,40 +50,65 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// UpdateOptsBuilder allows extensions to add additional attributes to the Update request.
+// Get returns additional information about a zone, given its ID.
+func Get(client *gophercloud.ServiceClient, zoneID string) (r GetResult) {
+	_, r.Err = client.Get(zoneURL(client, zoneID), &r.Body, nil)
+	return
+}
+
+// CreateOptsBuilder allows extensions to add additional attributes to the Update request.
 type CreateOptsBuilder interface {
 	ToZoneCreateMap() (map[string]interface{}, error)
 }
 
-// CreateOpts specifies the base attributes that may be updated on an existing server.
+// CreateOpts specifies the base attributes used to create a zone.
 type CreateOpts struct {
-	Email      string            `json:"email,omitempty"`
-	TTL        int               `json:"ttl,omitempty"`
-	Name       string            `json:"name"`
+	// Attributes are settings that supply hints and filters for the zone.
 	Attributes map[string]string `json:"attributes,omitempty"`
-	Masters    []string          `json:"masters,omitempty"`
-	Type       string            `json:"type,omitempty"`
+
+	// Email contact of the zone.
+	Email string `json:"email,omitempty"`
+
+	// Description of the zone.
+	Description string `json:"description,omitempty"`
+
+	// Name of the zone.
+	Name string `json:"name,required"`
+
+	// Masters specifies zone masters if this is a secondary zone.
+	Masters []string `json:"masters,omitempty"`
+
+	// TTL is the time to live of the zone.
+	TTL int `json:"-"`
+
+	// Type specifies if this is a primary or secondary zone.
+	Type string `json:"type,omitempty"`
 }
 
-// ToServerUpdateMap formats an UpdateOpts structure into a request body.
+// ToZoneCreateMap formats an CreateOpts structure into a request body.
 func (opts CreateOpts) ToZoneCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "")
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.TTL > 0 {
+		b["ttl"] = opts.TTL
+	}
+
+	return b, nil
 }
 
-// Update changes the service type of an existing service.
+// Create a zone
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToZoneCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(listURL(client), &b, &r.Body, nil)
-	return
-}
-
-// Get returns additional information about a service, given its ID.
-func Get(client *gophercloud.ServiceClient, zoneID string) (r GetResult) {
-	_, r.Err = client.Get(zoneURL(client, zoneID), &r.Body, nil)
+	_, r.Err = client.Post(baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201, 202},
+	})
 	return
 }
 
@@ -92,32 +117,45 @@ type UpdateOptsBuilder interface {
 	ToZoneUpdateMap() (map[string]interface{}, error)
 }
 
-// UpdateOpts specifies the base attributes that may be updated on an existing server.
+// UpdateOpts specifies the base attributes to update a zone.
 type UpdateOpts struct {
-	Email   string   `json:"email,omitempty"`
-	TTL     int      `json:"ttl,omitempty"`
-	Masters []string `json:"masters,omitempty"`
+	Email       string   `json:"email,omitempty"`
+	TTL         int      `json:"-"`
+	Masters     []string `json:"masters,omitempty"`
+	Description string   `json:"description,omitempty"`
 }
 
-// ToServerUpdateMap formats an UpdateOpts structure into a request body.
+// ToZoneUpdateMap formats an UpdateOpts structure into a request body.
 func (opts UpdateOpts) ToZoneUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "")
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.TTL > 0 {
+		b["ttl"] = opts.TTL
+	}
+
+	return b, nil
 }
 
-// Update changes the service type of an existing service.
+// Update a zone.
 func Update(client *gophercloud.ServiceClient, zoneID string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToZoneUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Patch(zoneURL(client, zoneID), &b, &r.Body, nil)
+	_, r.Err = client.Patch(zoneURL(client, zoneID), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 202},
+	})
 	return
 }
 
-// Delete removes an existing service.
-// It either deletes all associated endpoints, or fails until all endpoints are deleted.
+// Delete a zone.
 func Delete(client *gophercloud.ServiceClient, zoneID string) (r DeleteResult) {
-	_, r.Err = client.Delete(zoneURL(client, zoneID), nil)
+	_, r.Err = client.Delete(zoneURL(client, zoneID), &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
 	return
 }
