@@ -17,7 +17,7 @@ func TestZonesList(t *testing.T) {
 	}
 
 	var allZones []zones.Zone
-	allPages, err := zones.List(client).AllPages()
+	allPages, err := zones.List(client, nil).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to retrieve zones: %v", err)
 	}

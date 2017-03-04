@@ -15,7 +15,7 @@ func TestList(t *testing.T) {
 	HandleListSuccessfully(t)
 
 	count := 0
-	err := zones.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := zones.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := zones.ExtractZones(page)
 		th.AssertNoErr(t, err)
@@ -32,7 +32,7 @@ func TestListAllPages(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
-	allPages, err := zones.List(client.ServiceClient()).AllPages()
+	allPages, err := zones.List(client.ServiceClient(), nil).AllPages()
 	th.AssertNoErr(t, err)
 	allZones, err := zones.ExtractZones(allPages)
 	th.AssertNoErr(t, err)
