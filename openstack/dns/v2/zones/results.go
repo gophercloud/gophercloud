@@ -67,7 +67,7 @@ type Zone struct {
 	Description string `json:"description"`
 
 	// TTL is the Time to Live for the zone.
-	TTL int64 `json:"ttl"`
+	TTL int `json:"ttl"`
 
 	// Serial is the current serial number for the zone.
 	Serial int `json:"-"`
