@@ -5,8 +5,41 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/dns/v2/recordsets"
 	"github.com/gophercloud/gophercloud/openstack/dns/v2/zones"
 )
+
+// CreateRecordSet will create a RecordSet with a random name. An error will
+// be returned if the zone was unable to be created.
+func CreateRecordSet(t *testing.T, client *gophercloud.ServiceClient, zone *zones.Zone) (*recordsets.RecordSet, error) {
+	t.Logf("Attempting to create recordset: %s", zone.Name)
+
+	createOpts := recordsets.CreateOpts{
+		Name:        zone.Name,
+		Type:        "A",
+		TTL:         3600,
+		Description: "Test recordset",
+		Records:     []string{"10.1.0.2"},
+	}
+
+	rs, err := recordsets.Create(client, zone.ID, createOpts).Extract()
+	if err != nil {
+		return rs, err
+	}
+
+	if err := WaitForRecordSetStatus(client, rs, "ACTIVE"); err != nil {
+		return rs, err
+	}
+
+	newRS, err := recordsets.Get(client, rs.ZoneID, rs.ID).Extract()
+	if err != nil {
+		return newRS, err
+	}
+
+	t.Logf("Created record set: %s", newRS.Name)
+
+	return rs, nil
+}
 
 // CreateZone will create a Zone with a random name. An error will
 // be returned if the zone was unable to be created.
@@ -72,6 +105,18 @@ func CreateSecondaryZone(t *testing.T, client *gophercloud.ServiceClient) (*zone
 	return newZone, nil
 }
 
+// DeleteRecordSet will delete a specified record set. A fatal error will occur if
+// the record set failed to be deleted. This works best when used as a deferred
+// function.
+func DeleteRecordSet(t *testing.T, client *gophercloud.ServiceClient, rs *recordsets.RecordSet) {
+	err := recordsets.Delete(client, rs.ZoneID, rs.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete record set %s: %v", rs.ID, err)
+	}
+
+	t.Logf("Deleted record set: %s", rs.ID)
+}
+
 // DeleteZone will delete a specified zone. A fatal error will occur if
 // the zone failed to be deleted. This works best when used as a deferred
 // function.
@@ -82,6 +127,23 @@ func DeleteZone(t *testing.T, client *gophercloud.ServiceClient, zone *zones.Zon
 	}
 
 	t.Logf("Deleted zone: %s", zone.ID)
+}
+
+// WaitForRecordSetStatus will poll a record set's status until it either matches
+// the specified status or the status becomes ERROR.
+func WaitForRecordSetStatus(client *gophercloud.ServiceClient, rs *recordsets.RecordSet, status string) error {
+	return gophercloud.WaitFor(60, func() (bool, error) {
+		current, err := recordsets.Get(client, rs.ZoneID, rs.ID).Extract()
+		if err != nil {
+			return false, err
+		}
+
+		if current.Status == status {
+			return true, nil
+		}
+
+		return false, nil
+	})
 }
 
 // WaitForZoneStatus will poll a zone's status until it either matches
