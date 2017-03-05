@@ -61,66 +61,103 @@ func Get(client *gophercloud.ServiceClient, zoneID string, rrsetID string) (r Ge
 	return
 }
 
-// UpdateOptsBuilder allows extensions to add additional attributes to the Update request.
+// CreateOptsBuilder allows extensions to add additional attributes to the Create request.
 type CreateOptsBuilder interface {
-	ToZoneCreateMap() (map[string]interface{}, error)
+	ToRecordSetCreateMap() (map[string]interface{}, error)
 }
 
-// UpdateOpts specifies the base attributes that may be updated on an existing server.
+// CreateOpts specifies the base attributes that may be used to create a RecordSet.
 type CreateOpts struct {
-	ZoneID  string   `json:"zone_id,omitempty"`
-	Name    string   `json:"name,omitempty"`
-	Type    string   `json:"type,omitempty"`
+	// Name is the name of the RecordSet.
+	Name string `json:"name,required"`
+
+	// Description is a description of the RecordSet.
+	Description string `json:"description,omitempty"`
+
+	// Records are the DNS records of the RecordSet.
 	Records []string `json:"records,omitempty"`
-	TTL     int      `json:"ttl,omitempty"`
+
+	// TTL is the time to live of the RecordSet.
+	TTL int `json:"-"`
+
+	// Type is the RRTYPE of the RecordSet.
+	Type string `json:"type,omitempty"`
 }
 
-// ToServerUpdateMap formats an UpdateOpts structure into a request body.
-func (opts CreateOpts) ToZoneCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "")
+// ToRecordSetCreateMap formats an CreateOpts structure into a request body.
+func (opts CreateOpts) ToRecordSetCreateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.TTL > 0 {
+		b["ttl"] = opts.TTL
+	} else {
+		b["ttl"] = nil
+	}
+
+	return b, nil
 }
 
-// Update changes the service type of an existing service.
+// Create changes the service type of an existing service.
 func Create(client *gophercloud.ServiceClient, zoneID string, opts CreateOptsBuilder) (r CreateResult) {
-	b, err := opts.ToZoneCreateMap()
+	b, err := opts.ToRecordSetCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(listURL(client, zoneID), &b, &r.Body, nil)
+	_, r.Err = client.Post(baseURL(client, zoneID), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201, 202},
+	})
 	return
 }
 
 // UpdateOptsBuilder allows extensions to add additional attributes to the Update request.
 type UpdateOptsBuilder interface {
-	ToRRSetUpdateMap() (map[string]interface{}, error)
+	ToRecordSetSetUpdateMap() (map[string]interface{}, error)
 }
 
-// UpdateOpts specifies the base attributes that may be updated on an existing server.
+// UpdateOpts specifies the base attributes that may be updated on an existing RecordSet.
 type UpdateOpts struct {
-	TTL     int      `json:"ttl,omitempty"`
-	Records []string `json:"records,omitempty"`
+	Description string   `json:"description,omitempty"`
+	TTL         int      `json:"ttl,omitempty"`
+	Records     []string `json:"records,omitempty"`
 }
 
-// ToServerUpdateMap formats an UpdateOpts structure into a request body.
-func (opts UpdateOpts) ToRRSetUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "")
+// ToRecordSetUpdateMap formats an UpdateOpts structure into a request body.
+func (opts UpdateOpts) ToRecordSetSetUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.TTL > 0 {
+		b["ttl"] = opts.TTL
+	} else {
+		b["ttl"] = nil
+	}
+
+	return b, nil
 }
 
 // Update changes the service type of an existing service.
 func Update(client *gophercloud.ServiceClient, zoneID string, rrsetID string, opts UpdateOptsBuilder) (r UpdateResult) {
-	b, err := opts.ToRRSetUpdateMap()
+	b, err := opts.ToRecordSetSetUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Patch(rrsetURL(client, zoneID, rrsetID), &b, &r.Body, nil)
+	_, r.Err = client.Put(rrsetURL(client, zoneID, rrsetID), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 202},
+	})
 	return
 }
 
-// Delete removes an existing service.
-// It either deletes all associated endpoints, or fails until all endpoints are deleted.
+// Delete removes an existing RecordSet.
 func Delete(client *gophercloud.ServiceClient, zoneID string, rrsetID string) (r DeleteResult) {
-	_, r.Err = client.Delete(rrsetURL(client, zoneID, rrsetID), nil)
+	_, r.Err = client.Delete(rrsetURL(client, zoneID, rrsetID), &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
 	return
 }
