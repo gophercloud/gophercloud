@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -54,6 +55,26 @@ func TestListAllServers(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ServerHerp, actual[0])
 	th.CheckDeepEquals(t, ServerDerp, actual[1])
+}
+
+func TestListAllServersWithExtensions(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerListSuccessfully(t)
+
+	type ServerWithExt struct {
+		servers.Server
+		availabilityzones.ServerExt
+	}
+
+	allPages, err := servers.List(client.ServiceClient(), servers.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+
+	var actual []ServerWithExt
+	err = servers.ExtractServersInto(allPages, &actual)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 3, len(actual))
+	th.AssertEquals(t, "nova", actual[0].AvailabilityZone)
 }
 
 func TestCreateServer(t *testing.T) {
@@ -187,6 +208,26 @@ func TestGetServer(t *testing.T) {
 	}
 
 	th.CheckDeepEquals(t, ServerDerp, *actual)
+}
+
+func TestGetServerWithExtensions(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerGetSuccessfully(t)
+
+	var s struct {
+		servers.Server
+		availabilityzones.ServerExt
+	}
+
+	err := servers.Get(client.ServiceClient(), "1234asdf").ExtractInto(&s)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "nova", s.AvailabilityZone)
+
+	err = servers.Get(client.ServiceClient(), "1234asdf").ExtractInto(s)
+	if err == nil {
+		t.Errorf("Expected error when providing non-pointer struct")
+	}
 }
 
 func TestUpdateServer(t *testing.T) {
