@@ -1,7 +1,7 @@
 package gophercloud
 
 /*
-AuthOptions stores information needed to authenticate to an OpenStack cluster.
+AuthOptions stores information needed to authenticate to an OpenStack Cloud.
 You can populate one manually, or use a provider's AuthOptionsFromEnv() function
 to read relevant information from the standard environment variables. Pass one
 to a provider's AuthenticatedClient function to authenticate and obtain a
