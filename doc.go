@@ -13,7 +13,7 @@ TenantID or TenantName as project_id and project_name.
 These are defined like so:
 
   opts := gophercloud.AuthOptions{
-    IdentityEndpoint: "https://my-openstack.com:5000/v2.0",
+    IdentityEndpoint: "https://openstack.example.com:5000/v2.0",
     Username: "{username}",
     Password: "{password}",
     TenantID: "{tenant_id}",

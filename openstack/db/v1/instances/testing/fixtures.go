@@ -27,22 +27,22 @@ var instance = `
     "id": "1",
     "links": [
       {
-        "href": "https://my-openstack.com/v1.0/1234/flavors/1",
+        "href": "https://openstack.example.com/v1.0/1234/flavors/1",
         "rel": "self"
       },
       {
-        "href": "https://my-openstack.com/v1.0/1234/flavors/1",
+        "href": "https://openstack.example.com/v1.0/1234/flavors/1",
         "rel": "bookmark"
       }
     ]
   },
   "links": [
     {
-      "href": "https://my-openstack.com/v1.0/1234/instances/1",
+      "href": "https://openstack.example.com/v1.0/1234/instances/1",
       "rel": "self"
     }
   ],
-  "hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.my-openstack.com",
+  "hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.openstack.example.com",
   "id": "{instanceID}",
   "name": "json_rack_instance",
   "status": "BUILD",
@@ -114,14 +114,14 @@ var expectedInstance = instances.Instance{
 	Flavor: instances.Flavor{
 		ID: "1",
 		Links: []gophercloud.Link{
-			{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "self"},
-			{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "bookmark"},
+			{Href: "https://openstack.example.com/v1.0/1234/flavors/1", Rel: "self"},
+			{Href: "https://openstack.example.com/v1.0/1234/flavors/1", Rel: "bookmark"},
 		},
 	},
-	Hostname: "e09ad9a3f73309469cf1f43d11e79549caf9acf2.my-openstack.com",
+	Hostname: "e09ad9a3f73309469cf1f43d11e79549caf9acf2.openstack.example.com",
 	ID:       instanceID,
 	Links: []gophercloud.Link{
-		{Href: "https://my-openstack.com/v1.0/1234/instances/1", Rel: "self"},
+		{Href: "https://openstack.example.com/v1.0/1234/instances/1", Rel: "self"},
 	},
 	Name:   "json_rack_instance",
 	Status: "BUILD",
