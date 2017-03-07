@@ -4,8 +4,13 @@ clouds. The library has a three-level hierarchy: providers, services, and
 resources.
 
 Provider structs represent the service providers that offer and manage a
-collection of services. Examples of providers include: OpenStack, Rackspace,
-HP. These are defined like so:
+collection of services. Examples of public OpenStack cloud providers include:
+Rackspace, Dreamhost, Internap, Vexxhost, OVH, CityCloud, Datacentred and
+Enter Cloud Suite, or else the OpenStack cloud may be a local/private cloud.
+The IdentityEndpoint is typically refered to as "auth_url" in information
+provided by the cloud operator. Additionally, the cloud may refer to
+TenantID or TenantName as project_id and project_name.
+These are defined like so:
 
   opts := gophercloud.AuthOptions{
     IdentityEndpoint: "https://my-openstack.com:5000/v2.0",
