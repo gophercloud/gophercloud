@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // SecurityService contains all the information associated with an OpenStack
@@ -59,6 +60,27 @@ func (r *SecurityService) UnmarshalJSON(b []byte) error {
 
 type commonResult struct {
 	gophercloud.Result
+}
+
+// SecurityServicePage is a pagination.pager that is returned from a call to the List function.
+type SecurityServicePage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty returns true if a ListResult contains no SecurityServices.
+func (r SecurityServicePage) IsEmpty() (bool, error) {
+	securityServices, err := ExtractSecurityServices(r)
+	return len(securityServices) == 0, err
+}
+
+// ExtractSecurityServices extracts and returns SecurityServices. It is used while
+// iterating over a securityservices.List call.
+func ExtractSecurityServices(r pagination.Page) ([]SecurityService, error) {
+	var s struct {
+		SecurityServices []SecurityService `json:"security_services"`
+	}
+	err := (r.(SecurityServicePage)).ExtractInto(&s)
+	return s.SecurityServices, err
 }
 
 // Extract will get the SecurityService object out of the commonResult object.

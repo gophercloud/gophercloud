@@ -2,6 +2,7 @@ package testing
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/securityservices"
@@ -61,4 +62,89 @@ func TestDelete(t *testing.T) {
 
 	res := securityservices.Delete(client.ServiceClient(), "securityServiceID")
 	th.AssertNoErr(t, res.Err)
+}
+
+// Verifies that security services can be listed correctly
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockListResponse(t)
+
+	allPages, err := securityservices.List(client.ServiceClient(), &securityservices.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := securityservices.ExtractSecurityServices(allPages)
+	th.AssertNoErr(t, err)
+	var nilTime time.Time
+	expected := []securityservices.SecurityService{
+		{
+			Status:      "new",
+			Domain:      "",
+			ProjectID:   "16e1ab15c35a457e9c2b2aa189f544e1",
+			Name:        "SecServ1",
+			CreatedAt:   time.Date(2015, 9, 7, 12, 19, 10, 0, time.UTC),
+			Description: "Creating my first Security Service",
+			UpdatedAt:   nilTime,
+			Server:      "",
+			DNSIP:       "10.0.0.0/24",
+			User:        "demo",
+			Password:    "supersecret",
+			Type:        "kerberos",
+			ID:          "3c829734-0679-4c17-9637-801da48c0d5f",
+		},
+		{
+			Status:      "new",
+			Domain:      "",
+			ProjectID:   "16e1ab15c35a457e9c2b2aa189f544e1",
+			Name:        "SecServ2",
+			CreatedAt:   time.Date(2015, 9, 7, 12, 25, 03, 0, time.UTC),
+			Description: "Creating my second Security Service",
+			UpdatedAt:   nilTime,
+			Server:      "",
+			DNSIP:       "10.0.0.0/24",
+			User:        "",
+			Password:    "",
+			Type:        "ldap",
+			ID:          "5a1d3a12-34a7-4087-8983-50e9ed03509a",
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+// Verifies that security services list can be called with query parameters
+func TestFilteredList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockFilteredListResponse(t)
+
+	options := &securityservices.ListOpts{
+		Type: "kerberos",
+	}
+
+	allPages, err := securityservices.List(client.ServiceClient(), options).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := securityservices.ExtractSecurityServices(allPages)
+	th.AssertNoErr(t, err)
+	var nilTime time.Time
+	expected := []securityservices.SecurityService{
+		{
+			Status:      "new",
+			Domain:      "",
+			ProjectID:   "16e1ab15c35a457e9c2b2aa189f544e1",
+			Name:        "SecServ1",
+			CreatedAt:   time.Date(2015, 9, 7, 12, 19, 10, 0, time.UTC),
+			Description: "Creating my first Security Service",
+			UpdatedAt:   nilTime,
+			Server:      "",
+			DNSIP:       "10.0.0.0/24",
+			User:        "demo",
+			Password:    "supersecret",
+			Type:        "kerberos",
+			ID:          "3c829734-0679-4c17-9637-801da48c0d5f",
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
 }
