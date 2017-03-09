@@ -169,6 +169,19 @@ func TestShowAccess(t *testing.T) {
 
 	MockShowAccessResponse(t)
 
-	_, err := sharetypes.ShowAccess(client.ServiceClient(), "shareTypeID").Extract()
+	expected := []sharetypes.ShareTypeAccess{
+		{
+			ShareTypeID: "1732f284-401d-41d9-a494-425451e8b4b8",
+			ProjectID:   "818a3f48dcd644909b3fa2e45a399a27",
+		},
+		{
+			ShareTypeID: "1732f284-401d-41d9-a494-425451e8b4b8",
+			ProjectID:   "e1284adea3ee4d2482af5ed214f3ad90",
+		},
+	}
+
+	shareType, err := sharetypes.ShowAccess(client.ServiceClient(), "shareTypeID").Extract()
 	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, expected, shareType)
 }
