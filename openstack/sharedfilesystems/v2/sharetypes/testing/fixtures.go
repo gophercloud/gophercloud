@@ -215,3 +215,26 @@ func MockUnsetExtraSpecsResponse(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+func MockShowAccessResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/shareTypeID/share_type_access", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+        {
+            "share_type_access": [
+                {
+                    "share_type_id": "1732f284-401d-41d9-a494-425451e8b4b8",
+                    "project_id": "818a3f48dcd644909b3fa2e45a399a27"
+                },
+                {
+                    "share_type_id": "1732f284-401d-41d9-a494-425451e8b4b8",
+                    "project_id": "e1284adea3ee4d2482af5ed214f3ad90"
+                }
+            ]
+        }`)
+	})
+}

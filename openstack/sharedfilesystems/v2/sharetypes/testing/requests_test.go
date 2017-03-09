@@ -161,3 +161,27 @@ func TestUnsetExtraSpecs(t *testing.T) {
 	res := sharetypes.UnsetExtraSpecs(client.ServiceClient(), "shareTypeID", "my_key")
 	th.AssertNoErr(t, res.Err)
 }
+
+// Verifies that it is possible to see the access for a share type
+func TestShowAccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockShowAccessResponse(t)
+
+	expected := []sharetypes.ShareTypeAccess{
+		{
+			ShareTypeID: "1732f284-401d-41d9-a494-425451e8b4b8",
+			ProjectID:   "818a3f48dcd644909b3fa2e45a399a27",
+		},
+		{
+			ShareTypeID: "1732f284-401d-41d9-a494-425451e8b4b8",
+			ProjectID:   "e1284adea3ee4d2482af5ed214f3ad90",
+		},
+	}
+
+	shareType, err := sharetypes.ShowAccess(client.ServiceClient(), "shareTypeID").Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, expected, shareType)
+}
