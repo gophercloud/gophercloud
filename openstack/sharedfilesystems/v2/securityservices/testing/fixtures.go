@@ -137,7 +137,7 @@ func MockFilteredListResponse(t *testing.T) {
 }
 
 func MockGetResponse(t *testing.T) {
-	th.Mux.HandleFunc("/security-services/securityServiceID", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/security-services/3c829734-0679-4c17-9637-801da48c0d5f", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -157,7 +157,7 @@ func MockGetResponse(t *testing.T) {
                 "user": "demo",
                 "password": "supersecret",
                 "type": "kerberos",
-                "id": "securityServiceID",
+                "id": "3c829734-0679-4c17-9637-801da48c0d5f",
                 "description": "Creating my first Security Service"
             }
         }`)
