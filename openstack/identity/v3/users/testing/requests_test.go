@@ -50,3 +50,22 @@ func TestGetUser(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondUser, *actual)
 }
+
+func TestCreateUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateUserSuccessfully(t)
+
+	iTrue := true
+	createOpts := users.CreateOpts{
+		Name:             "glance",
+		DomainID:         "default",
+		Enabled:          &iTrue,
+		Password:         "secretsecret",
+		DefaultProjectID: "263fd9",
+	}
+
+	actual, err := users.Create(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondUser, *actual)
+}

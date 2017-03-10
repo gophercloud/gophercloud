@@ -64,6 +64,19 @@ const GetOutput = `
 }
 `
 
+// CreateRequest provides the input to a Create request.
+const CreateRequest = `
+{
+    "user": {
+        "default_project_id": "263fd9",
+        "domain_id": "default",
+        "enabled": true,
+        "name": "glance",
+        "password": "secretsecret"
+    }
+}
+`
+
 // FirstUser is the first user in the List request.
 var nilTime time.Time
 var FirstUser = users.User{
@@ -119,6 +132,19 @@ func HandleGetUserSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleCreateUserSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that tests project creation.
+func HandleCreateUserSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
+
+		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, GetOutput)
 	})
 }
