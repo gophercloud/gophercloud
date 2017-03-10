@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -86,6 +87,30 @@ func TestServersCreateDestroy(t *testing.T) {
 	for _, address := range allNetworkAddresses {
 		t.Logf("%+v", address)
 	}
+}
+
+func TestServersCreateDestroyWithExtensions(t *testing.T) {
+	var extendedServer struct {
+		servers.Server
+		availabilityzones.ServerExt
+	}
+
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	server, err := CreateServer(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create server: %v", err)
+	}
+	defer DeleteServer(t, client, server)
+
+	err = servers.Get(client, server.ID).ExtractInto(&extendedServer)
+	if err != nil {
+		t.Errorf("Unable to retrieve server: %v", err)
+	}
+	tools.PrintResource(t, extendedServer)
 }
 
 func TestServersWithoutImageRef(t *testing.T) {
