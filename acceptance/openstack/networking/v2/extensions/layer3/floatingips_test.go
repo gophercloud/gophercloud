@@ -9,6 +9,7 @@ import (
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 )
 
 func TestLayer3FloatingIPsList(t *testing.T) {
@@ -44,7 +45,12 @@ func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 		t.Fatalf("Unable to get choices: %v", err)
 	}
 
-	subnet, err := networking.CreateSubnet(t, client, choices.ExternalNetworkID)
+	netid, err := networks.IDFromName(client,chocices.NetworkName)
+	if err != nil {
+		t.Fatalf("Unable to find network id: %v", err)
+	}
+
+	subnet, err := networking.CreateSubnet(t, client, netid)
 	if err != nil {
 		t.Fatalf("Unable to create subnet: %v", err)
 	}
@@ -56,7 +62,7 @@ func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 	}
 	defer DeleteRouter(t, client, router.ID)
 
-	port, err := networking.CreatePort(t, client, choices.ExternalNetworkID, subnet.ID)
+	port, err := networking.CreatePort(t, client, netid, subnet.ID)
 	if err != nil {
 		t.Fatalf("Unable to create port: %v", err)
 	}
