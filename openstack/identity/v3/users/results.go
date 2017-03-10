@@ -13,6 +13,9 @@ type User struct {
 	// DefaultProjectID is the ID of the default project of the user.
 	DefaultProjectID string `json:"default_project_id"`
 
+	// Description is the description of the user.
+	Description string `json:"description"`
+
 	// DomainID is the domain ID the user belongs to.
 	DomainID string `json:"domain_id"`
 

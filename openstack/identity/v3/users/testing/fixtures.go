@@ -29,7 +29,8 @@ const ListOutput = `
                 "self": "http://example.com/identity/v3/users/2844b2a08be147a08ef58317d6471f1f"
             },
             "name": "glance",
-            "password_expires_at": null
+            "password_expires_at": null,
+            "description": "some description"
         },
         {
             "default_project_id": "263fd9",
@@ -74,6 +75,7 @@ var FirstUser = users.User{
 	},
 	Name:              "glance",
 	PasswordExpiresAt: nilTime,
+	Description:       "some description",
 }
 
 // SecondUser is the second user in the List request.
