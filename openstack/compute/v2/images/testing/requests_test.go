@@ -38,7 +38,16 @@ func TestListImages(t *testing.T) {
 							"created": "2014-09-23T12:54:52Z",
 							"minDisk": 0,
 							"progress": 100,
-							"minRam": 0
+							"minRam": 0,
+							"metadata": {
+								"architecture": "x86_64",
+								"block_device_mapping": {
+									"guest_format": null,
+									"boot_index": 0,
+									"device_name": "/dev/vda",
+									"delete_on_termination": false
+								}
+              }
 						},
 						{
 							"status": "ACTIVE",
@@ -81,6 +90,15 @@ func TestListImages(t *testing.T) {
 				MinRAM:   0,
 				Progress: 100,
 				Status:   "ACTIVE",
+				Metadata: map[string]interface{}{
+					"architecture": "x86_64",
+					"block_device_mapping": map[string]interface{}{
+						"guest_format":          interface{}(nil),
+						"boot_index":            float64(0),
+						"device_name":           "/dev/vda",
+						"delete_on_termination": false,
+					},
+				},
 			},
 			{
 				ID:       "f90f6034-2570-4974-8351-6b49732ef2eb",
@@ -129,7 +147,16 @@ func TestGetImage(t *testing.T) {
 					"created": "2014-09-23T12:54:52Z",
 					"minDisk": 0,
 					"progress": 100,
-					"minRam": 0
+					"minRam": 0,
+					"metadata": {
+						"architecture": "x86_64",
+						"block_device_mapping": {
+							"guest_format": null,
+							"boot_index": 0,
+							"device_name": "/dev/vda",
+							"delete_on_termination": false
+						}
+					}
 				}
 			}
 		`)
@@ -149,6 +176,15 @@ func TestGetImage(t *testing.T) {
 		MinDisk:  0,
 		Progress: 100,
 		MinRAM:   0,
+		Metadata: map[string]interface{}{
+			"architecture": "x86_64",
+			"block_device_mapping": map[string]interface{}{
+				"guest_format":          interface{}(nil),
+				"boot_index":            float64(0),
+				"device_name":           "/dev/vda",
+				"delete_on_termination": false,
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(expected, actual) {
