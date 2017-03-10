@@ -88,3 +88,48 @@ func Get(client *gophercloud.ServiceClient, id string, opts GetOptsBuilder) (r G
 	})
 	return
 }
+
+// CreateOptsBuilder allows extensions to add additional parameters to
+// the Create request.
+type CreateOptsBuilder interface {
+	ToUserCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts implements CreateOptsBuilder
+type CreateOpts struct {
+	// Name is the name of the new user.
+	Name string `json:"name" required:"true"`
+
+	// DefaultProjectID is the ID of the default project of the user.
+	DefaultProjectID string `json:"default_project_id,omitempty"`
+
+	// Description is a description of the user.
+	Description string `json:"description,omitempty"`
+
+	// DomainID is the ID of the domain the user belongs to.
+	DomainID string `json:"domain_id,omitempty"`
+
+	// Enabled sets the user status to enabled or disabled.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Password is the password of the new user.
+	Password string `json:"password,omitempty"`
+}
+
+// ToUserCreateMap formats a CreateOpts into a create request.
+func (opts CreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "user")
+}
+
+// Create creates a new User.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToUserCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(baseURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}
