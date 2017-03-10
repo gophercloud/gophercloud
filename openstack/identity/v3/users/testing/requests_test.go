@@ -69,3 +69,12 @@ func TestCreateUser(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondUser, *actual)
 }
+
+func TestDeleteUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteUserSuccessfully(t)
+
+	res := users.Delete(client.ServiceClient(), "9fe1d3")
+	th.AssertNoErr(t, res.Err)
+}
