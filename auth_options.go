@@ -31,7 +31,7 @@ type AuthOptions struct {
 	DomainName string `json:"name,omitempty"`
 
 	// The TenantID and TenantName fields are optional for the Identity V2 API.
-	// The same fields are knows as project id and project name in the Identity
+	// The same fields are known as project_id and project_name in the Identity
 	// V3 API, but are collected as TenantID and TenantName here in both cases.
 	// Some providers allow you to specify a TenantName instead of the TenantId.
 	// Some require both. Your provider's authentication policies will determine
