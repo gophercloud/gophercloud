@@ -76,7 +76,7 @@ func CreateSecondaryZone(t *testing.T, client *gophercloud.ServiceClient) (*zone
 // the zone failed to be deleted. This works best when used as a deferred
 // function.
 func DeleteZone(t *testing.T, client *gophercloud.ServiceClient, zone *zones.Zone) {
-	err := zones.Delete(client, zone.ID).ExtractErr()
+	_, err := zones.Delete(client, zone.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to delete zone %s: %v", zone.ID, err)
 	}

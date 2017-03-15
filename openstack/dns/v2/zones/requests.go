@@ -155,7 +155,8 @@ func Update(client *gophercloud.ServiceClient, zoneID string, opts UpdateOptsBui
 // Delete a zone.
 func Delete(client *gophercloud.ServiceClient, zoneID string) (r DeleteResult) {
 	_, r.Err = client.Delete(zoneURL(client, zoneID), &gophercloud.RequestOpts{
-		OkCodes: []int{202},
+		OkCodes:      []int{202},
+		JSONResponse: &r.Body,
 	})
 	return
 }

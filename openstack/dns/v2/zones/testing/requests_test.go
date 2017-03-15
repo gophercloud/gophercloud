@@ -99,7 +99,7 @@ func TestDelete(t *testing.T) {
 	DeletedZone.TTL = 600
 	DeletedZone.Description = "Updated Description"
 
-	err := zones.Delete(client.ServiceClient(), DeletedZone.ID).ExtractErr()
+	actual, err := zones.Delete(client.ServiceClient(), DeletedZone.ID).Extract()
 	th.AssertNoErr(t, err)
-	//th.CheckDeepEquals(t, &DeletedZone, actual)
+	th.CheckDeepEquals(t, &DeletedZone, actual)
 }

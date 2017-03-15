@@ -296,7 +296,7 @@ func HandleDeleteSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 			w.WriteHeader(http.StatusAccepted)
-			//w.Header().Add("Content-Type", "application/json")
-			//fmt.Fprintf(w, DeleteZoneResponse)
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprintf(w, DeleteZoneResponse)
 		})
 }
