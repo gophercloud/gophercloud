@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 )
 
 type CreateOptsExtBuilder interface {
@@ -9,26 +9,22 @@ type CreateOptsExtBuilder interface {
 }
 
 type CreateOptsExt struct {
-	AdminStateUp    *bool     `json:"admin_state_up,omitempty"`
-	Name            string    `json:"name,omitempty"`
-	Shared          *bool     `json:"shared,omitempty"`
-	TenantID        string    `json:"tenant_id,omitempty"`
-	NetworkType     string    `json:"provider:network_type,omitempty"`
-	PhysicalNetwork string    `json:"provider:physical_network,omitempty"`
-	SegmentationID  string    `json:"provider:segmentation_id,omitempty"`
+	networks.CreateOptsBuilder
 	Segments        []Segment `json:"segments,omitempty"`
 }
 
-func (opts CreateOptsExt) ToProviderCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "network")
-}
-
-func Create(c *gophercloud.ServiceClient, opts CreateOptsExtBuilder) (r CreateResult) {
-	b, err := opts.ToProviderCreateMap()
+func (opts CreateOptsExt) ToNetworkCreateMap() (map[string]interface{}, error) {
+	base, err := opts.CreateOptsBuilder.ToNetworkCreateMap()
 	if err != nil {
-		r.Err = err
-		return
+		return nil, err
 	}
-	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
-	return
+
+	if opts.Segments == nil {
+		return base, nil
+	}
+
+	providerMap := base["network"].(map[string]interface{})
+	providerMap["segments"] = opts.Segments
+
+	return base, nil
 }

@@ -2,7 +2,6 @@ package provider
 
 import (
 	"encoding/json"
-	"github.com/gophercloud/gophercloud"
 	"strconv"
 
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
@@ -123,21 +122,5 @@ func ExtractList(r pagination.Page) ([]NetworkExtAttrs, error) {
 		Networks []NetworkExtAttrs `json:"networks" json:"networks"`
 	}
 	err := (r.(networks.NetworkPage)).ExtractInto(&s)
-	return s.Networks, err
-}
-
-type NetworkExtAttrsResult struct {
-	gophercloud.Result
-}
-
-type CreateResult struct {
-	NetworkExtAttrsResult
-}
-
-func (r NetworkExtAttrsResult) Extract() (*NetworkExtAttrs, error) {
-	var s struct {
-		Networks *NetworkExtAttrs `json:"network"`
-	}
-	err := r.ExtractInto(&s)
 	return s.Networks, err
 }

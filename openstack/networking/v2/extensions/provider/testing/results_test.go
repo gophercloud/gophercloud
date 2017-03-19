@@ -233,7 +233,29 @@ func TestCreateWithMultipleProvider(t *testing.T) {
 		`)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, `{}`)
+		fmt.Fprintf(w, `
+{
+	"network": {
+		"status": "ACTIVE",
+		"name": "sample_network",
+		"admin_state_up": true,
+		"shared": true,
+		"tenant_id": "12345",
+		"segments": [
+			{
+				"provider:segmentation_id": 666,
+				"provider:physical_network": "br-ex",
+				"provider:network_type": "vlan"
+			},
+			{
+				"provider:segmentation_id": 615,
+				"provider:physical_network": "br-ex",
+				"provider:network_type": "vlan"
+			}
+		]
+	}
+}
+	`)
 	})
 
 	iTrue := true
@@ -242,14 +264,20 @@ func TestCreateWithMultipleProvider(t *testing.T) {
 		provider.Segment{NetworkType: "vxlan", PhysicalNetwork: "br-ex", SegmentationID: 615},
 	}
 
-	options := provider.CreateOptsExt{
+	networkCreateOpts := networks.CreateOpts{
 		Name:         "sample_network",
 		AdminStateUp: &iTrue,
 		Shared:       &iTrue,
 		TenantID:     "12345",
-		Segments:     segments,
 	}
-	_, err := provider.Create(fake.ServiceClient(), options).Extract()
+
+	providerCreateOpts := provider.CreateOptsExt{
+		CreateOptsBuilder: networkCreateOpts,
+		Segments: segments,
+	}
+
+	res := networks.Create(fake.ServiceClient(), providerCreateOpts)
+	_, err := provider.ExtractCreate(res)
 	th.AssertNoErr(t, err)
 }
 
