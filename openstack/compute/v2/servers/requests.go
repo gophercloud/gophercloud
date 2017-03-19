@@ -270,7 +270,11 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(listURL(client), reqBody, &r.Body, nil)
+	computeErr := ComputeError{}
+	reqOpts := gophercloud.RequestOpts{
+		ErrorContext: computeErr,
+	}
+	_, r.Err = client.Post(listURL(client), reqBody, &r.Body, &reqOpts)
 	return
 }
 

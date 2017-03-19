@@ -3,6 +3,7 @@ package servers
 import (
 	"fmt"
 
+	"encoding/json"
 	"github.com/gophercloud/gophercloud"
 )
 
@@ -68,4 +69,24 @@ type ErrServerNotFound struct {
 
 func (e ErrServerNotFound) Error() string {
 	return fmt.Sprintf("I couldn't find server [%s]", e.ID)
+}
+
+type BadRequest struct {
+	Message string `json:"message"`
+	Code    int    `json:"code"`
+}
+
+type ComputeError struct {
+	gophercloud.BaseError
+}
+
+func (ce ComputeError) Error400(code gophercloud.ErrUnexpectedResponseCode) error {
+	var b struct {
+		BadRequest BadRequest `json:"badRequest"`
+	}
+	err := json.Unmarshal(code.Body, &b)
+	if err != nil {
+		return err
+	}
+	return fmt.Errorf(b.BadRequest.Message)
 }
