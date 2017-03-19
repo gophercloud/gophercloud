@@ -61,16 +61,6 @@ type Network struct {
 
 	// Specifies whether the network resource can be accessed by any tenant or not.
 	Shared bool `json:"shared"`
-
-	// Array og Segment for define multiple physical binfig for logical network.
-	Segments []Segment `json:"segments,omitempty"`
-}
-
-// Define physical binding for logical network.
-type Segment struct {
-	PhysicalNetwork string `json:"provider:physical_network,omitempty"`
-	NetworkType     string `json:"provider:network_type,omitempty"`
-	SegmentationID  int `json:"provider:segmentation_id,omitempty"`
 }
 
 // NetworkPage is the page returned by a pager when traversing over a

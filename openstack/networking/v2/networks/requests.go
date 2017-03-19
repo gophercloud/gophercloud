@@ -72,7 +72,6 @@ type CreateOpts struct {
 	Name         string `json:"name,omitempty"`
 	Shared       *bool  `json:"shared,omitempty"`
 	TenantID     string `json:"tenant_id,omitempty"`
-	Segments     []Segment `json:"segments,omitempty""`
 }
 
 // ToNetworkCreateMap casts a CreateOpts struct to a map.

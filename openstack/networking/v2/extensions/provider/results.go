@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"github.com/gophercloud/gophercloud"
 	"strconv"
 
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
@@ -49,6 +50,16 @@ type NetworkExtAttrs struct {
 	// instance, if network_type is vlan, then this is a vlan identifier;
 	// otherwise, if network_type is gre, then this will be a gre key.
 	SegmentationID string `json:"provider:segmentation_id"`
+
+	// Array og Segment for define multiple physical binfig for logical network.
+	Segments []Segment `json:"segments"`
+}
+
+// Define physical binding for logical network.
+type Segment struct {
+	PhysicalNetwork string `json:"provider:physical_network"`
+	NetworkType     string `json:"provider:network_type"`
+	SegmentationID  int    `json:"provider:segmentation_id"`
 }
 
 func (n *NetworkExtAttrs) UnmarshalJSON(b []byte) error {
@@ -112,5 +123,21 @@ func ExtractList(r pagination.Page) ([]NetworkExtAttrs, error) {
 		Networks []NetworkExtAttrs `json:"networks" json:"networks"`
 	}
 	err := (r.(networks.NetworkPage)).ExtractInto(&s)
+	return s.Networks, err
+}
+
+type NetworkExtAttrsResult struct {
+	gophercloud.Result
+}
+
+type CreateResult struct {
+	NetworkExtAttrsResult
+}
+
+func (r NetworkExtAttrsResult) Extract() (*NetworkExtAttrs, error) {
+	var s struct {
+		Networks *NetworkExtAttrs `json:"network"`
+	}
+	err := r.ExtractInto(&s)
 	return s.Networks, err
 }
