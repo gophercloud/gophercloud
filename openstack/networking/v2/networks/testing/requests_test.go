@@ -214,6 +214,58 @@ func TestCreateWithOptionalFields(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestCreateWithMultipleProvider(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+	"network": {
+			"name": "sample_network",
+			"admin_state_up": true,
+			"shared": true,
+			"tenant_id": "12345",
+			"segments": [
+				{
+					"provider:segmentation_id": 666,
+					"provider:physical_network": "br-ex",
+					"provider:network_type": "vlan"
+				},
+				{
+					"provider:segmentation_id": 615,
+					"provider:network_type": "vxlan"
+				}
+			]
+	}
+}
+		`)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, `{}`)
+	})
+
+	iTrue := true
+	segments := []networks.Segment{
+		networks.Segment{NetworkType: "vlan", PhysicalNetwork: "br-ex", SegmentationID:  666,},
+		networks.Segment{NetworkType: "vxlan", SegmentationID: 615,},
+	}
+
+	options := networks.CreateOpts{
+		Name:         "sample_network",
+		AdminStateUp: &iTrue,
+		Shared:       &iTrue,
+		TenantID:     "12345",
+		Segments:     segments,
+	}
+	_, err := networks.Create(fake.ServiceClient(), options).Extract()
+	th.AssertNoErr(t, err)
+}
+
 func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
