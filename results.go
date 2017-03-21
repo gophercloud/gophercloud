@@ -57,29 +57,8 @@ func (r Result) ExtractInto(to interface{}) error {
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(b, to)
 
-	return err
-}
-
-func (r Result) extractIntoPtr(to interface{}, label string) error {
-	if label == "" {
-		return r.ExtractInto(&to)
-	}
-
-	var m map[string]interface{}
-	err := r.ExtractInto(&m)
-	if err != nil {
-		return err
-	}
-
-	b, err := json.Marshal(m[label])
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(b, &to)
-	return err
+	return json.Unmarshal(b, to)
 }
 
 // ExtractIntoStructPtr will unmarshal the Result (r) into the provided
@@ -100,12 +79,73 @@ func (r Result) ExtractIntoStructPtr(to interface{}, label string) error {
 	if k := t.Kind(); k != reflect.Ptr {
 		return fmt.Errorf("Expected pointer, got %v", k)
 	}
+
+	tov := reflect.ValueOf(to)
+
+	var rawitem map[string]interface{}
+	switch bodyt := r.Body.(type) {
+	case map[string]interface{}:
+		if label == "" {
+			rawitem = bodyt
+		} else {
+			rawmap := bodyt[label]
+			switch rawmapt := rawmap.(type) {
+			case map[string]interface{}:
+				rawitem = rawmapt
+			case nil:
+				return nil
+			default:
+				return fmt.Errorf("unsupported type: %T", rawmapt)
+			}
+		}
+	default:
+		return fmt.Errorf("unsupported type for r.Body: %T", r.Body)
+	}
+
+	b, err := json.Marshal(rawitem)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(b, to)
+	if err != nil {
+		return err
+	}
+
 	switch t.Elem().Kind() {
 	case reflect.Struct:
-		return r.extractIntoPtr(to, label)
+		for i := 0; i < t.Elem().NumField(); i++ {
+			if f := t.Elem().Field(i); f.Anonymous {
+				var jumer json.Unmarshaler
+				s := reflect.PtrTo(f.Type)
+				p0 := reflect.New(f.Type)
+				itemb, err := json.Marshal(rawitem)
+				if err != nil {
+					return err
+				}
+				p1 := reflect.ValueOf(itemb)
+				if s.Implements(reflect.TypeOf(&jumer).Elem()) {
+					method, _ := s.MethodByName("UnmarshalJSON")
+					params := []reflect.Value{p0, p1}
+					rvs := method.Func.Call(params)
+					if err, ok := rvs[0].Interface().(error); ok && err != nil {
+						return err
+					}
+					tov.Elem().FieldByName(f.Name).Set(reflect.Indirect(params[0]))
+				} else {
+					err := json.Unmarshal(itemb, p0.Interface())
+					if err != nil {
+						return err
+					}
+					tov.Elem().FieldByName(f.Name).Set(reflect.Indirect(p0))
+				}
+			}
+		}
 	default:
 		return fmt.Errorf("Expected pointer to struct, got: %v", t)
 	}
+
+	return nil
 }
 
 // ExtractIntoSlicePtr will unmarshal the Result (r) into the provided
@@ -126,12 +166,87 @@ func (r Result) ExtractIntoSlicePtr(to interface{}, label string) error {
 	if k := t.Kind(); k != reflect.Ptr {
 		return fmt.Errorf("Expected pointer, got %v", k)
 	}
-	switch t.Elem().Kind() {
-	case reflect.Slice:
-		return r.extractIntoPtr(to, label)
-	default:
+
+	eltype := t.Elem()
+	if eltype.Kind() != reflect.Slice {
 		return fmt.Errorf("Expected pointer to slice, got: %v", t)
 	}
+
+	tov := reflect.ValueOf(to)
+
+	var rawitems []interface{}
+	switch bodyt := r.Body.(type) {
+	case map[string][]interface{}:
+		if label == "" {
+			return fmt.Errorf("expected label for map[string]interface{} page")
+		}
+		rawitems = bodyt[label]
+	case map[string]interface{}:
+		if label == "" {
+			return fmt.Errorf("expected label for map[string]interface{} page")
+		}
+		rawitems = bodyt[label].([]interface{})
+	case []interface{}:
+		rawitems = bodyt
+	default:
+		return fmt.Errorf("unsupported type for r.Body: %T", r.Body)
+	}
+
+	if len(rawitems) == 0 {
+		return nil
+	}
+
+	switch rawitems[0].(type) {
+	case map[string]interface{}:
+	default:
+		return fmt.Errorf("don't know how to handle extracting type: []%T", rawitems[0])
+	}
+
+	b, err := json.Marshal(rawitems)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(b, to)
+	if err != nil {
+		return err
+	}
+
+	eleltype := eltype.Elem()
+	switch eleltype.Kind() {
+	case reflect.Struct:
+		for i := 0; i < eleltype.NumField(); i++ {
+			if f := eleltype.Field(i); f.Anonymous {
+				var jumer json.Unmarshaler
+				s := reflect.PtrTo(f.Type)
+				p0 := reflect.New(f.Type)
+				for i, rawitem := range rawitems {
+					itemb, err := json.Marshal(rawitem)
+					if err != nil {
+						return err
+					}
+					p1 := reflect.ValueOf(itemb)
+					if s.Implements(reflect.TypeOf(&jumer).Elem()) {
+						method, _ := s.MethodByName("UnmarshalJSON")
+						params := []reflect.Value{p0, p1}
+						rvs := method.Func.Call(params)
+						if err, ok := rvs[0].Interface().(error); ok && err != nil {
+							return err
+						}
+						tov.Elem().Index(i).FieldByName(f.Name).Set(reflect.Indirect(params[0]))
+					} else {
+						err := json.Unmarshal(itemb, p0.Interface())
+						if err != nil {
+							return err
+						}
+						tov.Elem().Index(i).FieldByName(f.Name).Set(reflect.Indirect(p0))
+					}
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 // PrettyPrintJSON creates a string containing the full response body as
