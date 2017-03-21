@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 )
 
@@ -23,27 +24,29 @@ type NetworkProviderExt struct {
 	// segment depends on the segmentation model defined by network_type. For
 	// instance, if network_type is vlan, then this is a vlan identifier;
 	// otherwise, if network_type is gre, then this will be a gre key.
-	SegmentationID string `json:"provider:segmentation_id"`
+	SegmentationID string `json:"-"`
 }
 
 func (r *NetworkProviderExt) UnmarshalJSON(b []byte) error {
 	type tmp NetworkProviderExt
-	var networkProviderExt struct {
+	var s struct {
 		tmp
 		SegmentationID interface{} `json:"provider:segmentation_id"`
 	}
 
-	if err := json.Unmarshal(b, &networkProviderExt); err != nil {
+	if err := json.Unmarshal(b, &s); err != nil {
 		return err
 	}
 
-	*r = NetworkProviderExt(networkProviderExt.tmp)
+	*r = NetworkProviderExt(s.tmp)
 
-	switch t := networkProviderExt.SegmentationID.(type) {
+	switch t := s.SegmentationID.(type) {
 	case float64:
 		r.SegmentationID = strconv.FormatFloat(t, 'f', -1, 64)
 	case string:
 		r.SegmentationID = string(t)
+	default:
+		fmt.Printf("unsupported segmentationid type: %T\n", s.SegmentationID)
 	}
 
 	return nil
