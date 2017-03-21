@@ -116,29 +116,16 @@ func (r Result) ExtractIntoStructPtr(to interface{}, label string) error {
 	case reflect.Struct:
 		for i := 0; i < t.Elem().NumField(); i++ {
 			if f := t.Elem().Field(i); f.Anonymous {
-				var jumer json.Unmarshaler
-				s := reflect.PtrTo(f.Type)
-				p0 := reflect.New(f.Type)
+				newf := reflect.New(f.Type)
 				itemb, err := json.Marshal(rawitem)
 				if err != nil {
 					return err
 				}
-				p1 := reflect.ValueOf(itemb)
-				if s.Implements(reflect.TypeOf(&jumer).Elem()) {
-					method, _ := s.MethodByName("UnmarshalJSON")
-					params := []reflect.Value{p0, p1}
-					rvs := method.Func.Call(params)
-					if err, ok := rvs[0].Interface().(error); ok && err != nil {
-						return err
-					}
-					tov.Elem().FieldByName(f.Name).Set(reflect.Indirect(params[0]))
-				} else {
-					err := json.Unmarshal(itemb, p0.Interface())
-					if err != nil {
-						return err
-					}
-					tov.Elem().FieldByName(f.Name).Set(reflect.Indirect(p0))
+				err = json.Unmarshal(itemb, newf.Interface())
+				if err != nil {
+					return err
 				}
+				tov.Elem().FieldByName(f.Name).Set(reflect.Indirect(newf))
 			}
 		}
 	default:
@@ -217,30 +204,17 @@ func (r Result) ExtractIntoSlicePtr(to interface{}, label string) error {
 	case reflect.Struct:
 		for i := 0; i < eleltype.NumField(); i++ {
 			if f := eleltype.Field(i); f.Anonymous {
-				var jumer json.Unmarshaler
-				s := reflect.PtrTo(f.Type)
-				p0 := reflect.New(f.Type)
+				newf := reflect.New(f.Type)
 				for i, rawitem := range rawitems {
 					itemb, err := json.Marshal(rawitem)
 					if err != nil {
 						return err
 					}
-					p1 := reflect.ValueOf(itemb)
-					if s.Implements(reflect.TypeOf(&jumer).Elem()) {
-						method, _ := s.MethodByName("UnmarshalJSON")
-						params := []reflect.Value{p0, p1}
-						rvs := method.Func.Call(params)
-						if err, ok := rvs[0].Interface().(error); ok && err != nil {
-							return err
-						}
-						tov.Elem().Index(i).FieldByName(f.Name).Set(reflect.Indirect(params[0]))
-					} else {
-						err := json.Unmarshal(itemb, p0.Interface())
-						if err != nil {
-							return err
-						}
-						tov.Elem().Index(i).FieldByName(f.Name).Set(reflect.Indirect(p0))
+					err = json.Unmarshal(itemb, newf.Interface())
+					if err != nil {
+						return err
 					}
+					tov.Elem().Index(i).FieldByName(f.Name).Set(reflect.Indirect(newf))
 				}
 			}
 		}
