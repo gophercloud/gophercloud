@@ -78,6 +78,8 @@ func (h *Hypervisor) UnmarshalJSON(b []byte) error {
 		tmp
 		CpuInfo           interface{} `json:"cpu_info"`
 		HypervisorVersion interface{} `json:"hypervisor_version"`
+		FreeDiskGB        interface{} `json:"free_disk_gb"`
+		LocalGB           interface{} `json:"local_gb"`
 	}
 
 	err := json.Unmarshal(b, &hypervisor)
@@ -147,6 +149,24 @@ func (h *Hypervisor) UnmarshalJSON(b []byte) error {
 		h.HypervisorVersion = int(t)
 	default:
 		return fmt.Errorf("Hypervisor version of unexpected type")
+	}
+
+	switch t := hypervisor.FreeDiskGB.(type) {
+	case int:
+		h.FreeDiskGB = t
+	case float64:
+		h.FreeDiskGB = int(t)
+	default:
+		return fmt.Errorf("Free disk GB of unexpected type")
+	}
+
+	switch t := hypervisor.LocalGB.(type) {
+	case int:
+		h.LocalGB = t
+	case float64:
+		h.LocalGB = int(t)
+	default:
+		return fmt.Errorf("Local GB of unexpected type")
 	}
 
 	return nil
