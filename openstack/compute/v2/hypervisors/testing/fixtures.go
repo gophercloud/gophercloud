@@ -84,7 +84,7 @@ const HypervisorListBody = `
 
 var (
 	HypervisorFake = hypervisors.Hypervisor{
-		CpuInfo: hypervisors.CpuInfo{
+		CPUInfo: hypervisors.CPUInfo{
 			Arch:   "x86_64",
 			Model:  "Nehalem",
 			Vendor: "Intel",

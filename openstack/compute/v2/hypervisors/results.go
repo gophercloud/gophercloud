@@ -12,12 +12,12 @@ type Topology struct {
 	Threads int `json:"threads"`
 }
 
-type CpuInfo struct {
+type CPUInfo struct {
 	Vendor   string   `json:"vendor"`
 	Arch     string   `json:"arch"`
 	Model    string   `json:"model"`
 	Features []string `json:"features"`
-	Topology `json:"topology"`
+	Topology Topology `json:"topology"`
 }
 
 type Service struct {
@@ -28,7 +28,7 @@ type Service struct {
 
 type Hypervisor struct {
 	// A structure that contains cpu information like arch, model, vendor, features and topology
-	CpuInfo `json:"cpu_info"`
+	CPUInfo CPUInfo `json:"-"`
 	// The current_workload is the number of tasks the hypervisor is responsible for.
 	// This will be equal or greater than the number of active VMs on the system
 	// (it can be greater when VMs are being deleted and the hypervisor is still cleaning up).
@@ -42,7 +42,7 @@ type Hypervisor struct {
 	// The hypervisor's IP address
 	HostIP string `json:"host_ip"`
 	// The free disk remaining on this hypervisor in GB
-	FreeDiskGB int `json:"free_disk_gb"`
+	FreeDiskGB int `json:"-"`
 	// The free RAM in this hypervisor in MB
 	FreeRamMB int `json:"free_ram_mb"`
 	// The hypervisor host name
@@ -50,11 +50,11 @@ type Hypervisor struct {
 	// The hypervisor type
 	HypervisorType string `json:"hypervisor_type"`
 	// The hypervisor version
-	HypervisorVersion int `json:"hypervisor_version"`
+	HypervisorVersion int `json:"-"`
 	// Unique ID of the hypervisor
 	ID int `json:"id"`
 	// The disk in this hypervisor in GB
-	LocalGB int `json:"local_gb"`
+	LocalGB int `json:"-"`
 	// The disk used in this hypervisor in GB
 	LocalGBUsed int `json:"local_gb_used"`
 	// The memory of this hypervisor in MB
@@ -64,107 +64,77 @@ type Hypervisor struct {
 	// The number of running vms on this hypervisor
 	RunningVMs int `json:"running_vms"`
 	// The hypervisor service object
-	Service `json:"service"`
+	Service Service `json:"service"`
 	// The number of vcpu in this hypervisor
 	VCPUs int `json:"vcpus"`
 	// The number of vcpu used in this hypervisor
 	VCPUsUsed int `json:"vcpus_used"`
 }
 
-func (h *Hypervisor) UnmarshalJSON(b []byte) error {
+func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 
 	type tmp Hypervisor
-	var hypervisor *struct {
+	var s *struct {
 		tmp
-		CpuInfo           interface{} `json:"cpu_info"`
+		CPUInfo           interface{} `json:"cpu_info"`
 		HypervisorVersion interface{} `json:"hypervisor_version"`
 		FreeDiskGB        interface{} `json:"free_disk_gb"`
 		LocalGB           interface{} `json:"local_gb"`
 	}
 
-	err := json.Unmarshal(b, &hypervisor)
+	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
 
-	*h = Hypervisor(hypervisor.tmp)
+	*r = Hypervisor(s.tmp)
 
 	// Newer versions pass the CPU into around as the correct types, this just needs
 	// converting and copying into place. Older versions pass CPU info around as a string
 	// and can simply be unmarshalled by the json parser
-	switch t := hypervisor.CpuInfo.(type) {
-	case map[string]interface{}:
-		var ok bool
-		if h.CpuInfo.Vendor, ok = t["vendor"].(string); !ok {
-			return fmt.Errorf("CPU info vendor expected to be a string")
-		}
-		if h.CpuInfo.Arch, ok = t["arch"].(string); !ok {
-			return fmt.Errorf("CPU info arch expected to be a string")
-		}
-		if h.CpuInfo.Model, ok = t["model"].(string); !ok {
-			return fmt.Errorf("CPU info model expected to be a string")
-		}
-		if features, ok := t["features"].([]interface{}); ok {
-			for _, feature := range features {
-				if temp, ok := feature.(string); ok {
-					h.CpuInfo.Features = append(h.CpuInfo.Features, temp)
-				} else {
-					return fmt.Errorf("CPU info feaure expected to be a string")
-				}
-			}
-		} else {
-			return fmt.Errorf("CPU info features to be an array")
-		}
-		if topology, ok := t["topology"].(map[string]interface{}); ok {
-			if temp, ok := topology["sockets"].(float64); ok {
-				h.CpuInfo.Topology.Sockets = int(temp)
-			} else {
-				return fmt.Errorf("CPU info topology sockets expected to be numeric")
-			}
-			if temp, ok := topology["cores"].(float64); ok {
-				h.CpuInfo.Topology.Cores = int(temp)
-			} else {
-				return fmt.Errorf("CPU info topology cores expected to be numeric")
-			}
-			if temp, ok := topology["threads"].(float64); ok {
-				h.CpuInfo.Topology.Threads = int(temp)
-			} else {
-				return fmt.Errorf("CPU info topology threads expected to be numeric")
-			}
-		} else {
-			return fmt.Errorf("CPU info topology expected to be a map")
-		}
+	var tmpb []byte;
+
+	switch t := s.CPUInfo.(type) {
 	case string:
-		err := json.Unmarshal([]byte(t), &h.CpuInfo)
+		tmpb = []byte(t)
+	case map[string]interface{}:
+		tmpb, err = json.Marshal(t)
 		if err != nil {
 			return err
 		}
+	default:
+		return fmt.Errorf("CPUInfo has unexpected type: %T", t)
 	}
 
-	// A feature in OpenStack may return this value as floating point
-	switch t := hypervisor.HypervisorVersion.(type) {
+	err = json.Unmarshal(tmpb, &r.CPUInfo)
+	if err != nil {
+		return err
+	}
+
+	// These fields may be passed in in scientific notation
+	switch t := s.HypervisorVersion.(type) {
 	case int:
-		h.HypervisorVersion = t
+		r.HypervisorVersion = t
 	case float64:
-		h.HypervisorVersion = int(t)
+		r.HypervisorVersion = int(t)
 	default:
 		return fmt.Errorf("Hypervisor version of unexpected type")
 	}
 
-	switch t := hypervisor.FreeDiskGB.(type) {
+	switch t := s.FreeDiskGB.(type) {
 	case int:
-		h.FreeDiskGB = t
+		r.FreeDiskGB = t
 	case float64:
-		h.FreeDiskGB = int(t)
+		r.FreeDiskGB = int(t)
 	default:
 		return fmt.Errorf("Free disk GB of unexpected type")
 	}
 
-	switch t := hypervisor.LocalGB.(type) {
+	switch t := s.LocalGB.(type) {
 	case int:
-		h.LocalGB = t
+		r.LocalGB = t
 	case float64:
-		h.LocalGB = int(t)
+		r.LocalGB = int(t)
 	default:
 		return fmt.Errorf("Local GB of unexpected type")
 	}
