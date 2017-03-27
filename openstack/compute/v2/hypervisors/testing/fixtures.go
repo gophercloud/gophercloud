@@ -130,15 +130,6 @@ func HandleHypervisorListSuccessfully(t *testing.T) {
 		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		r.ParseForm()
-		marker := r.Form.Get("marker")
-		switch marker {
-		case "":
-			fmt.Fprintf(w, HypervisorListBody)
-		case "1":
-			fmt.Fprintf(w, `{ "hypervisors": [] }`)
-		default:
-			t.Fatalf("/hypervisors/detail invoked with unexpected marker=[%s]", marker)
-		}
+		fmt.Fprintf(w, HypervisorListBody)
 	})
 }

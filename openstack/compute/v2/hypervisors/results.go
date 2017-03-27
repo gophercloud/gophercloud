@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gophercloud/gophercloud/pagination"
-	"strconv"
 )
 
 type Topology struct {
@@ -144,23 +143,12 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 }
 
 type HypervisorPage struct {
-	pagination.MarkerPageBase
+	pagination.SinglePageBase
 }
 
 func (page HypervisorPage) IsEmpty() (bool, error) {
-	hypervisors, err := ExtractHypervisors(page)
-	return len(hypervisors) == 0, err
-}
-
-func (r HypervisorPage) LastMarker() (string, error) {
-	hypervisors, err := ExtractHypervisors(r)
-	if err != nil {
-		return "", nil
-	}
-	if len(hypervisors) == 0 {
-		return "", nil
-	}
-	return strconv.Itoa(hypervisors[len(hypervisors)-1].ID), nil
+        va, err := ExtractHypervisors(page)
+        return len(va) == 0, err
 }
 
 func ExtractHypervisors(p pagination.Page) ([]Hypervisor, error) {

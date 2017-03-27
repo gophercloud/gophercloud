@@ -14,7 +14,7 @@ func TestListHypervisors(t *testing.T) {
 	HandleHypervisorListSuccessfully(t)
 
 	pages := 0
-	err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := hypervisors.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := hypervisors.ExtractHypervisors(page)
@@ -43,7 +43,7 @@ func TestListAllHypervisors(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	HandleHypervisorListSuccessfully(t)
 
-	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{}).AllPages()
+	allPages, err := hypervisors.List(client.ServiceClient()).AllPages()
 	testhelper.AssertNoErr(t, err)
 	actual, err := hypervisors.ExtractHypervisors(allPages)
 	testhelper.AssertNoErr(t, err)
