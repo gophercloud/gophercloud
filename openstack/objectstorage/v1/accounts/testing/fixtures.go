@@ -17,6 +17,7 @@ func HandleGetAccountSuccessfully(t *testing.T) {
 
 		w.Header().Set("X-Account-Container-Count", "2")
 		w.Header().Set("X-Account-Object-Count", "5")
+		w.Header().Set("X-Account-Meta-Quota-Bytes", "42")
 		w.Header().Set("X-Account-Bytes-Used", "14")
 		w.Header().Set("X-Account-Meta-Subject", "books")
 		w.Header().Set("Date", "Fri, 17 Jan 2014 16:09:56 GMT")

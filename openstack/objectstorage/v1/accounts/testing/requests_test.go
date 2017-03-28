@@ -35,7 +35,7 @@ func TestGetAccount(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetAccountSuccessfully(t)
 
-	expectedMetadata := map[string]string{"Subject": "books"}
+	expectedMetadata := map[string]string{"Subject": "books", "Quota-Bytes": "42"}
 	res := accounts.Get(fake.ServiceClient(), &accounts.GetOpts{})
 	th.AssertNoErr(t, res.Err)
 	actualMetadata, _ := res.ExtractMetadata()
@@ -44,6 +44,7 @@ func TestGetAccount(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := &accounts.GetHeader{
+		QuotaBytes:     42,
 		ContainerCount: 2,
 		ObjectCount:    5,
 		BytesUsed:      14,
