@@ -27,6 +27,8 @@ type SchedulerHints struct {
 	TargetCell string `json:"target_cell,omitempty"`
 	// BuildNearHostIP specifies a subnet of compute nodes to host the instance.
 	BuildNearHostIP string
+	// Reservation specifies the id of a reservation obtained in blazar
+	Reservation string
 }
 
 // CreateOptsBuilder builds the scheduler hints into a serializable format.
@@ -114,6 +116,17 @@ func (opts SchedulerHints) ToServerSchedulerHintsCreateMap() (map[string]interfa
 		ipParts := strings.Split(opts.BuildNearHostIP, "/")
 		sh["build_near_host_ip"] = ipParts[0]
 		sh["cidr"] = "/" + ipParts[1]
+	}
+
+	if opts.Reservation != "" {
+		if !uuidRegex.MatchString(opts.Reservation) {
+			err := gophercloud.ErrInvalidInput{}
+			err.Argument = "schedulerhints.SchedulerHints.Reservation"
+			err.Value = opts.Reservation
+			err.Info = "The reservation_id must be in UUID format."
+			return nil, err
+		}
+		sh["reservation"] = opts.Reservation
 	}
 
 	return sh, nil
