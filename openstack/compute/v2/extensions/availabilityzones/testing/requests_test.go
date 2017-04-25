@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/availabilityzones"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -29,6 +29,5 @@ func TestList(t *testing.T) {
 			ID:        "388c983d-258e-4a0e-b1ba-10da37d766db",
 		},
 	}
-
 	th.CheckDeepEquals(t, expected, actual)
 }
