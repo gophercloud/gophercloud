@@ -304,6 +304,21 @@ const ServerPasswordBody = `
 }
 `
 
+const HostKeyConsoleOutput = `
+FAKE CONSOLE OUTPUT\r
+-----BEGIN SSH HOST KEY KEYS-----\r
+ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBDciNMyzj0osyPOM+1OyseTWgkzw+M43zp5H2CchG8daRDHel7V3OHETVdI6WofNnSdBJAwIoisRFPxyroNGiVw= root@my-name
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDU854+fNdcKMZTLCUejMOZllQmmphr6V5Aaz1F2+x2jXql5rqKQd5/h6OdFszcp+gdTeVtfgG++/298qodTemVVrvqwjp4eN87iHvhPxH6GDEevAKlEed2ckdAmgvzI9rcOYgR/46G9xIea0IdgNjMvN1baj6WPtv+HfcfH/ZV58G306lSJfbz/GVxNTIxW+Wg7ZQCAe6jWgm4oQ+66sco+7Fub24EPue3kO8jqufqq3mY5+MFlzEHSX5B04ioG5Alw/JuqVx5+7zHt9I2wA3nzsyUdKtCTrw8V4fYEhWDm53WLOpW+8CeYCXuv+yL7EjwLqhIH/TUuzGQiWmFGvyz root@my-name
+-----END SSH HOST KEY KEYS-----\r
+LAST LINE
+`
+
+const HostKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDU854+fNdcKMZTLCUejMOZllQmmphr6V5Aaz1F2+x2jXql5rqKQd5/h6OdFszcp+gdTeVtfgG++/298qodTemVVrvqwjp4eN87iHvhPxH6GDEevAKlEed2ckdAmgvzI9rcOYgR/46G9xIea0IdgNjMvN1baj6WPtv+HfcfH/ZV58G306lSJfbz/GVxNTIxW+Wg7ZQCAe6jWgm4oQ+66sco+7Fub24EPue3kO8jqufqq3mY5+MFlzEHSX5B04ioG5Alw/JuqVx5+7zHt9I2wA3nzsyUdKtCTrw8V4fYEhWDm53WLOpW+8CeYCXuv+yL7EjwLqhIH/TUuzGQiWmFGvyz root@my-name"
+
+const ConsoleOutputBody = `{
+	"output": "abc"
+}`
+
 var (
 	herpTimeCreated, _ = time.Parse(time.RFC3339, "2014-09-25T13:10:02Z")
 	herpTimeUpdated, _ = time.Parse(time.RFC3339, "2014-09-25T13:10:10Z")
@@ -420,6 +435,8 @@ var (
 			},
 		},
 	}
+
+	ConsoleOutput = "abc"
 
 	merpTimeCreated, _ = time.Parse(time.RFC3339, "2014-09-25T13:04:41Z")
 	merpTimeUpdated, _ = time.Parse(time.RFC3339, "2014-09-25T13:04:49Z")
@@ -740,6 +757,19 @@ func HandleRebootSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, `{ "reboot": { "type": "SOFT" } }`)
 
 		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+// HandleShowConsoleOutputSuccessfully sets up the test server to respond to a os-getConsoleOutput request with success.
+func HandleShowConsoleOutputSuccessfully(t *testing.T, response string) {
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "os-getConsoleOutput": { "length": "50" } }`)
+
+		w.WriteHeader(http.StatusOK)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
 	})
 }
 

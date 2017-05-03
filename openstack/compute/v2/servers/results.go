@@ -4,9 +4,11 @@ import (
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -72,6 +74,11 @@ type CreateImageResult struct {
 	gophercloud.Result
 }
 
+// ShowConsoleOutputResult represents the result of console output from a server
+type ShowConsoleOutputResult struct {
+	gophercloud.Result
+}
+
 // GetPasswordResult represent the result of a get os-server-password operation.
 type GetPasswordResult struct {
 	gophercloud.Result
@@ -90,6 +97,41 @@ func (r GetPasswordResult) ExtractPassword(privateKey *rsa.PrivateKey) (string, 
 		return decryptPassword(s.Password, privateKey)
 	}
 	return s.Password, err
+}
+
+func (r ShowConsoleOutputResult) ExtractConsoleOutput() (string, error) {
+	if r.Err != nil {
+		return "", r.Err
+	}
+
+	var s struct {
+		Output string `json:"output"`
+	}
+
+	err := r.ExtractInto(&s)
+	return s.Output, err
+}
+
+func GetHostKeyFromConsole(consoleOutput string) (string, error) {
+	start := `-----BEGIN SSH HOST KEY KEYS-----\r`
+	end := `-----END SSH HOST KEY KEYS-----\r`
+	searchFlag := false
+	lines := strings.Split(consoleOutput, "\n")
+	for _, value := range lines {
+		if value == start {
+			searchFlag = true
+		}
+
+		if value == end {
+			searchFlag = false
+		}
+
+		if searchFlag && strings.HasPrefix(value, "ssh-rsa") {
+			return value, nil
+		}
+	}
+
+	return "", errors.New("ssh host key not found")
 }
 
 func decryptPassword(encryptedPassword string, privateKey *rsa.PrivateKey) (string, error) {
