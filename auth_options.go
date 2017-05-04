@@ -257,7 +257,6 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 			scope.DomainID = opts.DomainID
 			scope.DomainName = opts.DomainName
 		}
-		opts.TenantName = ""
 	}
 
 	if scope.ProjectName != "" {
