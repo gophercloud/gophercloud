@@ -55,12 +55,10 @@ func TestShareNetworkUpdate(t *testing.T) {
 	options := sharenetworks.UpdateOpts{
 		Name:        "NewName",
 		Description: "New share network description",
-		NovaNetID:   "New_nova_network_id",
 	}
 
 	expectedShareNetwork.Name = options.Name
 	expectedShareNetwork.Description = options.Description
-	expectedShareNetwork.NovaNetID = options.NovaNetID
 
 	_, err = sharenetworks.Update(client, shareNetwork.ID, options).Extract()
 	if err != nil {

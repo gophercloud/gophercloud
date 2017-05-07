@@ -55,10 +55,6 @@ func TestShareTypeGetDefault(t *testing.T) {
 		t.Fatalf("Unable to retrieve the default share type: %v", err)
 	}
 
-	if shareType.Name != "default" {
-		t.Fatal("Share type name was expected to be: default")
-	}
-
 	PrintShareType(t, shareType)
 }
 
