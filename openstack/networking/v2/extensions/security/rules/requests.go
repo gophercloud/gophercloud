@@ -57,7 +57,7 @@ const (
 	ProtocolEGP       RuleProtocol  = "egp"
 	ProtocolGRE       RuleProtocol  = "gre"
 	ProtocolIGMP      RuleProtocol  = "igmp"
-	ProtocolIPv6      RuleProtocol  = "ipv6-encap"
+	ProtocolIPv6Encap RuleProtocol  = "ipv6-encap"
 	ProtocolIPv6Frag  RuleProtocol  = "ipv6-frag"
 	ProtocolIPv6ICMP  RuleProtocol  = "ipv6-icmp"
 	ProtocolIPv6NoNxt RuleProtocol  = "ipv6-nonxt"
