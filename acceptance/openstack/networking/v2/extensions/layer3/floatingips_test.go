@@ -45,7 +45,7 @@ func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 		t.Fatalf("Unable to get choices: %v", err)
 	}
 
-	netid, err := networks.IDFromName(client,chocices.NetworkName)
+	netid, err := networks.IDFromName(client, chocices.NetworkName)
 	if err != nil {
 		t.Fatalf("Unable to find network id: %v", err)
 	}
