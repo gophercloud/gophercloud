@@ -9,13 +9,13 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-func TestList(t *testing.T) {
+func TestListByZone(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	HandleListByZoneSuccessfully(t)
 
 	count := 0
-	err := recordsets.List(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := recordsets.ListByZone(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", nil).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := recordsets.ExtractRecordSets(page)
 		th.AssertNoErr(t, err)
@@ -27,12 +27,12 @@ func TestList(t *testing.T) {
 	th.CheckEquals(t, 1, count)
 }
 
-func TestListAllPages(t *testing.T) {
+func TestListByZoneAllPages(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListSuccessfully(t)
+	HandleListByZoneSuccessfully(t)
 
-	allPages, err := recordsets.List(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", nil).AllPages()
+	allPages, err := recordsets.ListByZone(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", nil).AllPages()
 	th.AssertNoErr(t, err)
 	allRecordSets, err := recordsets.ExtractRecordSets(allPages)
 	th.AssertNoErr(t, err)

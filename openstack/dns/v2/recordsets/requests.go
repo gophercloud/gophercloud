@@ -40,8 +40,8 @@ func (opts ListOpts) ToRecordSetListQuery() (string, error) {
 	return q.String(), err
 }
 
-// List implements the recordset list request.
-func List(client *gophercloud.ServiceClient, zoneID string, opts ListOptsBuilder) pagination.Pager {
+// ListByZone implements the recordset list request.
+func ListByZone(client *gophercloud.ServiceClient, zoneID string, opts ListOptsBuilder) pagination.Pager {
 	url := baseURL(client, zoneID)
 	if opts != nil {
 		query, err := opts.ToRecordSetListQuery()

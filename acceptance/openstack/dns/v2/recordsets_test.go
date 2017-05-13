@@ -10,7 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/dns/v2/recordsets"
 )
 
-func TestRecordSetsList(t *testing.T) {
+func TestRecordSetsListByZone(t *testing.T) {
 	client, err := clients.NewDNSV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a DNS client: %v", err)
@@ -23,7 +23,7 @@ func TestRecordSetsList(t *testing.T) {
 	defer DeleteZone(t, client, zone)
 
 	var allRecordSets []recordsets.RecordSet
-	allPages, err := recordsets.List(client, zone.ID, nil).AllPages()
+	allPages, err := recordsets.ListByZone(client, zone.ID, nil).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to retrieve recordsets: %v", err)
 	}

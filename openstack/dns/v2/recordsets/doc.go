@@ -1,4 +1,4 @@
-// Package tokens provides information and interaction with the zone API
+// Package recordsets provides information and interaction with the zone API
 // resource for the OpenStack DNS service.
 //
 // For more information, see:

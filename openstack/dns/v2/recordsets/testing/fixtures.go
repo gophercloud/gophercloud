@@ -12,8 +12,8 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-// ListOutput is a sample response to a List call.
-const ListOutput = `
+// ListByZoneOutput is a sample response to a ListByZone call.
+const ListByZoneOutput = `
 {
     "recordsets": [
         {
@@ -94,7 +94,7 @@ const GetOutput = `
 }
 `
 
-// FirstRecordSet is the first result in ListOutput
+// FirstRecordSet is the first result in ListByZoneOutput
 var FirstRecordSetCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2014-10-24T19:59:44.000000")
 var FirstRecordSet = recordsets.RecordSet{
 	ID:          "f7b10e9b-0cae-4a91-b162-562bc6096648",
@@ -116,7 +116,7 @@ var FirstRecordSet = recordsets.RecordSet{
 	},
 }
 
-// SecondRecordSet is the first result in ListOutput
+// SecondRecordSet is the first result in ListByZoneOutput
 var SecondRecordSetCreatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2014-10-24T19:59:44.000000")
 var SecondRecordSetUpdatedAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2017-03-04T14:29:07.000000")
 var SecondRecordSet = recordsets.RecordSet{
@@ -140,22 +140,22 @@ var SecondRecordSet = recordsets.RecordSet{
 }
 
 // ExpectedRecordSetSlice is the slice of results that should be parsed
-// from ListOutput, in the expected order.
+// from ListByZoneOutput, in the expected order.
 var ExpectedRecordSetSlice = []recordsets.RecordSet{FirstRecordSet, SecondRecordSet}
 
-// HandleListSuccessfully configures the test server to respond to a List request.
-func HandleListSuccessfully(t *testing.T) {
+// HandleListByZoneSuccessfully configures the test server to respond to a ListByZone request.
+func HandleListByZoneSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets",
 		func(w http.ResponseWriter, r *http.Request) {
 			th.TestMethod(t, r, "GET")
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, ListOutput)
+			fmt.Fprintf(w, ListByZoneOutput)
 		})
 }
 
-// HandleGetSuccessfully configures the test server to respond to a List request.
+// HandleGetSuccessfully configures the test server to respond to a Get request.
 func HandleGetSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
 		func(w http.ResponseWriter, r *http.Request) {
