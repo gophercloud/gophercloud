@@ -37,3 +37,34 @@ func TestRecordSetsListByZone(t *testing.T) {
 		tools.PrintResource(t, &recordset)
 	}
 }
+
+func TestRecordSetsListByZoneLimited(t *testing.T) {
+	client, err := clients.NewDNSV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a DNS client: %v", err)
+	}
+
+	zone, err := CreateZone(t, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer DeleteZone(t, client, zone)
+
+	var allRecordSets []recordsets.RecordSet
+	listOpts := recordsets.ListOpts{
+		Limit: 1,
+	}
+	allPages, err := recordsets.ListByZone(client, zone.ID, listOpts).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to retrieve recordsets: %v", err)
+	}
+
+	allRecordSets, err = recordsets.ExtractRecordSets(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract recordsets: %v", err)
+	}
+
+	for _, recordset := range allRecordSets {
+		tools.PrintResource(t, &recordset)
+	}
+}

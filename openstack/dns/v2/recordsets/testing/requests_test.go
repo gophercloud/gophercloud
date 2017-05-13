@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/dns/v2/recordsets"
@@ -20,6 +21,28 @@ func TestListByZone(t *testing.T) {
 		actual, err := recordsets.ExtractRecordSets(page)
 		th.AssertNoErr(t, err)
 		th.CheckDeepEquals(t, ExpectedRecordSetSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 1, count)
+}
+
+func TestListByZoneLimited(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListByZoneSuccessfully(t)
+
+	count := 0
+	listOpts := recordsets.ListOpts{
+		Limit:  1,
+		Marker: "f7b10e9b-0cae-4a91-b162-562bc6096648",
+	}
+	err := recordsets.ListByZone(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", listOpts).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := recordsets.ExtractRecordSets(page)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, ExpectedRecordSetSliceLimited, actual)
 
 		return true, nil
 	})
@@ -47,4 +70,18 @@ func TestGet(t *testing.T) {
 	actual, err := recordsets.Get(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", "f7b10e9b-0cae-4a91-b162-562bc6096648").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstRecordSet, actual)
+}
+
+func TestNextPageURL(t *testing.T) {
+	var page recordsets.RecordSetPage
+	var body map[string]interface{}
+	err := json.Unmarshal([]byte(NextPageRequest), &body)
+	if err != nil {
+		t.Fatalf("Error unmarshaling data into page body: %v", err)
+	}
+	page.Body = body
+	expected := "http://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets?limit=1&marker=f7b10e9b-0cae-4a91-b162-562bc6096648"
+	actual, err := page.NextPageURL()
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, expected, actual)
 }
