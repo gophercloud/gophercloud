@@ -90,7 +90,7 @@ type RecordSet struct {
 
 	// Links includes HTTP references to the itself,
 	// useful for passing along to other APIs that might want a recordset reference.
-	Links map[string]interface{} `json:"links"`
+	Links []gophercloud.Link `json:"-"`
 }
 
 func (r *RecordSet) UnmarshalJSON(b []byte) error {
@@ -99,6 +99,7 @@ func (r *RecordSet) UnmarshalJSON(b []byte) error {
 		tmp
 		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
 		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+		Links     map[string]interface{}          `json:"links"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -108,6 +109,18 @@ func (r *RecordSet) UnmarshalJSON(b []byte) error {
 
 	r.CreatedAt = time.Time(s.CreatedAt)
 	r.UpdatedAt = time.Time(s.UpdatedAt)
+
+	if s.Links != nil {
+		for rel, href := range s.Links {
+			if v, ok := href.(string); ok {
+				link := gophercloud.Link{
+					Rel:  rel,
+					Href: v,
+				}
+				r.Links = append(r.Links, link)
+			}
+		}
+	}
 
 	return err
 }

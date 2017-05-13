@@ -40,7 +40,7 @@ const ListByZoneOutput = `
         {
             "description": "This is another example record set.",
             "links": {
-                "self": "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648"
+                "self": "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/7423aeaf-b354-4bd7-8aba-2e831567b478"
             },
             "updated_at": "2017-03-04T14:29:07.000000",
             "records": [
@@ -76,7 +76,7 @@ const ListByZoneOutputLimited = `
         {
             "description": "This is another example record set.",
             "links": {
-                "self": "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648"
+                "self": "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/7423aeaf-b354-4bd7-8aba-2e831567b478"
             },
             "updated_at": "2017-03-04T14:29:07.000000",
             "records": [
@@ -157,8 +157,11 @@ var FirstRecordSet = recordsets.RecordSet{
 	Type:        "A",
 	Status:      "PENDING",
 	Action:      "CREATE",
-	Links: map[string]interface{}{
-		"self": "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
+	Links: []gophercloud.Link{
+		{
+			Rel:  "self",
+			Href: "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
+		},
 	},
 }
 
@@ -180,8 +183,11 @@ var SecondRecordSet = recordsets.RecordSet{
 	Type:        "A",
 	Status:      "PENDING",
 	Action:      "CREATE",
-	Links: map[string]interface{}{
-		"self": "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/f7b10e9b-0cae-4a91-b162-562bc6096648",
+	Links: []gophercloud.Link{
+		{
+			Rel:  "self",
+			Href: "https://127.0.0.1:9001/v2/zones/2150b1bf-dee2-4221-9d85-11f7886fb15f/recordsets/7423aeaf-b354-4bd7-8aba-2e831567b478",
+		},
 	},
 }
 
