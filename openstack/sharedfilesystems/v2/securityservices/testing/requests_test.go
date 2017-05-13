@@ -185,9 +185,24 @@ func TestUpdate(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	MockUpdateResponse(t)
+	expected := securityservices.SecurityService{
+		ID:          "securityServiceID",
+		Name:        "SecServ2",
+		CreatedAt:   time.Date(2015, 9, 7, 12, 19, 10, 0, time.UTC),
+		Description: "Updating my first Security Service",
+		Type:        "kerberos",
+		UpdatedAt:   time.Date(2015, 9, 7, 12, 20, 10, 0, time.UTC),
+		ProjectID:   "16e1ab15c35a457e9c2b2aa189f544e1",
+		Status:      "new",
+		Domain:      "",
+		Server:      "",
+		DNSIP:       "10.0.0.0/24",
+		User:        "demo",
+		Password:    "supersecret",
+	}
 
 	options := securityservices.UpdateOpts{Name: "SecServ2"}
-	v, err := securityservices.Update(client.ServiceClient(), "securityServiceID", options).Extract()
+	s, err := securityservices.Update(client.ServiceClient(), "securityServiceID", options).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, "SecServ2", v.Name)
+	th.CheckDeepEquals(t, &expected, s)
 }

@@ -177,14 +177,14 @@ func MockUpdateResponse(t *testing.T) {
                     "project_id": "16e1ab15c35a457e9c2b2aa189f544e1",
                     "name": "SecServ2",
                     "created_at": "2015-09-07T12:19:10.000000",
-                    "updated_at": null,
+                    "updated_at": "2015-09-07T12:20:10.000000",
                     "server": null,
                     "dns_ip": "10.0.0.0/24",
                     "user": "demo",
                     "password": "supersecret",
                     "type": "kerberos",
                     "id": "securityServiceID",
-                    "description": "Creating my first Security Service"
+                    "description": "Updating my first Security Service"
                 }
             }
         `)
