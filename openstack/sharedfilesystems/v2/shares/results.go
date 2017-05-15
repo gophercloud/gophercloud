@@ -110,3 +110,53 @@ type DeleteResult struct {
 type GetResult struct {
 	commonResult
 }
+
+// Link contains links to OpenStack documentation, self (this Manila API).
+type Link struct {
+	// link
+	HRef string `json:"href"`
+	// link type
+	Type string `json:"type, omitempty"`
+	// link relationship
+	Rel string `json:"rel"`
+}
+
+// MediaType is a media type supported by the API
+type MediaType struct {
+	// Base of the media type
+	Base string `json:"base, omitempty"`
+	// Type of the media type
+	Type string `json:"type, omitempty"`
+}
+
+// Version contains all information associated with an OpenStack Manila specific API (micro)version
+type Version struct {
+	// The status of this API version. This can be one of: CURRENT, SUPPORTED, DEPRECATED
+	Status string `json:"status"`
+	// Timestamp
+	Updated time.Time `json:"updated, omitempty"`
+	// Shared filesystem API links
+	Links []Link `json:"links"`
+	// If this version of the API supports microversions, the minimum microversion that is supported. This will be the empty string if microversions are not supported.
+	MinVersion string `json:"min_version, omitempty"`
+	// If this version of the API supports microversions, the maximum microversion that is supported. This will be the empty string if microversions are not supported.
+	Version string `json:"version, omitempty"`
+	// Media types supported by the API
+	MediaTypes []MediaType `json:"media-types, omitempty"`
+	// A common name for the version in question. Informative only, it has no real semantic meaning.
+	ID string `json:"id"`
+}
+
+// ExtractMicroversion will get the Specific API Version object from the commonResult
+func (r commonResult) ExtractMicroversion() (*[]Version, error) {
+	var s struct {
+		GetMicroversionRes *[]Version `json:"versions"`
+	}
+	err := r.ExtractInto(&s)
+	return s.GetMicroversionRes, err
+}
+
+// GetMicroversionResult contains the result.
+type GetMicroversionResult struct {
+	commonResult
+}
