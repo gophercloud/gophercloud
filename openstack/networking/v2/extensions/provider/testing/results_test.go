@@ -13,7 +13,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestList(t *testing.T) {
+func TestExtractList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -107,7 +107,7 @@ func TestList(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
+func TestExtractGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -148,7 +148,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "", n.SegmentationID)
 }
 
-func TestCreate(t *testing.T) {
+func TestExtractCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -200,7 +200,7 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, "", n.SegmentationID)
 }
 
-func TestUpdate(t *testing.T) {
+func TestExtractUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
