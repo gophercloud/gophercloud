@@ -8,12 +8,19 @@ import (
 	"github.com/gophercloud/gophercloud"
 	tokens2 "github.com/gophercloud/gophercloud/openstack/identity/v2/tokens"
 	tokens3 "github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
+	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
 	"github.com/gophercloud/gophercloud/openstack/utils"
 )
 
 const (
 	v20 = "v2.0"
 	v30 = "v3.0"
+)
+
+const (
+	statusCurrent    = "CURRENT"
+	statusSupported  = "SUPPORTED"
+	statusDeprecated = "DEPRECATED"
 )
 
 // NewClient prepares an unauthenticated ProviderClient instance.
@@ -272,11 +279,25 @@ func NewBlockStorageV2(client *gophercloud.ProviderClient, eo gophercloud.Endpoi
 // NewSharedFileSystemV2 creates a ServiceClient that may be used to access the v2 shared file system service.
 func NewSharedFileSystemV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults(gophercloud.OpenStackManilaV2ServiceType)
-	url, _, err := client.EndpointLocator(eo)
+	url, extraInfo, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
-	return &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url}, nil
+	serviceClient := &gophercloud.ServiceClient{ProviderClient: client, Endpoint: url, EndpointExtraInfo: extraInfo}
+	microversion := "2.0"
+	respMicroversions := shares.GetMicroversion(serviceClient)
+	// failed to get a Microversion so keep ServiceClient.Microversion empty
+	if extractedMicroversionsReqResp, err := respMicroversions.ExtractMicroversion(); err == nil {
+		for _, extractedMicroversion := range *extractedMicroversionsReqResp {
+			if extractedMicroversion.Status == statusCurrent && len(extractedMicroversion.Version) > 0 {
+				microversion = extractedMicroversion.Version
+			}
+		}
+	}
+	if err := serviceClient.EndpointExtraInfo.SetMicroversion(microversion); err != nil {
+		return nil, err
+	}
+	return serviceClient, nil
 }
 
 // NewCDNV1 creates a ServiceClient that may be used to access the OpenStack v1
