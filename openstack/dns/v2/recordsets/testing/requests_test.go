@@ -85,3 +85,61 @@ func TestNextPageURL(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, expected, actual)
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSuccessfully(t)
+
+	createOpts := recordsets.CreateOpts{
+		Name:        "example.org.",
+		Type:        "A",
+		TTL:         3600,
+		Description: "This is an example record set.",
+		Records:     []string{"10.1.0.2"},
+	}
+
+	actual, err := recordsets.Create(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &CreatedRecordSet, actual)
+}
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateSuccessfully(t)
+
+	updateOpts := recordsets.UpdateOpts{
+		TTL:         0,
+		Description: "Updated description",
+		Records:     []string{"10.1.0.2", "10.1.0.3"},
+	}
+
+	UpdatedRecordSet := CreatedRecordSet
+	UpdatedRecordSet.Status = "PENDING"
+	UpdatedRecordSet.Action = "UPDATE"
+	UpdatedRecordSet.Description = "Updated description"
+	UpdatedRecordSet.Records = []string{"10.1.0.2", "10.1.0.3"}
+	UpdatedRecordSet.Version = 2
+
+	actual, err := recordsets.Update(client.ServiceClient(), UpdatedRecordSet.ZoneID, UpdatedRecordSet.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &UpdatedRecordSet, actual)
+}
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfully(t)
+
+	DeletedRecordSet := CreatedRecordSet
+	DeletedRecordSet.Status = "PENDING"
+	DeletedRecordSet.Action = "UPDATE"
+	DeletedRecordSet.Description = "Updated description"
+	DeletedRecordSet.Records = []string{"10.1.0.2", "10.1.0.3"}
+	DeletedRecordSet.Version = 2
+
+	err := recordsets.Delete(client.ServiceClient(), DeletedRecordSet.ZoneID, DeletedRecordSet.ID).ExtractErr()
+	th.AssertNoErr(t, err)
+	//th.CheckDeepEquals(t, &DeletedZone, actual)
+}
