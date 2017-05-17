@@ -12,6 +12,7 @@ import (
 const (
 	shareEndpoint = "/shares"
 	shareID       = "011d21e2-fbc3-4e4a-9993-9ea223f73264"
+	projectID     = "16e1ab15c35a457e9c2b2aa189f544e1"
 )
 
 var createRequest = `{
@@ -139,5 +140,44 @@ func MockGetResponse(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, getResponse)
+	})
+}
+
+var getMicroversionResponse = `{
+    "versions": [
+        {
+		"status": "CURRENT",
+		"updated": "2015-08-27T11:33:21Z",
+        	"links": [
+            		{
+                		"href": "http://172.18.198.54:8786/v2/16e1ab15c35a457e9c2b2aa189f544e1/shares/011d21e2-fbc3-4e4a-9993-9ea223f73264",
+                		"rel": "self"
+            		},
+            		{
+                		"href": "http://docs.openstack.org/",
+				"type": "text/html",
+                		"rel": "describedby"
+            		}
+        	],
+        	"min_version": "2.0",
+		"version": "2.15",
+		"media-types": [
+			{
+				"base": "application/json",
+				"type": "application/vnd.openstack.share+json;version=1"
+			}
+			],
+        	"id": "v2.0"
+	}
+    ]
+}`
+
+// MockGetMicroversionResponse creates a mock get microversion response
+func MockGetMicroversionResponse(t *testing.T) {
+	th.Mux.HandleFunc("/v2/", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, getMicroversionResponse)
 	})
 }
