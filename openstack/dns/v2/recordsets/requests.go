@@ -69,7 +69,7 @@ type CreateOptsBuilder interface {
 // CreateOpts specifies the base attributes that may be used to create a RecordSet.
 type CreateOpts struct {
 	// Name is the name of the RecordSet.
-	Name string `json:"name,required"`
+	Name string `json:"name" required:"true"`
 
 	// Description is a description of the RecordSet.
 	Description string `json:"description,omitempty"`
@@ -100,7 +100,7 @@ func (opts CreateOpts) ToRecordSetCreateMap() (map[string]interface{}, error) {
 	return b, nil
 }
 
-// Create changes the service type of an existing service.
+// Create creates a recordset in a given zone.
 func Create(client *gophercloud.ServiceClient, zoneID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToRecordSetCreateMap()
 	if err != nil {
@@ -115,7 +115,7 @@ func Create(client *gophercloud.ServiceClient, zoneID string, opts CreateOptsBui
 
 // UpdateOptsBuilder allows extensions to add additional attributes to the Update request.
 type UpdateOptsBuilder interface {
-	ToRecordSetSetUpdateMap() (map[string]interface{}, error)
+	ToRecordSetUpdateMap() (map[string]interface{}, error)
 }
 
 // UpdateOpts specifies the base attributes that may be updated on an existing RecordSet.
@@ -126,7 +126,7 @@ type UpdateOpts struct {
 }
 
 // ToRecordSetUpdateMap formats an UpdateOpts structure into a request body.
-func (opts UpdateOpts) ToRecordSetSetUpdateMap() (map[string]interface{}, error) {
+func (opts UpdateOpts) ToRecordSetUpdateMap() (map[string]interface{}, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -141,9 +141,9 @@ func (opts UpdateOpts) ToRecordSetSetUpdateMap() (map[string]interface{}, error)
 	return b, nil
 }
 
-// Update changes the service type of an existing service.
+// Update updates a recordset in a given zone
 func Update(client *gophercloud.ServiceClient, zoneID string, rrsetID string, opts UpdateOptsBuilder) (r UpdateResult) {
-	b, err := opts.ToRecordSetSetUpdateMap()
+	b, err := opts.ToRecordSetUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
