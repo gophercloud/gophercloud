@@ -78,7 +78,7 @@ type CreateOpts struct {
 	Records []string `json:"records,omitempty"`
 
 	// TTL is the time to live of the RecordSet.
-	TTL int `json:"-"`
+	TTL int `json:"ttl,omitempty"`
 
 	// Type is the RRTYPE of the RecordSet.
 	Type string `json:"type,omitempty"`
@@ -89,12 +89,6 @@ func (opts CreateOpts) ToRecordSetCreateMap() (map[string]interface{}, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
-	}
-
-	if opts.TTL > 0 {
-		b["ttl"] = opts.TTL
-	} else {
-		b["ttl"] = nil
 	}
 
 	return b, nil
