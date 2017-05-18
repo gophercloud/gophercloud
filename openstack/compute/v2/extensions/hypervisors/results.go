@@ -3,6 +3,7 @@ package hypervisors
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/gophercloud/gophercloud/pagination"
 )
 

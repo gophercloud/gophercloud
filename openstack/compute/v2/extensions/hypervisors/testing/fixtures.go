@@ -2,11 +2,12 @@ package testing
 
 import (
 	"fmt"
+	"net/http"
+	"testing"
+
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/hypervisors"
 	"github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
-	"net/http"
-	"testing"
 )
 
 // The first hypervisor represents what the specification says (~Newton)

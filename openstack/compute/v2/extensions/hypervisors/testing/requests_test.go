@@ -1,11 +1,12 @@
 package testing
 
 import (
+	"testing"
+
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/hypervisors"
 	"github.com/gophercloud/gophercloud/pagination"
 	"github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
-	"testing"
 )
 
 func TestListHypervisors(t *testing.T) {
