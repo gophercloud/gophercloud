@@ -74,7 +74,7 @@ type Hypervisor struct {
 func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 
 	type tmp Hypervisor
-	var s *struct {
+	var s struct {
 		tmp
 		CPUInfo           interface{} `json:"cpu_info"`
 		HypervisorVersion interface{} `json:"hypervisor_version"`
@@ -92,7 +92,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 	// Newer versions pass the CPU into around as the correct types, this just needs
 	// converting and copying into place. Older versions pass CPU info around as a string
 	// and can simply be unmarshalled by the json parser
-	var tmpb []byte;
+	var tmpb []byte
 
 	switch t := s.CPUInfo.(type) {
 	case string:
@@ -147,8 +147,8 @@ type HypervisorPage struct {
 }
 
 func (page HypervisorPage) IsEmpty() (bool, error) {
-        va, err := ExtractHypervisors(page)
-        return len(va) == 0, err
+	va, err := ExtractHypervisors(page)
+	return len(va) == 0, err
 }
 
 func ExtractHypervisors(p pagination.Page) ([]Hypervisor, error) {
