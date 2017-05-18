@@ -17,3 +17,7 @@ func listURL(c *gophercloud.ServiceClient) string {
 func getURL(c *gophercloud.ServiceClient, id string) string {
 	return deleteURL(c, id)
 }
+
+func updateURL(c *gophercloud.ServiceClient, id string) string {
+	return deleteURL(c, id)
+}

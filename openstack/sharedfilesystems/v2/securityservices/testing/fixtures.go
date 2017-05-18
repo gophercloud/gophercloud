@@ -163,3 +163,30 @@ func MockGetResponse(t *testing.T) {
         }`)
 	})
 }
+
+func MockUpdateResponse(t *testing.T) {
+	th.Mux.HandleFunc("/security-services/securityServiceID", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+            {
+                "security_service": {
+                    "status": "new",
+                    "domain": null,
+                    "project_id": "16e1ab15c35a457e9c2b2aa189f544e1",
+                    "name": "SecServ2",
+                    "created_at": "2015-09-07T12:19:10.000000",
+                    "updated_at": "2015-09-07T12:20:10.000000",
+                    "server": null,
+                    "dns_ip": "10.0.0.0/24",
+                    "user": "demo",
+                    "password": "supersecret",
+                    "type": "kerberos",
+                    "id": "securityServiceID",
+                    "description": "Updating my first Security Service"
+                }
+            }
+        `)
+	})
+}
