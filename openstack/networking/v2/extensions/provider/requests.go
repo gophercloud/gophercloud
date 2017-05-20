@@ -4,10 +4,6 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 )
 
-type CreateOptsExtBuilder interface {
-	ToProviderCreateMap() (map[string]interface{}, error)
-}
-
 type CreateOptsExt struct {
 	networks.CreateOptsBuilder
 	Segments        []Segment `json:"segments,omitempty"`
