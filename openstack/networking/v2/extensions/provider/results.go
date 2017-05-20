@@ -50,11 +50,11 @@ type NetworkExtAttrs struct {
 	// otherwise, if network_type is gre, then this will be a gre key.
 	SegmentationID string `json:"provider:segmentation_id"`
 
-	// Array og Segment for define multiple physical binfig for logical network.
+	// Segments is an array of Segment which defines multiple physical bindings to logical networks.
 	Segments []Segment `json:"segments"`
 }
 
-// Define physical binding for logical network.
+// Segment defines a physical binding to a logical network.
 type Segment struct {
 	PhysicalNetwork string `json:"provider:physical_network"`
 	NetworkType     string `json:"provider:network_type"`
