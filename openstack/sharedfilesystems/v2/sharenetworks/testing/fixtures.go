@@ -321,7 +321,7 @@ func MockAddSecurityServiceResponse(t *testing.T) {
                 "updated_at": null,
                 "id": "d8ae6799-2567-4a89-aafb-fa4424350d2b",
                 "neutron_net_id": null,
-                "ip_version": null,
+                "ip_version": 4,
                 "nova_net_id": "998b42ee-2cee-4d36-8b95-67b5ca1f2109",
                 "cidr": null,
                 "project_id": "16e1ab15c35a457e9c2b2aa189f544e1",
