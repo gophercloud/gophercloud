@@ -182,3 +182,33 @@ func TestShareNetworkListPagination(t *testing.T) {
 	}
 
 }
+
+func TestShareNetworkAddSecurityService(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a shared file system client: %v", err)
+	}
+
+	securityService, err := CreateSecurityService(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create security service: %v", err)
+	}
+	defer DeleteSecurityService(t, client, securityService)
+
+	shareNetwork, err := CreateShareNetwork(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create share network: %v", err)
+	}
+	defer DeleteShareNetwork(t, client, shareNetwork)
+
+	options := sharenetworks.AddSecurityServiceOpts{
+		SecurityServiceID: securityService.ID,
+	}
+
+	_, err = sharenetworks.AddSecurityService(client, shareNetwork.ID, options).Extract()
+	if err != nil {
+		t.Errorf("Unable to add security service: %v", err)
+	}
+
+	PrintShareNetwork(t, shareNetwork)
+}
