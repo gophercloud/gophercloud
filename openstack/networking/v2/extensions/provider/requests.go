@@ -7,7 +7,7 @@ import (
 // CreateOptsExt adds a Segments option to the base Network CreateOpts.
 type CreateOptsExt struct {
 	networks.CreateOptsBuilder
-	Segments        []Segment `json:"segments,omitempty"`
+	Segments []Segment `json:"segments,omitempty"`
 }
 
 // ToNetworkCreateMap adds segments to the base network creation options.

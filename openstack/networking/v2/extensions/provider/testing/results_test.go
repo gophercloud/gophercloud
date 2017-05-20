@@ -273,7 +273,7 @@ func TestCreateWithMultipleProvider(t *testing.T) {
 
 	providerCreateOpts := provider.CreateOptsExt{
 		CreateOptsBuilder: networkCreateOpts,
-		Segments: segments,
+		Segments:          segments,
 	}
 
 	res := networks.Create(fake.ServiceClient(), providerCreateOpts)
