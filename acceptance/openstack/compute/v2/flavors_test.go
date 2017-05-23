@@ -32,11 +32,11 @@ func TestFlavorsList(t *testing.T) {
 		tools.PrintResource(t, flavor)
 	}
 
-	flavorTypes := [3]flavors.FlavorType{flavors.Project, flavors.Private, flavors.All}
-	for _, flavorType := range flavorTypes {
-		t.Logf("** %s flavors: **", flavorType)
+	flavorAccessTypes := [3]flavors.FlavorAccess{flavors.Project, flavors.Private, flavors.All}
+	for _, flavorAccessType := range flavorAccessTypes {
+		t.Logf("** %s flavors: **", flavorAccessType)
 		t.Logf("")
-		allPages, err := flavors.ListDetail(client, flavors.ListOpts{FlavorType: flavorType}).AllPages()
+		allPages, err := flavors.ListDetail(client, flavors.ListOpts{FlavorAccess: flavorAccessType}).AllPages()
 		if err != nil {
 			t.Fatalf("Unable to retrieve flavors: %v", err)
 		}

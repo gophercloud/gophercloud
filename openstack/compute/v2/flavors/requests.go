@@ -11,21 +11,21 @@ type ListOptsBuilder interface {
 	ToFlavorListQuery() (string, error)
 }
 
-// FlavorType maps to OpenStack's Flavor.is_public field. Although the is_public field is boolean, the
-// request options are ternary, which is why FlavorType is a string. The following values are
+// FlavorAccess maps to OpenStack's Flavor.is_public field. Although the is_public field is boolean, the
+// request options are ternary, which is why FlavorAccess is a string. The following values are
 // allowed:
 //
 //      Project (the default): Returns only public flavors and private flavors associated with that project.
 //      Private (admin only):  Returns only private flavors, across all projects.
 //      All (admin only):      Returns all public and private flavors across all projects.
 //
-// If no IsPublic argument is supplied in the request, OpenStack treats the FlavorType as Project.
-type FlavorType string
+// If no IsPublic argument is supplied in the request, OpenStack treats the FlavorAccess as Project.
+type FlavorAccess string
 
 const (
-	Project FlavorType = "true"
-	Private FlavorType = "false"
-	All     FlavorType = "None"
+	Project FlavorAccess = "true"
+	Private FlavorAccess = "false"
+	All     FlavorAccess = "None"
 )
 
 // ListOpts helps control the results returned by the List() function.
@@ -49,7 +49,7 @@ type ListOpts struct {
 
 	// IsPublic, if provided, instructs List which set of flavors to return. If IsPublic not provided,
 	// flavors for the current project are returned.
-	FlavorType FlavorType `q:"is_public"`
+	FlavorAccess FlavorAccess `q:"is_public"`
 }
 
 // ToFlavorListQuery formats a ListOpts into a query string.
