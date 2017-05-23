@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas/monitors"
 )
 
@@ -26,7 +27,7 @@ func TestMonitorsList(t *testing.T) {
 	}
 
 	for _, monitor := range allMonitors {
-		PrintMonitor(t, &monitor)
+		tools.PrintResource(t, monitor)
 	}
 }
 
@@ -42,7 +43,7 @@ func TestMonitorsCRUD(t *testing.T) {
 	}
 	defer DeleteMonitor(t, client, monitor.ID)
 
-	PrintMonitor(t, monitor)
+	tools.PrintResource(t, monitor)
 
 	updateOpts := monitors.UpdateOpts{
 		Delay: 999,
@@ -58,5 +59,5 @@ func TestMonitorsCRUD(t *testing.T) {
 		t.Fatalf("Unable to get monitor: %v")
 	}
 
-	PrintMonitor(t, newMonitor)
+	tools.PrintResource(t, newMonitor)
 }

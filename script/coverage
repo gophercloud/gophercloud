@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -e
+
 n=1
 for testpkg in $(go list ./testing ./.../testing); do
   covpkg="${testpkg/"/testing"/}"

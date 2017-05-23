@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/firewalls"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/policies"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/routerinsertion"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/rules"
 )
 
@@ -19,9 +20,44 @@ func CreateFirewall(t *testing.T, client *gophercloud.ServiceClient, policyID st
 
 	t.Logf("Attempting to create firewall %s", firewallName)
 
+	iTrue := true
 	createOpts := firewalls.CreateOpts{
+		Name:         firewallName,
+		PolicyID:     policyID,
+		AdminStateUp: &iTrue,
+	}
+
+	firewall, err := firewalls.Create(client, createOpts).Extract()
+	if err != nil {
+		return firewall, err
+	}
+
+	t.Logf("Waiting for firewall to become active.")
+	if err := WaitForFirewallState(client, firewall.ID, "ACTIVE", 60); err != nil {
+		return firewall, err
+	}
+
+	t.Logf("Successfully created firewall %s", firewallName)
+
+	return firewall, nil
+}
+
+// CreateFirewallOnRouter will create a Firewall with a random name and a
+// specified policy ID attached to a specified Router. An error will be
+// returned if the firewall could not be created.
+func CreateFirewallOnRouter(t *testing.T, client *gophercloud.ServiceClient, policyID string, routerID string) (*firewalls.Firewall, error) {
+	firewallName := tools.RandomString("TESTACC-", 8)
+
+	t.Logf("Attempting to create firewall %s", firewallName)
+
+	firewallCreateOpts := firewalls.CreateOpts{
 		Name:     firewallName,
 		PolicyID: policyID,
+	}
+
+	createOpts := routerinsertion.CreateOptsExt{
+		firewallCreateOpts,
+		[]string{routerID},
 	}
 
 	firewall, err := firewalls.Create(client, createOpts).Extract()
@@ -141,49 +177,6 @@ func DeleteRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) 
 	}
 
 	t.Logf("Deleted rule: %s", ruleID)
-}
-
-// PrintFirewall will print a firewall and all of its attributes.
-func PrintFirewall(t *testing.T, firewall *firewalls.Firewall) {
-	t.Logf("ID: %s", firewall.ID)
-	t.Logf("Name: %s", firewall.Name)
-	t.Logf("Description: %s", firewall.Description)
-	t.Logf("AdminStateUp: %t", firewall.AdminStateUp)
-	t.Logf("Status: %s", firewall.Status)
-	t.Logf("PolicyID: %s", firewall.PolicyID)
-	t.Logf("TenantID: %s", firewall.TenantID)
-}
-
-// PrintPolicy will print a policy and all of its attributes.
-func PrintPolicy(t *testing.T, policy *policies.Policy) {
-	t.Logf("ID: %s", policy.ID)
-	t.Logf("Name: %s", policy.Name)
-	t.Logf("Description: %s", policy.Description)
-	t.Logf("TenantID: %s", policy.TenantID)
-	t.Logf("Audited: %t", policy.Audited)
-	t.Logf("Shared: %t", policy.Shared)
-	t.Logf("Rules:")
-
-	for _, rule := range policy.Rules {
-		t.Logf("Rule ID: %s", rule)
-	}
-}
-
-// PrintRule will print a rule and all of its attributes.
-func PrintRule(t *testing.T, rule *rules.Rule) {
-	t.Logf("ID: %s", rule.ID)
-	t.Logf("Name: %s", rule.Name)
-	t.Logf("Description: %s", rule.Description)
-	t.Logf("Protocol: %s", rule.Protocol)
-	t.Logf("Action: %s", rule.Action)
-	t.Logf("IPVersion: %d", rule.IPVersion)
-	t.Logf("SourceIPAddress: %s", rule.SourceIPAddress)
-	t.Logf("DestinationIPAddress: %s", rule.DestinationIPAddress)
-	t.Logf("Shared: %t", rule.Shared)
-	t.Logf("Enabled: %t", rule.Enabled)
-	t.Logf("PolicyID: %s", rule.PolicyID)
-	t.Logf("Position: %d", rule.Position)
-	t.Logf("TenantID: %s", rule.TenantID)
 }
 
 // WaitForFirewallState will wait until a firewall reaches a given state.

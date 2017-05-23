@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	blockstorage "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v2"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 )
 
@@ -35,13 +36,13 @@ func TestBootFromImage(t *testing.T) {
 		},
 	}
 
-	server, err := CreateBootableVolumeServer(t, client, blockDevices, choices)
+	server, err := CreateBootableVolumeServer(t, client, blockDevices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 	defer DeleteServer(t, client, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }
 
 func TestBootFromNewVolume(t *testing.T) {
@@ -69,13 +70,13 @@ func TestBootFromNewVolume(t *testing.T) {
 		},
 	}
 
-	server, err := CreateBootableVolumeServer(t, client, blockDevices, choices)
+	server, err := CreateBootableVolumeServer(t, client, blockDevices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 	defer DeleteServer(t, client, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }
 
 func TestBootFromExistingVolume(t *testing.T) {
@@ -93,12 +94,7 @@ func TestBootFromExistingVolume(t *testing.T) {
 		t.Fatalf("Unable to create a block storage client: %v", err)
 	}
 
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	volume, err := blockstorage.CreateVolumeFromImage(t, blockStorageClient, choices)
+	volume, err := blockstorage.CreateVolumeFromImage(t, blockStorageClient)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,13 +108,13 @@ func TestBootFromExistingVolume(t *testing.T) {
 		},
 	}
 
-	server, err := CreateBootableVolumeServer(t, computeClient, blockDevices, choices)
+	server, err := CreateBootableVolumeServer(t, computeClient, blockDevices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 	defer DeleteServer(t, computeClient, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }
 
 func TestBootFromMultiEphemeralServer(t *testing.T) {
@@ -163,13 +159,13 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 		},
 	}
 
-	server, err := CreateMultiEphemeralServer(t, client, blockDevices, choices)
+	server, err := CreateMultiEphemeralServer(t, client, blockDevices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 	defer DeleteServer(t, client, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }
 
 func TestAttachNewVolume(t *testing.T) {
@@ -204,13 +200,13 @@ func TestAttachNewVolume(t *testing.T) {
 		},
 	}
 
-	server, err := CreateBootableVolumeServer(t, client, blockDevices, choices)
+	server, err := CreateBootableVolumeServer(t, client, blockDevices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 	defer DeleteServer(t, client, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }
 
 func TestAttachExistingVolume(t *testing.T) {
@@ -255,11 +251,11 @@ func TestAttachExistingVolume(t *testing.T) {
 		},
 	}
 
-	server, err := CreateBootableVolumeServer(t, computeClient, blockDevices, choices)
+	server, err := CreateBootableVolumeServer(t, computeClient, blockDevices)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
 	defer DeleteServer(t, computeClient, server)
 
-	PrintServer(t, server)
+	tools.PrintResource(t, server)
 }

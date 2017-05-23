@@ -163,10 +163,35 @@ func mockGetNumericIDGroupResponse(t *testing.T, groupID int) {
 		fmt.Fprintf(w, `
 {
 	"security_group": {
-		"id": "12345"
+		"id": %d
 	}
 }
-			`)
+		`, groupID)
+	})
+}
+
+func mockGetNumericIDGroupRuleResponse(t *testing.T, groupID int) {
+	url := fmt.Sprintf("%s/%d", rootPath, groupID)
+	th.Mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "security_group": {
+    "id": %d,
+    "rules": [
+      {
+        "parent_group_id": %d,
+        "id": %d
+      }
+    ]
+  }
+}
+		`, groupID, groupID, groupID)
 	})
 }
 

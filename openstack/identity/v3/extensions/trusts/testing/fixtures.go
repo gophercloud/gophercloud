@@ -4,24 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
-	"time"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/trusts"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/testhelper"
 )
 
 // HandleCreateTokenWithTrustID verifies that providing certain AuthOptions and Scope results in an expected JSON structure.
 func HandleCreateTokenWithTrustID(t *testing.T, options tokens.AuthOptionsBuilder, requestJSON string) {
-	testhelper.SetupHTTP()
-	defer testhelper.TeardownHTTP()
-
-	client := gophercloud.ServiceClient{
-		ProviderClient: &gophercloud.ProviderClient{},
-		Endpoint:       testhelper.Endpoint(),
-	}
-
 	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "POST")
 		testhelper.TestHeader(t, r, "Content-Type", "application/json")
@@ -75,30 +64,4 @@ func HandleCreateTokenWithTrustID(t *testing.T, options tokens.AuthOptionsBuilde
     }
 }`)
 	})
-
-	var actual trusts.TokenExt
-	err := tokens.Create(&client, options).ExtractInto(&actual)
-	if err != nil {
-		t.Errorf("Create returned an error: %v", err)
-	}
-	expected := trusts.TokenExt{
-		Token: trusts.Token{
-			Token: tokens.Token{
-				ExpiresAt: gophercloud.JSONRFC3339Milli(time.Date(2013, 02, 27, 18, 30, 59, 999999000, time.UTC)),
-			},
-			Trust: trusts.Trust{
-				ID:            "fe0aef",
-				Impersonation: false,
-				TrusteeUser: trusts.TrusteeUser{
-					ID: "0ca8f6",
-				},
-				TrustorUser: trusts.TrustorUser{
-					ID: "bd263c",
-				},
-				RedelegatedTrustID: "3ba234",
-				RedelegationCount:  2,
-			},
-		},
-	}
-	testhelper.AssertDeepEquals(t, expected, actual)
 }

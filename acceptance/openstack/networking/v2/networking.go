@@ -6,7 +6,6 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/apiversions"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/subnets"
@@ -194,61 +193,6 @@ func DeleteSubnet(t *testing.T, client *gophercloud.ServiceClient, subnetID stri
 	}
 
 	t.Logf("Deleted subnet: %s", subnetID)
-}
-
-// PrintAPIVersion will print an API version and all of its attributes.
-func PrintAPIVersion(t *testing.T, apiVersion *apiversions.APIVersion) {
-	t.Logf("ID: %s", apiVersion.ID)
-	t.Logf("Status: %s", apiVersion.Status)
-}
-
-// PrintNetwork will print a network and all of its attributes.
-func PrintNetwork(t *testing.T, network *networks.Network) {
-	t.Logf("ID: %s", network.ID)
-	t.Logf("Name: %s", network.Name)
-	t.Logf("AdminStateUp: %t", network.AdminStateUp)
-	t.Logf("Status: %s", network.Status)
-	t.Logf("TenantID: %s", network.TenantID)
-	t.Logf("Shared: %t", network.Shared)
-	t.Logf("Subnets: %s", network.Subnets)
-}
-
-// PrintPort will print a port and all of its attributes.
-func PrintPort(t *testing.T, port *ports.Port) {
-	t.Logf("ID: %s", port.ID)
-	t.Logf("NetworkID: %s", port.NetworkID)
-	t.Logf("Name: %s", port.Name)
-	t.Logf("AdminStateUp: %t", port.AdminStateUp)
-	t.Logf("Status: %s", port.Status)
-	t.Logf("MACAddress: %s", port.MACAddress)
-	t.Logf("FixedIPs: %s", port.FixedIPs)
-	t.Logf("TenantID: %s", port.TenantID)
-	t.Logf("DeviceOwner: %s", port.DeviceOwner)
-	t.Logf("SecurityGroups: %s", port.SecurityGroups)
-	t.Logf("DeviceID: %s", port.DeviceID)
-	t.Logf("DeviceOwner: %s", port.DeviceOwner)
-	t.Logf("AllowedAddressPairs: %s", port.AllowedAddressPairs)
-}
-
-// PrintSubnet will print a subnet and all of its attributes.
-func PrintSubnet(t *testing.T, subnet *subnets.Subnet) {
-	t.Logf("ID: %s", subnet.ID)
-	t.Logf("NetworkID: %s", subnet.NetworkID)
-	t.Logf("Name: %s", subnet.Name)
-	t.Logf("IPVersion: %d", subnet.IPVersion)
-	t.Logf("CIDR: %s", subnet.CIDR)
-	t.Logf("GatewayIP: %s", subnet.GatewayIP)
-	t.Logf("DNSNameservers: %s", subnet.DNSNameservers)
-	t.Logf("AllocationPools: %s", subnet.AllocationPools)
-	t.Logf("HostRoutes: %s", subnet.HostRoutes)
-	t.Logf("EnableDHCP: %t", subnet.EnableDHCP)
-	t.Logf("TenantID: %s", subnet.TenantID)
-}
-
-// PrintVersionResource will print an API version resource and all of its attributes.
-func PrintVersionResource(t *testing.T, versionResource *apiversions.APIVersionResource) {
-	t.Logf("Name: %s", versionResource.Name)
-	t.Logf("Collection: %s", versionResource.Collection)
 }
 
 func WaitForPortToCreate(client *gophercloud.ServiceClient, portID string, secs int) error {

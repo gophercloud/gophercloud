@@ -1,6 +1,9 @@
 package shares
 
 import (
+	"encoding/json"
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 )
 
@@ -60,7 +63,24 @@ type Share struct {
 	SnapshotSupport          bool   `json:"snapshot_support"`
 	SourceCgsnapshotMemberID string `json:"source_cgsnapshot_member_id"`
 	// Timestamp when the share was created
-	CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+	CreatedAt time.Time `json:"-"`
+}
+
+func (r *Share) UnmarshalJSON(b []byte) error {
+	type tmp Share
+	var s struct {
+		tmp
+		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Share(s.tmp)
+
+	r.CreatedAt = time.Time(s.CreatedAt)
+
+	return nil
 }
 
 type commonResult struct {

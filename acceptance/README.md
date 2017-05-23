@@ -45,6 +45,11 @@ to set them manually.
 |`OS_POOL_NAME`|The Pool from where to obtain Floating IPs|
 |`OS_NETWORK_NAME`|The network to launch instances on|
 
+#### Shared file systems
+|Name|Description|
+|---|---|
+|`OS_SHARE_NETWORK_ID`| The share network ID to use when creating shares|
+
 ### 2. Run the test suite
 
 From the root directory, run:
@@ -58,7 +63,7 @@ Alternatively, add the following to your `.bashrc`:
 ```bash
 gophercloudtest() {
   if [[ -n $1 ]] && [[ -n $2 ]]; then
-    pushd  ~/go/src/github.com/gophercloud/gophercloud
+    pushd  $GOPATH/src/github.com/gophercloud/gophercloud
     go test -v -tags "fixtures acceptance" -run "$1" github.com/gophercloud/gophercloud/acceptance/openstack/$2 | tee ~/gophercloud.log
     popd
 fi

@@ -40,6 +40,56 @@ const ListOutput = `
 }
 `
 
+// GetOutput provides a Get result.
+const GetOutput = `
+{
+  "project": {
+		"is_domain": false,
+		"description": "The team that is red",
+		"domain_id": "default",
+		"enabled": true,
+		"id": "1234",
+		"name": "Red Team",
+		"parent_id": null
+  }
+}
+`
+
+// CreateRequest provides the input to a Create request.
+const CreateRequest = `
+{
+  "project": {
+		"description": "The team that is red",
+		"name": "Red Team"
+  }
+}
+`
+
+// UpdateRequest provides the input to an Update request.
+const UpdateRequest = `
+{
+  "project": {
+		"description": "The team that is bright red",
+		"name": "Bright Red Team"
+  }
+}
+`
+
+// UpdateOutput provides an Update response.
+const UpdateOutput = `
+{
+  "project": {
+		"is_domain": false,
+		"description": "The team that is bright red",
+		"domain_id": "default",
+		"enabled": true,
+		"id": "1234",
+		"name": "Bright Red Team",
+		"parent_id": null
+  }
+}
+`
+
 // RedTeam is a Project fixture.
 var RedTeam = projects.Project{
 	IsDomain:    false,
@@ -62,10 +112,21 @@ var BlueTeam = projects.Project{
 	ParentID:    "",
 }
 
+// UpdatedRedTeam is a Project Fixture.
+var UpdatedRedTeam = projects.Project{
+	IsDomain:    false,
+	Description: "The team that is bright red",
+	DomainID:    "default",
+	Enabled:     true,
+	ID:          "1234",
+	Name:        "Bright Red Team",
+	ParentID:    "",
+}
+
 // ExpectedProjectSlice is the slice of projects expected to be returned from ListOutput.
 var ExpectedProjectSlice = []projects.Project{RedTeam, BlueTeam}
 
-// HandleListProjectSuccessfully creates an HTTP handler at `/projects` on the
+// HandleListProjectsSuccessfully creates an HTTP handler at `/projects` on the
 // test handler mux that responds with a list of two tenants.
 func HandleListProjectsSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/projects", func(w http.ResponseWriter, r *http.Request) {
@@ -76,5 +137,56 @@ func HandleListProjectsSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, ListOutput)
+	})
+}
+
+// HandleGetProjectSuccessfully creates an HTTP handler at `/projects` on the
+// test handler mux that responds with a single project.
+func HandleGetProjectSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/1234", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleCreateProjectSuccessfully creates an HTTP handler at `/projects` on the
+// test handler mux that tests project creation.
+func HandleCreateProjectSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleDeleteProjectSuccessfully creates an HTTP handler at `/projects` on the
+// test handler mux that tests project deletion.
+func HandleDeleteProjectSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/1234", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleUpdateProjectSuccessfully creates an HTTP handler at `/projects` on the
+// test handler mux that tests project updates.
+func HandleUpdateProjectSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/1234", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, UpdateOutput)
 	})
 }

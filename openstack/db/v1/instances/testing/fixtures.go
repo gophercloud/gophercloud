@@ -7,14 +7,13 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/datastores"
-	"github.com/gophercloud/gophercloud/openstack/db/v1/flavors"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/instances"
 	"github.com/gophercloud/gophercloud/testhelper/fixture"
 )
 
 var (
-	timestamp  = "2015-11-12T14:22:42Z"
-	timeVal, _ = time.Parse(time.RFC3339, timestamp)
+	timestamp  = "2015-11-12T14:22:42"
+	timeVal, _ = time.Parse(gophercloud.RFC3339NoZ, timestamp)
 )
 
 var instance = `
@@ -25,25 +24,25 @@ var instance = `
     "version": "5.6"
   },
   "flavor": {
-    "id": 1,
+    "id": "1",
     "links": [
       {
-        "href": "https://my-openstack.com/v1.0/1234/flavors/1",
+        "href": "https://openstack.example.com/v1.0/1234/flavors/1",
         "rel": "self"
       },
       {
-        "href": "https://my-openstack.com/v1.0/1234/flavors/1",
+        "href": "https://openstack.example.com/v1.0/1234/flavors/1",
         "rel": "bookmark"
       }
     ]
   },
   "links": [
     {
-      "href": "https://my-openstack.com/v1.0/1234/instances/1",
+      "href": "https://openstack.example.com/v1.0/1234/instances/1",
       "rel": "self"
     }
   ],
-  "hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.my-openstack.com",
+  "hostname": "e09ad9a3f73309469cf1f43d11e79549caf9acf2.openstack.example.com",
   "id": "{instanceID}",
   "name": "json_rack_instance",
   "status": "BUILD",
@@ -112,17 +111,17 @@ var (
 var expectedInstance = instances.Instance{
 	Created: timeVal,
 	Updated: timeVal,
-	Flavor: flavors.Flavor{
-		ID: 1,
+	Flavor: instances.Flavor{
+		ID: "1",
 		Links: []gophercloud.Link{
-			{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "self"},
-			{Href: "https://my-openstack.com/v1.0/1234/flavors/1", Rel: "bookmark"},
+			{Href: "https://openstack.example.com/v1.0/1234/flavors/1", Rel: "self"},
+			{Href: "https://openstack.example.com/v1.0/1234/flavors/1", Rel: "bookmark"},
 		},
 	},
-	Hostname: "e09ad9a3f73309469cf1f43d11e79549caf9acf2.my-openstack.com",
+	Hostname: "e09ad9a3f73309469cf1f43d11e79549caf9acf2.openstack.example.com",
 	ID:       instanceID,
 	Links: []gophercloud.Link{
-		{Href: "https://my-openstack.com/v1.0/1234/instances/1", Rel: "self"},
+		{Href: "https://openstack.example.com/v1.0/1234/instances/1", Rel: "self"},
 	},
 	Name:   "json_rack_instance",
 	Status: "BUILD",

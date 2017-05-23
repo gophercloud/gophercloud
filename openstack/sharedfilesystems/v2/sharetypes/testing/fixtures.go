@@ -177,8 +177,96 @@ func MockGetExtraSpecsResponse(t *testing.T) {
             "extra_specs": {
                 "snapshot_support": "True",
                 "driver_handles_share_servers": "True",
-				"my_custom_extra_spec": "False"
+                "my_custom_extra_spec": "False"
             }
         }`)
+	})
+}
+
+func MockSetExtraSpecsResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/shareTypeID/extra_specs", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+        {
+            "extra_specs": {
+                "my_key": "my_value"
+            }
+        }`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, `
+        {
+            "extra_specs": {
+                "my_key": "my_value"
+            }
+        }`)
+	})
+}
+
+func MockUnsetExtraSpecsResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/shareTypeID/extra_specs/my_key", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func MockShowAccessResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/shareTypeID/share_type_access", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+        {
+            "share_type_access": [
+                {
+                    "share_type_id": "1732f284-401d-41d9-a494-425451e8b4b8",
+                    "project_id": "818a3f48dcd644909b3fa2e45a399a27"
+                },
+                {
+                    "share_type_id": "1732f284-401d-41d9-a494-425451e8b4b8",
+                    "project_id": "e1284adea3ee4d2482af5ed214f3ad90"
+                }
+            ]
+        }`)
+	})
+}
+
+func MockAddAccessResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/shareTypeID/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+        {
+            "addProjectAccess": {
+                "project": "e1284adea3ee4d2482af5ed214f3ad90"
+            }
+        }`)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func MockRemoveAccessResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/shareTypeID/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+        {
+            "removeProjectAccess": {
+                "project": "e1284adea3ee4d2482af5ed214f3ad90"
+            }
+        }`)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }

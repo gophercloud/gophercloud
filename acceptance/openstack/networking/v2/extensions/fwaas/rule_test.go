@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/rules"
 )
 
@@ -26,7 +27,7 @@ func TestRuleList(t *testing.T) {
 	}
 
 	for _, rule := range allRules {
-		PrintRule(t, &rule)
+		tools.PrintResource(t, rule)
 	}
 }
 
@@ -42,7 +43,7 @@ func TestRuleCRUD(t *testing.T) {
 	}
 	defer DeleteRule(t, client, rule.ID)
 
-	PrintRule(t, rule)
+	tools.PrintResource(t, rule)
 
 	ruleDescription := "Some rule description"
 	updateOpts := rules.UpdateOpts{
@@ -59,5 +60,5 @@ func TestRuleCRUD(t *testing.T) {
 		t.Fatalf("Unable to get rule: %v", err)
 	}
 
-	PrintRule(t, newRule)
+	tools.PrintResource(t, newRule)
 }

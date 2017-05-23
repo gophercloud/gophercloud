@@ -200,6 +200,87 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, "", n.SegmentationID)
 }
 
+func TestCreateWithMultipleProvider(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+	"network": {
+			"name": "sample_network",
+			"admin_state_up": true,
+			"shared": true,
+			"tenant_id": "12345",
+			"segments": [
+				{
+					"provider:segmentation_id": 666,
+					"provider:physical_network": "br-ex",
+					"provider:network_type": "vxlan"
+				},
+				{
+					"provider:segmentation_id": 615,
+					"provider:physical_network": "br-ex",
+					"provider:network_type": "vxlan"
+				}
+			]
+	}
+}
+		`)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, `
+{
+	"network": {
+		"status": "ACTIVE",
+		"name": "sample_network",
+		"admin_state_up": true,
+		"shared": true,
+		"tenant_id": "12345",
+		"segments": [
+			{
+				"provider:segmentation_id": 666,
+				"provider:physical_network": "br-ex",
+				"provider:network_type": "vlan"
+			},
+			{
+				"provider:segmentation_id": 615,
+				"provider:physical_network": "br-ex",
+				"provider:network_type": "vlan"
+			}
+		]
+	}
+}
+	`)
+	})
+
+	iTrue := true
+	segments := []provider.Segment{
+		provider.Segment{NetworkType: "vxlan", PhysicalNetwork: "br-ex", SegmentationID: 666},
+		provider.Segment{NetworkType: "vxlan", PhysicalNetwork: "br-ex", SegmentationID: 615},
+	}
+
+	networkCreateOpts := networks.CreateOpts{
+		Name:         "sample_network",
+		AdminStateUp: &iTrue,
+		Shared:       &iTrue,
+		TenantID:     "12345",
+	}
+
+	providerCreateOpts := provider.CreateOptsExt{
+		CreateOptsBuilder: networkCreateOpts,
+		Segments:          segments,
+	}
+
+	res := networks.Create(fake.ServiceClient(), providerCreateOpts)
+	_, err := provider.ExtractCreate(res)
+	th.AssertNoErr(t, err)
+}
+
 func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

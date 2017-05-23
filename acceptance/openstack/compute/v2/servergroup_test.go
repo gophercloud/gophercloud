@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/servergroups"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
@@ -27,7 +28,7 @@ func TestServergroupsList(t *testing.T) {
 	}
 
 	for _, serverGroup := range allServerGroups {
-		PrintServerGroup(t, &serverGroup)
+		tools.PrintResource(t, serverGroup)
 	}
 }
 
@@ -48,7 +49,7 @@ func TestServergroupsCreate(t *testing.T) {
 		t.Fatalf("Unable to get server group: %v", err)
 	}
 
-	PrintServerGroup(t, serverGroup)
+	tools.PrintResource(t, serverGroup)
 }
 
 func TestServergroupsAffinityPolicy(t *testing.T) {
@@ -57,18 +58,13 @@ func TestServergroupsAffinityPolicy(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	serverGroup, err := CreateServerGroup(t, client, "affinity")
 	if err != nil {
 		t.Fatalf("Unable to create server group: %v", err)
 	}
 	defer DeleteServerGroup(t, client, serverGroup)
 
-	firstServer, err := CreateServerInServerGroup(t, client, choices, serverGroup)
+	firstServer, err := CreateServerInServerGroup(t, client, serverGroup)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
@@ -76,7 +72,7 @@ func TestServergroupsAffinityPolicy(t *testing.T) {
 
 	firstServer, err = servers.Get(client, firstServer.ID).Extract()
 
-	secondServer, err := CreateServerInServerGroup(t, client, choices, serverGroup)
+	secondServer, err := CreateServerInServerGroup(t, client, serverGroup)
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}

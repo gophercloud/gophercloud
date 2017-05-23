@@ -32,6 +32,9 @@ type AcceptanceTestChoices struct {
 
 	// ExternalNetworkID is the network ID of the external network.
 	ExternalNetworkID string
+
+	// ShareNetworkID is the Manila Share network ID
+	ShareNetworkID string
 }
 
 // AcceptanceTestChoicesFromEnv populates a ComputeChoices struct from environment variables.
@@ -43,6 +46,7 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	networkName := os.Getenv("OS_NETWORK_NAME")
 	floatingIPPoolName := os.Getenv("OS_POOL_NAME")
 	externalNetworkID := os.Getenv("OS_EXTGW_ID")
+	shareNetworkID := os.Getenv("OS_SHARE_NETWORK_ID")
 
 	missing := make([]string, 0, 3)
 	if imageID == "" {
@@ -63,7 +67,9 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	if networkName == "" {
 		networkName = "private"
 	}
-
+	if shareNetworkID == "" {
+		missing = append(missing, "OS_SHARE_NETWORK_ID")
+	}
 	notDistinct := ""
 	if flavorID == flavorIDResize {
 		notDistinct = "OS_FLAVOR_ID and OS_FLAVOR_ID_RESIZE must be distinct."
@@ -81,7 +87,15 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 		return nil, fmt.Errorf(text)
 	}
 
-	return &AcceptanceTestChoices{ImageID: imageID, FlavorID: flavorID, FlavorIDResize: flavorIDResize, FloatingIPPoolName: floatingIPPoolName, NetworkName: networkName, ExternalNetworkID: externalNetworkID}, nil
+	return &AcceptanceTestChoices{
+		ImageID:            imageID,
+		FlavorID:           flavorID,
+		FlavorIDResize:     flavorIDResize,
+		FloatingIPPoolName: floatingIPPoolName,
+		NetworkName:        networkName,
+		ExternalNetworkID:  externalNetworkID,
+		ShareNetworkID:     shareNetworkID,
+	}, nil
 }
 
 // NewBlockStorageV1Client returns a *ServiceClient for making calls
@@ -156,6 +170,25 @@ func NewComputeV2Client() (*gophercloud.ServiceClient, error) {
 	}
 
 	return openstack.NewComputeV2(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
+// NewDNSV2Client returns a *ServiceClient for making calls
+// to the OpenStack Compute v2 API. An error will be returned
+// if authentication or client creation was not possible.
+func NewDNSV2Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewDNSV2(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }
@@ -250,6 +283,25 @@ func NewIdentityV3UnauthenticatedClient() (*gophercloud.ServiceClient, error) {
 	}
 
 	return openstack.NewIdentityV3(client, gophercloud.EndpointOpts{})
+}
+
+// NewImageServiceV2Client returns a *ServiceClient for making calls to the
+// OpenStack Image v2 API. An error will be returned if authentication or
+// client creation was not possible.
+func NewImageServiceV2Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewImageServiceV2(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
 }
 
 // NewNetworkV2Client returns a *ServiceClient for making calls to the

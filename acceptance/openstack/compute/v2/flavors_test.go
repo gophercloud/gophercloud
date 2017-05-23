@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
 )
 
@@ -28,8 +29,7 @@ func TestFlavorsList(t *testing.T) {
 	}
 
 	for _, flavor := range allFlavors {
-		PrintFlavor(t, &flavor)
-		t.Logf("")
+		tools.PrintResource(t, flavor)
 	}
 
 	flavorTypes := [3]flavors.FlavorType{flavors.Project, flavors.Private, flavors.All}
@@ -47,7 +47,7 @@ func TestFlavorsList(t *testing.T) {
 		}
 
 		for _, flavor := range allFlavors {
-			PrintFlavor(t, &flavor)
+			tools.PrintResource(t, flavor)
 			t.Logf("")
 		}
 	}
@@ -70,5 +70,5 @@ func TestFlavorsGet(t *testing.T) {
 		t.Fatalf("Unable to get flavor information: %v", err)
 	}
 
-	PrintFlavor(t, flavor)
+	tools.PrintResource(t, flavor)
 }

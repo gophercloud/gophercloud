@@ -33,7 +33,8 @@ func TestList(t *testing.T) {
             "tenant_id": "017d8de156df4177889f31a9bd6edc00",
             "status": "DOWN",
             "port_id": null,
-            "id": "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e"
+            "id": "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e",
+            "router_id": "1117c30a-ddb4-49a1-bec3-a65b286b4170"
         },
         {
             "floating_network_id": "90f742b1-6d17-487b-ba95-71881dbc0b64",
@@ -43,7 +44,8 @@ func TestList(t *testing.T) {
             "tenant_id": "017d8de156df4177889f31a9bd6edc00",
             "status": "DOWN",
             "port_id": "74a342ce-8e07-4e91-880c-9f834b68fa25",
-            "id": "ada25a95-f321-4f59-b0e0-f3a970dd3d63"
+            "id": "ada25a95-f321-4f59-b0e0-f3a970dd3d63",
+            "router_id": "2227c30a-ddb4-49a1-bec3-a65b286b4170"
         }
     ]
 }
@@ -69,6 +71,7 @@ func TestList(t *testing.T) {
 				Status:            "DOWN",
 				PortID:            "",
 				ID:                "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e",
+				RouterID:          "1117c30a-ddb4-49a1-bec3-a65b286b4170",
 			},
 			{
 				FloatingNetworkID: "90f742b1-6d17-487b-ba95-71881dbc0b64",
@@ -78,6 +81,7 @@ func TestList(t *testing.T) {
 				Status:            "DOWN",
 				PortID:            "74a342ce-8e07-4e91-880c-9f834b68fa25",
 				ID:                "ada25a95-f321-4f59-b0e0-f3a970dd3d63",
+				RouterID:          "2227c30a-ddb4-49a1-bec3-a65b286b4170",
 			},
 		}
 
@@ -240,7 +244,8 @@ func TestGet(t *testing.T) {
         "tenant_id": "017d8de156df4177889f31a9bd6edc00",
         "status": "DOWN",
         "port_id": "74a342ce-8e07-4e91-880c-9f834b68fa25",
-        "id": "2f245a7b-796b-4f26-9cf9-9e82d248fda7"
+        "id": "2f245a7b-796b-4f26-9cf9-9e82d248fda7",
+        "router_id": "1117c30a-ddb4-49a1-bec3-a65b286b4170"
     }
 }
       `)
@@ -256,6 +261,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "017d8de156df4177889f31a9bd6edc00", ip.TenantID)
 	th.AssertEquals(t, "DOWN", ip.Status)
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
+	th.AssertEquals(t, "1117c30a-ddb4-49a1-bec3-a65b286b4170", ip.RouterID)
 }
 
 func TestAssociate(t *testing.T) {

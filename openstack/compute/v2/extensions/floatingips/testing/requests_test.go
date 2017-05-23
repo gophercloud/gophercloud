@@ -39,6 +39,18 @@ func TestCreate(t *testing.T) {
 	th.CheckDeepEquals(t, &CreatedFloatingIP, actual)
 }
 
+func TestCreateWithNumericID(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateWithNumericIDSuccessfully(t)
+
+	actual, err := floatingips.Create(client.ServiceClient(), floatingips.CreateOpts{
+		Pool: "nova",
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &CreatedFloatingIP, actual)
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

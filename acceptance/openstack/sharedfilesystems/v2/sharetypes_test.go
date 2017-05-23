@@ -55,10 +55,6 @@ func TestShareTypeGetDefault(t *testing.T) {
 		t.Fatalf("Unable to retrieve the default share type: %v", err)
 	}
 
-	if shareType.Name != "default" {
-		t.Fatal("Share type name was expected to be: default")
-	}
-
 	PrintShareType(t, shareType)
 }
 
@@ -73,6 +69,15 @@ func TestShareTypeExtraSpecs(t *testing.T) {
 		t.Fatalf("Unable to create share type: %v", err)
 	}
 
+	options := sharetypes.SetExtraSpecsOpts{
+		Specs: map[string]interface{}{"my_new_key": "my_value"},
+	}
+
+	_, err = sharetypes.SetExtraSpecs(client, shareType.ID, options).Extract()
+	if err != nil {
+		t.Fatalf("Unable to set extra specs for Share type: %s", shareType.Name)
+	}
+
 	extraSpecs, err := sharetypes.GetExtraSpecs(client, shareType.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to retrieve share type: %s", shareType.Name)
@@ -82,7 +87,76 @@ func TestShareTypeExtraSpecs(t *testing.T) {
 		t.Fatal("driver_handles_share_servers was expected to be true")
 	}
 
+	if extraSpecs["my_new_key"] != "my_value" {
+		t.Fatal("my_new_key was expected to be equal to my_value")
+	}
+
+	err = sharetypes.UnsetExtraSpecs(client, shareType.ID, "my_new_key").ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to unset extra specs for Share type: %s", shareType.Name)
+	}
+
+	extraSpecs, err = sharetypes.GetExtraSpecs(client, shareType.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to retrieve share type: %s", shareType.Name)
+	}
+
+	if _, ok := extraSpecs["my_new_key"]; ok {
+		t.Fatalf("my_new_key was expected to be unset for Share type: %s", shareType.Name)
+	}
+
 	PrintShareType(t, shareType)
 
 	defer DeleteShareType(t, client, shareType)
+}
+
+func TestShareTypeAccess(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create shared file system client: %v", err)
+	}
+
+	shareType, err := CreateShareType(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create share type: %v", err)
+	}
+
+	options := sharetypes.AccessOpts{
+		Project: "9e3a5a44e0134445867776ef53a37605",
+	}
+
+	err = sharetypes.AddAccess(client, shareType.ID, options).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to add a new access to a share type: %v", err)
+	}
+
+	access, err := sharetypes.ShowAccess(client, shareType.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to retrieve the access details for a share type: %v", err)
+	}
+
+	expected := []sharetypes.ShareTypeAccess{{ShareTypeID: shareType.ID, ProjectID: options.Project}}
+
+	if access[0] != expected[0] {
+		t.Fatal("Share type access is not the same than expected")
+	}
+
+	err = sharetypes.RemoveAccess(client, shareType.ID, options).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to remove an access from a share type: %v", err)
+	}
+
+	access, err = sharetypes.ShowAccess(client, shareType.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to retrieve the access details for a share type: %v", err)
+	}
+
+	if len(access) > 0 {
+		t.Fatalf("No access should be left for the share type: %s", shareType.Name)
+	}
+
+	PrintShareType(t, shareType)
+
+	defer DeleteShareType(t, client, shareType)
+
 }

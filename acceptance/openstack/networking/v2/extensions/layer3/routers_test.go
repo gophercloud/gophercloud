@@ -9,6 +9,7 @@ import (
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 )
 
 func TestLayer3RouterList(t *testing.T) {
@@ -29,7 +30,7 @@ func TestLayer3RouterList(t *testing.T) {
 	}
 
 	for _, router := range allRouters {
-		PrintRouter(t, &router)
+		tools.PrintResource(t, router)
 	}
 }
 
@@ -45,7 +46,7 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 	}
 	defer DeleteRouter(t, client, router.ID)
 
-	PrintRouter(t, router)
+	tools.PrintResource(t, router)
 
 	newName := tools.RandomString("TESTACC-", 8)
 	updateOpts := routers.UpdateOpts{
@@ -62,7 +63,7 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 		t.Fatalf("Unable to get router: %v", err)
 	}
 
-	PrintRouter(t, newRouter)
+	tools.PrintResource(t, newRouter)
 }
 
 func TestLayer3RouterInterface(t *testing.T) {
@@ -76,13 +77,18 @@ func TestLayer3RouterInterface(t *testing.T) {
 		t.Fatalf("Unable to get choices: %v", err)
 	}
 
-	subnet, err := networking.CreateSubnet(t, client, choices.ExternalNetworkID)
+	netid, err := networks.IDFromName(client, chocices.NetworkName)
+	if err != nil {
+		t.Fatalf("Unable to find network id: %v", err)
+	}
+
+	subnet, err := networking.CreateSubnet(t, client, netid)
 	if err != nil {
 		t.Fatalf("Unable to create subnet: %v", err)
 	}
 	defer networking.DeleteSubnet(t, client, subnet.ID)
 
-	networking.PrintSubnet(t, subnet)
+	tools.PrintResource(t, subnet)
 
 	router, err := CreateExternalRouter(t, client)
 	if err != nil {
@@ -99,8 +105,8 @@ func TestLayer3RouterInterface(t *testing.T) {
 		t.Fatalf("Failed to add interface to router: %v", err)
 	}
 
-	PrintRouter(t, router)
-	PrintRouterInterface(t, iface)
+	tools.PrintResource(t, router)
+	tools.PrintResource(t, iface)
 
 	riOpts := routers.RemoveInterfaceOpts{
 		SubnetID: subnet.ID,

@@ -1,20 +1,56 @@
 package testing
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestWaitFor(t *testing.T) {
-	err := gophercloud.WaitFor(5, func() (bool, error) {
+	err := gophercloud.WaitFor(2, func() (bool, error) {
 		return true, nil
 	})
 	th.CheckNoErr(t, err)
+}
+
+func TestWaitForTimeout(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+
+	err := gophercloud.WaitFor(1, func() (bool, error) {
+		return false, nil
+	})
+	th.AssertEquals(t, "A timeout occurred", err.Error())
+}
+
+func TestWaitForError(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+
+	err := gophercloud.WaitFor(2, func() (bool, error) {
+		return false, errors.New("Error has occurred")
+	})
+	th.AssertEquals(t, "Error has occurred", err.Error())
+}
+
+func TestWaitForPredicateExceed(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+
+	err := gophercloud.WaitFor(1, func() (bool, error) {
+		time.Sleep(4 * time.Second)
+		return false, errors.New("Just wasting time")
+	})
+	th.AssertEquals(t, "A timeout occurred", err.Error())
 }
 
 func TestNormalizeURL(t *testing.T) {

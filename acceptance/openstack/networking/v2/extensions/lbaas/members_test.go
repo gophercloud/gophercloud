@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas/members"
 )
 
@@ -28,7 +29,7 @@ func TestMembersList(t *testing.T) {
 	}
 
 	for _, member := range allMembers {
-		PrintMember(t, &member)
+		tools.PrintResource(t, member)
 	}
 }
 
@@ -62,7 +63,7 @@ func TestMembersCRUD(t *testing.T) {
 	}
 	defer DeleteMember(t, client, member.ID)
 
-	PrintMember(t, member)
+	tools.PrintResource(t, member)
 
 	updateOpts := members.UpdateOpts{
 		AdminStateUp: gophercloud.Enabled,
@@ -78,5 +79,5 @@ func TestMembersCRUD(t *testing.T) {
 		t.Fatalf("Unable to get member: %v")
 	}
 
-	PrintMember(t, newMember)
+	tools.PrintResource(t, newMember)
 }

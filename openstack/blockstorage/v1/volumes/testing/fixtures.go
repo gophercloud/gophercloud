@@ -82,7 +82,8 @@ func MockCreateResponse(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "volume": {
-        "size": 75
+        "size": 75,
+        "availability_zone": "us-east1"
     }
 }
       `)

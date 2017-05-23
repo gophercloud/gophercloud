@@ -22,6 +22,7 @@ func (r GetResult) Extract() (*Flavor, error) {
 // Flavor records represent (virtual) hardware configurations for server resources in a region.
 type Flavor struct {
 	// The flavor's unique identifier.
+	// Contains 0 if the ID is not an integer.
 	ID int `json:"id"`
 
 	// The RAM capacity for the flavor.
@@ -32,6 +33,9 @@ type Flavor struct {
 
 	// Links to access the flavor.
 	Links []gophercloud.Link
+
+	// The flavor's unique identifier as a string
+	StrID string `json:"str_id"`
 }
 
 // FlavorPage contains a single page of the response from a List call.
