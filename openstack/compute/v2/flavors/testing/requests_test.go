@@ -74,7 +74,7 @@ func TestListFlavors(t *testing.T) {
 	})
 
 	pages := 0
-        // Get public an private flavors
+	// Get public and private flavors
 	err := flavors.ListDetail(fake.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 

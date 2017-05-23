@@ -21,22 +21,12 @@ type ListOptsBuilder interface {
 //
 // If no IsPublic argument is supplied in the request, OpenStack treats the FlavorType as Project.
 type FlavorType string
+
 const (
-        Project FlavorType =  "true"
-        Private FlavorType = "false"
-        All FlavorType = "None"
+	Project FlavorType = "true"
+	Private FlavorType = "false"
+	All     FlavorType = "None"
 )
-func (flavorType FlavorType) String() string {
-    switch flavorType {
-    case Project:
-        return "Project"
-    case Private:
-        return "Private"
-    case All:
-        return "All"
-    }
-    return "Unknown"
-}
 
 // ListOpts helps control the results returned by the List() function.
 // For example, a flavor with a minDisk field of 10 will not be returned if you specify MinDisk set to 20.
@@ -57,9 +47,9 @@ type ListOpts struct {
 	// Limit instructs List to refrain from sending excessively large lists of flavors.
 	Limit int `q:"limit"`
 
-        // IsPublic, if provided, instructs List which set of flavors to return. If IsPublic not provided,
-        // flavors for the current project are returned.
-        FlavorType FlavorType `q:"is_public"`
+	// IsPublic, if provided, instructs List which set of flavors to return. If IsPublic not provided,
+	// flavors for the current project are returned.
+	FlavorType FlavorType `q:"is_public"`
 }
 
 // ToFlavorListQuery formats a ListOpts into a query string.
