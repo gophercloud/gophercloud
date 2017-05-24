@@ -81,13 +81,16 @@ func (opts UpdateOpts) ToSecGroupUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update is an operation which updates an existing security group.
-func Update(c *gophercloud.ServiceClient, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToSecGroupUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(rootURL(c), b, &r.Body, nil)
+
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
 	return
 }
 
