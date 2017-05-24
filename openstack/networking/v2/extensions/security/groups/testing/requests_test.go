@@ -72,21 +72,22 @@ func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/security-groups", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, SecurityGroupUpdateRequest)
+	th.Mux.HandleFunc("/v2.0/security-groups/2076db17-a522-4506-91de-c6dd8e837028",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PUT")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "Content-Type", "application/json")
+			th.TestHeader(t, r, "Accept", "application/json")
+			th.TestJSONRequest(t, r, SecurityGroupUpdateRequest)
 
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, SecurityGroupUpdateResponse)
-	})
+			fmt.Fprintf(w, SecurityGroupUpdateResponse)
+		})
 
 	opts := groups.UpdateOpts{Name: "newer-webservers"}
-	sg, err := groups.Update(fake.ServiceClient(), opts).Extract()
+	sg, err := groups.Update(fake.ServiceClient(), "2076db17-a522-4506-91de-c6dd8e837028", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "newer-webservers", sg.Name)
