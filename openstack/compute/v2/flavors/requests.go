@@ -11,21 +11,22 @@ type ListOptsBuilder interface {
 	ToFlavorListQuery() (string, error)
 }
 
-// FlavorAccess maps to OpenStack's Flavor.is_public field. Although the is_public field is boolean, the
-// request options are ternary, which is why FlavorAccess is a string. The following values are
+// AccessType maps to OpenStack's Flavor.is_public field. Although the is_public field is boolean, the
+// request options are ternary, which is why AccessType is a string. The following values are
 // allowed:
 //
-//      Project (the default): Returns only public flavors and private flavors associated with that project.
-//      Private (admin only):  Returns only private flavors, across all projects.
-//      All (admin only):      Returns all public and private flavors across all projects.
+//      PublicAccess (the default):  Returns public flavors and private flavors associated with that project.
+//      PrivateAccess (admin only):  Returns private flavors, across all projects.
+//      AllAccess (admin only):      Returns public and private flavors across all projects.
 //
-// If no IsPublic argument is supplied in the request, OpenStack treats the FlavorAccess as Project.
-type FlavorAccess string
+// The AccessType arguement is optional, and if it is not supplied, OpenStack returns the PublicAccess
+// flavors.
+type AccessType string
 
 const (
-	Project FlavorAccess = "true"
-	Private FlavorAccess = "false"
-	All     FlavorAccess = "None"
+	PublicAccess  AccessType = "true"
+	PrivateAccess AccessType = "false"
+	AllAccess     AccessType = "None"
 )
 
 // ListOpts helps control the results returned by the List() function.
@@ -47,9 +48,9 @@ type ListOpts struct {
 	// Limit instructs List to refrain from sending excessively large lists of flavors.
 	Limit int `q:"limit"`
 
-	// IsPublic, if provided, instructs List which set of flavors to return. If IsPublic not provided,
+	// AccessType, if provided, instructs List which set of flavors to return. If IsPublic not provided,
 	// flavors for the current project are returned.
-	FlavorAccess FlavorAccess `q:"is_public"`
+	AccessType AccessType `q:"is_public"`
 }
 
 // ToFlavorListQuery formats a ListOpts into a query string.
