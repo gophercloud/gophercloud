@@ -183,7 +183,7 @@ func TestShareNetworkListPagination(t *testing.T) {
 
 }
 
-func TestShareNetworkAddSecurityService(t *testing.T) {
+func TestShareNetworkAddRemoveSecurityService(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -208,6 +208,15 @@ func TestShareNetworkAddSecurityService(t *testing.T) {
 	_, err = sharenetworks.AddSecurityService(client, shareNetwork.ID, options).Extract()
 	if err != nil {
 		t.Errorf("Unable to add security service: %v", err)
+	}
+
+	removeOptions := sharenetworks.RemoveSecurityServiceOpts{
+		SecurityServiceID: securityService.ID,
+	}
+
+	_, err = sharenetworks.RemoveSecurityService(client, shareNetwork.ID, removeOptions).Extract()
+	if err != nil {
+		t.Errorf("Unable to remove security service: %v", err)
 	}
 
 	PrintShareNetwork(t, shareNetwork)

@@ -174,3 +174,9 @@ type UpdateResult struct {
 type AddSecurityServiceResult struct {
 	commonResult
 }
+
+// RemoveSecurityServiceResult contains the response body and error from a security
+// service removal request.
+type RemoveSecurityServiceResult struct {
+	commonResult
+}

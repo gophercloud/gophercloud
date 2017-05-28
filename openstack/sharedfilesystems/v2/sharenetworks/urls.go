@@ -25,3 +25,7 @@ func updateURL(c *gophercloud.ServiceClient, id string) string {
 func addSecurityServiceURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("share-networks", id, "action")
 }
+
+func removeSecurityServiceURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("share-networks", id, "action")
+}
