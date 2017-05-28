@@ -60,7 +60,7 @@
 - For methods on a type in `results.go`, the receiver should be named `r` and the
   variable into which it will be unmarshalled `s`.
 
-- Functions in `results.go`, with the exception of functions that return a
+- Functions in `requests.go`, with the exception of functions that return a
   `pagination.Pager`, should be named returns of the name `r`.
 
 - Functions in `requests.go` that accept request bodies should accept as their
