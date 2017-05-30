@@ -50,7 +50,7 @@ type Flavor struct {
 	IsPublic bool `json:"is_public"`
 }
 
-func (f *Flavor) UnmarshalJSON(b []byte) error {
+func (r *Flavor) UnmarshalJSON(b []byte) error {
 	type tmp Flavor
 	var s struct {
 		tmp
@@ -61,21 +61,21 @@ func (f *Flavor) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	*f = Flavor(s.tmp)
+	*r = Flavor(s.tmp)
 
 	switch t := s.Swap.(type) {
 	case float64:
-		f.Swap = int(t)
+		r.Swap = int(t)
 	case string:
 		switch t {
 		case "":
-			f.Swap = 0
+			r.Swap = 0
 		default:
 			swap, err := strconv.ParseFloat(t, 64)
 			if err != nil {
 				return err
 			}
-			f.Swap = int(swap)
+			r.Swap = int(swap)
 		}
 	}
 
