@@ -60,7 +60,7 @@ It provides an implementation that locates a single endpoint from a service
 catalog for a specific ProviderClient based on user-provided EndpointOpts. The
 provider then uses it to discover related ServiceClients.
 */
-type EndpointLocator func(EndpointOpts) (string, error)
+type EndpointLocator func(EndpointOpts) (string, EndpointExtraInfo, error)
 
 // ApplyDefaults is an internal method to be used by provider implementations.
 //

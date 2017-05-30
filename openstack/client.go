@@ -129,7 +129,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		}
 	}
 	client.TokenID = token.ID
-	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
+	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, gophercloud.EndpointExtraInfo, error) {
 		return V2EndpointURL(catalog, opts)
 	}
 
@@ -172,7 +172,7 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, opts tokens3.Au
 			return v3auth(client, endpoint, opts, eo)
 		}
 	}
-	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
+	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, gophercloud.EndpointExtraInfo, error) {
 		return V3EndpointURL(catalog, opts)
 	}
 
@@ -185,7 +185,7 @@ func NewIdentityV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOp
 	var err error
 	if !reflect.DeepEqual(eo, gophercloud.EndpointOpts{}) {
 		eo.ApplyDefaults("identity")
-		endpoint, err = client.EndpointLocator(eo)
+		endpoint, _, err = client.EndpointLocator(eo)
 		if err != nil {
 			return nil, err
 		}
@@ -203,7 +203,7 @@ func NewIdentityV3(client *gophercloud.ProviderClient, eo gophercloud.EndpointOp
 	var err error
 	if !reflect.DeepEqual(eo, gophercloud.EndpointOpts{}) {
 		eo.ApplyDefaults("identity")
-		endpoint, err = client.EndpointLocator(eo)
+		endpoint, _, err = client.EndpointLocator(eo)
 		if err != nil {
 			return nil, err
 		}
@@ -218,7 +218,7 @@ func NewIdentityV3(client *gophercloud.ProviderClient, eo gophercloud.EndpointOp
 // NewObjectStorageV1 creates a ServiceClient that may be used with the v1 object storage package.
 func NewObjectStorageV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("object-store")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +228,7 @@ func NewObjectStorageV1(client *gophercloud.ProviderClient, eo gophercloud.Endpo
 // NewComputeV2 creates a ServiceClient that may be used with the v2 compute package.
 func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("compute")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
@@ -238,7 +238,7 @@ func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 // NewNetworkV2 creates a ServiceClient that may be used with the v2 network package.
 func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("network")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
@@ -252,7 +252,7 @@ func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 // NewBlockStorageV1 creates a ServiceClient that may be used to access the v1 block storage service.
 func NewBlockStorageV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("volume")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ func NewBlockStorageV1(client *gophercloud.ProviderClient, eo gophercloud.Endpoi
 // NewBlockStorageV2 creates a ServiceClient that may be used to access the v2 block storage service.
 func NewBlockStorageV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("volumev2")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
@@ -272,7 +272,7 @@ func NewBlockStorageV2(client *gophercloud.ProviderClient, eo gophercloud.Endpoi
 // NewSharedFileSystemV2 creates a ServiceClient that may be used to access the v2 shared file system service.
 func NewSharedFileSystemV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("sharev2")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
@@ -283,7 +283,7 @@ func NewSharedFileSystemV2(client *gophercloud.ProviderClient, eo gophercloud.En
 // CDN service.
 func NewCDNV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("cdn")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
@@ -293,7 +293,7 @@ func NewCDNV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (
 // NewOrchestrationV1 creates a ServiceClient that may be used to access the v1 orchestration service.
 func NewOrchestrationV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("orchestration")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
@@ -303,7 +303,7 @@ func NewOrchestrationV1(client *gophercloud.ProviderClient, eo gophercloud.Endpo
 // NewDBV1 creates a ServiceClient that may be used to access the v1 DB service.
 func NewDBV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("database")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
@@ -313,7 +313,7 @@ func NewDBV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*
 // NewDNSV2 creates a ServiceClient that may be used to access the v2 DNS service.
 func NewDNSV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("dns")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}
@@ -326,7 +326,7 @@ func NewDNSV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (
 // NewImageServiceV2 creates a ServiceClient that may be used to access the v2 image service.
 func NewImageServiceV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	eo.ApplyDefaults("image")
-	url, err := client.EndpointLocator(eo)
+	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
 	}

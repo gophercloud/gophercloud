@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/Masterminds/semver"
 )
 
 // ServiceClient stores details required to interact with a specific service API implemented by a provider.
@@ -16,12 +18,67 @@ type ServiceClient struct {
 	// It MUST end with a /.
 	Endpoint string
 
+	// Endpoint data except URL, i.e. service type, service name, microversion, etc.
+	EndpointExtraInfo EndpointExtraInfo
+
 	// ResourceBase is the base URL shared by the resources within a service's API. It should include
 	// the API version and, like Endpoint, MUST end with a / if set. If not set, the Endpoint is used
 	// as-is, instead.
 	ResourceBase string
 
 	Microversion string
+}
+
+// OpenStackVersion is the OpenStack version
+type openStackVersion string
+
+const (
+	// OpenStackV20 is the OpenStack v2.0 version
+	openStackV20 openStackVersion = "v2.0"
+	// OpenStackV30 is the OpenStack v3.0 version
+	openStackV30 openStackVersion = "v3.0"
+)
+
+type openStackV2Endpoint struct {
+	tenantID    string
+	publicURL   string
+	internalURL string
+	adminURL    string
+	region      string
+	versionID   string
+	versionInfo string
+	versionList string
+}
+
+type openStackV3Endpoint struct {
+	id                string
+	region            string
+	endpointInterface string
+	unnormalisedURL   string
+}
+
+type openStackV3EndpointExtraInfo struct {
+	microversion *semver.Version
+}
+
+type endpointExtraInfoStatus int
+
+const (
+	uninitialised endpointExtraInfoStatus = iota
+	serviceTypeSet
+	// microversionSet status is only for OpenStackV30 and for OpenStack service type that support microversions
+	microversionSet
+)
+
+// EndpointExtraInfo stores endpoint data except URL, i.e. service type, service name, microversion, etc.
+type EndpointExtraInfo struct {
+	status              endpointExtraInfoStatus
+	serviceType         string
+	serviceName         string
+	version             openStackVersion
+	v2Endpoint          openStackV2Endpoint
+	v3Endpoint          openStackV3Endpoint
+	v3EndpointExtraInfo openStackV3EndpointExtraInfo
 }
 
 // ResourceBaseURL returns the base URL of any resources used by this service. It MUST end with a /.
