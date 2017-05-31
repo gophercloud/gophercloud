@@ -37,6 +37,11 @@ var (
 	testCatalogID   = "catalogID"
 	testCatalogType = "identity"
 	testCatalogName = "keystone"
+
+	testDomainID   = "domainID"
+	testDomainName = "domainName"
+	testUserID     = "userID"
+	testUserName   = "userName"
 )
 
 func TestExtractToken(t *testing.T) {
@@ -86,6 +91,29 @@ func TestExtractCatalog(t *testing.T) {
 		testhelper.CheckDeepEquals(t, testEndpointRegions[i], endpoint.Region)
 		testhelper.CheckDeepEquals(t, testEndpointURLs[i], endpoint.URL)
 	}
+}
+
+func TestExtractUser(t *testing.T) {
+	result := getGetResultFromResponse(t, `{
+		"token": {
+			"user": {
+				"domain": {
+					"id": "`+testDomainID+`",
+					"name": "`+testDomainName+`"
+				},
+				"id": "`+testUserID+`",
+				"name": "`+testUserName+`"
+			}
+		}
+	}`)
+
+	user, err := result.ExtractUser()
+	testhelper.AssertNoErr(t, err)
+
+	testhelper.CheckDeepEquals(t, testDomainID, user.Domain.ID)
+	testhelper.CheckDeepEquals(t, testDomainName, user.Domain.Name)
+	testhelper.CheckDeepEquals(t, testUserID, user.ID)
+	testhelper.CheckDeepEquals(t, testUserName, user.Name)
 }
 
 func getGetResultFromResponse(t *testing.T, response string) tokens.GetResult {
