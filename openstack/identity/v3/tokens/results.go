@@ -67,7 +67,7 @@ func (r commonResult) ExtractToken() (*Token, error) {
 }
 
 // ExtractServiceCatalog returns the ServiceCatalog that was generated along with the user's Token.
-func (r CreateResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
+func (r commonResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
 	var s ServiceCatalog
 	err := r.ExtractInto(&s)
 	return &s, err
