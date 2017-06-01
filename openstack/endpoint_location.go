@@ -15,6 +15,7 @@ import (
 func V2EndpointURL(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpts) (string, gophercloud.EndpointExtraInfo, error) {
 	// Extract Endpoints from the catalog entries that match the requested Type, Name if provided, and Region if provided.
 	var endpoints = make([]tokens2.Endpoint, 0, 1)
+	var endpointExtraInfo gophercloud.EndpointExtraInfo
 	for _, entry := range catalog.Entries {
 		if (entry.Type == opts.Type) && (opts.Name == "" || entry.Name == opts.Name) {
 			for _, endpoint := range entry.Endpoints {
@@ -36,11 +37,14 @@ func V2EndpointURL(catalog *tokens2.ServiceCatalog, opts gophercloud.EndpointOpt
 	for _, endpoint := range endpoints {
 		switch opts.Availability {
 		case gophercloud.AvailabilityPublic:
-			return gophercloud.NormalizeURL(endpoint.PublicURL), gophercloud.EndpointExtraInfo{}, nil
+			endpointExtraInfo.InitializeV2(opts.Type, opts.Name, endpoint.AdminURL, endpoint.InternalURL, endpoint.PublicURL, endpoint.Region, endpoint.TenantID, endpoint.VersionID, endpoint.VersionInfo, endpoint.VersionList)
+			return gophercloud.NormalizeURL(endpoint.PublicURL), endpointExtraInfo, nil
 		case gophercloud.AvailabilityInternal:
-			return gophercloud.NormalizeURL(endpoint.InternalURL), gophercloud.EndpointExtraInfo{}, nil
+			endpointExtraInfo.InitializeV2(opts.Type, opts.Name, endpoint.AdminURL, endpoint.InternalURL, endpoint.PublicURL, endpoint.Region, endpoint.TenantID, endpoint.VersionID, endpoint.VersionInfo, endpoint.VersionList)
+			return gophercloud.NormalizeURL(endpoint.InternalURL), endpointExtraInfo, nil
 		case gophercloud.AvailabilityAdmin:
-			return gophercloud.NormalizeURL(endpoint.AdminURL), gophercloud.EndpointExtraInfo{}, nil
+			endpointExtraInfo.InitializeV2(opts.Type, opts.Name, endpoint.AdminURL, endpoint.InternalURL, endpoint.PublicURL, endpoint.Region, endpoint.TenantID, endpoint.VersionID, endpoint.VersionInfo, endpoint.VersionList)
+			return gophercloud.NormalizeURL(endpoint.AdminURL), endpointExtraInfo, nil
 		default:
 			err := &ErrInvalidAvailabilityProvided{}
 			err.Argument = "Availability"
@@ -64,6 +68,7 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 	// Extract Endpoints from the catalog entries that match the requested Type, Interface,
 	// Name if provided, and Region if provided.
 	var endpoints = make([]tokens3.Endpoint, 0, 1)
+	var endpointExtraInfo gophercloud.EndpointExtraInfo
 	for _, entry := range catalog.Entries {
 		if (entry.Type == opts.Type) && (opts.Name == "" || entry.Name == opts.Name) {
 			for _, endpoint := range entry.Endpoints {
@@ -90,7 +95,9 @@ func V3EndpointURL(catalog *tokens3.ServiceCatalog, opts gophercloud.EndpointOpt
 
 	// Extract the URL from the matching Endpoint.
 	for _, endpoint := range endpoints {
-		return gophercloud.NormalizeURL(endpoint.URL), gophercloud.EndpointExtraInfo{}, nil
+		url := gophercloud.NormalizeURL(endpoint.URL)
+		endpointExtraInfo.InitializeV3(opts.Type, opts.Name, endpoint.ID, endpoint.Interface, endpoint.Region, endpoint.URL)
+		return url, gophercloud.EndpointExtraInfo{}, nil
 	}
 
 	// Report an error if there were no matching endpoints.

@@ -1,6 +1,7 @@
 package gophercloud
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -37,6 +38,13 @@ const (
 	openStackV20 openStackVersion = "v2.0"
 	// OpenStackV30 is the OpenStack v3.0 version
 	openStackV30 openStackVersion = "v3.0"
+)
+
+const (
+	// OpenStackNovaV2ServiceType is the OpenStack NovaV2 Type value
+	OpenStackNovaV2ServiceType = "compute"
+	// OpenStackManilaV2ServiceType is the OpenStack ManilaV2 Type valuse
+	OpenStackManilaV2ServiceType = "sharev2"
 )
 
 type openStackV2Endpoint struct {
@@ -79,6 +87,87 @@ type EndpointExtraInfo struct {
 	v2Endpoint          openStackV2Endpoint
 	v3Endpoint          openStackV3Endpoint
 	v3EndpointExtraInfo openStackV3EndpointExtraInfo
+}
+
+// InitializeV2 initializes an EndpointExtraInfo instance with OpenStack v2.0 endpoint data
+func (e *EndpointExtraInfo) InitializeV2(serviceType, serviceName, adminURL, internalURL, publicURL, region, tenantID, versionID, versionInfo, versionList string) {
+	e.version = openStackV20
+	e.serviceType = serviceType
+	e.serviceName = serviceName
+	e.v2Endpoint.adminURL = adminURL
+	e.v2Endpoint.internalURL = internalURL
+	e.v2Endpoint.publicURL = publicURL
+	e.v2Endpoint.region = region
+	e.v2Endpoint.tenantID = tenantID
+	e.v2Endpoint.versionID = versionID
+	e.v2Endpoint.versionInfo = versionInfo
+	e.v2Endpoint.versionList = versionList
+	e.status = serviceTypeSet
+	return
+}
+
+// InitializeV3 initializes an EndpointExtraInfo instance with OpenStack v3.0 endpoint data
+func (e *EndpointExtraInfo) InitializeV3(serviceType, serviceName, id, endpointInterface, region, unnormalisedURL string) {
+	e.version = openStackV30
+	e.serviceType = serviceType
+	e.serviceName = serviceName
+	e.v3Endpoint.id = id
+	e.v3Endpoint.endpointInterface = endpointInterface
+	e.v3Endpoint.region = region
+	e.v3Endpoint.unnormalisedURL = unnormalisedURL
+	e.status = serviceTypeSet
+	return
+}
+
+// IsMicroversionImplemented returns true in case microversion is implemented for the e.serviceType
+func (e *EndpointExtraInfo) IsMicroversionImplemented() bool {
+	if e.serviceType == OpenStackManilaV2ServiceType {
+		return true
+	}
+	return false
+}
+
+func (e *EndpointExtraInfo) validateForMicroversion() error {
+	if e.status == uninitialised {
+		err := BaseError{}
+		err.Info = fmt.Sprintf("Internal error: cannot set microversion, EndpointExtraInfo struct is not initialised")
+		return err
+	}
+	if e.version != openStackV30 {
+		err := BaseError{}
+		err.Info = fmt.Sprintf("Internal error: cannot set microversion, microversion support is not implemented for (%v)", e.version)
+		return err
+	}
+	if !e.IsMicroversionImplemented() {
+		err := BaseError{}
+		err.Info = fmt.Sprintf("Internal error: cannot set microversion, service type %q does not have microversions implemented", e.serviceType)
+		return err
+	}
+	return nil
+}
+
+// SetMicroversion sets value of microversion for service types that have microversion implemented
+func (e *EndpointExtraInfo) SetMicroversion(microversion string) error {
+	if err := e.validateForMicroversion(); err != nil {
+		return err
+	}
+	var err error
+	e.v3EndpointExtraInfo.microversion, err = semver.NewVersion(microversion)
+	if err != nil {
+		retErr := BaseError{}
+		retErr.Info = fmt.Sprintf("The microversion %q has invalid format: %q", microversion, err.Error())
+		return retErr
+	}
+	e.status = microversionSet
+	return nil
+}
+
+// GetMicroversion returns value of microversion for service types that have microversion implemented
+func (e *EndpointExtraInfo) GetMicroversion(microversion string) (*semver.Version, error) {
+	if err := e.validateForMicroversion(); err != nil {
+		return nil, err
+	}
+	return e.v3EndpointExtraInfo.microversion, nil
 }
 
 // ResourceBaseURL returns the base URL of any resources used by this service. It MUST end with a /.

@@ -227,7 +227,7 @@ func NewObjectStorageV1(client *gophercloud.ProviderClient, eo gophercloud.Endpo
 
 // NewComputeV2 creates a ServiceClient that may be used with the v2 compute package.
 func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	eo.ApplyDefaults("compute")
+	eo.ApplyDefaults(gophercloud.OpenStackNovaV2ServiceType)
 	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
@@ -271,7 +271,7 @@ func NewBlockStorageV2(client *gophercloud.ProviderClient, eo gophercloud.Endpoi
 
 // NewSharedFileSystemV2 creates a ServiceClient that may be used to access the v2 shared file system service.
 func NewSharedFileSystemV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	eo.ApplyDefaults("sharev2")
+	eo.ApplyDefaults(gophercloud.OpenStackManilaV2ServiceType)
 	url, _, err := client.EndpointLocator(eo)
 	if err != nil {
 		return nil, err
