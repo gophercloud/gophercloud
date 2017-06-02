@@ -53,6 +53,9 @@ var (
 		"role2Name",
 		"role3Name",
 	}
+
+	testProjectID   = "projectID"
+	testProjectName = "projectName"
 )
 
 func TestExtractToken(t *testing.T) {
@@ -146,6 +149,23 @@ func TestExtractRoles(t *testing.T) {
 		testhelper.CheckDeepEquals(t, testRoleIDs[i], role.ID)
 		testhelper.CheckDeepEquals(t, testRoleNames[i], role.Name)
 	}
+}
+
+func TestExtractProject(t *testing.T) {
+	result := getGetResultFromResponse(t, `{
+		"token": {
+			"project": {
+				"id": "`+testProjectID+`",
+				"name": "`+testProjectName+`"
+			}
+		}
+	}`)
+
+	project, err := result.ExtractProject()
+	testhelper.AssertNoErr(t, err)
+
+	testhelper.CheckDeepEquals(t, testProjectID, project.ID)
+	testhelper.CheckDeepEquals(t, testProjectName, project.Name)
 }
 
 func getGetResultFromResponse(t *testing.T, response string) tokens.GetResult {
