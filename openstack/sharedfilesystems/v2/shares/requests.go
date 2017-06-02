@@ -93,7 +93,7 @@ type ListOpts struct {
 	// Offset can be used to define the starting point of share listing
 	Offset int `q:"offset"`
 	// Admin-only option to list shares from all tenants
-	AllTenants bool `q:"tenant_id"`
+	AllTenants bool `q:"all_tenants"`
 	// Name of the share
 	Name string `q:"name"`
 	// Status of the share
