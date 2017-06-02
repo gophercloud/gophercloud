@@ -42,6 +42,17 @@ var (
 	testDomainName = "domainName"
 	testUserID     = "userID"
 	testUserName   = "userName"
+
+	testRoleIDs = [...]string{
+		"role1ID",
+		"role2ID",
+		"role3ID",
+	}
+	testRoleNames = [...]string{
+		"role1Name",
+		"role2Name",
+		"role3Name",
+	}
 )
 
 func TestExtractToken(t *testing.T) {
@@ -116,6 +127,27 @@ func TestExtractUser(t *testing.T) {
 	testhelper.CheckDeepEquals(t, testUserName, user.Name)
 }
 
+func TestExtractRoles(t *testing.T) {
+	rawRoles := ""
+	for i := 0; i < len(testRoleIDs); i++ {
+		rawRoles += getRole(testRoleIDs[i], testRoleNames[i]) + ","
+	}
+	result := getGetResultFromResponse(t, `{
+		"token": {
+			"roles": [`+rawRoles[:len(rawRoles)-1]+`]
+		}
+	}`)
+
+	roles, err := result.ExtractRoles()
+	testhelper.AssertNoErr(t, err)
+
+	testhelper.CheckDeepEquals(t, 3, len(roles.Roles))
+	for i, role := range roles.Roles {
+		testhelper.CheckDeepEquals(t, testRoleIDs[i], role.ID)
+		testhelper.CheckDeepEquals(t, testRoleNames[i], role.Name)
+	}
+}
+
 func getGetResultFromResponse(t *testing.T, response string) tokens.GetResult {
 	result := tokens.GetResult{}
 	result.Header = http.Header{
@@ -132,5 +164,12 @@ func getEndpoint(id, interfaceName, region, url string) string {
 		"interface": "` + interfaceName + `",
 		"region": "` + region + `",
 		"url": "` + url + `"
+	}`
+}
+
+func getRole(id, name string) string {
+	return `{
+		"id": "` + id + `",
+		"name": "` + name + `"
 	}`
 }

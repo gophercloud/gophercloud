@@ -54,6 +54,16 @@ type User struct {
 	Name   string `json:"name"`
 }
 
+// Role provides information about roles to which User is authorized.
+type Role struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Roles struct {
+	Roles []*Role `json:"roles"`
+}
+
 // commonResult is the deferred result of a Create or a Get call.
 type commonResult struct {
 	gophercloud.Result
@@ -93,6 +103,13 @@ func (r commonResult) ExtractUser() (*User, error) {
 	}
 	err := r.ExtractInto(&s)
 	return &s.User, err
+}
+
+// ExtractRoles returns Roles to which User is authorized.
+func (r commonResult) ExtractRoles() (*Roles, error) {
+	var s Roles
+	err := r.ExtractInto(&s)
+	return &s, err
 }
 
 // CreateResult defers the interpretation of a created token.
