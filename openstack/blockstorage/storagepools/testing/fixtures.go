@@ -2,12 +2,13 @@ package testing
 
 import (
 	"fmt"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/storagepools"
-	"github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
 	"math"
 	"net/http"
 	"testing"
+
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/storagepools"
+	"github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 const StoragePoolsListBody = `

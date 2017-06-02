@@ -1,10 +1,11 @@
 package testing
 
 import (
+	"testing"
+
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/storagepools"
 	"github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
-	"testing"
 )
 
 func TestListStoragePoolsDetail(t *testing.T) {
