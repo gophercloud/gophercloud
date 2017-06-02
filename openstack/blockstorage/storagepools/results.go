@@ -12,15 +12,29 @@ type ListResult struct {
 	gophercloud.Result
 }
 
-// Minimum iset of driver capabilities only
-// https://github.com/openstack/cinder/blob/master/doc/source/devref/drivers.rst#volume-stats
+// Minimum set of driver capabilities only
+// https://github.com/openstack/cinder/blob/master/cinder/interface/volume_driver.py#L56
 type Capabilities struct {
+	// Required Fields
 	DriverVersion     string  `json:"driver_version"`
 	FreeCapacityGB    float64 `json:"-"`
 	StorageProtocol   string  `json:"storage_protocol"`
 	TotalCapacityGB   float64 `json:"-"`
 	VendorName        string  `json:"vendor_name"`
 	VolumeBackendName string  `json:"volume_backend_name"`
+	// Optional Fields
+	ReservedPercentage       int64   `json:"reserved_percentage"`
+	LocationInfo             string  `json:"location_info"`
+	QoSSupprt                bool    `json:"QoS_support"`
+	ProvisonedCapacityGB     float64 `json:"provisoned_capacity_gb"`
+	MaxOverSubscriptionRatio float64 `json:"max_over_subscription_ratio"`
+	ThinProvisioningSupport  bool    `json:"thin_provisioning_support"`
+	ThickProvisioningSupport bool    `json:"thick_provisioning_support"`
+	TotalVolumes             int64   `json:"total_volumes"`
+	FilterFunction           string  `json:"filter_function"`
+	GoodnessFuction          string  `json:"goodness_function"`
+	Mutliattach              bool    `json:"multiattach"`
+	SparseCopyVolume         bool    `json:"sparse_copy_volume"`
 }
 
 type StoragePool struct {
