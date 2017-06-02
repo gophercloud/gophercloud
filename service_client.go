@@ -26,8 +26,6 @@ type ServiceClient struct {
 	// the API version and, like Endpoint, MUST end with a / if set. If not set, the Endpoint is used
 	// as-is, instead.
 	ResourceBase string
-
-	Microversion string
 }
 
 // OpenStackVersion is the OpenStack version
@@ -170,6 +168,32 @@ func (e *EndpointExtraInfo) GetMicroversion(microversion string) (*semver.Versio
 	return e.v3EndpointExtraInfo.microversion, nil
 }
 
+func (e *EndpointExtraInfo) getHTTPAPIVersionHeader() (string, error) {
+	switch e.serviceType {
+	case OpenStackManilaV2ServiceType:
+		return "X-Openstack-Manila-Api-Version", nil
+	default:
+		err := BaseError{}
+		err.Info = fmt.Sprintf("Internal error: the (%v) service type doesn't have microversions implemented", e.serviceType)
+		return "", err
+	}
+}
+
+// GetAPIVersionForHTTPHeader returns:
+// - in case the EndpointExtraInfo contains valid data: (HTTPMicroversionHeader, Value (for the HTTPMicroversionHeader), nil)
+// - in case the EndpointExtraInfo contains invalid data or an error occured: (N/A, N/A, error)
+func (e *EndpointExtraInfo) GetAPIVersionForHTTPHeader() (string, string, error) {
+	if err := e.validateForMicroversion(); err != nil {
+		return "", "", err
+	}
+	header, err := e.getHTTPAPIVersionHeader()
+	if err != nil {
+		return "", "", err
+	}
+	value := e.v3EndpointExtraInfo.microversion.String()
+	return header, value, nil
+}
+
 // ResourceBaseURL returns the base URL of any resources used by this service. It MUST end with a /.
 func (client *ServiceClient) ResourceBaseURL() string {
 	if client.ResourceBase != "" {
@@ -195,7 +219,9 @@ func (client *ServiceClient) Get(url string, JSONResponse interface{}, opts *Req
 	if opts.MoreHeaders == nil {
 		opts.MoreHeaders = make(map[string]string)
 	}
-	opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
+	if header, value, err := client.EndpointExtraInfo.GetAPIVersionForHTTPHeader(); err == nil {
+		opts.MoreHeaders[header] = value
+	}
 
 	return client.Request("GET", url, opts)
 }
@@ -219,7 +245,9 @@ func (client *ServiceClient) Post(url string, JSONBody interface{}, JSONResponse
 	if opts.MoreHeaders == nil {
 		opts.MoreHeaders = make(map[string]string)
 	}
-	opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
+	if header, value, err := client.EndpointExtraInfo.GetAPIVersionForHTTPHeader(); err == nil {
+		opts.MoreHeaders[header] = value
+	}
 
 	return client.Request("POST", url, opts)
 }
@@ -243,7 +271,9 @@ func (client *ServiceClient) Put(url string, JSONBody interface{}, JSONResponse 
 	if opts.MoreHeaders == nil {
 		opts.MoreHeaders = make(map[string]string)
 	}
-	opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
+	if header, value, err := client.EndpointExtraInfo.GetAPIVersionForHTTPHeader(); err == nil {
+		opts.MoreHeaders[header] = value
+	}
 
 	return client.Request("PUT", url, opts)
 }
@@ -267,7 +297,9 @@ func (client *ServiceClient) Patch(url string, JSONBody interface{}, JSONRespons
 	if opts.MoreHeaders == nil {
 		opts.MoreHeaders = make(map[string]string)
 	}
-	opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
+	if header, value, err := client.EndpointExtraInfo.GetAPIVersionForHTTPHeader(); err == nil {
+		opts.MoreHeaders[header] = value
+	}
 
 	return client.Request("PATCH", url, opts)
 }
@@ -281,7 +313,9 @@ func (client *ServiceClient) Delete(url string, opts *RequestOpts) (*http.Respon
 	if opts.MoreHeaders == nil {
 		opts.MoreHeaders = make(map[string]string)
 	}
-	opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
+	if header, value, err := client.EndpointExtraInfo.GetAPIVersionForHTTPHeader(); err == nil {
+		opts.MoreHeaders[header] = value
+	}
 
 	return client.Request("DELETE", url, opts)
 }
