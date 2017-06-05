@@ -1,4 +1,4 @@
-package storagepools
+package schedulerstats
 
 import (
 	"encoding/json"

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/storagepools"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/extensions/schedulerstats"
 	"github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -64,9 +64,9 @@ const StoragePoolsListBodyDetail = `
 `
 
 var (
-	StoragePoolFake1 = storagepools.StoragePool{
+	StoragePoolFake1 = schedulerstats.StoragePool{
 		Name: "rbd:cinder.volumes.ssd@cinder.volumes.ssd#cinder.volumes.ssd",
-		Capabilities: storagepools.Capabilities{
+		Capabilities: schedulerstats.Capabilities{
 			DriverVersion:     "1.2.0",
 			FreeCapacityGB:    64765,
 			StorageProtocol:   "ceph",
@@ -76,9 +76,9 @@ var (
 		},
 	}
 
-	StoragePoolFake2 = storagepools.StoragePool{
+	StoragePoolFake2 = schedulerstats.StoragePool{
 		Name: "rbd:cinder.volumes.hdd@cinder.volumes.hdd#cinder.volumes.hdd",
-		Capabilities: storagepools.Capabilities{
+		Capabilities: schedulerstats.Capabilities{
 			DriverVersion:     "1.2.0",
 			FreeCapacityGB:    0.0,
 			StorageProtocol:   "ceph",

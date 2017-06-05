@@ -1,4 +1,4 @@
-package storagepools
+package schedulerstats
 
 import "github.com/gophercloud/gophercloud"
 

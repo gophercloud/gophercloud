@@ -3,7 +3,7 @@ package testing
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/storagepools"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/extensions/schedulerstats"
 	"github.com/gophercloud/gophercloud/pagination"
 	"github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -15,10 +15,10 @@ func TestListStoragePoolsDetail(t *testing.T) {
 	HandleStoragePoolsListSuccessfully(t)
 
 	pages := 0
-	err := storagepools.List(client.ServiceClient(), storagepools.ListOpts{Detail: true}).EachPage(func(page pagination.Page) (bool, error) {
+	err := schedulerstats.List(client.ServiceClient(), schedulerstats.ListOpts{Detail: true}).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
-		actual, err := storagepools.ExtractStoragePools(page)
+		actual, err := schedulerstats.ExtractStoragePools(page)
 		testhelper.AssertNoErr(t, err)
 
 		if len(actual) != 2 {
