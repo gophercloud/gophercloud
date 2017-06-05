@@ -5,12 +5,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
-
-type ListResult struct {
-	gophercloud.Result
-}
 
 // Minimum set of driver capabilities only
 // https://github.com/openstack/cinder/blob/master/cinder/interface/volume_driver.py#L56
@@ -105,10 +101,19 @@ func (r *StoragePool) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func ExtractStoragePools(r ListResult) ([]StoragePool, error) {
+type StoragePoolPage struct {
+	pagination.SinglePageBase
+}
+
+func (page StoragePoolPage) IsEmpty() (bool, error) {
+	va, err := ExtractStoragePools(page)
+	return len(va) == 0, err
+}
+
+func ExtractStoragePools(p pagination.Page) ([]StoragePool, error) {
 	var s struct {
 		StoragePools []StoragePool `json:"pools"`
 	}
-	err := r.ExtractInto(&s)
+	err := (p.(StoragePoolPage)).ExtractInto(&s)
 	return s.StoragePools, err
 }

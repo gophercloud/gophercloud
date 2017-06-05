@@ -2,6 +2,7 @@ package storagepools
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
@@ -27,15 +28,16 @@ func (opts ListOpts) ToStoragePoolsListQuery() (string, error) {
 }
 
 // List makes a request against the API to list hypervisors.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) (r ListResult) {
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := storagePoolsListURL(client)
 	if opts != nil {
 		query, err := opts.ToStoragePoolsListQuery()
 		if err != nil {
-			return ListResult{}
+			return pagination.Pager{Err: err}
 		}
 		url += query
 	}
-	_, r.Err = client.Get(url, &r.Body, nil)
-	return
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return StoragePoolPage{pagination.SinglePageBase(r)}
+	})
 }
