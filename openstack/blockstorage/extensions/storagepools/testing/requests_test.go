@@ -18,7 +18,7 @@ func TestListStoragePoolsDetail(t *testing.T) {
 	testhelper.AssertNoErr(t, err)
 
 	if len(actual) != 2 {
-		t.Fatalf("Expected 2 backends,  got %d", len(actual))
+		t.Fatalf("Expected 2 backends, got %d", len(actual))
 	}
 	testhelper.CheckDeepEquals(t, StoragePoolFake1, actual[0])
 	testhelper.CheckDeepEquals(t, StoragePoolFake2, actual[1])

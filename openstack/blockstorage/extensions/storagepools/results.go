@@ -25,8 +25,8 @@ type Capabilities struct {
 	// Optional Fields
 	ReservedPercentage       int64   `json:"reserved_percentage"`
 	LocationInfo             string  `json:"location_info"`
-	QoSSupprt                bool    `json:"QoS_support"`
-	ProvisonedCapacityGB     float64 `json:"provisoned_capacity_gb"`
+	QoSSupport               bool    `json:"QoS_support"`
+	ProvisionedCapacityGB    float64 `json:"provisioned_capacity_gb"`
 	MaxOverSubscriptionRatio float64 `json:"max_over_subscription_ratio"`
 	ThinProvisioningSupport  bool    `json:"thin_provisioning_support"`
 	ThickProvisioningSupport bool    `json:"thick_provisioning_support"`
@@ -38,8 +38,8 @@ type Capabilities struct {
 }
 
 type StoragePool struct {
-	Name         string `json:"name"`
-	Capabilities `json:"capabilities"`
+	Name         string       `json:"name"`
+	Capabilities Capabilities `json:"capabilities"`
 }
 
 func (r *StoragePool) UnmarshalJSON(b []byte) error {
@@ -71,17 +71,13 @@ func (r *StoragePool) UnmarshalJSON(b []byte) error {
 		switch t := q.Capabilities.FreeCapacityGB.(type) {
 		case float64:
 			r.Capabilities.FreeCapacityGB = q.Capabilities.FreeCapacityGB.(float64)
-		case int:
-			r.Capabilities.FreeCapacityGB = q.Capabilities.FreeCapacityGB.(float64)
 		case string:
 			keyword := q.Capabilities.FreeCapacityGB.(string)
 			switch keyword {
-			case "unknown":
-				r.Capabilities.FreeCapacityGB = 0.0
 			case "infinite":
 				r.Capabilities.FreeCapacityGB = math.Inf(1)
 			default:
-				return fmt.Errorf("capabilities.free_capacity_gb: unexpected string %v", keyword)
+				r.Capabilities.FreeCapacityGB = 0.0
 			}
 		default:
 			return fmt.Errorf("capabilities.free_capacity_gb: unexpected type %v", t)
@@ -93,17 +89,13 @@ func (r *StoragePool) UnmarshalJSON(b []byte) error {
 		switch t := q.Capabilities.TotalCapacityGB.(type) {
 		case float64:
 			r.Capabilities.TotalCapacityGB = q.Capabilities.TotalCapacityGB.(float64)
-		case int:
-			r.Capabilities.TotalCapacityGB = q.Capabilities.TotalCapacityGB.(float64)
 		case string:
 			keyword := q.Capabilities.TotalCapacityGB.(string)
 			switch keyword {
-			case "unknown":
-				r.Capabilities.TotalCapacityGB = 0.0
 			case "infinite":
 				r.Capabilities.TotalCapacityGB = math.Inf(1)
 			default:
-				return fmt.Errorf("capabilities.free_capacity_gb: unexpected string %v", keyword)
+				r.Capabilities.TotalCapacityGB = 0.0
 			}
 		default:
 			return fmt.Errorf("capabilities.total_capacity_gb: unexpected type %v", t)

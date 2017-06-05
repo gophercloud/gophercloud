@@ -31,7 +31,7 @@ const StoragePoolsListBodyDetail = `
             "capabilities": {
                 "driver_version": "1.2.0",
                 "filter_function": null,
-                "free_capacity_gb": 64765.87,
+                "free_capacity_gb": 64765,
                 "goodness_function": null,
                 "multiattach": false,
                 "reserved_percentage": 0,
@@ -68,7 +68,7 @@ var (
 		Name: "rbd:cinder.volumes.ssd@cinder.volumes.ssd#cinder.volumes.ssd",
 		Capabilities: storagepools.Capabilities{
 			DriverVersion:     "1.2.0",
-			FreeCapacityGB:    64765.87,
+			FreeCapacityGB:    64765,
 			StorageProtocol:   "ceph",
 			TotalCapacityGB:   787947.93,
 			VendorName:        "Open Source",
