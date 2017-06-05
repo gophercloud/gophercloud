@@ -109,6 +109,12 @@ var applicationJSON = "application/json"
 // Request performs an HTTP request using the ProviderClient's current HTTPClient. An authentication
 // header will automatically be provided.
 func (client *ProviderClient) Request(method, url string, options *RequestOpts) (*http.Response, error) {
+	return client.request(method, url, options, false)
+}
+
+// Request performs an HTTP request using the ProviderClient's current HTTPClient. An authentication
+// header will automatically be provided.
+func (client *ProviderClient) request(method, url string, options *RequestOpts, recursive bool) (*http.Response, error) {
 	var body io.Reader
 	var contentType *string
 
@@ -208,6 +214,9 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 				err = error400er.Error400(respErr)
 			}
 		case http.StatusUnauthorized:
+			if recursive {
+				return nil, &ErrErrorAfterReauthentication{}
+			}
 			if client.ReauthFunc != nil {
 				err = client.ReauthFunc()
 				if err != nil {
@@ -220,7 +229,7 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 						seeker.Seek(0, 0)
 					}
 				}
-				resp, err = client.Request(method, url, options)
+				resp, err = client.request(method, url, options, true)
 				if err != nil {
 					switch err.(type) {
 					case *ErrUnexpectedResponseCode:
