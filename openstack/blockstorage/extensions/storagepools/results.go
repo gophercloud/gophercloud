@@ -9,7 +9,6 @@ import (
 )
 
 // Minimum set of driver capabilities only
-// https://github.com/openstack/cinder/blob/master/cinder/interface/volume_driver.py#L56
 type Capabilities struct {
 	// Required Fields
 	DriverVersion     string  `json:"driver_version"`
@@ -38,42 +37,31 @@ type StoragePool struct {
 	Capabilities Capabilities `json:"capabilities"`
 }
 
-func (r *StoragePool) UnmarshalJSON(b []byte) error {
-	// Unmarshal the generic stuff
-	type tmp StoragePool
-	var s *struct {
+func (r *Capabilities) UnmarshalJSON(b []byte) error {
+	type tmp Capabilities
+	var s struct {
 		tmp
+		FreeCapacityGB  interface{} `json:"free_capacity_gb"`
+		TotalCapacityGB interface{} `json:"total_capacity_gb"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
-	*r = StoragePool(s.tmp)
-
-	// Unmarshal the more complex things
-	var q *struct {
-		Capabilities struct {
-			FreeCapacityGB  interface{} `json:"free_capacity_gb"`
-			TotalCapacityGB interface{} `json:"total_capacity_gb"`
-		} `json:"capabilities"`
-	}
-	err = json.Unmarshal(b, &q)
-	if err != nil {
-		return err
-	}
+	*r = Capabilities(s.tmp)
 
 	// Should be a numeric, "unknown", "infinite"
-	if q.Capabilities.FreeCapacityGB != nil {
-		switch t := q.Capabilities.FreeCapacityGB.(type) {
+	if s.FreeCapacityGB != nil {
+		switch t := s.FreeCapacityGB.(type) {
 		case float64:
-			r.Capabilities.FreeCapacityGB = q.Capabilities.FreeCapacityGB.(float64)
+			r.FreeCapacityGB = s.FreeCapacityGB.(float64)
 		case string:
-			keyword := q.Capabilities.FreeCapacityGB.(string)
+			keyword := s.FreeCapacityGB.(string)
 			switch keyword {
 			case "infinite":
-				r.Capabilities.FreeCapacityGB = math.Inf(1)
+				r.FreeCapacityGB = math.Inf(1)
 			default:
-				r.Capabilities.FreeCapacityGB = 0.0
+				r.FreeCapacityGB = 0.0
 			}
 		default:
 			return fmt.Errorf("capabilities.free_capacity_gb: unexpected type %v", t)
@@ -81,17 +69,17 @@ func (r *StoragePool) UnmarshalJSON(b []byte) error {
 	}
 
 	// Should be a numeric, "unknown", "infinite"
-	if q.Capabilities.TotalCapacityGB != nil {
-		switch t := q.Capabilities.TotalCapacityGB.(type) {
+	if s.TotalCapacityGB != nil {
+		switch t := s.TotalCapacityGB.(type) {
 		case float64:
-			r.Capabilities.TotalCapacityGB = q.Capabilities.TotalCapacityGB.(float64)
+			r.TotalCapacityGB = s.TotalCapacityGB.(float64)
 		case string:
-			keyword := q.Capabilities.TotalCapacityGB.(string)
+			keyword := s.TotalCapacityGB.(string)
 			switch keyword {
 			case "infinite":
-				r.Capabilities.TotalCapacityGB = math.Inf(1)
+				r.TotalCapacityGB = math.Inf(1)
 			default:
-				r.Capabilities.TotalCapacityGB = 0.0
+				r.TotalCapacityGB = 0.0
 			}
 		default:
 			return fmt.Errorf("capabilities.total_capacity_gb: unexpected type %v", t)
