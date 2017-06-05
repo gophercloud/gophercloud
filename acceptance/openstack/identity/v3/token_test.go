@@ -32,6 +32,29 @@ func TestGetToken(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to get token: %v", err)
 	}
-
 	tools.PrintResource(t, token)
+
+	catalog, err := tokens.Get(client, token.ID).ExtractServiceCatalog()
+	if err != nil {
+		t.Fatalf("Unable to get catalog from token: %v", err)
+	}
+	tools.PrintResource(t, catalog)
+
+	user, err := tokens.Get(client, token.ID).ExtractUser()
+	if err != nil {
+		t.Fatalf("Unable to get user from token: %v", err)
+	}
+	tools.PrintResource(t, user)
+
+	roles, err := tokens.Get(client, token.ID).ExtractRoles()
+	if err != nil {
+		t.Fatalf("Unable to get roles from token: %v", err)
+	}
+	tools.PrintResource(t, roles)
+
+	project, err := tokens.Get(client, token.ID).ExtractProject()
+	if err != nil {
+		t.Fatalf("Unable to get project from token: %v", err)
+	}
+	tools.PrintResource(t, project)
 }
