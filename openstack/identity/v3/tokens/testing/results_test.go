@@ -155,6 +155,10 @@ func TestExtractProject(t *testing.T) {
 	result := getGetResultFromResponse(t, `{
 		"token": {
 			"project": {
+				"domain": {
+					"id": "`+testDomainID+`",
+					"name": "`+testDomainName+`"
+				},
 				"id": "`+testProjectID+`",
 				"name": "`+testProjectName+`"
 			}
@@ -164,6 +168,8 @@ func TestExtractProject(t *testing.T) {
 	project, err := result.ExtractProject()
 	testhelper.AssertNoErr(t, err)
 
+	testhelper.CheckDeepEquals(t, testDomainID, project.Domain.ID)
+	testhelper.CheckDeepEquals(t, testDomainName, project.Domain.Name)
 	testhelper.CheckDeepEquals(t, testProjectID, project.ID)
 	testhelper.CheckDeepEquals(t, testProjectName, project.Name)
 }

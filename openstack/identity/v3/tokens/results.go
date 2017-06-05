@@ -66,8 +66,9 @@ type Roles struct {
 
 // Project provides information about project to which User is authorized.
 type Project struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	Domain Domain `json:"domain"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
 }
 
 // commonResult is the deferred result of a Create or a Get call.
