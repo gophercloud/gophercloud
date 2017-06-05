@@ -69,7 +69,7 @@ func TestV2EndpointExact(t *testing.T) {
 	}
 
 	for availability, expected := range expectedURLs {
-		actual, err := openstack.V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
+		actual, _, err := openstack.V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
 			Type:         "same",
 			Name:         "same",
 			Region:       "same",
@@ -81,7 +81,7 @@ func TestV2EndpointExact(t *testing.T) {
 }
 
 func TestV2EndpointNone(t *testing.T) {
-	_, actual := openstack.V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
+	_, _, actual := openstack.V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
 		Type:         "nope",
 		Availability: gophercloud.AvailabilityPublic,
 	})
@@ -90,7 +90,7 @@ func TestV2EndpointNone(t *testing.T) {
 }
 
 func TestV2EndpointMultiple(t *testing.T) {
-	_, err := openstack.V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
+	_, _, err := openstack.V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
 		Type:         "same",
 		Region:       "same",
 		Availability: gophercloud.AvailabilityPublic,
@@ -101,7 +101,7 @@ func TestV2EndpointMultiple(t *testing.T) {
 }
 
 func TestV2EndpointBadAvailability(t *testing.T) {
-	_, err := openstack.V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
+	_, _, err := openstack.V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
 		Type:         "same",
 		Name:         "same",
 		Region:       "same",
@@ -189,7 +189,7 @@ func TestV3EndpointExact(t *testing.T) {
 	}
 
 	for availability, expected := range expectedURLs {
-		actual, err := openstack.V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
+		actual, _, err := openstack.V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
 			Type:         "same",
 			Name:         "same",
 			Region:       "same",
@@ -201,7 +201,7 @@ func TestV3EndpointExact(t *testing.T) {
 }
 
 func TestV3EndpointNone(t *testing.T) {
-	_, actual := openstack.V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
+	_, _, actual := openstack.V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
 		Type:         "nope",
 		Availability: gophercloud.AvailabilityPublic,
 	})
@@ -210,7 +210,7 @@ func TestV3EndpointNone(t *testing.T) {
 }
 
 func TestV3EndpointMultiple(t *testing.T) {
-	_, err := openstack.V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
+	_, _, err := openstack.V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
 		Type:         "same",
 		Region:       "same",
 		Availability: gophercloud.AvailabilityPublic,
@@ -221,7 +221,7 @@ func TestV3EndpointMultiple(t *testing.T) {
 }
 
 func TestV3EndpointBadAvailability(t *testing.T) {
-	_, err := openstack.V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
+	_, _, err := openstack.V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
 		Type:         "same",
 		Name:         "same",
 		Region:       "same",

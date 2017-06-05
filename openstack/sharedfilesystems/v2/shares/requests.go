@@ -1,8 +1,6 @@
 package shares
 
-import (
-	"github.com/gophercloud/gophercloud"
-)
+import "github.com/gophercloud/gophercloud"
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
@@ -77,5 +75,11 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 // Get will get a single share with given UUID
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
+}
+
+// GetMicroversion will get Microversion of Manila API
+func GetMicroversion(client *gophercloud.ServiceClient) (r GetResult) {
+	_, r.Err = client.Get(getMicroversionsURL(client), &r.Body, nil)
 	return
 }
