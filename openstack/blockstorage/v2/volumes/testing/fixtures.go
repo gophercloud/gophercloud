@@ -22,7 +22,7 @@ func MockListResponse(t *testing.T) {
   "volumes": [
     {
       "volume_type": "lvmdriver-1",
-      "created_at": "2015-09-17T03:35:03.000000",
+      "created_at": "2015-09-17T03:35:03.000000Z",
       "bootable": "false",
       "name": "vol-001",
       "os-vol-mig-status-attr:name_id": null,
@@ -97,7 +97,7 @@ func MockGetResponse(t *testing.T) {
 {
   "volume": {
     "volume_type": "lvmdriver-1",
-    "created_at": "2015-09-17T03:32:29.000000",
+    "created_at": "2015-09-17T03:32:29.000000Z",
     "bootable": "false",
     "name": "vol-001",
     "os-vol-mig-status-attr:name_id": null,
@@ -158,7 +158,7 @@ func MockCreateResponse(t *testing.T) {
     "size": 75,
     "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
     "metadata": {},
-    "created_at": "2015-09-17T03:32:29.044216",
+    "created_at": "2015-09-17T03:32:29.044216Z",
     "encrypted": false,
     "bootable": "false",
     "availability_zone": "nova",
