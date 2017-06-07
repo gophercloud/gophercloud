@@ -1,0 +1,30 @@
+{
+	"ImportPath": "github.com/gophercloud/gophercloud",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v74",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "golang.org/x/crypto/curve25519",
+			"Rev": "d1464577745bc7f4e74f65be9cfbd09436a729d6"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/ed25519",
+			"Rev": "d1464577745bc7f4e74f65be9cfbd09436a729d6"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/ed25519/internal/edwards25519",
+			"Rev": "d1464577745bc7f4e74f65be9cfbd09436a729d6"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/ssh",
+			"Rev": "d1464577745bc7f4e74f65be9cfbd09436a729d6"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "a5b47d31c556af34a302ce5d659e6fea44d90de0"
+		}
+	]
+}
