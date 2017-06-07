@@ -61,8 +61,8 @@ func TestCreate(t *testing.T) {
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
 	createOpts := routerinsertion.CreateOptsExt{
-		firewallCreateOpts,
-		[]string{"8a3a0d6a-34b5-4a92-b65d-6375a4c1e9e8"},
+		CreateOptsBuilder: firewallCreateOpts,
+		RouterIDs:         []string{"8a3a0d6a-34b5-4a92-b65d-6375a4c1e9e8"},
 	}
 
 	_, err := firewalls.Create(fake.ServiceClient(), createOpts).Extract()
@@ -116,8 +116,8 @@ func TestCreateWithNoRouters(t *testing.T) {
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
 	createOpts := routerinsertion.CreateOptsExt{
-		firewallCreateOpts,
-		[]string{},
+		CreateOptsBuilder: firewallCreateOpts,
+		RouterIDs:         []string{},
 	}
 
 	_, err := firewalls.Create(fake.ServiceClient(), createOpts).Extract()
@@ -172,8 +172,8 @@ func TestUpdate(t *testing.T) {
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
 	updateOpts := routerinsertion.UpdateOptsExt{
-		firewallUpdateOpts,
-		[]string{"8a3a0d6a-34b5-4a92-b65d-6375a4c1e9e8"},
+		UpdateOptsBuilder: firewallUpdateOpts,
+		RouterIDs:         []string{"8a3a0d6a-34b5-4a92-b65d-6375a4c1e9e8"},
 	}
 
 	_, err := firewalls.Update(fake.ServiceClient(), "ea5b5315-64f6-4ea3-8e58-981cc37c6576", updateOpts).Extract()
@@ -226,8 +226,8 @@ func TestUpdateWithNoRouters(t *testing.T) {
 		PolicyID:     "19ab8c87-4a32-4e6a-a74e-b77fffb89a0c",
 	}
 	updateOpts := routerinsertion.UpdateOptsExt{
-		firewallUpdateOpts,
-		[]string{},
+		UpdateOptsBuilder: firewallUpdateOpts,
+		RouterIDs:         []string{},
 	}
 
 	_, err := firewalls.Update(fake.ServiceClient(), "ea5b5315-64f6-4ea3-8e58-981cc37c6576", updateOpts).Extract()

@@ -29,7 +29,7 @@ type Absolute struct {
 	MaxPersonalitySize int `json:"maxPersonalitySize"`
 
 	// MaxTotalKeypairs is the total keypairs available to a tenant.
-	MaxTotalKeypairs int `json:maxTotalKeypairs"`
+	MaxTotalKeypairs int `json:"maxTotalKeypairs"`
 
 	// MaxSecurityGroups is the number of security groups available to a tenant.
 	MaxSecurityGroups int `json:"maxSecurityGroups"`

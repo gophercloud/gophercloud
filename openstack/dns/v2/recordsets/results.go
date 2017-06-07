@@ -95,7 +95,7 @@ type RecordSet struct {
 	Description string `json:"description"`
 
 	// Version is the revision of the recordset.
-	Version int `json:version"`
+	Version int `json:"version"`
 
 	// CreatedAt is the date when the recordset was created.
 	CreatedAt time.Time `json:"-"`
