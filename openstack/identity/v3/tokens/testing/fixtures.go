@@ -192,7 +192,7 @@ var role = tokens.Role{
 
 // ExpectedRoles contains expected roles extracted from token response.
 var ExpectedRoles = tokens.Roles{
-	Roles: []*tokens.Role{&role}}
+	Roles: []tokens.Role{role}}
 
 // ExpectedProject contains expected project extracted from token response.
 var ExpectedProject = tokens.Project{
