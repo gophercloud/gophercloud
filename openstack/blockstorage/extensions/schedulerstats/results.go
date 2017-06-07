@@ -2,7 +2,6 @@ package schedulerstats
 
 import (
 	"encoding/json"
-	"fmt"
 	"math"
 
 	"github.com/gophercloud/gophercloud/pagination"
@@ -37,6 +36,25 @@ type StoragePool struct {
 	Capabilities Capabilities `json:"capabilities"`
 }
 
+// Generic function to parse a capacity value which may be a numeric
+// value, "unknown", or "infinite"
+func ParseCapacity(capacity interface{}) float64 {
+	if capacity == nil {
+		return 0.0
+	}
+
+	switch capacity.(type) {
+	case float64:
+		return capacity.(float64)
+	case string:
+		if capacity.(string) == "infinite" {
+			return math.Inf(1)
+		}
+	}
+
+	return 0.0
+}
+
 func (r *Capabilities) UnmarshalJSON(b []byte) error {
 	type tmp Capabilities
 	var s struct {
@@ -50,41 +68,8 @@ func (r *Capabilities) UnmarshalJSON(b []byte) error {
 	}
 	*r = Capabilities(s.tmp)
 
-	// Should be a numeric, "unknown", "infinite"
-	if s.FreeCapacityGB != nil {
-		switch t := s.FreeCapacityGB.(type) {
-		case float64:
-			r.FreeCapacityGB = s.FreeCapacityGB.(float64)
-		case string:
-			keyword := s.FreeCapacityGB.(string)
-			switch keyword {
-			case "infinite":
-				r.FreeCapacityGB = math.Inf(1)
-			default:
-				r.FreeCapacityGB = 0.0
-			}
-		default:
-			return fmt.Errorf("capabilities.free_capacity_gb: unexpected type %v", t)
-		}
-	}
-
-	// Should be a numeric, "unknown", "infinite"
-	if s.TotalCapacityGB != nil {
-		switch t := s.TotalCapacityGB.(type) {
-		case float64:
-			r.TotalCapacityGB = s.TotalCapacityGB.(float64)
-		case string:
-			keyword := s.TotalCapacityGB.(string)
-			switch keyword {
-			case "infinite":
-				r.TotalCapacityGB = math.Inf(1)
-			default:
-				r.TotalCapacityGB = 0.0
-			}
-		default:
-			return fmt.Errorf("capabilities.total_capacity_gb: unexpected type %v", t)
-		}
-	}
+	r.FreeCapacityGB = ParseCapacity(s.FreeCapacityGB)
+	r.TotalCapacityGB = ParseCapacity(s.TotalCapacityGB)
 
 	return nil
 }
