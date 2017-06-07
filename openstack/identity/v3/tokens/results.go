@@ -61,7 +61,7 @@ type Role struct {
 }
 
 type Roles struct {
-	Roles []*Role `json:"roles"`
+	Roles []Role `json:"roles"`
 }
 
 // Project provides information about project to which User is authorized.
