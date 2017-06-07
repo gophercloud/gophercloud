@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/extensions/schedulerstats"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/schedulerstats"
 	"github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
