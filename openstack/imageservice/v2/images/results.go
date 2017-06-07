@@ -161,7 +161,7 @@ func (r ImagePage) NextPageURL() (string, error) {
 		return "", nil
 	}
 
-	return nextPageURL(r.URL.String(), s.Next), nil
+	return nextPageURL(r.URL.String(), s.Next)
 }
 
 // ExtractImages interprets the results of a single page from a List() call, producing a slice of Image entities.
