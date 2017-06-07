@@ -15,11 +15,11 @@ type CreateOptsBuilder interface {
 // the snapshots.Create function. For more information about these parameters,
 // see the Snapshot object.
 type CreateOpts struct {
-	VolumeID    string                 `json:"volume_id" required:"true"`
-	Force       bool                   `json:"force,omitempty"`
-	Name        string                 `json:"name,omitempty"`
-	Description string                 `json:"description,omitempty"`
-	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	VolumeID    string            `json:"volume_id" required:"true"`
+	Force       bool              `json:"force,omitempty"`
+	Name        string            `json:"name,omitempty"`
+	Description string            `json:"description,omitempty"`
+	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 
 // ToSnapshotCreateMap assembles a request body based on the contents of a
