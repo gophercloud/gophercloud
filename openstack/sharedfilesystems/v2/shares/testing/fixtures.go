@@ -163,3 +163,39 @@ func MockGetExportLocationsResponse(t *testing.T) {
 		fmt.Fprintf(w, getExportLocationsResponse)
 	})
 }
+
+var grantAccessRequest = `{
+		"allow_access": {
+			"access_type": "ip",
+			"access_to": "0.0.0.0/0",
+			"access_level": "rw"
+		}
+	}`
+
+var grantAccessResponse = `{
+    "access": {
+	"share_id": "011d21e2-fbc3-4e4a-9993-9ea223f73264",
+	"created_at": "2015-08-27T11:33:21Z",
+	"updated_at": "2015-08-27T11:33:21Z",
+	"access_type": "ip",
+	"access_to": "0.0.0.0/0",
+	"access_key": "",
+	"access_level": "rw",
+	"state": "new",
+	"id": "a2f226a5-cee8-430b-8a03-78a59bd84ee8"
+    }
+}`
+
+// MockGrantAccessResponse creates a mock grant access response
+func MockGrantAccessResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, grantAccessRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, grantAccessResponse)
+	})
+}
