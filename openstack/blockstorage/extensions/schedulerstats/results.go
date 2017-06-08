@@ -36,25 +36,6 @@ type StoragePool struct {
 	Capabilities Capabilities `json:"capabilities"`
 }
 
-// Generic function to parse a capacity value which may be a numeric
-// value, "unknown", or "infinite"
-func ParseCapacity(capacity interface{}) float64 {
-	if capacity == nil {
-		return 0.0
-	}
-
-	switch capacity.(type) {
-	case float64:
-		return capacity.(float64)
-	case string:
-		if capacity.(string) == "infinite" {
-			return math.Inf(1)
-		}
-	}
-
-	return 0.0
-}
-
 func (r *Capabilities) UnmarshalJSON(b []byte) error {
 	type tmp Capabilities
 	var s struct {
@@ -68,8 +49,24 @@ func (r *Capabilities) UnmarshalJSON(b []byte) error {
 	}
 	*r = Capabilities(s.tmp)
 
-	r.FreeCapacityGB = ParseCapacity(s.FreeCapacityGB)
-	r.TotalCapacityGB = ParseCapacity(s.TotalCapacityGB)
+	// Generic function to parse a capacity value which may be a numeric
+	// value, "unknown", or "infinite"
+	parseCapacity := func(capacity interface{}) float64 {
+		if capacity != nil {
+			switch capacity.(type) {
+			case float64:
+				return capacity.(float64)
+			case string:
+				if capacity.(string) == "infinite" {
+					return math.Inf(1)
+				}
+			}
+		}
+		return 0.0
+	}
+
+	r.FreeCapacityGB = parseCapacity(s.FreeCapacityGB)
+	r.TotalCapacityGB = parseCapacity(s.TotalCapacityGB)
 
 	return nil
 }
