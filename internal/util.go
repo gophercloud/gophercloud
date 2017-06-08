@@ -12,13 +12,17 @@ import (
 // for resources that can contain an arbitrary or dynamic number of fields.
 func RemainingKeys(s interface{}, m map[string]interface{}) (extras map[string]interface{}) {
 	extras = make(map[string]interface{})
+	for k, v := range m {
+		extras[k] = v
+	}
+
 	valueOf := reflect.ValueOf(s)
 	typeOf := reflect.TypeOf(s)
 	for i := 0; i < valueOf.NumField(); i++ {
 		field := typeOf.Field(i)
 		tagValue := field.Tag.Get("json")
-		if _, ok := m[tagValue]; !ok {
-			extras[tagValue] = m[tagValue]
+		if _, ok := extras[tagValue]; ok {
+			delete(extras, tagValue)
 		}
 	}
 
