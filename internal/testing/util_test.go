@@ -1,36 +1,54 @@
 package testing
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/internal"
-	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestRemainingKeys(t *testing.T) {
 	type User struct {
-		FirstName string `json:"first_name"`
-		LastName  string `json:"last_name"`
-		City      string
+		UserID    string `json:"user_id"`
+		Username  string `json:"username"`
+		Location  string `json:"-"`
+		CreatedAt string `json:"-"`
+		Status    string
+		IsAdmin   bool
 	}
 
-	userStruct := User{
-		FirstName: "John",
-		LastName:  "Doe",
-	}
-
-	userMap := map[string]interface{}{
-		"first_name": "John",
-		"last_name":  "Doe",
-		"city":       "Honolulu",
-		"state":      "Hawaii",
+	userResponse := map[string]interface{}{
+		"user_id":      "abcd1234",
+		"username":     "jdoe",
+		"location":     "Hawaii",
+		"created_at":   "2017-06-08T02:49:03.000000",
+		"status":       "active",
+		"is_admin":     "true",
+		"custom_field": "foo",
 	}
 
 	expected := map[string]interface{}{
-		"city":  "Honolulu",
-		"state": "Hawaii",
+		"created_at":   "2017-06-08T02:49:03.000000",
+		"is_admin":     "true",
+		"custom_field": "foo",
 	}
 
-	actual := internal.RemainingKeys(userStruct, userMap)
-	th.AssertDeepEquals(t, expected, actual)
+	notExpected := map[string]interface{}{
+		"created_at":   "2017-06-08T02:49:03.000000",
+		"is_admin":     "true",
+		"custom_field": "foo",
+		"bar":          "baz",
+	}
+
+	actual := internal.RemainingKeys(User{}, userResponse)
+
+	isEqual := reflect.DeepEqual(expected, actual)
+	if !isEqual {
+		t.Fatalf("expected %s but got %s", expected, actual)
+	}
+
+	isEqual = reflect.DeepEqual(notExpected, actual)
+	if isEqual {
+		t.Fatalf("expected %s but got %s", notExpected, actual)
+	}
 }

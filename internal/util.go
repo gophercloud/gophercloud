@@ -2,11 +2,12 @@ package internal
 
 import (
 	"reflect"
+	"strings"
 )
 
-// RemainingKeys will inspect a struct and compare it to a map. Any key that
-// is not defined in a JSON tag of the struct will be added to the extras map
-// and returned.
+// RemainingKeys will inspect a struct and compare it to a map. Any struct
+// field that does not have a JSON tag that matches a key in the map or
+// a matching lower-case field in the map will be returned as an extra.
 //
 // This is useful for determining the extra fields returned in response bodies
 // for resources that can contain an arbitrary or dynamic number of fields.
@@ -20,9 +21,21 @@ func RemainingKeys(s interface{}, m map[string]interface{}) (extras map[string]i
 	typeOf := reflect.TypeOf(s)
 	for i := 0; i < valueOf.NumField(); i++ {
 		field := typeOf.Field(i)
-		tagValue := field.Tag.Get("json")
-		if _, ok := extras[tagValue]; ok {
-			delete(extras, tagValue)
+
+		lowerField := strings.ToLower(field.Name)
+		if _, ok := extras[lowerField]; ok {
+			delete(extras, lowerField)
+		}
+
+		if tagValue := field.Tag.Get("json"); tagValue != "" {
+			if tagValue == "-" {
+				continue
+			}
+
+			if _, ok := extras[tagValue]; ok {
+				delete(extras, tagValue)
+				continue
+			}
 		}
 	}
 
