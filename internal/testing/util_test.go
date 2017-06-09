@@ -33,22 +33,10 @@ func TestRemainingKeys(t *testing.T) {
 		"custom_field": "foo",
 	}
 
-	notExpected := map[string]interface{}{
-		"created_at":   "2017-06-08T02:49:03.000000",
-		"is_admin":     "true",
-		"custom_field": "foo",
-		"bar":          "baz",
-	}
-
 	actual := internal.RemainingKeys(User{}, userResponse)
 
 	isEqual := reflect.DeepEqual(expected, actual)
 	if !isEqual {
 		t.Fatalf("expected %s but got %s", expected, actual)
-	}
-
-	isEqual = reflect.DeepEqual(notExpected, actual)
-	if isEqual {
-		t.Fatalf("expected %s but got %s", notExpected, actual)
 	}
 }

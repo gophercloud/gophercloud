@@ -34,7 +34,6 @@ func RemainingKeys(s interface{}, m map[string]interface{}) (extras map[string]i
 
 			if _, ok := extras[tagValue]; ok {
 				delete(extras, tagValue)
-				continue
 			}
 		}
 	}
