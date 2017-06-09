@@ -23,18 +23,10 @@ func RemainingKeys(s interface{}, m map[string]interface{}) (extras map[string]i
 		field := typeOf.Field(i)
 
 		lowerField := strings.ToLower(field.Name)
-		if _, ok := extras[lowerField]; ok {
-			delete(extras, lowerField)
-		}
+		delete(extras, lowerField)
 
-		if tagValue := field.Tag.Get("json"); tagValue != "" {
-			if tagValue == "-" {
-				continue
-			}
-
-			if _, ok := extras[tagValue]; ok {
-				delete(extras, tagValue)
-			}
+		if tagValue := field.Tag.Get("json"); tagValue != "" && tagValue != "-" {
+			delete(extras, tagValue)
 		}
 	}
 
