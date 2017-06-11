@@ -94,7 +94,7 @@ func TestList(t *testing.T) {
 			Name:               "d",
 			IsPublic:           true,
 			ExtraSpecs:         map[string]interface{}{"driver_handles_share_servers": "false", "snapshot_support": "True"},
-			RequiredExtraSpecs: map[string]interface{}{"driver_handles_share_servers": "True"},
+			RequiredExtraSpecs: map[string]interface{}{"driver_handles_share_servers": "false"},
 		},
 	}
 
