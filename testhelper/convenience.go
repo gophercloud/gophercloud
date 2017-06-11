@@ -170,10 +170,12 @@ func deepDiffEqual(expected, actual reflect.Value, visited map[visit]bool, path 
 			actualValue := actual.MapIndex(k)
 
 			if !expectedValue.IsValid() {
-				continue
+				logDifference(path, nil, actual.Interface())
+				return
 			}
 			if !actualValue.IsValid() {
-				continue
+				logDifference(path, expected.Interface(), nil)
+				return
 			}
 
 			hop := append(path, fmt.Sprintf("[%v]", k))
