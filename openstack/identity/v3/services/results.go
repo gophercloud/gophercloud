@@ -41,7 +41,7 @@ type DeleteResult struct {
 
 // Service is the result of a list or information query.
 type Service struct {
-	Description string `json:"description`
+	Description string `json:"description"`
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Type        string `json:"type"`
