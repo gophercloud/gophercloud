@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/internal"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -63,7 +64,7 @@ type Image struct {
 	Metadata map[string]string `json:"metadata"`
 
 	// Properties is a set of key-value pairs, if any, that are associated with the image.
-	Properties map[string]string `json:"properties"`
+	Properties map[string]interface{} `json:"-"`
 
 	// CreatedAt is the date when the image has been created.
 	CreatedAt time.Time `json:"created_at"`
@@ -103,6 +104,17 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 		r.SizeBytes = int64(t)
 	default:
 		return fmt.Errorf("Unknown type for SizeBytes: %v (value: %v)", reflect.TypeOf(t), t)
+	}
+
+	// Bundle all other fields into Properties
+	var result interface{}
+	err = json.Unmarshal(b, &result)
+	if err != nil {
+		return err
+	}
+	if resultMap, ok := result.(map[string]interface{}); ok {
+		delete(resultMap, "self")
+		r.Properties = internal.RemainingKeys(Image{}, resultMap)
 	}
 
 	return err

@@ -108,6 +108,11 @@ func TestCreateImage(t *testing.T) {
 		UpdatedAt:   lastUpdate,
 		Schema:      schema,
 		VirtualSize: 0,
+		Properties: map[string]interface{}{
+			"hw_disk_bus":       "scsi",
+			"hw_disk_bus_model": "virtio-scsi",
+			"hw_scsi_model":     "virtio-scsi",
+		},
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -212,6 +217,11 @@ func TestGetImage(t *testing.T) {
 		UpdatedAt:   lastUpdate,
 		Schema:      schema,
 		VirtualSize: 0,
+		Properties: map[string]interface{}{
+			"hw_disk_bus":       "scsi",
+			"hw_disk_bus_model": "virtio-scsi",
+			"hw_scsi_model":     "virtio-scsi",
+		},
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -272,6 +282,11 @@ func TestUpdateImage(t *testing.T) {
 		UpdatedAt:       lastUpdate,
 		Schema:          schema,
 		VirtualSize:     0,
+		Properties: map[string]interface{}{
+			"hw_disk_bus":       "scsi",
+			"hw_disk_bus_model": "virtio-scsi",
+			"hw_scsi_model":     "virtio-scsi",
+		},
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)

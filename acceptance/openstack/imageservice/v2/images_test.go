@@ -30,6 +30,7 @@ func TestImagesListEachPage(t *testing.T) {
 
 		for _, image := range images {
 			tools.PrintResource(t, image)
+			tools.PrintResource(t, image.Properties)
 		}
 
 		return true, nil
@@ -58,6 +59,7 @@ func TestImagesListAllPages(t *testing.T) {
 
 	for _, image := range allImages {
 		tools.PrintResource(t, image)
+		tools.PrintResource(t, image.Properties)
 	}
 }
 
