@@ -106,7 +106,7 @@ func (r commonResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
 // ExtractUser returns the User that is the owner of the Token.
 func (r commonResult) ExtractUser() (*User, error) {
 	var s struct {
-		*User `json:"user"`
+		User *User `json:"user"`
 	}
 	err := r.ExtractInto(&s)
 	return s.User, err
