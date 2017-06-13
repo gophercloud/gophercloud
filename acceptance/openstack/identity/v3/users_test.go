@@ -54,7 +54,7 @@ func TestUsersGet(t *testing.T) {
 	}
 
 	user := allUsers[0]
-	p, err := users.Get(client, user.ID, nil).Extract()
+	p, err := users.Get(client, user.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get user: %v", err)
 	}

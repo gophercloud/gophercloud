@@ -20,7 +20,7 @@ type ListOpts struct {
 	Enabled *bool `q:"enabled"`
 
 	// IdpID filters the response by an Identity Provider ID.
-	IdPID string `q:"enabled"`
+	IdPID string `q:"idp_id"`
 
 	// Name filters the response by username.
 	Name string `q:"name"`
@@ -56,35 +56,8 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// GetOptsBuilder allows extensions to add additional parameters to
-// the Get request.
-type GetOptsBuilder interface {
-	ToUserGetQuery() (string, error)
-}
-
-// GetOpts allows you to modify the details included in the Get request.
-type GetOpts struct{}
-
-// ToUserGetQuery formats a GetOpts into a query string.
-func (opts GetOpts) ToUserGetQuery() (string, error) {
-	q, err := gophercloud.BuildQueryString(opts)
-	return q.String(), err
-}
-
 // Get retrieves details on a single user, by ID.
-func Get(client *gophercloud.ServiceClient, id string, opts GetOptsBuilder) (r GetResult) {
-	url := getURL(client, id)
-	if opts != nil {
-		query, err := opts.ToUserGetQuery()
-		if err != nil {
-			r.Err = err
-			return
-		}
-		url += query
-	}
-
-	_, r.Err = client.Get(url, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200},
-	})
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
 	return
 }

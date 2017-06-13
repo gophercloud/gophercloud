@@ -48,7 +48,7 @@ func TestGetUser(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetUserSuccessfully(t)
 
-	actual, err := users.Get(client.ServiceClient(), "9fe1d3", nil).Extract()
+	actual, err := users.Get(client.ServiceClient(), "9fe1d3").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondUser, *actual)
 	th.AssertEquals(t, SecondUser.Extra["email"], "jsmith@example.com")
