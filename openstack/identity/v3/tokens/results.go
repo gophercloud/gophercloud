@@ -122,7 +122,7 @@ func (r commonResult) ExtractRoles() (*Roles, error) {
 // ExtractProject returns Project to which User is authorized.
 func (r commonResult) ExtractProject() (*Project, error) {
 	var s struct {
-		*Project `json:"project"`
+		Project *Project `json:"project"`
 	}
 	err := r.ExtractInto(&s)
 	return s.Project, err
