@@ -79,3 +79,9 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
 	return
 }
+
+// GetExportLocations will get shareID's export locations
+func GetExportLocations(client *gophercloud.ServiceClient, id string) (r GetExportLocationsResult) {
+	_, r.Err = client.Get(getExportLocationsURL(client, id), &r.Body, nil)
+	return
+}
