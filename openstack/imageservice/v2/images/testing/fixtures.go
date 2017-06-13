@@ -261,7 +261,7 @@ func HandleImageGetSuccessfully(t *testing.T) {
 			"size": 13167616,
 			"min_ram": 0,
 			"schema": "/v2/schemas/image",
-			"virtual_size": "None"
+			"virtual_size": null
 		}`)
 	})
 }

@@ -77,6 +77,9 @@ type Image struct {
 
 	// Schema is the path to the JSON-schema that represent the image or image entity.
 	Schema string `json:"schema"`
+
+	// VirtualSize is the virtual size of the image
+	VirtualSize int64 `json:"virtual_size"`
 }
 
 func (r *Image) UnmarshalJSON(b []byte) error {

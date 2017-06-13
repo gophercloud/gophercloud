@@ -102,11 +102,12 @@ func TestCreateImage(t *testing.T) {
 
 		Owner: owner,
 
-		Visibility: images.ImageVisibilityPrivate,
-		File:       file,
-		CreatedAt:  createdDate,
-		UpdatedAt:  lastUpdate,
-		Schema:     schema,
+		Visibility:  images.ImageVisibilityPrivate,
+		File:        file,
+		CreatedAt:   createdDate,
+		UpdatedAt:   lastUpdate,
+		Schema:      schema,
+		VirtualSize: 0,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -204,12 +205,13 @@ func TestGetImage(t *testing.T) {
 		Protected:  false,
 		Visibility: images.ImageVisibilityPublic,
 
-		Checksum:  checksum,
-		SizeBytes: sizeBytes,
-		File:      file,
-		CreatedAt: createdDate,
-		UpdatedAt: lastUpdate,
-		Schema:    schema,
+		Checksum:    checksum,
+		SizeBytes:   sizeBytes,
+		File:        file,
+		CreatedAt:   createdDate,
+		UpdatedAt:   lastUpdate,
+		Schema:      schema,
+		VirtualSize: 0,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
@@ -269,6 +271,7 @@ func TestUpdateImage(t *testing.T) {
 		CreatedAt:       createdDate,
 		UpdatedAt:       lastUpdate,
 		Schema:          schema,
+		VirtualSize:     0,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
