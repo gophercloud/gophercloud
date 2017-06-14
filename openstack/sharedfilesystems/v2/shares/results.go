@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
 	"net/url"
 	"strconv"
+
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 var maxInt = strconv.Itoa(int(^uint(0) >> 1))

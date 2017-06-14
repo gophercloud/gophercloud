@@ -6,6 +6,7 @@ import (
 
 	"encoding/json"
 	"fmt"
+
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
