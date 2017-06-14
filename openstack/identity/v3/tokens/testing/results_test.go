@@ -39,7 +39,7 @@ func TestExtractRoles(t *testing.T) {
 	roles, err := result.ExtractRoles()
 	testhelper.AssertNoErr(t, err)
 
-	testhelper.CheckDeepEquals(t, &ExpectedRoles, roles)
+	testhelper.CheckDeepEquals(t, ExpectedRoles, roles)
 }
 
 func TestExtractProject(t *testing.T) {
