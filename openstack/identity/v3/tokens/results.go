@@ -60,10 +60,6 @@ type Role struct {
 	Name string `json:"name"`
 }
 
-type Roles struct {
-	Roles []Role `json:"roles"`
-}
-
 // Project provides information about project to which User is authorized.
 type Project struct {
 	Domain Domain `json:"domain"`
@@ -113,10 +109,12 @@ func (r commonResult) ExtractUser() (*User, error) {
 }
 
 // ExtractRoles returns Roles to which User is authorized.
-func (r commonResult) ExtractRoles() (*Roles, error) {
-	var s Roles
+func (r commonResult) ExtractRoles() ([]Role, error) {
+	var s struct {
+		Roles []Role `json:"roles"`
+	}
 	err := r.ExtractInto(&s)
-	return &s, err
+	return s.Roles, err
 }
 
 // ExtractProject returns Project to which User is authorized.
