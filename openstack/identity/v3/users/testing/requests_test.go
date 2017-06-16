@@ -53,3 +53,50 @@ func TestGetUser(t *testing.T) {
 	th.CheckDeepEquals(t, SecondUser, *actual)
 	th.AssertEquals(t, SecondUser.Extra["email"], "jsmith@example.com")
 }
+
+func TestCreateUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateUserSuccessfully(t)
+
+	iTrue := true
+	createOpts := users.CreateOpts{
+		Name:             "jsmith",
+		DomainID:         "1789d1",
+		Enabled:          &iTrue,
+		Password:         "secretsecret",
+		DefaultProjectID: "263fd9",
+		Options: map[users.Option]interface{}{
+			users.IgnorePasswordExpiry: true,
+		},
+		Extra: map[string]interface{}{
+			"email": "jsmith@example.com",
+		},
+	}
+
+	actual, err := users.Create(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondUser, *actual)
+}
+
+func TestCreateNoOptionsUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateNoOptionsUserSuccessfully(t)
+
+	iTrue := true
+	createOpts := users.CreateOpts{
+		Name:             "jsmith",
+		DomainID:         "1789d1",
+		Enabled:          &iTrue,
+		Password:         "secretsecret",
+		DefaultProjectID: "263fd9",
+		Extra: map[string]interface{}{
+			"email": "jsmith@example.com",
+		},
+	}
+
+	actual, err := users.Create(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondUserNoOptions, *actual)
+}
