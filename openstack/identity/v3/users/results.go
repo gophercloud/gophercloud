@@ -90,6 +90,11 @@ type CreateResult struct {
 	userResult
 }
 
+// DeleteResult temporarily contains the response from the Delete call.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // UserPage is a single page of User results.
 type UserPage struct {
 	pagination.LinkedPageBase
