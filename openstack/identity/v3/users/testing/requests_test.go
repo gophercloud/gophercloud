@@ -68,6 +68,10 @@ func TestCreateUser(t *testing.T) {
 		DefaultProjectID: "263fd9",
 		Options: map[users.Option]interface{}{
 			users.IgnorePasswordExpiry: true,
+			users.MultiFactorAuthRules: []interface{}{
+				[]string{"password", "totp"},
+				[]string{"password", "custom-auth-method"},
+			},
 		},
 		Extra: map[string]interface{}{
 			"email": "jsmith@example.com",

@@ -100,7 +100,7 @@ type CreateOpts struct {
 	// Extra is free-form extra key/value pairs to describe the user.
 	Extra map[string]interface{} `json:"-"`
 
-	// Options are coded 4-character options defined by the API.
+	// Options are defined options in the API to enable certain features.
 	Options map[Option]interface{} `json:"options,omitempty"`
 
 	// Password is the password of the new user.

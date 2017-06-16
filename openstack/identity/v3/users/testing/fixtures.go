@@ -47,7 +47,8 @@ const ListOutput = `
             "password_expires_at": "2016-11-06T15:32:17.000000",
             "email": "jsmith@example.com",
             "options": {
-                "ignore_password_expiry": true
+                "ignore_password_expiry": true,
+                "multi_factor_auth_rules": [["password", "totp"], ["password", "custom-auth-method"]]
             }
         }
     ]
@@ -69,7 +70,8 @@ const GetOutput = `
         "password_expires_at": "2016-11-06T15:32:17.000000",
         "email": "jsmith@example.com",
         "options": {
-            "ignore_password_expiry": true
+            "ignore_password_expiry": true,
+            "multi_factor_auth_rules": [["password", "totp"], ["password", "custom-auth-method"]]
         }
     }
 }
@@ -104,7 +106,8 @@ const CreateRequest = `
         "password": "secretsecret",
         "email": "jsmith@example.com",
         "options": {
-            "ignore_password_expiry": true
+            "ignore_password_expiry": true,
+            "multi_factor_auth_rules": [["password", "totp"], ["password", "custom-auth-method"]]
         }
     }
 }
@@ -158,6 +161,10 @@ var SecondUser = users.User{
 	},
 	Options: map[string]interface{}{
 		"ignore_password_expiry": true,
+		"multi_factor_auth_rules": []interface{}{
+			[]string{"password", "totp"},
+			[]string{"password", "custom-auth-method"},
+		},
 	},
 }
 
