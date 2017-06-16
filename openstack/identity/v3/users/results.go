@@ -90,6 +90,11 @@ type CreateResult struct {
 	userResult
 }
 
+// UpdateResult temporarily contains the response from the Update call.
+type UpdateResult struct {
+	userResult
+}
+
 // DeleteResult temporarily contains the response from the Delete call.
 type DeleteResult struct {
 	gophercloud.ErrResult
