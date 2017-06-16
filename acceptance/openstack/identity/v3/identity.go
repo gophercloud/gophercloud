@@ -6,6 +6,7 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
 )
 
 // CreateProject will create a project with a random name.
@@ -33,6 +34,33 @@ func CreateProject(t *testing.T, client *gophercloud.ServiceClient, c *projects.
 	t.Logf("Successfully created project %s with ID %s", name, project.ID)
 
 	return project, nil
+}
+
+// CreateUser will create a project with a random name.
+// It takes an optional createOpts parameter since creating a user
+// has so many options. An error will be returned if the user was
+// unable to be created.
+func CreateUser(t *testing.T, client *gophercloud.ServiceClient, c *users.CreateOpts) (*users.User, error) {
+	name := tools.RandomString("ACPTTEST", 8)
+	t.Logf("Attempting to create user: %s", name)
+
+	var createOpts users.CreateOpts
+	if c != nil {
+		createOpts = *c
+	} else {
+		createOpts = users.CreateOpts{}
+	}
+
+	createOpts.Name = name
+
+	user, err := users.Create(client, createOpts).Extract()
+	if err != nil {
+		return user, err
+	}
+
+	t.Logf("Successfully created user %s with ID %s", name, user.ID)
+
+	return user, nil
 }
 
 // DeleteProject will delete a project by ID. A fatal error will occur if
