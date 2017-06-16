@@ -127,6 +127,41 @@ const CreateNoOptionsRequest = `
 }
 `
 
+// UpdateRequest provides the input to as Update request.
+const UpdateRequest = `
+{
+    "user": {
+        "enabled": false,
+        "disabled_reason": "DDOS",
+        "options": {
+            "multi_factor_auth_rules": null
+        }
+    }
+}
+`
+
+// UpdateOutput provides an update result.
+const UpdateOutput = `
+{
+    "user": {
+        "default_project_id": "263fd9",
+        "domain_id": "1789d1",
+        "enabled": false,
+        "id": "9fe1d3",
+        "links": {
+            "self": "https://example.com/identity/v3/users/9fe1d3"
+        },
+        "name": "jsmith",
+        "password_expires_at": "2016-11-06T15:32:17.000000",
+        "email": "jsmith@example.com",
+        "disabled_reason": "DDOS",
+        "options": {
+            "ignore_password_expiry": true
+        }
+    }
+}
+`
+
 // FirstUser is the first user in the List request.
 var nilTime time.Time
 var FirstUser = users.User{
@@ -183,6 +218,26 @@ var SecondUserNoOptions = users.User{
 	},
 }
 
+// SecondUserUpdated is how SecondUser should look after an Update.
+var SecondUserUpdated = users.User{
+	DefaultProjectID: "263fd9",
+	DomainID:         "1789d1",
+	Enabled:          false,
+	ID:               "9fe1d3",
+	Links: map[string]interface{}{
+		"self": "https://example.com/identity/v3/users/9fe1d3",
+	},
+	Name:              "jsmith",
+	PasswordExpiresAt: SecondUserPasswordExpiresAt,
+	Extra: map[string]interface{}{
+		"email":           "jsmith@example.com",
+		"disabled_reason": "DDOS",
+	},
+	Options: map[string]interface{}{
+		"ignore_password_expiry": true,
+	},
+}
+
 // ExpectedUsersSlice is the slice of users expected to be returned from ListOutput.
 var ExpectedUsersSlice = []users.User{FirstUser, SecondUser}
 
@@ -215,7 +270,7 @@ func HandleGetUserSuccessfully(t *testing.T) {
 }
 
 // HandleCreateUserSuccessfully creates an HTTP handler at `/users` on the
-// test handler mux that tests project creation.
+// test handler mux that tests user creation.
 func HandleCreateUserSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
@@ -228,7 +283,7 @@ func HandleCreateUserSuccessfully(t *testing.T) {
 }
 
 // HandleCreateNoOptionsUserSuccessfully creates an HTTP handler at `/users` on the
-// test handler mux that tests project creation.
+// test handler mux that tests user creation.
 func HandleCreateNoOptionsUserSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
@@ -240,8 +295,21 @@ func HandleCreateNoOptionsUserSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleUpdateUserSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that tests user update.
+func HandleUpdateUserSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, UpdateOutput)
+	})
+}
+
 // HandleDeleteUserSuccessfully creates an HTTP handler at `/users` on the
-// test handler mux that tests project deletion.
+// test handler mux that tests user deletion.
 func HandleDeleteUserSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
