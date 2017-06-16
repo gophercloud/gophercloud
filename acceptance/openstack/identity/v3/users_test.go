@@ -92,6 +92,7 @@ func TestUserCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create user: %v", err)
 	}
+	defer DeleteUser(t, client, user.ID)
 
 	tools.PrintResource(t, user)
 	tools.PrintResource(t, user.Extra)

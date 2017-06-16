@@ -74,3 +74,15 @@ func DeleteProject(t *testing.T, client *gophercloud.ServiceClient, projectID st
 
 	t.Logf("Deleted project: %s", projectID)
 }
+
+// DeleteUser will delete a user by ID. A fatal error will occur if
+// the user failed to be deleted. This works best when using it as
+// a deferred function.
+func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, userID string) {
+	err := users.Delete(client, userID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete user %s: %v", userID, err)
+	}
+
+	t.Logf("Deleted user: %s", userID)
+}

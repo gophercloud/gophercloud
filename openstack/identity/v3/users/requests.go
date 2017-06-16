@@ -137,3 +137,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// Delete deletes a user.
+func Delete(client *gophercloud.ServiceClient, userID string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, userID), nil)
+	return
+}
