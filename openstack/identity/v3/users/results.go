@@ -85,6 +85,11 @@ type GetResult struct {
 	userResult
 }
 
+// CreateResult temporarily contains the response from the Create call.
+type CreateResult struct {
+	userResult
+}
+
 // UserPage is a single page of User results.
 type UserPage struct {
 	pagination.LinkedPageBase

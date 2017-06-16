@@ -5,6 +5,18 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+// Option is a specific option defined at the API to enable features
+// on a user account.
+type Option string
+
+const (
+	IgnoreChangePasswordUponFirstUse Option = "ignore_change_password_upon_first_use"
+	IgnorePasswordExpiry             Option = "ignore_password_expiry"
+	IgnoreLockoutFailureAttempts     Option = "ignore_lockout_failure_attempts"
+	MultiFactorAuthRules             Option = "multi_factor_auth_rules"
+	MultiFactorAuthEnabled           Option = "multi_factor_auth_enabled"
+)
+
 // ListOptsBuilder allows extensions to add additional parameters to
 // the List request
 type ListOptsBuilder interface {
@@ -59,5 +71,69 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // Get retrieves details on a single user, by ID.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
+}
+
+// CreateOptsBuilder allows extensions to add additional parameters to
+// the Create request.
+type CreateOptsBuilder interface {
+	ToUserCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts implements CreateOptsBuilder
+type CreateOpts struct {
+	// Name is the name of the new user.
+	Name string `json:"name" required:"true"`
+
+	// DefaultProjectID is the ID of the default project of the user.
+	DefaultProjectID string `json:"default_project_id,omitempty"`
+
+	// Description is a description of the user.
+	Description string `json:"description,omitempty"`
+
+	// DomainID is the ID of the domain the user belongs to.
+	DomainID string `json:"domain_id,omitempty"`
+
+	// Enabled sets the user status to enabled or disabled.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Extra is free-form extra key/value pairs to describe the user.
+	Extra map[string]interface{} `json:"-"`
+
+	// Options are coded 4-character options defined by the API.
+	Options map[Option]interface{} `json:"options,omitempty"`
+
+	// Password is the password of the new user.
+	Password string `json:"password,omitempty"`
+}
+
+// ToUserCreateMap formats a CreateOpts into a create request.
+func (opts CreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "user")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		if v, ok := b["user"].(map[string]interface{}); ok {
+			for key, value := range opts.Extra {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
+}
+
+// Create creates a new User.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToUserCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
 	return
 }
