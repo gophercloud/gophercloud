@@ -82,6 +82,10 @@ func TestUserCRUD(t *testing.T) {
 		DomainID:         "default",
 		Options: map[users.Option]interface{}{
 			users.IgnorePasswordExpiry: true,
+			users.MultiFactorAuthRules: []interface{}{
+				[]string{"password", "totp"},
+				[]string{"password", "custom-auth-method"},
+			},
 		},
 		Extra: map[string]interface{}{
 			"email": "jsmith@example.com",
@@ -96,4 +100,24 @@ func TestUserCRUD(t *testing.T) {
 
 	tools.PrintResource(t, user)
 	tools.PrintResource(t, user.Extra)
+
+	iFalse := false
+	updateOpts := users.UpdateOpts{
+		Enabled: &iFalse,
+		Options: map[users.Option]interface{}{
+			users.MultiFactorAuthRules: nil,
+		},
+		Extra: map[string]interface{}{
+			"disabled_reason": "DDOS",
+		},
+	}
+
+	newUser, err := users.Update(client, user.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update user: %v", err)
+	}
+
+	tools.PrintResource(t, newUser)
+	tools.PrintResource(t, newUser.Extra)
+
 }

@@ -105,6 +105,27 @@ func TestCreateNoOptionsUser(t *testing.T) {
 	th.CheckDeepEquals(t, SecondUserNoOptions, *actual)
 }
 
+func TestUpdateUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateUserSuccessfully(t)
+
+	iFalse := false
+	updateOpts := users.UpdateOpts{
+		Enabled: &iFalse,
+		Options: map[users.Option]interface{}{
+			users.MultiFactorAuthRules: nil,
+		},
+		Extra: map[string]interface{}{
+			"disabled_reason": "DDOS",
+		},
+	}
+
+	actual, err := users.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondUserUpdated, *actual)
+}
+
 func TestDeleteUser(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

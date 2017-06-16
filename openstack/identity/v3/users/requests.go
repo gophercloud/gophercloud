@@ -138,6 +138,70 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
+// UpdateOptsBuilder allows extensions to add additional parameters to
+// the Update request.
+type UpdateOptsBuilder interface {
+	ToUserUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts implements UpdateOptsBuilder
+type UpdateOpts struct {
+	// Name is the name of the new user.
+	Name string `json:"name,omitempty"`
+
+	// DefaultProjectID is the ID of the default project of the user.
+	DefaultProjectID string `json:"default_project_id,omitempty"`
+
+	// Description is a description of the user.
+	Description string `json:"description,omitempty"`
+
+	// DomainID is the ID of the domain the user belongs to.
+	DomainID string `json:"domain_id,omitempty"`
+
+	// Enabled sets the user status to enabled or disabled.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Extra is free-form extra key/value pairs to describe the user.
+	Extra map[string]interface{} `json:"-"`
+
+	// Options are defined options in the API to enable certain features.
+	Options map[Option]interface{} `json:"options,omitempty"`
+
+	// Password is the password of the new user.
+	Password string `json:"password,omitempty"`
+}
+
+// ToUserUpdateMap formats a UpdateOpts into an update request.
+func (opts UpdateOpts) ToUserUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "user")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		if v, ok := b["user"].(map[string]interface{}); ok {
+			for key, value := range opts.Extra {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
+}
+
+// Update updates an existing User.
+func Update(client *gophercloud.ServiceClient, userID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToUserUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Patch(updateURL(client, userID), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
 // Delete deletes a user.
 func Delete(client *gophercloud.ServiceClient, userID string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, userID), nil)
