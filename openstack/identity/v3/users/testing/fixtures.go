@@ -47,7 +47,8 @@ const ListOutput = `
             "password_expires_at": "2016-11-06T15:32:17.000000",
             "email": "jsmith@example.com",
             "options": {
-                "ignore_password_expiry": true
+                "ignore_password_expiry": true,
+                "multi_factor_auth_rules": [["password", "totp"], ["password", "custom-auth-method"]]
             }
         }
     ]
@@ -69,8 +70,59 @@ const GetOutput = `
         "password_expires_at": "2016-11-06T15:32:17.000000",
         "email": "jsmith@example.com",
         "options": {
-            "ignore_password_expiry": true
+            "ignore_password_expiry": true,
+            "multi_factor_auth_rules": [["password", "totp"], ["password", "custom-auth-method"]]
         }
+    }
+}
+`
+
+// GetOutputNoOptions provides a Get result of a user with no options.
+const GetOutputNoOptions = `
+{
+    "user": {
+        "default_project_id": "263fd9",
+        "domain_id": "1789d1",
+        "enabled": true,
+        "id": "9fe1d3",
+        "links": {
+            "self": "https://example.com/identity/v3/users/9fe1d3"
+        },
+        "name": "jsmith",
+        "password_expires_at": "2016-11-06T15:32:17.000000",
+        "email": "jsmith@example.com"
+    }
+}
+`
+
+// CreateRequest provides the input to a Create request.
+const CreateRequest = `
+{
+    "user": {
+        "default_project_id": "263fd9",
+        "domain_id": "1789d1",
+        "enabled": true,
+        "name": "jsmith",
+        "password": "secretsecret",
+        "email": "jsmith@example.com",
+        "options": {
+            "ignore_password_expiry": true,
+            "multi_factor_auth_rules": [["password", "totp"], ["password", "custom-auth-method"]]
+        }
+    }
+}
+`
+
+// CreateNoOptionsRequest provides the input to a Create request with no Options.
+const CreateNoOptionsRequest = `
+{
+    "user": {
+        "default_project_id": "263fd9",
+        "domain_id": "1789d1",
+        "enabled": true,
+        "name": "jsmith",
+        "password": "secretsecret",
+        "email": "jsmith@example.com"
     }
 }
 `
@@ -109,6 +161,25 @@ var SecondUser = users.User{
 	},
 	Options: map[string]interface{}{
 		"ignore_password_expiry": true,
+		"multi_factor_auth_rules": []interface{}{
+			[]string{"password", "totp"},
+			[]string{"password", "custom-auth-method"},
+		},
+	},
+}
+
+var SecondUserNoOptions = users.User{
+	DefaultProjectID: "263fd9",
+	DomainID:         "1789d1",
+	Enabled:          true,
+	ID:               "9fe1d3",
+	Links: map[string]interface{}{
+		"self": "https://example.com/identity/v3/users/9fe1d3",
+	},
+	Name:              "jsmith",
+	PasswordExpiresAt: SecondUserPasswordExpiresAt,
+	Extra: map[string]interface{}{
+		"email": "jsmith@example.com",
 	},
 }
 
@@ -140,5 +211,31 @@ func HandleGetUserSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleCreateUserSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that tests project creation.
+func HandleCreateUserSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleCreateNoOptionsUserSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that tests project creation.
+func HandleCreateNoOptionsUserSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateNoOptionsRequest)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, GetOutputNoOptions)
 	})
 }

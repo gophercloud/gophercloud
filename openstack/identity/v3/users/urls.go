@@ -9,3 +9,7 @@ func listURL(client *gophercloud.ServiceClient) string {
 func getURL(client *gophercloud.ServiceClient, userID string) string {
 	return client.ServiceURL("users", userID)
 }
+
+func createURL(client *gophercloud.ServiceClient) string {
+	return client.ServiceURL("users")
+}
