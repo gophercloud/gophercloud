@@ -239,3 +239,14 @@ func HandleCreateNoOptionsUserSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, GetOutputNoOptions)
 	})
 }
+
+// HandleDeleteUserSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that tests project deletion.
+func HandleDeleteUserSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
