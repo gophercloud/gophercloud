@@ -74,3 +74,8 @@ type CreateResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+// UpdateResult temporarily contains the response from the Update call.
+type UpdateResult struct {
+	tenantResult
+}
