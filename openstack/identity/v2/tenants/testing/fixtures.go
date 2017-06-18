@@ -62,3 +62,34 @@ func HandleListTenantsSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, ListOutput)
 	})
 }
+
+func mockCreateTenantResponse(t *testing.T) {
+	th.Mux.HandleFunc("/tenants", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+    "tenant": {
+		    "name": "new_tenant",
+		    "description": "This is new tenant",
+		    "enabled": true
+    }
+}
+	`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "tenant": {
+        "name": "new_tenant",
+        "description": "This is new tenant",
+        "enabled": true,
+        "id": "5c62ef576dc7444cbb73b1fe84b97648"
+    }
+}
+`)
+	})
+}
