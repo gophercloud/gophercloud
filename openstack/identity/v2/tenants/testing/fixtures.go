@@ -93,3 +93,11 @@ func mockCreateTenantResponse(t *testing.T) {
 `)
 	})
 }
+
+func mockDeleteTenantResponse(t *testing.T) {
+	th.Mux.HandleFunc("/tenants/2466f69cd4714d89a548a68ed97ffcd4", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

@@ -55,3 +55,13 @@ func TestCreateTenant(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, tenant)
 }
+
+func TestDeleteTenant(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockDeleteTenantResponse(t)
+
+	err := tenants.Delete(client.ServiceClient(), "2466f69cd4714d89a548a68ed97ffcd4").ExtractErr()
+	th.AssertNoErr(t, err)
+}
