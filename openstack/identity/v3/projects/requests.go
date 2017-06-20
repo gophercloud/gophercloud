@@ -75,7 +75,7 @@ type CreateOpts struct {
 	IsDomain *bool `json:"is_domain,omitempty"`
 
 	// Name is the name of the project.
-	Name string `json:"name,required"`
+	Name string `json:"name" required:"true"`
 
 	// ParentID specifies the parent project of this new project.
 	ParentID string `json:"parent_id,omitempty"`

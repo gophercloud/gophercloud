@@ -73,7 +73,7 @@ type CreateOpts struct {
 	Description string `json:"description,omitempty"`
 
 	// Name of the zone.
-	Name string `json:"name,required"`
+	Name string `json:"name" required:"true"`
 
 	// Masters specifies zone masters if this is a secondary zone.
 	Masters []string `json:"masters,omitempty"`
