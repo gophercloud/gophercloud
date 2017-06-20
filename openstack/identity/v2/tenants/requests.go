@@ -60,3 +60,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// Delete is the operation responsible for permanently deleting an API tenant.
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
+}

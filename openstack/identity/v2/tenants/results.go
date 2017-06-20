@@ -69,3 +69,8 @@ func (r tenantResult) Extract() (*Tenant, error) {
 type CreateResult struct {
 	tenantResult
 }
+
+// DeleteResult temporarily contains the response from the Delete call.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
