@@ -31,7 +31,7 @@ func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
 // CreateOpts represents the options needed when creating new tenant.
 type CreateOpts struct {
 	// Name is the name of the tenant.
-	Name string `json:"name,required"`
+	Name string `json:"name" required:"true"`
 	// Description is the description of the tenant.
 	Description string `json:"description,omitempty"`
 	// Enabled sets the tenant status to enabled or disabled.
