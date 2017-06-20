@@ -27,3 +27,36 @@ func List(client *gophercloud.ServiceClient, opts *ListOpts) pagination.Pager {
 		return TenantPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// CreateOpts represents the options needed when creating new tenant.
+type CreateOpts struct {
+	// Name is the name of the tenant.
+	Name string `json:"name,required"`
+	// Description is the description of the tenant.
+	Description string `json:"description,omitempty"`
+	// Enabled sets the tenant status to enabled or disabled.
+	Enabled *bool `json:"enabled,omitempty"`
+}
+
+// CreateOptsBuilder describes struct types that can be accepted by the Create call.
+type CreateOptsBuilder interface {
+	ToTenantCreateMap() (map[string]interface{}, error)
+}
+
+// ToTenantCreateMap assembles a request body based on the contents of a CreateOpts.
+func (opts CreateOpts) ToTenantCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "tenant")
+}
+
+// Create is the operation responsible for creating new tenant.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToTenantCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201},
+	})
+	return
+}
