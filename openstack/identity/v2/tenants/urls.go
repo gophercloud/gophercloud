@@ -13,3 +13,7 @@ func createURL(client *gophercloud.ServiceClient) string {
 func deleteURL(client *gophercloud.ServiceClient, tenantID string) string {
 	return client.ServiceURL("tenants", tenantID)
 }
+
+func updateURL(client *gophercloud.ServiceClient, tenantID string) string {
+	return client.ServiceURL("tenants", tenantID)
+}

@@ -101,3 +101,34 @@ func mockDeleteTenantResponse(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
+
+func mockUpdateTenantResponse(t *testing.T) {
+	th.Mux.HandleFunc("/tenants/5c62ef576dc7444cbb73b1fe84b97648", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		th.TestJSONRequest(t, r, `
+{
+    "tenant": {
+		    "name": "new_name",
+	 	    "description": "This is new name",
+		    "enabled": true
+    }
+}
+`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+		"tenant": {
+				"name": "new_name",
+				"description": "This is new name",
+				"enabled": true,
+				"id": "5c62ef576dc7444cbb73b1fe84b97648"
+		}
+}
+`)
+	})
+}

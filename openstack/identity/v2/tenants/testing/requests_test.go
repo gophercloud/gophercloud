@@ -65,3 +65,30 @@ func TestDeleteTenant(t *testing.T) {
 	err := tenants.Delete(client.ServiceClient(), "2466f69cd4714d89a548a68ed97ffcd4").ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestUpdateTenant(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockUpdateTenantResponse(t)
+
+	id := "5c62ef576dc7444cbb73b1fe84b97648"
+	opts := tenants.UpdateOpts{
+		Name:        "new_name",
+		Description: "This is new name",
+		Enabled:     gophercloud.Enabled,
+	}
+
+	tenant, err := tenants.Update(client.ServiceClient(), id, opts).Extract()
+
+	th.AssertNoErr(t, err)
+
+	expected := &tenants.Tenant{
+		Name:        "new_name",
+		ID:          id,
+		Description: "This is new name",
+		Enabled:     true,
+	}
+
+	th.AssertDeepEquals(t, expected, tenant)
+}
