@@ -92,3 +92,22 @@ func TestUpdateTenant(t *testing.T) {
 
 	th.AssertDeepEquals(t, expected, tenant)
 }
+
+func TestGetTenant(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockGetTenantResponse(t)
+
+	tenant, err := tenants.Get(client.ServiceClient(), "5c62ef576dc7444cbb73b1fe84b97648").Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &tenants.Tenant{
+		Name:        "new_tenant",
+		ID:          "5c62ef576dc7444cbb73b1fe84b97648",
+		Description: "This is new tenant",
+		Enabled:     true,
+	}
+
+	th.AssertDeepEquals(t, expected, tenant)
+}

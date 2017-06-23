@@ -61,6 +61,12 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
+// Get requests details on a single tenant by ID.
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	return
+}
+
 // UpdateOptsBuilder allows extensions to add additional attributes to the Update request.
 type UpdateOptsBuilder interface {
 	ToTenantUpdateMap() (map[string]interface{}, error)

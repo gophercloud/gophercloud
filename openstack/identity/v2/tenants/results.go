@@ -65,6 +65,11 @@ func (r tenantResult) Extract() (*Tenant, error) {
 	return s.Tenant, err
 }
 
+// GetResult temporarily contains the response from the Get call.
+type GetResult struct {
+	tenantResult
+}
+
 // CreateResult temporarily contains the reponse from the Create call.
 type CreateResult struct {
 	tenantResult

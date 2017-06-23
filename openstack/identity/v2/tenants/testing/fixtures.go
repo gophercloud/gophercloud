@@ -132,3 +132,24 @@ func mockUpdateTenantResponse(t *testing.T) {
 `)
 	})
 }
+
+func mockGetTenantResponse(t *testing.T) {
+	th.Mux.HandleFunc("/tenants/5c62ef576dc7444cbb73b1fe84b97648", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+		"tenant": {
+				"name": "new_tenant",
+				"description": "This is new tenant",
+				"enabled": true,
+				"id": "5c62ef576dc7444cbb73b1fe84b97648"
+		}
+}
+`)
+	})
+}
