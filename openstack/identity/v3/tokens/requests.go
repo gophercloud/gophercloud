@@ -125,7 +125,17 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 			},
 		}, nil
 	} else if opts.Scope.DomainName != "" {
-		return nil, gophercloud.ErrScopeDomainName{}
+		// DomainName provided. ProjectID, ProjectName, and DomainID may not be provided.
+		if opts.Scope.DomainID != "" {
+			return nil, gophercloud.ErrScopeDomainIDOrDomainName{}
+		}
+
+		// DomainID
+		return map[string]interface{}{
+			"domain": map[string]interface{}{
+				"name": &opts.Scope.DomainName,
+			},
+		}, nil
 	}
 
 	return nil, nil
