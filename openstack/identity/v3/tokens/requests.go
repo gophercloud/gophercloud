@@ -130,7 +130,7 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 			return nil, gophercloud.ErrScopeDomainIDOrDomainName{}
 		}
 
-		// DomainID
+		// DomainName
 		return map[string]interface{}{
 			"domain": map[string]interface{}{
 				"name": &opts.Scope.DomainName,
