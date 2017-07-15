@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+// Attachment represents a Volume Attachment record
 type Attachment struct {
 	AttachedAt   time.Time `json:"-"`
 	AttachmentID string    `json:"attachment_id"`
@@ -18,6 +19,8 @@ type Attachment struct {
 	VolumeID     string    `json:"volume_id"`
 }
 
+// UnmarshalJSON is our unmarshalling helper
+// NOTE(j-griffith) this may not need to be public?
 func (r *Attachment) UnmarshalJSON(b []byte) error {
 	type tmp Attachment
 	var s struct {
@@ -77,6 +80,8 @@ type Volume struct {
 	Multiattach bool `json:"multiattach"`
 }
 
+// UnmarshalJSON another unmarshalling function
+// NOTE(j-griffith) this may not need to be public?
 func (r *Volume) UnmarshalJSON(b []byte) error {
 	type tmp Volume
 	var s struct {
@@ -102,6 +107,7 @@ type VolumePage struct {
 }
 
 // IsEmpty returns true if a ListResult contains no Volumes.
+// NOTE(j-griffith) this may not need to be public?
 func (r VolumePage) IsEmpty() (bool, error) {
 	volumes, err := ExtractVolumes(r)
 	return len(volumes) == 0, err
@@ -125,10 +131,12 @@ func (r commonResult) Extract() (*Volume, error) {
 	return &s, err
 }
 
+// ExtractInto converts our response data into a volume struct
 func (r commonResult) ExtractInto(v interface{}) error {
 	return r.Result.ExtractIntoStructPtr(v, "volume")
 }
 
+// ExtractVolumesInto similar to ExtractInto but operates on a `list` of volumes
 func ExtractVolumesInto(r pagination.Page, v interface{}) error {
 	return r.(VolumePage).Result.ExtractIntoSlicePtr(v, "volumes")
 }

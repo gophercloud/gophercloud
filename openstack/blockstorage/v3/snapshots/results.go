@@ -58,6 +58,8 @@ type SnapshotPage struct {
 	pagination.SinglePageBase
 }
 
+// UnmarshalJSON converts our JSON API response into our snapshot struct
+// NOTE(j-griffith) this may not need to be public?
 func (r *Snapshot) UnmarshalJSON(b []byte) error {
 	type tmp Snapshot
 	var s struct {
