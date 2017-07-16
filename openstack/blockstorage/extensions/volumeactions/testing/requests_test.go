@@ -55,7 +55,7 @@ func TestUploadImage(t *testing.T) {
 		Force:           true,
 	}
 
-	err := volumeactions.UploadImage(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	_, err := volumeactions.UploadImage(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).Extract()
 	th.AssertNoErr(t, err)
 }
 
