@@ -53,7 +53,7 @@ func (r commonResult) Extract() (map[string]interface{}, error) {
 // Extract will get an object with info about image being uploaded out of the UploadImageResult object.
 func (r UploadImageResult) Extract() (map[string]interface{}, error) {
 	var s struct {
-		VolumeUploadImage   map[string]interface{} `json:"os-volume_upload_image"`
+		VolumeUploadImage map[string]interface{} `json:"os-volume_upload_image"`
 	}
 	err := r.ExtractInto(&s)
 	return s.VolumeUploadImage, err
