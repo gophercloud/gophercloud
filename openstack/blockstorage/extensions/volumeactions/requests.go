@@ -246,7 +246,7 @@ func UploadImage(client *gophercloud.ServiceClient, id string, opts UploadImageO
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(uploadURL(client, id), b, nil, &gophercloud.RequestOpts{
+	_, r.Err = client.Post(uploadURL(client, id), b,  &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	return
