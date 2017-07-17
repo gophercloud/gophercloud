@@ -100,7 +100,7 @@ func MockUploadImageResponse(t *testing.T) {
     "os-volume_upload_image": {
         "container_format": "bare",
         "display_description": null,
-        "id": "a3f68aa2-a07b-4c6d-9a5b-ebd5600cfff8",
+        "id": "cd281d77-8217-4830-be95-9528227c105c",
         "image_id": "ecb92d98-de08-45db-8235-bbafe317269c",
         "image_name": "test",
         "disk_format": "raw",
