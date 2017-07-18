@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
+	"strings"
 
 	"github.com/gophercloud/gophercloud"
 	tokens2 "github.com/gophercloud/gophercloud/openstack/identity/v2/tokens"
@@ -25,19 +26,22 @@ func NewClient(endpoint string) (*gophercloud.ProviderClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	hadPath := u.Path != ""
-	u.Path, u.RawQuery, u.Fragment = "", "", ""
-	base := u.String()
+	u.RawQuery, u.Fragment = "", ""
 
-	endpoint = gophercloud.NormalizeURL(endpoint)
-	base = gophercloud.NormalizeURL(base)
-
-	if hadPath {
-		return &gophercloud.ProviderClient{
-			IdentityBase:     base,
-			IdentityEndpoint: endpoint,
-		}, nil
+	segments := strings.Split(u.Path, "/")
+	// if the url ends by / we have an empty string as last segment
+	if segments[len(segments)-1] == "" {
+		segments = segments[:len(segments)-1]
 	}
+
+	lastSegmentIndex := len(segments) - 1
+	lastSegment := segments[lastSegmentIndex]
+	if lastSegment == "v2.0" || lastSegment == "v3" {
+		segments = segments[:lastSegmentIndex]
+		u.Path = strings.Join(segments, "/")
+	}
+
+	base := gophercloud.NormalizeURL(u.String())
 
 	return &gophercloud.ProviderClient{
 		IdentityBase:     base,
