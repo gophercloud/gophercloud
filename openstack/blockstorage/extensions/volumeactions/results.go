@@ -55,6 +55,30 @@ func (r commonResult) Extract() (map[string]interface{}, error) {
 }
 
 // VolumeImage contains information about volume upload to an image service.
+type VolumeImageVolumeType struct {
+	// The ID of a volume type.
+	Id string `json:"id"`
+	// Human-readable display name for the volume type.
+	Name string `json:"name"`
+	// Human-readable description for the volume type.
+	Description string `json:"display_description"`
+	// Flag for public access.
+	IsPublic bool `json:"is_public"`
+	// Extra specifications for volume type.
+	ExtraSpecs map[string]interface{} `json:"extra_specs"`
+	// Id of quality of service specs.
+	QosSpecsId string `json:"qos_specs_id"`
+	// Flag for deletion status of volume tpe.
+	Deleted bool `json:"deleted"`
+	// The date when volume type was deleted.
+	DeletedAt time.Time `json:"-"`
+	// The date when volume type was created.
+	CreatedAt time.Time `json:"-"`
+	// The date when this volume was last updated.
+	UpdatedAt time.Time `json:"-"`
+}
+
+// VolumeImage contains information about volume upload to an image service.
 type VolumeImage struct {
 	// The ID of a volume an image is created from.
 	VolumeId string `json:"id"`
@@ -74,6 +98,8 @@ type VolumeImage struct {
 	Status string `json:"status"`
 	// The date when this volume was last updated.
 	UpdatedAt time.Time `json:"-"`
+	// Volume type object of used volume.
+	VolumeType VolumeImageVolumeType `json:"volume_type"`
 }
 
 // Extract will get an object with info about image being uploaded out of the UploadImageResult object.
