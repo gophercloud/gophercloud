@@ -187,6 +187,24 @@ func TestDeleteServer(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
+func TestPauseServer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerPauseSuccessfully(t)
+
+	res := servers.Pause(client.ServiceClient(), "asdfasdfasdf")
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestUnpauseServer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerUnpauseSuccessfully(t)
+
+	res := servers.Unpause(client.ServiceClient(), "asdfasdfasdf")
+	th.AssertNoErr(t, res.Err)
+}
+
 func TestForceDeleteServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
