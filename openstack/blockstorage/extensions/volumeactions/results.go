@@ -1,6 +1,7 @@
 package volumeactions
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -78,6 +79,27 @@ type VolumeImageVolumeType struct {
 	UpdatedAt time.Time `json:"-"`
 }
 
+func (r *VolumeImageVolumeType) UnmarshalJSON(b []byte) error {
+	type tmp VolumeImageVolumeType
+	var s struct {
+		tmp
+		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+		DeletedAt gophercloud.JSONRFC3339MilliNoZ `json:"deleted_at"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = VolumeImageVolumeType(s.tmp)
+
+	r.CreatedAt = time.Time(s.CreatedAt)
+	r.UpdatedAt = time.Time(s.UpdatedAt)
+	r.DeletedAt = time.Time(s.DeletedAt)
+
+	return err
+}
+
 // VolumeImage contains information about volume upload to an image service.
 type VolumeImage struct {
 	// The ID of a volume an image is created from.
@@ -100,6 +122,23 @@ type VolumeImage struct {
 	UpdatedAt time.Time `json:"-"`
 	// Volume type object of used volume.
 	VolumeType VolumeImageVolumeType `json:"volume_type"`
+}
+
+func (r *VolumeImage) UnmarshalJSON(b []byte) error {
+	type tmp VolumeImage
+	var s struct {
+		tmp
+		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = VolumeImage(s.tmp)
+
+	r.UpdatedAt = time.Time(s.UpdatedAt)
+
+	return err
 }
 
 // Extract will get an object with info about image being uploaded out of the UploadImageResult object.
