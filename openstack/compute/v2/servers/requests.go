@@ -289,18 +289,6 @@ func ForceDelete(client *gophercloud.ServiceClient, id string) (r ActionResult) 
 	return
 }
 
-// Pause requests a single server to be paused, by ID.
-func Pause(client *gophercloud.ServiceClient, id string) (r ActionResult) {
-	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"pause": ""}, nil, nil)
-	return
-}
-
-// Unpause requests a single server to be unpaused, by ID.
-func Unpause(client *gophercloud.ServiceClient, id string) (r ActionResult) {
-	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"unpause": ""}, nil, nil)
-	return
-}
-
 // Get requests details on a single server, by ID.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{

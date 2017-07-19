@@ -684,28 +684,6 @@ func HandleServerDeletionSuccessfully(t *testing.T) {
 	})
 }
 
-// HandleServerPauseSuccessfully sets up the test server to respond to a server pause request.
-func HandleServerPauseSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/asdfasdfasdf/action", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, `{ "pause": "" }`)
-
-		w.WriteHeader(http.StatusAccepted)
-	})
-}
-
-// HandleServerUnpauseSuccessfully sets up the test server to respond to a server unpause request.
-func HandleServerUnpauseSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/servers/asdfasdfasdf/action", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, `{ "unpause": "" }`)
-
-		w.WriteHeader(http.StatusAccepted)
-	})
-}
-
 // HandleServerForceDeletionSuccessfully sets up the test server to respond to a server force deletion
 // request.
 func HandleServerForceDeletionSuccessfully(t *testing.T) {
