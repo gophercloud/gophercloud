@@ -1,7 +1,6 @@
 package apiversions
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -65,10 +64,10 @@ func (r GetResult) Extract() (*APIVersion, error) {
 
 	switch len(s.Versions) {
 	case 0:
-		return nil, fmt.Errorf("Version not found")
+		return nil, ErrVersionNotFound{}
 	case 1:
 		return &s.Versions[0], nil
 	default:
-		return nil, fmt.Errorf("Multiple results found")
+		return nil, ErrMultipleVersionsFound{Count: len(s.Versions)}
 	}
 }

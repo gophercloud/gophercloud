@@ -34,3 +34,23 @@ func TestGetAPIVersion(t *testing.T) {
 
 	th.AssertDeepEquals(t, ManilaAPIVersion2Result, *actual)
 }
+
+func TestGetNoAPIVersion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetNoResponse(t)
+
+	_, err := apiversions.Get(client.ServiceClient(), "v2").Extract()
+	th.AssertEquals(t, err.Error(), "Unable to find requested API version")
+}
+
+func TestGetMultipleAPIVersion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetMultipleResponses(t)
+
+	_, err := apiversions.Get(client.ServiceClient(), "v2").Extract()
+	th.AssertEquals(t, err.Error(), "Found 2 API versions")
+}

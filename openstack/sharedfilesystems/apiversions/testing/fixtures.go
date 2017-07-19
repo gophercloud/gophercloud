@@ -41,6 +41,69 @@ const ManilaAPIVersionResponse = `
     ]
 }
 `
+
+const ManilaAPIInvalidVersionResponse_1 = `
+{
+    "versions": [
+    ]
+}
+`
+
+const ManilaAPIInvalidVersionResponse_2 = `
+{
+    "versions": [
+        {
+            "id": "v2.0",
+            "links": [
+                {
+                    "href": "http://docs.openstack.org/",
+                    "rel": "describedby",
+                    "type": "text/html"
+                },
+                {
+                    "href": "http://localhost:8786/v2/",
+                    "rel": "self"
+                }
+            ],
+            "media-types": [
+                {
+                    "base": "application/json",
+                    "type": "application/vnd.openstack.share+json;version=1"
+                }
+            ],
+            "min_version": "2.0",
+            "status": "CURRENT",
+            "updated": "2015-08-27T11:33:21Z",
+            "version": "2.32"
+        },
+        {
+            "id": "v2.9",
+            "links": [
+                {
+                    "href": "http://docs.openstack.org/",
+                    "rel": "describedby",
+                    "type": "text/html"
+                },
+                {
+                    "href": "http://localhost:8786/v2/",
+                    "rel": "self"
+                }
+            ],
+            "media-types": [
+                {
+                    "base": "application/json",
+                    "type": "application/vnd.openstack.share+json;version=1"
+                }
+            ],
+            "min_version": "2.9",
+            "status": "CURRENT",
+            "updated": "2015-08-27T11:33:21Z",
+            "version": "2.99"
+        }
+    ]
+}
+`
+
 const ManilaAllAPIVersionsResponse = `
 {
     "versions": [
@@ -136,5 +199,29 @@ func MockGetResponse(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 
 		fmt.Fprintf(w, ManilaAPIVersionResponse)
+	})
+}
+
+func MockGetNoResponse(t *testing.T) {
+	th.Mux.HandleFunc("/v2/", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ManilaAPIInvalidVersionResponse_1)
+	})
+}
+
+func MockGetMultipleResponses(t *testing.T) {
+	th.Mux.HandleFunc("/v2/", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ManilaAPIInvalidVersionResponse_2)
 	})
 }
