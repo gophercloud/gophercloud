@@ -55,10 +55,10 @@ func (r commonResult) Extract() (map[string]interface{}, error) {
 	return s.ConnectionInfo, err
 }
 
-// VolumeImage contains information about volume upload to an image service.
-type VolumeImageVolumeType struct {
+// ImageVolumeType contains volume type object obtained from UploadImage action.
+type ImageVolumeType struct {
 	// The ID of a volume type.
-	Id string `json:"id"`
+	ID string `json:"id"`
 	// Human-readable display name for the volume type.
 	Name string `json:"name"`
 	// Human-readable description for the volume type.
@@ -67,8 +67,8 @@ type VolumeImageVolumeType struct {
 	IsPublic bool `json:"is_public"`
 	// Extra specifications for volume type.
 	ExtraSpecs map[string]interface{} `json:"extra_specs"`
-	// Id of quality of service specs.
-	QosSpecsId string `json:"qos_specs_id"`
+	// ID of quality of service specs.
+	QosSpecsID string `json:"qos_specs_id"`
 	// Flag for deletion status of volume tpe.
 	Deleted bool `json:"deleted"`
 	// The date when volume type was deleted.
@@ -79,8 +79,8 @@ type VolumeImageVolumeType struct {
 	UpdatedAt time.Time `json:"-"`
 }
 
-func (r *VolumeImageVolumeType) UnmarshalJSON(b []byte) error {
-	type tmp VolumeImageVolumeType
+func (r *ImageVolumeType) UnmarshalJSON(b []byte) error {
+	type tmp ImageVolumeType
 	var s struct {
 		tmp
 		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
@@ -91,7 +91,7 @@ func (r *VolumeImageVolumeType) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	*r = VolumeImageVolumeType(s.tmp)
+	*r = ImageVolumeType(s.tmp)
 
 	r.CreatedAt = time.Time(s.CreatedAt)
 	r.UpdatedAt = time.Time(s.UpdatedAt)
@@ -103,7 +103,7 @@ func (r *VolumeImageVolumeType) UnmarshalJSON(b []byte) error {
 // VolumeImage contains information about volume upload to an image service.
 type VolumeImage struct {
 	// The ID of a volume an image is created from.
-	VolumeId string `json:"id"`
+	VolumeID string `json:"id"`
 	// Container format, may be bare, ofv, ova, etc.
 	ContainerFormat string `json:"container_format"`
 	// Disk format, may be raw, qcow2, vhd, vdi, vmdk, etc.
@@ -111,7 +111,7 @@ type VolumeImage struct {
 	// Human-readable description for the volume.
 	Description string `json:"display_description"`
 	// The ID of an image being created.
-	ImageId string `json:"image_id"`
+	ImageID string `json:"image_id"`
 	// Human-readable display name for the image.
 	ImageName string `json:"image_name"`
 	// Size of the volume in GB.
@@ -121,7 +121,7 @@ type VolumeImage struct {
 	// The date when this volume was last updated.
 	UpdatedAt time.Time `json:"-"`
 	// Volume type object of used volume.
-	VolumeType VolumeImageVolumeType `json:"volume_type"`
+	VolumeType ImageVolumeType `json:"volume_type"`
 }
 
 func (r *VolumeImage) UnmarshalJSON(b []byte) error {
@@ -144,10 +144,10 @@ func (r *VolumeImage) UnmarshalJSON(b []byte) error {
 // Extract will get an object with info about image being uploaded out of the UploadImageResult object.
 func (r UploadImageResult) Extract() (VolumeImage, error) {
 	var s struct {
-		VolumeUploadImage VolumeImage `json:"os-volume_upload_image"`
+		VolumeImage VolumeImage `json:"os-volume_upload_image"`
 	}
 	err := r.ExtractInto(&s)
-	return s.VolumeUploadImage, err
+	return s.VolumeImage, err
 }
 
 // InitializeConnectionResult contains the response body and error from a Get request.
