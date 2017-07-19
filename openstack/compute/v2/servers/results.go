@@ -77,6 +77,11 @@ type GetPasswordResult struct {
 	gophercloud.Result
 }
 
+// MigrateResult represents the result of a server migrate operation
+type MigrateResult struct {
+	gophercloud.Result
+}
+
 // ExtractPassword gets the encrypted password.
 // If privateKey != nil the password is decrypted with the private key.
 // If privateKey == nil the encrypted password is returned and can be decrypted with:

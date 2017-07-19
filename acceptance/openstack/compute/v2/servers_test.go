@@ -388,3 +388,30 @@ func TestServersActionResizeRevert(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestServersActionMigrate(t *testing.T) {
+	t.Parallel()
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	server, err := CreateServer(t, client, choices)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer DeleteServer(t, client, server)
+
+	t.Logf("Attempting to migrate server %s", server.ID)
+	MigrateServer(t, client, server, choices)
+
+	if err = WaitForComputeStatus(client, server, "VERIFY_RESIZE"); err != nil {
+		t.Fatal(err)
+	}
+}

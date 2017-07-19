@@ -726,6 +726,23 @@ func ResizeServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 	return nil
 }
 
+// MigrateServer performs a migrate action on an instance. An error will be
+// returned if the instance failed to migrate.
+func MigrateServer(t *testing.T, client *gophercloud.ServiceClient,
+	server *servers.Server, choices *clients.AcceptanceTestChoices) error {
+	opts := &servers.MigrateOpts{}
+
+	if res := servers.Migrate(client, server.ID, opts); res.Err != nil {
+		return res.Err
+	}
+	// After migration instance needs to confirm resize and is not active
+	if err := WaitForComputeStatus(client, server, "VERIFY_RESIZE"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // WaitForComputeStatus will poll an instance's status until it either matches
 // the specified status or the status becomes ERROR.
 func WaitForComputeStatus(client *gophercloud.ServiceClient, server *servers.Server, status string) error {
