@@ -69,7 +69,7 @@ type ImageVolumeType struct {
 	ExtraSpecs map[string]interface{} `json:"extra_specs"`
 	// ID of quality of service specs.
 	QosSpecsID string `json:"qos_specs_id"`
-	// Flag for deletion status of volume tpe.
+	// Flag for deletion status of volume type.
 	Deleted bool `json:"deleted"`
 	// The date when volume type was deleted.
 	DeletedAt time.Time `json:"-"`
