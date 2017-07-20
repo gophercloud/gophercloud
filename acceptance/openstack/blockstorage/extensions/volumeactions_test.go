@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
 
 	blockstorage "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v2"
@@ -28,12 +29,14 @@ func TestVolumeActionsUploadImageDestroy(t *testing.T) {
 	}
 	defer blockstorage.DeleteVolume(t, blockClient, volume)
 
-	imageName, err := CreateUploadImage(t, blockClient, volume)
+	volumeImage, err := CreateUploadImage(t, blockClient, volume)
 	if err != nil {
 		t.Fatalf("Unable to upload volume-backed image: %v", err)
 	}
 
-	err = DeleteUploadedImage(t, computeClient, imageName)
+	tools.PrintResource(t, volumeImage)
+
+	err = DeleteUploadedImage(t, computeClient, volumeImage.ImageName)
 	if err != nil {
 		t.Fatalf("Unable to delete volume-backed image: %v", err)
 	}
