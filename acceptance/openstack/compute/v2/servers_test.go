@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/attachinterfaces"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/pauseunpause"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
@@ -72,6 +73,20 @@ func TestServersCreateDestroy(t *testing.T) {
 
 	for network, address := range allAddresses {
 		t.Logf("Addresses on %s: %+v", network, address)
+	}
+
+	allInterfacePages, err := attachinterfaces.List(client, server.ID).AllPages()
+	if err != nil {
+		t.Errorf("Unable to list server Interfaces: %v", err)
+	}
+
+	allInterfaces, err := attachinterfaces.ExtractInterfaces(allInterfacePages)
+	if err != nil {
+		t.Errorf("Unable to extract server Interfaces: %v", err)
+	}
+
+	for _, Interface := range allInterfaces {
+		t.Logf("Interfaces: %+v", Interface)
 	}
 
 	allNetworkAddressPages, err := servers.ListAddressesByNetwork(client, server.ID, choices.NetworkName).AllPages()
