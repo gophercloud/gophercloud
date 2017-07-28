@@ -12,6 +12,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/attachinterfaces"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/pauseunpause"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/suspendresume"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -431,6 +432,42 @@ func TestServersActionPause(t *testing.T) {
 	}
 
 	err = pauseunpause.Unpause(client, server.ID).ExtractErr()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = WaitForComputeStatus(client, server, "ACTIVE")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestServersActionSuspend(t *testing.T) {
+	t.Parallel()
+
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	server, err := CreateServer(t, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer DeleteServer(t, client, server)
+
+	t.Logf("Attempting to suspend server %s", server.ID)
+	err = suspendresume.Suspend(client, server.ID).ExtractErr()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = WaitForComputeStatus(client, server, "SUSPENDED")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = suspendresume.Resume(client, server.ID).ExtractErr()
 	if err != nil {
 		t.Fatal(err)
 	}
