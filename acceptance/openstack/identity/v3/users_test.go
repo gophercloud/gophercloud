@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
 )
 
@@ -119,5 +120,37 @@ func TestUserCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newUser)
 	tools.PrintResource(t, newUser.Extra)
+}
 
+func TestUsersListGroups(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v", err)
+	}
+	allUserPages, err := users.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list users: %v", err)
+	}
+
+	allUsers, err := users.ExtractUsers(allUserPages)
+	if err != nil {
+		t.Fatalf("Unable to extract users: %v", err)
+	}
+
+	user := allUsers[0]
+
+	allGroupPages, err := users.ListGroups(client, user.ID).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list groups: %v", err)
+	}
+
+	allGroups, err := groups.ExtractGroups(allGroupPages)
+	if err != nil {
+		t.Fatalf("Unable to extract groups: %v", err)
+	}
+
+	for _, group := range allGroups {
+		tools.PrintResource(t, group)
+		tools.PrintResource(t, group.Extra)
+	}
 }

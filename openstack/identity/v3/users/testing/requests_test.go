@@ -3,6 +3,7 @@ package testing
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -133,4 +134,15 @@ func TestDeleteUser(t *testing.T) {
 
 	res := users.Delete(client.ServiceClient(), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestListUserGroups(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListUserGroupsSuccessfully(t)
+	allPages, err := users.ListGroups(client.ServiceClient(), "9fe1d3").AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := groups.ExtractGroups(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedGroupsSlice, actual)
 }

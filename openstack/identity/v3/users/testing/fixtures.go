@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -162,6 +163,38 @@ const UpdateOutput = `
 }
 `
 
+// ListGroupsOutput provides a ListGroups result.
+const ListGroupsOutput = `
+{
+    "groups": [
+        {
+            "description": "Developers cleared for work on all general projects",
+            "domain_id": "1789d1",
+            "id": "ea167b",
+            "links": {
+                "self": "https://example.com/identity/v3/groups/ea167b"
+            },
+            "building": "Hilltop A",
+            "name": "Developers"
+        },
+        {
+            "description": "Developers cleared for work on secret projects",
+            "domain_id": "1789d1",
+            "id": "a62db1",
+            "links": {
+                "self": "https://example.com/identity/v3/groups/a62db1"
+            },
+            "name": "Secure Developers"
+        }
+    ],
+    "links": {
+        "self": "http://example.com/identity/v3/users/9fe1d3/groups",
+        "previous": null,
+        "next": null
+    }
+}
+`
+
 // FirstUser is the first user in the List request.
 var nilTime time.Time
 var FirstUser = users.User{
@@ -241,6 +274,32 @@ var SecondUserUpdated = users.User{
 // ExpectedUsersSlice is the slice of users expected to be returned from ListOutput.
 var ExpectedUsersSlice = []users.User{FirstUser, SecondUser}
 
+var FirstGroup = groups.Group{
+	Description: "Developers cleared for work on all general projects",
+	DomainID:    "1789d1",
+	ID:          "ea167b",
+	Links: map[string]interface{}{
+		"self": "https://example.com/identity/v3/groups/ea167b",
+	},
+	Extra: map[string]interface{}{
+		"building": "Hilltop A",
+	},
+	Name: "Developers",
+}
+
+var SecondGroup = groups.Group{
+	Description: "Developers cleared for work on secret projects",
+	DomainID:    "1789d1",
+	ID:          "a62db1",
+	Links: map[string]interface{}{
+		"self": "https://example.com/identity/v3/groups/a62db1",
+	},
+	Extra: map[string]interface{}{},
+	Name:  "Secure Developers",
+}
+
+var ExpectedGroupsSlice = []groups.Group{FirstGroup, SecondGroup}
+
 // HandleListUsersSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that responds with a list of two users.
 func HandleListUsersSuccessfully(t *testing.T) {
@@ -316,5 +375,19 @@ func HandleDeleteUserSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleListUserGroupsSuccessfully creates an HTTP handler at /users/{userID}/groups
+// on the test handler mux that respons wit a list of two groups
+func HandleListUserGroupsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users/9fe1d3/groups", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListGroupsOutput)
 	})
 }
