@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/gophercloud/gophercloud/internal"
 )
 
 // ServiceClient stores details required to interact with a specific service API implemented by a provider.
@@ -27,7 +29,7 @@ type ServiceClient struct {
 	Type string
 
 	// The microversion of the service to use. Set this to use a particular microversion.
-	Microversion string
+	Microversion *internal.Microversion
 }
 
 // ResourceBaseURL returns the base URL of any resources used by this service. It MUST end with a /.
@@ -58,7 +60,7 @@ func (client *ServiceClient) initReqOpts(url string, JSONBody interface{}, JSONR
 		opts.MoreHeaders = make(map[string]string)
 	}
 
-	if client.Microversion != "" {
+	if client.Microversion != nil {
 		client.setMicroversionHeader(opts)
 	}
 }
@@ -111,12 +113,12 @@ func (client *ServiceClient) Delete(url string, opts *RequestOpts) (*http.Respon
 func (client *ServiceClient) setMicroversionHeader(opts *RequestOpts) {
 	switch client.Type {
 	case "compute":
-		opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion
+		opts.MoreHeaders["X-OpenStack-Nova-API-Version"] = client.Microversion.String()
 	case "sharev2":
-		opts.MoreHeaders["X-OpenStack-Manila-API-Version"] = client.Microversion
+		opts.MoreHeaders["X-OpenStack-Manila-API-Version"] = client.Microversion.String()
 	}
 
 	if client.Type != "" {
-		opts.MoreHeaders["OpenStack-API-Version"] = client.Type + " " + client.Microversion
+		opts.MoreHeaders["OpenStack-API-Version"] = client.Type + " " + client.Microversion.String()
 	}
 }
