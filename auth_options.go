@@ -21,13 +21,13 @@ type AuthOptions struct {
 	// control panel to discover your account's username. In Identity V3, either
 	// UserID or a combination of Username and DomainID or DomainName are needed.
 	Username string `json:"username,omitempty"`
-	UserID   string `json:"id,omitempty"`
+	UserID   string `json:"-"`
 
 	Password string `json:"password,omitempty"`
 
 	// At most one of DomainID and DomainName must be provided if using Username
 	// with Identity V3. Otherwise, either are optional.
-	DomainID   string `json:"id,omitempty"`
+	DomainID   string `json:"-"`
 	DomainName string `json:"name,omitempty"`
 
 	// The TenantID and TenantName fields are optional for the Identity V2 API.
@@ -138,14 +138,6 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 	// Populate the request structure based on the provided arguments. Create and return an error
 	// if insufficient or incompatible information is present.
 	var req request
-
-	// Test first for unrecognized arguments.
-	if opts.TenantID != "" {
-		return nil, ErrTenantIDProvided{}
-	}
-	if opts.TenantName != "" {
-		return nil, ErrTenantNameProvided{}
-	}
 
 	if opts.Password == "" {
 		if opts.TokenID != "" {
@@ -259,15 +251,12 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 
 	if opts.TenantID != "" {
 		scope.ProjectID = opts.TenantID
-		opts.TenantID = ""
-		opts.TenantName = ""
 	} else {
 		if opts.TenantName != "" {
 			scope.ProjectName = opts.TenantName
 			scope.DomainID = opts.DomainID
 			scope.DomainName = opts.DomainName
 		}
-		opts.TenantName = ""
 	}
 
 	if scope.ProjectName != "" {

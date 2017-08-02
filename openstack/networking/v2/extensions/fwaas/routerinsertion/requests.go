@@ -17,10 +17,6 @@ func (opts CreateOptsExt) ToFirewallCreateMap() (map[string]interface{}, error) 
 		return nil, err
 	}
 
-	if len(opts.RouterIDs) == 0 {
-		return base, nil
-	}
-
 	firewallMap := base["firewall"].(map[string]interface{})
 	firewallMap["router_ids"] = opts.RouterIDs
 
@@ -38,10 +34,6 @@ func (opts UpdateOptsExt) ToFirewallUpdateMap() (map[string]interface{}, error) 
 	base, err := opts.UpdateOptsBuilder.ToFirewallUpdateMap()
 	if err != nil {
 		return nil, err
-	}
-
-	if len(opts.RouterIDs) == 0 {
-		return base, nil
 	}
 
 	firewallMap := base["firewall"].(map[string]interface{})

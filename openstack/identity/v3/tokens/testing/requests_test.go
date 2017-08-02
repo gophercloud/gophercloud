@@ -484,7 +484,7 @@ func TestValidateRequestFailure(t *testing.T) {
 func TestValidateRequestError(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
-	client := prepareAuthTokenHandler(t, "HEAD", http.StatusUnauthorized)
+	client := prepareAuthTokenHandler(t, "HEAD", http.StatusMethodNotAllowed)
 
 	_, err := tokens.Validate(&client, "abcdef12345")
 	if err == nil {
