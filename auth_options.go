@@ -316,7 +316,12 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 			},
 		}, nil
 	} else if scope.DomainName != "" {
-		return nil, ErrScopeDomainName{}
+               // DomainName
+                return map[string]interface{}{
+                        "domain": map[string]interface{}{
+                                "name": &scope.DomainName,
+                        },
+                }, nil
 	}
 
 	return nil, nil
