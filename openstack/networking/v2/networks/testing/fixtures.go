@@ -19,7 +19,8 @@ const ListResponse = `
             "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
             "provider:segmentation_id": 9876543210,
             "provider:physical_network": null,
-            "provider:network_type": "local"
+            "provider:network_type": "local",
+            "router:external": true
         },
         {
             "status": "ACTIVE",
@@ -33,7 +34,8 @@ const ListResponse = `
             "id": "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
             "provider:segmentation_id": 1234567890,
             "provider:physical_network": null,
-            "provider:network_type": "local"
+            "provider:network_type": "local",
+            "router:external": false
         }
     ]
 }`
@@ -52,7 +54,8 @@ const GetResponse = `
         "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
         "provider:segmentation_id": 9876543210,
         "provider:physical_network": null,
-        "provider:network_type": "local"
+        "provider:network_type": "local",
+        "router:external": true
     }
 }`
 
