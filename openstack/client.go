@@ -220,6 +220,13 @@ func NewIdentityV3(client *gophercloud.ProviderClient, eo gophercloud.EndpointOp
 		}
 	}
 
+	// Ensure endpoint still has a suffix of v3.
+	// This is because EndpointLocator might have found a versionless
+	// endpoint and requests will fail unless targeted at /v3.
+	if !strings.HasSuffix(endpoint, "v3/") {
+		endpoint = endpoint + "v3/"
+	}
+
 	return &gophercloud.ServiceClient{
 		ProviderClient: client,
 		Endpoint:       endpoint,
