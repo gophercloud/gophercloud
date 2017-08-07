@@ -10,9 +10,35 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
 )
 
+// CreateShares creates `n` shares
+func CreateShares(t *testing.T, client *gophercloud.ServiceClient, names []string) ([]shares.Share, error) {
+	if testing.Short() {
+		t.Skip("Skipping test that requres share creation in short mode.")
+	}
+
+	created := []shares.Share{}
+	for _, name := range names {
+		share, err := CreateShare(t, client, name)
+		if err != nil {
+			t.Fatalf("Failed to create a share %v", err)
+		}
+
+		created = append(created, *share)
+	}
+
+	return created, nil
+}
+
+// DeleteShares will delete all shares
+func DeleteShares(t *testing.T, client *gophercloud.ServiceClient, sharesToDel []shares.Share) {
+	for _, s := range sharesToDel {
+		DeleteShare(t, client, &s)
+	}
+}
+
 // CreateShare will create a share with a name, and a size of 1Gb. An
 // error will be returned if the share could not be created
-func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share, error) {
+func CreateShare(t *testing.T, client *gophercloud.ServiceClient, name string) (*shares.Share, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requres share creation in short mode.")
 	}
@@ -22,11 +48,10 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share
 		t.Fatalf("Unable to fetch environment information")
 	}
 
-	t.Logf("Share network id %s", choices.ShareNetworkID)
 	createOpts := shares.CreateOpts{
 		Size:           1,
-		Name:           "My Test Share",
-		ShareProto:     "NFS",
+		Name:           name,
+		ShareProto:     "nfs",
 		ShareNetworkID: choices.ShareNetworkID,
 	}
 

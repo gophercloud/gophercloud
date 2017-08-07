@@ -4,13 +4,19 @@ import (
 	"encoding/json"
 	"time"
 
+	"net/url"
+	"strconv"
+
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
+
+var maxInt = strconv.Itoa(int(^uint(0) >> 1))
 
 // Share contains all information associated with an OpenStack Share
 type Share struct {
 	// The availability zone of the share
-	AvailabilityZone string `json:"availability_zone"`
+	AvailabilityZone string `json:"availability_zone,omitempty"`
 	// A description of the share
 	Description string `json:"description,omitempty"`
 	// DisplayDescription is inherited from BlockStorage API.
@@ -94,6 +100,81 @@ func (r commonResult) Extract() (*Share, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.Share, err
+}
+
+// SharePage is a pagination.pager that is returned from a call to the List func
+type SharePage struct {
+	pagination.MarkerPageBase
+}
+
+// NextPageURL generates the URL for the page of results afer the current
+func (r SharePage) NextPageURL() (string, error) {
+	currentURL := r.URL
+	mark, err := r.Owner.LastMarker()
+	if err != nil {
+		return "", err
+	}
+	q := currentURL.Query()
+	q.Set("offset", mark)
+	currentURL.RawQuery = q.Encode()
+	return currentURL.String(), nil
+}
+
+// LastMarker returns the last offset in a ListResult
+func (r SharePage) LastMarker() (string, error) {
+	shares, err := ExtractShares(r)
+	if err != nil {
+		return maxInt, err
+	}
+
+	if len(shares) == 0 {
+		return maxInt, err
+	}
+
+	u, err := url.Parse(r.URL.String())
+	if err != nil {
+		return maxInt, err
+	}
+
+	queryParams := u.Query()
+	offset := queryParams.Get("offset")
+	limit := queryParams.Get("limit")
+
+	// Limit is not present, only one page required
+	if limit == "" {
+		return maxInt, nil
+	}
+
+	iOffset := 0
+	if offset != "" {
+		iOffset, err = strconv.Atoi(offset)
+		if err != nil {
+			return maxInt, err
+		}
+	}
+	iLimit, err := strconv.Atoi(limit)
+	if err != nil {
+		return maxInt, err
+	}
+	iOffset = iOffset + iLimit
+	offset = strconv.Itoa(iOffset)
+
+	return offset, nil
+}
+
+// IsEmpty satisifies the IsEmpty method of the Page interface
+func (r SharePage) IsEmpty() (bool, error) {
+	share, err := ExtractShares(r)
+	return len(share) == 0, err
+}
+
+// ExtractShares extracts and returns Shares when iterating over a shares.List() call
+func ExtractShares(r pagination.Page) ([]Share, error) {
+	var s struct {
+		Shares []Share `json:"shares"`
+	}
+	err := (r.(SharePage)).ExtractInto(&s)
+	return s.Shares, err
 }
 
 // CreateResult contains the result..

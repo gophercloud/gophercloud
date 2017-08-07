@@ -141,3 +141,158 @@ func MockGetResponse(t *testing.T) {
 		fmt.Fprintf(w, getResponse)
 	})
 }
+
+var shortListResponse = `{
+	"shares": [{
+		"id": "d94a8548-2079-4be0-b21c-0a887acd31ca",
+		"links": [{
+			"href": "http://172.18.198.54:8786/v1/16e1ab15c35a457e9c2b2aa189f544e1/shares/d94a8548-2079-4be0-b21c-0a887acd31ca",
+			"rel": "self"
+		}, {
+			"href": "http://172.18.198.54:8786/16e1ab15c35a457e9c2b2aa189f544e1/shares/d94a8548-2079-4be0-b21c-0a887acd31ca",
+			"rel": "bookmark"
+		}],
+		"name": "My_share"
+	}, {
+		"id": "406ea93b-32e9-4907-a117-148b3945749f",
+		"links": [{
+			"href": "http://172.18.198.54:8786/v1/16e1ab15c35a457e9c2b2aa189f544e1/shares/406ea93b-32e9-4907-a117-148b3945749f",
+			"rel": "self"
+		}, {
+			"href": "http://172.18.198.54:8786/16e1ab15c35a457e9c2b2aa189f544e1/shares/406ea93b-32e9-4907-a117-148b3945749f",
+			"rel": "bookmark"
+		}],
+		"name": "Share1"
+	}]
+}`
+
+// MockListResponse creates a mock list response
+func MockListResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		r.ParseForm()
+		marker := r.Form.Get("offset")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, shortListResponse)
+		default:
+			fmt.Fprintf(w, `{"shares": []}`)
+		}
+	})
+}
+
+// MockListDetailResponse creates a mock list response with details
+func MockListDetailResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		r.ParseForm()
+		marker := r.Form.Get("offset")
+		switch marker {
+		case "":
+			fallthrough
+		case "1":
+			fmt.Fprintf(w, `
+{
+    "shares": [
+        {
+            "links": [
+                {
+                    "href": "http://172.18.198.54:8786/v2/16e1ab15c35a457e9c2b2aa189f544e1/shares/f45cc5b2-d1bb-4a3e-ba5b-5c4125613adc",
+                    "rel": "self"
+                },
+                {
+                    "href": "http://172.18.198.54:8786/16e1ab15c35a457e9c2b2aa189f544e1/shares/f45cc5b2-d1bb-4a3e-ba5b-5c4125613adc",
+                    "rel": "bookmark"
+                }
+            ],
+            "availability_zone": "nova",
+            "share_network_id": "f9b2e754-ac01-4466-86e1-5c569424754e",
+            "export_locations": [],
+            "share_server_id": "87d8943a-f5da-47a4-b2f2-ddfa6794aa82",
+            "snapshot_id": null,
+            "id": "f45cc5b2-d1bb-4a3e-ba5b-5c4125613adc",
+            "size": 1,
+            "share_type": "25747776-08e5-494f-ab40-a64b9d20d8f7",
+            "share_type_name": "default",
+            "export_location": null,
+            "consistency_group_id": "9397c191-8427-4661-a2e8-b23820dc01d4",
+            "project_id": "16e1ab15c35a457e9c2b2aa189f544e1",
+            "metadata": {},
+            "status": "error",
+            "access_rules_status": "active",
+            "description": "There is a share description.",
+            "host": "manila2@generic1#GENERIC1",
+            "task_state": null,
+            "is_public": true,
+            "snapshot_support": true,
+            "name": "my_share4",
+            "has_replicas": false,
+            "replication_type": null,
+            "created_at": "2015-09-16T18:19:50.000000",
+            "share_proto": "NFS",
+            "volume_type": "default",
+            "source_cgsnapshot_member_id": null
+        }
+	]
+}`)
+		case "2":
+			fmt.Fprintf(w, `
+{
+    "shares": [
+        {
+            "links": [
+                {
+                    "href": "http://172.18.198.54:8786/v2/16e1ab15c35a457e9c2b2aa189f544e1/shares/c4a2ced4-2c9f-4ae1-adaa-6171833e64df",
+                    "rel": "self"
+                },
+                {
+                    "href": "http://172.18.198.54:8786/16e1ab15c35a457e9c2b2aa189f544e1/shares/c4a2ced4-2c9f-4ae1-adaa-6171833e64df",
+                    "rel": "bookmark"
+                }
+            ],
+            "availability_zone": "nova",
+            "share_network_id": "f9b2e754-ac01-4466-86e1-5c569424754e",
+            "export_locations": [
+                "10.254.0.5:/shares/share-50ad5e7b-f6f1-4b78-a651-0812cef2bb67"
+            ],
+            "share_server_id": "87d8943a-f5da-47a4-b2f2-ddfa6794aa82",
+            "snapshot_id": null,
+            "id": "c4a2ced4-2c9f-4ae1-adaa-6171833e64df",
+            "size": 1,
+            "share_type": "25747776-08e5-494f-ab40-a64b9d20d8f7",
+            "share_type_name": "default",
+            "export_location": "10.254.0.5:/shares/share-50ad5e7b-f6f1-4b78-a651-0812cef2bb67",
+            "consistency_group_id": "9397c191-8427-4661-a2e8-b23820dc01d4",
+            "project_id": "16e1ab15c35a457e9c2b2aa189f544e1",
+            "metadata": {},
+            "status": "available",
+            "access_rules_status": "active",
+            "description": "Changed description.",
+            "host": "manila2@generic1#GENERIC1",
+            "task_state": null,
+            "is_public": true,
+            "snapshot_support": true,
+            "name": "my_share3",
+            "has_replicas": false,
+            "replication_type": null,
+            "created_at": "2015-09-16T17:26:28.000000",
+            "share_proto": "NFS",
+            "volume_type": "default",
+            "source_cgsnapshot_member_id": null
+        }
+    ]
+}`)
+		default:
+			fmt.Fprintf(w, `
+{
+"shares": []
+}`)
+		}
+	})
+}
