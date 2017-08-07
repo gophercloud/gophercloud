@@ -11,11 +11,13 @@ type commonResult struct {
 
 // Extract is a function that accepts a result and extracts a network resource.
 func (r commonResult) Extract() (*Network, error) {
-	var s struct {
-		Network *Network `json:"network"`
-	}
+	var s Network
 	err := r.ExtractInto(&s)
-	return s.Network, err
+	return &s, err
+}
+
+func (r commonResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, "network")
 }
 
 // CreateResult represents the result of a create operation.
@@ -93,9 +95,11 @@ func (r NetworkPage) IsEmpty() (bool, error) {
 // and extracts the elements into a slice of Network structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractNetworks(r pagination.Page) ([]Network, error) {
-	var s struct {
-		Networks []Network `json:"networks"`
-	}
-	err := (r.(NetworkPage)).ExtractInto(&s)
-	return s.Networks, err
+	var s []Network
+	err := ExtractNetworksInto(r, &s)
+	return s, err
+}
+
+func ExtractNetworksInto(r pagination.Page, v interface{}) error {
+	return r.(NetworkPage).Result.ExtractIntoSlicePtr(v, "networks")
 }
