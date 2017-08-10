@@ -117,21 +117,26 @@ type ExportLocation struct {
 	Path string `json:"path"`
 	// The UUID of the share instance that this export location belongs to.
 	ShareInstanceID string `json:"share_instance_id"`
-	// Defines purpose of an export location. If set to true, then it is expected to be used for service needs and by administrators only. If it is set to false, then this export location can be used by end users.
+	// Defines purpose of an export location.
+	// If set to true, then it is expected to be used for service needs
+	// and by administrators only.
+	// If it is set to false, then this export location can be used by end users.
 	IsAdminOnly bool `json:"is_admin_only"`
 	// The share export location UUID.
 	ID string `json:"id"`
-	// Drivers may use this field to identify which export locations are most efficient and should be used preferentially by clients. By default it is set to false value. New in version 2.14
+	// Drivers may use this field to identify which export locations are
+	// most efficient and should be used preferentially by clients.
+	// By default it is set to false value. New in version 2.14
 	Preferred bool `json:"preferred"`
 }
 
 // ExtractExportLocations will get the Export Locations from the commonResult
 func (r commonResult) ExtractExportLocations() ([]ExportLocation, error) {
 	var s struct {
-		GetExportLocationsRes []ExportLocation `json:"export_locations"`
+		ExportLocations []ExportLocation `json:"export_locations"`
 	}
 	err := r.ExtractInto(&s)
-	return s.GetExportLocationsRes, err
+	return s.ExportLocations, err
 }
 
 // GetExportLocationsResult contains the result.
