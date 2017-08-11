@@ -249,7 +249,7 @@ func (opts UploadImageOpts) ToVolumeUploadImageMap() (map[string]interface{}, er
 	return gophercloud.BuildRequestBody(opts, "os-volume_upload_image")
 }
 
-// UploadImage will upload image based on the values in UploadImageOptsBuilder.
+// UploadImage will upload an image based on the values in UploadImageOptsBuilder.
 func UploadImage(client *gophercloud.ServiceClient, id string, opts UploadImageOptsBuilder) (r UploadImageResult) {
 	b, err := opts.ToVolumeUploadImageMap()
 	if err != nil {
