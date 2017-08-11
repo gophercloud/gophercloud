@@ -151,3 +151,23 @@ func DeleteVolumeReserve(t *testing.T, client *gophercloud.ServiceClient, volume
 
 	t.Logf("Unreserved volume %s", volume.ID)
 }
+
+// ExtendVolumeSize will extend the size of a volume.
+func ExtendVolumeSize(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) error {
+	t.Logf("Attempting to extend the size of volume %s", volume.ID)
+
+	extendOpts := volumeactions.ExtendSizeOpts{
+		NewSize: 2,
+	}
+
+	err := volumeactions.ExtendSize(client, volume.ID, extendOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	if err := volumes.WaitForStatus(client, volume.ID, "available", 60); err != nil {
+		return err
+	}
+
+	return nil
+}
