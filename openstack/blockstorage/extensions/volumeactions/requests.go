@@ -209,7 +209,7 @@ func ExtendSize(client *gophercloud.ServiceClient, id string, opts ExtendSizeOpt
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(extendSizeURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Post(extendSizeURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	return
