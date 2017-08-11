@@ -136,7 +136,7 @@ type ExportLocation struct {
 	Preferred bool `json:"preferred"`
 }
 
-// ExtractExportLocations will get the Export Locations from the commonResult
+// Extract will get the Export Locations from the commonResult
 func (r GetExportLocationsResult) Extract() ([]ExportLocation, error) {
 	var s struct {
 		ExportLocations []ExportLocation `json:"export_locations"`
