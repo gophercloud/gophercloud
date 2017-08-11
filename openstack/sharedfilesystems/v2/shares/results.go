@@ -114,7 +114,7 @@ type GetResult struct {
 // GetExportLocationsResult contains the result body and error from an
 // GetExportLocations request.
 type GetExportLocationsResult struct {
-	commonResult
+	gophercloud.Result
 }
 
 // ExportLocation contains all information associated with a share export location
@@ -137,7 +137,7 @@ type ExportLocation struct {
 }
 
 // ExtractExportLocations will get the Export Locations from the commonResult
-func (r GetExportLocationsResult) ExtractExportLocations() ([]ExportLocation, error) {
+func (r GetExportLocationsResult) Extract() ([]ExportLocation, error) {
 	var s struct {
 		ExportLocations []ExportLocation `json:"export_locations"`
 	}
