@@ -122,10 +122,10 @@ func TestGrantAcessSuccess(t *testing.T) {
 	grantAccessReq.AccessTo = "0.0.0.0/0"
 	grantAccessReq.AccessLevel = "rw"
 
-	s, err := shares.GrantAccessRequest(c, shareID, grantAccessReq).Extract()
+	s, err := shares.GrantAccess(c, shareID, grantAccessReq).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, s, &shares.GrantAccess{
+	th.AssertDeepEquals(t, s, &shares.AccessRight{
 		ShareID:     "011d21e2-fbc3-4e4a-9993-9ea223f73264",
 		AccessType:  "ip",
 		AccessTo:    "0.0.0.0/0",
