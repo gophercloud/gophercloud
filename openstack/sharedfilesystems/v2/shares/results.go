@@ -96,19 +96,25 @@ func (r commonResult) Extract() (*Share, error) {
 	return s.Share, err
 }
 
-// CreateResult contains the result..
+// CreateResult contains the response body and error from a Create request.
 type CreateResult struct {
 	commonResult
 }
 
-// DeleteResult contains the delete results
+// DeleteResult contains the response body and error from a Delete request.
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
-// GetResult contains the get result
+// GetResult contains the response body and error from a Get request.
 type GetResult struct {
 	commonResult
+}
+
+// GetExportLocationsResult contains the result body and error from an
+// GetExportLocations request.
+type GetExportLocationsResult struct {
+	gophercloud.Result
 }
 
 // ExportLocation contains all information associated with a share export location
@@ -130,16 +136,11 @@ type ExportLocation struct {
 	Preferred bool `json:"preferred"`
 }
 
-// ExtractExportLocations will get the Export Locations from the commonResult
-func (r commonResult) ExtractExportLocations() ([]ExportLocation, error) {
+// Extract will get the Export Locations from the commonResult
+func (r GetExportLocationsResult) Extract() ([]ExportLocation, error) {
 	var s struct {
 		ExportLocations []ExportLocation `json:"export_locations"`
 	}
 	err := r.ExtractInto(&s)
 	return s.ExportLocations, err
-}
-
-// GetExportLocationsResult contains the result.
-type GetExportLocationsResult struct {
-	commonResult
 }

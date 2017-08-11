@@ -93,7 +93,7 @@ func TestGetExportLocationsSuccess(t *testing.T) {
 	// Client c must have Microversion set; minimum supported microversion for Get Export Locations is 2.14
 	c.Microversion = "2.14"
 
-	s, err := shares.GetExportLocations(c, shareID).ExtractExportLocations()
+	s, err := shares.GetExportLocations(c, shareID).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, s, []shares.ExportLocation{
