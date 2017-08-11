@@ -7,16 +7,18 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// Minimum set of driver capabilities only
+// Capabilities represents the information of an individual StoragePool.
 type Capabilities struct {
-	// Required Fields
+	// The following fields should be present in all storage drivers.
 	DriverVersion     string  `json:"driver_version"`
 	FreeCapacityGB    float64 `json:"-"`
 	StorageProtocol   string  `json:"storage_protocol"`
 	TotalCapacityGB   float64 `json:"-"`
 	VendorName        string  `json:"vendor_name"`
 	VolumeBackendName string  `json:"volume_backend_name"`
-	// Optional Fields
+
+	// The following fields are optional and may have empty values depending
+	// on the storage driver in use.
 	ReservedPercentage       int64   `json:"reserved_percentage"`
 	LocationInfo             string  `json:"location_info"`
 	QoSSupport               bool    `json:"QoS_support"`
@@ -31,6 +33,8 @@ type Capabilities struct {
 	SparseCopyVolume         bool    `json:"sparse_copy_volume"`
 }
 
+// StoragePool represents an individual StoragePool retrieved from the
+// schedulerstats API.
 type StoragePool struct {
 	Name         string       `json:"name"`
 	Capabilities Capabilities `json:"capabilities"`
@@ -71,15 +75,20 @@ func (r *Capabilities) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// StoragePoolPage is a single page of all List results.
 type StoragePoolPage struct {
 	pagination.SinglePageBase
 }
 
+// IsEmpty satisfies the IsEmpty method of the Page interface. It returns true
+// if a List contains no results.
 func (page StoragePoolPage) IsEmpty() (bool, error) {
 	va, err := ExtractStoragePools(page)
 	return len(va) == 0, err
 }
 
+// ExtractStoragePools takes a List result and extracts the collection of
+// StoragePools returned by the API.
 func ExtractStoragePools(p pagination.Page) ([]StoragePool, error) {
 	var s struct {
 		StoragePools []StoragePool `json:"pools"`
