@@ -12,22 +12,22 @@ type ListOptsBuilder interface {
 }
 
 // ListOpts controls the view of data returned (e.g globally or per project)
-// via tenant_id and the verbosity via detail
+// via tenant_id and the verbosity via detail.
 type ListOpts struct {
-	// ID of the tenant to look up storage pools for
+	// ID of the tenant to look up storage pools for.
 	TenantID string `q:"tenant_id"`
 
-	// Whether to list extended details
+	// Whether to list extended details.
 	Detail bool `q:"detail"`
 }
 
-// Formats a ListOpts into a query string.
+// ToStoragePoolsListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToStoragePoolsListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
 }
 
-// List makes a request against the API to list hypervisors.
+// List makes a request against the API to list storage pool information.
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := storagePoolsListURL(client)
 	if opts != nil {
