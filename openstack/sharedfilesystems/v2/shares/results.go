@@ -168,7 +168,7 @@ type GrantAccessRes struct {
 }
 
 // ExtractGrantAccess will get the GrantAccess object from the commonResult
-func (r commonResult) ExtractGrantAccess() (*GrantAccessRes, error) {
+func (r GrantAccessResult) ExtractGrantAccess() (*GrantAccessRes, error) {
 	var s struct {
 		GrantAccessRes *GrantAccessRes `json:"access"`
 	}

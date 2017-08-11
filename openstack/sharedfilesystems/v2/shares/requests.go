@@ -94,16 +94,12 @@ type GrantAccessOptsBuilder interface {
 // For more information about these parameters, please, refer to the shared file systems API v2,
 // Share Actions, Grant Access documentation
 type GrantAccessOpts struct {
-	// The UUID of the share to which you are granted or denied access.
-	//ShareID string `json:"share_id"`
 	// The access rule type that can be "ip", "cert" or "user".
 	AccessType string `json:"access_type"`
 	// The value that defines the access that can be a valid format of IP, cert or user.
 	AccessTo string `json:"access_to"`
 	// The access level to the share is either "rw" or "ro".
 	AccessLevel string `json:"access_level"`
-	// The UUID of the tenant to which this share belongs to
-	//TenantID string `json:"tenant_id"`
 }
 
 // ToGrantAccessMap assembles a request body based on the contents of a
@@ -114,7 +110,7 @@ func (opts GrantAccessOpts) ToGrantAccessMap() (map[string]interface{}, error) {
 
 // GrantAccess will grant access to a Share based on the values in GrantAccessOpts. To extract
 // the GrantAccess object from the response, call the Extract method on the GrantAccessResult.
-func GrantAccess(client *gophercloud.ServiceClient, opts GrantAccessOptsBuilder, id string) (r GrantAccessResult) {
+func GrantAccess(client *gophercloud.ServiceClient, id string, opts GrantAccessOptsBuilder) (r GrantAccessResult) {
 	b, err := opts.ToGrantAccessMap()
 	if err != nil {
 		r.Err = err
