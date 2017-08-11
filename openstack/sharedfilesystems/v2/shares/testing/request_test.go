@@ -122,13 +122,11 @@ func TestGrantAcessSuccess(t *testing.T) {
 	grantAccessReq.AccessTo = "0.0.0.0/0"
 	grantAccessReq.AccessLevel = "rw"
 
-	s, err := shares.GrantAccess(c, shareID, grantAccessReq).ExtractGrantAccess()
+	s, err := shares.GrantAccessRequest(c, shareID, grantAccessReq).ExtractGrantAccess()
 
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, s, &shares.GrantAccessRes{
+	th.AssertDeepEquals(t, s, &shares.GrantAccess{
 		ShareID:     "011d21e2-fbc3-4e4a-9993-9ea223f73264",
-		CreatedAt:   time.Date(2015, time.August, 27, 11, 33, 21, 0, time.UTC),
-		UpdatedAt:   time.Date(2015, time.August, 27, 11, 33, 21, 0, time.UTC),
 		AccessType:  "ip",
 		AccessTo:    "0.0.0.0/0",
 		AccessKey:   "",

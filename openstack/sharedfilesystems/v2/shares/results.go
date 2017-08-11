@@ -146,13 +146,9 @@ func (r GetExportLocationsResult) Extract() ([]ExportLocation, error) {
 }
 
 // GrantAccessRes contains all information associated with an OpenStack share Grant Access
-type GrantAccessRes struct {
+type GrantAccess struct {
 	// The UUID of the share to which you are granted or denied access.
 	ShareID string `json:"share_id"`
-	// Timestamp when the share was created
-	CreatedAt time.Time `json:"created_at, omitempty"`
-	// Timestamp when the share was updated
-	UpdatedAt time.Time `json:"updated_at, omitempty"`
 	// The access rule type that can be "ip", "cert" or "user".
 	AccessType string `json:"access_type,omitempty"`
 	// The value that defines the access that can be a valid format of IP, cert or user.
@@ -168,9 +164,9 @@ type GrantAccessRes struct {
 }
 
 // ExtractGrantAccess will get the GrantAccess object from the commonResult
-func (r GrantAccessResult) ExtractGrantAccess() (*GrantAccessRes, error) {
+func (r GrantAccessResult) ExtractGrantAccess() (*GrantAccess, error) {
 	var s struct {
-		GrantAccessRes *GrantAccessRes `json:"access"`
+		GrantAccessRes *GrantAccess `json:"access"`
 	}
 	err := r.ExtractInto(&s)
 	return s.GrantAccessRes, err

@@ -175,8 +175,6 @@ var grantAccessRequest = `{
 var grantAccessResponse = `{
     "access": {
 	"share_id": "011d21e2-fbc3-4e4a-9993-9ea223f73264",
-	"created_at": "2015-08-27T11:33:21Z",
-	"updated_at": "2015-08-27T11:33:21Z",
 	"access_type": "ip",
 	"access_to": "0.0.0.0/0",
 	"access_key": "",
