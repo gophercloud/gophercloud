@@ -145,7 +145,7 @@ func (r GetExportLocationsResult) Extract() ([]ExportLocation, error) {
 	return s.ExportLocations, err
 }
 
-// GrantAccessRes contains all information associated with an OpenStack share Grant Access
+// GrantAccess contains all information associated with an OpenStack share Grant Access
 type GrantAccess struct {
 	// The UUID of the share to which you are granted or denied access.
 	ShareID string `json:"share_id"`
@@ -163,8 +163,8 @@ type GrantAccess struct {
 	ID string `json:"id"`
 }
 
-// ExtractGrantAccess will get the GrantAccess object from the commonResult
-func (r GrantAccessResult) ExtractGrantAccess() (*GrantAccess, error) {
+// Extract will get the GrantAccess object from the commonResult
+func (r GrantAccessResult) Extract() (*GrantAccess, error) {
 	var s struct {
 		GrantAccessRes *GrantAccess `json:"access"`
 	}
@@ -172,7 +172,7 @@ func (r GrantAccessResult) ExtractGrantAccess() (*GrantAccess, error) {
 	return s.GrantAccessRes, err
 }
 
-// GrantAccessResult contains the result.
+// GrantAccessResult contains the result body and error from an GrantAccessRequest request.
 type GrantAccessResult struct {
 	commonResult
 }

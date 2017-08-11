@@ -108,7 +108,7 @@ func (opts GrantAccessOpts) ToGrantAccessMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "allow_access")
 }
 
-// GrantAccess will grant access to a Share based on the values in GrantAccessOpts. To extract
+// GrantAccessRequest will grant access to a Share based on the values in GrantAccessOpts. To extract
 // the GrantAccess object from the response, call the Extract method on the GrantAccessResult.
 func GrantAccessRequest(client *gophercloud.ServiceClient, id string, opts GrantAccessOptsBuilder) (r GrantAccessResult) {
 	b, err := opts.ToGrantAccessMap()
