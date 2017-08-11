@@ -42,12 +42,18 @@ type TerminateConnectionResult struct {
 	gophercloud.ErrResult
 }
 
-type commonResult struct {
+// InitializeConnectionResult contains the response body and error from an
+// InitializeConnection request.
+type InitializeConnectionResult struct {
 	gophercloud.Result
 }
 
-// Extract will get the Volume object out of the commonResult object.
-func (r commonResult) Extract() (map[string]interface{}, error) {
+// Extract will get the connection information out of the
+// InitializeConnectionResult object.
+//
+// This will be a generic map[string]interface{} and the results will be
+// dependent on the type of connection made.
+func (r InitializeConnectionResult) Extract() (map[string]interface{}, error) {
 	var s struct {
 		ConnectionInfo map[string]interface{} `json:"connection_info"`
 	}
@@ -148,11 +154,6 @@ func (r UploadImageResult) Extract() (VolumeImage, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.VolumeImage, err
-}
-
-// InitializeConnectionResult contains the response body and error from a Get request.
-type InitializeConnectionResult struct {
-	commonResult
 }
 
 // ExtendSizeResult contains the response body and error from an ExtendSize request.
