@@ -117,7 +117,7 @@ func GrantAccess(client *gophercloud.ServiceClient, id string, opts GrantAccessO
 		return
 	}
 	_, r.Err = client.Post(grantAccessURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 201},
+		OkCodes: []int{200},
 	})
 	return
 }
