@@ -97,6 +97,33 @@ func TestVolumeActionsReserveUnreserve(t *testing.T) {
 	defer DeleteVolumeReserve(t, client, volume)
 }
 
+func TestVolumeActionsExtendSize(t *testing.T) {
+	blockClient, err := clients.NewBlockStorageV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a blockstorage client: %v", err)
+	}
+
+	volume, err := blockstorage.CreateVolume(t, blockClient)
+	if err != nil {
+		t.Fatalf("Unable to create volume: %v", err)
+	}
+	defer blockstorage.DeleteVolume(t, blockClient, volume)
+
+	tools.PrintResource(t, volume)
+
+	err = ExtendVolumeSize(t, blockClient, volume)
+	if err != nil {
+		t.Fatalf("Unable to resize volume: %v", err)
+	}
+
+	newVolume, err := volumes.Get(blockClient, volume.ID).Extract()
+	if err != nil {
+		t.Fatal("Unable to get updated volume information: %v", err)
+	}
+
+	tools.PrintResource(t, newVolume)
+}
+
 // Note(jtopjian): I plan to work on this at some point, but it requires
 // setting up a server with iscsi utils.
 /*
