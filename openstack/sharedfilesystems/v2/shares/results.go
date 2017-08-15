@@ -144,3 +144,36 @@ func (r GetExportLocationsResult) Extract() ([]ExportLocation, error) {
 	err := r.ExtractInto(&s)
 	return s.ExportLocations, err
 }
+
+// AccessRight contains all information associated with an OpenStack share
+// Grant Access Response
+type AccessRight struct {
+	// The UUID of the share to which you are granted or denied access.
+	ShareID string `json:"share_id"`
+	// The access rule type that can be "ip", "cert" or "user".
+	AccessType string `json:"access_type,omitempty"`
+	// The value that defines the access that can be a valid format of IP, cert or user.
+	AccessTo string `json:"access_to,omitempty"`
+	// The access credential of the entity granted share access.
+	AccessKey string `json:"access_key,omitempty"`
+	// The access level to the share is either "rw" or "ro".
+	AccessLevel string `json:"access_level,omitempty"`
+	// The state of the access rule
+	State string `json:"state,omitempty"`
+	// The access rule ID.
+	ID string `json:"id"`
+}
+
+// Extract will get the GrantAccess object from the commonResult
+func (r GrantAccessResult) Extract() (*AccessRight, error) {
+	var s struct {
+		AccessRight *AccessRight `json:"access"`
+	}
+	err := r.ExtractInto(&s)
+	return s.AccessRight, err
+}
+
+// GrantAccessResult contains the result body and error from an GrantAccess request.
+type GrantAccessResult struct {
+	gophercloud.Result
+}
