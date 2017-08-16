@@ -83,7 +83,7 @@ func (r GetResult) Extract() (*Limits, error) {
 	return s.Limits, err
 }
 
-// GetResult is the response from a Get operation. Call its ExtractAbsolute
+// GetResult is the response from a Get operation. Call its Extract
 // method to interpret it as an Absolute.
 type GetResult struct {
 	gophercloud.Result
