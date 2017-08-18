@@ -37,9 +37,14 @@ func TestAPIVersionsGet(t *testing.T) {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	v, err := apiversions.Get(client, "v2").Extract()
+	allPages, err := apiversions.List(client).AllPages()
 	if err != nil {
-		t.Fatalf("Unable to retrieve API version: %v", err)
+		t.Fatalf("Unable to retrieve API versions: %v", err)
+	}
+
+	v, err := apiversions.ExtractAPIVersion(allPages, "v3.0")
+	if err != nil {
+		t.Fatalf("Unable to extract API version: %v", err)
 	}
 
 	tools.PrintResource(t, v)

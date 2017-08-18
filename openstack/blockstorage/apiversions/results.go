@@ -3,7 +3,6 @@ package apiversions
 import (
 	"time"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -47,27 +46,19 @@ func ExtractAPIVersions(r pagination.Page) ([]APIVersion, error) {
 	return s.Versions, err
 }
 
-// GetResult represents the result of a get operation.
-type GetResult struct {
-	gophercloud.Result
-}
-
-// Extract is a function that accepts a result and extracts an API version resource.
-func (r GetResult) Extract() (*APIVersion, error) {
-	var s struct {
-		Versions []APIVersion `json:"versions"`
-	}
-	err := r.ExtractInto(&s)
+// ExtractAPIVersion takes a List result and extracts a single requested
+// version, which is returned as an APIVersion
+func ExtractAPIVersion(r pagination.Page, v string) (*APIVersion, error) {
+	allVersions, err := ExtractAPIVersions(r)
 	if err != nil {
 		return nil, err
 	}
 
-	switch len(s.Versions) {
-	case 0:
-		return nil, ErrVersionNotFound{}
-	case 1:
-		return &s.Versions[0], nil
-	default:
-		return nil, ErrMultipleVersionsFound{Count: len(s.Versions)}
+	for _, version := range allVersions {
+		if version.ID == v {
+			return &version, nil
+		}
 	}
+
+	return nil, ErrVersionNotFound{}
 }
