@@ -194,6 +194,31 @@ func TestCreateDomainIDScope(t *testing.T) {
 	`)
 }
 
+func TestCreateDomainNameScope(t *testing.T) {
+	options := tokens.AuthOptions{UserID: "fenris", Password: "g0t0h311"}
+	scope := &tokens.Scope{DomainName: "evil-plans"}
+	authTokenPost(t, options, scope, `
+                {
+                        "auth": {
+                                "identity": {
+                                        "methods": ["password"],
+                                        "password": {
+                                                "user": {
+                                                        "id": "fenris",
+                                                        "password": "g0t0h311"
+                                                }
+                                        }
+                                },
+                                "scope": {
+                                        "domain": {
+                                                "name": "evil-plans"
+                                        }
+                                }
+                        }
+                }
+        `)
+}
+
 func TestCreateProjectNameAndDomainIDScope(t *testing.T) {
 	options := tokens.AuthOptions{UserID: "fenris", Password: "g0t0h311"}
 	scope := &tokens.Scope{ProjectName: "world-domination", DomainID: "1000"}
@@ -379,12 +404,6 @@ func TestCreateFailureScopeDomainIDAndDomainName(t *testing.T) {
 	options := tokens.AuthOptions{UserID: "myself", Password: "swordfish"}
 	scope := &tokens.Scope{DomainID: "toomuch", DomainName: "notneeded"}
 	authTokenPostErr(t, options, scope, false, gophercloud.ErrScopeDomainIDOrDomainName{})
-}
-
-func TestCreateFailureScopeDomainNameAlone(t *testing.T) {
-	options := tokens.AuthOptions{UserID: "myself", Password: "swordfish"}
-	scope := &tokens.Scope{DomainName: "notenough"}
-	authTokenPostErr(t, options, scope, false, gophercloud.ErrScopeDomainName{})
 }
 
 /*
