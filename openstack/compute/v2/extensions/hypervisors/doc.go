@@ -15,7 +15,7 @@ Example of Retrieving Details of All Hypervisors
 	}
 
 	for _, hypervisor := range allHypervisors {
-		fmt.Println("%+v\n", hypervisor)
+		fmt.Printf("%+v\n", hypervisor)
 	}
 */
 package hypervisors

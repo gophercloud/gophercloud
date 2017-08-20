@@ -22,7 +22,7 @@ Example to List Servers
 	}
 
 	for _, server := range allServers {
-		fmt.Println("%+v\n", server)
+		fmt.Printf("%+v\n", server)
 	}
 
 Example to Create a Server

@@ -23,7 +23,7 @@ Example to List Tenants
 	}
 
 	for _, tenant := range allTenants {
-		fmt.Println("%+v\n", tenant)
+		fmt.Printf("%+v\n", tenant)
 	}
 
 Example to Create a Tenant

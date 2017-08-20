@@ -12,6 +12,6 @@ Example to Retrieve Limits for a Tenant
 		panic("Unable to retrieve limits: %s", err)
 	}
 
-	fmt.Println("%+v\n", limits)
+	fmt.Printf("%+v\n", limits)
 */
 package limits

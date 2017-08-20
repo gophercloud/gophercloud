@@ -28,7 +28,7 @@ Example to List Roles
 	}
 
 	for _, role := range allRoles {
-		fmt.Println("%+v\n", role)
+		fmt.Printf("%+v\n", role)
 	}
 
 Example to Grant a Role to a User

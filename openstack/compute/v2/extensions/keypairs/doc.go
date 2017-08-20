@@ -15,7 +15,7 @@ Example to List Key Pairs
 	}
 
 	for _, kp := range allKeyPairs {
-		fmt.Println("%+v\n", kp)
+		fmt.Printf("%+v\n", kp)
 	}
 
 Example to Create a Key Pair
@@ -29,7 +29,7 @@ Example to Create a Key Pair
 		panic("Unable to create key pair: %s", err)
 	}
 
-	fmt.Println("%+v", keypair)
+	fmt.Printf("%+v", keypair)
 
 Example to Import a Key Pair
 

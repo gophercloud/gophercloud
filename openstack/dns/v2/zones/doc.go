@@ -19,7 +19,7 @@ Example to List Zones
 	}
 
 	for _, zone := range allZones {
-		fmt.Println("%+v\n", zone)
+		fmt.Printf("%+v\n", zone)
 	}
 
 Example to Create a Zone

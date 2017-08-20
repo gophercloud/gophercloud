@@ -26,7 +26,7 @@ Example to List Images
 	}
 
 	for _, image := range allImages {
-		fmt.Println("%+v\n", image)
+		fmt.Printf("%+v\n", image)
 	}
 */
 package images
