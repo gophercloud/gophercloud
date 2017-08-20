@@ -12,12 +12,12 @@ Example of Listing Default Security Group Rules
 
 	allPages, err := defsecrules.List(computeClient).AllPages()
 	if err != nil {
-		panic("Unable to list default security group rules: %s", err)
+		panic(err)
 	}
 
 	allDefaultRules, err := defsecrules.ExtractDefaultRules(allPages)
 	if err != nil {
-		panic("Unable to extract default security group rules: %s", err)
+		panic(err)
 	}
 
 	for _, df := range allDefaultRules {
@@ -28,7 +28,7 @@ Example of Retrieving a Default Security Group Rule
 
 	rule, err := defsecrules.Get(computeClient, "rule-id").Extract()
 	if err != nil {
-		panic("Unable to retrieve default security group rule: %s", err
+		panic(err)
 	}
 
 Example of Creating a Default Security Group Rule
@@ -42,14 +42,14 @@ Example of Creating a Default Security Group Rule
 
 	rule, err := defsecrules.Create(computeClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create default security group rule: %s", err)
+		panic(err)
 	}
 
 Example of Deleting a Default Security Group Rule
 
 	err := defsecrules.Delete(computeClient, "rule-id").ExtractErr()
 	if err != nil {
-		panic("Unable to delete default security group rule: %s", err)
+		panic(err)
 	}
 */
 package defsecrules

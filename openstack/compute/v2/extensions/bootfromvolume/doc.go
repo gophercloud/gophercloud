@@ -39,7 +39,7 @@ a server without using block device mappings.
 
 	server, err := bootfromvolume.Create(client, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create server: %s", err)
+		panic(err)
 	}
 
 Example of Creating a Server From a New Volume
@@ -69,7 +69,7 @@ server will use this volume as its root disk.
 
 	server, err := bootfromvolume.Create(client, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create server: %s", err)
+		panic(err)
 	}
 
 Example of Creating a Server From an Existing Volume
@@ -97,7 +97,7 @@ This example will create a server with an existing volume as its root disk.
 
 	server, err := bootfromvolume.Create(client, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create server: %s", err)
+		panic(err)
 	}
 
 Example of Creating a Server with Multiple Ephemeral Disks
@@ -146,7 +146,7 @@ ephemeral disks must have an index of -1.
 
 	server, err := bootfromvolume.Create(client, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create server: %s", err)
+		panic(err)
 	}
 */
 package bootfromvolume

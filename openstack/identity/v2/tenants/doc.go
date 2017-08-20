@@ -14,12 +14,12 @@ Example to List Tenants
 
 	allPages, err := tenants.List(identityClient, listOpts).AllPages()
 	if err != nil {
-		panic("Unable to list tenants: %s", err)
+		panic(err)
 	}
 
 	allTenants, err := tenants.ExtractTenants(allPages)
 	if err != nil {
-		panic("Unable to extract tenants: %s", err)
+		panic(err)
 	}
 
 	for _, tenant := range allTenants {
@@ -36,7 +36,7 @@ Example to Create a Tenant
 
 	tenant, err := tenants.Create(identityClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create tenant: %s", err)
+		panic(err)
 	}
 
 Example to Update a Tenant
@@ -50,7 +50,7 @@ Example to Update a Tenant
 
 	tenant, err := tenants.Update(identityClient, tenantID, updateOpts).Extract()
 	if err != nil {
-		panic("Unable to update tenant: %s", err)
+		panic(err)
 	}
 
 Example to Delete a Tenant
@@ -59,7 +59,7 @@ Example to Delete a Tenant
 
 	err := tenants.Delete(identitYClient, tenantID).ExtractErr()
 	if err != nil {
-		panic("Unable to delete tenant: %s", err)
+		panic(err)
 	}
 */
 package tenants

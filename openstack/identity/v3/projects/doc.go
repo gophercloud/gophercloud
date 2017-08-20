@@ -10,12 +10,12 @@ Example to List Projects
 
 	allPages, err := projects.List(identityClient, listOpts).AllPages()
 	if err != nil {
-		panic("Unable to list projects: %s", err)
+		panic(err)
 	}
 
 	allProjects, err := projects.ExtractProjects(allPages)
 	if err != nil {
-		panic("Unable to extract projects: %s", err)
+		panic(err)
 	}
 
 	for _, project := range allProjects {
@@ -31,7 +31,7 @@ Example to Create a Project
 
 	project, err := projects.Create(identityClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create project: %s", err)
+		panic(err)
 	}
 
 Example to Update a Project
@@ -44,7 +44,7 @@ Example to Update a Project
 
 	project, err := projects.Update(identityClient, projectID, updateOpts).Extract()
 	if err != nil {
-		panic("Unable to update project: %s", err)
+		panic(err)
 	}
 
 Example to Delete a Project
@@ -52,7 +52,7 @@ Example to Delete a Project
 	projectID := "966b3c7d36a24facaf20b7e458bf2192"
 	err := projects.Delete(identityClient, projectID).ExtractErr()
 	if err != nil {
-		panic("Unable to delete project: %s", err)
+		panic(err)
 	}
 */
 package projects

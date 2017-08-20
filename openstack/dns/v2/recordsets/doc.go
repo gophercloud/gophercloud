@@ -12,12 +12,12 @@ Example to List RecordSets by Zone
 
 	allPages, err := recordsets.ListByZone(dnsClient, zoneID, listOpts).AllPages()
 	if err != nil {
-		panic("Unable to list recordsets: %s", err)
+		panic(err)
 	}
 
 	allRRs, err := recordsets.ExtractRecordSets(allPages()
 	if err != nil {
-		panic("Unable to extract recordsets: %s", err)
+		panic(err)
 	}
 
 	for _, rr := range allRRs {
@@ -38,7 +38,7 @@ Example to Create a RecordSet
 
 	rr, err := recordsets.Create(dnsClient, zoneID, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create recordset: %s", err)
+		panic(err)
 	}
 
 Example to Delete a RecordSet
@@ -48,7 +48,7 @@ Example to Delete a RecordSet
 
 	err := recordsets.Delete(dnsClient, zoneID, recordsetID).ExtractErr()
 	if err != nil {
-		panic("Unable to delete recordset: %s", err)
+		panic(err)
 	}
 */
 package recordsets

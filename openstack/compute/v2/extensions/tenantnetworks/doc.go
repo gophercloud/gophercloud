@@ -11,12 +11,12 @@ Example to List Networks Available to a Tenant
 
 	allPages, err := tenantnetworks.List(computeClient).AllPages()
 	if err != nil {
-		panic("Unable to retrieve networks: %s", err)
+		panic(err)
 	}
 
 	allNetworks, err := tenantnetworks.ExtractNetworks(allPages)
 	if err != nil {
-		panic("Unable to extract networks: %s", err)
+		panic(err)
 	}
 
 	for _, network := range allNetworks {

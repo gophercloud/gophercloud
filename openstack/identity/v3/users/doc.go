@@ -9,12 +9,12 @@ Example to List Users
 
 	allPages, err := users.List(identityClient, listOpts).AllPages()
 	if err != nil {
-		panic("Unable to list users: %s", err)
+		panic(err)
 	}
 
 	allUsers, err := users.ExtractUsers(allPages)
 	if err != nil {
-		panic("Unable to extract users: %s", err)
+		panic(err)
 	}
 
 	for _, user := range allUsers {
@@ -38,7 +38,7 @@ Example to Create a User
 
 	user, err := users.Create(identityClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create user: %s", err)
+		panic(err)
 	}
 
 Example to Update a User
@@ -51,7 +51,7 @@ Example to Update a User
 
 	user, err := users.Update(identityClient, userID, updateOpts).Extract()
 	if err != nil {
-		panic("Unable to update user: %s", err)
+		panic(err)
 	}
 
 Example to Delete a User
@@ -59,7 +59,7 @@ Example to Delete a User
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
 	err := users.Delete(identityClient, userID).ExtractErr()
 	if err != nil {
-		panic("Unable to delete user: %s", err)
+		panic(err)
 	}
 
 Example to List Groups a User Belongs To
@@ -68,12 +68,12 @@ Example to List Groups a User Belongs To
 
 	allPages, err := users.ListGroups(identityClient, userID).AllPages()
 	if err != nil {
-		panic("Unable to retrieve groups: %s", err)
+		panic(err)
 	}
 
 	allGroups, err := users.ExtractGroups(allPages)
 	if err != nil {
-		panic("Unable to extract groups: %s", err)
+		panic(err)
 	}
 
 	for _, group := range allGroups {

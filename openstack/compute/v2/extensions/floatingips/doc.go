@@ -13,12 +13,12 @@ Example to List Floating IPs
 
 	allPages, err := floatingips.List(computeClient).AllPages()
 	if err != nil {
-		panic("Unable to retrieve Floating IPs: %s", err)
+		panic(err)
 	}
 
 	allFloatingIPs, err := floatingips.ExtractFloatingIPs(allPages)
 	if err != nil {
-		panic("Unable to extract Floating IPs: %s", err)
+		panic(err)
 	}
 
 	for _, fip := range allFloatingIPs {
@@ -33,14 +33,14 @@ Example to Create a Floating IP
 
 	fip, err := floatingips.Create(computeClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create Floating IP: %s", err)
+		panic(err)
 	}
 
 Example to Delete a Floating IP
 
 	err := floatingips.Delete(computeClient, "floatingip-id").ExtractErr()
 	if err != nil {
-		panic("Unable to delete Floating IP: %s", err)
+		panic(err)
 	}
 
 Example to Associate a Floating IP With a Server
@@ -51,7 +51,7 @@ Example to Associate a Floating IP With a Server
 
 	err := floatingips.AssociateInstance(computeClient, "server-id", associateOpts).ExtractErr()
 	if err != nil {
-		panic("Unable to associate Floating IP: %s", err)
+		panic(err)
 	}
 
 Example to Disassociate a Floating IP From a Server
@@ -62,7 +62,7 @@ Example to Disassociate a Floating IP From a Server
 
 	err := floatingips.DisassociateInstance(computeClient, "server-id", disassociateOpts).ExtractErr()
 	if err != nil {
-		panic("Unable to disassocaite Floating IP: %s", err)
+		panic(err)
 	}
 */
 package floatingips

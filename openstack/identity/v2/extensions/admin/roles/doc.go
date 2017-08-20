@@ -19,12 +19,12 @@ Example to List Roles
 
 	allPages, err := roles.List(identityClient).AllPages()
 	if err != nil {
-		panic("Unable to list roles: %s", err)
+		panic(err)
 	}
 
 	allRoles, err := roles.ExtractRoles(allPages)
 	if err != nil {
-		panic("Unable to extract roles: %s", err)
+		panic(err)
 	}
 
 	for _, role := range allRoles {
@@ -39,7 +39,7 @@ Example to Grant a Role to a User
 
 	err := roles.AddUser(identityClient, tenantID, userID, roleID).ExtractErr()
 	if err != nil {
-		panic("Unable to assign role: %s", err)
+		panic(err)
 	}
 
 Example to Remove a Role from a User
@@ -50,7 +50,7 @@ Example to Remove a Role from a User
 
 	err := roles.DeleteUser(identityClient, tenantID, userID, roleID).ExtractErr()
 	if err != nil {
-		panic("Unable to remove role: %s", err)
+		panic(err)
 	}
 */
 package roles

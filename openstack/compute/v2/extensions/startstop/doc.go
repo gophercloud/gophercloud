@@ -8,12 +8,12 @@ Example to Stop and Start a Server
 
 	err := startstop.Stop(computeClient, serverID).ExtractErr()
 	if err != nil {
-		panic("Unable to stop server: %s", err)
+		panic(err)
 	}
 
 	err := startstop.Start(computeClient, serverID).ExtractErr()
 	if err != nil {
-		panic("Unable to start server: %s", err)
+		panic(err)
 	}
 */
 package startstop

@@ -14,7 +14,7 @@ Example to Create a Token From a Username and Password
 
 	token, err := tokens.Create(identityClient, authOptions).ExtractToken()
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 
 Example to Create a Token From a Username, Password, and Domain
@@ -27,7 +27,7 @@ Example to Create a Token From a Username, Password, and Domain
 
 	token, err := tokens.Create(identityClient, authOptions).ExtractToken()
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 
 	authOptions = tokens.AuthOptions{
@@ -38,7 +38,7 @@ Example to Create a Token From a Username, Password, and Domain
 
 	token, err = tokens.Create(identityClient, authOptions).ExtractToken()
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 
 Example to Create a Token From a Token
@@ -49,7 +49,7 @@ Example to Create a Token From a Token
 
 	token, err := tokens.Create(identityClient, authOptions).ExtractToken()
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 
 Example to Create a Token from a Username and Password with Project ID Scope
@@ -66,7 +66,7 @@ Example to Create a Token from a Username and Password with Project ID Scope
 
 	token, err = tokens.Create(identityClient, authOptions).ExtractToken()
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 
 Example to Create a Token from a Username and Password with Domain ID Scope
@@ -83,7 +83,7 @@ Example to Create a Token from a Username and Password with Domain ID Scope
 
 	token, err = tokens.Create(identityClient, authOptions).ExtractToken()
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 
 Example to Create a Token from a Username and Password with Project Name Scope
@@ -101,7 +101,7 @@ Example to Create a Token from a Username and Password with Project Name Scope
 
 	token, err = tokens.Create(identityClient, authOptions).ExtractToken()
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 
 */

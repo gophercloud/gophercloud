@@ -6,12 +6,12 @@ Example to List Key Pairs
 
 	allPages, err := keypairs.List(computeClient).AllPages()
 	if err != nil {
-		panic("Unable to list key pairs: %s", err)
+		panic(err)
 	}
 
 	allKeyPairs, err := keypairs.ExtractKeyPairs(allPages)
 	if err != nil {
-		panic("Unable to extract key pairs: %s", err)
+		panic(err)
 	}
 
 	for _, kp := range allKeyPairs {
@@ -26,7 +26,7 @@ Example to Create a Key Pair
 
 	keypair, err := keypairs.Create(computeClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create key pair: %s", err)
+		panic(err)
 	}
 
 	fmt.Printf("%+v", keypair)
@@ -40,14 +40,14 @@ Example to Import a Key Pair
 
 	keypair, err := keypairs.Create(computeClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create key pair: %s", err)
+		panic(err)
 	}
 
 Example to Delete a Key Pair
 
 	err := keypairs.Delete(computeClient, "keypair-name").ExtractErr()
 	if err != nil {
-		panic("Unable to delete key pair: %s", err)
+		panic(err)
 	}
 
 Example to Create a Server With a Key Pair
@@ -65,7 +65,7 @@ Example to Create a Server With a Key Pair
 
 	server, err := servers.Create(computeClient, createOpts).Extract()
 	if err != nil {
-		panic("Could not create server: %s", err)
+		panic(err)
 	}
 */
 package keypairs

@@ -14,7 +14,7 @@ Example to Create an Unscoped Token from a Password
 
 	token, err := tokens.Create(identityClient, authOpts).ExtractToken()
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 
 Example to Create a Token from a Tenant ID and Password
@@ -27,7 +27,7 @@ Example to Create a Token from a Tenant ID and Password
 
 	token, err := tokens.Create(identityClient, authOpts).ExtractToken()
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 
 Example to Create a Token from a Tenant Name and Password
@@ -40,7 +40,7 @@ Example to Create a Token from a Tenant Name and Password
 
 	token, err := tokens.Create(identityClient, authOpts).ExtractToken()
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 */
 package tokens

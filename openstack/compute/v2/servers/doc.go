@@ -13,12 +13,12 @@ Example to List Servers
 
 	allPages, err := servers.List(computeClient, listOpts).AllPages()
 	if err != nil {
-		panic("Unable to list servers: %s", err)
+		panic(err)
 	}
 
 	allServers, err := servers.ExtractServers(allPages)
 	if err != nil {
-		panic("Unable to extract servers: %s", err)
+		panic(err)
 	}
 
 	for _, server := range allServers {
@@ -35,7 +35,7 @@ Example to Create a Server
 
 	server, err := servers.Create(computeClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create server: %s", err)
+		panic(err)
 	}
 
 Example to Delete a Server
@@ -43,7 +43,7 @@ Example to Delete a Server
 	serverID := "d9072956-1560-487c-97f2-18bdf65ec749"
 	err := servers.Delete(computeClient, serverID).ExtractErr()
 	if err != nil {
-		panic("Error deleting server: %s", err)
+		panic(err)
 	}
 
 Example to Force Delete a Server
@@ -51,7 +51,7 @@ Example to Force Delete a Server
 	serverID := "d9072956-1560-487c-97f2-18bdf65ec749"
 	err := servers.ForceDelete(computeClient, serverID).ExtractErr()
 	if err != nil {
-		panic("Error deleting server: %s", err)
+		panic(err)
 	}
 
 Example to Reboot a Server
@@ -64,7 +64,7 @@ Example to Reboot a Server
 
 	err := servers.Reboot(computeClient, serverID, rebootOpts).ExtractErr()
 	if err != nil {
-		panic("Unable to reboot server: %s", err)
+		panic(err)
 	}
 
 Example to Rebuild a Server
@@ -78,7 +78,7 @@ Example to Rebuild a Server
 
 	server, err := servers.Rebuilt(computeClient, serverID, rebuildOpts).Extract()
 	if err != nil {
-		panic("Unable to rebuild server: %s", err)
+		panic(err)
 	}
 
 Example to Resize a Server
@@ -91,12 +91,12 @@ Example to Resize a Server
 
 	err := servers.Resize(computeClient, serverID, resizeOpts).ExtractErr()
 	if err != nil {
-		panic("Unable to resize server: %s", err)
+		panic(err)
 	}
 
 	err = servers.ConfirmResize(computeClient, serverID).ExtractErr()
 	if err != nil {
-		panic("Unable to confirm resize: %s", err)
+		panic(err)
 	}
 
 Example to Snapshot a Server
@@ -109,7 +109,7 @@ Example to Snapshot a Server
 
 	image, err := servers.CreateImage(computeClient, serverID, snapshotOpts).ExtractImageID()
 	if err != nil {
-		panic("Unable to snapshot server: %s", err)
+		panic(err)
 	}
 */
 package servers
