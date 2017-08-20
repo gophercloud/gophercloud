@@ -8,12 +8,12 @@ Example to Suspend and Resume a Server
 
 	err := suspendresume.Suspend(computeClient, serverID).ExtractErr()
 	if err != nil {
-		panic("Unable to suspend server: %s", err)
+		panic(err)
 	}
 
 	err := suspendresume.Resume(computeClient, serverID).ExtractErr()
 	if err != nil {
-		panic("Unable to resume server: %s", err)
+		panic(err)
 	}
 */
 package suspendresume

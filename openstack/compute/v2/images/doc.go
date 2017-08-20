@@ -17,12 +17,12 @@ Example to List Images
 
 	allPages, err := images.ListDetail(computeClient, listOpts).AllPages()
 	if err != nil {
-		panic("Unable to list images: %s", err)
+		panic(err)
 	}
 
 	allImages, err := images.ExtractImages(allPages)
 	if err != nil {
-		panic("Unable to extract images: %s", err)
+		panic(err)
 	}
 
 	for _, image := range allImages {

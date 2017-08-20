@@ -10,12 +10,12 @@ Example to List Services
 
 	allPages, err := services.List(identityClient, listOpts).AllPages()
 	if err != nil {
-		panic("Unable to list services: %s", err)
+		panic(err)
 	}
 
 	allServices, err := services.ExtractServices(allPages)
 	if err != nil {
-		panic("Unable to extract services: %s", err)
+		panic(err)
 	}
 
 	for _, service := range allServices {
@@ -26,7 +26,7 @@ Example to Create a Service
 
 	service, err := services.Create(identityClient, "compute").Extract()
 	if err != nil {
-		panic("Unable to create service: %s", err)
+		panic(err)
 	}
 
 Example to Delete a Service
@@ -34,7 +34,7 @@ Example to Delete a Service
 	serviceID := "3c7bbe9a6ecb453ca1789586291380ed"
 	err := services.Delete(identityClient, serviceID).ExtractErr()
 	if err != nil {
-		panic("Unable to delete service: %s", err)
+		panic(err)
 	}
 */
 package services

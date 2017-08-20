@@ -22,7 +22,7 @@ Example to Add a Server to a Server Group
 
 	server, err := servers.Create(computeClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create server: %s", err)
+		panic(err)
 	}
 
 Example to Place Server B on a Different Host than Server A
@@ -46,7 +46,7 @@ Example to Place Server B on a Different Host than Server A
 
 	server, err := servers.Create(computeClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create server: %s", err)
+		panic(err)
 	}
 
 Example to Place Server B on the Same Host as Server A
@@ -70,7 +70,7 @@ Example to Place Server B on the Same Host as Server A
 
 	server, err := servers.Create(computeClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create server: %s", err)
+		panic(err)
 	}
 */
 package schedulerhints

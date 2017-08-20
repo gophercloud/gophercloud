@@ -20,7 +20,7 @@ Example to Create a Token with Username, Password, and Trust ID
 
 	err := tokens.Create(identityClient, createOpts).ExtractInto(&trustToken)
 	if err != nil {
-		panic("Unable to create token: %s", err)
+		panic(err)
 	}
 */
 package trusts

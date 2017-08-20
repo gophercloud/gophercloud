@@ -8,12 +8,12 @@ and utilisation. Example:
 
 	allPages, err := schedulerstats.List(client, listOpts).AllPages()
 	if err != nil {
-		panic("Unable to query schedulerstats: %s", err)
+		panic(err)
 	}
 
 	allStats, err := schedulerstats.ExtractStoragePools(allPages)
 	if err != nil {
-		panic("Unable to extract pools: %s", err)
+		panic(err)
 	}
 
 	for _, stat := range allStats {

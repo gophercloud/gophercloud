@@ -6,12 +6,12 @@ Example to List Users
 
 	allPages, err := users.List(identityClient).AllPages()
 	if err != nil {
-		panic("Unable to list users: %s", err)
+		panic(err)
 	}
 
 	allUsers, err := users.ExtractUsers(allPages)
 	if err != nil {
-		panic("Unable to extract users: %s", err)
+		panic(err)
 	}
 
 	for _, user := range allUsers {
@@ -28,7 +28,7 @@ Example to Create a User
 
 	user, err := users.Create(identityClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create user: %s", err)
+		panic(err)
 	}
 
 Example to Update a User
@@ -42,7 +42,7 @@ Example to Update a User
 
 	user, err := users.Update(identityClient, userID, updateOpts).Extract()
 	if err != nil {
-		panic("Unable to update user: %s", err)
+		panic(err)
 	}
 
 Example to Delete a User
@@ -50,7 +50,7 @@ Example to Delete a User
 	userID := "9fe2ff9ee4384b1894a90878d3e92bab"
 	err := users.Delete(identityClient, userID).ExtractErr()
 	if err != nil {
-		panic("Unable to delete user: %s", err)
+		panic(err)
 	}
 
 Example to List a User's Roles
@@ -60,12 +60,12 @@ Example to List a User's Roles
 
 	allPages, err := users.ListRoles(identityClient, tenantID, userID).AllPages()
 	if err != nil {
-		panic("Unable to list user's roles: %s", err)
+		panic(err)
 	}
 
 	allRoles, err := users.ExtractRoles(allPages)
 	if err != nil {
-		panic("Unable to extract roles: %s", err)
+		panic(err)
 	}
 
 	for _, role := range allRoles {

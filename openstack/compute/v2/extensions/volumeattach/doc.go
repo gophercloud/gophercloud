@@ -14,7 +14,7 @@ Example to Attach a Volume
 
 	result, err := volumeattach.Create(computeClient, serverID, createOpts).Extract()
 	if err != nil {
-		panic("Unable to attach volume: %s", err)
+		panic(err)
 	}
 
 Example to Detach a Volume
@@ -24,7 +24,7 @@ Example to Detach a Volume
 
 	err := volumeattach.Delete(computeClient, serverID, attachmentID).ExtractErr()
 	if err != nil {
-		panic("Unable to detach volume: %s", err)
+		panic(err)
 	}
 */
 package volumeattach

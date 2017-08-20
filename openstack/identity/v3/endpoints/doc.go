@@ -15,12 +15,12 @@ Example to List Endpoints
 
 	allPages, err := endpoints.List(identityClient, listOpts).AllPages()
 	if err != nil {
-		panic("Unable to list endpoints: %s", err)
+		panic(err)
 	}
 
 	allEndpoints, err := endpoints.ExtractEndpoints(allPages)
 	if err != nil {
-		panic("Unable to extract endpoints: %s", err)
+		panic(err)
 	}
 
 	for _, endpoint := range allEndpoints {
@@ -41,7 +41,7 @@ Example to Create an Endpoint
 
 	endpoint, err := endpoints.Create(identityClient, createOpts).Extract()
 	if err != nil {
-		panic("Unable to create endpoint: %s", err)
+		panic(err)
 	}
 
 
@@ -55,7 +55,7 @@ Example to Update an Endpoint
 
 	endpoint, err := endpoints.Update(identityClient, endpointID, updateOpts).Extract()
 	if err != nil {
-		panic("Unable to update endpoint: %s", err)
+		panic(err)
 	}
 
 Example to Delete an Endpoint
@@ -63,7 +63,7 @@ Example to Delete an Endpoint
 	endpointID := "ad59deeec5154d1fa0dcff518596f499"
 	err := endpoints.Delete(identityClient, endpointID).ExtractErr()
 	if err != nil {
-		panic("Unable to delete endpoint: %s", err)
+		panic(err)
 	}
 */
 package endpoints

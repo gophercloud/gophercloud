@@ -13,7 +13,7 @@ Example of Attaching a Volume to an Instance
 
 	err := volumeactions.Attach(client, volume.ID, attachOpts).ExtractErr()
 	if err != nil {
-		panic("Unable to attach volume: %s", err)
+		panic(err)
 	}
 
 	detachOpts := volumeactions.DetachOpts{
@@ -22,7 +22,7 @@ Example of Attaching a Volume to an Instance
 
 	err = volumeactions.Detach(client, volume.ID, detachOpts).ExtractErr()
 	if err != nil {
-		panic("Unable to detach volume: %s", err)
+		panic(err)
 	}
 
 
@@ -35,7 +35,7 @@ Example of Creating an Image from a Volume
 
 	volumeImage, err := volumeactions.UploadImage(client, volume.ID, uploadImageOpts).Extract()
 	if err != nil {
-		panic("Unable to upload image: %s", err)
+		panic(err)
 	}
 
 	fmt.Printf("%+v\n", volumeImage)
@@ -48,7 +48,7 @@ Example of Extending a Volume's Size
 
 	err := volumeactions.ExtendSize(client, volume.ID, extendOpts).ExtractErr()
 	if err != nil {
-		panic("Unable to resize volume: %s", err)
+		panic(err)
 	}
 
 Example of Initializing a Volume Connection
@@ -64,7 +64,7 @@ Example of Initializing a Volume Connection
 
 	connectionInfo, err := volumeactions.InitializeConnection(client, volume.ID, connectOpts).Extract()
 	if err != nil {
-		panic("Unable to initialize connection: %s", err)
+		panic(err)
 	}
 
 	fmt.Println("%+v\n", connectionInfo["data"])
@@ -80,7 +80,7 @@ Example of Initializing a Volume Connection
 
 	err = volumeactions.TerminateConnection(client, volume.ID, terminateOpts).ExtractErr()
 	if err != nil {
-		panic("Unable to terminate connection: %s", err)
+		panic(err)
 	}
 */
 package volumeactions

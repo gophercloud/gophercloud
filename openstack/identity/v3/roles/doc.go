@@ -11,12 +11,12 @@ Example to List Role Assignments
 
 	allPages, err := roles.ListAssignments(identityClient, listOpts).AllPages()
 	if err != nil {
-		panic("Unable to list role assignments: %s", err)
+		panic(err)
 	}
 
 	allRoles, err := roles.ExtractRoleAssignments(allPages)
 	if err != nil {
-		panic("Unable to extract roles: %s", err)
+		panic(err)
 	}
 
 	for _, role := range allRoles {
