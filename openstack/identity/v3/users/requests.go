@@ -24,7 +24,7 @@ type ListOptsBuilder interface {
 	ToUserListQuery() (string, error)
 }
 
-// ListOpts allows you to query the List method.
+// ListOpts provides options to filter the List results.
 type ListOpts struct {
 	// DomainID filters the response by a domain ID.
 	DomainID string `q:"domain_id"`
@@ -81,7 +81,7 @@ type CreateOptsBuilder interface {
 	ToUserCreateMap() (map[string]interface{}, error)
 }
 
-// CreateOpts implements CreateOptsBuilder
+// CreateOpts provides options used to create a user.
 type CreateOpts struct {
 	// Name is the name of the new user.
 	Name string `json:"name" required:"true"`
@@ -145,7 +145,7 @@ type UpdateOptsBuilder interface {
 	ToUserUpdateMap() (map[string]interface{}, error)
 }
 
-// UpdateOpts implements UpdateOptsBuilder
+// UpdateOpts provides options for updating a user account.
 type UpdateOpts struct {
 	// Name is the name of the new user.
 	Name string `json:"name,omitempty"`
