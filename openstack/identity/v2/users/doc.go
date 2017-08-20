@@ -15,7 +15,7 @@ Example to List Users
 	}
 
 	for _, user := range allUsers {
-		fmt.Println("%+v\n", user)
+		fmt.Printf("%+v\n", user)
 	}
 
 Example to Create a User
@@ -69,7 +69,7 @@ Example to List a User's Roles
 	}
 
 	for _, role := range allRoles {
-		fmt.Println("%+v\n", role)
+		fmt.Printf("%+v\n", role)
 	}
 */
 package users

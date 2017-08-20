@@ -18,7 +18,7 @@ Example to List Networks
 	}
 
 	for _, network := range allNetworks {
-		fmt.Println("%+v\n", network)
+		fmt.Printf("%+v\n", network)
 	}
 */
 package networks

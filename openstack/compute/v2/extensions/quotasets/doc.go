@@ -8,7 +8,7 @@ Example to Get a Quota Set
 		panic("Unable to retrieve quotaset: %s", err)
 	}
 
-	fmt.Println("%+v\n", quotaset)
+	fmt.Printf("%+v\n", quotaset)
 
 Example to Update a Quota Set
 
@@ -22,6 +22,6 @@ Example to Update a Quota Set
 		panic("Unable to update quotaset: %s", err)
 	}
 
-	fmt.Println("%+v\n", quotaset)
+	fmt.Printf("%+v\n", quotaset)
 */
 package quotasets

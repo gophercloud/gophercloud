@@ -16,7 +16,7 @@ Example of Listing a Server's Interfaces
 	}
 
 	for _, interface := range allInterfaces {
-		fmt.Println("%+v\n", interface)
+		fmt.Printf("%+v\n", interface)
 	}
 */
 package attachinterfaces

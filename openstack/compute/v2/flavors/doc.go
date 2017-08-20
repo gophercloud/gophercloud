@@ -23,7 +23,7 @@ Example to List Flavors
 	}
 
 	for _, flavor := range allFlavors {
-		fmt.Println("%+v\n", flavor)
+		fmt.Printf("%+v\n", flavor)
 	}
 
 Example to Create a Flavor

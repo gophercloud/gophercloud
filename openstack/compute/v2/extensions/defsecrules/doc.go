@@ -20,8 +20,8 @@ Example of Listing Default Security Group Rules
 		panic("Unable to extract default security group rules: %s", err)
 	}
 
-	for _, df := allDefaultRules {
-		fmt.Println("%+v\n", df)
+	for _, df := range allDefaultRules {
+		fmt.Printf("%+v\n", df)
 	}
 
 Example of Retrieving a Default Security Group Rule

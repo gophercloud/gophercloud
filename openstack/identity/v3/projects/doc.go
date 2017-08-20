@@ -19,7 +19,7 @@ Example to List Projects
 	}
 
 	for _, project := range allProjects {
-		fmt.Println("%+v\n", project)
+		fmt.Printf("%+v\n", project)
 	}
 
 Example to Create a Project

@@ -67,7 +67,7 @@ Example of Initializing a Volume Connection
 		panic("Unable to initialize connection: %s", err)
 	}
 
-	fmt.Println("%+v\n", connectionInfo["data"])
+	fmt.Printf("%+v\n", connectionInfo["data"])
 
 	terminateOpts := &volumeactions.InitializeConnectionOpts{
 		IP:        "127.0.0.1",

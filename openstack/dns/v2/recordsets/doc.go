@@ -21,7 +21,7 @@ Example to List RecordSets by Zone
 	}
 
 	for _, rr := range allRRs {
-		fmt.Println("%+v\n", rr)
+		fmt.Printf("%+v\n", rr)
 	}
 
 Example to Create a RecordSet

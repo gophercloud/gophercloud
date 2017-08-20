@@ -24,7 +24,7 @@ Example to List Endpoints
 	}
 
 	for _, endpoint := range allEndpoints {
-		fmt.Println("%+v\n", endpoint)
+		fmt.Printf("%+v\n", endpoint)
 	}
 
 Example to Create an Endpoint

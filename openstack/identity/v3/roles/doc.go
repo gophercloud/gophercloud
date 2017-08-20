@@ -20,7 +20,7 @@ Example to List Role Assignments
 	}
 
 	for _, role := range allRoles {
-		fmt.Println("%+v\n", role)
+		fmt.Printf("%+v\n", role)
 	}
 */
 package roles

@@ -22,7 +22,7 @@ Example to List Floating IPs
 	}
 
 	for _, fip := range allFloatingIPs {
-		fmt.Println("%+v\n", fip)
+		fmt.Printf("%+v\n", fip)
 	}
 
 Example to Create a Floating IP

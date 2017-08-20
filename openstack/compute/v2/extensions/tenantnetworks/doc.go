@@ -20,7 +20,7 @@ Example to List Networks Available to a Tenant
 	}
 
 	for _, network := range allNetworks {
-		fmt.Println("%+v\n", network)
+		fmt.Printf("%+v\n", network)
 	}
 */
 package tenantnetworks
