@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// User is a base unit of ownership.
+// User represents a User in the OpenStack Identity Service.
 type User struct {
 	// DefaultProjectID is the ID of the default project of the user.
 	DefaultProjectID string `json:"default_project_id"`
@@ -80,22 +80,26 @@ type userResult struct {
 	gophercloud.Result
 }
 
-// GetResult temporarily contains the response from the Get call.
+// GetResult is the response from a Get operation. Call its Extract method
+// to interpret it as a User.
 type GetResult struct {
 	userResult
 }
 
-// CreateResult temporarily contains the response from the Create call.
+// CreateResult is the response from a Create operation. Call its Extract method
+// to interpret it as a User.
 type CreateResult struct {
 	userResult
 }
 
-// UpdateResult temporarily contains the response from the Update call.
+// UpdateResult is the response from an Update operation. Call its Extract
+// method to interpret it as a User.
 type UpdateResult struct {
 	userResult
 }
 
-// DeleteResult temporarily contains the response from the Delete call.
+// DeleteResult is the response from a Delete operation. Call its ExtractErr
+// method to interpret it as a User.
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
@@ -105,7 +109,7 @@ type UserPage struct {
 	pagination.LinkedPageBase
 }
 
-// IsEmpty determines whether or not a page of Users contains any results.
+// IsEmpty determines whether or not a UserPage contains any results.
 func (r UserPage) IsEmpty() (bool, error) {
 	users, err := ExtractUsers(r)
 	return len(users) == 0, err
