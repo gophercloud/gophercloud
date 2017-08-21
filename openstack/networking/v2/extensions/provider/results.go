@@ -5,18 +5,19 @@ import (
 	"strconv"
 )
 
-// NetworkProviderExt represents an extended form of a Network with additional fields.
+// NetworkProviderExt represents an extended form of a Network with additional
+// fields.
 type NetworkProviderExt struct {
 	// Specifies the nature of the physical network mapped to this network
 	// resource. Examples are flat, vlan, or gre.
 	NetworkType string `json:"provider:network_type"`
 
 	// Identifies the physical network on top of which this network object is
-	// being implemented. The OpenStack Networking API does not expose any facility
-	// for retrieving the list of available physical networks. As an example, in
-	// the Open vSwitch plug-in this is a symbolic name which is then mapped to
-	// specific bridges on each compute host through the Open vSwitch plug-in
-	// configuration file.
+	// being implemented. The OpenStack Networking API does not expose any
+	// facility for retrieving the list of available physical networks. As an
+	// example, in the Open vSwitch plug-in this is a symbolic name which is
+	// then mapped to specific bridges on each compute host through the Open
+	// vSwitch plug-in configuration file.
 	PhysicalNetwork string `json:"provider:physical_network"`
 
 	// Identifies an isolated segment on the physical network; the nature of the
@@ -25,7 +26,8 @@ type NetworkProviderExt struct {
 	// otherwise, if network_type is gre, then this will be a gre key.
 	SegmentationID string `json:"-"`
 
-	// Segments is an array of Segment which defines multiple physical bindings to logical networks.
+	// Segments is an array of Segment which defines multiple physical bindings
+	// to logical networks.
 	Segments []Segment `json:"segments"`
 }
 
