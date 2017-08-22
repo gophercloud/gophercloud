@@ -1,2 +1,2 @@
-// compute_extensions_pauseunpause_v2
+// pauseunpause unit tests
 package testing

@@ -1,2 +1,2 @@
-// compute_extensions_suspendresume_v2
+// suspendresume unit tests
 package testing
