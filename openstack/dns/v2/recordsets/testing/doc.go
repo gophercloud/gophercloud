@@ -1,2 +1,2 @@
-// dns recordsets v2
+// recordsets unit tests
 package testing

@@ -1,2 +1,2 @@
-// compute_extensions_attachinterfaces_v2
+// attachinterfaces unit tests
 package testing
