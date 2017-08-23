@@ -109,7 +109,7 @@ func TestServersCreateDestroy(t *testing.T) {
 func TestServersCreateDestroyWithExtensions(t *testing.T) {
 	var extendedServer struct {
 		servers.Server
-		availabilityzones.ServerExt
+		availabilityzones.ServerAvailabilityZoneExt
 	}
 
 	client, err := clients.NewComputeV2Client()
@@ -128,6 +128,8 @@ func TestServersCreateDestroyWithExtensions(t *testing.T) {
 		t.Errorf("Unable to retrieve server: %v", err)
 	}
 	tools.PrintResource(t, extendedServer)
+
+	t.Logf("Availability Zone: %s\n", extendedServer.AvailabilityZone)
 }
 
 func TestServersWithoutImageRef(t *testing.T) {
