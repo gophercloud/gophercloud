@@ -148,6 +148,12 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	return
 }
 
+// Delete deletes the specified flavor ID.
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
+}
+
 // IDFromName is a convienience function that returns a flavor's ID given its
 // name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {

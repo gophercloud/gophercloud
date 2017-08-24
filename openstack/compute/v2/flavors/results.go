@@ -22,6 +22,12 @@ type GetResult struct {
 	commonResult
 }
 
+// DeleteResult is the result from a Delete operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract provides access to the individual Flavor returned by the Get and
 // Create functions.
 func (r commonResult) Extract() (*Flavor, error) {
