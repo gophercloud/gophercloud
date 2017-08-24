@@ -124,7 +124,7 @@ type CreateOpts struct {
 }
 
 // ToFlavorCreateMap constructs a request body from CreateOpts.
-func (opts *CreateOpts) ToFlavorCreateMap() (map[string]interface{}, error) {
+func (opts CreateOpts) ToFlavorCreateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "flavor")
 }
 
