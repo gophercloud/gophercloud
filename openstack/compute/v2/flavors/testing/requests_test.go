@@ -197,3 +197,18 @@ func TestCreateFlavor(t *testing.T) {
 		t.Errorf("Expected %#v, but was %#v", expected, actual)
 	}
 }
+
+func TestDeleteFlavor(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/flavors/12345678", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	res := flavors.Delete(fake.ServiceClient(), "12345678")
+	th.AssertNoErr(t, res.Err)
+}
