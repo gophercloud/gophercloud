@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/noauth"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/noauth"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -26,7 +26,7 @@ func TestNoAuth(t *testing.T) {
 	provider2, err := noauth.UnAuthenticatedClient(ao2)
 	th.AssertNoErr(t, err)
 	noauthClient2, err := noauth.NewBlockStorageV2(provider2, noauth.EndpointOpts{
-		CinderEndpoint: "http://cinder:8776/v2",
+		CinderEndpoint: "http://cinder:8776/v2/",
 	})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, noauthClient2.Endpoint, naResult.Endpoint)

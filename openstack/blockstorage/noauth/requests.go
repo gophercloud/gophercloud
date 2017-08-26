@@ -44,12 +44,12 @@ func UnAuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.Provid
 
 func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts, clientType string) (*gophercloud.ServiceClient, error) {
 	sc := new(gophercloud.ServiceClient)
-	url, err := getURL(client, eo, clientType)
-	if err != nil {
-		return nil, err
+	if len(eo.CinderEndpoint) > 0 {
+		sc.Endpoint = getURL(client, eo.CinderEndpoint)
+	} else {
+		return nil, fmt.Errorf("Pass proper EndPointOpt")
 	}
 	sc.ProviderClient = client
-	sc.Endpoint = url
 	sc.Type = clientType
 	return sc, nil
 }
