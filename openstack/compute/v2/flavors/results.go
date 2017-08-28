@@ -12,6 +12,8 @@ type commonResult struct {
 	gophercloud.Result
 }
 
+// CreateResult is the response of a Get operations. Call its Extract method to
+// interpret it as a Flavor.
 type CreateResult struct {
 	commonResult
 }
@@ -26,6 +28,12 @@ type GetResult struct {
 // method to determine if the call succeeded or failed.
 type DeleteResult struct {
 	gophercloud.ErrResult
+}
+
+// AccessResult is the result from an Access operation. Call its Extract method
+// to interpret it as a FlavorAccess.
+type AccessResult struct {
+	gophercloud.Result
 }
 
 // Extract provides access to the individual Flavor returned by the Get and
@@ -130,4 +138,22 @@ func ExtractFlavors(r pagination.Page) ([]Flavor, error) {
 	}
 	err := (r.(FlavorPage)).ExtractInto(&s)
 	return s.Flavors, err
+}
+
+// FlavorAccess represents an ACL of tenant access to a specific Flavor.
+type FlavorAccess struct {
+	// FlavorID is the unique ID of the flavor.
+	FlavorID string `json:"flavor_id"`
+
+	// TenantID is the unique ID of the tenant.
+	TenantID string `json:"tenant_id"`
+}
+
+// Extract interprets an AccessResult as a FlavorAccess.
+func (r AccessResult) Extract() ([]FlavorAccess, error) {
+	var s struct {
+		FlavorAccess []FlavorAccess `json:"flavor_access"`
+	}
+	err := r.ExtractInto(&s)
+	return s.FlavorAccess, err
 }

@@ -154,6 +154,13 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	return
 }
 
+// ListAccess retrieves details about tenant access to a flavor. Use
+// ExtractAccess to convert its result into a FlavorAccess.
+func ListAccess(client *gophercloud.ServiceClient, id string) (r AccessResult) {
+	_, r.Err = client.Get(accessURL(client, id), &r.Body, nil)
+	return
+}
+
 // IDFromName is a convienience function that returns a flavor's ID given its
 // name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
