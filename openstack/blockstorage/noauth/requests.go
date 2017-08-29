@@ -29,10 +29,10 @@ func NewClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, er
 
 // UnAuthenticatedClient allows for standalone "noauth" Cinder usage
 func UnAuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
-	if len(options.Username) == 0 {
+	if options.Username == "" {
 		options.Username = "admin"
 	}
-	if len(options.TenantName) == 0 {
+	if options.TenantName == "" {
 		options.TenantName = "admin"
 	}
 	client, err := NewClient(options)
@@ -44,10 +44,10 @@ func UnAuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.Provid
 
 func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts, clientType string) (*gophercloud.ServiceClient, error) {
 	sc := new(gophercloud.ServiceClient)
-	if len(eo.CinderEndpoint) > 0 {
+	if eo.CinderEndpoint != "" {
 		sc.Endpoint = getURL(client, eo.CinderEndpoint)
 	} else {
-		return nil, fmt.Errorf("Pass proper EndPointOpt")
+		return nil, fmt.Errorf("CinderEndpoint is required")
 	}
 	sc.ProviderClient = client
 	sc.Type = clientType

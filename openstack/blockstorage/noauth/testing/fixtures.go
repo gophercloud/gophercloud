@@ -15,3 +15,5 @@ var naResult = NoAuthResult{
 	TokenID:  "admin:admin",
 	Endpoint: "http://cinder:8776/v2/admin/",
 }
+
+var errorResult = "CinderEndpoint is required"
