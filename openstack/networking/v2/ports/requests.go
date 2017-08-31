@@ -81,7 +81,7 @@ type CreateOpts struct {
 	DeviceID            string        `json:"device_id,omitempty"`
 	DeviceOwner         string        `json:"device_owner,omitempty"`
 	TenantID            string        `json:"tenant_id,omitempty"`
-	SecurityGroups      []string      `json:"security_groups,omitempty"`
+	SecurityGroups      *[]string     `json:"security_groups,omitempty"`
 	AllowedAddressPairs []AddressPair `json:"allowed_address_pairs,omitempty"`
 }
 
@@ -115,7 +115,7 @@ type UpdateOpts struct {
 	FixedIPs            interface{}   `json:"fixed_ips,omitempty"`
 	DeviceID            string        `json:"device_id,omitempty"`
 	DeviceOwner         string        `json:"device_owner,omitempty"`
-	SecurityGroups      []string      `json:"security_groups"`
+	SecurityGroups      *[]string     `json:"security_groups,omitempty"`
 	AllowedAddressPairs []AddressPair `json:"allowed_address_pairs"`
 }
 
