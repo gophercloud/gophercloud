@@ -192,6 +192,36 @@ func AddAccess(client *gophercloud.ServiceClient, id string, opts AddAccessOptsB
 	return
 }
 
+// RemoveAccessOptsBuilder allows extensions to add additional parameters to the
+// RemoveAccess requests.
+type RemoveAccessOptsBuilder interface {
+	ToRemoveAccessMap() (map[string]interface{}, error)
+}
+
+// RemoveAccessOpts represents options for removing access to a flavor.
+type RemoveAccessOpts struct {
+	// Tenant is the project/tenant ID to grant access.
+	Tenant string `json:"tenant"`
+}
+
+// ToRemoveAccessMap constructs a request body from RemoveAccessOpts.
+func (opts RemoveAccessOpts) ToRemoveAccessMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "removeTenantAccess")
+}
+
+// RemoveAccess removes/revokes a tenant/project access to a flavor.
+func RemoveAccess(client *gophercloud.ServiceClient, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
+	b, err := opts.ToRemoveAccessMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(accessActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
 // ExtraSpecs requests all the extra-specs for the given flavor ID.
 func ListExtraSpecs(client *gophercloud.ServiceClient, flavorID string) (r ListExtraSpecsResult) {
 	_, r.Err = client.Get(extraSpecsListURL(client, flavorID), &r.Body, nil)
