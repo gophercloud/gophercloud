@@ -162,6 +162,36 @@ func ListAccesses(client *gophercloud.ServiceClient, id string) pagination.Pager
 	})
 }
 
+// AddAccessOptsBuilder allows extensions to add additional parameters to the
+// AddAccess requests.
+type AddAccessOptsBuilder interface {
+	ToAddAccessMap() (map[string]interface{}, error)
+}
+
+// AddAccessOpts represents options for adding access to a flavor.
+type AddAccessOpts struct {
+	// Tenant is the project/tenant ID to grant access.
+	Tenant string `json:"tenant"`
+}
+
+// ToAddAccessMap constructs a request body from AddAccessOpts.
+func (opts AddAccessOpts) ToAddAccessMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "addTenantAccess")
+}
+
+// AddAccess grants a tenant/project access to a flavor.
+func AddAccess(client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
+	b, err := opts.ToAddAccessMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(accessActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
 // IDFromName is a convienience function that returns a flavor's ID given its
 // name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {

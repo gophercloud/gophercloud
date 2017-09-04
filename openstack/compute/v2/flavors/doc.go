@@ -59,5 +59,18 @@ Example to List Flavor Access
 	for _, access := range allAccesses {
 		fmt.Printf("%+v", access)
 	}
+
+Example to Grant Access to a Flavor
+
+	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
+
+	accessOpts := flavors.AddAccessOpts{
+		Tenant: "15153a0979884b59b0592248ef947921",
+	}
+
+	accessList, err := flavors.AddAccess(computeClient, flavor.ID, accessOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package flavors

@@ -114,3 +114,30 @@ func TestFlavorAccessesList(t *testing.T) {
 		tools.PrintResource(t, access)
 	}
 }
+
+func TestFlavorAccessCRUD(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	flavor, err := CreatePrivateFlavor(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create flavor: %v", err)
+	}
+	defer DeleteFlavor(t, client, flavor)
+
+	// Fun fact: this doesn't verify the tenant id.
+	addAccessOpts := flavors.AddAccessOpts{
+		Tenant: "123456",
+	}
+
+	accessList, err := flavors.AddAccess(client, flavor.ID, addAccessOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to add access to flavor: %v", err)
+	}
+
+	for _, access := range accessList {
+		tools.PrintResource(t, access)
+	}
+}

@@ -23,3 +23,7 @@ func deleteURL(client *gophercloud.ServiceClient, id string) string {
 func accessURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("flavors", id, "os-flavor-access")
 }
+
+func accessActionURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("flavors", id, "action")
+}
