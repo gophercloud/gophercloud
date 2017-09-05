@@ -151,7 +151,7 @@ func TestListUserGroups(t *testing.T) {
 func TestListUserProjects(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListUserGroupsSuccessfully(t)
+	HandleListUserProjectsSuccessfully(t)
 	allPages, err := users.ListProjects(client.ServiceClient(), "9fe1d3").AllPages()
 	th.AssertNoErr(t, err)
 	actual, err := projects.ExtractProjects(allPages)
