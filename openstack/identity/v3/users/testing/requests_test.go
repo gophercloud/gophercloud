@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -145,4 +146,15 @@ func TestListUserGroups(t *testing.T) {
 	actual, err := groups.ExtractGroups(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedGroupsSlice, actual)
+}
+
+func TestListUserProjects(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListUserGroupsSuccessfully(t)
+	allPages, err := users.ListProjects(client.ServiceClient(), "9fe1d3").AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := projects.ExtractProjects(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedProjectsSlice, actual)
 }

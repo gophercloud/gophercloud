@@ -8,6 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -195,6 +196,41 @@ const ListGroupsOutput = `
 }
 `
 
+// ListProjectsOutput provides a ListProjects result.
+const ListProjectsOutput = `
+{
+    "projects": [
+        {
+            "description": "description of this project",
+            "domain_id": "161718",
+            "enabled": true,
+            "id": "456788",
+            "links": {
+                "self": "http://example.com/identity/v3/projects/456788"
+            },
+            "name": "a project name",
+            "parent_id": "212223"
+        },
+        {
+            "description": "description of this project",
+            "domain_id": "161718",
+            "enabled": true,
+            "id": "456789",
+            "links": {
+                "self": "http://example.com/identity/v3/projects/456789"
+            },
+            "name": "another domain",
+            "parent_id": "212223"
+        }
+    ],
+    "links": {
+        "self": "http://example.com/identity/v3/users/313233/projects",
+        "previous": null,
+        "next": null
+    }
+}
+`
+
 // FirstUser is the first user in the List request.
 var nilTime time.Time
 var FirstUser = users.User{
@@ -300,6 +336,26 @@ var SecondGroup = groups.Group{
 
 var ExpectedGroupsSlice = []groups.Group{FirstGroup, SecondGroup}
 
+var FirstProject = projects.Project{
+	Description: "description of this project",
+	DomainID:    "161718",
+	Enabled:     true,
+	ID:          "456788",
+	Name:        "a project name",
+	ParentID:    "212223",
+}
+
+var SecondProject = projects.Project{
+	Description: "description of this project",
+	DomainID:    "161718",
+	Enabled:     true,
+	ID:          "456789",
+	Name:        "another domain",
+	ParentID:    "212223",
+}
+
+var ExpectedProjectsSlice = []projects.Project{FirstProject, SecondProject}
+
 // HandleListUsersSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that responds with a list of two users.
 func HandleListUsersSuccessfully(t *testing.T) {
@@ -379,7 +435,7 @@ func HandleDeleteUserSuccessfully(t *testing.T) {
 }
 
 // HandleListUserGroupsSuccessfully creates an HTTP handler at /users/{userID}/groups
-// on the test handler mux that respons wit a list of two groups
+// on the test handler mux that respons with a list of two groups
 func HandleListUserGroupsSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/users/9fe1d3/groups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -389,5 +445,19 @@ func HandleListUserGroupsSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, ListGroupsOutput)
+	})
+}
+
+// HandleListUserProjectsSuccessfully creates an HTTP handler at /users/{userID}/projects
+// on the test handler mux that respons wit a list of two projects
+func HandleListUserProjectsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users/9fe1d3/projects", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListProjectsOutput)
 	})
 }
