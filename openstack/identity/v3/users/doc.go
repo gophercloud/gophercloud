@@ -84,7 +84,7 @@ Example to List Projects a User Belongs To
 
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
 
-	allPages, err := users.ListGroups(identityClient, userID).AllPages()
+	allPages, err := users.ListProjects(identityClient, userID).AllPages()
 	if err != nil {
 		panic(err)
 	}
