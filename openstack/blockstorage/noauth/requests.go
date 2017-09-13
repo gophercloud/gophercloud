@@ -2,14 +2,16 @@ package noauth
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gophercloud/gophercloud"
 )
 
-// EndpointOpts specifies "noauth" Endpoints - e.g. CinderEndpoint
+// EndpointOpts specifies a "noauth" Cinder Endpoint.
 type EndpointOpts struct {
-	// CinderEndpoint [required] is currently only used w/ "noauth" Cinder.
-	// A cinder endpoint w/ "auth_strategy=noauth" is necessary - e.g. http://cinder:8776/v2
+	// CinderEndpoint [required] is currently only used with "noauth" Cinder.
+	// A cinder endpoint with "auth_strategy=noauth" is necessary, for example:
+	// http://example.com:8776/v2.
 	CinderEndpoint string
 }
 
@@ -20,14 +22,13 @@ instead.
 */
 func NewClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
 	client := &gophercloud.ProviderClient{
-		IdentityBase: options.TenantName,
-		TokenID:      fmt.Sprintf("%s:%s", options.Username, options.TenantName),
+		TokenID: fmt.Sprintf("%s:%s", options.Username, options.TenantName),
 	}
 
 	return client, nil
 }
 
-// UnAuthenticatedClient allows for standalone "noauth" Cinder usage
+// UnAuthenticatedClient allows for standalone "noauth" Cinder usage.
 func UnAuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
 	if options.Username == "" {
 		options.Username = "admin"
@@ -42,20 +43,25 @@ func UnAuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.Provid
 	return client, nil
 }
 
-func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts, clientType string) (*gophercloud.ServiceClient, error) {
+func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc := new(gophercloud.ServiceClient)
-	if eo.CinderEndpoint != "" {
-		sc.Endpoint = getURL(client, eo.CinderEndpoint)
-	} else {
+	if eo.CinderEndpoint == "" {
 		return nil, fmt.Errorf("CinderEndpoint is required")
 	}
+
+	token := strings.Split(client.TokenID, ":")
+	if len(token) != 2 {
+		return nil, fmt.Errorf("Malformed noauth token")
+	}
+
+	endpoint := fmt.Sprintf("%s%s", gophercloud.NormalizeURL(eo.CinderEndpoint), token[1])
+	sc.Endpoint = gophercloud.NormalizeURL(endpoint)
 	sc.ProviderClient = client
-	sc.Type = clientType
 	return sc, nil
 }
 
-// NewBlockStorageV2 creates a ServiceClient that may be used to access a v2 "noauth"
-// block storage service.
+// NewBlockStorageV2 creates a ServiceClient that may be used to access a
+// "noauth" block storage service.
 func NewBlockStorageV2(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo, "volumev2")
+	return initClientOpts(client, eo)
 }

@@ -1,5 +1,6 @@
 /*
-Package noauth creates a "noauth" *gophercloud.ServiceClient.
+Package noauth creates a "noauth" *gophercloud.ServiceClient for use in Cinder
+environments configured with the noauth authentication middleware.
 
 Example of Creating a noauth Service Client
 
@@ -9,7 +10,6 @@ Example of Creating a noauth Service Client
 		CinderEndpoint: os.Getenv("CINDER_ENDPOINT"),
 	})
 
-e.g.
-	CinderEndpoint: "http://cinder:8776/v2",
+	An example of a CinderEndpoint would be: http://example.com:8776/v2,
 */
 package noauth
