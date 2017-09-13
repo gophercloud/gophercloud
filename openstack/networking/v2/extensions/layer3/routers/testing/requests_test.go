@@ -44,6 +44,21 @@ func TestList(t *testing.T) {
             "tenant_id": "33a40233088643acb66ff6eb0ebea679",
             "distributed": false,
             "id": "a9254bdb-2613-4a13-ac4c-adc581fba50d"
+        },
+        {
+            "status": "ACTIVE",
+            "external_gateway_info": {
+                "network_id": "2b37576e-b050-4891-8b20-e1e37a93942a",
+                "external_fixed_ips": [
+                    {"ip_address": "192.0.2.17", "subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
+                    {"ip_address": "198.51.100.33", "subnet_id": "1d699529-bdfd-43f8-bcaa-bff00c547af2"}
+                ]
+            },
+            "name": "gateway",
+            "admin_state_up": true,
+            "tenant_id": "a3e881e0a6534880c5473d95b9442099",
+            "distributed": false,
+            "id": "308a035c-005d-4452-a9fe-6f8f2f0c28d8"
         }
     ]
 }
@@ -78,6 +93,21 @@ func TestList(t *testing.T) {
 				Name:         "router1",
 				ID:           "a9254bdb-2613-4a13-ac4c-adc581fba50d",
 				TenantID:     "33a40233088643acb66ff6eb0ebea679",
+			},
+			{
+				Status: "ACTIVE",
+				GatewayInfo: routers.GatewayInfo{
+					NetworkID: "2b37576e-b050-4891-8b20-e1e37a93942a",
+					ExternalFixedIPs: []routers.ExternalFixedIP{
+						{IP: "192.0.2.17", SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
+						{IP: "198.51.100.33", SubnetID: "1d699529-bdfd-43f8-bcaa-bff00c547af2"},
+					},
+				},
+				AdminStateUp: true,
+				Distributed:  false,
+				Name:         "gateway",
+				ID:           "308a035c-005d-4452-a9fe-6f8f2f0c28d8",
+				TenantID:     "a3e881e0a6534880c5473d95b9442099",
 			},
 		}
 
