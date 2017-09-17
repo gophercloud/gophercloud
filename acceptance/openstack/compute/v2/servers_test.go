@@ -409,6 +409,37 @@ func TestServersActionResizeRevert(t *testing.T) {
 	}
 }
 
+func TestServersActionLock(t *testing.T) {
+	t.Parallel()
+
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	server, err := CreateServer(t, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer DeleteServer(t, client, server)
+
+	t.Logf("Attempting to Lock server %s", server.ID)
+	err = lockunlock.Lock(client, server.ID).ExtractErr()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = lockunlock.Unlock(client, server.ID).ExtractErr()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = WaitForComputeStatus(client, server, "ACTIVE")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestServersActionPause(t *testing.T) {
 	t.Parallel()
 
@@ -471,37 +502,6 @@ func TestServersActionSuspend(t *testing.T) {
 	}
 
 	err = suspendresume.Resume(client, server.ID).ExtractErr()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = WaitForComputeStatus(client, server, "ACTIVE")
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestServersActionLock(t *testing.T) {
-	t.Parallel()
-
-	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
-
-	server, err := CreateServer(t, client)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer DeleteServer(t, client, server)
-
-	t.Logf("Attempting to Lock server %s", server.ID)
-	err = lockunlock.Lock(client, server.ID).ExtractErr()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = lockunlock.Unlock(client, server.ID).ExtractErr()
 	if err != nil {
 		t.Fatal(err)
 	}
