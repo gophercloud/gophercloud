@@ -12,6 +12,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/attachinterfaces"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/pauseunpause"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/lockunlock"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/suspendresume"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -470,6 +471,37 @@ func TestServersActionSuspend(t *testing.T) {
 	}
 
 	err = suspendresume.Resume(client, server.ID).ExtractErr()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = WaitForComputeStatus(client, server, "ACTIVE")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestServersActionLock(t *testing.T) {
+	t.Parallel()
+
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	server, err := CreateServer(t, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer DeleteServer(t, client, server)
+
+	t.Logf("Attempting to Lock server %s", server.ID)
+	err = lockunlock.Lock(client, server.ID).ExtractErr()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = lockunlock.Unlock(client, server.ID).ExtractErr()
 	if err != nil {
 		t.Fatal(err)
 	}
