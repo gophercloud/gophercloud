@@ -500,6 +500,11 @@ func TestServersActionLock(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	
+    err := servers.Delete(client, server.ID).ExtractErr()
+    if err == nil {
+    	t.Fatalf("Should not have been able to delete the server")
+    }
 
 	err = lockunlock.Unlock(client, server.ID).ExtractErr()
 	if err != nil {
