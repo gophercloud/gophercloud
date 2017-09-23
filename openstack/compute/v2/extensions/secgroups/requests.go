@@ -95,7 +95,7 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 }
 
 // Delete will permanently delete a security group from the project.
-func Delete(client *gophercloud.ServiceClient, id string) (r gophercloud.ErrResult) {
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(resourceURL(client, id), nil)
 	return
 }
@@ -158,7 +158,7 @@ func CreateRule(client *gophercloud.ServiceClient, opts CreateRuleOptsBuilder) (
 }
 
 // DeleteRule will permanently delete a rule from a security group.
-func DeleteRule(client *gophercloud.ServiceClient, id string) (r gophercloud.ErrResult) {
+func DeleteRule(client *gophercloud.ServiceClient, id string) (r DeleteRuleResult) {
 	_, r.Err = client.Delete(resourceRuleURL(client, id), nil)
 	return
 }
@@ -171,13 +171,13 @@ func actionMap(prefix, groupName string) map[string]map[string]string {
 
 // AddServer will associate a server and a security group, enforcing the
 // rules of the group on the server.
-func AddServer(client *gophercloud.ServiceClient, serverID, groupName string) (r gophercloud.ErrResult) {
+func AddServer(client *gophercloud.ServiceClient, serverID, groupName string) (r AddServerResult) {
 	_, r.Err = client.Post(serverActionURL(client, serverID), actionMap("add", groupName), &r.Body, nil)
 	return
 }
 
 // RemoveServer will disassociate a server from a security group.
-func RemoveServer(client *gophercloud.ServiceClient, serverID, groupName string) (r gophercloud.ErrResult) {
+func RemoveServer(client *gophercloud.ServiceClient, serverID, groupName string) (r RemoveServerResult) {
 	_, r.Err = client.Post(serverActionURL(client, serverID), actionMap("remove", groupName), &r.Body, nil)
 	return
 }

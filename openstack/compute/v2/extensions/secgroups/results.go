@@ -188,3 +188,27 @@ func (r CreateRuleResult) Extract() (*Rule, error) {
 	err := r.ExtractInto(&s)
 	return s.Rule, err
 }
+
+// DeleteResult is the response from delete operation. Call its ExtractErr
+// method to determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// DeleteRuleResult is the response from a DeleteRule operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type DeleteRuleResult struct {
+	gophercloud.ErrResult
+}
+
+// AddServerResult is the response from an AddServer operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type AddServerResult struct {
+	gophercloud.ErrResult
+}
+
+// RemoveServerResult is the response from a RemoveServer operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type RemoveServerResult struct {
+	gophercloud.ErrResult
+}
