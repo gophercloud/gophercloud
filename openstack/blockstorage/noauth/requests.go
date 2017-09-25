@@ -17,29 +17,19 @@ type EndpointOpts struct {
 
 /*
 NewClient prepares an unauthenticated ProviderClient instance.
-Most users will probably prefer using the UnAuthenticatedClient function
-instead.
 */
 func NewClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
-	client := &gophercloud.ProviderClient{
-		TokenID: fmt.Sprintf("%s:%s", options.Username, options.TenantName),
-	}
-
-	return client, nil
-}
-
-// UnAuthenticatedClient allows for standalone "noauth" Cinder usage.
-func UnAuthenticatedClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
 	if options.Username == "" {
 		options.Username = "admin"
 	}
 	if options.TenantName == "" {
 		options.TenantName = "admin"
 	}
-	client, err := NewClient(options)
-	if err != nil {
-		return nil, err
+
+	client := &gophercloud.ProviderClient{
+		TokenID: fmt.Sprintf("%s:%s", options.Username, options.TenantName),
 	}
+
 	return client, nil
 }
 

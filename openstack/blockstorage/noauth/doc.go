@@ -5,7 +5,7 @@ environments configured with the noauth authentication middleware.
 Example of Creating a noauth Service Client
 
 	ao, err := openstack.AuthOptionsFromEnv()
-	provider, err := noauth.UnAuthenticatedClient(ao)
+	provider, err := noauth.NewClient(ao)
 	client, err := noauth.NewBlockStorageV2(provider, noauth.EndpointOpts{
 		CinderEndpoint: os.Getenv("CINDER_ENDPOINT"),
 	})
