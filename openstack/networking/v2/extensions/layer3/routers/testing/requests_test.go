@@ -99,8 +99,8 @@ func TestList(t *testing.T) {
 				GatewayInfo: routers.GatewayInfo{
 					NetworkID: "2b37576e-b050-4891-8b20-e1e37a93942a",
 					ExternalFixedIPs: []routers.ExternalFixedIP{
-						{IP: "192.0.2.17", SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
-						{IP: "198.51.100.33", SubnetID: "1d699529-bdfd-43f8-bcaa-bff00c547af2"},
+						{IPAddress: "192.0.2.17", SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
+						{IPAddress: "198.51.100.33", SubnetID: "1d699529-bdfd-43f8-bcaa-bff00c547af2"},
 					},
 				},
 				AdminStateUp: true,
@@ -177,8 +177,8 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	gwi.ExternalFixedIPs = []routers.ExternalFixedIP{{
-		IP:       "192.0.2.17",
-		SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def",
+		IPAddress: "192.0.2.17",
+		SubnetID:  "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def",
 	}}
 
 	th.AssertEquals(t, "foo_router", r.Name)
@@ -230,7 +230,7 @@ func TestGet(t *testing.T) {
 	th.AssertDeepEquals(t, n.GatewayInfo, routers.GatewayInfo{
 		NetworkID: "85d76829-6415-48ff-9c63-5c5ca8c61ac6",
 		ExternalFixedIPs: []routers.ExternalFixedIP{
-			{IP: "198.51.100.33", SubnetID: "1d699529-bdfd-43f8-bcaa-bff00c547af2"},
+			{IPAddress: "198.51.100.33", SubnetID: "1d699529-bdfd-43f8-bcaa-bff00c547af2"},
 		},
 	})
 	th.AssertEquals(t, n.Name, "router1")
@@ -303,7 +303,7 @@ func TestUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	gwi.ExternalFixedIPs = []routers.ExternalFixedIP{
-		{IP: "192.0.2.17", SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
+		{IPAddress: "192.0.2.17", SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
 	}
 
 	th.AssertEquals(t, n.Name, "new_name")
