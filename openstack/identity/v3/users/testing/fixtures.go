@@ -196,6 +196,8 @@ const ListGroupsOutput = `
 }
 `
 
+// Sample response from "https://developer.openstack.org/api-ref/identity/v3/#list-projects-for-user"
+// by the Openstack Foundation is licensed under CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
 // ListProjectsOutput provides a ListProjects result.
 const ListProjectsOutput = `
 {
@@ -336,6 +338,8 @@ var SecondGroup = groups.Group{
 
 var ExpectedGroupsSlice = []groups.Group{FirstGroup, SecondGroup}
 
+// Parsed response is derivative of "https://developer.openstack.org/api-ref/identity/v3/#list-projects-for-user"
+// by the Openstack Foundation is licensed under CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
 var FirstProject = projects.Project{
 	Description: "description of this project",
 	DomainID:    "161718",
