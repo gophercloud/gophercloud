@@ -15,9 +15,7 @@ type EndpointOpts struct {
 	CinderEndpoint string
 }
 
-/*
-NewClient prepares an unauthenticated ProviderClient instance.
-*/
+// NewClient prepares an unauthenticated ProviderClient instance.
 func NewClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, error) {
 	if options.Username == "" {
 		options.Username = "admin"

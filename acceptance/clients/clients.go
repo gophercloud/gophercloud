@@ -10,6 +10,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/noauth"
 )
 
 // AcceptanceTestChoices contains image and flavor selections for use by the acceptance tests.
@@ -133,6 +134,23 @@ func NewBlockStorageV2Client() (*gophercloud.ServiceClient, error) {
 
 	return openstack.NewBlockStorageV2(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
+// NewBlockStorageV2NoAuthClient returns a noauth *ServiceClient for
+// making calls to the OpenStack Block Storage v2 API. An error will be
+// returned if client creation was not possible.
+func NewBlockStorageV2NoAuthClient() (*gophercloud.ServiceClient, error) {
+	client, err := noauth.NewClient(gophercloud.AuthOptions{
+		Username:   os.Getenv("OS_USERNAME"),
+		TenantName: os.Getenv("OS_TENANT_NAME"),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return noauth.NewBlockStorageV2(client, noauth.EndpointOpts{
+		CinderEndpoint: os.Getenv("CINDER_ENDPOINT"),
 	})
 }
 
