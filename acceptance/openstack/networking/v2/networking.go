@@ -43,6 +43,7 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subn
 		Name:         portName,
 		AdminStateUp: gophercloud.Enabled,
 		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
+		ExtraDHCPOPTS: &[]string{},
 	}
 
 	port, err := ports.Create(client, createOpts).Extract()
