@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/groupresults"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/userresults"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -197,7 +197,7 @@ const ListGroupsOutput = `
 
 // FirstUser is the first user in the List request.
 var nilTime time.Time
-var FirstUser = users.User{
+var FirstUser = userresults.User{
 	DomainID: "default",
 	Enabled:  true,
 	ID:       "2844b2a08be147a08ef58317d6471f1f",
@@ -214,7 +214,7 @@ var FirstUser = users.User{
 
 // SecondUser is the second user in the List request.
 var SecondUserPasswordExpiresAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2016-11-06T15:32:17.000000")
-var SecondUser = users.User{
+var SecondUser = userresults.User{
 	DefaultProjectID: "263fd9",
 	DomainID:         "1789d1",
 	Enabled:          true,
@@ -236,7 +236,7 @@ var SecondUser = users.User{
 	},
 }
 
-var SecondUserNoOptions = users.User{
+var SecondUserNoOptions = userresults.User{
 	DefaultProjectID: "263fd9",
 	DomainID:         "1789d1",
 	Enabled:          true,
@@ -252,7 +252,7 @@ var SecondUserNoOptions = users.User{
 }
 
 // SecondUserUpdated is how SecondUser should look after an Update.
-var SecondUserUpdated = users.User{
+var SecondUserUpdated = userresults.User{
 	DefaultProjectID: "263fd9",
 	DomainID:         "1789d1",
 	Enabled:          false,
@@ -272,9 +272,9 @@ var SecondUserUpdated = users.User{
 }
 
 // ExpectedUsersSlice is the slice of users expected to be returned from ListOutput.
-var ExpectedUsersSlice = []users.User{FirstUser, SecondUser}
+var ExpectedUsersSlice = []userresults.User{FirstUser, SecondUser}
 
-var FirstGroup = groups.Group{
+var FirstGroup = groupresults.Group{
 	Description: "Developers cleared for work on all general projects",
 	DomainID:    "1789d1",
 	ID:          "ea167b",
@@ -287,7 +287,7 @@ var FirstGroup = groups.Group{
 	Name: "Developers",
 }
 
-var SecondGroup = groups.Group{
+var SecondGroup = groupresults.Group{
 	Description: "Developers cleared for work on secret projects",
 	DomainID:    "1789d1",
 	ID:          "a62db1",
@@ -298,7 +298,7 @@ var SecondGroup = groups.Group{
 	Name:  "Secure Developers",
 }
 
-var ExpectedGroupsSlice = []groups.Group{FirstGroup, SecondGroup}
+var ExpectedGroupsSlice = []groupresults.Group{FirstGroup, SecondGroup}
 
 // HandleListUsersSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that responds with a list of two users.

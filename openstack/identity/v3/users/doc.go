@@ -71,7 +71,7 @@ Example to List Groups a User Belongs To
 		panic(err)
 	}
 
-	allGroups, err := users.ExtractGroups(allPages)
+	allGroups, err := groups.ExtractGroups(allPages)
 	if err != nil {
 		panic(err)
 	}

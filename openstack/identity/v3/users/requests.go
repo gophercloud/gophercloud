@@ -2,7 +2,8 @@ package users
 
 import (
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/groupresults"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/userresults"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -65,12 +66,12 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		url += query
 	}
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return UserPage{pagination.LinkedPageBase{PageResult: r}}
+		return userresults.UserPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
 // Get retrieves details on a single user, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+func Get(client *gophercloud.ServiceClient, id string) (r userresults.GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
 	return
 }
@@ -127,7 +128,7 @@ func (opts CreateOpts) ToUserCreateMap() (map[string]interface{}, error) {
 }
 
 // Create creates a new User.
-func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r userresults.CreateResult) {
 	b, err := opts.ToUserCreateMap()
 	if err != nil {
 		r.Err = err
@@ -191,7 +192,7 @@ func (opts UpdateOpts) ToUserUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update updates an existing User.
-func Update(client *gophercloud.ServiceClient, userID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(client *gophercloud.ServiceClient, userID string, opts UpdateOptsBuilder) (r userresults.UpdateResult) {
 	b, err := opts.ToUserUpdateMap()
 	if err != nil {
 		r.Err = err
@@ -204,7 +205,7 @@ func Update(client *gophercloud.ServiceClient, userID string, opts UpdateOptsBui
 }
 
 // Delete deletes a user.
-func Delete(client *gophercloud.ServiceClient, userID string) (r DeleteResult) {
+func Delete(client *gophercloud.ServiceClient, userID string) (r userresults.DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, userID), nil)
 	return
 }
@@ -213,6 +214,6 @@ func Delete(client *gophercloud.ServiceClient, userID string) (r DeleteResult) {
 func ListGroups(client *gophercloud.ServiceClient, userID string) pagination.Pager {
 	url := listGroupsURL(client, userID)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return groups.GroupPage{pagination.LinkedPageBase{PageResult: r}}
+		return groupresults.GroupPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
