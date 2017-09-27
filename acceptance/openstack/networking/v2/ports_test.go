@@ -67,9 +67,11 @@ func TestPortsCRUD(t *testing.T) {
 
 	// Update port
 	newPortName := tools.RandomString("TESTACC-", 8)
+	extraPort := []string{}
+	extraPort = append(extraPort, tools.RandomString("TESTACC-", 8))
 	updateOpts := ports.UpdateOpts{
-		Name: newPortName,
-		ExtraDHCPOPTS: []string{},
+		Name:          newPortName,
+		ExtraDHCPOPTS: extraPort,
 	}
 	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
 	if err != nil {
