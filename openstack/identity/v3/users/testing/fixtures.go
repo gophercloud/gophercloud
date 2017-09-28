@@ -196,40 +196,38 @@ const ListGroupsOutput = `
 }
 `
 
-// Sample response from "https://developer.openstack.org/api-ref/identity/v3/#list-projects-for-user"
-// by the Openstack Foundation is licensed under CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
 // ListProjectsOutput provides a ListProjects result.
 const ListProjectsOutput = `
 {
+    "links": {
+        "next": null,
+        "previous": null,
+        "self": "http://localhost:5000/identity/v3/users/foobar/projects",
+    },
     "projects": [
         {
-            "description": "description of this project",
-            "domain_id": "161718",
+            "description": "my first project",
+            "domain_id": "11111",
             "enabled": true,
-            "id": "456788",
+            "id": "abcde",
             "links": {
-                "self": "http://example.com/identity/v3/projects/456788"
+                "self": "http://localhost:5000/identity/v3/projects/abcde"
             },
-            "name": "a project name",
-            "parent_id": "212223"
+            "name": "project 1",
+            "parent_id": "11111"
         },
         {
-            "description": "description of this project",
-            "domain_id": "161718",
+            "description": "my second project",
+            "domain_id": "22222",
             "enabled": true,
-            "id": "456789",
+            "id": "bcdef",
             "links": {
-                "self": "http://example.com/identity/v3/projects/456789"
+                "self": "http://localhost:5000/identity/v3/projects/bcdef"
             },
-            "name": "another domain",
-            "parent_id": "212223"
+            "name": "project 2",
+            "parent_id": "22222"
         }
-    ],
-    "links": {
-        "self": "http://example.com/identity/v3/users/313233/projects",
-        "previous": null,
-        "next": null
-    }
+    ]
 }
 `
 
@@ -338,24 +336,22 @@ var SecondGroup = groups.Group{
 
 var ExpectedGroupsSlice = []groups.Group{FirstGroup, SecondGroup}
 
-// Parsed response is derivative of "https://developer.openstack.org/api-ref/identity/v3/#list-projects-for-user"
-// by the Openstack Foundation is licensed under CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/)
 var FirstProject = projects.Project{
-	Description: "description of this project",
-	DomainID:    "161718",
+	Description: "my first project",
+	DomainID:    "11111",
 	Enabled:     true,
-	ID:          "456788",
-	Name:        "a project name",
-	ParentID:    "212223",
+	ID:          "abcde",
+	Name:        "project 1",
+	ParentID:    "11111",
 }
 
 var SecondProject = projects.Project{
-	Description: "description of this project",
-	DomainID:    "161718",
+	Description: "my second project",
+	DomainID:    "22222",
 	Enabled:     true,
-	ID:          "456789",
-	Name:        "another domain",
-	ParentID:    "212223",
+	ID:          "bcdef",
+	Name:        "project 2",
+	ParentID:    "22222",
 }
 
 var ExpectedProjectsSlice = []projects.Project{FirstProject, SecondProject}
