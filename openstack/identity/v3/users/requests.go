@@ -225,3 +225,11 @@ func ListProjects(client *gophercloud.ServiceClient, userID string) pagination.P
 		return projects.ProjectPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// ListInGroup enumerates users that belong to a group.
+func ListInGroup(client *gophercloud.ServiceClient, groupID string) pagination.Pager {
+	url := listInGroupURL(client, groupID)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return UserPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}

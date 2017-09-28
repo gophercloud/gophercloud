@@ -98,5 +98,23 @@ Example to List Projects a User Belongs To
 		fmt.Printf("%+v\n", project)
 	}
 
+Example to List Users in a Group
+
+	groupID := "bede500ee1124ae9b0006ff859758b3a"
+
+	allPages, err := users.ListInGroup(identityClient, groupID).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allUsers, err := users.ExtractUsers(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, user := range allUsers {
+		fmt.Printf("%+v\n", user)
+	}
+
 */
 package users

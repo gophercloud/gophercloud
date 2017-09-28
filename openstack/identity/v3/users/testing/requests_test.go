@@ -158,3 +158,14 @@ func TestListUserProjects(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedProjectsSlice, actual)
 }
+
+func TestListInGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListInGroupSuccessfully(t)
+	allPages, err := users.ListInGroup(client.ServiceClient(), "ea167b").AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := users.ExtractUsers(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedUsersSlice, actual)
+}
