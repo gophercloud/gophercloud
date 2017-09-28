@@ -93,7 +93,7 @@ func TestCreate(t *testing.T) {
 	}
 
 	externalCreateOpts := external.CreateOptsExt{
-		CreateOptsBuilder:	networkCreateOpts,
+		struct:		networkCreateOpts,
 		External:	&iFalse,
 	}
 
@@ -129,7 +129,7 @@ func TestUpdate(t *testing.T) {
 	}
 
 	externalUpdateOpts := external.UpdateOptsExt{
-		UpdateOptsBuilder: 	networkUpdateOpts,
+		struct: 			networkUpdateOpts,
 		External:			&iFalse,
 	}
 
