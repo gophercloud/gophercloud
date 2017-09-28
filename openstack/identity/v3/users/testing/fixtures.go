@@ -202,7 +202,7 @@ const ListProjectsOutput = `
     "links": {
         "next": null,
         "previous": null,
-        "self": "http://localhost:5000/identity/v3/users/foobar/projects",
+        "self": "http://localhost:5000/identity/v3/users/foobar/projects"
     },
     "projects": [
         {
