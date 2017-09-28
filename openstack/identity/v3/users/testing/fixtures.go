@@ -461,3 +461,17 @@ func HandleListUserProjectsSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, ListProjectsOutput)
 	})
 }
+
+// HandleListInGroupSuccessfully creates an HTTP handler at /groups/{groupID}/users
+// on the test handler mux that response with a list of two users
+func HandleListInGroupSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/groups/ea167b/users", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListOutput)
+	})
+}
