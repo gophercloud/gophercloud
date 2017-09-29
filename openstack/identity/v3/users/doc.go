@@ -89,7 +89,7 @@ Example to List Projects a User Belongs To
 		panic(err)
 	}
 
-	allProjects, err := projects.ExtractGroups(allPages)
+	allProjects, err := projects.ExtractProjects(allPages)
 	if err != nil {
 		panic(err)
 	}
