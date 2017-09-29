@@ -3,6 +3,7 @@ package users
 import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -214,5 +215,13 @@ func ListGroups(client *gophercloud.ServiceClient, userID string) pagination.Pag
 	url := listGroupsURL(client, userID)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return groups.GroupPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+// ListProjects enumerates groups user belongs to.
+func ListProjects(client *gophercloud.ServiceClient, userID string) pagination.Pager {
+	url := listProjectsURL(client, userID)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return projects.ProjectPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
