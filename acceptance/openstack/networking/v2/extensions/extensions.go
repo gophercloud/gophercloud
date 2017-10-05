@@ -28,7 +28,7 @@ func CreateExternalNetwork(t *testing.T, client *gophercloud.ServiceClient) (*ne
 	}
 
 	createOpts := external.CreateOptsExt{
-		struct:				networkCreateOpts,
+		networkCreateOpts:				&networkCreateOpts,
 		External:			&isExternal,
 	}
 
