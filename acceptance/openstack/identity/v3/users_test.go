@@ -187,3 +187,36 @@ func TestUsersListProjects(t *testing.T) {
 		tools.PrintResource(t, project)
 	}
 }
+
+func TestUsersListInGroup(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v", err)
+	}
+	allGroupPages, err := groups.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list groups: %v", err)
+	}
+
+	allGroups, err := groups.ExtractGroups(allGroupPages)
+	if err != nil {
+		t.Fatalf("Unable to extract groups: %v", err)
+	}
+
+	group := allGroups[0]
+
+	allUserPages, err := users.ListInGroup(client, group.ID, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list users: %v", err)
+	}
+
+	allUsers, err := users.ExtractUsers(allUserPages)
+	if err != nil {
+		t.Fatalf("Unable to extract users: %v", err)
+	}
+
+	for _, user := range allUsers {
+		tools.PrintResource(t, user)
+		tools.PrintResource(t, user.Extra)
+	}
+}
