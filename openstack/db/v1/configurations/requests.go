@@ -168,14 +168,14 @@ func GetGlobalParam(client *gophercloud.ServiceClient, versionID, paramID string
 
 // AttachConfigGroup will attach configuration group to the instance
 func AttachConfigGroup(client *gophercloud.ServiceClient, id string, configID string) (r commonResult) {
-        b := map[string]interface{}{"instance": map[string]interface{}{"configuration": configID}}
-        _, r.Err = client.Put(resourceURL(client, id), &b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
-        return
+	b := map[string]interface{}{"instance": map[string]interface{}{"configuration": configID}}
+	_, r.Err = client.Put(resourceURL(client, id), &b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	return
 }
 
 // DetachConfigGroup will dettach configuration group from the instance
 func DetachConfigGroup(client *gophercloud.ServiceClient, id string) (r commonResult) {
-        b := map[string]interface{}{"instance": map[string]interface{}{}}
-        _, r.Err = client.Put(resourceURL(client, id), &b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
-        return
+	b := map[string]interface{}{"instance": map[string]interface{}{}}
+	_, r.Err = client.Put(resourceURL(client, id), &b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	return
 }

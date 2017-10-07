@@ -237,19 +237,19 @@ func TestGetGlobalParam(t *testing.T) {
 }
 
 func TestAttachConfigGroup(t *testing.T) {
-        th.SetupHTTP()
-        defer th.TeardownHTTP()
-        fixture.SetupHandler(t, resURL, "PUT", "", "", 202)
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	fixture.SetupHandler(t, resURL, "PUT", "", "", 202)
 
-        _, err := configurations.AttachConfigGroup(fake.ServiceClient(), configID, "zzz").Extract()
-        th.AssertNoErr(t, err)
+	_, err := configurations.AttachConfigGroup(fake.ServiceClient(), configID, "zzz").Extract()
+	th.AssertNoErr(t, err)
 }
 
 func TestDetachConfigGroup(t *testing.T) {
-        th.SetupHTTP()
-        defer th.TeardownHTTP()
-        fixture.SetupHandler(t, resURL, "PUT", "", "", 202)
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	fixture.SetupHandler(t, resURL, "PUT", "", "", 202)
 
-        _, err := configurations.DetachConfigGroup(fake.ServiceClient(), configID).Extract()
-        th.AssertNoErr(t, err)
+	_, err := configurations.DetachConfigGroup(fake.ServiceClient(), configID).Extract()
+	th.AssertNoErr(t, err)
 }
