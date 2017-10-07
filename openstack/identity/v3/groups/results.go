@@ -63,6 +63,12 @@ type groupResult struct {
 	gophercloud.Result
 }
 
+// GetResult is the response from a Get operation. Call its Extract method
+// to interpret it as a Group.
+type GetResult struct {
+	groupResult
+}
+
 // GroupPage is a single page of Group results.
 type GroupPage struct {
 	pagination.LinkedPageBase
