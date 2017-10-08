@@ -8,8 +8,6 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-
-
 func TestEvacuate(t *testing.T) {
 	const serverID = "b16ba811-199d-4ffd-8839-ba96c1185a67"
 	th.SetupHTTP()
@@ -18,12 +16,11 @@ func TestEvacuate(t *testing.T) {
 	mockEvacuateResponse(t, serverID)
 
 	err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{
-		Host:      			"derp",
-		AdminPass: 			"false",
-		OnSharedStorage: 	false,
+		Host:            "derp",
+		AdminPass:       "false",
+		OnSharedStorage: false,
 	}).ExtractErr()
 	if err != nil && err.Error() != "EOF" {
 		t.Fatalf("Unable to evacuate to server: %s", err)
 	}
 }
-
