@@ -241,7 +241,7 @@ func TestAttachConfigGroup(t *testing.T) {
 	defer th.TeardownHTTP()
 	fixture.SetupHandler(t, resURL, "PUT", "", "", 202)
 
-	_, err := configurations.AttachConfigGroup(fake.ServiceClient(), configID, "zzz").Extract()
+	_, err := configurations.AttachConfigGroup(fake.ServiceClient(), "0000-0000-0000-0000", configID).Extract()
 	th.AssertNoErr(t, err)
 }
 
