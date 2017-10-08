@@ -222,7 +222,7 @@ func ListGroups(client *gophercloud.ServiceClient, userID string) pagination.Pag
 func ListProjects(client *gophercloud.ServiceClient, userID string) pagination.Pager {
 	url := listProjectsURL(client, userID)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return projects.ProjectPage{pagination.LinkedPageBase{PageResult: r}}
+		return projects.ProjectPage{LinkedPageBase: pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
