@@ -13,10 +13,10 @@ type EvacuateOptsBuilder interface {
 // EvacuateOpts specifies Evacuate action parameters.
 type EvacuateOpts struct {
 	// The name of the host to which the server is evacuated
-	Host string `json:"host"`
+	Host string `json:"host,omitempty"`
 
 	// Indicates whether server is on shared storage
-	onSharedStorage *bool `json:"onSharedStorage"`
+	OnSharedStorage bool `json:"OnSharedStorage"`
 
 	// An administrative password to access the evacuated server
 	AdminPass string `json:"adminPass,omitempty"`

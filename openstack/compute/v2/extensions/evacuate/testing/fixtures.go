@@ -15,8 +15,9 @@ func mockEvacuateResponse(t *testing.T, id string) {
 		th.TestJSONRequest(t, r, `
 		{
 		    "evacuate": {
-		    	"host": "derp",
-		        "adminPass": "false"
+		    	"OnSharedStorage": false,
+			    "adminPass": "false",
+			    "host": "derp"
 		    }
 		}
 		      `)
