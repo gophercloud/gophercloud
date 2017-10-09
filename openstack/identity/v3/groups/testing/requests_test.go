@@ -54,3 +54,22 @@ func TestGetGroup(t *testing.T) {
 	th.CheckDeepEquals(t, SecondGroup, *actual)
 	th.AssertEquals(t, SecondGroup.Extra["email"], "support@example.com")
 }
+
+func TestCreateGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateGroupSuccessfully(t)
+
+	createOpts := groups.CreateOpts{
+		Name:        "support",
+		DomainID:    "1789d1",
+		Description: "group for support users",
+		Extra: map[string]interface{}{
+			"email": "support@example.com",
+		},
+	}
+
+	actual, err := groups.Create(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondGroup, *actual)
+}

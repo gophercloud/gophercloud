@@ -46,3 +46,55 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
 	return
 }
+
+// CreateOptsBuilder allows extensions to add additional parameters to
+// the Create request.
+type CreateOptsBuilder interface {
+	ToGroupCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts provides options used to create a group.
+type CreateOpts struct {
+	// Name is the name of the new group.
+	Name string `json:"name" required:"true"`
+
+	// Description is a description of the group.
+	Description string `json:"description,omitempty"`
+
+	// DomainID is the ID of the domain the group belongs to.
+	DomainID string `json:"domain_id,omitempty"`
+
+	// Extra is free-form extra key/value pairs to describe the group.
+	Extra map[string]interface{} `json:"-"`
+}
+
+// ToGroupCreateMap formats a CreateOpts into a create request.
+func (opts CreateOpts) ToGroupCreateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "group")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		if v, ok := b["group"].(map[string]interface{}); ok {
+			for key, value := range opts.Extra {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
+}
+
+// Create creates a new Group.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToGroupCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}

@@ -69,6 +69,12 @@ type GetResult struct {
 	groupResult
 }
 
+// CreateResult is the response from a Create operation. Call its Extract method
+// to interpret it as a Group.
+type CreateResult struct {
+	groupResult
+}
+
 // GroupPage is a single page of Group results.
 type GroupPage struct {
 	pagination.LinkedPageBase
