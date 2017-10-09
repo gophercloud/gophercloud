@@ -17,8 +17,37 @@ func TestEvacuate(t *testing.T) {
 
 	err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{
 		Host:            "derp",
-		AdminPass:       "false",
+		AdminPass:       "true",
 		OnSharedStorage: false,
+	}).ExtractErr()
+	if err != nil && err.Error() != "EOF" {
+		t.Fatalf("Unable to evacuate to server: %s", err)
+	}
+}
+
+func TestEvacuateWithHost(t *testing.T) {
+	const serverID = "b16ba811-199d-4ffd-8839-ba96c1185a67"
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockEvacuateResponseWithHost(t, serverID)
+
+	err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{
+		Host:            "derp",
+	}).ExtractErr()
+	if err != nil && err.Error() != "EOF" {
+		t.Fatalf("Unable to evacuate to server: %s", err)
+	}
+}
+
+func TestEvacuateWithNoOpts(t *testing.T) {
+	const serverID = "b16ba811-199d-4ffd-8839-ba96c1185a67"
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockEvacuateResponseWithNoOpts(t, serverID)
+
+	err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{
 	}).ExtractErr()
 	if err != nil && err.Error() != "EOF" {
 		t.Fatalf("Unable to evacuate to server: %s", err)
