@@ -1,6 +1,8 @@
 package quotasets
 
 import (
+	"fmt"
+
 	"github.com/gophercloud/gophercloud"
 )
 
@@ -8,6 +10,13 @@ import (
 func Get(client *gophercloud.ServiceClient, tenantID string) GetResult {
 	var res GetResult
 	_, res.Err = client.Get(getURL(client, tenantID), &res.Body, nil)
+	return res
+}
+
+// GetDetail returns detailed public data about a previously created QuotaSet.
+func GetDetail(client *gophercloud.ServiceClient, tenantID string) GetResultDetail {
+	var res GetResultDetail
+	_, res.Err = client.Get(getURL(client, fmt.Sprintf("%s/detail", tenantID)), &res.Body, nil)
 	return res
 }
 

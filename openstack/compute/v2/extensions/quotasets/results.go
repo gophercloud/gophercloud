@@ -55,6 +55,68 @@ type QuotaSet struct {
 	ServerGroupMembers int `json:"server_group_members"`
 }
 
+// QuotaDetailSet is detail on both operational limits that allow for control
+// of compute usage and also currently measured allocation against those limits.
+type QuotaDetailSet struct {
+	// ID is tenant associated with this QuotaDetailSet.
+	ID string `json:"id"`
+
+	// FixedIps is number of fixed ips alloted this QuotaDetailSet.
+	FixedIps QuotaDetail `json:"fixed_ips"`
+
+	// FloatingIps is number of floating ips alloted this QuotaDetailSet.
+	FloatingIps QuotaDetail `json:"floating_ips"`
+
+	// InjectedFileContentBytes is the allowed bytes for each injected file.
+	InjectedFileContentBytes QuotaDetail `json:"injected_file_content_bytes"`
+
+	// InjectedFilePathBytes is allowed bytes for each injected file path.
+	InjectedFilePathBytes QuotaDetail `json:"injected_file_path_bytes"`
+
+	// InjectedFiles is the number of injected files allowed for each project.
+	InjectedFiles QuotaDetail `json:"injected_files"`
+
+	// KeyPairs is number of ssh keypairs.
+	KeyPairs QuotaDetail `json:"key_pairs"`
+
+	// MetadataItems is number of metadata items allowed for each instance.
+	MetadataItems QuotaDetail `json:"metadata_items"`
+
+	// Ram is megabytes allowed for each instance.
+	Ram QuotaDetail `json:"ram"`
+
+	// SecurityGroupRules is number of security group rules allowed for each
+	// security group.
+	SecurityGroupRules QuotaDetail `json:"security_group_rules"`
+
+	// SecurityGroups is the number of security groups allowed for each project.
+	SecurityGroups QuotaDetail `json:"security_groups"`
+
+	// Cores is number of instance cores allowed for each project.
+	Cores QuotaDetail `json:"cores"`
+
+	// Instances is number of instances allowed for each project.
+	Instances QuotaDetail `json:"instances"`
+
+	// ServerGroups is the number of ServerGroups allowed for the project.
+	ServerGroups QuotaDetail `json:"server_groups"`
+
+	// ServerGroupMembers is the number of members for each ServerGroup.
+	ServerGroupMembers QuotaDetail `json:"server_group_members"`
+}
+
+// QuotaDetail is a set of details about a single operational limit that allows for control of compute usage.
+type QuotaDetail struct {
+	// InUse is the current number of provisioned/allocated resources of the given type.
+	InUse int `json:"in_use"`
+
+	// Reserved is a transitional state when a claim against quota has been made but the resource is not yet fully online.
+	Reserved int `json:"reserved"`
+
+	// Limit is the maximum number of a given resource that can be allocated/provisioned.  This is what "quota" usually refers to.
+	Limit int `json:"limit"`
+}
+
 // QuotaSetPage stores a single page of all QuotaSet results from a List call.
 type QuotaSetPage struct {
 	pagination.SinglePageBase
@@ -105,4 +167,24 @@ type UpdateResult struct {
 // to interpret it as a QuotaSet.
 type DeleteResult struct {
 	quotaResult
+}
+
+type quotaResultDetail struct {
+	gophercloud.Result
+}
+
+// GetResult is the response from a Get operation. Call its Extract method to interpret it
+// as a QuotaSet.
+type GetResultDetail struct {
+	quotaResultDetail
+}
+
+// ExtractDetails is a method that attempts to interpret any QuotaDetailSet
+// resource response as an array of QuotaDetailSet structs.
+func (r quotaResultDetail) Extract() (QuotaDetailSet, error) {
+	var s struct {
+		QuotaData QuotaDetailSet `json:"quota_set"`
+	}
+	err := r.ExtractInto(&s)
+	return s.QuotaData, err
 }
