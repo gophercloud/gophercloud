@@ -39,11 +39,11 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subn
 	t.Logf("Attempting to create port: %s", portName)
 
 	createOpts := ports.CreateOpts{
-		NetworkID:    	networkID,
-		Name:         	portName,
-		AdminStateUp: 	gophercloud.Enabled,
-		FixedIPs:     	[]ports.IP{ports.IP{SubnetID: subnetID}},
-		ExtraDHCPOPTS:	&[]string{tools.RandomString("TESTACC-", 8)},
+		NetworkID:     networkID,
+		Name:          portName,
+		AdminStateUp:  gophercloud.Enabled,
+		FixedIPs:      []ports.IP{ports.IP{SubnetID: subnetID}},
+		ExtraDHCPOPTS: &[]string{tools.RandomString("TESTACC-", 8)},
 	}
 
 	port, err := ports.Create(client, createOpts).Extract()
