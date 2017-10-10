@@ -22,7 +22,7 @@ func mockEvacuateResponse(t *testing.T, id string) {
 
 		}
 		      `)
-		w.WriteHeader(http.StatusAccepted)
+		w.WriteHeader(http.StatusOK)
 	})
 }
 
@@ -39,7 +39,7 @@ func mockEvacuateResponseWithHost(t *testing.T, id string) {
 
 		}
 		      `)
-		w.WriteHeader(http.StatusAccepted)
+		w.WriteHeader(http.StatusOK)
 	})
 }
 
@@ -55,6 +55,6 @@ func mockEvacuateResponseWithNoOpts(t *testing.T, id string) {
 
 		}
 		      `)
-		w.WriteHeader(http.StatusAccepted)
+		w.WriteHeader(http.StatusOK)
 	})
 }
