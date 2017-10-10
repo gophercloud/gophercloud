@@ -15,10 +15,11 @@ func mockEvacuateResponse(t *testing.T, id string) {
 		th.TestJSONRequest(t, r, `
 		{
 		    "evacuate": {
-		    	"OnSharedStorage": false,
-			    "adminPass": "true",
-			    "host": "derp"
-		    }
+		    "adminPass": "MySecretPass",
+		    "host": "derp",
+		    "onSharedStorage": false
+		  }
+
 		}
 		      `)
 		w.WriteHeader(http.StatusAccepted)
@@ -32,9 +33,10 @@ func mockEvacuateResponseWithHost(t *testing.T, id string) {
 		th.TestJSONRequest(t, r, `
 		{
 		    "evacuate": {
-		    	"OnSharedStorage": false,
-			    "host": "derp"
-		    }
+		    "host": "derp",
+		    "onSharedStorage": false
+		  }
+
 		}
 		      `)
 		w.WriteHeader(http.StatusAccepted)
@@ -48,8 +50,9 @@ func mockEvacuateResponseWithNoOpts(t *testing.T, id string) {
 		th.TestJSONRequest(t, r, `
 		{
 		    "evacuate": {
-		    	"OnSharedStorage": false
+		    "onSharedStorage": false
 		  }
+
 		}
 		      `)
 		w.WriteHeader(http.StatusAccepted)

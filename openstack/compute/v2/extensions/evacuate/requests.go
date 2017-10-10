@@ -16,7 +16,7 @@ type EvacuateOpts struct {
 	Host string `json:"host,omitempty"`
 
 	// Indicates whether server is on shared storage
-	OnSharedStorage bool `json:"OnSharedStorage"`
+	OnSharedStorage bool `json:"onSharedStorage"`
 
 	// An administrative password to access the evacuated server
 	AdminPass string `json:"adminPass,omitempty"`
@@ -35,7 +35,17 @@ func Evacuate(client *gophercloud.ServiceClient, id string, opts EvacuateOptsBui
 		return
 	}
 	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{202},
+		OkCodes: []int{200},
 	})
 	return
+}
+
+func (r EvacuateResult) ExtractAdminPass() (string, error) {
+	if r.Err != nil && r.Err.Error() != "EOF" {
+		return "", r.Err
+	}
+	if l, ok := r.Header["adminPass"]; ok && len(l) > 0 {
+		return l[0], nil
+	}
+	return "", nil
 }

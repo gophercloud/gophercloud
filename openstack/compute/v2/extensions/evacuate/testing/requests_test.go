@@ -15,12 +15,12 @@ func TestEvacuate(t *testing.T) {
 
 	mockEvacuateResponse(t, serverID)
 
-	err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{
+	_, err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{
 		Host:            "derp",
-		AdminPass:       "true",
+		AdminPass:       "MySecretPass",
 		OnSharedStorage: false,
-	}).ExtractErr()
-	if err != nil && err.Error() != "EOF" {
+	}).ExtractAdminPass()
+	if err != nil {
 		t.Fatalf("Unable to evacuate to server: %s", err)
 	}
 }
@@ -32,10 +32,10 @@ func TestEvacuateWithHost(t *testing.T) {
 
 	mockEvacuateResponseWithHost(t, serverID)
 
-	err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{
+	_, err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{
 		Host: "derp",
-	}).ExtractErr()
-	if err != nil && err.Error() != "EOF" {
+	}).ExtractAdminPass()
+	if err != nil {
 		t.Fatalf("Unable to evacuate to server: %s", err)
 	}
 }
@@ -47,8 +47,8 @@ func TestEvacuateWithNoOpts(t *testing.T) {
 
 	mockEvacuateResponseWithNoOpts(t, serverID)
 
-	err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{}).ExtractErr()
-	if err != nil && err.Error() != "EOF" {
+	_, err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{}).ExtractAdminPass()
+	if err != nil {
 		t.Fatalf("Unable to evacuate to server: %s", err)
 	}
 }
