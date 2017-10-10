@@ -65,6 +65,18 @@ const GetOutput = `
 }
 `
 
+// CreateRequest provides the input to a Create request.
+const CreateRequest = `
+{
+    "group": {
+        "domain_id": "1789d1",
+        "name": "support",
+        "description": "group for support users",
+        "email": "support@example.com"
+    }
+}
+`
+
 // FirstGroup is the first group in the List request.
 var FirstGroup = groups.Group{
 	DomainID: "default",
@@ -120,6 +132,19 @@ func HandleGetGroupSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleCreateGroupSuccessfully creates an HTTP handler at `/groups` on the
+// test handler mux that tests group creation.
+func HandleCreateGroupSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/groups", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
+
+		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, GetOutput)
 	})
 }

@@ -10,16 +10,33 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
 )
 
-func TestGroupsList(t *testing.T) {
+func TestGroupCRUD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	if err != nil {
 		t.Fatalf("Unable to obtain an identity client: %v", err)
 	}
 
+	createOpts := groups.CreateOpts{
+		Name:     "testgroup",
+		DomainID: "default",
+		Extra: map[string]interface{}{
+			"email": "testgroup@example.com",
+		},
+	}
+
+	// Create Group in the default domain
+	group, err := CreateGroup(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create group: %v", err)
+	}
+	tools.PrintResource(t, group)
+	tools.PrintResource(t, group.Extra)
+
 	listOpts := groups.ListOpts{
 		DomainID: "default",
 	}
 
+	// List all Groups in default domain
 	allPages, err := groups.List(client, listOpts).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to list groups: %v", err)
@@ -30,29 +47,12 @@ func TestGroupsList(t *testing.T) {
 		t.Fatalf("Unable to extract groups: %v", err)
 	}
 
-	for _, group := range allGroups {
-		tools.PrintResource(t, group)
-		tools.PrintResource(t, group.Extra)
-	}
-}
-
-func TestGroupsGet(t *testing.T) {
-	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
+	for _, g := range allGroups {
+		tools.PrintResource(t, g)
+		tools.PrintResource(t, g.Extra)
 	}
 
-	allPages, err := groups.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list groups: %v", err)
-	}
-
-	allGroups, err := groups.ExtractGroups(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract groups: %v", err)
-	}
-
-	group := allGroups[0]
+	// Get the recently created group by ID
 	p, err := groups.Get(client, group.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get group: %v", err)
