@@ -29,6 +29,8 @@ func TestGroupCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create group: %v", err)
 	}
+	defer DeleteGroup(t, client, group.ID)
+
 	tools.PrintResource(t, group)
 	tools.PrintResource(t, group.Extra)
 

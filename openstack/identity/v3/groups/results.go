@@ -75,6 +75,12 @@ type CreateResult struct {
 	groupResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // GroupPage is a single page of Group results.
 type GroupPage struct {
 	pagination.LinkedPageBase

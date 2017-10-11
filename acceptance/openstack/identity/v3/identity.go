@@ -114,3 +114,15 @@ func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, userID string) 
 
 	t.Logf("Deleted user: %s", userID)
 }
+
+// DeleteGroup will delete a group by ID. A fatal error will occur if
+// the group failed to be deleted. This works best when using it as
+// a deferred function.
+func DeleteGroup(t *testing.T, client *gophercloud.ServiceClient, groupID string) {
+	err := groups.Delete(client, groupID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete group %s: %v", groupID, err)
+	}
+
+	t.Logf("Deleted group: %s", groupID)
+}

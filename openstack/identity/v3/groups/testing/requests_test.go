@@ -73,3 +73,12 @@ func TestCreateGroup(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondGroup, *actual)
 }
+
+func TestDeleteGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteGroupSuccessfully(t)
+
+	res := groups.Delete(client.ServiceClient(), "9fe1d3")
+	th.AssertNoErr(t, res.Err)
+}

@@ -98,3 +98,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// Delete deletes a group.
+func Delete(client *gophercloud.ServiceClient, groupID string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, groupID), nil)
+	return
+}
