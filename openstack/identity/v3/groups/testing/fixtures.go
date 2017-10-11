@@ -77,6 +77,34 @@ const CreateRequest = `
 }
 `
 
+// UpdateRequest provides the input to as Update request.
+const UpdateRequest = `
+{
+    "group": {
+        "description": "L2 Support Team",
+        "email": "supportteam@example.com"
+    }
+}
+`
+
+// UpdateOutput provides an update result.
+const UpdateOutput = `
+{
+    "group": {
+        "domain_id": "1789d1",
+        "id": "9fe1d3",
+        "links": {
+            "self": "https://example.com/identity/v3/groups/9fe1d3"
+        },
+        "name": "support",
+        "description": "L2 Support Team",
+        "extra": {
+            "email": "supportteam@example.com"
+        }
+    }
+}
+`
+
 // FirstGroup is the first group in the List request.
 var FirstGroup = groups.Group{
 	DomainID: "default",
@@ -102,6 +130,20 @@ var SecondGroup = groups.Group{
 	Description: "group for support users",
 	Extra: map[string]interface{}{
 		"email": "support@example.com",
+	},
+}
+
+// SecondGroupUpdated is how SecondGroup should look after an Update.
+var SecondGroupUpdated = groups.Group{
+	DomainID: "1789d1",
+	ID:       "9fe1d3",
+	Links: map[string]interface{}{
+		"self": "https://example.com/identity/v3/groups/9fe1d3",
+	},
+	Name:        "support",
+	Description: "L2 Support Team",
+	Extra: map[string]interface{}{
+		"email": "supportteam@example.com",
 	},
 }
 
@@ -146,6 +188,19 @@ func HandleCreateGroupSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleUpdateGroupSuccessfully creates an HTTP handler at `/groups` on the
+// test handler mux that tests group update.
+func HandleUpdateGroupSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/groups/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, UpdateOutput)
 	})
 }
 

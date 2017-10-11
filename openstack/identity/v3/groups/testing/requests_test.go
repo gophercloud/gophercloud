@@ -74,6 +74,23 @@ func TestCreateGroup(t *testing.T) {
 	th.CheckDeepEquals(t, SecondGroup, *actual)
 }
 
+func TestUpdateGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateGroupSuccessfully(t)
+
+	updateOpts := groups.UpdateOpts{
+		Description: "L2 Support Team",
+		Extra: map[string]interface{}{
+			"email": "supportteam@example.com",
+		},
+	}
+
+	actual, err := groups.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondGroupUpdated, *actual)
+}
+
 func TestDeleteGroup(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

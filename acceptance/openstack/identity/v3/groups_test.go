@@ -34,6 +34,21 @@ func TestGroupCRUD(t *testing.T) {
 	tools.PrintResource(t, group)
 	tools.PrintResource(t, group.Extra)
 
+	updateOpts := groups.UpdateOpts{
+		Description: "Test Users",
+		Extra: map[string]interface{}{
+			"email": "thetestgroup@example.com",
+		},
+	}
+
+	newGroup, err := groups.Update(client, group.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update group: %v", err)
+	}
+
+	tools.PrintResource(t, newGroup)
+	tools.PrintResource(t, newGroup.Extra)
+
 	listOpts := groups.ListOpts{
 		DomainID: "default",
 	}
