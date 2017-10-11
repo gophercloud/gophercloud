@@ -2,6 +2,26 @@
 Package roles provides information and interaction with the roles API
 resource for the OpenStack Identity service.
 
+Example to List Roles
+
+	listOpts := roles.ListOpts{
+		DomainID: "default",
+	}
+
+	allPages, err := roles.List(identityClient, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allRoles, err := roles.ExtractRoles(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, role := range allRoles {
+		fmt.Printf("%+v\n", role)
+	}
+
 Example to List Role Assignments
 
 	listOpts := roles.ListAssignmentsOpts{
