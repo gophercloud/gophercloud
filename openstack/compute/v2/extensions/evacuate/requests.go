@@ -41,11 +41,12 @@ func Evacuate(client *gophercloud.ServiceClient, id string, opts EvacuateOptsBui
 }
 
 func (r EvacuateResult) ExtractAdminPass() (string, error) {
-	if r.Err != nil && r.Err.Error() != "EOF" {
-		return "", r.Err
+	var s struct {
+		AdminPass string `json:"adminPass"`
 	}
-	if l, ok := r.Header["adminPass"]; ok && len(l) > 0 {
-		return l[0], nil
+	err := r.ExtractInto(&s)
+	if err != nil && err.Error() != "EOF" {
+		return s.AdminPass, err
 	}
-	return "", nil
+	return s.AdminPass, nil
 }

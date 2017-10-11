@@ -52,3 +52,16 @@ func TestEvacuateWithNoOpts(t *testing.T) {
 		t.Fatalf("Unable to evacuate to server: %s", err)
 	}
 }
+
+func TestEvacuateAdminpassResponse(t *testing.T) {
+	const serverID = "b16ba811-199d-4ffd-8839-ba96c1185a67"
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockEvacuateAdminpassResponse(t, serverID)
+
+	_, err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{}).ExtractAdminPass()
+	if err != nil {
+		t.Fatalf("Unable to evacuate to server: %s", err)
+	}
+}
