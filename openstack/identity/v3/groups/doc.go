@@ -36,6 +36,19 @@ Example to Create a Group
 		panic(err)
 	}
 
+Example to Update a Group
+
+	groupID := "0fe36e73809d46aeae6705c39077b1b3"
+
+	updateOpts := groups.UpdateOpts{
+		Description: "Updated Description for group",
+	}
+
+	group, err := groups.Update(identityClient, groupID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Delete a Group
 
 	groupID := "0fe36e73809d46aeae6705c39077b1b3"
