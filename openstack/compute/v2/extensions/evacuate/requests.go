@@ -46,7 +46,7 @@ func (r EvacuateResult) ExtractAdminPass() (string, error) {
 	}
 	err := r.ExtractInto(&s)
 	if err != nil && err.Error() == "EOF" {
-	  return "", nil
+		return "", nil
 	}
 	if err != nil && err.Error() != "EOF" {
 		return s.AdminPass, err
