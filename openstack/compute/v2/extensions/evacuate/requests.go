@@ -45,8 +45,11 @@ func (r EvacuateResult) ExtractAdminPass() (string, error) {
 		AdminPass string `json:"adminPass"`
 	}
 	err := r.ExtractInto(&s)
+	if err != nil && err.Error() == "EOF" {
+	  return "", nil
+	}
 	if err != nil && err.Error() != "EOF" {
 		return s.AdminPass, err
 	}
-	return s.AdminPass, nil
+	return s.AdminPass, err
 }

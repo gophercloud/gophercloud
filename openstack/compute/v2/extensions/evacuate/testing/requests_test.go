@@ -60,7 +60,8 @@ func TestEvacuateAdminpassResponse(t *testing.T) {
 
 	mockEvacuateAdminpassResponse(t, serverID)
 
-	_, err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{}).ExtractAdminPass()
+	actual, err := evacuate.Evacuate(client.ServiceClient(), serverID, evacuate.EvacuateOpts{}).ExtractAdminPass()
+	th.CheckEquals(t, "MySecretPass", actual)
 	if err != nil {
 		t.Fatalf("Unable to evacuate to server: %s", err)
 	}
