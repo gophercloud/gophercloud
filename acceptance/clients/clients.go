@@ -36,6 +36,12 @@ type AcceptanceTestChoices struct {
 
 	// ShareNetworkID is the Manila Share network ID
 	ShareNetworkID string
+
+	// DBDatastoreType is the datastore type for DB tests.
+	DBDatastoreType string
+
+	// DBDatastoreTypeID is the datastore type version for DB tests.
+	DBDatastoreVersion string
 }
 
 // AcceptanceTestChoicesFromEnv populates a ComputeChoices struct from environment variables.
@@ -48,6 +54,8 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	floatingIPPoolName := os.Getenv("OS_POOL_NAME")
 	externalNetworkID := os.Getenv("OS_EXTGW_ID")
 	shareNetworkID := os.Getenv("OS_SHARE_NETWORK_ID")
+	dbDatastoreType := os.Getenv("OS_DB_DATASTORE_TYPE")
+	dbDatastoreVersion := os.Getenv("OS_DB_DATASTORE_VERSION")
 
 	missing := make([]string, 0, 3)
 	if imageID == "" {
@@ -96,6 +104,8 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 		NetworkName:        networkName,
 		ExternalNetworkID:  externalNetworkID,
 		ShareNetworkID:     shareNetworkID,
+		DBDatastoreType:    dbDatastoreType,
+		DBDatastoreVersion: dbDatastoreVersion,
 	}, nil
 }
 
