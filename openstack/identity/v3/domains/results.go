@@ -33,6 +33,12 @@ type GetResult struct {
 	domainResult
 }
 
+// CreateResult is the response from a Create operation. Call its Extract method
+// to interpret it as a Domain.
+type CreateResult struct {
+	domainResult
+}
+
 // DomainPage is a single page of Domain results.
 type DomainPage struct {
 	pagination.LinkedPageBase

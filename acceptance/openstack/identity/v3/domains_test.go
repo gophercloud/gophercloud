@@ -60,3 +60,23 @@ func TestDomainsGet(t *testing.T) {
 
 	tools.PrintResource(t, p)
 }
+
+func TestDomainCRUD(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v", err)
+	}
+
+	var iFalse bool = false
+	createOpts := domains.CreateOpts{
+		Description: "Testing Domain",
+		Enabled:     &iFalse,
+	}
+
+	domain, err := CreateDomain(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create domain: %v", err)
+	}
+
+	tools.PrintResource(t, domain)
+}
