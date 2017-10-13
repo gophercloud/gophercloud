@@ -82,3 +82,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// Delete deletes a domain.
+func Delete(client *gophercloud.ServiceClient, domainID string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, domainID), nil)
+	return
+}

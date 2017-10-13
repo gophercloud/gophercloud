@@ -33,5 +33,12 @@ Example to Create a Domain
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete a Domain
+
+	domainID := "0fe36e73809d46aeae6705c39077b1b3"
+	err := domains.Delete(identityClient, domainID).ExtractErr()
+	if err != nil {
+		panic(err)
 */
 package domains
