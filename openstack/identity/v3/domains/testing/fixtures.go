@@ -63,6 +63,30 @@ const CreateRequest = `
 }
 `
 
+// UpdateRequest provides the input to as Update request.
+const UpdateRequest = `
+{
+    "domain": {
+        "description": "Staging Domain"
+    }
+}
+`
+
+// UpdateOutput provides an update result.
+const UpdateOutput = `
+{
+    "domain": {
+		"enabled": true,
+        "id": "9fe1d3",
+        "links": {
+            "self": "https://example.com/identity/v3/domains/9fe1d3"
+        },
+        "name": "domain two",
+        "description": "Staging Domain"
+    }
+}
+`
+
 // FirstDomain is the first domain in the List request.
 var FirstDomain = domains.Domain{
 	Enabled: true,
@@ -82,6 +106,17 @@ var SecondDomain = domains.Domain{
 		"self": "https://example.com/identity/v3/domains/9fe1d3",
 	},
 	Name: "domain two",
+}
+
+// SecondDomainUpdated is how SecondDomain should look after an Update.
+var SecondDomainUpdated = domains.Domain{
+	Enabled: true,
+	ID:      "9fe1d3",
+	Links: map[string]interface{}{
+		"self": "https://example.com/identity/v3/domains/9fe1d3",
+	},
+	Name:        "domain two",
+	Description: "Staging Domain",
 }
 
 // ExpectedDomainsSlice is the slice of domains expected to be returned from ListOutput.
@@ -136,5 +171,18 @@ func HandleDeleteDomainSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleUpdateDomainSuccessfully creates an HTTP handler at `/domains` on the
+// test handler mux that tests domain update.
+func HandleUpdateDomainSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/domains/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, UpdateOutput)
 	})
 }

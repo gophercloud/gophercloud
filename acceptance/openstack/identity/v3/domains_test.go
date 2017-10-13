@@ -61,16 +61,16 @@ func TestDomainsGet(t *testing.T) {
 	tools.PrintResource(t, p)
 }
 
-func TestDomainCRUD(t *testing.T) {
+func TestDomainsCRUD(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	if err != nil {
 		t.Fatalf("Unable to obtain an identity client: %v", err)
 	}
 
-	var iFalse bool = false
+	var iTrue bool = true
 	createOpts := domains.CreateOpts{
 		Description: "Testing Domain",
-		Enabled:     &iFalse,
+		Enabled:     &iTrue,
 	}
 
 	domain, err := CreateDomain(t, client, &createOpts)
@@ -80,4 +80,17 @@ func TestDomainCRUD(t *testing.T) {
 	defer DeleteDomain(t, client, domain.ID)
 
 	tools.PrintResource(t, domain)
+
+	var iFalse bool = false
+	updateOpts := domains.UpdateOpts{
+		Description: "Staging Test Domain",
+		Enabled:     &iFalse,
+	}
+
+	newDomain, err := domains.Update(client, domain.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update domain: %v", err)
+	}
+
+	tools.PrintResource(t, newDomain)
 }

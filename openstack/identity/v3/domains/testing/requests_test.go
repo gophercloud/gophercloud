@@ -73,3 +73,17 @@ func TestDeleteDomain(t *testing.T) {
 	res := domains.Delete(client.ServiceClient(), "9fe1d3")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestUpdateDomain(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateDomainSuccessfully(t)
+
+	updateOpts := domains.UpdateOpts{
+		Description: "Staging Domain",
+	}
+
+	actual, err := domains.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondDomainUpdated, *actual)
+}

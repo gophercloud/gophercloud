@@ -17,3 +17,7 @@ func createURL(client *gophercloud.ServiceClient) string {
 func deleteURL(client *gophercloud.ServiceClient, domainID string) string {
 	return client.ServiceURL("domains", domainID)
 }
+
+func updateURL(client *gophercloud.ServiceClient, domainID string) string {
+	return client.ServiceURL("domains", domainID)
+}
