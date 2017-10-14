@@ -45,6 +45,12 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// UpdateResult is the result of an Update request. Call its Extract method to
+// interpret it as a Domain.
+type UpdateResult struct {
+	domainResult
+}
+
 // DomainPage is a single page of Domain results.
 type DomainPage struct {
 	pagination.LinkedPageBase

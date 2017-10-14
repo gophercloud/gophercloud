@@ -34,11 +34,26 @@ Example to Create a Domain
 		panic(err)
 	}
 
+Example to Update a Domain
+
+	domainID := "0fe36e73809d46aeae6705c39077b1b3"
+
+	var iFalse bool = false
+	updateOpts := domains.UpdateOpts{
+		Enabled: &iFalse,
+	}
+
+	domain, err := domains.Update(identityClient, domainID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Delete a Domain
 
 	domainID := "0fe36e73809d46aeae6705c39077b1b3"
 	err := domains.Delete(identityClient, domainID).ExtractErr()
 	if err != nil {
 		panic(err)
+	}
 */
 package domains

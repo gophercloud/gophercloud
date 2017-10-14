@@ -88,3 +88,39 @@ func Delete(client *gophercloud.ServiceClient, domainID string) (r DeleteResult)
 	_, r.Err = client.Delete(deleteURL(client, domainID), nil)
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to
+// the Update request.
+type UpdateOptsBuilder interface {
+	ToDomainUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents parameters to update a domain.
+type UpdateOpts struct {
+	// Name is the name of the domain.
+	Name string `json:"name,omitempty"`
+
+	// Description is the description of the domain.
+	Description string `json:"description,omitempty"`
+
+	// Enabled sets the domain status to enabled or disabled.
+	Enabled *bool `json:"enabled,omitempty"`
+}
+
+// ToUpdateCreateMap formats a UpdateOpts into an update request.
+func (opts UpdateOpts) ToDomainUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "domain")
+}
+
+// Update modifies the attributes of a domain.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToDomainUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
