@@ -127,3 +127,14 @@ func HandleCreateDomainSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, GetOutput)
 	})
 }
+
+// HandleDeleteDomainSuccessfully creates an HTTP handler at `/domains` on the
+// test handler mux that tests domain deletion.
+func HandleDeleteDomainSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/domains/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

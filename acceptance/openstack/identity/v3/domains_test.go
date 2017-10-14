@@ -77,6 +77,7 @@ func TestDomainCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create domain: %v", err)
 	}
+	defer DeleteDomain(t, client, domain.ID)
 
 	tools.PrintResource(t, domain)
 }

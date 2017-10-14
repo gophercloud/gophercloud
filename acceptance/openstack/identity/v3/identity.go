@@ -154,3 +154,15 @@ func DeleteGroup(t *testing.T, client *gophercloud.ServiceClient, groupID string
 
 	t.Logf("Deleted group: %s", groupID)
 }
+
+// DeleteDomain will delete a domain by ID. A fatal error will occur if
+// the project ID failed to be deleted. This works best when using it as
+// a deferred function.
+func DeleteDomain(t *testing.T, client *gophercloud.ServiceClient, domainID string) {
+	err := domains.Delete(client, domainID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete domain %s: %v", domainID, err)
+	}
+
+	t.Logf("Deleted domain: %s", domainID)
+}

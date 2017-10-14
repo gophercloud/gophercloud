@@ -64,3 +64,12 @@ func TestCreateDomain(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondDomain, *actual)
 }
+
+func TestDeleteDomain(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteDomainSuccessfully(t)
+
+	res := domains.Delete(client.ServiceClient(), "9fe1d3")
+	th.AssertNoErr(t, res.Err)
+}
