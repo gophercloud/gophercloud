@@ -39,17 +39,3 @@ func Evacuate(client *gophercloud.ServiceClient, id string, opts EvacuateOptsBui
 	})
 	return
 }
-
-func (r EvacuateResult) ExtractAdminPass() (string, error) {
-	var s struct {
-		AdminPass string `json:"adminPass"`
-	}
-	err := r.ExtractInto(&s)
-	if err != nil && err.Error() == "EOF" {
-		return "", nil
-	}
-	if err != nil && err.Error() != "EOF" {
-		return s.AdminPass, err
-	}
-	return s.AdminPass, err
-}
