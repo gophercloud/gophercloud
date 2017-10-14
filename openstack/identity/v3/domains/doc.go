@@ -21,5 +21,17 @@ Example to List Domains
 	for _, domain := range allDomains {
 		fmt.Printf("%+v\n", domain)
 	}
+
+Example to Create a Domain
+
+	createOpts := domains.CreateOpts{
+		Name:             "domain name",
+		Description:      "Test domain",
+	}
+
+	domain, err := domains.Create(identityClient, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package domains

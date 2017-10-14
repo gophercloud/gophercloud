@@ -50,3 +50,17 @@ func TestGetDomain(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondDomain, *actual)
 }
+
+func TestCreateDomain(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateDomainSuccessfully(t)
+
+	createOpts := domains.CreateOpts{
+		Name: "domain two",
+	}
+
+	actual, err := domains.Create(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondDomain, *actual)
+}

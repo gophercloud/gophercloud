@@ -5,6 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/domains"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
@@ -89,6 +90,33 @@ func CreateGroup(t *testing.T, client *gophercloud.ServiceClient, c *groups.Crea
 	t.Logf("Successfully created group %s with ID %s", name, group.ID)
 
 	return group, nil
+}
+
+// CreateDomain will create a domain with a random name.
+// It takes an optional createOpts parameter since creating a domain
+// has many options. An error will be returned if the domain was
+// unable to be created.
+func CreateDomain(t *testing.T, client *gophercloud.ServiceClient, c *domains.CreateOpts) (*domains.Domain, error) {
+	name := tools.RandomString("ACPTTEST", 8)
+	t.Logf("Attempting to create domain: %s", name)
+
+	var createOpts domains.CreateOpts
+	if c != nil {
+		createOpts = *c
+	} else {
+		createOpts = domains.CreateOpts{}
+	}
+
+	createOpts.Name = name
+
+	domain, err := domains.Create(client, createOpts).Extract()
+	if err != nil {
+		return domain, err
+	}
+
+	t.Logf("Successfully created domain %s with ID %s", name, domain.ID)
+
+	return domain, nil
 }
 
 // DeleteProject will delete a project by ID. A fatal error will occur if
