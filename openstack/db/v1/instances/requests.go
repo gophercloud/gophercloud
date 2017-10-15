@@ -203,3 +203,17 @@ func ResizeVolume(client *gophercloud.ServiceClient, id string, size int) (r Act
 	_, r.Err = client.Post(actionURL(client, id), &b, nil, nil)
 	return
 }
+
+// AttachConfigGroup will attach configuration group to the instance
+func AttachConfigGroup(client *gophercloud.ServiceClient, instanceID string, configID string) (r commonResult) {
+	b := map[string]interface{}{"instance": map[string]interface{}{"configuration": configID}}
+	_, r.Err = client.Put(resourceURL(client, instanceID), &b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	return
+}
+
+// DetachConfigGroup will dettach configuration group from the instance
+func DetachConfigGroup(client *gophercloud.ServiceClient, instanceID string) (r commonResult) {
+	b := map[string]interface{}{"instance": map[string]interface{}{}}
+	_, r.Err = client.Put(resourceURL(client, instanceID), &b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	return
+}

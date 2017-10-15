@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/testhelper/fixture"
 )
 
 func TestCreate(t *testing.T) {
@@ -130,5 +131,33 @@ func TestResizeVolume(t *testing.T) {
 	HandleResizeVol(t)
 
 	res := instances.ResizeVolume(fake.ServiceClient(), instanceID, 4)
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestAttachConfigGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	req := `{
+    	"instance": {
+        	"configuration": "00000000-0000-0000-0000-000000000000"
+    	}
+	}`
+	fixture.SetupHandler(t, resURL, "PUT", req, "", 202)
+
+	res := instances.AttachConfigGroup(fake.ServiceClient(), instanceID, "00000000-0000-0000-0000-000000000000")
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestDetachConfigGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	req := `{
+		"instance": {}
+	}`
+	fixture.SetupHandler(t, resURL, "PUT", req, "", 202)
+
+	res := instances.DetachConfigGroup(fake.ServiceClient(), instanceID)
 	th.AssertNoErr(t, res.Err)
 }
