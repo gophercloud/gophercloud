@@ -65,6 +65,13 @@ to set them manually.
 |`OS_NETWORK_NAME`|The internal/private network to launch instances on|
 |`OS_EXTGW_ID`|The external/public network|
 
+#### Database
+
+|Name|Description|
+|---|---|
+|`OS_DB_DATASTORE_TYPE`|The Datastore type to use. Example: `mariadb`|
+|`OS_DB_DATASTORE_VERSION`|The Datastore version to use. Example: `mariadb-10`|
+
 #### Shared file systems
 |Name|Description|
 |---|---|
