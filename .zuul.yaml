@@ -1,0 +1,5 @@
+- project:
+    name: theopenlab/gophercloud
+    check:
+      jobs:
+        - gophercloud-unittest
