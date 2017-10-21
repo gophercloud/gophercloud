@@ -17,20 +17,20 @@ type ListOptsBuilder interface {
 // by a particular port attribute. SortDir sets the direction, and is either
 // `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	Status        string    `q:"status"`
-	Name          string    `q:"name"`
-	AdminStateUp  *bool     `q:"admin_state_up"`
-	NetworkID     string    `q:"network_id"`
-	TenantID      string    `q:"tenant_id"`
-	DeviceOwner   string    `q:"device_owner"`
-	MACAddress    string    `q:"mac_address"`
-	ID            string    `q:"id"`
-	DeviceID      string    `q:"device_id"`
-	Limit         int       `q:"limit"`
-	Marker        string    `q:"marker"`
-	SortKey       string    `q:"sort_key"`
-	SortDir       string    `q:"sort_dir"`
-	ExtraDHCPOPTS *[]string `q:"extra_dhcp_opts"`
+	Status        string          `q:"status"`
+	Name          string          `q:"name"`
+	AdminStateUp  *bool           `q:"admin_state_up"`
+	NetworkID     string          `q:"network_id"`
+	TenantID      string          `q:"tenant_id"`
+	DeviceOwner   string          `q:"device_owner"`
+	MACAddress    string          `q:"mac_address"`
+	ID            string          `q:"id"`
+	DeviceID      string          `q:"device_id"`
+	Limit         int             `q:"limit"`
+	Marker        string          `q:"marker"`
+	SortKey       string          `q:"sort_key"`
+	SortDir       string          `q:"sort_dir"`
+	ExtraDHCPOPTS []ExtraDHCPOpts `q:"extra_dhcp_opts"`
 }
 
 // ToPortListQuery formats a ListOpts into a query string.
@@ -74,17 +74,17 @@ type CreateOptsBuilder interface {
 
 // CreateOpts represents the attributes used when creating a new port.
 type CreateOpts struct {
-	NetworkID           string        `json:"network_id" required:"true"`
-	Name                string        `json:"name,omitempty"`
-	AdminStateUp        *bool         `json:"admin_state_up,omitempty"`
-	MACAddress          string        `json:"mac_address,omitempty"`
-	FixedIPs            interface{}   `json:"fixed_ips,omitempty"`
-	DeviceID            string        `json:"device_id,omitempty"`
-	DeviceOwner         string        `json:"device_owner,omitempty"`
-	TenantID            string        `json:"tenant_id,omitempty"`
-	SecurityGroups      *[]string     `json:"security_groups,omitempty"`
-	AllowedAddressPairs []AddressPair `json:"allowed_address_pairs,omitempty"`
-	ExtraDHCPOPTS       *[]string     `json:"extra_dhcp_opts,omitempty"`
+	NetworkID           string          `json:"network_id" required:"true"`
+	Name                string          `json:"name,omitempty"`
+	AdminStateUp        *bool           `json:"admin_state_up,omitempty"`
+	MACAddress          string          `json:"mac_address,omitempty"`
+	FixedIPs            interface{}     `json:"fixed_ips,omitempty"`
+	DeviceID            string          `json:"device_id,omitempty"`
+	DeviceOwner         string          `json:"device_owner,omitempty"`
+	TenantID            string          `json:"tenant_id,omitempty"`
+	SecurityGroups      *[]string       `json:"security_groups,omitempty"`
+	AllowedAddressPairs []AddressPair   `json:"allowed_address_pairs,omitempty"`
+	ExtraDHCPOPTS       []ExtraDHCPOpts `json:"extra_dhcp_opts,omitempty"`
 }
 
 // ToPortCreateMap builds a request body from CreateOpts.
@@ -112,14 +112,14 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts represents the attributes used when updating an existing port.
 type UpdateOpts struct {
-	Name                string         `json:"name,omitempty"`
-	AdminStateUp        *bool          `json:"admin_state_up,omitempty"`
-	FixedIPs            interface{}    `json:"fixed_ips,omitempty"`
-	DeviceID            string         `json:"device_id,omitempty"`
-	DeviceOwner         string         `json:"device_owner,omitempty"`
-	SecurityGroups      *[]string      `json:"security_groups,omitempty"`
-	AllowedAddressPairs *[]AddressPair `json:"allowed_address_pairs,omitempty"`
-	ExtraDHCPOPTS       *[]string      `json:"extra_dhcp_opts,omitempty"`
+	Name                string           `json:"name,omitempty"`
+	AdminStateUp        *bool            `json:"admin_state_up,omitempty"`
+	FixedIPs            interface{}      `json:"fixed_ips,omitempty"`
+	DeviceID            string           `json:"device_id,omitempty"`
+	DeviceOwner         string           `json:"device_owner,omitempty"`
+	SecurityGroups      *[]string        `json:"security_groups,omitempty"`
+	AllowedAddressPairs *[]AddressPair   `json:"allowed_address_pairs,omitempty"`
+	ExtraDHCPOPTS       *[]ExtraDHCPOpts `json:"extra_dhcp_opts,omitempty"`
 }
 
 // ToPortUpdateMap builds a request body from UpdateOpts.
