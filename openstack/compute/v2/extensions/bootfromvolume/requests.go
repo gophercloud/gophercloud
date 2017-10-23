@@ -67,6 +67,12 @@ type BlockDevice struct {
 	// VolumeSize is the size of the volume to create (in gigabytes). This can be
 	// omitted for existing volumes.
 	VolumeSize int `json:"volume_size,omitempty"`
+
+	// DeviceType [optional] low level details that some hypervisors (currently only libvirt) may support. device_type value may be disk, cdrom, floppy, lun.
+	DeviceType string `json:"device_type"`
+
+	// DiskBus values can be: ide, usb, virtio, scsi
+	DiskBus string `json:"disk_bus"`
 }
 
 // CreateOptsExt is a structure that extends the server `CreateOpts` structure
