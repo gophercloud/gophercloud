@@ -69,10 +69,10 @@ type BlockDevice struct {
 	VolumeSize int `json:"volume_size,omitempty"`
 
 	// DeviceType [optional] low level details that some hypervisors (currently only libvirt) may support. device_type value may be disk, cdrom, floppy, lun.
-	DeviceType string `json:"device_type"`
+	DeviceType string `json:"device_type,omitempty"`
 
 	// DiskBus values can be: ide, usb, virtio, scsi
-	DiskBus string `json:"disk_bus"`
+	DiskBus string `json:"disk_bus,omitempty"`
 }
 
 // CreateOptsExt is a structure that extends the server `CreateOpts` structure
