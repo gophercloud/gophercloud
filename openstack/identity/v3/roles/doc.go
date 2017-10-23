@@ -58,5 +58,27 @@ Example to List Role Assignments
 	for _, role := range allRoles {
 		fmt.Printf("%+v\n", role)
 	}
+
+Example to Grant a Role to a User on a Project
+
+	projectID := "a99e9b4e620e4db09a2dfb6e42a01e66"
+	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
+	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
+
+	err := roles.AssignToUserOnProject(identityClient, roleID, userID, projectID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Remove a Role from a User on a project
+
+	projectID := "a99e9b4e620e4db09a2dfb6e42a01e66"
+	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
+	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
+
+	err := roles.UnassignFromUserOnProject(identityClient, roleID, userID, projectID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package roles

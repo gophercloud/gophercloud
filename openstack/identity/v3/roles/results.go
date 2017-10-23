@@ -188,3 +188,9 @@ func ExtractRoleAssignments(r pagination.Page) ([]RoleAssignment, error) {
 	err := (r.(RoleAssignmentPage)).ExtractInto(&s)
 	return s.RoleAssignments, err
 }
+
+// RoleAssignmentResult represents the result of assign or unassign operation.
+// Call ExtractErr method to determine if the request succeeded or failed.
+type RoleAssignmentResult struct {
+	gophercloud.ErrResult
+}

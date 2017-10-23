@@ -148,3 +148,21 @@ func ListAssignments(client *gophercloud.ServiceClient, opts ListAssignmentsOpts
 		return RoleAssignmentPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// AssignToUserOnProject is the operation responsible for assigning a role
+// to a user on a project.
+func AssignToUserOnProject(client *gophercloud.ServiceClient, roleID, userID, projectID string) (r RoleAssignmentResult) {
+	_, r.Err = client.Put(userOnProjectURL(client, projectID, userID, roleID), nil, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
+// UnassignFromUserOnProject is the operation responsible for assigning a role
+// to a user on a project.
+func UnassignFromUserOnProject(client *gophercloud.ServiceClient, roleID, userID, projectID string) (r RoleAssignmentResult) {
+	_, r.Err = client.Delete(userOnProjectURL(client, projectID, userID, roleID), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}

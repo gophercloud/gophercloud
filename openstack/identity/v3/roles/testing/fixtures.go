@@ -7,7 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/roles"
 	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
+	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 // ListOutput provides a single page of Role results.
@@ -103,7 +103,7 @@ func HandleListRolesSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/roles", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -117,7 +117,7 @@ func HandleGetRoleSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/roles/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -130,10 +130,26 @@ func HandleGetRoleSuccessfully(t *testing.T) {
 func HandleCreateRoleSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/roles", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+func HandleAssignToUserOnProjectSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleUnassignFromUserOnProjectSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
 	})
 }

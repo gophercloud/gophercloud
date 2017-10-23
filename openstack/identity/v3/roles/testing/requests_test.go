@@ -165,3 +165,21 @@ func TestListAssignmentsSinglePage(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestAssignToUserOnProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAssignToUserOnProjectSuccessfully(t)
+
+	err := roles.AssignToUserOnProject(client.ServiceClient(), "{role_id}", "{user_id}", "{project_id}").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestUnassignToUserOnProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUnassignFromUserOnProjectSuccessfully(t)
+
+	err := roles.UnassignFromUserOnProject(client.ServiceClient(), "{role_id}", "{user_id}", "{project_id}").ExtractErr()
+	th.AssertNoErr(t, err)
+}
