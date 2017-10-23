@@ -3,3 +3,4 @@
     check:
       jobs:
         - gophercloud-unittest
+        - gophercloud-acceptance-test
