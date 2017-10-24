@@ -6,5 +6,4 @@
         - gophercloud-acceptance-test
     recheck-pike:
       jobs:
-        - gophercloud-unittest
-
+        - gophercloud-acceptance-test-os-pike
