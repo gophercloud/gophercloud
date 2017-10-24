@@ -42,6 +42,7 @@ func TestListRolesAllPages(t *testing.T) {
 	actual, err := roles.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedRolesSlice, actual)
+	th.AssertEquals(t, ExpectedRolesSlice[1].Extra["description"], "read-only support role")
 }
 
 func TestGetRole(t *testing.T) {
@@ -51,6 +52,24 @@ func TestGetRole(t *testing.T) {
 
 	actual, err := roles.Get(client.ServiceClient(), "9fe1d3").Extract()
 
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondRole, *actual)
+}
+
+func TestCreateRole(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateRoleSuccessfully(t)
+
+	createOpts := roles.CreateOpts{
+		Name:     "support",
+		DomainID: "1789d1",
+		Extra: map[string]interface{}{
+			"description": "read-only support role",
+		},
+	}
+
+	actual, err := roles.Create(client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRole, *actual)
 }

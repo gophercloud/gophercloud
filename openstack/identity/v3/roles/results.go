@@ -1,7 +1,10 @@
 package roles
 
 import (
+	"encoding/json"
+
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/internal"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -18,6 +21,39 @@ type Role struct {
 
 	// Name is the role name
 	Name string `json:"name"`
+
+	// Extra is a collection of miscellaneous key/values.
+	Extra map[string]interface{} `json:"-"`
+}
+
+func (r *Role) UnmarshalJSON(b []byte) error {
+	type tmp Role
+	var s struct {
+		tmp
+		Extra map[string]interface{} `json:"extra"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Role(s.tmp)
+
+	// Collect other fields and bundle them into Extra
+	// but only if a field titled "extra" wasn't sent.
+	if s.Extra != nil {
+		r.Extra = s.Extra
+	} else {
+		var result interface{}
+		err := json.Unmarshal(b, &result)
+		if err != nil {
+			return err
+		}
+		if resultMap, ok := result.(map[string]interface{}); ok {
+			r.Extra = internal.RemainingKeys(Role{}, resultMap)
+		}
+	}
+
+	return err
 }
 
 type roleResult struct {
@@ -27,6 +63,12 @@ type roleResult struct {
 // GetResult is the response from a Get operation. Call its Extract method
 // to interpret it as a Role.
 type GetResult struct {
+	roleResult
+}
+
+// CreateResult is the response from a Create operation. Call its Extract method
+// to interpret it as a Role
+type CreateResult struct {
 	roleResult
 }
 

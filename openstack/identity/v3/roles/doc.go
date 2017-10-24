@@ -22,6 +22,22 @@ Example to List Roles
 		fmt.Printf("%+v\n", role)
 	}
 
+Example to Create a Role
+
+	createOpts := roles.CreateOpts{
+		Name:             "read-only-admin",
+		DomainID:         "default",
+		Extra: map[string]interface{}{
+			"description": "this role grants read-only privilege cross tenant",
+		}
+	}
+
+	role, err := roles.Create(identityClient, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+
 Example to List Role Assignments
 
 	listOpts := roles.ListAssignmentsOpts{
