@@ -48,6 +48,55 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	return
 }
 
+// CreateOptsBuilder allows extensions to add additional parameters to
+// the Create request.
+type CreateOptsBuilder interface {
+	ToRoleCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts provides options used to create a role.
+type CreateOpts struct {
+	// Name is the name of the new role.
+	Name string `json:"name" required:"true"`
+
+	// DomainID is the ID of the domain the role belongs to.
+	DomainID string `json:"domain_id,omitempty"`
+
+	// Extra is free-form extra key/value pairs to describe the role.
+	Extra map[string]interface{} `json:"-"`
+}
+
+// ToRoleCreateMap formats a CreateOpts into a create request.
+func (opts CreateOpts) ToRoleCreateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "role")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		if v, ok := b["role"].(map[string]interface{}); ok {
+			for key, value := range opts.Extra {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
+}
+
+// Create creates a new Role.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToRoleCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}
+
 // ListAssignmentsOptsBuilder allows extensions to add additional parameters to
 // the ListAssignments request.
 type ListAssignmentsOptsBuilder interface {

@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/domains"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/roles"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
 )
 
@@ -117,6 +118,33 @@ func CreateDomain(t *testing.T, client *gophercloud.ServiceClient, c *domains.Cr
 	t.Logf("Successfully created domain %s with ID %s", name, domain.ID)
 
 	return domain, nil
+}
+
+// CreateRole will create a role with a random name.
+// It takes an optional createOpts parameter since creating a role
+// has so many options. An error will be returned if the role was
+// unable to be created.
+func CreateRole(t *testing.T, client *gophercloud.ServiceClient, c *roles.CreateOpts) (*roles.Role, error) {
+	name := tools.RandomString("ACPTTEST", 8)
+	t.Logf("Attempting to create role: %s", name)
+
+	var createOpts roles.CreateOpts
+	if c != nil {
+		createOpts = *c
+	} else {
+		createOpts = roles.CreateOpts{}
+	}
+
+	createOpts.Name = name
+
+	role, err := roles.Create(client, createOpts).Extract()
+	if err != nil {
+		return role, err
+	}
+
+	t.Logf("Successfully created role %s with ID %s", name, role.ID)
+
+	return role, nil
 }
 
 // DeleteProject will delete a project by ID. A fatal error will occur if
