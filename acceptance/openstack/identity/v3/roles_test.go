@@ -59,3 +59,27 @@ func TestRolesGet(t *testing.T) {
 
 	tools.PrintResource(t, p)
 }
+
+func TestRoleCRUD(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v", err)
+	}
+
+	createOpts := roles.CreateOpts{
+		Name:     "testrole",
+		DomainID: "default",
+		Extra: map[string]interface{}{
+			"description": "test role description",
+		},
+	}
+
+	// Create Role in the default domain
+	role, err := CreateRole(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create role: %v", err)
+	}
+
+	tools.PrintResource(t, role)
+	tools.PrintResource(t, role.Extra)
+}
