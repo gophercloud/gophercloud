@@ -59,7 +59,7 @@ Example to List Role Assignments
 		fmt.Printf("%+v\n", role)
 	}
 
-Example to Grant a Role
+Example to Assign a Role to a User in a Project
 
 	projectID := "a99e9b4e620e4db09a2dfb6e42a01e66"
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
@@ -74,7 +74,7 @@ Example to Grant a Role
 		panic(err)
 	}
 
-Example to Remove a Role
+Example to Unassign a Role From a User in a Project
 
 	projectID := "a99e9b4e620e4db09a2dfb6e42a01e66"
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"

@@ -170,19 +170,19 @@ type AssignOpts struct {
 
 // UnassignOpts provides options to unassign a role
 type UnassignOpts struct {
-	// UserID is the ID of a user to assign a role
+	// UserID is the ID of a user to unassign a role
 	// Note: exactly one of UserID or GroupID must be provided
 	UserID string `xor:"GroupID"`
 
-	// GroupID is the ID of a group to assign a role
+	// GroupID is the ID of a group to unassign a role
 	// Note: exactly one of UserID or GroupID must be provided
 	GroupID string `xor:"UserID"`
 
-	// ProjectID is the ID of a project to assign a role on
+	// ProjectID is the ID of a project to unassign a role on
 	// Note: exactly one of ProjectID or DomainID must be provided
 	ProjectID string `xor:"DomainID"`
 
-	// DomainID is the ID of a domain to assign a role on
+	// DomainID is the ID of a domain to unassign a role on
 	// Note: exactly one of ProjectID or DomainID must be provided
 	DomainID string `xor:"ProjectID"`
 }
