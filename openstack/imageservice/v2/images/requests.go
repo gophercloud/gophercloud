@@ -45,6 +45,9 @@ type ListOpts struct {
 	// SizeMax filters on the size_max image property.
 	SizeMax int64 `q:"size_max"`
 
+	// Sort will sort the results based on a specified image properties (allow multi field sorting).
+	Sort string `q:"sort"`
+
 	// SortKey will sort the results based on a specified image property.
 	SortKey string `q:"sort_key"`
 
