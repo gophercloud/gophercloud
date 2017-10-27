@@ -198,7 +198,7 @@ func DeleteDomain(t *testing.T, client *gophercloud.ServiceClient, domainID stri
 // UnassignRole will delete a role assigned to a user/group on a project/domain
 // A fatal error will occur if it fails to delete the assignment.
 // This works best when using it as a deferred function.
-func UnassignRole(t *testing.T, client *gophercloud.ServiceClient, roleID string, opts *roles.AssignOpts) {
+func UnassignRole(t *testing.T, client *gophercloud.ServiceClient, roleID string, opts *roles.UnassignOpts) {
 	err := roles.Unassign(client, roleID, *opts).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to unassign a role %v on context %+v: %v", roleID, *opts, err)

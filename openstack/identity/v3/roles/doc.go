@@ -80,7 +80,7 @@ Example to Remove a Role
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
 	roleID := "9fe2ff9ee4384b1894a90878d3e92bab"
 
-	err := roles.Unassign(identityClient, roleID, roles.AssignOpts{
+	err := roles.Unassign(identityClient, roleID, roles.UnassignOpts{
 		UserID:    userID,
 		ProjectID: projectID,
 	}).ExtractErr()

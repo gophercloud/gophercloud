@@ -5,11 +5,11 @@ package v3
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/roles"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/domains"
-	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/roles"
 )
 
 func TestRolesList(t *testing.T) {
@@ -112,7 +112,7 @@ func TestRoleAssignToUserOnProject(t *testing.T) {
 		t.Fatalf("Unable to assign a role to a user on a project: %v", err)
 	}
 	t.Logf("Successfully assigned a role %s to a user %s on a project %s", role.Name, user.Name, project.Name)
-	defer UnassignRole(t, client, role.ID, &roles.AssignOpts{
+	defer UnassignRole(t, client, role.ID, &roles.UnassignOpts{
 		UserID:    user.ID,
 		ProjectID: project.ID,
 	})
@@ -171,7 +171,7 @@ func TestRoleAssignToUserOnDomain(t *testing.T) {
 		t.Fatalf("Unable to assign a role to a user on a domain: %v", err)
 	}
 	t.Logf("Successfully assigned a role %s to a user %s on a domain %s", role.Name, user.Name, domain.Name)
-	defer UnassignRole(t, client, role.ID, &roles.AssignOpts{
+	defer UnassignRole(t, client, role.ID, &roles.UnassignOpts{
 		UserID:   user.ID,
 		DomainID: domain.ID,
 	})
@@ -230,7 +230,7 @@ func TestRoleAssignToGroupOnDomain(t *testing.T) {
 		t.Fatalf("Unable to assign a role to a group on a domain: %v", err)
 	}
 	t.Logf("Successfully assigned a role %s to a group %s on a domain %s", role.Name, group.Name, domain.Name)
-	defer UnassignRole(t, client, role.ID, &roles.AssignOpts{
+	defer UnassignRole(t, client, role.ID, &roles.UnassignOpts{
 		GroupID:  group.ID,
 		DomainID: domain.ID,
 	})
@@ -287,7 +287,7 @@ func TestRoleAssignToGroupOnProject(t *testing.T) {
 		t.Fatalf("Unable to assign a role to a group on a project: %v", err)
 	}
 	t.Logf("Successfully assigned a role %s to a group %s on a project %s", role.Name, group.Name, project.Name)
-	defer UnassignRole(t, client, role.ID, &roles.AssignOpts{
+	defer UnassignRole(t, client, role.ID, &roles.UnassignOpts{
 		GroupID:   group.ID,
 		ProjectID: project.ID,
 	})

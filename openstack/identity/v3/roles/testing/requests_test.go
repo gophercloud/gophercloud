@@ -201,25 +201,25 @@ func TestUnassign(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUnassignSuccessfully(t)
 
-	err := roles.Unassign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err := roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
 		UserID:    "{user_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
 
-	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
 	}).ExtractErr()
