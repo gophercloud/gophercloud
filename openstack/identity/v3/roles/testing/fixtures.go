@@ -70,6 +70,32 @@ const CreateRequest = `
 }
 `
 
+// UpdateRequest provides the input to as Update request.
+const UpdateRequest = `
+{
+    "role": {
+        "description": "admin read-only support role"
+    }
+}
+`
+
+// UpdateOutput provides an update result.
+const UpdateOutput = `
+{
+    "role": {
+        "domain_id": "1789d1",
+        "id": "9fe1d3",
+        "links": {
+            "self": "https://example.com/identity/v3/roles/9fe1d3"
+        },
+        "name": "support",
+        "extra": {
+            "description": "admin read-only support role"
+        }
+    }
+}
+`
+
 // FirstRole is the first role in the List request.
 var FirstRole = roles.Role{
 	DomainID: "default",
@@ -91,6 +117,19 @@ var SecondRole = roles.Role{
 	Name: "support",
 	Extra: map[string]interface{}{
 		"description": "read-only support role",
+	},
+}
+
+// SecondRoleUpdated is how SecondRole should look after an Update.
+var SecondRoleUpdated = roles.Role{
+	DomainID: "1789d1",
+	ID:       "9fe1d3",
+	Links: map[string]interface{}{
+		"self": "https://example.com/identity/v3/roles/9fe1d3",
+	},
+	Name: "support",
+	Extra: map[string]interface{}{
+		"description": "admin read-only support role",
 	},
 }
 
@@ -135,6 +174,19 @@ func HandleCreateRoleSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleUpdateRoleSuccessfully creates an HTTP handler at `/roles` on the
+// test handler mux that tests role update.
+func HandleUpdateRoleSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/roles/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, UpdateOutput)
 	})
 }
 

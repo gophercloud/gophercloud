@@ -74,6 +74,22 @@ func TestCreateRole(t *testing.T) {
 	th.CheckDeepEquals(t, SecondRole, *actual)
 }
 
+func TestUpdateRole(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateRoleSuccessfully(t)
+
+	updateOpts := roles.UpdateOpts{
+		Extra: map[string]interface{}{
+			"description": "admin read-only support role",
+		},
+	}
+
+	actual, err := roles.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondRoleUpdated, *actual)
+}
+
 func TestDeleteRole(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

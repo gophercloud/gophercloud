@@ -18,6 +18,10 @@ func createURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL(rolePath)
 }
 
+func updateURL(client *gophercloud.ServiceClient, roleID string) string {
+	return client.ServiceURL(rolePath, roleID)
+}
+
 func deleteURL(client *gophercloud.ServiceClient, roleID string) string {
 	return client.ServiceURL(rolePath, roleID)
 }

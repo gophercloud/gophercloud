@@ -79,6 +79,20 @@ func TestRoleCRUD(t *testing.T) {
 
 	tools.PrintResource(t, role)
 	tools.PrintResource(t, role.Extra)
+
+	updateOpts := roles.UpdateOpts{
+		Extra: map[string]interface{}{
+			"description": "updated test role description",
+		},
+	}
+
+	newRole, err := roles.Update(client, role.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update role: %v", err)
+	}
+
+	tools.PrintResource(t, newRole)
+	tools.PrintResource(t, newRole.Extra)
 }
 
 func TestRoleAssignToUserOnProject(t *testing.T) {

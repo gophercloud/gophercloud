@@ -37,6 +37,19 @@ Example to Create a Role
 		panic(err)
 	}
 
+Example to Update a Role
+
+	roleID := "0fe36e73809d46aeae6705c39077b1b3"
+
+	updateOpts := roles.UpdateOpts{
+		Name: "read only admin",
+	}
+
+	role, err := roles.Update(identityClient, roleID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Delete a Role
 
 	roleID := "0fe36e73809d46aeae6705c39077b1b3"

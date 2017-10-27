@@ -97,6 +97,52 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
+// UpdateOptsBuilder allows extensions to add additional parameters to
+// the Update request.
+type UpdateOptsBuilder interface {
+	ToRoleUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts provides options for updating a role.
+type UpdateOpts struct {
+	// Name is the name of the new role.
+	Name string `json:"name,omitempty"`
+
+	// Extra is free-form extra key/value pairs to describe the role.
+	Extra map[string]interface{} `json:"-"`
+}
+
+// ToRoleUpdateMap formats a UpdateOpts into an update request.
+func (opts UpdateOpts) ToRoleUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "role")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		if v, ok := b["role"].(map[string]interface{}); ok {
+			for key, value := range opts.Extra {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
+}
+
+// Update updates an existing Role.
+func Update(client *gophercloud.ServiceClient, roleID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToRoleUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Patch(updateURL(client, roleID), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
 // Delete deletes a role.
 func Delete(client *gophercloud.ServiceClient, roleID string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, roleID), nil)
