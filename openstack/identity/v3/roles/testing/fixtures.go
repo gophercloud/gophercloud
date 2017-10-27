@@ -138,16 +138,52 @@ func HandleCreateRoleSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleAssignToUserOnProjectSuccessfully(t *testing.T) {
+func HandleAssignSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	th.Mux.HandleFunc("/projects/{project_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	th.Mux.HandleFunc("/domains/{domain_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	th.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
 
-func HandleUnassignFromUserOnProjectSuccessfully(t *testing.T) {
+func HandleUnassignSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	th.Mux.HandleFunc("/projects/{project_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	th.Mux.HandleFunc("/domains/{domain_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	th.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)

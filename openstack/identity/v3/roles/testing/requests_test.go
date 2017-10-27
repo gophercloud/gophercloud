@@ -166,20 +166,62 @@ func TestListAssignmentsSinglePage(t *testing.T) {
 	}
 }
 
-func TestAssignToUserOnProject(t *testing.T) {
+func TestAssign(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleAssignToUserOnProjectSuccessfully(t)
+	HandleAssignSuccessfully(t)
 
-	err := roles.AssignToUserOnProject(client.ServiceClient(), "{role_id}", "{user_id}", "{project_id}").ExtractErr()
+	err := roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		UserID:   "{user_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		GroupID:  "{group_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
-func TestUnassignToUserOnProject(t *testing.T) {
+func TestUnassign(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleUnassignFromUserOnProjectSuccessfully(t)
+	HandleUnassignSuccessfully(t)
 
-	err := roles.UnassignFromUserOnProject(client.ServiceClient(), "{role_id}", "{user_id}", "{project_id}").ExtractErr()
+	err := roles.Unassign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		UserID:   "{user_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		GroupID:  "{group_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
 	th.AssertNoErr(t, err)
 }

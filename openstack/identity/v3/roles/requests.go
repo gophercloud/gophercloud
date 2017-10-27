@@ -149,19 +149,72 @@ func ListAssignments(client *gophercloud.ServiceClient, opts ListAssignmentsOpts
 	})
 }
 
-// AssignToUserOnProject is the operation responsible for assigning a role
-// to a user on a project.
-func AssignToUserOnProject(client *gophercloud.ServiceClient, roleID, userID, projectID string) (r RoleAssignmentResult) {
-	_, r.Err = client.Put(userOnProjectURL(client, projectID, userID, roleID), nil, nil, &gophercloud.RequestOpts{
+// AssignOpts provides options to assign a role
+type AssignOpts struct {
+	// UserID is the ID of a user to assign a role
+	// Note: exactly one of UserID or GroupID must be provided
+	UserID string `xor:"GroupID"`
+
+	// GroupID is the ID of a group to assign a role
+	// Note: exactly one of UserID or GroupID must be provided
+	GroupID string `xor:"UserID"`
+
+	// ProjectID is the ID of a project to assign a role on
+	// Note: exactly one of ProjectID or DomainID must be provided
+	ProjectID string `xor:"DomainID"`
+
+	// DomainID is the ID of a domain to assign a role on
+	// Note: exactly one of ProjectID or DomainID must be provided
+	DomainID string `xor:"ProjectID"`
+}
+
+func toAssignRoleURL(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (string, error) {
+	// Check xor conditions
+	_, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return "", err
+	}
+
+	// Get corresponding URL
+	var url string
+	if opts.UserID != "" && opts.ProjectID != "" {
+		url = userOnProjectURL(client, opts.ProjectID, opts.UserID, roleID)
+	} else if opts.UserID != "" && opts.DomainID != "" {
+		url = userOnDomainURL(client, opts.DomainID, opts.UserID, roleID)
+	} else if opts.GroupID != "" && opts.ProjectID != "" {
+		url = groupOnProjectURL(client, opts.ProjectID, opts.GroupID, roleID)
+	} else if opts.GroupID != "" && opts.DomainID != "" {
+		url = groupOnDomainURL(client, opts.DomainID, opts.GroupID, roleID)
+	}
+
+	return url, nil
+}
+
+// Assign is the operation responsible for assigning a role
+// to a user/group on a project/domain.
+func Assign(client *gophercloud.ServiceClient, roleID string, assignOpts AssignOpts) (r RoleAssignmentResult) {
+	url, err := toAssignRoleURL(client, roleID, assignOpts)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Put(url, nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	return
 }
 
-// UnassignFromUserOnProject is the operation responsible for assigning a role
-// to a user on a project.
-func UnassignFromUserOnProject(client *gophercloud.ServiceClient, roleID, userID, projectID string) (r RoleAssignmentResult) {
-	_, r.Err = client.Delete(userOnProjectURL(client, projectID, userID, roleID), &gophercloud.RequestOpts{
+// Unassign is the operation responsible for unassigning a role
+// from a user/group on a project/domain.
+func Unassign(client *gophercloud.ServiceClient, roleID string, assignOpts AssignOpts) (r RoleAssignmentResult) {
+	url, err := toAssignRoleURL(client, roleID, assignOpts)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Delete(url, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	return

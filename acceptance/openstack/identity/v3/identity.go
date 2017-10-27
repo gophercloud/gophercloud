@@ -147,21 +147,6 @@ func CreateRole(t *testing.T, client *gophercloud.ServiceClient, c *roles.Create
 	return role, nil
 }
 
-// AssignRoleToUserOnProject will grant a role to a user on a project. An error will be
-// returned if the grant was unsuccessful.
-func AssignRoleToUserOnProject(t *testing.T, client *gophercloud.ServiceClient, role *roles.Role, user *users.User, project *projects.Project) error {
-	t.Logf("Attempting to grant user %s role %s on project %s", user.Name, role.Name, project.Name)
-
-	err := roles.AssignToUserOnProject(client, role.ID, user.ID, project.ID).ExtractErr()
-	if err != nil {
-		return err
-	}
-
-	t.Logf("Granted user %s role %s on project %s", user.Name, role.Name, project.Name)
-
-	return nil
-}
-
 // DeleteProject will delete a project by ID. A fatal error will occur if
 // the project ID failed to be deleted. This works best when using it as
 // a deferred function.
@@ -210,17 +195,15 @@ func DeleteDomain(t *testing.T, client *gophercloud.ServiceClient, domainID stri
 	t.Logf("Deleted domain: %s", domainID)
 }
 
-// UnassignRoleFromUserOnProject will revoke a role of a user on a project. A fatal error will
-// occur if the revoke was unsuccessful. This works best when used as a deferred function
-func UnassignRoleFromUserOnProject(t *testing.T, client *gophercloud.ServiceClient, role *roles.Role, user *users.User, project *projects.Project) {
-	t.Logf("Attempting to remove role %s from user %s on project %s", role.Name, user.Name, project.Name)
-
-	err := roles.UnassignFromUserOnProject(client, role.ID, user.ID, project.ID).ExtractErr()
+// UnassignRole will delete a role assigned to a user/group on a project/domain
+// A fatal error will occur if it fails to delete the assignment.
+// This works best when using it as a deferred function.
+func UnassignRole(t *testing.T, client *gophercloud.ServiceClient, roleID string, opts *roles.AssignOpts) {
+	err := roles.Unassign(client, roleID, *opts).ExtractErr()
 	if err != nil {
-		t.Fatalf("Unable to remove role")
+		t.Fatalf("Unable to unassign a role %v on context %v: %v", roleID, *opts, err)
 	}
-
-	t.Logf("Removed role %s from user %s on project %s", role.Name, user.Name, project.Name)
+	t.Logf("Unassigned the role %v on context %v", roleID, *opts)
 }
 
 // FindRole finds all roles that the current authenticated client has access
@@ -248,32 +231,4 @@ func FindRole(t *testing.T, client *gophercloud.ServiceClient) (*roles.Role, err
 	t.Logf("Successfully found a role %s with ID %s", role.Name, role.ID)
 
 	return role, nil
-}
-
-// FindProject finds all projects that the current authenticated client has access
-// to and returns the first one found. An error will be returned if the lookup
-// was unsuccessful.
-func FindProject(t *testing.T, client *gophercloud.ServiceClient) (*projects.Project, error) {
-	t.Log("Attempting to find a project")
-
-	var project *projects.Project
-
-	allPages, err := projects.List(client, nil).AllPages()
-	if err != nil {
-		return nil, err
-	}
-
-	allProjects, err := projects.ExtractProjects(allPages)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, p := range allProjects {
-		project = &p
-		break
-	}
-
-	t.Logf("Successfully found a project %s with ID %s", project.Name, project.ID)
-
-	return project, nil
 }
