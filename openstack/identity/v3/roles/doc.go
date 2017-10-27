@@ -37,6 +37,13 @@ Example to Create a Role
 		panic(err)
 	}
 
+Example to Delete a Role
+
+	roleID := "0fe36e73809d46aeae6705c39077b1b3"
+	err := roles.Delete(identityClient, roleID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 
 Example to List Role Assignments
 

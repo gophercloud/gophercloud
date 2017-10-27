@@ -74,6 +74,15 @@ func TestCreateRole(t *testing.T) {
 	th.CheckDeepEquals(t, SecondRole, *actual)
 }
 
+func TestDeleteRole(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteRoleSuccessfully(t)
+
+	res := roles.Delete(client.ServiceClient(), "9fe1d3")
+	th.AssertNoErr(t, res.Err)
+}
+
 func TestListAssignmentsSinglePage(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

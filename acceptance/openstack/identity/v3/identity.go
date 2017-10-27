@@ -195,6 +195,18 @@ func DeleteDomain(t *testing.T, client *gophercloud.ServiceClient, domainID stri
 	t.Logf("Deleted domain: %s", domainID)
 }
 
+// DeleteRole will delete a role by ID. A fatal error will occur if
+// the role failed to be deleted. This works best when using it as
+// a deferred function.
+func DeleteRole(t *testing.T, client *gophercloud.ServiceClient, roleID string) {
+	err := roles.Delete(client, roleID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete role %s: %v", roleID, err)
+	}
+
+	t.Logf("Deleted role: %s", roleID)
+}
+
 // UnassignRole will delete a role assigned to a user/group on a project/domain
 // A fatal error will occur if it fails to delete the assignment.
 // This works best when using it as a deferred function.

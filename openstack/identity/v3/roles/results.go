@@ -72,6 +72,12 @@ type CreateResult struct {
 	roleResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // RolePage is a single page of Role results.
 type RolePage struct {
 	pagination.LinkedPageBase

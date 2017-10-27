@@ -75,6 +75,7 @@ func TestRoleCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create role: %v", err)
 	}
+	defer DeleteRole(t, client, role.ID)
 
 	tools.PrintResource(t, role)
 	tools.PrintResource(t, role.Extra)
