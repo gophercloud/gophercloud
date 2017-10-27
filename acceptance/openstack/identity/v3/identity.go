@@ -201,9 +201,9 @@ func DeleteDomain(t *testing.T, client *gophercloud.ServiceClient, domainID stri
 func UnassignRole(t *testing.T, client *gophercloud.ServiceClient, roleID string, opts *roles.AssignOpts) {
 	err := roles.Unassign(client, roleID, *opts).ExtractErr()
 	if err != nil {
-		t.Fatalf("Unable to unassign a role %v on context %v: %v", roleID, *opts, err)
+		t.Fatalf("Unable to unassign a role %v on context %+v: %v", roleID, *opts, err)
 	}
-	t.Logf("Unassigned the role %v on context %v", roleID, *opts)
+	t.Logf("Unassigned the role %v on context %+v", roleID, *opts)
 }
 
 // FindRole finds all roles that the current authenticated client has access

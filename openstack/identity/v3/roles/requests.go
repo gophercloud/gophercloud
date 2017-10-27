@@ -168,7 +168,7 @@ type AssignOpts struct {
 	DomainID string `xor:"ProjectID"`
 }
 
-func toAssignRoleURL(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (string, error) {
+func toRoleAssignURL(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (string, error) {
 	// Check xor conditions
 	_, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
@@ -176,24 +176,33 @@ func toAssignRoleURL(client *gophercloud.ServiceClient, roleID string, opts Assi
 	}
 
 	// Get corresponding URL
-	var url string
-	if opts.UserID != "" && opts.ProjectID != "" {
-		url = userOnProjectURL(client, opts.ProjectID, opts.UserID, roleID)
-	} else if opts.UserID != "" && opts.DomainID != "" {
-		url = userOnDomainURL(client, opts.DomainID, opts.UserID, roleID)
-	} else if opts.GroupID != "" && opts.ProjectID != "" {
-		url = groupOnProjectURL(client, opts.ProjectID, opts.GroupID, roleID)
-	} else if opts.GroupID != "" && opts.DomainID != "" {
-		url = groupOnDomainURL(client, opts.DomainID, opts.GroupID, roleID)
+	var targetID string
+	var targetType string
+	if opts.ProjectID != "" {
+		targetID = opts.ProjectID
+		targetType = "projects"
+	} else {
+		targetID = opts.DomainID
+		targetType = "domains"
 	}
 
-	return url, nil
+	var actorID string
+	var actorType string
+	if opts.UserID != "" {
+		actorID = opts.UserID
+		actorType = "users"
+	} else {
+		actorID = opts.GroupID
+		actorType = "groups"
+	}
+
+	return assignURL(client, targetType, targetID, actorType, actorID, roleID), nil
 }
 
 // Assign is the operation responsible for assigning a role
 // to a user/group on a project/domain.
-func Assign(client *gophercloud.ServiceClient, roleID string, assignOpts AssignOpts) (r RoleAssignmentResult) {
-	url, err := toAssignRoleURL(client, roleID, assignOpts)
+func Assign(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (r AssignmentResult) {
+	url, err := toRoleAssignURL(client, roleID, opts)
 	if err != nil {
 		r.Err = err
 		return
@@ -207,8 +216,8 @@ func Assign(client *gophercloud.ServiceClient, roleID string, assignOpts AssignO
 
 // Unassign is the operation responsible for unassigning a role
 // from a user/group on a project/domain.
-func Unassign(client *gophercloud.ServiceClient, roleID string, assignOpts AssignOpts) (r RoleAssignmentResult) {
-	url, err := toAssignRoleURL(client, roleID, assignOpts)
+func Unassign(client *gophercloud.ServiceClient, roleID string, opts AssignOpts) (r UnassignmentResult) {
+	url, err := toRoleAssignURL(client, roleID, opts)
 	if err != nil {
 		r.Err = err
 		return

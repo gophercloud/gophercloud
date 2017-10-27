@@ -3,11 +3,7 @@ package roles
 import "github.com/gophercloud/gophercloud"
 
 const (
-	rolePath    = "roles"
-	userPath    = "users"
-	domainPath  = "domains"
-	groupPath   = "groups"
-	projectPath = "projects"
+	rolePath = "roles"
 )
 
 func listURL(client *gophercloud.ServiceClient) string {
@@ -26,18 +22,6 @@ func listAssignmentsURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("role_assignments")
 }
 
-func groupOnDomainURL(client *gophercloud.ServiceClient, domainID, groupID, roleID string) string {
-	return client.ServiceURL(domainPath, domainID, groupPath, groupID, rolePath, roleID)
-}
-
-func userOnDomainURL(client *gophercloud.ServiceClient, domainID, userID, roleID string) string {
-	return client.ServiceURL(domainPath, domainID, userPath, userID, rolePath, roleID)
-}
-
-func groupOnProjectURL(client *gophercloud.ServiceClient, projectID, groupID, roleID string) string {
-	return client.ServiceURL(projectPath, projectID, groupPath, groupID, rolePath, roleID)
-}
-
-func userOnProjectURL(client *gophercloud.ServiceClient, projectID, userID, roleID string) string {
-	return client.ServiceURL(projectPath, projectID, userPath, userID, rolePath, roleID)
+func assignURL(client *gophercloud.ServiceClient, targetType, targetID, actorType, actorID, roleID string) string {
+	return client.ServiceURL(targetType, targetID, actorType, actorID, rolePath, roleID)
 }
