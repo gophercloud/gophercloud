@@ -3,10 +3,10 @@
     check:
       jobs:
         - gophercloud-unittest
-        - gophercloud-acceptance-test
+        - gophercloud-acctest
     recheck-mitaka:
       jobs:
-        - gophercloud-acceptance-test-os-mitaka
+        - gophercloud-acctest-mitaka
     recheck-pike:
       jobs:
-        - gophercloud-acceptance-test-os-pike
+        - gophercloud-acctest-pike
