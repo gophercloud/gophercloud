@@ -97,6 +97,12 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
+// Delete deletes a role.
+func Delete(client *gophercloud.ServiceClient, roleID string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, roleID), nil)
+	return
+}
+
 // ListAssignmentsOptsBuilder allows extensions to add additional parameters to
 // the ListAssignments request.
 type ListAssignmentsOptsBuilder interface {

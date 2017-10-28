@@ -138,6 +138,17 @@ func HandleCreateRoleSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleDeleteRoleSuccessfully creates an HTTP handler at `/roles` on the
+// test handler mux that tests role deletion.
+func HandleDeleteRoleSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/roles/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
 func HandleAssignSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles/{role_id}", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
