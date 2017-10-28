@@ -96,11 +96,11 @@ var (
 )
 
 var (
-	restartReq           = `{"restart": {}}`
-	resizeReq            = `{"resize": {"flavorRef": "2"}}`
-	resizeVolReq         = `{"resize": {"volume": {"size": 4}}}`
-	attachConfigGroupReq = `{"instance": {"configuration": "00000000-0000-0000-0000-000000000000"}}`
-	detachConfigGroupReq = `{"instance": {}}`
+	restartReq                  = `{"restart": {}}`
+	resizeReq                   = `{"resize": {"flavorRef": "2"}}`
+	resizeVolReq                = `{"resize": {"volume": {"size": 4}}}`
+	attachConfigurationGroupReq = `{"instance": {"configuration": "00000000-0000-0000-0000-000000000000"}}`
+	detachConfigurationGroupReq = `{"instance": {}}`
 )
 
 var (
@@ -171,10 +171,10 @@ func HandleResizeVol(t *testing.T) {
 	fixture.SetupHandler(t, aURL, "POST", resizeVolReq, "", 202)
 }
 
-func HandleAttachConfigGroup(t *testing.T) {
-	fixture.SetupHandler(t, resURL, "PUT", attachConfigGroupReq, "", 202)
+func HandleAttachConfigurationGroup(t *testing.T) {
+	fixture.SetupHandler(t, resURL, "PUT", attachConfigurationGroupReq, "", 202)
 }
 
-func HandleDetachConfigGroup(t *testing.T) {
-	fixture.SetupHandler(t, resURL, "PUT", detachConfigGroupReq, "", 202)
+func HandleDetachConfigurationGroup(t *testing.T) {
+	fixture.SetupHandler(t, resURL, "PUT", detachConfigurationGroupReq, "", 202)
 }
