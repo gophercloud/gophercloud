@@ -165,3 +165,63 @@ func TestListAssignmentsSinglePage(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestAssign(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAssignSuccessfully(t)
+
+	err := roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		UserID:   "{user_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		GroupID:  "{group_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestUnassign(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUnassignSuccessfully(t)
+
+	err := roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+		UserID:   "{user_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+		GroupID:  "{group_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+}

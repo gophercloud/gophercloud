@@ -165,10 +165,10 @@ func DeleteProject(t *testing.T, client *gophercloud.ServiceClient, projectID st
 func DeleteUser(t *testing.T, client *gophercloud.ServiceClient, userID string) {
 	err := users.Delete(client, userID).ExtractErr()
 	if err != nil {
-		t.Fatalf("Unable to delete user %s: %v", userID, err)
+		t.Fatalf("Unable to delete user with ID %s: %v", userID, err)
 	}
 
-	t.Logf("Deleted user: %s", userID)
+	t.Logf("Deleted user with ID: %s", userID)
 }
 
 // DeleteGroup will delete a group by ID. A fatal error will occur if
@@ -193,4 +193,42 @@ func DeleteDomain(t *testing.T, client *gophercloud.ServiceClient, domainID stri
 	}
 
 	t.Logf("Deleted domain: %s", domainID)
+}
+
+// UnassignRole will delete a role assigned to a user/group on a project/domain
+// A fatal error will occur if it fails to delete the assignment.
+// This works best when using it as a deferred function.
+func UnassignRole(t *testing.T, client *gophercloud.ServiceClient, roleID string, opts *roles.UnassignOpts) {
+	err := roles.Unassign(client, roleID, *opts).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to unassign a role %v on context %+v: %v", roleID, *opts, err)
+	}
+	t.Logf("Unassigned the role %v on context %+v", roleID, *opts)
+}
+
+// FindRole finds all roles that the current authenticated client has access
+// to and returns the first one found. An error will be returned if the lookup
+// was unsuccessful.
+func FindRole(t *testing.T, client *gophercloud.ServiceClient) (*roles.Role, error) {
+	t.Log("Attempting to find a role")
+	var role *roles.Role
+
+	allPages, err := roles.List(client, nil).AllPages()
+	if err != nil {
+		return nil, err
+	}
+
+	allRoles, err := roles.ExtractRoles(allPages)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, r := range allRoles {
+		role = &r
+		break
+	}
+
+	t.Logf("Successfully found a role %s with ID %s", role.Name, role.ID)
+
+	return role, nil
 }
