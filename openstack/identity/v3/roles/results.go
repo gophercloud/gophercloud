@@ -72,6 +72,12 @@ type CreateResult struct {
 	roleResult
 }
 
+// UpdateResult is the response from an Update operation. Call its Extract
+// method to interpret it as a Role.
+type UpdateResult struct {
+	roleResult
+}
+
 // DeleteResult is the response from a Delete operation. Call its ExtractErr to
 // determine if the request succeeded or failed.
 type DeleteResult struct {
