@@ -96,6 +96,51 @@ const UpdateOutput = `
 }
 `
 
+const ListAssignmentOutput = `
+{
+    "role_assignments": [
+        {
+            "links": {
+                "assignment": "http://identity:35357/v3/domains/161718/users/313233/roles/123456"
+            },
+            "role": {
+                "id": "123456"
+            },
+            "scope": {
+                "domain": {
+                    "id": "161718"
+                }
+            },
+            "user": {
+                "id": "313233"
+            }
+        },
+        {
+            "links": {
+                "assignment": "http://identity:35357/v3/projects/456789/groups/101112/roles/123456",
+                "membership": "http://identity:35357/v3/groups/101112/users/313233"
+            },
+            "role": {
+                "id": "123456"
+            },
+            "scope": {
+                "project": {
+                    "id": "456789"
+                }
+            },
+            "user": {
+                "id": "313233"
+            }
+        }
+    ],
+    "links": {
+        "self": "http://identity:35357/v3/role_assignments?effective",
+        "previous": null,
+        "next": null
+    }
+}
+`
+
 // FirstRole is the first role in the List request.
 var FirstRole = roles.Role{
 	DomainID: "default",
@@ -250,5 +295,39 @@ func HandleUnassignSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// FirstRoleAssignment is the first role assignment in the List request.
+var FirstRoleAssignment = roles.RoleAssignment{
+	Role:  roles.AssignedRole{ID: "123456"},
+	Scope: roles.Scope{Domain: roles.Domain{ID: "161718"}},
+	User:  roles.User{ID: "313233"},
+	Group: roles.Group{},
+}
+
+// SecondRoleAssignemnt is the second role assignemnt in the List request.
+var SecondRoleAssignment = roles.RoleAssignment{
+	Role:  roles.AssignedRole{ID: "123456"},
+	Scope: roles.Scope{Project: roles.Project{ID: "456789"}},
+	User:  roles.User{ID: "313233"},
+	Group: roles.Group{},
+}
+
+// ExpectedRoleAssignmentsSlice is the slice of role assignments expected to be
+// returned from ListAssignmentOutput.
+var ExpectedRoleAssignmentsSlice = []roles.RoleAssignment{FirstRoleAssignment, SecondRoleAssignment}
+
+// HandleListRoleAssignmentsSuccessfully creates an HTTP handler at `/role_assignments` on the
+// test handler mux that responds with a list of two role assignments.
+func HandleListRoleAssignmentsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListAssignmentOutput)
 	})
 }
