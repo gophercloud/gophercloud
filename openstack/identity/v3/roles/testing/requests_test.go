@@ -1,9 +1,6 @@
 package testing
 
 import (
-	"fmt"
-	"net/http"
-	"reflect"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/roles"
@@ -74,94 +71,106 @@ func TestCreateRole(t *testing.T) {
 	th.CheckDeepEquals(t, SecondRole, *actual)
 }
 
+func TestUpdateRole(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateRoleSuccessfully(t)
+
+	updateOpts := roles.UpdateOpts{
+		Extra: map[string]interface{}{
+			"description": "admin read-only support role",
+		},
+	}
+
+	actual, err := roles.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondRoleUpdated, *actual)
+}
+
+func TestDeleteRole(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteRoleSuccessfully(t)
+
+	res := roles.Delete(client.ServiceClient(), "9fe1d3")
+	th.AssertNoErr(t, res.Err)
+}
+
 func TestListAssignmentsSinglePage(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `
-			{
-                "role_assignments": [
-                    {
-                        "links": {
-                            "assignment": "http://identity:35357/v3/domains/161718/users/313233/roles/123456"
-                        },
-                        "role": {
-                            "id": "123456"
-                        },
-                        "scope": {
-                            "domain": {
-                                "id": "161718"
-                            }
-                        },
-                        "user": {
-                            "id": "313233"
-                        }
-                    },
-                    {
-                        "links": {
-                            "assignment": "http://identity:35357/v3/projects/456789/groups/101112/roles/123456",
-                            "membership": "http://identity:35357/v3/groups/101112/users/313233"
-                        },
-                        "role": {
-                            "id": "123456"
-                        },
-                        "scope": {
-                            "project": {
-                                "id": "456789"
-                            }
-                        },
-                        "user": {
-                            "id": "313233"
-                        }
-                    }
-                ],
-                "links": {
-                    "self": "http://identity:35357/v3/role_assignments?effective",
-                    "previous": null,
-                    "next": null
-                }
-            }
-		`)
-	})
+	HandleListRoleAssignmentsSuccessfully(t)
 
 	count := 0
 	err := roles.ListAssignments(client.ServiceClient(), roles.ListAssignmentsOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := roles.ExtractRoleAssignments(page)
-		if err != nil {
-			return false, err
-		}
+		th.AssertNoErr(t, err)
 
-		expected := []roles.RoleAssignment{
-			{
-				Role:  roles.AssignedRole{ID: "123456"},
-				Scope: roles.Scope{Domain: roles.Domain{ID: "161718"}},
-				User:  roles.User{ID: "313233"},
-				Group: roles.Group{},
-			},
-			{
-				Role:  roles.AssignedRole{ID: "123456"},
-				Scope: roles.Scope{Project: roles.Project{ID: "456789"}},
-				User:  roles.User{ID: "313233"},
-				Group: roles.Group{},
-			},
-		}
-
-		if !reflect.DeepEqual(expected, actual) {
-			t.Errorf("Expected %#v, got %#v", expected, actual)
-		}
+		th.CheckDeepEquals(t, ExpectedRoleAssignmentsSlice, actual)
 
 		return true, nil
 	})
-	if err != nil {
-		t.Errorf("Unexpected error while paging: %v", err)
-	}
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+}
+
+func TestAssign(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAssignSuccessfully(t)
+
+	err := roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		UserID:   "{user_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		GroupID:  "{group_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestUnassign(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUnassignSuccessfully(t)
+
+	err := roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+		UserID:   "{user_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+		GroupID:  "{group_id}",
+		DomainID: "{domain_id}",
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
 }

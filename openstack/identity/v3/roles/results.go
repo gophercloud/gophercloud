@@ -72,6 +72,18 @@ type CreateResult struct {
 	roleResult
 }
 
+// UpdateResult is the response from an Update operation. Call its Extract
+// method to interpret it as a Role.
+type UpdateResult struct {
+	roleResult
+}
+
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // RolePage is a single page of Role results.
 type RolePage struct {
 	pagination.LinkedPageBase
@@ -187,4 +199,16 @@ func ExtractRoleAssignments(r pagination.Page) ([]RoleAssignment, error) {
 	}
 	err := (r.(RoleAssignmentPage)).ExtractInto(&s)
 	return s.RoleAssignments, err
+}
+
+// AssignmentResult represents the result of an assign operation.
+// Call ExtractErr method to determine if the request succeeded or failed.
+type AssignmentResult struct {
+	gophercloud.ErrResult
+}
+
+// UnassignmentResult represents the result of an unassign operation.
+// Call ExtractErr method to determine if the request succeeded or failed.
+type UnassignmentResult struct {
+	gophercloud.ErrResult
 }
