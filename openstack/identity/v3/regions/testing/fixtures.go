@@ -139,3 +139,14 @@ func HandleCreateRegionSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, GetOutput)
 	})
 }
+
+// HandleDeleteRegionSuccessfully creates an HTTP handler at `/regions` on the
+// test handler mux that tests region deletion.
+func HandleDeleteRegionSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/regions/RegionOne-West", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

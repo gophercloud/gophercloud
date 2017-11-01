@@ -235,6 +235,18 @@ func DeleteRole(t *testing.T, client *gophercloud.ServiceClient, roleID string) 
 	t.Logf("Deleted role: %s", roleID)
 }
 
+// DeleteRegion will delete a reg by ID. A fatal error will occur if
+// the role failed to be deleted. This works best when using it as
+// a deferred function.
+func DeleteRegion(t *testing.T, client *gophercloud.ServiceClient, regionID string) {
+	err := regions.Delete(client, regionID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete region %s: %v", regionID, err)
+	}
+
+	t.Logf("Deleted region: %s", regionID)
+}
+
 // UnassignRole will delete a role assigned to a user/group on a project/domain
 // A fatal error will occur if it fails to delete the assignment.
 // This works best when using it as a deferred function.
