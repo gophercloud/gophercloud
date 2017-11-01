@@ -60,6 +60,18 @@ const GetOutput = `
 }
 `
 
+// CreateRequest provides the input to a Create request.
+const CreateRequest = `
+{
+    "region": {
+        "id": "RegionOne-West",
+        "description": "West sub-region of RegionOne",
+        "email": "westsupport@example.com",
+        "parent_region_id": "RegionOne"
+    }
+}
+`
+
 // FirstRegion is the first region in the List request.
 var FirstRegion = regions.Region{
 	ID: "RegionOne-East",
@@ -111,6 +123,19 @@ func HandleGetRegionSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleCreateRegionSuccessfully creates an HTTP handler at `/regions` on the
+// test handler mux that tests region creation.
+func HandleCreateRegionSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/regions", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
+
+		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, GetOutput)
 	})
 }

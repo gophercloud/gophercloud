@@ -59,3 +59,27 @@ func TestRegionsGet(t *testing.T) {
 
 	tools.PrintResource(t, p)
 }
+
+func TestRegionsCRUD(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v", err)
+	}
+
+	createOpts := regions.CreateOpts{
+		ID:          "testregion",
+		Description: "Region for testing",
+		Extra: map[string]interface{}{
+			"email": "testregion@example.com",
+		},
+	}
+
+	// Create region in the default domain
+	region, err := CreateRegion(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create region: %v", err)
+	}
+
+	tools.PrintResource(t, region)
+	tools.PrintResource(t, region.Extra)
+}

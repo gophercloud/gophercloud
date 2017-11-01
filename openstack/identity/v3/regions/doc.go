@@ -20,5 +20,20 @@ Example to List Regions
 	for _, region := range allRegions {
 		fmt.Printf("%+v\n", region)
 	}
+
+Example to Create a Region
+
+	createOpts := regions.CreateOpts{
+		ID:             "TestRegion",
+		Description: "Region for testing"
+		Extra: map[string]interface{}{
+			"email": "testregionsupport@example.com",
+		}
+	}
+
+	region, err := regions.Create(identityClient, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package regions
