@@ -35,6 +35,19 @@ Example to Create a Region
 	if err != nil {
 		panic(err)
 
+Example to Update a Region
+
+	regionID := "TestRegion"
+
+	updateOpts := regions.UpdateOpts{
+		Description: "Updated Description for region",
+	}
+
+	region, err := regions.Update(identityClient, regionID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Delete a Region
 
 	regionID := "TestRegion"

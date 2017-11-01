@@ -83,4 +83,19 @@ func TestRegionsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, region)
 	tools.PrintResource(t, region.Extra)
+
+	updateOpts := regions.UpdateOpts{
+		Description: "Region A for testing",
+		Extra: map[string]interface{}{
+			"email": "testregionA@example.com",
+		},
+	}
+
+	newRegion, err := regions.Update(client, region.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update region: %v", err)
+	}
+
+	tools.PrintResource(t, newRegion)
+	tools.PrintResource(t, newRegion.Extra)
 }

@@ -72,6 +72,23 @@ func TestCreateRegion(t *testing.T) {
 	th.CheckDeepEquals(t, SecondRegion, *actual)
 }
 
+func TestUpdateRegion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateRegionSuccessfully(t)
+
+	updateOpts := regions.UpdateOpts{
+		Description: "First West sub-region of RegionOne",
+		Extra: map[string]interface{}{
+			"email": "1stwestsupport@example.com",
+		},
+	}
+
+	actual, err := regions.Update(client.ServiceClient(), "RegionOne-West", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondRegionUpdated, *actual)
+}
+
 func TestDeleteRegion(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
