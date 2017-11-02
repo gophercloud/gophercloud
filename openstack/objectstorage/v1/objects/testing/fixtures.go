@@ -43,11 +43,18 @@ var ExpectedListInfo = []objects.Object{
 		Name:         "hello",
 		ContentType:  "application/octet-stream",
 	},
+	{
+		Hash:         "d41d8cd98f00b204e9800998ecf8427e",
+		LastModified: time.Date(2016, time.August, 17, 22, 11, 58, 602650000, time.UTC),
+		Bytes:        0,
+		Name:         "directory",
+		ContentType:  "application/directory",
+	},
 }
 
 // ExpectedListNames is the result expected from a call to `List` when just
 // object names are requested.
-var ExpectedListNames = []string{"hello", "goodbye"}
+var ExpectedListNames = []string{"hello", "goodbye", "directory"}
 
 // HandleListObjectsInfoSuccessfully creates an HTTP handler at `/testContainer` on the test handler mux that
 // responds with a `List` response when full info is requested.
@@ -69,16 +76,25 @@ func HandleListObjectsInfoSuccessfully(t *testing.T) {
         "bytes": 14,
         "name": "goodbye",
         "content_type": "application/octet-stream"
-      },
+      }, 
       {
         "hash": "451e372e48e0f6b1114fa0724aa79fa1",
         "last_modified": "2016-08-17T22:11:58.602650",
         "bytes": 14,
         "name": "hello",
         "content_type": "application/octet-stream"
+      },{
+      	"hash": "d41d8cd98f00b204e9800998ecf8427e",
+      	"last_modified": "2016-08-17T22:11:58.602650",
+      	"bytes": 0,
+      	"name": "directory",
+      	"content_type": "application\/directory"
+      },
+      {
+      	"subdir": "directory\/"
       }
     ]`)
-		case "hello":
+		case "directory":
 			fmt.Fprintf(w, `[]`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
