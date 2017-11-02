@@ -54,7 +54,7 @@ var ExpectedListInfo = []objects.Object{
 
 // ExpectedListNames is the result expected from a call to `List` when just
 // object names are requested.
-var ExpectedListNames = []string{"hello", "goodbye", "directory"}
+var ExpectedListNames = []string{"hello", "goodbye"}
 
 // HandleListObjectsInfoSuccessfully creates an HTTP handler at `/testContainer` on the test handler mux that
 // responds with a `List` response when full info is requested.
