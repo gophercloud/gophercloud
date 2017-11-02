@@ -98,7 +98,9 @@ func ExtractNames(r pagination.Page) ([]string, error) {
 
 		names := make([]string, 0, len(parsed))
 		for _, object := range parsed {
-			names = append(names, object.Name)
+			if object.Name != "" {
+				names = append(names, object.Name)
+			}
 		}
 
 		return names, nil

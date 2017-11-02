@@ -59,7 +59,7 @@ func TestListObjectInfo(t *testing.T) {
 	HandleListObjectsInfoSuccessfully(t)
 
 	count := 0
-	options := &objects.ListOpts{Full: true}
+	options := &objects.ListOpts{Full: true, Prefix: "", Delimiter: "/"}
 	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractInfo(page)
@@ -79,7 +79,7 @@ func TestListObjectNames(t *testing.T) {
 	HandleListObjectNamesSuccessfully(t)
 
 	count := 0
-	options := &objects.ListOpts{Full: false}
+	options := &objects.ListOpts{Full: false, Prefix: "", Delimiter: "/"}
 	err := objects.List(fake.ServiceClient(), "testContainer", options).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := objects.ExtractNames(page)
