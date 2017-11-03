@@ -43,7 +43,6 @@ const (
 	the Marker for the current call.
 */
 type ListOpts struct {
-
 	// ChangesSince, if provided, instructs List to return only those things which
 	// have changed since the timestamp provided.
 	ChangesSince string `q:"changes-since"`
