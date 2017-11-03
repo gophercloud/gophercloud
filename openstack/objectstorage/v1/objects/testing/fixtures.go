@@ -76,14 +76,15 @@ func HandleListObjectsInfoSuccessfully(t *testing.T) {
         "bytes": 14,
         "name": "goodbye",
         "content_type": "application/octet-stream"
-      }, 
+      },
       {
         "hash": "451e372e48e0f6b1114fa0724aa79fa1",
         "last_modified": "2016-08-17T22:11:58.602650",
         "bytes": 14,
         "name": "hello",
         "content_type": "application/octet-stream"
-      },{
+      },
+      {
       	"hash": "d41d8cd98f00b204e9800998ecf8427e",
       	"last_modified": "2016-08-17T22:11:58.602650",
       	"bytes": 0,
