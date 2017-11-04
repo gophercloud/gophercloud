@@ -88,7 +88,7 @@ func TestFlavorCreateDelete(t *testing.T) {
 	tools.PrintResource(t, flavor)
 }
 
-func TestFlavorAccessList(t *testing.T) {
+func TestFlavorAccessesList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -100,9 +100,9 @@ func TestFlavorAccessList(t *testing.T) {
 	}
 	defer DeleteFlavor(t, client, flavor)
 
-	accessList, err := flavors.ListAccess(client, flavor.ID).Extract()
+	accessList, err := flavors.ListAccesses(client, flavor.ID).Extract()
 	if err != nil {
-		t.Fatalf("Unable to list flavor access: %v", err)
+		t.Fatalf("Unable to list flavor accesses: %v", err)
 	}
 
 	for _, access := range accessList {

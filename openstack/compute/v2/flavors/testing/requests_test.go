@@ -213,7 +213,7 @@ func TestDeleteFlavor(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
-func TestFlavorAccessList(t *testing.T) {
+func TestFlavorAccessesList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -240,7 +240,7 @@ func TestFlavorAccessList(t *testing.T) {
 		},
 	}
 
-	actual, err := flavors.ListAccess(fake.ServiceClient(), "12345678").Extract()
+	actual, err := flavors.ListAccesses(fake.ServiceClient(), "12345678").Extract()
 	th.AssertNoErr(t, err)
 
 	if !reflect.DeepEqual(expected, actual) {

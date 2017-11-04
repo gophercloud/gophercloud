@@ -154,9 +154,9 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	return
 }
 
-// ListAccess retrieves details about tenant access to a flavor. Use
-// ExtractAccess to convert its result into a FlavorAccess.
-func ListAccess(client *gophercloud.ServiceClient, id string) (r AccessResult) {
+// ListAccesses retrieves details about tenant access to a flavor. Use
+// ExtractAccesses to convert its result into a slice of FlavorAccess.
+func ListAccesses(client *gophercloud.ServiceClient, id string) (r AccessesResult) {
 	_, r.Err = client.Get(accessURL(client, id), &r.Body, nil)
 	return
 }

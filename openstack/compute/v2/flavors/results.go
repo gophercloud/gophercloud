@@ -30,9 +30,9 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
-// AccessResult is the result from an Access operation. Call its Extract method
-// to interpret it as a FlavorAccess.
-type AccessResult struct {
+// AccessesResult is the result from a ListAccesses operation. Call its
+// ExtractAccesses method to interpret it as a slice of FlavorAccess.
+type AccessesResult struct {
 	gophercloud.Result
 }
 
@@ -149,8 +149,8 @@ type FlavorAccess struct {
 	TenantID string `json:"tenant_id"`
 }
 
-// Extract interprets an AccessResult as a FlavorAccess.
-func (r AccessResult) Extract() ([]FlavorAccess, error) {
+// Extract interprets an AccessesResult as a slice of FlavorAccess.
+func (r AccessesResult) Extract() ([]FlavorAccess, error) {
 	var s struct {
 		FlavorAccess []FlavorAccess `json:"flavor_access"`
 	}
