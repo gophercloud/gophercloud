@@ -46,12 +46,17 @@ Example to List Flavor Access
 
 	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
 
-	accessList, err := flavors.ListAccess(computeClient, flavorID).Extract()
+	allPages, err := flavors.ListAccesses(computeClient, flavorID).AllPages()
 	if err != nil {
 		panic(err)
 	}
 
-	for _, access := range accessList {
+	allAccesses, err := flavors.ExtractAccesses(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, access := range allAccesses {
 		fmt.Printf("%+v", access)
 	}
 */

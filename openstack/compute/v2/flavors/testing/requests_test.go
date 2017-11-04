@@ -240,7 +240,10 @@ func TestFlavorAccessesList(t *testing.T) {
 		},
 	}
 
-	actual, err := flavors.ListAccesses(fake.ServiceClient(), "12345678").Extract()
+	allPages, err := flavors.ListAccesses(fake.ServiceClient(), "12345678").AllPages()
+	th.AssertNoErr(t, err)
+
+	actual, err := flavors.ExtractAccesses(allPages)
 	th.AssertNoErr(t, err)
 
 	if !reflect.DeepEqual(expected, actual) {

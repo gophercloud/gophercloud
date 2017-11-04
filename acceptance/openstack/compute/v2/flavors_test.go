@@ -100,12 +100,17 @@ func TestFlavorAccessesList(t *testing.T) {
 	}
 	defer DeleteFlavor(t, client, flavor)
 
-	accessList, err := flavors.ListAccesses(client, flavor.ID).Extract()
+	allPages, err := flavors.ListAccesses(client, flavor.ID).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to list flavor accesses: %v", err)
 	}
 
-	for _, access := range accessList {
+	allAccesses, err := flavors.ExtractAccesses(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract accesses: %v", err)
+	}
+
+	for _, access := range allAccesses {
 		tools.PrintResource(t, access)
 	}
 }
