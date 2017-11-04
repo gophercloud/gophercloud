@@ -43,12 +43,13 @@ var ExpectedListInfo = []objects.Object{
 		Name:         "hello",
 		ContentType:  "application/octet-stream",
 	},
+}
+
+// ExpectedListSubdir is the result expected from a call to `List` when full
+// info is requested.
+var ExpectedListSubdir = []objects.Object{
 	{
-		Hash:         "d41d8cd98f00b204e9800998ecf8427e",
-		LastModified: time.Date(2016, time.August, 17, 22, 11, 58, 602650000, time.UTC),
-		Bytes:        0,
-		Name:         "directory",
-		ContentType:  "application/directory",
+		Subdir: "directory/",
 	},
 }
 
@@ -83,19 +84,35 @@ func HandleListObjectsInfoSuccessfully(t *testing.T) {
         "bytes": 14,
         "name": "hello",
         "content_type": "application/octet-stream"
-      },
-      {
-      	"hash": "d41d8cd98f00b204e9800998ecf8427e",
-      	"last_modified": "2016-08-17T22:11:58.602650",
-      	"bytes": 0,
-      	"name": "directory",
-      	"content_type": "application\/directory"
-      },
-      {
-      	"subdir": "directory\/"
       }
     ]`)
-		case "directory":
+		case "hello":
+			fmt.Fprintf(w, `[]`)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
+	})
+}
+
+// HandleListSubdirSuccessfully creates an HTTP handler at `/testContainer` on the test handler mux that
+// responds with a `List` response when full info is requested.
+func HandleListSubdirSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/testContainer", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Set("Content-Type", "application/json")
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, `[
+      {
+        "subdir": "directory/"
+      }
+    ]`)
+		case "directory/":
 			fmt.Fprintf(w, `[]`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
