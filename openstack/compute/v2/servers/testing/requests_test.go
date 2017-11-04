@@ -178,6 +178,46 @@ func TestCreateServerWithImageNameAndFlavorName(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestCreateMultipleServersPositiveWithMax(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerMultipleCreationSuccessfully(t, SingleServerBody)
+
+	actual, err := servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		MaxCount:  4,
+		MinCount:  2,
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, len(actual.Links) >= 2)
+	th.AssertEquals(t, true, len(actual.Links) <= 4)
+}
+
+func TestCreateMultipleServersNegative(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerCreationSuccessfully(t, SingleServerBody)
+
+	_, err := servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		MinCount:  2,
+		MaxCount:  1,
+	}).Extract()
+	th.AssertNotEquals(t, nil, err)
+
+	_, err = servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		MaxCount:  -1,
+	}).Extract()
+	th.AssertNotEquals(t, nil, err)
+}
+
 func TestDeleteServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

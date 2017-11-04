@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
+	"fmt"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
@@ -189,6 +190,48 @@ type CreateOpts struct {
 	// ServiceClient will allow calls to be made to retrieve an image or
 	// flavor ID by name.
 	ServiceClient *gophercloud.ServiceClient `json:"-"`
+
+	// Minimal count of servers to create
+	MinCount int `json:"_"`
+	// Maximal count of servers to be created
+	MaxCount int `json:"_"`
+}
+
+func setMinMaxCount(opts CreateOpts, request map[string]interface{}) error {
+	// Check count values are not negative
+	if opts.MinCount < 0 {
+		return ErrNegativeValue{
+			Value: opts.MinCount,
+		}
+	}
+
+	if opts.MaxCount < 0 {
+		return ErrNegativeValue{
+			Value: opts.MaxCount,
+		}
+	}
+
+	// Check min is less than max
+	if opts.MinCount > opts.MaxCount && opts.MaxCount > 0 {
+		if opts.MinCount > opts.MaxCount {
+			err := ErrMinGreaterThanMax{
+				Min: opts.MinCount,
+				Max: opts.MaxCount,
+			}
+
+			return err
+		}
+	} else {
+		if opts.MinCount > 0 {
+			request["min_count"] = fmt.Sprintf("%d", opts.MinCount)
+		}
+
+		if opts.MaxCount > 0 {
+			request["max_count"] = fmt.Sprintf("%d", opts.MaxCount)
+		}
+	}
+
+	return nil
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a
@@ -198,6 +241,10 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 	opts.ServiceClient = nil
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
+		return nil, err
+	}
+
+	if err = setMinMaxCount(opts, b); err != nil {
 		return nil, err
 	}
 

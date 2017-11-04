@@ -589,6 +589,26 @@ func HandleServerCreationSuccessfully(t *testing.T, response string) {
 	})
 }
 
+func HandleServerMultipleCreationSuccessfully(t *testing.T, response string) {
+	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"server": {
+				"name": "derp",
+				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
+				"flavorRef": "1",
+				"max_count":  "4",
+				"min_count":  "2"
+			}
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
+	})
+}
+
 // HandleServerCreationWithCustomFieldSuccessfully sets up the test server to respond to a server creation request
 // with a given response.
 func HandleServerCreationWithCustomFieldSuccessfully(t *testing.T, response string) {
