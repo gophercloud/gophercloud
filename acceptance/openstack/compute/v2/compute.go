@@ -268,6 +268,31 @@ func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient,
 	return newServer, nil
 }
 
+// CreatePrivateFlavor will create a private flavor with a random name.
+// An error will be returned if the flavor could not be created.
+func CreatePrivateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flavors.Flavor, error) {
+	flavorName := tools.RandomString("flavor_", 5)
+	t.Logf("Attempting to create flavor %s", flavorName)
+
+	isPublic := false
+	createOpts := flavors.CreateOpts{
+		Name:     flavorName,
+		RAM:      1,
+		VCPUs:    1,
+		Disk:     gophercloud.IntToPointer(1),
+		IsPublic: &isPublic,
+	}
+
+	flavor, err := flavors.Create(client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created flavor %s", flavor.ID)
+
+	return flavor, nil
+}
+
 // CreateSecurityGroup will create a security group with a random name.
 // An error will be returned if one was failed to be created.
 func CreateSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (secgroups.SecurityGroup, error) {
