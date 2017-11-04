@@ -34,6 +34,12 @@ Example to Create a Region
 	region, err := regions.Create(identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
+
+Example to Delete a Region
+
+	regionID := "TestRegion"
+	err := regions.Delete(identityClient, regionID).ExtractErr()
+	if err != nil {
 	}
 */
 package regions

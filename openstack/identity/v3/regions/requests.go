@@ -95,3 +95,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// Delete deletes a region.
+func Delete(client *gophercloud.ServiceClient, regionID string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, regionID), nil)
+	return
+}

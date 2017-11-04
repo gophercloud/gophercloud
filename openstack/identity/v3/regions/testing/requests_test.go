@@ -71,3 +71,12 @@ func TestCreateRegion(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRegion, *actual)
 }
+
+func TestDeleteRegion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteRegionSuccessfully(t)
+
+	res := regions.Delete(client.ServiceClient(), "RegionOne-West")
+	th.AssertNoErr(t, res.Err)
+}

@@ -79,6 +79,7 @@ func TestRegionsCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create region: %v", err)
 	}
+	defer DeleteRegion(t, client, region.ID)
 
 	tools.PrintResource(t, region)
 	tools.PrintResource(t, region.Extra)

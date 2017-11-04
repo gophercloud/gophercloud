@@ -72,6 +72,12 @@ type CreateResult struct {
 	regionResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // RegionPage is a single page of Region results.
 type RegionPage struct {
 	pagination.LinkedPageBase
