@@ -66,6 +66,12 @@ type GetResult struct {
 	regionResult
 }
 
+// CreateResult is the response from a Create operation. Call its Extract method
+// to interpret it as a Region.
+type CreateResult struct {
+	regionResult
+}
+
 // RegionPage is a single page of Region results.
 type RegionPage struct {
 	pagination.LinkedPageBase
