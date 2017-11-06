@@ -72,16 +72,31 @@ const CreateRequest = `
 }
 `
 
+/*
+	// Due to a bug in Keystone, the Extra column of the Region table
+	// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+	// The following line should be added to region in UpdateRequest once the
+	// fix is merged.
+
+	"email": "1stwestsupport@example.com"
+*/
 // UpdateRequest provides the input to as Update request.
 const UpdateRequest = `
 {
     "region": {
-        "description": "First West sub-region of RegionOne",
-        "email": "1stwestsupport@example.com"
+        "description": "First West sub-region of RegionOne"
     }
 }
 `
 
+/*
+	// Due to a bug in Keystone, the Extra column of the Region table
+	// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+	// This following line should replace the email in UpdateOutput.extra once
+	// the fix is merged.
+
+	"email": "1stwestsupport@example.com"
+*/
 // UpdateOutput provides an update result.
 const UpdateOutput = `
 {
@@ -92,7 +107,7 @@ const UpdateOutput = `
         },
         "description": "First West sub-region of RegionOne",
         "extra": {
-            "email": "1stwestsupport@example.com"
+            "email": "westsupport@example.com"
         },
         "parent_region_id": "RegionOne"
     }
@@ -123,6 +138,14 @@ var SecondRegion = regions.Region{
 	ParentRegionID: "RegionOne",
 }
 
+/*
+	// Due to a bug in Keystone, the Extra column of the Region table
+	// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+	// This should replace the email in SecondRegionUpdated.Extra once the fix
+	// is merged.
+
+	"email": "1stwestsupport@example.com"
+*/
 // SecondRegionUpdated is the second region in the List request.
 var SecondRegionUpdated = regions.Region{
 	ID: "RegionOne-West",
@@ -131,7 +154,7 @@ var SecondRegionUpdated = regions.Region{
 	},
 	Description: "First West sub-region of RegionOne",
 	Extra: map[string]interface{}{
-		"email": "1stwestsupport@example.com",
+		"email": "westsupport@example.com",
 	},
 	ParentRegionID: "RegionOne",
 }

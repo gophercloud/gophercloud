@@ -34,11 +34,15 @@ Example to Create a Region
 	region, err := regions.Create(identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
+	}
 
 Example to Update a Region
 
 	regionID := "TestRegion"
 
+	// There is currently a bug in Keystone where updating the optional Extras
+	// attributes set in regions.Create is not supported, see:
+	// https://bugs.launchpad.net/keystone/+bug/1729933
 	updateOpts := regions.UpdateOpts{
 		Description: "Updated Description for region",
 	}
@@ -53,6 +57,7 @@ Example to Delete a Region
 	regionID := "TestRegion"
 	err := regions.Delete(identityClient, regionID).ExtractErr()
 	if err != nil {
+		panic(err)
 	}
 */
 package regions

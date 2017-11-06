@@ -110,8 +110,14 @@ type UpdateOpts struct {
 	// ParentRegionID is the ID of the parent region.
 	ParentRegionID string `json:"parent_region_id,omitempty"`
 
-	// Extra is free-form extra key/value pairs to describe the region.
-	Extra map[string]interface{} `json:"-"`
+	/*
+		// Due to a bug in Keystone, the Extra column of the Region table
+		// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+		// The following lines should be uncommented once the fix is merged.
+
+		// Extra is free-form extra key/value pairs to describe the region.
+		Extra map[string]interface{} `json:"-"`
+	*/
 }
 
 // ToRegionUpdateMap formats a UpdateOpts into an update request.
@@ -121,13 +127,19 @@ func (opts UpdateOpts) ToRegionUpdateMap() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	if opts.Extra != nil {
-		if v, ok := b["region"].(map[string]interface{}); ok {
-			for key, value := range opts.Extra {
-				v[key] = value
+	/*
+		// Due to a bug in Keystone, the Extra column of the Region table
+		// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+		// The following lines should be uncommented once the fix is merged.
+
+		if opts.Extra != nil {
+			if v, ok := b["region"].(map[string]interface{}); ok {
+				for key, value := range opts.Extra {
+					v[key] = value
+				}
 			}
 		}
-	}
+	*/
 
 	return b, nil
 }

@@ -79,9 +79,15 @@ func TestUpdateRegion(t *testing.T) {
 
 	updateOpts := regions.UpdateOpts{
 		Description: "First West sub-region of RegionOne",
-		Extra: map[string]interface{}{
-			"email": "1stwestsupport@example.com",
-		},
+		/*
+			// Due to a bug in Keystone, the Extra column of the Region table
+			// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+			// The following lines should be uncommented once the fix is merged.
+
+			Extra: map[string]interface{}{
+				"email": "1stwestsupport@example.com",
+			},
+		*/
 	}
 
 	actual, err := regions.Update(client.ServiceClient(), "RegionOne-West", updateOpts).Extract()
