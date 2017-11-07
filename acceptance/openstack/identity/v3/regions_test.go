@@ -83,4 +83,25 @@ func TestRegionsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, region)
 	tools.PrintResource(t, region.Extra)
+
+	updateOpts := regions.UpdateOpts{
+		Description: "Region A for testing",
+		/*
+			// Due to a bug in Keystone, the Extra column of the Region table
+			// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+			// The following lines should be uncommented once the fix is merged.
+
+			Extra: map[string]interface{}{
+				"email": "testregionA@example.com",
+			},
+		*/
+	}
+
+	newRegion, err := regions.Update(client, region.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update region: %v", err)
+	}
+
+	tools.PrintResource(t, newRegion)
+	tools.PrintResource(t, newRegion.Extra)
 }

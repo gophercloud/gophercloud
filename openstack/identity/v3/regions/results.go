@@ -22,7 +22,7 @@ type Region struct {
 	// Links contains referencing links to the region.
 	Links map[string]interface{} `json:"links"`
 
-	// Name is the ID of the parent region.
+	// ParentRegionID is the ID of the parent region.
 	ParentRegionID string `json:"parent_region_id"`
 }
 
@@ -69,6 +69,12 @@ type GetResult struct {
 // CreateResult is the response from a Create operation. Call its Extract method
 // to interpret it as a Region.
 type CreateResult struct {
+	regionResult
+}
+
+// UpdateResult is the response from an Update operation. Call its Extract
+// method to interpret it as a Region.
+type UpdateResult struct {
 	regionResult
 }
 

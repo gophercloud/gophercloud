@@ -96,6 +96,67 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
+// UpdateOptsBuilder allows extensions to add additional parameters to
+// the Update request.
+type UpdateOptsBuilder interface {
+	ToRegionUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts provides options for updating a region.
+type UpdateOpts struct {
+	// Description is a description of the region.
+	Description string `json:"description,omitempty"`
+
+	// ParentRegionID is the ID of the parent region.
+	ParentRegionID string `json:"parent_region_id,omitempty"`
+
+	/*
+		// Due to a bug in Keystone, the Extra column of the Region table
+		// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+		// The following lines should be uncommented once the fix is merged.
+
+		// Extra is free-form extra key/value pairs to describe the region.
+		Extra map[string]interface{} `json:"-"`
+	*/
+}
+
+// ToRegionUpdateMap formats a UpdateOpts into an update request.
+func (opts UpdateOpts) ToRegionUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "region")
+	if err != nil {
+		return nil, err
+	}
+
+	/*
+		// Due to a bug in Keystone, the Extra column of the Region table
+		// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+		// The following lines should be uncommented once the fix is merged.
+
+		if opts.Extra != nil {
+			if v, ok := b["region"].(map[string]interface{}); ok {
+				for key, value := range opts.Extra {
+					v[key] = value
+				}
+			}
+		}
+	*/
+
+	return b, nil
+}
+
+// Update updates an existing Region.
+func Update(client *gophercloud.ServiceClient, regionID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToRegionUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Patch(updateURL(client, regionID), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
 // Delete deletes a region.
 func Delete(client *gophercloud.ServiceClient, regionID string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, regionID), nil)
