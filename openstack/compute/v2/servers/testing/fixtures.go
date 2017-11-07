@@ -298,6 +298,15 @@ const SingleServerBody = `
 }
 `
 
+const BadRequestBody = `
+{
+    "badRequest": {
+        "message": "The requested availability zone is not available",
+        "code": 400
+    }
+}
+`
+
 const ServerPasswordBody = `
 {
     "password": "xlozO3wLCBRWAa2yDjCCVx8vwNPypxnypmRYDa/zErlQ+EzPe1S/Gz6nfmC52mOlOSCRuUOmG7kqqgejPof6M7bOezS387zjq4LSvvwp28zUknzy4YzfFGhnHAdai3TxUJ26pfQCYrq8UTzmKF2Bq8ioSEtVVzM0A96pDh8W2i7BOz6MdoiVyiev/I1K2LsuipfxSJR7Wdke4zNXJjHHP2RfYsVbZ/k9ANu+Nz4iIH8/7Cacud/pphH7EjrY6a4RZNrjQskrhKYed0YERpotyjYk1eDtRe72GrSiXteqCM4biaQ5w3ruS+AcX//PXk3uJ5kC7d67fPXaVz4WaQRYMg=="
@@ -605,6 +614,25 @@ func HandleServerCreationWithCustomFieldSuccessfully(t *testing.T, response stri
 		}`)
 
 		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
+	})
+}
+
+func HandleServerCreationWithBadRequest(t *testing.T, response string) {
+	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"server": {
+				"name": "derp",
+				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
+				"flavorRef": "1",
+				"availability_zone": "NotFoundAZ"
+			}
+		}`)
+
+		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, response)
 	})

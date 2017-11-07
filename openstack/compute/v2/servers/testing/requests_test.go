@@ -181,6 +181,21 @@ func TestCreateServerWithImageNameAndFlavorName(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestCreateWithBadRequest(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerCreationWithBadRequest(t, BadRequestBody)
+
+	_, err := servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		AvailabilityZone: "NotFoundAZ",
+		ServiceClient: client.ServiceClient(),
+	}).Extract()
+	th.AssertEquals(t, "The requested availability zone is not available", err.Error())
+}
+
 func TestDeleteServer(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
