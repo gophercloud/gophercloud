@@ -185,8 +185,6 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 	if err != nil {
 		return nil, nil, "", err
 	}
-	localChecksum := fmt.Sprintf("%x", hash.Sum(nil))
-	h["ETag"] = localChecksum
 
 	return buf, h, q.String(), nil
 }
