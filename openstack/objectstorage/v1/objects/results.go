@@ -141,10 +141,11 @@ func (r *DownloadHeader) UnmarshalJSON(b []byte) error {
 	type tmp DownloadHeader
 	var s struct {
 		tmp
-		ContentLength string                  `json:"Content-Length"`
-		Date          gophercloud.JSONRFC1123 `json:"Date"`
-		DeleteAt      gophercloud.JSONUnix    `json:"X-Delete-At"`
-		LastModified  gophercloud.JSONRFC1123 `json:"Last-Modified"`
+		ContentLength     string                  `json:"Content-Length"`
+		Date              gophercloud.JSONRFC1123 `json:"Date"`
+		DeleteAt          gophercloud.JSONUnix    `json:"X-Delete-At"`
+		LastModified      gophercloud.JSONRFC1123 `json:"Last-Modified"`
+		StaticLargeObject string                  `json:"X-Static-Large-Object"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -161,6 +162,13 @@ func (r *DownloadHeader) UnmarshalJSON(b []byte) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	switch strings.ToLower(s.StaticLargeObject) {
+	case "true":
+		r.StaticLargeObject = true
+	default:
+		r.StaticLargeObject = false
 	}
 
 	r.Date = time.Time(s.Date)
@@ -221,10 +229,11 @@ func (r *GetHeader) UnmarshalJSON(b []byte) error {
 	type tmp GetHeader
 	var s struct {
 		tmp
-		ContentLength string                  `json:"Content-Length"`
-		Date          gophercloud.JSONRFC1123 `json:"Date"`
-		DeleteAt      gophercloud.JSONUnix    `json:"X-Delete-At"`
-		LastModified  gophercloud.JSONRFC1123 `json:"Last-Modified"`
+		ContentLength     string                  `json:"Content-Length"`
+		Date              gophercloud.JSONRFC1123 `json:"Date"`
+		DeleteAt          gophercloud.JSONUnix    `json:"X-Delete-At"`
+		LastModified      gophercloud.JSONRFC1123 `json:"Last-Modified"`
+		StaticLargeObject string                  `json:"X-Static-Large-Object"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -241,6 +250,13 @@ func (r *GetHeader) UnmarshalJSON(b []byte) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	switch strings.ToLower(s.StaticLargeObject) {
+	case "true":
+		r.StaticLargeObject = true
+	default:
+		r.StaticLargeObject = false
 	}
 
 	r.Date = time.Time(s.Date)
