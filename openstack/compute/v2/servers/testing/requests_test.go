@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/diskconfig"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -65,6 +66,7 @@ func TestListAllServersWithExtensions(t *testing.T) {
 	type ServerWithExt struct {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
+		diskconfig.ServerDiskConfigExt
 	}
 
 	allPages, err := servers.List(client.ServiceClient(), servers.ListOpts{}).AllPages()
@@ -75,6 +77,7 @@ func TestListAllServersWithExtensions(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 3, len(actual))
 	th.AssertEquals(t, "nova", actual[0].AvailabilityZone)
+	th.AssertEquals(t, diskconfig.Manual, actual[0].DiskConfig)
 }
 
 func TestCreateServer(t *testing.T) {
@@ -218,11 +221,13 @@ func TestGetServerWithExtensions(t *testing.T) {
 	var s struct {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
+		diskconfig.ServerDiskConfigExt
 	}
 
 	err := servers.Get(client.ServiceClient(), "1234asdf").ExtractInto(&s)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "nova", s.AvailabilityZone)
+	th.AssertEquals(t, diskconfig.Manual, s.DiskConfig)
 
 	err = servers.Get(client.ServiceClient(), "1234asdf").ExtractInto(s)
 	if err == nil {
