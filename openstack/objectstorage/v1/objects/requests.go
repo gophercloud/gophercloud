@@ -187,8 +187,9 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 	}
 	localChecksum := fmt.Sprintf("%x", hash.Sum(nil))
 	h["ETag"] = localChecksum
-
-	return buf, h, q.String(), nil
+	// Wrap the bytes in a bytes.Reader, which implements io.Seeker, so its contents can be read more than once
+	// when being retried by provider_client.go.
+	return bytes.NewReader(buf.Bytes()), h, q.String(), nil
 }
 
 // Create is a function that creates a new object or replaces an existing
