@@ -213,6 +213,22 @@ func TestGetServer(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestGetFaultyServer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerGetFaultSuccessfully(t)
+
+	client := client.ServiceClient()
+	actual, err := servers.Get(client, "1234asdf").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
+
+	FaultyServer := ServerDerp
+	FaultyServer.Fault = DerpFault
+	th.CheckDeepEquals(t, FaultyServer, *actual)
+}
+
 func TestGetServerWithExtensions(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
