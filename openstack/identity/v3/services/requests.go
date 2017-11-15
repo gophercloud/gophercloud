@@ -5,10 +5,52 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+// CreateOptsBuilder allows extensions to add additional parameters to
+// the Create request.
+type CreateOptsBuilder interface {
+	ToServiceCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts provides options used to create a service.
+type CreateOpts struct {
+	// Type is the type of the service.
+	Type string `json:"type"`
+
+	// Enabled is whether or not the service is enabled.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Extra is free-form extra key/value pairs to describe the service.
+	Extra map[string]interface{} `json:"-"`
+}
+
+// ToServiceCreateMap formats a CreateOpts into a create request.
+func (opts CreateOpts) ToServiceCreateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "service")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		if v, ok := b["service"].(map[string]interface{}); ok {
+			for key, value := range opts.Extra {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
+}
+
 // Create adds a new service of the requested type to the catalog.
-func Create(client *gophercloud.ServiceClient, serviceType string) (r CreateResult) {
-	b := map[string]string{"type": serviceType}
-	_, r.Err = client.Post(listURL(client), b, &r.Body, nil)
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToServiceCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
 	return
 }
 
