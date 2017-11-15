@@ -2,12 +2,13 @@ package testing
 
 import (
 	"fmt"
-	"github.com/Comcast/gophercloud/openstack/compute/v2/extensions/quotasets"
-	"github.com/gophercloud/gophercloud"
-	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/testhelper/client"
 	"net/http"
 	"testing"
+
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/quotasets"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 // GetOutput is a sample response to a Get call.
@@ -126,7 +127,7 @@ var FirstQuotaDetailsSet = quotasets.QuotaDetailSet{
 	InjectedFiles:            quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 5},
 	KeyPairs:                 quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 10},
 	MetadataItems:            quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 128},
-	Ram:                      quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 200000},
+	RAM:                      quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 200000},
 	SecurityGroupRules:       quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 20},
 	SecurityGroups:           quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 10},
 	Cores:                    quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 200},

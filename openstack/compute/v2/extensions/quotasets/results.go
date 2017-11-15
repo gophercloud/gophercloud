@@ -55,10 +55,10 @@ type QuotaSet struct {
 	ServerGroupMembers int `json:"server_group_members"`
 }
 
-// QuotaDetailSet is detail on both operational limits that allow for control
-// of compute usage and also currently measured allocation against those limits.
+// QuotaDetailSet represents details of both operational limits of compute
+// resources and the current usage of those resources.
 type QuotaDetailSet struct {
-	// ID is tenant associated with this QuotaDetailSet.
+	// ID is the tenant ID associated with this QuotaDetailSet.
 	ID string `json:"id"`
 
 	// FixedIps is number of fixed ips alloted this QuotaDetailSet.
@@ -82,8 +82,8 @@ type QuotaDetailSet struct {
 	// MetadataItems is number of metadata items allowed for each instance.
 	MetadataItems QuotaDetail `json:"metadata_items"`
 
-	// Ram is megabytes allowed for each instance.
-	Ram QuotaDetail `json:"ram"`
+	// RAM is megabytes allowed for each instance.
+	RAM QuotaDetail `json:"ram"`
 
 	// SecurityGroupRules is number of security group rules allowed for each
 	// security group.
@@ -105,7 +105,8 @@ type QuotaDetailSet struct {
 	ServerGroupMembers QuotaDetail `json:"server_group_members"`
 }
 
-// QuotaDetail is a set of details about a single operational limit that allows for control of compute usage.
+// QuotaDetail is a set of details about a single operational limit that allows
+// for control of compute usage.
 type QuotaDetail struct {
 	// InUse is the current number of provisioned/allocated resources of the given type.
 	InUse int `json:"in_use"`
@@ -169,19 +170,19 @@ type DeleteResult struct {
 	quotaResult
 }
 
-type quotaResultDetail struct {
+type quotaDetailResult struct {
 	gophercloud.Result
 }
 
-// GetResult is the response from a Get operation. Call its Extract method to interpret it
+// GetDetailResult is the response from a Get operation. Call its Extract method to interpret it
 // as a QuotaSet.
-type GetResultDetail struct {
-	quotaResultDetail
+type GetDetailResult struct {
+	quotaDetailResult
 }
 
 // ExtractDetails is a method that attempts to interpret any QuotaDetailSet
 // resource response as an array of QuotaDetailSet structs.
-func (r quotaResultDetail) Extract() (QuotaDetailSet, error) {
+func (r quotaDetailResult) Extract() (QuotaDetailSet, error) {
 	var s struct {
 		QuotaData QuotaDetailSet `json:"quota_set"`
 	}
