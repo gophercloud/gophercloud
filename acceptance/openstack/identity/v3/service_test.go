@@ -16,7 +16,11 @@ func TestServicesList(t *testing.T) {
 		t.Fatalf("Unable to obtain an identity client: %v")
 	}
 
-	allPages, err := services.List(client, nil).AllPages()
+	listOpts := services.ListOpts{
+		ServiceType: "identity",
+	}
+
+	allPages, err := services.List(client, listOpts).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to list services: %v", err)
 	}

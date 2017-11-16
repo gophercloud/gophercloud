@@ -62,9 +62,11 @@ type ListOptsBuilder interface {
 
 // ListOpts provides options for filtering the List results.
 type ListOpts struct {
+	// ServiceType filter the response by a type of service.
 	ServiceType string `q:"type"`
-	PerPage     int    `q:"perPage"`
-	Page        int    `q:"page"`
+
+	// Name filters the response by a service name.
+	Name string `q:"name"`
 }
 
 // ToServiceListMap builds a list query from the list options.
@@ -75,15 +77,15 @@ func (opts ListOpts) ToServiceListMap() (string, error) {
 
 // List enumerates the services available to a specific user.
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
-	u := listURL(client)
+	url := listURL(client)
 	if opts != nil {
-		q, err := opts.ToServiceListMap()
+		query, err := opts.ToServiceListMap()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
-		u += q
+		url += query
 	}
-	return pagination.NewPager(client, u, func(r pagination.PageResult) pagination.Page {
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return ServicePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
