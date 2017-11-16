@@ -1,8 +1,6 @@
 package quotasets
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 )
 
