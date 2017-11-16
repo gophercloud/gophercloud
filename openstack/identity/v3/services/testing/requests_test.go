@@ -66,9 +66,16 @@ func TestUpdateSuccessful(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateServiceSuccessfully(t)
 
-	actual, err := services.Update(client.ServiceClient(), "9876", "compute2").Extract()
+	updateOpts := services.UpdateOpts{
+		Type: "compute2",
+		Extra: map[string]interface{}{
+			"description": "Service Two Updated",
+		},
+	}
+	actual, err := services.Update(client.ServiceClient(), "9876", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondServiceUpdated, *actual)
+	th.AssertEquals(t, SecondServiceUpdated.Extra["description"], "Service Two Updated")
 }
 
 func TestDeleteSuccessful(t *testing.T) {
