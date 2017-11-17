@@ -108,13 +108,16 @@ type QuotaDetailSet struct {
 // QuotaDetail is a set of details about a single operational limit that allows
 // for control of compute usage.
 type QuotaDetail struct {
-	// InUse is the current number of provisioned/allocated resources of the given type.
+	// InUse is the current number of provisioned/allocated resources of the
+	// given type.
 	InUse int `json:"in_use"`
 
-	// Reserved is a transitional state when a claim against quota has been made but the resource is not yet fully online.
+	// Reserved is a transitional state when a claim against quota has been made
+	// but the resource is not yet fully online.
 	Reserved int `json:"reserved"`
 
-	// Limit is the maximum number of a given resource that can be allocated/provisioned.  This is what "quota" usually refers to.
+	// Limit is the maximum number of a given resource that can be
+	// allocated/provisioned.  This is what "quota" usually refers to.
 	Limit int `json:"limit"`
 }
 
@@ -174,14 +177,14 @@ type quotaDetailResult struct {
 	gophercloud.Result
 }
 
-// GetDetailResult is the response from a Get operation. Call its Extract method to interpret it
-// as a QuotaSet.
+// GetDetailResult is the response from a Get operation. Call its Extract
+// method to interpret it as a QuotaSet.
 type GetDetailResult struct {
 	quotaDetailResult
 }
 
-// ExtractDetails is a method that attempts to interpret any QuotaDetailSet
-// resource response as an array of QuotaDetailSet structs.
+// Extract is a method that attempts to interpret any QuotaDetailSet
+// resource response as a set of QuotaDetailSet structs.
 func (r quotaDetailResult) Extract() (QuotaDetailSet, error) {
 	var s struct {
 		QuotaData QuotaDetailSet `json:"quota_set"`
