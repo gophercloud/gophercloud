@@ -30,6 +30,75 @@ const GetOutput = `
    }
 }
 `
+
+// GetDetailsOutput is a sample response to a Get call with the detailed option.
+const GetDetailsOutput = `
+{
+   "quota_set" : {
+	  "id": "555544443333222211110000ffffeeee",
+      "instances" : {
+          "in_use": 0,
+          "limit": 25,
+          "reserved": 0
+      },
+      "security_groups" : {
+          "in_use": 0,
+          "limit": 10,
+          "reserved": 0
+      },
+      "security_group_rules" : {
+          "in_use": 0,
+          "limit": 20,
+          "reserved": 0
+      },
+      "cores" : {
+          "in_use": 0,
+          "limit": 200,
+          "reserved": 0
+      },
+      "injected_file_content_bytes" : {
+          "in_use": 0,
+          "limit": 10240,
+          "reserved": 0
+      },
+      "injected_files" : {
+          "in_use": 0,
+          "limit": 5,
+          "reserved": 0
+      },
+      "metadata_items" : {
+          "in_use": 0,
+          "limit": 128,
+          "reserved": 0
+      },
+      "ram" : {
+          "in_use": 0,
+          "limit": 200000,
+          "reserved": 0
+      },
+      "key_pairs" : {
+          "in_use": 0,
+          "limit": 10,
+          "reserved": 0
+      },
+      "injected_file_path_bytes" : {
+          "in_use": 0,
+          "limit": 255,
+          "reserved": 0
+      },
+      "server_groups" : {
+          "in_use": 0,
+          "limit": 2,
+          "reserved": 0
+      },
+      "server_group_members" : {
+          "in_use": 0,
+          "limit": 3,
+          "reserved": 0
+      }
+   }
+}
+`
 const FirstTenantID = "555544443333222211110000ffffeeee"
 
 // FirstQuotaSet is the first result in ListOutput.
@@ -48,6 +117,23 @@ var FirstQuotaSet = quotasets.QuotaSet{
 	Instances:                25,
 	ServerGroups:             2,
 	ServerGroupMembers:       3,
+}
+
+// FirstQuotaDetailsSet is the first result in ListOutput.
+var FirstQuotaDetailsSet = quotasets.QuotaDetailSet{
+	ID: FirstTenantID,
+	InjectedFileContentBytes: quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 10240},
+	InjectedFilePathBytes:    quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 255},
+	InjectedFiles:            quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 5},
+	KeyPairs:                 quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 10},
+	MetadataItems:            quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 128},
+	RAM:                      quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 200000},
+	SecurityGroupRules:       quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 20},
+	SecurityGroups:           quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 10},
+	Cores:                    quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 200},
+	Instances:                quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 25},
+	ServerGroups:             quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 2},
+	ServerGroupMembers:       quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 3},
 }
 
 //The expected update Body. Is also returned by PUT request
@@ -82,6 +168,16 @@ func HandleGetSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleGetDetailSuccessfully configures the test server to respond to a Get Details request for sample tenant
+func HandleGetDetailSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID+"/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, GetDetailsOutput)
 	})
 }
 
