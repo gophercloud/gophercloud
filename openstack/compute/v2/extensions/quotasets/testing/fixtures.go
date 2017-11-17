@@ -103,14 +103,14 @@ const FirstTenantID = "555544443333222211110000ffffeeee"
 
 // FirstQuotaSet is the first result in ListOutput.
 var FirstQuotaSet = quotasets.QuotaSet{
-	FixedIps:                 0,
-	FloatingIps:              0,
+	FixedIPs:                 0,
+	FloatingIPs:              0,
 	InjectedFileContentBytes: 10240,
 	InjectedFilePathBytes:    255,
 	InjectedFiles:            5,
 	KeyPairs:                 10,
 	MetadataItems:            128,
-	Ram:                      200000,
+	RAM:                      200000,
 	SecurityGroupRules:       20,
 	SecurityGroups:           10,
 	Cores:                    200,
@@ -144,14 +144,14 @@ const PartialUpdateBody = `{"quota_set":{"cores":200, "force":true}}`
 
 //Result of Quota-update
 var UpdatedQuotaSet = quotasets.UpdateOpts{
-	FixedIps:                 gophercloud.IntToPointer(0),
-	FloatingIps:              gophercloud.IntToPointer(0),
+	FixedIPs:                 gophercloud.IntToPointer(0),
+	FloatingIPs:              gophercloud.IntToPointer(0),
 	InjectedFileContentBytes: gophercloud.IntToPointer(10240),
 	InjectedFilePathBytes:    gophercloud.IntToPointer(255),
 	InjectedFiles:            gophercloud.IntToPointer(5),
 	KeyPairs:                 gophercloud.IntToPointer(10),
 	MetadataItems:            gophercloud.IntToPointer(128),
-	Ram:                      gophercloud.IntToPointer(200000),
+	RAM:                      gophercloud.IntToPointer(200000),
 	SecurityGroupRules:       gophercloud.IntToPointer(20),
 	SecurityGroups:           gophercloud.IntToPointer(10),
 	Cores:                    gophercloud.IntToPointer(200),
