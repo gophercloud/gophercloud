@@ -1,12 +1,13 @@
 package testing
 
 import (
-	"code.comcast.com/onecloud/gophercloud/openstack/compute/v2/extensions/simpletenantusage"
-	th "code.comcast.com/onecloud/gophercloud/testhelper"
-	"code.comcast.com/onecloud/gophercloud/testhelper/client"
 	"fmt"
 	"net/http"
 	"testing"
+
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/simpletenantusage"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 // GetOutput is a sample response to a Get call.
@@ -154,31 +155,29 @@ var SimpleTenantUsageDetailResults = []simpletenantusage.TenantUsage{
 }
 
 // SimpleTenantUsageOneTenantResults is the decoded output corresponding to GetTenantOutput above.
-var SimpleTenantUsageOneTenantResults = []simpletenantusage.TenantUsage{
-	simpletenantusage.TenantUsage{
-		ServerUsages: []simpletenantusage.ServerUsage{
-			simpletenantusage.ServerUsage{
-				Flavor:     "m1.tiny",
-				Hours:      1.0,
-				InstanceID: "1f1deceb-17b5-4c04-84c7-e0d4499c8fe0",
-				LocalGB:    1,
-				MemoryMB:   512,
-				Name:       "instance-2",
-				StartedAt:  "2012-10-08T20:10:44.541277",
-				State:      "active",
-				TenantID:   "6f70656e737461636b20342065766572",
-				Uptime:     3600,
-				VCPUs:      1,
-			},
+var SimpleTenantUsageOneTenantResults = simpletenantusage.TenantUsage{
+	ServerUsages: []simpletenantusage.ServerUsage{
+		simpletenantusage.ServerUsage{
+			Flavor:     "m1.tiny",
+			Hours:      1.0,
+			InstanceID: "1f1deceb-17b5-4c04-84c7-e0d4499c8fe0",
+			LocalGB:    1,
+			MemoryMB:   512,
+			Name:       "instance-2",
+			StartedAt:  "2012-10-08T20:10:44.541277",
+			State:      "active",
+			TenantID:   "6f70656e737461636b20342065766572",
+			Uptime:     3600,
+			VCPUs:      1,
 		},
-		Start:              "2012-10-08T20:10:44.587336",
-		Stop:               "2012-10-08T21:10:44.587336",
-		TenantID:           "6f70656e737461636b20342065766572",
-		TotalHours:         1.0,
-		TotalLocalGBUsage:  1.0,
-		TotalMemoryMBUsage: 512.0,
-		TotalVCPUsUsage:    1.0,
 	},
+	Start:              "2012-10-08T20:10:44.587336",
+	Stop:               "2012-10-08T21:10:44.587336",
+	TenantID:           "6f70656e737461636b20342065766572",
+	TotalHours:         1.0,
+	TotalLocalGBUsage:  1.0,
+	TotalMemoryMBUsage: 512.0,
+	TotalVCPUsUsage:    1.0,
 }
 
 // HandleGetSuccessfully configures the test server to respond to a Get request

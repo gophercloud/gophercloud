@@ -1,6 +1,6 @@
 package simpletenantusage
 
-import "code.comcast.com/onecloud/gophercloud"
+import "github.com/gophercloud/gophercloud"
 
 const resourcePath = "os-simple-tenant-usage"
 
