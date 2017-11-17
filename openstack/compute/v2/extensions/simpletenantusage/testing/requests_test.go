@@ -3,10 +3,9 @@ package testing
 import (
 	"testing"
 
-	"code.comcast.com/onecloud/gophercloud"
-	"code.comcast.com/onecloud/gophercloud/openstack/compute/v2/extensions/simpletenantusage"
-	th "code.comcast.com/onecloud/gophercloud/testhelper"
-	"code.comcast.com/onecloud/gophercloud/testhelper/client"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/simpletenantusage"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
 func TestGet(t *testing.T) {
@@ -18,7 +17,7 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	actual, err := simpletenantusage.ExtractSimpleTenantUsages(page)
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &SimpleTenantUsageResults, actual)
+	th.CheckDeepEquals(t, SimpleTenantUsageResults, actual)
 }
 
 func TestGetTenant(t *testing.T) {
@@ -34,8 +33,9 @@ func TestGetTenant(t *testing.T) {
 }
 
 func TestGetDetails(t *testing.T) {
+	detailed := true
 	getOpts := simpletenantusage.GetOpts{
-		Detailed: gophercloud.IntToPointer(1),
+		Detailed: &detailed,
 	}
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -44,5 +44,5 @@ func TestGetDetails(t *testing.T) {
 	th.AssertNoErr(t, err)
 	actual, err := simpletenantusage.ExtractSimpleTenantUsages(page)
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &SimpleTenantUsageDetailResults, actual)
+	th.CheckDeepEquals(t, SimpleTenantUsageDetailResults, actual)
 }

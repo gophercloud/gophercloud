@@ -3,8 +3,8 @@ package simpletenantusage
 import (
 	"time"
 
-	"code.comcast.com/onecloud/gophercloud"
-	"code.comcast.com/onecloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // Get returns simple tenant usage data about all tenants
@@ -33,7 +33,7 @@ func GetTenant(client *gophercloud.ServiceClient, tenantID string, opts GetOptsB
 		url += query
 	}
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return SimpleTenantUsagePage{pagination.LinkedPageBase{PageResult: r}}
+		return SimpleSingleTenantUsagePage{pagination.SinglePageBase(r)}
 	})
 }
 
