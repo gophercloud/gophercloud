@@ -11,6 +11,13 @@ func Get(client *gophercloud.ServiceClient, tenantID string) GetResult {
 	return res
 }
 
+// GetDetail returns detailed public data about a previously created QuotaSet.
+func GetDetail(client *gophercloud.ServiceClient, tenantID string) GetDetailResult {
+	var res GetDetailResult
+	_, res.Err = client.Get(getDetailURL(client, tenantID), &res.Body, nil)
+	return res
+}
+
 // Updates the quotas for the given tenantID and returns the new QuotaSet.
 func Update(client *gophercloud.ServiceClient, tenantID string, opts UpdateOptsBuilder) (res UpdateResult) {
 	reqBody, err := opts.ToComputeQuotaUpdateMap()
