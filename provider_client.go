@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"sync"
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
@@ -52,6 +53,8 @@ type ProviderClient struct {
 
 	// TokenID is the ID of the most recently issued valid token.
 	TokenID string
+	// TokenLock is the lock to guarantee thread safe call on token refresh
+	TokenLock sync.Mutex
 
 	// EndpointLocator describes how this provider discovers the endpoints for
 	// its constituent services.
@@ -74,6 +77,8 @@ type ProviderClient struct {
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
 // authenticated service requests.
 func (client *ProviderClient) AuthenticatedHeaders() map[string]string {
+	client.TokenLock.Lock()
+	defer client.TokenLock.Unlock()
 	if client.TokenID == "" {
 		return map[string]string{}
 	}
