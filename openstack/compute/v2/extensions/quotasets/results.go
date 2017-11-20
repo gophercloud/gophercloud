@@ -11,11 +11,11 @@ type QuotaSet struct {
 	// ID is tenant associated with this QuotaSet.
 	ID string `json:"id"`
 
-	// FixedIps is number of fixed ips alloted this QuotaSet.
-	FixedIps int `json:"fixed_ips"`
+	// FixedIPs is number of fixed ips alloted this QuotaSet.
+	FixedIPs int `json:"fixed_ips"`
 
-	// FloatingIps is number of floating ips alloted this QuotaSet.
-	FloatingIps int `json:"floating_ips"`
+	// FloatingIPs is number of floating ips alloted this QuotaSet.
+	FloatingIPs int `json:"floating_ips"`
 
 	// InjectedFileContentBytes is the allowed bytes for each injected file.
 	InjectedFileContentBytes int `json:"injected_file_content_bytes"`
@@ -32,8 +32,8 @@ type QuotaSet struct {
 	// MetadataItems is number of metadata items allowed for each instance.
 	MetadataItems int `json:"metadata_items"`
 
-	// Ram is megabytes allowed for each instance.
-	Ram int `json:"ram"`
+	// RAM is megabytes allowed for each instance.
+	RAM int `json:"ram"`
 
 	// SecurityGroupRules is number of security group rules allowed for each
 	// security group.
@@ -61,11 +61,11 @@ type QuotaDetailSet struct {
 	// ID is the tenant ID associated with this QuotaDetailSet.
 	ID string `json:"id"`
 
-	// FixedIps is number of fixed ips alloted this QuotaDetailSet.
-	FixedIps QuotaDetail `json:"fixed_ips"`
+	// FixedIPs is number of fixed ips alloted this QuotaDetailSet.
+	FixedIPs QuotaDetail `json:"fixed_ips"`
 
-	// FloatingIps is number of floating ips alloted this QuotaDetailSet.
-	FloatingIps QuotaDetail `json:"floating_ips"`
+	// FloatingIPs is number of floating ips alloted this QuotaDetailSet.
+	FloatingIPs QuotaDetail `json:"floating_ips"`
 
 	// InjectedFileContentBytes is the allowed bytes for each injected file.
 	InjectedFileContentBytes QuotaDetail `json:"injected_file_content_bytes"`
@@ -108,13 +108,16 @@ type QuotaDetailSet struct {
 // QuotaDetail is a set of details about a single operational limit that allows
 // for control of compute usage.
 type QuotaDetail struct {
-	// InUse is the current number of provisioned/allocated resources of the given type.
+	// InUse is the current number of provisioned/allocated resources of the
+	// given type.
 	InUse int `json:"in_use"`
 
-	// Reserved is a transitional state when a claim against quota has been made but the resource is not yet fully online.
+	// Reserved is a transitional state when a claim against quota has been made
+	// but the resource is not yet fully online.
 	Reserved int `json:"reserved"`
 
-	// Limit is the maximum number of a given resource that can be allocated/provisioned.  This is what "quota" usually refers to.
+	// Limit is the maximum number of a given resource that can be
+	// allocated/provisioned.  This is what "quota" usually refers to.
 	Limit int `json:"limit"`
 }
 
@@ -174,14 +177,14 @@ type quotaDetailResult struct {
 	gophercloud.Result
 }
 
-// GetDetailResult is the response from a Get operation. Call its Extract method to interpret it
-// as a QuotaSet.
+// GetDetailResult is the response from a Get operation. Call its Extract
+// method to interpret it as a QuotaSet.
 type GetDetailResult struct {
 	quotaDetailResult
 }
 
-// ExtractDetails is a method that attempts to interpret any QuotaDetailSet
-// resource response as an array of QuotaDetailSet structs.
+// Extract is a method that attempts to interpret any QuotaDetailSet
+// resource response as a set of QuotaDetailSet structs.
 func (r quotaDetailResult) Extract() (QuotaDetailSet, error) {
 	var s struct {
 		QuotaData QuotaDetailSet `json:"quota_set"`
