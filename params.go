@@ -347,12 +347,31 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 								params.Add(tags[0], v.Index(i).String())
 							}
 						}
+					case reflect.Map:
+						fm := map[reflect.Type]func(reflect.Value) string{
+							reflect.TypeOf(""):   func(v reflect.Value) string { return v.String() },
+							reflect.TypeOf(0):    func(v reflect.Value) string { return strconv.FormatInt(v.Int(), 10) },
+							reflect.TypeOf(true): func(v reflect.Value) string { return strconv.FormatBool(v.Bool()) },
+						}
+						kf, e1 := fm[v.Type().Key()]
+						if !e1 {
+							return &url.URL{}, fmt.Errorf("Can not build query string on item %v: not suport key type %v", v, v.Type().Key())
+						}
+						vf, e2 := fm[v.Type().Elem()]
+						if !e2 {
+							return &url.URL{}, fmt.Errorf("Can not build query string on item %v: not support value type %v", v, v.Type().Elem())
+						}
+						var s []string
+						for _, k := range v.MapKeys() {
+							s = append(s, "'"+kf(k)+"':'"+vf(v.MapIndex(k))+"'")
+						}
+						params.Add(tags[0], "{"+strings.Join(s, ", ")+"}")
 					}
 				} else {
 					// Otherwise, the field is not set.
 					if len(tags) == 2 && tags[1] == "required" {
 						// And the field is required. Return an error.
-						return nil, fmt.Errorf("Required query parameter [%s] not set.", f.Name)
+						return &url.URL{}, fmt.Errorf("Required query parameter [%s] not set.", f.Name)
 					}
 				}
 			}
