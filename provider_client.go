@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"sync"
 )
 
 // DefaultUserAgent is the default User-Agent string set in the request header.
@@ -68,16 +69,26 @@ type ProviderClient struct {
 	// authentication functions for different Identity service versions.
 	ReauthFunc func() error
 
-	Debug bool
+	mut *sync.RWMutex
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
 // authenticated service requests.
 func (client *ProviderClient) AuthenticatedHeaders() map[string]string {
+	if client.mut != nil {
+		client.mut.RLock()
+		defer client.mut.RUnlock()
+	}
 	if client.TokenID == "" {
 		return map[string]string{}
 	}
 	return map[string]string{"X-Auth-Token": client.TokenID}
+}
+
+// UseSafeReauth creates a mutex that is used to allow safe concurrent re-authentication.
+// If the application's ProviderClient is not used concurrently, this doesn't need to be called.
+func (client *ProviderClient) UseSafeReauth() {
+	client.mut = new(sync.RWMutex)
 }
 
 // RequestOpts customizes the behavior of the provider.Request() method.
@@ -166,6 +177,8 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 	// Set connection parameter to close the connection immediately when we've got the response
 	req.Close = true
 
+	prereqtok := req.Header.Get("X-Auth-Token")
+
 	// Issue the request.
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
@@ -189,9 +202,6 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 	if !ok {
 		body, _ := ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
-		//pc := make([]uintptr, 1)
-		//runtime.Callers(2, pc)
-		//f := runtime.FuncForPC(pc[0])
 		respErr := ErrUnexpectedResponseCode{
 			URL:      url,
 			Method:   method,
@@ -199,7 +209,6 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 			Actual:   resp.StatusCode,
 			Body:     body,
 		}
-		//respErr.Function = "gophercloud.ProviderClient.Request"
 
 		errType := options.ErrorContext
 		switch resp.StatusCode {
@@ -210,7 +219,15 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 			}
 		case http.StatusUnauthorized:
 			if client.ReauthFunc != nil {
-				err = client.ReauthFunc()
+				if client.mut != nil {
+					client.mut.Lock()
+					if curtok := client.TokenID; curtok == prereqtok {
+						err = client.ReauthFunc()
+					}
+					client.mut.Unlock()
+				} else {
+					err = client.ReauthFunc()
+				}
 				if err != nil {
 					e := &ErrUnableToReauthenticate{}
 					e.ErrOriginal = respErr
