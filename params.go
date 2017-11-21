@@ -348,24 +348,22 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 							}
 						}
 					case reflect.Map:
-						fm := map[reflect.Type]func(reflect.Value) string{
-							reflect.TypeOf(""):   func(v reflect.Value) string { return v.String() },
-							reflect.TypeOf(0):    func(v reflect.Value) string { return strconv.FormatInt(v.Int(), 10) },
-							reflect.TypeOf(true): func(v reflect.Value) string { return strconv.FormatBool(v.Bool()) },
+						if v.Type().Key().Kind() == reflect.String {
+							var s []string
+							for _, k := range v.MapKeys() {
+								value := ""
+								switch v.Type().Elem().Kind() {
+								case reflect.String:
+									value = v.MapIndex(k).String()
+								case reflect.Int:
+									value = strconv.FormatInt(v.MapIndex(k).Int(), 10)
+								case reflect.Bool:
+									value = strconv.FormatBool(v.MapIndex(k).Bool())
+								}
+								s = append(s, fmt.Sprintf("'%s':'%s'", k.String(), value))
+							}
+							params.Add(tags[0], fmt.Sprintf("{%s}", strings.Join(s, ", ")))
 						}
-						kf, e1 := fm[v.Type().Key()]
-						if !e1 {
-							return &url.URL{}, fmt.Errorf("Can not build query string on item %v: not suport key type %v", v, v.Type().Key())
-						}
-						vf, e2 := fm[v.Type().Elem()]
-						if !e2 {
-							return &url.URL{}, fmt.Errorf("Can not build query string on item %v: not support value type %v", v, v.Type().Elem())
-						}
-						var s []string
-						for _, k := range v.MapKeys() {
-							s = append(s, "'"+kf(k)+"':'"+vf(v.MapIndex(k))+"'")
-						}
-						params.Add(tags[0], "{"+strings.Join(s, ", ")+"}")
 					}
 				} else {
 					// Otherwise, the field is not set.

@@ -37,13 +37,16 @@ func TestBuildQueryString(t *testing.T) {
 	type testVar string
 	iFalse := false
 	opts := struct {
-		J  int       `q:"j"`
-		R  string    `q:"r,required"`
-		C  bool      `q:"c"`
-		S  []string  `q:"s"`
-		TS []testVar `q:"ts"`
-		TI []int     `q:"ti"`
-		F  *bool     `q:"f"`
+		J  int               `q:"j"`
+		R  string            `q:"r,required"`
+		C  bool              `q:"c"`
+		S  []string          `q:"s"`
+		TS []testVar         `q:"ts"`
+		TI []int             `q:"ti"`
+		F  *bool             `q:"f"`
+		M0 map[string]string `q:"m0"`
+		M1 map[string]int    `q:"m1"`
+		M2 map[string]bool   `q:"m2"`
 	}{
 		J:  2,
 		R:  "red",
@@ -52,8 +55,11 @@ func TestBuildQueryString(t *testing.T) {
 		TS: []testVar{"a", "b"},
 		TI: []int{1, 2},
 		F:  &iFalse,
+		M0: map[string]string{"k1": "success1"},
+		M1: map[string]int{"k2": 10},
+		M2: map[string]bool{"k3": true},
 	}
-	expected := &url.URL{RawQuery: "c=true&f=false&j=2&r=red&s=one&s=two&s=three&ti=1&ti=2&ts=a&ts=b"}
+	expected := &url.URL{RawQuery: "c=true&f=false&j=2&m0=%7B%27k1%27%3A%27success1%27%7D&m1=%7B%27k2%27%3A%2710%27%7D&m2=%7B%27k3%27%3A%27true%27%7D&r=red&s=one&s=two&s=three&ti=1&ti=2&ts=a&ts=b"}
 	actual, err := gophercloud.BuildQueryString(&opts)
 	if err != nil {
 		t.Errorf("Error building query string: %v", err)
@@ -61,13 +67,16 @@ func TestBuildQueryString(t *testing.T) {
 	th.CheckDeepEquals(t, expected, actual)
 
 	opts = struct {
-		J  int       `q:"j"`
-		R  string    `q:"r,required"`
-		C  bool      `q:"c"`
-		S  []string  `q:"s"`
-		TS []testVar `q:"ts"`
-		TI []int     `q:"ti"`
-		F  *bool     `q:"f"`
+		J  int               `q:"j"`
+		R  string            `q:"r,required"`
+		C  bool              `q:"c"`
+		S  []string          `q:"s"`
+		TS []testVar         `q:"ts"`
+		TI []int             `q:"ti"`
+		F  *bool             `q:"f"`
+		M0 map[string]string `q:"m0"`
+		M1 map[string]int    `q:"m1"`
+		M2 map[string]bool   `q:"m2"`
 	}{
 		J: 2,
 		C: true,
