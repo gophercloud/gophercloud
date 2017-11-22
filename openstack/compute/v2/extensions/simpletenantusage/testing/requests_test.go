@@ -31,18 +31,3 @@ func TestGetTenant(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &SimpleTenantUsageOneTenantResults, actual)
 }
-
-func TestGetDetails(t *testing.T) {
-	detailed := true
-	getOpts := simpletenantusage.GetOpts{
-		Detailed: &detailed,
-	}
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetDetailSuccessfully(t)
-	page, err := simpletenantusage.Get(client.ServiceClient(), getOpts).AllPages()
-	th.AssertNoErr(t, err)
-	actual, err := simpletenantusage.ExtractSimpleTenantUsages(page)
-	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, SimpleTenantUsageDetailResults, actual)
-}

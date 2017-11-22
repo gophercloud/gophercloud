@@ -1,2 +1,2 @@
-// compute_extensions_simpletenantusage_v2
+// simple tenant usage unit tests
 package testing

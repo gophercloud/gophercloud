@@ -1,6 +1,7 @@
 package simpletenantusage
 
 import (
+	"net/url"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -37,36 +38,35 @@ func GetTenant(client *gophercloud.ServiceClient, tenantID string, opts GetOptsB
 	})
 }
 
-// Options for fetching the tenant usage for a Tenant.
+// GetOpts are options for fetching the tenant usage for a Tenant.
 // All int-values are pointers so they can be nil if they are not needed
 // you can use gopercloud.IntToPointer() for convenience
 type GetOpts struct {
-	// Set to 1 to get detailed (i.e. "server usages") tenant usage; 0 otherwise.
-	Detailed *bool `json:"detailed,omitempty"`
-
 	// The ending time to calculate usage statistics on compute and storage resources.
-	End time.Time `json:"end,omitempty"`
+	End *time.Time `json:"end,omitempty" q:"end"`
 
 	// The beginning time to calculate usage statistics on compute and storage resources.
-	Start time.Time `json:"start,omitempty"`
-
-	// Requests a page size of items. Calculate usage for the limited number of instances.
-	// Use the limit parameter to make an initial limited request and use the last-seen instance
-	// UUID from the response as the marker parameter value in a subsequent limited request.
-	Limit *int `json:"limit,omitempty"`
-
-	// The last-seen item based on an earlier Limit query.
-	Marker string `json:"marker,omitempty"`
+	Start *time.Time `json:"start,omitempty" q:"start"`
 }
 
-// Interface for GetOpts structs
+// GetOptsBuilder is an interface for GetOpts structs
 type GetOptsBuilder interface {
 	// Extra specific name to prevent collisions with interfaces for other usages
 	ToSimpleTenantUsageGetMap() (string, error)
 }
 
-// Convert the options into URL-encoded query string arguments.
+// ToSimpleTenantUsageGetMap converts the options into URL-encoded query string
+// arguments.
 func (opts GetOpts) ToSimpleTenantUsageGetMap() (string, error) {
-	q, err := gophercloud.BuildQueryString(opts)
-	return q.String(), err
+	params := make(url.Values)
+	if opts.Start != nil {
+		params.Add("start", opts.Start.Format(gophercloud.RFC3339MilliNoZ))
+	}
+
+	if opts.End != nil {
+		params.Add("end", opts.End.Format(gophercloud.RFC3339MilliNoZ))
+	}
+
+	q := &url.URL{RawQuery: params.Encode()}
+	return q.String(), nil
 }

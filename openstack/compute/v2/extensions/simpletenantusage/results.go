@@ -11,10 +11,10 @@ type TenantUsage struct {
 	ServerUsages []ServerUsage `json:"server_usages"`
 
 	// Start is the beginning time to calculate usage statistics on compute and storage resources
-	Start string `json:"start"`
+	Start gophercloud.JSONRFC3339MilliNoZ `json:"start"`
 
 	// Stop is the ending time to calculate usage statistics on compute and storage resources
-	Stop string `json:"stop"`
+	Stop gophercloud.JSONRFC3339MilliNoZ `json:"stop"`
 
 	// TenantID is the ID of the tenant whose usage is being reported on
 	TenantID string `json:"tenant_id"`
@@ -35,7 +35,7 @@ type TenantUsage struct {
 // ServerUsage is a detailed set of information about a specific instance inside a tenant
 type ServerUsage struct {
 	// EndedAt is the date and time when the server was deleted
-	EndedAt string `json:"ended_at"`
+	EndedAt gophercloud.JSONRFC3339MilliNoZ `json:"ended_at"`
 
 	// Flavor is the display name of a flavor
 	Flavor string `json:"flavor"`
@@ -56,7 +56,7 @@ type ServerUsage struct {
 	Name string `json:"name"`
 
 	// StartedAt is the date and time when the server was started
-	StartedAt string `json:"started_at"`
+	StartedAt gophercloud.JSONRFC3339MilliNoZ `json:"started_at"`
 
 	// State is the VM power state
 	State string `json:"state"`
