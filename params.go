@@ -348,18 +348,10 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 							}
 						}
 					case reflect.Map:
-						if v.Type().Key().Kind() == reflect.String {
+						if v.Type().Key().Kind() == reflect.String && v.Type().Elem().Kind() == reflect.String {
 							var s []string
 							for _, k := range v.MapKeys() {
-								value := ""
-								switch v.Type().Elem().Kind() {
-								case reflect.String:
-									value = v.MapIndex(k).String()
-								case reflect.Int:
-									value = strconv.FormatInt(v.MapIndex(k).Int(), 10)
-								case reflect.Bool:
-									value = strconv.FormatBool(v.MapIndex(k).Bool())
-								}
+								value := v.MapIndex(k).String()
 								s = append(s, fmt.Sprintf("'%s':'%s'", k.String(), value))
 							}
 							params.Add(tags[0], fmt.Sprintf("{%s}", strings.Join(s, ", ")))
