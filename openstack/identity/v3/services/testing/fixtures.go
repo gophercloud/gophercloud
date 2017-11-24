@@ -81,7 +81,10 @@ const CreateRequest = `
 // UpdateRequest provides the input to as Update request.
 const UpdateRequest = `
 {
-    "type": "compute2"
+    "service": {
+        "type": "compute2",
+        "description": "Service Two Updated"
+    }
 }
 `
 
@@ -97,7 +100,7 @@ const UpdateOutput = `
         "enabled": false,
         "extra": {
             "name": "service-two",
-            "description": "Service Two",
+            "description": "Service Two Updated",
             "email": "service@example.com"
         }
     }
@@ -143,7 +146,7 @@ var SecondServiceUpdated = services.Service{
 	Enabled: false,
 	Extra: map[string]interface{}{
 		"name":        "service-two",
-		"description": "Service Two",
+		"description": "Service Two Updated",
 		"email":       "service@example.com",
 	},
 }

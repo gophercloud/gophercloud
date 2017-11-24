@@ -94,10 +94,52 @@ func Get(client *gophercloud.ServiceClient, serviceID string) (r GetResult) {
 	return
 }
 
-// Update changes the service type of an existing service.
-func Update(client *gophercloud.ServiceClient, serviceID string, serviceType string) (r UpdateResult) {
-	b := map[string]string{"type": serviceType}
-	_, r.Err = client.Patch(serviceURL(client, serviceID), &b, &r.Body, nil)
+// UpdateOptsBuilder allows extensions to add additional parameters to
+// the Update request.
+type UpdateOptsBuilder interface {
+	ToServiceUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts provides options for updating a service.
+type UpdateOpts struct {
+	// Type is the type of the service.
+	Type string `json:"type"`
+
+	// Enabled is whether or not the service is enabled.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Extra is free-form extra key/value pairs to describe the service.
+	Extra map[string]interface{} `json:"-"`
+}
+
+// ToServiceUpdateMap formats a UpdateOpts into an update request.
+func (opts UpdateOpts) ToServiceUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "service")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		if v, ok := b["service"].(map[string]interface{}); ok {
+			for key, value := range opts.Extra {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
+}
+
+// Update updates an existing Service.
+func Update(client *gophercloud.ServiceClient, serviceID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToServiceUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Patch(updateURL(client, serviceID), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
 	return
 }
 

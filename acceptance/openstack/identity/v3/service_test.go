@@ -54,4 +54,20 @@ func TestServicesCRUD(t *testing.T) {
 
 	tools.PrintResource(t, service)
 	tools.PrintResource(t, service.Extra)
+
+	updateOpts := services.UpdateOpts{
+		Type: "testing2",
+		Extra: map[string]interface{}{
+			"description": "Test Users",
+			"email":       "thetestservice@example.com",
+		},
+	}
+
+	newService, err := services.Update(client, service.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update service: %v", err)
+	}
+
+	tools.PrintResource(t, newService)
+	tools.PrintResource(t, newService.Extra)
 }
