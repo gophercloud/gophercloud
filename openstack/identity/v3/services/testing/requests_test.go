@@ -29,7 +29,7 @@ func TestCreateSuccessful(t *testing.T) {
 	th.CheckDeepEquals(t, SecondService, *actual)
 }
 
-func TestListSinglePage(t *testing.T) {
+func TestListServices(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleListServicesSuccessfully(t)
@@ -47,6 +47,20 @@ func TestListSinglePage(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, count, 1)
+}
+
+func TestListServicesAllPages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListServicesSuccessfully(t)
+
+	allPages, err := services.List(client.ServiceClient(), nil).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := services.ExtractServices(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedServicesSlice, actual)
+	th.AssertEquals(t, ExpectedServicesSlice[0].Extra["name"], "service-one")
+	th.AssertEquals(t, ExpectedServicesSlice[1].Extra["email"], "service@example.com")
 }
 
 func TestGetSuccessful(t *testing.T) {
