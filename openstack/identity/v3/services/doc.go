@@ -24,7 +24,15 @@ Example to List Services
 
 Example to Create a Service
 
-	service, err := services.Create(identityClient, "compute").Extract()
+	createOpts := services.CreateOpts{
+		Type: "compute",
+		Extra: map[string]interface{}{
+			"name": "compute-service",
+			"description": "Compute Service",
+		},
+	}
+
+	service, err := services.Create(identityClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

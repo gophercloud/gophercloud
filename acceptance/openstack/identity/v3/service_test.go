@@ -31,3 +31,27 @@ func TestServicesList(t *testing.T) {
 	}
 
 }
+
+func TestServicesCRUD(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v", err)
+	}
+
+	createOpts := services.CreateOpts{
+		Type: "testing",
+		Extra: map[string]interface{}{
+			"email": "testservice@example.com",
+		},
+	}
+
+	// Create service in the default domain
+	service, err := CreateService(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create service: %v", err)
+	}
+	defer DeleteService(t, client, service.ID)
+
+	tools.PrintResource(t, service)
+	tools.PrintResource(t, service.Extra)
+}
