@@ -68,6 +68,11 @@ type ListOpts struct {
 	Name     string `q:"name"`
 	Status   string `q:"status"`
 	VolumeID string `q:"volume_id"`
+	// Admin-only option. Set it to true to see all tenant snapshots.
+	AllTenants bool `q:"all_tenants"`
+	// List only snapshots that belongs to one particular tenant.
+	// Setting "AllTenants = true" is required.
+	TenantID string `q:"project_id"`
 }
 
 // ToSnapshotListQuery formats a ListOpts into a query string.

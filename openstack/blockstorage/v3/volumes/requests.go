@@ -91,6 +91,9 @@ type ListOpts struct {
 	Name string `q:"name"`
 	// List only volumes that have a status of Status.
 	Status string `q:"status"`
+	// List only volumes that belongs to one particular tenant.
+	// Setting "AllTenants = true" is required.
+	TenantID string `q:"project_id"`
 }
 
 // ToVolumeListQuery formats a ListOpts into a query string.
