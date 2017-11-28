@@ -152,6 +152,12 @@ func Extend(client *gophercloud.ServiceClient, id string, opts ExtendOptsBuilder
 	return
 }
 
+// ForceDelete will delete the volume regardless of state.
+func ForceDelete(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"os-force_delete": ""}, nil, nil)
+	return
+}
+
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {
