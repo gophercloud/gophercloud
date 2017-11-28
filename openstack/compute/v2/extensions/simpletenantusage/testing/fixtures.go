@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/simpletenantusage"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -78,8 +77,8 @@ const FirstTenantID = "aabbccddeeff112233445566"
 var SimpleTenantUsageResults = []simpletenantusage.TenantUsage{
 	simpletenantusage.TenantUsage{
 		ServerUsages:       []simpletenantusage.ServerUsage(nil),
-		Start:              gophercloud.JSONRFC3339MilliNoZ(time.Date(2012, 10, 8, 21, 10, 44, 587336000, time.UTC)),
-		Stop:               gophercloud.JSONRFC3339MilliNoZ(time.Date(2012, 10, 8, 22, 10, 44, 587336000, time.UTC)),
+		Start:              time.Date(2012, 10, 8, 21, 10, 44, 587336000, time.UTC),
+		Stop:               time.Date(2012, 10, 8, 22, 10, 44, 587336000, time.UTC),
 		TenantID:           "6f70656e737461636b20342065766572",
 		TotalHours:         1.0,
 		TotalLocalGBUsage:  1.0,
@@ -98,15 +97,15 @@ var SimpleTenantUsageOneTenantResults = simpletenantusage.TenantUsage{
 			LocalGB:    1,
 			MemoryMB:   512,
 			Name:       "instance-2",
-			StartedAt:  gophercloud.JSONRFC3339MilliNoZ(time.Date(2012, 10, 8, 20, 10, 44, 541277000, time.UTC)),
+			StartedAt:  time.Date(2012, 10, 8, 20, 10, 44, 541277000, time.UTC),
 			State:      "active",
 			TenantID:   "6f70656e737461636b20342065766572",
 			Uptime:     3600,
 			VCPUs:      1,
 		},
 	},
-	Start:              gophercloud.JSONRFC3339MilliNoZ(time.Date(2012, 10, 8, 20, 10, 44, 587336000, time.UTC)),
-	Stop:               gophercloud.JSONRFC3339MilliNoZ(time.Date(2012, 10, 8, 21, 10, 44, 587336000, time.UTC)),
+	Start:              time.Date(2012, 10, 8, 20, 10, 44, 587336000, time.UTC),
+	Stop:               time.Date(2012, 10, 8, 21, 10, 44, 587336000, time.UTC),
 	TenantID:           "6f70656e737461636b20342065766572",
 	TotalHours:         1.0,
 	TotalLocalGBUsage:  1.0,

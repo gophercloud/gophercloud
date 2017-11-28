@@ -39,8 +39,6 @@ func GetTenant(client *gophercloud.ServiceClient, tenantID string, opts GetOptsB
 }
 
 // GetOpts are options for fetching the tenant usage for a Tenant.
-// All int-values are pointers so they can be nil if they are not needed
-// you can use gopercloud.IntToPointer() for convenience
 type GetOpts struct {
 	// The ending time to calculate usage statistics on compute and storage resources.
 	End *time.Time `json:"end,omitempty" q:"end"`

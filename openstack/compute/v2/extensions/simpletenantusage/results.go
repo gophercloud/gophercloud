@@ -1,6 +1,9 @@
 package simpletenantusage
 
 import (
+	"encoding/json"
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -11,10 +14,10 @@ type TenantUsage struct {
 	ServerUsages []ServerUsage `json:"server_usages"`
 
 	// Start is the beginning time to calculate usage statistics on compute and storage resources
-	Start gophercloud.JSONRFC3339MilliNoZ `json:"start"`
+	Start time.Time `json:"-"`
 
 	// Stop is the ending time to calculate usage statistics on compute and storage resources
-	Stop gophercloud.JSONRFC3339MilliNoZ `json:"stop"`
+	Stop time.Time `json:"-"`
 
 	// TenantID is the ID of the tenant whose usage is being reported on
 	TenantID string `json:"tenant_id"`
@@ -32,10 +35,29 @@ type TenantUsage struct {
 	TotalVCPUsUsage float64 `json:"total_vcpus_usage"`
 }
 
+func (r *TenantUsage) UnmarshalJSON(b []byte) error {
+	type tmp TenantUsage
+	var s struct {
+		tmp
+		Start gophercloud.JSONRFC3339MilliNoZ `json:"start"`
+		Stop  gophercloud.JSONRFC3339MilliNoZ `json:"stop"`
+	}
+
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+	*r = TenantUsage(s.tmp)
+
+	r.Start = time.Time(s.Start)
+	r.Stop = time.Time(s.Stop)
+
+	return nil
+}
+
 // ServerUsage is a detailed set of information about a specific instance inside a tenant
 type ServerUsage struct {
 	// EndedAt is the date and time when the server was deleted
-	EndedAt gophercloud.JSONRFC3339MilliNoZ `json:"ended_at"`
+	EndedAt time.Time `json:"-"`
 
 	// Flavor is the display name of a flavor
 	Flavor string `json:"flavor"`
@@ -56,7 +78,7 @@ type ServerUsage struct {
 	Name string `json:"name"`
 
 	// StartedAt is the date and time when the server was started
-	StartedAt gophercloud.JSONRFC3339MilliNoZ `json:"started_at"`
+	StartedAt time.Time `json:"-"`
 
 	// State is the VM power state
 	State string `json:"state"`
@@ -69,6 +91,25 @@ type ServerUsage struct {
 
 	// VCPUs is the number of virtual CPUs that the server uses
 	VCPUs int `json:"vcpus"`
+}
+
+func (r *ServerUsage) UnmarshalJSON(b []byte) error {
+	type tmp ServerUsage
+	var s struct {
+		tmp
+		EndedAt   gophercloud.JSONRFC3339MilliNoZ `json:"ended_at"`
+		StartedAt gophercloud.JSONRFC3339MilliNoZ `json:"started_at"`
+	}
+
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+	*r = ServerUsage(s.tmp)
+
+	r.EndedAt = time.Time(s.EndedAt)
+	r.StartedAt = time.Time(s.StartedAt)
+
+	return nil
 }
 
 // SimpleSingleTenantUsagePage stores a single, only page of SimpleTenantUsage results from a List call.

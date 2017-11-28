@@ -7,7 +7,7 @@ Example to get usage for an entire region
 	if err != nil {
 		return err
 	}
-	usage, err := simpletenantusage.ExtractSimpleTenantUsage(page)
+	usage, err := simpletenantusage.ExtractSimpleTenantUsages(page)
 	if err != nil {
 		return err
 	}
@@ -17,7 +17,7 @@ Example to get usage for a particular tenant.
 	if err != nil {
 		return err
 	}
-	usage, err := simpletenantusage.ExtractSimpleTenantUsages(page)
+	usage, err := simpletenantusage.ExtractSimpleTenantUsage(page)
 	if err != nil {
 		return err
 	}
