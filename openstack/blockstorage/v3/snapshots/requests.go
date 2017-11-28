@@ -62,17 +62,22 @@ type ListOptsBuilder interface {
 	ToSnapshotListQuery() (string, error)
 }
 
-// ListOpts hold options for listing Snapshots. It is passed to the
-// snapshots.List function.
 type ListOpts struct {
-	Name     string `q:"name"`
-	Status   string `q:"status"`
-	VolumeID string `q:"volume_id"`
-	// Admin-only option. Set it to true to see all tenant snapshots.
+	// AllTenants will retrieve snapshots of all tenants/projects.
 	AllTenants bool `q:"all_tenants"`
-	// List only snapshots that belongs to one particular tenant.
-	// Setting "AllTenants = true" is required.
+
+	// Name will filter by the specified snapshot name.
+	Name string `q:"name"`
+
+	// Status will filter by the specified status.
+	Status string `q:"status"`
+
+	// TenantID will filter by a specific tenant/project ID.
+	// Setting AllTenants is required to use this.
 	TenantID string `q:"project_id"`
+
+	// VolumeID will filter by a specified volume ID.
+	VolumeID string `q:"volume_id"`
 }
 
 // ToSnapshotListQuery formats a ListOpts into a query string.
