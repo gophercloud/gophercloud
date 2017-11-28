@@ -255,14 +255,3 @@ func TestGetWithExtensions(t *testing.T) {
 		t.Errorf("Expected error when providing non-pointer struct")
 	}
 }
-
-func TestExtend(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	MockExtendResponse(t)
-
-	options := volumes.ExtendOpts{NewSize: 2}
-	err := volumes.Extend(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).ExtractErr()
-	th.AssertNoErr(t, err)
-}

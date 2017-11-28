@@ -122,36 +122,6 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// ExtendOptsBuilder allows extensions to add additional parameters to the
-// extend action (os-extend) request.
-type ExtendOptsBuilder interface {
-	ToVolumeExtendMap() (map[string]interface{}, error)
-}
-
-// ExtendOpts holds options for extending volumes. It is passed to the volumes.Extend
-// function.
-type ExtendOpts struct {
-	//New size of the volume in GiB
-	NewSize int `json:"new_size" required:"true"`
-}
-
-func (opts ExtendOpts) ToVolumeExtendMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "os-extend")
-}
-
-// Extend will extend the Volume with specified volume size.
-func Extend(client *gophercloud.ServiceClient, id string, opts ExtendOptsBuilder) (r ActionResult) {
-	b, err := opts.ToVolumeExtendMap()
-	if err != nil {
-		r.Err = err
-		return
-	}
-	_, r.Err = client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
-		OkCodes: []int{202},
-	})
-	return
-}
-
 // UpdateOptsBuilder allows extensions to add additional parameters to the
 // Update request.
 type UpdateOptsBuilder interface {

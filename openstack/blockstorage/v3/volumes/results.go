@@ -157,8 +157,3 @@ type UpdateResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
-
-// ActionResult contains the response body and error from a Action request.
-type ActionResult struct {
-	gophercloud.ErrResult
-}
