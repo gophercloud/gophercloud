@@ -43,6 +43,13 @@ var ExpectedListInfo = []objects.Object{
 		Name:         "hello",
 		ContentType:  "application/octet-stream",
 	},
+	{
+		Hash:         "d41d8cd98f00b204e9800998ecf8427e",
+		LastModified: time.Date(2016, time.August, 17, 22, 11, 58, 602650000, time.UTC),
+		Bytes:        0,
+		Name:         "directory",
+		ContentType:  "application/directory",
+	},
 }
 
 // ExpectedListNames is the result expected from a call to `List` when just
@@ -76,9 +83,19 @@ func HandleListObjectsInfoSuccessfully(t *testing.T) {
         "bytes": 14,
         "name": "hello",
         "content_type": "application/octet-stream"
+      },
+      {
+      	"hash": "d41d8cd98f00b204e9800998ecf8427e",
+      	"last_modified": "2016-08-17T22:11:58.602650",
+      	"bytes": 0,
+      	"name": "directory",
+      	"content_type": "application\/directory"
+      },
+      {
+      	"subdir": "directory\/"
       }
     ]`)
-		case "hello":
+		case "directory":
 			fmt.Fprintf(w, `[]`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
