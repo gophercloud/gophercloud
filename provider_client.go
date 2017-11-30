@@ -52,6 +52,8 @@ type ProviderClient struct {
 	IdentityEndpoint string
 
 	// TokenID is the ID of the most recently issued valid token.
+	// NOTE: Aside from within a custom ReauthFunc, this field shouldn't be set by an application.
+	// To safely read or write this value, call `Token` or `SetToken`, respectively
 	TokenID string
 
 	// EndpointLocator describes how this provider discovers the endpoints for
@@ -88,6 +90,8 @@ func (client *ProviderClient) UseSafeReauth() {
 	client.mut = new(sync.RWMutex)
 }
 
+// Token safely reads the value of the auth token from the ProviderClient. Applications should
+// call this method to access the token instead of the TokenID field
 func (client *ProviderClient) Token() string {
 	if client.mut != nil {
 		client.mut.RLock()
@@ -96,6 +100,8 @@ func (client *ProviderClient) Token() string {
 	return client.TokenID
 }
 
+// SetToken safely sets the value of the auth token in the ProviderClient. Applications may
+// use this method in a custom ReauthFunc
 func (client *ProviderClient) SetToken(t string) {
 	if client.mut != nil {
 		client.mut.Lock()

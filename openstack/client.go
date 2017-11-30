@@ -163,7 +163,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 			return v2auth(client, endpoint, options, eo)
 		}
 	}
-	client.SetToken(token.ID)
+	client.TokenID = token.ID
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
 		return V2EndpointURL(catalog, opts)
 	}
@@ -199,7 +199,7 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, opts tokens3.Au
 		return err
 	}
 
-	client.SetToken(token.ID)
+	client.TokenID = token.ID
 
 	if opts.CanReauth() {
 		client.ReauthFunc = func() error {
