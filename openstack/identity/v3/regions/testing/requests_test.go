@@ -52,3 +52,54 @@ func TestGetRegion(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRegion, *actual)
 }
+
+func TestCreateRegion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateRegionSuccessfully(t)
+
+	createOpts := regions.CreateOpts{
+		ID:          "RegionOne-West",
+		Description: "West sub-region of RegionOne",
+		Extra: map[string]interface{}{
+			"email": "westsupport@example.com",
+		},
+		ParentRegionID: "RegionOne",
+	}
+
+	actual, err := regions.Create(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondRegion, *actual)
+}
+
+func TestUpdateRegion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateRegionSuccessfully(t)
+
+	updateOpts := regions.UpdateOpts{
+		Description: "First West sub-region of RegionOne",
+		/*
+			// Due to a bug in Keystone, the Extra column of the Region table
+			// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+			// The following lines should be uncommented once the fix is merged.
+
+			Extra: map[string]interface{}{
+				"email": "1stwestsupport@example.com",
+			},
+		*/
+	}
+
+	actual, err := regions.Update(client.ServiceClient(), "RegionOne-West", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondRegionUpdated, *actual)
+}
+
+func TestDeleteRegion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteRegionSuccessfully(t)
+
+	res := regions.Delete(client.ServiceClient(), "RegionOne-West")
+	th.AssertNoErr(t, res.Err)
+}

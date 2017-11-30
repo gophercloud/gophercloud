@@ -22,7 +22,7 @@ type Region struct {
 	// Links contains referencing links to the region.
 	Links map[string]interface{} `json:"links"`
 
-	// Name is the ID of the parent region.
+	// ParentRegionID is the ID of the parent region.
 	ParentRegionID string `json:"parent_region_id"`
 }
 
@@ -64,6 +64,24 @@ type regionResult struct {
 // to interpret it as a Region.
 type GetResult struct {
 	regionResult
+}
+
+// CreateResult is the response from a Create operation. Call its Extract method
+// to interpret it as a Region.
+type CreateResult struct {
+	regionResult
+}
+
+// UpdateResult is the response from an Update operation. Call its Extract
+// method to interpret it as a Region.
+type UpdateResult struct {
+	regionResult
+}
+
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
 }
 
 // RegionPage is a single page of Region results.

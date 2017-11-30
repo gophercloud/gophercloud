@@ -60,6 +60,60 @@ const GetOutput = `
 }
 `
 
+// CreateRequest provides the input to a Create request.
+const CreateRequest = `
+{
+    "region": {
+        "id": "RegionOne-West",
+        "description": "West sub-region of RegionOne",
+        "email": "westsupport@example.com",
+        "parent_region_id": "RegionOne"
+    }
+}
+`
+
+/*
+	// Due to a bug in Keystone, the Extra column of the Region table
+	// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+	// The following line should be added to region in UpdateRequest once the
+	// fix is merged.
+
+	"email": "1stwestsupport@example.com"
+*/
+// UpdateRequest provides the input to as Update request.
+const UpdateRequest = `
+{
+    "region": {
+        "description": "First West sub-region of RegionOne"
+    }
+}
+`
+
+/*
+	// Due to a bug in Keystone, the Extra column of the Region table
+	// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+	// This following line should replace the email in UpdateOutput.extra once
+	// the fix is merged.
+
+	"email": "1stwestsupport@example.com"
+*/
+// UpdateOutput provides an update result.
+const UpdateOutput = `
+{
+    "region": {
+        "id": "RegionOne-West",
+        "links": {
+            "self": "https://example.com/identity/v3/regions/RegionOne-West"
+        },
+        "description": "First West sub-region of RegionOne",
+        "extra": {
+            "email": "westsupport@example.com"
+        },
+        "parent_region_id": "RegionOne"
+    }
+}
+`
+
 // FirstRegion is the first region in the List request.
 var FirstRegion = regions.Region{
 	ID: "RegionOne-East",
@@ -78,6 +132,27 @@ var SecondRegion = regions.Region{
 		"self": "https://example.com/identity/v3/regions/RegionOne-West",
 	},
 	Description: "West sub-region of RegionOne",
+	Extra: map[string]interface{}{
+		"email": "westsupport@example.com",
+	},
+	ParentRegionID: "RegionOne",
+}
+
+/*
+	// Due to a bug in Keystone, the Extra column of the Region table
+	// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
+	// This should replace the email in SecondRegionUpdated.Extra once the fix
+	// is merged.
+
+	"email": "1stwestsupport@example.com"
+*/
+// SecondRegionUpdated is the second region in the List request.
+var SecondRegionUpdated = regions.Region{
+	ID: "RegionOne-West",
+	Links: map[string]interface{}{
+		"self": "https://example.com/identity/v3/regions/RegionOne-West",
+	},
+	Description: "First West sub-region of RegionOne",
 	Extra: map[string]interface{}{
 		"email": "westsupport@example.com",
 	},
@@ -112,5 +187,42 @@ func HandleGetRegionSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleCreateRegionSuccessfully creates an HTTP handler at `/regions` on the
+// test handler mux that tests region creation.
+func HandleCreateRegionSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/regions", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, GetOutput)
+	})
+}
+
+// HandleUpdateRegionSuccessfully creates an HTTP handler at `/regions` on the
+// test handler mux that tests region update.
+func HandleUpdateRegionSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/regions/RegionOne-West", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, UpdateOutput)
+	})
+}
+
+// HandleDeleteRegionSuccessfully creates an HTTP handler at `/regions` on the
+// test handler mux that tests region deletion.
+func HandleDeleteRegionSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/regions/RegionOne-West", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
 	})
 }
