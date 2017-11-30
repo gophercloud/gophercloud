@@ -56,7 +56,7 @@ func TestConcurrentReauth(t *testing.T) {
 	postreauthTok := "12345678"
 
 	p := new(gophercloud.ProviderClient)
-	p.UseSafeReauth()
+	p.UseTokenLock()
 	p.SetToken(prereauthTok)
 	p.ReauthFunc = func() error {
 		time.Sleep(1 * time.Second)

@@ -84,9 +84,9 @@ func (client *ProviderClient) AuthenticatedHeaders() map[string]string {
 	return map[string]string{"X-Auth-Token": t}
 }
 
-// UseSafeReauth creates a mutex that is used to allow safe concurrent re-authentication.
+// UseTokenLock creates a mutex that is used to allow safe concurrent access to the auth token.
 // If the application's ProviderClient is not used concurrently, this doesn't need to be called.
-func (client *ProviderClient) UseSafeReauth() {
+func (client *ProviderClient) UseTokenLock() {
 	client.mut = new(sync.RWMutex)
 }
 
