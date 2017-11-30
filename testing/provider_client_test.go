@@ -56,8 +56,8 @@ func TestConcurrentReauth(t *testing.T) {
 	postreauthTok := "12345678"
 
 	p := new(gophercloud.ProviderClient)
-	p.TokenID = prereauthTok
 	p.UseSafeReauth()
+	p.SetToken(prereauthTok)
 	p.ReauthFunc = func() error {
 		time.Sleep(1 * time.Second)
 		info.mut.Lock()
@@ -80,7 +80,7 @@ func TestConcurrentReauth(t *testing.T) {
 		info.mut.RUnlock()
 
 		if hasReauthed {
-			th.CheckEquals(t, p.TokenID, postreauthTok)
+			th.CheckEquals(t, p.Token(), postreauthTok)
 		}
 
 		w.Header().Add("Content-Type", "application/json")

@@ -75,20 +75,33 @@ type ProviderClient struct {
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
 // authenticated service requests.
 func (client *ProviderClient) AuthenticatedHeaders() map[string]string {
-	if client.mut != nil {
-		client.mut.RLock()
-		defer client.mut.RUnlock()
-	}
-	if client.TokenID == "" {
+	t := client.Token()
+	if t == "" {
 		return map[string]string{}
 	}
-	return map[string]string{"X-Auth-Token": client.TokenID}
+	return map[string]string{"X-Auth-Token": t}
 }
 
 // UseSafeReauth creates a mutex that is used to allow safe concurrent re-authentication.
 // If the application's ProviderClient is not used concurrently, this doesn't need to be called.
 func (client *ProviderClient) UseSafeReauth() {
 	client.mut = new(sync.RWMutex)
+}
+
+func (client *ProviderClient) Token() string {
+	if client.mut != nil {
+		client.mut.RLock()
+		defer client.mut.RUnlock()
+	}
+	return client.TokenID
+}
+
+func (client *ProviderClient) SetToken(t string) {
+	if client.mut != nil {
+		client.mut.Lock()
+		defer client.mut.Unlock()
+	}
+	client.TokenID = t
 }
 
 // RequestOpts customizes the behavior of the provider.Request() method.
