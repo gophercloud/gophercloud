@@ -185,7 +185,6 @@ func (r UploadImageResult) Extract() (VolumeImage, error) {
 	return s.VolumeImage, err
 }
 
-
 // ForceDeleteResult contains the response body and error from a ForceDelete request.
 type ForceDeleteResult struct {
 	gophercloud.ErrResult

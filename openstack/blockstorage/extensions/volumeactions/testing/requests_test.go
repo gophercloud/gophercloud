@@ -164,4 +164,3 @@ func TestForceDelete(t *testing.T) {
 	res := volumeactions.ForceDelete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }
-

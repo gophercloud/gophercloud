@@ -267,4 +267,3 @@ func ForceDelete(client *gophercloud.ServiceClient, id string) (r ForceDeleteRes
 	_, r.Err = client.Post(forceDeleteURL(client, id), map[string]interface{}{"os-force_delete": ""}, nil, nil)
 	return
 }
-

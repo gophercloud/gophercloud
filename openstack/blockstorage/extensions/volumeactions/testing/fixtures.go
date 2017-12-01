@@ -285,4 +285,3 @@ func MockForceDeleteResponse(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
-
