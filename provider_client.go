@@ -72,14 +72,19 @@ type ProviderClient struct {
 	ReauthFunc func() error
 
 	mut *sync.RWMutex
+
+	isreauthing bool
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
 // authenticated service requests.
-func (client *ProviderClient) AuthenticatedHeaders() map[string]string {
+func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
+	if client.isreauthing {
+		return
+	}
 	t := client.Token()
 	if t == "" {
-		return map[string]string{}
+		return
 	}
 	return map[string]string{"X-Auth-Token": t}
 }
@@ -240,9 +245,11 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 			if client.ReauthFunc != nil {
 				if client.mut != nil {
 					client.mut.Lock()
+					client.isreauthing = true
 					if curtok := client.TokenID; curtok == prereqtok {
 						err = client.ReauthFunc()
 					}
+					client.isreauthing = false
 					client.mut.Unlock()
 				} else {
 					err = client.ReauthFunc()
