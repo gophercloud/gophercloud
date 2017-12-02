@@ -9,7 +9,7 @@ type attachInterfaceResult struct {
 	gophercloud.Result
 }
 
-// Extract interprets any attachInterfaceResult as an Interface, if possible.
+// Extract interprets any attachInterfaceResult as a Interface, if possible.
 func (r attachInterfaceResult) Extract() (*Interface, error) {
 	var s struct {
 		Interface *Interface `json:"interfaceAttachment"`
@@ -21,6 +21,12 @@ func (r attachInterfaceResult) Extract() (*Interface, error) {
 // GetResult is the response from a Get operation. Call its Extract
 // method to interpret it as a Interface.
 type GetResult struct {
+	attachInterfaceResult
+}
+
+// CreateResult is the response from a Create operation. Call its Extract
+// method to interpret it as a Interface.
+type CreateResult struct {
 	attachInterfaceResult
 }
 
