@@ -82,8 +82,8 @@ func TestDeleteInterface(t *testing.T) {
 	HandleInterfaceDeleteSuccessfully(t)
 
 	serverID := "b07e7a3b-d951-4efc-a4f9-ac9f001afb7f"
-	interfaceID := "0dde1598-b374-474e-986f-5b8dd1df1d4e"
+	portID := "0dde1598-b374-474e-986f-5b8dd1df1d4e"
 
-	err := attachinterfaces.Delete(client.ServiceClient(), serverID, interfaceID).ExtractErr()
+	err := attachinterfaces.Delete(client.ServiceClient(), serverID, portID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
