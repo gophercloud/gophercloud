@@ -15,7 +15,7 @@ func List(client *gophercloud.ServiceClient, serverID string) pagination.Pager {
 // Get requests details on a single interface attachment by the server and port IDs.
 func Get(client *gophercloud.ServiceClient, serverID, portID string) (r GetResult) {
 	_, r.Err = client.Get(getInterfaceURL(client, serverID, portID), &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 203},
+		OkCodes: []int{200},
 	})
 	return
 }
