@@ -27,5 +27,17 @@ Example to Get a Server's Interface
 	if err != nil {
 		panic(err)
 	}
+
+Example to Create a new Interface attachment on the Server
+
+	networkID := "8a5fe506-7e9f-4091-899b-96336909d93c"
+	serverID := "b07e7a3b-d951-4efc-a4f9-ac9f001afb7f"
+	attachOpts := attachinterfaces.CreateOpts{
+		NetworkID: networkID,
+	}
+	interface, err := attachinterfaces.Create(computeClient, serverID, attachOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package attachinterfaces

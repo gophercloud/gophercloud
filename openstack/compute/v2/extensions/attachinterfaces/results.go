@@ -19,8 +19,14 @@ func (r attachInterfaceResult) Extract() (*Interface, error) {
 }
 
 // GetResult is the response from a Get operation. Call its Extract
-// method to interpret it as a Interface.
+// method to interpret it as an Interface.
 type GetResult struct {
+	attachInterfaceResult
+}
+
+// CreateResult is the response from a Create operation. Call its Extract
+// method to interpret it as an Interface.
+type CreateResult struct {
 	attachInterfaceResult
 }
 
