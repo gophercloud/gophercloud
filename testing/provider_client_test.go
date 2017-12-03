@@ -60,6 +60,7 @@ func TestConcurrentReauth(t *testing.T) {
 	p.SetToken(prereauthTok)
 	p.ReauthFunc = func() error {
 		time.Sleep(1 * time.Second)
+		p.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
 		info.mut.Unlock()

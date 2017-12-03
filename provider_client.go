@@ -72,14 +72,29 @@ type ProviderClient struct {
 	ReauthFunc func() error
 
 	mut *sync.RWMutex
+
+	reauthmut *reauthlock
+}
+
+type reauthlock struct {
+	sync.RWMutex
+	reauthing bool
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
 // authenticated service requests.
-func (client *ProviderClient) AuthenticatedHeaders() map[string]string {
+func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
+	if client.reauthmut != nil {
+		client.reauthmut.RLock()
+		if client.reauthmut.reauthing {
+			client.reauthmut.RUnlock()
+			return
+		}
+		client.reauthmut.RUnlock()
+	}
 	t := client.Token()
 	if t == "" {
-		return map[string]string{}
+		return
 	}
 	return map[string]string{"X-Auth-Token": t}
 }
@@ -88,6 +103,7 @@ func (client *ProviderClient) AuthenticatedHeaders() map[string]string {
 // If the application's ProviderClient is not used concurrently, this doesn't need to be called.
 func (client *ProviderClient) UseTokenLock() {
 	client.mut = new(sync.RWMutex)
+	client.reauthmut = new(reauthlock)
 }
 
 // Token safely reads the value of the auth token from the ProviderClient. Applications should
@@ -240,9 +256,15 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 			if client.ReauthFunc != nil {
 				if client.mut != nil {
 					client.mut.Lock()
+					client.reauthmut.Lock()
+					client.reauthmut.reauthing = true
+					client.reauthmut.Unlock()
 					if curtok := client.TokenID; curtok == prereqtok {
 						err = client.ReauthFunc()
 					}
+					client.reauthmut.Lock()
+					client.reauthmut.reauthing = false
+					client.reauthmut.Unlock()
 					client.mut.Unlock()
 				} else {
 					err = client.ReauthFunc()
