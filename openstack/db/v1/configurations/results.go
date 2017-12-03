@@ -1,19 +1,17 @@
 package configurations
 
 import (
-	"time"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // Config represents a configuration group API resource.
 type Config struct {
-	Created              time.Time `json:"created"`
-	Updated              time.Time `json:"updated"`
-	DatastoreName        string    `json:"datastore_name"`
-	DatastoreVersionID   string    `json:"datastore_version_id"`
-	DatastoreVersionName string    `json:"datastore_version_name"`
+	Created              string `json:"created"`
+	Updated              string `json:"updated"`
+	DatastoreName        string `json:"datastore_name"`
+	DatastoreVersionID   string `json:"datastore_version_id"`
+	DatastoreVersionName string `json:"datastore_version_name"`
 	Description          string
 	ID                   string
 	Name                 string
