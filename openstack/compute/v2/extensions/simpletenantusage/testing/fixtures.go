@@ -11,124 +11,127 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-// GetOutput is a sample response to a Get call.
-const GetOutput = `
-{
-    "tenant_usages": [
-        {
-            "start": "2012-10-08T21:10:44.587336",
-            "stop": "2012-10-08T22:10:44.587336",
-            "tenant_id": "6f70656e737461636b20342065766572",
-            "total_hours": 1.0,
-            "total_local_gb_usage": 1.0,
-            "total_memory_mb_usage": 512.0,
-            "total_vcpus_usage": 1.0
-        }
-    ],
-    "tenant_usages_links": [
-        {
-            "href": "http://openstack.example.com/v2.1/6f70656e737461636b20342065766572/os-simple-tenant-usage?end=2016-10-12+18%3A22%3A04.868106&limit=1&marker=1f1deceb-17b5-4c04-84c7-e0d4499c8fe0&start=2016-10-12+18%3A22%3A04.868106",
-            "rel": "next"
-        }
-    ]
-}
-`
+const FirstTenantID = "aabbccddeeff112233445566"
 
-// GetTenantOutput is a sample response to a Get call for a specific tenant.
-const GetTenantOutput = `
-{
+// GetSingleTenant holds the fixtures for the content of the request for a
+// single tenant.
+const GetSingleTenant = `{
     "tenant_usage": {
         "server_usages": [
             {
                 "ended_at": null,
                 "flavor": "m1.tiny",
-                "hours": 1.0,
-                "instance_id": "1f1deceb-17b5-4c04-84c7-e0d4499c8fe0",
+                "hours": 0.021675453333333334,
+                "instance_id": "a70096fd-8196-406b-86c4-045840f53ad7",
                 "local_gb": 1,
                 "memory_mb": 512,
-                "name": "instance-2",
-                "started_at": "2012-10-08T20:10:44.541277",
+                "name": "jttest",
+                "started_at": "2017-11-30T03:23:43.000000",
                 "state": "active",
-                "tenant_id": "6f70656e737461636b20342065766572",
-                "uptime": 3600,
+                "tenant_id": "aabbccddeeff112233445566",
+                "uptime": 78,
+                "vcpus": 1
+            },
+            {
+                "ended_at": "2017-11-21T04:10:11.000000",
+                "flavor": "m1.acctest",
+                "hours": 0.33444444444444443,
+                "instance_id": "c04e38f2-dcee-4ca8-9466-7708d0a9b6dd",
+                "local_gb": 15,
+                "memory_mb": 512,
+                "name": "basic",
+                "started_at": "2017-11-21T03:50:07.000000",
+                "state": "terminated",
+                "tenant_id": "aabbccddeeff112233445566",
+                "uptime": 1204,
+                "vcpus": 1
+            },
+            {
+                "ended_at": "2017-11-30T03:21:21.000000",
+                "flavor": "m1.acctest",
+                "hours": 0.004166666666666667,
+                "instance_id": "ceb654fa-e0e8-44fb-8942-e4d0bfad3941",
+                "local_gb": 15,
+                "memory_mb": 512,
+                "name": "ACPTTESTJSxbPQAC34lTnBE1",
+                "started_at": "2017-11-30T03:21:06.000000",
+                "state": "terminated",
+                "tenant_id": "aabbccddeeff112233445566",
+                "uptime": 15,
                 "vcpus": 1
             }
         ],
-        "start": "2012-10-08T20:10:44.587336",
-        "stop": "2012-10-08T21:10:44.587336",
-        "tenant_id": "6f70656e737461636b20342065766572",
-        "total_hours": 1.0,
-        "total_local_gb_usage": 1.0,
-        "total_memory_mb_usage": 512.0,
-        "total_vcpus_usage": 1.0
-    },
-    "tenant_usage_links": [
-        {
-            "href": "http://openstack.example.com/v2.1/6f70656e737461636b20342065766572/os-simple-tenant-usage/6f70656e737461636b20342065766572?end=2016-10-12+18%3A22%3A04.868106&limit=1&marker=1f1deceb-17b5-4c04-84c7-e0d4499c8fe0&start=2016-10-12+18%3A22%3A04.868106",
-            "rel": "next"
-        }
-    ]
-}
-`
+        "start": "2017-11-02T03:25:01.000000",
+        "stop": "2017-11-30T03:25:01.000000",
+        "tenant_id": "aabbccddeeff112233445566",
+        "total_hours": 1.25834212,
+        "total_local_gb_usage": 18.571675453333334,
+        "total_memory_mb_usage": 644.27116544,
+        "total_vcpus_usage": 1.25834212
+    }
+}`
 
-const FirstTenantID = "aabbccddeeff112233445566"
-
-// SimpleTenantUsageResults is the decoded output corresponding to GetOutput above.
-var SimpleTenantUsageResults = []simpletenantusage.TenantUsage{
-	simpletenantusage.TenantUsage{
-		ServerUsages:       []simpletenantusage.ServerUsage(nil),
-		Start:              time.Date(2012, 10, 8, 21, 10, 44, 587336000, time.UTC),
-		Stop:               time.Date(2012, 10, 8, 22, 10, 44, 587336000, time.UTC),
-		TenantID:           "6f70656e737461636b20342065766572",
-		TotalHours:         1.0,
-		TotalLocalGBUsage:  1.0,
-		TotalMemoryMBUsage: 512.0,
-		TotalVCPUsUsage:    1.0,
-	},
-}
-
-// SimpleTenantUsageOneTenantResults is the decoded output corresponding to GetTenantOutput above.
-var SimpleTenantUsageOneTenantResults = simpletenantusage.TenantUsage{
-	ServerUsages: []simpletenantusage.ServerUsage{
-		simpletenantusage.ServerUsage{
-			Flavor:     "m1.tiny",
-			Hours:      1.0,
-			InstanceID: "1f1deceb-17b5-4c04-84c7-e0d4499c8fe0",
-			LocalGB:    1,
-			MemoryMB:   512,
-			Name:       "instance-2",
-			StartedAt:  time.Date(2012, 10, 8, 20, 10, 44, 541277000, time.UTC),
-			State:      "active",
-			TenantID:   "6f70656e737461636b20342065766572",
-			Uptime:     3600,
-			VCPUs:      1,
-		},
-	},
-	Start:              time.Date(2012, 10, 8, 20, 10, 44, 587336000, time.UTC),
-	Stop:               time.Date(2012, 10, 8, 21, 10, 44, 587336000, time.UTC),
-	TenantID:           "6f70656e737461636b20342065766572",
-	TotalHours:         1.0,
-	TotalLocalGBUsage:  1.0,
-	TotalMemoryMBUsage: 512.0,
-	TotalVCPUsUsage:    1.0,
-}
-
-// HandleGetSuccessfully configures the test server to respond to a Get request
-func HandleGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-simple-tenant-usage/", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprint(w, GetOutput)
-	})
-}
-
-// HandleGetTenantSuccessfully configures the test server to respond to a Get request for sample tenant
-func HandleGetTenantSuccessfully(t *testing.T) {
+// HandleGetSingleTenantSuccessfully configures the test server to respond to a
+// Get request for a single tenant
+func HandleGetSingleTenantSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/os-simple-tenant-usage/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprint(w, GetTenantOutput)
+		fmt.Fprint(w, GetSingleTenant)
 	})
+}
+
+// SingleTenantUsageResults is the code fixture for GetSingleTenant.
+var SingleTenantUsageResults = simpletenantusage.TenantUsage{
+	ServerUsages: []simpletenantusage.ServerUsage{
+		{
+			Flavor:     "m1.tiny",
+			Hours:      0.021675453333333334,
+			InstanceID: "a70096fd-8196-406b-86c4-045840f53ad7",
+			LocalGB:    1,
+			MemoryMB:   512,
+			Name:       "jttest",
+			StartedAt:  time.Date(2017, 11, 30, 3, 23, 43, 0, time.UTC),
+			State:      "active",
+			TenantID:   "aabbccddeeff112233445566",
+			Uptime:     78,
+			VCPUs:      1,
+		},
+		{
+			Flavor:     "m1.acctest",
+			Hours:      0.33444444444444443,
+			InstanceID: "c04e38f2-dcee-4ca8-9466-7708d0a9b6dd",
+			LocalGB:    15,
+			MemoryMB:   512,
+			Name:       "basic",
+			StartedAt:  time.Date(2017, 11, 21, 3, 50, 7, 0, time.UTC),
+			EndedAt:    time.Date(2017, 11, 21, 4, 10, 11, 0, time.UTC),
+			State:      "terminated",
+			TenantID:   "aabbccddeeff112233445566",
+			Uptime:     1204,
+			VCPUs:      1,
+		},
+		{
+			Flavor:     "m1.acctest",
+			Hours:      0.004166666666666667,
+			InstanceID: "ceb654fa-e0e8-44fb-8942-e4d0bfad3941",
+			LocalGB:    15,
+			MemoryMB:   512,
+			Name:       "ACPTTESTJSxbPQAC34lTnBE1",
+			StartedAt:  time.Date(2017, 11, 30, 3, 21, 6, 0, time.UTC),
+			EndedAt:    time.Date(2017, 11, 30, 3, 21, 21, 0, time.UTC),
+			State:      "terminated",
+			TenantID:   "aabbccddeeff112233445566",
+			Uptime:     15,
+			VCPUs:      1,
+		},
+	},
+	Start:              time.Date(2017, 11, 2, 3, 25, 1, 0, time.UTC),
+	Stop:               time.Date(2017, 11, 30, 3, 25, 1, 0, time.UTC),
+	TenantID:           "aabbccddeeff112233445566",
+	TotalHours:         1.25834212,
+	TotalLocalGBUsage:  18.571675453333334,
+	TotalMemoryMBUsage: 644.27116544,
+	TotalVCPUsUsage:    1.25834212,
 }

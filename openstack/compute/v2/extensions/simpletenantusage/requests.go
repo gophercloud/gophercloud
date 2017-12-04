@@ -8,26 +8,11 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// Get returns simple tenant usage data about all tenants
-func Get(client *gophercloud.ServiceClient, opts GetOptsBuilder) pagination.Pager {
-	url := getURL(client)
-	if opts != nil {
-		query, err := opts.ToSimpleTenantUsageGetMap()
-		if err != nil {
-			return pagination.Pager{Err: err}
-		}
-		url += query
-	}
-	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return SimpleTenantUsagePage{pagination.LinkedPageBase{PageResult: r}}
-	})
-}
-
-// GetTenant returns simple tenant usage data about a specific tenant
-func GetTenant(client *gophercloud.ServiceClient, tenantID string, opts GetOptsBuilder) pagination.Pager {
+// GetSingleTenant returns simple tenant usage data about a specific tenant
+func GetSingleTenant(client *gophercloud.ServiceClient, tenantID string, opts GetSingleTenantOptsBuilder) pagination.Pager {
 	url := getTenantURL(client, tenantID)
 	if opts != nil {
-		query, err := opts.ToSimpleTenantUsageGetMap()
+		query, err := opts.ToSingleTenantUsageGetMap()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
@@ -38,8 +23,8 @@ func GetTenant(client *gophercloud.ServiceClient, tenantID string, opts GetOptsB
 	})
 }
 
-// GetOpts are options for fetching the tenant usage for a Tenant.
-type GetOpts struct {
+// GetSingleTenantOpts are options for fetching the tenant usage for a Tenant.
+type GetSingleTenantOpts struct {
 	// The ending time to calculate usage statistics on compute and storage resources.
 	End *time.Time `json:"end,omitempty" q:"end"`
 
@@ -47,15 +32,15 @@ type GetOpts struct {
 	Start *time.Time `json:"start,omitempty" q:"start"`
 }
 
-// GetOptsBuilder is an interface for GetOpts structs
-type GetOptsBuilder interface {
+// GetSingleTenantOptsBuilder is an interface for GetOpts structs
+type GetSingleTenantOptsBuilder interface {
 	// Extra specific name to prevent collisions with interfaces for other usages
-	ToSimpleTenantUsageGetMap() (string, error)
+	ToSingleTenantUsageGetMap() (string, error)
 }
 
-// ToSimpleTenantUsageGetMap converts the options into URL-encoded query string
+// ToSingleTenantUsageGetMap converts the options into URL-encoded query string
 // arguments.
-func (opts GetOpts) ToSimpleTenantUsageGetMap() (string, error) {
+func (opts GetSingleTenantOpts) ToSingleTenantUsageGetMap() (string, error) {
 	params := make(url.Values)
 	if opts.Start != nil {
 		params.Add("start", opts.Start.Format(gophercloud.RFC3339MilliNoZ))

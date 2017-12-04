@@ -35,7 +35,8 @@ type TenantUsage struct {
 	TotalVCPUsUsage float64 `json:"total_vcpus_usage"`
 }
 
-func (r *TenantUsage) UnmarshalJSON(b []byte) error {
+// UnmarshalJSON sets *u to a copy of data.
+func (u *TenantUsage) UnmarshalJSON(b []byte) error {
 	type tmp TenantUsage
 	var s struct {
 		tmp
@@ -46,10 +47,10 @@ func (r *TenantUsage) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &s); err != nil {
 		return err
 	}
-	*r = TenantUsage(s.tmp)
+	*u = TenantUsage(s.tmp)
 
-	r.Start = time.Time(s.Start)
-	r.Stop = time.Time(s.Stop)
+	u.Start = time.Time(s.Start)
+	u.Stop = time.Time(s.Stop)
 
 	return nil
 }
@@ -93,7 +94,8 @@ type ServerUsage struct {
 	VCPUs int `json:"vcpus"`
 }
 
-func (r *ServerUsage) UnmarshalJSON(b []byte) error {
+// UnmarshalJSON sets *u to a copy of data.
+func (u *ServerUsage) UnmarshalJSON(b []byte) error {
 	type tmp ServerUsage
 	var s struct {
 		tmp
@@ -104,10 +106,10 @@ func (r *ServerUsage) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &s); err != nil {
 		return err
 	}
-	*r = ServerUsage(s.tmp)
+	*u = ServerUsage(s.tmp)
 
-	r.EndedAt = time.Time(s.EndedAt)
-	r.StartedAt = time.Time(s.StartedAt)
+	u.EndedAt = time.Time(s.EndedAt)
+	u.StartedAt = time.Time(s.StartedAt)
 
 	return nil
 }
@@ -123,23 +125,6 @@ func (page SimpleSingleTenantUsagePage) IsEmpty() (bool, error) {
 	return ks == nil, err
 }
 
-// SimpleTenantUsagePage stores a single, only page of SimpleTenantUsage results
-// from a List call.
-type SimpleTenantUsagePage struct {
-	pagination.LinkedPageBase
-}
-
-// IsEmpty determines whether or not a SimpleTenantUsagePage is empty.
-func (page SimpleTenantUsagePage) IsEmpty() (bool, error) {
-	ks, err := ExtractSimpleTenantUsages(page)
-	return len(ks) == 0, err
-}
-
-// Type to specifically indicate Simple Tenant Usage results.
-type simpleTenantUsageResult struct {
-	gophercloud.Result
-}
-
 // ExtractSimpleTenantUsage is a function that attempts to interpret any SimpleTenantUsage resource response as a SimpleTenantUsage struct.
 // The difference between ExtractSimpleTenantUsage and ExtractSimpleTenantUsages is that when a tenant ID is provided the JSON is
 // "tenant_usage" (singular) which is a struct, otherwise it is "tenant_usages" (plural) which is an array of structs.
@@ -150,22 +135,4 @@ func ExtractSimpleTenantUsage(page pagination.Page) (*TenantUsage, error) {
 	}
 	err := (page.(SimpleSingleTenantUsagePage)).ExtractInto(&s)
 	return s.TenantUsage, err
-}
-
-// ExtractSimpleTenantUsages is a function that attempts to interpret any SimpleTenantUsage resource response as a SimpleTenantUsage struct.
-// The difference between ExtractSimpleTenantUsage and ExtractSimpleTenantUsages is that when a tenant ID is provided the JSON is
-// "tenant_usage" (singular) which is a struct, otherwise it is "tenant_usages" (plural) which is an array of structs.
-func ExtractSimpleTenantUsages(page pagination.Page) ([]TenantUsage, error) {
-	var s struct {
-		TenantUsages     []TenantUsage      `json:"tenant_usages"`
-		TenantUsageLinks []gophercloud.Link `json:"tenant_usage_links"`
-	}
-	err := (page.(SimpleTenantUsagePage)).ExtractInto(&s)
-	return s.TenantUsages, err
-}
-
-// GetResult is the response from a Get operation. Call its Extract function to interpret it
-// as a SimpleTenantUsage.
-type GetResult struct {
-	simpleTenantUsageResult
 }
