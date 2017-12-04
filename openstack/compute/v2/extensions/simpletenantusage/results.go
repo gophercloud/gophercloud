@@ -35,7 +35,8 @@ type TenantUsage struct {
 	TotalVCPUsUsage float64 `json:"total_vcpus_usage"`
 }
 
-func (r *TenantUsage) UnmarshalJSON(b []byte) error {
+// UnmarshalJSON sets *u to a copy of data.
+func (u *TenantUsage) UnmarshalJSON(b []byte) error {
 	type tmp TenantUsage
 	var s struct {
 		tmp
@@ -46,10 +47,10 @@ func (r *TenantUsage) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &s); err != nil {
 		return err
 	}
-	*r = TenantUsage(s.tmp)
+	*u = TenantUsage(s.tmp)
 
-	r.Start = time.Time(s.Start)
-	r.Stop = time.Time(s.Stop)
+	u.Start = time.Time(s.Start)
+	u.Stop = time.Time(s.Stop)
 
 	return nil
 }
@@ -93,7 +94,8 @@ type ServerUsage struct {
 	VCPUs int `json:"vcpus"`
 }
 
-func (r *ServerUsage) UnmarshalJSON(b []byte) error {
+// UnmarshalJSON sets *u to a copy of data.
+func (u *ServerUsage) UnmarshalJSON(b []byte) error {
 	type tmp ServerUsage
 	var s struct {
 		tmp
@@ -104,10 +106,10 @@ func (r *ServerUsage) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &s); err != nil {
 		return err
 	}
-	*r = ServerUsage(s.tmp)
+	*u = ServerUsage(s.tmp)
 
-	r.EndedAt = time.Time(s.EndedAt)
-	r.StartedAt = time.Time(s.StartedAt)
+	u.EndedAt = time.Time(s.EndedAt)
+	u.StartedAt = time.Time(s.StartedAt)
 
 	return nil
 }

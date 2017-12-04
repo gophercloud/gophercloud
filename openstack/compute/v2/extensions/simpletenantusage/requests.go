@@ -23,7 +23,7 @@ func GetSingleTenant(client *gophercloud.ServiceClient, tenantID string, opts Ge
 	})
 }
 
-// GetSingleOpts are options for fetching the tenant usage for a Tenant.
+// GetSingleTenantOpts are options for fetching the tenant usage for a Tenant.
 type GetSingleTenantOpts struct {
 	// The ending time to calculate usage statistics on compute and storage resources.
 	End *time.Time `json:"end,omitempty" q:"end"`
@@ -38,7 +38,7 @@ type GetSingleTenantOptsBuilder interface {
 	ToSingleTenantUsageGetMap() (string, error)
 }
 
-// ToSimpleTenantUsageGetMap converts the options into URL-encoded query string
+// ToSingleTenantUsageGetMap converts the options into URL-encoded query string
 // arguments.
 func (opts GetSingleTenantOpts) ToSingleTenantUsageGetMap() (string, error) {
 	params := make(url.Values)
