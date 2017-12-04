@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/db/v1/configurations"
 )
 
-const JSONRFC3339NoZ = "2006-01-02T15:04:05"
-
 var (
 	timestamp  = "2015-11-12T14:22:42"
-	timeVal, _ = time.Parse(JSONRFC3339NoZ, timestamp)
+	timeVal, _ = time.Parse(gophercloud.RFC3339NoZ, timestamp)
 )
 
 var singleConfigJSON = `
