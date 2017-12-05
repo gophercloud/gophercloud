@@ -91,3 +91,15 @@ func TestDelete(t *testing.T) {
 	res := volumetypes.Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUpdateResponse(t)
+
+	options := volumetypes.UpdateOpts{Name: "vol-type-002"}
+	v, err := volumetypes.Update(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, "vol-type-002", v.Name)
+}
