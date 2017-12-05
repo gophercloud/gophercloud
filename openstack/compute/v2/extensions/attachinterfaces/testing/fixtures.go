@@ -150,3 +150,13 @@ func HandleInterfaceCreateSuccessfully(t *testing.T) {
 		}`)
 	})
 }
+
+// HandleInterfaceDeleteSuccessfully sets up the test server to respond to a DeleteInterface request.
+func HandleInterfaceDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/servers/b07e7a3b-d951-4efc-a4f9-ac9f001afb7f/os-interface/0dde1598-b374-474e-986f-5b8dd1df1d4e", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
