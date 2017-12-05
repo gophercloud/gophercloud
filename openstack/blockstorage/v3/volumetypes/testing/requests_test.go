@@ -63,3 +63,19 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, v.QosSpecID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertEquals(t, v.PublicAccess, true)
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockCreateResponse(t)
+
+	options := &volumetypes.CreateOpts{Name: "test_type", IsPublic: true, Description: "test_type_desc"}
+	n, err := volumetypes.Create(client.ServiceClient(), options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.Name, "test_type")
+	th.AssertEquals(t, n.Description, "test_type_desc")
+	th.AssertEquals(t, n.IsPublic, true)
+	th.AssertEquals(t, n.ID, "6d0ff92a-0007-4780-9ece-acfe5876966a")
+}

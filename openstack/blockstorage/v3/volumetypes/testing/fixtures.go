@@ -87,3 +87,36 @@ func MockGetResponse(t *testing.T) {
 `)
 	})
 }
+
+func MockCreateResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "volume_type": {
+        "name": "test_type",
+        "is_public": true,
+        "description": "test_type_desc"
+    }
+}
+      `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "volume_type": {
+        "name": "test_type",
+        "extra_specs": {},
+        "is_public": true,
+        "id": "6d0ff92a-0007-4780-9ece-acfe5876966a",
+        "description": "test_type_desc"
+    }
+}
+    `)
+	})
+}
