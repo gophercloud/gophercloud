@@ -80,7 +80,6 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, n.PublicAccess, true)
 	th.AssertEquals(t, n.ID, "6d0ff92a-0007-4780-9ece-acfe5876966a")
 	th.AssertEquals(t, n.ExtraSpecs["capabilities"], "gpu")
-	th.AssertEquals(t, n.ID, "6d0ff92a-0007-4780-9ece-acfe5876966a")
 }
 
 func TestDelete(t *testing.T) {

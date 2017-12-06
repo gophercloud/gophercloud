@@ -37,6 +37,14 @@ Example to create a Volume Type
 		panic(err)
 	}
 	fmt.Println(volumeType)
+
+Example to delete a Volume TYpe
+
+	typeID := "0fe36e73809d46aeae6705c39077b1b3"
+	err := volumetypes.Delete(client, typeID).ExtractErr()
+	if err != nil{
+		panic(err)
+	}
 */
 
 package volumetypes
