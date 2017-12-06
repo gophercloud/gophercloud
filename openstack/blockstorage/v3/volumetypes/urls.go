@@ -19,5 +19,5 @@ func deleteURL(c *gophercloud.ServiceClient, id string) string {
 }
 
 func updateURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL("types")
+	return c.ServiceURL("types", id)
 }

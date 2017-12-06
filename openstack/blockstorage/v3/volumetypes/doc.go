@@ -19,7 +19,7 @@ Example to list Volume Types
 
 Example to show a Volume Type
 
-	typeID := "0fe36e73809d46aeae6705c39077b1b3"
+	typeID := "7ffaca22-f646-41d4-b79d-d7e4452ef8cc"
 	volumeType, err := volumetypes.Get(client, typeID).Extract()
 	if err != nil{
 		panic(err)
@@ -38,13 +38,26 @@ Example to create a Volume Type
 	}
 	fmt.Println(volumeType)
 
-Example to delete a Volume TYpe
+Example to delete a Volume Type
 
-	typeID := "0fe36e73809d46aeae6705c39077b1b3"
+	typeID := "7ffaca22-f646-41d4-b79d-d7e4452ef8cc"
 	err := volumetypes.Delete(client, typeID).ExtractErr()
 	if err != nil{
 		panic(err)
 	}
+
+Example to update a Volume Type
+
+	typeID := "7ffaca22-f646-41d4-b79d-d7e4452ef8cc"
+	volumetype, err = volumetypes.Update(client, typeID, volumetypes.UpdateOpts{
+		Name: "volume_type_002",
+		Description:"description_002",
+		IsPublic:false,
+	}).Extract()
+	if err != nil{
+		panic(err)
+	}
+	fmt.Println(volumetype)
 */
 
 package volumetypes

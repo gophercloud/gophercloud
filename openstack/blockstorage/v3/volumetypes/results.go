@@ -92,4 +92,3 @@ type DeleteResult struct {
 type UpdateResult struct {
 	commonResult
 }
-
