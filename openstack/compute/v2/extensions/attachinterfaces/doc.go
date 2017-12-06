@@ -39,5 +39,14 @@ Example to Create a new Interface attachment on the Server
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete an Interface attachment from the Server
+
+	portID = "0dde1598-b374-474e-986f-5b8dd1df1d4e"
+	serverID := "b07e7a3b-d951-4efc-a4f9-ac9f001afb7f"
+	err := attachinterfaces.Delete(computeClient, serverID, portID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package attachinterfaces

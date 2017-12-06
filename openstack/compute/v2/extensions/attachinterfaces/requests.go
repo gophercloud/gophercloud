@@ -63,3 +63,10 @@ func Create(client *gophercloud.ServiceClient, serverID string, opts CreateOptsB
 	})
 	return
 }
+
+// Delete makes a request against the nova API to detach a single interface from the server.
+// It needs server and port IDs to make a such request.
+func Delete(client *gophercloud.ServiceClient, serverID, portID string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteInterfaceURL(client, serverID, portID), nil)
+	return
+}

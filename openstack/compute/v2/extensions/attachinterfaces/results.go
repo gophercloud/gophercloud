@@ -30,6 +30,12 @@ type CreateResult struct {
 	attachInterfaceResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // FixedIP represents a Fixed IP Address.
 type FixedIP struct {
 	SubnetID  string `json:"subnet_id"`
