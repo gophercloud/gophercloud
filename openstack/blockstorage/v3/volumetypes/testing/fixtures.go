@@ -17,12 +17,17 @@ func MockListResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, `
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, `
 {
     "volume_types": [
         {
             "name": "SSD",
             "qos_specs_id": null,
+ 			"os-volume-type-access:is_public": true,
             "extra_specs": {
                 "volume_backend_name": "lvmdriver-1"
             },
@@ -33,6 +38,7 @@ func MockListResponse(t *testing.T) {
         {
             "name": "SATA",
             "qos_specs_id": null,
+			"os-volume-type-access:is_public": true,
             "extra_specs": {
                 "volume_backend_name": "lvmdriver-1"
             },
@@ -40,9 +46,20 @@ func MockListResponse(t *testing.T) {
             "id": "8eb69a46-df97-4e41-9586-9a40a7533803",
             "description": null
         }
+    ],
+	"volume_type_links": [
+        {
+            "href": "%s/types?marker=1",
+            "rel": "next"
+        }
     ]
 }
-  `)
+  `, th.Server.URL)
+		case "1":
+			fmt.Fprintf(w, `{"volume_types": []}`)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
 	})
 }
 
@@ -58,6 +75,8 @@ func MockGetResponse(t *testing.T) {
     "volume_type": {
         "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
         "name": "vol-type-001",
+		"os-volume-type-access:is_public": true,
+		"qos_specs_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
         "description": "volume type 001",
         "is_public": true,
         "extra_specs": {
@@ -66,63 +85,5 @@ func MockGetResponse(t *testing.T) {
     }
 }
 `)
-	})
-}
-
-func MockCreateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, `
-{
-    "volume_type": {
-        "name": "test_type",
-        "is_public": true,
-        "description": "test_type_desc"
-    }
-}
-      `)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-{
-    "volume_type": {
-        "name": "test_type",
-        "extra_specs": {},
-        "is_public": true,
-        "id": "6d0ff92a-0007-4780-9ece-acfe5876966a",
-        "description": "test_type_desc"
-    }
-}
-    `)
-	})
-}
-
-func MockDeleteResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusAccepted)
-	})
-}
-
-func MockUpdateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, `
-{
-    "volume_type": {
-        "name": "vol-type-002",
-        "description": "volume type 0001",
-        "is_public": true,
-		"id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"
-    }
-}`)
 	})
 }
