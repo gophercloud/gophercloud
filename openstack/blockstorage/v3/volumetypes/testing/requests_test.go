@@ -70,12 +70,14 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t)
 
-	options := &volumetypes.CreateOpts{Name: "test_type", IsPublic: true, Description: "test_type_desc"}
+	options := &volumetypes.CreateOpts{Name: "test_type", PublicAccess: true, Description: "test_type_desc", ExtraSpecs: map[string]string{"capabilities": "gpu"}}
 	n, err := volumetypes.Create(client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.Name, "test_type")
 	th.AssertEquals(t, n.Description, "test_type_desc")
 	th.AssertEquals(t, n.IsPublic, true)
+	th.AssertEquals(t, n.PublicAccess, true)
 	th.AssertEquals(t, n.ID, "6d0ff92a-0007-4780-9ece-acfe5876966a")
+	th.AssertEquals(t, n.ExtraSpecs["capabilities"], "gpu")
 }

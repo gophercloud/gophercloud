@@ -44,3 +44,24 @@ func TestVolumeTypesList(t *testing.T) {
 		tools.PrintResource(t, vt)
 	}
 }
+
+func TestVolumeTypesCreate(t *testing.T) {
+	client, err := clients.NewBlockStorageV3Client()
+	if err != nil {
+		t.Fatalf("Unable to create a blockstorage client: %v", err)
+	}
+
+	createOpts := volumetypes.CreateOpts{
+		Name:         "create_from_gophercloud",
+		PublicAccess: true,
+		ExtraSpecs:   map[string]string{"volume_backend_name": "fake_backend_name"},
+		Description:  "create_from_gophercloud",
+	}
+
+	vt, err := volumetypes.Create(client, createOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to create volumetype: %v", err)
+	}
+
+	tools.PrintResource(t, vt)
+}

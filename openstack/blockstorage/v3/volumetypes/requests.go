@@ -20,7 +20,9 @@ type CreateOpts struct {
 	// The volume type description
 	Description string `json:"description,omitempty"`
 	// the ID of the existing volume snapshot
-	IsPublic bool `json:"is_public"`
+	PublicAccess bool `json:"os-volume-type-access:is_public"`
+	// Extra spec key-value pairs defined by the user.
+	ExtraSpecs map[string]string `json:"extra_specs"`
 }
 
 // ToVolumeTypeCreateMap assembles a request body based on the contents of a

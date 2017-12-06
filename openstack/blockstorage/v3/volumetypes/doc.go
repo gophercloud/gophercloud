@@ -25,6 +25,18 @@ Example to show a Volume Type
 		panic(err)
 	}
 	fmt.Println(volumeType)
+
+Example to create a Volume Type
+
+	volumeType, err := volumetypes.Create(client, volumetypes.CreateOpts{
+		Name:"volume_type_001",
+		IsPublic:true,
+		Description:"description_001",
+	}).Extract()
+	if err != nil{
+		panic(err)
+	}
+	fmt.Println(volumeType)
 */
 
 package volumetypes

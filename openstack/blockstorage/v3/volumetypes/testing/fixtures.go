@@ -98,8 +98,11 @@ func MockCreateResponse(t *testing.T) {
 {
     "volume_type": {
         "name": "test_type",
-        "is_public": true,
-        "description": "test_type_desc"
+        "os-volume-type-access:is_public": true,
+        "description": "test_type_desc",
+		"extra_specs": {
+            "capabilities": "gpu"
+        }
     }
 }
       `)
@@ -113,8 +116,12 @@ func MockCreateResponse(t *testing.T) {
         "name": "test_type",
         "extra_specs": {},
         "is_public": true,
+        "os-volume-type-access:is_public": true,
         "id": "6d0ff92a-0007-4780-9ece-acfe5876966a",
-        "description": "test_type_desc"
+        "description": "test_type_desc",
+		"extra_specs": {
+            "capabilities": "gpu"
+        }
     }
 }
     `)
