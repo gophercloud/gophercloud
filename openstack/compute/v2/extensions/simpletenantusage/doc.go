@@ -2,25 +2,27 @@
 Package simpletenantusage provides information and interaction with the
 SimpleTenantUsage extension for the OpenStack Compute service.
 
-Example to get usage for an entire region
-	page, err := simpletenantusage.Get(computeClient).AllPages()
-	if err != nil {
-		return err
-	}
-	usage, err := simpletenantusage.ExtractSimpleTenantUsages(page)
-	if err != nil {
-		return err
-	}
+Example to Retrieve Usage for a Single Tenant:
 
-Example to get usage for a particular tenant.
-	page, err := simpletenantusage.GetTenant(computeClient, tenantID).AllPages()
-	if err != nil {
-		return err
-	}
-	usage, err := simpletenantusage.ExtractSimpleTenantUsage(page)
-	if err != nil {
-		return err
-	}
+	start := time.Date(2017, 01, 21, 10, 4, 20, 0, time.UTC)
+	end := time.Date(2017, 01, 21, 10, 4, 20, 0, time.UTC)
+
+    singleTenantOpts := simpletenantusage.SingleTenantOpts{
+        Start: &start,
+        End: &end,
+    }
+
+    page, err := simpletenantusage.SingleTenant(computeClient, tenantID, singleTenantOpts).AllPages()
+    if err != nil {
+        panic(err)
+    }
+
+    usage, err := simpletenantusage.ExtractSingleTenantUsage(page)
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("%+v\n", usage)
 
 */
 package simpletenantusage

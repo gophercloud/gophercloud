@@ -9,13 +9,13 @@ import (
 )
 
 func TestGetTenant(t *testing.T) {
-	var getOpts simpletenantusage.GetSingleTenantOpts
+	var getOpts simpletenantusage.SingleTenantOpts
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleGetSingleTenantSuccessfully(t)
-	page, err := simpletenantusage.GetSingleTenant(client.ServiceClient(), FirstTenantID, getOpts).AllPages()
+	page, err := simpletenantusage.SingleTenant(client.ServiceClient(), FirstTenantID, getOpts).AllPages()
 	th.AssertNoErr(t, err)
-	actual, err := simpletenantusage.ExtractSimpleTenantUsage(page)
+	actual, err := simpletenantusage.ExtractSingleTenant(page)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &SingleTenantUsageResults, actual)
 }

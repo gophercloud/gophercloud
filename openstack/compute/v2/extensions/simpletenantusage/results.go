@@ -114,25 +114,24 @@ func (u *ServerUsage) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// SimpleSingleTenantUsagePage stores a single, only page of SimpleTenantUsage results from a List call.
-type SimpleSingleTenantUsagePage struct {
+// SingleTenantPage stores a single, only page of TenantUsage results from a
+// SingleTenant call.
+type SingleTenantPage struct {
 	pagination.SinglePageBase
 }
 
-// IsEmpty determines whether or not a SimpleSingleTenantUsagePage is empty.
-func (page SimpleSingleTenantUsagePage) IsEmpty() (bool, error) {
-	ks, err := ExtractSimpleTenantUsage(page)
+// IsEmpty determines whether or not a SingleTenantPage is empty.
+func (page SingleTenantPage) IsEmpty() (bool, error) {
+	ks, err := ExtractSingleTenant(page)
 	return ks == nil, err
 }
 
-// ExtractSimpleTenantUsage is a function that attempts to interpret any SimpleTenantUsage resource response as a SimpleTenantUsage struct.
-// The difference between ExtractSimpleTenantUsage and ExtractSimpleTenantUsages is that when a tenant ID is provided the JSON is
-// "tenant_usage" (singular) which is a struct, otherwise it is "tenant_usages" (plural) which is an array of structs.
-func ExtractSimpleTenantUsage(page pagination.Page) (*TenantUsage, error) {
+// ExtractSingleTenant interprets a SingleTenantPage as a TenantUsage result.
+func ExtractSingleTenant(page pagination.Page) (*TenantUsage, error) {
 	var s struct {
 		TenantUsage      *TenantUsage       `json:"tenant_usage"`
 		TenantUsageLinks []gophercloud.Link `json:"tenant_usage_links"`
 	}
-	err := (page.(SimpleSingleTenantUsagePage)).ExtractInto(&s)
+	err := (page.(SingleTenantPage)).ExtractInto(&s)
 	return s.TenantUsage, err
 }
