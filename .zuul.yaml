@@ -1,9 +1,8 @@
 - project:
-    name: gophercloud/gophercloud
+    name: theopenlab/gophercloud
     check:
       jobs:
-        - gophercloud-unittest
-        - gophercloud-acceptance-test
+        - gophercloud-telefonica-acceptance-test
     recheck-mitaka:
       jobs:
         - gophercloud-acceptance-test-mitaka
