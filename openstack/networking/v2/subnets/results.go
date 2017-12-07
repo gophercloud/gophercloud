@@ -99,7 +99,7 @@ type Subnet struct {
 
 	// The IPv6 router advertisement specifies whether the networking service
 	// should transmit ICMPv6 packets.
-	IPv6RaMode string `json:"ipv6_ra_mode"`
+	IPv6RAMode string `json:"ipv6_ra_mode"`
 }
 
 // SubnetPage is the page returned by a pager when traversing over a collection

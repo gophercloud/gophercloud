@@ -265,7 +265,7 @@ func TestCreateIPv6RaAddressMode(t *testing.T) {
 		CIDR:            "2001:db8:0:a:0:0:0:0/64",
 		GatewayIP:       &gatewayIP,
 		IPv6AddressMode: "slaac",
-		IPv6RaMode:      "slaac",
+		IPv6RAMode:      "slaac",
 	}
 	s, err := subnets.Create(fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
@@ -279,7 +279,7 @@ func TestCreateIPv6RaAddressMode(t *testing.T) {
 	th.AssertEquals(t, s.CIDR, "2001:db8:0:a:0:0:0:0/64")
 	th.AssertEquals(t, s.ID, "3b80198d-4f7b-4f77-9ef5-774d54e17126")
 	th.AssertEquals(t, s.IPv6AddressMode, "slaac")
-	th.AssertEquals(t, s.IPv6RaMode, "slaac")
+	th.AssertEquals(t, s.IPv6RAMode, "slaac")
 }
 
 func TestRequiredCreateOpts(t *testing.T) {

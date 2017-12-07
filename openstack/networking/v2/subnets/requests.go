@@ -25,7 +25,7 @@ type ListOpts struct {
 	GatewayIP       string `q:"gateway_ip"`
 	CIDR            string `q:"cidr"`
 	IPv6AddressMode string `q:"ipv6_address_mode"`
-	IPv6RaMode      string `q:"ipv6_ra_mode"`
+	IPv6RAMode      string `q:"ipv6_ra_mode"`
 	ID              string `q:"id"`
 	Limit           int    `q:"limit"`
 	Marker          string `q:"marker"`
@@ -113,7 +113,7 @@ type CreateOpts struct {
 
 	// The IPv6 router advertisement specifies whether the networking service
 	// should transmit ICMPv6 packets.
-	IPv6RaMode string `json:"ipv6_ra_mode,omitempty"`
+	IPv6RAMode string `json:"ipv6_ra_mode,omitempty"`
 }
 
 // ToSubnetCreateMap builds a request body from CreateOpts.
