@@ -11,8 +11,10 @@ type ServerExtendedStatusExt struct {
 const (
 	NOSTATE = iota
 	RUNNING
+	_UNUSED1
 	PAUSED
 	SHUTDOWN
+	_UNUSED2
 	CRASHED
 	SUSPENDED
 )
@@ -31,6 +33,8 @@ func (ps PowerState) String() string {
 		return "CRASHED"
 	case SUSPENDED:
 		return "SUSPENDED"
+	case _UNUSED1, _UNUSED2:
+		return "_UNUSED"
 	default:
 		return "N/A"
 	}
