@@ -19,8 +19,8 @@ const (
 	SUSPENDED
 )
 
-func (ps PowerState) String() string {
-	switch ps {
+func (r PowerState) String() string {
+	switch r {
 	case NOSTATE:
 		return "NOSTATE"
 	case RUNNING:
