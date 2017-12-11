@@ -166,7 +166,13 @@ func TestCreateWithOptionalFields(t *testing.T) {
 	})
 
 	iTrue := true
-	options := networks.CreateOpts{Name: "public", AdminStateUp: &iTrue, Shared: &iTrue, TenantID: "12345"}
+	options := networks.CreateOpts{
+		Name:                  "public",
+		AdminStateUp:          &iTrue,
+		Shared:                &iTrue,
+		TenantID:              "12345",
+		AvailabilityZoneHints: []string{"zone1", "zone2"},
+	}
 	_, err := networks.Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }

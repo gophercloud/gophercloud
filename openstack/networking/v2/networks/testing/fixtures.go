@@ -92,7 +92,8 @@ const CreateOptionalFieldsRequest = `
       "name": "public",
       "admin_state_up": true,
       "shared": true,
-      "tenant_id": "12345"
+      "tenant_id": "12345",
+      "availability_zone_hints": ["zone1", "zone2"]
   }
 }`
 
