@@ -3,7 +3,7 @@
 - [Getting started](#getting-started)
 - [Tests](#tests)
 - [Style guide](#basic-style-guide)
-- [3 ways to get involved](#5-ways-to-get-involved)
+- [3 ways to get involved](#3-ways-to-get-involved)
 
 ## Setting up your git workspace
 
@@ -101,7 +101,7 @@ import (
 
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
-  "github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 )
 
 func TestGet(t *testing.T) {
@@ -159,6 +159,9 @@ service charges from your provider. Although most tests handle their own
 teardown procedures, it is always worth manually checking that resources are
 deleted after the test suite finishes.
 
+We provide detailed information about how to set up local acceptance test
+environments in our [acceptance tests readme](/acceptance).
+
 ### Running tests
 
 To run all tests:
@@ -191,7 +194,7 @@ See [here](/STYLEGUIDE.md)
 
 ## 3 ways to get involved
 
-There are five main ways you can get involved in our open-source project, and
+There are three main ways you can get involved in our open-source project, and
 each is described briefly below. Once you've made up your mind and decided on
 your fix, you will need to follow the same basic steps that all submissions are
 required to adhere to:
@@ -210,8 +213,9 @@ thread to see the current state of the issue and if anybody has made any
 breakthroughs on it so far.
 
 ### 2. Improving documentation
-The best source of documentation is on [godoc.org](http://godoc.org). It is
-automatically generated from the source code.
+
+Gophercloud's documentation is automatically generated from the source code
+and can be read online at [godoc.org](https://godoc.org/github.com/gophercloud/gophercloud).
 
 If you feel that a certain section could be improved - whether it's to clarify
 ambiguity, correct a technical mistake, or to fix a grammatical error - please
@@ -228,8 +232,18 @@ known issues. It might also help you avoid losing time implementing something
 that might not ever work. One tip is to prefix your Pull Request issue title
 with [wip] - then people know it's a work in progress.
 
-You must ensure that all of your work is well tested - both in terms of unit
-and acceptance tests. Untested code will not be merged because it introduces
-too much of a risk to end-users.
+We ask that you do not submit a feature that you have not spent time researching
+and testing first-hand in an actual OpenStack environment. While we appreciate
+the contribution, submitting code which you are unfamiliar with is a risk to the
+users who will ultimately use it. See our [acceptance tests readme](/acceptance)
+for information about how you can create a local development environment to
+better understand the feature you're working on.
+
+When submitting a Pull Request, please follow our
+[Style Guide](https://github.com/gophercloud/gophercloud/blob/master/STYLEGUIDE.md).
+
+Please do not hesitate to ask questions or request clarification. Your
+contribution is very much appreciated and we are happy to work with you to get
+it merged.
 
 Happy hacking!
