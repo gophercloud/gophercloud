@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/snapshots"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 func TestSnapshotsList(t *testing.T) {
@@ -16,26 +17,54 @@ func TestSnapshotsList(t *testing.T) {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	allPages, err := snapshots.List(client, snapshots.ListOpts{}).AllPages()
+	volume1, err := CreateVolume(t, client)
 	if err != nil {
-		t.Fatalf("Unable to retrieve snapshots: %v", err)
+		t.Fatalf("Unable to create volume: %v", err)
 	}
 
-	allSnapshots, err := snapshots.ExtractSnapshots(allPages)
+	defer DeleteVolume(t, client, volume1)
+
+	snapshot1, err := CreateSnapshot(t, client, volume1)
 	if err != nil {
-		t.Fatalf("Unable to extract snapshots: %v", err)
+		t.Fatalf("Unable to create snapshot: %v", err)
 	}
 
-	for _, snapshot := range allSnapshots {
-		tools.PrintResource(t, snapshot)
+	defer DeleteSnapshot(t, client, snapshot1)
+
+	volume2, err := CreateVolume(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create volume: %v", err)
 	}
-	if len(allSnapshots) > 0 {
-		vt, err := snapshots.Get(client, allSnapshots[0].ID).Extract()
+
+	defer DeleteVolume(t, client, volume2)
+
+	snapshot2, err := CreateSnapshot(t, client, volume2)
+	if err != nil {
+		t.Fatalf("Unable to create snapshot: %v", err)
+	}
+
+	defer DeleteSnapshot(t, client, snapshot2)
+
+	pages := 0
+	err = snapshots.List(client, snapshots.ListOpts{Limit: 1}).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := snapshots.ExtractSnapshots(page)
 		if err != nil {
-			t.Fatalf("Error retrieving snapshot: %v", err)
+			t.Fatalf("Unable to extract snapshots: %v", err)
 		}
 
-		tools.PrintResource(t, vt)
+		if len(actual) != 1 {
+			t.Fatalf("Expected 1 snapshot, got %d", len(actual))
+		}
+
+		tools.PrintResource(t, actual[0])
+
+		return true, nil
+	})
+
+	if pages != 2 {
+		t.Fatalf("Expected 2 pages, saw %d", pages)
 	}
 }
 
