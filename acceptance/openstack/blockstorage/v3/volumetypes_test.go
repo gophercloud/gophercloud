@@ -26,16 +26,16 @@ func TestVolumeTypesList(t *testing.T) {
 		t.Fatalf("Unable to retrieve volumetypes: %v", err)
 	}
 
-	allVolumes, err := volumetypes.ExtractVolumeTypes(allPages)
+	allVolumeTypes, err := volumetypes.ExtractVolumeTypes(allPages)
 	if err != nil {
 		t.Fatalf("Unable to extract volumetypes: %v", err)
 	}
 
-	for _, volume := range allVolumes {
-		tools.PrintResource(t, volume)
+	for _, vt := range allVolumeTypes {
+		tools.PrintResource(t, vt)
 	}
 
-	if len(allVolumes) > 0 {
+	if len(allVolumeTypes) > 0 {
 		vt, err := volumetypes.Get(client, allVolumes[0].ID).Extract()
 		if err != nil {
 			t.Fatalf("Error retrieving volume type: %v", err)
