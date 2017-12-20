@@ -36,7 +36,7 @@ func TestVolumeTypesList(t *testing.T) {
 	}
 
 	if len(allVolumeTypes) > 0 {
-		vt, err := volumetypes.Get(client, allVolumes[0].ID).Extract()
+		vt, err := volumetypes.Get(client, allVolumeTypes[0].ID).Extract()
 		if err != nil {
 			t.Fatalf("Error retrieving volume type: %v", err)
 		}
