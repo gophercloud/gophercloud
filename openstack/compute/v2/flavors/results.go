@@ -182,3 +182,44 @@ type FlavorAccess struct {
 	// TenantID is the unique ID of the tenant.
 	TenantID string `json:"tenant_id"`
 }
+
+// Extract interprets any extraSpecsResult as ExtraSpecs, if possible.
+func (r extraSpecsResult) Extract() (map[string]string, error) {
+	var s struct {
+		ExtraSpecs map[string]string `json:"extra_specs"`
+	}
+	err := r.ExtractInto(&s)
+	return s.ExtraSpecs, err
+}
+
+// extraSpecsResult contains the result of a call for (potentially) multiple
+// key-value pairs. Call its Extract method to interpret it as a
+// map[string]interface.
+type extraSpecsResult struct {
+	gophercloud.Result
+}
+
+// ListExtraSpecsResult contains the result of a Get operation. Call its Extract
+// method to interpret it as a map[string]interface.
+type ListExtraSpecsResult struct {
+	extraSpecsResult
+}
+
+// extraSpecResult contains the result of a call for individual a single
+// key-value pair.
+type extraSpecResult struct {
+	gophercloud.Result
+}
+
+// GetExtraSpecResult contains the result of a Get operation. Call its Extract
+// method to interpret it as a map[string]interface.
+type GetExtraSpecResult struct {
+	extraSpecResult
+}
+
+// Extract interprets any extraSpecResult as an ExtraSpec, if possible.
+func (r extraSpecResult) Extract() (map[string]string, error) {
+	var s map[string]string
+	err := r.ExtractInto(&s)
+	return s, err
+}

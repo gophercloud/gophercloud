@@ -72,5 +72,15 @@ Example to Grant Access to a Flavor
 	if err != nil {
 		panic(err)
 	}
+
+Example to Get Extra Specs for a Flavor
+	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
+
+	extraSpecs, err := flavors.ListExtraSpecs(computeClient, flavorID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v", extraSpecs)
 */
 package flavors
