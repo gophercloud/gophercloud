@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 func TestVolumesList(t *testing.T) {
@@ -16,27 +17,38 @@ func TestVolumesList(t *testing.T) {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	allPages, err := volumes.List(client, volumes.ListOpts{}).AllPages()
+	volume1, err := CreateVolume(t, client)
 	if err != nil {
-		t.Fatalf("Unable to retrieve volumes: %v", err)
+		t.Fatalf("Unable to create volume: %v", err)
 	}
+	defer DeleteVolume(t, client, volume1)
 
-	allVolumes, err := volumes.ExtractVolumes(allPages)
+	volume2, err := CreateVolume(t, client)
 	if err != nil {
-		t.Fatalf("Unable to extract volumes: %v", err)
+		t.Fatalf("Unable to create volume: %v", err)
 	}
+	defer DeleteVolume(t, client, volume2)
 
-	for _, volume := range allVolumes {
-		tools.PrintResource(t, volume)
-	}
+	pages := 0
+	err = volumes.List(client, volumes.ListOpts{Limit: 1}).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
 
-	if len(allVolumes) > 0 {
-		vt, err := volumes.Get(client, allVolumes[0].ID).Extract()
+		actual, err := volumes.ExtractVolumes(page)
 		if err != nil {
-			t.Fatalf("Error retrieving volume: %v", err)
+			t.Fatalf("Unable to extract volumes: %v", err)
 		}
 
-		tools.PrintResource(t, vt)
+		if len(actual) != 1 {
+			t.Fatalf("Expected 1 volume, got %d", len(actual))
+		}
+
+		tools.PrintResource(t, actual[0])
+
+		return true, nil
+	})
+
+	if pages != 2 {
+		t.Fatalf("Expected 2 pages, saw %d", pages)
 	}
 }
 
