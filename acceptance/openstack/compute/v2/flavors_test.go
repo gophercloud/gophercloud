@@ -153,3 +153,23 @@ func TestFlavorAccessCRUD(t *testing.T) {
 		tools.PrintResource(t, access)
 	}
 }
+
+func TestFlavorExtraSpecs(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	flavor, err := CreatePrivateFlavor(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create flavor: %v", err)
+	}
+	defer DeleteFlavor(t, client, flavor)
+
+	allExtraSpecs, err := flavors.ListExtraSpecs(client, flavor.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get flavor extra_specs: %v", err)
+	}
+
+	tools.PrintResource(t, allExtraSpecs)
+}
