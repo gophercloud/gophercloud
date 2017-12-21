@@ -165,7 +165,7 @@ func ListAccesses(client *gophercloud.ServiceClient, id string) pagination.Pager
 // AddAccessOptsBuilder allows extensions to add additional parameters to the
 // AddAccess requests.
 type AddAccessOptsBuilder interface {
-	ToAddAccessMap() (map[string]interface{}, error)
+	ToFlavorAddAccessMap() (map[string]interface{}, error)
 }
 
 // AddAccessOpts represents options for adding access to a flavor.
@@ -174,14 +174,14 @@ type AddAccessOpts struct {
 	Tenant string `json:"tenant"`
 }
 
-// ToAddAccessMap constructs a request body from AddAccessOpts.
-func (opts AddAccessOpts) ToAddAccessMap() (map[string]interface{}, error) {
+// ToFlavorAddAccessMap constructs a request body from AddAccessOpts.
+func (opts AddAccessOpts) ToFlavorAddAccessMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "addTenantAccess")
 }
 
 // AddAccess grants a tenant/project access to a flavor.
 func AddAccess(client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
-	b, err := opts.ToAddAccessMap()
+	b, err := opts.ToFlavorAddAccessMap()
 	if err != nil {
 		r.Err = err
 		return
@@ -195,7 +195,7 @@ func AddAccess(client *gophercloud.ServiceClient, id string, opts AddAccessOptsB
 // RemoveAccessOptsBuilder allows extensions to add additional parameters to the
 // RemoveAccess requests.
 type RemoveAccessOptsBuilder interface {
-	ToRemoveAccessMap() (map[string]interface{}, error)
+	ToFlavorRemoveAccessMap() (map[string]interface{}, error)
 }
 
 // RemoveAccessOpts represents options for removing access to a flavor.
@@ -204,14 +204,14 @@ type RemoveAccessOpts struct {
 	Tenant string `json:"tenant"`
 }
 
-// ToRemoveAccessMap constructs a request body from RemoveAccessOpts.
-func (opts RemoveAccessOpts) ToRemoveAccessMap() (map[string]interface{}, error) {
+// ToFlavorRemoveAccessMap constructs a request body from RemoveAccessOpts.
+func (opts RemoveAccessOpts) ToFlavorRemoveAccessMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "removeTenantAccess")
 }
 
 // RemoveAccess removes/revokes a tenant/project access to a flavor.
 func RemoveAccess(client *gophercloud.ServiceClient, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
-	b, err := opts.ToRemoveAccessMap()
+	b, err := opts.ToFlavorRemoveAccessMap()
 	if err != nil {
 		r.Err = err
 		return
