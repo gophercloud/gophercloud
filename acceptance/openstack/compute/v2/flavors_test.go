@@ -8,6 +8,8 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
+
+	identity "github.com/gophercloud/gophercloud/acceptance/openstack/identity/v3"
 )
 
 func TestFlavorsList(t *testing.T) {
@@ -111,6 +113,43 @@ func TestFlavorAccessesList(t *testing.T) {
 	}
 
 	for _, access := range allAccesses {
+		tools.PrintResource(t, access)
+	}
+}
+
+func TestFlavorAccessCRUD(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	identityClient, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatal("Unable to create identity client: %v", err)
+	}
+
+	project, err := identity.CreateProject(t, identityClient, nil)
+	if err != nil {
+		t.Fatal("Unable to create project: %v", err)
+	}
+	defer identity.DeleteProject(t, identityClient, project.ID)
+
+	flavor, err := CreatePrivateFlavor(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create flavor: %v", err)
+	}
+	defer DeleteFlavor(t, client, flavor)
+
+	addAccessOpts := flavors.AddAccessOpts{
+		Tenant: project.ID,
+	}
+
+	accessList, err := flavors.AddAccess(client, flavor.ID, addAccessOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to add access to flavor: %v", err)
+	}
+
+	for _, access := range accessList {
 		tools.PrintResource(t, access)
 	}
 }

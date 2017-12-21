@@ -250,3 +250,52 @@ func TestFlavorAccessesList(t *testing.T) {
 		t.Errorf("Expected %#v, but was %#v", expected, actual)
 	}
 }
+
+func TestFlavorAccessAdd(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/flavors/12345678/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "accept", "application/json")
+		th.TestJSONRequest(t, r, `
+			{
+			  "addTenantAccess": {
+			    "tenant": "2f954bcf047c4ee9b09a37d49ae6db54"
+			  }
+			}
+		`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+			{
+			  "flavor_access": [
+			    {
+			      "flavor_id": "12345678",
+			      "tenant_id": "2f954bcf047c4ee9b09a37d49ae6db54"
+			    }
+			  ]
+			}
+			`)
+	})
+
+	expected := []flavors.FlavorAccess{
+		flavors.FlavorAccess{
+			FlavorID: "12345678",
+			TenantID: "2f954bcf047c4ee9b09a37d49ae6db54",
+		},
+	}
+
+	addAccessOpts := flavors.AddAccessOpts{
+		Tenant: "2f954bcf047c4ee9b09a37d49ae6db54",
+	}
+
+	actual, err := flavors.AddAccess(fake.ServiceClient(), "12345678", addAccessOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %#v, but was %#v", expected, actual)
+	}
+}

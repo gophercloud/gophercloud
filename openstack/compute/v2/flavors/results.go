@@ -154,6 +154,26 @@ func ExtractAccesses(r pagination.Page) ([]FlavorAccess, error) {
 	return s.FlavorAccesses, err
 }
 
+type accessResult struct {
+	gophercloud.Result
+}
+
+// AddAccessResult is the response of an AddAccess operations. Call its
+// Extract method to interpret it as a slice of FlavorAccess.
+type AddAccessResult struct {
+	accessResult
+}
+
+// Extract provides access to the result of an access create or delete.
+// The result will be all accesses that the flavor has.
+func (r accessResult) Extract() ([]FlavorAccess, error) {
+	var s struct {
+		FlavorAccesses []FlavorAccess `json:"flavor_access"`
+	}
+	err := r.ExtractInto(&s)
+	return s.FlavorAccesses, err
+}
+
 // FlavorAccess represents an ACL of tenant access to a specific Flavor.
 type FlavorAccess struct {
 	// FlavorID is the unique ID of the flavor.
