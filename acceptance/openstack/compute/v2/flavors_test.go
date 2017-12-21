@@ -8,6 +8,8 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
+
+	identity "github.com/gophercloud/gophercloud/acceptance/openstack/identity/v3"
 )
 
 func TestFlavorsList(t *testing.T) {
@@ -121,15 +123,25 @@ func TestFlavorAccessCRUD(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
+	identityClient, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatal("Unable to create identity client: %v", err)
+	}
+
+	project, err := identity.CreateProject(t, identityClient, nil)
+	if err != nil {
+		t.Fatal("Unable to create project: %v", err)
+	}
+	defer identity.DeleteProject(t, identityClient, project.ID)
+
 	flavor, err := CreatePrivateFlavor(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create flavor: %v", err)
 	}
 	defer DeleteFlavor(t, client, flavor)
 
-	// Fun fact: this doesn't verify the tenant id.
 	addAccessOpts := flavors.AddAccessOpts{
-		Tenant: "123456",
+		Tenant: project.ID,
 	}
 
 	accessList, err := flavors.AddAccess(client, flavor.ID, addAccessOpts).Extract()
