@@ -127,3 +127,11 @@ func MockCreateResponse(t *testing.T) {
     `)
 	})
 }
+
+func MockDeleteResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
