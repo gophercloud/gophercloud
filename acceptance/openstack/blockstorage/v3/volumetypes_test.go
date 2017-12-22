@@ -45,7 +45,7 @@ func TestVolumeTypesList(t *testing.T) {
 	}
 }
 
-func TestVolumeTypesCreate(t *testing.T) {
+func TestVolumeTypesCreateDestroy(t *testing.T) {
 	client, err := clients.NewBlockStorageV3Client()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
@@ -64,4 +64,6 @@ func TestVolumeTypesCreate(t *testing.T) {
 	}
 
 	tools.PrintResource(t, vt)
+
+	defer volumetypes.Delete(client, vt.ID)
 }

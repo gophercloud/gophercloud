@@ -81,3 +81,13 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, n.ID, "6d0ff92a-0007-4780-9ece-acfe5876966a")
 	th.AssertEquals(t, n.ExtraSpecs["capabilities"], "gpu")
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteResponse(t)
+
+	res := volumetypes.Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertNoErr(t, res.Err)
+}
