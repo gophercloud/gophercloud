@@ -73,7 +73,23 @@ Example to Grant Access to a Flavor
 		panic(err)
 	}
 
+Example to Create Extra Specs for a Flavor
+
+	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
+
+	createOpts := flavors.ExtraSpecsOpts{
+		"hw:cpu_policy":        "CPU-POLICY",
+		"hw:cpu_thread_policy": "CPU-THREAD-POLICY",
+	}
+	createdExtraSpecs, err := flavors.CreateExtraSpecs(computeClient, flavorID, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v", createdExtraSpecs)
+
 Example to Get Extra Specs for a Flavor
+
 	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
 
 	extraSpecs, err := flavors.ListExtraSpecs(computeClient, flavorID).Extract()
@@ -82,5 +98,6 @@ Example to Get Extra Specs for a Flavor
 	}
 
 	fmt.Printf("%+v", extraSpecs)
+
 */
 package flavors

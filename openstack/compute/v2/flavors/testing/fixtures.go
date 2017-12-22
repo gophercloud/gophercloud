@@ -60,3 +60,21 @@ func HandleExtraSpecGetSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, GetExtraSpecBody)
 	})
 }
+
+func HandleExtraSpecsCreateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/flavors/1/os-extra_specs", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `{
+				"extra_specs": {
+					"hw:cpu_policy":        "CPU-POLICY",
+					"hw:cpu_thread_policy": "CPU-THREAD-POLICY"
+				}
+			}`)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ExtraSpecsGetBody)
+	})
+}

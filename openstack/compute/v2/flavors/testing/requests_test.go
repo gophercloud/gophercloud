@@ -321,3 +321,18 @@ func TestFlavorExtraSpecGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
+
+func TestFlavorExtraSpecsCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleExtraSpecsCreateSuccessfully(t)
+
+	createOpts := flavors.ExtraSpecsOpts{
+		"hw:cpu_policy":        "CPU-POLICY",
+		"hw:cpu_thread_policy": "CPU-THREAD-POLICY",
+	}
+	expected := ExtraSpecs
+	actual, err := flavors.CreateExtraSpecs(fake.ServiceClient(), "1", createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
+}

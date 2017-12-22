@@ -154,7 +154,7 @@ func TestFlavorAccessCRUD(t *testing.T) {
 	}
 }
 
-func TestFlavorExtraSpecs(t *testing.T) {
+func TestFlavorExtraSpecsCRUD(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -166,10 +166,27 @@ func TestFlavorExtraSpecs(t *testing.T) {
 	}
 	defer DeleteFlavor(t, client, flavor)
 
+	createOpts := flavors.ExtraSpecsOpts{
+		"hw:cpu_policy":        "CPU-POLICY",
+		"hw:cpu_thread_policy": "CPU-THREAD-POLICY",
+	}
+	createdExtraSpecs, err := flavors.CreateExtraSpecs(client, flavor.ID, createOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to create flavor extra_specs: %v", err)
+	}
+	tools.PrintResource(t, createdExtraSpecs)
+
 	allExtraSpecs, err := flavors.ListExtraSpecs(client, flavor.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get flavor extra_specs: %v", err)
 	}
-
 	tools.PrintResource(t, allExtraSpecs)
+
+	for key, _ := range allExtraSpecs {
+		spec, err := flavors.GetExtraSpec(client, flavor.ID, key).Extract()
+		if err != nil {
+			t.Fatalf("Unable to get flavor extra spec: %v", err)
+		}
+		tools.PrintResource(t, spec)
+	}
 }
