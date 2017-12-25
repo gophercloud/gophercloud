@@ -8,7 +8,7 @@ type Aggregate struct {
 	AvailabilityZone string `json:"availability_zone"`
 
 	// A list of host ids in this aggregate.
-	Hosts []string `json:hosts`
+	Hosts []string `json:"hosts"`
 
 	// The ID of the host aggregate.
 	ID int `json:"id"`
