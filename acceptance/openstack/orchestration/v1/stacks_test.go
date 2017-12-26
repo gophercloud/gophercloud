@@ -17,10 +17,13 @@ func TestStacks(t *testing.T) {
 	client := newClient(t)
 
 	stackName1 := "gophercloud-test-stack-2"
+	var templateOpts = new(stacks.Template)
+	templateOpts.Bin = []byte(template)
+
 	createOpts := stacks.CreateOpts{
-		Name:     stackName1,
-		Template: template,
-		Timeout:  5,
+		Name:         stackName1,
+		TemplateOpts: templateOpts,
+		Timeout:      5,
 	}
 	stack, err := stacks.Create(client, createOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -42,8 +45,8 @@ func TestStacks(t *testing.T) {
 	})
 
 	updateOpts := stacks.UpdateOpts{
-		Template: template,
-		Timeout:  20,
+		TemplateOpts: templateOpts,
+		Timeout:      20,
 	}
 	err = stacks.Update(client, stackName1, stack.ID, updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
@@ -87,9 +90,9 @@ func TestStacksNewTemplateFormat(t *testing.T) {
 	client := newClient(t)
 
 	stackName1 := "gophercloud-test-stack-2"
-	templateOpts := new(osStacks.Template)
+	templateOpts := new(stacks.Template)
 	templateOpts.Bin = []byte(template)
-	createOpts := osStacks.CreateOpts{
+	createOpts := stacks.CreateOpts{
 		Name:         stackName1,
 		TemplateOpts: templateOpts,
 		Timeout:      5,
@@ -113,7 +116,7 @@ func TestStacksNewTemplateFormat(t *testing.T) {
 		return false, nil
 	})
 
-	updateOpts := osStacks.UpdateOpts{
+	updateOpts := stacks.UpdateOpts{
 		TemplateOpts: templateOpts,
 		Timeout:      20,
 	}
@@ -133,7 +136,7 @@ func TestStacksNewTemplateFormat(t *testing.T) {
 	t.Logf("Updated stack")
 
 	err = stacks.List(client, nil).EachPage(func(page pagination.Page) (bool, error) {
-		stackList, err := osStacks.ExtractStacks(page)
+		stackList, err := stacks.ExtractStacks(page)
 		th.AssertNoErr(t, err)
 
 		t.Logf("Got stack list: %+v\n", stackList)

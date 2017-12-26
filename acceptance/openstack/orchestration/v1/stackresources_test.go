@@ -18,11 +18,13 @@ func TestStackResources(t *testing.T) {
 	client := newClient(t)
 
 	stackName := "postman_stack_2"
+	var templateOpts = new(stacks.Template)
+	templateOpts.Bin = []byte(template)
 
 	createOpts := stacks.CreateOpts{
-		Name:     stackName,
-		Template: template,
-		Timeout:  5,
+		Name:         stackName,
+		TemplateOpts: templateOpts,
+		Timeout:      5,
 	}
 	stack, err := stacks.Create(client, createOpts).Extract()
 	th.AssertNoErr(t, err)

@@ -20,11 +20,13 @@ func TestStackEvents(t *testing.T) {
 	stackName := "postman_stack_2"
 	resourceName := "hello_world"
 	var eventID string
+	var templateOpts = new(stacks.Template)
+	templateOpts.Bin = []byte(template)
 
 	createOpts := stacks.CreateOpts{
-		Name:     stackName,
-		Template: template,
-		Timeout:  5,
+		Name:         stackName,
+		TemplateOpts: templateOpts,
+		Timeout:      5,
 	}
 	stack, err := stacks.Create(client, createOpts).Extract()
 	th.AssertNoErr(t, err)

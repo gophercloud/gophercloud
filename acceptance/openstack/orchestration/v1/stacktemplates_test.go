@@ -17,11 +17,13 @@ func TestStackTemplates(t *testing.T) {
 	client := newClient(t)
 
 	stackName := "postman_stack_2"
+	var templateOpts = new(stacks.Template)
+	templateOpts.Bin = []byte(template)
 
 	createOpts := stacks.CreateOpts{
-		Name:     stackName,
-		Template: template,
-		Timeout:  5,
+		Name:         stackName,
+		TemplateOpts: templateOpts,
+		Timeout:      5,
 	}
 	stack, err := stacks.Create(client, createOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -46,7 +48,7 @@ func TestStackTemplates(t *testing.T) {
 	th.AssertNoErr(t, err)
 	t.Logf("retrieved template: %+v\n", tmpl)
 
-	validateOpts := osStacktemplates.ValidateOpts{
+	validateOpts := stacktemplates.ValidateOpts{
 		Template: `{"heat_template_version": "2013-05-23",
 			"description": "Simple template to test heat commands",
 			"parameters": {
@@ -68,7 +70,8 @@ func TestStackTemplates(t *testing.T) {
 					},
 				},
 			},
-		}`}
+		}`,
+	}
 	validatedTemplate, err := stacktemplates.Validate(client, validateOpts).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("validated template: %+v\n", validatedTemplate)
