@@ -7,7 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/ildarsv/gophercloud/openstack/compute/v2/extensions/aggregates"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/aggregates"
 )
 
 func TestAggregatesList(t *testing.T) {
