@@ -135,3 +135,20 @@ func MockDeleteResponse(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+func MockUpdateResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+{
+    "volume_type": {
+        "name": "vol-type-002",
+        "description": "volume type 0001",
+        "is_public": true,
+		"id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"
+    }
+}`)
+	})
+}
