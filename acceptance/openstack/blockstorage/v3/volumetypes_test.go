@@ -53,16 +53,17 @@ func TestVolumeTypesCRUD(t *testing.T) {
 	}
 
 	createOpts := volumetypes.CreateOpts{
-		Name:         "create_from_gophercloud",
-		PublicAccess: true,
-		ExtraSpecs:   map[string]string{"volume_backend_name": "fake_backend_name"},
-		Description:  "create_from_gophercloud",
+		Name:        "create_from_gophercloud",
+		ExtraSpecs:  map[string]string{"volume_backend_name": "fake_backend_name"},
+		Description: "create_from_gophercloud",
 	}
 
 	vt, err := volumetypes.Create(client, createOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to create volumetype: %v", err)
 	}
+
+	th.AssertEquals(t, true, vt.IsPublic)
 
 	tools.PrintResource(t, vt)
 
@@ -74,7 +75,9 @@ func TestVolumeTypesCRUD(t *testing.T) {
 		Name:     "updated_volume_type",
 		IsPublic: &isPublic,
 	}).Extract()
-	th.AssertEquals(t, "updated_volume_type", newVT.Name)
 
+	th.AssertEquals(t, "updated_volume_type", newVT.Name)
 	th.AssertEquals(t, false, newVT.IsPublic)
+
+	tools.PrintResource(t, newVT)
 }
