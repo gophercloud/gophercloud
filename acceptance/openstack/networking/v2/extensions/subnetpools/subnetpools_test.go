@@ -1,4 +1,4 @@
-// +build acceptance networking
+// +build acceptance networking subnetpools
 
 package v2
 
