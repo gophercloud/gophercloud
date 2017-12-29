@@ -1,6 +1,10 @@
 package subnetpools
 
 import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -39,17 +43,17 @@ type SubnetPool struct {
 	// DefaultPrefixLen is yhe size of the prefix to allocate when the cidr
 	// or prefixlen attributes are omitted when you create the subnet.
 	// Defaults to the MinPrefixLen.
-	DefaultPrefixLen int `json:"default_prefixlen"`
+	DefaultPrefixLen int `json:"-"`
 
 	// MinPrefixLen is the smallest prefix that can be allocated from a subnetpool.
 	// For IPv4 subnetpools, default is 8.
 	// For IPv6 subnetpools, default is 64.
-	MinPrefixLen int `json:"min_prefixlen"`
+	MinPrefixLen int `json:"-"`
 
 	// MaxPrefixLen is the maximum prefix size that can be allocated from the subnetpool.
 	// For IPv4 subnetpools, default is 32.
 	// For IPv6 subnetpools, default is 128.
-	MaxPrefixLen int `json:"max_prefixlen"`
+	MaxPrefixLen int `json:"-"`
 
 	// AddressScopeID is the Neutron address scope to assign to the subnetpool.
 	AddressScopeID string `json:"address_scope_id"`
@@ -69,6 +73,57 @@ type SubnetPool struct {
 
 	// RevisionNumber is the revision number of the subnetpool.
 	RevisionNumber int `json:"revision_number"`
+}
+
+func (r *SubnetPool) UnmarshalJSON(b []byte) error {
+	type tmp SubnetPool
+	var s struct {
+		tmp
+		DefaultPrefixLen interface{} `json:"default_prefixlen"`
+		MinPrefixLen     interface{} `json:"min_prefixlen"`
+		MaxPrefixLen     interface{} `json:"max_prefixlen"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+
+	*r = SubnetPool(s.tmp)
+
+	switch t := s.DefaultPrefixLen.(type) {
+	case string:
+		if r.DefaultPrefixLen, err = strconv.Atoi(t); err != nil {
+			return err
+		}
+	case float64:
+		r.DefaultPrefixLen = int(t)
+	default:
+		return fmt.Errorf("DefaultPrefixLen has unexpected type: %T", t)
+	}
+
+	switch t := s.MinPrefixLen.(type) {
+	case string:
+		if r.MinPrefixLen, err = strconv.Atoi(t); err != nil {
+			return err
+		}
+	case float64:
+		r.MinPrefixLen = int(t)
+	default:
+		return fmt.Errorf("MinPrefixLen has unexpected type: %T", t)
+	}
+
+	switch t := s.MaxPrefixLen.(type) {
+	case string:
+		if r.MaxPrefixLen, err = strconv.Atoi(t); err != nil {
+			return err
+		}
+	case float64:
+		r.MaxPrefixLen = int(t)
+	default:
+		return fmt.Errorf("MaxPrefixLen has unexpected type: %T", t)
+	}
+
+	return nil
 }
 
 // SubnetPoolPage stores a single page of SubnetPools from a List() API call.
