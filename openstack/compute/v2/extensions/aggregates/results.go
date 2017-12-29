@@ -13,6 +13,9 @@ type Aggregate struct {
 	// The ID of the host aggregate.
 	ID int `json:"id"`
 
+	// Metadata key and value pairs associate with the aggregate.
+	Metadata map[string]string `json:"metadata"`
+
 	// Name of the aggregate.
 	Name string `json:"name"`
 }

@@ -49,6 +49,7 @@ var FirstFakeAggregate = aggregates.Aggregate{
 	AvailabilityZone: "",
 	Hosts:            []string{},
 	ID:               1,
+	Metadata:         map[string]string{},
 	Name:             "test-aggregate1",
 }
 
@@ -57,6 +58,7 @@ var SecondFakeAggregate = aggregates.Aggregate{
 	AvailabilityZone: "test-az",
 	Hosts:            []string{"cmp0"},
 	ID:               4,
+	Metadata:         map[string]string{"availability_zone": "test-az"},
 	Name:             "test-aggregate2",
 }
 
