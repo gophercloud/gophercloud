@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumetypes"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestVolumeTypesList(t *testing.T) {
@@ -45,17 +46,16 @@ func TestVolumeTypesList(t *testing.T) {
 	}
 }
 
-func TestVolumeTypesCreateDestroy(t *testing.T) {
+func TestVolumeTypesCRUD(t *testing.T) {
 	client, err := clients.NewBlockStorageV3Client()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
 	createOpts := volumetypes.CreateOpts{
-		Name:         "create_from_gophercloud",
-		PublicAccess: true,
-		ExtraSpecs:   map[string]string{"volume_backend_name": "fake_backend_name"},
-		Description:  "create_from_gophercloud",
+		Name:        "create_from_gophercloud",
+		ExtraSpecs:  map[string]string{"volume_backend_name": "fake_backend_name"},
+		Description: "create_from_gophercloud",
 	}
 
 	vt, err := volumetypes.Create(client, createOpts).Extract()
@@ -63,7 +63,21 @@ func TestVolumeTypesCreateDestroy(t *testing.T) {
 		t.Fatalf("Unable to create volumetype: %v", err)
 	}
 
+	th.AssertEquals(t, true, vt.IsPublic)
+
 	tools.PrintResource(t, vt)
 
 	defer volumetypes.Delete(client, vt.ID)
+
+	var isPublic = false
+
+	newVT, err := volumetypes.Update(client, vt.ID, volumetypes.UpdateOpts{
+		Name:     "updated_volume_type",
+		IsPublic: &isPublic,
+	}).Extract()
+
+	th.AssertEquals(t, "updated_volume_type", newVT.Name)
+	th.AssertEquals(t, false, newVT.IsPublic)
+
+	tools.PrintResource(t, newVT)
 }

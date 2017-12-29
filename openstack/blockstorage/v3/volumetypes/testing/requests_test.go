@@ -45,7 +45,6 @@ func TestListAll(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, pages, 1)
-
 }
 
 func TestGet(t *testing.T) {
@@ -70,7 +69,15 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t)
 
-	options := &volumetypes.CreateOpts{Name: "test_type", PublicAccess: true, Description: "test_type_desc", ExtraSpecs: map[string]string{"capabilities": "gpu"}}
+	var isPublic = true
+
+	options := &volumetypes.CreateOpts{
+		Name:        "test_type",
+		IsPublic:    &isPublic,
+		Description: "test_type_desc",
+		ExtraSpecs:  map[string]string{"capabilities": "gpu"},
+	}
+
 	n, err := volumetypes.Create(client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
@@ -90,4 +97,22 @@ func TestDelete(t *testing.T) {
 
 	res := volumetypes.Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUpdateResponse(t)
+
+	var isPublic = true
+	options := volumetypes.UpdateOpts{
+		Name:     "vol-type-002",
+		IsPublic: &isPublic,
+	}
+
+	v, err := volumetypes.Update(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, "vol-type-002", v.Name)
+	th.CheckEquals(t, true, v.IsPublic)
 }

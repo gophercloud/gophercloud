@@ -27,9 +27,9 @@ func MockListResponse(t *testing.T) {
         {
             "name": "SSD",
             "qos_specs_id": null,
- 			"os-volume-type-access:is_public": true,
+            "os-volume-type-access:is_public": true,
             "extra_specs": {
-                "volume_backend_name": "lvmdriver-1"
+              "volume_backend_name": "lvmdriver-1"
             },
             "is_public": true,
             "id": "6685584b-1eac-4da6-b5c3-555430cf68ff",
@@ -38,7 +38,7 @@ func MockListResponse(t *testing.T) {
         {
             "name": "SATA",
             "qos_specs_id": null,
-			"os-volume-type-access:is_public": true,
+            "os-volume-type-access:is_public": true,
             "extra_specs": {
                 "volume_backend_name": "lvmdriver-1"
             },
@@ -75,8 +75,8 @@ func MockGetResponse(t *testing.T) {
     "volume_type": {
         "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
         "name": "vol-type-001",
-		"os-volume-type-access:is_public": true,
-		"qos_specs_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+        "os-volume-type-access:is_public": true,
+        "qos_specs_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
         "description": "volume type 001",
         "is_public": true,
         "extra_specs": {
@@ -100,7 +100,7 @@ func MockCreateResponse(t *testing.T) {
         "name": "test_type",
         "os-volume-type-access:is_public": true,
         "description": "test_type_desc",
-		"extra_specs": {
+        "extra_specs": {
             "capabilities": "gpu"
         }
     }
@@ -119,7 +119,7 @@ func MockCreateResponse(t *testing.T) {
         "os-volume-type-access:is_public": true,
         "id": "6d0ff92a-0007-4780-9ece-acfe5876966a",
         "description": "test_type_desc",
-		"extra_specs": {
+        "extra_specs": {
             "capabilities": "gpu"
         }
     }
@@ -133,5 +133,22 @@ func MockDeleteResponse(t *testing.T) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func MockUpdateResponse(t *testing.T) {
+	th.Mux.HandleFunc("/types/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `
+{
+    "volume_type": {
+        "name": "vol-type-002",
+        "description": "volume type 0001",
+        "is_public": true,
+        "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"
+    }
+}`)
 	})
 }
