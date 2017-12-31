@@ -6,73 +6,73 @@ import (
 
 const SubnetPoolsListResult = `
 {
-	  "subnetpools": [
-	  		{
-	  				"address_scope_id": null,
-	  				"created_at": "2017-12-28T07:21:41Z",
-	  				"default_prefixlen": "8",
-	  				"default_quota": null,
-	  				"description": "IPv4",
-	  				"id": "d43a57fe-3390-4608-b437-b1307b0adb40",
-	  				"ip_version": 4,
-	  				"is_default": false,
-	  				"max_prefixlen": "32",
-	  				"min_prefixlen": "8",
-	  				"name": "MyPoolIpv4",
-	  				"prefixes": [
-	  						"10.10.10.0/24",
-	  						"10.11.11.0/24"
-	  				],
-	  				"project_id": "1e2b9857295a4a3e841809ef492812c5",
-	  				"revision_number": 1,
-	  				"shared": false,
-	  				"tenant_id": "1e2b9857295a4a3e841809ef492812c5",
-	  				"updated_at": "2017-12-28T07:21:41Z"
-	  		},
-	  		{
-	  				"address_scope_id": "0bc38e22-be49-4e67-969e-fec3f36508bd",
-	  				"created_at": "2017-12-28T07:21:34Z",
-	  				"default_prefixlen": "64",
-	  				"default_quota": null,
-	  				"description": "IPv6",
-	  				"id": "832cb7f3-59fe-40cf-8f64-8350ffc03272",
-	  				"ip_version": 6,
-	  				"is_default": true,
-	  				"max_prefixlen": "128",
-	  				"min_prefixlen": "64",
-	  				"name": "MyPoolIpv6",
-	  				"prefixes": [
-	  						"fdf7:b13d:dead:beef::/64",
-	  						"fd65:86cc:a334:39b7::/64"
-	  				],
-	  				"project_id": "1e2b9857295a4a3e841809ef492812c5",
-	  				"revision_number": 1,
-	  				"shared": false,
-	  				"tenant_id": "1e2b9857295a4a3e841809ef492812c5",
-	  				"updated_at": "2017-12-28T07:21:34Z"
-	  		},
-	  		{
-	  				"address_scope_id": null,
-	  				"created_at": "2017-12-28T07:21:27Z",
-	  				"default_prefixlen": "64",
-	  				"default_quota": 4,
-	  				"description": "PublicPool",
-	  				"id": "2fe18ae6-58c2-4a85-8bfb-566d6426749b",
-	  				"ip_version": 6,
-	  				"is_default": false,
-	  				"max_prefixlen": "128",
-	  				"min_prefixlen": "64",
-	  				"name": "PublicIPv6",
-	  				"prefixes": [
-	  						"2001:db8::a3/64"
-	  				],
-	  				"project_id": "ceb366d50ad54fe39717df3af60f9945",
-	  				"revision_number": 1,
-	  				"shared": true,
-	  				"tenant_id": "ceb366d50ad54fe39717df3af60f9945",
-	  				"updated_at": "2017-12-28T07:21:27Z"
-	  		}
-	  ]
+    "subnetpools": [
+        {
+            "address_scope_id": null,
+            "created_at": "2017-12-28T07:21:41Z",
+            "default_prefixlen": "8",
+            "default_quota": null,
+            "description": "IPv4",
+            "id": "d43a57fe-3390-4608-b437-b1307b0adb40",
+            "ip_version": 4,
+            "is_default": false,
+            "max_prefixlen": "32",
+            "min_prefixlen": "8",
+            "name": "MyPoolIpv4",
+            "prefixes": [
+                "10.10.10.0/24",
+                "10.11.11.0/24"
+            ],
+            "project_id": "1e2b9857295a4a3e841809ef492812c5",
+            "revision_number": 1,
+            "shared": false,
+            "tenant_id": "1e2b9857295a4a3e841809ef492812c5",
+            "updated_at": "2017-12-28T07:21:41Z"
+        },
+        {
+            "address_scope_id": "0bc38e22-be49-4e67-969e-fec3f36508bd",
+            "created_at": "2017-12-28T07:21:34Z",
+            "default_prefixlen": "64",
+            "default_quota": null,
+            "description": "IPv6",
+            "id": "832cb7f3-59fe-40cf-8f64-8350ffc03272",
+            "ip_version": 6,
+            "is_default": true,
+            "max_prefixlen": "128",
+            "min_prefixlen": "64",
+            "name": "MyPoolIpv6",
+            "prefixes": [
+                "fdf7:b13d:dead:beef::/64",
+                "fd65:86cc:a334:39b7::/64"
+            ],
+            "project_id": "1e2b9857295a4a3e841809ef492812c5",
+            "revision_number": 1,
+            "shared": false,
+            "tenant_id": "1e2b9857295a4a3e841809ef492812c5",
+            "updated_at": "2017-12-28T07:21:34Z"
+        },
+        {
+            "address_scope_id": null,
+            "created_at": "2017-12-28T07:21:27Z",
+            "default_prefixlen": "64",
+            "default_quota": 4,
+            "description": "PublicPool",
+            "id": "2fe18ae6-58c2-4a85-8bfb-566d6426749b",
+            "ip_version": 6,
+            "is_default": false,
+            "max_prefixlen": "128",
+            "min_prefixlen": "64",
+            "name": "PublicIPv6",
+            "prefixes": [
+                "2001:db8::a3/64"
+            ],
+            "project_id": "ceb366d50ad54fe39717df3af60f9945",
+            "revision_number": 1,
+            "shared": true,
+            "tenant_id": "ceb366d50ad54fe39717df3af60f9945",
+            "updated_at": "2017-12-28T07:21:27Z"
+        }
+    ]
 }
 `
 
