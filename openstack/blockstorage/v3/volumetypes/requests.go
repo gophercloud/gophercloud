@@ -20,7 +20,7 @@ type CreateOpts struct {
 	// The volume type description
 	Description string `json:"description,omitempty"`
 	// the ID of the existing volume snapshot
-	PublicAccess bool `json:"os-volume-type-access:is_public"`
+	IsPublic *bool `json:"os-volume-type-access:is_public,omitempty"`
 	// Extra spec key-value pairs defined by the user.
 	ExtraSpecs map[string]string `json:"extra_specs"`
 }
@@ -100,4 +100,39 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return VolumeTypePage{pagination.LinkedPageBase{PageResult: r}}
 	})
+}
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToVolumeTypeUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contain options for updating an existing Volume Type. This object is passed
+// to the volumetypes.Update function. For more information about the parameters, see
+// the Volume Type object.
+type UpdateOpts struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+	IsPublic    *bool  `json:"is_public,omitempty"`
+}
+
+// ToVolumeUpdateMap assembles a request body based on the contents of an
+// UpdateOpts.
+func (opts UpdateOpts) ToVolumeTypeUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "volume_type")
+}
+
+// Update will update the Volume Type with provided information. To extract the updated
+// Volume Type from the response, call the Extract method on the UpdateResult.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToVolumeTypeUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
 }
