@@ -10,6 +10,21 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/subnetpools"
 )
 
+func TestCreateSubnetPool(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	// Create a subnetpool
+	subnetPool, err := CreateSubnetPool(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create a subnetpool: %v", err)
+	}
+
+	tools.PrintResource(t, subnetPool)
+}
+
 func TestSubnetPoolsList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
