@@ -20,5 +20,13 @@ Example of Listing Subnetpools.
 	for _, subnetpools := range allSubnetpools {
 		fmt.Printf("%+v\n", subnetpools)
 	}
+
+Example to Get a Subnetpool
+
+	subnetPoolID = "23d5d3f7-9dfa-4f73-b72b-8b0b0063ec55"
+	subnetPool, err := subnetpools.Get(networkClient, subnetPoolID).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package subnetpools
