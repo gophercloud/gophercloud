@@ -28,5 +28,22 @@ Example to Get a Subnetpool
 	if err != nil {
 		panic(err)
 	}
+
+Example to Create a new Subnetpool.
+
+	subnetPoolName := "private_pool"
+	subnetPoolPrefixes := []string{
+		"10.0.0.0/8",
+		"172.16.0.0/12",
+		"192.168.0.0/16",
+	}
+	subnetPoolOpts := subnetpools.CreateOpts{
+		Name: subnetPoolName,
+		Prefixes: subnetPoolPrefixes,
+	}
+	subnetPool, err := subnetpools.Create(networkClient, subnetPoolOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package subnetpools

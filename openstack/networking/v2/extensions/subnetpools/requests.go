@@ -72,3 +72,77 @@ func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
 	return
 }
+
+// CreateOptsBuilder allows to add additional parameters to the
+// Create request.
+type CreateOptsBuilder interface {
+	ToSubnetPoolCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts specifies parameters of a new subnetpool.
+type CreateOpts struct {
+
+	// Name is the human-readable name of the subnetpool.
+	Name string `json:"name"`
+
+	// DefaultQuota is the per-project quota on the prefix space
+	// that can be allocated from the subnetpool for project subnets.
+	DefaultQuota int `json:"default_quota,omitempty"`
+
+	// TenantID is the id of the Identity project.
+	TenantID string `json:"tenant_id,omitempty"`
+
+	// ProjectID is the id of the Identity project.
+	ProjectID string `json:"project_id,omitempty"`
+
+	// Prefixes is the list of subnet prefixes to assign to the subnetpool.
+	// Neutron API merges adjacent prefixes and treats them as a single prefix.
+	// Each subnet prefix must be unique among all subnet prefixes in all subnetpools
+	// that are associated with the address scope.
+	Prefixes []string `json:"prefixes"`
+
+	// DefaultPrefixLen is yhe size of the prefix to allocate when the cidr
+	// or prefixlen attributes are omitted when you create the subnet.
+	// Defaults to the MinPrefixLen.
+	DefaultPrefixLen int `json:"default_prefixlen,omitempty"`
+
+	// MinPrefixLen is the smallest prefix that can be allocated from a subnetpool.
+	// For IPv4 subnetpools, default is 8.
+	// For IPv6 subnetpools, default is 64.
+	MinPrefixLen int `json:"min_prefixlen,omitempty"`
+
+	// MaxPrefixLen is the maximum prefix size that can be allocated from the subnetpool.
+	// For IPv4 subnetpools, default is 32.
+	// For IPv6 subnetpools, default is 128.
+	MaxPrefixLen int `json:"max_prefixlen,omitempty"`
+
+	// AddressScopeID is the Neutron address scope to assign to the subnetpool.
+	AddressScopeID string `json:"address_scope_id,omitempty"`
+
+	// Shared indicates whether this network is shared across all projects.
+	Shared bool `json:"shared,omitempty"`
+
+	// Description is the human-readable description for the resource.
+	Description string `json:"description,omitempty"`
+
+	// IsDefault indicates if the subnetpool is default pool or not.
+	IsDefault bool `json:"is_default,omitempty"`
+}
+
+// ToSubnetPoolCreateMap constructs a request body from CreateOpts.
+func (opts CreateOpts) ToSubnetPoolCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "subnetpool")
+}
+
+// Create requests the creation of a new subnetpool on the server.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToSubnetPoolCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}

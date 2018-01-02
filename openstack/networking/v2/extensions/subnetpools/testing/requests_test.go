@@ -88,3 +88,44 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.IsDefault, true)
 	th.AssertEquals(t, s.RevisionNumber, 2)
 }
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/subnetpools", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, SubnetPoolCreateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, SubnetPoolCreateResult)
+	})
+
+	opts := subnetpools.CreateOpts{
+		Name: "my_ipv4_pool",
+		Prefixes: []string{
+			"10.10.0.0/16",
+			"10.11.11.0/24",
+		},
+		MinPrefixLen:   25,
+		MaxPrefixLen:   30,
+		AddressScopeID: "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3",
+		Description:    "ipv4 prefixes",
+	}
+	s, err := subnetpools.Create(fake.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, s.Name, "my_ipv4_pool")
+	th.AssertDeepEquals(t, s.Prefixes, []string{
+		"10.10.0.0/16",
+		"10.11.11.0/24",
+	})
+	th.AssertEquals(t, s.MinPrefixLen, 25)
+	th.AssertEquals(t, s.MaxPrefixLen, 30)
+	th.AssertEquals(t, s.AddressScopeID, "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3")
+	th.AssertEquals(t, s.Description, "ipv4 prefixes")
+}
