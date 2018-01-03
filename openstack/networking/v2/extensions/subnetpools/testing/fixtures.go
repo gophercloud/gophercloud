@@ -143,3 +143,29 @@ var SubnetPool3 = subnetpools.SubnetPool{
 	Shared:         true,
 	UpdatedAt:      "2017-12-28T07:21:27Z",
 }
+
+const SubnetPoolGetResult = `
+{
+    "subnetpool": {
+        "min_prefixlen": "64",
+        "address_scope_id": null,
+        "default_prefixlen": "64",
+        "id": "0a738452-8057-4ad3-89c2-92f6a74afa76",
+        "max_prefixlen": "128",
+        "name": "my-ipv6-pool",
+        "default_quota": 2,
+        "is_default": true,
+        "project_id": "1e2b9857295a4a3e841809ef492812c5",
+        "tenant_id": "1e2b9857295a4a3e841809ef492812c5",
+        "created_at": "2018-01-01T00:00:01",
+        "prefixes": [
+            "2001:db8::a3/64"
+        ],
+        "updated_at": "2018-01-01T00:10:10",
+        "ip_version": 6,
+        "shared": false,
+        "description": "ipv6 prefixes",
+        "revision_number": 2
+    }
+}
+`
