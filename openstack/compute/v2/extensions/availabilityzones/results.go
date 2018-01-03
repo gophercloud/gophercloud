@@ -44,11 +44,11 @@ func (r *StateofService) UnmarshalJSON(b []byte) error {
 }
 
 type Services struct {
-	NovaConductor StateofService `json:"nova-conductor"`
+	NovaConductor   StateofService `json:"nova-conductor"`
 	NovaConsoleauth StateofService `json:"nova-consoleauth"`
-	NovaNetwork StateofService `json:"nova-network"`
-	NovaScheduler StateofService `json:"nova-scheduler"`
-	NovaCompute StateofService `json:"nova-compute"`
+	NovaNetwork     StateofService `json:"nova-network"`
+	NovaScheduler   StateofService `json:"nova-scheduler"`
+	NovaCompute     StateofService `json:"nova-compute"`
 }
 
 type Hosts map[string]Services
