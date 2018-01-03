@@ -81,7 +81,6 @@ type CreateOptsBuilder interface {
 
 // CreateOpts specifies parameters of a new subnetpool.
 type CreateOpts struct {
-
 	// Name is the human-readable name of the subnetpool.
 	Name string `json:"name"`
 
@@ -101,7 +100,7 @@ type CreateOpts struct {
 	// that are associated with the address scope.
 	Prefixes []string `json:"prefixes"`
 
-	// DefaultPrefixLen is yhe size of the prefix to allocate when the cidr
+	// DefaultPrefixLen is the size of the prefix to allocate when the cidr
 	// or prefixlen attributes are omitted when you create the subnet.
 	// Defaults to the MinPrefixLen.
 	DefaultPrefixLen int `json:"default_prefixlen,omitempty"`
