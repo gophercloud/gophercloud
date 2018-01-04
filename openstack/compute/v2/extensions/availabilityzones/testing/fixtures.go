@@ -30,32 +30,48 @@ const GetDetailOutput = `
     "availabilityZoneInfo": [
         {
             "hosts": {
-                "conductor": {
+                "localhost": {
+                    "nova-cert": {
+                        "active": true,
+                        "available": false,
+                        "updated_at": "2017-10-14T17:03:39.000000"
+                    },
+                    "nova-conductor": {
+                        "active": true,
+                        "available": false,
+                        "updated_at": "2017-10-14T17:04:09.000000"
+                    },
+                    "nova-consoleauth": {
+                        "active": true,
+                        "available": false,
+                        "updated_at": "2017-10-14T17:04:18.000000"
+                    },
+                    "nova-scheduler": {
+                        "active": true,
+                        "available": false,
+                        "updated_at": "2017-10-14T17:04:30.000000"
+                    }
+                },
+                "openstack-acc-tests.novalocal": {
+                    "nova-cert": {
+                        "active": true,
+                        "available": true,
+                        "updated_at": "2018-01-04T04:11:19.000000"
+                    },
                     "nova-conductor": {
                         "active": true,
                         "available": true,
-                        "updated_at": null
-                    }
-                },
-                "consoleauth": {
+                        "updated_at": "2018-01-04T04:11:22.000000"
+                    },
                     "nova-consoleauth": {
                         "active": true,
                         "available": true,
-                        "updated_at": null
-                    }
-                },
-                "network": {
-                    "nova-network": {
-                        "active": true,
-                        "available": true,
-                        "updated_at": "2015-09-18T09:50:55.000000"
-                    }
-                },
-                "scheduler": {
+                        "updated_at": "2018-01-04T04:11:20.000000"
+                    },
                     "nova-scheduler": {
                         "active": true,
                         "available": true,
-                        "updated_at": null
+                        "updated_at": "2018-01-04T04:11:23.000000"
                     }
                 }
             },
@@ -66,11 +82,11 @@ const GetDetailOutput = `
         },
         {
             "hosts": {
-                "compute": {
+                "openstack-acc-tests.novalocal": {
                     "nova-compute": {
                         "active": true,
                         "available": true,
-                        "updated_at": null
+                        "updated_at": "2018-01-04T04:11:23.000000"
                     }
                 }
             },
@@ -80,8 +96,7 @@ const GetDetailOutput = `
             }
         }
     ]
-}
-`
+}`
 
 var OSAZResult = az.OSAvailabilityZone{
 	AvailabilityZoneInfo: []az.AvailabilityZone{
@@ -93,37 +108,52 @@ var OSAZResult = az.OSAvailabilityZone{
 	},
 }
 
-var nilTime time.Time
 var OSAZDetailResult = az.OSAvailabilityZone{
 	AvailabilityZoneInfo: []az.AvailabilityZone{
 		{
 			Hosts: az.Hosts{
-				"conductor": az.Services{
+				"localhost": az.Services{
+					NovaCert: az.StateofService{
+						Active:    true,
+						Available: false,
+						UpdatedAt: time.Date(2017, 10, 14, 17, 3, 39, 0, time.UTC),
+					},
+					NovaConductor: az.StateofService{
+						Active:    true,
+						Available: false,
+						UpdatedAt: time.Date(2017, 10, 14, 17, 4, 9, 0, time.UTC),
+					},
+					NovaConsoleauth: az.StateofService{
+						Active:    true,
+						Available: false,
+						UpdatedAt: time.Date(2017, 10, 14, 17, 4, 18, 0, time.UTC),
+					},
+					NovaScheduler: az.StateofService{
+						Active:    true,
+						Available: false,
+						UpdatedAt: time.Date(2017, 10, 14, 17, 4, 30, 0, time.UTC),
+					},
+				},
+				"openstack-acc-tests.novalocal": az.Services{
+					NovaCert: az.StateofService{
+						Active:    true,
+						Available: true,
+						UpdatedAt: time.Date(2018, 1, 4, 4, 11, 19, 0, time.UTC),
+					},
 					NovaConductor: az.StateofService{
 						Active:    true,
 						Available: true,
-						UpdatedAt: nilTime,
+						UpdatedAt: time.Date(2018, 1, 4, 4, 11, 22, 0, time.UTC),
 					},
-				},
-				"consoleauth": az.Services{
 					NovaConsoleauth: az.StateofService{
 						Active:    true,
 						Available: true,
-						UpdatedAt: nilTime,
+						UpdatedAt: time.Date(2018, 1, 4, 4, 11, 20, 0, time.UTC),
 					},
-				},
-				"network": az.Services{
-					NovaNetwork: az.StateofService{
-						Active:    true,
-						Available: true,
-						UpdatedAt: time.Date(2015, 9, 18, 9, 50, 55, 0, time.UTC),
-					},
-				},
-				"scheduler": az.Services{
 					NovaScheduler: az.StateofService{
 						Active:    true,
 						Available: true,
-						UpdatedAt: nilTime,
+						UpdatedAt: time.Date(2018, 1, 4, 4, 11, 23, 0, time.UTC),
 					},
 				},
 			},
@@ -132,11 +162,11 @@ var OSAZDetailResult = az.OSAvailabilityZone{
 		},
 		{
 			Hosts: az.Hosts{
-				"compute": az.Services{
+				"openstack-acc-tests.novalocal": az.Services{
 					NovaCompute: az.StateofService{
 						Active:    true,
 						Available: true,
-						UpdatedAt: nilTime,
+						UpdatedAt: time.Date(2018, 1, 4, 4, 11, 23, 0, time.UTC),
 					},
 				},
 			},

@@ -49,6 +49,7 @@ type Services struct {
 	NovaNetwork     StateofService `json:"nova-network"`
 	NovaScheduler   StateofService `json:"nova-scheduler"`
 	NovaCompute     StateofService `json:"nova-compute"`
+	NovaCert		StateofService `json:"nova-cert"`
 }
 
 type Hosts map[string]Services
