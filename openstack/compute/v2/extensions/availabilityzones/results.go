@@ -14,11 +14,6 @@ type ServerAvailabilityZoneExt struct {
 	AvailabilityZone string `json:"OS-EXT-AZ:availability_zone"`
 }
 
-// UnmarshalJSON to override default
-func (r *ServerAvailabilityZoneExt) UnmarshalJSON(b []byte) error {
-	return nil
-}
-
 type StateofService struct {
 	Active    bool      `json:"active"`
 	Available bool      `json:"available"`
@@ -49,7 +44,7 @@ type Services struct {
 	NovaNetwork     StateofService `json:"nova-network"`
 	NovaScheduler   StateofService `json:"nova-scheduler"`
 	NovaCompute     StateofService `json:"nova-compute"`
-	NovaCert		StateofService `json:"nova-cert"`
+	NovaCert        StateofService `json:"nova-cert"`
 }
 
 type Hosts map[string]Services
