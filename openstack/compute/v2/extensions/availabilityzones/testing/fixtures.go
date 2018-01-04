@@ -98,81 +98,77 @@ const GetDetailOutput = `
     ]
 }`
 
-var OSAZResult = az.OSAvailabilityZone{
-	AvailabilityZoneInfo: []az.AvailabilityZone{
-		{
-			Hosts:     nil,
-			ZoneName:  "nova",
-			ZoneState: az.ZoneState{Available: true},
-		},
+var AZResult = az.AvailabilityZoneInfo{
+	{
+		Hosts:     nil,
+		ZoneName:  "nova",
+		ZoneState: az.ZoneState{Available: true},
 	},
 }
 
-var OSAZDetailResult = az.OSAvailabilityZone{
-	AvailabilityZoneInfo: []az.AvailabilityZone{
-		{
-			Hosts: az.Hosts{
-				"localhost": az.Services{
-					NovaCert: az.StateofService{
-						Active:    true,
-						Available: false,
-						UpdatedAt: time.Date(2017, 10, 14, 17, 3, 39, 0, time.UTC),
-					},
-					NovaConductor: az.StateofService{
-						Active:    true,
-						Available: false,
-						UpdatedAt: time.Date(2017, 10, 14, 17, 4, 9, 0, time.UTC),
-					},
-					NovaConsoleauth: az.StateofService{
-						Active:    true,
-						Available: false,
-						UpdatedAt: time.Date(2017, 10, 14, 17, 4, 18, 0, time.UTC),
-					},
-					NovaScheduler: az.StateofService{
-						Active:    true,
-						Available: false,
-						UpdatedAt: time.Date(2017, 10, 14, 17, 4, 30, 0, time.UTC),
-					},
+var AZDetailResult = az.AvailabilityZoneInfo{
+	{
+		Hosts: az.Hosts{
+			"localhost": az.Services{
+				NovaCert: az.StateofService{
+					Active:    true,
+					Available: false,
+					UpdatedAt: time.Date(2017, 10, 14, 17, 3, 39, 0, time.UTC),
 				},
-				"openstack-acc-tests.novalocal": az.Services{
-					NovaCert: az.StateofService{
-						Active:    true,
-						Available: true,
-						UpdatedAt: time.Date(2018, 1, 4, 4, 11, 19, 0, time.UTC),
-					},
-					NovaConductor: az.StateofService{
-						Active:    true,
-						Available: true,
-						UpdatedAt: time.Date(2018, 1, 4, 4, 11, 22, 0, time.UTC),
-					},
-					NovaConsoleauth: az.StateofService{
-						Active:    true,
-						Available: true,
-						UpdatedAt: time.Date(2018, 1, 4, 4, 11, 20, 0, time.UTC),
-					},
-					NovaScheduler: az.StateofService{
-						Active:    true,
-						Available: true,
-						UpdatedAt: time.Date(2018, 1, 4, 4, 11, 23, 0, time.UTC),
-					},
+				NovaConductor: az.StateofService{
+					Active:    true,
+					Available: false,
+					UpdatedAt: time.Date(2017, 10, 14, 17, 4, 9, 0, time.UTC),
+				},
+				NovaConsoleauth: az.StateofService{
+					Active:    true,
+					Available: false,
+					UpdatedAt: time.Date(2017, 10, 14, 17, 4, 18, 0, time.UTC),
+				},
+				NovaScheduler: az.StateofService{
+					Active:    true,
+					Available: false,
+					UpdatedAt: time.Date(2017, 10, 14, 17, 4, 30, 0, time.UTC),
 				},
 			},
-			ZoneName:  "internal",
-			ZoneState: az.ZoneState{Available: true},
-		},
-		{
-			Hosts: az.Hosts{
-				"openstack-acc-tests.novalocal": az.Services{
-					NovaCompute: az.StateofService{
-						Active:    true,
-						Available: true,
-						UpdatedAt: time.Date(2018, 1, 4, 4, 11, 23, 0, time.UTC),
-					},
+			"openstack-acc-tests.novalocal": az.Services{
+				NovaCert: az.StateofService{
+					Active:    true,
+					Available: true,
+					UpdatedAt: time.Date(2018, 1, 4, 4, 11, 19, 0, time.UTC),
+				},
+				NovaConductor: az.StateofService{
+					Active:    true,
+					Available: true,
+					UpdatedAt: time.Date(2018, 1, 4, 4, 11, 22, 0, time.UTC),
+				},
+				NovaConsoleauth: az.StateofService{
+					Active:    true,
+					Available: true,
+					UpdatedAt: time.Date(2018, 1, 4, 4, 11, 20, 0, time.UTC),
+				},
+				NovaScheduler: az.StateofService{
+					Active:    true,
+					Available: true,
+					UpdatedAt: time.Date(2018, 1, 4, 4, 11, 23, 0, time.UTC),
 				},
 			},
-			ZoneName:  "nova",
-			ZoneState: az.ZoneState{Available: true},
 		},
+		ZoneName:  "internal",
+		ZoneState: az.ZoneState{Available: true},
+	},
+	{
+		Hosts: az.Hosts{
+			"openstack-acc-tests.novalocal": az.Services{
+				NovaCompute: az.StateofService{
+					Active:    true,
+					Available: true,
+					UpdatedAt: time.Date(2018, 1, 4, 4, 11, 23, 0, time.UTC),
+				},
+			},
+		},
+		ZoneName:  "nova",
+		ZoneState: az.ZoneState{Available: true},
 	},
 }
 

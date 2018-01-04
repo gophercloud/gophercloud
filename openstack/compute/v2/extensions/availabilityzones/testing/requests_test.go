@@ -18,10 +18,10 @@ func TestList(t *testing.T) {
 	allPages, err := az.List(client.ServiceClient()).AllPages()
 	th.AssertNoErr(t, err)
 
-	actual, err := az.ExtractOSAvailabilityZones(allPages)
+	actual, err := az.ExtractAvailabilityZones(allPages)
 	th.AssertNoErr(t, err)
 
-	th.CheckDeepEquals(t, OSAZResult, actual)
+	th.CheckDeepEquals(t, AZResult, actual)
 }
 
 // Verifies that detailed availability zones can be listed correctly
@@ -34,8 +34,8 @@ func TestListDetail(t *testing.T) {
 	allPages, err := az.ListDetail(client.ServiceClient()).AllPages()
 	th.AssertNoErr(t, err)
 
-	actual, err := az.ExtractOSAvailabilityZones(allPages)
+	actual, err := az.ExtractAvailabilityZones(allPages)
 	th.AssertNoErr(t, err)
 
-	th.CheckDeepEquals(t, OSAZDetailResult, actual)
+	th.CheckDeepEquals(t, AZDetailResult, actual)
 }

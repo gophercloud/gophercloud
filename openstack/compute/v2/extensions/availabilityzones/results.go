@@ -64,18 +64,29 @@ type AvailabilityZone struct {
 	ZoneState `json:"zoneState"`
 }
 
-type OSAvailabilityZone struct {
-	// The list of availability zone information
-	AvailabilityZoneInfo []AvailabilityZone `json:"availabilityZoneInfo"`
+// AvailabilityZoneInfo contains list of AvailabilityZone info
+type AvailabilityZoneInfo []AvailabilityZone
+
+func (az *AvailabilityZoneInfo) UnmarshalJSON(b []byte) error {
+	tmp := &struct {
+		AvailabilityZoneInfo []AvailabilityZone `json:"availabilityZoneInfo"`
+	}{}
+
+	if err := json.Unmarshal(b, tmp); err != nil {
+		return err
+	}
+
+	*az = tmp.AvailabilityZoneInfo
+
+	return nil
 }
 
-type OSAvailabilityZonePage struct {
+type AvailabilityZonePage struct {
 	pagination.SinglePageBase
 }
 
-// ExtractOSAvailabilityZones will get the OSAvailabilityZone objects out of the shareTypeAccessResult object.
-func ExtractOSAvailabilityZones(r pagination.Page) (OSAvailabilityZone, error) {
-	var a OSAvailabilityZone
-	err := (r.(OSAvailabilityZonePage)).ExtractInto(&a)
+func ExtractAvailabilityZones(r pagination.Page) (AvailabilityZoneInfo, error) {
+	var a AvailabilityZoneInfo
+	err := (r.(AvailabilityZonePage)).ExtractInto(&a)
 	return a, err
 }
