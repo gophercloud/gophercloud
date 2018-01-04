@@ -336,3 +336,12 @@ func TestFlavorExtraSpecsCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
+
+func TestFlavorExtraSpecDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleExtraSpecDeleteSuccessfully(t)
+
+	res := flavors.DeleteExtraSpec(fake.ServiceClient(), "1", "hw:cpu_policy")
+	th.AssertNoErr(t, res.Err)
+}
