@@ -9,6 +9,31 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+type commonResult struct {
+	gophercloud.Result
+}
+
+// Extract is a function that accepts a result and extracts a subnetpool resource.
+func (r commonResult) Extract() (*SubnetPool, error) {
+	var s struct {
+		SubnetPool *SubnetPool `json:"subnetpool"`
+	}
+	err := r.ExtractInto(&s)
+	return s.SubnetPool, err
+}
+
+// GetResult represents the result of a get operation. Call its Extract
+// method to interpret it as a SubnetPool.
+type GetResult struct {
+	commonResult
+}
+
+// CreateResult represents the result of a create operation. Call its Extract
+// method to interpret it as a SubnetPool.
+type CreateResult struct {
+	commonResult
+}
+
 // SubnetPool represents a Neutron subnetpool.
 // A subnetpool is a pool of addresses from which subnets can be allocated.
 type SubnetPool struct {

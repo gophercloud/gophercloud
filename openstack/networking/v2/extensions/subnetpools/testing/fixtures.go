@@ -143,3 +143,72 @@ var SubnetPool3 = subnetpools.SubnetPool{
 	Shared:         true,
 	UpdatedAt:      "2017-12-28T07:21:27Z",
 }
+
+const SubnetPoolGetResult = `
+{
+    "subnetpool": {
+        "min_prefixlen": "64",
+        "address_scope_id": null,
+        "default_prefixlen": "64",
+        "id": "0a738452-8057-4ad3-89c2-92f6a74afa76",
+        "max_prefixlen": "128",
+        "name": "my-ipv6-pool",
+        "default_quota": 2,
+        "is_default": true,
+        "project_id": "1e2b9857295a4a3e841809ef492812c5",
+        "tenant_id": "1e2b9857295a4a3e841809ef492812c5",
+        "created_at": "2018-01-01T00:00:01",
+        "prefixes": [
+            "2001:db8::a3/64"
+        ],
+        "updated_at": "2018-01-01T00:10:10",
+        "ip_version": 6,
+        "shared": false,
+        "description": "ipv6 prefixes",
+        "revision_number": 2
+    }
+}
+`
+
+const SubnetPoolCreateRequest = `
+{
+    "subnetpool": {
+        "name": "my_ipv4_pool",
+        "prefixes": [
+            "10.10.0.0/16",
+            "10.11.11.0/24"
+        ],
+        "address_scope_id": "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3",
+        "min_prefixlen": 25,
+        "max_prefixlen": 30,
+        "description": "ipv4 prefixes"
+    }
+}
+`
+
+const SubnetPoolCreateResult = `
+{
+    "subnetpool": {
+        "address_scope_id": "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3",
+        "created_at": "2018-01-01T00:00:15Z",
+        "default_prefixlen": "25",
+        "default_quota": null,
+        "description": "ipv4 prefixes",
+        "id": "55b5999c-c2fe-42cd-bce0-961a551b80f5",
+        "ip_version": 4,
+        "is_default": false,
+        "max_prefixlen": "30",
+        "min_prefixlen": "25",
+        "name": "my_ipv4_pool",
+        "prefixes": [
+            "10.10.0.0/16",
+            "10.11.11.0/24"
+        ],
+        "project_id": "1e2b9857295a4a3e841809ef492812c5",
+        "revision_number": 1,
+        "shared": false,
+        "tenant_id": "1e2b9857295a4a3e841809ef492812c5",
+        "updated_at": "2018-01-01T00:00:15Z"
+    }
+}
+`
