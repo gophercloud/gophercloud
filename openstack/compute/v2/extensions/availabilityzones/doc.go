@@ -1,26 +1,44 @@
 /*
-Package availabilityzones provides the ability to extend a server result with
-availability zone information. Example:
+Package availabilityzones provides the ability to get lists and detailed
+availability zone information.
 
-	type ServerWithAZ struct {
-		servers.Server
-		availabilityzones.ServerAvailabilityZoneExt
-	}
+Example of Get Availability Zone Information
 
-	var allServers []ServerWithAZ
-
-	allPages, err := servers.List(client, nil).AllPages()
+	allPages, err := az.List(computeClient).AllPages()
 	if err != nil {
-		panic("Unable to retrieve servers: %s", err)
+		panic(err)
 	}
 
-	err = servers.ExtractServersInto(allPages, &allServers)
+	availabilityZoneInfo, err := az.ExtractAvailabilityZones(allPages)
 	if err != nil {
-		panic("Unable to extract servers: %s", err)
+		panic(err)
 	}
 
-	for _, server := range allServers {
-		fmt.Println(server.AvailabilityZone)
+	for _, zoneInfo := range availabilityZoneInfo {
+		fmt.Printf("Zone name: %s\nAvailable: %v\n", zoneInfo.ZoneName,
+					zoneInfo.ZoneState.Available)
+	}
+
+Example of Get Detailed Availability Zone Information
+
+	allPages, err := az.ListDetail(computeClient).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	availabilityZoneInfo, err := az.ExtractAvailabilityZones(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, zoneInfo := range availabilityZoneInfo {
+		fmt.Printf("Zone name: %s\nAvailable: %v\n", zoneInfo.ZoneName,
+					zoneInfo.ZoneState.Available)
+		for hostname, services := range zoneInfo.Hosts {
+			fmt.Println(hostname)
+			// to be continued ...
+			// cut for brevity :)
+		}
 	}
 */
 package availabilityzones
