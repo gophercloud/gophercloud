@@ -1,7 +1,7 @@
 /*
 Package subnetpools provides the ability to retrieve and manage subnetpools through the Neutron API.
 
-Example of Listing Subnetpools.
+Example of Listing Subnetpools
 
 	listOpts := subnets.ListOpts{
 		IPVersion: 6,
@@ -29,7 +29,7 @@ Example to Get a Subnetpool
 		panic(err)
 	}
 
-Example to Create a new Subnetpool.
+Example to Create a new Subnetpool
 
 	subnetPoolName := "private_pool"
 	subnetPoolPrefixes := []string{
