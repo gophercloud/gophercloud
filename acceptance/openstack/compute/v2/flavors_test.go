@@ -176,6 +176,11 @@ func TestFlavorExtraSpecsCRUD(t *testing.T) {
 	}
 	tools.PrintResource(t, createdExtraSpecs)
 
+	err = flavors.DeleteExtraSpec(client, flavor.ID, "hw:cpu_policy").ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete ExtraSpec: %v\n", err)
+	}
+
 	allExtraSpecs, err := flavors.ListExtraSpecs(client, flavor.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get flavor extra_specs: %v", err)
@@ -189,4 +194,5 @@ func TestFlavorExtraSpecsCRUD(t *testing.T) {
 		}
 		tools.PrintResource(t, spec)
 	}
+
 }
