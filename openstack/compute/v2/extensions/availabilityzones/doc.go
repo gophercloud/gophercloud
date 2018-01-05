@@ -1,44 +1,57 @@
 /*
 Package availabilityzones provides the ability to get lists and detailed
+availability zone information and to extend a server result with
 availability zone information.
+
+Example of Extend server result with Availability Zone Information:
+
+	type ServerWithAZ struct {
+		servers.Server
+		availabilityzones.ServerAvailabilityZoneExt
+	}
+	var allServers []ServerWithAZ
+	allPages, err := servers.List(client, nil).AllPages()
+	if err != nil {
+		panic("Unable to retrieve servers: %s", err)
+	}
+	err = servers.ExtractServersInto(allPages, &allServers)
+	if err != nil {
+		panic("Unable to extract servers: %s", err)
+	}
+	for _, server := range allServers {
+		fmt.Println(server.AvailabilityZone)
+	}
 
 Example of Get Availability Zone Information
 
-	allPages, err := az.List(computeClient).AllPages()
+	allPages, err := availabilityzones.List(computeClient).AllPages()
 	if err != nil {
 		panic(err)
 	}
 
-	availabilityZoneInfo, err := az.ExtractAvailabilityZones(allPages)
+	availabilityZoneInfo, err := availabilityzones.ExtractAvailabilityZones(allPages)
 	if err != nil {
 		panic(err)
 	}
 
 	for _, zoneInfo := range availabilityZoneInfo {
-		fmt.Printf("Zone name: %s\nAvailable: %v\n", zoneInfo.ZoneName,
-					zoneInfo.ZoneState.Available)
+  		fmt.Printf("%+v\n", zoneInfo)
 	}
 
 Example of Get Detailed Availability Zone Information
 
-	allPages, err := az.ListDetail(computeClient).AllPages()
+	allPages, err := availabilityzones.ListDetail(computeClient).AllPages()
 	if err != nil {
 		panic(err)
 	}
 
-	availabilityZoneInfo, err := az.ExtractAvailabilityZones(allPages)
+	availabilityZoneInfo, err := availabilityzones.ExtractAvailabilityZones(allPages)
 	if err != nil {
 		panic(err)
 	}
 
 	for _, zoneInfo := range availabilityZoneInfo {
-		fmt.Printf("Zone name: %s\nAvailable: %v\n", zoneInfo.ZoneName,
-					zoneInfo.ZoneState.Available)
-		for hostname, services := range zoneInfo.Hosts {
-			fmt.Println(hostname)
-			// to be continued ...
-			// cut for brevity :)
-		}
+  		fmt.Printf("%+v\n", zoneInfo)
 	}
 */
 package availabilityzones

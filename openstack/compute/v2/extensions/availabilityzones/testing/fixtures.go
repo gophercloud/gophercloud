@@ -98,7 +98,7 @@ const GetDetailOutput = `
     ]
 }`
 
-var AZResult = az.AvailabilityZoneInfo{
+var AZResult = []az.AvailabilityZone{
 	{
 		Hosts:     nil,
 		ZoneName:  "nova",
@@ -106,48 +106,48 @@ var AZResult = az.AvailabilityZoneInfo{
 	},
 }
 
-var AZDetailResult = az.AvailabilityZoneInfo{
+var AZDetailResult = []az.AvailabilityZone{
 	{
 		Hosts: az.Hosts{
 			"localhost": az.Services{
-				NovaCert: az.StateofService{
+				"nova-cert": az.ServiceState{
 					Active:    true,
 					Available: false,
 					UpdatedAt: time.Date(2017, 10, 14, 17, 3, 39, 0, time.UTC),
 				},
-				NovaConductor: az.StateofService{
+				"nova-conductor": az.ServiceState{
 					Active:    true,
 					Available: false,
 					UpdatedAt: time.Date(2017, 10, 14, 17, 4, 9, 0, time.UTC),
 				},
-				NovaConsoleauth: az.StateofService{
+				"nova-consoleauth": az.ServiceState{
 					Active:    true,
 					Available: false,
 					UpdatedAt: time.Date(2017, 10, 14, 17, 4, 18, 0, time.UTC),
 				},
-				NovaScheduler: az.StateofService{
+				"nova-scheduler": az.ServiceState{
 					Active:    true,
 					Available: false,
 					UpdatedAt: time.Date(2017, 10, 14, 17, 4, 30, 0, time.UTC),
 				},
 			},
 			"openstack-acc-tests.novalocal": az.Services{
-				NovaCert: az.StateofService{
+				"nova-cert": az.ServiceState{
 					Active:    true,
 					Available: true,
 					UpdatedAt: time.Date(2018, 1, 4, 4, 11, 19, 0, time.UTC),
 				},
-				NovaConductor: az.StateofService{
+				"nova-conductor": az.ServiceState{
 					Active:    true,
 					Available: true,
 					UpdatedAt: time.Date(2018, 1, 4, 4, 11, 22, 0, time.UTC),
 				},
-				NovaConsoleauth: az.StateofService{
+				"nova-consoleauth": az.ServiceState{
 					Active:    true,
 					Available: true,
 					UpdatedAt: time.Date(2018, 1, 4, 4, 11, 20, 0, time.UTC),
 				},
-				NovaScheduler: az.StateofService{
+				"nova-scheduler": az.ServiceState{
 					Active:    true,
 					Available: true,
 					UpdatedAt: time.Date(2018, 1, 4, 4, 11, 23, 0, time.UTC),
@@ -160,7 +160,7 @@ var AZDetailResult = az.AvailabilityZoneInfo{
 	{
 		Hosts: az.Hosts{
 			"openstack-acc-tests.novalocal": az.Services{
-				NovaCompute: az.StateofService{
+				"nova-compute": az.ServiceState{
 					Active:    true,
 					Available: true,
 					UpdatedAt: time.Date(2018, 1, 4, 4, 11, 23, 0, time.UTC),
