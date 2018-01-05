@@ -212,3 +212,43 @@ const SubnetPoolCreateResult = `
     }
 }
 `
+
+const SubnetPoolUpdateRequest = `
+{
+    "subnetpool": {
+        "name": "new_subnetpool_name",
+        "prefixes": [
+            "10.11.12.0/24",
+            "10.24.0.0/16"
+        ],
+        "max_prefixlen": 16
+    }
+}
+`
+
+const SubnetPoolUpdateResponse = `
+{
+    "subnetpool": {
+        "address_scope_id": null,
+        "created_at": "2018-01-03T07:21:34Z",
+        "default_prefixlen": 8,
+        "default_quota": null,
+        "description": "private pool",
+        "id": "099546ca-788d-41e5-a76d-17d8cd282d3e",
+        "ip_version": 4,
+        "is_default": true,
+        "max_prefixlen": 16,
+        "min_prefixlen": 8,
+        "name": "new_subnetpool_name",
+        "prefixes": [
+            "10.8.0.0/16",
+            "10.11.12.0/24",
+            "10.24.0.0/16"
+        ],
+        "revision_number": 2,
+        "shared": false,
+        "tenant_id": "1e2b9857295a4a3e841809ef492812c5",
+        "updated_at": "2018-01-05T09:56:56Z"
+    }
+}
+`
