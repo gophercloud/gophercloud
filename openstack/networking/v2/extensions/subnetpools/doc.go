@@ -45,5 +45,20 @@ Example to Create a new Subnetpool.
 	if err != nil {
 		panic(err)
 	}
+
+Example to Update a Subnetpool
+
+	subnetPoolID := "099546ca-788d-41e5-a76d-17d8cd282d3e"
+	updateOpts := networks.UpdateOpts{
+		Prefixes: []string{
+		  "fdf7:b13d:dead:beef::/64",
+	  },
+		MaxPrefixLen: 72,
+	}
+
+	subnetPool, err := subnetpools.Update(networkClient, subnetPoolID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package subnetpools
