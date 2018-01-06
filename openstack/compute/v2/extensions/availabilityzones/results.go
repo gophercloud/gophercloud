@@ -17,7 +17,7 @@ type ServerAvailabilityZoneExt struct {
 type ServiceState struct {
 	Active    bool      `json:"active"`
 	Available bool      `json:"available"`
-	UpdatedAt time.Time `json:"updated_at"`
+	UpdatedAt time.Time `json:"-"`
 }
 
 // UnmarshalJSON to override default
