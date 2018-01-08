@@ -8,12 +8,13 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// ServerExt is an extension to the base Server object
+// ServerAvailabilityZoneExt is an extension to the base Server object.
 type ServerAvailabilityZoneExt struct {
 	// AvailabilityZone is the availabilty zone the server is in.
 	AvailabilityZone string `json:"OS-EXT-AZ:availability_zone"`
 }
 
+// ServiceState represents the state of a service in an AvailabilityZone.
 type ServiceState struct {
 	Active    bool      `json:"active"`
 	Available bool      `json:"available"`
@@ -38,11 +39,14 @@ func (r *ServiceState) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// Services is a map of services contained in an AvailabilityZone.
 type Services map[string]ServiceState
 
+// Hosts is map of hosts/nodes contained in an AvailabilityZone.
+// Each host can have multiple services.
 type Hosts map[string]Services
 
-// The current state of the availability zone
+// ZoneState represents the current state of the availability zone.
 type ZoneState struct {
 	// Returns true if the availability zone is available
 	Available bool `json:"available"`
@@ -61,6 +65,8 @@ type AvailabilityZonePage struct {
 	pagination.SinglePageBase
 }
 
+// ExtractAvailabilityZones returns a slice of AvailabilityZones contained in a
+// single page of results.
 func ExtractAvailabilityZones(r pagination.Page) ([]AvailabilityZone, error) {
 	var s struct {
 		AvailabilityZoneInfo []AvailabilityZone `json:"availabilityZoneInfo"`
