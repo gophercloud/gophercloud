@@ -170,7 +170,7 @@ service_db:
 	th.AssertEquals(t, expectedEnvFilesContent, env.Files[fakeEnvURL])
 	th.AssertEquals(t, expectedDBFilesContent, env.Files[fakeDBURL])
 
-	// Update env's fileMaps to reference to replace relative filenames by absolute URLs.
+	// Update env's fileMaps to replace relative filenames by absolute URLs.
 	env.fileMaps = map[string]string{
 		"my_env.yaml": fakeEnvURL,
 		"my_db.yaml":  fakeDBURL,
