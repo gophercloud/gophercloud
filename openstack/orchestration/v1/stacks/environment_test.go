@@ -138,7 +138,7 @@ service_db:
 	// handler for my_env.yaml
 	th.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "application/jason")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, environmentContent)
 	})
@@ -150,7 +150,7 @@ service_db:
 	// handler for my_db.yaml
 	th.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
-		w.Header().Set("Content-Type", "application/jason")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, dbContent)
 	})
