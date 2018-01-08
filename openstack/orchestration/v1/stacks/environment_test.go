@@ -170,13 +170,20 @@ service_db:
 	th.AssertEquals(t, expectedEnvFilesContent, env.Files[fakeEnvURL])
 	th.AssertEquals(t, expectedDBFilesContent, env.Files[fakeDBURL])
 
+	// Update env's fileMaps to reference to replace relative filenames by absolute URLs.
+	env.fileMaps = map[string]string{
+		"my_env.yaml": fakeEnvURL,
+		"my_db.yaml":  fakeDBURL,
+	}
 	env.fixFileRefs()
+
 	expectedParsed := map[string]interface{}{
-		"resource_registry": "2015-04-30",
-		"My::WP::Server":    fakeEnvURL,
-		"resources": map[string]interface{}{
-			"my_db_server": map[string]interface{}{
-				"OS::DBInstance": fakeDBURL,
+		"resource_registry": map[string]interface{}{
+			"My::WP::Server": fakeEnvURL,
+			"resources": map[string]interface{}{
+				"my_db_server": map[string]interface{}{
+					"OS::DBInstance": fakeDBURL,
+				},
 			},
 		},
 	}
