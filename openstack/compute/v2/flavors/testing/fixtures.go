@@ -78,3 +78,12 @@ func HandleExtraSpecsCreateSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, ExtraSpecsGetBody)
 	})
 }
+
+func HandleExtraSpecDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/flavors/1/os-extra_specs/hw:cpu_policy", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusOK)
+	})
+}

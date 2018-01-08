@@ -231,6 +231,15 @@ func CreateExtraSpecs(client *gophercloud.ServiceClient, flavorID string, opts C
 	return
 }
 
+// DeleteExtraSpec will delete the key-value pair with the given key for the given
+// flavor ID.
+func DeleteExtraSpec(client *gophercloud.ServiceClient, flavorID, key string) (r DeleteExtraSpecResult) {
+	_, r.Err = client.Delete(extraSpecDeleteURL(client, flavorID, key), &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
 // IDFromName is a convienience function that returns a flavor's ID given its
 // name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {

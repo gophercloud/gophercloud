@@ -99,5 +99,12 @@ Example to Get Extra Specs for a Flavor
 
 	fmt.Printf("%+v", extraSpecs)
 
+Example to Delete an Extra Spec for a Flavor
+
+	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
+	err := flavors.DeleteExtraSpec(computeClient, flavorID, "hw:cpu_thread_policy").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package flavors
