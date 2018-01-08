@@ -147,13 +147,18 @@ func TestUpdate(t *testing.T) {
 		fmt.Fprintf(w, SubnetPoolUpdateResponse)
 	})
 
+	nullString := ""
+	nullInt := 0
 	updateOpts := subnetpools.UpdateOpts{
 		Name: "new_subnetpool_name",
 		Prefixes: []string{
 			"10.11.12.0/24",
 			"10.24.0.0/16",
 		},
-		MaxPrefixLen: 16,
+		MaxPrefixLen:   16,
+		AddressScopeID: &nullString,
+		DefaultQuota:   &nullInt,
+		Description:    &nullString,
 	}
 	n, err := subnetpools.Update(fake.ServiceClient(), "099546ca-788d-41e5-a76d-17d8cd282d3e", updateOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -166,4 +171,7 @@ func TestUpdate(t *testing.T) {
 	})
 	th.AssertEquals(t, n.MaxPrefixLen, 16)
 	th.AssertEquals(t, n.ID, "099546ca-788d-41e5-a76d-17d8cd282d3e")
+	th.AssertEquals(t, n.AddressScopeID, "")
+	th.AssertEquals(t, n.DefaultQuota, 0)
+	th.AssertEquals(t, n.Description, "")
 }

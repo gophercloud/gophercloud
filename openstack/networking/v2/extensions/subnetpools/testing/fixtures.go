@@ -221,7 +221,10 @@ const SubnetPoolUpdateRequest = `
             "10.11.12.0/24",
             "10.24.0.0/16"
         ],
-        "max_prefixlen": 16
+        "max_prefixlen": 16,
+        "address_scope_id": "",
+        "default_quota": 0,
+        "description": ""
     }
 }
 `
@@ -233,7 +236,7 @@ const SubnetPoolUpdateResponse = `
         "created_at": "2018-01-03T07:21:34Z",
         "default_prefixlen": 8,
         "default_quota": null,
-        "description": "private pool",
+        "description": null,
         "id": "099546ca-788d-41e5-a76d-17d8cd282d3e",
         "ip_version": 4,
         "is_default": true,

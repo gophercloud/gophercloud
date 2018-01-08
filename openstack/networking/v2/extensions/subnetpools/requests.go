@@ -159,7 +159,7 @@ type UpdateOpts struct {
 
 	// DefaultQuota is the per-project quota on the prefix space
 	// that can be allocated from the subnetpool for project subnets.
-	DefaultQuota int `json:"default_quota,omitempty"`
+	DefaultQuota *int `json:"default_quota,omitempty"`
 
 	// TenantID is the id of the Identity project.
 	TenantID string `json:"tenant_id,omitempty"`
@@ -189,13 +189,13 @@ type UpdateOpts struct {
 	MaxPrefixLen int `json:"max_prefixlen,omitempty"`
 
 	// AddressScopeID is the Neutron address scope to assign to the subnetpool.
-	AddressScopeID string `json:"address_scope_id,omitempty"`
+	AddressScopeID *string `json:"address_scope_id,omitempty"`
 
 	// Description is thehuman-readable description for the resource.
-	Description string `json:"description,omitempty"`
+	Description *string `json:"description,omitempty"`
 
 	// IsDefault indicates if the subnetpool is default pool or not.
-	IsDefault bool `json:"is_default,omitempty"`
+	IsDefault *bool `json:"is_default,omitempty"`
 }
 
 // ToSubnetPoolUpdateMap builds a request body from UpdateOpts.
