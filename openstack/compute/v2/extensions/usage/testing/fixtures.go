@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/simpletenantusage"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/usage"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -83,8 +83,8 @@ func HandleGetSingleTenantSuccessfully(t *testing.T) {
 }
 
 // SingleTenantUsageResults is the code fixture for GetSingleTenant.
-var SingleTenantUsageResults = simpletenantusage.TenantUsage{
-	ServerUsages: []simpletenantusage.ServerUsage{
+var SingleTenantUsageResults = usage.TenantUsage{
+	ServerUsages: []usage.ServerUsage{
 		{
 			Flavor:     "m1.tiny",
 			Hours:      0.021675453333333334,

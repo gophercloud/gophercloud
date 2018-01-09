@@ -1,4 +1,4 @@
-package simpletenantusage
+package usage
 
 import (
 	"net/url"

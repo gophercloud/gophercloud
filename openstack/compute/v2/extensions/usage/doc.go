@@ -24,4 +24,4 @@ Example to Retrieve Usage for a Single Tenant:
     fmt.Printf("%+v\n", usage)
 
 */
-package simpletenantusage
+package usage
