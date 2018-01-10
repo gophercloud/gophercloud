@@ -181,6 +181,15 @@ func TestFlavorExtraSpecsCRUD(t *testing.T) {
 		t.Fatalf("Unable to delete ExtraSpec: %v\n", err)
 	}
 
+	updateOpts := flavors.ExtraSpecsOpts{
+		"hw:cpu_thread_policy": "CPU-THREAD-POLICY-BETTER",
+	}
+	updatedExtraSpec, err := flavors.UpdateExtraSpec(client, flavor.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update flavor extra_specs: %v", err)
+	}
+	tools.PrintResource(t, updatedExtraSpec)
+
 	allExtraSpecs, err := flavors.ListExtraSpecs(client, flavor.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get flavor extra_specs: %v", err)
