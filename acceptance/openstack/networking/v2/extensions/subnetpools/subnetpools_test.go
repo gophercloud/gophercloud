@@ -29,7 +29,7 @@ func TestSubnetPoolsCRUD(t *testing.T) {
 		Name: newName,
 	}
 
-	newSubnetPool, err = subnetpools.Update(client, subnetPool.ID, updateOpts).Extract()
+	newSubnetPool, err := subnetpools.Update(client, subnetPool.ID, updateOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to update the subnetpool: %v", err)
 	}
