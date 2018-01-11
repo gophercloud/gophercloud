@@ -72,6 +72,11 @@ type ErrDefault401 struct {
 	ErrUnexpectedResponseCode
 }
 
+// ErrDefault403 is the default error type returned on a 403 HTTP response code.
+type ErrDefault403 struct {
+	ErrUnexpectedResponseCode
+}
+
 // ErrDefault404 is the default error type returned on a 404 HTTP response code.
 type ErrDefault404 struct {
 	ErrUnexpectedResponseCode
@@ -108,6 +113,9 @@ func (e ErrDefault400) Error() string {
 func (e ErrDefault401) Error() string {
 	return "Authentication failed"
 }
+func (e ErrDefault403) Error() string {
+	return "Forbidden"
+}
 func (e ErrDefault404) Error() string {
 	return "Resource not found"
 }
@@ -139,6 +147,12 @@ type Err400er interface {
 // from a 401 error.
 type Err401er interface {
 	Error401(ErrUnexpectedResponseCode) error
+}
+
+// Err403er is the interface resource error types implement to override the error message
+// from a 403 error.
+type Err403er interface {
+	Error403(ErrUnexpectedResponseCode) error
 }
 
 // Err404er is the interface resource error types implement to override the error message

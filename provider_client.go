@@ -298,6 +298,11 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 			if error401er, ok := errType.(Err401er); ok {
 				err = error401er.Error401(respErr)
 			}
+		case http.StatusForbidden:
+			err = ErrDefault403{respErr}
+			if error403er, ok := errType.(Err403er); ok {
+				err = error403er.Error403(respErr)
+			}
 		case http.StatusNotFound:
 			err = ErrDefault404{respErr}
 			if error404er, ok := errType.(Err404er); ok {
