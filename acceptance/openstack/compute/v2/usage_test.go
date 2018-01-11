@@ -25,10 +25,10 @@ func TestUsageSingleTenant(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	usage, err := usage.ExtractSingleTenant(page)
+	tenantUsage, err := usage.ExtractSingleTenant(page)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	tools.PrintResource(t, usage)
+	tools.PrintResource(t, tenantUsage)
 }
