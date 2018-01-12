@@ -337,6 +337,20 @@ func TestFlavorExtraSpecsCreate(t *testing.T) {
 	th.CheckDeepEquals(t, expected, actual)
 }
 
+func TestFlavorExtraSpecUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleExtraSpecUpdateSuccessfully(t)
+
+	updateOpts := flavors.ExtraSpecsOpts{
+		"hw:cpu_policy": "CPU-POLICY-2",
+	}
+	expected := UpdatedExtraSpec
+	actual, err := flavors.UpdateExtraSpec(fake.ServiceClient(), "1", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
+}
+
 func TestFlavorExtraSpecDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

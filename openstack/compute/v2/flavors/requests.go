@@ -231,6 +231,43 @@ func CreateExtraSpecs(client *gophercloud.ServiceClient, flavorID string, opts C
 	return
 }
 
+// UpdateExtraSpecOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateExtraSpecOptsBuilder interface {
+	ToExtraSpecUpdateMap() (map[string]string, string, error)
+}
+
+// ToExtraSpecUpdateMap assembles a body for an Update request based on the
+// contents of a ExtraSpecOpts.
+func (opts ExtraSpecsOpts) ToExtraSpecUpdateMap() (map[string]string, string, error) {
+	if len(opts) != 1 {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "flavors.ExtraSpecOpts"
+		err.Info = "Must have 1 and only one key-value pair"
+		return nil, "", err
+	}
+
+	var key string
+	for k := range opts {
+		key = k
+	}
+
+	return opts, key, nil
+}
+
+// UpdateExtraSpec will updates the value of the specified flavor's extra spec for the key in opts.
+func UpdateExtraSpec(client *gophercloud.ServiceClient, flavorID string, opts UpdateExtraSpecOptsBuilder) (r UpdateExtraSpecResult) {
+	b, key, err := opts.ToExtraSpecUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Put(extraSpecUpdateURL(client, flavorID, key), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
 // DeleteExtraSpec will delete the key-value pair with the given key for the given
 // flavor ID.
 func DeleteExtraSpec(client *gophercloud.ServiceClient, flavorID, key string) (r DeleteExtraSpecResult) {

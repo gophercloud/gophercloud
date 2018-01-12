@@ -223,6 +223,12 @@ type GetExtraSpecResult struct {
 	extraSpecResult
 }
 
+// UpdateExtraSpecResult contains the result of an Update operation. Call its
+// Extract method to interpret it as a map[string]interface.
+type UpdateExtraSpecResult struct {
+	extraSpecResult
+}
+
 // DeleteExtraSpecResult contains the result of a Delete operation. Call its
 // ExtractErr method to determine if the call succeeded or failed.
 type DeleteExtraSpecResult struct {

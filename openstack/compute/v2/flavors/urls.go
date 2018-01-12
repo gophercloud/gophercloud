@@ -40,6 +40,10 @@ func extraSpecsCreateURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("flavors", id, "os-extra_specs")
 }
 
+func extraSpecUpdateURL(client *gophercloud.ServiceClient, id, key string) string {
+	return client.ServiceURL("flavors", id, "os-extra_specs", key)
+}
+
 func extraSpecDeleteURL(client *gophercloud.ServiceClient, id, key string) string {
 	return client.ServiceURL("flavors", id, "os-extra_specs", key)
 }

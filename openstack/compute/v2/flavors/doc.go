@@ -99,6 +99,20 @@ Example to Get Extra Specs for a Flavor
 
 	fmt.Printf("%+v", extraSpecs)
 
+Example to Update Extra Specs for a Flavor
+
+	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
+
+	updateOpts := flavors.ExtraSpecsOpts{
+		"hw:cpu_thread_policy": "CPU-THREAD-POLICY-UPDATED",
+	}
+	updatedExtraSpec, err := flavors.UpdateExtraSpec(computeClient, flavorID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v", updatedExtraSpec)
+
 Example to Delete an Extra Spec for a Flavor
 
 	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
