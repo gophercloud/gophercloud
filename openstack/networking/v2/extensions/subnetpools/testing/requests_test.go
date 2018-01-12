@@ -129,3 +129,49 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, s.AddressScopeID, "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3")
 	th.AssertEquals(t, s.Description, "ipv4 prefixes")
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/subnetpools/099546ca-788d-41e5-a76d-17d8cd282d3e", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, SubnetPoolUpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, SubnetPoolUpdateResponse)
+	})
+
+	nullString := ""
+	nullInt := 0
+	updateOpts := subnetpools.UpdateOpts{
+		Name: "new_subnetpool_name",
+		Prefixes: []string{
+			"10.11.12.0/24",
+			"10.24.0.0/16",
+		},
+		MaxPrefixLen:   16,
+		AddressScopeID: &nullString,
+		DefaultQuota:   &nullInt,
+		Description:    &nullString,
+	}
+	n, err := subnetpools.Update(fake.ServiceClient(), "099546ca-788d-41e5-a76d-17d8cd282d3e", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.Name, "new_subnetpool_name")
+	th.AssertDeepEquals(t, n.Prefixes, []string{
+		"10.8.0.0/16",
+		"10.11.12.0/24",
+		"10.24.0.0/16",
+	})
+	th.AssertEquals(t, n.MaxPrefixLen, 16)
+	th.AssertEquals(t, n.ID, "099546ca-788d-41e5-a76d-17d8cd282d3e")
+	th.AssertEquals(t, n.AddressScopeID, "")
+	th.AssertEquals(t, n.DefaultQuota, 0)
+	th.AssertEquals(t, n.Description, "")
+}

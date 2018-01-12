@@ -23,6 +23,18 @@ func TestSubnetPoolsCRUD(t *testing.T) {
 	}
 
 	tools.PrintResource(t, subnetPool)
+
+	newName := tools.RandomString("TESTACC-", 8)
+	updateOpts := &subnetpools.UpdateOpts{
+		Name: newName,
+	}
+
+	newSubnetPool, err := subnetpools.Update(client, subnetPool.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update the subnetpool: %v", err)
+	}
+
+	tools.PrintResource(t, newSubnetPool)
 }
 
 func TestSubnetPoolsList(t *testing.T) {
