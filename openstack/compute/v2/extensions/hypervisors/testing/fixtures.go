@@ -143,18 +143,18 @@ var (
 		VCPUsUsed: 0,
 	}
 	HypervisorsStatisticsExpected = hypervisors.HypervisorsStatistics{
-		Count:1,
-		CurrentWorkload:0,
-		DiskAvailableLeast:0,
-		FreeDiskGB:1028,
-		FreeRamMB:7680,
-		LocalGB:1028,
-		LocalGBUsed:0,
-		MemoryMB:8192,
-		MemoryMBUsed:512,
-		RunningVMs:0,
-		VCPUs:2,
-		VCPUsUsed:0,
+		Count:              1,
+		CurrentWorkload:    0,
+		DiskAvailableLeast: 0,
+		FreeDiskGB:         1028,
+		FreeRamMB:          7680,
+		LocalGB:            1028,
+		LocalGBUsed:        0,
+		MemoryMB:           8192,
+		MemoryMBUsed:       512,
+		RunningVMs:         0,
+		VCPUs:              2,
+		VCPUsUsed:          0,
 	}
 )
 

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/gophercloud/gophercloud/pagination"
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // Topology represents a CPU Topology.
@@ -235,12 +235,11 @@ type StatisticsResult struct {
 	gophercloud.Result
 }
 
-
 // Extract interprets any StatisticsResult as a HypervisorsStatistics, if possible.
 func (r StatisticsResult) Extract() (*HypervisorsStatistics, error) {
 	var s struct {
 		Stats HypervisorsStatistics `json:"hypervisor_statistics"`
-		}
+	}
 	err := r.ExtractInto(&s)
 	return &s.Stats, err
 }
