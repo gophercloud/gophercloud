@@ -175,3 +175,17 @@ func TestUpdate(t *testing.T) {
 	th.AssertEquals(t, n.DefaultQuota, 0)
 	th.AssertEquals(t, n.Description, "")
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/subnetpools/099546ca-788d-41e5-a76d-17d8cd282d3e", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := subnetpools.Delete(fake.ServiceClient(), "099546ca-788d-41e5-a76d-17d8cd282d3e")
+	th.AssertNoErr(t, res.Err)
+}

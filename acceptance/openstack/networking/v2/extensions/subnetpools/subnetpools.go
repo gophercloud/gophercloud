@@ -30,3 +30,16 @@ func CreateSubnetPool(t *testing.T, client *gophercloud.ServiceClient) (*subnetp
 	t.Logf("Successfully created the subnetpool.")
 	return subnetPool, nil
 }
+
+// DeleteSubnetPool will delete a subnetpool with a specified ID.
+// A fatal error will occur if the delete was not successful.
+func DeleteSubnetPool(t *testing.T, client *gophercloud.ServiceClient, subnetPoolID string) {
+	t.Logf("Attempting to delete the subnetpool: %s", subnetPoolID)
+
+	err := subnetpools.Delete(client, subnetPoolID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete subnetpool %s: %v", subnetPoolID, err)
+	}
+
+	t.Logf("Deleted subnetpool: %s", subnetPoolID)
+}

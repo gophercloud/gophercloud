@@ -40,6 +40,12 @@ type UpdateResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a delete operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // SubnetPool represents a Neutron subnetpool.
 // A subnetpool is a pool of addresses from which subnets can be allocated.
 type SubnetPool struct {

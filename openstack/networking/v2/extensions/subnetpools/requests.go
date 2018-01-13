@@ -216,3 +216,9 @@ func Update(c *gophercloud.ServiceClient, subnetPoolID string, opts UpdateOptsBu
 	})
 	return
 }
+
+// Delete accepts a unique ID and deletes the subnetpool associated with it.
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(deleteURL(c, id), nil)
+	return
+}
