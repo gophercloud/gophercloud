@@ -11,3 +11,11 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 		return HypervisorPage{pagination.SinglePageBase(r)}
 	})
 }
+
+// Statistics makes a request against the API to get hypervisors statistics.
+func Statistics(client *gophercloud.ServiceClient) (r StatisticsResult) {
+	_, r.Err = client.Get(hypervisorsStatisticsURL(client), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

@@ -30,3 +30,17 @@ func TestHypervisorsList(t *testing.T) {
 		tools.PrintResource(t, h)
 	}
 }
+
+func TestHypervisorsStatistics(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	hypervisorsStats, err := hypervisors.Statistics(client).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get hypervisors statistics: %v", err)
+	}
+
+	tools.PrintResource(t, hypervisorsStats)
+}
