@@ -60,5 +60,13 @@ Example to Update a Subnetpool
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete a Subnetpool
+
+	subnetPoolID := "23d5d3f7-9dfa-4f73-b72b-8b0b0063ec55"
+	err := subnetpools.Delete(networkClient, subnetPoolID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package subnetpools

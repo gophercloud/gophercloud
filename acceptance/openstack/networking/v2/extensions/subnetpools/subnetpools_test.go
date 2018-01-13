@@ -21,6 +21,7 @@ func TestSubnetPoolsCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a subnetpool: %v", err)
 	}
+	defer DeleteSubnetPool(t, client, subnetPool.ID)
 
 	tools.PrintResource(t, subnetPool)
 
