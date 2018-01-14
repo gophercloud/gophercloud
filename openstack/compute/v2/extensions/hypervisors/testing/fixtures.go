@@ -102,6 +102,50 @@ const HypervisorsStatisticsBody = `
 }
 `
 
+const HypervisorGetBody = `
+{
+    "hypervisor":{
+        "cpu_info":{
+            "arch":"x86_64",
+            "model":"Nehalem",
+            "vendor":"Intel",
+            "features":[
+                "pge",
+                "clflush"
+            ],
+            "topology":{
+                "cores":1,
+                "threads":1,
+                "sockets":4
+            }
+        },
+        "current_workload":0,
+        "status":"enabled",
+        "state":"up",
+        "disk_available_least":0,
+        "host_ip":"1.1.1.1",
+        "free_disk_gb":1028,
+        "free_ram_mb":7680,
+        "hypervisor_hostname":"fake-mini",
+        "hypervisor_type":"fake",
+        "hypervisor_version":2002000,
+        "id":1,
+        "local_gb":1028,
+        "local_gb_used":0,
+        "memory_mb":8192,
+        "memory_mb_used":512,
+        "running_vms":0,
+        "service":{
+            "host":"e6a37ee802d74863ab8b91ade8f12a67",
+            "id":2,
+            "disabled_reason":null
+        },
+        "vcpus":1,
+        "vcpus_used":0
+    }
+}
+`
+
 var (
 	HypervisorFake = hypervisors.Hypervisor{
 		CPUInfo: hypervisors.CPUInfo{
@@ -175,5 +219,15 @@ func HandleHypervisorListSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, HypervisorListBody)
+	})
+}
+
+func HandleHypervisorGetSuccessfully(t *testing.T) {
+	testhelper.Mux.HandleFunc("/os-hypervisors/"+string(HypervisorFake.ID), func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, HypervisorGetBody)
 	})
 }
