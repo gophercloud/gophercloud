@@ -37,7 +37,7 @@ func TestHypervisorsStatistics(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	hypervisorsStats, err := hypervisors.Statistics(client).Extract()
+	hypervisorsStats, err := hypervisors.GetStatistics(client).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get hypervisors statistics: %v", err)
 	}

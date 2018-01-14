@@ -191,9 +191,9 @@ func ExtractHypervisors(p pagination.Page) ([]Hypervisor, error) {
 	return h.Hypervisors, err
 }
 
-// HypervisorsStatistics represents a summary statistics for all enabled
+// Statistics represents a summary statistics for all enabled
 // hypervisors over all compute nodes in the OpenStack cloud.
-type HypervisorsStatistics struct {
+type Statistics struct {
 	// The number of hypervisors.
 	Count int `json:"count"`
 
@@ -235,10 +235,10 @@ type StatisticsResult struct {
 	gophercloud.Result
 }
 
-// Extract interprets any StatisticsResult as a HypervisorsStatistics, if possible.
-func (r StatisticsResult) Extract() (*HypervisorsStatistics, error) {
+// Extract interprets any StatisticsResult as a Statistics, if possible.
+func (r StatisticsResult) Extract() (*Statistics, error) {
 	var s struct {
-		Stats HypervisorsStatistics `json:"hypervisor_statistics"`
+		Stats Statistics `json:"hypervisor_statistics"`
 	}
 	err := r.ExtractInto(&s)
 	return &s.Stats, err

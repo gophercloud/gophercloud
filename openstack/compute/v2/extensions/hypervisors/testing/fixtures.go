@@ -142,7 +142,7 @@ var (
 		VCPUs:     1,
 		VCPUsUsed: 0,
 	}
-	HypervisorsStatisticsExpected = hypervisors.HypervisorsStatistics{
+	HypervisorsStatisticsExpected = hypervisors.Statistics{
 		Count:              1,
 		CurrentWorkload:    0,
 		DiskAvailableLeast: 0,

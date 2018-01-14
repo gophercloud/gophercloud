@@ -59,7 +59,7 @@ func TestHypervisorsStatistics(t *testing.T) {
 
 	expected := HypervisorsStatisticsExpected
 
-	actual, err := hypervisors.Statistics(client.ServiceClient()).Extract()
+	actual, err := hypervisors.GetStatistics(client.ServiceClient()).Extract()
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }

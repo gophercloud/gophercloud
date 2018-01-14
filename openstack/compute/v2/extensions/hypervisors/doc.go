@@ -20,7 +20,7 @@ Example of Retrieving Details of All Hypervisors
 
 Example of Show Hypervisor Statistics
 
-	hypervisorsStatistics, err := hypervisors.Statistics(computeClient).Extract()
+	hypervisorsStatistics, err := hypervisors.GetStatistics(computeClient).Extract()
 	if err != nil {
 		panic(err)
 	}
