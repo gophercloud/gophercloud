@@ -19,3 +19,11 @@ func GetStatistics(client *gophercloud.ServiceClient) (r StatisticsResult) {
 	})
 	return
 }
+
+// Get makes a request against the API to get details for specific hypervisor.
+func Get(client *gophercloud.ServiceClient, hypervisorID int) (r HypervisorResult) {
+	_, r.Err = client.Get(hypervisorsGetURL(client, hypervisorID), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
