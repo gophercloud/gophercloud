@@ -114,7 +114,11 @@ func (e ErrDefault401) Error() string {
 	return "Authentication failed"
 }
 func (e ErrDefault403) Error() string {
-	return "Forbidden"
+	e.DefaultErrString = fmt.Sprintf(
+		"Request forbidden: [%s %s], error message: %s",
+		e.Method, e.URL, e.Body,
+	)
+	return e.choseErrString()
 }
 func (e ErrDefault404) Error() string {
 	return "Resource not found"
