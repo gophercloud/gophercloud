@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/services"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -66,11 +67,11 @@ const ServiceListBody = `
 var FirstFakeService = services.Service{
 	Binary:         "nova-scheduler",
 	DisabledReason: "test1",
-	ForcedDown:     false,
 	Host:           "host1",
 	ID:             1,
 	State:          "up",
 	Status:         "disabled",
+	UpdatedAt:      time.Date(2012, 10, 29, 13, 42, 2, 0, time.UTC),
 	Zone:           "internal",
 }
 
@@ -78,11 +79,11 @@ var FirstFakeService = services.Service{
 var SecondFakeService = services.Service{
 	Binary:         "nova-compute",
 	DisabledReason: "test2",
-	ForcedDown:     false,
 	Host:           "host1",
 	ID:             2,
 	State:          "up",
 	Status:         "disabled",
+	UpdatedAt:      time.Date(2012, 10, 29, 13, 42, 5, 0, time.UTC),
 	Zone:           "nova",
 }
 
@@ -90,11 +91,11 @@ var SecondFakeService = services.Service{
 var ThirdFakeService = services.Service{
 	Binary:         "nova-scheduler",
 	DisabledReason: "",
-	ForcedDown:     false,
 	Host:           "host2",
 	ID:             3,
 	State:          "down",
 	Status:         "enabled",
+	UpdatedAt:      time.Date(2012, 9, 19, 6, 55, 34, 0, time.UTC),
 	Zone:           "internal",
 }
 
@@ -102,11 +103,11 @@ var ThirdFakeService = services.Service{
 var FourthFakeService = services.Service{
 	Binary:         "nova-compute",
 	DisabledReason: "test4",
-	ForcedDown:     false,
 	Host:           "host2",
 	ID:             4,
 	State:          "down",
 	Status:         "disabled",
+	UpdatedAt:      time.Date(2012, 9, 18, 8, 3, 38, 0, time.UTC),
 	Zone:           "nova",
 }
 

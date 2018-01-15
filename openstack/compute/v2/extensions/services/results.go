@@ -1,6 +1,12 @@
 package services
 
-import "github.com/gophercloud/gophercloud/pagination"
+import (
+	"encoding/json"
+	"time"
+
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
 
 // Service represents a Compute service in the OpenStack cloud.
 type Service struct {
@@ -9,9 +15,6 @@ type Service struct {
 
 	// The reason for disabling a service.
 	DisabledReason string `json:"disabled_reason"`
-
-	// Whether or not this service was forced down manually by an administrator.
-	ForcedDown bool `json:"forced_down"`
 
 	// The name of the host.
 	Host string `json:"host"`
@@ -25,8 +28,29 @@ type Service struct {
 	// The status of the service. One of enabled or disabled.
 	Status string `json:"status"`
 
+	// The date and time when the resource was updated.
+	UpdatedAt time.Time `json:"-"`
+
 	// The availability zone name.
 	Zone string `json:"zone"`
+}
+
+// UnmarshalJSON to override default
+func (r *Service) UnmarshalJSON(b []byte) error {
+	type tmp Service
+	var s struct {
+		tmp
+		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Service(s.tmp)
+
+	r.UpdatedAt = time.Time(s.UpdatedAt)
+
+	return nil
 }
 
 // ServicePage represents a single page of all Services from a List request.
