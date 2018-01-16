@@ -10,6 +10,6 @@ func hypervisorsStatisticsURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("os-hypervisors", "statistics")
 }
 
-func hypervisorsGetURL(c *gophercloud.ServiceClient, hypervisorID int) string {
-	return c.ServiceURL("os-hypervisors", string(hypervisorID))
+func hypervisorsGetURL(c *gophercloud.ServiceClient, hypervisorID string) string {
+	return c.ServiceURL("os-hypervisors", hypervisorID)
 }

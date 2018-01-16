@@ -1,6 +1,8 @@
 package hypervisors
 
 import (
+	"strconv"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -22,7 +24,8 @@ func GetStatistics(client *gophercloud.ServiceClient) (r StatisticsResult) {
 
 // Get makes a request against the API to get details for specific hypervisor.
 func Get(client *gophercloud.ServiceClient, hypervisorID int) (r HypervisorResult) {
-	_, r.Err = client.Get(hypervisorsGetURL(client, hypervisorID), &r.Body, &gophercloud.RequestOpts{
+	v := strconv.Itoa(hypervisorID)
+	_, r.Err = client.Get(hypervisorsGetURL(client, v), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	return

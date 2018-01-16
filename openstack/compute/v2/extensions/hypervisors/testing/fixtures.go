@@ -3,6 +3,7 @@ package testing
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/hypervisors"
@@ -223,7 +224,8 @@ func HandleHypervisorListSuccessfully(t *testing.T) {
 }
 
 func HandleHypervisorGetSuccessfully(t *testing.T) {
-	testhelper.Mux.HandleFunc("/os-hypervisors/"+string(HypervisorFake.ID), func(w http.ResponseWriter, r *http.Request) {
+	v := strconv.Itoa(HypervisorFake.ID)
+	testhelper.Mux.HandleFunc("/os-hypervisors/"+v, func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
 		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
