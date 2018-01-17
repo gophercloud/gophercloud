@@ -147,6 +147,18 @@ const HypervisorGetBody = `
 }
 `
 
+const HypervisorUptimeBody = `
+{
+    "hypervisor": {
+        "hypervisor_hostname": "fake-mini",
+        "id": 1,
+        "state": "up",
+        "status": "enabled",
+        "uptime": " 08:32:11 up 93 days, 18:25, 12 users,  load average: 0.20, 0.12, 0.14"
+    }
+}
+`
+
 var (
 	HypervisorFake = hypervisors.Hypervisor{
 		CPUInfo: hypervisors.CPUInfo{
@@ -201,6 +213,13 @@ var (
 		VCPUs:              2,
 		VCPUsUsed:          0,
 	}
+	HypervisorUptimeExpected = hypervisors.Uptime{
+		HypervisorHostname: "fake-mini",
+		ID:                 1,
+		State:              "up",
+		Status:             "enabled",
+		Uptime:             " 08:32:11 up 93 days, 18:25, 12 users,  load average: 0.20, 0.12, 0.14",
+	}
 )
 
 func HandleHypervisorsStatisticsSuccessfully(t *testing.T) {
@@ -231,5 +250,16 @@ func HandleHypervisorGetSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, HypervisorGetBody)
+	})
+}
+
+func HandleHypervisorUptimeSuccessfully(t *testing.T) {
+	v := strconv.Itoa(HypervisorFake.ID)
+	testhelper.Mux.HandleFunc("/os-hypervisors/"+v+"/uptime", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, HypervisorUptimeBody)
 	})
 }
