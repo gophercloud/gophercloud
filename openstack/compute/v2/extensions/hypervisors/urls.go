@@ -13,3 +13,7 @@ func hypervisorsStatisticsURL(c *gophercloud.ServiceClient) string {
 func hypervisorsGetURL(c *gophercloud.ServiceClient, hypervisorID string) string {
 	return c.ServiceURL("os-hypervisors", hypervisorID)
 }
+
+func hypervisorsUptimeURL(c *gophercloud.ServiceClient, hypervisorID string) string {
+	return c.ServiceURL("os-hypervisors", hypervisorID, "uptime")
+}

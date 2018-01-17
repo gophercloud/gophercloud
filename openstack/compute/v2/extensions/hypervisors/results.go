@@ -256,3 +256,35 @@ func (r StatisticsResult) Extract() (*Statistics, error) {
 	err := r.ExtractInto(&s)
 	return &s.Stats, err
 }
+
+// Uptime represents uptime and additional info for a specific hypervisor.
+type Uptime struct {
+	// The hypervisor host name provided by the Nova virt driver.
+	// For the Ironic driver, it is the Ironic node uuid.
+	HypervisorHostname string `json:"hypervisor_hostname"`
+
+	// The id of the hypervisor.
+	ID int `json:"id"`
+
+	// The state of the hypervisor. One of up or down.
+	State string `json:"state"`
+
+	// The status of the hypervisor. One of enabled or disabled.
+	Status string `json:"status"`
+
+	// The total uptime of the hypervisor and information about average load.
+	Uptime string `json:"uptime"`
+}
+
+type UptimeResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any UptimeResult as a Uptime, if possible.
+func (r UptimeResult) Extract() (*Uptime, error) {
+	var s struct {
+		Uptime Uptime `json:"hypervisor"`
+	}
+	err := r.ExtractInto(&s)
+	return &s.Uptime, err
+}

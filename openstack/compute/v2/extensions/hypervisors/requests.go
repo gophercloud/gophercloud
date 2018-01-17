@@ -30,3 +30,12 @@ func Get(client *gophercloud.ServiceClient, hypervisorID int) (r HypervisorResul
 	})
 	return
 }
+
+// GetUptime makes a request against the API to get uptime for specific hypervisor.
+func GetUptime(client *gophercloud.ServiceClient, hypervisorID int) (r UptimeResult) {
+	v := strconv.Itoa(hypervisorID)
+	_, r.Err = client.Get(hypervisorsUptimeURL(client, v), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

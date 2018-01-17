@@ -37,5 +37,15 @@ Example of Show Hypervisor Statistics
 
 	fmt.Printf("%+v\n", hypervisorsStatistics)
 
+Example of Show Hypervisor Uptime
+
+	hypervisorID := 42
+	hypervisorUptime, err := hypervisors.GetUptime(computeClient, hypervisorID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v\n", hypervisorUptime)
+
 */
 package hypervisors
