@@ -52,7 +52,7 @@ func TestHypervisorsGet(t *testing.T) {
 	tools.PrintResource(t, hypervisor)
 }
 
-func TestHypervisorsStatistics(t *testing.T) {
+func TestHypervisorsGetStatistics(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -64,6 +64,25 @@ func TestHypervisorsStatistics(t *testing.T) {
 	}
 
 	tools.PrintResource(t, hypervisorsStats)
+}
+
+func TestHypervisorsGetUptime(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	hypervisorID, err := getHypervisorID(t, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	hypervisor, err := hypervisors.GetUptime(client, hypervisorID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to hypervisor uptime: %v", err)
+	}
+
+	tools.PrintResource(t, hypervisor)
 }
 
 func getHypervisorID(t *testing.T, client *gophercloud.ServiceClient) (int, error) {
