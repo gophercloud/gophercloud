@@ -1,6 +1,16 @@
 /*
-Package hypervisors returns details about the hypervisors and shows
-summary statistics for all hypervisors over all compute nodes in the OpenStack cloud.
+Package hypervisors returns details about list of hypervisors, shows details for a hypervisor
+and shows summary statistics for all hypervisors over all compute nodes in the OpenStack cloud.
+
+Example of Show Hypervisor Details
+
+	hypervisorID := 42
+	hypervisor, err := hypervisors.Get(computeClient, 42).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v\n", hypervisor)
 
 Example of Retrieving Details of All Hypervisors
 

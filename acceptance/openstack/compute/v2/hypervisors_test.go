@@ -3,8 +3,10 @@
 package v2
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/hypervisors"
@@ -31,6 +33,25 @@ func TestHypervisorsList(t *testing.T) {
 	}
 }
 
+func TestHypervisorsGet(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	hypervisorID, err := getHypervisorID(t, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	hypervisor, err := hypervisors.Get(client, hypervisorID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get hypervisor: %v", err)
+	}
+
+	tools.PrintResource(t, hypervisor)
+}
+
 func TestHypervisorsStatistics(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
@@ -43,4 +64,22 @@ func TestHypervisorsStatistics(t *testing.T) {
 	}
 
 	tools.PrintResource(t, hypervisorsStats)
+}
+
+func getHypervisorID(t *testing.T, client *gophercloud.ServiceClient) (int, error) {
+	allPages, err := hypervisors.List(client).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list hypervisors: %v", err)
+	}
+
+	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract hypervisors")
+	}
+
+	for _, h := range allHypervisors {
+		return h.ID, nil
+	}
+
+	return 0, fmt.Errorf("Unable to get hypervisor ID")
 }

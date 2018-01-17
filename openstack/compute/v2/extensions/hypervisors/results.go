@@ -191,6 +191,19 @@ func ExtractHypervisors(p pagination.Page) ([]Hypervisor, error) {
 	return h.Hypervisors, err
 }
 
+type HypervisorResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any HypervisorResult as a Hypervisor, if possible.
+func (r HypervisorResult) Extract() (*Hypervisor, error) {
+	var s struct {
+		Hypervisor Hypervisor `json:"hypervisor"`
+	}
+	err := r.ExtractInto(&s)
+	return &s.Hypervisor, err
+}
+
 // Statistics represents a summary statistics for all enabled
 // hypervisors over all compute nodes in the OpenStack cloud.
 type Statistics struct {
