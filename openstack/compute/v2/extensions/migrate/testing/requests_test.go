@@ -26,11 +26,12 @@ func TestLiveMigrate(t *testing.T) {
 
 	mockLiveMigrateResponse(t, serverID)
 
+	host := "01c0cadef72d47e28a672a76060d492c"
 	blockMigration := false
 	diskOverCommit := true
 
 	migrationOpts := migrate.LiveMigrateOpts{
-		Host:           "01c0cadef72d47e28a672a76060d492c",
+		Host:           &host,
 		BlockMigration: &blockMigration,
 		DiskOverCommit: &diskOverCommit,
 	}

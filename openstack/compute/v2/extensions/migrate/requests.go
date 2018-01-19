@@ -21,7 +21,7 @@ type LiveMigrateOpts struct {
 
 	// The host to which to migrate the server.
 	// If this parameter is None, the scheduler chooses a host.
-	Host string `json:"host,omitempty"`
+	Host *string `json:"host"`
 
 	// Set to True to migrate local disks by using block migration.
 	// If the source or destination host uses shared storage and you set

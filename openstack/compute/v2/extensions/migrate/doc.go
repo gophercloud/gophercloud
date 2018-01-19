@@ -13,10 +13,11 @@ Example of Migrate Server (migrate Action)
 Example of Live-Migrate Server (os-migrateLive Action)
 
 	serverID := "b16ba811-199d-4ffd-8839-ba96c1185a67"
+	host := "01c0cadef72d47e28a672a76060d492c"
 	blockMigration := false
 
 	migrationOpts := migrate.LiveMigrateOpts{
-		Host: "01c0cadef72d47e28a672a76060d492c",
+		Host: &host,
 		BlockMigration: &blockMigration,
 	}
 
