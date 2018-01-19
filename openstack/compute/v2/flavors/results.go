@@ -158,9 +158,15 @@ type accessResult struct {
 	gophercloud.Result
 }
 
-// AddAccessResult is the response of an AddAccess operations. Call its
+// AddAccessResult is the response of an AddAccess operation. Call its
 // Extract method to interpret it as a slice of FlavorAccess.
 type AddAccessResult struct {
+	accessResult
+}
+
+// RemoveAccessResult is the response of a RemoveAccess operation. Call its
+// Extract method to interpret it as a slice of FlavorAccess.
+type RemoveAccessResult struct {
 	accessResult
 }
 

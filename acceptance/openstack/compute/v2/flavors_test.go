@@ -152,6 +152,19 @@ func TestFlavorAccessCRUD(t *testing.T) {
 	for _, access := range accessList {
 		tools.PrintResource(t, access)
 	}
+
+	removeAccessOpts := flavors.RemoveAccessOpts{
+		Tenant: project.ID,
+	}
+
+	accessList, err = flavors.RemoveAccess(client, flavor.ID, removeAccessOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to remove access to flavor: %v", err)
+	}
+
+	for _, access := range accessList {
+		tools.PrintResource(t, access)
+	}
 }
 
 func TestFlavorExtraSpecsCRUD(t *testing.T) {

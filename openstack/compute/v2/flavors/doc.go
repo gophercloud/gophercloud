@@ -73,6 +73,19 @@ Example to Grant Access to a Flavor
 		panic(err)
 	}
 
+Example to Remove/Revoke Access to a Flavor
+
+	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
+
+	accessOpts := flavors.RemoveAccessOpts{
+		Tenant: "15153a0979884b59b0592248ef947921",
+	}
+
+	accessList, err := flavors.RemoveAccess(computeClient, flavor.ID, accessOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Create Extra Specs for a Flavor
 
 	flavorID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
