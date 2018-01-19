@@ -75,3 +75,15 @@ func TestGetHypervisor(t *testing.T) {
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }
+
+func TestHypervisorsUptime(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+	HandleHypervisorUptimeSuccessfully(t)
+
+	expected := HypervisorUptimeExpected
+
+	actual, err := hypervisors.GetUptime(client.ServiceClient(), HypervisorFake.ID).Extract()
+	testhelper.AssertNoErr(t, err)
+	testhelper.CheckDeepEquals(t, &expected, actual)
+}
