@@ -36,7 +36,7 @@ func TestLiveMigrate(t *testing.T) {
 	}
 
 	if !choices.LiveMigrate {
-		t.Skip()
+		t.Skip("Testing of live migration is disabled")
 	}
 
 	client, err := clients.NewComputeV2Client()
