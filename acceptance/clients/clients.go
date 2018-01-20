@@ -6,6 +6,7 @@ package clients
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/gophercloud/gophercloud"
@@ -42,6 +43,9 @@ type AcceptanceTestChoices struct {
 
 	// DBDatastoreTypeID is the datastore type version for DB tests.
 	DBDatastoreVersion string
+
+	// LiveMigrate indicates ability to run multi-node migration tests
+	LiveMigrate bool
 }
 
 // AcceptanceTestChoicesFromEnv populates a ComputeChoices struct from environment variables.
@@ -56,6 +60,7 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	shareNetworkID := os.Getenv("OS_SHARE_NETWORK_ID")
 	dbDatastoreType := os.Getenv("OS_DB_DATASTORE_TYPE")
 	dbDatastoreVersion := os.Getenv("OS_DB_DATASTORE_VERSION")
+	liveMigrate := os.Getenv("OS_LIVE_MIGRATE")
 
 	missing := make([]string, 0, 3)
 	if imageID == "" {
@@ -84,6 +89,8 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 		notDistinct = "OS_FLAVOR_ID and OS_FLAVOR_ID_RESIZE must be distinct."
 	}
 
+	LiveMigrate, _ := strconv.ParseBool(liveMigrate)
+
 	if len(missing) > 0 || notDistinct != "" {
 		text := "You're missing some important setup:\n"
 		if len(missing) > 0 {
@@ -106,6 +113,7 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 		ShareNetworkID:     shareNetworkID,
 		DBDatastoreType:    dbDatastoreType,
 		DBDatastoreVersion: dbDatastoreVersion,
+		LiveMigrate:        LiveMigrate,
 	}, nil
 }
 

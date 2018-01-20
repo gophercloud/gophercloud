@@ -18,7 +18,6 @@ type LiveMigrateOptsBuilder interface {
 
 // LiveMigrateOpts specifies parameters of live migrate action.
 type LiveMigrateOpts struct {
-
 	// The host to which to migrate the server.
 	// If this parameter is None, the scheduler chooses a host.
 	Host *string `json:"host"`
