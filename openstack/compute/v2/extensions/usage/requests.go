@@ -12,7 +12,7 @@ import (
 func SingleTenant(client *gophercloud.ServiceClient, tenantID string, opts SingleTenantOptsBuilder) pagination.Pager {
 	url := getTenantURL(client, tenantID)
 	if opts != nil {
-		query, err := opts.ToSingleTenantQuery()
+		query, err := opts.ToUsageSingleTenantQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
@@ -35,11 +35,11 @@ type SingleTenantOpts struct {
 // SingleTenantOptsBuilder allows extensions to add additional parameters to the
 // SingleTenant request.
 type SingleTenantOptsBuilder interface {
-	ToSingleTenantQuery() (string, error)
+	ToUsageSingleTenantQuery() (string, error)
 }
 
-// ToSingleTenantQuery formats a SingleTenantOpts into a query string.
-func (opts SingleTenantOpts) ToSingleTenantQuery() (string, error) {
+// ToUsageSingleTenantQuery formats a SingleTenantOpts into a query string.
+func (opts SingleTenantOpts) ToUsageSingleTenantQuery() (string, error) {
 	params := make(url.Values)
 	if opts.Start != nil {
 		params.Add("start", opts.Start.Format(gophercloud.RFC3339MilliNoZ))

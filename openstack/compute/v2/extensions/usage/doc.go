@@ -16,12 +16,12 @@ Example to Retrieve Usage for a Single Tenant:
         panic(err)
     }
 
-    usage, err := usage.ExtractSingleTenant(page)
+    tenantUsage, err := usage.ExtractSingleTenant(page)
     if err != nil {
         panic(err)
     }
 
-    fmt.Printf("%+v\n", usage)
+    fmt.Printf("%+v\n", tenantUsage)
 
 */
 package usage
