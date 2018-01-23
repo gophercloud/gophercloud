@@ -15,7 +15,7 @@ func TestListServices(t *testing.T) {
 	HandleListSuccessfully(t)
 
 	pages := 0
-	err := services.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := services.List(client.ServiceClient(), services.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := services.ExtractServices(page)

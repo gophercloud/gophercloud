@@ -16,7 +16,7 @@ func TestServicesList(t *testing.T) {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	allPages, err := services.List(blockClient).AllPages()
+	allPages, err := services.List(blockClient, services.ListOpts{}).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to list services: %v", err)
 	}
