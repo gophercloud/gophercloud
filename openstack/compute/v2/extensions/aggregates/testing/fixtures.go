@@ -3,6 +3,7 @@ package testing
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"testing"
 	"time"
 
@@ -91,6 +92,8 @@ var CreatedAggregate = aggregates.Aggregate{
 	UpdatedAt:        time.Time{},
 }
 
+var AggregateIDtoDelete = 1
+
 // HandleListSuccessfully configures the test server to respond to a List request.
 func HandleListSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/os-aggregates", func(w http.ResponseWriter, r *http.Request) {
@@ -109,5 +112,15 @@ func HandleCreateSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, AggregateCreateBody)
+	})
+}
+
+func HandleDeleteSuccessfully(t *testing.T) {
+	v := strconv.Itoa(AggregateIDtoDelete)
+	th.Mux.HandleFunc("/os-aggregates/"+v, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
