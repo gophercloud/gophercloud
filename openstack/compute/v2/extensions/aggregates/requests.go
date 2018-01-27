@@ -27,6 +27,7 @@ func (opts CreateOpts) ToAggregatesCreateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "aggregate")
 }
 
+// Create makes a request against the API to create an aggregate.
 func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
 	b, err := opts.ToAggregatesCreateMap()
 	if err != nil {
