@@ -14,7 +14,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 
 type CreateOpts struct {
 	// The name of the host aggregate.
-	Name string `json:"name"`
+	Name string `json:"name" required:"true"`
 
 	// The availability zone of the host aggregate.
 	// You should use a custom availability zone rather than

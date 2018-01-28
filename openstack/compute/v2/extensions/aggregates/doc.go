@@ -1,5 +1,5 @@
 /*
-Package aggregates creates aggregates and returns information about the host aggregates in the
+Package aggregates manages information about the host aggregates in the
 OpenStack cloud.
 
 Example of Create an aggregate
