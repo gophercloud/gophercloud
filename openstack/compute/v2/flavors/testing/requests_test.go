@@ -37,7 +37,8 @@ func TestListFlavors(t *testing.T) {
 								"disk": 1,
 								"ram": 512,
 								"swap":"",
-								"os-flavor-access:is_public": true
+								"os-flavor-access:is_public": true,
+								"OS-FLV-EXT-DATA:ephemeral": 10
 							},
 							{
 								"id": "2",
@@ -46,7 +47,8 @@ func TestListFlavors(t *testing.T) {
 								"disk": 20,
 								"ram": 2048,
 								"swap": 1000,
-								"os-flavor-access:is_public": true
+								"os-flavor-access:is_public": true,
+								"OS-FLV-EXT-DATA:ephemeral": 0
 							},
 							{
 								"id": "3",
@@ -55,7 +57,8 @@ func TestListFlavors(t *testing.T) {
 								"disk": 40,
 								"ram": 4096,
 								"swap": 1000,
-								"os-flavor-access:is_public": false
+								"os-flavor-access:is_public": false,
+								"OS-FLV-EXT-DATA:ephemeral": 0
 							}
 						],
 						"flavors_links": [
@@ -84,9 +87,9 @@ func TestListFlavors(t *testing.T) {
 		}
 
 		expected := []flavors.Flavor{
-			{ID: "1", Name: "m1.tiny", VCPUs: 1, Disk: 1, RAM: 512, Swap: 0, IsPublic: true},
-			{ID: "2", Name: "m1.small", VCPUs: 1, Disk: 20, RAM: 2048, Swap: 1000, IsPublic: true},
-			{ID: "3", Name: "m1.medium", VCPUs: 2, Disk: 40, RAM: 4096, Swap: 1000, IsPublic: false},
+			{ID: "1", Name: "m1.tiny", VCPUs: 1, Disk: 1, RAM: 512, Swap: 0, IsPublic: true, Ephemeral: 10},
+			{ID: "2", Name: "m1.small", VCPUs: 1, Disk: 20, RAM: 2048, Swap: 1000, IsPublic: true, Ephemeral: 0},
+			{ID: "3", Name: "m1.medium", VCPUs: 2, Disk: 40, RAM: 4096, Swap: 1000, IsPublic: false, Ephemeral: 0},
 		}
 
 		if !reflect.DeepEqual(expected, actual) {
