@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/aggregates"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -44,6 +45,20 @@ const AggregateListBody = `
 }
 `
 
+const AggregateCreateBody = `
+{
+    "aggregate": {
+        "availability_zone": "london",
+        "created_at": "2016-12-27T22:51:32.000000",
+        "deleted": false,
+        "deleted_at": null,
+        "id": 32,
+        "name": "name",
+        "updated_at": null
+    }
+}
+`
+
 // First aggregate from the AggregateListBody
 var FirstFakeAggregate = aggregates.Aggregate{
 	AvailabilityZone: "",
@@ -51,6 +66,8 @@ var FirstFakeAggregate = aggregates.Aggregate{
 	ID:               1,
 	Metadata:         map[string]string{},
 	Name:             "test-aggregate1",
+	CreatedAt:        time.Date(2017, 12, 22, 10, 12, 6, 0, time.UTC),
+	UpdatedAt:        time.Time{},
 }
 
 // Second aggregate from the AggregateListBody
@@ -60,6 +77,18 @@ var SecondFakeAggregate = aggregates.Aggregate{
 	ID:               4,
 	Metadata:         map[string]string{"availability_zone": "test-az"},
 	Name:             "test-aggregate2",
+	CreatedAt:        time.Date(2017, 12, 22, 10, 16, 7, 0, time.UTC),
+	UpdatedAt:        time.Time{},
+}
+
+var CreatedAggregate = aggregates.Aggregate{
+	AvailabilityZone: "london",
+	Hosts:            nil,
+	ID:               32,
+	Metadata:         nil,
+	Name:             "name",
+	CreatedAt:        time.Date(2016, 12, 27, 22, 51, 32, 0, time.UTC),
+	UpdatedAt:        time.Time{},
 }
 
 // HandleListSuccessfully configures the test server to respond to a List request.
@@ -70,5 +99,15 @@ func HandleListSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, AggregateListBody)
+	})
+}
+
+func HandleCreateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/os-aggregates", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, AggregateCreateBody)
 	})
 }

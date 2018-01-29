@@ -1,6 +1,20 @@
 /*
-Package aggregates returns information about the host aggregates in the
+Package aggregates manages information about the host aggregates in the
 OpenStack cloud.
+
+Example of Create an aggregate
+
+	opts := aggregates.CreateOpts{
+		Name:             "name",
+		AvailabilityZone: "london",
+	}
+
+	aggregate, err := aggregates.Create(computeClient, opts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v\n", aggregate)
 
 Example of Retrieving list of all aggregates
 
