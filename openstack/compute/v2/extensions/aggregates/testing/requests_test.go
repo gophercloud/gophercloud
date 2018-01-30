@@ -65,3 +65,16 @@ func TestDeleteAggregates(t *testing.T) {
 	err := aggregates.Delete(client.ServiceClient(), AggregateIDtoDelete).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestGetAggregates(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetSuccessfully(t)
+
+	expected := SecondFakeAggregate
+
+	actual, err := aggregates.Get(client.ServiceClient(), AggregateIDtoGet).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, &expected, actual)
+}

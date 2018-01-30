@@ -60,39 +60,66 @@ const AggregateCreateBody = `
 }
 `
 
-// First aggregate from the AggregateListBody
-var FirstFakeAggregate = aggregates.Aggregate{
-	AvailabilityZone: "",
-	Hosts:            []string{},
-	ID:               1,
-	Metadata:         map[string]string{},
-	Name:             "test-aggregate1",
-	CreatedAt:        time.Date(2017, 12, 22, 10, 12, 6, 0, time.UTC),
-	UpdatedAt:        time.Time{},
+const AggregateGetBody = `
+{
+    "aggregate": {
+            "name": "test-aggregate2",
+            "availability_zone": "test-az",
+            "deleted": false,
+            "created_at": "2017-12-22T10:16:07.000000",
+            "updated_at": null,
+            "hosts": [
+                "cmp0"
+            ],
+            "deleted_at": null,
+            "id": 4,
+            "metadata": {
+                "availability_zone": "test-az"
+            }
+        }
 }
+`
 
-// Second aggregate from the AggregateListBody
-var SecondFakeAggregate = aggregates.Aggregate{
-	AvailabilityZone: "test-az",
-	Hosts:            []string{"cmp0"},
-	ID:               4,
-	Metadata:         map[string]string{"availability_zone": "test-az"},
-	Name:             "test-aggregate2",
-	CreatedAt:        time.Date(2017, 12, 22, 10, 16, 7, 0, time.UTC),
-	UpdatedAt:        time.Time{},
-}
+var (
+	// First aggregate from the AggregateListBody
+	FirstFakeAggregate = aggregates.Aggregate{
+		AvailabilityZone: "",
+		Hosts:            []string{},
+		ID:               1,
+		Metadata:         map[string]string{},
+		Name:             "test-aggregate1",
+		CreatedAt:        time.Date(2017, 12, 22, 10, 12, 6, 0, time.UTC),
+		UpdatedAt:        time.Time{},
+	}
 
-var CreatedAggregate = aggregates.Aggregate{
-	AvailabilityZone: "london",
-	Hosts:            nil,
-	ID:               32,
-	Metadata:         nil,
-	Name:             "name",
-	CreatedAt:        time.Date(2016, 12, 27, 22, 51, 32, 0, time.UTC),
-	UpdatedAt:        time.Time{},
-}
+	// Second aggregate from the AggregateListBody
+	SecondFakeAggregate = aggregates.Aggregate{
+		AvailabilityZone: "test-az",
+		Hosts:            []string{"cmp0"},
+		ID:               4,
+		Metadata:         map[string]string{"availability_zone": "test-az"},
+		Name:             "test-aggregate2",
+		CreatedAt:        time.Date(2017, 12, 22, 10, 16, 7, 0, time.UTC),
+		UpdatedAt:        time.Time{},
+	}
 
-var AggregateIDtoDelete = 1
+	// Aggregate from the AggregateCreateBody
+	CreatedAggregate = aggregates.Aggregate{
+		AvailabilityZone: "london",
+		Hosts:            nil,
+		ID:               32,
+		Metadata:         nil,
+		Name:             "name",
+		CreatedAt:        time.Date(2016, 12, 27, 22, 51, 32, 0, time.UTC),
+		UpdatedAt:        time.Time{},
+	}
+
+	// Aggregate ID to delete
+	AggregateIDtoDelete = 1
+
+	// Aggregate ID to get, from the AggregateGetBody
+	AggregateIDtoGet = SecondFakeAggregate.ID
+)
 
 // HandleListSuccessfully configures the test server to respond to a List request.
 func HandleListSuccessfully(t *testing.T) {
@@ -122,5 +149,16 @@ func HandleDeleteSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusOK)
+	})
+}
+
+func HandleGetSuccessfully(t *testing.T) {
+	v := strconv.Itoa(AggregateIDtoGet)
+	th.Mux.HandleFunc("/os-aggregates/"+v, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, AggregateGetBody)
 	})
 }
