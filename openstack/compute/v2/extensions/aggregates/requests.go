@@ -1,6 +1,8 @@
 package aggregates
 
 import (
+	"strconv"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -35,6 +37,15 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult)
 		return
 	}
 	_, r.Err = client.Post(aggregatesCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+// Delete makes a request against the API to delete an aggregate.
+func Delete(client *gophercloud.ServiceClient, aggregateID int) (r DeleteResult) {
+	v := strconv.Itoa(aggregateID)
+	_, r.Err = client.Delete(aggregatesDeleteURL(client, v), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	return

@@ -56,3 +56,12 @@ func TestCreateAggregates(t *testing.T) {
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
+
+func TestDeleteAggregates(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfully(t)
+
+	err := aggregates.Delete(client.ServiceClient(), AggregateIDtoDelete).ExtractErr()
+	th.AssertNoErr(t, err)
+}

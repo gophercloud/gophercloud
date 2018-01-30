@@ -13,8 +13,15 @@ Example of Create an aggregate
 	if err != nil {
 		panic(err)
 	}
-
 	fmt.Printf("%+v\n", aggregate)
+
+Example of Delete an aggregate
+
+	aggregateID := 32
+	err := aggregates.Delete(computeClient, aggregateID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 
 Example of Retrieving list of all aggregates
 

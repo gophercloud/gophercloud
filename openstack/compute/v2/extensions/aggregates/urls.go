@@ -9,3 +9,7 @@ func aggregatesListURL(c *gophercloud.ServiceClient) string {
 func aggregatesCreateURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("os-aggregates")
 }
+
+func aggregatesDeleteURL(c *gophercloud.ServiceClient, aggregateID string) string {
+	return c.ServiceURL("os-aggregates", aggregateID)
+}

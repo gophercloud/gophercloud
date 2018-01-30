@@ -89,3 +89,7 @@ func (r CreateResult) Extract() (*Aggregate, error) {
 	err := r.ExtractInto(&s)
 	return s.Aggregate, err
 }
+
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
