@@ -31,24 +31,22 @@ func TestAggregatesList(t *testing.T) {
 	}
 }
 
-func TestAggregatesCreateDelete(t *testing.T) {
+func TestAggregatesCreateGetDelete(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	opts := aggregates.CreateOpts{
-		Name:             "name",
-		AvailabilityZone: "london",
-	}
-
-	aggregate, err := aggregates.Create(client, opts).Extract()
+	createdAggregate, err := CreateAggregate(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create an aggregate: %v", err)
 	}
+	defer DeleteAggregate(t, client, aggregate)
 
-	err = aggregates.Delete(client, aggregate.ID).ExtractErr()
+	aggregate, err := aggregates.Get(client, createdAggregate.ID).Extract()
 	if err != nil {
-		t.Fatalf("Unable to delete an aggregate: %v", err)
+		t.Fatalf("Unable to get an aggregate: %v", err)
 	}
+
+	tools.PrintResource(t, aggregate)
 }
