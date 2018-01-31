@@ -90,6 +90,8 @@ var (
 		Name:             "test-aggregate1",
 		CreatedAt:        time.Date(2017, 12, 22, 10, 12, 6, 0, time.UTC),
 		UpdatedAt:        time.Time{},
+		DeletedAt:        time.Time{},
+		Deleted:          false,
 	}
 
 	// Second aggregate from the AggregateListBody
@@ -101,6 +103,8 @@ var (
 		Name:             "test-aggregate2",
 		CreatedAt:        time.Date(2017, 12, 22, 10, 16, 7, 0, time.UTC),
 		UpdatedAt:        time.Time{},
+		DeletedAt:        time.Time{},
+		Deleted:          false,
 	}
 
 	// Aggregate from the AggregateCreateBody
@@ -112,6 +116,8 @@ var (
 		Name:             "name",
 		CreatedAt:        time.Date(2016, 12, 27, 22, 51, 32, 0, time.UTC),
 		UpdatedAt:        time.Time{},
+		DeletedAt:        time.Time{},
+		Deleted:          false,
 	}
 
 	// Aggregate ID to delete
