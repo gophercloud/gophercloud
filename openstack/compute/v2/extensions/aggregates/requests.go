@@ -50,3 +50,12 @@ func Delete(client *gophercloud.ServiceClient, aggregateID int) (r DeleteResult)
 	})
 	return
 }
+
+// Get makes a request against the API to get details for an specific aggregate.
+func Get(client *gophercloud.ServiceClient, aggregateID int) (r GetResult) {
+	v := strconv.Itoa(aggregateID)
+	_, r.Err = client.Get(aggregatesGetURL(client, v), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

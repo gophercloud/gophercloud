@@ -78,16 +78,20 @@ type aggregatesResult struct {
 	gophercloud.Result
 }
 
-type CreateResult struct {
-	aggregatesResult
-}
-
-func (r CreateResult) Extract() (*Aggregate, error) {
+func (r aggregatesResult) Extract() (*Aggregate, error) {
 	var s struct {
 		Aggregate *Aggregate `json:"aggregate"`
 	}
 	err := r.ExtractInto(&s)
 	return s.Aggregate, err
+}
+
+type CreateResult struct {
+	aggregatesResult
+}
+
+type GetResult struct {
+	aggregatesResult
 }
 
 type DeleteResult struct {

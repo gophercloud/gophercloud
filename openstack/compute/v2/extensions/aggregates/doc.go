@@ -2,7 +2,7 @@
 Package aggregates manages information about the host aggregates in the
 OpenStack cloud.
 
-Example of Create an aggregate
+Example of Create Aggregate
 
 	opts := aggregates.CreateOpts{
 		Name:             "name",
@@ -15,7 +15,16 @@ Example of Create an aggregate
 	}
 	fmt.Printf("%+v\n", aggregate)
 
-Example of Delete an aggregate
+Example of Show Aggregate Details
+
+	aggregateID := 42
+	aggregate, err := aggregates.Get(computeClient, aggregateID).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", aggregate)
+
+Example of Delete Aggregate
 
 	aggregateID := 32
 	err := aggregates.Delete(computeClient, aggregateID).ExtractErr()
