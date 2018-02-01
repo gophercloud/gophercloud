@@ -62,7 +62,7 @@ func Get(client *gophercloud.ServiceClient, aggregateID int) (r GetResult) {
 
 type UpdateOpts struct {
 	// The name of the host aggregate.
-	Name string `json:"name" required:"true"`
+	Name string `json:"name,omitempty"`
 
 	// The availability zone of the host aggregate.
 	// You should use a custom availability zone rather than
