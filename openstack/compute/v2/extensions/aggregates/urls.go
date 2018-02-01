@@ -17,3 +17,7 @@ func aggregatesDeleteURL(c *gophercloud.ServiceClient, aggregateID string) strin
 func aggregatesGetURL(c *gophercloud.ServiceClient, aggregateID string) string {
 	return c.ServiceURL("os-aggregates", aggregateID)
 }
+
+func aggregatesUpdateURL(c *gophercloud.ServiceClient, aggregateID string) string {
+	return c.ServiceURL("os-aggregates", aggregateID)
+}

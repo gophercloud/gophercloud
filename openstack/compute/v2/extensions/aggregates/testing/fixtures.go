@@ -80,6 +80,24 @@ const AggregateGetBody = `
 }
 `
 
+const AggregateUpdateBody = `
+{
+    "aggregate": {
+            "name": "test-aggregate2",
+            "availability_zone": "nova2",
+            "deleted": false,
+            "created_at": "2017-12-22T10:12:06.000000",
+            "updated_at": "2017-12-23T10:18:00.000000",
+            "hosts": [],
+            "deleted_at": null,
+            "id": 1,
+            "metadata": {
+                "availability_zone": "nova2"
+            }
+        }
+}
+`
+
 var (
 	// First aggregate from the AggregateListBody
 	FirstFakeAggregate = aggregates.Aggregate{
@@ -125,6 +143,22 @@ var (
 
 	// Aggregate ID to get, from the AggregateGetBody
 	AggregateIDtoGet = SecondFakeAggregate.ID
+
+	// Aggregate ID to update
+	AggregateIDtoUpdate = FirstFakeAggregate.ID
+
+	// Updated aggregate
+	UpdatedAggregate = aggregates.Aggregate{
+		AvailabilityZone: "nova2",
+		Hosts:            []string{},
+		ID:               1,
+		Metadata:         map[string]string{"availability_zone": "nova2"},
+		Name:             "test-aggregate2",
+		CreatedAt:        time.Date(2017, 12, 22, 10, 12, 6, 0, time.UTC),
+		UpdatedAt:        time.Date(2017, 12, 23, 10, 18, 0, 0, time.UTC),
+		DeletedAt:        time.Time{},
+		Deleted:          false,
+	}
 )
 
 // HandleListSuccessfully configures the test server to respond to a List request.
@@ -166,5 +200,16 @@ func HandleGetSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, AggregateGetBody)
+	})
+}
+
+func HandleUpdateSuccessfully(t *testing.T) {
+	v := strconv.Itoa(AggregateIDtoUpdate)
+	th.Mux.HandleFunc("/os-aggregates/"+v, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, AggregateUpdateBody)
 	})
 }

@@ -59,3 +59,32 @@ func Get(client *gophercloud.ServiceClient, aggregateID int) (r GetResult) {
 	})
 	return
 }
+
+type UpdateOpts struct {
+	// The name of the host aggregate.
+	Name string `json:"name" required:"true"`
+
+	// The availability zone of the host aggregate.
+	// You should use a custom availability zone rather than
+	// the default returned by the os-availability-zone API.
+	// The availability zone must not include ‘:’ in its name.
+	AvailabilityZone string `json:"availability_zone,omitempty"`
+}
+
+func (opts UpdateOpts) ToAggregatesUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "aggregate")
+}
+
+func Update(client *gophercloud.ServiceClient, aggregateID int, opts UpdateOpts) (r UpdateResult) {
+	v := strconv.Itoa(aggregateID)
+
+	b, err := opts.ToAggregatesUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Put(aggregatesUpdateURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

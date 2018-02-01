@@ -107,3 +107,7 @@ type GetResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+type UpdateResult struct {
+	aggregatesResult
+}
