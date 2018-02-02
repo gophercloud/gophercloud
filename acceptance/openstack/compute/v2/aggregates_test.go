@@ -90,3 +90,27 @@ func TestAggregatesUpdate(t *testing.T) {
 
 	tools.PrintResource(t, updatedAggregate)
 }
+
+func TestAggregatesAddHost(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	createdAggregate, err := CreateAggregate(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create an aggregate: %v", err)
+	}
+	defer DeleteAggregate(t, client, createdAggregate)
+
+	addHostOpts := aggregates.AddHostOpts{
+		Host: "new-cmp",
+	}
+
+	aggregateWithNewHost, err := aggregates.AddHost(client, createdAggregate.ID, addHostOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to add host to aggregate: %v", err)
+	}
+
+	tools.PrintResource(t, aggregateWithNewHost)
+}
