@@ -41,7 +41,7 @@ func TestAggregatesCreateGetDelete(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create an aggregate: %v", err)
 	}
-	defer DeleteAggregate(t, client, aggregate)
+	defer DeleteAggregate(t, client, createdAggregate)
 
 	aggregate, err := aggregates.Get(client, createdAggregate.ID).Extract()
 	if err != nil {
