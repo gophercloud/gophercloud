@@ -30,3 +30,23 @@ func TestAggregatesList(t *testing.T) {
 		tools.PrintResource(t, h)
 	}
 }
+
+func TestAggregatesCreateGetDelete(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	createdAggregate, err := CreateAggregate(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create an aggregate: %v", err)
+	}
+	defer DeleteAggregate(t, client, createdAggregate)
+
+	aggregate, err := aggregates.Get(client, createdAggregate.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get an aggregate: %v", err)
+	}
+
+	tools.PrintResource(t, aggregate)
+}
