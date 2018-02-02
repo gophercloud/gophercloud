@@ -73,6 +73,38 @@ type Network struct {
 	// Availability zone hints groups network nodes that run services like DHCP, L3, FW, and others.
 	// Used to make network resources highly available.
 	AvailabilityZoneHints []string `json:"availability_zone_hints"`
+
+	// AvailabilityZones
+	AvailabilityZones []string `json:"availability_zones"`
+
+	// DNS domain
+	DNSDomain string `json:"dns_domain"`
+
+	// MTU of the network
+	MTU string `json:"mtu"`
+
+	// Whether PortSecurity is enabled
+	PortSecurityEnabled bool `json:"port_security_enabled"`
+
+	// The type of the provider network
+	ProviderNetworkType string `json:"provider:network_type"`
+
+	// The physical provider network
+	ProviderPhysicalNetwork string `json:"provider:physical_network"`
+
+	// The provider segmentation id
+	ProviderSegmentationID int `json:"provider:segmentation_id"`
+
+	// Indicates whether the network has an external routing facility
+	// that’s not managed by the networking service.
+	RouterExternal bool `json:"router:external"`
+
+	// Indicates the VLAN transparency mode of the network, which is
+	// VLAN transparent (true) or not VLAN transparent (false).
+	VLANTransparent bool `json:"vlan_transparent"`
+
+	// The network is default pool or not.
+	IsDefault bool `json:"is_default"`
 }
 
 // NetworkPage is the page returned by a pager when traversing over a
