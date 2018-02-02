@@ -32,6 +32,20 @@ Example of Delete Aggregate
 		panic(err)
 	}
 
+Example of Update Aggregate
+
+	aggregateID := 42
+	opts := aggregates.UpdateOpts{
+		Name:             "new_name",
+		AvailabilityZone: "nova2",
+	}
+
+	aggregate, err := aggregates.Update(computeClient, aggregateID, opts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", aggregate)
+
 Example of Retrieving list of all aggregates
 
 	allPages, err := aggregates.List(computeClient).AllPages()

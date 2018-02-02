@@ -78,3 +78,21 @@ func TestGetAggregates(t *testing.T) {
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
+
+func TestUpdateAggregate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateSuccessfully(t)
+
+	expected := UpdatedAggregate
+
+	opts := aggregates.UpdateOpts{
+		Name:             "test-aggregates2",
+		AvailabilityZone: "nova2",
+	}
+
+	actual, err := aggregates.Update(client.ServiceClient(), expected.ID, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, &expected, actual)
+}
