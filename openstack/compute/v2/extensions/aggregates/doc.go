@@ -61,5 +61,19 @@ Example of Retrieving list of all aggregates
 	for _, aggregate := range allAggregates {
 		fmt.Printf("%+v\n", aggregate)
 	}
+
+Example of Add Host
+
+	aggregateID := 22
+	opts := aggregates.AddHostOpts{
+		Host: "newhost-cmp1"
+	}
+
+	aggregate, err := aggregates.AddHost(computeClient, aggregateID, opts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", aggregate)
+
 */
 package aggregates
