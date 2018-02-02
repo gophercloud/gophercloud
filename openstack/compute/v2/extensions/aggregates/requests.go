@@ -92,7 +92,7 @@ func Update(client *gophercloud.ServiceClient, aggregateID int, opts UpdateOpts)
 
 type AddHostOpts struct {
 	// The name of the host.
-	Host string `json:"host"`
+	Host string `json:"host" required:"true"`
 }
 
 func (opts AddHostOpts) ToAggregatesAddHostMap() (map[string]interface{}, error) {
