@@ -31,7 +31,22 @@ func TestAggregatesList(t *testing.T) {
 	}
 }
 
-func TestAggregatesCreateGetDelete(t *testing.T) {
+func TestAggregatesCreateDelete(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	createdAggregate, err := CreateAggregate(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create an aggregate: %v", err)
+	}
+	defer DeleteAggregate(t, client, createdAggregate)
+
+	tools.PrintResource(t, createdAggregate)
+}
+
+func TestAggregatesGet(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -49,4 +64,29 @@ func TestAggregatesCreateGetDelete(t *testing.T) {
 	}
 
 	tools.PrintResource(t, aggregate)
+}
+
+func TestAggregatesUpdate(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	createdAggregate, err := CreateAggregate(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create an aggregate: %v", err)
+	}
+	defer DeleteAggregate(t, client, createdAggregate)
+
+	updateOpts := aggregates.UpdateOpts{
+		Name:             "new_aggregate_name",
+		AvailabilityZone: "new_azone",
+	}
+
+	updatedAggregate, err := aggregates.Update(client, createdAggregate.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update an aggregate: %v", err)
+	}
+
+	tools.PrintResource(t, updatedAggregate)
 }
