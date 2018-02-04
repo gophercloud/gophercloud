@@ -113,3 +113,27 @@ func AddHost(client *gophercloud.ServiceClient, aggregateID int, opts AddHostOpt
 	})
 	return
 }
+
+type RemoveHostOpts struct {
+	// The name of the host.
+	Host string `json:"host" required:"true"`
+}
+
+func (opts RemoveHostOpts) ToAggregatesRemoveHostMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "remove_host")
+}
+
+// RemoveHost makes a request against the API to remove host from a specific aggregate.
+func RemoveHost(client *gophercloud.ServiceClient, aggregateID int, opts RemoveHostOpts) (r ActionResult) {
+	v := strconv.Itoa(aggregateID)
+
+	b, err := opts.ToAggregatesRemoveHostMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(aggregatesRemoveHostURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
