@@ -3,11 +3,14 @@
 package v2
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/aggregates"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/hypervisors"
 )
 
 func TestAggregatesList(t *testing.T) {
@@ -89,4 +92,51 @@ func TestAggregatesUpdate(t *testing.T) {
 	}
 
 	tools.PrintResource(t, updatedAggregate)
+}
+
+func TestAggregatesAddHost(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	hostToAdd, err := getHypervisor(t, client)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	createdAggregate, err := CreateAggregate(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create an aggregate: %v", err)
+	}
+	defer DeleteAggregate(t, client, createdAggregate)
+
+	addHostOpts := aggregates.AddHostOpts{
+		Host: hostToAdd.HypervisorHostname,
+	}
+
+	aggregateWithNewHost, err := aggregates.AddHost(client, createdAggregate.ID, addHostOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to add host to aggregate: %v", err)
+	}
+
+	tools.PrintResource(t, aggregateWithNewHost)
+}
+
+func getHypervisor(t *testing.T, client *gophercloud.ServiceClient) (*hypervisors.Hypervisor, error) {
+	allPages, err := hypervisors.List(client).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list hypervisors: %v", err)
+	}
+
+	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)
+	if err != nil {
+		t.Fatal("Unable to extract hypervisors")
+	}
+
+	for _, h := range allHypervisors {
+		return &h, nil
+	}
+
+	return nil, fmt.Errorf("Unable to get hypervisor")
 }

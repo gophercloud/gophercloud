@@ -98,6 +98,27 @@ const AggregateUpdateBody = `
 }
 `
 
+const AggregateAddHostBody = `
+{
+    "aggregate": {
+            "name": "test-aggregate2",
+            "availability_zone": "test-az",
+            "deleted": false,
+            "created_at": "2017-12-22T10:16:07.000000",
+            "updated_at": null,
+            "hosts": [
+                "cmp0",
+				"cmp1"
+            ],
+            "deleted_at": null,
+            "id": 4,
+            "metadata": {
+                "availability_zone": "test-az"
+            }
+        }
+}
+`
+
 var (
 	// First aggregate from the AggregateListBody
 	FirstFakeAggregate = aggregates.Aggregate{
@@ -159,6 +180,18 @@ var (
 		DeletedAt:        time.Time{},
 		Deleted:          false,
 	}
+
+	AggregateWithAddedHost = aggregates.Aggregate{
+		AvailabilityZone: "test-az",
+		Hosts:            []string{"cmp0", "cmp1"},
+		ID:               4,
+		Metadata:         map[string]string{"availability_zone": "test-az"},
+		Name:             "test-aggregate2",
+		CreatedAt:        time.Date(2017, 12, 22, 10, 16, 7, 0, time.UTC),
+		UpdatedAt:        time.Time{},
+		DeletedAt:        time.Time{},
+		Deleted:          false,
+	}
 )
 
 // HandleListSuccessfully configures the test server to respond to a List request.
@@ -211,5 +244,16 @@ func HandleUpdateSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, AggregateUpdateBody)
+	})
+}
+
+func HandleAddHostSuccessfully(t *testing.T) {
+	v := strconv.Itoa(AggregateWithAddedHost.ID)
+	th.Mux.HandleFunc("/os-aggregates/"+v+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, AggregateAddHostBody)
 	})
 }

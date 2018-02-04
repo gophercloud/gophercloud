@@ -51,7 +51,7 @@ func Delete(client *gophercloud.ServiceClient, aggregateID int) (r DeleteResult)
 	return
 }
 
-// Get makes a request against the API to get details for an specific aggregate.
+// Get makes a request against the API to get details for a specific aggregate.
 func Get(client *gophercloud.ServiceClient, aggregateID int) (r GetResult) {
 	v := strconv.Itoa(aggregateID)
 	_, r.Err = client.Get(aggregatesGetURL(client, v), &r.Body, &gophercloud.RequestOpts{
@@ -75,6 +75,7 @@ func (opts UpdateOpts) ToAggregatesUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "aggregate")
 }
 
+// Update makes a request against the API to update a specific aggregate.
 func Update(client *gophercloud.ServiceClient, aggregateID int, opts UpdateOpts) (r UpdateResult) {
 	v := strconv.Itoa(aggregateID)
 
@@ -84,6 +85,30 @@ func Update(client *gophercloud.ServiceClient, aggregateID int, opts UpdateOpts)
 		return
 	}
 	_, r.Err = client.Put(aggregatesUpdateURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+type AddHostOpts struct {
+	// The name of the host.
+	Host string `json:"host" required:"true"`
+}
+
+func (opts AddHostOpts) ToAggregatesAddHostMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "add_host")
+}
+
+// AddHost makes a request against the API to add host to a specific aggregate.
+func AddHost(client *gophercloud.ServiceClient, aggregateID int, opts AddHostOpts) (r ActionResult) {
+	v := strconv.Itoa(aggregateID)
+
+	b, err := opts.ToAggregatesAddHostMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(aggregatesAddHostURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	return

@@ -111,3 +111,7 @@ type DeleteResult struct {
 type UpdateResult struct {
 	aggregatesResult
 }
+
+type ActionResult struct {
+	aggregatesResult
+}
