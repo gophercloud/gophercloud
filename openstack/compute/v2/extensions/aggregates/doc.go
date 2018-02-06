@@ -75,5 +75,18 @@ Example of Add Host
 	}
 	fmt.Printf("%+v\n", aggregate)
 
+Example of Remove Host
+
+	aggregateID := 22
+	opts := aggregates.RemoveHostOpts{
+		Host: "newhost-cmp1"
+	}
+
+	aggregate, err := aggregates.RemoveHost(computeClient, aggregateID, opts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", aggregate)
+
 */
 package aggregates

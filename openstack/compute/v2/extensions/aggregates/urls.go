@@ -25,3 +25,7 @@ func aggregatesUpdateURL(c *gophercloud.ServiceClient, aggregateID string) strin
 func aggregatesAddHostURL(c *gophercloud.ServiceClient, aggregateID string) string {
 	return c.ServiceURL("os-aggregates", aggregateID, "action")
 }
+
+func aggregatesRemoveHostURL(c *gophercloud.ServiceClient, aggregateID string) string {
+	return c.ServiceURL("os-aggregates", aggregateID, "action")
+}

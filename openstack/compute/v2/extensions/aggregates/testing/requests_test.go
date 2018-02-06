@@ -113,3 +113,20 @@ func TestAddHostAggregate(t *testing.T) {
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
+
+func TestRemoveHostAggregate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAddHostSuccessfully(t)
+
+	expected := AggregateWithAddedHost
+
+	opts := aggregates.RemoveHostOpts{
+		Host: "cmp1",
+	}
+
+	actual, err := aggregates.RemoveHost(client.ServiceClient(), expected.ID, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, &expected, actual)
+}
