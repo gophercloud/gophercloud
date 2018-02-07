@@ -29,3 +29,7 @@ func aggregatesAddHostURL(c *gophercloud.ServiceClient, aggregateID string) stri
 func aggregatesRemoveHostURL(c *gophercloud.ServiceClient, aggregateID string) string {
 	return c.ServiceURL("os-aggregates", aggregateID, "action")
 }
+
+func aggregatesSetMetadataURL(c *gophercloud.ServiceClient, aggregateID string) string {
+	return c.ServiceURL("os-aggregates", aggregateID, "action")
+}
