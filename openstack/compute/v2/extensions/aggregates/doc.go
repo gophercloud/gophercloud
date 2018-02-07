@@ -88,5 +88,18 @@ Example of Remove Host
 	}
 	fmt.Printf("%+v\n", aggregate)
 
+Example of Create or Update Metadata
+
+	aggregateID := 22
+	opts := aggregates.SetMetadata{
+		Metadata: map[string]string{"key": "value"}
+	}
+
+	aggregate, err := aggregates.SetMetadata(computeClient, aggregateID, opts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", aggregate)
+
 */
 package aggregates
