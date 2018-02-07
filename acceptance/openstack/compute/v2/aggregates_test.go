@@ -147,7 +147,7 @@ func TestAggregatesSetMetadata(t *testing.T) {
 	defer DeleteAggregate(t, client, createdAggregate)
 
 	opts := aggregates.SetMetadataOpts{
-		Metadata: map[string]string{"key": "value"},
+		Metadata: map[string]interface{}{"key": "value"},
 	}
 
 	aggregateWithMetadata, err := aggregates.SetMetadata(client, createdAggregate.ID, opts).Extract()

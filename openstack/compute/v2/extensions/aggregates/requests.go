@@ -139,7 +139,7 @@ func RemoveHost(client *gophercloud.ServiceClient, aggregateID int, opts RemoveH
 }
 
 type SetMetadataOpts struct {
-	Metadata map[string]string `json:"metadata" required:"true"`
+	Metadata map[string]interface{} `json:"metadata" required:"true"`
 }
 
 func (opts SetMetadataOpts) ToSetMetadataMap() (map[string]interface{}, error) {

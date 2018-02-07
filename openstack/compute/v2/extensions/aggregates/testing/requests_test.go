@@ -139,7 +139,7 @@ func TestSetMetadataAggregate(t *testing.T) {
 	expected := AggregateWithUpdatedMetadata
 
 	opts := aggregates.SetMetadataOpts{
-		Metadata: map[string]string{"key": "value"},
+		Metadata: map[string]interface{}{"key": "value"},
 	}
 
 	actual, err := aggregates.SetMetadata(client.ServiceClient(), expected.ID, opts).Extract()
