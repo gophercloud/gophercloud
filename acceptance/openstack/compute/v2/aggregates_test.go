@@ -134,7 +134,7 @@ func TestAggregatesAddRemoveHost(t *testing.T) {
 	tools.PrintResource(t, aggregateWithRemovedHost)
 }
 
-func TestAggregatesSetMetadata(t *testing.T) {
+func TestAggregatesSetRemoveMetadata(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -156,6 +156,17 @@ func TestAggregatesSetMetadata(t *testing.T) {
 	}
 
 	tools.PrintResource(t, aggregateWithMetadata)
+
+	optsToRemove := aggregates.SetMetadataOpts{
+		Metadata: map[string]interface{}{"key": nil},
+	}
+
+	aggregateWithRemovedKey, err := aggregates.SetMetadata(client, createdAggregate.ID, optsToRemove).Extract()
+	if err != nil {
+		t.Fatalf("Unable to set metadata to aggregate: %v", err)
+	}
+
+	tools.PrintResource(t, aggregateWithRemovedKey)
 }
 
 func getHypervisor(t *testing.T, client *gophercloud.ServiceClient) (*hypervisors.Hypervisor, error) {
