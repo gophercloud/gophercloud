@@ -117,15 +117,32 @@ func TestAddHostAggregate(t *testing.T) {
 func TestRemoveHostAggregate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleAddHostSuccessfully(t)
+	HandleRemoveHostSuccessfully(t)
 
-	expected := AggregateWithAddedHost
+	expected := AggregateWithRemovedHost
 
 	opts := aggregates.RemoveHostOpts{
 		Host: "cmp1",
 	}
 
 	actual, err := aggregates.RemoveHost(client.ServiceClient(), expected.ID, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, &expected, actual)
+}
+
+func TestSetMetadataAggregate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleSetMetadataSuccessfully(t)
+
+	expected := AggregateWithUpdatedMetadata
+
+	opts := aggregates.SetMetadataOpts{
+		Metadata: map[string]string{"key": "value"},
+	}
+
+	actual, err := aggregates.SetMetadata(client.ServiceClient(), expected.ID, opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
