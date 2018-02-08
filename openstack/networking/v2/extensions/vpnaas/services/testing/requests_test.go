@@ -9,7 +9,6 @@ import (
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/services"
 	th "github.com/gophercloud/gophercloud/testhelper"
-	"github.com/gophercloud/gophercloud/pagination"
 )
 
 

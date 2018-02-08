@@ -24,6 +24,15 @@ type commonResult struct {
 	gophercloud.Result
 }
 
+// Extract is a function that accepts a result and extracts a VPN service.
+func (r commonResult) Extract() (*Service, error) {
+	var s struct {
+		Service *Service `json:"vpnservice"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Service, err
+}
+
 // CreateResult represents the result of a create operation. Call its Extract
 // method to interpret it as a Service.
 type CreateResult struct {
