@@ -28,7 +28,7 @@ func TestCreate(t *testing.T) {
         "name": "vpn",
         "admin_state_up": true,
 		"description": "OpenStack VPN service",
-		"tenant_id":  "b4eedccc6fb74fa8a7ad6b08382b852b",
+		"tenant_id":  "10039663455a446d8ba2cbb058b0f578",
 		"project_id": "10039663455a446d8ba2cbb058b0f578"
     }
 }      `)
@@ -41,22 +41,22 @@ func TestCreate(t *testing.T) {
     "vpnservice": {
         "router_id": "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
         "status": "PENDING_CREATE",
-        "name": "myservice",
+        "name": "vpn",
         "external_v6_ip": "2001:db8::1",
         "admin_state_up": true,
         "subnet_id": null,
         "project_id": "10039663455a446d8ba2cbb058b0f578",
-        "tenant_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
+        "tenant_id": "10039663455a446d8ba2cbb058b0f578",
         "external_v4_ip": "172.32.1.11",
         "id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
-        "description": ""
+        "description": "OpenStack VPN service"
     }
 }
     `)
 	})
 
 	options := services.CreateOpts{
-		TenantID:     "b4eedccc6fb74fa8a7ad6b08382b852b",
+		TenantID:     "10039663455a446d8ba2cbb058b0f578",
 		Name:         "vpn",
 		Description:  "OpenStack VPN service",
 		AdminStateUp: gophercloud.Enabled,

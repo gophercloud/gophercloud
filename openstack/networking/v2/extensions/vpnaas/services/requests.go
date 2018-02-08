@@ -20,7 +20,7 @@ type CreateOpts struct {
 	AdminStateUp 	*bool 	`json:"admin_state_up"`
 	ProjectID   	string  `json:"project_id"`
 	Name 			string  `json:"name,omitempty"`
-	FlavorID        string  `json:"flavor_id"`
+	FlavorID        string  `json:"flavor_id,omitempty"`
 }
 
 // ToVPNServiceCreateMap casts a CreateOpts struct to a map.
