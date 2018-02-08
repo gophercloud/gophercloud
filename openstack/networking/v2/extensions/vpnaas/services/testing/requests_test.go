@@ -1,11 +1,16 @@
 package testing
 
 import (
-	"net/http"
 	"fmt"
-	"github.com/gophercloud/gophercloud/pagination"
+	"net/http"
+	"testing"
 	"github.com/gophercloud/gophercloud"
+	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/services"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"github.com/gophercloud/gophercloud/pagination"
 )
+
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
