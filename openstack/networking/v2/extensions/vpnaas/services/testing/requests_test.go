@@ -68,7 +68,7 @@ func TestList(t *testing.T) {
 				ID: 		  "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
 				ExternalV4IP: "172.32.1.11",
 				ExternalV6IP: "2001:db8::1",
-				FlavorID:     nil,
+				FlavorID:     "",
 			},
 		}
 
@@ -96,15 +96,18 @@ func TestGet(t *testing.T) {
 		fmt.Fprintf(w, `
 {
     "vpnservice": {
-        "router_id": "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
-        "status": "PENDING_CREATE",
-        "name": "vpnservice1",
-        "admin_state_up": true,
-        "subnet_id": null,
-        "project_id": "10039663455a446d8ba2cbb058b0f578",
-        "tenant_id": "10039663455a446d8ba2cbb058b0f578",
-        "id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
-        "description": "VPN test service"
+        	"router_id": "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
+            "status": "PENDING_CREATE",
+            "name": "vpnservice1",
+            "admin_state_up": true,
+            "subnet_id": null,
+            "project_id": "10039663455a446d8ba2cbb058b0f578",
+            "tenant_id": "10039663455a446d8ba2cbb058b0f578",
+            "description": "Test VPN service",
+			"id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+			"external_v4_ip": "172.32.1.11",
+			"external_v6_ip": "2001:db8::1",
+            "flavor_id": null
     }
 }
         `)
@@ -115,12 +118,15 @@ func TestGet(t *testing.T) {
 
 	th.AssertEquals(t, "PENDING_CREATE", serv.Status)
 	th.AssertEquals(t, "vpnservice1", serv.Name)
-	th.AssertEquals(t, "VPN test service", serv.Description)
+	th.AssertEquals(t, "Test VPN service", serv.Description)
 	th.AssertEquals(t, true, *serv.AdminStateUp)
 	th.AssertEquals(t, "10039663455a446d8ba2cbb058b0f578", serv.ProjectID)
 	th.AssertEquals(t, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", serv.ID)
 	th.AssertEquals(t, "10039663455a446d8ba2cbb058b0f578", serv.TenantID)
 	th.AssertEquals(t, "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa", serv.RouterID)
 	th.AssertEquals(t, "", serv.SubnetID)
+	th.AssertEquals(t, "172.32.1.11", serv.ExternalV4IP)
+	th.AssertEquals(t,"2001:db8::1", serv.ExternalV6IP)
+	th.AssertEquals(t, "", serv.FlavorID)
 
 }
