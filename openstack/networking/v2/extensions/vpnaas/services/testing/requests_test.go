@@ -34,7 +34,11 @@ func TestList(t *testing.T) {
             "subnet_id": null,
             "project_id": "10039663455a446d8ba2cbb058b0f578",
             "tenant_id": "10039663455a446d8ba2cbb058b0f578",
-            "description": "Test VPN service"
+            "description": "Test VPN service",
+			"id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+			"external_v4_ip": "172.32.1.11",
+			"external_v6_ip": "2001:db8::1",
+            "flavor_id": null
         }
    ]
 }
@@ -61,6 +65,10 @@ func TestList(t *testing.T) {
 				SubnetID:     "",
 				RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
 				ProjectID:    "10039663455a446d8ba2cbb058b0f578",
+				ID: 		  "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+				ExternalV4IP: "172.32.1.11",
+				ExternalV6IP: "2001:db8::1",
+				FlavorID:     nil,
 			},
 		}
 
