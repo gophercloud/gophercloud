@@ -18,7 +18,7 @@ type Service struct {
 	ID              string  `json:"id"`
 	ExternalV6IP	string 	`json:"external_v6_ip"`
 	ExternalV4IP	string 	`json:"external_v4_ip"`
-	FlavorID		string 	`json:"flavor_id"`
+	FlavorID	string 	`json:"flavor_id"`
 }
 
 type commonResult struct {
