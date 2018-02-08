@@ -15,11 +15,12 @@ type CreateOpts struct {
 	// and the caller will be the owner.
 	TenantID    	string  `json:"tenant_id,omitempty"`
 	SubnetID    	string 	`json:"subnet_id,omitempty"`
-	RouterID    	string 	`json:"router_id,omitempty"`
-	Description 	string  `json:"description"`
+	RouterID    	string 	`json:"router_id", required:"true"`
+	Description 	string  `json:"description,omitempty"`
 	AdminStateUp 	*bool 	`json:"admin_state_up"`
 	ProjectID   	string  `json:"project_id"`
-	Name 			string  `json:"name"`
+	Name 			string  `json:"name,omitempty"`
+	FlavorID        string  `json:"flavor_id"`
 }
 
 // ToVPNServiceCreateMap casts a CreateOpts struct to a map.
