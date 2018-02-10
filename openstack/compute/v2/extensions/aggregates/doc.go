@@ -66,7 +66,7 @@ Example of Add Host
 
 	aggregateID := 22
 	opts := aggregates.AddHostOpts{
-		Host: "newhost-cmp1"
+		Host: "newhost-cmp1",
 	}
 
 	aggregate, err := aggregates.AddHost(computeClient, aggregateID, opts).Extract()
@@ -79,10 +79,23 @@ Example of Remove Host
 
 	aggregateID := 22
 	opts := aggregates.RemoveHostOpts{
-		Host: "newhost-cmp1"
+		Host: "newhost-cmp1",
 	}
 
 	aggregate, err := aggregates.RemoveHost(computeClient, aggregateID, opts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", aggregate)
+
+Example of Create or Update Metadata
+
+	aggregateID := 22
+	opts := aggregates.SetMetadata{
+		Metadata: map[string]string{"key": "value"},
+	}
+
+	aggregate, err := aggregates.SetMetadata(computeClient, aggregateID, opts).Extract()
 	if err != nil {
 		panic(err)
 	}
