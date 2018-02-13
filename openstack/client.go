@@ -408,3 +408,8 @@ func NewMessagingV2(client *gophercloud.ProviderClient, clientID string, eo goph
 	sc.MoreHeaders = map[string]string{"Client-ID": clientID}
 	return sc, err
 }
+
+// NewContainerExperimental creates a ServiceClient that may be used with experimental container package
+func NewContainerExperimental(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	return initClientOpts(client, eo, "container-experimental")
+}
