@@ -27,5 +27,25 @@ Example to Create a RBAC Policy
 		panic(err)
 	}
 
+Example to List RBAC Policies
+
+	listOpts := rbacpolicies.ListOpts{
+		TenantID: "a99e9b4e620e4db09a2dfb6e42a01e66",
+	}
+
+	allPages, err := rbacpolicies.List(rbacClient, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allRBACPolicies, err := rbacpolicies.ExtractRBACPolicies(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, rbacpolicy := range allRBACPolicies {
+		fmt.Printf("%+v", rbacpolicy)
+	}
+
 */
 package rbacpolicies
