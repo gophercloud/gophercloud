@@ -84,6 +84,7 @@ type Address struct {
 	Addr             string  `json:"addr"`
 	Port             string  `json:"port"`
 	Version          float64 `json:"version"`
+	SubnetID         string  `json:"subnet_id"`
 }
 
 func (r *Capsule) UnmarshalJSON(b []byte) error {

@@ -53,7 +53,8 @@ func HandleCapsuleGetSuccessfully(t *testing.T) {
 						"version": 4,
 						"preserve_on_delete": false,
 						"addr": "172.24.4.11",
-						"port": "8439060f-381a-4386-a518-33d5a4058636"
+						"port": "8439060f-381a-4386-a518-33d5a4058636",
+						"subnet_id": "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a"
 					}
 				]
 			},

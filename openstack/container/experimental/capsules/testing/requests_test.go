@@ -57,6 +57,7 @@ func TestGetCapsule(t *testing.T) {
 				Addr:             "172.24.4.11",
 				Port:             "8439060f-381a-4386-a518-33d5a4058636",
 				Version:          float64(4),
+				SubnetID:         "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a",
 			},
 		},
 	}
