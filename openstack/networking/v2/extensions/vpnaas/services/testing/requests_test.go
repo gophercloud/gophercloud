@@ -2,13 +2,14 @@ package testing
 
 import (
 	"fmt"
+	"net/http"
+	"testing"
+	
 	"github.com/gophercloud/gophercloud"
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/services"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
-	"net/http"
-	"testing"
 )
 
 func TestList(t *testing.T) {
