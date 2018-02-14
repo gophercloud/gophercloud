@@ -15,7 +15,7 @@ type CreateOpts struct {
 	// and the caller will be the owner.
 	TenantID    	string  `json:"tenant_id,omitempty"`
 	SubnetID    	string 	`json:"subnet_id,omitempty"`
-	RouterID    	string 	`json:"router_id", required:"true"`
+	RouterID    	string 	`json:"router_id",required:"true"`
 	Description 	string  `json:"description,omitempty"`
 	AdminStateUp 	*bool 	`json:"admin_state_up"`
 	ProjectID   	string  `json:"project_id"`
