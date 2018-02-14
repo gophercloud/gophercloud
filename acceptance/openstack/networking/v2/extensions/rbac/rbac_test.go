@@ -32,11 +32,11 @@ func TestRbacCreate(t *testing.T) {
 	}
 
 	// Create a project/tenant
-	project, err := projects.CreateProject(t, client, nil)
+	project, err := projects.CreateProject(t, identityClient, nil)
 	if err != nil {
 		t.Fatalf("Unable to create project: %v", err)
 	}
-	defer projects.DeleteProject(t, client, project.ID)
+	defer projects.DeleteProject(t, identityClient, project.ID)
 
 	tools.PrintResource(t, project)
 
