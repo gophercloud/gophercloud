@@ -27,6 +27,7 @@ type ListOpts struct {
 	IPv6AddressMode string `q:"ipv6_address_mode"`
 	IPv6RAMode      string `q:"ipv6_ra_mode"`
 	ID              string `q:"id"`
+	SubnetPoolID    string `q:"subnetpool_id"`
 	Limit           int    `q:"limit"`
 	Marker          string `q:"marker"`
 	SortKey         string `q:"sort_key"`
