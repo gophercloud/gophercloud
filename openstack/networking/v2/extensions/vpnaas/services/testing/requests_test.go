@@ -11,7 +11,6 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -66,5 +65,3 @@ func TestCreate(t *testing.T) {
 	_, err := services.Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
-
-

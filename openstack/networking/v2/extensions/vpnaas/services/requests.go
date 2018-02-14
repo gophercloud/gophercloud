@@ -13,14 +13,14 @@ type CreateOpts struct {
 	// TenantID specifies a tenant to own the VPN service. The caller must have
 	// an admin role in order to set this. Otherwise, this field is left unset
 	// and the caller will be the owner.
-	TenantID    	string  `json:"tenant_id,omitempty"`
-	SubnetID    	string 	`json:"subnet_id,omitempty"`
-	RouterID    	string 	`json:"router_id" required:"true"`
-	Description 	string  `json:"description,omitempty"`
-	AdminStateUp 	*bool 	`json:"admin_state_up"`
-	ProjectID   	string  `json:"project_id"`
-	Name 			string  `json:"name,omitempty"`
-	FlavorID        string  `json:"flavor_id,omitempty"`
+	TenantID     string `json:"tenant_id,omitempty"`
+	SubnetID     string `json:"subnet_id,omitempty"`
+	RouterID     string `json:"router_id" required:"true"`
+	Description  string `json:"description,omitempty"`
+	AdminStateUp *bool  `json:"admin_state_up"`
+	ProjectID    string `json:"project_id"`
+	Name         string `json:"name,omitempty"`
+	FlavorID     string `json:"flavor_id,omitempty"`
 }
 
 // ToVPNServiceCreateMap casts a CreateOpts struct to a map.
@@ -39,4 +39,3 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
 	return
 }
-
