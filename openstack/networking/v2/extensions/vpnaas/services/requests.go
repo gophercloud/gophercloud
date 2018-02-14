@@ -17,18 +17,18 @@ type ListOptsBuilder interface {
 // to sort by a particular VPN service attribute. SortDir sets the direction,
 // and is either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	ID				string `q:"id"`
-	TenantID    	string `q:"tenant_id"`
-	Name        	string `q:"name"`
-	Description 	string `q:"description"`
-	AdminStateUp	*bool  `q:"admin_state_up"`
-	Status      	string `q:"status"`
-	SubnetID    	string `q:"subnet_id"`
-	RouterID    	string `q:"router_id"`
-	ProjectID		string `q:"project_id"`
-	ExternalV6IP	string `q:"external_v6_ip"`
-	ExternalV4IP	string `q:"external_v4_ip"`
-	FlavorID		string `q:"flavor_id"`
+	ID           string `q:"id"`
+	TenantID     string `q:"tenant_id"`
+	Name         string `q:"name"`
+	Description  string `q:"description"`
+	AdminStateUp *bool  `q:"admin_state_up"`
+	Status       string `q:"status"`
+	SubnetID     string `q:"subnet_id"`
+	RouterID     string `q:"router_id"`
+	ProjectID    string `q:"project_id"`
+	ExternalV6IP string `q:"external_v6_ip"`
+	ExternalV4IP string `q:"external_v4_ip"`
+	FlavorID     string `q:"flavor_id"`
 }
 
 // ToVPNServiceListQuery formats a ListOpts into a query string.
@@ -53,7 +53,6 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		return ServicePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
-
 
 // Get retrieves a particular VPN service based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {

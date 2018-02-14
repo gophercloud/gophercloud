@@ -2,15 +2,14 @@ package testing
 
 import (
 	"fmt"
-	"net/http"
-	"testing"
 	"github.com/gophercloud/gophercloud"
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/services"
-	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+	"net/http"
+	"testing"
 )
-
 
 func TestList(t *testing.T) {
 	th.SetupHTTP()
@@ -65,7 +64,7 @@ func TestList(t *testing.T) {
 				SubnetID:     "",
 				RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
 				ProjectID:    "10039663455a446d8ba2cbb058b0f578",
-				ID: 		  "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+				ID:           "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
 				ExternalV4IP: "172.32.1.11",
 				ExternalV6IP: "2001:db8::1",
 				FlavorID:     "",
@@ -126,7 +125,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa", serv.RouterID)
 	th.AssertEquals(t, "", serv.SubnetID)
 	th.AssertEquals(t, "172.32.1.11", serv.ExternalV4IP)
-	th.AssertEquals(t,"2001:db8::1", serv.ExternalV6IP)
+	th.AssertEquals(t, "2001:db8::1", serv.ExternalV6IP)
 	th.AssertEquals(t, "", serv.FlavorID)
 
 }

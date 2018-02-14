@@ -7,19 +7,18 @@ import (
 
 // Service is a VPN Service
 type Service struct {
-	TenantID        string  `json:"tenant_id"`
-	SubnetID        string  `json:"subnet_id,omitempty"`
-	RouterID        string  `json:"router_id"`
-	Description     string  `json:"description,omitempty"`
-	AdminStateUp    *bool   `json:"admin_state_up"`
-	ProjectID       string  `json:"project_id"`
-	Name            string  `json:"name,omitempty"`
-	Status          string  `json:"status"`
-	ID              string  `json:"id"`
-	ExternalV6IP	string 	`json:"external_v6_ip"`
-	ExternalV4IP	string 	`json:"external_v4_ip"`
-	FlavorID		string 	`json:"flavor_id"`
-
+	TenantID     string `json:"tenant_id"`
+	SubnetID     string `json:"subnet_id,omitempty"`
+	RouterID     string `json:"router_id"`
+	Description  string `json:"description,omitempty"`
+	AdminStateUp *bool  `json:"admin_state_up"`
+	ProjectID    string `json:"project_id"`
+	Name         string `json:"name,omitempty"`
+	Status       string `json:"status"`
+	ID           string `json:"id"`
+	ExternalV6IP string `json:"external_v6_ip"`
+	ExternalV4IP string `json:"external_v4_ip"`
+	FlavorID     string `json:"flavor_id"`
 }
 
 type commonResult struct {
