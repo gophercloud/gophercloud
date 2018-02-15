@@ -14,12 +14,20 @@ type CreateOpts struct {
 	// an admin role in order to set this. Otherwise, this field is left unset
 	// and the caller will be the owner.
 	TenantID     string `json:"tenant_id,omitempty"`
+	//If you specify only a subnet UUID, OpenStack Networking allocates an available IP from that subnet to the port
+	//If you specify both a subnet UUID and an IP address, OpenStack Networking tries to allocate the address to the port
 	SubnetID     string `json:"subnet_id,omitempty"`
+	//The ID of the router
 	RouterID     string `json:"router_id" required:"true"`
+	//Human readable description of the service
 	Description  string `json:"description,omitempty"`
+	//The administrative state of the resource, which is up (true) or down (false).
 	AdminStateUp *bool  `json:"admin_state_up"`
+	//The ID of the project
 	ProjectID    string `json:"project_id"`
+	//The human readable name of the service
 	Name         string `json:"name,omitempty"`
+	//The ID of the flavor
 	FlavorID     string `json:"flavor_id,omitempty"`
 }
 
