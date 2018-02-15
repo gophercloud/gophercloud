@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/rbac"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/rbacpolicies"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -26,8 +26,13 @@ func TestCreate(t *testing.T) {
 		fmt.Fprintf(w, CreateResponse)
 	})
 
-	options := rbac.CreateOpts{Action: "access_as_shared", ObjectType: "network", TargetTenant: "6e547a3bcfe44702889fdeff3c3520c3", ObjectID: "240d22bf-bd17-4238-9758-25f72610ecdc"}
-	rbacResult, err := rbac.Create(fake.ServiceClient(), options).Extract()
+	options := rbacpolicies.CreateOpts{
+		Action:       rbacpolicies.ActionAccessShared,
+		ObjectType:   "network",
+		TargetTenant: "6e547a3bcfe44702889fdeff3c3520c3",
+		ObjectID:     "240d22bf-bd17-4238-9758-25f72610ecdc",
+	}
+	rbacResult, err := rbacpolicies.Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &rbac1, rbacResult)

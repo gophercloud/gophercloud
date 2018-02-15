@@ -1,4 +1,4 @@
-package rbac
+package rbacpolicies
 
 import (
 	"github.com/gophercloud/gophercloud"
@@ -8,9 +8,9 @@ type commonResult struct {
 	gophercloud.Result
 }
 
-// Extract is a function that accepts a result and extracts rbac resource.
-func (r commonResult) Extract() (*Rbac, error) {
-	var s Rbac
+// Extract is a function that accepts a result and extracts RBAC resource.
+func (r commonResult) Extract() (*RBAC, error) {
+	var s RBAC
 	err := r.ExtractInto(&s)
 	return &s, err
 }
@@ -20,14 +20,14 @@ func (r commonResult) ExtractInto(v interface{}) error {
 }
 
 // CreateResult represents the result of a create operation. Call its Extract
-// method to interpret it as a Rbac.
+// method to interpret it as a RBAC.
 type CreateResult struct {
 	commonResult
 }
 
-// Rbac represents a rbac_policy.
-type Rbac struct {
-	// UUID of the rbac_policy.
+// RBAC represents a RBAC policy.
+type RBAC struct {
+	// UUID of the RBAC policy.
 	ID string `json:"id"`
 
 	// Action for the RBAC policy which is access_as_external or access_as_shared.

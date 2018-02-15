@@ -1,5 +1,5 @@
 /*
-Package rbac contains functionality for working with Neutron RBAC Policies.
+Package rbacpolicies contains functionality for working with Neutron RBAC Policies.
 Role-Based Access Control (RBAC) policy framework enables both operators
 and users to grant access to resources for specific projects.
 
@@ -15,17 +15,17 @@ before this feature was added.
 
 Example to Create a RBAC Policy
 
-	createOpts := rbac.CreateOpts{
-		Action:       "access_as_shared",
+	createOpts := rbacpolicies.CreateOpts{
+		Action:       rbacpolicies.ActionAccessShared,
 		ObjectType:   "network",
                 TargetTenant: "6e547a3bcfe44702889fdeff3c3520c3",
                 ObjectID:     "240d22bf-bd17-4238-9758-25f72610ecdc"
 	}
 
-	rbac_policy, err := rbac.Create(rbacClient, createOpts).Extract()
+	rbacPolicy, err := rbacpolicies.Create(rbacClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
 */
-package rbac
+package rbacpolicies

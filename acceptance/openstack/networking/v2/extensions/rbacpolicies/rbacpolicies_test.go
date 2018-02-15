@@ -1,6 +1,6 @@
 // +build acceptance
 
-package rbac
+package rbacpolicies
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 )
 
-func TestRbacCreate(t *testing.T) {
+func TestRBACCreate(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)
@@ -41,7 +41,7 @@ func TestRbacCreate(t *testing.T) {
 	tools.PrintResource(t, project)
 
 	// Create a rbac-policy
-	rbacPolicy, err := CreateRbac(t, client, project.ID, network.ID)
+	rbacPolicy, err := CreateRBAC(t, client, project.ID, network.ID)
 	if err != nil {
 		t.Fatalf("Unable to create rbac-policy: %v", err)
 	}

@@ -1,7 +1,7 @@
 package testing
 
 import (
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/rbac"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/rbacpolicies"
 )
 
 // CreateRequest is the structure of request body to create rbac-policy.
@@ -29,9 +29,9 @@ const CreateResponse = `
     }
 }`
 
-var rbac1 = rbac.Rbac{
+var rbac1 = rbacpolicies.RBAC{
 	ID:           "2cf7523a-93b5-4e69-9360-6c6bf986bb7c",
-	Action:       "access_as_shared",
+	Action:       rbacpolicies.ActionAccessShared,
 	ObjectID:     "240d22bf-bd17-4238-9758-25f72610ecdc",
 	ObjectType:   "network",
 	TenantID:     "3de27ce0a2a54cc6ae06dc62dd0ec832",
