@@ -6,7 +6,6 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/services"
-	"fmt"
 )
 
 // CreateService will create a Service with a random name and a specified router ID
@@ -22,9 +21,6 @@ func CreateService(t *testing.T, client *gophercloud.ServiceClient, routerID str
 		AdminStateUp: &iTrue,
 		RouterID:     routerID,
 	}
-
-	fmt.Printf("#%v", createOpts)
-
 	service, err := services.Create(client, createOpts).Extract()
 	if err != nil {
 		return service, err
