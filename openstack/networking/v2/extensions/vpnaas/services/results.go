@@ -17,8 +17,6 @@ type Service struct {
 	Description  string `json:"description"`
 	//The administrative state of the resource, which is up (true) or down (false).
 	AdminStateUp *bool  `json:"admin_state_up"`
-	//The ID of the project
-	ProjectID    string `json:"project_id"`
 	//The human readable name of the service
 	Name         string `json:"name"`
 	//Indicates whether IPsec VPN service is currently operational

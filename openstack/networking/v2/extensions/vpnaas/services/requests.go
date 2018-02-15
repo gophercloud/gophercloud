@@ -22,8 +22,6 @@ type CreateOpts struct {
 	Description  string `json:"description,omitempty"`
 	//The administrative state of the resource, which is up (true) or down (false).
 	AdminStateUp *bool  `json:"admin_state_up"`
-	//The ID of the project
-	ProjectID    string `json:"project_id"`
 	//The human readable name of the service
 	Name         string `json:"name,omitempty"`
 	//The ID of the flavor

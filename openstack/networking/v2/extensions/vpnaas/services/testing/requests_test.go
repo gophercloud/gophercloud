@@ -27,8 +27,7 @@ func TestCreate(t *testing.T) {
         "name": "vpn",
         "admin_state_up": true,
 		"description": "OpenStack VPN service",
-		"tenant_id":  "10039663455a446d8ba2cbb058b0f578",
-		"project_id": "10039663455a446d8ba2cbb058b0f578"
+		"tenant_id":  "10039663455a446d8ba2cbb058b0f578"
     }
 }      `)
 
@@ -44,7 +43,6 @@ func TestCreate(t *testing.T) {
         "external_v6_ip": "2001:db8::1",
         "admin_state_up": true,
         "subnet_id": null,
-        "project_id": "10039663455a446d8ba2cbb058b0f578",
         "tenant_id": "10039663455a446d8ba2cbb058b0f578",
         "external_v4_ip": "172.32.1.11",
         "id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
@@ -60,7 +58,6 @@ func TestCreate(t *testing.T) {
 		Description:  "OpenStack VPN service",
 		AdminStateUp: gophercloud.Enabled,
 		RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
-		ProjectID:    "10039663455a446d8ba2cbb058b0f578",
 	}
 	_, err := services.Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
