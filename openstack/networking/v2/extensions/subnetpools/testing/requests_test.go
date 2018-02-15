@@ -88,6 +88,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.IsDefault, true)
 	th.AssertEquals(t, s.RevisionNumber, 2)
 }
+
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -105,6 +106,7 @@ func TestCreate(t *testing.T) {
 		fmt.Fprintf(w, SubnetPoolCreateResult)
 	})
 
+	shared := true
 	opts := subnetpools.CreateOpts{
 		Name: "my_ipv4_pool",
 		Prefixes: []string{
@@ -115,6 +117,7 @@ func TestCreate(t *testing.T) {
 		MaxPrefixLen:   30,
 		AddressScopeID: "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3",
 		Description:    "ipv4 prefixes",
+		Shared:         &shared,
 	}
 	s, err := subnetpools.Create(fake.ServiceClient(), opts).Extract()
 	th.AssertNoErr(t, err)
@@ -128,6 +131,7 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, s.MaxPrefixLen, 30)
 	th.AssertEquals(t, s.AddressScopeID, "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3")
 	th.AssertEquals(t, s.Description, "ipv4 prefixes")
+	th.AssertEquals(t, s.Shared, true)
 }
 
 func TestUpdate(t *testing.T) {

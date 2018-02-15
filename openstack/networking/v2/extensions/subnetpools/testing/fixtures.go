@@ -181,7 +181,8 @@ const SubnetPoolCreateRequest = `
         "address_scope_id": "3d4e2e2a-552b-42ad-a16d-820bbf3edaf3",
         "min_prefixlen": 25,
         "max_prefixlen": 30,
-        "description": "ipv4 prefixes"
+        "description": "ipv4 prefixes",
+        "shared": true
     }
 }
 `
@@ -206,7 +207,7 @@ const SubnetPoolCreateResult = `
         ],
         "project_id": "1e2b9857295a4a3e841809ef492812c5",
         "revision_number": 1,
-        "shared": false,
+        "shared": true,
         "tenant_id": "1e2b9857295a4a3e841809ef492812c5",
         "updated_at": "2018-01-01T00:00:15Z"
     }
