@@ -118,14 +118,14 @@ type CreateOpts struct {
 	// AddressScopeID is the Neutron address scope to assign to the subnetpool.
 	AddressScopeID string `json:"address_scope_id,omitempty"`
 
-	// Shared indicates whether this network is shared across all projects.
-	Shared bool `json:"shared,omitempty"`
+	// Shared indicates whether the subnetpool is shared across all projects.
+	Shared *bool `json:"shared,omitempty"`
 
 	// Description is the human-readable description for the resource.
 	Description string `json:"description,omitempty"`
 
 	// IsDefault indicates if the subnetpool is default pool or not.
-	IsDefault bool `json:"is_default,omitempty"`
+	IsDefault *bool `json:"is_default,omitempty"`
 }
 
 // ToSubnetPoolCreateMap constructs a request body from CreateOpts.
