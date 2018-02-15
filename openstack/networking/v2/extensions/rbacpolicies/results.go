@@ -31,7 +31,7 @@ type RBAC struct {
 	ID string `json:"id"`
 
 	// Action for the RBAC policy which is access_as_external or access_as_shared.
-	Action string `json:"action"`
+	Action PolicyAction `json:"action"`
 
 	// ObjectID is the ID of the object_type resource.
 	// An object_type of network returns a network ID and
