@@ -14,8 +14,7 @@ type CreateOpts struct {
 	// an admin role in order to set this. Otherwise, this field is left unset
 	// and the caller will be the owner.
 	TenantID     string `json:"tenant_id,omitempty"`
-	//If you specify only a subnet UUID, OpenStack Networking allocates an available IP from that subnet to the port
-	//If you specify both a subnet UUID and an IP address, OpenStack Networking tries to allocate the address to the port
+	//The ID of the subnet
 	SubnetID     string `json:"subnet_id,omitempty"`
 	//The ID of the router
 	RouterID     string `json:"router_id" required:"true"`
