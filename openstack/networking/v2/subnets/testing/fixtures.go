@@ -199,7 +199,8 @@ const SubnetCreateRequest = `
                 "end": "192.168.199.254"
             }
         ],
-        "host_routes": [{"destination":"","nexthop": "bar"}]
+        "host_routes": [{"destination":"","nexthop": "bar"}],
+        "subnetpool_id": "b80340c7-9960-4f67-a99c-02501656284b"
     }
 }
 `
@@ -222,7 +223,8 @@ const SubnetCreateResult = `
         "ip_version": 4,
         "gateway_ip": "192.168.199.1",
         "cidr": "192.168.199.0/24",
-        "id": "3b80198d-4f7b-4f77-9ef5-774d54e17126"
+        "id": "3b80198d-4f7b-4f77-9ef5-774d54e17126",
+        "subnetpool_id": "b80340c7-9960-4f67-a99c-02501656284b"
     }
 }
 `

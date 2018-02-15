@@ -115,6 +115,9 @@ type CreateOpts struct {
 	// The IPv6 router advertisement specifies whether the networking service
 	// should transmit ICMPv6 packets.
 	IPv6RAMode string `json:"ipv6_ra_mode,omitempty"`
+
+	// SubnetPoolID is the id of the subnet pool that subnet should be associated to.
+	SubnetPoolID string `json:"subnetpool_id,omitempty"`
 }
 
 // ToSubnetCreateMap builds a request body from CreateOpts.
