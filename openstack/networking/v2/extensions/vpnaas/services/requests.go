@@ -5,7 +5,7 @@ import "github.com/gophercloud/gophercloud"
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToVPNServiceCreateMap() (map[string]interface{}, error)
+	ToServiceCreateMap() (map[string]interface{}, error)
 }
 
 // CreateOpts contains all the values needed to create a new VPN service
@@ -31,15 +31,15 @@ type CreateOpts struct {
 	FlavorID     string `json:"flavor_id,omitempty"`
 }
 
-// ToVPNServiceCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToVPNServiceCreateMap() (map[string]interface{}, error) {
+// ToServiceCreateMap casts a CreateOpts struct to a map.
+func (opts CreateOpts) ToServiceCreateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "vpnservice")
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new
 // VPN service
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
-	b, err := opts.ToVPNServiceCreateMap()
+	b, err := opts.ToServiceCreateMap()
 	if err != nil {
 		r.Err = err
 		return
