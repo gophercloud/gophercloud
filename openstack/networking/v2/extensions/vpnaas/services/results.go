@@ -7,29 +7,29 @@ import (
 // Service is a VPN Service
 type Service struct {
 	//The ID of the project
-	TenantID     string `json:"tenant_id"`
+	TenantID string `json:"tenant_id"`
 	//The ID of the subnet
-	SubnetID     string `json:"subnet_id"`
+	SubnetID string `json:"subnet_id"`
 	//The ID of the router
-	RouterID     string `json:"router_id"`
+	RouterID string `json:"router_id"`
 	//A human-readable description for the resource
 	//Default is an empty string
-	Description  string `json:"description"`
+	Description string `json:"description"`
 	//The administrative state of the resource, which is up (true) or down (false).
-	AdminStateUp *bool  `json:"admin_state_up"`
+	AdminStateUp *bool `json:"admin_state_up"`
 	//The human readable name of the service
-	Name         string `json:"name"`
+	Name string `json:"name"`
 	//Indicates whether IPsec VPN service is currently operational
 	//Values are ACTIVE, DOWN, BUILD, ERROR, PENDING_CREATE, PENDING_UPDATE, or PENDING_DELETE.
-	Status       string `json:"status"`
+	Status string `json:"status"`
 	//The unique ID of the VPN service
-	ID           string `json:"id"`
+	ID string `json:"id"`
 	//Read-only external (public) IPv6 address that is used for the VPN service
 	ExternalV6IP string `json:"external_v6_ip"`
 	//Read-only external (public) IPv4 address that is used for the VPN service
 	ExternalV4IP string `json:"external_v4_ip"`
 	//The ID of the flavor
-	FlavorID     string `json:"flavor_id"`
+	FlavorID string `json:"flavor_id"`
 }
 
 type commonResult struct {

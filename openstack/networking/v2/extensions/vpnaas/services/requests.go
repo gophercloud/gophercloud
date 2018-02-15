@@ -13,19 +13,19 @@ type CreateOpts struct {
 	// TenantID specifies a tenant to own the VPN service. The caller must have
 	// an admin role in order to set this. Otherwise, this field is left unset
 	// and the caller will be the owner.
-	TenantID     string `json:"tenant_id,omitempty"`
+	TenantID string `json:"tenant_id,omitempty"`
 	//The ID of the subnet
-	SubnetID     string `json:"subnet_id,omitempty"`
+	SubnetID string `json:"subnet_id,omitempty"`
 	//The ID of the router
-	RouterID     string `json:"router_id" required:"true"`
+	RouterID string `json:"router_id" required:"true"`
 	//Human readable description of the service
-	Description  string `json:"description,omitempty"`
+	Description string `json:"description,omitempty"`
 	//The administrative state of the resource, which is up (true) or down (false).
-	AdminStateUp *bool  `json:"admin_state_up"`
+	AdminStateUp *bool `json:"admin_state_up"`
 	//The human readable name of the service
-	Name         string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 	//The ID of the flavor
-	FlavorID     string `json:"flavor_id,omitempty"`
+	FlavorID string `json:"flavor_id,omitempty"`
 }
 
 // ToServiceCreateMap casts a CreateOpts struct to a map.
