@@ -22,14 +22,30 @@ type Policy struct {
 	PFS string `json:"pfs"`
 	// The transform protocol
 	TransformProtocol string `json:"transform_protocol"`
-	// The units for the lifetime of the security association
-	// The lifetime consists of a unit and integer value
-	LifetimeUnit  string `json:"lifetime.units"`
-	LifetimeValue int    `json:"lifetime.value"`
+	// The lifetime of the security association
+	Lifetime *Lifetime `json:"lifetime"`
+}
+
+type Lifetime struct {
+	// The unit for the lifetime
+	// Default is seconds
+	LifetimeUnit string `json:"units"`
+	// The lifetime
+	// Default is 3600
+	LifetimeValue int `json:"value"`
 }
 
 type commonResult struct {
 	gophercloud.Result
+}
+
+// Extract is a function that accepts a result and extracts an IPSec Policy.
+func (r commonResult) Extract() (*Policy, error) {
+	var s struct {
+		Policy *Policy `json:"ipsecpolicy"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Policy, err
 }
 
 // CreateResult represents the result of a create operation. Call its Extract

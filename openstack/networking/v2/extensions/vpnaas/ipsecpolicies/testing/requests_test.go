@@ -7,7 +7,6 @@ import (
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ipsecpolicies"
-	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -33,7 +32,6 @@ func TestCreate(t *testing.T) {
             "units": "seconds",
             "value": 7200
         },
-		"description": "",
         "tenant_id": "b4eedccc6fb74fa8a7ad6b08382b852b"
 }
 }      `)
@@ -61,6 +59,11 @@ func TestCreate(t *testing.T) {
 }
     `)
 	})
+
+	lifetime := ipsecpolicies.LifetimeCreateOpts{
+		LifetimeUnits: "seconds",
+		LifetimeValue: 7200,
+	}
 	options := ipsecpolicies.CreateOpts{
 		TenantID:            "b4eedccc6fb74fa8a7ad6b08382b852b",
 		Name:                "ipsecpolicy1",
@@ -69,8 +72,7 @@ func TestCreate(t *testing.T) {
 		EncapsulationMode:   "tunnel",
 		EncryptionAlgorithm: "aes-128",
 		PFS:                 "group5",
-		LifetimeUnit:        "seconds",
-		LifetimeValue:       7200,
+		Lifetime:            &lifetime,
 		Description:         "",
 	}
 	_, err := ipsecpolicies.Create(fake.ServiceClient(), options).Extract()

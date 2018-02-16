@@ -14,37 +14,54 @@ type CreateOpts struct {
 	// an admin role in order to set this. Otherwise, this field is left unset
 	// and the caller will be the owner.
 	TenantID string `json:"tenant_id,omitempty"`
-	// The human readable description of the policy
+
+	// Description is the human readable description of the policy.
 	Description string `json:"description,omitempty"`
-	// The human readable name of the policy
-	// Does not have to be unique
+
+	// Name is the human readable name of the policy.
+	// Does not have to be unique.
 	Name string `json:"name,omitempty"`
-	// The authentication hash algorithm
-	// Valid values are sha1, sha256, sha384, sha512
+
+	// AuthAlgorithm is the authentication hash algorithm.
+	// Valid values are sha1, sha256, sha384, sha512.
 	// The default is sha1.
 	AuthAlgorithm string `json:"auth_algorithm,omitempty"`
-	// The encapsulation mode
-	// A valid value is tunnel or transport
+
+	// EncapsulationMode is the encapsulation mode.
+	// A valid value is tunnel or transport.
 	// Default is tunnel.
 	EncapsulationMode string `json:"encapsulation_mode,omitempty"`
-	// The encryption algorithm
-	// A valid value is 3des, aes-128, aes-192, aes-256, and so on
-	// Default is aes-128
+
+	// EncryptionAlgorithm is the encryption algorithm.
+	// A valid value is 3des, aes-128, aes-192, aes-256, and so on.
+	// Default is aes-128.
 	EncryptionAlgorithm string `json:"encryption_algorithm,omitempty"`
-	// Perfect forward secrecy (PFS)
-	// A valid value is Group2, Group5, Group14, and so on
-	// Default is Group5
+
+	// PFS is the Perfect forward secrecy mode.
+	// A valid value is Group2, Group5, Group14, and so on.
+	// Default is Group5.
 	PFS string `json:"pfs,omitempty"`
-	// The transform protocol
-	// A valid value is ESP, AH, or AH- ESP
+
+	// TransformProtocol is the transform protocol.
+	// A valid value is ESP, AH, or AH- ESP.
 	// Default is ESP.
 	TransformProtocol string `json:"transform_protocol,omitempty"`
-	// The units for the lifetime of the security association
-	// The lifetime consists of a unit and integer value
-	// You can omit either the unit or value portion of the lifetime
-	// Default unit is seconds and default value is 3600.
-	LifetimeUnit  string `json:"lifetime.units,omitempty"`
-	LifetimeValue int    `json:"lifetime.value,omitempty"`
+
+	//Lifetime is the lifetime of the security association
+	Lifetime *LifetimeCreateOpts `json:"lifetime,omitempty"`
+}
+
+// The lifetime consists of a unit and integer value
+// You can omit either the unit or value portion of the lifetime
+type LifetimeCreateOpts struct {
+	// LifetimeUnits is the units for the lifetime of the security association
+	// Default unit is seconds
+	LifetimeUnits string `json:"units,omitempty"`
+
+	// The lifetime value.
+	// Must be a positive integer.
+	// Default value is 3600.
+	LifetimeValue int `json:"value,omitempty"`
 }
 
 // ToPolicyCreateMap casts a CreateOpts struct to a map.
