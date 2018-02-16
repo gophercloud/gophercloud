@@ -6,31 +6,40 @@ import (
 
 // Policy is an IPSec Policy
 type Policy struct {
-	// The ID of the project
+	// TenantID is the ID of the project
 	TenantID string `json:"tenant_id"`
-	// The human readable description of the policy
+
+	// Description is the human readable description of the policy
 	Description string `json:"description"`
-	// The human readable name of the policy
+
+	// Name is the human readable name of the policy
 	Name string `json:"name"`
-	// The authentication hash algorithm
+
+	// AuthAlgorithm is the authentication hash algorithm
 	AuthAlgorithm string `json:"auth_algorithm"`
-	// The encapsulation mode
+
+	// EncapsulationMode is the encapsulation mode
 	EncapsulationMode string `json:"encapsulation_mode"`
-	// The encryption algorithm
+
+	// EncryptionAlgorithm is the encryption algorithm
 	EncryptionAlgorithm string `json:"encryption_algorithm"`
-	// The Perfect forward secrecy (PFS) mode
+
+	// PFS is the Perfect forward secrecy (PFS) mode
 	PFS string `json:"pfs"`
-	// The transform protocol
+
+	// TranformProtocol is the transform protocol
 	TransformProtocol string `json:"transform_protocol"`
-	// The lifetime of the security association
+
+	// Lifetime is the lifetime of the security association
 	Lifetime *Lifetime `json:"lifetime"`
 }
 
 type Lifetime struct {
-	// The unit for the lifetime
+	// LifetimeUnits is the unit for the lifetime
 	// Default is seconds
-	LifetimeUnit string `json:"units"`
-	// The lifetime
+	LifetimeUnits string `json:"units"`
+
+	// LifetimeValue is the lifetime
 	// Default is 3600
 	LifetimeValue int `json:"value"`
 }
