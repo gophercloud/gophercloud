@@ -14,17 +14,23 @@ type CreateOpts struct {
 	// an admin role in order to set this. Otherwise, this field is left unset
 	// and the caller will be the owner.
 	TenantID string `json:"tenant_id,omitempty"`
-	//The ID of the subnet
+
+	// SubnetID is the ID of the subnet.
 	SubnetID string `json:"subnet_id,omitempty"`
-	//The ID of the router
+
+	// RouterID is the ID of the router.
 	RouterID string `json:"router_id" required:"true"`
-	//Human readable description of the service
+
+	// Description is the human readable description of the service.
 	Description string `json:"description,omitempty"`
-	//The administrative state of the resource, which is up (true) or down (false).
+
+	// AdminStateUp is the administrative state of the resource, which is up (true) or down (false).
 	AdminStateUp *bool `json:"admin_state_up"`
-	//The human readable name of the service
+
+	// Name is the human readable name of the service.
 	Name string `json:"name,omitempty"`
-	//The ID of the flavor
+
+	// The ID of the flavor.
 	FlavorID string `json:"flavor_id,omitempty"`
 }
 
@@ -34,7 +40,7 @@ func (opts CreateOpts) ToServiceCreateMap() (map[string]interface{}, error) {
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new
-// VPN service
+// VPN service.
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToServiceCreateMap()
 	if err != nil {
