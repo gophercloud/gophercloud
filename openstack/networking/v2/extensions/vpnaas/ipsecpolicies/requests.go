@@ -43,8 +43,8 @@ type CreateOpts struct {
 	// The lifetime consists of a unit and integer value
 	// You can omit either the unit or value portion of the lifetime
 	// Default unit is seconds and default value is 3600.
-	LifetimeUnit string `json:"lifetime.units,omitempty"`
-	LifetimeName string `json:"lifetime.name,omitempty"`
+	LifetimeUnit  string `json:"lifetime.units,omitempty"`
+	LifetimeValue int    `json:"lifetime.value,omitempty"`
 }
 
 // ToPolicyCreateMap casts a CreateOpts struct to a map.

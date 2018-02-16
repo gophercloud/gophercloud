@@ -24,8 +24,8 @@ type Policy struct {
 	TransformProtocol string `json:"transform_protocol"`
 	// The units for the lifetime of the security association
 	// The lifetime consists of a unit and integer value
-	LifetimeUnit string `json:"lifetime.units"`
-	LifetimeName string `json:"lifetime.name"`
+	LifetimeUnit  string `json:"lifetime.units"`
+	LifetimeValue int    `json:"lifetime.value"`
 }
 
 type commonResult struct {
