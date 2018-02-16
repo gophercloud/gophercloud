@@ -59,6 +59,16 @@ func TestCreate(t *testing.T) {
 		AdminStateUp: gophercloud.Enabled,
 		RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
 	}
-	_, err := services.Create(fake.ServiceClient(), options).Extract()
+	actual, err := services.Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa", actual.RouterID)
+	th.AssertEquals(t, "PENDING_CREATE", actual.Status)
+	th.AssertEquals(t, "vpn", actual.Name)
+	th.AssertEquals(t, "2001:db8::1", actual.ExternalV6IP)
+	th.AssertEquals(t, true, *actual.AdminStateUp)
+	th.AssertEquals(t, "", actual.SubnetID)
+	th.AssertEquals(t, "10039663455a446d8ba2cbb058b0f578", actual.TenantID)
+	th.AssertEquals(t, "172.32.1.11", actual.ExternalV4IP)
+	th.AssertEquals(t, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", actual.ID)
+	th.AssertEquals(t, "OpenStack VPN service", actual.Description)
 }
