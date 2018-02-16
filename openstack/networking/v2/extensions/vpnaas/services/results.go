@@ -60,3 +60,9 @@ func (r commonResult) Extract() (*Service, error) {
 type CreateResult struct {
 	commonResult
 }
+
+// DeleteResult represents the result of a delete operation. Call its
+// ExtractErr method to determine if the operation succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
