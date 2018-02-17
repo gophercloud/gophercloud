@@ -61,17 +61,17 @@ func TestCreate(t *testing.T) {
 	})
 
 	lifetime := ipsecpolicies.LifetimeCreateOpts{
-		Units: "seconds",
+		Units: ipsecpolicies.UnitSeconds,
 		Value: 7200,
 	}
 	options := ipsecpolicies.CreateOpts{
 		TenantID:            "b4eedccc6fb74fa8a7ad6b08382b852b",
 		Name:                "ipsecpolicy1",
-		TransformProtocol:   "esp",
-		AuthAlgorithm:       "sha1",
-		EncapsulationMode:   "tunnel",
-		EncryptionAlgorithm: "aes-128",
-		PFS:                 "group5",
+		TransformProtocol:   ipsecpolicies.TransformProtocolESP,
+		AuthAlgorithm:       ipsecpolicies.AuthAlgorithmSHA1,
+		EncapsulationMode:   ipsecpolicies.EncapsulationModeTunnel,
+		EncryptionAlgorithm: ipsecpolicies.EncryptionAlgorithmAES128,
+		PFS:                 ipsecpolicies.PFSGroup5,
 		Lifetime:            &lifetime,
 		Description:         "",
 	}

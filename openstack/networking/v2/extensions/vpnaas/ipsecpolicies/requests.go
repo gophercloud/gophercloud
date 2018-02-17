@@ -2,6 +2,34 @@ package ipsecpolicies
 
 import "github.com/gophercloud/gophercloud"
 
+type TransformProtocol string
+type AuthAlgorithm string
+type EncapsulationMode string
+type EncryptionAlgorithm string
+type PFS string
+type Unit string
+
+const (
+	TransformProtocolESP       TransformProtocol   = "esp"
+	TransformProtocolAH        TransformProtocol   = "ah"
+	TransformProtocolAHESP     TransformProtocol   = "ah-esp"
+	AuthAlgorithmSHA1          AuthAlgorithm       = "sha1"
+	AuthAlgorithmSHA256        AuthAlgorithm       = "sha256"
+	AuthAlgorithmHA384         AuthAlgorithm       = "sha384"
+	AuthAlgorithmSHA512        AuthAlgorithm       = "sha512"
+	EncryptionAlgorithm3DES    EncryptionAlgorithm = "3des"
+	EncryptionAlgorithmAES128  EncryptionAlgorithm = "aes-128"
+	EncryptionAlgorithmAES256  EncryptionAlgorithm = "aes-256"
+	EncryptionAlgorithmAES192  EncryptionAlgorithm = "aes-192"
+	EncapsulationModeTunnel    EncapsulationMode   = "tunnel"
+	EncapsulationModeTransport EncapsulationMode   = "transport"
+	UnitSeconds                Unit                = "seconds"
+	UnitKilobytes              Unit                = "kilobytes"
+	PFSGroup2                  PFS                 = "group2"
+	PFSGroup5                  PFS                 = "group5"
+	PFSGroup14                 PFS                 = "group14"
+)
+
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
@@ -25,27 +53,27 @@ type CreateOpts struct {
 	// AuthAlgorithm is the authentication hash algorithm.
 	// Valid values are sha1, sha256, sha384, sha512.
 	// The default is sha1.
-	AuthAlgorithm string `json:"auth_algorithm,omitempty"`
+	AuthAlgorithm AuthAlgorithm `json:"auth_algorithm,omitempty"`
 
 	// EncapsulationMode is the encapsulation mode.
 	// A valid value is tunnel or transport.
 	// Default is tunnel.
-	EncapsulationMode string `json:"encapsulation_mode,omitempty"`
+	EncapsulationMode EncapsulationMode `json:"encapsulation_mode,omitempty"`
 
 	// EncryptionAlgorithm is the encryption algorithm.
 	// A valid value is 3des, aes-128, aes-192, aes-256, and so on.
 	// Default is aes-128.
-	EncryptionAlgorithm string `json:"encryption_algorithm,omitempty"`
+	EncryptionAlgorithm EncryptionAlgorithm `json:"encryption_algorithm,omitempty"`
 
 	// PFS is the Perfect forward secrecy mode.
 	// A valid value is Group2, Group5, Group14, and so on.
 	// Default is Group5.
-	PFS string `json:"pfs,omitempty"`
+	PFS PFS `json:"pfs,omitempty"`
 
 	// TransformProtocol is the transform protocol.
 	// A valid value is ESP, AH, or AH- ESP.
 	// Default is ESP.
-	TransformProtocol string `json:"transform_protocol,omitempty"`
+	TransformProtocol TransformProtocol `json:"transform_protocol,omitempty"`
 
 	//Lifetime is the lifetime of the security association
 	Lifetime *LifetimeCreateOpts `json:"lifetime,omitempty"`
@@ -56,7 +84,7 @@ type CreateOpts struct {
 type LifetimeCreateOpts struct {
 	// Units is the units for the lifetime of the security association
 	// Default unit is seconds
-	Units string `json:"units,omitempty"`
+	Units Unit `json:"units,omitempty"`
 
 	// The lifetime value.
 	// Must be a positive integer.
