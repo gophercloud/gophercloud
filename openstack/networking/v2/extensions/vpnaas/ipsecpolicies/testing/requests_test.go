@@ -61,8 +61,8 @@ func TestCreate(t *testing.T) {
 	})
 
 	lifetime := ipsecpolicies.LifetimeCreateOpts{
-		LifetimeUnits: "seconds",
-		LifetimeValue: 7200,
+		Units: "seconds",
+		Value: 7200,
 	}
 	options := ipsecpolicies.CreateOpts{
 		TenantID:            "b4eedccc6fb74fa8a7ad6b08382b852b",
@@ -77,14 +77,20 @@ func TestCreate(t *testing.T) {
 	}
 	actual, err := ipsecpolicies.Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, "b4eedccc6fb74fa8a7ad6b08382b852b", actual.TenantID)
-	th.AssertEquals(t, "ipsecpolicy1", actual.Name)
-	th.AssertEquals(t, "esp", actual.TransformProtocol)
-	th.AssertEquals(t, "sha1", actual.AuthAlgorithm)
-	th.AssertEquals(t, "tunnel", actual.EncapsulationMode)
-	th.AssertEquals(t, "aes-128", actual.EncryptionAlgorithm)
-	th.AssertEquals(t, "group5", actual.PFS)
-	th.AssertEquals(t, "", actual.Description)
-	th.AssertEquals(t, "seconds", actual.Lifetime.LifetimeUnits)
-	th.AssertEquals(t, 7200, actual.Lifetime.LifetimeValue)
+	expectedLifetime := ipsecpolicies.Lifetime{
+		Units: "seconds",
+		Value: 7200,
+	}
+	expected := ipsecpolicies.Policy{
+		TenantID:            "b4eedccc6fb74fa8a7ad6b08382b852b",
+		Name:                "ipsecpolicy1",
+		TransformProtocol:   "esp",
+		AuthAlgorithm:       "sha1",
+		EncapsulationMode:   "tunnel",
+		EncryptionAlgorithm: "aes-128",
+		PFS:                 "group5",
+		Description:         "",
+		Lifetime:            expectedLifetime,
+	}
+	th.AssertDeepEquals(t, expected, *actual)
 }

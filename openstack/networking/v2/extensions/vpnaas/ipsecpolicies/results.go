@@ -31,17 +31,17 @@ type Policy struct {
 	TransformProtocol string `json:"transform_protocol"`
 
 	// Lifetime is the lifetime of the security association
-	Lifetime *Lifetime `json:"lifetime"`
+	Lifetime Lifetime `json:"lifetime"`
 }
 
 type Lifetime struct {
-	// LifetimeUnits is the unit for the lifetime
+	// Units is the unit for the lifetime
 	// Default is seconds
-	LifetimeUnits string `json:"units"`
+	Units string `json:"units"`
 
-	// LifetimeValue is the lifetime
+	// Value is the lifetime
 	// Default is 3600
-	LifetimeValue int `json:"value"`
+	Value int `json:"value"`
 }
 
 type commonResult struct {

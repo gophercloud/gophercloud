@@ -54,14 +54,14 @@ type CreateOpts struct {
 // The lifetime consists of a unit and integer value
 // You can omit either the unit or value portion of the lifetime
 type LifetimeCreateOpts struct {
-	// LifetimeUnits is the units for the lifetime of the security association
+	// Units is the units for the lifetime of the security association
 	// Default unit is seconds
-	LifetimeUnits string `json:"units,omitempty"`
+	Units string `json:"units,omitempty"`
 
 	// The lifetime value.
 	// Must be a positive integer.
 	// Default value is 3600.
-	LifetimeValue int `json:"value,omitempty"`
+	Value int `json:"value,omitempty"`
 }
 
 // ToPolicyCreateMap casts a CreateOpts struct to a map.
