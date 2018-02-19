@@ -98,6 +98,12 @@ type Port struct {
 
 	// Identifies the list of IP addresses the port will recognize/accept
 	AllowedAddressPairs []AddressPair `json:"allowed_address_pairs"`
+
+	// Specifies the DNS Domain used as the local DNS Search Domain, and the domain used for autocreating public DNS entries for this port
+	DNSDomain string `json:"dns_domain,omitempty"`
+
+	// Specifies the DNS Name used as the first label of the DNS entry, and the name used for autocreating public DNS entries for this port
+	DNSName string `json:"dns_name,omitempty"`
 }
 
 // PortPage is the page returned by a pager when traversing over a collection

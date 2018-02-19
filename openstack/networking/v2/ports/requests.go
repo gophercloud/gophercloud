@@ -30,6 +30,8 @@ type ListOpts struct {
 	Marker       string `q:"marker"`
 	SortKey      string `q:"sort_key"`
 	SortDir      string `q:"sort_dir"`
+	DNSDomain    string `q:"dns_domain"`
+	DNSName      string `q:"dns_name"`
 }
 
 // ToPortListQuery formats a ListOpts into a query string.
@@ -83,6 +85,8 @@ type CreateOpts struct {
 	TenantID            string        `json:"tenant_id,omitempty"`
 	SecurityGroups      *[]string     `json:"security_groups,omitempty"`
 	AllowedAddressPairs []AddressPair `json:"allowed_address_pairs,omitempty"`
+	DNSDomain           string        `json:"dns_domain,omitempty"`
+	DNSName             string        `json:"dns_name,omitempty"`
 }
 
 // ToPortCreateMap builds a request body from CreateOpts.
@@ -117,6 +121,8 @@ type UpdateOpts struct {
 	DeviceOwner         string         `json:"device_owner,omitempty"`
 	SecurityGroups      *[]string      `json:"security_groups,omitempty"`
 	AllowedAddressPairs *[]AddressPair `json:"allowed_address_pairs,omitempty"`
+	DNSDomain           string         `json:"dns_domain,omitempty"`
+	DNSName             string         `json:"dns_name,omitempty"`
 }
 
 // ToPortUpdateMap builds a request body from UpdateOpts.

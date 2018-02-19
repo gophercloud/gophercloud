@@ -23,6 +23,8 @@ type ListOpts struct {
 	SortDir           string `q:"sort_dir"`
 	RouterID          string `q:"router_id"`
 	Status            string `q:"status"`
+	DNSDomain         string `q:"dns_domain"`
+	DNSName           string `q:"dns_name"`
 }
 
 // List returns a Pager which allows you to iterate over a collection of
@@ -55,6 +57,8 @@ type CreateOpts struct {
 	FixedIP           string `json:"fixed_ip_address,omitempty"`
 	SubnetID          string `json:"subnet_id,omitempty"`
 	TenantID          string `json:"tenant_id,omitempty"`
+	DNSDomain         string `json:"dns_domain,omitempty"`
+	DNSName           string `json:"dns_name,omitempty"`
 }
 
 // ToFloatingIPCreateMap allows CreateOpts to satisfy the CreateOptsBuilder
@@ -114,7 +118,9 @@ type UpdateOptsBuilder interface {
 // linked to. To associate the floating IP with a new internal port, provide its
 // ID. To disassociate the floating IP from all ports, provide an empty string.
 type UpdateOpts struct {
-	PortID *string `json:"port_id"`
+	PortID    *string `json:"port_id"`
+	DNSDomain string  `json:"dns_domain,omitempty"`
+	DNSName   string  `json:"dns_name,omitempty"`
 }
 
 // ToFloatingIPUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder
