@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ipsecpolicies"
 )
 
 func TestPolicyCRUD(t *testing.T) {
@@ -22,4 +23,10 @@ func TestPolicyCRUD(t *testing.T) {
 	defer DeleteIPSecPolicy(t, client, policy.ID)
 
 	tools.PrintResource(t, policy)
+
+	newPolicy, err := ipsecpolicies.Get(client, policy.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get firewall: %v", err)
+	}
+	tools.PrintResource(t, newPolicy)
 }
