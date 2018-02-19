@@ -35,5 +35,5 @@ func TestCreate(t *testing.T) {
 	rbacResult, err := rbacpolicies.Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, &rbac1, rbacResult)
+	th.AssertDeepEquals(t, &rbacPolicy1, rbacResult)
 }

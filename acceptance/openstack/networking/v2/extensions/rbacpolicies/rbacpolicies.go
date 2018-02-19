@@ -7,9 +7,9 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/rbacpolicies"
 )
 
-// CreateRBAC will create a rbac-policy. An error will be returned if the
+// CreateRBACPolicy will create a rbac-policy. An error will be returned if the
 // rbac-policy could not be created.
-func CreateRBAC(t *testing.T, client *gophercloud.ServiceClient, tenantID, networkID string) (*rbacpolicies.RBAC, error) {
+func CreateRBACPolicy(t *testing.T, client *gophercloud.ServiceClient, tenantID, networkID string) (*rbacpolicies.RBACPolicy, error) {
 	createOpts := rbacpolicies.CreateOpts{
 		Action:       rbacpolicies.ActionAccessShared,
 		ObjectType:   "network",

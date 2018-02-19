@@ -9,17 +9,17 @@ import (
 type PolicyAction string
 
 const (
-	//ActionAccessExternal returns Action for the RBAC policy as access_as_external.
+	// ActionAccessExternal returns Action for the RBAC policy as access_as_external.
 	ActionAccessExternal PolicyAction = "access_as_external"
 
-	//ActionAccessShared returns Action for the RBAC policy as access_as_shared.
+	// ActionAccessShared returns Action for the RBAC policy as access_as_shared.
 	ActionAccessShared PolicyAction = "access_as_shared"
 )
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToRBACCreateMap() (map[string]interface{}, error)
+	ToRBACPolicyCreateMap() (map[string]interface{}, error)
 }
 
 // CreateOpts represents options used to create a rbac-policy.
@@ -30,8 +30,8 @@ type CreateOpts struct {
 	ObjectID     string       `json:"object_id" required:"true"`
 }
 
-// ToRBACCreateMap builds a request body from CreateOpts.
-func (opts CreateOpts) ToRBACCreateMap() (map[string]interface{}, error) {
+// ToRBACPolicyCreateMap builds a request body from CreateOpts.
+func (opts CreateOpts) ToRBACPolicyCreateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "rbac_policy")
 }
 
@@ -41,7 +41,7 @@ func (opts CreateOpts) ToRBACCreateMap() (map[string]interface{}, error) {
 // The tenant ID that is contained in the URI is the tenant that creates the
 // rbac-policy.
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
-	b, err := opts.ToRBACCreateMap()
+	b, err := opts.ToRBACPolicyCreateMap()
 	if err != nil {
 		r.Err = err
 		return

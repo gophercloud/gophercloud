@@ -3,6 +3,7 @@
 package rbacpolicies
 
 import (
+	"os"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -11,7 +12,12 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 )
 
-func TestRBACCreate(t *testing.T) {
+func TestRBACPolicyCreate(t *testing.T) {
+	username := os.Getenv("OS_USERNAME")
+	if username != "admin" {
+		t.Skip("must be admin to run this test")
+	}
+
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)
@@ -41,7 +47,7 @@ func TestRBACCreate(t *testing.T) {
 	tools.PrintResource(t, project)
 
 	// Create a rbac-policy
-	rbacPolicy, err := CreateRBAC(t, client, project.ID, network.ID)
+	rbacPolicy, err := CreateRBACPolicy(t, client, project.ID, network.ID)
 	if err != nil {
 		t.Fatalf("Unable to create rbac-policy: %v", err)
 	}

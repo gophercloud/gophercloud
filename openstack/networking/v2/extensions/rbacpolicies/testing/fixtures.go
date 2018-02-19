@@ -29,7 +29,7 @@ const CreateResponse = `
     }
 }`
 
-var rbac1 = rbacpolicies.RBAC{
+var rbacPolicy1 = rbacpolicies.RBACPolicy{
 	ID:           "2cf7523a-93b5-4e69-9360-6c6bf986bb7c",
 	Action:       rbacpolicies.ActionAccessShared,
 	ObjectID:     "240d22bf-bd17-4238-9758-25f72610ecdc",
