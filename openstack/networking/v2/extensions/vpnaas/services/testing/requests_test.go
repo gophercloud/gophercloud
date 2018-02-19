@@ -166,18 +166,19 @@ func TestGet(t *testing.T) {
         `)
 	})
 
-	serv, err := services.Get(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
+	actual, err := services.Get(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
 	th.AssertNoErr(t, err)
-
-	th.AssertEquals(t, "PENDING_CREATE", serv.Status)
-	th.AssertEquals(t, "vpnservice1", serv.Name)
-	th.AssertEquals(t, "VPN test service", serv.Description)
-	th.AssertEquals(t, true, serv.AdminStateUp)
-	th.AssertEquals(t, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", serv.ID)
-	th.AssertEquals(t, "10039663455a446d8ba2cbb058b0f578", serv.TenantID)
-	th.AssertEquals(t, "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa", serv.RouterID)
-	th.AssertEquals(t, "", serv.SubnetID)
-
+	expected := services.Service{
+		Status:       "PENDING_CREATE",
+		Name:         "vpnservice1",
+		Description:  "VPN test service",
+		AdminStateUp: true,
+		ID:           "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+		TenantID:     "10039663455a446d8ba2cbb058b0f578",
+		RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
+		SubnetID:     "",
+	}
+	th.AssertDeepEquals(t, expected, *actual)
 }
 
 func TestDelete(t *testing.T) {
