@@ -26,6 +26,7 @@ func TestServiceCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create service: %v", err)
 	}
+	defer DeleteService(t, client, service.ID)
 
 	tools.PrintResource(t, service)
 }
