@@ -29,6 +29,20 @@ const CreateResponse = `
     }
 }`
 
+// GetResponse is the structure of the response body of rbac-policy get operation.
+const GetResponse = `
+{
+    "rbac_policy": {
+                        "target_tenant": "6e547a3bcfe44702889fdeff3c3520c3",
+                        "tenant_id": "3de27ce0a2a54cc6ae06dc62dd0ec832",
+                        "object_type": "network",
+                        "object_id": "240d22bf-bd17-4238-9758-25f72610ecdc",
+                        "action": "access_as_shared",
+                        "project_id": "3de27ce0a2a54cc6ae06dc62dd0ec832",
+                        "id": "2cf7523a-93b5-4e69-9360-6c6bf986bb7c"
+        }
+}`
+
 var rbacPolicy1 = rbacpolicies.RBACPolicy{
 	ID:           "2cf7523a-93b5-4e69-9360-6c6bf986bb7c",
 	Action:       rbacpolicies.ActionAccessShared,

@@ -4,6 +4,12 @@ import (
 	"github.com/gophercloud/gophercloud"
 )
 
+// Get retrieves a specific rbac policy based on its unique ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
+}
+
 // PolicyAction maps to Action for the RBAC policy.
 // Which allows access_as_external or access_as_shared.
 type PolicyAction string
