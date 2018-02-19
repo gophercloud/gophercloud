@@ -66,6 +66,8 @@ type CreateResult struct {
 	commonResult
 }
 
+// CreateResult represents the result of a delete operation. Call its ExtractErr method
+// to determine if the operation succeeded or failed.
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
