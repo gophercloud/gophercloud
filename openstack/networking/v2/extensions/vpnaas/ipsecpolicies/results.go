@@ -65,3 +65,7 @@ func (r commonResult) Extract() (*Policy, error) {
 type CreateResult struct {
 	commonResult
 }
+
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
