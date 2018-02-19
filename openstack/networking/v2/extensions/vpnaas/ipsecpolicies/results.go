@@ -118,3 +118,9 @@ func ExtractPolicies(r pagination.Page) ([]Policy, error) {
 	err := (r.(PolicyPage)).ExtractInto(&s)
 	return s.Policies, err
 }
+
+// UpdateResult represents the result of an update operation. Call its Extract
+// method to interpret it as a Policy.
+type UpdateResult struct {
+	commonResult
+}
