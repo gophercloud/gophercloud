@@ -2,6 +2,7 @@ package ipsecpolicies
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // Policy is an IPSec Policy
@@ -70,4 +71,10 @@ type CreateResult struct {
 // to determine if the operation succeeded or failed.
 type DeleteResult struct {
 	gophercloud.ErrResult
+}
+
+// GetResult represents the result of a get operation. Call its Extract
+// method to interpret it as a Policy.
+type GetResult struct {
+	commonResult
 }
