@@ -2,9 +2,7 @@ package testing
 
 import (
 	"fmt"
-	"github.com/gophercloud/gophercloud"
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas/policies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ikepolicies"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"net/http"
@@ -15,23 +13,18 @@ func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/fw/firewall_policies", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/vpn/ikepolicies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
 {
-    "firewall_policy":{
+    "ikepolicy":{
         "name": "policy",
-        "firewall_rules": [
-            "98a58c87-76be-ae7c-a74e-b77fffb88d95",
-            "11a58c87-76be-ae7c-a74e-b77fffb88a32"
-        ],
-        "description": "Firewall policy",
+        "description": "IKE policy",
 		"tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
-		"audited": true,
-		"shared": false
+		"ike_version": "v2"
     }
 }
       `)
@@ -41,16 +34,20 @@ func TestCreate(t *testing.T) {
 
 		fmt.Fprintf(w, `
 {
-    "firewall_policy":{
+    "ikepolicy":{
         "name": "policy",
-        "firewall_rules": [
-            "98a58c87-76be-ae7c-a74e-b77fffb88d95",
-            "11a58c87-76be-ae7c-a74e-b77fffb88a32"
-        ],
         "tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
-        "audited": false,
         "id": "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
-        "description": "Firewall policy"
+        "description": "IKE policy",
+		"auth_algorithm": "sha1",
+		"encryption_algorithm": "aes-128",
+		"pfs": "Group5",
+		"lifetime": {
+			"value": 3600,
+			"units": "seconds"
+		},
+		"phase1_negotiation_mode": "main",
+		"ike_version": "v2"
     }
 }
         `)
@@ -59,15 +56,27 @@ func TestCreate(t *testing.T) {
 	options := ikepolicies.CreateOpts{
 		TenantID:    "9145d91459d248b1b02fdaca97c6a75d",
 		Name:        "policy",
-		Description: "Firewall policy",
-		Shared:      gophercloud.Disabled,
-		Audited:     gophercloud.Enabled,
-		Rules: []string{
-			"98a58c87-76be-ae7c-a74e-b77fffb88d95",
-			"11a58c87-76be-ae7c-a74e-b77fffb88a32",
-		},
+		Description: "IKE policy",
+		IKEVersion:  ikepolicies.IKEVersionv2,
 	}
 
-	_, err := policies.Create(fake.ServiceClient(), options).Extract()
+	actual, err := ikepolicies.Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
+	expectedLifetime := ikepolicies.Lifetime{
+		Units: "seconds",
+		Value: 3600,
+	}
+	expected := ikepolicies.Policy{
+		AuthAlgorithm:         "sha1",
+		IkeVersion:            "v2",
+		TenantID:              "9145d91459d248b1b02fdaca97c6a75d",
+		Phase1NegotiationMode: "main",
+		PFS:                 "Group5",
+		EncryptionAlgorithm: "aes-128",
+		Description:         "IKE policy",
+		Name:                "policy",
+		ID:                  "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
+		Lifetime:            expectedLifetime,
+	}
+	th.AssertDeepEquals(t, expected, *actual)
 }

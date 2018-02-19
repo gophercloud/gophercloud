@@ -1,5 +1,7 @@
 package ikepolicies
 
+import "github.com/gophercloud/gophercloud"
+
 // Policy is an IKE Policy
 type Policy struct {
 	// TenantID is the ID of the project
@@ -39,6 +41,9 @@ type Policy struct {
 	IkeVersion string `json:"ike_version"`
 }
 
+type commonResult struct {
+	gophercloud.Result
+}
 type Lifetime struct {
 	// Units is the unit for the lifetime
 	// Default is seconds
@@ -47,4 +52,17 @@ type Lifetime struct {
 	// Value is the lifetime
 	// Default is 3600
 	Value int `json:"value"`
+}
+
+// Extract is a function that accepts a result and extracts an IKE Policy.
+func (r commonResult) Extract() (*Policy, error) {
+	var s struct {
+		Policy *Policy `json:"ikepolicy"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Policy, err
+}
+
+type CreateResult struct {
+	commonResult
 }
