@@ -27,11 +27,14 @@ type Policy struct {
 	// PFS is the Perfect forward secrecy (PFS) mode
 	PFS string `json:"pfs"`
 
-	// TranformProtocol is the transform protocol
+	// TransformProtocol is the transform protocol
 	TransformProtocol string `json:"transform_protocol"`
 
 	// Lifetime is the lifetime of the security association
 	Lifetime Lifetime `json:"lifetime"`
+
+	// ID is the ID of the policy
+	ID string `json:"id"`
 }
 
 type Lifetime struct {

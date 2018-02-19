@@ -91,6 +91,7 @@ func TestCreate(t *testing.T) {
 		PFS:                 "group5",
 		Description:         "",
 		Lifetime:            expectedLifetime,
+		ID:                  "5291b189-fd84-46e5-84bd-78f40c05d69c",
 	}
 	th.AssertDeepEquals(t, expected, *actual)
 }
