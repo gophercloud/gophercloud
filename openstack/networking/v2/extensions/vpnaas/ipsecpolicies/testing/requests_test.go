@@ -7,6 +7,7 @@ import (
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ipsecpolicies"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -165,4 +166,77 @@ func TestDelete(t *testing.T) {
 
 	res := ipsecpolicies.Delete(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/vpn/ipsecpolicies", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+		{
+	"ipsecpolicies": [
+		{
+			"name": "ipsecpolicy1",
+			"transform_protocol": "esp",
+			"auth_algorithm": "sha1",
+			"encapsulation_mode": "tunnel",
+			"encryption_algorithm": "aes-128",
+			"pfs": "group5",
+			"project_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
+			"tenant_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
+			"lifetime": {
+				"units": "seconds",
+				"value": 7200
+			},
+			"id": "5291b189-fd84-46e5-84bd-78f40c05d69c",
+			"description": ""
+		}
+	]
+}
+	  `)
+	})
+
+	count := 0
+
+	ipsecpolicies.List(fake.ServiceClient(), ipsecpolicies.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := ipsecpolicies.ExtractPolicies(page)
+		if err != nil {
+			t.Errorf("Failed to extract members: %v", err)
+			return false, err
+		}
+
+		expected := []ipsecpolicies.Policy{
+			{
+				Name:                "ipsecpolicy1",
+				TransformProtocol:   "esp",
+				TenantID:            "b4eedccc6fb74fa8a7ad6b08382b852b",
+				AuthAlgorithm:       "sha1",
+				EncapsulationMode:   "tunnel",
+				EncryptionAlgorithm: "aes-128",
+				PFS:                 "group5",
+				Lifetime: ipsecpolicies.Lifetime{
+					Value: 7200,
+					Units: "seconds",
+				},
+				Description: "",
+				ID:          "5291b189-fd84-46e5-84bd-78f40c05d69c",
+			},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }
