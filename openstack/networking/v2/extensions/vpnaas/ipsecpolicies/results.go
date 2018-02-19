@@ -2,7 +2,6 @@ package ipsecpolicies
 
 import (
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // Policy is an IPSec Policy
