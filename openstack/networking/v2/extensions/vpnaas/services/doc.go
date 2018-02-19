@@ -17,5 +17,13 @@ Example to Create a Service
 		panic(err)
 	}
 
+Example to Delete a Service
+
+	serviceID := "38aee955-6283-4279-b091-8b9c828000ec"
+	err := policies.Delete(networkClient, serviceID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package services
