@@ -137,6 +137,27 @@ const AggregateRemoveHostBody = `
 }
 `
 
+const AggregateSetMetadataBody = `
+{
+    "aggregate": {
+            "name": "test-aggregate2",
+            "availability_zone": "test-az",
+            "deleted": false,
+            "created_at": "2017-12-22T10:16:07.000000",
+            "updated_at": "2017-12-23T10:18:00.000000",
+            "hosts": [
+                "cmp0"
+            ],
+            "deleted_at": null,
+            "id": 4,
+            "metadata": {
+                "availability_zone": "test-az",
+				"key": "value"
+            }
+        }
+}
+`
+
 var (
 	// First aggregate from the AggregateListBody
 	FirstFakeAggregate = aggregates.Aggregate{
@@ -222,6 +243,18 @@ var (
 		DeletedAt:        time.Time{},
 		Deleted:          false,
 	}
+
+	AggregateWithUpdatedMetadata = aggregates.Aggregate{
+		AvailabilityZone: "test-az",
+		Hosts:            []string{"cmp0"},
+		ID:               4,
+		Metadata:         map[string]string{"availability_zone": "test-az", "key": "value"},
+		Name:             "test-aggregate2",
+		CreatedAt:        time.Date(2017, 12, 22, 10, 16, 7, 0, time.UTC),
+		UpdatedAt:        time.Date(2017, 12, 23, 10, 18, 0, 0, time.UTC),
+		DeletedAt:        time.Time{},
+		Deleted:          false,
+	}
 )
 
 // HandleListSuccessfully configures the test server to respond to a List request.
@@ -296,5 +329,16 @@ func HandleRemoveHostSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, AggregateRemoveHostBody)
+	})
+}
+
+func HandleSetMetadataSuccessfully(t *testing.T) {
+	v := strconv.Itoa(AggregateWithUpdatedMetadata.ID)
+	th.Mux.HandleFunc("/os-aggregates/"+v+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, AggregateSetMetadataBody)
 	})
 }

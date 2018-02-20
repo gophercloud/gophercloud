@@ -100,6 +100,9 @@ type Subnet struct {
 	// The IPv6 router advertisement specifies whether the networking service
 	// should transmit ICMPv6 packets.
 	IPv6RAMode string `json:"ipv6_ra_mode"`
+
+	// SubnetPoolID is the id of the subnet pool associated with the subnet.
+	SubnetPoolID string `json:"subnetpool_id"`
 }
 
 // SubnetPage is the page returned by a pager when traversing over a collection

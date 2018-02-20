@@ -137,3 +137,26 @@ func RemoveHost(client *gophercloud.ServiceClient, aggregateID int, opts RemoveH
 	})
 	return
 }
+
+type SetMetadataOpts struct {
+	Metadata map[string]interface{} `json:"metadata" required:"true"`
+}
+
+func (opts SetMetadataOpts) ToSetMetadataMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "set_metadata")
+}
+
+// SetMetadata makes a request against the API to set metadata to a specific aggregate.
+func SetMetadata(client *gophercloud.ServiceClient, aggregateID int, opts SetMetadataOpts) (r ActionResult) {
+	v := strconv.Itoa(aggregateID)
+
+	b, err := opts.ToSetMetadataMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(aggregatesSetMetadataURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
