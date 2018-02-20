@@ -134,7 +134,7 @@ func TestImagesListByDate(t *testing.T) {
 	}
 }
 
-func TestImagesFilterByTags(t *testing.T) {
+func TestImagesFilter(t *testing.T) {
 	client, err := clients.NewImageServiceV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create an image service client: %v", err)
@@ -148,7 +148,9 @@ func TestImagesFilterByTags(t *testing.T) {
 	defer DeleteImage(t, client, image)
 
 	listOpts := images.ListOpts{
-		Tags: []string{"foo", "bar"},
+		Tags:            []string{"foo", "bar"},
+		ContainerFormat: "bare",
+		DiskFormat:      "qcow2",
 	}
 
 	allPages, err := images.List(client, listOpts).AllPages()

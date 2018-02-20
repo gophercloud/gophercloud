@@ -69,6 +69,12 @@ type ListOpts struct {
 
 	// UpdatedAt filters images based on their updated date.
 	UpdatedAt *ImageDateQuery
+
+	// ContainerFormat filters images based on the container_format.
+	ContainerFormat string `q:"container_format"`
+
+	// DiskFormat filters images based on the disk_format.
+	DiskFormat string `q:"disk_format"`
 }
 
 // ToImageListQuery formats a ListOpts into a query string.
