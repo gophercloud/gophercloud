@@ -27,3 +27,17 @@ func CreateRBACPolicy(t *testing.T, client *gophercloud.ServiceClient, tenantID,
 	t.Logf("Successfully created rbac_policy")
 	return rbacPolicy, nil
 }
+
+// DeleteRBACPolicy will delete a rbac-policy with a specified ID. A fatal error will
+// occur if the delete was not successful. This works best when used as a
+// deferred function.
+func DeleteRBACPolicy(t *testing.T, client *gophercloud.ServiceClient, rbacPolicyID string) {
+	t.Logf("Trying to delete rbac_policy: %s", rbacPolicyID)
+
+	err := rbacpolicies.Delete(client, rbacPolicyID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete rbac_policy %s: %v", rbacPolicyID, err)
+	}
+
+	t.Logf("Deleted rbac_policy: %s", rbacPolicyID)
+}
