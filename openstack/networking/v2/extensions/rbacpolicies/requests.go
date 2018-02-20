@@ -109,3 +109,33 @@ func Delete(c *gophercloud.ServiceClient, rbacPolicyID string) (r DeleteResult) 
 	_, r.Err = c.Delete(deleteURL(c, rbacPolicyID), nil)
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToRBACPolicyUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents options used to update a rbac-policy.
+type UpdateOpts struct {
+	TargetTenant string `json:"target_tenant" required:"true"`
+}
+
+// ToRBACPolicyUpdateMap builds a request body from UpdateOpts.
+func (opts UpdateOpts) ToRBACPolicyUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "rbac_policy")
+}
+
+// Update accepts a UpdateOpts struct and updates an existing rbac-policy using the
+// values provided.
+func Update(c *gophercloud.ServiceClient, rbacPolicyID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToRBACPolicyUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(updateURL(c, rbacPolicyID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201},
+	})
+	return
+}

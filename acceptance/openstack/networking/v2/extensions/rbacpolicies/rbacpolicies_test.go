@@ -13,7 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/rbacpolicies"
 )
 
-func TestRBACPolicyCreate(t *testing.T) {
+func TestRBACPolicyCRUD(t *testing.T) {
 	username := os.Getenv("OS_USERNAME")
 	if username != "admin" {
 		t.Skip("must be admin to run this test")
@@ -55,6 +55,25 @@ func TestRBACPolicyCreate(t *testing.T) {
 	defer DeleteRBACPolicy(t, client, rbacPolicy.ID)
 
 	tools.PrintResource(t, rbacPolicy)
+
+	// Create another project/tenant for rbac-update
+	project2, err := projects.CreateProject(t, identityClient, nil)
+	if err != nil {
+		t.Fatalf("Unable to create project2: %v", err)
+	}
+	defer projects.DeleteProject(t, identityClient, project2.ID)
+
+	tools.PrintResource(t, project2)
+
+	// Update a rbac-policy
+	updateOpts := rbacpolicies.UpdateOpts{
+		TargetTenant: project2.ID,
+	}
+
+	_, err = rbacpolicies.Update(client, rbacPolicy.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update rbac-policy: %v", err)
+	}
 
 	// Get the rbac-policy by ID
 	t.Logf("Get rbac_policy by ID")

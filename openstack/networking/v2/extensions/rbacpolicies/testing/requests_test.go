@@ -142,3 +142,28 @@ func TestDelete(t *testing.T) {
 	res := rbacpolicies.Delete(fake.ServiceClient(), "71d55b18-d2f8-4c76-a5e6-e0a3dd114361").ExtractErr()
 	th.AssertNoErr(t, res)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/rbac-policies/2cf7523a-93b5-4e69-9360-6c6bf986bb7c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, UpdateResponse)
+	})
+
+	options := rbacpolicies.UpdateOpts{TargetTenant: "9d766060b6354c9e8e2da44cab0e8f38"}
+	rbacResult, err := rbacpolicies.Update(fake.ServiceClient(), "2cf7523a-93b5-4e69-9360-6c6bf986bb7c", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, rbacResult.TargetTenant, "9d766060b6354c9e8e2da44cab0e8f38")
+	th.AssertEquals(t, rbacResult.ID, "2cf7523a-93b5-4e69-9360-6c6bf986bb7c")
+}
