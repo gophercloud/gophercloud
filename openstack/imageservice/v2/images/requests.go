@@ -1,6 +1,10 @@
 package images
 
 import (
+	"fmt"
+	"net/url"
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -56,12 +60,42 @@ type ListOpts struct {
 
 	// SortDir will sort the list results either ascending or decending.
 	SortDir string `q:"sort_dir"`
-	Tag     string `q:"tag"`
+
+	// Tag filters on a specific image tag.
+	Tag string `q:"tag"`
+
+	// CreatedAt filters images based on their creation date.
+	CreatedAt *ImageDateQuery
+
+	// UpdatedAt filters images based on their updated date.
+	UpdatedAt *ImageDateQuery
 }
 
 // ToImageListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToImageListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
+	params := q.Query()
+
+	if opts.CreatedAt != nil {
+		createdAt := opts.CreatedAt.Date.Format(time.RFC3339)
+		if v := opts.CreatedAt.Filter; v != "" {
+			createdAt = fmt.Sprintf("%s:%s", v, createdAt)
+		}
+
+		params.Add("created_at", createdAt)
+	}
+
+	if opts.UpdatedAt != nil {
+		updatedAt := opts.UpdatedAt.Date.Format(time.RFC3339)
+		if v := opts.UpdatedAt.Filter; v != "" {
+			updatedAt = fmt.Sprintf("%s:%s", v, updatedAt)
+		}
+
+		params.Add("updated_at", updatedAt)
+	}
+
+	q = &url.URL{RawQuery: params.Encode()}
+
 	return q.String(), err
 }
 

@@ -2,6 +2,7 @@ package testing
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -290,4 +291,23 @@ func TestUpdateImage(t *testing.T) {
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
+}
+
+func TestImageDateQuery(t *testing.T) {
+	date := time.Date(2014, 1, 1, 1, 1, 1, 0, time.UTC)
+
+	listOpts := images.ListOpts{
+		CreatedAt: &images.ImageDateQuery{
+			Date:   date,
+			Filter: images.FilterGTE,
+		},
+		UpdatedAt: &images.ImageDateQuery{
+			Date: date,
+		},
+	}
+
+	expectedQueryString := "?created_at=gte%3A2014-01-01T01%3A01%3A01Z&updated_at=2014-01-01T01%3A01%3A01Z"
+	actualQueryString, err := listOpts.ToImageListQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, expectedQueryString, actualQueryString)
 }
