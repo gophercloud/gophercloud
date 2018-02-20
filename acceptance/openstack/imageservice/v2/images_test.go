@@ -133,3 +133,35 @@ func TestImagesListByDate(t *testing.T) {
 		t.Fatalf("Expected 0 images, got %d", len(allImages))
 	}
 }
+
+func TestImagesFilterByTags(t *testing.T) {
+	client, err := clients.NewImageServiceV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create an image service client: %v", err)
+	}
+
+	image, err := CreateEmptyImage(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create empty image: %v", err)
+	}
+
+	defer DeleteImage(t, client, image)
+
+	listOpts := images.ListOpts{
+		Tags: []string{"foo", "bar"},
+	}
+
+	allPages, err := images.List(client, listOpts).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to retrieve all images: %v", err)
+	}
+
+	allImages, err := images.ExtractImages(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract images: %v", err)
+	}
+
+	if len(allImages) == 0 {
+		t.Fatalf("Query resulted in no results")
+	}
+}

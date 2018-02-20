@@ -61,8 +61,8 @@ type ListOpts struct {
 	// SortDir will sort the list results either ascending or decending.
 	SortDir string `q:"sort_dir"`
 
-	// Tag filters on a specific image tag.
-	Tag string `q:"tag"`
+	// Tags filters on specific image tags.
+	Tags []string `q:"tag"`
 
 	// CreatedAt filters images based on their creation date.
 	CreatedAt *ImageDateQuery
