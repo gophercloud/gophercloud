@@ -194,7 +194,74 @@ func TestDelete(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
 	})
-
 	res := services.Delete(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/vpn/vpnservices/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
+
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "vpnservice":{
+        "name": "updatedname",
+        "description": "updated service",
+        "admin_state_up": false
+    }
+}
+      `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "vpnservice": {
+        "router_id": "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
+        "status": "PENDING_CREATE",
+        "name": "updatedname",
+        "admin_state_up": false,
+        "subnet_id": null,
+        "tenant_id": "10039663455a446d8ba2cbb058b0f578",
+        "project_id": "10039663455a446d8ba2cbb058b0f578",
+        "id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+        "description": "updated service",
+		"external_v4_ip": "172.32.1.11",
+		"external_v6_ip": "2001:db8::1"
+    }
+}
+    `)
+	})
+	updatedName := "updatedname"
+	updatedServiceDescription := "updated service"
+	options := services.UpdateOpts{
+		Name:         &updatedName,
+		Description:  &updatedServiceDescription,
+		AdminStateUp: gophercloud.Disabled,
+	}
+
+	actual, err := services.Update(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
+	th.AssertNoErr(t, err)
+	expected := services.Service{
+		RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
+		Status:       "PENDING_CREATE",
+		Name:         "updatedname",
+		ExternalV6IP: "2001:db8::1",
+		AdminStateUp: false,
+		SubnetID:     "",
+		TenantID:     "10039663455a446d8ba2cbb058b0f578",
+		ProjectID:    "10039663455a446d8ba2cbb058b0f578",
+		ExternalV4IP: "172.32.1.11",
+		ID:           "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+		Description:  "updated service",
+	}
+	th.AssertDeepEquals(t, expected, *actual)
+
 }
