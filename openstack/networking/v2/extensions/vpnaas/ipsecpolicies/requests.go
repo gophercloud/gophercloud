@@ -15,7 +15,7 @@ const (
 	TransformProtocolAHESP     TransformProtocol   = "ah-esp"
 	AuthAlgorithmSHA1          AuthAlgorithm       = "sha1"
 	AuthAlgorithmSHA256        AuthAlgorithm       = "sha256"
-	AuthAlgorithmHA384         AuthAlgorithm       = "sha384"
+	AuthAlgorithmSHA384        AuthAlgorithm       = "sha384"
 	AuthAlgorithmSHA512        AuthAlgorithm       = "sha512"
 	EncryptionAlgorithm3DES    EncryptionAlgorithm = "3des"
 	EncryptionAlgorithmAES128  EncryptionAlgorithm = "aes-128"
