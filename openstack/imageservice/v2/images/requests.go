@@ -22,6 +22,9 @@ type ListOptsBuilder interface {
 //
 // http://developer.openstack.org/api-ref-image-v2.html
 type ListOpts struct {
+	// ID is the ID of the image.
+	ID string `q:"id"`
+
 	// Integer value for the limit of values to return.
 	Limit int `q:"limit"`
 
