@@ -30,3 +30,17 @@ func CreateService(t *testing.T, client *gophercloud.ServiceClient, routerID str
 
 	return service, nil
 }
+
+// DeleteService will delete a service with a specified ID. A fatal error
+// will occur if the delete was not successful. This works best when used as
+// a deferred function.
+func DeleteService(t *testing.T, client *gophercloud.ServiceClient, serviceID string) {
+	t.Logf("Attempting to delete service: %s", serviceID)
+
+	err := services.Delete(client, serviceID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete service %s: %v", serviceID, err)
+	}
+
+	t.Logf("Service deleted: %s", serviceID)
+}
