@@ -5,6 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/endpointgroups"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ikepolicies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ipsecpolicies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/services"
@@ -103,4 +104,29 @@ func DeleteIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient, policyID
 	}
 
 	t.Logf("Deleted policy: %s", policyID)
+}
+
+// CreateEndpointGroup will create an endpoint group with a random name.
+// An error will be returned if the group could not be created.
+func CreateEndpointGroup(t *testing.T, client *gophercloud.ServiceClient) (*endpointgroups.EndpointGroup, error) {
+	groupName := tools.RandomString("TESTACC-", 8)
+
+	t.Logf("Attempting to create group %s", groupName)
+
+	createOpts := endpointgroups.CreateOpts{
+		Name: groupName,
+		Type: endpointgroups.TypeCidr,
+		Endpoints: []string{
+			"10.2.0.0/24",
+			"10.3.0.0/24",
+		},
+	}
+	group, err := endpointgroups.Create(client, createOpts).Extract()
+	if err != nil {
+		return group, err
+	}
+
+	t.Logf("Successfully created group %s", groupName)
+
+	return group, nil
 }
