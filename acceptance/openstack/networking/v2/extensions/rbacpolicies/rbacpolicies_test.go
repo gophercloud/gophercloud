@@ -54,6 +54,15 @@ func TestRBACPolicyCreate(t *testing.T) {
 	}
 
 	tools.PrintResource(t, rbacPolicy)
+
+	// Get the rbac-policy by ID
+	t.Logf("Get rbac_policy by ID")
+	newrbacPolicy, err := rbacpolicies.Get(client, rbacPolicy.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to retrieve rbac policy: %v", err)
+	}
+
+	tools.PrintResource(t, newrbacPolicy)
 }
 
 func TestRBACPolicyList(t *testing.T) {

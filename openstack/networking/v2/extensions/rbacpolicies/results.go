@@ -27,7 +27,7 @@ type CreateResult struct {
 }
 
 // GetResult represents the result of a get operation. Call its Extract
-// method to interpret it as a RBAC.
+// method to interpret it as a RBAC Policy.
 type GetResult struct {
 	commonResult
 }

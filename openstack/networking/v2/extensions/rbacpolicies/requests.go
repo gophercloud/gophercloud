@@ -18,12 +18,10 @@ type ListOptsBuilder interface {
 // `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
 	TargetTenant string       `q:"target_tenant"`
-	TenantID     string       `q:"tenant_id"`
 	ObjectType   string       `q:"object_type"`
 	ObjectID     string       `q:"object_id"`
 	Action       PolicyAction `q:"action"`
 	ProjectID    string       `q:"project_id"`
-	ID           string       `q:"id"`
 	Marker       string       `q:"marker"`
 	Limit        int          `q:"limit"`
 	SortKey      string       `q:"sort_key"`
@@ -52,6 +50,12 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		return RBACPolicyPage{pagination.LinkedPageBase{PageResult: r}}
 
 	})
+}
+
+// Get retrieves a specific rbac policy based on its unique ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
 }
 
 // PolicyAction maps to Action for the RBAC policy.
