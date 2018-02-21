@@ -192,7 +192,7 @@ type UpdateOpts struct {
 	Lifetime            *LifetimeUpdateOpts `json:"lifetime,omitempty"`
 }
 
-// ToIPSecPolicyUpdateMap casts an UpdateOpts struct to a map.
+// ToPolicyUpdateMap casts an UpdateOpts struct to a map.
 func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "ipsecpolicy")
 }
