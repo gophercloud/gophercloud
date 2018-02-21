@@ -64,6 +64,8 @@ type CreateResult struct {
 	commonResult
 }
 
+// GetResult represents the result of a Get operation. Call its Extract method to
+// interpret it as a Policy.
 type GetResult struct {
 	commonResult
 }
