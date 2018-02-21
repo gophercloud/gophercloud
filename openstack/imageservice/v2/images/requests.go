@@ -44,7 +44,7 @@ type ListOpts struct {
 	Owner string `q:"owner"`
 
 	// Status filters on the status of the image.
-	Status ImageStatus `q:"status"`
+	Status string `q:"status"`
 
 	// SizeMin filters on the size_min image property.
 	SizeMin int64 `q:"size_min"`
