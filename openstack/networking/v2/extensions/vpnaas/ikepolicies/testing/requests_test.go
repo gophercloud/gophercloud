@@ -88,7 +88,7 @@ func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/vpn/ipsecpolicies/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/vpn/ikepolicies/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -100,7 +100,7 @@ func TestGet(t *testing.T) {
     "ikepolicy":{
         "name": "policy",
         "tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
-        "id": "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
+        "id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
         "description": "IKE policy",
 		"auth_algorithm": "sha1",
 		"encryption_algorithm": "aes-128",
@@ -131,7 +131,7 @@ func TestGet(t *testing.T) {
 		EncryptionAlgorithm: "aes-128",
 		Description:         "IKE policy",
 		Name:                "policy",
-		ID:                  "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
+		ID:                  "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
 		Lifetime:            expectedLifetime,
 	}
 	th.AssertDeepEquals(t, expected, *actual)
