@@ -92,7 +92,7 @@ const (
 	FilterLT  ImageDateFilter = "lt"
 	FilterLTE ImageDateFilter = "lte"
 	FilterNEQ ImageDateFilter = "neq"
-	FilterNE  ImageDateFilter = "eq"
+	FilterEQ  ImageDateFilter = "eq"
 )
 
 // ImageDateQuery represents a date field to be used for listing images.
