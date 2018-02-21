@@ -27,5 +27,13 @@ Example to Create a RBAC Policy
 		panic(err)
 	}
 
+Example to Delete a RBAC Policy
+
+        rbacPolicyID := "94fe107f-da78-4d92-a9d7-5611b06dad8d"
+        err := rbacpolicies.Delete(rbacClient, rbacPolicyID).ExtractErr()
+        if err != nil {
+                panic(err)
+        }
+
 */
 package rbacpolicies
