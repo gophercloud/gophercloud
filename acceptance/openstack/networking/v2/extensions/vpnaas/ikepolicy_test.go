@@ -1,4 +1,4 @@
-// +build acceptance networking fwaas
+// +build acceptance networking vpnaas
 
 package vpnaas
 
