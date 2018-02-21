@@ -63,3 +63,7 @@ func (r commonResult) Extract() (*Policy, error) {
 type CreateResult struct {
 	commonResult
 }
+
+type GetResult struct {
+	commonResult
+}
