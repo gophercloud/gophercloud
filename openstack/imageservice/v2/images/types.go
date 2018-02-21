@@ -83,6 +83,7 @@ const (
 )
 
 // ImageDateFilter represents a valid filter to use for filtering
+// images by their date during a List.
 type ImageDateFilter string
 
 const (
