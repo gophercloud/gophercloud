@@ -5,6 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ikepolicies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ipsecpolicies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/services"
 )
@@ -63,6 +64,30 @@ func CreateIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ipsecp
 	}
 
 	t.Logf("Successfully created IPSec policy %s", policyName)
+	t.Logf("Successfully created IKE policy %s", policyName)
+
+	return policy, nil
+}
+
+// CreateIKEPolicy will create an IKE Policy with a random name and given
+// rule. An error will be returned if the policy could not be created.
+func CreateIKEPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ikepolicies.Policy, error) {
+	policyName := tools.RandomString("TESTACC-", 8)
+
+	t.Logf("Attempting to create policy %s", policyName)
+
+	createOpts := ikepolicies.CreateOpts{
+		Name:                policyName,
+		EncryptionAlgorithm: ikepolicies.EncryptionAlgorithm3DES,
+		PFS:                 ikepolicies.PFSGroup5,
+	}
+
+	policy, err := ikepolicies.Create(client, createOpts).Extract()
+	if err != nil {
+		return policy, err
+	}
+
+	t.Logf("Successfully created IKE policy %s", policyName)
 
 	return policy, nil
 }
