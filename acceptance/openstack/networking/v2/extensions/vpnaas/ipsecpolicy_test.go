@@ -18,7 +18,7 @@ func TestPolicyCRUD(t *testing.T) {
 
 	policy, err := CreateIPSecPolicy(t, client)
 	if err != nil {
-		t.Fatalf("Unable to create policy: %v", err)
+		t.Fatalf("Unable to create IPSec policy: %v", err)
 	}
 	defer DeleteIPSecPolicy(t, client, policy.ID)
 
@@ -26,7 +26,7 @@ func TestPolicyCRUD(t *testing.T) {
 
 	newPolicy, err := ipsecpolicies.Get(client, policy.ID).Extract()
 	if err != nil {
-		t.Fatalf("Unable to get firewall: %v", err)
+		t.Fatalf("Unable to get IPSec policy: %v", err)
 	}
 	tools.PrintResource(t, newPolicy)
 }
