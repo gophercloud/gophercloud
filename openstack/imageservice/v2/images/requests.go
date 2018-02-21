@@ -23,6 +23,8 @@ type ListOptsBuilder interface {
 // http://developer.openstack.org/api-ref-image-v2.html
 type ListOpts struct {
 	// ID is the ID of the image.
+	// Multiple IDs can be specified by constructing a string
+	// such as "in:uuid1,uuid2,uuid3".
 	ID string `q:"id"`
 
 	// Integer value for the limit of values to return.
@@ -32,6 +34,8 @@ type ListOpts struct {
 	Marker string `q:"marker"`
 
 	// Name filters on the name of the image.
+	// Multiple names can be specified by constructing a string
+	// such as "in:name1,name2,name3".
 	Name string `q:"name"`
 
 	// Visibility filters on the visibility of the image.
@@ -44,6 +48,8 @@ type ListOpts struct {
 	Owner string `q:"owner"`
 
 	// Status filters on the status of the image.
+	// Multiple statuses can be specified by constructing a string
+	// such as "in:saving,queued".
 	Status string `q:"status"`
 
 	// SizeMin filters on the size_min image property.
@@ -74,9 +80,13 @@ type ListOpts struct {
 	UpdatedAt *ImageDateQuery
 
 	// ContainerFormat filters images based on the container_format.
+	// Multiple container formats can be specified by constructing a
+	// string such as "in:bare,ami".
 	ContainerFormat string `q:"container_format"`
 
 	// DiskFormat filters images based on the disk_format.
+	// Multiple disk formats can be specified by constructing a string
+	// such as "in:qcow2,iso".
 	DiskFormat string `q:"disk_format"`
 }
 
