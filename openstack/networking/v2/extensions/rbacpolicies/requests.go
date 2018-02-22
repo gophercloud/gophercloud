@@ -2,7 +2,55 @@ package rbacpolicies
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToRBACPolicyListQuery() (string, error)
+}
+
+// ListOpts allows the filtering and sorting of paginated collections through
+// the API. Filtering is achieved by passing in struct field values that map to
+// the rbac attributes you want to see returned. SortKey allows you to sort
+// by a particular rbac attribute. SortDir sets the direction, and is either
+// `asc' or `desc'. Marker and Limit are used for pagination.
+type ListOpts struct {
+	TargetTenant string       `q:"target_tenant"`
+	ObjectType   string       `q:"object_type"`
+	ObjectID     string       `q:"object_id"`
+	Action       PolicyAction `q:"action"`
+	ProjectID    string       `q:"project_id"`
+	Marker       string       `q:"marker"`
+	Limit        int          `q:"limit"`
+	SortKey      string       `q:"sort_key"`
+	SortDir      string       `q:"sort_dir"`
+}
+
+// ToRBACPolicyListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToRBACPolicyListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List returns a Pager which allows you to iterate over a collection of
+// rbac policies. It accepts a ListOpts struct, which allows you to filter and sort
+// the returned collection for greater efficiency.
+func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listURL(c)
+	if opts != nil {
+		query, err := opts.ToRBACPolicyListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return RBACPolicyPage{pagination.LinkedPageBase{PageResult: r}}
+
+	})
+}
 
 // Get retrieves a specific rbac policy based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {

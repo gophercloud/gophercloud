@@ -7,6 +7,7 @@ import (
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/rbacpolicies"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -55,6 +56,77 @@ func TestGet(t *testing.T) {
 	n, err := rbacpolicies.Get(fake.ServiceClient(), "2cf7523a-93b5-4e69-9360-6c6bf986bb7c").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &rbacPolicy1, n)
+}
+
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/rbac-policies", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ListResponse)
+	})
+
+	client := fake.ServiceClient()
+	count := 0
+
+	rbacpolicies.List(client, rbacpolicies.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := rbacpolicies.ExtractRBACPolicies(page)
+		if err != nil {
+			t.Errorf("Failed to extract rbac policies: %v", err)
+			return false, err
+		}
+
+		th.CheckDeepEquals(t, ExpectedRBACPoliciesSlice, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
+}
+
+func TestListWithAllPages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/rbac-policies", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ListResponse)
+	})
+
+	client := fake.ServiceClient()
+
+	type newRBACPolicy struct {
+		rbacpolicies.RBACPolicy
+	}
+
+	var allRBACpolicies []newRBACPolicy
+
+	allPages, err := rbacpolicies.List(client, rbacpolicies.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+
+	err = rbacpolicies.ExtractRBACPolicesInto(allPages, &allRBACpolicies)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, allRBACpolicies[0].ObjectType, "network")
+	th.AssertEquals(t, allRBACpolicies[0].Action, rbacpolicies.ActionAccessShared)
+
+	th.AssertEquals(t, allRBACpolicies[1].ProjectID, "1ae27ce0a2a54cc6ae06dc62dd0ec832")
+	th.AssertEquals(t, allRBACpolicies[1].TargetTenant, "1a547a3bcfe44702889fdeff3c3520c3")
+
 }
 
 func TestDelete(t *testing.T) {

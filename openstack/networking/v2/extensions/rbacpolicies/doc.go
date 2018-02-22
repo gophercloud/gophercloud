@@ -27,13 +27,42 @@ Example to Create a RBAC Policy
 		panic(err)
 	}
 
+Example to List RBAC Policies
+
+	listOpts := rbacpolicies.ListOpts{
+		TenantID: "a99e9b4e620e4db09a2dfb6e42a01e66",
+	}
+
+	allPages, err := rbacpolicies.List(rbacClient, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allRBACPolicies, err := rbacpolicies.ExtractRBACPolicies(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, rbacpolicy := range allRBACPolicies {
+		fmt.Printf("%+v", rbacpolicy)
+	}
+
 Example to Delete a RBAC Policy
 
-        rbacPolicyID := "94fe107f-da78-4d92-a9d7-5611b06dad8d"
-        err := rbacpolicies.Delete(rbacClient, rbacPolicyID).ExtractErr()
-        if err != nil {
-                panic(err)
-        }
+	rbacPolicyID := "94fe107f-da78-4d92-a9d7-5611b06dad8d"
+	err := rbacpolicies.Delete(rbacClient, rbacPolicyID).ExtractErr()
+	if err != nil {
+	  panic(err)
+	}
+
+Example to Get RBAC Policy by ID
+
+	rbacPolicyID := "94fe107f-da78-4d92-a9d7-5611b06dad8d"
+	rbacpolicy, err := rbacpolicies.Get(rbacClient, rbacPolicyID).Extract()
+	if err != nil {
+	  panic(err)
+	}
+	fmt.Printf("%+v", rbacpolicy)
 
 */
 package rbacpolicies

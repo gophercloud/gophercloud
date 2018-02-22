@@ -65,3 +65,30 @@ func TestRBACPolicyCreate(t *testing.T) {
 
 	tools.PrintResource(t, newrbacPolicy)
 }
+
+func TestRBACPolicyList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	type rbacPolicy struct {
+		rbacpolicies.RBACPolicy
+	}
+
+	var allRBACPolicies []rbacPolicy
+
+	allPages, err := rbacpolicies.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list rbac policies: %v", err)
+	}
+
+	err = rbacpolicies.ExtractRBACPolicesInto(allPages, &allRBACPolicies)
+	if err != nil {
+		t.Fatalf("Unable to extract rbac policies: %v", err)
+	}
+
+	for _, rbacpolicy := range allRBACPolicies {
+		tools.PrintResource(t, rbacpolicy)
+	}
+}
