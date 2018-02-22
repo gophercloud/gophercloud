@@ -6,6 +6,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/portsecurity"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/subnets"
@@ -18,6 +19,32 @@ func CreateNetwork(t *testing.T, client *gophercloud.ServiceClient) (*networks.N
 	createOpts := networks.CreateOpts{
 		Name:         networkName,
 		AdminStateUp: gophercloud.Enabled,
+	}
+
+	t.Logf("Attempting to create network: %s", networkName)
+
+	network, err := networks.Create(client, createOpts).Extract()
+	if err != nil {
+		return network, err
+	}
+
+	t.Logf("Successfully created network.")
+	return network, nil
+}
+
+// CreateNetworkWithoutPortSecurity will create a network without port security.
+// An error will be returned if the network could not be created.
+func CreateNetworkWithoutPortSecurity(t *testing.T, client *gophercloud.ServiceClient) (*networks.Network, error) {
+	networkName := tools.RandomString("TESTACC-", 8)
+	networkCreateOpts := networks.CreateOpts{
+		Name:         networkName,
+		AdminStateUp: gophercloud.Enabled,
+	}
+
+	iFalse := false
+	createOpts := portsecurity.NetworkCreateOptsExt{
+		CreateOptsBuilder:   networkCreateOpts,
+		PortSecurityEnabled: &iFalse,
 	}
 
 	t.Logf("Attempting to create network: %s", networkName)
@@ -78,6 +105,45 @@ func CreatePortWithNoSecurityGroup(t *testing.T, client *gophercloud.ServiceClie
 		AdminStateUp:   &iFalse,
 		FixedIPs:       []ports.IP{ports.IP{SubnetID: subnetID}},
 		SecurityGroups: &[]string{},
+	}
+
+	port, err := ports.Create(client, createOpts).Extract()
+	if err != nil {
+		return port, err
+	}
+
+	if err := WaitForPortToCreate(client, port.ID, 60); err != nil {
+		return port, err
+	}
+
+	newPort, err := ports.Get(client, port.ID).Extract()
+	if err != nil {
+		return newPort, err
+	}
+
+	t.Logf("Successfully created port: %s", portName)
+
+	return newPort, nil
+}
+
+// CreatePortWithoutPortSecurity will create a port without port security on the
+// specified subnet. An error will be returned if the port could not be created.
+func CreatePortWithoutPortSecurity(t *testing.T, client *gophercloud.ServiceClient, networkID, subnetID string) (*ports.Port, error) {
+	portName := tools.RandomString("TESTACC-", 8)
+
+	t.Logf("Attempting to create port: %s", portName)
+
+	portCreateOpts := ports.CreateOpts{
+		NetworkID:    networkID,
+		Name:         portName,
+		AdminStateUp: gophercloud.Enabled,
+		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
+	}
+
+	iFalse := false
+	createOpts := portsecurity.PortCreateOptsExt{
+		CreateOptsBuilder:   portCreateOpts,
+		PortSecurityEnabled: &iFalse,
 	}
 
 	port, err := ports.Create(client, createOpts).Extract()

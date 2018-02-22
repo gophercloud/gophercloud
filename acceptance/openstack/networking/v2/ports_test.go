@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	extensions "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2/extensions"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/portsecurity"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
 )
 
@@ -346,4 +347,44 @@ func TestPortsDontUpdateAllowedAddressPairs(t *testing.T) {
 	if len(newPort.AllowedAddressPairs) == 0 {
 		t.Fatalf("Address Pairs were removed")
 	}
+}
+
+func TestPortsPortSecurityCRUD(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	// Create Network
+	network, err := CreateNetwork(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create network: %v", err)
+	}
+	defer DeleteNetwork(t, client, network.ID)
+
+	// Create Subnet
+	subnet, err := CreateSubnet(t, client, network.ID)
+	if err != nil {
+		t.Fatalf("Unable to create subnet: %v", err)
+	}
+	defer DeleteSubnet(t, client, subnet.ID)
+
+	// Create port
+	port, err := CreatePortWithoutPortSecurity(t, client, network.ID, subnet.ID)
+	if err != nil {
+		t.Fatalf("Unable to create port: %v", err)
+	}
+	defer DeletePort(t, client, port.ID)
+
+	var portWithExt struct {
+		ports.Port
+		portsecurity.PortSecurityExt
+	}
+
+	err = ports.Get(client, port.ID).ExtractInto(&portWithExt)
+	if err != nil {
+		t.Fatalf("Unable to create port: %v", err)
+	}
+
+	tools.PrintResource(t, portWithExt)
 }
