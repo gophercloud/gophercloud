@@ -103,3 +103,9 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 	_, r.Err = c.Post(createURL(c), b, &r.Body, nil)
 	return
 }
+
+// Delete accepts a unique ID and deletes the rbac-policy associated with it.
+func Delete(c *gophercloud.ServiceClient, rbacPolicyID string) (r DeleteResult) {
+	_, r.Err = c.Delete(deleteURL(c, rbacPolicyID), nil)
+	return
+}

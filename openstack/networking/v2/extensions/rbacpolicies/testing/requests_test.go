@@ -128,3 +128,17 @@ func TestListWithAllPages(t *testing.T) {
 	th.AssertEquals(t, allRBACpolicies[1].TargetTenant, "1a547a3bcfe44702889fdeff3c3520c3")
 
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/rbac-policies/71d55b18-d2f8-4c76-a5e6-e0a3dd114361", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := rbacpolicies.Delete(fake.ServiceClient(), "71d55b18-d2f8-4c76-a5e6-e0a3dd114361").ExtractErr()
+	th.AssertNoErr(t, res)
+}

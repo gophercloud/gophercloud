@@ -52,6 +52,7 @@ func TestRBACPolicyCreate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create rbac-policy: %v", err)
 	}
+	defer DeleteRBACPolicy(t, client, rbacPolicy.ID)
 
 	tools.PrintResource(t, rbacPolicy)
 
