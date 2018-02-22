@@ -49,20 +49,20 @@ Example to List RBAC Policies
 
 Example to Delete a RBAC Policy
 
-rbacPolicyID := "94fe107f-da78-4d92-a9d7-5611b06dad8d"
-err := rbacpolicies.Delete(rbacClient, rbacPolicyID).ExtractErr()
-if err != nil {
-  panic(err)
-}
+	rbacPolicyID := "94fe107f-da78-4d92-a9d7-5611b06dad8d"
+	err := rbacpolicies.Delete(rbacClient, rbacPolicyID).ExtractErr()
+	if err != nil {
+	  panic(err)
+	}
 
 Example to Get RBAC Policy by ID
 
-rbacPolicyID := "94fe107f-da78-4d92-a9d7-5611b06dad8d"
-rbacpolicy, err := rbacpolicies.Get(rbacClient, rbacPolicyID).Extract()
-if err != nil{
-  panic(err)
-}
-fmt.Printf("%+v", rbacpolicy)
+	rbacPolicyID := "94fe107f-da78-4d92-a9d7-5611b06dad8d"
+	rbacpolicy, err := rbacpolicies.Get(rbacClient, rbacPolicyID).Extract()
+	if err != nil {
+	  panic(err)
+	}
+	fmt.Printf("%+v", rbacpolicy)
 
 */
 package rbacpolicies
