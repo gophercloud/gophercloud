@@ -5,6 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ipsecpolicies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/services"
 )
 
@@ -43,4 +44,25 @@ func DeleteService(t *testing.T, client *gophercloud.ServiceClient, serviceID st
 	}
 
 	t.Logf("Service deleted: %s", serviceID)
+}
+
+// CreateIPSecPolicy will create an IPSec Policy with a random name and given
+// rule. An error will be returned if the rule could not be created.
+func CreateIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ipsecpolicies.Policy, error) {
+	policyName := tools.RandomString("TESTACC-", 8)
+
+	t.Logf("Attempting to create policy %s", policyName)
+
+	createOpts := ipsecpolicies.CreateOpts{
+		Name: policyName,
+	}
+
+	policy, err := ipsecpolicies.Create(client, createOpts).Extract()
+	if err != nil {
+		return policy, err
+	}
+
+	t.Logf("Successfully created IPSec policy %s", policyName)
+
+	return policy, nil
 }
