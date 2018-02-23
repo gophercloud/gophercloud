@@ -80,6 +80,9 @@ type ListOpts struct {
 	SubnetID     string `q:"subnet_id"`
 	RouterID     string `q:"router_id"`
 	ProjectID    string `q:"project_id"`
+	ExternalV6IP string `q:"external_v6_ip"`
+	ExternalV4IP string `q:"external_v4_ip"`
+	FlavorID     string `q:"flavor_id"`
 }
 
 // ToServiceListQuery formats a ListOpts into a query string.
