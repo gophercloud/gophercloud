@@ -47,7 +47,8 @@ func TestCreate(t *testing.T) {
         "tenant_id": "10039663455a446d8ba2cbb058b0f578",
         "external_v4_ip": "172.32.1.11",
         "id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
-        "description": "OpenStack VPN service"
+        "description": "OpenStack VPN service",
+		"project_id": "10039663455a446d8ba2cbb058b0f578"
     }
 }
     `)
@@ -70,6 +71,7 @@ func TestCreate(t *testing.T) {
 		AdminStateUp: true,
 		SubnetID:     "",
 		TenantID:     "10039663455a446d8ba2cbb058b0f578",
+		ProjectID:    "10039663455a446d8ba2cbb058b0f578",
 		ExternalV4IP: "172.32.1.11",
 		ID:           "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
 		Description:  "OpenStack VPN service",
@@ -122,6 +124,7 @@ func TestList(t *testing.T) {
 				Name:         "vpnservice1",
 				AdminStateUp: true,
 				TenantID:     "10039663455a446d8ba2cbb058b0f578",
+				ProjectID:    "10039663455a446d8ba2cbb058b0f578",
 				Description:  "Test VPN service",
 				SubnetID:     "",
 				RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
@@ -175,6 +178,7 @@ func TestGet(t *testing.T) {
 		AdminStateUp: true,
 		ID:           "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
 		TenantID:     "10039663455a446d8ba2cbb058b0f578",
+		ProjectID:    "10039663455a446d8ba2cbb058b0f578",
 		RouterID:     "66e3b16c-8ce5-40fb-bb49-ab6d8dc3f2aa",
 		SubnetID:     "",
 	}

@@ -10,6 +10,9 @@ type Service struct {
 	// TenantID is the ID of the project.
 	TenantID string `json:"tenant_id"`
 
+	// ProjectID is the ID of the project.
+	ProjectID string `json:"project_id"`
+
 	// SubnetID is the ID of the subnet.
 	SubnetID string `json:"subnet_id"`
 
