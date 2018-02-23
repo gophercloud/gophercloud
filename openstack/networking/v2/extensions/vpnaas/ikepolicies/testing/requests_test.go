@@ -69,7 +69,7 @@ func TestCreate(t *testing.T) {
 	}
 	expected := ikepolicies.Policy{
 		AuthAlgorithm:         "sha1",
-		IkeVersion:            "v2",
+		IKEVersion:            "v2",
 		TenantID:              "9145d91459d248b1b02fdaca97c6a75d",
 		Phase1NegotiationMode: "main",
 		PFS:                 "Group5",

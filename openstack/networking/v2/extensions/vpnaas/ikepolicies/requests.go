@@ -2,9 +2,7 @@ package ikepolicies
 
 import "github.com/gophercloud/gophercloud"
 
-type TransformProtocol string
 type AuthAlgorithm string
-type EncapsulationMode string
 type EncryptionAlgorithm string
 type PFS string
 type Unit string
@@ -12,27 +10,22 @@ type IKEVersion string
 type Phase1NegotiationMode string
 
 const (
-	TransformProtocolESP       TransformProtocol     = "esp"
-	TransformProtocolAH        TransformProtocol     = "ah"
-	TransformProtocolAHESP     TransformProtocol     = "ah-esp"
-	AuthAlgorithmSHA1          AuthAlgorithm         = "sha1"
-	AuthAlgorithmSHA256        AuthAlgorithm         = "sha256"
-	AuthAlgorithmSHA384        AuthAlgorithm         = "sha384"
-	AuthAlgorithmSHA512        AuthAlgorithm         = "sha512"
-	EncryptionAlgorithm3DES    EncryptionAlgorithm   = "3des"
-	EncryptionAlgorithmAES128  EncryptionAlgorithm   = "aes-128"
-	EncryptionAlgorithmAES256  EncryptionAlgorithm   = "aes-256"
-	EncryptionAlgorithmAES192  EncryptionAlgorithm   = "aes-192"
-	EncapsulationModeTunnel    EncapsulationMode     = "tunnel"
-	EncapsulationModeTransport EncapsulationMode     = "transport"
-	UnitSeconds                Unit                  = "seconds"
-	UnitKilobytes              Unit                  = "kilobytes"
-	PFSGroup2                  PFS                   = "group2"
-	PFSGroup5                  PFS                   = "group5"
-	PFSGroup14                 PFS                   = "group14"
-	IKEVersionv1               IKEVersion            = "v1"
-	IKEVersionv2               IKEVersion            = "v2"
-	Phase1NegotiationModeMain  Phase1NegotiationMode = "main"
+	AuthAlgorithmSHA1         AuthAlgorithm         = "sha1"
+	AuthAlgorithmSHA256       AuthAlgorithm         = "sha256"
+	AuthAlgorithmSHA384       AuthAlgorithm         = "sha384"
+	AuthAlgorithmSHA512       AuthAlgorithm         = "sha512"
+	EncryptionAlgorithm3DES   EncryptionAlgorithm   = "3des"
+	EncryptionAlgorithmAES128 EncryptionAlgorithm   = "aes-128"
+	EncryptionAlgorithmAES256 EncryptionAlgorithm   = "aes-256"
+	EncryptionAlgorithmAES192 EncryptionAlgorithm   = "aes-192"
+	UnitSeconds               Unit                  = "seconds"
+	UnitKilobytes             Unit                  = "kilobytes"
+	PFSGroup2                 PFS                   = "group2"
+	PFSGroup5                 PFS                   = "group5"
+	PFSGroup14                PFS                   = "group14"
+	IKEVersionv1              IKEVersion            = "v1"
+	IKEVersionv2              IKEVersion            = "v2"
+	Phase1NegotiationModeMain Phase1NegotiationMode = "main"
 )
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
@@ -60,11 +53,6 @@ type CreateOpts struct {
 	// The default is sha1.
 	AuthAlgorithm AuthAlgorithm `json:"auth_algorithm,omitempty"`
 
-	// EncapsulationMode is the encapsulation mode.
-	// A valid value is tunnel or transport.
-	// Default is tunnel.
-	EncapsulationMode EncapsulationMode `json:"encapsulation_mode,omitempty"`
-
 	// EncryptionAlgorithm is the encryption algorithm.
 	// A valid value is 3des, aes-128, aes-192, aes-256, and so on.
 	// Default is aes-128.
@@ -74,11 +62,6 @@ type CreateOpts struct {
 	// A valid value is Group2, Group5, Group14, and so on.
 	// Default is Group5.
 	PFS PFS `json:"pfs,omitempty"`
-
-	// TransformProtocol is the transform protocol.
-	// A valid value is ESP, AH, or AH- ESP.
-	// Default is ESP.
-	TransformProtocol TransformProtocol `json:"transform_protocol,omitempty"`
 
 	// The IKE mode.
 	// A valid value is main, which is the default.

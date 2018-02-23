@@ -16,17 +16,11 @@ type Policy struct {
 	// AuthAlgorithm is the authentication hash algorithm
 	AuthAlgorithm string `json:"auth_algorithm"`
 
-	// EncapsulationMode is the encapsulation mode
-	EncapsulationMode string `json:"encapsulation_mode"`
-
 	// EncryptionAlgorithm is the encryption algorithm
 	EncryptionAlgorithm string `json:"encryption_algorithm"`
 
 	// PFS is the Perfect forward secrecy (PFS) mode
 	PFS string `json:"pfs"`
-
-	// TransformProtocol is the transform protocol
-	TransformProtocol string `json:"transform_protocol"`
 
 	// Lifetime is the lifetime of the security association
 	Lifetime Lifetime `json:"lifetime"`
@@ -37,8 +31,8 @@ type Policy struct {
 	// Phase1NegotiationMode is the IKE mode
 	Phase1NegotiationMode string `json:"phase1_negotiation_mode"`
 
-	// IkeVersion is the IKE version.
-	IkeVersion string `json:"ike_version"`
+	// IKEVersion is the IKE version.
+	IKEVersion string `json:"ike_version"`
 }
 
 type commonResult struct {
