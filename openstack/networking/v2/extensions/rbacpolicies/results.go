@@ -38,6 +38,12 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// UpdateResult represents the result of an update operation. Call its Extract
+// method to interpret it as a RBAC Policy.
+type UpdateResult struct {
+	commonResult
+}
+
 // RBACPolicy represents a RBAC policy.
 type RBACPolicy struct {
 	// UUID of the RBAC policy.

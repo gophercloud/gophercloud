@@ -64,5 +64,16 @@ Example to Get RBAC Policy by ID
 	}
 	fmt.Printf("%+v", rbacpolicy)
 
+Example to Update a RBAC Policy
+
+	rbacPolicyID := "570b0306-afb5-4d3b-ab47-458fdc16baaa"
+	updateOpts := rbacpolicies.UpdateOpts{
+		TargetTenant: "9d766060b6354c9e8e2da44cab0e8f38",
+	}
+	rbacPolicy, err := rbacpolicies.Update(rbacClient, rbacPolicyID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package rbacpolicies
