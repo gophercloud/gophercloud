@@ -27,6 +27,7 @@ type ListOpts struct {
 	Limit        int    `q:"limit"`
 	SortKey      string `q:"sort_key"`
 	SortDir      string `q:"sort_dir"`
+	DNSDomain    string `q:"dns_domain"`
 }
 
 // ToNetworkListQuery formats a ListOpts into a query string.
@@ -71,6 +72,7 @@ type CreateOpts struct {
 	Shared                *bool    `json:"shared,omitempty"`
 	TenantID              string   `json:"tenant_id,omitempty"`
 	AvailabilityZoneHints []string `json:"availability_zone_hints,omitempty"`
+	DNSDomain             string   `json:"dns_domain,omitempty"`
 }
 
 // ToNetworkCreateMap builds a request body from CreateOpts.
@@ -106,6 +108,7 @@ type UpdateOpts struct {
 	AdminStateUp *bool  `json:"admin_state_up,omitempty"`
 	Name         string `json:"name,omitempty"`
 	Shared       *bool  `json:"shared,omitempty"`
+	DNSDomain    string `json:"dns_domain,omitempty"`
 }
 
 // ToNetworkUpdateMap builds a request body from UpdateOpts.

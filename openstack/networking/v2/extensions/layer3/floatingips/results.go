@@ -39,6 +39,12 @@ type FloatingIP struct {
 
 	// RouterID is the ID of the router used for this floating IP.
 	RouterID string `json:"router_id"`
+
+	// Specifies the DNS domain used for autocreating public DNS entries for this floating IP (overrides port and network DNSDomain settings)
+	DNSDomain string `json:"dns_domain,omitempty"`
+
+	// Specifies the DNS Name used as the first label of autocreated public DNS entries for this floating IP (overrides port DNSName setting)
+	DNSName string `json:"dns_name,omitempty"`
 }
 
 type commonResult struct {
