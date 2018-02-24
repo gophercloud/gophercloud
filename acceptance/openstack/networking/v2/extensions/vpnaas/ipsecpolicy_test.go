@@ -19,6 +19,7 @@ func TestPolicyCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create policy: %v", err)
 	}
+	defer DeleteIPSecPolicy(t, client, policy.ID)
 
 	tools.PrintResource(t, policy)
 }

@@ -66,3 +66,17 @@ func CreateIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ipsecp
 
 	return policy, nil
 }
+
+// DeleteIPSecPolicy will delete an IPSec policy with a specified ID. A fatal error will
+// occur if the delete was not successful. This works best when used as a
+// deferred function.
+func DeleteIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient, policyID string) {
+	t.Logf("Attempting to delete policy: %s", policyID)
+
+	err := ipsecpolicies.Delete(client, policyID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete policy %s: %v", policyID, err)
+	}
+
+	t.Logf("Deleted policy: %s", policyID)
+}

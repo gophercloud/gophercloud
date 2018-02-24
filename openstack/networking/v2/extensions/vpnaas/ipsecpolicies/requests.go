@@ -108,3 +108,10 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
 	return
 }
+
+// Delete will permanently delete a particular IPSec policy based on its
+// unique ID.
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return
+}
