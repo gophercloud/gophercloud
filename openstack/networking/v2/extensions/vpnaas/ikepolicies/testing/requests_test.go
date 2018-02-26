@@ -38,6 +38,7 @@ func TestCreate(t *testing.T) {
     "ikepolicy":{
         "name": "policy",
         "tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
+        "project_id": "9145d91459d248b1b02fdaca97c6a75d",
         "id": "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
         "description": "IKE policy",
 		"auth_algorithm": "sha1",
@@ -78,6 +79,7 @@ func TestCreate(t *testing.T) {
 		Name:                "policy",
 		ID:                  "f2b08c1e-aa81-4668-8ae1-1401bcb0576c",
 		Lifetime:            expectedLifetime,
+		ProjectID:           "9145d91459d248b1b02fdaca97c6a75d",
 	}
 	th.AssertDeepEquals(t, expected, *actual)
 }

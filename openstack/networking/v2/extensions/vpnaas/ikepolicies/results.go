@@ -7,6 +7,9 @@ type Policy struct {
 	// TenantID is the ID of the project
 	TenantID string `json:"tenant_id"`
 
+	// ProjectID is the ID of the project
+	ProjectID string `json:"project_id"`
+
 	// Description is the human readable description of the policy
 	Description string `json:"description"`
 

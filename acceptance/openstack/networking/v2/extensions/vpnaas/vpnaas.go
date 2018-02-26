@@ -64,7 +64,6 @@ func CreateIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ipsecp
 	}
 
 	t.Logf("Successfully created IPSec policy %s", policyName)
-	t.Logf("Successfully created IKE policy %s", policyName)
 
 	return policy, nil
 }
