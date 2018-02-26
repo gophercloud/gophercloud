@@ -49,6 +49,7 @@ func TestCreate(t *testing.T) {
         "encryption_algorithm": "aes-128",
         "pfs": "group5",
         "tenant_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
+        "project_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
         "lifetime": {
             "units": "seconds",
             "value": 7200
@@ -92,6 +93,7 @@ func TestCreate(t *testing.T) {
 		Description:         "",
 		Lifetime:            expectedLifetime,
 		ID:                  "5291b189-fd84-46e5-84bd-78f40c05d69c",
+		ProjectID:           "b4eedccc6fb74fa8a7ad6b08382b852b",
 	}
 	th.AssertDeepEquals(t, expected, *actual)
 }
@@ -117,6 +119,7 @@ func TestGet(t *testing.T) {
         "encryption_algorithm": "aes-128",
         "pfs": "group5",
         "tenant_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
+        "project_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
         "lifetime": {
             "units": "seconds",
             "value": 7200
@@ -145,6 +148,7 @@ func TestGet(t *testing.T) {
 		Lifetime:            expectedLifetime,
 		TenantID:            "b4eedccc6fb74fa8a7ad6b08382b852b",
 		ID:                  "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+		ProjectID:           "b4eedccc6fb74fa8a7ad6b08382b852b",
 	}
 	th.AssertDeepEquals(t, expected, *actual)
 }
