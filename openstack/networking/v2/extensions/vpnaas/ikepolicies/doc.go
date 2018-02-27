@@ -17,5 +17,12 @@ Example to Create an IKE policy
 		panic(err)
 	}
 
+Example to Show the details of a specific IKE policy by ID
+
+	policy, err := ikepolicies.Get(client, "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
+    if err != nil {
+		panic(err)
+	}
+
 */
 package ikepolicies
