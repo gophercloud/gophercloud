@@ -30,6 +30,19 @@ Example to Delete a Policy
 	err := ikepolicies.Delete(client, "5291b189-fd84-46e5-84bd-78f40c05d69c").ExtractErr()
 	if err != nil {
 		panic(err)
+
+Example to Update an IKE policy
+
+	updateOpts := ikepolicies.UpdateOpts{
+		Name:        "updatedname",
+		Description: "updated policy",
+		Lifetime: &ikepolicies.LifetimeUpdateOpts{
+			Value: 7000,
+		},
+	}
+	updatedPolicy, err := ikepolicies.Update(client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update IKE policy: %v", err)
 	}
 
 

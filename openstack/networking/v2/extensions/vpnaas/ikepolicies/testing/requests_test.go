@@ -252,24 +252,25 @@ func TestUpdate(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 
 		fmt.Fprintf(w, `
-	  {
-		  "ikepolicy": {
-			  "name": "updatedname",
-			  "transform_protocol": "esp",
-			  "auth_algorithm": "sha1",
-			  "encapsulation_mode": "tunnel",
-			  "encryption_algorithm": "aes-128",
-			  "pfs": "group5",
-			  "tenant_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
-			  "lifetime": {
-				  "units": "seconds",
-				  "value": 7000
-			  },
-			  "id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
-			  "description": "updated policy"
-		  }
-	  }
-	  `)
+{
+    "ikepolicy": {
+        "name": "updatedname",
+        "transform_protocol": "esp",
+        "auth_algorithm": "sha1",
+        "encapsulation_mode": "tunnel",
+        "encryption_algorithm": "aes-128",
+        "pfs": "group5",
+        "tenant_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
+        "project_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
+        "lifetime": {
+            "units": "seconds",
+            "value": 7000
+        },
+        "id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+        "description": "updated policy"
+    }
+}
+`)
 	})
 
 	options := ikepolicies.UpdateOpts{
@@ -288,10 +289,9 @@ func TestUpdate(t *testing.T) {
 	}
 	expected := ikepolicies.Policy{
 		TenantID:            "b4eedccc6fb74fa8a7ad6b08382b852b",
+		ProjectID:           "b4eedccc6fb74fa8a7ad6b08382b852b",
 		Name:                "updatedname",
-		TransformProtocol:   "esp",
 		AuthAlgorithm:       "sha1",
-		EncapsulationMode:   "tunnel",
 		EncryptionAlgorithm: "aes-128",
 		PFS:                 "group5",
 		Description:         "updated policy",
