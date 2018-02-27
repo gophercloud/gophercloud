@@ -51,9 +51,11 @@ func TestIKEPolicyCRUD(t *testing.T) {
 	}
 	tools.PrintResource(t, newPolicy)
 
+	updatedName := "updatedname"
+	updatedDescription := "updated policy"
 	updateOpts := ikepolicies.UpdateOpts{
-		Name:        "updatedname",
-		Description: "updated policy",
+		Name:        &updatedName,
+		Description: &updatedDescription,
 		Lifetime: &ikepolicies.LifetimeUpdateOpts{
 			Value: 7000,
 		},
