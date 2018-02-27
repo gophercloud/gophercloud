@@ -135,17 +135,15 @@ type ListOptsBuilder interface {
 // the API. Filtering is achieved by passing in struct field values that map to
 // the IPSec policy attributes you want to see returned.
 type ListOpts struct {
-	ID                  string   `q:"id"`
-	TenantID            string   `q:"tenant_id"`
-	Name                string   `q:"name"`
-	Description         string   `q:"description"`
-	ProjectID           string   `q:"project_id"`
-	AuthAlgorithm       string   `q:"auth_algorithm"`
-	EncapsulationMode   string   `q:"encapsulation_mode"`
-	EncryptionAlgorithm string   `q:"encryption_algorithm"`
-	PFS                 string   `q:"pfs"`
-	Lifetime            Lifetime `q:"lifetime"`
-	TransformProtocol   string   `q:"transform_protocol"`
+	TenantID            string `q:"tenant_id"`
+	Name                string `q:"name"`
+	Description         string `q:"description"`
+	ProjectID           string `q:"project_id"`
+	AuthAlgorithm       string `q:"auth_algorithm"`
+	EncapsulationMode   string `q:"encapsulation_mode"`
+	EncryptionAlgorithm string `q:"encryption_algorithm"`
+	PFS                 string `q:"pfs"`
+	TransformProtocol   string `q:"transform_protocol"`
 }
 
 // ToPolicyListQuery formats a ListOpts into a query string.

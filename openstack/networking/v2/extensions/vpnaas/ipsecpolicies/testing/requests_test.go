@@ -218,6 +218,7 @@ func TestList(t *testing.T) {
 				Name:                "ipsecpolicy1",
 				TransformProtocol:   "esp",
 				TenantID:            "b4eedccc6fb74fa8a7ad6b08382b852b",
+				ProjectID:           "b4eedccc6fb74fa8a7ad6b08382b852b",
 				AuthAlgorithm:       "sha1",
 				EncapsulationMode:   "tunnel",
 				EncryptionAlgorithm: "aes-128",
