@@ -100,6 +100,7 @@ func TestGet(t *testing.T) {
     "ikepolicy":{
         "name": "policy",
         "tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
+        "project_id": "9145d91459d248b1b02fdaca97c6a75d",
         "id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
         "description": "IKE policy",
 		"auth_algorithm": "sha1",
@@ -124,8 +125,9 @@ func TestGet(t *testing.T) {
 	}
 	expected := ikepolicies.Policy{
 		AuthAlgorithm:         "sha1",
-		IkeVersion:            "v2",
+		IKEVersion:            "v2",
 		TenantID:              "9145d91459d248b1b02fdaca97c6a75d",
+		ProjectID:             "9145d91459d248b1b02fdaca97c6a75d",
 		Phase1NegotiationMode: "main",
 		PFS:                 "Group5",
 		EncryptionAlgorithm: "aes-128",

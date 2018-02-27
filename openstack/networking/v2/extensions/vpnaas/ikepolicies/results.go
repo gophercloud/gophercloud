@@ -60,6 +60,8 @@ func (r commonResult) Extract() (*Policy, error) {
 	return s.Policy, err
 }
 
+// CreateResult represents the result of a Create operation. Call its Extract method to
+// interpret it as a Policy.
 type CreateResult struct {
 	commonResult
 }
