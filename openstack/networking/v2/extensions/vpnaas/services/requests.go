@@ -71,7 +71,6 @@ type ListOptsBuilder interface {
 // the API. Filtering is achieved by passing in struct field values that map to
 // the VPN service attributes you want to see returned.
 type ListOpts struct {
-	ID           string `q:"id"`
 	TenantID     string `q:"tenant_id"`
 	Name         string `q:"name"`
 	Description  string `q:"description"`
