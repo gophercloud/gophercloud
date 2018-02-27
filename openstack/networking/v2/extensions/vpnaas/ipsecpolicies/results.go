@@ -9,6 +9,9 @@ type Policy struct {
 	// TenantID is the ID of the project
 	TenantID string `json:"tenant_id"`
 
+	// ProjectID is the ID of the project
+	ProjectID string `json:"project_id"`
+
 	// Description is the human readable description of the policy
 	Description string `json:"description"`
 
@@ -70,4 +73,10 @@ type CreateResult struct {
 // to determine if the operation succeeded or failed.
 type DeleteResult struct {
 	gophercloud.ErrResult
+}
+
+// GetResult represents the result of a get operation. Call its Extract
+// method to interpret it as a Policy.
+type GetResult struct {
+	commonResult
 }
