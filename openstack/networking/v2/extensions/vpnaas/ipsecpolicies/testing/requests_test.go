@@ -287,10 +287,11 @@ func TestUpdate(t *testing.T) {
 	  }
 	  `)
 	})
-
+	updatedName := "updatedname"
+	updatedDescription := "updated policy"
 	options := ipsecpolicies.UpdateOpts{
-		Name:        "updatedname",
-		Description: "updated policy",
+		Name:        &updatedName,
+		Description: &updatedDescription,
 		Lifetime: &ipsecpolicies.LifetimeUpdateOpts{
 			Value: 7000,
 		},
@@ -304,6 +305,7 @@ func TestUpdate(t *testing.T) {
 	}
 	expected := ipsecpolicies.Policy{
 		TenantID:            "b4eedccc6fb74fa8a7ad6b08382b852b",
+		ProjectID:           "b4eedccc6fb74fa8a7ad6b08382b852b",
 		Name:                "updatedname",
 		TransformProtocol:   "esp",
 		AuthAlgorithm:       "sha1",

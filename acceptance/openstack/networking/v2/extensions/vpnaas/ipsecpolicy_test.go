@@ -44,8 +44,9 @@ func TestIPSecPolicyCRUD(t *testing.T) {
 	defer DeleteIPSecPolicy(t, client, policy.ID)
 	tools.PrintResource(t, policy)
 
+	updatedDescription := "Updated policy description"
 	updateOpts := ipsecpolicies.UpdateOpts{
-		Description: "Updated policy description",
+		Description: &updatedDescription,
 	}
 
 	policy, err = ipsecpolicies.Update(client, policy.ID, updateOpts).Extract()
