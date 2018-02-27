@@ -24,5 +24,12 @@ Example to Show the details of a specific IKE policy by ID
 		panic(err)
 	}
 
+Example to Delete a Policy
+
+	err := ikepolicies.Delete(client, "5291b189-fd84-46e5-84bd-78f40c05d69c").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package ikepolicies
