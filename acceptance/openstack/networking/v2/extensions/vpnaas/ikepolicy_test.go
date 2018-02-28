@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ikepolicies"
 )
 
 func TestIKEPolicyCRUD(t *testing.T) {
@@ -19,6 +20,12 @@ func TestIKEPolicyCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create IKE policy: %v", err)
 	}
-
 	tools.PrintResource(t, policy)
+
+	newPolicy, err := ikepolicies.Get(client, policy.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get IKE policy: %v", err)
+	}
+	tools.PrintResource(t, newPolicy)
+
 }
