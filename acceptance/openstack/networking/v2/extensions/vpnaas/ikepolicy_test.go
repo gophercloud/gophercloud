@@ -10,6 +10,27 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ikepolicies"
 )
 
+func TestIKEPolicyList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	allPages, err := ikepolicies.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list IKE policies: %v", err)
+	}
+
+	allPolicies, err := ikepolicies.ExtractPolicies(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract IKE policies: %v", err)
+	}
+
+	for _, policy := range allPolicies {
+		tools.PrintResource(t, policy)
+	}
+}
+
 func TestIKEPolicyCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {

@@ -1,6 +1,9 @@
 package ikepolicies
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
 
 type AuthAlgorithm string
 type EncryptionAlgorithm string
@@ -117,4 +120,49 @@ func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
 	return
+}
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToPolicyListQuery() (string, error)
+}
+
+// ListOpts allows the filtering of paginated collections through
+// the API. Filtering is achieved by passing in struct field values that map to
+// the IKE policy attributes you want to see returned.
+type ListOpts struct {
+	TenantID              string `q:"tenant_id"`
+	Name                  string `q:"name"`
+	Description           string `q:"description"`
+	ProjectID             string `q:"project_id"`
+	AuthAlgorithm         string `q:"auth_algorithm"`
+	EncapsulationMode     string `q:"encapsulation_mode"`
+	EncryptionAlgorithm   string `q:"encryption_algorithm"`
+	PFS                   string `q:"pfs"`
+	Phase1NegotiationMode string `q:"phase_1_negotiation_mode"`
+	IKEVersion            string `q:"ike_version"`
+}
+
+// ToPolicyListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToPolicyListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List returns a Pager which allows you to iterate over a collection of
+// IKE policies. It accepts a ListOpts struct, which allows you to filter
+// the returned collection for greater efficiency.
+func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := rootURL(c)
+	if opts != nil {
+		query, err := opts.ToPolicyListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return PolicyPage{pagination.LinkedPageBase{PageResult: r}}
+	})
 }

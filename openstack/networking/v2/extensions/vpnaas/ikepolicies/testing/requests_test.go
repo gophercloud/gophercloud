@@ -7,6 +7,7 @@ import (
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ikepolicies"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -151,4 +152,78 @@ func TestDelete(t *testing.T) {
 
 	res := ikepolicies.Delete(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/vpn/ikepolicies", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+		{
+	"ikepolicies": [
+		{
+			"name": "policy",
+			"tenant_id": "9145d91459d248b1b02fdaca97c6a75d",
+			"project_id": "9145d91459d248b1b02fdaca97c6a75d",
+			"id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+			"description": "IKE policy",
+			"auth_algorithm": "sha1",
+			"encryption_algorithm": "aes-128",
+			"pfs": "Group5",
+			"lifetime": {
+				"value": 3600,
+				"units": "seconds"
+			},
+			"phase1_negotiation_mode": "main",
+			"ike_version": "v2"
+		}
+	]
+}
+	  `)
+	})
+
+	count := 0
+
+	ikepolicies.List(fake.ServiceClient(), ikepolicies.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := ikepolicies.ExtractPolicies(page)
+		if err != nil {
+			t.Errorf("Failed to extract members: %v", err)
+			return false, err
+		}
+		expectedLifetime := ikepolicies.Lifetime{
+			Units: "seconds",
+			Value: 3600,
+		}
+		expected := []ikepolicies.Policy{
+			{
+				AuthAlgorithm:         "sha1",
+				IKEVersion:            "v2",
+				TenantID:              "9145d91459d248b1b02fdaca97c6a75d",
+				ProjectID:             "9145d91459d248b1b02fdaca97c6a75d",
+				Phase1NegotiationMode: "main",
+				PFS:                 "Group5",
+				EncryptionAlgorithm: "aes-128",
+				Description:         "IKE policy",
+				Name:                "policy",
+				ID:                  "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+				Lifetime:            expectedLifetime,
+			},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }
