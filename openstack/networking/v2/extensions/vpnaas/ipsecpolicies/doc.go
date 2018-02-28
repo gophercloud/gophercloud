@@ -24,12 +24,12 @@ Example to List IPSec policies
 
 	allPages, err := ipsecpolicies.List(client, nil).AllPages()
 	if err != nil {
-		t.Fatalf("Unable to list IPSec policies: %v", err)
+		panic(err)
 	}
 
 	allPolicies, err := ipsecpolicies.ExtractPolicies(allPages)
 	if err != nil {
-		t.Fatalf("Unable to extract policies: %v", err)
+		panic(err)
 	}
 
 */
