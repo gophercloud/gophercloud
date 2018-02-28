@@ -19,5 +19,18 @@ Example to Delete a Policy
 	if err != nil {
 		panic(err)
 	}
+
+Example to List IPSec policies
+
+	allPages, err := ipsecpolicies.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list IPSec policies: %v", err)
+	}
+
+	allPolicies, err := ipsecpolicies.ExtractPolicies(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract policies: %v", err)
+	}
+
 */
 package ipsecpolicies

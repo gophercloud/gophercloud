@@ -2,6 +2,7 @@ package ipsecpolicies
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // Policy is an IPSec Policy
@@ -79,4 +80,41 @@ type DeleteResult struct {
 // method to interpret it as a Policy.
 type GetResult struct {
 	commonResult
+}
+
+// PolicyPage is the page returned by a pager when traversing over a
+// collection of Policies.
+type PolicyPage struct {
+	pagination.LinkedPageBase
+}
+
+// NextPageURL is invoked when a paginated collection of IPSec policies has
+// reached the end of a page and the pager seeks to traverse over a new one.
+// In order to do this, it needs to construct the next page's URL.
+func (r PolicyPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"ipsecpolicies_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
+}
+
+// IsEmpty checks whether a PolicyPage struct is empty.
+func (r PolicyPage) IsEmpty() (bool, error) {
+	is, err := ExtractPolicies(r)
+	return len(is) == 0, err
+}
+
+// ExtractPolicies accepts a Page struct, specifically a Policy struct,
+// and extracts the elements into a slice of Policy structs. In other words,
+// a generic collection is mapped into a relevant slice.
+func ExtractPolicies(r pagination.Page) ([]Policy, error) {
+	var s struct {
+		Policies []Policy `json:"ipsecpolicies"`
+	}
+	err := (r.(PolicyPage)).ExtractInto(&s)
+	return s.Policies, err
 }
