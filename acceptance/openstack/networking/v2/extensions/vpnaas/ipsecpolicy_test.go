@@ -51,7 +51,7 @@ func TestIPSecPolicyCRUD(t *testing.T) {
 
 	policy, err = ipsecpolicies.Update(client, policy.ID, updateOpts).Extract()
 	if err != nil {
-		t.Fatalf("Unable to update firewall: %v", err)
+		t.Fatalf("Unable to update IPSec policy: %v", err)
 	}
 	tools.PrintResource(t, policy)
 
