@@ -73,7 +73,7 @@ func CreateIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ipsecp
 func CreateIKEPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ikepolicies.Policy, error) {
 	policyName := tools.RandomString("TESTACC-", 8)
 
-	t.Logf("Attempting to create policy %s", policyName)
+	t.Logf("Attempting to create IKE policy %s", policyName)
 
 	createOpts := ikepolicies.CreateOpts{
 		Name:                policyName,
@@ -95,12 +95,26 @@ func CreateIKEPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ikepolic
 // occur if the delete was not successful. This works best when used as a
 // deferred function.
 func DeleteIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient, policyID string) {
-	t.Logf("Attempting to delete policy: %s", policyID)
+	t.Logf("Attempting to delete IPSec policy: %s", policyID)
 
 	err := ipsecpolicies.Delete(client, policyID).ExtractErr()
 	if err != nil {
-		t.Fatalf("Unable to delete policy %s: %v", policyID, err)
+		t.Fatalf("Unable to delete IPSec policy %s: %v", policyID, err)
 	}
 
-	t.Logf("Deleted policy: %s", policyID)
+	t.Logf("Deleted IPSec policy: %s", policyID)
+}
+
+// DeleteIKEPolicy will delete an IKE policy with a specified ID. A fatal error will
+// occur if the delete was not successful. This works best when used as a
+// deferred function.
+func DeleteIKEPolicy(t *testing.T, client *gophercloud.ServiceClient, policyID string) {
+	t.Logf("Attempting to delete policy: %s", policyID)
+
+	err := ikepolicies.Delete(client, policyID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete IKE policy %s: %v", policyID, err)
+	}
+
+	t.Logf("Deleted IKE policy: %s", policyID)
 }

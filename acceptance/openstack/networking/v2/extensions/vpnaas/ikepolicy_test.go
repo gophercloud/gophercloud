@@ -20,6 +20,8 @@ func TestIKEPolicyCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create IKE policy: %v", err)
 	}
+	defer DeleteIKEPolicy(t, client, policy.ID)
+
 	tools.PrintResource(t, policy)
 
 	newPolicy, err := ikepolicies.Get(client, policy.ID).Extract()
