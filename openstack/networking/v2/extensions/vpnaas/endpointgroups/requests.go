@@ -6,8 +6,8 @@ type EndpointType string
 
 const (
 	TypeSubnet  EndpointType = "subnet"
-	TypeCidr    EndpointType = "cidr"
-	TypeVlan    EndpointType = "vlan"
+	TypeCIDR    EndpointType = "cidr"
+	TypeVLAN    EndpointType = "vlan"
 	TypeNetwork EndpointType = "network"
 	TypeRouter  EndpointType = "router"
 )
@@ -15,7 +15,7 @@ const (
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
 type CreateOptsBuilder interface {
-	ToGroupCreateMap() (map[string]interface{}, error)
+	ToEndpointGroupCreateMap() (map[string]interface{}, error)
 }
 
 // CreateOpts contains all the values needed to create a new endpoint group
@@ -40,15 +40,15 @@ type CreateOpts struct {
 	Endpoints []string `json:"endpoints"`
 }
 
-// ToGroupCreateMap casts a CreateOpts struct to a map.
-func (opts CreateOpts) ToGroupCreateMap() (map[string]interface{}, error) {
+// ToEndpointGroupCreateMap casts a CreateOpts struct to a map.
+func (opts CreateOpts) ToEndpointGroupCreateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "endpoint_group")
 }
 
 // Create accepts a CreateOpts struct and uses the values to create a new
 // endpoint group.
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
-	b, err := opts.ToGroupCreateMap()
+	b, err := opts.ToEndpointGroupCreateMap()
 	if err != nil {
 		r.Err = err
 		return
