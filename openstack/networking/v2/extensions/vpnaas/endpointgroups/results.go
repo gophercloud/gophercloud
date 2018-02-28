@@ -46,3 +46,9 @@ func (r commonResult) Extract() (*EndpointGroup, error) {
 type CreateResult struct {
 	commonResult
 }
+
+// GetResult represents the result of a get operation. Call its Extract
+// method to interpret it as an EndpointGroup.
+type GetResult struct {
+	commonResult
+}

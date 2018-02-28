@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/endpointgroups"
 )
 
 func TestGroupCRUD(t *testing.T) {
@@ -19,6 +20,12 @@ func TestGroupCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create Endpoint group: %v", err)
 	}
-
 	tools.PrintResource(t, group)
+
+	newGroup, err := endpointgroups.Get(client, group.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to retrieve Endpoint group: %v", err)
+	}
+	tools.PrintResource(t, newGroup)
+
 }

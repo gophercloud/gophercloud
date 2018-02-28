@@ -56,3 +56,9 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
 	return
 }
+
+// Get retrieves a particular endpoint group based on its unique ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
+}

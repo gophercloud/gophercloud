@@ -15,5 +15,12 @@ Example to create an Endpoint Group
 	if err != nil {
 		return group, err
 	}
+
+Example to retrieve an Endpoint Group
+
+	group, err := endpointgroups.Get(client, "6ecd9cf3-ca64-46c7-863f-f2eb1b9e838a").Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package endpointgroups
