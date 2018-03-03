@@ -56,6 +56,13 @@ type AddressPair struct {
 	MACAddress string `json:"mac_address,omitempty"`
 }
 
+//This is the sub-struct that represents extra DHCP option pairs
+type ExtraDHCPOpts struct {
+	OptName   string                `json:"opt_name"`
+	OptValue  string                `json:"opt_value"`
+	IPVersion gophercloud.IPVersion `json:"ip_version"`
+}
+
 // Port represents a Neutron port. See package documentation for a top-level
 // description of what this is.
 type Port struct {
@@ -98,6 +105,9 @@ type Port struct {
 
 	// Identifies the list of IP addresses the port will recognize/accept
 	AllowedAddressPairs []AddressPair `json:"allowed_address_pairs"`
+
+	//A set of zero or more extra DHCP option pairs
+	ExtraDHCPOPTS []ExtraDHCPOpts `json:"extra_dhcp_opts"`
 }
 
 // PortPage is the page returned by a pager when traversing over a collection
