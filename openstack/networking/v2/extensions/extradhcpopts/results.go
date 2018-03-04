@@ -1,5 +1,7 @@
 package extradhcpopts
 
+import "github.com/gophercloud/gophercloud"
+
 // ExtraDHCPOptsExt is a struct that contains different DHCP options for a single port.
 type ExtraDHCPOptsExt struct {
 	ExtraDHCPOpts []ExtraDHCPOpts `json:"extra_dhcp_opts"`
@@ -16,4 +18,15 @@ type ExtraDHCPOpts struct {
 	// IPVersion is the IP protocol version of a single DHCP option.
 	// Valid value is 4 or 6. Default is 4.
 	IPVersion int `json:"ip_version,omitempty"`
+}
+
+// ToMap is a helper function to convert an individual DHCPOpts structure
+// into a sub-map.
+func (opts ExtraDHCPOpts) ToMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
 }

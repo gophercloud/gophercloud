@@ -612,3 +612,67 @@ func TestGetWithDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, s.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
 	th.AssertEquals(t, s.DeviceID, "")
 }
+
+func TestCreateWithDHCPOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, CreateWithDHCPOptsRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, CreateWithDHCPOptsResponse)
+	})
+
+	adminStateUp := true
+	portCreateOpts := ports.CreateOpts{
+		Name:         "port-with-extra-dhcp-opts",
+		AdminStateUp: &adminStateUp,
+		NetworkID:    "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+		FixedIPs: []ports.IP{
+			{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
+		},
+	}
+
+	createOpts := extradhcpopts.CreateOptsExt{
+		CreateOptsBuilder: portCreateOpts,
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+			{
+				OptName:  "option1",
+				OptValue: "value1",
+			},
+		},
+	}
+
+	var s struct {
+		ports.Port
+		extradhcpopts.ExtraDHCPOptsExt
+	}
+
+	err := ports.Create(fake.ServiceClient(), createOpts).ExtractInto(&s)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, s.Status, "DOWN")
+	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
+	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
+	th.AssertDeepEquals(t, s.ExtraDHCPOptsExt, extradhcpopts.ExtraDHCPOptsExt{
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+			{OptName: "option1", OptValue: "value1", IPVersion: 4},
+		},
+	})
+	th.AssertEquals(t, s.AdminStateUp, true)
+	th.AssertEquals(t, s.Name, "port-with-extra-dhcp-opts")
+	th.AssertEquals(t, s.DeviceOwner, "")
+	th.AssertEquals(t, s.MACAddress, "fa:16:3e:c9:cb:f0")
+	th.AssertDeepEquals(t, s.FixedIPs, []ports.IP{
+		{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
+	})
+	th.AssertEquals(t, s.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
+	th.AssertEquals(t, s.DeviceID, "")
+}

@@ -13,5 +13,35 @@ Example to Get a Port with DHCP opts
 	if err != nil {
 		panic(err)
 	}
+
+Example to Create a Port with DHCP opts
+
+	adminStateUp := true
+	portCreateOpts := ports.CreateOpts{
+		Name:         "dhcp-conf-port",
+		AdminStateUp: &adminStateUp,
+		NetworkID:    "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+		FixedIPs: []ports.IP{
+			{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
+		},
+	}
+	createOpts := extradhcpopts.CreateOptsExt{
+		CreateOptsBuilder: portCreateOpts,
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+			{
+				OptName:  "optionA",
+				OptValue: "valueA",
+			},
+		},
+	}
+	var s struct {
+		ports.Port
+		extradhcpopts.ExtraDHCPOptsExt
+	}
+
+	err := ports.Create(networkClient, createOpts).ExtractInto(&s)
+	if err != nil {
+		panic(err)
+	}
 */
 package extradhcpopts
