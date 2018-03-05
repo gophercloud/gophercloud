@@ -43,5 +43,33 @@ Example to Create a Port with DHCP opts
 	if err != nil {
 		panic(err)
 	}
+
+Example to Update a Port with DHCP opts
+
+	portUpdateOpts := ports.UpdateOpts{
+		Name: "updated-dhcp-conf-port",
+		FixedIPs: []ports.IP{
+			{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.3"},
+		},
+	}
+	updateOpts := extradhcpopts.UpdateOptsExt{
+		UpdateOptsBuilder: portUpdateOpts,
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+			{
+				OptName:  "optionB",
+				OptValue: "valueB",
+			},
+		},
+	}
+	var s struct {
+		ports.Port
+		extradhcpopts.ExtraDHCPOptsExt
+	}
+	portID := "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2"
+
+	err := ports.Update(networkClient, portID, updateOpts).ExtractInto(&s)
+	if err != nil {
+		panic(err)
+	}
 */
 package extradhcpopts

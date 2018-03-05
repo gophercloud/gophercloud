@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	extensions "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2/extensions"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/extradhcpopts"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/portsecurity"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
 )
@@ -417,4 +418,27 @@ func TestPortsWithDHCPOptsCRUD(t *testing.T) {
 	defer DeletePort(t, client, port.ID)
 
 	tools.PrintResource(t, port)
+
+	// Update the port with extra DHCP options.
+	newPortName := tools.RandomString("TESTACC-", 8)
+	portUpdateOpts := ports.UpdateOpts{
+		Name: newPortName,
+	}
+	updateOpts := extradhcpopts.UpdateOptsExt{
+		UpdateOptsBuilder: portUpdateOpts,
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+			{
+				OptName:  "test_option_2",
+				OptValue: "test_value_2",
+			},
+		},
+	}
+
+	newPort := &PortWithDHCPOpts{}
+	err = ports.Update(client, port.ID, updateOpts).ExtractInto(newPort)
+	if err != nil {
+		t.Fatalf("Could not update port: %v", err)
+	}
+
+	tools.PrintResource(t, newPort)
 }
