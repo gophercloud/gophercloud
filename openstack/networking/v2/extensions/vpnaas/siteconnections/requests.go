@@ -42,10 +42,11 @@ type CreateOpts struct {
 	RouteMode          string         `json:"route_mode,omitempty"`
 	PSK                string         `json:"psk"`
 	Initiator          Initiator      `json:"initiator,omitempty"`
-	PeerCIDRs          string         `json:"peer_cidrs,omitempty"`
+	PeerCIDRs          []string       `json:"peer_cidrs,omitempty"`
 	AdminStateUp       *bool          `json:"admin_state_up,omitempty"`
 	DPD                *DPDCreateOpts `json:"dpd,omitempty"`
 	AuthenticationMode string         `json:"auth_mode,omitempty"`
+	MTU                int            `json:"mtu"`
 }
 
 // ToServiceCreateMap casts a CreateOpts struct to a map.

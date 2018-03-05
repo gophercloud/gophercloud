@@ -5,31 +5,35 @@ import (
 )
 
 type DPD struct {
-	Action   string `q:"action"`
-	Timeout  int    `q:"timeout"`
-	Interval int    `q:"interval"`
+	Action   string `json:"action"`
+	Timeout  int    `json:"timeout"`
+	Interval int    `json:"interval"`
 }
 
 // Connection is an IPSec site connection
 type Connection struct {
-	IKEPolicyID        string `q:"ikepolicy_id"`
-	VPNServiceID       string `q:"vpnservice_id"`
-	LocalEPGroupID     string `q:"local_ep_group_id"`
-	IPSecPolicyID      string `q:"ipsecpolicy_id"`
-	PeerID             string `q:"peer_id"`
-	TenantID           string `q:"tenant_id"`
-	PeerEPGroupID      string `q:"peer_ep_group_id"`
-	LocalID            string `q:"local_id"`
-	Name               string `q:"name"`
-	Description        string `q:"description"`
-	PeerAddress        string `q:"peer_address"`
-	RouteMode          string `q:"route_mode"`
-	PSK                string `q:"psk"`
-	Initiator          string `q:"initiator"`
-	PeerCIDRs          string `q:"peer_cidrs"`
-	AdminStateUp       bool   `q:"admin_state_up"`
-	DPD                DPD    `q:"dpd"`
-	AuthenticationMode string `q:"auth_mode"`
+	IKEPolicyID        string   `json:"ikepolicy_id"`
+	VPNServiceID       string   `json:"vpnservice_id"`
+	LocalEPGroupID     string   `json:"local_ep_group_id"`
+	IPSecPolicyID      string   `json:"ipsecpolicy_id"`
+	PeerID             string   `json:"peer_id"`
+	TenantID           string   `json:"tenant_id"`
+	PeerEPGroupID      string   `json:"peer_ep_group_id"`
+	LocalID            string   `json:"local_id"`
+	Name               string   `json:"name"`
+	Description        string   `json:"description"`
+	PeerAddress        string   `json:"peer_address"`
+	RouteMode          string   `json:"route_mode"`
+	PSK                string   `json:"psk"`
+	Initiator          string   `json:"initiator"`
+	PeerCIDRs          []string `json:"peer_cidrs"`
+	AdminStateUp       bool     `json:"admin_state_up"`
+	DPD                DPD      `json:"dpd"`
+	AuthenticationMode string   `json:"auth_mode"`
+	MTU                int      `json:"mtu"`
+	Status             string   `json:"status"`
+	ProjectID          string   `json:"project_id"`
+	ID                 string   `json:"id"`
 }
 
 type commonResult struct {
