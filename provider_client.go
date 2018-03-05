@@ -194,6 +194,9 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 	// Set the User-Agent header
 	req.Header.Set("User-Agent", client.UserAgent.Join())
 
+	// Avoid caching of responses; you could wait forever for resources being created...
+	req.Header.Set("Cache-Control", "no-cache")
+
 	if options.MoreHeaders != nil {
 		for k, v := range options.MoreHeaders {
 			if v != "" {
