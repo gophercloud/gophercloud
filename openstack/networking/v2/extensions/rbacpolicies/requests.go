@@ -21,6 +21,7 @@ type ListOpts struct {
 	ObjectType   string       `q:"object_type"`
 	ObjectID     string       `q:"object_id"`
 	Action       PolicyAction `q:"action"`
+	TenantID     string       `q:"tenant_id"`
 	ProjectID    string       `q:"project_id"`
 	Marker       string       `q:"marker"`
 	Limit        int          `q:"limit"`
