@@ -5,7 +5,7 @@ Example to create an Endpoint Group
 
 	createOpts := endpointgroups.CreateOpts{
 		Name: groupName,
-		Type: endpointgroups.TypeCidr,
+		Type: endpointgroups.TypeCIDR,
 		Endpoints: []string{
 			"10.2.0.0/24",
 			"10.3.0.0/24",
