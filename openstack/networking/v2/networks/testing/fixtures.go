@@ -86,6 +86,32 @@ const CreateResponse = `
     }
 }`
 
+const CreatePortSecurityRequest = `
+{
+    "network": {
+        "name": "private",
+        "admin_state_up": true,
+        "port_security_enabled": false
+    }
+}`
+
+const CreatePortSecurityResponse = `
+{
+    "network": {
+        "status": "ACTIVE",
+        "subnets": ["08eae331-0402-425a-923c-34f7cfe39c1b"],
+        "name": "private",
+        "admin_state_up": true,
+        "tenant_id": "26a7980765d0414dbc1fc1f88cdb7e6e",
+        "shared": false,
+        "id": "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
+        "provider:segmentation_id": 9876543210,
+        "provider:physical_network": null,
+        "provider:network_type": "local",
+        "port_security_enabled": false
+    }
+}`
+
 const CreateOptionalFieldsRequest = `
 {
   "network": {

@@ -311,6 +311,54 @@ func TestRequiredCreateOpts(t *testing.T) {
 	}
 }
 
+func TestCreatePortSecurity(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, CreatePortSecurityRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, CreatePortSecurityResponse)
+	})
+
+	var portWithExt struct {
+		ports.Port
+		portsecurity.PortSecurityExt
+	}
+
+	asu := true
+	iFalse := false
+	portCreateOpts := ports.CreateOpts{
+		Name:         "private-port",
+		AdminStateUp: &asu,
+		NetworkID:    "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+		FixedIPs: []ports.IP{
+			{SubnetID: "a0304c3a-4f08-4c43-88af-d796509c97d2", IPAddress: "10.0.0.2"},
+		},
+		SecurityGroups: &[]string{"foo"},
+		AllowedAddressPairs: []ports.AddressPair{
+			{IPAddress: "10.0.0.4", MACAddress: "fa:16:3e:c9:cb:f0"},
+		},
+	}
+	createOpts := portsecurity.PortCreateOptsExt{
+		CreateOptsBuilder:   portCreateOpts,
+		PortSecurityEnabled: &iFalse,
+	}
+
+	err := ports.Create(fake.ServiceClient(), createOpts).ExtractInto(&portWithExt)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, portWithExt.Status, "DOWN")
+	th.AssertEquals(t, portWithExt.PortSecurityEnabled, false)
+}
+
 func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
