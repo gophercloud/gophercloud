@@ -5,6 +5,7 @@ import (
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"strings"
@@ -155,6 +156,7 @@ type CreateOpts struct {
 	DeleteAt           int    `h:"X-Delete-At"`
 	DetectContentType  string `h:"X-Detect-Content-Type"`
 	ETag               string `h:"ETag"`
+	NoETagCalculation  bool   `h:"-"`
 	IfNoneMatch        string `h:"If-None-Match"`
 	ObjectManifest     string `h:"X-Object-Manifest"`
 	TransferEncoding   string `h:"Transfer-Encoding"`
@@ -179,16 +181,24 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 		h["X-Object-Meta-"+k] = v
 	}
 
-	hash := md5.New()
-	buf := bytes.NewBuffer([]byte{})
-	_, err = io.Copy(io.MultiWriter(hash, buf), opts.Content)
-	if err != nil {
-		return nil, nil, "", err
-	}
-	localChecksum := fmt.Sprintf("%x", hash.Sum(nil))
-	h["ETag"] = localChecksum
+	var reader io.Reader
 
-	return buf, h, q.String(), nil
+	if opts.NoETagCalculation {
+		reader = opts.Content
+	} else {
+		buf := bytes.NewBuffer([]byte{})
+		hash := md5.New()
+		_, err = io.Copy(io.MultiWriter(buf, hash), opts.Content)
+		if err != nil {
+			return nil, nil, "", err
+		}
+		localChecksum := hex.EncodeToString(hash.Sum(nil))
+		h["ETag"] = localChecksum
+
+		reader = buf
+	}
+
+	return reader, h, q.String(), nil
 }
 
 // Create is a function that creates a new object or replaces an existing
