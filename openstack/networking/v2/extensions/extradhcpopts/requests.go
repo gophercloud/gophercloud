@@ -10,7 +10,7 @@ type CreateOptsExt struct {
 	// to be used in the main Create operation in this package.
 	ports.CreateOptsBuilder
 
-	// DHCPOpts field is a set of DHCP options for a single port.
+	// ExtraDHCPOpts field is a set of DHCP options for a single port.
 	ExtraDHCPOpts []ExtraDHCPOpts `json:"extra_dhcp_opts,omitempty"`
 }
 
