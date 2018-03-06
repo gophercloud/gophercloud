@@ -338,15 +338,15 @@ func WaitForPortToCreate(client *gophercloud.ServiceClient, portID string, secs 
 	})
 }
 
-// PortWithDHCPOpts represents a port with extra DHCP options configuration.
-type PortWithDHCPOpts struct {
+// PortWithExtraDHCPOpts represents a port with extra DHCP options configuration.
+type PortWithExtraDHCPOpts struct {
 	ports.Port
 	extradhcpopts.ExtraDHCPOptsExt
 }
 
-// CreatePortWithDHCPOpts will create a port with DHCP options on the specified subnet.
-// An error will be returned if the port could not be created.
-func CreatePortWithDHCPOpts(t *testing.T, client *gophercloud.ServiceClient, networkID, subnetID string) (*PortWithDHCPOpts, error) {
+// CreatePortWithExtraDHCPOpts will create a port with DHCP options on the
+// specified subnet. An error will be returned if the port could not be created.
+func CreatePortWithExtraDHCPOpts(t *testing.T, client *gophercloud.ServiceClient, networkID, subnetID string) (*PortWithExtraDHCPOpts, error) {
 	portName := tools.RandomString("TESTACC-", 8)
 
 	t.Logf("Attempting to create port: %s", portName)
@@ -359,14 +359,14 @@ func CreatePortWithDHCPOpts(t *testing.T, client *gophercloud.ServiceClient, net
 	}
 	createOpts := extradhcpopts.CreateOptsExt{
 		CreateOptsBuilder: portCreateOpts,
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
 			{
 				OptName:  "test_option_1",
 				OptValue: "test_value_1",
 			},
 		},
 	}
-	port := &PortWithDHCPOpts{}
+	port := &PortWithExtraDHCPOpts{}
 
 	err := ports.Create(client, createOpts).ExtractInto(port)
 	if err != nil {

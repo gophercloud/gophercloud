@@ -390,7 +390,7 @@ func TestPortsPortSecurityCRUD(t *testing.T) {
 	tools.PrintResource(t, portWithExt)
 }
 
-func TestPortsWithDHCPOptsCRUD(t *testing.T) {
+func TestPortsWithExtraDHCPOptsCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)
@@ -411,7 +411,7 @@ func TestPortsWithDHCPOptsCRUD(t *testing.T) {
 	defer DeleteSubnet(t, client, subnet.ID)
 
 	// Create a port with extra DHCP options.
-	port, err := CreatePortWithDHCPOpts(t, client, network.ID, subnet.ID)
+	port, err := CreatePortWithExtraDHCPOpts(t, client, network.ID, subnet.ID)
 	if err != nil {
 		t.Fatalf("Unable to create a port: %v", err)
 	}
@@ -426,7 +426,7 @@ func TestPortsWithDHCPOptsCRUD(t *testing.T) {
 	}
 	updateOpts := extradhcpopts.UpdateOptsExt{
 		UpdateOptsBuilder: portUpdateOpts,
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
 			{
 				OptName:  "test_option_2",
 				OptValue: "test_value_2",
@@ -434,7 +434,7 @@ func TestPortsWithDHCPOptsCRUD(t *testing.T) {
 		},
 	}
 
-	newPort := &PortWithDHCPOpts{}
+	newPort := &PortWithExtraDHCPOpts{}
 	err = ports.Update(client, port.ID, updateOpts).ExtractInto(newPort)
 	if err != nil {
 		t.Fatalf("Could not update port: %v", err)
