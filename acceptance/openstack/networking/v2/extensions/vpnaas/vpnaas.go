@@ -144,3 +144,17 @@ func CreateEndpointGroup(t *testing.T, client *gophercloud.ServiceClient) (*endp
 
 	return group, nil
 }
+
+// DeleteEndpointGroup will delete an Endpoint group with a specified ID. A fatal error will
+// occur if the delete was not successful. This works best when used as a
+// deferred function.
+func DeleteEndpointGroup(t *testing.T, client *gophercloud.ServiceClient, epGroupID string) {
+	t.Logf("Attempting to delete endpoint group: %s", epGroupID)
+
+	err := endpointgroups.Delete(client, epGroupID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete endpoint group %s: %v", epGroupID, err)
+	}
+
+	t.Logf("Deleted endpoint group: %s", epGroupID)
+}

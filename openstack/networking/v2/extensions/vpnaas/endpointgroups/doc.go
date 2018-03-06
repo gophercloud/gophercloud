@@ -22,5 +22,13 @@ Example to retrieve an Endpoint Group
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete an Endpoint Group
+
+	err := endpointgroups.Delete(client, "5291b189-fd84-46e5-84bd-78f40c05d69c").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package endpointgroups
