@@ -521,10 +521,10 @@ func NewMessagingV2Client(clientID string) (*gophercloud.ServiceClient, error) {
 	})
 }
 
-// NewContainerExperimentalClient returns a *ServiceClient for making calls
-// to the OpenStack Container Experimental API. An error will be returned
+// NewContainerV1Client returns a *ServiceClient for making calls
+// to the OpenStack Container V1 API. An error will be returned
 // if authentication or client creation was not possible.
-func NewContainerExperimentalClient() (*gophercloud.ServiceClient, error) {
+func NewContainerV1Client() (*gophercloud.ServiceClient, error) {
 	ao, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
 		return nil, err
@@ -535,7 +535,7 @@ func NewContainerExperimentalClient() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
-	return openstack.NewContainerExperimental(client, gophercloud.EndpointOpts{
+	return openstack.NewContainerV1(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }
