@@ -96,4 +96,18 @@ func TestNetworksPortSecurityCRUD(t *testing.T) {
 	}
 
 	tools.PrintResource(t, networkWithExtensions)
+
+	iTrue := true
+	networkUpdateOpts := networks.UpdateOpts{}
+	updateOpts := portsecurity.NetworkUpdateOptsExt{
+		UpdateOptsBuilder:   networkUpdateOpts,
+		PortSecurityEnabled: &iTrue,
+	}
+
+	err = networks.Update(client, network.ID, updateOpts).ExtractInto(&networkWithExtensions)
+	if err != nil {
+		t.Fatalf("Unable to update network: %v", err)
+	}
+
+	tools.PrintResource(t, networkWithExtensions)
 }

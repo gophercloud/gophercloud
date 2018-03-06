@@ -441,6 +441,43 @@ func TestUpdateOmitSecurityGroups(t *testing.T) {
 	th.AssertDeepEquals(t, s.SecurityGroups, []string{"f0ac4394-7e4a-4409-9701-ba8be283dbc3"})
 }
 
+func TestUpdatePortSecurity(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/ports/65c0ee9f-d634-4522-8954-51021b570b0d", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, UpdatePortSecurityRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, UpdatePortSecurityResponse)
+	})
+
+	var portWithExt struct {
+		ports.Port
+		portsecurity.PortSecurityExt
+	}
+
+	iFalse := false
+	portUpdateOpts := ports.UpdateOpts{}
+	updateOpts := portsecurity.PortUpdateOptsExt{
+		UpdateOptsBuilder:   portUpdateOpts,
+		PortSecurityEnabled: &iFalse,
+	}
+
+	err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithExt)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, portWithExt.Status, "DOWN")
+	th.AssertEquals(t, portWithExt.Name, "private-port")
+	th.AssertEquals(t, portWithExt.PortSecurityEnabled, false)
+}
+
 func TestRemoveSecurityGroups(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
