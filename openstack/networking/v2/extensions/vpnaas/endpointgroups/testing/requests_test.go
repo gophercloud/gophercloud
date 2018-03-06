@@ -76,3 +76,49 @@ func TestCreate(t *testing.T) {
 	}
 	th.AssertDeepEquals(t, expected, *actual)
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/vpn/endpoint-groups/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "endpoint_group": {
+        "description": "",
+        "tenant_id": "4ad57e7ce0b24fca8f12b9834d91079d",
+        "project_id": "4ad57e7ce0b24fca8f12b9834d91079d",
+        "endpoints": [
+            "10.2.0.0/24",
+            "10.3.0.0/24"
+        ],
+        "type": "cidr",
+        "id": "6ecd9cf3-ca64-46c7-863f-f2eb1b9e838a",
+        "name": "peers"
+    }
+}
+        `)
+	})
+
+	actual, err := endpointgroups.Get(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828").Extract()
+	th.AssertNoErr(t, err)
+	expected := endpointgroups.EndpointGroup{
+		Name:        "peers",
+		TenantID:    "4ad57e7ce0b24fca8f12b9834d91079d",
+		ProjectID:   "4ad57e7ce0b24fca8f12b9834d91079d",
+		ID:          "6ecd9cf3-ca64-46c7-863f-f2eb1b9e838a",
+		Description: "",
+		Endpoints: []string{
+			"10.2.0.0/24",
+			"10.3.0.0/24",
+		},
+		Type: "cidr",
+	}
+	th.AssertDeepEquals(t, expected, *actual)
+}
