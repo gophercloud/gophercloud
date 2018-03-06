@@ -1,6 +1,9 @@
 package siteconnections
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"fmt"
+	"github.com/gophercloud/gophercloud"
+)
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
@@ -46,7 +49,7 @@ type CreateOpts struct {
 	AdminStateUp       *bool          `json:"admin_state_up,omitempty"`
 	DPD                *DPDCreateOpts `json:"dpd,omitempty"`
 	AuthenticationMode string         `json:"auth_mode,omitempty"`
-	MTU                int            `json:"mtu"`
+	MTU                int            `json:"mtu,omitempty"`
 }
 
 // ToServiceCreateMap casts a CreateOpts struct to a map.
@@ -62,6 +65,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		r.Err = err
 		return
 	}
+	fmt.Printf(rootURL(c))
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
 	return
 }
