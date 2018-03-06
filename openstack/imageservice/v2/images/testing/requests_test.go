@@ -297,11 +297,11 @@ func TestImageDateQuery(t *testing.T) {
 	date := time.Date(2014, 1, 1, 1, 1, 1, 0, time.UTC)
 
 	listOpts := images.ListOpts{
-		CreatedAt: &images.ImageDateQuery{
+		CreatedAtQuery: &images.ImageDateQuery{
 			Date:   date,
 			Filter: images.FilterGTE,
 		},
-		UpdatedAt: &images.ImageDateQuery{
+		UpdatedAtQuery: &images.ImageDateQuery{
 			Date: date,
 		},
 	}

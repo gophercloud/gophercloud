@@ -50,7 +50,7 @@ type ListOpts struct {
 	// Status filters on the status of the image.
 	// Multiple statuses can be specified by constructing a string
 	// such as "in:saving,queued".
-	Status string `q:"status"`
+	Status ImageStatus `q:"status"`
 
 	// SizeMin filters on the size_min image property.
 	SizeMin int64 `q:"size_min"`
@@ -73,11 +73,11 @@ type ListOpts struct {
 	// Tags filters on specific image tags.
 	Tags []string `q:"tag"`
 
-	// CreatedAt filters images based on their creation date.
-	CreatedAt *ImageDateQuery
+	// CreatedAtQuery filters images based on their creation date.
+	CreatedAtQuery *ImageDateQuery
 
-	// UpdatedAt filters images based on their updated date.
-	UpdatedAt *ImageDateQuery
+	// UpdatedAtQuery filters images based on their updated date.
+	UpdatedAtQuery *ImageDateQuery
 
 	// ContainerFormat filters images based on the container_format.
 	// Multiple container formats can be specified by constructing a
@@ -95,18 +95,18 @@ func (opts ListOpts) ToImageListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	params := q.Query()
 
-	if opts.CreatedAt != nil {
-		createdAt := opts.CreatedAt.Date.Format(time.RFC3339)
-		if v := opts.CreatedAt.Filter; v != "" {
+	if opts.CreatedAtQuery != nil {
+		createdAt := opts.CreatedAtQuery.Date.Format(time.RFC3339)
+		if v := opts.CreatedAtQuery.Filter; v != "" {
 			createdAt = fmt.Sprintf("%s:%s", v, createdAt)
 		}
 
 		params.Add("created_at", createdAt)
 	}
 
-	if opts.UpdatedAt != nil {
-		updatedAt := opts.UpdatedAt.Date.Format(time.RFC3339)
-		if v := opts.UpdatedAt.Filter; v != "" {
+	if opts.UpdatedAtQuery != nil {
+		updatedAt := opts.UpdatedAtQuery.Date.Format(time.RFC3339)
+		if v := opts.UpdatedAtQuery.Filter; v != "" {
 			updatedAt = fmt.Sprintf("%s:%s", v, updatedAt)
 		}
 
