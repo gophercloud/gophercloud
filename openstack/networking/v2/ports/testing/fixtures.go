@@ -521,8 +521,9 @@ const DontUpdateAllowedAddressPairsResponse = `
 }
 `
 
-// GetWithDHCPOptsResponse represents a raw port response with extra DHCP options.
-const GetWithDHCPOptsResponse = `
+// GetWithExtraDHCPOptsResponse represents a raw port response with extra
+// DHCP options.
+const GetWithExtraDHCPOptsResponse = `
 {
     "port": {
         "status": "ACTIVE",
@@ -556,8 +557,9 @@ const GetWithDHCPOptsResponse = `
 }
 `
 
-// CreateWithDHCPOptsRequest represents a raw port creation request with extra DHCP options.
-const CreateWithDHCPOptsRequest = `
+// CreateWithExtraDHCPOptsRequest represents a raw port creation request
+// with extra DHCP options.
+const CreateWithExtraDHCPOptsRequest = `
 {
     "port": {
         "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
@@ -579,8 +581,9 @@ const CreateWithDHCPOptsRequest = `
 }
 `
 
-// CreateWithDHCPOptsResponse represents a raw port creation response with extra DHCP options.
-const CreateWithDHCPOptsResponse = `
+// CreateWithExtraDHCPOptsResponse represents a raw port creation response
+// with extra DHCP options.
+const CreateWithExtraDHCPOptsResponse = `
 {
     "port": {
         "status": "DOWN",
@@ -609,8 +612,9 @@ const CreateWithDHCPOptsResponse = `
 }
 `
 
-// UpdateWithDHCPOptsRequest represents a raw port update request with extra DHCP options.
-const UpdateWithDHCPOptsRequest = `
+// UpdateWithExtraDHCPOptsRequest represents a raw port update request with
+// extra DHCP options.
+const UpdateWithExtraDHCPOptsRequest = `
 {
     "port": {
         "name": "updated-port-with-dhcp-opts",
@@ -630,8 +634,9 @@ const UpdateWithDHCPOptsRequest = `
 }
 `
 
-// UpdateWithDHCPOptsResponse represents a raw port update response with extra DHCP options.
-const UpdateWithDHCPOptsResponse = `
+// UpdateWithExtraDHCPOptsResponse represents a raw port update response with
+// extra DHCP options.
+const UpdateWithExtraDHCPOptsResponse = `
 {
     "port": {
         "status": "DOWN",

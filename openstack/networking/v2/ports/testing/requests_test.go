@@ -571,7 +571,7 @@ func TestDelete(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
-func TestGetWithDHCPOpts(t *testing.T) {
+func TestGetWithExtraDHCPOpts(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -582,7 +582,7 @@ func TestGetWithDHCPOpts(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetWithDHCPOptsResponse)
+		fmt.Fprintf(w, GetWithExtraDHCPOptsResponse)
 	})
 
 	var s struct {
@@ -597,7 +597,7 @@ func TestGetWithDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
 	th.AssertDeepEquals(t, s.ExtraDHCPOptsExt, extradhcpopts.ExtraDHCPOptsExt{
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
 			{OptName: "option1", OptValue: "value1", IPVersion: 4},
 			{OptName: "option2", OptValue: "value2", IPVersion: 4},
 		},
@@ -613,7 +613,7 @@ func TestGetWithDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, s.DeviceID, "")
 }
 
-func TestCreateWithDHCPOpts(t *testing.T) {
+func TestCreateWithExtraDHCPOpts(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -622,12 +622,12 @@ func TestCreateWithDHCPOpts(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, CreateWithDHCPOptsRequest)
+		th.TestJSONRequest(t, r, CreateWithExtraDHCPOptsRequest)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		fmt.Fprintf(w, CreateWithDHCPOptsResponse)
+		fmt.Fprintf(w, CreateWithExtraDHCPOptsResponse)
 	})
 
 	adminStateUp := true
@@ -642,7 +642,7 @@ func TestCreateWithDHCPOpts(t *testing.T) {
 
 	createOpts := extradhcpopts.CreateOptsExt{
 		CreateOptsBuilder: portCreateOpts,
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
 			{
 				OptName:  "option1",
 				OptValue: "value1",
@@ -662,7 +662,7 @@ func TestCreateWithDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
 	th.AssertDeepEquals(t, s.ExtraDHCPOptsExt, extradhcpopts.ExtraDHCPOptsExt{
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
 			{OptName: "option1", OptValue: "value1", IPVersion: 4},
 		},
 	})
@@ -677,7 +677,7 @@ func TestCreateWithDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, s.DeviceID, "")
 }
 
-func TestUpdateWithDHCPOpts(t *testing.T) {
+func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -686,12 +686,12 @@ func TestUpdateWithDHCPOpts(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
-		th.TestJSONRequest(t, r, UpdateWithDHCPOptsRequest)
+		th.TestJSONRequest(t, r, UpdateWithExtraDHCPOptsRequest)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, UpdateWithDHCPOptsResponse)
+		fmt.Fprintf(w, UpdateWithExtraDHCPOptsResponse)
 	})
 
 	portUpdateOpts := ports.UpdateOpts{
@@ -703,7 +703,7 @@ func TestUpdateWithDHCPOpts(t *testing.T) {
 
 	updateOpts := extradhcpopts.UpdateOptsExt{
 		UpdateOptsBuilder: portUpdateOpts,
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
 			{
 				OptName:  "option2",
 				OptValue: "value2",
@@ -723,7 +723,7 @@ func TestUpdateWithDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
 	th.AssertDeepEquals(t, s.ExtraDHCPOptsExt, extradhcpopts.ExtraDHCPOptsExt{
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
 			{OptName: "option2", OptValue: "value2", IPVersion: 4},
 		},
 	})

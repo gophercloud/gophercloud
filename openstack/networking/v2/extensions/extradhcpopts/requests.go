@@ -4,14 +4,14 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
 )
 
-// CreateOptsExt adds port DHCP options to the base ports.CreateOpts.
+// CreateOptsExt adds extra DHCP options to the base ports.CreateOpts.
 type CreateOptsExt struct {
 	// CreateOptsBuilder is the interface options structs have to satisfy in order
 	// to be used in the main Create operation in this package.
 	ports.CreateOptsBuilder
 
 	// ExtraDHCPOpts field is a set of DHCP options for a single port.
-	ExtraDHCPOpts []ExtraDHCPOpts `json:"extra_dhcp_opts,omitempty"`
+	ExtraDHCPOpts []ExtraDHCPOpt `json:"extra_dhcp_opts,omitempty"`
 }
 
 // ToPortCreateMap casts a CreateOptsExt struct to a map.
@@ -23,7 +23,7 @@ func (opts CreateOptsExt) ToPortCreateMap() (map[string]interface{}, error) {
 
 	port := base["port"].(map[string]interface{})
 
-	// Convert opts.DHCPOpts to a slice of maps.
+	// Convert opts.ExtraDHCPOpts to a slice of maps.
 	if opts.ExtraDHCPOpts != nil {
 		extraDHCPOpts := make([]map[string]interface{}, len(opts.ExtraDHCPOpts))
 		for i, opt := range opts.ExtraDHCPOpts {
@@ -39,14 +39,14 @@ func (opts CreateOptsExt) ToPortCreateMap() (map[string]interface{}, error) {
 	return base, nil
 }
 
-// UpdateOptsExt adds port DHCP options to the base ports.UpdateOpts
+// UpdateOptsExt adds extra DHCP options to the base ports.UpdateOpts.
 type UpdateOptsExt struct {
 	// UpdateOptsBuilder is the interface options structs have to satisfy in order
 	// to be used in the main Update operation in this package.
 	ports.UpdateOptsBuilder
 
 	// ExtraDHCPOpts field is a set of DHCP options for a single port.
-	ExtraDHCPOpts []ExtraDHCPOpts `json:"extra_dhcp_opts,omitempty"`
+	ExtraDHCPOpts []ExtraDHCPOpt `json:"extra_dhcp_opts,omitempty"`
 }
 
 // ToPortUpdateMap casts an UpdateOpts struct to a map.

@@ -1,7 +1,7 @@
 /*
 Package extradhcpopts allow to work with extra DHCP functionality of Neutron ports.
 
-Example to Get a Port with DHCP opts
+Example to Get a Port with Extra DHCP Options
 
 	portID := "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2"
 	var s struct {
@@ -14,7 +14,7 @@ Example to Get a Port with DHCP opts
 		panic(err)
 	}
 
-Example to Create a Port with DHCP opts
+Example to Create a Port with Extra DHCP Options
 
 	adminStateUp := true
 	portCreateOpts := ports.CreateOpts{
@@ -27,7 +27,7 @@ Example to Create a Port with DHCP opts
 	}
 	createOpts := extradhcpopts.CreateOptsExt{
 		CreateOptsBuilder: portCreateOpts,
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
 			{
 				OptName:  "optionA",
 				OptValue: "valueA",
@@ -44,7 +44,7 @@ Example to Create a Port with DHCP opts
 		panic(err)
 	}
 
-Example to Update a Port with DHCP opts
+Example to Update a Port with Extra DHCP Options
 
 	portUpdateOpts := ports.UpdateOpts{
 		Name: "updated-dhcp-conf-port",
@@ -54,7 +54,7 @@ Example to Update a Port with DHCP opts
 	}
 	updateOpts := extradhcpopts.UpdateOptsExt{
 		UpdateOptsBuilder: portUpdateOpts,
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpts{
+		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
 			{
 				OptName:  "optionB",
 				OptValue: "valueB",
