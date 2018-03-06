@@ -241,3 +241,81 @@ func TestList(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/vpn/ipsecpolicies/5c561d9d-eaea-45f6-ae3e-08d1a7080828", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+	{
+		"ipsecpolicy":{
+			"name": "updatedname",
+			"description": "updated policy",
+			"lifetime": {
+			"value": 7000
+			}
+		}
+	}
+	`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+
+	{
+		"ipsecpolicy": {
+		"name": "updatedname",
+		"transform_protocol": "esp",
+		"auth_algorithm": "sha1",
+		"encapsulation_mode": "tunnel",
+		"encryption_algorithm": "aes-128",
+		"pfs": "group5",
+		"project_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
+		"tenant_id": "b4eedccc6fb74fa8a7ad6b08382b852b",
+		"lifetime": {
+			"units": "seconds",
+			"value": 7000
+		},
+		"id": "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+		"description": "updated policy"
+	}
+}
+`)
+	})
+	updatedName := "updatedname"
+	updatedDescription := "updated policy"
+	options := ipsecpolicies.UpdateOpts{
+		Name:        &updatedName,
+		Description: &updatedDescription,
+		Lifetime: &ipsecpolicies.LifetimeUpdateOpts{
+			Value: 7000,
+		},
+	}
+
+	actual, err := ipsecpolicies.Update(fake.ServiceClient(), "5c561d9d-eaea-45f6-ae3e-08d1a7080828", options).Extract()
+	th.AssertNoErr(t, err)
+	expectedLifetime := ipsecpolicies.Lifetime{
+		Units: "seconds",
+		Value: 7000,
+	}
+	expected := ipsecpolicies.Policy{
+		TenantID:            "b4eedccc6fb74fa8a7ad6b08382b852b",
+		ProjectID:           "b4eedccc6fb74fa8a7ad6b08382b852b",
+		Name:                "updatedname",
+		TransformProtocol:   "esp",
+		AuthAlgorithm:       "sha1",
+		EncapsulationMode:   "tunnel",
+		EncryptionAlgorithm: "aes-128",
+		PFS:                 "group5",
+		Description:         "updated policy",
+		Lifetime:            expectedLifetime,
+		ID:                  "5c561d9d-eaea-45f6-ae3e-08d1a7080828",
+	}
+	th.AssertDeepEquals(t, expected, *actual)
+}

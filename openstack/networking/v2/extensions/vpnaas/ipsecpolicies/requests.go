@@ -168,3 +168,44 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		return PolicyPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToPolicyUpdateMap() (map[string]interface{}, error)
+}
+
+type LifetimeUpdateOpts struct {
+	Units Unit `json:"units,omitempty"`
+	Value int  `json:"value,omitempty"`
+}
+
+// UpdateOpts contains the values used when updating an IPSec policy
+type UpdateOpts struct {
+	Description         *string             `json:"description,omitempty"`
+	Name                *string             `json:"name,omitempty"`
+	AuthAlgorithm       AuthAlgorithm       `json:"auth_algorithm,omitempty"`
+	EncapsulationMode   EncapsulationMode   `json:"encapsulation_mode,omitempty"`
+	EncryptionAlgorithm EncryptionAlgorithm `json:"encryption_algorithm,omitempty"`
+	PFS                 PFS                 `json:"pfs,omitempty"`
+	TransformProtocol   TransformProtocol   `json:"transform_protocol,omitempty"`
+	Lifetime            *LifetimeUpdateOpts `json:"lifetime,omitempty"`
+}
+
+// ToPolicyUpdateMap casts an UpdateOpts struct to a map.
+func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "ipsecpolicy")
+}
+
+// Update allows IPSec policies to be updated.
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToPolicyUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
