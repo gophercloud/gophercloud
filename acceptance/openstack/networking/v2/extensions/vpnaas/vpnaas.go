@@ -54,7 +54,7 @@ func DeleteService(t *testing.T, client *gophercloud.ServiceClient, serviceID st
 func CreateIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ipsecpolicies.Policy, error) {
 	policyName := tools.RandomString("TESTACC-", 8)
 
-	t.Logf("Attempting to create policy %s", policyName)
+	t.Logf("Attempting to create IPSec policy %s", policyName)
 
 	createOpts := ipsecpolicies.CreateOpts{
 		Name: policyName,
@@ -185,12 +185,13 @@ func CreateEndpointGroupWithSubnet(t *testing.T, client *gophercloud.ServiceClie
 	return group, nil
 }
 
-// CreateService will create a Service with a random name and a specified router ID
-// An error will be returned if the service could not be created.
+// CreateSiteConnection will create an IPSec site connection with a random name and specified
+// IKE policy, IPSec policy, service, peer EP group and local EP Group
+// An error will be returned if the connection could not be created.
 func CreateSiteConnection(t *testing.T, client *gophercloud.ServiceClient, ikepolicyID string, ipsecpolicyID string, serviceID string, peerEPGroupID string, localEPGroupID string) (*siteconnections.Connection, error) {
 	connectionName := tools.RandomString("TESTACC-", 8)
 
-	t.Logf("Attempting to create siteconnection %s", connectionName)
+	t.Logf("Attempting to create IPSec site connection %s", connectionName)
 
 	createOpts := siteconnections.CreateOpts{
 		Name:           connectionName,
@@ -211,7 +212,7 @@ func CreateSiteConnection(t *testing.T, client *gophercloud.ServiceClient, ikepo
 		return connection, err
 	}
 
-	t.Logf("Successfully created service %s", connectionName)
+	t.Logf("Successfully created IPSec Site Connection %s", connectionName)
 
 	return connection, nil
 }

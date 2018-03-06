@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	networks "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	layer3 "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2/extensions/layer3"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
 
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 )
@@ -18,43 +19,48 @@ func TestConnectionCRUD(t *testing.T) {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
 
-	router, err := layer3.CreateExternalRouter(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create router: %v", err)
-	}
-	defer layer3.DeleteRouter(t, client, router.ID)
-
-	service, err := CreateService(t, client, router.ID)
-	if err != nil {
-		t.Fatalf("Unable to create service: %v", err)
-	}
-	defer DeleteService(t, client, service.ID)
-
-	ikepolicy, err := CreateIKEPolicy(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create IKE policy: %v", err)
-	}
-	defer DeleteIKEPolicy(t, client, ikepolicy.ID)
-
-	ipsecpolicy, err := CreateIPSecPolicy(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create IPSec Policy: %v", err)
-	}
-	defer DeleteIPSecPolicy(t, client, ipsecpolicy.ID)
-
 	// Create Network
 	network, err := networks.CreateNetwork(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create network: %v", err)
 	}
-	defer networks.DeleteNetwork(t, client, network.ID)
 
 	// Create Subnet
 	subnet, err := networks.CreateSubnet(t, client, network.ID)
 	if err != nil {
 		t.Fatalf("Unable to create subnet: %v", err)
 	}
-	defer networks.DeleteSubnet(t, client, subnet.ID)
+
+	router, err := layer3.CreateExternalRouter(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create router: %v", err)
+	}
+
+	// Link router and subnet
+	aiOpts := routers.AddInterfaceOpts{
+		SubnetID: subnet.ID,
+	}
+
+	_, err = routers.AddInterface(client, router.ID, aiOpts).Extract()
+	if err != nil {
+		t.Fatalf("Failed to add interface to router: %v", err)
+	}
+
+	// Create all needed resources for the connection
+	service, err := CreateService(t, client, router.ID)
+	if err != nil {
+		t.Fatalf("Unable to create service: %v", err)
+	}
+
+	ikepolicy, err := CreateIKEPolicy(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create IKE policy: %v", err)
+	}
+
+	ipsecpolicy, err := CreateIPSecPolicy(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create IPSec Policy: %v", err)
+	}
 
 	peerEPGroup, err := CreateEndpointGroup(t, client)
 	if err != nil {
