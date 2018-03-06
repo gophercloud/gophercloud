@@ -388,3 +388,33 @@ func TestPortsPortSecurityCRUD(t *testing.T) {
 
 	tools.PrintResource(t, portWithExt)
 }
+
+func TestPortsWithDHCPOptsCRUD(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	// Create a Network
+	network, err := CreateNetwork(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create a network: %v", err)
+	}
+	defer DeleteNetwork(t, client, network.ID)
+
+	// Create a Subnet
+	subnet, err := CreateSubnet(t, client, network.ID)
+	if err != nil {
+		t.Fatalf("Unable to create a subnet: %v", err)
+	}
+	defer DeleteSubnet(t, client, subnet.ID)
+
+	// Create a port with extra DHCP options.
+	port, err := CreatePortWithDHCPOpts(t, client, network.ID, subnet.ID)
+	if err != nil {
+		t.Fatalf("Unable to create a port: %v", err)
+	}
+	defer DeletePort(t, client, port.ID)
+
+	tools.PrintResource(t, port)
+}
