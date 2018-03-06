@@ -1,7 +1,6 @@
 package siteconnections
 
 import (
-	"fmt"
 	"github.com/gophercloud/gophercloud"
 )
 
@@ -133,7 +132,6 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		r.Err = err
 		return
 	}
-	fmt.Printf(rootURL(c))
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
 	return
 }
