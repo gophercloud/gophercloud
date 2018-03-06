@@ -194,6 +194,19 @@ func TestErrorIsRaisedForChecksumMismatch(t *testing.T) {
 }
 */
 
+func TestCreateObjectWithoutChecksum(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	content := "Did gyre and gimble in the wabe"
+
+	HandleCreateTextObjectWithoutChecksumSuccessfully(t, content)
+
+	options := &objects.CreateOpts{ContentType: "text/plain", Content: strings.NewReader(content), NoETagCalculation: true}
+	res := objects.Create(fake.ServiceClient(), "testContainer", "testObject", options)
+	th.AssertNoErr(t, res.Err)
+}
+
 func TestCopyObject(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
