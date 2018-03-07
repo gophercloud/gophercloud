@@ -76,11 +76,10 @@ type ListOptsBuilder interface {
 // the API. Filtering is achieved by passing in struct field values that map to
 // the Endpoint group attributes you want to see returned.
 type ListOpts struct {
-	TenantID    string   `q:"tenant_id"`
-	Description string   `q:"description"`
-	Name        string   `q:"name"`
-	Type        string   `q:"type"`
-	Endpoints   []string `q:"endpoints"`
+	TenantID    string `q:"tenant_id"`
+	Description string `q:"description"`
+	Name        string `q:"name"`
+	Type        string `q:"type"`
 }
 
 // ToEndpointGroupListQuery formats a ListOpts into a query string.
