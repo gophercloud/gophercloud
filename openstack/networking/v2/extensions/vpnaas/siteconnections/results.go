@@ -73,8 +73,8 @@ type Connection struct {
 	// DPD is the dead peer detection (DPD) protocol controls.
 	DPD DPD `json:"dpd"`
 
-	// AuthenticationMode is the authentication mode.
-	AuthenticationMode string `json:"auth_mode"`
+	// AuthMode is the authentication mode.
+	AuthMode string `json:"auth_mode"`
 
 	// MTU is the maximum transmission unit (MTU) value to address fragmentation.
 	MTU int `json:"mtu"`

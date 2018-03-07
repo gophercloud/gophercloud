@@ -100,7 +100,7 @@ type CreateOpts struct {
 	// A valid value is response-only or bi-directional. Default is bi-directional.
 	Initiator Initiator `json:"initiator,omitempty"`
 
-	// (Deprecated) Unique list of valid peer private CIDRs in the form < net_address > / < prefix > .
+	// Unique list of valid peer private CIDRs in the form < net_address > / < prefix > .
 	PeerCIDRs []string `json:"peer_cidrs,omitempty"`
 
 	// The administrative state of the resource, which is up (true) or down (false).
@@ -112,7 +112,7 @@ type CreateOpts struct {
 
 	// The authentication mode.
 	// A valid value is psk, which is the default.
-	AuthenticationMode string `json:"auth_mode,omitempty"`
+	AuthMode string `json:"auth_mode,omitempty"`
 
 	// The maximum transmission unit (MTU) value to address fragmentation.
 	// Minimum value is 68 for IPv4, and 1280 for IPv6.
