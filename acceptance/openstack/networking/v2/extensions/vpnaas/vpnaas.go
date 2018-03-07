@@ -161,7 +161,7 @@ func DeleteEndpointGroup(t *testing.T, client *gophercloud.ServiceClient, epGrou
 
 }
 
-// CreateEndpointGroupWidthSubnet will create an endpoint group with a random name.
+// CreateEndpointGroupWithSubnet will create an endpoint group with a random name.
 // An error will be returned if the group could not be created.
 func CreateEndpointGroupWithSubnet(t *testing.T, client *gophercloud.ServiceClient, subnetID string) (*endpointgroups.EndpointGroup, error) {
 	groupName := tools.RandomString("TESTACC-", 8)
@@ -186,7 +186,7 @@ func CreateEndpointGroupWithSubnet(t *testing.T, client *gophercloud.ServiceClie
 }
 
 // CreateSiteConnection will create an IPSec site connection with a random name and specified
-// IKE policy, IPSec policy, service, peer EP group and local EP Group
+// IKE policy, IPSec policy, service, peer EP group and local EP Group.
 // An error will be returned if the connection could not be created.
 func CreateSiteConnection(t *testing.T, client *gophercloud.ServiceClient, ikepolicyID string, ipsecpolicyID string, serviceID string, peerEPGroupID string, localEPGroupID string) (*siteconnections.Connection, error) {
 	connectionName := tools.RandomString("TESTACC-", 8)
