@@ -88,10 +88,6 @@ type CreateOpts struct {
 	// The peer gateway public IPv4 or IPv6 address or FQDN.
 	PeerAddress string `json:"peer_address"`
 
-	// The route mode.
-	// A valid value is static, which is the default.
-	RouteMode string `json:"route_mode,omitempty"`
-
 	// The pre-shared key.
 	// A valid value is any string.
 	PSK string `json:"psk"`
@@ -109,10 +105,6 @@ type CreateOpts struct {
 
 	// A dictionary with dead peer detection (DPD) protocol controls.
 	DPD *DPDCreateOpts `json:"dpd,omitempty"`
-
-	// The authentication mode.
-	// A valid value is psk, which is the default.
-	AuthMode string `json:"auth_mode,omitempty"`
 
 	// The maximum transmission unit (MTU) value to address fragmentation.
 	// Minimum value is 68 for IPv4, and 1280 for IPv6.
