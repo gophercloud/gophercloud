@@ -89,3 +89,57 @@ func TestGetCapsule(t *testing.T) {
 
 	th.AssertDeepEquals(t, &expectedCapsule, actualCapsule)
 }
+
+func TestCreateCapsule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCapsuleCreateSuccessfully(t)
+	template := new(capsules.Template)
+	template.Bin = []byte(`{
+		"capsuleVersion": "beta",
+		"kind": "capsule",
+		"metadata": {
+			"labels": {
+				"app": "web",
+				"app1": "web1"
+			},
+			"name": "template"
+		},
+		"restartPolicy": "Always",
+		"spec": {
+			"containers": [
+				{
+					"command": [
+						"/bin/bash"
+					],
+					"env": {
+						"ENV1": "/usr/local/bin",
+						"ENV2": "/usr/bin"
+					},
+					"image": "ubuntu",
+					"imagePullPolicy": "ifnotpresent",
+					"ports": [
+						{
+							"containerPort": 80,
+							"hostPort": 80,
+							"name": "nginx-port",
+							"protocol": "TCP"
+						}
+					],
+					"resources": {
+						"requests": {
+							"cpu": 1,
+							"memory": 1024
+						}
+					},
+					"workDir": "/root"
+				}
+			]
+		}
+	}`)
+	createOpts := capsules.CreateOpts{
+		TemplateOpts: template,
+	}
+	err := capsules.Create(fakeclient.ServiceClient(), createOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+}

@@ -23,6 +23,12 @@ type GetResult struct {
 	commonResult
 }
 
+// CreateResult is the response from a Create operation. Call its Extract
+// method to interpret it as a Server.
+type CreateResult struct {
+	gophercloud.ErrResult
+}
+
 // Represents a Container Orchestration Engine Bay, i.e. a cluster
 type Capsule struct {
 	// UUID for the capsule
