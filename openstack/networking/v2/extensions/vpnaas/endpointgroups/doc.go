@@ -30,5 +30,16 @@ Example to Delete an Endpoint Group
 		panic(err)
 	}
 
+Example to List Endpoint groups
+
+	allPages, err := endpointgroups.List(client, nil).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allGroups, err := endpointgroups.ExtractEndpointGroups(allPages)
+	if err != nil {
+		panic(err)
+	}
 */
 package endpointgroups
