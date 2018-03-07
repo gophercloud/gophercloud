@@ -20,6 +20,7 @@ func TestGroupCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create Endpoint group: %v", err)
 	}
+	defer DeleteEndpointGroup(t, client, group.ID)
 	tools.PrintResource(t, group)
 
 	newGroup, err := endpointgroups.Get(client, group.ID).Extract()
