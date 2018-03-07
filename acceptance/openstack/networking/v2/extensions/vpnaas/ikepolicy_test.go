@@ -51,4 +51,19 @@ func TestIKEPolicyCRUD(t *testing.T) {
 	}
 	tools.PrintResource(t, newPolicy)
 
+	updatedName := "updatedname"
+	updatedDescription := "updated policy"
+	updateOpts := ikepolicies.UpdateOpts{
+		Name:        &updatedName,
+		Description: &updatedDescription,
+		Lifetime: &ikepolicies.LifetimeUpdateOpts{
+			Value: 7000,
+		},
+	}
+	updatedPolicy, err := ikepolicies.Update(client, policy.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update IKE policy: %v", err)
+	}
+	tools.PrintResource(t, updatedPolicy)
+
 }

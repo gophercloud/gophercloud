@@ -117,3 +117,9 @@ type GetResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+// UpdateResult represents the result of an update operation. Call its Extract method
+// to interpret it as a Policy.
+type UpdateResult struct {
+	commonResult
+}
