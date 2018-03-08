@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ikepolicies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/ipsecpolicies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/services"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/siteconnections"
 )
 
 // CreateService will create a Service with a random name and a specified router ID
@@ -53,7 +54,7 @@ func DeleteService(t *testing.T, client *gophercloud.ServiceClient, serviceID st
 func CreateIPSecPolicy(t *testing.T, client *gophercloud.ServiceClient) (*ipsecpolicies.Policy, error) {
 	policyName := tools.RandomString("TESTACC-", 8)
 
-	t.Logf("Attempting to create policy %s", policyName)
+	t.Logf("Attempting to create IPSec policy %s", policyName)
 
 	createOpts := ipsecpolicies.CreateOpts{
 		Name: policyName,
@@ -157,4 +158,61 @@ func DeleteEndpointGroup(t *testing.T, client *gophercloud.ServiceClient, epGrou
 	}
 
 	t.Logf("Deleted endpoint group: %s", epGroupID)
+
+}
+
+// CreateEndpointGroupWithSubnet will create an endpoint group with a random name.
+// An error will be returned if the group could not be created.
+func CreateEndpointGroupWithSubnet(t *testing.T, client *gophercloud.ServiceClient, subnetID string) (*endpointgroups.EndpointGroup, error) {
+	groupName := tools.RandomString("TESTACC-", 8)
+
+	t.Logf("Attempting to create group %s", groupName)
+
+	createOpts := endpointgroups.CreateOpts{
+		Name: groupName,
+		Type: endpointgroups.TypeSubnet,
+		Endpoints: []string{
+			subnetID,
+		},
+	}
+	group, err := endpointgroups.Create(client, createOpts).Extract()
+	if err != nil {
+		return group, err
+	}
+
+	t.Logf("Successfully created group %s", groupName)
+
+	return group, nil
+}
+
+// CreateSiteConnection will create an IPSec site connection with a random name and specified
+// IKE policy, IPSec policy, service, peer EP group and local EP Group.
+// An error will be returned if the connection could not be created.
+func CreateSiteConnection(t *testing.T, client *gophercloud.ServiceClient, ikepolicyID string, ipsecpolicyID string, serviceID string, peerEPGroupID string, localEPGroupID string) (*siteconnections.Connection, error) {
+	connectionName := tools.RandomString("TESTACC-", 8)
+
+	t.Logf("Attempting to create IPSec site connection %s", connectionName)
+
+	createOpts := siteconnections.CreateOpts{
+		Name:           connectionName,
+		PSK:            "secret",
+		Initiator:      siteconnections.InitiatorBiDirectional,
+		AdminStateUp:   gophercloud.Enabled,
+		IPSecPolicyID:  ipsecpolicyID,
+		PeerEPGroupID:  peerEPGroupID,
+		IKEPolicyID:    ikepolicyID,
+		VPNServiceID:   serviceID,
+		LocalEPGroupID: localEPGroupID,
+		PeerAddress:    "172.24.4.233",
+		PeerID:         "172.24.4.233",
+		MTU:            1500,
+	}
+	connection, err := siteconnections.Create(client, createOpts).Extract()
+	if err != nil {
+		return connection, err
+	}
+
+	t.Logf("Successfully created IPSec Site Connection %s", connectionName)
+
+	return connection, nil
 }
