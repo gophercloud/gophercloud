@@ -77,6 +77,7 @@ type ListOptsBuilder interface {
 // the Endpoint group attributes you want to see returned.
 type ListOpts struct {
 	TenantID    string `q:"tenant_id"`
+	ProjectID   string `q:"project_id"`
 	Description string `q:"description"`
 	Name        string `q:"name"`
 	Type        string `q:"type"`
