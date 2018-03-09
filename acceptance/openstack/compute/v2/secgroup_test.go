@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/secgroups"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
 
 func TestSecGroupsList(t *testing.T) {
@@ -105,12 +106,6 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	server, err := CreateServer(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
-	defer DeleteServer(t, client, server)
-
 	securityGroup, err := CreateSecurityGroup(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create security group: %v", err)
@@ -123,15 +118,28 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 	}
 	defer DeleteSecurityGroupRule(t, client, rule)
 
+	server, err := CreateServer(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create server: %v", err)
+	}
+	defer DeleteServer(t, client, server)
+
 	t.Logf("Adding group %s to server %s", securityGroup.ID, server.ID)
 	err = secgroups.AddServer(client, server.ID, securityGroup.Name).ExtractErr()
-	if err != nil && err.Error() != "EOF" {
+	if err != nil {
 		t.Fatalf("Unable to add group %s to server %s: %s", securityGroup.ID, server.ID, err)
 	}
 
+	server, err = servers.Get(client, server.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get server %s: %s", server.ID, err)
+	}
+
+	tools.PrintResource(t, server)
+
 	t.Logf("Removing group %s from server %s", securityGroup.ID, server.ID)
 	err = secgroups.RemoveServer(client, server.ID, securityGroup.Name).ExtractErr()
-	if err != nil && err.Error() != "EOF" {
+	if err != nil {
 		t.Fatalf("Unable to remove group %s from server %s: %s", securityGroup.ID, server.ID, err)
 	}
 }
