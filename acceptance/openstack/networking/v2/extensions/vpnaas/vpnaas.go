@@ -216,3 +216,18 @@ func CreateSiteConnection(t *testing.T, client *gophercloud.ServiceClient, ikepo
 
 	return connection, nil
 }
+
+// DeleteSiteConnection will delete an IPSec site connection with a specified ID. A fatal error will
+// occur if the delete was not successful. This works best when used as a
+// deferred function.
+func DeleteSiteConnection(t *testing.T, client *gophercloud.ServiceClient, siteConnectionID string) {
+	t.Logf("Attempting to delete site connection: %s", siteConnectionID)
+
+	err := siteconnections.Delete(client, siteConnectionID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete site connection %s: %v", siteConnectionID, err)
+	}
+
+	t.Logf("Deleted site connection: %s", siteConnectionID)
+
+}
