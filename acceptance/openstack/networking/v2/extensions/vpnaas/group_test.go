@@ -10,6 +10,27 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/endpointgroups"
 )
 
+func TestGroupList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	allPages, err := endpointgroups.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list endpoint groups: %v", err)
+	}
+
+	allGroups, err := endpointgroups.ExtractEndpointGroups(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract endpoint groups: %v", err)
+	}
+
+	for _, group := range allGroups {
+		tools.PrintResource(t, group)
+	}
+}
+
 func TestGroupCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {

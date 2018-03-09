@@ -1,6 +1,9 @@
 package endpointgroups
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
 
 type EndpointType string
 
@@ -61,6 +64,46 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
 	return
+}
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToEndpointGroupListQuery() (string, error)
+}
+
+// ListOpts allows the filtering of paginated collections through
+// the API. Filtering is achieved by passing in struct field values that map to
+// the Endpoint group attributes you want to see returned.
+type ListOpts struct {
+	TenantID    string `q:"tenant_id"`
+	ProjectID   string `q:"project_id"`
+	Description string `q:"description"`
+	Name        string `q:"name"`
+	Type        string `q:"type"`
+}
+
+// ToEndpointGroupListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToEndpointGroupListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List returns a Pager which allows you to iterate over a collection of
+// Endpoint groups. It accepts a ListOpts struct, which allows you to filter
+// the returned collection for greater efficiency.
+func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := rootURL(c)
+	if opts != nil {
+		query, err := opts.ToEndpointGroupListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return EndpointGroupPage{pagination.LinkedPageBase{PageResult: r}}
+	})
 }
 
 // Delete will permanently delete a particular endpoint group based on its
