@@ -7,11 +7,15 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/attachinterfaces"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 )
 
 func TestAttachDetachInterface(t *testing.T) {
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -21,40 +25,36 @@ func TestAttachDetachInterface(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create server: %v", err)
 	}
-
 	defer DeleteServer(t, client, server)
 
-	newServer, err := servers.Get(client, server.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve server: %v", err)
-	}
-	tools.PrintResource(t, newServer)
-
-	intOpts := attachinterfaces.CreateOpts{}
-
-	iface, err := attachinterfaces.Create(client, server.ID, intOpts).Extract()
+	iface, err := AttachInterface(t, client, server.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer DetachInterface(t, client, server.ID, iface.PortID)
 
 	tools.PrintResource(t, iface)
 
-	allPages, err := attachinterfaces.List(client, server.ID).AllPages()
+	server, err = servers.Get(client, server.ID).Extract()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	allIfaces, err := attachinterfaces.ExtractInterfaces(allPages)
-	if err != nil {
-		t.Fatal(err)
+	var found bool
+	for _, networkAddresses := range server.Addresses[choices.NetworkName].([]interface{}) {
+		address := networkAddresses.(map[string]interface{})
+		if address["OS-EXT-IPS:type"] == "fixed" {
+			fixedIP := address["addr"].(string)
+
+			for _, v := range iface.FixedIPs {
+				if fixedIP == v.IPAddress {
+					found = true
+				}
+			}
+		}
 	}
 
-	for _, i := range allIfaces {
-		tools.PrintResource(t, i)
-	}
-
-	err = attachinterfaces.Delete(client, server.ID, iface.PortID).ExtractErr()
-	if err != nil {
-		t.Fatal(err)
+	if !found {
+		t.Fatalf("Unable to attach interface to server %s", server.ID)
 	}
 }

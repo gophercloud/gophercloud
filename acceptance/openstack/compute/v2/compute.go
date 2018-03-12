@@ -12,6 +12,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v1/volumes"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/attachinterfaces"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
 	dsr "github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/defsecrules"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/floatingips"
@@ -65,6 +66,35 @@ func AssociateFloatingIPWithFixedIP(t *testing.T, client *gophercloud.ServiceCli
 	return nil
 }
 
+// AttachInterface will create and attach an interface on a given server.
+// An error will returned if the interface could not be created.
+func AttachInterface(t *testing.T, client *gophercloud.ServiceClient, serverID string) (*attachinterfaces.Interface, error) {
+	t.Logf("Attempting to attach interface to server %s", serverID)
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
+	if err != nil {
+		return nil, err
+	}
+
+	createOpts := attachinterfaces.CreateOpts{
+		NetworkID: networkID,
+	}
+
+	iface, err := attachinterfaces.Create(client, serverID, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created interface %s on server %s", iface.PortID, serverID)
+
+	return iface, nil
+}
+
 // CreateAggregate will create an aggregate with random name and available zone.
 // An error will be returned if the aggregate could not be created.
 func CreateAggregate(t *testing.T, client *gophercloud.ServiceClient) (*aggregates.Aggregate, error) {
@@ -83,6 +113,11 @@ func CreateAggregate(t *testing.T, client *gophercloud.ServiceClient) (*aggregat
 	}
 
 	t.Logf("Successfully created aggregate %d", aggregate.ID)
+
+	aggregate, err = aggregates.Get(client, aggregate.ID).Extract()
+	if err != nil {
+		return nil, err
+	}
 
 	th.AssertEquals(t, aggregate.Name, aggregateName)
 	th.AssertEquals(t, aggregate.AvailabilityZone, availabilityZone)
@@ -413,7 +448,16 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Ser
 		return server, err
 	}
 
-	return server, nil
+	newServer, err := servers.Get(client, server.ID).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	th.AssertEquals(t, newServer.Name, name)
+	th.AssertEquals(t, newServer.Flavor["id"], choices.FlavorID)
+	th.AssertEquals(t, newServer.Image["id"], choices.ImageID)
+
+	return newServer, nil
 }
 
 // CreateServerWithoutImageRef creates a basic instance with a randomly generated name.
@@ -725,6 +769,20 @@ func DeleteVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blo
 		t.Fatalf("Unable to wait for volume: %v", err)
 	}
 	t.Logf("Deleted volume: %s", volumeAttachment.VolumeID)
+}
+
+// DetachInterface will detach an interface from a server. A fatal
+// error will occur if the interface could not be detached. This works best
+// when used as a deferred function.
+func DetachInterface(t *testing.T, client *gophercloud.ServiceClient, serverID, portID string) {
+	t.Logf("Attempting to detach interface %s from server %s", portID, serverID)
+
+	err := attachinterfaces.Delete(client, serverID, portID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to detach interface %s from server %s", portID, serverID)
+	}
+
+	t.Logf("Detached interface %s from server %s", portID, serverID)
 }
 
 // DisassociateFloatingIP will disassociate a floating IP from an instance. A
