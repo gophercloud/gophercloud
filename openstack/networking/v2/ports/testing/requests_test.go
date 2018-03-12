@@ -596,12 +596,6 @@ func TestGetWithExtraDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, s.Status, "ACTIVE")
 	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertDeepEquals(t, s.ExtraDHCPOptsExt, extradhcpopts.ExtraDHCPOptsExt{
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
-			{OptName: "option1", OptValue: "value1", IPVersion: 4},
-			{OptName: "option2", OptValue: "value2", IPVersion: 4},
-		},
-	})
 	th.AssertEquals(t, s.AdminStateUp, true)
 	th.AssertEquals(t, s.Name, "port-with-extra-dhcp-opts")
 	th.AssertEquals(t, s.DeviceOwner, "")
@@ -611,6 +605,13 @@ func TestGetWithExtraDHCPOpts(t *testing.T) {
 	})
 	th.AssertEquals(t, s.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
 	th.AssertEquals(t, s.DeviceID, "")
+
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptName, "option1")
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptValue, "value1")
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].IPVersion, 4)
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[1].OptName, "option2")
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[1].OptValue, "value2")
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[1].IPVersion, 4)
 }
 
 func TestCreateWithExtraDHCPOpts(t *testing.T) {
@@ -642,7 +643,7 @@ func TestCreateWithExtraDHCPOpts(t *testing.T) {
 
 	createOpts := extradhcpopts.CreateOptsExt{
 		CreateOptsBuilder: portCreateOpts,
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
+		ExtraDHCPOpts: []extradhcpopts.CreateExtraDHCPOpt{
 			{
 				OptName:  "option1",
 				OptValue: "value1",
@@ -661,11 +662,6 @@ func TestCreateWithExtraDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, s.Status, "DOWN")
 	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertDeepEquals(t, s.ExtraDHCPOptsExt, extradhcpopts.ExtraDHCPOptsExt{
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
-			{OptName: "option1", OptValue: "value1", IPVersion: 4},
-		},
-	})
 	th.AssertEquals(t, s.AdminStateUp, true)
 	th.AssertEquals(t, s.Name, "port-with-extra-dhcp-opts")
 	th.AssertEquals(t, s.DeviceOwner, "")
@@ -675,6 +671,10 @@ func TestCreateWithExtraDHCPOpts(t *testing.T) {
 	})
 	th.AssertEquals(t, s.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
 	th.AssertEquals(t, s.DeviceID, "")
+
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptName, "option1")
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptValue, "value1")
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].IPVersion, 4)
 }
 
 func TestUpdateWithExtraDHCPOpts(t *testing.T) {
@@ -701,12 +701,16 @@ func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 		},
 	}
 
+	edoValue2 := "value2"
 	updateOpts := extradhcpopts.UpdateOptsExt{
 		UpdateOptsBuilder: portUpdateOpts,
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
+		ExtraDHCPOpts: []extradhcpopts.UpdateExtraDHCPOpt{
+			{
+				OptName: "option1",
+			},
 			{
 				OptName:  "option2",
-				OptValue: "value2",
+				OptValue: &edoValue2,
 			},
 		},
 	}
@@ -722,11 +726,6 @@ func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 	th.AssertEquals(t, s.Status, "DOWN")
 	th.AssertEquals(t, s.NetworkID, "a87cc70a-3e15-4acf-8205-9b711a3531b7")
 	th.AssertEquals(t, s.TenantID, "d6700c0c9ffa4f1cb322cd4a1f3906fa")
-	th.AssertDeepEquals(t, s.ExtraDHCPOptsExt, extradhcpopts.ExtraDHCPOptsExt{
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
-			{OptName: "option2", OptValue: "value2", IPVersion: 4},
-		},
-	})
 	th.AssertEquals(t, s.AdminStateUp, true)
 	th.AssertEquals(t, s.Name, "updated-port-with-dhcp-opts")
 	th.AssertEquals(t, s.DeviceOwner, "")
@@ -736,4 +735,8 @@ func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 	})
 	th.AssertEquals(t, s.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
 	th.AssertEquals(t, s.DeviceID, "")
+
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptName, "option2")
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].OptValue, "value2")
+	th.AssertDeepEquals(t, s.ExtraDHCPOpts[0].IPVersion, 4)
 }

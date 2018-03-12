@@ -626,6 +626,10 @@ const UpdateWithExtraDHCPOptsRequest = `
         ],
         "extra_dhcp_opts": [
             {
+                "opt_name": "option1",
+                "opt_value": null
+            },
+            {
                 "opt_name": "option2",
                 "opt_value": "value2"
             }
