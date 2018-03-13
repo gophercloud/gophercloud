@@ -11,6 +11,9 @@ import (
 )
 
 func TestDefSecRulesList(t *testing.T) {
+	clients.RequireAdmin(t)
+	clients.RequireNovaNetwork(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -32,6 +35,9 @@ func TestDefSecRulesList(t *testing.T) {
 }
 
 func TestDefSecRulesCreate(t *testing.T) {
+	clients.RequireAdmin(t)
+	clients.RequireNovaNetwork(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -47,6 +53,9 @@ func TestDefSecRulesCreate(t *testing.T) {
 }
 
 func TestDefSecRulesGet(t *testing.T) {
+	clients.RequireAdmin(t)
+	clients.RequireNovaNetwork(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
