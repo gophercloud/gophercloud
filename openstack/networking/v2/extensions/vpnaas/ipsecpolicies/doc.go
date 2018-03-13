@@ -20,6 +20,24 @@ Example to Delete a Policy
 		panic(err)
 	}
 
+Example to Show the details of a specific IPSec policy by ID
+
+	policy, err := ipsecpolicies.Get(client, "f2b08c1e-aa81-4668-8ae1-1401bcb0576c").Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Update an IPSec policy
+
+	updateOpts := ipsecpolicies.UpdateOpts{
+		Name:        "updatedname",
+		Description: "updated policy",
+	}
+	updatedPolicy, err := ipsecpolicies.Update(client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to List IPSec policies
 
 	allPages, err := ipsecpolicies.List(client, nil).AllPages()

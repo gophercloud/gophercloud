@@ -42,7 +42,7 @@ Example to Update an IKE policy
 	}
 	updatedPolicy, err := ikepolicies.Update(client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
 	if err != nil {
-		t.Fatalf("Unable to update IKE policy: %v", err)
+		panic(err)
 	}
 
 
