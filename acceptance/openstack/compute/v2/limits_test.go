@@ -7,7 +7,9 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/limits"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestLimits(t *testing.T) {
@@ -21,11 +23,14 @@ func TestLimits(t *testing.T) {
 		t.Fatalf("Unable to get limits: %v", err)
 	}
 
-	t.Logf("Limits for scoped user:")
-	t.Logf("%#v", limits)
+	tools.PrintResource(t, limits)
+
+	th.AssertEquals(t, limits.Absolute.MaxPersonalitySize, 10240)
 }
 
 func TestLimitsForTenant(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -47,6 +52,7 @@ func TestLimitsForTenant(t *testing.T) {
 		t.Fatalf("Unable to get absolute limits: %v", err)
 	}
 
-	t.Logf("Limits for tenant %s:", tenantID)
-	t.Logf("%#v", limits)
+	tools.PrintResource(t, limits)
+
+	th.AssertEquals(t, limits.Absolute.MaxPersonalitySize, 10240)
 }
