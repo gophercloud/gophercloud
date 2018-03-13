@@ -129,10 +129,6 @@ func CreateAggregate(t *testing.T, client *gophercloud.ServiceClient) (*aggregat
 // one or more block devices defined by passing in []bootfromvolume.BlockDevice.
 // An error will be returned if a server was unable to be created.
 func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice) (*servers.Server, error) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
-
 	var server *servers.Server
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
@@ -286,10 +282,6 @@ func CreateKeyPair(t *testing.T, client *gophercloud.ServiceClient) (*keypairs.K
 // are actually local ephemeral disks.
 // An error will be returned if a server was unable to be created.
 func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient, blockDevices []bootfromvolume.BlockDevice) (*servers.Server, error) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
-
 	var server *servers.Server
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
@@ -401,10 +393,6 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 // The instance will be launched on the network specified in OS_NETWORK_NAME.
 // An error will be returned if the instance was unable to be created.
 func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Server, error) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
-
 	var server *servers.Server
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
@@ -466,10 +454,6 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Ser
 // The instance will be launched on the network specified in OS_NETWORK_NAME.
 // An error will be returned if the instance was unable to be created.
 func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient) (*servers.Server, error) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
-
 	var server *servers.Server
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
@@ -530,10 +514,6 @@ func CreateServerGroup(t *testing.T, client *gophercloud.ServiceClient, policy s
 // CreateServerInServerGroup works like CreateServer but places the instance in
 // a specified Server Group.
 func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, serverGroup *servergroups.ServerGroup) (*servers.Server, error) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
-
 	var server *servers.Server
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
@@ -578,10 +558,6 @@ func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, 
 // CreateServerWithPublicKey works the same as CreateServer, but additionally
 // configures the server with a specified Key Pair name.
 func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, keyPairName string) (*servers.Server, error) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
-
 	var server *servers.Server
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
