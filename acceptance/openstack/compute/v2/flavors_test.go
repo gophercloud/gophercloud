@@ -8,16 +8,20 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
+	th "github.com/gophercloud/gophercloud/testhelper"
 
 	identity "github.com/gophercloud/gophercloud/acceptance/openstack/identity/v3"
 )
 
 func TestFlavorsList(t *testing.T) {
-	t.Logf("** Default flavors (same as Project flavors): **")
-	t.Logf("")
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	allPages, err := flavors.ListDetail(client, nil).AllPages()
@@ -30,14 +34,34 @@ func TestFlavorsList(t *testing.T) {
 		t.Fatalf("Unable to extract flavor results: %v", err)
 	}
 
+	var found bool
 	for _, flavor := range allFlavors {
 		tools.PrintResource(t, flavor)
+
+		if flavor.ID == choices.FlavorID {
+			found = true
+		}
 	}
 
-	flavorAccessTypes := [3]flavors.AccessType{flavors.PublicAccess, flavors.PrivateAccess, flavors.AllAccess}
-	for _, flavorAccessType := range flavorAccessTypes {
-		t.Logf("** %s flavors: **", flavorAccessType)
-		t.Logf("")
+	if !found {
+		t.Fatalf("Unable to find %s", choices.FlavorID)
+	}
+}
+
+func TestFlavorsAccessTypeList(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	flavorAccessTypes := map[string]flavors.AccessType{
+		"public":  flavors.PublicAccess,
+		"private": flavors.PrivateAccess,
+		"all":     flavors.AllAccess,
+	}
+
+	for flavorTypeName, flavorAccessType := range flavorAccessTypes {
+		t.Logf("** %s flavors: **", flavorTypeName)
 		allPages, err := flavors.ListDetail(client, flavors.ListOpts{AccessType: flavorAccessType}).AllPages()
 		if err != nil {
 			t.Fatalf("Unable to retrieve flavors: %v", err)
@@ -50,10 +74,8 @@ func TestFlavorsList(t *testing.T) {
 
 		for _, flavor := range allFlavors {
 			tools.PrintResource(t, flavor)
-			t.Logf("")
 		}
 	}
-
 }
 
 func TestFlavorsGet(t *testing.T) {
@@ -73,9 +95,13 @@ func TestFlavorsGet(t *testing.T) {
 	}
 
 	tools.PrintResource(t, flavor)
+
+	th.AssertEquals(t, flavor.ID, choices.FlavorID)
 }
 
-func TestFlavorCreateDelete(t *testing.T) {
+func TestFlavorsCreateDelete(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -90,7 +116,9 @@ func TestFlavorCreateDelete(t *testing.T) {
 	tools.PrintResource(t, flavor)
 }
 
-func TestFlavorAccessesList(t *testing.T) {
+func TestFlavorsAccessesList(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -112,12 +140,12 @@ func TestFlavorAccessesList(t *testing.T) {
 		t.Fatalf("Unable to extract accesses: %v", err)
 	}
 
-	for _, access := range allAccesses {
-		tools.PrintResource(t, access)
-	}
+	th.AssertEquals(t, len(allAccesses), 0)
 }
 
-func TestFlavorAccessCRUD(t *testing.T) {
+func TestFlavorsAccessCRUD(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -149,6 +177,10 @@ func TestFlavorAccessCRUD(t *testing.T) {
 		t.Fatalf("Unable to add access to flavor: %v", err)
 	}
 
+	th.AssertEquals(t, len(accessList), 1)
+	th.AssertEquals(t, accessList[0].TenantID, project.ID)
+	th.AssertEquals(t, accessList[0].FlavorID, flavor.ID)
+
 	for _, access := range accessList {
 		tools.PrintResource(t, access)
 	}
@@ -162,12 +194,12 @@ func TestFlavorAccessCRUD(t *testing.T) {
 		t.Fatalf("Unable to remove access to flavor: %v", err)
 	}
 
-	for _, access := range accessList {
-		tools.PrintResource(t, access)
-	}
+	th.AssertEquals(t, len(accessList), 0)
 }
 
-func TestFlavorExtraSpecsCRUD(t *testing.T) {
+func TestFlavorsExtraSpecsCRUD(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -187,7 +219,12 @@ func TestFlavorExtraSpecsCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create flavor extra_specs: %v", err)
 	}
+
 	tools.PrintResource(t, createdExtraSpecs)
+
+	th.AssertEquals(t, len(createdExtraSpecs), 2)
+	th.AssertEquals(t, createdExtraSpecs["hw:cpu_policy"], "CPU-POLICY")
+	th.AssertEquals(t, createdExtraSpecs["hw:cpu_thread_policy"], "CPU-THREAD-POLICY")
 
 	err = flavors.DeleteExtraSpec(client, flavor.ID, "hw:cpu_policy").ExtractErr()
 	if err != nil {
@@ -201,20 +238,25 @@ func TestFlavorExtraSpecsCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to update flavor extra_specs: %v", err)
 	}
+
 	tools.PrintResource(t, updatedExtraSpec)
 
 	allExtraSpecs, err := flavors.ListExtraSpecs(client, flavor.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get flavor extra_specs: %v", err)
 	}
+
 	tools.PrintResource(t, allExtraSpecs)
 
-	for key, _ := range allExtraSpecs {
-		spec, err := flavors.GetExtraSpec(client, flavor.ID, key).Extract()
-		if err != nil {
-			t.Fatalf("Unable to get flavor extra spec: %v", err)
-		}
-		tools.PrintResource(t, spec)
+	th.AssertEquals(t, len(allExtraSpecs), 1)
+	th.AssertEquals(t, allExtraSpecs["hw:cpu_thread_policy"], "CPU-THREAD-POLICY-BETTER")
+
+	spec, err := flavors.GetExtraSpec(client, flavor.ID, "hw:cpu_thread_policy").Extract()
+	if err != nil {
+		t.Fatalf("Unable to get flavor extra spec: %v", err)
 	}
 
+	tools.PrintResource(t, spec)
+
+	th.AssertEquals(t, spec["hw:cpu_thread_policy"], "CPU-THREAD-POLICY-BETTER")
 }
