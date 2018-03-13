@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/snapshots"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 // CreateVolume will create a volume with a random name and size of 1GB. An
@@ -72,7 +73,15 @@ func CreateVolumeFromImage(t *testing.T, client *gophercloud.ServiceClient) (*vo
 		return volume, err
 	}
 
-	return volume, nil
+	newVolume, err := volumes.Get(client, volume.ID).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	th.AssertEquals(t, newVolume.Name, volumeName)
+	th.AssertEquals(t, newVolume.Size, 1)
+
+	return newVolume, nil
 }
 
 // DeleteVolume will delete a volume. A fatal error will occur if the volume

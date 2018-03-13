@@ -9,6 +9,8 @@ import (
 	blockstorage "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/bootfromvolume"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/volumeattach"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestBootFromImage(t *testing.T) {
@@ -43,6 +45,8 @@ func TestBootFromImage(t *testing.T) {
 	defer DeleteServer(t, client, server)
 
 	tools.PrintResource(t, server)
+
+	th.AssertEquals(t, server.Image["id"], choices.ImageID)
 }
 
 func TestBootFromNewVolume(t *testing.T) {
@@ -76,7 +80,26 @@ func TestBootFromNewVolume(t *testing.T) {
 	}
 	defer DeleteServer(t, client, server)
 
+	attachPages, err := volumeattach.List(client, server.ID).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to get volume attachments for server %s: %s", server.ID, err)
+	}
+
+	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
+	if err != nil {
+		t.Fatalf("Unable to extract volume attachments for server %s: %s", server.ID, err)
+	}
+
 	tools.PrintResource(t, server)
+	tools.PrintResource(t, attachments)
+
+	if server.Image != nil {
+		t.Fatalf("server image should be nil")
+	}
+
+	th.AssertEquals(t, len(attachments), 1)
+
+	// TODO: volumes_attached extension
 }
 
 func TestBootFromExistingVolume(t *testing.T) {
@@ -99,6 +122,8 @@ func TestBootFromExistingVolume(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	tools.PrintResource(t, volume)
+
 	blockDevices := []bootfromvolume.BlockDevice{
 		bootfromvolume.BlockDevice{
 			DeleteOnTermination: true,
@@ -114,7 +139,26 @@ func TestBootFromExistingVolume(t *testing.T) {
 	}
 	defer DeleteServer(t, computeClient, server)
 
+	attachPages, err := volumeattach.List(computeClient, server.ID).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to get volume attachments for server %s: %s", server.ID, err)
+	}
+
+	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
+	if err != nil {
+		t.Fatalf("Unable to extract volume attachments for server %s: %s", server.ID, err)
+	}
+
 	tools.PrintResource(t, server)
+	tools.PrintResource(t, attachments)
+
+	if server.Image != nil {
+		t.Fatalf("server image should be nil")
+	}
+
+	th.AssertEquals(t, len(attachments), 1)
+	th.AssertEquals(t, attachments[0].VolumeID, volume.ID)
+	// TODO: volumes_attached extension
 }
 
 func TestBootFromMultiEphemeralServer(t *testing.T) {
@@ -206,7 +250,23 @@ func TestAttachNewVolume(t *testing.T) {
 	}
 	defer DeleteServer(t, client, server)
 
+	attachPages, err := volumeattach.List(client, server.ID).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to get volume attachments for server %s: %s", server.ID, err)
+	}
+
+	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
+	if err != nil {
+		t.Fatalf("Unable to extract volume attachments for server %s: %s", server.ID, err)
+	}
+
 	tools.PrintResource(t, server)
+	tools.PrintResource(t, attachments)
+
+	th.AssertEquals(t, server.Image["id"], choices.ImageID)
+	th.AssertEquals(t, len(attachments), 1)
+
+	// TODO: volumes_attached extension
 }
 
 func TestAttachExistingVolume(t *testing.T) {
@@ -257,5 +317,22 @@ func TestAttachExistingVolume(t *testing.T) {
 	}
 	defer DeleteServer(t, computeClient, server)
 
+	attachPages, err := volumeattach.List(computeClient, server.ID).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to get volume attachments for server %s: %s", server.ID, err)
+	}
+
+	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
+	if err != nil {
+		t.Fatalf("Unable to extract volume attachments for server %s: %s", server.ID, err)
+	}
+
 	tools.PrintResource(t, server)
+	tools.PrintResource(t, attachments)
+
+	th.AssertEquals(t, server.Image["id"], choices.ImageID)
+	th.AssertEquals(t, len(attachments), 1)
+	th.AssertEquals(t, attachments[0].VolumeID, volume.ID)
+
+	// TODO: volumes_attached extension
 }

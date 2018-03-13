@@ -170,6 +170,12 @@ func CreateBootableVolumeServer(t *testing.T, client *gophercloud.ServiceClient,
 	}
 
 	newServer, err := servers.Get(client, server.ID).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	th.AssertEquals(t, newServer.Name, name)
+	th.AssertEquals(t, newServer.Flavor["id"], choices.FlavorID)
 
 	return newServer, nil
 }
@@ -320,6 +326,10 @@ func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient,
 	}
 
 	newServer, err := servers.Get(client, server.ID).Extract()
+
+	th.AssertEquals(t, newServer.Name, name)
+	th.AssertEquals(t, newServer.Flavor["id"], choices.FlavorID)
+	th.AssertEquals(t, newServer.Image["id"], choices.ImageID)
 
 	return newServer, nil
 }
