@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
 
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/siteconnections"
 )
 
 func TestConnectionCRUD(t *testing.T) {
@@ -92,6 +93,12 @@ func TestConnectionCRUD(t *testing.T) {
 	}
 	defer DeleteSiteConnection(t, client, conn.ID)
 
+	newConnection, err := siteconnections.Get(client, conn.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get connection: %v", err)
+	}
+
 	tools.PrintResource(t, conn)
+	tools.PrintResource(t, newConnection)
 
 }
