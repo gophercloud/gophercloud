@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/common/extensions"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestExtensionsList(t *testing.T) {
@@ -26,12 +27,21 @@ func TestExtensionsList(t *testing.T) {
 		t.Fatalf("Unable to extract extensions: %v", err)
 	}
 
+	var found bool
 	for _, extension := range allExtensions {
 		tools.PrintResource(t, extension)
+
+		if extension.Name == "SchedulerHints" {
+			found = true
+		}
+	}
+
+	if !found {
+		t.Fatal("Unable to find extension SchedulerHints")
 	}
 }
 
-func TestExtensionGet(t *testing.T) {
+func TestExtensionsGet(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -43,4 +53,6 @@ func TestExtensionGet(t *testing.T) {
 	}
 
 	tools.PrintResource(t, extension)
+
+	th.AssertEquals(t, extension.Name, "AdminActions")
 }
