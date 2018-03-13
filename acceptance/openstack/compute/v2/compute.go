@@ -285,6 +285,9 @@ func CreateKeyPair(t *testing.T, client *gophercloud.ServiceClient) (*keypairs.K
 	}
 
 	t.Logf("Created keypair: %s", keyPairName)
+
+	th.AssertEquals(t, keyPair.Name, keyPairName)
+
 	return keyPair, nil
 }
 
@@ -865,6 +868,10 @@ func ImportPublicKey(t *testing.T, client *gophercloud.ServiceClient, publicKey 
 	}
 
 	t.Logf("Created keypair: %s", keyPairName)
+
+	th.AssertEquals(t, keyPair.Name, keyPairName)
+	th.AssertEquals(t, keyPair.PublicKey, publicKey)
+
 	return keyPair, nil
 }
 

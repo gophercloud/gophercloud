@@ -9,32 +9,12 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/keypairs"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 const keyName = "gophercloud_test_key_pair"
 
-func TestKeypairsList(t *testing.T) {
-	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
-
-	allPages, err := keypairs.List(client).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to retrieve keypairs: %s", err)
-	}
-
-	allKeys, err := keypairs.ExtractKeyPairs(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract keypairs results: %s", err)
-	}
-
-	for _, keypair := range allKeys {
-		tools.PrintResource(t, keypair)
-	}
-}
-
-func TestKeypairsCreate(t *testing.T) {
+func TestKeypairsCreateDelete(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -47,6 +27,29 @@ func TestKeypairsCreate(t *testing.T) {
 	defer DeleteKeyPair(t, client, keyPair)
 
 	tools.PrintResource(t, keyPair)
+
+	allPages, err := keypairs.List(client).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to retrieve keypairs: %s", err)
+	}
+
+	allKeys, err := keypairs.ExtractKeyPairs(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract keypairs results: %s", err)
+	}
+
+	var found bool
+	for _, kp := range allKeys {
+		tools.PrintResource(t, kp)
+
+		if kp.Name == keyPair.Name {
+			found = true
+		}
+	}
+
+	if !found {
+		t.Fatalf("Unable to find keypair %s", keyPair.Name)
+	}
 }
 
 func TestKeypairsImportPublicKey(t *testing.T) {
@@ -101,7 +104,5 @@ func TestKeypairsServerCreateWithKey(t *testing.T) {
 		t.Fatalf("Unable to retrieve server: %s", err)
 	}
 
-	if server.KeyName != keyPair.Name {
-		t.Fatalf("key name of server %s is %s, not %s", server.ID, server.KeyName, keyPair.Name)
-	}
+	th.AssertEquals(t, server.KeyName, keyPair.Name)
 }
