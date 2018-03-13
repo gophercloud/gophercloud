@@ -10,6 +10,8 @@ import (
 )
 
 func TestMigrate(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -30,14 +32,8 @@ func TestMigrate(t *testing.T) {
 }
 
 func TestLiveMigrate(t *testing.T) {
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if !choices.LiveMigrate {
-		t.Skip("Testing of live migration is disabled")
-	}
+	clients.RequireAdmin(t)
+	clients.RequireLiveMigration(t)
 
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
