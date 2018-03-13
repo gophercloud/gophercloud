@@ -8,12 +8,18 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/networks"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestNetworksList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	allPages, err := networks.List(client).AllPages()
@@ -26,8 +32,17 @@ func TestNetworksList(t *testing.T) {
 		t.Fatalf("Unable to list networks: %v", err)
 	}
 
+	var found bool
 	for _, network := range allNetworks {
 		tools.PrintResource(t, network)
+
+		if network.Label == choices.NetworkName {
+			found = true
+		}
+	}
+
+	if !found {
+		t.Fatalf("Unable to find network %s", choices.NetworkName)
 	}
 }
 
@@ -53,4 +68,6 @@ func TestNetworksGet(t *testing.T) {
 	}
 
 	tools.PrintResource(t, network)
+
+	th.AssertEquals(t, network.Label, choices.NetworkName)
 }
