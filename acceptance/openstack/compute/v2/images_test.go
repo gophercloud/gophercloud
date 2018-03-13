@@ -8,12 +8,18 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestImagesList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute: client: %v", err)
+	}
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	allPages, err := images.ListDetail(client, nil).AllPages()
@@ -26,8 +32,17 @@ func TestImagesList(t *testing.T) {
 		t.Fatalf("Unable to extract image results: %v", err)
 	}
 
+	var found bool
 	for _, image := range allImages {
 		tools.PrintResource(t, image)
+
+		if image.ID == choices.ImageID {
+			found = true
+		}
+	}
+
+	if !found {
+		t.Fatalf("Unable to find image %s", choices.ImageID)
 	}
 }
 
@@ -48,4 +63,6 @@ func TestImagesGet(t *testing.T) {
 	}
 
 	tools.PrintResource(t, image)
+
+	th.AssertEquals(t, choices.ImageID, image.ID)
 }
