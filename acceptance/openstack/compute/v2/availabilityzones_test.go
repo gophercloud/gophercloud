@@ -26,12 +26,23 @@ func TestAvailabilityZonesList(t *testing.T) {
 		t.Fatalf("Unable to extract availability zones info: %v", err)
 	}
 
+	var found bool
 	for _, zoneInfo := range availabilityZoneInfo {
 		tools.PrintResource(t, zoneInfo)
+
+		if zoneInfo.ZoneName == "nova" {
+			found = true
+		}
+	}
+
+	if !found {
+		t.Fatal("Unable to find availability zone nova")
 	}
 }
 
 func TestAvailabilityZonesListDetail(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -47,7 +58,16 @@ func TestAvailabilityZonesListDetail(t *testing.T) {
 		t.Fatalf("Unable to extract availability zones detailed info: %v", err)
 	}
 
+	var found bool
 	for _, zoneInfo := range availabilityZoneInfo {
 		tools.PrintResource(t, zoneInfo)
+
+		if zoneInfo.ZoneName == "nova" {
+			found = true
+		}
+	}
+
+	if !found {
+		t.Fatal("Unable to find availability zone nova")
 	}
 }
