@@ -5,6 +5,7 @@ package v2
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
@@ -17,10 +18,23 @@ func TestUsageSingleTenant(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
+	server, err := CreateServer(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create server: %v", err)
+	}
+	DeleteServer(t, client, server)
+
 	endpointParts := strings.Split(client.Endpoint, "/")
 	tenantID := endpointParts[4]
 
-	page, err := usage.SingleTenant(client, tenantID, nil).AllPages()
+	end := time.Now()
+	start := end.AddDate(0, -1, 0)
+	opts := usage.SingleTenantOpts{
+		Start: &start,
+		End:   &end,
+	}
+
+	page, err := usage.SingleTenant(client, tenantID, opts).AllPages()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,4 +45,8 @@ func TestUsageSingleTenant(t *testing.T) {
 	}
 
 	tools.PrintResource(t, tenantUsage)
+
+	if tenantUsage.TotalHours == 0 {
+		t.Fatalf("TotalHours should not be 0")
+	}
 }
