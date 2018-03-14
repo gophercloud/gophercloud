@@ -430,8 +430,6 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 // The instance will be launched on the network specified in OS_NETWORK_NAME.
 // An error will be returned if the instance was unable to be created.
 func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Server, error) {
-	var server *servers.Server
-
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
@@ -439,7 +437,7 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Ser
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
-		return server, err
+		return nil, err
 	}
 
 	name := tools.RandomString("ACPTTEST", 16)
@@ -447,7 +445,7 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Ser
 
 	pwd := tools.MakeNewPassword("")
 
-	server, err = servers.Create(client, servers.CreateOpts{
+	server, err := servers.Create(client, servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		ImageRef:  choices.ImageID,
@@ -470,7 +468,7 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Ser
 	}
 
 	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
-		return server, err
+		return nil, err
 	}
 
 	newServer, err := servers.Get(client, server.ID).Extract()
@@ -491,8 +489,6 @@ func CreateServer(t *testing.T, client *gophercloud.ServiceClient) (*servers.Ser
 // The instance will be launched on the network specified in OS_NETWORK_NAME.
 // An error will be returned if the instance was unable to be created.
 func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient) (*servers.Server, error) {
-	var server *servers.Server
-
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
@@ -500,7 +496,7 @@ func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
-		return server, err
+		return nil, err
 	}
 
 	name := tools.RandomString("ACPTTEST", 16)
@@ -508,7 +504,7 @@ func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient
 
 	pwd := tools.MakeNewPassword("")
 
-	server, err = servers.Create(client, servers.CreateOpts{
+	server, err := servers.Create(client, servers.CreateOpts{
 		Name:      name,
 		FlavorRef: choices.FlavorID,
 		AdminPass: pwd,
@@ -523,11 +519,11 @@ func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient
 		},
 	}).Extract()
 	if err != nil {
-		return server, err
+		return nil, err
 	}
 
 	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
-		return server, err
+		return nil, err
 	}
 
 	return server, nil
@@ -559,8 +555,6 @@ func CreateServerGroup(t *testing.T, client *gophercloud.ServiceClient, policy s
 // CreateServerInServerGroup works like CreateServer but places the instance in
 // a specified Server Group.
 func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, serverGroup *servergroups.ServerGroup) (*servers.Server, error) {
-	var server *servers.Server
-
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
@@ -568,7 +562,7 @@ func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, 
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
-		return server, err
+		return nil, err
 	}
 
 	name := tools.RandomString("ACPTTEST", 16)
@@ -592,19 +586,30 @@ func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, 
 			Group: serverGroup.ID,
 		},
 	}
-	server, err = servers.Create(client, schedulerHintsOpts).Extract()
+	server, err := servers.Create(client, schedulerHintsOpts).Extract()
 	if err != nil {
-		return server, err
+		return nil, err
 	}
 
-	return server, nil
+	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
+		return nil, err
+	}
+
+	newServer, err := servers.Get(client, server.ID).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	th.AssertEquals(t, newServer.Name, name)
+	th.AssertEquals(t, newServer.Flavor["id"], choices.FlavorID)
+	th.AssertEquals(t, newServer.Image["id"], choices.ImageID)
+
+	return newServer, nil
 }
 
 // CreateServerWithPublicKey works the same as CreateServer, but additionally
 // configures the server with a specified Key Pair name.
 func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, keyPairName string) (*servers.Server, error) {
-	var server *servers.Server
-
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
@@ -612,7 +617,7 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 
 	networkID, err := GetNetworkIDFromTenantNetworks(t, client, choices.NetworkName)
 	if err != nil {
-		return server, err
+		return nil, err
 	}
 
 	name := tools.RandomString("ACPTTEST", 16)
@@ -627,19 +632,28 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 		},
 	}
 
-	server, err = servers.Create(client, keypairs.CreateOptsExt{
+	server, err := servers.Create(client, keypairs.CreateOptsExt{
 		CreateOptsBuilder: serverCreateOpts,
 		KeyName:           keyPairName,
 	}).Extract()
 	if err != nil {
-		return server, err
+		return nil, err
 	}
 
 	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
-		return server, err
+		return nil, err
 	}
 
-	return server, nil
+	newServer, err := servers.Get(client, server.ID).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	th.AssertEquals(t, newServer.Name, name)
+	th.AssertEquals(t, newServer.Flavor["id"], choices.FlavorID)
+	th.AssertEquals(t, newServer.Image["id"], choices.ImageID)
+
+	return newServer, nil
 }
 
 // CreateVolumeAttachment will attach a volume to a server. An error will be
