@@ -35,7 +35,7 @@ If you've found something we've left out, we'd love for you to add it! Please
 first open an issue to indicate your interest to a core contributor - this
 enables quick/early feedback and can help steer you in the right direction by
 avoiding known issues. It might also help you avoid losing time implementing
-something that might not ever work.
+something that might not ever work or is outside the scope of the project.
 
 While you're implementing the feature, one tip is to prefix your Pull Request
 title with `[wip]` - then people know it's a work in progress. Once the PR is
