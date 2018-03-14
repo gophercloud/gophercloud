@@ -17,14 +17,10 @@ func TestBootFromImage(t *testing.T) {
 	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	blockDevices := []bootfromvolume.BlockDevice{
 		bootfromvolume.BlockDevice{
@@ -37,9 +33,7 @@ func TestBootFromImage(t *testing.T) {
 	}
 
 	server, err := CreateBootableVolumeServer(t, client, blockDevices)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
 	tools.PrintResource(t, server)
@@ -51,14 +45,10 @@ func TestBootFromNewVolume(t *testing.T) {
 	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	blockDevices := []bootfromvolume.BlockDevice{
 		bootfromvolume.BlockDevice{
@@ -71,20 +61,14 @@ func TestBootFromNewVolume(t *testing.T) {
 	}
 
 	server, err := CreateBootableVolumeServer(t, client, blockDevices)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
 	attachPages, err := volumeattach.List(client, server.ID).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to get volume attachments for server %s: %s", server.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
-	if err != nil {
-		t.Fatalf("Unable to extract volume attachments for server %s: %s", server.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, server)
 	tools.PrintResource(t, attachments)
@@ -102,19 +86,13 @@ func TestBootFromExistingVolume(t *testing.T) {
 	clients.RequireLong(t)
 
 	computeClient, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	blockStorageClient, err := clients.NewBlockStorageV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a block storage client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	volume, err := blockstorage.CreateVolumeFromImage(t, blockStorageClient)
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, volume)
 
@@ -128,20 +106,14 @@ func TestBootFromExistingVolume(t *testing.T) {
 	}
 
 	server, err := CreateBootableVolumeServer(t, computeClient, blockDevices)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, computeClient, server)
 
 	attachPages, err := volumeattach.List(computeClient, server.ID).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to get volume attachments for server %s: %s", server.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
-	if err != nil {
-		t.Fatalf("Unable to extract volume attachments for server %s: %s", server.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, server)
 	tools.PrintResource(t, attachments)
@@ -159,14 +131,10 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	blockDevices := []bootfromvolume.BlockDevice{
 		bootfromvolume.BlockDevice{
@@ -196,9 +164,7 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 	}
 
 	server, err := CreateMultiEphemeralServer(t, client, blockDevices)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
 	tools.PrintResource(t, server)
@@ -208,14 +174,10 @@ func TestAttachNewVolume(t *testing.T) {
 	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	blockDevices := []bootfromvolume.BlockDevice{
 		bootfromvolume.BlockDevice{
@@ -235,20 +197,14 @@ func TestAttachNewVolume(t *testing.T) {
 	}
 
 	server, err := CreateBootableVolumeServer(t, client, blockDevices)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
 	attachPages, err := volumeattach.List(client, server.ID).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to get volume attachments for server %s: %s", server.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
-	if err != nil {
-		t.Fatalf("Unable to extract volume attachments for server %s: %s", server.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, server)
 	tools.PrintResource(t, attachments)
@@ -263,24 +219,16 @@ func TestAttachExistingVolume(t *testing.T) {
 	clients.RequireLong(t)
 
 	computeClient, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	blockStorageClient, err := clients.NewBlockStorageV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a block storage client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	volume, err := blockstorage.CreateVolume(t, blockStorageClient)
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	blockDevices := []bootfromvolume.BlockDevice{
 		bootfromvolume.BlockDevice{
@@ -300,20 +248,14 @@ func TestAttachExistingVolume(t *testing.T) {
 	}
 
 	server, err := CreateBootableVolumeServer(t, computeClient, blockDevices)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, computeClient, server)
 
 	attachPages, err := volumeattach.List(computeClient, server.ID).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to get volume attachments for server %s: %s", server.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	attachments, err := volumeattach.ExtractVolumeAttachments(attachPages)
-	if err != nil {
-		t.Fatalf("Unable to extract volume attachments for server %s: %s", server.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, server)
 	tools.PrintResource(t, attachments)

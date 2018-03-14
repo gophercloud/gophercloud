@@ -10,20 +10,17 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/usage"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestUsageSingleTenant(t *testing.T) {
 	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	server, err := CreateServer(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	DeleteServer(t, client, server)
 
 	endpointParts := strings.Split(client.Endpoint, "/")
@@ -37,14 +34,10 @@ func TestUsageSingleTenant(t *testing.T) {
 	}
 
 	page, err := usage.SingleTenant(client, tenantID, opts).AllPages()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	tenantUsage, err := usage.ExtractSingleTenant(page)
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, tenantUsage)
 

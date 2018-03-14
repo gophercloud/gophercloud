@@ -14,27 +14,19 @@ import (
 
 func TestFloatingIPsCreateDelete(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	floatingIP, err := CreateFloatingIP(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create floating IP: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteFloatingIP(t, client, floatingIP)
 
 	tools.PrintResource(t, floatingIP)
 
 	allPages, err := floatingips.List(client).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to retrieve floating IPs: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allFloatingIPs, err := floatingips.ExtractFloatingIPs(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract floating IPs: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	var found bool
 	for _, fip := range allFloatingIPs {
@@ -48,9 +40,7 @@ func TestFloatingIPsCreateDelete(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	fip, err := floatingips.Get(client, floatingIP.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get floating IP %s: %s", floatingIP.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, floatingIP.ID, fip.ID)
 }
@@ -59,34 +49,24 @@ func TestFloatingIPsAssociate(t *testing.T) {
 	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	server, err := CreateServer(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
 	floatingIP, err := CreateFloatingIP(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create floating IP: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteFloatingIP(t, client, floatingIP)
 
 	tools.PrintResource(t, floatingIP)
 
 	err = AssociateFloatingIP(t, client, floatingIP, server)
-	if err != nil {
-		t.Fatalf("Unable to associate floating IP %s with server %s: %v", floatingIP.IP, server.ID, err)
-	}
+	th.AssertNoErr(t, err)
 	defer DisassociateFloatingIP(t, client, floatingIP, server)
 
 	newFloatingIP, err := floatingips.Get(client, floatingIP.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get floating IP %s: %v", floatingIP.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	t.Logf("Floating IP %s is associated with Fixed IP %s", floatingIP.IP, newFloatingIP.FixedIP)
 
@@ -99,30 +79,20 @@ func TestFloatingIPsFixedIPAssociate(t *testing.T) {
 	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	server, err := CreateServer(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
 	newServer, err := servers.Get(client, server.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get server %s: %v", server.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	floatingIP, err := CreateFloatingIP(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create floating IP: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteFloatingIP(t, client, floatingIP)
 
 	tools.PrintResource(t, floatingIP)
@@ -138,15 +108,11 @@ func TestFloatingIPsFixedIPAssociate(t *testing.T) {
 	}
 
 	err = AssociateFloatingIPWithFixedIP(t, client, floatingIP, newServer, fixedIP)
-	if err != nil {
-		t.Fatalf("Unable to associate floating IP %s with server %s: %v", floatingIP.IP, newServer.ID, err)
-	}
+	th.AssertNoErr(t, err)
 	defer DisassociateFloatingIP(t, client, floatingIP, newServer)
 
 	newFloatingIP, err := floatingips.Get(client, floatingIP.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get floating IP %s: %v", floatingIP.ID, err)
-	}
+	th.AssertNoErr(t, err)
 
 	t.Logf("Floating IP %s is associated with Fixed IP %s", floatingIP.IP, newFloatingIP.FixedIP)
 

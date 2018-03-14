@@ -15,31 +15,21 @@ func TestVolumeAttachAttachment(t *testing.T) {
 	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	blockClient, err := clients.NewBlockStorageV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a blockstorage client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	server, err := CreateServer(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
 	volume, err := bs.CreateVolume(t, blockClient)
-	if err != nil {
-		t.Fatalf("Unable to create volume: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer bs.DeleteVolume(t, blockClient, volume)
 
 	volumeAttachment, err := CreateVolumeAttachment(t, client, blockClient, server, volume)
-	if err != nil {
-		t.Fatalf("Unable to attach volume: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteVolumeAttachment(t, client, blockClient, server, volumeAttachment)
 
 	tools.PrintResource(t, volumeAttachment)

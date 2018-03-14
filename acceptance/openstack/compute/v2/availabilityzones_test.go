@@ -13,19 +13,13 @@ import (
 
 func TestAvailabilityZonesList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allPages, err := availabilityzones.List(client).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list availability zones info: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	availabilityZoneInfo, err := availabilityzones.ExtractAvailabilityZones(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract availability zones info: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	var found bool
 	for _, zoneInfo := range availabilityZoneInfo {
@@ -43,19 +37,13 @@ func TestAvailabilityZonesListDetail(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allPages, err := availabilityzones.ListDetail(client).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list availability zones detailed info: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	availabilityZoneInfo, err := availabilityzones.ExtractAvailabilityZones(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract availability zones detailed info: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	var found bool
 	for _, zoneInfo := range availabilityZoneInfo {

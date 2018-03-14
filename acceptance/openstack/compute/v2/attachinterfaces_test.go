@@ -15,33 +15,23 @@ func TestAttachDetachInterface(t *testing.T) {
 	clients.RequireLong(t)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	server, err := CreateServer(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
 	iface, err := AttachInterface(t, client, server.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 	defer DetachInterface(t, client, server.ID, iface.PortID)
 
 	tools.PrintResource(t, iface)
 
 	server, err = servers.Get(client, server.ID).Extract()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	var found bool
 	for _, networkAddresses := range server.Addresses[choices.NetworkName].([]interface{}) {

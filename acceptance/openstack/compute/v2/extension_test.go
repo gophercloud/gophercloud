@@ -13,19 +13,13 @@ import (
 
 func TestExtensionsList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allPages, err := extensions.List(client).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list extensions: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allExtensions, err := extensions.ExtractExtensions(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract extensions: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	var found bool
 	for _, extension := range allExtensions {
@@ -41,14 +35,10 @@ func TestExtensionsList(t *testing.T) {
 
 func TestExtensionsGet(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	extension, err := extensions.Get(client, "os-admin-actions").Extract()
-	if err != nil {
-		t.Fatalf("Unable to get extension os-admin-actions: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, extension)
 

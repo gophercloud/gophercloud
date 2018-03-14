@@ -17,24 +17,16 @@ import (
 
 func TestQuotasetGet(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	identityClient, err := clients.NewIdentityV2Client()
-	if err != nil {
-		t.Fatalf("Unable to get a new identity client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tenantID, err := getTenantID(t, identityClient)
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	quotaSet, err := quotasets.Get(client, tenantID).Extract()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotaSet)
 
@@ -43,14 +35,10 @@ func TestQuotasetGet(t *testing.T) {
 
 func getTenantID(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
 	allPages, err := tenants.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to get list of tenants: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allTenants, err := tenants.ExtractTenants(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract tenants: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	for _, tenant := range allTenants {
 		return tenant.ID, nil
@@ -61,14 +49,10 @@ func getTenantID(t *testing.T, client *gophercloud.ServiceClient) (string, error
 
 func getTenantIDByName(t *testing.T, client *gophercloud.ServiceClient, name string) (string, error) {
 	allPages, err := tenants.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to get list of tenants: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allTenants, err := tenants.ExtractTenants(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract tenants: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	for _, tenant := range allTenants {
 		if tenant.Name == name {
@@ -119,19 +103,13 @@ func TestQuotasetUpdateDelete(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	idclient, err := clients.NewIdentityV2Client()
-	if err != nil {
-		t.Fatalf("Could not create IdentityClient to look up tenant id!")
-	}
+	th.AssertNoErr(t, err)
 
 	tenantid, err := getTenantIDByName(t, idclient, os.Getenv("OS_TENANT_NAME"))
-	if err != nil {
-		t.Fatalf("Id for Tenant named '%' not found. Please set OS_TENANT_NAME appropriately", os.Getenv("OS_TENANT_NAME"))
-	}
+	th.AssertNoErr(t, err)
 
 	// save original quotas
 	orig, err := quotasets.Get(client, tenantid).Extract()

@@ -14,19 +14,13 @@ import (
 
 func TestSecGroupsList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allPages, err := secgroups.List(client).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to retrieve security groups: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allSecGroups, err := secgroups.ExtractSecurityGroups(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract security groups: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	var found bool
 	for _, secgroup := range allSecGroups {
@@ -42,14 +36,10 @@ func TestSecGroupsList(t *testing.T) {
 
 func TestSecGroupsCRUD(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	securityGroup, err := CreateSecurityGroup(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create security group: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteSecurityGroup(t, client, securityGroup.ID)
 
 	tools.PrintResource(t, securityGroup)
@@ -60,9 +50,7 @@ func TestSecGroupsCRUD(t *testing.T) {
 		Description: tools.RandomString("dec_", 10),
 	}
 	updatedSecurityGroup, err := secgroups.Update(client, securityGroup.ID, updateOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update security group: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedSecurityGroup)
 
@@ -73,30 +61,22 @@ func TestSecGroupsCRUD(t *testing.T) {
 
 func TestSecGroupsRuleCreate(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	securityGroup, err := CreateSecurityGroup(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create security group: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteSecurityGroup(t, client, securityGroup.ID)
 
 	tools.PrintResource(t, securityGroup)
 
 	rule, err := CreateSecurityGroupRule(t, client, securityGroup.ID)
-	if err != nil {
-		t.Fatalf("Unable to create rule: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteSecurityGroupRule(t, client, rule.ID)
 
 	tools.PrintResource(t, rule)
 
 	newSecurityGroup, err := secgroups.Get(client, securityGroup.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to obtain security group: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newSecurityGroup)
 
@@ -107,20 +87,18 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
+
+	server, err := CreateServer(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteServer(t, client, server)
 
 	securityGroup, err := CreateSecurityGroup(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create security group: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteSecurityGroup(t, client, securityGroup.ID)
 
 	rule, err := CreateSecurityGroupRule(t, client, securityGroup.ID)
-	if err != nil {
-		t.Fatalf("Unable to create rule: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteSecurityGroupRule(t, client, rule.ID)
 
 	server, err := CreateServer(t, client)

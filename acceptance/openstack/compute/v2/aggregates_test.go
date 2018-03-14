@@ -18,19 +18,13 @@ func TestAggregatesList(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allPages, err := aggregates.List(client).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list aggregates: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allAggregates, err := aggregates.ExtractAggregates(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract aggregates")
-	}
+	th.AssertNoErr(t, err)
 
 	for _, v := range allAggregates {
 		tools.PrintResource(t, v)
@@ -41,14 +35,11 @@ func TestAggregatesCRUD(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	aggregate, err := CreateAggregate(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create an aggregate: %v", err)
-	}
+	th.AssertNoErr(t, err)
+
 	defer DeleteAggregate(t, client, aggregate)
 
 	tools.PrintResource(t, aggregate)
@@ -59,9 +50,7 @@ func TestAggregatesCRUD(t *testing.T) {
 	}
 
 	updatedAggregate, err := aggregates.Update(client, aggregate.ID, updateOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update an aggregate: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, aggregate)
 
@@ -73,19 +62,13 @@ func TestAggregatesAddRemoveHost(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	hostToAdd, err := getHypervisor(t, client)
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	aggregate, err := CreateAggregate(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create an aggregate: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteAggregate(t, client, aggregate)
 
 	addHostOpts := aggregates.AddHostOpts{
@@ -93,9 +76,7 @@ func TestAggregatesAddRemoveHost(t *testing.T) {
 	}
 
 	aggregateWithNewHost, err := aggregates.AddHost(client, aggregate.ID, addHostOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to add host to aggregate: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, aggregateWithNewHost)
 
@@ -106,9 +87,7 @@ func TestAggregatesAddRemoveHost(t *testing.T) {
 	}
 
 	aggregateWithRemovedHost, err := aggregates.RemoveHost(client, aggregate.ID, removeHostOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to remove host from aggregate: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, aggregateWithRemovedHost)
 
@@ -119,14 +98,10 @@ func TestAggregatesSetRemoveMetadata(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	aggregate, err := CreateAggregate(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create an aggregate: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteAggregate(t, client, aggregate)
 
 	opts := aggregates.SetMetadataOpts{
@@ -134,9 +109,7 @@ func TestAggregatesSetRemoveMetadata(t *testing.T) {
 	}
 
 	aggregateWithMetadata, err := aggregates.SetMetadata(client, aggregate.ID, opts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to set metadata to aggregate: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, aggregateWithMetadata)
 
@@ -149,9 +122,7 @@ func TestAggregatesSetRemoveMetadata(t *testing.T) {
 	}
 
 	aggregateWithRemovedKey, err := aggregates.SetMetadata(client, aggregate.ID, optsToRemove).Extract()
-	if err != nil {
-		t.Fatalf("Unable to set metadata to aggregate: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, aggregateWithRemovedKey)
 
@@ -162,14 +133,10 @@ func TestAggregatesSetRemoveMetadata(t *testing.T) {
 
 func getHypervisor(t *testing.T, client *gophercloud.ServiceClient) (*hypervisors.Hypervisor, error) {
 	allPages, err := hypervisors.List(client).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list hypervisors: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)
-	if err != nil {
-		t.Fatal("Unable to extract hypervisors")
-	}
+	th.AssertNoErr(t, err)
 
 	for _, h := range allHypervisors {
 		return &h, nil
