@@ -159,6 +159,13 @@ func MockCreateResponse(t *testing.T) {
     "volume": {
     	"name": "vol-001",
         "size": 75
+    },
+    "OS-SCH-HNT:scheduler_hints": {
+         "local_to_instance": "8c19174f-4220-44f0-824a-cd1eeef102ff",
+         "same_host": [
+             "a0cf03a5-d921-4877-bb5c-86d26cf818e1",
+             "8c19174f-4220-44f0-824a-cd1eeef10287"
+         ]
     }
 }
       `)

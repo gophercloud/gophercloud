@@ -206,7 +206,18 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t)
 
-	options := &volumes.CreateOpts{Size: 75, Name: "vol-001"}
+	h := map[string]interface{}{
+		"same_host": []string{
+			"a0cf03a5-d921-4877-bb5c-86d26cf818e1",
+			"8c19174f-4220-44f0-824a-cd1eeef10287",
+		},
+		"local_to_instance": "8c19174f-4220-44f0-824a-cd1eeef102ff",
+	}
+	options := &volumes.CreateOpts{
+		Size:           75,
+		Name:           "vol-001",
+		SchedulerHints: h,
+	}
 	n, err := volumes.Create(client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 

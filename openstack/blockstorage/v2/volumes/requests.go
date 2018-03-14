@@ -38,12 +38,18 @@ type CreateOpts struct {
 	ImageID string `json:"imageRef,omitempty"`
 	// The associated volume type
 	VolumeType string `json:"volume_type,omitempty"`
+	// The scheduler hints
+	SchedulerHints map[string]interface{} `json:"-"`
 }
 
 // ToVolumeCreateMap assembles a request body based on the contents of a
 // CreateOpts.
 func (opts CreateOpts) ToVolumeCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "volume")
+	m, err := gophercloud.BuildRequestBody(opts, "volume")
+	if err == nil && opts.SchedulerHints != nil {
+		m["OS-SCH-HNT:scheduler_hints"] = opts.SchedulerHints
+	}
+	return m, err
 }
 
 // Create will create a new Volume based on the values in CreateOpts. To extract
