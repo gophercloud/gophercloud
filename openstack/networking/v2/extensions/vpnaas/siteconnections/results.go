@@ -111,3 +111,9 @@ type CreateResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+// GetResult represents the result of a get operation. Call its Extract
+// method to interpret it as a Connection.
+type GetResult struct {
+	commonResult
+}
