@@ -45,10 +45,6 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 // CreateVolumeFromImage will create a volume from with a random name and size of
 // 1GB. An error will be returned if the volume was unable to be created.
 func CreateVolumeFromImage(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Volume, error) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires volume creation in short mode.")
-	}
-
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)

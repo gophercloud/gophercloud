@@ -5,10 +5,10 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	bs "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v1/volumes"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestVolumeAttachAttachment(t *testing.T) {
@@ -21,7 +21,7 @@ func TestVolumeAttachAttachment(t *testing.T) {
 		t.Fatalf("Unable to create a compute client: %v", err)
 	}
 
-	blockClient, err := clients.NewBlockStorageV1Client()
+	blockClient, err := clients.NewBlockStorageV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
@@ -32,15 +32,11 @@ func TestVolumeAttachAttachment(t *testing.T) {
 	}
 	defer DeleteServer(t, client, server)
 
-	volume, err := createVolume(t, blockClient)
+	volume, err := bs.CreateVolume(t, blockClient)
 	if err != nil {
 		t.Fatalf("Unable to create volume: %v", err)
 	}
-
-	if err = volumes.WaitForStatus(blockClient, volume.ID, "available", 60); err != nil {
-		t.Fatalf("Unable to wait for volume: %v", err)
-	}
-	defer deleteVolume(t, blockClient, volume)
+	defer bs.DeleteVolume(t, blockClient, volume)
 
 	volumeAttachment, err := CreateVolumeAttachment(t, client, blockClient, server, volume)
 	if err != nil {
@@ -50,29 +46,5 @@ func TestVolumeAttachAttachment(t *testing.T) {
 
 	tools.PrintResource(t, volumeAttachment)
 
-}
-
-func createVolume(t *testing.T, blockClient *gophercloud.ServiceClient) (*volumes.Volume, error) {
-	volumeName := tools.RandomString("ACPTTEST", 16)
-	createOpts := volumes.CreateOpts{
-		Size: 1,
-		Name: volumeName,
-	}
-
-	volume, err := volumes.Create(blockClient, createOpts).Extract()
-	if err != nil {
-		return volume, err
-	}
-
-	t.Logf("Created volume: %s", volume.ID)
-	return volume, nil
-}
-
-func deleteVolume(t *testing.T, blockClient *gophercloud.ServiceClient, volume *volumes.Volume) {
-	err := volumes.Delete(blockClient, volume.ID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to delete volume: %v", err)
-	}
-
-	t.Logf("Deleted volume: %s", volume.ID)
+	th.AssertEquals(t, volumeAttachment.ServerID, server.ID)
 }
