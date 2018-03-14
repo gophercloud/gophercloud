@@ -13,6 +13,8 @@ import (
 )
 
 func TestUsageSingleTenant(t *testing.T) {
+	clients.RequireLong(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)

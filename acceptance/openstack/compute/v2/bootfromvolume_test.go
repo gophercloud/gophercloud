@@ -14,9 +14,7 @@ import (
 )
 
 func TestBootFromImage(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
+	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
@@ -50,9 +48,7 @@ func TestBootFromImage(t *testing.T) {
 }
 
 func TestBootFromNewVolume(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
+	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
@@ -103,9 +99,7 @@ func TestBootFromNewVolume(t *testing.T) {
 }
 
 func TestBootFromExistingVolume(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
+	clients.RequireLong(t)
 
 	computeClient, err := clients.NewComputeV2Client()
 	if err != nil {
@@ -162,9 +156,7 @@ func TestBootFromExistingVolume(t *testing.T) {
 }
 
 func TestBootFromMultiEphemeralServer(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
+	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
@@ -213,9 +205,7 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 }
 
 func TestAttachNewVolume(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
+	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
@@ -270,9 +260,7 @@ func TestAttachNewVolume(t *testing.T) {
 }
 
 func TestAttachExistingVolume(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
+	clients.RequireLong(t)
 
 	computeClient, err := clients.NewComputeV2Client()
 	if err != nil {

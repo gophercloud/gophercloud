@@ -20,6 +20,8 @@ import (
 )
 
 func TestServersCreateDestroy(t *testing.T) {
+	clients.RequireLong(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -102,6 +104,8 @@ func TestServersCreateDestroy(t *testing.T) {
 }
 
 func TestServersWithExtensionsCreateDestroy(t *testing.T) {
+	clients.RequireLong(t)
+
 	var extendedServer struct {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
@@ -148,6 +152,8 @@ func TestServersWithoutImageRef(t *testing.T) {
 }
 
 func TestServersUpdate(t *testing.T) {
+	clients.RequireLong(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -188,6 +194,8 @@ func TestServersUpdate(t *testing.T) {
 }
 
 func TestServersMetadata(t *testing.T) {
+	clients.RequireLong(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -288,6 +296,7 @@ func TestServersMetadata(t *testing.T) {
 }
 
 func TestServersActionChangeAdminPassword(t *testing.T) {
+	clients.RequireLong(t)
 	clients.RequireGuestAgent(t)
 
 	client, err := clients.NewComputeV2Client()
@@ -317,6 +326,8 @@ func TestServersActionChangeAdminPassword(t *testing.T) {
 }
 
 func TestServersActionReboot(t *testing.T) {
+	clients.RequireLong(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -348,6 +359,8 @@ func TestServersActionReboot(t *testing.T) {
 }
 
 func TestServersActionRebuild(t *testing.T) {
+	clients.RequireLong(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -389,6 +402,8 @@ func TestServersActionRebuild(t *testing.T) {
 }
 
 func TestServersActionResizeConfirm(t *testing.T) {
+	clients.RequireLong(t)
+
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
@@ -426,6 +441,8 @@ func TestServersActionResizeConfirm(t *testing.T) {
 }
 
 func TestServersActionResizeRevert(t *testing.T) {
+	clients.RequireLong(t)
+
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)
@@ -463,6 +480,8 @@ func TestServersActionResizeRevert(t *testing.T) {
 }
 
 func TestServersActionPause(t *testing.T) {
+	clients.RequireLong(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -497,6 +516,8 @@ func TestServersActionPause(t *testing.T) {
 }
 
 func TestServersActionSuspend(t *testing.T) {
+	clients.RequireLong(t)
+
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -531,7 +552,7 @@ func TestServersActionSuspend(t *testing.T) {
 }
 
 func TestServersActionLock(t *testing.T) {
-	t.Parallel()
+	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
 	if err != nil {

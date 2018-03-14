@@ -56,9 +56,7 @@ func TestFloatingIPsCreateDelete(t *testing.T) {
 }
 
 func TestFloatingIPsAssociate(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
+	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
@@ -98,9 +96,7 @@ func TestFloatingIPsAssociate(t *testing.T) {
 }
 
 func TestFloatingIPsFixedIPAssociate(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
+	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
 	if err != nil {

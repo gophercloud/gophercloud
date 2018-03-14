@@ -104,9 +104,7 @@ func TestSecGroupsRuleCreate(t *testing.T) {
 }
 
 func TestSecGroupsAddGroupToServer(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Skipping test that requires server creation in short mode.")
-	}
+	clients.RequireLong(t)
 
 	client, err := clients.NewComputeV2Client()
 	if err != nil {

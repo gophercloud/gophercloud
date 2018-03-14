@@ -12,6 +12,8 @@ import (
 )
 
 func TestAttachDetachInterface(t *testing.T) {
+	clients.RequireLong(t)
+
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		t.Fatal(err)

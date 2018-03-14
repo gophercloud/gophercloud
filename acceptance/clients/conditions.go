@@ -28,6 +28,13 @@ func RequireLiveMigration(t *testing.T) {
 	}
 }
 
+// RequireLong will ensure long-running tests can run.
+func RequireLong(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode")
+	}
+}
+
 // RequireNovaNetwork will restrict a test to only be run in
 // environments that support nova-network.
 func RequireNovaNetwork(t *testing.T) {

@@ -10,6 +10,7 @@ import (
 )
 
 func TestMigrate(t *testing.T) {
+	clients.RequireLong(t)
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
@@ -32,6 +33,7 @@ func TestMigrate(t *testing.T) {
 }
 
 func TestLiveMigrate(t *testing.T) {
+	clients.RequireLong(t)
 	clients.RequireAdmin(t)
 	clients.RequireLiveMigration(t)
 
