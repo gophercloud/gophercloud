@@ -1,6 +1,8 @@
 package loadbalancers
 
 import (
+	"fmt"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -36,7 +38,7 @@ type ListOpts struct {
 	SortDir            string `q:"sort_dir"`
 }
 
-// ToLoadbalancerListQuery formats a ListOpts into a query string.
+// ToLoadBalancerListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToLoadBalancerListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
@@ -172,6 +174,20 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateR
 // unique ID.
 func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return
+}
+
+// CascadingDelete is like `Delete`, but will also delete any of the load balancer's
+// children (listener, monitor, etc).
+// NOTE: This function will only work with Octavia load balancers; Neutron does not
+// support this.
+func CascadingDelete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	if c.Type != "load-balancer" {
+		r.Err = fmt.Errorf("error prior to running cascade delete: only Octavia LBs supported")
+		return
+	}
+	u := fmt.Sprintf("%s?cascade=true", resourceURL(c, id))
+	_, r.Err = c.Delete(u, nil)
 	return
 }
 
