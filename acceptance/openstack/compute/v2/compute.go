@@ -376,40 +376,52 @@ func CreatePrivateFlavor(t *testing.T, client *gophercloud.ServiceClient) (*flav
 
 // CreateSecurityGroup will create a security group with a random name.
 // An error will be returned if one was failed to be created.
-func CreateSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (secgroups.SecurityGroup, error) {
+func CreateSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (*secgroups.SecurityGroup, error) {
+	name := tools.RandomString("secgroup_", 5)
+
 	createOpts := secgroups.CreateOpts{
-		Name:        tools.RandomString("secgroup_", 5),
+		Name:        name,
 		Description: "something",
 	}
 
 	securityGroup, err := secgroups.Create(client, createOpts).Extract()
 	if err != nil {
-		return *securityGroup, err
+		return nil, err
 	}
 
 	t.Logf("Created security group: %s", securityGroup.ID)
-	return *securityGroup, nil
+
+	th.AssertEquals(t, securityGroup.Name, name)
+
+	return securityGroup, nil
 }
 
 // CreateSecurityGroupRule will create a security group rule with a random name
 // and a random TCP port range between port 80 and 99. An error will be
 // returned if the rule failed to be created.
-func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, securityGroupID string) (secgroups.Rule, error) {
+func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, securityGroupID string) (*secgroups.Rule, error) {
+	fromPort := tools.RandomInt(80, 89)
+	toPort := tools.RandomInt(90, 99)
 	createOpts := secgroups.CreateRuleOpts{
 		ParentGroupID: securityGroupID,
-		FromPort:      tools.RandomInt(80, 89),
-		ToPort:        tools.RandomInt(90, 99),
+		FromPort:      fromPort,
+		ToPort:        toPort,
 		IPProtocol:    "TCP",
 		CIDR:          "0.0.0.0/0",
 	}
 
 	rule, err := secgroups.CreateRule(client, createOpts).Extract()
 	if err != nil {
-		return *rule, err
+		return nil, err
 	}
 
 	t.Logf("Created security group rule: %s", rule.ID)
-	return *rule, nil
+
+	th.AssertEquals(t, rule.FromPort, fromPort)
+	th.AssertEquals(t, rule.ToPort, toPort)
+	th.AssertEquals(t, rule.ParentGroupID, securityGroupID)
+
+	return rule, nil
 }
 
 // CreateServer creates a basic instance with a randomly generated name.
@@ -524,14 +536,22 @@ func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient
 // CreateServerGroup will create a server with a random name. An error will be
 // returned if the server group failed to be created.
 func CreateServerGroup(t *testing.T, client *gophercloud.ServiceClient, policy string) (*servergroups.ServerGroup, error) {
+	name := tools.RandomString("ACPTTEST", 16)
+
+	t.Logf("Attempting to create server group %s", name)
+
 	sg, err := servergroups.Create(client, &servergroups.CreateOpts{
-		Name:     "test",
+		Name:     name,
 		Policies: []string{policy},
 	}).Extract()
 
 	if err != nil {
-		return sg, err
+		return nil, err
 	}
+
+	t.Logf("Successfully created server group %s", name)
+
+	th.AssertEquals(t, sg.Name, name)
 
 	return sg, nil
 }
@@ -703,25 +723,25 @@ func DeleteKeyPair(t *testing.T, client *gophercloud.ServiceClient, keyPair *key
 
 // DeleteSecurityGroup will delete a security group. A fatal error will occur
 // if the group failed to be deleted. This works best as a deferred function.
-func DeleteSecurityGroup(t *testing.T, client *gophercloud.ServiceClient, securityGroup secgroups.SecurityGroup) {
-	err := secgroups.Delete(client, securityGroup.ID).ExtractErr()
+func DeleteSecurityGroup(t *testing.T, client *gophercloud.ServiceClient, securityGroupID string) {
+	err := secgroups.Delete(client, securityGroupID).ExtractErr()
 	if err != nil {
-		t.Fatalf("Unable to delete security group %s: %s", securityGroup.ID, err)
+		t.Fatalf("Unable to delete security group %s: %s", securityGroupID, err)
 	}
 
-	t.Logf("Deleted security group: %s", securityGroup.ID)
+	t.Logf("Deleted security group: %s", securityGroupID)
 }
 
 // DeleteSecurityGroupRule will delete a security group rule. A fatal error
 // will occur if the rule failed to be deleted. This works best when used
 // as a deferred function.
-func DeleteSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, rule secgroups.Rule) {
-	err := secgroups.DeleteRule(client, rule.ID).ExtractErr()
+func DeleteSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) {
+	err := secgroups.DeleteRule(client, ruleID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete rule: %v", err)
 	}
 
-	t.Logf("Deleted security group rule: %s", rule.ID)
+	t.Logf("Deleted security group rule: %s", ruleID)
 }
 
 // DeleteServer deletes an instance via its UUID.

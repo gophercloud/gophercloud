@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestAttachDetachInterface(t *testing.T) {
@@ -54,7 +55,5 @@ func TestAttachDetachInterface(t *testing.T) {
 		}
 	}
 
-	if !found {
-		t.Fatalf("Unable to attach interface to server %s", server.ID)
-	}
+	th.AssertEquals(t, found, true)
 }

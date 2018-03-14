@@ -47,9 +47,7 @@ func TestKeypairsCreateDelete(t *testing.T) {
 		}
 	}
 
-	if !found {
-		t.Fatalf("Unable to find keypair %s", keyPair.Name)
-	}
+	th.AssertEquals(t, found, true)
 }
 
 func TestKeypairsImportPublicKey(t *testing.T) {

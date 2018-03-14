@@ -41,9 +41,7 @@ func TestImagesList(t *testing.T) {
 		}
 	}
 
-	if !found {
-		t.Fatalf("Unable to find image %s", choices.ImageID)
-	}
+	th.AssertEquals(t, found, true)
 }
 
 func TestImagesGet(t *testing.T) {

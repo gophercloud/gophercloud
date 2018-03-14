@@ -45,9 +45,7 @@ func TestFloatingIPsCreateDelete(t *testing.T) {
 		}
 	}
 
-	if !found {
-		t.Fatalf("Unable to find floating IP %s", floatingIP.ID)
-	}
+	th.AssertEquals(t, found, true)
 
 	fip, err := floatingips.Get(client, floatingIP.ID).Extract()
 	if err != nil {

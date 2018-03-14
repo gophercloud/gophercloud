@@ -43,9 +43,7 @@ func TestFlavorsList(t *testing.T) {
 		}
 	}
 
-	if !found {
-		t.Fatalf("Unable to find %s", choices.FlavorID)
-	}
+	th.AssertEquals(t, found, true)
 }
 
 func TestFlavorsAccessTypeList(t *testing.T) {

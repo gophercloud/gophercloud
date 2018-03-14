@@ -9,30 +9,10 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/servergroups"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestServergroupsList(t *testing.T) {
-	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
-
-	allPages, err := servergroups.List(client).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list server groups: %v", err)
-	}
-
-	allServerGroups, err := servergroups.ExtractServerGroups(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract server groups: %v", err)
-	}
-
-	for _, serverGroup := range allServerGroups {
-		tools.PrintResource(t, serverGroup)
-	}
-}
-
-func TestServergroupsCreate(t *testing.T) {
+func TestServergroupsCreateDelete(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -50,6 +30,27 @@ func TestServergroupsCreate(t *testing.T) {
 	}
 
 	tools.PrintResource(t, serverGroup)
+
+	allPages, err := servergroups.List(client).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list server groups: %v", err)
+	}
+
+	allServerGroups, err := servergroups.ExtractServerGroups(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract server groups: %v", err)
+	}
+
+	var found bool
+	for _, sg := range allServerGroups {
+		tools.PrintResource(t, serverGroup)
+
+		if sg.ID == serverGroup.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
 }
 
 func TestServergroupsAffinityPolicy(t *testing.T) {
@@ -87,7 +88,5 @@ func TestServergroupsAffinityPolicy(t *testing.T) {
 
 	secondServer, err = servers.Get(client, secondServer.ID).Extract()
 
-	if firstServer.HostID != secondServer.HostID {
-		t.Fatalf("%s and %s were not scheduled on the same host.", firstServer.ID, secondServer.ID)
-	}
+	th.AssertEquals(t, firstServer.HostID, secondServer.HostID)
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/secgroups"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestSecGroupsList(t *testing.T) {
@@ -27,12 +28,19 @@ func TestSecGroupsList(t *testing.T) {
 		t.Fatalf("Unable to extract security groups: %v", err)
 	}
 
+	var found bool
 	for _, secgroup := range allSecGroups {
 		tools.PrintResource(t, secgroup)
+
+		if secgroup.Name == "default" {
+			found = true
+		}
 	}
+
+	th.AssertEquals(t, found, true)
 }
 
-func TestSecGroupsCreate(t *testing.T) {
+func TestSecGroupsCRUD(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a compute client: %v", err)
@@ -42,23 +50,13 @@ func TestSecGroupsCreate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create security group: %v", err)
 	}
-	defer DeleteSecurityGroup(t, client, securityGroup)
-}
+	defer DeleteSecurityGroup(t, client, securityGroup.ID)
 
-func TestSecGroupsUpdate(t *testing.T) {
-	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	tools.PrintResource(t, securityGroup)
 
-	securityGroup, err := CreateSecurityGroup(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create security group: %v", err)
-	}
-	defer DeleteSecurityGroup(t, client, securityGroup)
-
+	newName := tools.RandomString("secgroup_", 4)
 	updateOpts := secgroups.UpdateOpts{
-		Name:        tools.RandomString("secgroup_", 4),
+		Name:        newName,
 		Description: tools.RandomString("dec_", 10),
 	}
 	updatedSecurityGroup, err := secgroups.Update(client, securityGroup.ID, updateOpts).Extract()
@@ -66,7 +64,11 @@ func TestSecGroupsUpdate(t *testing.T) {
 		t.Fatalf("Unable to update security group: %v", err)
 	}
 
+	tools.PrintResource(t, updatedSecurityGroup)
+
 	t.Logf("Updated %s's name to %s", updatedSecurityGroup.ID, updatedSecurityGroup.Name)
+
+	th.AssertEquals(t, updatedSecurityGroup.Name, newName)
 }
 
 func TestSecGroupsRuleCreate(t *testing.T) {
@@ -79,13 +81,17 @@ func TestSecGroupsRuleCreate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create security group: %v", err)
 	}
-	defer DeleteSecurityGroup(t, client, securityGroup)
+	defer DeleteSecurityGroup(t, client, securityGroup.ID)
+
+	tools.PrintResource(t, securityGroup)
 
 	rule, err := CreateSecurityGroupRule(t, client, securityGroup.ID)
 	if err != nil {
 		t.Fatalf("Unable to create rule: %v", err)
 	}
-	defer DeleteSecurityGroupRule(t, client, rule)
+	defer DeleteSecurityGroupRule(t, client, rule.ID)
+
+	tools.PrintResource(t, rule)
 
 	newSecurityGroup, err := secgroups.Get(client, securityGroup.ID).Extract()
 	if err != nil {
@@ -94,6 +100,7 @@ func TestSecGroupsRuleCreate(t *testing.T) {
 
 	tools.PrintResource(t, newSecurityGroup)
 
+	th.AssertEquals(t, len(newSecurityGroup.Rules), 1)
 }
 
 func TestSecGroupsAddGroupToServer(t *testing.T) {
@@ -110,13 +117,13 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create security group: %v", err)
 	}
-	defer DeleteSecurityGroup(t, client, securityGroup)
+	defer DeleteSecurityGroup(t, client, securityGroup.ID)
 
 	rule, err := CreateSecurityGroupRule(t, client, securityGroup.ID)
 	if err != nil {
 		t.Fatalf("Unable to create rule: %v", err)
 	}
-	defer DeleteSecurityGroupRule(t, client, rule)
+	defer DeleteSecurityGroupRule(t, client, rule.ID)
 
 	server, err := CreateServer(t, client)
 	if err != nil {

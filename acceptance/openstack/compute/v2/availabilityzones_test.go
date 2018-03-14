@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestAvailabilityZonesList(t *testing.T) {
@@ -35,9 +36,7 @@ func TestAvailabilityZonesList(t *testing.T) {
 		}
 	}
 
-	if !found {
-		t.Fatal("Unable to find availability zone nova")
-	}
+	th.AssertEquals(t, found, true)
 }
 
 func TestAvailabilityZonesListDetail(t *testing.T) {
@@ -67,7 +66,5 @@ func TestAvailabilityZonesListDetail(t *testing.T) {
 		}
 	}
 
-	if !found {
-		t.Fatal("Unable to find availability zone nova")
-	}
+	th.AssertEquals(t, found, true)
 }

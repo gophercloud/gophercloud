@@ -41,9 +41,7 @@ func TestNetworksList(t *testing.T) {
 		}
 	}
 
-	if !found {
-		t.Fatalf("Unable to find network %s", choices.NetworkName)
-	}
+	th.AssertEquals(t, found, true)
 }
 
 func TestNetworksGet(t *testing.T) {

@@ -36,9 +36,7 @@ func TestExtensionsList(t *testing.T) {
 		}
 	}
 
-	if !found {
-		t.Fatal("Unable to find extension SchedulerHints")
-	}
+	th.AssertEquals(t, found, true)
 }
 
 func TestExtensionsGet(t *testing.T) {
