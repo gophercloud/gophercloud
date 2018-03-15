@@ -381,6 +381,46 @@ const UpdateOmitSecurityGroupsResponse = `
 }
 `
 
+const UpdatePortSecurityRequest = `
+{
+    "port": {
+        "port_security_enabled": false
+    }
+}
+`
+
+const UpdatePortSecurityResponse = `
+{
+    "port": {
+        "status": "DOWN",
+        "name": "private-port",
+        "admin_state_up": true,
+        "network_id": "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+        "tenant_id": "d6700c0c9ffa4f1cb322cd4a1f3906fa",
+        "device_owner": "",
+        "mac_address": "fa:16:3e:c9:cb:f0",
+        "fixed_ips": [
+            {
+                "subnet_id": "a0304c3a-4f08-4c43-88af-d796509c97d2",
+                "ip_address": "10.0.0.2"
+            }
+        ],
+        "id": "65c0ee9f-d634-4522-8954-51021b570b0d",
+        "security_groups": [
+            "f0ac4394-7e4a-4409-9701-ba8be283dbc3"
+        ],
+        "allowed_address_pairs": [
+          {
+            "ip_address": "10.0.0.4",
+            "mac_address": "fa:16:3e:c9:cb:f0"
+          }
+        ],
+        "device_id": "",
+        "port_security_enabled": false
+    }
+}
+`
+
 const RemoveSecurityGroupRequest = `
 {
     "port": {

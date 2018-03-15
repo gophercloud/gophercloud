@@ -388,6 +388,20 @@ func TestPortsPortSecurityCRUD(t *testing.T) {
 	}
 
 	tools.PrintResource(t, portWithExt)
+
+	iTrue := true
+	portUpdateOpts := ports.UpdateOpts{}
+	updateOpts := portsecurity.PortUpdateOptsExt{
+		UpdateOptsBuilder:   portUpdateOpts,
+		PortSecurityEnabled: &iTrue,
+	}
+
+	err = ports.Update(client, port.ID, updateOpts).ExtractInto(&portWithExt)
+	if err != nil {
+		t.Fatalf("Unable to update port: %v", err)
+	}
+
+	tools.PrintResource(t, portWithExt)
 }
 
 func TestPortsWithExtraDHCPOptsCRUD(t *testing.T) {
