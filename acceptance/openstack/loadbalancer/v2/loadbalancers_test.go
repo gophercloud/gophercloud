@@ -100,6 +100,12 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newListener)
 
+	// L7 policy
+	policy, err := CreateL7Policy(t, client, listener, lb)
+	if err != nil {
+		t.Fatalf("Unable to create l7 policy: %v", err)
+	}
+
 	// Pool
 	pool, err := CreatePool(t, lbClient, lb)
 	if err != nil {

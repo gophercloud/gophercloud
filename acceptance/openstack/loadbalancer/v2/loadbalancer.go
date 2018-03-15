@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/loadbalancers"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/monitors"
@@ -170,6 +171,35 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalance
 	}
 
 	return pool, nil
+}
+
+// CreateL7Policy will create a l7 policy with a random name with a specified listener
+// and loadbalancer. An error will be returned if the l7 policy could not be
+// created.
+func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *listeners.Listener, lb *loadbalancers.LoadBalancer) (*l7policies.L7Policy, error) {
+	policyName := tools.RandomString("TESTACCT-", 8)
+
+	t.Logf("Attempting to create l7 policy %s", policyName)
+
+	createOpts := l7policies.CreateOpts{
+		Name:        policyName,
+		ListenerID:  listener.ID,
+		Action:      l7policies.ActionRedirectToURL,
+		RedirectURL: "http://www.example.com",
+	}
+
+	policy, err := l7policies.Create(client, createOpts).Extract()
+	if err != nil {
+		return policy, err
+	}
+
+	t.Logf("Successfully created l7 policy %s", policyName)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		return policy, fmt.Errorf("Timed out waiting for loadbalancer to become active")
+	}
+
+	return policy, nil
 }
 
 // DeleteListener will delete a specified listener. A fatal error will occur if
