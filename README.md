@@ -127,7 +127,7 @@ new resource in the `server` variable (a
 
 ## Advanced Usage
 
-Have a look at the [FAQ](./FAQ.md) for some tips on customizing the way Gophercloud works.
+Have a look at the [FAQ](./docs/FAQ.md) for some tips on customizing the way Gophercloud works.
 
 ## Backwards-Compatibility Guarantees
 
