@@ -101,7 +101,7 @@ need to checkout a new feature branch:
    git commit
    ```
 
-7. Submit your branch as a [Pull Request](https://help.github.com/articles/creating-a-pull-request/). When submitting a Pull Request, please follow our [Style Guide](https://github.com/gophercloud/gophercloud/blob/master/STYLEGUIDE.md).
+7. Submit your branch as a [Pull Request](https://help.github.com/articles/creating-a-pull-request/). When submitting a Pull Request, please follow our [Style Guide](https://github.com/gophercloud/gophercloud/blob/master/docs/STYLEGUIDE.md).
 
 > Further information about using Git can be found [here](https://git-scm.com/book/en/v2).
 
@@ -247,4 +247,4 @@ To run tests for a particular sub-package:
 
 ## Style guide
 
-See [here](/STYLEGUIDE.md)
+See [here](/docs/STYLEGUIDE.md)
