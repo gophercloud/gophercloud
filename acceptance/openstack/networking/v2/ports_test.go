@@ -438,12 +438,20 @@ func TestPortsWithExtraDHCPOptsCRUD(t *testing.T) {
 	portUpdateOpts := ports.UpdateOpts{
 		Name: newPortName,
 	}
+
+	existingOpt := port.ExtraDHCPOpts[0]
+	newOptValue := "test_value_2"
+
 	updateOpts := extradhcpopts.UpdateOptsExt{
 		UpdateOptsBuilder: portUpdateOpts,
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
+		ExtraDHCPOpts: []extradhcpopts.UpdateExtraDHCPOpt{
+			{
+				OptName:  existingOpt.OptName,
+				OptValue: nil,
+			},
 			{
 				OptName:  "test_option_2",
-				OptValue: "test_value_2",
+				OptValue: &newOptValue,
 			},
 		},
 	}

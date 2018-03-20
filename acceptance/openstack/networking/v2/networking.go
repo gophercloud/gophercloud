@@ -357,9 +357,10 @@ func CreatePortWithExtraDHCPOpts(t *testing.T, client *gophercloud.ServiceClient
 		AdminStateUp: gophercloud.Enabled,
 		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
 	}
+
 	createOpts := extradhcpopts.CreateOptsExt{
 		CreateOptsBuilder: portCreateOpts,
-		ExtraDHCPOpts: []extradhcpopts.ExtraDHCPOpt{
+		ExtraDHCPOpts: []extradhcpopts.CreateExtraDHCPOpt{
 			{
 				OptName:  "test_option_1",
 				OptValue: "test_value_1",
