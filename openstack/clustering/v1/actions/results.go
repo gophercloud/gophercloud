@@ -50,6 +50,14 @@ type Action struct {
 	User         string                 `json:"user"`
 }
 
+func (r commonResult) Extract() (*Action, error) {
+	var s struct {
+		Action *Action `json:"action"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Action, err
+}
+
 // ExtractActions provides access to the list of actions in a page acquired from the List operation.
 func ExtractActions(r pagination.Page) ([]Action, error) {
 	var s struct {

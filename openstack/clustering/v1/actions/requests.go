@@ -42,3 +42,10 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		return ActionPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// Get retrieves details of a single action. Use Extract to convert its
+// result into an action id.
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	return
+}
