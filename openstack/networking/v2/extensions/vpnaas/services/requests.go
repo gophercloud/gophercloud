@@ -84,7 +84,7 @@ type ListOpts struct {
 	FlavorID     string `q:"flavor_id"`
 }
 
-// ToConnectionListQuery formats a ListOpts into a query string.
+// ToServiceListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToServiceListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
