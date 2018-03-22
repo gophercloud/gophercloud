@@ -41,5 +41,16 @@ Example to List Endpoint groups
 	if err != nil {
 		panic(err)
 	}
+
+Example to Update an endpoint group
+
+	updateOpts := endpointgroups.UpdateOpts{
+		Name:        "updatedname",
+		Description: "updated policy",
+	}
+	updatedPolicy, err := endpointgroups.Update(client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package endpointgroups

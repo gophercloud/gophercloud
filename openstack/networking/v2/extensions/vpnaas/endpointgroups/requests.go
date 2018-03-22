@@ -112,3 +112,33 @@ func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToEndpointGroupUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contains the values used when updating an endpoint group.
+type UpdateOpts struct {
+	Description *string `json:"description,omitempty"`
+	Name        *string `json:"name,omitempty"`
+}
+
+// ToEndpointGroupUpdateMap casts an UpdateOpts struct to a map.
+func (opts UpdateOpts) ToEndpointGroupUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "endpoint_group")
+}
+
+// Update allows endpoint groups to be updated.
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToEndpointGroupUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
