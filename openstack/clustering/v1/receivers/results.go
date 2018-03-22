@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // commonResult is the response of a base result.
@@ -97,4 +98,24 @@ func (r *Receiver) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
+}
+
+// ExtractReceivers provides access to the list of nodes in a page acquired from the ListDetail operation.
+func ExtractReceivers(r pagination.Page) ([]Receiver, error) {
+	var s struct {
+		Receivers []Receiver `json:"receivers"`
+	}
+	err := (r.(ReceiverPage)).ExtractInto(&s)
+	return s.Receivers, err
+}
+
+// ReceiverPage contains a single page of all nodes from a ListDetails call.
+type ReceiverPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines if a ProfilePage contains any results.
+func (page ReceiverPage) IsEmpty() (bool, error) {
+	receivers, err := ExtractReceivers(page)
+	return len(receivers) == 0, err
 }
