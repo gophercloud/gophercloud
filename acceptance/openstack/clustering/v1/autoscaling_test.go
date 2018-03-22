@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -13,6 +14,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/actions"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/receivers"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -31,6 +33,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	receiverUpdate(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -416,4 +419,32 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
 		}
 	})
+}
+
+func receiverUpdate(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	receiverName := testName
+	newReceiverName := receiverName + "-UPDATE_TEST"
+
+	// Update to new receiver name
+	updateOpts := receivers.UpdateOpts{
+		Name: newReceiverName,
+	}
+	receiver, err := receivers.Update(client, receiverName, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newReceiverName, receiver.Name)
+
+	time.Sleep(5 * time.Second)
+
+	// revert to original receiver name
+	updateOpts = receivers.UpdateOpts{
+		Name: receiverName,
+	}
+	receiver, err = receivers.Update(client, newReceiverName, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, receiverName, receiver.Name)
 }
