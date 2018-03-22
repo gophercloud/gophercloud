@@ -119,3 +119,9 @@ func (page ReceiverPage) IsEmpty() (bool, error) {
 	receivers, err := ExtractReceivers(page)
 	return len(receivers) == 0, err
 }
+
+// DeleteResult is the result from a Delete operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}

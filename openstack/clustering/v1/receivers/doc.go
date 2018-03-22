@@ -26,6 +26,16 @@ Example to Get a Receiver
 
 	fmt.Print("receiver", receiver)
 
+Example to Delete receiver
+
+	receiverID := "6dc6d336e3fc4c0a951b5698cd1236ee"
+	err := receivers.Delete(serviceClient, receiverID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Print("receiver", receiver)
+
 Example to Update Receiver
 
 	receiver, err := receivers.Update(serviceClient, receiverName, receivers.UpdateOpts{Name: newReceiverName}).Extract()
