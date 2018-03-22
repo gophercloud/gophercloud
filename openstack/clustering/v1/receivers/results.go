@@ -19,6 +19,11 @@ type CreateResult struct {
 	commonResult
 }
 
+// GetResult is the response for a get operation.
+type GetResult struct {
+	commonResult
+}
+
 // Extract provides access to the individual node returned by Get and extracts Node
 func (r commonResult) Extract() (*Receiver, error) {
 	var s struct {

@@ -17,5 +17,13 @@ Example to Create a Receiver
 	}
 	fmt.Println("receiver", receiver)
 
+Example to Get a Receiver
+
+	receiver, err := receivers.Get(serviceClient, "receiver-name").Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Print("receiver", receiver)
 */
 package receivers
