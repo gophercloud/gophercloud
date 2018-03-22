@@ -13,6 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/actions"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/receivers"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -31,6 +32,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	defer receiverDelete(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -416,4 +418,15 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
 		}
 	})
+}
+
+func receiverDelete(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	receiverName := testName
+	err = receivers.Delete(client, receiverName).ExtractErr()
+	th.AssertNoErr(t, err)
 }
