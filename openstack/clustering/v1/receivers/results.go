@@ -24,6 +24,11 @@ type GetResult struct {
 	commonResult
 }
 
+// UpdateResult is the response of a Update operations.
+type UpdateResult struct {
+	commonResult
+}
+
 // Extract provides access to the individual node returned by Get and extracts Node
 func (r commonResult) Extract() (*Receiver, error) {
 	var s struct {
@@ -33,6 +38,7 @@ func (r commonResult) Extract() (*Receiver, error) {
 	return s.Receiver, err
 }
 
+// Receiver represent a detailed receiver
 type Receiver struct {
 	Action    string                 `json:"action"`
 	Actor     map[string]interface{} `json:"actor"`

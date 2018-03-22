@@ -25,5 +25,14 @@ Example to Get a Receiver
 	}
 
 	fmt.Print("receiver", receiver)
+
+Example to Update Receiver
+
+	receiver, err := receivers.Update(serviceClient, receiverName, receivers.UpdateOpts{Name: newReceiverName}).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Print("receiver", receiver)
 */
 package receivers
