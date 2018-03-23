@@ -20,3 +20,7 @@ func createURL(client *gophercloud.ServiceClient) string {
 func getURL(client *gophercloud.ServiceClient, id string) string {
 	return idURL(client, id)
 }
+
+func listURL(client *gophercloud.ServiceClient) string {
+	return commonURL(client)
+}
