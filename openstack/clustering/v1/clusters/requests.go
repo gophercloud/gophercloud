@@ -272,6 +272,32 @@ func AttachPolicy(client *gophercloud.ServiceClient, id string, opts AttachPolic
 	return
 }
 
+type UpdatePolicyOpts struct {
+	PolicyID string `json:"policy_id" required:"true"`
+	Enabled  *bool  `json:"enabled,omitempty" required:"true"`
+}
+
+func (opts UpdatePolicyOpts) ToClusterUpdatePolicyMap(policyAction string) (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, policyAction)
+}
+
+func UpdatePolicy(client *gophercloud.ServiceClient, id string, opts UpdatePolicyOpts) (r UpdatePolicyResult) {
+	b, err := opts.ToClusterUpdatePolicyMap("policy_update")
+	if err != nil {
+		r.Err = err
+		return
+	}
+	var result *http.Response
+	result, r.Err = client.Post(policyURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 202},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
+	return
+}
+
 // Cluster Recover
 type RecoverOpts struct {
 	Operation     RecoveryAction `json:"operation,omitempty"`
