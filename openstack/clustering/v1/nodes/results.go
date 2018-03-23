@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // commonResult is the response of a base result.
@@ -25,6 +26,25 @@ func (r commonResult) Extract() (*Node, error) {
 	err := r.ExtractInto(&s)
 
 	return s.Node, err
+}
+
+// GetResult is the response of a Get operations.
+type GetResult struct {
+	commonResult
+}
+
+// ExtractNodes provides access to the list of nodes in a page acquired from the ListDetail operation.
+func ExtractNodes(r pagination.Page) ([]Node, error) {
+	var s struct {
+		Nodes []Node `json:"nodes"`
+	}
+	err := (r.(NodePage)).ExtractInto(&s)
+	return s.Nodes, err
+}
+
+// NodePage contains a single page of all nodes from a ListDetails call.
+type NodePage struct {
+	pagination.LinkedPageBase
 }
 
 // Node represents a node structure
@@ -48,6 +68,12 @@ type Node struct {
 	StatusReason string                 `json:"status_reason"`
 	UpdatedAt    time.Time              `json:"-"`
 	User         string                 `json:"user"`
+}
+
+// IsEmpty determines if a NodePage contains any results.
+func (page NodePage) IsEmpty() (bool, error) {
+	nodes, err := ExtractNodes(page)
+	return len(nodes) == 0, err
 }
 
 func (r *Node) UnmarshalJSON(b []byte) error {

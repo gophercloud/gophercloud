@@ -18,5 +18,25 @@ Example to Create Nodes
 	}
 	fmt.Printf("node", node)
 
+Example to List Nodes
+
+	listOpts := nodes.ListOpts{
+		Name: "testnode",
+	}
+
+	allNodes, err := nodes.List(serviceClient, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allNodes, err := nodes.ExtractNodes(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, node := range allNodes {
+		fmt.Printf("%+v\n", node)
+	}
+
 */
 package nodes
