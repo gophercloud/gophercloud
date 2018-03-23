@@ -5,10 +5,6 @@ import "github.com/gophercloud/gophercloud"
 var apiVersion = "v1"
 var apiName = "clusters"
 
-func actionURL(client *gophercloud.ServiceClient, id string) string {
-	return client.ServiceURL(apiVersion, apiName, id, "actions")
-}
-
 func commonURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL(apiVersion, apiName)
 }
@@ -46,5 +42,13 @@ func getPolicyURL(client *gophercloud.ServiceClient, clusterID string, policyID 
 }
 
 func recoverURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL(apiVersion, apiName, id, "actions")
+}
+
+func actionURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL(apiVersion, apiName, id, "actions")
+}
+
+func policyURL(client *gophercloud.ServiceClient, id string) string {
 	return actionURL(client, id)
 }

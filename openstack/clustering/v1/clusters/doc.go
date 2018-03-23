@@ -66,7 +66,6 @@ Example to Delete a cluster
 		panic(err)
 	}
 
-<<<<<<< HEAD
 Example to Resize a cluster
 
 	number := 1
@@ -147,6 +146,20 @@ Example to Recover a cluster
 		panic(err)
 	}
 	fmt.Println("action=", actionID)
+
+Example to attach a policy to a cluster
+
+	enabled := true
+	attachPolicyOpts := clusters.AttachPolicyOpts{
+		PolicyID: "policy-123",
+		Enabled:  &enabled,
+	}
+	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	actionID, err := clusters.AttachPolicy(serviceClient, clusterID, attachPolicyOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Attach Policy actionID", actionID)
 
 */
 package clusters

@@ -49,6 +49,11 @@ type GetPolicyResult struct {
 	commonResult
 }
 
+// AttachPolicy is the response of a Create operations.
+type AttachPolicyResult struct {
+	commonResult
+}
+
 type Cluster struct {
 	Config          map[string]interface{} `json:"config"`
 	CreatedAt       time.Time              `json:"-"`
@@ -98,6 +103,18 @@ func (r ActionResult) Extract() (string, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.Action, err
+}
+
+func (r AttachPolicyResult) Extract() (string, error) {
+	var s struct {
+		Action string `json:"action"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+
+	return s.Action, nil
 }
 
 // ClusterPage contains a single page of all clusters from a List call.
