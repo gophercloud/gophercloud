@@ -150,3 +150,28 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	}
 	return
 }
+
+// ScaleInOpts params
+type ScaleInOpts struct {
+	Count *int `json:"count,omitempty"`
+}
+
+// ToClusterScaleInMap constructs a request body from ScaleInOpts.
+func (opts ScaleInOpts) ToClusterScaleInMap(scaleAction string) (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, scaleAction)
+}
+
+// ScaleIn CLI
+func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOpts) (r ScaleInResult) {
+	b, err := opts.ToClusterScaleInMap("scale_in")
+	if err != nil {
+		r.Err = err
+		return
+	}
+	var result *http.Response
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 202},
+	})
+	r.Header = result.Header
+	return
+}
