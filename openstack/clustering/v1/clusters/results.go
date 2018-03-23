@@ -19,6 +19,11 @@ type CreateResult struct {
 	commonResult
 }
 
+// GetResult is the response of a Get operations.
+type GetResult struct {
+	commonResult
+}
+
 type Cluster struct {
 	Config          map[string]interface{} `json:"config"`
 	CreatedAt       time.Time              `json:"-"`
