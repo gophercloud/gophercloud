@@ -30,6 +30,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	clusterUpdatePolicy(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -361,4 +362,83 @@ func clustersDelete(t *testing.T) {
 	err = clusters.Delete(client, clusterName).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Cluster deleted: %s", clusterName)
+}
+
+func clusterUpdatePolicy(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+	policyName := testName
+	newPolicyName := policyName + "-CLUSTER_UPDATE_POLICY"
+	enabled := false
+	policyOpts := clusters.UpdatePolicyOpts{
+		PolicyID: policyName,
+		Enabled:  &enabled,
+	}
+	actionID, err := clusters.UpdatePolicy(client, newPolicyName, policyOpts).Extract()
+	if err != nil {
+		t.Fatalf("Failed to update policy to cluster: %v cluster:[%s] policy:[%s]", err, clusterName, policyName)
+	}
+
+	WaitForClusterToUpdatePolicy(client, actionID, 15)
+
+	// TODO: Dependent on clusterpolicies:Get()
+	/*
+		clusterpolicy, err := clusterpolicies.Get(client, clusterName, newPolicyName).Extract()
+		if err != nil {
+			t.Fatalf("Unable to get cluster policy: %v", err)
+		}
+		th.AssertEquals(t, clusterName, clusterpolicy.ClusterName)
+		th.AssertEquals(t, newPolicyName, clusterpolicy.PolicyName)
+		th.AssertEquals(t, enabled, clusterpolicy.Enabled)
+	*/
+
+	// Revert back
+	originalEnabled := true
+	originalPolicyOpts := clusters.UpdatePolicyOpts{
+		PolicyID: policyName,
+		Enabled:  &originalEnabled,
+	}
+	actionID, err = clusters.UpdatePolicy(client, newPolicyName, originalPolicyOpts).Extract()
+	if err != nil {
+		t.Fatalf("Failed to revert to original cluster policy: %v cluster:[%s] policy:[%s]", err, clusterName, policyName)
+	}
+
+	WaitForClusterToUpdatePolicy(client, actionID, 15)
+
+	// TODO: Dependent on clusterpolicies:Get()
+	/*
+		clusterpolicy, err := clusterpolicies.Get(client, clusterName, policyName).Extract()
+		if err != nil {
+			t.Fatalf("Unable to get cluster policy: %v", err)
+		}
+		th.AssertEquals(t, clusterName, clusterpolicy.ClusterName)
+		th.AssertEquals(t, policyName, clusterpolicy.PolicyName)
+		th.AssertEquals(t, enabled, true)
+	*/
+	t.Log("Cluster Update Policy Complete")
+}
+
+func WaitForClusterToUpdatePolicy(client *gophercloud.ServiceClient, actionID string, sleepTimeSecs int) error {
+	return gophercloud.WaitFor(sleepTimeSecs, func() (bool, error) {
+		if actionID == "" {
+			return false, fmt.Errorf("Invalid action id. id=%s", actionID)
+		}
+
+		action, err := actions.Get(client, actionID).Extract()
+		if err != nil {
+			return false, err
+		}
+		switch action.Status {
+		case "SUCCEEDED":
+			return true, nil
+		case "READY", "RUNNING":
+			return false, nil
+		default:
+			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
+		}
+	})
 }
