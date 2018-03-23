@@ -119,6 +119,37 @@ Example to List Users in a Group
 		fmt.Printf("%+v\n", user)
 	}
 
+Example to Add a User to a Group
+
+	groupID := "bede500ee1124ae9b0006ff859758b3a"
+	userID := "0fe36e73809d46aeae6705c39077b1b3"
+	err := users.AddToGroup(identityClient, groupID, userID).ExtractErr()
+
+	if err != nil {
+		panic(err)
+	}
+
+
+Example to Remove a User from a Group
+
+	groupID := "bede500ee1124ae9b0006ff859758b3a"
+	userID := "0fe36e73809d46aeae6705c39077b1b3"
+	err := users.RemoveFromGroup(identityClient, groupID, userID).ExtractErr()
+
+	if err != nil {
+		panic(err)
+	}
+
+Example to Validates That a User Belongs to a Group.
+
+	groupID := "bede500ee1124ae9b0006ff859758b3a"
+	userID := "0fe36e73809d46aeae6705c39077b1b3"
+	err := users.ValidateInGroup(identityClient, groupID, userID).ExtractErr()
+
+	if err != nil {
+		panic(err)
+	}
+
 Example to Change Password of a User
 
 	userID := "0fe36e73809d46aeae6705c39077b1b3"

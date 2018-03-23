@@ -241,6 +241,33 @@ func ListInGroup(client *gophercloud.ServiceClient, groupID string, opts ListOpt
 	})
 }
 
+// AddToGroup adds a user to a group.
+func AddToGroup(client *gophercloud.ServiceClient, groupID, userID string) (r AddToGroupResult) {
+	url := addToGroupURL(client, groupID, userID)
+	_, r.Err = client.Put(url, nil, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
+// RemoveFromGroup removes a user from a group.
+func RemoveFromGroup(client *gophercloud.ServiceClient, groupID, userID string) (r RemoveFromGroupResult) {
+	url := removeFromGroupURL(client, groupID, userID)
+	_, r.Err = client.Delete(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
+// ValidateInGroup validates that a user belongs to a group.
+func ValidateInGroup(client *gophercloud.ServiceClient, groupID, userID string) (r ValidateInGroupResult) {
+	url := validateInGroupURL(client, groupID, userID)
+	_, r.Err = client.Head(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
 // ChpwdOptsBuilder allows extensions to add additional parameters to
 // the ChangePassword request.
 type ChpwdOptsBuilder interface {
