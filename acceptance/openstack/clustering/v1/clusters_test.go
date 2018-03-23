@@ -3,6 +3,7 @@
 package v1
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -264,4 +265,56 @@ func TestClustersRecovery(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newCluster)
+}
+
+func TestClustersAddNode(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	node1, err := CreateNode(t, client, "", profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node1.ID)
+
+	node2, err := CreateNode(t, client, "", profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node2.ID)
+
+	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	nodeIDs := []string{node1.ID, node2.ID}
+	nodeIDs = append(nodeIDs, cluster.Nodes...)
+
+	nodeNames := []string{node1.Name, node2.Name}
+	addNodesOpts := clusters.AddNodesOpts{
+		Nodes: nodeNames,
+	}
+	actionID, err := clusters.AddNodes(client, cluster.ID, addNodesOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to add nodes to cluster: %v", err)
+	}
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	sort.Strings(nodeIDs)
+	sort.Strings(cluster.Nodes)
+
+	tools.PrintResource(t, nodeIDs)
+	tools.PrintResource(t, cluster.Nodes)
+
+	th.AssertDeepEquals(t, nodeIDs, cluster.Nodes)
+
+	tools.PrintResource(t, cluster)
 }
