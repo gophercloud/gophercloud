@@ -44,5 +44,19 @@ Example to List Clusters
 		fmt.Printf("%+v\n", cluster)
 	}
 
+Example to Update a cluster
+
+	updateOpts := clusters.UpdateOpts{
+		Name:       "testcluster",
+		ProfileID:  "b7b870ee-d3c5-4a93-b9d7-846c53b2c2da",
+	}
+
+	clusterID := "7d85f602-a948-4a30-afd4-e84f47471c15"
+	cluster, err := clusters.Update(serviceClient, clusterName, clusters.UpdateOpts{Name: newClusterName}).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", cluster)
+
 */
 package clusters

@@ -25,6 +25,11 @@ type GetResult struct {
 	commonResult
 }
 
+// UpdateResult is the response of a Update operations.
+type UpdateResult struct {
+	commonResult
+}
+
 type Cluster struct {
 	Config          map[string]interface{} `json:"config"`
 	CreatedAt       time.Time              `json:"-"`
