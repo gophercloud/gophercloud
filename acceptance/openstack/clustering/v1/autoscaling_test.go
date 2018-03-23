@@ -31,6 +31,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	nodeCreate(t)
 }
 
 func profileCreate(t *testing.T) {
