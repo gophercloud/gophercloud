@@ -66,5 +66,29 @@ Example to Delete a cluster
 		panic(err)
 	}
 
+Example to Resize a cluster
+
+	adjustmentType := "CHANGE_IN_CAPACITY"
+	number := 1
+	maxSize := 5
+	minSize := 1
+	minStep := 1
+	strict := true
+
+	resizeOpts := clusters.ResizeOpts{
+		AdjustmentType: adjustmentType,
+		Number:         number,
+		MaxSize:        &maxSize,
+		MinSize:        &minSize,
+		MinStep:        &minStep,
+		Strict:         &strict,
+	}
+
+	actionID, err := clusters.Resize(client, clusterName, resizeOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to resize cluster: %v", err)
+	}
+	fmt.Println("Resize actionID", actionID)
+
 */
 package clusters

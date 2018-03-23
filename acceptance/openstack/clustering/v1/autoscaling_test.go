@@ -30,6 +30,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	clusterResize(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -361,4 +362,107 @@ func clustersDelete(t *testing.T) {
 	err = clusters.Delete(client, clusterName).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Cluster deleted: %s", clusterName)
+}
+
+func clusterResize(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+
+	// Retrieve original value
+	cluster, err := clusters.Get(client, clusterName).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get cluster: %v", err)
+	}
+	originalMaxSize := cluster.MaxSize
+	originalMinSize := cluster.MinSize
+
+	// Update to new cluster capacity
+	adjustmentType := "CHANGE_IN_CAPACITY"
+	number := 1
+	maxSize := 5
+	minSize := 1
+	minStep := 1
+	strict := true
+
+	resizeOpts := clusters.ResizeOpts{
+		AdjustmentType: adjustmentType,
+		Number:         number,
+		MaxSize:        &maxSize,
+		MinSize:        &minSize,
+		MinStep:        &minStep,
+		Strict:         &strict,
+	}
+
+	resizeResult := clusters.Resize(client, clusterName, resizeOpts)
+	if resizeResult.Err != nil {
+		t.Fatalf("Unable to resize cluster: %v", resizeResult.Err)
+	}
+
+	location := resizeResult.Header.Get("Location")
+	th.AssertEquals(t, true, location != "")
+
+	actionID := ""
+	locationFields := strings.Split(location, "actions/")
+	if len(locationFields) >= 2 {
+		actionID = locationFields[1]
+	}
+
+	WaitForClusterToResize(client, actionID, 15)
+
+	cluster, err = clusters.Get(client, clusterName).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get cluster: %v", err)
+	}
+	th.AssertEquals(t, maxSize, cluster.MaxSize)
+	th.AssertEquals(t, minSize, cluster.MinSize)
+
+	// Revert back to original cluster size
+	originalResizeOpts := clusters.ResizeOpts{
+		AdjustmentType: adjustmentType,
+		Number:         number,
+		MaxSize:        &originalMaxSize,
+		MinSize:        &originalMinSize,
+		MinStep:        &minStep,
+		Strict:         &strict,
+	}
+	resizeResult = clusters.Resize(client, clusterName, originalResizeOpts)
+	if resizeResult.Err != nil {
+		t.Fatalf("Unable to revert cluster size: %v", resizeResult.Err)
+	}
+	location = resizeResult.Header.Get("Location")
+	th.AssertEquals(t, true, location != "")
+
+	actionID = ""
+	locationFields = strings.Split(location, "actions/")
+	if len(locationFields) >= 2 {
+		actionID = locationFields[1]
+	}
+
+	WaitForClusterToResize(client, actionID, 15)
+	t.Logf("Cluster resize completed for cluster: %s", clusterName)
+}
+
+func WaitForClusterToResize(client *gophercloud.ServiceClient, actionID string, sleepTimeSecs int) error {
+	return gophercloud.WaitFor(sleepTimeSecs, func() (bool, error) {
+		if actionID == "" {
+			return false, fmt.Errorf("Invalid action id. id=%s", actionID)
+		}
+
+		action, err := actions.Get(client, actionID).Extract()
+		if err != nil {
+			return false, err
+		}
+		switch action.Status {
+		case "SUCCEEDED":
+			return true, nil
+		case "READY", "RUNNING", "WAITING":
+			return false, nil
+		default:
+			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
+		}
+	})
 }
