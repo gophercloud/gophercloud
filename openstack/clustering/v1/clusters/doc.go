@@ -192,5 +192,17 @@ Example to detach a policy to cluster
 	}
 	fmt.Println("Update Policy actionID", actionID)
 
+Example to ScaleOut a cluster
+
+	scaleOutOpts := clusters.ScaleOutOpts{
+		Count: 2,
+	}
+	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+
+	actionID, err := clusters.ScaleOut(computeClient, clusterID, scaleOutOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package clusters
