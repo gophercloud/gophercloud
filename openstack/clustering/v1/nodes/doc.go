@@ -24,7 +24,7 @@ Example to List Nodes
 		Name: "testnode",
 	}
 
-	allNodes, err := nodes.List(serviceClient, listOpts).AllPages()
+	allPages, err := nodes.List(serviceClient, listOpts).AllPages()
 	if err != nil {
 		panic(err)
 	}
@@ -38,5 +38,13 @@ Example to List Nodes
 		fmt.Printf("%+v\n", node)
 	}
 
+
+Example to Delete a Node
+
+	nodeID := "6dc6d336e3fc4c0a951b5698cd1236ee"
+	err := nodes.Delete(serviceClient, nodeID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package nodes

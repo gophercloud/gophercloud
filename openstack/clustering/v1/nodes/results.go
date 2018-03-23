@@ -115,3 +115,9 @@ func (r *Node) UnmarshalJSON(b []byte) error {
 
 	return nil
 }
+
+// DeleteResult is the result from a Delete operation. Call ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}

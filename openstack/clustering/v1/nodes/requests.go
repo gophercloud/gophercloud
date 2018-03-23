@@ -41,6 +41,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	if r.Err == nil {
 		r.Header = result.Header
 	}
+
 	return
 }
 
@@ -80,4 +81,14 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return NodePage{pagination.LinkedPageBase{PageResult: r}}
 	})
+}
+
+// Delete deletes the specified node ID.
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	var result *http.Response
+	result, r.Err = client.Delete(deleteURL(client, id), nil)
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
 }
