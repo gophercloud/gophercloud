@@ -1182,3 +1182,19 @@ func TestUpdateClusterInvalidTimeString(t *testing.T) {
 	_, err := clusters.Update(fake.ServiceClient(), id, updateOpts).Extract()
 	th.AssertEquals(t, false, err == nil)
 }
+
+func TestDeleteCluster(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/clusters/6dc6d336e3fc4c0a951b5698cd1236ee", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	err := clusters.Delete(fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee").ExtractErr()
+	th.AssertNoErr(t, err)
+}

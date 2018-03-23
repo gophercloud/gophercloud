@@ -25,6 +25,7 @@ func TestAutoScaling(t *testing.T) {
 	profileGet(t)
 	profileList(t)
 	clusterCreate(t)
+	defer clustersDelete(t)
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
@@ -322,4 +323,17 @@ func WaitForClusterToUpdate(client *gophercloud.ServiceClient, actionID string, 
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
 		}
 	})
+}
+
+func clustersDelete(t *testing.T) {
+
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+	err = clusters.Delete(client, clusterName).ExtractErr()
+	th.AssertNoErr(t, err)
+	t.Logf("Cluster deleted: %s", clusterName)
 }
