@@ -274,3 +274,29 @@ func TestResizeClusterInvalidParamsNumberFloat(t *testing.T) {
 	isValid := err == nil
 	th.AssertEquals(t, false, isValid)
 }
+
+func TestClusterScaleIn(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/clusters/edce3528-864f-41fb-8759-f4707925cc09/actions", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+		{
+			"action": "2a0ff107-e789-4660-a122-3816c43af703"
+		}`)
+	})
+
+	count := 5
+	scaleOpts := clusters.ScaleInOpts{
+		Count: &count,
+	}
+	result, err := clusters.ScaleIn(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", scaleOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, result, "2a0ff107-e789-4660-a122-3816c43af703")
+}

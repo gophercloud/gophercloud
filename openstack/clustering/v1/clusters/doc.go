@@ -89,5 +89,17 @@ Example to Resize a cluster
 	}
 	fmt.Println("Resize actionID", actionID)
 
+Example to ScaleIn a cluster
+
+	count := 2
+	scaleInOpts := clusters.ScaleInOpts{
+		Count: &count,
+	}
+	clusterID:  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+
+	action, err := clusters.ScaleIn(computeClient, clusterID, scaleInOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package clusters

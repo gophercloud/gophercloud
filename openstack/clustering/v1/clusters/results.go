@@ -33,6 +33,11 @@ type UpdateResult struct {
 	commonResult
 }
 
+// ScaleInResult is the response of a ScaleIn operations.
+type ScaleInResult struct {
+	commonResult
+}
+
 type Cluster struct {
 	Config          map[string]interface{} `json:"config"`
 	CreatedAt       time.Time              `json:"-"`
@@ -76,6 +81,18 @@ func (r ResizeResult) Extract() (string, error) {
 	err := r.ExtractInto(&s)
 	if err != nil {
 		return s.Action, err
+	}
+
+	return s.Action, nil
+}
+
+func (r ScaleInResult) Extract() (string, error) {
+	var s struct {
+		Action string `json:"action"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
 	}
 
 	return s.Action, nil
