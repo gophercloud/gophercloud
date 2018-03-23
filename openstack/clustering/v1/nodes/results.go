@@ -19,18 +19,28 @@ type CreateResult struct {
 }
 
 // Extract provides access to the individual node returned by Get and Create
+// GetResult is the response of a Get operations.
+type GetResult struct {
+	commonResult
+}
+
+// DeleteResult is the result from a Delete operation. Call ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// Extract provides access to the individual node returned by Get and extracts Node
 func (r commonResult) Extract() (*Node, error) {
 	var s struct {
 		Node *Node `json:"node"`
 	}
 	err := r.ExtractInto(&s)
+	if err != nil {
+		return &Node{}, err
+	}
 
 	return s.Node, err
-}
-
-// GetResult is the response of a Get operations.
-type GetResult struct {
-	commonResult
 }
 
 // ExtractNodes provides access to the list of nodes in a page acquired from
@@ -114,10 +124,4 @@ func (r *Node) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
-}
-
-// DeleteResult is the result from a Delete operation. Call ExtractErr
-// method to determine if the call succeeded or failed.
-type DeleteResult struct {
-	gophercloud.ErrResult
 }

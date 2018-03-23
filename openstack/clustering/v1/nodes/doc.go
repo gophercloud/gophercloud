@@ -46,5 +46,15 @@ Example to Delete a Node
 	if err != nil {
 		panic(err)
 	}
+
+Example to Get Node
+
+	nodeID := "node123"
+	node, err := nodes.Get(serviceClient, nodeID).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", node)
+
 */
 package nodes
