@@ -150,3 +150,31 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	}
 	return
 }
+
+// PolicyOpts params
+type AttachPolicyOpts struct {
+	PolicyID string `json:"policy_id" required:"true"`
+	Enabled  *bool  `json:"enabled,omitempty"`
+}
+
+// ToClusterPolicyMap constructs a request body from PolicyOpts
+func (opts AttachPolicyOpts) ToClusterAttachPolicyMap(policyAction string) (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, policyAction)
+}
+
+// Attach Policy
+func AttachPolicy(client *gophercloud.ServiceClient, id string, opts AttachPolicyOpts) (r AttachPolicyResult) {
+	b, err := opts.ToClusterAttachPolicyMap("policy_attach")
+	if err != nil {
+		r.Err = err
+		return
+	}
+	var result *http.Response
+	result, r.Err = client.Post(policyURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 202},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
+}

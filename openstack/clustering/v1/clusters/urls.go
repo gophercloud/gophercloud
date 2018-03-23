@@ -32,3 +32,11 @@ func updateURL(client *gophercloud.ServiceClient, id string) string {
 func deleteURL(client *gophercloud.ServiceClient, id string) string {
 	return idURL(client, id)
 }
+
+func actionURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL(apiVersion, apiName, id, "actions")
+}
+
+func policyURL(client *gophercloud.ServiceClient, id string) string {
+	return actionURL(client, id)
+}
