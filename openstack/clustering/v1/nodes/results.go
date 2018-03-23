@@ -30,16 +30,17 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// UpdateResult is the response of a Update operations.
+type UpdateResult struct {
+	commonResult
+}
+
 // Extract provides access to the individual node returned by Get and extracts Node
 func (r commonResult) Extract() (*Node, error) {
 	var s struct {
 		Node *Node `json:"node"`
 	}
 	err := r.ExtractInto(&s)
-	if err != nil {
-		return &Node{}, err
-	}
-
 	return s.Node, err
 }
 
