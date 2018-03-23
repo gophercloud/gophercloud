@@ -30,6 +30,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	clusterDetachPolicy(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -361,4 +362,50 @@ func clustersDelete(t *testing.T) {
 	err = clusters.Delete(client, clusterName).ExtractErr()
 	th.AssertNoErr(t, err)
 	t.Logf("Cluster deleted: %s", clusterName)
+}
+
+func clusterDetachPolicy(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+	policyName := testName
+	policyOpts := clusters.DetachPolicyOpts{
+		PolicyID: policyName,
+	}
+	actionID, err := clusters.DetachPolicy(client, clusterName, policyOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable detach policy from cluster: %v", err)
+	}
+
+	WaitForClusterToDetach(client, actionID, 15)
+
+	// TODO: Dependent on clusterpolicies:Get()
+	/*
+		clusterpolicy, err := clusterpolicies.Get(client, actionID).Extract()
+		th.AssertEquals(t, false, err == nil)
+	*/
+}
+
+func WaitForClusterToDetach(client *gophercloud.ServiceClient, actionID string, sleepTimeSecs int) error {
+	return gophercloud.WaitFor(sleepTimeSecs, func() (bool, error) {
+		if actionID == "" {
+			return false, fmt.Errorf("Invalid action id. id=%s", actionID)
+		}
+
+		action, err := actions.Get(client, actionID).Extract()
+		if err != nil {
+			return false, err
+		}
+		switch action.Status {
+		case "SUCCEEDED":
+			return true, nil
+		case "READY", "RUNNING", "WAITING":
+			return false, nil
+		default:
+			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
+		}
+	})
 }
