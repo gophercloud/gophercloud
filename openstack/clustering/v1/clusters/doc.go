@@ -161,5 +161,17 @@ Example to attach a policy to a cluster
 	}
 	fmt.Println("Attach Policy actionID", actionID)
 
+Example to detach a policy to cluster
+
+	detachpolicyOpts := clusters.DetachPolicyOpts{
+		PolicyID: "policy-123",
+	}
+	clusterID :=  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	actionID, err := clusters.DetachPolicy(serviceClient, clusterID, detachpolicyOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("DetachPolicy actionID", actionID)
+
 */
 package clusters

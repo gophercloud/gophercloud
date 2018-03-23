@@ -44,3 +44,7 @@ func getPolicyURL(client *gophercloud.ServiceClient, clusterID string, policyID 
 func actionURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL(apiVersion, apiName, id, "actions")
 }
+
+func policyURL(client *gophercloud.ServiceClient, id string) string {
+	return actionURL(client, id)
+}
