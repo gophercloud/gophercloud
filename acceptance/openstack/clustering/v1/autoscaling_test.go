@@ -7,10 +7,11 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
-	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
-
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/nodes"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -20,6 +21,7 @@ func TestAutoScaling(t *testing.T) {
 	testName = tools.RandomString("TESTACC-", 8)
 	profileCreate(t)
 	clusterCreate(t)
+	nodesList(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -130,4 +132,36 @@ func clusterCreate(t *testing.T) {
 	th.AssertEquals(t, optsCluster.Timeout, cluster.Timeout)
 	th.CheckDeepEquals(t, optsCluster.Metadata, cluster.Metadata)
 	th.CheckDeepEquals(t, optsCluster.Config, cluster.Config)
+}
+
+func nodesList(t *testing.T) {
+
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	hasNode := false
+	nodes.ListDetail(client, nodes.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		allNodes, err := nodes.ExtractNodes(page)
+		if err != nil {
+			t.Fatalf("Error extracting page of clusters: %v", err)
+		}
+
+		for _, node := range allNodes {
+			tools.PrintResource(t, node)
+			hasNode = true
+		}
+
+		empty, err := page.IsEmpty()
+
+		th.AssertNoErr(t, err)
+
+		// Expect the page IS NOT empty
+		th.AssertEquals(t, false, empty)
+
+		return true, nil
+	})
+
+	th.AssertEquals(t, true, hasNode)
 }
