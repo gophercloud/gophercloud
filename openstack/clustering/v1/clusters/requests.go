@@ -546,3 +546,25 @@ func AddNodes(client *gophercloud.ServiceClient, id string, opts AddNodesOpts) (
 	r.Header = result.Header
 	return
 }
+
+func (opts RemoveNodesOpts) ToClusterNodeMap(nodeAction string) (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, nodeAction)
+}
+
+type RemoveNodesOpts struct {
+	Nodes []string `json:"nodes" required:"true"`
+}
+
+func RemoveNodes(client *gophercloud.ServiceClient, clusterID string, opts RemoveNodesOpts) (r DeleteResult) {
+	b, err := opts.ToClusterNodeMap("del_nodes")
+	if err != nil {
+		r.Err = err
+		return
+	}
+	var result *http.Response
+	result, r.Err = client.Post(nodeURL(client, clusterID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	r.Header = result.Header
+	return
+}
