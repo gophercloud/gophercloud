@@ -246,5 +246,16 @@ Example to remove nodes from a cluster
 		panic(err)
 	}
 
+Example to replace nodes for a cluster
+
+	replaceNodesOpts := clusters.ReplaceNodesOpts{
+		Nodes: map[string]string{"node-1234": "node-5678"},
+	}
+	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	actionID, err := clusters.ReplaceNodes(serviceClient, clusterID, replaceNodesOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package clusters

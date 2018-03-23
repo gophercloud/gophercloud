@@ -4,6 +4,7 @@ package v1
 
 import (
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -357,5 +358,45 @@ func TestClustersRemoveNodeFromCluster(t *testing.T) {
 
 	th.AssertEquals(t, 0, len(cluster.Nodes))
 
+	tools.PrintResource(t, cluster)
+}
+
+func TestClustersReplaceNode(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.3"
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	node1, err := CreateNode(t, client, "", profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node1.ID)
+
+	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, len(cluster.Nodes) > 0)
+	for _, n := range cluster.Nodes {
+		defer DeleteNode(t, client, n)
+	}
+
+	nodeIDToBeReplaced := cluster.Nodes[0]
+	opts := clusters.ReplaceNodesOpts{Nodes: map[string]string{nodeIDToBeReplaced: node1.ID}}
+	actionID, err := clusters.ReplaceNodes(client, cluster.ID, opts).Extract()
+	th.AssertNoErr(t, err)
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	clusterNodes := strings.Join(cluster.Nodes, ",")
+	th.AssertEquals(t, true, strings.Contains(clusterNodes, node1.ID))
+	th.AssertEquals(t, false, strings.Contains(clusterNodes, nodeIDToBeReplaced))
 	tools.PrintResource(t, cluster)
 }
