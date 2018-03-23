@@ -33,3 +33,7 @@ func listProjectsURL(client *gophercloud.ServiceClient, userID string) string {
 func listInGroupURL(client *gophercloud.ServiceClient, groupID string) string {
 	return client.ServiceURL("groups", groupID, "users")
 }
+
+func changePasswordURL(client *gophercloud.ServiceClient, userID string) string {
+	return client.ServiceURL("users", userID, "password")
+}

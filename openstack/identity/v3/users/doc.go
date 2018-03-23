@@ -119,5 +119,21 @@ Example to List Users in a Group
 		fmt.Printf("%+v\n", user)
 	}
 
+Example to Change Password of a User
+
+	userID := "0fe36e73809d46aeae6705c39077b1b3"
+	originalPassword := "secretsecret"
+	password := "new_secretsecret"
+
+	chpwdOpts := users.ChpwdOpts{
+		OriginalPassword: originalPassword,
+		Password:         password,
+	}
+
+	user, err := users.ChangePassword(identityClient, userID, chpwdOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package users

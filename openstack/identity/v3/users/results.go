@@ -104,6 +104,12 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// ChpwdResult is the response from a ChangePassword operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type ChpwdResult struct {
+	gophercloud.ErrResult
+}
+
 // UserPage is a single page of User results.
 type UserPage struct {
 	pagination.LinkedPageBase
