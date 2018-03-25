@@ -34,9 +34,22 @@ Example to Show the details of a specific IPSec site connection by ID
 Example to Delete a site connection
 
 	connID := "38aee955-6283-4279-b091-8b9c828000ec"
-	err := siteconnections.Delete(networkClient, serviceID).ExtractErr()
+	err := siteconnections.Delete(networkClient, connID).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
+
+Example to List site connections
+
+	allPages, err := siteconnections.List(client, nil).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allConnections, err := siteconnections.ExtractConnections(allPages)
+	if err != nil {
+		panic(err)
+	}
+
 */
 package siteconnections

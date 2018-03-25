@@ -14,6 +14,27 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vpnaas/siteconnections"
 )
 
+func TestConnectionList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	allPages, err := siteconnections.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list IPSec site connections: %v", err)
+	}
+
+	allConnections, err := siteconnections.ExtractConnections(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract IPSec site connections: %v", err)
+	}
+
+	for _, connection := range allConnections {
+		tools.PrintResource(t, connection)
+	}
+}
+
 func TestConnectionCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
