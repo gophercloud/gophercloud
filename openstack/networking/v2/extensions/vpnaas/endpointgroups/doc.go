@@ -44,9 +44,11 @@ Example to List Endpoint groups
 
 Example to Update an endpoint group
 
+	name := "updatedname"
+	description := "updated description"
 	updateOpts := endpointgroups.UpdateOpts{
-		Name:        "updatedname",
-		Description: "updated policy",
+		Name:        &name,
+		Description: &description,
 	}
 	updatedPolicy, err := endpointgroups.Update(client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
 	if err != nil {
