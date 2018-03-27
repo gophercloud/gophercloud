@@ -11,7 +11,8 @@ Example to List Queues
 	}
 
 	pager := queues.List(client, listOpts)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+
+    err = pager.EachPage(func(page pagination.Page) (bool, error) {
 		queues, err := queues.ExtractQueues(page)
 		if err != nil {
 			panic(err)
