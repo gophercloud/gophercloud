@@ -28,6 +28,11 @@ type UpdateResult struct {
 	commonResult
 }
 
+// GetResult is the response of a Get operation.
+type GetResult struct {
+	commonResult
+}
+
 // Queue represents a messaging queue.
 type Queue struct {
 	Href          string       `json:"href"`

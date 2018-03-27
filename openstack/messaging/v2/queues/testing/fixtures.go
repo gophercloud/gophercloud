@@ -93,6 +93,14 @@ const UpdateQueueResponse = `
 	"description": "Update queue description"
 }`
 
+// GetQueueResponse is a sample response to a get queue.
+const GetQueueResponse = `
+{
+	"_max_messages_post_size": 262144,
+	"_default_message_ttl": 3600,
+	"description": "Queue used for unit testing."
+}`
+
 // FirstQueue is the first result in a List.
 var FirstQueue = queues.Queue{
 	Href: "/v2/queues/london",
@@ -125,6 +133,13 @@ var SecondQueue = queues.Queue{
 
 // ExpectedQueueSlice is the expected result in a List.
 var ExpectedQueueSlice = [][]queues.Queue{{FirstQueue}, {SecondQueue}}
+
+// QueueDetails is the expected result in a Get.
+var QueueDetails = queues.QueueDetails{
+	DefaultMessageTTL:   3600,
+	MaxMessagesPostSize: 262144,
+	Extra:               map[string]interface{}{"description": "Queue used for unit testing."},
+}
 
 // HandleListSuccessfully configures the test server to respond to a List request.
 func HandleListSuccessfully(t *testing.T) {
@@ -169,5 +184,17 @@ func HandleUpdateSuccessfully(t *testing.T) {
 
 			w.Header().Add("Content-Type", "application/json")
 			fmt.Fprintf(w, UpdateQueueResponse)
+		})
+}
+
+// HandleGetSuccessfully configures the test server to respond to a Get request.
+func HandleGetSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s", QueueName),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprintf(w, GetQueueResponse)
 		})
 }
