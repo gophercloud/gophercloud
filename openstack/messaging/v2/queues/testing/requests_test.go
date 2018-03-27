@@ -52,3 +52,24 @@ func TestCreate(t *testing.T) {
 	err := queues.Create(fake.ServiceClient(), createOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateSuccessfully(t)
+
+	updateOpts := queues.UpdateOpts{
+		queues.UpdateQueueBody{
+			Op:    "replace",
+			Path:  "/metadata/_max_claim_count",
+			Value: 10,
+		},
+	}
+	updatedQueueResult := queues.QueueDetails{
+		MaxClaimCount: 10,
+	}
+
+	actual, err := queues.Update(fake.ServiceClient(), QueueName, ClientID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, updatedQueueResult, actual)
+}
