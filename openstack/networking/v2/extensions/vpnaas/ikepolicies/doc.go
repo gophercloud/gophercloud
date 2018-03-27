@@ -33,9 +33,11 @@ Example to Delete a Policy
 
 Example to Update an IKE policy
 
+	name := "updatedname"
+	description := "updated policy"
 	updateOpts := ikepolicies.UpdateOpts{
-		Name:        "updatedname",
-		Description: "updated policy",
+		Name:        &name,
+		Description: &description,
 		Lifetime: &ikepolicies.LifetimeUpdateOpts{
 			Value: 7000,
 		},
