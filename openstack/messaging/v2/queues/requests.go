@@ -2,7 +2,52 @@ package queues
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToQueueListQuery() (string, error)
+}
+
+// ListOpts params to be used with List
+type ListOpts struct {
+	// Limit instructs List to refrain from sending excessively large lists of queues
+	Limit int `q:"limit,omitempty"`
+
+	// Marker and Limit control paging. Marker instructs List where to start listing from.
+	Marker string `q:"marker,omitempty"`
+
+	// Specifies if showing the detailed information when querying queues
+	Detailed bool `q:"detailed,omitempty"`
+}
+
+// ToQueueListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToQueueListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List instructs OpenStack to provide a list of queues.
+func List(client *gophercloud.ServiceClient, clientID string, opts ListOptsBuilder) pagination.Pager {
+	headers := map[string]string{"Client-ID": clientID}
+	url := listURL(client)
+	if opts != nil {
+		query, err := opts.ToQueueListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
+	pager := pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return QueuePage{pagination.LinkedPageBase{PageResult: r}}
+
+	})
+	pager.Headers = headers
+	return pager
+}
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.

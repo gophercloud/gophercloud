@@ -4,6 +4,28 @@ the OpenStack Messaging (Zaqar) service.
 
 Lists all queues and creates, shows information for updates, deletes, and actions on a queue.
 
+Example to List Queues
+
+	listOpts := queues.ListOpts{
+		Limit: 10,
+	}
+
+	clientID := "3381af92-2b9e-11e3-b191-71861300734d"
+
+	pager := queues.List(client, clientID, listOpts)
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		queues, err := queues.ExtractQueues(page)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, queue := range queues {
+			fmt.Printf("%+v\n", queue)
+		}
+
+		return true, nil
+	})
+
 Example to Create a Queue
 
 	createOpts := queues.CreateOpts{
