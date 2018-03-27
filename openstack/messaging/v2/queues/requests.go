@@ -121,3 +121,35 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// update request.
+type UpdateOptsBuilder interface {
+	ToQueueUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts is an array of UpdateQueueBody.
+type UpdateOpts []UpdateQueueBody
+
+// UpdateOpts implements UpdateOpts.
+type UpdateQueueBody struct {
+	Op    string      `json:"op" required:"true"`
+	Path  string      `json:"path" required:"true"`
+	Value interface{} `json:"value" required:"true"`
+}
+
+// ToQueueUpdateMap constructs a request body from UpdateOpts.
+func (opts UpdateOpts) ToQueueUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// Update Updates the specified queue.
+func Update(client *gophercloud.ServiceClient, queueName string, clientID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	_, r.Err = client.Patch(updateURL(client, queueName), opts, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 204},
+		MoreHeaders: map[string]string{
+			"Client-ID":    clientID,
+			"Content-Type": "application/openstack-messaging-v2.0-json-patch"},
+	})
+	return
+}
