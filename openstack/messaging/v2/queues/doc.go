@@ -42,5 +42,27 @@ Example to Create a Queue
 	if err != nil {
 		panic(err)
 	}
+
+Example to Update a Queue
+
+	updateOpts := queues.UpdateOpts{
+		queues.UpdateQueueBody{
+			Op:    "replace",
+			Path:  "/metadata/_max_claim_count",
+			Value: 15,
+		},
+		queues.UpdateQueueBody{
+			Op: "replace",
+			Path: "/metadata/description",
+			Value: "Updated description test queue.",
+		},
+	}
+
+	clientID := "3381af92-2b9e-11e3-b191-71861300734d"
+
+	updateResult, err := queues.Update(client, queueName, clientID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package queues

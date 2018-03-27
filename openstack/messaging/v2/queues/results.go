@@ -5,6 +5,11 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+// commonResult is the response of a base result.
+type commonResult struct {
+	gophercloud.Result
+}
+
 // QueuePage contains a single page of all queues from a List operation.
 type QueuePage struct {
 	pagination.LinkedPageBase
@@ -13,6 +18,11 @@ type QueuePage struct {
 // CreateResult is the response of a Create operation.
 type CreateResult struct {
 	gophercloud.ErrResult
+}
+
+// UpdateResult is the response of a Update operation.
+type UpdateResult struct {
+	commonResult
 }
 
 // Queue represents a messaging queue.
@@ -35,6 +45,13 @@ type QueueDetails struct {
 	MaxMessagesPostSize       int    `json:"_max_messages_post_size"`
 	Description               string `json:"description"`
 	Flavor                    string `json:"flavor"`
+}
+
+// Extract interprets any commonResult as a Queue.
+func (r commonResult) Extract() (QueueDetails, error) {
+	var s QueueDetails
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // ExtractQueues interprets the results of a single page from a

@@ -16,3 +16,7 @@ func createURL(client *gophercloud.ServiceClient, queueName string) string {
 func listURL(client *gophercloud.ServiceClient) string {
 	return commonURL(client)
 }
+
+func updateURL(client *gophercloud.ServiceClient, queueName string) string {
+	return client.ServiceURL(apiVersion, apiName, queueName)
+}
