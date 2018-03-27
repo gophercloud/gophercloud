@@ -72,6 +72,15 @@ func (client *ServiceClient) Get(url string, JSONResponse interface{}, opts *Req
 	return client.Request("GET", url, opts)
 }
 
+// Head calls `Request` with the "HEAD" HTTP verb.
+func (client *ServiceClient) Head(url string, opts *RequestOpts) (*http.Response, error) {
+	if opts == nil {
+		opts = new(RequestOpts)
+	}
+	client.initReqOpts(url, nil, nil, opts)
+	return client.Request("HEAD", url, opts)
+}
+
 // Post calls `Request` with the "POST" HTTP verb.
 func (client *ServiceClient) Post(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
 	if opts == nil {

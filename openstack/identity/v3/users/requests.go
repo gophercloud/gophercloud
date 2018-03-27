@@ -240,3 +240,69 @@ func ListInGroup(client *gophercloud.ServiceClient, groupID string, opts ListOpt
 		return UserPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// AddToGroup adds a user to a group.
+func AddToGroup(client *gophercloud.ServiceClient, groupID, userID string) (r AddToGroupResult) {
+	url := addToGroupURL(client, groupID, userID)
+	_, r.Err = client.Put(url, nil, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
+// RemoveFromGroup removes a user from a group.
+func RemoveFromGroup(client *gophercloud.ServiceClient, groupID, userID string) (r RemoveFromGroupResult) {
+	url := removeFromGroupURL(client, groupID, userID)
+	_, r.Err = client.Delete(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
+// ValidateInGroup validates that a user belongs to a group.
+func ValidateInGroup(client *gophercloud.ServiceClient, groupID, userID string) (r ValidateInGroupResult) {
+	url := validateInGroupURL(client, groupID, userID)
+	_, r.Err = client.Head(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
+// ChpwdOptsBuilder allows extensions to add additional parameters to
+// the ChangePassword request.
+type ChpwdOptsBuilder interface {
+	ToUserChpwdMap() (map[string]interface{}, error)
+}
+
+// ChpwdOpts provides options for changing password for a user.
+type ChpwdOpts struct {
+	// OriginalPassword is the original password of the user.
+	OriginalPassword string `json:"original_password,omitempty"`
+
+	// Password is the new password of the user.
+	Password string `json:"password,omitempty"`
+}
+
+// ToUserChpwdMap formats a ChpwdOpts into a ChangePassword request.
+func (opts ChpwdOpts) ToUserChpwdMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "user")
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+// ChangePassword changes password for a user.
+func ChangePassword(client *gophercloud.ServiceClient, userID string, opts ChpwdOptsBuilder) (r ChpwdResult) {
+	b, err := opts.ToUserChpwdMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(changePasswordURL(client, userID), &b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
