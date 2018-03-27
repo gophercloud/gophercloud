@@ -34,7 +34,7 @@ func TestWebhooks(t *testing.T) {
 	th.AssertEquals(t, result, "290c44fa-c60f-4d75-a0eb-87433ba982a3")
 }
 
-// Return an invalid type of integer as action id
+// Returns invalid type (integer) for action id
 func TestWebhooksInvalidAction(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

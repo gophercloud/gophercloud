@@ -4,12 +4,9 @@ import (
 	"github.com/gophercloud/gophercloud"
 )
 
-// TriggerOpts Webhooks request parameters
+// TriggerOpts represents options used for triggering an action
 type TriggerOpts struct {
-	// V (Optional)	query	string	The webhook implementation version requested.
-	V string `q:"V, omitempty"`
-
-	// params (Optional)	query	object	The query string that forms the inputs to use for the targeted action.
+	V      string `q:"V"`
 	Params string `q:"params, omitempty"`
 }
 
