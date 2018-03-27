@@ -59,7 +59,6 @@ const UpdateQueueResponse = `
     "_max_claim_count": 10
 }`
 
-
 // FirstQueue is the first result in a List.
 var FirstQueue = queues.Queue{
 	Href: "/v2/queues/beijing",
