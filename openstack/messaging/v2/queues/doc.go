@@ -68,5 +68,12 @@ Example to Get a Queue
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete a Queue
+
+	err := queues.Delete(client, queueName).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package queues

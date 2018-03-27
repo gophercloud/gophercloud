@@ -181,3 +181,11 @@ func Get(client *gophercloud.ServiceClient, queueName string) (r GetResult) {
 	})
 	return
 }
+
+// Delete deletes the specified queue.
+func Delete(client *gophercloud.ServiceClient, queueName string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, queueName), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
