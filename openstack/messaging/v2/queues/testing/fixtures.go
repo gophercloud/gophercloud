@@ -128,7 +128,6 @@ func HandleListSuccessfully(t *testing.T) {
 			case "/v2/queues?marker=beijing":
 				fmt.Fprint(w, `{ "queues": [] }`)
 			}
-
 		})
 }
 
