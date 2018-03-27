@@ -146,6 +146,31 @@ func CreateEndpointGroup(t *testing.T, client *gophercloud.ServiceClient) (*endp
 	return group, nil
 }
 
+// CreateEndpointGroupWithCIDR will create an endpoint group with a random name and a specified CIDR.
+// An error will be returned if the group could not be created.
+func CreateEndpointGroupWithCIDR(t *testing.T, client *gophercloud.ServiceClient, cidr string) (*endpointgroups.EndpointGroup, error) {
+	groupName := tools.RandomString("TESTACC-", 8)
+
+	t.Logf("Attempting to create group %s", groupName)
+
+	createOpts := endpointgroups.CreateOpts{
+		Name: groupName,
+		Type: endpointgroups.TypeCIDR,
+		Endpoints: []string{
+			cidr,
+		},
+	}
+	group, err := endpointgroups.Create(client, createOpts).Extract()
+	if err != nil {
+		return group, err
+	}
+
+	t.Logf("Successfully created group %s", groupName)
+	t.Logf("%v", group)
+
+	return group, nil
+}
+
 // DeleteEndpointGroup will delete an Endpoint group with a specified ID. A fatal error will
 // occur if the delete was not successful. This works best when used as a
 // deferred function.

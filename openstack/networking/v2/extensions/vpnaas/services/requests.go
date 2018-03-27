@@ -61,6 +61,42 @@ func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	return
 }
 
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToServiceUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contains the values used when updating a VPN service
+type UpdateOpts struct {
+	// Name is the human readable name of the service.
+	Name *string `json:"name,omitempty"`
+
+	// Description is the human readable description of the service.
+	Description *string `json:"description,omitempty"`
+
+	// AdminStateUp is the administrative state of the resource, which is up (true) or down (false).
+	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+}
+
+// ToServiceUpdateMap casts aa UodateOpts struct to a map.
+func (opts UpdateOpts) ToServiceUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "vpnservice")
+}
+
+// Update allows VPN services to be updated.
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToServiceUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
