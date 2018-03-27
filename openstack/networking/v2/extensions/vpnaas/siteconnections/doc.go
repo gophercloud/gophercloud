@@ -51,5 +51,18 @@ Example to List site connections
 		panic(err)
 	}
 
+Example to Update an IPSec site connection
+
+	description := "updated connection"
+	name := "updatedname"
+	updateOpts := siteconnections.UpdateOpts{
+		Name:        &name,
+		Description: &description,
+	}
+	updatedConnection, err := siteconnections.Update(client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package siteconnections

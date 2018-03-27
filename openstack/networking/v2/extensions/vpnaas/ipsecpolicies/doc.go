@@ -29,9 +29,11 @@ Example to Show the details of a specific IPSec policy by ID
 
 Example to Update an IPSec policy
 
+	name := "updatedname"
+	description := "updated policy"
 	updateOpts := ipsecpolicies.UpdateOpts{
-		Name:        "updatedname",
-		Description: "updated policy",
+		Name:        &name,
+		Description: &description,
 	}
 	updatedPolicy, err := ipsecpolicies.Update(client, "5c561d9d-eaea-45f6-ae3e-08d1a7080828", updateOpts).Extract()
 	if err != nil {

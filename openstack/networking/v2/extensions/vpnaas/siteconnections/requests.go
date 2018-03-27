@@ -192,3 +192,51 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		return ConnectionPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToConnectionUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contains the values used when updating the DPD of an IPSec site connection
+type DPDUpdateOpts struct {
+	Action   Action `json:"action,omitempty"`
+	Timeout  int    `json:"timeout,omitempty"`
+	Interval int    `json:"interval,omitempty"`
+}
+
+// UpdateOpts contains the values used when updating an IPSec site connection
+type UpdateOpts struct {
+	Description    *string        `json:"description,omitempty"`
+	Name           *string        `json:"name,omitempty"`
+	LocalID        string         `json:"local_id,omitempty"`
+	PeerAddress    string         `json:"peer_address,omitempty"`
+	PeerID         string         `json:"peer_id,omitempty"`
+	PeerCIDRs      []string       `json:"peer_cidrs,omitempty"`
+	LocalEPGroupID string         `json:"local_ep_group_id,omitempty"`
+	PeerEPGroupID  string         `json:"peer_ep_group_id,omitempty"`
+	MTU            int            `json:"mtu,omitempty"`
+	Initiator      Initiator      `json:"initiator,omitempty"`
+	PSK            string         `json:"psk,omitempty"`
+	DPD            *DPDUpdateOpts `json:"dpd,omitempty"`
+	AdminStateUp   *bool          `json:"admin_state_up,omitempty"`
+}
+
+// ToConnectionUpdateMap casts an UpdateOpts struct to a map.
+func (opts UpdateOpts) ToConnectionUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "ipsec_site_connection")
+}
+
+// Update allows IPSec site connections to be updated.
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToConnectionUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

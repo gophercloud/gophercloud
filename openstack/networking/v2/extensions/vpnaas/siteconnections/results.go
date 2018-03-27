@@ -155,3 +155,9 @@ type DeleteResult struct {
 type GetResult struct {
 	commonResult
 }
+
+// UpdateResult represents the result of an update operation. Call its Extract
+// method to interpret it as a connection
+type UpdateResult struct {
+	commonResult
+}
