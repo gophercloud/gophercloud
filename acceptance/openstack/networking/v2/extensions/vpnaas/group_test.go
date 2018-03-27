@@ -50,4 +50,16 @@ func TestGroupCRUD(t *testing.T) {
 	}
 	tools.PrintResource(t, newGroup)
 
+	updatedName := "updatedname"
+	updatedDescription := "updated description"
+	updateOpts := endpointgroups.UpdateOpts{
+		Name:        &updatedName,
+		Description: &updatedDescription,
+	}
+	updatedGroup, err := endpointgroups.Update(client, group.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update endpoint group: %v", err)
+	}
+	tools.PrintResource(t, updatedGroup)
+
 }
