@@ -12,12 +12,15 @@ type CreateOptsBuilder interface {
 
 // CreateOpts specifies the queue creation parameters.
 type CreateOpts struct {
-	//The target incoming messages will be moved to when a message can’t
+	// The name of the queue to create.
+	QueueName string `json:"queue_name" required:"true"`
+
+	// The target incoming messages will be moved to when a message can’t
 	// processed successfully after meet the max claim count is met.
 	DeadLetterQueue string `json:"_dead_letter_queue,omitempty"`
 
 	// The new TTL setting for messages when moved to dead letter queue.
-	DeadLetterQueueMessageTTL int `json:"_dead_letter_queue_messages_ttl,omitempty"`
+	DeadLetterQueueMessagesTTL int `json:"_dead_letter_queue_messages_ttl,omitempty"`
 
 	// The delay of messages defined for a queue. When the messages send to
 	// the queue, it will be delayed for some times and means it can not be
@@ -39,22 +42,36 @@ type CreateOpts struct {
 	// for any messages posted to the queue.
 	MaxMessagesPostSize int `json:"_max_messages_post_size,omitempty"`
 
-	// Description of the queue.
-	Description string `json:"description,omitempty"`
+	// Extra is free-form extra key/value pairs to describe the user.
+	Extra map[string]interface{} `json:"-"`
 }
 
 // ToQueueCreateMap constructs a request body from CreateOpts.
 func (opts CreateOpts) ToQueueCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "")
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		for key, value := range opts.Extra {
+			b[key] = value
+		}
+
+	}
+	return b, nil
 }
 
 // Create requests the creation of a new queue.
-func Create(client *gophercloud.ServiceClient, queueName string, clientID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(client *gophercloud.ServiceClient, clientID string, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToQueueCreateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
+
+	queueName := b["queue_name"].(string)
+	delete(b, "queue_name")
 
 	_, r.Err = client.Put(createURL(client, queueName), b, r.Body, &gophercloud.RequestOpts{
 		OkCodes:     []int{201, 204},
