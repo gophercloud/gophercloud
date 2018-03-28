@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/pools"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/pools"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )

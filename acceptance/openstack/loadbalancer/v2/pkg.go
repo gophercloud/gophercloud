@@ -1,1 +1,1 @@
-package lbaas_v2
+package v2

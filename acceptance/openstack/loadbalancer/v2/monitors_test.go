@@ -1,19 +1,19 @@
-// +build acceptance networking lbaas_v2 monitors
+// +build acceptance networking loadbalancer monitors
 
-package lbaas_v2
+package v2
 
 import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/monitors"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/monitors"
 )
 
 func TestMonitorsList(t *testing.T) {
-	client, err := clients.NewNetworkV2Client()
+	client, err := clients.NewLoadBalancerV2Client()
 	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
+		t.Fatalf("Unable to create a loadbalancer client: %v", err)
 	}
 
 	allPages, err := monitors.List(client, nil).AllPages()
