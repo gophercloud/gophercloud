@@ -42,7 +42,7 @@ type CreateOpts struct {
 	// for any messages posted to the queue.
 	MaxMessagesPostSize int `json:"_max_messages_post_size,omitempty"`
 
-	// Extra is free-form extra key/value pairs to describe the user.
+	// Extra is free-form extra key/value pairs to describe the queue.
 	Extra map[string]interface{} `json:"-"`
 }
 
