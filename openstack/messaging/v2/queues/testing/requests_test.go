@@ -14,15 +14,16 @@ func TestCreate(t *testing.T) {
 	HandleCreateSuccessfully(t)
 
 	createOpts := queues.CreateOpts{
-		MaxMessagesPostSize:       262144,
-		DefaultMessageTTL:         3600,
-		DefaultMessageDelay:       30,
-		DeadLetterQueue:           "dead_letter",
-		DeadLetterQueueMessageTTL: 3600,
-		MaxClaimCount:             10,
-		Description:               "Queue for unit testing.",
+		QueueName:                  QueueName,
+		MaxMessagesPostSize:        262144,
+		DefaultMessageTTL:          3600,
+		DefaultMessageDelay:        30,
+		DeadLetterQueue:            "dead_letter",
+		DeadLetterQueueMessagesTTL: 3600,
+		MaxClaimCount:              10,
+		Extra:                      map[string]interface{}{"description": "Queue for unit testing."},
 	}
 
-	err := queues.Create(fake.ServiceClient(), QueueName, ClientID, createOpts).ExtractErr()
+	err := queues.Create(fake.ServiceClient(), ClientID, createOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
