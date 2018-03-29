@@ -1,13 +1,13 @@
 package testing
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 	"testing"
 
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/policytypes"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
-	"github.com/gophercloud/gophercloud/openstack/clustering/v1/policytypes"
 )
 
 const PolicyTypeBody = `
@@ -72,7 +72,7 @@ const PolicyTypeBody = `
 var (
 	ExpectedPolicyTypes = []policytypes.PolicyType{
 		{
-			Name: "senlin.policy.affinity",
+			Name:    "senlin.policy.affinity",
 			Version: "1.0",
 			SupportStatus: map[string][]policytypes.SupportStatusType{
 				"1.0": {
@@ -84,7 +84,7 @@ var (
 			},
 		},
 		{
-			Name: "senlin.policy.health",
+			Name:    "senlin.policy.health",
 			Version: "1.0",
 			SupportStatus: map[string][]policytypes.SupportStatusType{
 				"1.0": {
@@ -96,7 +96,7 @@ var (
 			},
 		},
 		{
-			Name: "senlin.policy.scaling",
+			Name:    "senlin.policy.scaling",
 			Version: "1.0",
 			SupportStatus: map[string][]policytypes.SupportStatusType{
 				"1.0": {
@@ -108,7 +108,7 @@ var (
 			},
 		},
 		{
-			Name: "senlin.policy.region_placement",
+			Name:    "senlin.policy.region_placement",
 			Version: "1.0",
 			SupportStatus: map[string][]policytypes.SupportStatusType{
 				"1.0": {

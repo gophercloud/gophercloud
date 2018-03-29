@@ -6,13 +6,13 @@ import (
 
 // PolicyType represents a clustering policy type in the Openstack cloud
 type PolicyType struct {
-	Name          string `json:"name"`
-	Version       string `json:"version"`
+	Name          string                         `json:"name"`
+	Version       string                         `json:"version"`
 	SupportStatus map[string][]SupportStatusType `json:"support_status,omitempty"`
 }
 
 // SupportStatus represents the support status information for a clustering policy type
-type SupportStatusType struct{
+type SupportStatusType struct {
 	Status string `json:"status"`
 	Since  string `json:"since"`
 }
