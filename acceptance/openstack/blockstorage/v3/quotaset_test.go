@@ -3,6 +3,7 @@
 package v3
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -38,6 +39,15 @@ func TestQuotasetGetUsage(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotaSetUsage)
+}
+
+func TestQuotasetGetDetailed(t *testing.T) {
+	client, projectID := getClientAndProject(t)
+
+	detailedQuotaSet, err := quotasets.GetDetail(client, projectID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, detailedQuotaSet)
 }
 
 var UpdateQuotaOpts = quotasets.UpdateOpts{
@@ -82,7 +92,45 @@ func TestQuotasetUpdate(t *testing.T) {
 	// same as before
 	newQuotas, err := quotasets.Get(client, projectID).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, resultQuotas.Volumes, newQuotas.Volumes)
+	if newQuotas.Volumes != resultQuotas.Volumes {
+		t.Fatalf(
+			fmt.Sprintf("Failed to update quotas\n\texpected: %d\t actual: %d",
+				resultQuotas.Volumes,
+				newQuotas.Volumes,
+			),
+		)
+	}
+}
+
+func TestQuotasetDelete(t *testing.T) {
+	client, projectID := getClientAndProject(t)
+
+	// save original quotas
+	orig, err := quotasets.Get(client, projectID).Extract()
+	th.AssertNoErr(t, err)
+
+	defer func() {
+		restore := quotasets.UpdateOpts{}
+		FillUpdateOptsFromQuotaSet(*orig, &restore)
+
+		_, err = quotasets.Update(client, projectID, restore).Extract()
+		th.AssertNoErr(t, err)
+	}()
+
+	// Obtain environment default quotaset values to validate deletion.
+	defaultQuotaSet, err := quotasets.GetDefaults(client, projectID).Extract()
+	th.AssertNoErr(t, err)
+
+	// Test Delete
+	_, err = quotasets.Delete(client, projectID).Extract()
+	th.AssertNoErr(t, err)
+
+	newQuotas, err := quotasets.Get(client, projectID).Extract()
+	th.AssertNoErr(t, err)
+
+	if newQuotas.Volumes != defaultQuotaSet.Volumes {
+		t.Fatalf("Failed to delete quotas!")
+	}
 }
 
 // getClientAndProject reduces boilerplate by returning a new blockstorage v3
