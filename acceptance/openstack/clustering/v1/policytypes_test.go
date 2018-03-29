@@ -12,8 +12,6 @@ import (
 )
 
 func TestPolicyTypeList(t *testing.T) {
-	clients.RequireAdmin(t)
-
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
