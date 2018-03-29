@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/quotasets"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/extensions/quotasets"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -57,11 +57,11 @@ func TestDelete(t *testing.T) {
 
 type ErrorUpdateOpts quotasets.UpdateOpts
 
-func (opts ErrorUpdateOpts) ToComputeQuotaUpdateMap() (map[string]interface{}, error) {
+func (opts ErrorUpdateOpts) ToBlockStorageQuotaUpdateMap() (map[string]interface{}, error) {
 	return nil, errors.New("This is an error")
 }
 
-func TestErrorInToComputeQuotaUpdateMap(t *testing.T) {
+func TestErrorInToBlockStorageQuotaUpdateMap(t *testing.T) {
 	opts := &ErrorUpdateOpts{}
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
