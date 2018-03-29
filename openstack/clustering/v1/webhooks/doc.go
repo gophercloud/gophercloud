@@ -4,7 +4,9 @@ Service.
 
 Example to Trigger webhook action
 
-	result, err := webhooks.Trigger(webhookClient, "f93f83f6-762b-41b6-b757-80507834d394", nil).Extract()
+	result, err := webhooks.Trigger(webhookClient,
+									"f93f83f6-762b-41b6-b757-80507834d394",
+									webhooks.TriggerOpts{V: "1"}).Extract()
 	if err != nil {
 		panic(err)
 	}
