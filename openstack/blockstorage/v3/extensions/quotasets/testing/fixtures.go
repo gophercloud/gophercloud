@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/quotasets"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/extensions/quotasets"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -14,150 +14,101 @@ import (
 // GetOutput is a sample response to a Get call.
 const GetOutput = `
 {
-   "quota_set" : {
-      "instances" : 25,
-      "security_groups" : 10,
-      "security_group_rules" : 20,
-      "cores" : 200,
-      "injected_file_content_bytes" : 10240,
-      "injected_files" : 5,
-      "metadata_items" : 128,
-      "ram" : 200000,
-      "key_pairs" : 10,
-      "injected_file_path_bytes" : 255,
-	  "server_groups" : 2,
-	  "server_group_members" : 3
-   }
+	"quota_set" : {
+		"volumes" : 8,
+		"snapshots" : 9,
+		"gigabytes" : 10,
+		"per_volume_gigabytes" : 11,
+		"backups" : 12,
+		"backup_gigabytes" : 13,
+		"groups" : 14,
+	}
 }
 `
 
 // GetDetailsOutput is a sample response to a Get call with the detailed option.
 const GetDetailsOutput = `
 {
-   "quota_set" : {
-	  "id": "555544443333222211110000ffffeeee",
-      "instances" : {
-          "in_use": 0,
-          "limit": 25,
-          "reserved": 0
-      },
-      "security_groups" : {
-          "in_use": 0,
-          "limit": 10,
-          "reserved": 0
-      },
-      "security_group_rules" : {
-          "in_use": 0,
-          "limit": 20,
-          "reserved": 0
-      },
-      "cores" : {
-          "in_use": 0,
-          "limit": 200,
-          "reserved": 0
-      },
-      "injected_file_content_bytes" : {
-          "in_use": 0,
-          "limit": 10240,
-          "reserved": 0
-      },
-      "injected_files" : {
-          "in_use": 0,
-          "limit": 5,
-          "reserved": 0
-      },
-      "metadata_items" : {
-          "in_use": 0,
-          "limit": 128,
-          "reserved": 0
-      },
-      "ram" : {
-          "in_use": 0,
-          "limit": 200000,
-          "reserved": 0
-      },
-      "key_pairs" : {
-          "in_use": 0,
-          "limit": 10,
-          "reserved": 0
-      },
-      "injected_file_path_bytes" : {
-          "in_use": 0,
-          "limit": 255,
-          "reserved": 0
-      },
-      "server_groups" : {
-          "in_use": 0,
-          "limit": 2,
-          "reserved": 0
-      },
-      "server_group_members" : {
-          "in_use": 0,
-          "limit": 3,
-          "reserved": 0
-      }
-   }
+	"quota_set" : {
+		"id": "555544443333222211110000ffffeeee",
+		"volumes" : {
+			"in_use": 15,
+			"limit": 16,
+			"reserved": 17
+		},
+		"snapshots" : {
+			"in_use": 18,
+			"limit": 19,
+			"reserved": 20
+		},
+		"gigabytes" : {
+			"in_use": 21,
+			"limit": 22,
+			"reserved": 23
+		},
+		"per_volume_gigabytes" : {
+			"in_use": 24,
+			"limit": 25,
+			"reserved": 26
+		},
+		"backups" : {
+			"in_use": 27,
+			"limit": 28,
+			"reserved": 29
+		},
+		"backup_gigabytes" : {
+			"in_use": 30,
+			"limit": 31,
+			"reserved": 32
+		},
+		"groups" : {
+			"in_use": 33,
+			"limit": 34,
+			"reserved": 35
+		},
+	}
 }
 `
 const FirstTenantID = "555544443333222211110000ffffeeee"
 
 // FirstQuotaSet is the first result in ListOutput.
 var FirstQuotaSet = quotasets.QuotaSet{
-	FixedIPs:                 0,
-	FloatingIPs:              0,
-	InjectedFileContentBytes: 10240,
-	InjectedFilePathBytes:    255,
-	InjectedFiles:            5,
-	KeyPairs:                 10,
-	MetadataItems:            128,
-	RAM:                      200000,
-	SecurityGroupRules:       20,
-	SecurityGroups:           10,
-	Cores:                    200,
-	Instances:                25,
-	ServerGroups:             2,
-	ServerGroupMembers:       3,
+	Volumes:            8,
+	Snapshots:          9,
+	Gigabytes:          10,
+	PerVolumeGigabytes: 11,
+	Backups:            12,
+	BackupGigabytes:    13,
+	Groups:             14,
 }
 
 // FirstQuotaDetailsSet is the first result in ListOutput.
 var FirstQuotaDetailsSet = quotasets.QuotaDetailSet{
-	ID: FirstTenantID,
-	InjectedFileContentBytes: quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 10240},
-	InjectedFilePathBytes:    quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 255},
-	InjectedFiles:            quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 5},
-	KeyPairs:                 quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 10},
-	MetadataItems:            quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 128},
-	RAM:                      quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 200000},
-	SecurityGroupRules:       quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 20},
-	SecurityGroups:           quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 10},
-	Cores:                    quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 200},
-	Instances:                quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 25},
-	ServerGroups:             quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 2},
-	ServerGroupMembers:       quotasets.QuotaDetail{InUse: 0, Reserved: 0, Limit: 3},
+	ID:                 FirstTenantID,
+	Volumes:            quotasets.QuotaDetail{InUse: 15, Reserved: 16, Limit: 17},
+	Snapshots:          quotasets.QuotaDetail{InUse: 18, Reserved: 19, Limit: 20},
+	Gigabytes:          quotasets.QuotaDetail{InUse: 21, Reserved: 22, Limit: 21},
+	PerVolumeGigabytes: quotasets.QuotaDetail{InUse: 24, Reserved: 25, Limit: 22},
+	Backups:            quotasets.QuotaDetail{InUse: 27, Reserved: 28, Limit: 23},
+	BackupGigabytes:    quotasets.QuotaDetail{InUse: 30, Reserved: 31, Limit: 32},
+	Groups:             quotasets.QuotaDetail{InUse: 33, Reserved: 34, Limit: 35},
 }
 
 //The expected update Body. Is also returned by PUT request
-const UpdateOutput = `{"quota_set":{"cores":200,"fixed_ips":0,"floating_ips":0,"injected_file_content_bytes":10240,"injected_file_path_bytes":255,"injected_files":5,"instances":25,"key_pairs":10,"metadata_items":128,"ram":200000,"security_group_rules":20,"security_groups":10,"server_groups":2,"server_group_members":3}}`
+const UpdateOutput = `{"quota_set":{"volumes":1,"snapshots":2,"gigabytes":3,"per_volume_gigabytes":4,"backups":5,"backup_gigabytes":6,"groups":7}}`
 
 //The expected partialupdate Body. Is also returned by PUT request
 const PartialUpdateBody = `{"quota_set":{"cores":200, "force":true}}`
 
 //Result of Quota-update
 var UpdatedQuotaSet = quotasets.UpdateOpts{
-	FixedIPs:                 gophercloud.IntToPointer(0),
-	FloatingIPs:              gophercloud.IntToPointer(0),
-	InjectedFileContentBytes: gophercloud.IntToPointer(10240),
-	InjectedFilePathBytes:    gophercloud.IntToPointer(255),
-	InjectedFiles:            gophercloud.IntToPointer(5),
-	KeyPairs:                 gophercloud.IntToPointer(10),
-	MetadataItems:            gophercloud.IntToPointer(128),
-	RAM:                      gophercloud.IntToPointer(200000),
-	SecurityGroupRules:       gophercloud.IntToPointer(20),
-	SecurityGroups:           gophercloud.IntToPointer(10),
-	Cores:                    gophercloud.IntToPointer(200),
-	Instances:                gophercloud.IntToPointer(25),
-	ServerGroups:             gophercloud.IntToPointer(2),
-	ServerGroupMembers:       gophercloud.IntToPointer(3),
+	Volumes:            gophercloud.IntToPointer(1),
+	Snapshots:          gophercloud.IntToPointer(2),
+	Gigabytes:          gophercloud.IntToPointer(3),
+	PerVolumeGigabytes: gophercloud.IntToPointer(4),
+	Backups:            gophercloud.IntToPointer(5),
+	BackupGigabytes:    gophercloud.IntToPointer(6),
+	Groups:             gophercloud.IntToPointer(7),
 }
 
 // HandleGetSuccessfully configures the test server to respond to a Get request for sample tenant
