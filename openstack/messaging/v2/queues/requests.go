@@ -77,6 +77,5 @@ func Create(client *gophercloud.ServiceClient, clientID string, opts CreateOptsB
 		OkCodes:     []int{201, 204},
 		MoreHeaders: map[string]string{"Client-ID": clientID},
 	})
-
 	return
 }
