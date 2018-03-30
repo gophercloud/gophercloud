@@ -24,6 +24,7 @@ func TestAutoScaling(t *testing.T) {
 	profileCreate(t)
 	profileGet(t)
 	profileList(t)
+	profileUpdate(t)
 	clusterCreate(t)
 	defer clustersDelete(t)
 	clusterGet(t)
@@ -127,6 +128,30 @@ func profileList(t *testing.T) {
 	})
 
 	th.AssertEquals(t, true, testProfileFound)
+}
+
+func profileUpdate(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	profileName := testName
+	newProfileName := profileName + "-TEST-PROFILE_UPDATE"
+
+	// Use new name
+	profile, err := profiles.Update(client, profileName, profiles.UpdateOpts{Name: newProfileName}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newProfileName, profile.Name)
+
+	tools.PrintResource(t, profile)
+
+	// Revert back to original name
+	profile, err = profiles.Update(client, newProfileName, profiles.UpdateOpts{Name: profileName}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, profileName, profile.Name)
+
+	tools.PrintResource(t, profile)
 }
 
 func clusterCreate(t *testing.T) {

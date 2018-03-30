@@ -90,3 +90,42 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		return ProfilePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToProfileUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts implements Profile's UpdateOpts
+type UpdateOpts struct {
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Name     string                 `json:"name,omitempty"`
+}
+
+// ToProfileUpdateMap assembles a request body based on the contents of
+// UpdateOpts.
+func (opts UpdateOpts) ToProfileUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "profile")
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// Update implements profile update request.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToProfileUpdateMap()
+	if err != nil {
+		r.Err = err
+		return r
+	}
+	var result *http.Response
+	result, r.Err = client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
+}
