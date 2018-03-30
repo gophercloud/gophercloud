@@ -10,6 +10,22 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+func testSuccessTestCase(t *testing.T, jsonBody,
+	uriPath, httpMethod string, expectedQuotaSet quotasets.QuotaSet) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleSuccessfulRequest(t, httpMethod, uriPath, jsonBody)
+	actual, err := quotasets.Get(client.ServiceClient(), FirstTenantID).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &expectedQuotaSet, actual)
+}
+
+func TestSuccessTestCases(t *testing.T) {
+	for _, tt := range successTestCases {
+		testSuccessTestCase(t, tt.jsonBody, tt.uriPath, tt.httpMethod, tt.expectedQuotaSet)
+	}
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
