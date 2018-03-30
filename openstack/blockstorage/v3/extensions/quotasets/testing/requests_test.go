@@ -11,16 +11,25 @@ import (
 )
 
 var emptyQuotaSet = quotasets.QuotaSet{}
+var emptyUpdateOpts = quotasets.UpdateOpts{}
 
 func testSuccessTestCase(t *testing.T, jsonBody,
 	uriPath, httpMethod string,
+	updateOpts quotasets.UpdateOpts,
 	expectedQuotaSet quotasets.QuotaSet,
 	expectedQuotaDetailSet quotasets.QuotaDetailSet) error {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleSuccessfulRequest(t, httpMethod, uriPath, jsonBody)
 
-	if expectedQuotaSet != emptyQuotaSet {
+	if updateOpts != emptyUpdateOpts {
+		actual, err := quotasets.Update(client.ServiceClient(),
+			FirstTenantID, updateOpts).Extract()
+		if err != nil {
+			return err
+		}
+		th.CheckDeepEquals(t, &expectedQuotaSet, actual)
+	} else if expectedQuotaSet != emptyQuotaSet {
 		actual, err := quotasets.Get(client.ServiceClient(),
 			FirstTenantID).Extract()
 		if err != nil {
@@ -41,20 +50,11 @@ func testSuccessTestCase(t *testing.T, jsonBody,
 func TestSuccessTestCases(t *testing.T) {
 	for _, tt := range successTestCases {
 		err := testSuccessTestCase(t, tt.jsonBody, tt.uriPath, tt.httpMethod,
-			tt.expectedQuotaSet, tt.expectedQuotaDetailSet)
+			tt.updateOpts, tt.expectedQuotaSet, tt.expectedQuotaDetailSet)
 		if err != nil {
 			t.Fatalf("Test case '%s' failed with error:\n%s", tt.name, err)
 		}
 	}
-}
-
-func TestUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePutSuccessfully(t, "/os-quota-sets/"+FirstTenantID, UpdateOutput)
-	actual, err := quotasets.Update(client.ServiceClient(), FirstTenantID, UpdatedQuotaSet).Extract()
-	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &FirstQuotaSet, actual)
 }
 
 func TestPartialUpdate(t *testing.T) {
