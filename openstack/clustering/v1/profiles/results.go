@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // commonResult is the response of a base result.
@@ -33,6 +34,15 @@ func (r commonResult) Extract() (*Profile, error) {
 	return s.Profile, err
 }
 
+// ExtractProfiles provides access to the list of profiles in a page from the ListDetail operation.
+func ExtractProfiles(r pagination.Page) ([]Profile, error) {
+	var s struct {
+		Profiles []Profile `json:"profiles"`
+	}
+	err := (r.(ProfilePage)).ExtractInto(&s)
+	return s.Profiles, err
+}
+
 type Spec struct {
 	Type       string                 `json:"type"`
 	Version    string                 `json:"version"`
@@ -51,6 +61,16 @@ type Profile struct {
 	Type      string                 `json:"type"`
 	UpdatedAt time.Time              `json:"-"`
 	User      string                 `json:"user"`
+}
+
+type ProfilePage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines if a ProfilePage contains any results.
+func (page ProfilePage) IsEmpty() (bool, error) {
+	profiles, err := ExtractProfiles(page)
+	return len(profiles) == 0, err
 }
 
 func (r *Profile) UnmarshalJSON(b []byte) error {
