@@ -45,21 +45,6 @@ var successTestCases = []struct {
 	},
 }
 
-// GetOutput is a sample response to a Get call.
-const GetOutput = `
-{
-	"quota_set" : {
-		"volumes" : 8,
-		"snapshots" : 9,
-		"gigabytes" : 10,
-		"per_volume_gigabytes" : 11,
-		"backups" : 12,
-		"backup_gigabytes" : 13,
-		"groups" : 14
-	}
-}
-`
-
 // FirstQuotaSet is the first result in ListOutput.
 var FirstQuotaSet = quotasets.QuotaSet{
 	Volumes:            8,

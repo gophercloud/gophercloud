@@ -26,15 +26,6 @@ func TestSuccessTestCases(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t, "/os-quota-sets/"+FirstTenantID, GetOutput)
-	actual, err := quotasets.Get(client.ServiceClient(), FirstTenantID).Extract()
-	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &FirstQuotaSet, actual)
-}
-
 func TestGetDetail(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
