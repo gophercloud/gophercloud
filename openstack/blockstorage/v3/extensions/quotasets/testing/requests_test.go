@@ -44,7 +44,7 @@ func TestPartialUpdate(t *testing.T) {
 	opts := quotasets.UpdateOpts{Volumes: gophercloud.IntToPointer(200), Force: true}
 	actual, err := quotasets.Update(client.ServiceClient(), FirstTenantID, opts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &FirstQuotaSet, actual)
+	th.CheckDeepEquals(t, &PartialQuotaSet, actual)
 }
 
 func TestDelete(t *testing.T) {
