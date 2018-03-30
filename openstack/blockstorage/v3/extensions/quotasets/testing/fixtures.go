@@ -168,6 +168,11 @@ var successTestCases = []struct {
 		uriPath:    "/os-quota-sets/" + FirstTenantID,
 		httpMethod: "PUT",
 	},
+
+	{
+		name:       "simple DELETE request",
+		uriPath:    "/os-quota-sets/" + FirstTenantID,
+		httpMethod: "DELETE"},
 }
 
 //The expected update Body. Is also returned by PUT request
@@ -179,17 +184,11 @@ func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput strin
 		th.TestMethod(t, r, httpMethod)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
+		if httpMethod == "DELETE" {
+			th.TestBody(t, r, "")
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(202)
+		}
 		fmt.Fprintf(w, jsonOutput)
-	})
-}
-
-// HandleDeleteSuccessfully configures the test server to respond to a Delete request for sample tenant
-func HandleDeleteSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "DELETE")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestBody(t, r, "")
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(202)
 	})
 }
