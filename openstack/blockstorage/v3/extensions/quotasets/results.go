@@ -11,48 +11,29 @@ type QuotaSet struct {
 	// ID is tenant associated with this QuotaSet.
 	ID string `json:"id"`
 
-	// FixedIPs is number of fixed ips alloted this QuotaSet.
-	FixedIPs int `json:"fixed_ips"`
+	// Volumes is the number of volumes that are allowed for each project.
+	Volumes int `json:"volumes"`
 
-	// FloatingIPs is number of floating ips alloted this QuotaSet.
-	FloatingIPs int `json:"floating_ips"`
+	// Snapshots is the number of snapshots that are allowed for each project.
+	Snapshots int `json:"snapshots"`
 
-	// InjectedFileContentBytes is the allowed bytes for each injected file.
-	InjectedFileContentBytes int `json:"injected_file_content_bytes"`
+	// Gigabytes is the size (GB) of volumes and snapshots that are allowed for
+	// each project.
+	Gigabytes int `json:"gigabytes"`
 
-	// InjectedFilePathBytes is allowed bytes for each injected file path.
-	InjectedFilePathBytes int `json:"injected_file_path_bytes"`
+	// PerVolumeGigabytes is the size (GB) of volumes and snapshots that are
+	// allowed for each project and the specifed volume type.
+	PerVolumeGigabytes int `json:"per_volume_gigabytes"`
 
-	// InjectedFiles is the number of injected files allowed for each project.
-	InjectedFiles int `json:"injected_files"`
+	// Backups is the number of backups that are allowed for each project.
+	Backups int `json:"backups"`
 
-	// KeyPairs is number of ssh keypairs.
-	KeyPairs int `json:"key_pairs"`
+	// BackupGigabytes is the size (GB) of backups that are allowed for each
+	// project.
+	BackupGigabytes int `json:"backup_gigabytes"`
 
-	// MetadataItems is number of metadata items allowed for each instance.
-	MetadataItems int `json:"metadata_items"`
-
-	// RAM is megabytes allowed for each instance.
-	RAM int `json:"ram"`
-
-	// SecurityGroupRules is number of security group rules allowed for each
-	// security group.
-	SecurityGroupRules int `json:"security_group_rules"`
-
-	// SecurityGroups is the number of security groups allowed for each project.
-	SecurityGroups int `json:"security_groups"`
-
-	// Cores is number of instance cores allowed for each project.
-	Cores int `json:"cores"`
-
-	// Instances is number of instances allowed for each project.
-	Instances int `json:"instances"`
-
-	// ServerGroups is the number of ServerGroups allowed for the project.
-	ServerGroups int `json:"server_groups"`
-
-	// ServerGroupMembers is the number of members for each ServerGroup.
-	ServerGroupMembers int `json:"server_group_members"`
+	// Groups is the number of groups that are allowed for each project.
+	Groups int `json:"groups"`
 }
 
 // QuotaDetailSet represents details of both operational limits of compute
@@ -61,48 +42,26 @@ type QuotaDetailSet struct {
 	// ID is the tenant ID associated with this QuotaDetailSet.
 	ID string `json:"id"`
 
-	// FixedIPs is number of fixed ips alloted this QuotaDetailSet.
-	FixedIPs QuotaDetail `json:"fixed_ips"`
+	// Volumes is the
+	Volumes QuotaDetail `json:"volumes"`
 
-	// FloatingIPs is number of floating ips alloted this QuotaDetailSet.
-	FloatingIPs QuotaDetail `json:"floating_ips"`
+	// Snapshots is the
+	Snapshots QuotaDetail `json:"snapshots"`
 
-	// InjectedFileContentBytes is the allowed bytes for each injected file.
-	InjectedFileContentBytes QuotaDetail `json:"injected_file_content_bytes"`
+	// Gigabytes is the
+	Gigabytes QuotaDetail `json:"gigabytes"`
 
-	// InjectedFilePathBytes is allowed bytes for each injected file path.
-	InjectedFilePathBytes QuotaDetail `json:"injected_file_path_bytes"`
+	// PerVolumeGigabytes is the
+	PerVolumeGigabytes QuotaDetail `json:"per_volume_gigabytes"`
 
-	// InjectedFiles is the number of injected files allowed for each project.
-	InjectedFiles QuotaDetail `json:"injected_files"`
+	// Backups is the
+	Backups QuotaDetail `json:"backups"`
 
-	// KeyPairs is number of ssh keypairs.
-	KeyPairs QuotaDetail `json:"key_pairs"`
+	// BackupGigabytes is the
+	BackupGigabytes QuotaDetail `json:"backup_gigabytes"`
 
-	// MetadataItems is number of metadata items allowed for each instance.
-	MetadataItems QuotaDetail `json:"metadata_items"`
-
-	// RAM is megabytes allowed for each instance.
-	RAM QuotaDetail `json:"ram"`
-
-	// SecurityGroupRules is number of security group rules allowed for each
-	// security group.
-	SecurityGroupRules QuotaDetail `json:"security_group_rules"`
-
-	// SecurityGroups is the number of security groups allowed for each project.
-	SecurityGroups QuotaDetail `json:"security_groups"`
-
-	// Cores is number of instance cores allowed for each project.
-	Cores QuotaDetail `json:"cores"`
-
-	// Instances is number of instances allowed for each project.
-	Instances QuotaDetail `json:"instances"`
-
-	// ServerGroups is the number of ServerGroups allowed for the project.
-	ServerGroups QuotaDetail `json:"server_groups"`
-
-	// ServerGroupMembers is the number of members for each ServerGroup.
-	ServerGroupMembers QuotaDetail `json:"server_group_members"`
+	// Volumes is the
+	Groups QuotaDetail `json:"groups"`
 }
 
 // QuotaDetail is a set of details about a single operational limit that allows
