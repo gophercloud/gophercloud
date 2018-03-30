@@ -10,29 +10,42 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+var emptyQuotaSet = quotasets.QuotaSet{}
+
 func testSuccessTestCase(t *testing.T, jsonBody,
-	uriPath, httpMethod string, expectedQuotaSet quotasets.QuotaSet) {
+	uriPath, httpMethod string,
+	expectedQuotaSet quotasets.QuotaSet,
+	expectedQuotaDetailSet quotasets.QuotaDetailSet) error {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleSuccessfulRequest(t, httpMethod, uriPath, jsonBody)
-	actual, err := quotasets.Get(client.ServiceClient(), FirstTenantID).Extract()
-	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &expectedQuotaSet, actual)
+
+	if expectedQuotaSet != emptyQuotaSet {
+		actual, err := quotasets.Get(client.ServiceClient(),
+			FirstTenantID).Extract()
+		if err != nil {
+			return err
+		}
+		th.CheckDeepEquals(t, &expectedQuotaSet, actual)
+	} else {
+		actual, err := quotasets.GetDetail(client.ServiceClient(),
+			FirstTenantID).Extract()
+		if err != nil {
+			return err
+		}
+		th.CheckDeepEquals(t, expectedQuotaDetailSet, actual)
+	}
+	return nil
 }
 
 func TestSuccessTestCases(t *testing.T) {
 	for _, tt := range successTestCases {
-		testSuccessTestCase(t, tt.jsonBody, tt.uriPath, tt.httpMethod, tt.expectedQuotaSet)
+		err := testSuccessTestCase(t, tt.jsonBody, tt.uriPath, tt.httpMethod,
+			tt.expectedQuotaSet, tt.expectedQuotaDetailSet)
+		if err != nil {
+			t.Fatalf("Test case '%s' failed with error:\n%s", tt.name, err)
+		}
 	}
-}
-
-func TestGetDetail(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleGetSuccessfully(t, "/os-quota-sets/"+FirstTenantID+"/detail", GetDetailsOutput)
-	actual, err := quotasets.GetDetail(client.ServiceClient(), FirstTenantID).Extract()
-	th.CheckDeepEquals(t, FirstQuotaDetailsSet, actual)
-	th.AssertNoErr(t, err)
 }
 
 func TestUpdate(t *testing.T) {
