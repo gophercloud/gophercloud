@@ -8,10 +8,10 @@ import (
 type PolicyType struct {
 	Name          string                         `json:"name"`
 	Version       string                         `json:"version"`
-	SupportStatus map[string][]SupportStatusType `json:"support_status,omitempty"`
+	SupportStatus map[string][]SupportStatusType `json:"support_status"`
 }
 
-// SupportStatus represents the support status information for a clustering policy type
+// SupportStatusType represents the support status information for a clustering policy type
 type SupportStatusType struct {
 	Status string `json:"status"`
 	Since  string `json:"since"`
