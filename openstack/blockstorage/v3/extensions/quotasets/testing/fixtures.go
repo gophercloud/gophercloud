@@ -21,7 +21,7 @@ const GetOutput = `
 		"per_volume_gigabytes" : 11,
 		"backups" : 12,
 		"backup_gigabytes" : 13,
-		"groups" : 14,
+		"groups" : 14
 	}
 }
 `
@@ -65,7 +65,7 @@ const GetDetailsOutput = `
 			"in_use": 33,
 			"limit": 34,
 			"reserved": 35
-		},
+		}
 	}
 }
 `
@@ -85,30 +85,30 @@ var FirstQuotaSet = quotasets.QuotaSet{
 // FirstQuotaDetailsSet is the first result in ListOutput.
 var FirstQuotaDetailsSet = quotasets.QuotaDetailSet{
 	ID:                 FirstTenantID,
-	Volumes:            quotasets.QuotaDetail{InUse: 15, Reserved: 16, Limit: 17},
-	Snapshots:          quotasets.QuotaDetail{InUse: 18, Reserved: 19, Limit: 20},
-	Gigabytes:          quotasets.QuotaDetail{InUse: 21, Reserved: 22, Limit: 21},
-	PerVolumeGigabytes: quotasets.QuotaDetail{InUse: 24, Reserved: 25, Limit: 22},
-	Backups:            quotasets.QuotaDetail{InUse: 27, Reserved: 28, Limit: 23},
-	BackupGigabytes:    quotasets.QuotaDetail{InUse: 30, Reserved: 31, Limit: 32},
-	Groups:             quotasets.QuotaDetail{InUse: 33, Reserved: 34, Limit: 35},
+	Volumes:            quotasets.QuotaDetail{InUse: 15, Limit: 16, Reserved: 17},
+	Snapshots:          quotasets.QuotaDetail{InUse: 18, Limit: 19, Reserved: 20},
+	Gigabytes:          quotasets.QuotaDetail{InUse: 21, Limit: 22, Reserved: 23},
+	PerVolumeGigabytes: quotasets.QuotaDetail{InUse: 24, Limit: 25, Reserved: 26},
+	Backups:            quotasets.QuotaDetail{InUse: 27, Limit: 28, Reserved: 29},
+	BackupGigabytes:    quotasets.QuotaDetail{InUse: 30, Limit: 31, Reserved: 32},
+	Groups:             quotasets.QuotaDetail{InUse: 33, Limit: 34, Reserved: 35},
 }
 
 //The expected update Body. Is also returned by PUT request
-const UpdateOutput = `{"quota_set":{"volumes":1,"snapshots":2,"gigabytes":3,"per_volume_gigabytes":4,"backups":5,"backup_gigabytes":6,"groups":7}}`
+const UpdateOutput = `{"quota_set":{"volumes":8,"snapshots":9,"gigabytes":10,"per_volume_gigabytes":11,"backups":12,"backup_gigabytes":13,"groups":14}}`
 
 //The expected partialupdate Body. Is also returned by PUT request
-const PartialUpdateBody = `{"quota_set":{"cores":200, "force":true}}`
+const PartialUpdateBody = `{"quota_set":{"volumes":200, "force":true}}`
 
 //Result of Quota-update
 var UpdatedQuotaSet = quotasets.UpdateOpts{
-	Volumes:            gophercloud.IntToPointer(1),
-	Snapshots:          gophercloud.IntToPointer(2),
-	Gigabytes:          gophercloud.IntToPointer(3),
-	PerVolumeGigabytes: gophercloud.IntToPointer(4),
-	Backups:            gophercloud.IntToPointer(5),
-	BackupGigabytes:    gophercloud.IntToPointer(6),
-	Groups:             gophercloud.IntToPointer(7),
+	Volumes:            gophercloud.IntToPointer(8),
+	Snapshots:          gophercloud.IntToPointer(9),
+	Gigabytes:          gophercloud.IntToPointer(10),
+	PerVolumeGigabytes: gophercloud.IntToPointer(11),
+	Backups:            gophercloud.IntToPointer(12),
+	BackupGigabytes:    gophercloud.IntToPointer(13),
+	Groups:             gophercloud.IntToPointer(14),
 }
 
 // HandleGetSuccessfully configures the test server to respond to a Get request for sample tenant
