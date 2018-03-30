@@ -15,6 +15,7 @@ const FirstTenantID = "555544443333222211110000ffffeeee"
 
 var successTestCases = []struct {
 	name, httpMethod, jsonBody, uriPath string
+	updateOpts                          quotasets.UpdateOpts
 	expectedQuotaSet                    quotasets.QuotaSet
 	expectedQuotaDetailSet              quotasets.QuotaDetailSet
 }{
@@ -44,6 +45,7 @@ var successTestCases = []struct {
 		uriPath:    "/os-quota-sets/" + FirstTenantID,
 		httpMethod: "GET",
 	},
+
 	{
 		name: "GET details request",
 		jsonBody: `
@@ -100,32 +102,46 @@ var successTestCases = []struct {
 		uriPath:    "/os-quota-sets/" + FirstTenantID + "/detail",
 		httpMethod: "GET",
 	},
-}
 
-// FirstQuotaSet is the first result in ListOutput.
-var FirstQuotaSet = quotasets.QuotaSet{
-	Volumes:            8,
-	Snapshots:          9,
-	Gigabytes:          10,
-	PerVolumeGigabytes: 11,
-	Backups:            12,
-	BackupGigabytes:    13,
-	Groups:             14,
+	{
+		name: "update all quota fields",
+		jsonBody: `
+{
+	"quota_set": {
+		"volumes": 8,
+		"snapshots": 9,
+		"gigabytes": 10,
+		"per_volume_gigabytes": 11,
+		"backups": 12,
+		"backup_gigabytes": 13,
+		"groups": 14
+	}
+}`,
+		updateOpts: quotasets.UpdateOpts{
+			Volumes:            gophercloud.IntToPointer(8),
+			Snapshots:          gophercloud.IntToPointer(9),
+			Gigabytes:          gophercloud.IntToPointer(10),
+			PerVolumeGigabytes: gophercloud.IntToPointer(11),
+			Backups:            gophercloud.IntToPointer(12),
+			BackupGigabytes:    gophercloud.IntToPointer(13),
+			Groups:             gophercloud.IntToPointer(14),
+		},
+		expectedQuotaSet: quotasets.QuotaSet{
+			Volumes:            8,
+			Snapshots:          9,
+			Gigabytes:          10,
+			PerVolumeGigabytes: 11,
+			Backups:            12,
+			BackupGigabytes:    13,
+			Groups:             14,
+		},
+		uriPath:    "/os-quota-sets/" + FirstTenantID,
+		httpMethod: "PUT",
+	},
 }
 
 //The expected update Body. Is also returned by PUT request
-const UpdateOutput = `{"quota_set":{"volumes":8,"snapshots":9,"gigabytes":10,"per_volume_gigabytes":11,"backups":12,"backup_gigabytes":13,"groups":14}}`
-
-//Result of Quota-update
-var UpdatedQuotaSet = quotasets.UpdateOpts{
-	Volumes:            gophercloud.IntToPointer(8),
-	Snapshots:          gophercloud.IntToPointer(9),
-	Gigabytes:          gophercloud.IntToPointer(10),
-	PerVolumeGigabytes: gophercloud.IntToPointer(11),
-	Backups:            gophercloud.IntToPointer(12),
-	BackupGigabytes:    gophercloud.IntToPointer(13),
-	Groups:             gophercloud.IntToPointer(14),
-}
+var UpdateOutput = successTestCases[2].jsonBody
 
 //The expected partialupdate Body. Is also returned by PUT request
 const PartialUpdateBody = `{"quota_set":{"volumes":200, "force":true}}`
