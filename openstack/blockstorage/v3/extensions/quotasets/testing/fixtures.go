@@ -138,24 +138,46 @@ var successTestCases = []struct {
 		uriPath:    "/os-quota-sets/" + FirstTenantID,
 		httpMethod: "PUT",
 	},
+
+	{
+		name: "handle partial update of quotasets",
+		jsonBody: `
+{
+	"quota_set": {
+		"volumes": 200,
+		"snapshots": 0,
+		"gigabytes": 0,
+		"per_volume_gigabytes": 0,
+		"backups": 0,
+		"backup_gigabytes": 0,
+		"groups": 0
+	}
+}`,
+		updateOpts: quotasets.UpdateOpts{
+			Volumes:            gophercloud.IntToPointer(200),
+			Snapshots:          gophercloud.IntToPointer(0),
+			Gigabytes:          gophercloud.IntToPointer(0),
+			PerVolumeGigabytes: gophercloud.IntToPointer(0),
+			Backups:            gophercloud.IntToPointer(0),
+			BackupGigabytes:    gophercloud.IntToPointer(0),
+			Groups:             gophercloud.IntToPointer(0),
+		},
+		expectedQuotaSet: quotasets.QuotaSet{
+			Volumes:            200,
+			Snapshots:          0,
+			Gigabytes:          0,
+			PerVolumeGigabytes: 0,
+			Backups:            0,
+			BackupGigabytes:    0,
+			Groups:             0,
+		},
+		uriPath:    "/os-quota-sets/" + FirstTenantID,
+		httpMethod: "PUT",
+	},
 }
 
 //The expected update Body. Is also returned by PUT request
 var UpdateOutput = successTestCases[2].jsonBody
-
-//The expected partialupdate Body. Is also returned by PUT request
-const PartialUpdateBody = `{"quota_set":{"volumes":200, "force":true}}`
-
-// PartialQuotaSet something something
-var PartialQuotaSet = quotasets.QuotaSet{
-	Volumes:            200,
-	Snapshots:          0,
-	Gigabytes:          0,
-	PerVolumeGigabytes: 0,
-	Backups:            0,
-	BackupGigabytes:    0,
-	Groups:             0,
-}
 
 // HandleSuccessfulRequest configures the test server to respond to an HTTP request.
 func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput string) {

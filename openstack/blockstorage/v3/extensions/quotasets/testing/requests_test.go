@@ -4,7 +4,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/extensions/quotasets"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -55,16 +54,6 @@ func TestSuccessTestCases(t *testing.T) {
 			t.Fatalf("Test case '%s' failed with error:\n%s", tt.name, err)
 		}
 	}
-}
-
-func TestPartialUpdate(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandlePutSuccessfully(t, "/os-quota-sets/"+FirstTenantID, PartialUpdateBody)
-	opts := quotasets.UpdateOpts{Volumes: gophercloud.IntToPointer(200), Force: true}
-	actual, err := quotasets.Update(client.ServiceClient(), FirstTenantID, opts).Extract()
-	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, &PartialQuotaSet, actual)
 }
 
 func TestDelete(t *testing.T) {
