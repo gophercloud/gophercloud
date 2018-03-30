@@ -100,6 +100,17 @@ const UpdateOutput = `{"quota_set":{"volumes":8,"snapshots":9,"gigabytes":10,"pe
 //The expected partialupdate Body. Is also returned by PUT request
 const PartialUpdateBody = `{"quota_set":{"volumes":200, "force":true}}`
 
+// PartialQuotaSet something something
+var PartialQuotaSet = quotasets.QuotaSet{
+	Volumes:            200,
+	Snapshots:          0,
+	Gigabytes:          0,
+	PerVolumeGigabytes: 0,
+	Backups:            0,
+	BackupGigabytes:    0,
+	Groups:             0,
+}
+
 //Result of Quota-update
 var UpdatedQuotaSet = quotasets.UpdateOpts{
 	Volumes:            gophercloud.IntToPointer(8),
@@ -150,7 +161,7 @@ func HandlePartialPutSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, PartialUpdateBody)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, UpdateOutput)
+		fmt.Fprintf(w, PartialUpdateBody)
 	})
 }
 
