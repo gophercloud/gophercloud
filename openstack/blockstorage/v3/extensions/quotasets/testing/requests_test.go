@@ -74,7 +74,7 @@ func TestErrorInToBlockStorageQuotaUpdateMap(t *testing.T) {
 	opts := &ErrorUpdateOpts{}
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandlePutSuccessfully(t, "/os-quota-sets/"+FirstTenantID, UpdateOutput)
+	HandleSuccessfulRequest(t, "PUT", "/os-quota-sets/"+FirstTenantID, UpdateOutput)
 	_, err := quotasets.Update(client.ServiceClient(), FirstTenantID, opts).Extract()
 	if err == nil {
 		t.Fatal("Error handling failed")
