@@ -175,9 +175,6 @@ var successTestCases = []struct {
 		httpMethod: "DELETE"},
 }
 
-//The expected update Body. Is also returned by PUT request
-var UpdateOutput = successTestCases[2].jsonBody
-
 // HandleSuccessfulRequest configures the test server to respond to an HTTP request.
 func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput string) {
 	th.Mux.HandleFunc(uriPath, func(w http.ResponseWriter, r *http.Request) {
