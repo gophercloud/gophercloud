@@ -11,6 +11,8 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+const FirstTenantID = "555544443333222211110000ffffeeee"
+
 // GetOutput is a sample response to a Get call.
 const GetOutput = `
 {
@@ -25,6 +27,17 @@ const GetOutput = `
 	}
 }
 `
+
+// FirstQuotaSet is the first result in ListOutput.
+var FirstQuotaSet = quotasets.QuotaSet{
+	Volumes:            8,
+	Snapshots:          9,
+	Gigabytes:          10,
+	PerVolumeGigabytes: 11,
+	Backups:            12,
+	BackupGigabytes:    13,
+	Groups:             14,
+}
 
 // GetDetailsOutput is a sample response to a Get call with the detailed option.
 const GetDetailsOutput = `
@@ -69,18 +82,6 @@ const GetDetailsOutput = `
 	}
 }
 `
-const FirstTenantID = "555544443333222211110000ffffeeee"
-
-// FirstQuotaSet is the first result in ListOutput.
-var FirstQuotaSet = quotasets.QuotaSet{
-	Volumes:            8,
-	Snapshots:          9,
-	Gigabytes:          10,
-	PerVolumeGigabytes: 11,
-	Backups:            12,
-	BackupGigabytes:    13,
-	Groups:             14,
-}
 
 // FirstQuotaDetailsSet is the first result in ListOutput.
 var FirstQuotaDetailsSet = quotasets.QuotaDetailSet{
@@ -97,6 +98,17 @@ var FirstQuotaDetailsSet = quotasets.QuotaDetailSet{
 //The expected update Body. Is also returned by PUT request
 const UpdateOutput = `{"quota_set":{"volumes":8,"snapshots":9,"gigabytes":10,"per_volume_gigabytes":11,"backups":12,"backup_gigabytes":13,"groups":14}}`
 
+//Result of Quota-update
+var UpdatedQuotaSet = quotasets.UpdateOpts{
+	Volumes:            gophercloud.IntToPointer(8),
+	Snapshots:          gophercloud.IntToPointer(9),
+	Gigabytes:          gophercloud.IntToPointer(10),
+	PerVolumeGigabytes: gophercloud.IntToPointer(11),
+	Backups:            gophercloud.IntToPointer(12),
+	BackupGigabytes:    gophercloud.IntToPointer(13),
+	Groups:             gophercloud.IntToPointer(14),
+}
+
 //The expected partialupdate Body. Is also returned by PUT request
 const PartialUpdateBody = `{"quota_set":{"volumes":200, "force":true}}`
 
@@ -109,17 +121,6 @@ var PartialQuotaSet = quotasets.QuotaSet{
 	Backups:            0,
 	BackupGigabytes:    0,
 	Groups:             0,
-}
-
-//Result of Quota-update
-var UpdatedQuotaSet = quotasets.UpdateOpts{
-	Volumes:            gophercloud.IntToPointer(8),
-	Snapshots:          gophercloud.IntToPointer(9),
-	Gigabytes:          gophercloud.IntToPointer(10),
-	PerVolumeGigabytes: gophercloud.IntToPointer(11),
-	Backups:            gophercloud.IntToPointer(12),
-	BackupGigabytes:    gophercloud.IntToPointer(13),
-	Groups:             gophercloud.IntToPointer(14),
 }
 
 // HandleGetSuccessfully configures the test server to respond to a Get request for sample tenant
