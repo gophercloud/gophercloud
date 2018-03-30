@@ -124,45 +124,24 @@ var PartialQuotaSet = quotasets.QuotaSet{
 }
 
 // HandleGetSuccessfully configures the test server to respond to a Get request for sample tenant
-func HandleGetSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
+func HandleGetSuccessfully(t *testing.T, uriPath, jsonOutput string) {
+	th.Mux.HandleFunc(uriPath, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, GetOutput)
-	})
-}
-
-// HandleGetDetailSuccessfully configures the test server to respond to a Get Details request for sample tenant
-func HandleGetDetailSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID+"/detail", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "GET")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, GetDetailsOutput)
+		fmt.Fprintf(w, jsonOutput)
 	})
 }
 
 // HandlePutSuccessfully configures the test server to respond to a Put request for sample tenant
-func HandlePutSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
+func HandlePutSuccessfully(t *testing.T, uriPath, jsonOutput string) {
+	th.Mux.HandleFunc(uriPath, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, UpdateOutput)
+		th.TestJSONRequest(t, r, jsonOutput)
 		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, UpdateOutput)
-	})
-}
-
-// HandlePartialPutSuccessfully configures the test server to respond to a Put request for sample tenant that only containes specific values
-func HandlePartialPutSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, PartialUpdateBody)
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, PartialUpdateBody)
+		fmt.Fprintf(w, jsonOutput)
 	})
 }
 
