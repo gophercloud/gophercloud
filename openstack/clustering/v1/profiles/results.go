@@ -140,6 +140,11 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// ValidateResult is the response of a Validate operations.
+type ValidateResult struct {
+	commonResult
+}
+
 // ProfilePage contains a single page of all profiles from a List operation.
 type ProfilePage struct {
 	pagination.LinkedPageBase
