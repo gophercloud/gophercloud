@@ -26,7 +26,7 @@ func TestPolicyTypeList(t *testing.T) {
 	}
 }
 
-func TestPolicyTypeList_v_1_9(t *testing.T) {
+func TestPolicyTypeList_v_1_5(t *testing.T) {
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
