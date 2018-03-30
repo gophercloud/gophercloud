@@ -22,6 +22,7 @@ var testName string
 func TestAutoScaling(t *testing.T) {
 	testName = tools.RandomString("TESTACC-", 8)
 	profileCreate(t)
+	defer profileDelete(t)
 	profileGet(t)
 	profileList(t)
 	profileUpdate(t)
@@ -94,6 +95,18 @@ func profileGet(t *testing.T) {
 	th.AssertEquals(t, profileName, profile.Name)
 
 	tools.PrintResource(t, profile)
+}
+
+func profileDelete(t *testing.T) {
+
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	profileName := testName
+	err = profiles.Delete(client, profileName).ExtractErr()
+	th.AssertNoErr(t, err)
 }
 
 func profileList(t *testing.T) {
@@ -358,7 +371,49 @@ func clustersDelete(t *testing.T) {
 	}
 
 	clusterName := testName
-	err = clusters.Delete(client, clusterName).ExtractErr()
+	deleteResult := clusters.Delete(client, clusterName)
+	err = deleteResult.ExtractErr()
 	th.AssertNoErr(t, err)
-	t.Logf("Cluster deleted: %s", clusterName)
+
+	location := deleteResult.Header.Get("Location")
+	th.AssertEquals(t, true, location != "")
+
+	actionID := ""
+	locationFields := strings.Split(location, "actions/")
+	if len(locationFields) >= 2 {
+		actionID = locationFields[1]
+	}
+
+	err = WaitForClusterToDelete(client, actionID, 15)
+	if err != nil {
+		t.Fatalf("Error waiting for cluster to delete: %v", err)
+	}
+
+	_, err = clusters.Get(client, clusterName).Extract()
+	if err == nil {
+		t.Fatalf("Unable to delete cluster [%s]: %v", clusterName, err)
+	}
+	t.Log("Cluster deleted:", clusterName)
+
+}
+
+func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, sleepTimeSecs int) error {
+	return gophercloud.WaitFor(sleepTimeSecs, func() (bool, error) {
+		if actionID == "" {
+			return false, fmt.Errorf("Invalid action id. id=%s", actionID)
+		}
+
+		action, err := actions.Get(client, actionID).Extract()
+		if err != nil {
+			return false, err
+		}
+		switch action.Status {
+		case "SUCCEEDED":
+			return true, nil
+		case "READY", "RUNNING", "DELETING", "WAITING":
+			return false, nil
+		default:
+			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
+		}
+	})
 }

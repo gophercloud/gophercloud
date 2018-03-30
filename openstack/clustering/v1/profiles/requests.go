@@ -129,3 +129,13 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	}
 	return
 }
+
+// Delete deletes the specified profile via profile id.
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	var result *http.Response
+	result, r.Err = client.Delete(deleteURL(client, id), nil)
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
+}
