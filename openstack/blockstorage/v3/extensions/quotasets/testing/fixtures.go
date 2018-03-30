@@ -183,17 +183,6 @@ func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput strin
 	})
 }
 
-// HandlePutSuccessfully configures the test server to respond to a Put request for sample tenant
-func HandlePutSuccessfully(t *testing.T, uriPath, jsonOutput string) {
-	th.Mux.HandleFunc(uriPath, func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "PUT")
-		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		th.TestJSONRequest(t, r, jsonOutput)
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, jsonOutput)
-	})
-}
-
 // HandleDeleteSuccessfully configures the test server to respond to a Delete request for sample tenant
 func HandleDeleteSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/os-quota-sets/"+FirstTenantID, func(w http.ResponseWriter, r *http.Request) {
