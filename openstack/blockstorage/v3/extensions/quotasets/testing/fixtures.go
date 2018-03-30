@@ -13,6 +13,38 @@ import (
 
 const FirstTenantID = "555544443333222211110000ffffeeee"
 
+var successTestCases = []struct {
+	name, httpMethod, jsonBody, uriPath string
+	expectedQuotaSet                    quotasets.QuotaSet
+}{
+	{
+		name: "simple GET request",
+		jsonBody: `
+{
+	"quota_set" : {
+		"volumes" : 8,
+		"snapshots" : 9,
+		"gigabytes" : 10,
+		"per_volume_gigabytes" : 11,
+		"backups" : 12,
+		"backup_gigabytes" : 13,
+		"groups" : 14
+	}
+}`,
+		expectedQuotaSet: quotasets.QuotaSet{
+			Volumes:            8,
+			Snapshots:          9,
+			Gigabytes:          10,
+			PerVolumeGigabytes: 11,
+			Backups:            12,
+			BackupGigabytes:    13,
+			Groups:             14,
+		},
+		uriPath:    "/os-quota-sets/" + FirstTenantID,
+		httpMethod: "GET",
+	},
+}
+
 // GetOutput is a sample response to a Get call.
 const GetOutput = `
 {
@@ -121,6 +153,16 @@ var PartialQuotaSet = quotasets.QuotaSet{
 	Backups:            0,
 	BackupGigabytes:    0,
 	Groups:             0,
+}
+
+// HandleSuccessfulRequest configures the test server to respond to an HTTP request.
+func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput string) {
+	th.Mux.HandleFunc(uriPath, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, httpMethod)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, jsonOutput)
+	})
 }
 
 // HandleGetSuccessfully configures the test server to respond to a Get request for sample tenant
