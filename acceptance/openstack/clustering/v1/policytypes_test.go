@@ -25,3 +25,19 @@ func TestPolicyTypeList(t *testing.T) {
 		tools.PrintResource(t, v)
 	}
 }
+
+func TestPolicyTypeList_v_1_9(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.5"
+	allPages, err := policytypes.List(client).AllPages()
+	th.AssertNoErr(t, err)
+
+	allPolicyTypes, err := policytypes.ExtractPolicyTypes(allPages)
+	th.AssertNoErr(t, err)
+
+	for _, v := range allPolicyTypes {
+		tools.PrintResource(t, v)
+	}
+}
