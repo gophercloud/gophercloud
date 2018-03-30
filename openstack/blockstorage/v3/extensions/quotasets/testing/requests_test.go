@@ -10,6 +10,7 @@ import (
 )
 
 var emptyQuotaSet = quotasets.QuotaSet{}
+var emptyQuotaDetailSet = quotasets.QuotaDetailSet{}
 var emptyUpdateOpts = quotasets.UpdateOpts{}
 
 func testSuccessTestCase(t *testing.T, jsonBody,
@@ -35,13 +36,16 @@ func testSuccessTestCase(t *testing.T, jsonBody,
 			return err
 		}
 		th.CheckDeepEquals(t, &expectedQuotaSet, actual)
-	} else {
+	} else if expectedQuotaDetailSet != emptyQuotaDetailSet {
 		actual, err := quotasets.GetDetail(client.ServiceClient(),
 			FirstTenantID).Extract()
 		if err != nil {
 			return err
 		}
 		th.CheckDeepEquals(t, expectedQuotaDetailSet, actual)
+	} else { // we are on a DELETE case
+		_, err := quotasets.Delete(client.ServiceClient(), FirstTenantID).Extract()
+		th.AssertNoErr(t, err)
 	}
 	return nil
 }
@@ -54,14 +58,6 @@ func TestSuccessTestCases(t *testing.T) {
 			t.Fatalf("Test case '%s' failed with error:\n%s", tt.name, err)
 		}
 	}
-}
-
-func TestDelete(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleDeleteSuccessfully(t)
-	_, err := quotasets.Delete(client.ServiceClient(), FirstTenantID).Extract()
-	th.AssertNoErr(t, err)
 }
 
 type ErrorUpdateOpts quotasets.UpdateOpts
