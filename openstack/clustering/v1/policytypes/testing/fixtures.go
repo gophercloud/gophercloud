@@ -74,60 +74,38 @@ const PolicyTypeBody = `
 const PolicyTypeDetailBody = `
 {
     "policy_type": {
-        "name": "senlin.policy.affinity-1.0",
-        "schema": {
-            "availability_zone": {
-                "description": "Name of the availability zone to place the nodes.",
-                "required": false,
-                "type": "String",
-                "updatable": false
-            },
-            "enable_drs_extension": {
-                "default": false,
-                "description": "Enable vSphere DRS extension.",
-                "required": false,
-                "type": "Boolean",
-                "updatable": false
-            },
-            "servergroup": {
-                "description": "Properties of the VM server group",
-                "required": false,
-                "schema": {
-                    "name": {
-                        "description": "The name of the server group",
-                        "required": false,
-                        "type": "String",
-                        "updatable": false
-                    },
-                    "policies": {
-                        "constraints": [
-                            {
-                                "constraint": [
-                                    "affinity",
-                                    "anti-affinity"
-                                ],
-                                "type": "AllowedValues"
-                            }
-                        ],
-                        "default": "anti-affinity",
-                        "description": "The server group policies.",
-                        "required": false,
-                        "type": "String",
-                        "updatable": false
-                    }
-                },
-                "type": "Map",
-                "updatable": false
-            }
-        },
-        "support_status": {
-            "1.0": [
-                {
-                    "status": "SUPPORTED",
-                    "since": "2016.10"
-                }
-            ]
-        }
+    	"name": "senlin.policy.batch-1.0",
+		"schema": {
+		  "max_batch_size": {
+			"default": -1,
+			"description": "Maximum number of nodes that will be updated in parallel.",
+			"required": false,
+			"type": "Integer",
+			"updatable": false
+		  },
+		  "min_in_service": {
+			"default": 1,
+			"description": "Minimum number of nodes in service when performing updates.",
+			"required": false,
+			"type": "Integer",
+			"updatable": false
+		  },
+		  "pause_time": {
+			"default": 60,
+			"description": "Interval in seconds between update batches if any.",
+			"required": false,
+			"type": "Integer",
+			"updatable": false
+		  }
+		},
+		"support_status": {
+			"1.0": [
+			  {
+				"status": "EXPERIMENTAL",
+				"since": "2017.02"
+			  }
+			]
+		}
     }
 }
 `
@@ -189,57 +167,35 @@ var (
 	}
 
 	ExpectedPolicyTypeDetail = &policytypes.PolicyTypeDetail{
-		Name: "senlin.policy.affinity-1.0",
-		Schema: policytypes.SchemaType{
-			AvailabilityZone: map[string]interface{}{
-				"description": "Name of the availability zone to place the nodes.",
+		Name: "senlin.policy.batch-1.0",
+		Schema: map[string]interface{}{
+			"max_batch_size": map[string]interface{}{
+				"default":     float64(-1),
+				"description": "Maximum number of nodes that will be updated in parallel.",
 				"required":    false,
-				"type":        "String",
+				"type":        "Integer",
 				"updatable":   false,
 			},
-			EnableDrsExtension: map[string]interface{}{
-				"default":     false,
-				"description": "Enable vSphere DRS extension.",
+			"min_in_service": map[string]interface{}{
+				"default":     float64(1),
+				"description": "Minimum number of nodes in service when performing updates.",
 				"required":    false,
-				"type":        "Boolean",
+				"type":        "Integer",
 				"updatable":   false,
 			},
-			Servergroup: map[string]interface{}{
-				"description": "Properties of the VM server group",
+			"pause_time": map[string]interface{}{
+				"default":     float64(60),
+				"description": "Interval in seconds between update batches if any.",
 				"required":    false,
-				"schema": map[string]interface{}{
-					"name": map[string]interface{}{
-						"description": "The name of the server group",
-						"required":    false,
-						"type":        "String",
-						"updatable":   false,
-					},
-					"policies": map[string]interface{}{
-						"constraints": []interface{}{
-							map[string]interface{}{
-								"constraint": []interface{}{
-									"affinity",
-									"anti-affinity",
-								},
-								"type": "AllowedValues",
-							},
-						},
-						"default":     "anti-affinity",
-						"description": "The server group policies.",
-						"required":    false,
-						"type":        "String",
-						"updatable":   false,
-					},
-				},
-				"type":      "Map",
-				"updatable": false,
+				"type":        "Integer",
+				"updatable":   false,
 			},
 		},
 		SupportStatus: map[string][]policytypes.SupportStatusType{
 			"1.0": []policytypes.SupportStatusType{
 				{
-					Status: "SUPPORTED",
-					Since:  "2016.10",
+					Status: "EXPERIMENTAL",
+					Since:  "2017.02",
 				},
 			},
 		},
