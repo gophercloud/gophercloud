@@ -123,7 +123,7 @@ func TestDeleteLoadbalancer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleLoadbalancerDeletionSuccessfully(t)
 
-	res := loadbalancers.Delete(fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
+	res := loadbalancers.Delete(fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", nil)
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -149,13 +149,14 @@ func TestCascadingDeleteLoadbalancer(t *testing.T) {
 	HandleLoadbalancerDeletionSuccessfully(t)
 
 	sc := fake.ServiceClient()
-	sc.Type = "network"
-	err := loadbalancers.CascadingDelete(sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").ExtractErr()
-	if err == nil {
-		t.Fatalf("expected error running CascadingDelete with Neutron service client but didn't get one")
+	deleteOpts := loadbalancers.DeleteOpts{
+		Cascade: true,
 	}
 
-	sc.Type = "load-balancer"
-	err = loadbalancers.CascadingDelete(sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").ExtractErr()
+	query, err := deleteOpts.ToLoadBalancerDeleteQuery()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, query, "?cascade=true")
+
+	err = loadbalancers.Delete(sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

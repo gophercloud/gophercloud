@@ -212,11 +212,38 @@ func DeleteMember(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID,
 func DeleteLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, lbID string) {
 	t.Logf("Attempting to delete loadbalancer %s", lbID)
 
-	if err := loadbalancers.Delete(client, lbID).ExtractErr(); err != nil {
+	deleteOpts := loadbalancers.DeleteOpts{
+		Cascade: false,
+	}
+
+	if err := loadbalancers.Delete(client, lbID, deleteOpts).ExtractErr(); err != nil {
 		t.Fatalf("Unable to delete loadbalancer: %v", err)
 	}
 
 	t.Logf("Waiting for loadbalancer %s to delete", lbID)
+
+	if err := WaitForLoadBalancerState(client, lbID, "DELETED", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Loadbalancer did not delete in time.")
+	}
+
+	t.Logf("Successfully deleted loadbalancer %s", lbID)
+}
+
+// CascadeDeleteLoadBalancer will perform a cascading delete on a loadbalancer.
+// A fatal error will occur if the loadbalancer could not be deleted. This works
+// best when used as a deferred function.
+func CascadeDeleteLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, lbID string) {
+	t.Logf("Attempting to cascade delete loadbalancer %s", lbID)
+
+	deleteOpts := loadbalancers.DeleteOpts{
+		Cascade: true,
+	}
+
+	if err := loadbalancers.Delete(client, lbID, deleteOpts).ExtractErr(); err != nil {
+		t.Fatalf("Unable to cascade delete loadbalancer: %v", err)
+	}
+
+	t.Logf("Waiting for loadbalancer %s to cascade delete", lbID)
 
 	if err := WaitForLoadBalancerState(client, lbID, "DELETED", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Loadbalancer did not delete in time.")

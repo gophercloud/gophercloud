@@ -1,8 +1,6 @@
 package loadbalancers
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -170,24 +168,38 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateR
 	return
 }
 
-// Delete will permanently delete a particular LoadBalancer based on its
-// unique ID.
-func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	_, r.Err = c.Delete(resourceURL(c, id), nil)
-	return
+// DeleteOptsBuilder allows extensions to add additional parameters to the
+// Delete request.
+type DeleteOptsBuilder interface {
+	ToLoadBalancerDeleteQuery() (string, error)
 }
 
-// CascadingDelete is like `Delete`, but will also delete any of the load balancer's
-// children (listener, monitor, etc).
-// NOTE: This function will only work with Octavia load balancers; Neutron does not
-// support this.
-func CascadingDelete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	if c.Type != "load-balancer" {
-		r.Err = fmt.Errorf("error prior to running cascade delete: only Octavia LBs supported")
-		return
+// DeleteOpts is the common options struct used in this package's Delete
+// operation.
+type DeleteOpts struct {
+	// Cascade will delete all children of the load balancer (listners, monitors, etc).
+	Cascade bool `q:"cascade"`
+}
+
+// ToLoadBalancerDeleteQuery formats a DeleteOpts into a query string.
+func (opts DeleteOpts) ToLoadBalancerDeleteQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// Delete will permanently delete a particular LoadBalancer based on its
+// unique ID.
+func Delete(c *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder) (r DeleteResult) {
+	url := resourceURL(c, id)
+	if opts != nil {
+		query, err := opts.ToLoadBalancerDeleteQuery()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += query
 	}
-	u := fmt.Sprintf("%s?cascade=true", resourceURL(c, id))
-	_, r.Err = c.Delete(u, nil)
+	_, r.Err = c.Delete(url, nil)
 	return
 }
 

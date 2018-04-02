@@ -54,8 +54,13 @@ Example to Update a Load Balancer
 
 Example to Delete a Load Balancers
 
+	deleteOpts := loadbalancers.DeleteOpts{
+		Cascade: true,
+	}
+
 	lbID := "d67d56a6-4a86-4688-a282-f46444705c64"
-	err := loadbalancers.Delete(networkClient, lbID).ExtractErr()
+
+	err := loadbalancers.Delete(networkClient, lbID, deleteOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
