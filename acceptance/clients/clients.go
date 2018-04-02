@@ -460,20 +460,6 @@ func NewSharedFileSystemV2Client() (*gophercloud.ServiceClient, error) {
 	})
 }
 
-// configureDebug will configure the provider client to print the API
-// requests and responses if OS_DEBUG is enabled.
-func configureDebug(client *gophercloud.ProviderClient) *gophercloud.ProviderClient {
-	if os.Getenv("OS_DEBUG") != "" {
-		client.HTTPClient = http.Client{
-			Transport: &LogRoundTripper{
-				Rt: &http.Transport{},
-			},
-		}
-	}
-
-	return client
-}
-
 // NewLoadBalancerV2Client returns a *ServiceClient for making calls to the
 // OpenStack Octavia v2 API. An error will be returned if authentication
 // or client creation was not possible.
@@ -487,6 +473,8 @@ func NewLoadBalancerV2Client() (*gophercloud.ServiceClient, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	client = configureDebug(client)
 
 	return openstack.NewLoadBalancerV2(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
@@ -510,4 +498,18 @@ func NewClusteringV1Client() (*gophercloud.ServiceClient, error) {
 	return openstack.NewClusteringV1(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
+}
+
+// configureDebug will configure the provider client to print the API
+// requests and responses if OS_DEBUG is enabled.
+func configureDebug(client *gophercloud.ProviderClient) *gophercloud.ProviderClient {
+	if os.Getenv("OS_DEBUG") != "" {
+		client.HTTPClient = http.Client{
+			Transport: &LogRoundTripper{
+				Rt: &http.Transport{},
+			},
+		}
+	}
+
+	return client
 }
