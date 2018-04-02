@@ -104,6 +104,12 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// AddToGroupResult is the response from a AddToGroup operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type AddToGroupResult struct {
+	gophercloud.ErrResult
+}
+
 // UserPage is a single page of User results.
 type UserPage struct {
 	pagination.LinkedPageBase

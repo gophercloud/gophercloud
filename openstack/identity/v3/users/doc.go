@@ -80,6 +80,16 @@ Example to List Groups a User Belongs To
 		fmt.Printf("%+v\n", group)
 	}
 
+Example to Add a User to a Group
+
+	groupID := "bede500ee1124ae9b0006ff859758b3a"
+	userID := "0fe36e73809d46aeae6705c39077b1b3"
+	err := users.AddToGroup(identityClient, groupID, userID).ExtractErr()
+
+	if err != nil {
+		panic(err)
+	}
+
 Example to List Projects a User Belongs To
 
 	userID := "0fe36e73809d46aeae6705c39077b1b3"

@@ -218,6 +218,15 @@ func ListGroups(client *gophercloud.ServiceClient, userID string) pagination.Pag
 	})
 }
 
+// AddToGroup adds a user to a group.
+func AddToGroup(client *gophercloud.ServiceClient, groupID, userID string) (r AddToGroupResult) {
+	url := addToGroupURL(client, groupID, userID)
+	_, r.Err = client.Put(url, nil, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
 // ListProjects enumerates groups user belongs to.
 func ListProjects(client *gophercloud.ServiceClient, userID string) pagination.Pager {
 	url := listProjectsURL(client, userID)
