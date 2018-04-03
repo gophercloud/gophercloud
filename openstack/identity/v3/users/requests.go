@@ -213,10 +213,10 @@ type ChangePasswordOptsBuilder interface {
 // ChangePasswordOpts provides options for changing password for a user.
 type ChangePasswordOpts struct {
 	// OriginalPassword is the original password of the user.
-	OriginalPassword string `json:"original_password,omitempty"`
+	OriginalPassword string `json:"original_password"`
 
 	// Password is the new password of the user.
-	Password string `json:"password,omitempty"`
+	Password string `json:"password"`
 }
 
 // ToUserChangePasswordMap formats a ChangePasswordOpts into a ChangePassword request.
