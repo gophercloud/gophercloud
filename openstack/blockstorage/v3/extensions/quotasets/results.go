@@ -42,25 +42,42 @@ type QuotaDetailSet struct {
 	// ID is the tenant ID associated with this QuotaDetailSet.
 	ID string `json:"id"`
 
-	// Volumes is the
+	// Volumes is the volume usage information for this project, including
+	// in_use, limit, reserved and allocated attributes. Note: allocated
+	// attribute is available only when nested quota is enabled.
 	Volumes QuotaDetail `json:"volumes"`
 
-	// Snapshots is the
+	// Snapshots is the snapshot usage information for this project, including
+	// in_use, limit, reserved and allocated attributes. Note: allocated
+	// attribute is available only when nested quota is enabled.
 	Snapshots QuotaDetail `json:"snapshots"`
 
-	// Gigabytes is the
+	// Gigabytes is the size (GB) usage information of volumes and snapshots
+	// for this project, including in_use, limit, reserved and allocated
+	// attributes. Note: allocated attribute is available only when nested
+	// quota is enabled.
 	Gigabytes QuotaDetail `json:"gigabytes"`
 
-	// PerVolumeGigabytes is the
+	// PerVolumeGigabytes is the size (GB) usage information for each volume,
+	// including in_use, limit, reserved and allocated attributes. Note:
+	// allocated attribute is available only when nested quota is enabled and
+	// only limit is meaningful here.
 	PerVolumeGigabytes QuotaDetail `json:"per_volume_gigabytes"`
 
-	// Backups is the
+	// Backups is the backup usage information for this project, including
+	// in_use, limit, reserved and allocated attributes. Note: allocated
+	// attribute is available only when nested quota is enabled.
 	Backups QuotaDetail `json:"backups"`
 
-	// BackupGigabytes is the
+	// BackupGigabytes is the size (GB) usage information of backup for this
+	// project, including in_use, limit, reserved and allocated attributes.
+	// Note: allocated attribute is available only when nested quota is
+	// enabled.
 	BackupGigabytes QuotaDetail `json:"backup_gigabytes"`
 
-	// Volumes is the
+	// Volumes is the group usage information for this project, including
+	// in_use, limit, reserved and allocated attributes. Note: allocated
+	// attribute is available only when nested quota is enabled.
 	Groups QuotaDetail `json:"groups"`
 }
 
