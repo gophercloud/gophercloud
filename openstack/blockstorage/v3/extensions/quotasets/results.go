@@ -8,7 +8,7 @@ import (
 // QuotaSet is a set of operational limits that allow for control of compute
 // usage.
 type QuotaSet struct {
-	// ID is tenant associated with this QuotaSet.
+	// ID is project associated with this QuotaSet.
 	ID string `json:"id"`
 
 	// Volumes is the number of volumes that are allowed for each project.
@@ -39,7 +39,7 @@ type QuotaSet struct {
 // QuotaDetailSet represents details of both operational limits of compute
 // resources and the current usage of those resources.
 type QuotaDetailSet struct {
-	// ID is the tenant ID associated with this QuotaDetailSet.
+	// ID is the project ID associated with this QuotaDetailSet.
 	ID string `json:"id"`
 
 	// Volumes is the volume usage information for this project, including
