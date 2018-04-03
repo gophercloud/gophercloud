@@ -65,7 +65,7 @@ Example to Change Password of a User
 		Password:         password,
 	}
 
-	user, err := users.ChangePassword(identityClient, userID, changePasswordOpts).ExtractErr()
+	err := users.ChangePassword(identityClient, userID, changePasswordOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
