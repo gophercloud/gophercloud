@@ -158,6 +158,12 @@ var successTestCases = []struct {
 		uriPath:    "/os-quota-sets/" + FirstTenantID,
 		httpMethod: "PUT",
 	},
+
+	{
+		name:       "simple DELETE request",
+		uriPath:    "/os-quota-sets/" + FirstTenantID,
+		httpMethod: "DELETE",
+	},
 }
 
 // HandleSuccessfulRequest configures the test server to respond to an HTTP request.
@@ -173,7 +179,10 @@ func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput strin
 		if uriQueryParams != nil {
 			th.TestFormValues(t, r, uriQueryParams)
 		}
-
+		if httpMethod == "DELETE" {
+			th.TestBody(t, r, "")
+			w.Header().Add("Content-Type", "application/json")
+		}
 		fmt.Fprintf(w, jsonOutput)
 	})
 }

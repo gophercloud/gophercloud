@@ -45,6 +45,9 @@ func testSuccessTestCase(t *testing.T,
 			return err
 		}
 		th.CheckDeepEquals(t, expectedQuotaDetailSet, actual)
+	} else { // we are on a DELETE case
+		_, err := quotasets.Delete(client.ServiceClient(), FirstTenantID).Extract()
+		th.AssertNoErr(t, err)
 	}
 	return nil
 }

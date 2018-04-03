@@ -139,6 +139,12 @@ type UpdateResult struct {
 	quotaResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its Extract method
+// to interpret it as a QuotaSet.
+type DeleteResult struct {
+	quotaResult
+}
+
 type quotaDetailResult struct {
 	gophercloud.Result
 }
