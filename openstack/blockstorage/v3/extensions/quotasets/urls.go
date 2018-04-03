@@ -8,18 +8,18 @@ func resourceURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL(resourcePath)
 }
 
-func getURL(c *gophercloud.ServiceClient, tenantID string) string {
-	return c.ServiceURL(resourcePath, tenantID)
+func getURL(c *gophercloud.ServiceClient, projectID string) string {
+	return c.ServiceURL(resourcePath, projectID)
 }
 
-func getDetailURL(c *gophercloud.ServiceClient, tenantID string) string {
-	return c.ServiceURL(resourcePath, tenantID, "detail")
+func getDetailURL(c *gophercloud.ServiceClient, projectID string) string {
+	return c.ServiceURL(resourcePath, projectID, "detail")
 }
 
-func updateURL(c *gophercloud.ServiceClient, tenantID string) string {
-	return getURL(c, tenantID)
+func updateURL(c *gophercloud.ServiceClient, projectID string) string {
+	return getURL(c, projectID)
 }
 
-func deleteURL(c *gophercloud.ServiceClient, tenantID string) string {
-	return getURL(c, tenantID)
+func deleteURL(c *gophercloud.ServiceClient, projectID string) string {
+	return getURL(c, projectID)
 }
