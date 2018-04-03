@@ -30,7 +30,6 @@ var successTestCases = []struct {
 		"per_volume_gigabytes" : 11,
 		"backups" : 12,
 		"backup_gigabytes" : 13,
-		"groups" : 14
 	}
 }`,
 		expectedQuotaSet: quotasets.QuotaSet{
@@ -40,7 +39,6 @@ var successTestCases = []struct {
 			PerVolumeGigabytes: 11,
 			Backups:            12,
 			BackupGigabytes:    13,
-			Groups:             14,
 		},
 		uriPath:    "/os-quota-sets/" + FirstTenantID,
 		httpMethod: "GET",
@@ -82,10 +80,6 @@ var successTestCases = []struct {
 			"limit": 31,
 			"reserved": 32
 		},
-		"groups" : {
-			"in_use": 33,
-			"limit": 34,
-			"reserved": 35
 		}
 	}
 }`,
@@ -97,7 +91,6 @@ var successTestCases = []struct {
 			PerVolumeGigabytes: quotasets.QuotaDetail{InUse: 24, Limit: 25, Reserved: 26},
 			Backups:            quotasets.QuotaDetail{InUse: 27, Limit: 28, Reserved: 29},
 			BackupGigabytes:    quotasets.QuotaDetail{InUse: 30, Limit: 31, Reserved: 32},
-			Groups:             quotasets.QuotaDetail{InUse: 33, Limit: 34, Reserved: 35},
 		},
 		uriPath:    "/os-quota-sets/" + FirstTenantID + "/detail",
 		httpMethod: "GET",
@@ -114,7 +107,6 @@ var successTestCases = []struct {
 		"per_volume_gigabytes": 11,
 		"backups": 12,
 		"backup_gigabytes": 13,
-		"groups": 14
 	}
 }`,
 		updateOpts: quotasets.UpdateOpts{
@@ -124,7 +116,6 @@ var successTestCases = []struct {
 			PerVolumeGigabytes: gophercloud.IntToPointer(11),
 			Backups:            gophercloud.IntToPointer(12),
 			BackupGigabytes:    gophercloud.IntToPointer(13),
-			Groups:             gophercloud.IntToPointer(14),
 		},
 		expectedQuotaSet: quotasets.QuotaSet{
 			Volumes:            8,
@@ -133,7 +124,6 @@ var successTestCases = []struct {
 			PerVolumeGigabytes: 11,
 			Backups:            12,
 			BackupGigabytes:    13,
-			Groups:             14,
 		},
 		uriPath:    "/os-quota-sets/" + FirstTenantID,
 		httpMethod: "PUT",
@@ -150,7 +140,6 @@ var successTestCases = []struct {
 		"per_volume_gigabytes": 0,
 		"backups": 0,
 		"backup_gigabytes": 0,
-		"groups": 0
 	}
 }`,
 		updateOpts: quotasets.UpdateOpts{
@@ -160,7 +149,6 @@ var successTestCases = []struct {
 			PerVolumeGigabytes: gophercloud.IntToPointer(0),
 			Backups:            gophercloud.IntToPointer(0),
 			BackupGigabytes:    gophercloud.IntToPointer(0),
-			Groups:             gophercloud.IntToPointer(0),
 		},
 		expectedQuotaSet: quotasets.QuotaSet{
 			Volumes: 200,
