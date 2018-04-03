@@ -17,7 +17,7 @@ type L7Policy struct {
 	ListenerID string `json:"listener_id"`
 
 	// The L7 policy action. One of REDIRECT_TO_POOL, REDIRECT_TO_URL, or REJECT.
-	Action Action `json:"action"`
+	Action string `json:"action"`
 
 	// The position of this policy on the listener.
 	Position int32 `json:"position"`
@@ -50,10 +50,10 @@ type Rule struct {
 	ID string `json:"id"`
 
 	// The L7 rule type. One of COOKIE, FILE_TYPE, HEADER, HOST_NAME, or PATH.
-	RuleType RuleType `json:"type"`
+	RuleType string `json:"type"`
 
 	// The comparison type for the L7 rule. One of CONTAINS, ENDS_WITH, EQUAL_TO, REGEX, or STARTS_WITH.
-	CompareType CompareType `json:"compare_type"`
+	CompareType string `json:"compare_type"`
 
 	// The value to use for the comparison. For example, the file type to compare.
 	Value string `json:"value"`

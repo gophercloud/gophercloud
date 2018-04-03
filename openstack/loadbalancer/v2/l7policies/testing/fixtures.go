@@ -34,7 +34,7 @@ var (
 		ID:             "8a1412f0-4c32-4257-8b07-af4770b604fd",
 		Name:           "redirect-example.com",
 		ListenerID:     "023f2e34-7806-443b-bfae-16c324569a3d",
-		Action:         l7policies.ActionRedirectToURL,
+		Action:         "REDIRECT_TO_URL",
 		Position:       1,
 		Description:    "",
 		TenantID:       "e3cd678b11784734bc366148aa37580e",
