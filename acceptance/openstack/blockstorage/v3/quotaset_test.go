@@ -23,15 +23,6 @@ func TestQuotasetGet(t *testing.T) {
 	tools.PrintResource(t, quotaSet)
 }
 
-func TestQuotasetGetDefaults(t *testing.T) {
-	client, projectID := getClientAndProject(t)
-
-	quotaSet, err := quotasets.GetDefaults(client, projectID).Extract()
-	th.AssertNoErr(t, err)
-
-	tools.PrintResource(t, quotaSet)
-}
-
 // getClientAndProject reduces boilerplate by returning a new blockstorage v3
 // ServiceClient and a project ID obtained from the OS_PROJECT_NAME envvar.
 func getClientAndProject(t *testing.T) (*gophercloud.ServiceClient, string) {
