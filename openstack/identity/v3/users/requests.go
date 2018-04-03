@@ -204,14 +204,14 @@ func Update(client *gophercloud.ServiceClient, userID string, opts UpdateOptsBui
 	return
 }
 
-// ChpwdOptsBuilder allows extensions to add additional parameters to
+// ChangePasswordOptsBuilder allows extensions to add additional parameters to
 // the ChangePassword request.
-type ChpwdOptsBuilder interface {
-	ToUserChpwdMap() (map[string]interface{}, error)
+type ChangePasswordOptsBuilder interface {
+	ToUserChangePasswordMap() (map[string]interface{}, error)
 }
 
-// ChpwdOpts provides options for changing password for a user.
-type ChpwdOpts struct {
+// ChangePasswordOpts provides options for changing password for a user.
+type ChangePasswordOpts struct {
 	// OriginalPassword is the original password of the user.
 	OriginalPassword string `json:"original_password,omitempty"`
 
@@ -219,8 +219,8 @@ type ChpwdOpts struct {
 	Password string `json:"password,omitempty"`
 }
 
-// ToUserChpwdMap formats a ChpwdOpts into a ChangePassword request.
-func (opts ChpwdOpts) ToUserChpwdMap() (map[string]interface{}, error) {
+// ToUserChangePasswordMap formats a ChangePasswordOpts into a ChangePassword request.
+func (opts ChangePasswordOpts) ToUserChangePasswordMap() (map[string]interface{}, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "user")
 	if err != nil {
 		return nil, err
@@ -230,8 +230,8 @@ func (opts ChpwdOpts) ToUserChpwdMap() (map[string]interface{}, error) {
 }
 
 // ChangePassword changes password for a user.
-func ChangePassword(client *gophercloud.ServiceClient, userID string, opts ChpwdOptsBuilder) (r ChpwdResult) {
-	b, err := opts.ToUserChpwdMap()
+func ChangePassword(client *gophercloud.ServiceClient, userID string, opts ChangePasswordOptsBuilder) (r ChangePasswordResult) {
+	b, err := opts.ToUserChangePasswordMap()
 	if err != nil {
 		r.Err = err
 		return

@@ -98,9 +98,9 @@ type UpdateResult struct {
 	userResult
 }
 
-// ChpwdResult is the response from a ChangePassword operation. Call its
+// ChangePasswordResult is the response from a ChangePassword operation. Call its
 // ExtractErr method to determine if the request succeeded or failed.
-type ChpwdResult struct {
+type ChangePasswordResult struct {
 	gophercloud.ErrResult
 }
 
