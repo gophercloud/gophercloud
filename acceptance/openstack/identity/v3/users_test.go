@@ -156,6 +156,54 @@ func TestUsersListGroups(t *testing.T) {
 	}
 }
 
+func TestUserAddToGroup(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v", err)
+	}
+
+	createOpts := users.CreateOpts{
+		Password: "foobar",
+		DomainID: "default",
+		Options: map[users.Option]interface{}{
+			users.IgnorePasswordExpiry: true,
+			users.MultiFactorAuthRules: []interface{}{
+				[]string{"password", "totp"},
+				[]string{"password", "custom-auth-method"},
+			},
+		},
+		Extra: map[string]interface{}{
+			"email": "jsmith@example.com",
+		},
+	}
+
+	user, err := CreateUser(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create user: %v", err)
+	}
+	defer DeleteUser(t, client, user.ID)
+
+	tools.PrintResource(t, user)
+	tools.PrintResource(t, user.Extra)
+
+	allGroupPages, err := groups.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list groups: %v", err)
+	}
+
+	allGroups, err := groups.ExtractGroups(allGroupPages)
+	if err != nil {
+		t.Fatalf("Unable to extract groups: %v", err)
+	}
+
+	group := allGroups[0]
+
+	err = users.AddToGroup(client, group.ID, user.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to add user to group: %v", err)
+	}
+}
+
 func TestUsersListProjects(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	if err != nil {
