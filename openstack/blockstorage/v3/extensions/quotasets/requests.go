@@ -32,7 +32,7 @@ func Update(client *gophercloud.ServiceClient, projectID string, opts UpdateOpts
 
 // Resets the quotas for the given tenant to their default values.
 func Delete(client *gophercloud.ServiceClient, projectID string) (res DeleteResult) {
-	_, res.Err = client.Delete(deleteURL(client, projectID), nil)
+	_, res.Err = client.Delete(updateURL(client, projectID), &gophercloud.RequestOpts{OkCodes: []int{200}})
 	return
 }
 
