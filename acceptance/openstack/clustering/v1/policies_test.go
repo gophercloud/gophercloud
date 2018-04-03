@@ -24,12 +24,13 @@ func TestPolicyList(t *testing.T) {
 	for _, v := range allPolicies {
 		tools.PrintResource(t, v)
 
-		if v.CreatedAt != nil {
-			t.Log("Created at: " + (*v.CreatedAt).String())
+		if v.CreatedAt.IsZero() {
+			t.Fatalf("CreatedAt value should not be zero")
 		}
+		t.Log("Created at: " + v.CreatedAt.String())
 
-		if v.UpdatedAt != nil {
-			t.Log("Updated at: " + (*v.UpdatedAt).String())
+		if !v.UpdatedAt.IsZero() {
+			t.Log("Updated at: " + v.UpdatedAt.String())
 		}
 	}
 }

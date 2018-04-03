@@ -11,17 +11,16 @@ import (
 
 // Policy represents a clustering policy in the Openstack cloud
 type Policy struct {
-	CreatedAt   *time.Time             `json:"-"`
-	Data        map[string]interface{} `json:"data"`
-	DomainUUID  string                 `json:"domain"`
-	ID          string                 `json:"id"`
-	Metadata    map[string]string      `json:"metadata"`
-	Name        string                 `json:"name"`
-	ProjectUUID string                 `json:"project"`
-	Spec        map[string]interface{} `json:"spec"`
-	Type        string                 `json:"type"`
-	UpdatedAt   *time.Time             `json:"-"`
-	UserUUID    string                 `json:"user"`
+	CreatedAt time.Time              `json:"-"`
+	Data      map[string]interface{} `json:"data"`
+	Domain    string                 `json:"domain"`
+	ID        string                 `json:"id"`
+	Name      string                 `json:"name"`
+	Project   string                 `json:"project"`
+	Spec      map[string]interface{} `json:"spec"`
+	Type      string                 `json:"type"`
+	UpdatedAt time.Time              `json:"-"`
+	UserUUID  string                 `json:"user"`
 }
 
 // ExtractPolicies interprets a page of results as a slice of Policy.
@@ -60,8 +59,8 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 	type tmp Policy
 	var s struct {
 		tmp
-		CreatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"created_at,omitempty"`
-		UpdatedAt *gophercloud.JSONRFC3339MilliNoZ `json:"updated_at,omitempty"`
+		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at,omitempty"`
+		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at,omitempty"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -71,19 +70,8 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 	}
 	*r = Policy(s.tmp)
 
-	if s.CreatedAt != nil {
-		r.CreatedAt = new(time.Time)
-		*r.CreatedAt = time.Time(*s.CreatedAt)
-	} else {
-		r.CreatedAt = nil
-	}
-
-	if s.UpdatedAt != nil {
-		r.UpdatedAt = new(time.Time)
-		*r.UpdatedAt = time.Time(*s.UpdatedAt)
-	} else {
-		r.UpdatedAt = nil
-	}
+	r.CreatedAt = time.Time(s.CreatedAt)
+	r.UpdatedAt = time.Time(s.UpdatedAt)
 
 	return nil
 }

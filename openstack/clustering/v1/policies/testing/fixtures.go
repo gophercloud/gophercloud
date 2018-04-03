@@ -72,16 +72,17 @@ const PolicyListBody2 = `
 var (
 	ExpectedPolicyCreatedAt1, _ = time.Parse(time.RFC3339, "2018-04-02T21:43:30.000000Z")
 	ExpectedPolicyCreatedAt2, _ = time.Parse(time.RFC3339, "2018-04-02T22:29:36.000000Z")
+	ZeroTime, _                 = time.Parse(time.RFC3339, "1-01-01T00:00:00.000000Z")
 
 	ExpectedPolicies = [][]policies.Policy{
 		{
 			{
-				CreatedAt:   &ExpectedPolicyCreatedAt1,
-				Data:        map[string]interface{}{},
-				DomainUUID:  "",
-				ID:          "PolicyListBodyID1",
-				Name:        "delpol",
-				ProjectUUID: "018cd0909fb44cd5bc9b7a3cd664920e",
+				CreatedAt: ExpectedPolicyCreatedAt1,
+				Data:      map[string]interface{}{},
+				Domain:    "",
+				ID:        "PolicyListBodyID1",
+				Name:      "delpol",
+				Project:   "018cd0909fb44cd5bc9b7a3cd664920e",
 
 				Spec: map[string]interface{}{
 					"description": "A policy for choosing victim node(s) from a cluster for deletion.",
@@ -96,17 +97,17 @@ var (
 				},
 				Type:      "senlin.policy.deletion-1.0",
 				UserUUID:  "fe43e41739154b72818565e0d2580819",
-				UpdatedAt: nil,
+				UpdatedAt: ZeroTime,
 			},
 		},
 		{
 			{
-				CreatedAt:   &ExpectedPolicyCreatedAt2,
-				Data:        map[string]interface{}{},
-				DomainUUID:  "",
-				ID:          "PolicyListBodyID2",
-				Name:        "delpol2",
-				ProjectUUID: "018cd0909fb44cd5bc9b7a3cd664920e",
+				CreatedAt: ExpectedPolicyCreatedAt2,
+				Data:      map[string]interface{}{},
+				Domain:    "",
+				ID:        "PolicyListBodyID2",
+				Name:      "delpol2",
+				Project:   "018cd0909fb44cd5bc9b7a3cd664920e",
 
 				Spec: map[string]interface{}{
 					"description": "A policy for choosing victim node(s) from a cluster for deletion.",
@@ -121,7 +122,7 @@ var (
 				},
 				Type:      "senlin.policy.deletion-1.0",
 				UserUUID:  "fe43e41739154b72818565e0d2580819",
-				UpdatedAt: nil,
+				UpdatedAt: ZeroTime,
 			},
 		},
 	}

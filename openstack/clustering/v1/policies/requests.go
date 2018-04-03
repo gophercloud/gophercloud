@@ -22,7 +22,7 @@ type ListOpts struct {
 	Sort string `q:"sort"`
 
 	// GlobalProject indicates whether to include resources for all projects or resources for the current project
-	GlobalProject bool `q:"global_project"`
+	GlobalProject *bool `q:"global_project"`
 
 	// Name to filter the response by the specified name property of the object
 	Name string `q:"name"`
