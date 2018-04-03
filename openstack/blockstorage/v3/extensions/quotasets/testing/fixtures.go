@@ -29,7 +29,7 @@ var successTestCases = []struct {
 		"gigabytes" : 10,
 		"per_volume_gigabytes" : 11,
 		"backups" : 12,
-		"backup_gigabytes" : 13,
+		"backup_gigabytes" : 13
 	}
 }`,
 		expectedQuotaSet: quotasets.QuotaSet{
@@ -79,7 +79,7 @@ var successTestCases = []struct {
 			"in_use": 30,
 			"limit": 31,
 			"reserved": 32
-		},
+		}
 		}
 	}
 }`,
@@ -106,7 +106,7 @@ var successTestCases = []struct {
 		"gigabytes": 10,
 		"per_volume_gigabytes": 11,
 		"backups": 12,
-		"backup_gigabytes": 13,
+		"backup_gigabytes": 13
 	}
 }`,
 		updateOpts: quotasets.UpdateOpts{
@@ -139,7 +139,7 @@ var successTestCases = []struct {
 		"gigabytes": 0,
 		"per_volume_gigabytes": 0,
 		"backups": 0,
-		"backup_gigabytes": 0,
+		"backup_gigabytes": 0
 	}
 }`,
 		updateOpts: quotasets.UpdateOpts{
