@@ -1,9 +1,9 @@
 /*
-Package quotasets enables retrieving and managing Compute quotas.
+Package quotasets enables retrieving and managing Block Storage quotas.
 
 Example to Get a Quota Set
 
-	quotaset, err := quotasets.Get(computeClient, "project-id").Extract()
+	quotaset, err := quotasets.Get(blockStorageClient, "project-id").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -12,7 +12,7 @@ Example to Get a Quota Set
 
 Example to Get a Detailed Quota Set
 
-	quotaset, err := quotasets.GetDetail(computeClient, "project-id").Extract()
+	quotaset, err := quotasets.GetDetail(blockStorageClient, "project-id").Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -22,11 +22,10 @@ Example to Get a Detailed Quota Set
 Example to Update a Quota Set
 
 	updateOpts := quotasets.UpdateOpts{
-		FixedIPs: gophercloud.IntToPointer(100),
-		Cores:    gophercloud.IntToPointer(64),
+		Volumes: gophercloud.IntToPointer(100),
 	}
 
-	quotaset, err := quotasets.Update(computeClient, "project-id", updateOpts).Extract()
+	quotaset, err := quotasets.Update(blockStorageClient, "project-id", updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

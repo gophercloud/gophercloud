@@ -5,8 +5,8 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// QuotaSet is a set of operational limits that allow for control of compute
-// usage.
+// QuotaSet is a set of operational limits that allow for control of block
+// storage usage.
 type QuotaSet struct {
 	// ID is project associated with this QuotaSet.
 	ID string `json:"id"`
@@ -33,8 +33,8 @@ type QuotaSet struct {
 	BackupGigabytes int `json:"backup_gigabytes"`
 }
 
-// QuotaDetailSet represents details of both operational limits of compute
-// resources and the current usage of those resources.
+// QuotaDetailSet represents details of both operational limits of block
+// storage resources and the current usage of those resources.
 type QuotaDetailSet struct {
 	// ID is the project ID associated with this QuotaDetailSet.
 	ID string `json:"id"`
@@ -74,7 +74,7 @@ type QuotaDetailSet struct {
 }
 
 // QuotaDetail is a set of details about a single operational limit that allows
-// for control of compute usage.
+// for control of block storage usage.
 type QuotaDetail struct {
 	// InUse is the current number of provisioned resources of the given type.
 	InUse int `json:"in_use"`

@@ -1,4 +1,4 @@
-// +build acceptance compute quotasets
+// +build acceptance quotasets
 
 package v3
 
