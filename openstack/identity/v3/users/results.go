@@ -98,6 +98,12 @@ type UpdateResult struct {
 	userResult
 }
 
+// ChangePasswordResult is the response from a ChangePassword operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type ChangePasswordResult struct {
+	gophercloud.ErrResult
+}
+
 // DeleteResult is the response from a Delete operation. Call its ExtractErr to
 // determine if the request succeeded or failed.
 type DeleteResult struct {

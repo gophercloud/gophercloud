@@ -54,6 +54,22 @@ Example to Update a User
 		panic(err)
 	}
 
+Example to Change Password of a User
+
+	userID := "0fe36e73809d46aeae6705c39077b1b3"
+	originalPassword := "secretsecret"
+	password := "new_secretsecret"
+
+	changePasswordOpts := users.ChangePasswordOpts{
+		OriginalPassword: originalPassword,
+		Password:         password,
+	}
+
+	err := users.ChangePassword(identityClient, userID, changePasswordOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Delete a User
 
 	userID := "0fe36e73809d46aeae6705c39077b1b3"

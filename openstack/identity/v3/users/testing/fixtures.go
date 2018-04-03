@@ -129,7 +129,7 @@ const CreateNoOptionsRequest = `
 }
 `
 
-// UpdateRequest provides the input to as Update request.
+// UpdateRequest provides the input to an Update request.
 const UpdateRequest = `
 {
     "user": {
@@ -160,6 +160,16 @@ const UpdateOutput = `
         "options": {
             "ignore_password_expiry": true
         }
+    }
+}
+`
+
+// ChangePasswordRequest provides the input to a ChangePassword request.
+const ChangePasswordRequest = `
+{
+    "user": {
+        "password": "new_secretsecret",
+        "original_password": "secretsecret"
     }
 }
 `
@@ -420,6 +430,18 @@ func HandleUpdateUserSuccessfully(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, UpdateOutput)
+	})
+}
+
+// HandleChangeUserPasswordSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that tests change user password.
+func HandleChangeUserPasswordSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users/9fe1d3/password", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, ChangePasswordRequest)
+
+		w.WriteHeader(http.StatusNoContent)
 	})
 }
 

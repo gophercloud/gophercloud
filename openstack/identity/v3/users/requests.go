@@ -204,6 +204,45 @@ func Update(client *gophercloud.ServiceClient, userID string, opts UpdateOptsBui
 	return
 }
 
+// ChangePasswordOptsBuilder allows extensions to add additional parameters to
+// the ChangePassword request.
+type ChangePasswordOptsBuilder interface {
+	ToUserChangePasswordMap() (map[string]interface{}, error)
+}
+
+// ChangePasswordOpts provides options for changing password for a user.
+type ChangePasswordOpts struct {
+	// OriginalPassword is the original password of the user.
+	OriginalPassword string `json:"original_password"`
+
+	// Password is the new password of the user.
+	Password string `json:"password"`
+}
+
+// ToUserChangePasswordMap formats a ChangePasswordOpts into a ChangePassword request.
+func (opts ChangePasswordOpts) ToUserChangePasswordMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "user")
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+// ChangePassword changes password for a user.
+func ChangePassword(client *gophercloud.ServiceClient, userID string, opts ChangePasswordOptsBuilder) (r ChangePasswordResult) {
+	b, err := opts.ToUserChangePasswordMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(changePasswordURL(client, userID), &b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
 // Delete deletes a user.
 func Delete(client *gophercloud.ServiceClient, userID string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, userID), nil)

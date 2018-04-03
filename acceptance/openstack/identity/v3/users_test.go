@@ -123,6 +123,46 @@ func TestUserCRUD(t *testing.T) {
 	tools.PrintResource(t, newUser.Extra)
 }
 
+func TestUserChangePassword(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v", err)
+	}
+
+	createOpts := users.CreateOpts{
+		Password: "secretsecret",
+		DomainID: "default",
+		Options: map[users.Option]interface{}{
+			users.IgnorePasswordExpiry: true,
+			users.MultiFactorAuthRules: []interface{}{
+				[]string{"password", "totp"},
+				[]string{"password", "custom-auth-method"},
+			},
+		},
+		Extra: map[string]interface{}{
+			"email": "jsmith@example.com",
+		},
+	}
+
+	user, err := CreateUser(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create user: %v", err)
+	}
+	defer DeleteUser(t, client, user.ID)
+
+	tools.PrintResource(t, user)
+	tools.PrintResource(t, user.Extra)
+
+	changePasswordOpts := users.ChangePasswordOpts{
+		OriginalPassword: "secretsecret",
+		Password:         "new_secretsecret",
+	}
+	err = users.ChangePassword(client, user.ID, changePasswordOpts).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to change password for user: %v", err)
+	}
+}
+
 func TestUsersListGroups(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	if err != nil {
