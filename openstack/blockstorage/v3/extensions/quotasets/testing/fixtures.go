@@ -16,7 +16,6 @@ const FirstTenantID = "555544443333222211110000ffffeeee"
 var successTestCases = []struct {
 	name, httpMethod, jsonBody, uriPath string
 	expectedQuotaSet                    quotasets.QuotaSet
-	expectedQuotaDetailSet              quotasets.QuotaDetailSet
 }{
 	{
 		name: "simple GET request",
@@ -40,58 +39,6 @@ var successTestCases = []struct {
 			BackupGigabytes:    13,
 		},
 		uriPath:    "/os-quota-sets/" + FirstTenantID,
-		httpMethod: "GET",
-	},
-
-	{
-		name: "GET details request",
-		jsonBody: `
-{
-	"quota_set" : {
-		"id": "555544443333222211110000ffffeeee",
-		"volumes" : {
-			"in_use": 15,
-			"limit": 16,
-			"reserved": 17
-		},
-		"snapshots" : {
-			"in_use": 18,
-			"limit": 19,
-			"reserved": 20
-		},
-		"gigabytes" : {
-			"in_use": 21,
-			"limit": 22,
-			"reserved": 23
-		},
-		"per_volume_gigabytes" : {
-			"in_use": 24,
-			"limit": 25,
-			"reserved": 26
-		},
-		"backups" : {
-			"in_use": 27,
-			"limit": 28,
-			"reserved": 29
-		},
-		"backup_gigabytes" : {
-			"in_use": 30,
-			"limit": 31,
-			"reserved": 32
-		},
-		}
-	}
-}`,
-		expectedQuotaDetailSet: quotasets.QuotaDetailSet{
-			ID:                 FirstTenantID,
-			Volumes:            quotasets.QuotaDetail{InUse: 15, Limit: 16, Reserved: 17},
-			Snapshots:          quotasets.QuotaDetail{InUse: 18, Limit: 19, Reserved: 20},
-			Gigabytes:          quotasets.QuotaDetail{InUse: 21, Limit: 22, Reserved: 23},
-			PerVolumeGigabytes: quotasets.QuotaDetail{InUse: 24, Limit: 25, Reserved: 26},
-			Backups:            quotasets.QuotaDetail{InUse: 27, Limit: 28, Reserved: 29},
-			BackupGigabytes:    quotasets.QuotaDetail{InUse: 30, Limit: 31, Reserved: 32},
-		},
-		uriPath:    "/os-quota-sets/" + FirstTenantID + "/detail",
 		httpMethod: "GET",
 	},
 }

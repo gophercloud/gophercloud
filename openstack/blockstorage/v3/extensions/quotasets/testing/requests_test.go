@@ -10,38 +10,26 @@ import (
 )
 
 var emptyQuotaSet = quotasets.QuotaSet{}
-var emptyQuotaDetailSet = quotasets.QuotaDetailSet{}
 
 func testSuccessTestCase(t *testing.T, jsonBody,
 	uriPath, httpMethod string,
 	expectedQuotaSet quotasets.QuotaSet,
-	expectedQuotaDetailSet quotasets.QuotaDetailSet) error {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleSuccessfulRequest(t, httpMethod, uriPath, jsonBody)
 
-	if expectedQuotaSet != emptyQuotaSet {
-		actual, err := quotasets.Get(client.ServiceClient(),
-			FirstTenantID).Extract()
-		if err != nil {
-			return err
-		}
-		th.CheckDeepEquals(t, &expectedQuotaSet, actual)
-	} else if expectedQuotaDetailSet != emptyQuotaDetailSet {
-		actual, err := quotasets.GetDetail(client.ServiceClient(),
-			FirstTenantID).Extract()
-		if err != nil {
-			return err
-		}
-		th.CheckDeepEquals(t, expectedQuotaDetailSet, actual)
+	actual, err := quotasets.Get(client.ServiceClient(),
+		FirstTenantID).Extract()
+	if err != nil {
+		return err
 	}
-	return nil
+	th.CheckDeepEquals(t, &expectedQuotaSet, actual)
 }
 
 func TestSuccessTestCases(t *testing.T) {
 	for _, tt := range successTestCases {
 		err := testSuccessTestCase(t, tt.jsonBody, tt.uriPath, tt.httpMethod,
-			tt.expectedQuotaSet, tt.expectedQuotaDetailSet)
+			tt.expectedQuotaSet)
 		if err != nil {
 			t.Fatalf("Test case '%s' failed with error:\n%s", tt.name, err)
 		}
