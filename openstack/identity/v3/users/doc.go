@@ -60,12 +60,12 @@ Example to Change Password of a User
 	originalPassword := "secretsecret"
 	password := "new_secretsecret"
 
-	chpwdOpts := users.ChpwdOpts{
+	changePasswordOpts := users.ChangePasswordOpts{
 		OriginalPassword: originalPassword,
 		Password:         password,
 	}
 
-	user, err := users.ChangePassword(identityClient, userID, chpwdOpts).ExtractErr()
+	user, err := users.ChangePassword(identityClient, userID, changePasswordOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

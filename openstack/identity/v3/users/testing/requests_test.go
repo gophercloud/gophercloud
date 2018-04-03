@@ -133,12 +133,12 @@ func TestChangeUserPassword(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleChangeUserPasswordSuccessfully(t)
 
-	chpwdOpts := users.ChpwdOpts{
+	changePasswordOpts := users.ChangePasswordOpts{
 		OriginalPassword: "secretsecret",
 		Password:         "new_secretsecret",
 	}
 
-	res := users.ChangePassword(client.ServiceClient(), "9fe1d3", chpwdOpts)
+	res := users.ChangePassword(client.ServiceClient(), "9fe1d3", changePasswordOpts)
 	th.AssertNoErr(t, res.Err)
 }
 
