@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/quotasets"
@@ -8,35 +9,63 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-var emptyQuotaSet = quotasets.QuotaSet{}
-var emptyQuotaUsageSet = quotasets.QuotaUsageSet{}
-
-func testSuccessTestCase(t *testing.T, httpMethod, uriPath, jsonBody string, uriQueryParams map[string]string, expectedQuotaSet quotasets.QuotaSet, expectedQuotaUsageSet quotasets.QuotaUsageSet) error {
+func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleSuccessfulRequest(t, httpMethod, uriPath, jsonBody, uriQueryParams)
 
-	if expectedQuotaSet != emptyQuotaSet {
-		actual, err := quotasets.Get(client.ServiceClient(), FirstTenantID).Extract()
-		if err != nil {
-			return err
-		}
-		th.CheckDeepEquals(t, &expectedQuotaSet, actual)
-	} else if expectedQuotaUsageSet != emptyQuotaUsageSet {
-		actual, err := quotasets.GetUsage(client.ServiceClient(), FirstTenantID).Extract()
-		if err != nil {
-			return err
-		}
-		th.CheckDeepEquals(t, expectedQuotaUsageSet, actual)
-	}
-	return nil
+	uriQueryParms := map[string]string{}
+	HandleSuccessfulRequest(t, "GET", "/os-quota-sets/"+FirstTenantID, getExpectedJSONBody, uriQueryParms)
+	actual, err := quotasets.Get(client.ServiceClient(), FirstTenantID).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &getExpectedQuotaSet, actual)
 }
 
-func TestSuccessTestCases(t *testing.T) {
-	for _, tt := range successTestCases {
-		err := testSuccessTestCase(t, tt.httpMethod, tt.uriPath, tt.jsonBody, tt.uriQueryParams, tt.expectedQuotaSet, tt.expectedQuotaUsageSet)
-		if err != nil {
-			t.Fatalf("Test case '%s' failed with error:\n%s", tt.name, err)
-		}
+func TestGetUsage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	uriQueryParms := map[string]string{"usage": "true"}
+	HandleSuccessfulRequest(t, "GET", "/os-quota-sets/"+FirstTenantID, getUsageExpectedJSONBody, uriQueryParms)
+	actual, err := quotasets.GetUsage(client.ServiceClient(), FirstTenantID).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, getUsageExpectedQuotaSet, actual)
+}
+
+func TestFullUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	uriQueryParms := map[string]string{}
+	HandleSuccessfulRequest(t, "PUT", "/os-quota-sets/"+FirstTenantID, fullUpdateExpectedJSONBody, uriQueryParms)
+	actual, err := quotasets.Update(client.ServiceClient(), FirstTenantID, fullUpdateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &fullUpdateExpectedQuotaSet, actual)
+}
+
+func TestPartialUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	uriQueryParms := map[string]string{}
+	HandleSuccessfulRequest(t, "PUT", "/os-quota-sets/"+FirstTenantID, partialUpdateExpectedJSONBody, uriQueryParms)
+	actual, err := quotasets.Update(client.ServiceClient(), FirstTenantID, partialUpdateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &partiualUpdateExpectedQuotaSet, actual)
+}
+
+type ErrorUpdateOpts quotasets.UpdateOpts
+
+func (opts ErrorUpdateOpts) ToBlockStorageQuotaUpdateMap() (map[string]interface{}, error) {
+	return nil, errors.New("This is an error")
+}
+
+func TestErrorInToBlockStorageQuotaUpdateMap(t *testing.T) {
+	opts := &ErrorUpdateOpts{}
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleSuccessfulRequest(t, "PUT", "/os-quota-sets/"+FirstTenantID, "", nil)
+	_, err := quotasets.Update(client.ServiceClient(), FirstTenantID, opts).Extract()
+	if err == nil {
+		t.Fatal("Error handling failed")
 	}
 }
