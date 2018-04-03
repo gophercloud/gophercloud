@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/extensions/quotasets"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -15,6 +16,7 @@ const FirstTenantID = "555544443333222211110000ffffeeee"
 var successTestCases = []struct {
 	name, httpMethod, jsonBody, uriPath string
 	uriQueryParams                      map[string]string
+	updateOpts                          quotasets.UpdateOpts
 	expectedQuotaSet                    quotasets.QuotaSet
 	expectedQuotaDetailSet              quotasets.QuotaDetailSet
 }{
@@ -94,6 +96,67 @@ var successTestCases = []struct {
 		uriPath:        "/os-quota-sets/" + FirstTenantID,
 		uriQueryParams: map[string]string{"usage": "true"},
 		httpMethod:     "GET",
+	},
+
+	{
+		name: "update all quota fields",
+		jsonBody: `
+{
+	"quota_set": {
+		"volumes": 8,
+		"snapshots": 9,
+		"gigabytes": 10,
+		"per_volume_gigabytes": 11,
+		"backups": 12,
+		"backup_gigabytes": 13
+	}
+}`,
+		updateOpts: quotasets.UpdateOpts{
+			Volumes:            gophercloud.IntToPointer(8),
+			Snapshots:          gophercloud.IntToPointer(9),
+			Gigabytes:          gophercloud.IntToPointer(10),
+			PerVolumeGigabytes: gophercloud.IntToPointer(11),
+			Backups:            gophercloud.IntToPointer(12),
+			BackupGigabytes:    gophercloud.IntToPointer(13),
+		},
+		expectedQuotaSet: quotasets.QuotaSet{
+			Volumes:            8,
+			Snapshots:          9,
+			Gigabytes:          10,
+			PerVolumeGigabytes: 11,
+			Backups:            12,
+			BackupGigabytes:    13,
+		},
+		uriPath:    "/os-quota-sets/" + FirstTenantID,
+		httpMethod: "PUT",
+	},
+
+	{
+		name: "handle partial update of quotasets",
+		jsonBody: `
+{
+	"quota_set": {
+		"volumes": 200,
+		"snapshots": 0,
+		"gigabytes": 0,
+		"per_volume_gigabytes": 0,
+		"backups": 0,
+		"backup_gigabytes": 0
+	}
+}`,
+		updateOpts: quotasets.UpdateOpts{
+			Volumes:            gophercloud.IntToPointer(200),
+			Snapshots:          gophercloud.IntToPointer(0),
+			Gigabytes:          gophercloud.IntToPointer(0),
+			PerVolumeGigabytes: gophercloud.IntToPointer(0),
+			Backups:            gophercloud.IntToPointer(0),
+			BackupGigabytes:    gophercloud.IntToPointer(0),
+		},
+		expectedQuotaSet: quotasets.QuotaSet{
+			Volumes: 200,
+		},
+		uriPath:    "/os-quota-sets/" + FirstTenantID,
+		httpMethod: "PUT",
 	},
 }
 
