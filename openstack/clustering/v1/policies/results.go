@@ -20,7 +20,7 @@ type Policy struct {
 	Spec      map[string]interface{} `json:"spec"`
 	Type      string                 `json:"type"`
 	UpdatedAt time.Time              `json:"-"`
-	UserUUID  string                 `json:"user"`
+	User      string                 `json:"user"`
 }
 
 // ExtractPolicies interprets a page of results as a slice of Policy.
