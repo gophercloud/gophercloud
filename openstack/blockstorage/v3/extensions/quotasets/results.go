@@ -84,9 +84,13 @@ type QuotaDetailSet struct {
 // QuotaDetail is a set of details about a single operational limit that allows
 // for control of compute usage.
 type QuotaDetail struct {
-	// InUse is the current number of provisioned/allocated resources of the
-	// given type.
+	// InUse is the current number of provisioned resources of the given type.
 	InUse int `json:"in_use"`
+
+	// Allocated is the current number of resources of a given type allocated
+	// for use.  It is only available when nested quota is enabled. It tells
+	// how
+	Allocated int `json:"allocated"`
 
 	// Reserved is a transitional state when a claim against quota has been made
 	// but the resource is not yet fully online.
