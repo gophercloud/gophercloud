@@ -10,3 +10,10 @@ func Get(client *gophercloud.ServiceClient, projectID string) GetResult {
 	_, res.Err = client.Get(getURL(client, projectID), &res.Body, nil)
 	return res
 }
+
+// Get returns public data about the project's default block storage quotas.
+func GetDefaults(client *gophercloud.ServiceClient, projectID string) GetResult {
+	var res GetResult
+	_, res.Err = client.Get(getDefaultsURL(client, projectID), &res.Body, nil)
+	return res
+}
