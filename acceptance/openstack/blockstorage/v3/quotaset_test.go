@@ -93,37 +93,6 @@ func TestQuotasetUpdate(t *testing.T) {
 	}
 }
 
-func TestQuotasetDelete(t *testing.T) {
-	client, projectID := getClientAndProject(t)
-
-	// save original quotas
-	orig, err := quotasets.Get(client, projectID).Extract()
-	th.AssertNoErr(t, err)
-
-	defer func() {
-		restore := quotasets.UpdateOpts{}
-		FillUpdateOptsFromQuotaSet(*orig, &restore)
-
-		_, err = quotasets.Update(client, projectID, restore).Extract()
-		th.AssertNoErr(t, err)
-	}()
-
-	// Obtain environment default quotaset values to validate deletion.
-	defaultQuotaSet, err := quotasets.GetDefaults(client, projectID).Extract()
-	th.AssertNoErr(t, err)
-
-	// Test Delete
-	_, err = quotasets.Delete(client, projectID).Extract()
-	th.AssertNoErr(t, err)
-
-	newQuotas, err := quotasets.Get(client, projectID).Extract()
-	th.AssertNoErr(t, err)
-
-	if newQuotas.Volumes != defaultQuotaSet.Volumes {
-		t.Fatalf("Failed to delete quotas!")
-	}
-}
-
 // getClientAndProject reduces boilerplate by returning a new blockstorage v3
 // ServiceClient and a project ID obtained from the OS_PROJECT_NAME envvar.
 func getClientAndProject(t *testing.T) (*gophercloud.ServiceClient, string) {
