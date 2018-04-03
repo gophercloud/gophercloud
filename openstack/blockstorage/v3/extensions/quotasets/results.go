@@ -31,9 +31,6 @@ type QuotaSet struct {
 	// BackupGigabytes is the size (GB) of backups that are allowed for each
 	// project.
 	BackupGigabytes int `json:"backup_gigabytes"`
-
-	// Groups is the number of groups that are allowed for each project.
-	Groups int `json:"groups"`
 }
 
 // QuotaDetailSet represents details of both operational limits of compute
@@ -74,11 +71,6 @@ type QuotaDetailSet struct {
 	// Note: allocated attribute is available only when nested quota is
 	// enabled.
 	BackupGigabytes QuotaDetail `json:"backup_gigabytes"`
-
-	// Volumes is the group usage information for this project, including
-	// in_use, limit, reserved and allocated attributes. Note: allocated
-	// attribute is available only when nested quota is enabled.
-	Groups QuotaDetail `json:"groups"`
 }
 
 // QuotaDetail is a set of details about a single operational limit that allows
