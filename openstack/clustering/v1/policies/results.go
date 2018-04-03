@@ -15,6 +15,7 @@ type Policy struct {
 	Data        map[string]interface{} `json:"data"`
 	DomainUUID  string                 `json:"domain"`
 	ID          string                 `json:"id"`
+	Metadata    map[string]string      `json:"metadata"`
 	Name        string                 `json:"name"`
 	ProjectUUID string                 `json:"project"`
 	Spec        map[string]interface{} `json:"spec"`
