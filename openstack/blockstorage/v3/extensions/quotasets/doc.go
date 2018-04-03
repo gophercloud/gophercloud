@@ -18,18 +18,5 @@ Example to Get a Detailed Quota Set
 	}
 
 	fmt.Printf("%+v\n", quotaset)
-
-Example to Update a Quota Set
-
-	updateOpts := quotasets.UpdateOpts{
-		Volumes: gophercloud.IntToPointer(100),
-	}
-
-	quotaset, err := quotasets.Update(blockStorageClient, "project-id", updateOpts).Extract()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("%+v\n", quotaset)
 */
 package quotasets

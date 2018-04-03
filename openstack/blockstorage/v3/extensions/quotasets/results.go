@@ -133,12 +133,6 @@ type GetResult struct {
 	quotaResult
 }
 
-// UpdateResult is the response from a Update operation. Call its Extract method
-// to interpret it as a QuotaSet.
-type UpdateResult struct {
-	quotaResult
-}
-
 type quotaDetailResult struct {
 	gophercloud.Result
 }
