@@ -15,6 +15,7 @@ const FirstTenantID = "555544443333222211110000ffffeeee"
 
 var successTestCases = []struct {
 	name, httpMethod, jsonBody, uriPath string
+	uriQueryParams                      map[string]string
 	updateOpts                          quotasets.UpdateOpts
 	expectedQuotaSet                    quotasets.QuotaSet
 	expectedQuotaDetailSet              quotasets.QuotaDetailSet
@@ -92,8 +93,9 @@ var successTestCases = []struct {
 			Backups:            quotasets.QuotaDetail{InUse: 27, Limit: 28, Reserved: 29},
 			BackupGigabytes:    quotasets.QuotaDetail{InUse: 30, Limit: 31, Reserved: 32},
 		},
-		uriPath:    "/os-quota-sets/" + FirstTenantID + "/detail",
-		httpMethod: "GET",
+		uriPath:        "/os-quota-sets/" + FirstTenantID,
+		uriQueryParams: map[string]string{"usage": "true"},
+		httpMethod:     "GET",
 	},
 
 	{
@@ -165,11 +167,18 @@ var successTestCases = []struct {
 }
 
 // HandleSuccessfulRequest configures the test server to respond to an HTTP request.
-func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput string) {
+func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput string,
+	uriQueryParams map[string]string,
+) {
+
 	th.Mux.HandleFunc(uriPath, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, httpMethod)
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.Header().Add("Content-Type", "application/json")
+
+		if uriQueryParams != nil {
+			th.TestFormValues(t, r, uriQueryParams)
+		}
 		if httpMethod == "DELETE" {
 			th.TestBody(t, r, "")
 			w.Header().Add("Content-Type", "application/json")

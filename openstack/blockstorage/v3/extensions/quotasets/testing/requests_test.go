@@ -13,14 +13,16 @@ var emptyQuotaSet = quotasets.QuotaSet{}
 var emptyQuotaDetailSet = quotasets.QuotaDetailSet{}
 var emptyUpdateOpts = quotasets.UpdateOpts{}
 
-func testSuccessTestCase(t *testing.T, jsonBody,
-	uriPath, httpMethod string,
-	updateOpts quotasets.UpdateOpts,
+func testSuccessTestCase(t *testing.T,
+	httpMethod, uriPath, jsonBody string,
+	uriQueryParams map[string]string,
 	expectedQuotaSet quotasets.QuotaSet,
-	expectedQuotaDetailSet quotasets.QuotaDetailSet) error {
+	expectedQuotaDetailSet quotasets.QuotaDetailSet,
+	updateOpts quotasets.UpdateOpts,
+) error {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleSuccessfulRequest(t, httpMethod, uriPath, jsonBody)
+	HandleSuccessfulRequest(t, httpMethod, uriPath, jsonBody, uriQueryParams)
 
 	if updateOpts != emptyUpdateOpts {
 		actual, err := quotasets.Update(client.ServiceClient(),
@@ -52,8 +54,12 @@ func testSuccessTestCase(t *testing.T, jsonBody,
 
 func TestSuccessTestCases(t *testing.T) {
 	for _, tt := range successTestCases {
-		err := testSuccessTestCase(t, tt.jsonBody, tt.uriPath, tt.httpMethod,
-			tt.updateOpts, tt.expectedQuotaSet, tt.expectedQuotaDetailSet)
+		err := testSuccessTestCase(t,
+			tt.httpMethod, tt.uriPath, tt.jsonBody, tt.uriQueryParams,
+			tt.expectedQuotaSet,
+			tt.expectedQuotaDetailSet,
+			tt.updateOpts,
+		)
 		if err != nil {
 			t.Fatalf("Test case '%s' failed with error:\n%s", tt.name, err)
 		}
@@ -70,7 +76,7 @@ func TestErrorInToBlockStorageQuotaUpdateMap(t *testing.T) {
 	opts := &ErrorUpdateOpts{}
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleSuccessfulRequest(t, "PUT", "/os-quota-sets/"+FirstTenantID, "")
+	HandleSuccessfulRequest(t, "PUT", "/os-quota-sets/"+FirstTenantID, "", nil)
 	_, err := quotasets.Update(client.ServiceClient(), FirstTenantID, opts).Extract()
 	if err == nil {
 		t.Fatal("Error handling failed")
