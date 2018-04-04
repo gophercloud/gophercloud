@@ -6,7 +6,7 @@ const ApiVersion = "v2"
 const ApiName = "queues"
 
 func commonURL(client *gophercloud.ServiceClient) string {
-	return client.ServiceURL(apiVersion, apiName)
+	return client.ServiceURL(ApiVersion, ApiName)
 }
 
 func createURL(client *gophercloud.ServiceClient, queueName string) string {
