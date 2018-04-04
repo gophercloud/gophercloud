@@ -170,6 +170,14 @@ func TestAddToGroup(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
+func TestRemoveFromGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRemoveFromGroupSuccessfully(t)
+	res := users.RemoveFromGroup(client.ServiceClient(), "ea167b", "9fe1d3")
+	th.AssertNoErr(t, res.Err)
+}
+
 func TestListUserProjects(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
