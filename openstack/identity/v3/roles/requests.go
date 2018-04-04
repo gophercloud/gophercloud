@@ -201,6 +201,14 @@ func ListAssignments(client *gophercloud.ServiceClient, opts ListAssignmentsOpts
 	})
 }
 
+// ListAssignmentsForUserOnProject enumerates the roles assigned to a user on a project.
+func ListAssignmentsForUserOnProject(client *gophercloud.ServiceClient, projectID, userID string) pagination.Pager {
+	url := listAssignmentsForUserOnProjectURL(client, projectID, userID)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return roles.RolePage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
 // AssignOpts provides options to assign a role
 type AssignOpts struct {
 	// UserID is the ID of a user to assign a role
