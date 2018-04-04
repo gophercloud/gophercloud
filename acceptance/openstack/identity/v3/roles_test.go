@@ -152,6 +152,62 @@ func TestRoleAssignToUserOnProject(t *testing.T) {
 	}
 }
 
+func TestRoleListAssignmentForUserOnProject(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an indentity client: %v", err)
+	}
+
+	project, err := CreateProject(t, client, nil)
+	if err != nil {
+		t.Fatal("Unable to create a project")
+	}
+	defer DeleteProject(t, client, project.ID)
+
+	role, err := FindRole(t, client)
+	if err != nil {
+		t.Fatalf("Unable to get a role: %v", err)
+	}
+
+	user, err := CreateUser(t, client, nil)
+	if err != nil {
+		t.Fatalf("Unable to create user: %v", err)
+	}
+	defer DeleteUser(t, client, user.ID)
+
+	t.Logf("Attempting to assign a role %s to a user %s on a project %s",
+		role.Name, user.Name, project.Name,
+	)
+	err = roles.Assign(client, role.ID, roles.AssignOpts{
+		UserID:    user.ID,
+		ProjectID: project.ID,
+	}).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to assign a role to a user on a project: %v", err)
+	}
+	t.Logf("Successfully assigned a role %s to a user %s on a project %s",
+		role.Name, user.Name, project.Name,
+	)
+	defer UnassignRole(t, client, role.ID, &roles.UnassignOpts{
+		UserID:    user.ID,
+		ProjectID: project.ID,
+	})
+
+	allPages, err := roles.ListAssignmentsForUserOnProject(client, project.ID, user.ID).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list role assignments for user on project: %v", err)
+	}
+
+	allRoles, err := roles.ExtractRoles(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract roles: %v", err)
+	}
+
+	for _, role := range allRoles {
+		tools.PrintResource(t, role)
+	}
+}
+
 func TestRoleAssignToUserOnDomain(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	if err != nil {

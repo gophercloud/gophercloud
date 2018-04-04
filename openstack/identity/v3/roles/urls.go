@@ -30,6 +30,10 @@ func listAssignmentsURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("role_assignments")
 }
 
+func listAssignmentsForUserOnProjectURL(client *gophercloud.ServiceClient, projectID, userID string) string {
+	return client.ServiceURL("projects", projectID, "users", userID, rolePath)
+}
+
 func assignURL(client *gophercloud.ServiceClient, targetType, targetID, actorType, actorID, roleID string) string {
 	return client.ServiceURL(targetType, targetID, actorType, actorID, rolePath, roleID)
 }

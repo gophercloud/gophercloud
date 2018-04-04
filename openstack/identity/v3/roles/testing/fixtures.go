@@ -141,6 +141,29 @@ const ListAssignmentOutput = `
 }
 `
 
+// ListAssignmentsForUserOnProjectOutput provides a result of ListAssignmentsForUserOnProject request.
+const ListAssignmentsForUserOnProjectOutput = `
+{
+    "links": {
+        "next": null,
+        "previous": null,
+		"self": "http://example.com/identity/v3/projects/9e5a15/users/b964a9/roles",
+    },
+    "roles": [
+        {
+            "id": "9fe1d3",
+            "links": {
+                "self": "https://example.com/identity/v3/roles/9fe1d3"
+            },
+            "name": "support",
+            "extra": {
+                "description": "read-only support role"
+            }
+        }
+    ]
+}
+`
+
 // FirstRole is the first role in the List request.
 var FirstRole = roles.Role{
 	DomainID: "default",
@@ -329,5 +352,36 @@ func HandleListRoleAssignmentsSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, ListAssignmentOutput)
+	})
+}
+
+// RoleForUserOnProject is the role for user on project in the ListAssignmentsForUserOnProject request.
+var RoleForUserOnProject = roles.Role{
+	ID: "9fe1d3",
+	Links: map[string]interface{}{
+		"self": "https://example.com/identity/v3/roles/9fe1d3",
+	},
+	Name: "support",
+	Extra: map[string]interface{}{
+		"description": "read-only support role",
+	},
+}
+
+// ExpectedRolesForUserOnProjectSlice is the slice of roles expected to be returned
+// from ListAssignmentsForUserOnProjectOutput.
+var ExpectedRolesForUserOnProjectSlice = []roles.Role{RoleForUserOnProject}
+
+// HandleListAssignmentsForUserOnProjectSuccessfully creates an HTTP handler at
+// `/projects/9e5a15/users/b964a9/roles` on the test handler mux that tests listing
+// role assignments for user on project.
+func HandleListAssignmentsForUserOnProjectSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/projects/9e5a15/users/b964a9/roles", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListAssignmentsForUserOnProjectOutput)
 	})
 }
