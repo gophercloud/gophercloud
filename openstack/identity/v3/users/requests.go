@@ -266,6 +266,15 @@ func AddToGroup(client *gophercloud.ServiceClient, groupID, userID string) (r Ad
 	return
 }
 
+// RemoveFromGroup removes a user from a group.
+func RemoveFromGroup(client *gophercloud.ServiceClient, groupID, userID string) (r RemoveFromGroupResult) {
+	url := removeFromGroupURL(client, groupID, userID)
+	_, r.Err = client.Delete(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
 // ListProjects enumerates groups user belongs to.
 func ListProjects(client *gophercloud.ServiceClient, userID string) pagination.Pager {
 	url := listProjectsURL(client, userID)
