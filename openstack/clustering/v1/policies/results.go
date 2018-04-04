@@ -2,7 +2,6 @@ package policies
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -64,8 +63,6 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
-		fmt.Println("Error Unmarshal")
-		fmt.Printf("Detail Unmarshal Error: %v", err)
 		return err
 	}
 	*r = Policy(s.tmp)
