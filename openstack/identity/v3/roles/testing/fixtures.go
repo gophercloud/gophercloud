@@ -147,7 +147,7 @@ const ListAssignmentsForUserOnProjectOutput = `
     "links": {
         "next": null,
         "previous": null,
-		"self": "http://example.com/identity/v3/projects/9e5a15/users/b964a9/roles",
+        "self": "http://example.com/identity/v3/projects/9e5a15/users/b964a9/roles"
     },
     "roles": [
         {
