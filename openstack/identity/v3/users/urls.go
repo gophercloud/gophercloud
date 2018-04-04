@@ -30,6 +30,10 @@ func listGroupsURL(client *gophercloud.ServiceClient, userID string) string {
 	return client.ServiceURL("users", userID, "groups")
 }
 
+func addToGroupURL(client *gophercloud.ServiceClient, groupID, userID string) string {
+	return client.ServiceURL("groups", groupID, "users", userID)
+}
+
 func listProjectsURL(client *gophercloud.ServiceClient, userID string) string {
 	return client.ServiceURL("users", userID, "projects")
 }

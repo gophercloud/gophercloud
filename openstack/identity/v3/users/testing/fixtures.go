@@ -470,6 +470,17 @@ func HandleListUserGroupsSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleAddToGroupSuccessfully creates an HTTP handler at /groups/{groupID}/users/{userID}
+// on the test handler mux that tests adding user to group.
+func HandleAddToGroupSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/groups/ea167b/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
 // HandleListUserProjectsSuccessfully creates an HTTP handler at /users/{userID}/projects
 // on the test handler mux that respons wit a list of two projects
 func HandleListUserProjectsSuccessfully(t *testing.T) {
