@@ -205,7 +205,7 @@ func ListAssignments(client *gophercloud.ServiceClient, opts ListAssignmentsOpts
 func ListAssignmentsForUserOnProject(client *gophercloud.ServiceClient, projectID, userID string) pagination.Pager {
 	url := listAssignmentsForUserOnProjectURL(client, projectID, userID)
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return roles.RolePage{pagination.LinkedPageBase{PageResult: r}}
+		return RolePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
