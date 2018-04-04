@@ -64,5 +64,14 @@ Example to Update a Queue
 	if err != nil {
 		panic(err)
 	}
+
+Example to Get a Queue
+
+	clientID := "3381af92-2b9e-11e3-b191-71861300734d"
+
+	queue, err := queues.Get(client, queueName, clientID).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package queues

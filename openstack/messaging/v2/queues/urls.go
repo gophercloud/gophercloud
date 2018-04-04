@@ -20,3 +20,7 @@ func listURL(client *gophercloud.ServiceClient) string {
 func updateURL(client *gophercloud.ServiceClient, queueName string) string {
 	return client.ServiceURL(ApiVersion, ApiName, queueName)
 }
+
+func getUrl(client *gophercloud.ServiceClient, queueName string) string {
+	return client.ServiceURL(ApiVersion, ApiName, queueName)
+}

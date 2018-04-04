@@ -156,3 +156,10 @@ func Update(client *gophercloud.ServiceClient, queueName string, clientID string
 	})
 	return
 }
+
+// Get requests details on a single queue, by name.
+func Get(client *gophercloud.ServiceClient, queueName string, clientID string) (r GetResult) {
+	_, r.Err = client.Get(getUrl(client, queueName), &r.Body, &gophercloud.RequestOpts{
+		MoreHeaders: map[string]string{"Client-ID": clientID}})
+	return
+}
