@@ -186,17 +186,23 @@ func TestUserAddToGroup(t *testing.T) {
 	tools.PrintResource(t, user)
 	tools.PrintResource(t, user.Extra)
 
-	allGroupPages, err := groups.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list groups: %v", err)
+	createGroupOpts := groups.CreateOpts{
+		Name:     "testgroup",
+		DomainID: "default",
+		Extra: map[string]interface{}{
+			"email": "testgroup@example.com",
+		},
 	}
 
-	allGroups, err := groups.ExtractGroups(allGroupPages)
+	// Create Group in the default domain
+	group, err := CreateGroup(t, client, &createGroupOpts)
 	if err != nil {
-		t.Fatalf("Unable to extract groups: %v", err)
+		t.Fatalf("Unable to create group: %v", err)
 	}
+	defer DeleteGroup(t, client, group.ID)
 
-	group := allGroups[0]
+	tools.PrintResource(t, group)
+	tools.PrintResource(t, group.Extra)
 
 	err = users.AddToGroup(client, group.ID, user.ID).ExtractErr()
 	if err != nil {
