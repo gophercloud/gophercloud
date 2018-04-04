@@ -115,6 +115,25 @@ func TestListAssignmentsSinglePage(t *testing.T) {
 	th.CheckEquals(t, count, 1)
 }
 
+func TestListAssignmentsForUserOnProject(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListAssignmentsForUserOnProjectSuccessfully(t)
+
+	count := 0
+	err := roles.ListAssignmentsForUserOnProject(client.ServiceClient(), "9e5a15", "b964a9").EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := roles.ExtractRoles(page)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, ExpectedRolesForUserOnProjectSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+}
+
 func TestAssign(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
