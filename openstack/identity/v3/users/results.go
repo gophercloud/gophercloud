@@ -116,6 +116,12 @@ type AddToGroupResult struct {
 	gophercloud.ErrResult
 }
 
+// CheckInGroupResult is the response from a CheckInGroup operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type CheckInGroupResult struct {
+	gophercloud.ErrResult
+}
+
 // RemoveFromGroupResult is the response from a RemoveFromGroup operation. Call its
 // ExtractErr method to determine if the request succeeded or failed.
 type RemoveFromGroupResult struct {

@@ -250,6 +250,65 @@ func TestUsersAddToGroup(t *testing.T) {
 	}
 }
 
+func TestUsersCheckInGroup(t *testing.T) {
+	client, err := clients.NewIdentityV3Client()
+	if err != nil {
+		t.Fatalf("Unable to obtain an identity client: %v", err)
+	}
+
+	createOpts := users.CreateOpts{
+		Password: "foobar",
+		DomainID: "default",
+		Options: map[users.Option]interface{}{
+			users.IgnorePasswordExpiry: true,
+			users.MultiFactorAuthRules: []interface{}{
+				[]string{"password", "totp"},
+				[]string{"password", "custom-auth-method"},
+			},
+		},
+		Extra: map[string]interface{}{
+			"email": "jsmith@example.com",
+		},
+	}
+
+	user, err := CreateUser(t, client, &createOpts)
+	if err != nil {
+		t.Fatalf("Unable to create user: %v", err)
+	}
+	defer DeleteUser(t, client, user.ID)
+
+	tools.PrintResource(t, user)
+	tools.PrintResource(t, user.Extra)
+
+	createGroupOpts := groups.CreateOpts{
+		Name:     "testgroup",
+		DomainID: "default",
+		Extra: map[string]interface{}{
+			"email": "testgroup@example.com",
+		},
+	}
+
+	// Create Group in the default domain
+	group, err := CreateGroup(t, client, &createGroupOpts)
+	if err != nil {
+		t.Fatalf("Unable to create group: %v", err)
+	}
+	defer DeleteGroup(t, client, group.ID)
+
+	tools.PrintResource(t, group)
+	tools.PrintResource(t, group.Extra)
+
+	err = users.AddToGroup(client, group.ID, user.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to add user to group: %v", err)
+	}
+
+	err = users.CheckInGroup(client, group.ID, user.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to check whether user belongs to group correctly: %v", err)
+	}
+}
+
 func TestUsersRemoveFromGroup(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	if err != nil {

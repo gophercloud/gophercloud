@@ -34,6 +34,10 @@ func addToGroupURL(client *gophercloud.ServiceClient, groupID, userID string) st
 	return client.ServiceURL("groups", groupID, "users", userID)
 }
 
+func checkInGroupURL(client *gophercloud.ServiceClient, groupID, userID string) string {
+	return client.ServiceURL("groups", groupID, "users", userID)
+}
+
 func removeFromGroupURL(client *gophercloud.ServiceClient, groupID, userID string) string {
 	return client.ServiceURL("groups", groupID, "users", userID)
 }

@@ -266,6 +266,15 @@ func AddToGroup(client *gophercloud.ServiceClient, groupID, userID string) (r Ad
 	return
 }
 
+// CheckInGroup checks whether a user belongs to a group.
+func CheckInGroup(client *gophercloud.ServiceClient, groupID, userID string) (r CheckInGroupResult) {
+	url := checkInGroupURL(client, groupID, userID)
+	_, r.Err = client.Request("HEAD", url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
 // RemoveFromGroup removes a user from a group.
 func RemoveFromGroup(client *gophercloud.ServiceClient, groupID, userID string) (r RemoveFromGroupResult) {
 	url := removeFromGroupURL(client, groupID, userID)
