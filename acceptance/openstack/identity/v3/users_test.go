@@ -303,7 +303,7 @@ func TestUsersRemoveFromGroup(t *testing.T) {
 		t.Fatalf("Unable to add user to group: %v", err)
 	}
 
-	err = users.RemoveFromGroup(client, groupID, user.ID).ExtractErr()
+	err = users.RemoveFromGroup(client, group.ID, user.ID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to remove user from group: %v", err)
 	}
