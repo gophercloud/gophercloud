@@ -73,5 +73,14 @@ Example to Get a Queue
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete a Queue
+
+	clientID := "3381af92-2b9e-11e3-b191-71861300734d"
+
+	err := queues.Delete(client, queueName, clientID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package queues
