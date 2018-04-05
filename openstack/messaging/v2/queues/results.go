@@ -119,3 +119,33 @@ func (r *QueueDetails) UnmarshalJSON(b []byte) error {
 
 	return err
 }
+
+func (r *QueueDetails) UnmarshalJSON(b []byte) error {
+	type tmp QueueDetails
+	var s struct {
+		tmp
+		Extra map[string]interface{} `json:"extra"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = QueueDetails(s.tmp)
+
+	// Collect other fields and bundle them into Extra
+	// but only if a field titled "extra" wasn't sent.
+	if s.Extra != nil {
+		r.Extra = s.Extra
+	} else {
+		var result interface{}
+		err := json.Unmarshal(b, &result)
+		if err != nil {
+			return err
+		}
+		if resultMap, ok := result.(map[string]interface{}); ok {
+			r.Extra = internal.RemainingKeys(QueueDetails{}, resultMap)
+		}
+	}
+
+	return err
+}
