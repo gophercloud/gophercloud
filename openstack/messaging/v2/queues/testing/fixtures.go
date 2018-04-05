@@ -90,7 +90,7 @@ const UpdateQueueRequest = `
 // UpdateQueueResponse is a sample response to a update queue.
 const UpdateQueueResponse = `
 {
-    "_max_claim_count": 10
+	"description": "Update queue description"
 }`
 
 // FirstQueue is the first result in a List.

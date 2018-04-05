@@ -60,13 +60,13 @@ func TestUpdate(t *testing.T) {
 
 	updateOpts := queues.UpdateOpts{
 		queues.UpdateQueueBody{
-			Op:    "replace",
+			Op:    queues.ReplaceOp,
 			Path:  "/metadata/_max_claim_count",
 			Value: 10,
 		},
 	}
 	updatedQueueResult := queues.QueueDetails{
-		MaxClaimCount: 10,
+		Extra: map[string]interface{}{"description": "Update queue description"},
 	}
 
 	actual, err := queues.Update(fake.ServiceClient(), QueueName, ClientID, updateOpts).Extract()

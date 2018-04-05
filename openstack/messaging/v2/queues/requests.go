@@ -131,12 +131,20 @@ type UpdateOptsBuilder interface {
 // UpdateOpts is an array of UpdateQueueBody.
 type UpdateOpts []UpdateQueueBody
 
-// UpdateOpts implements UpdateOpts.
+// UpdateQueueBody implements UpdateOpts.
 type UpdateQueueBody struct {
-	Op    string      `json:"op" required:"true"`
+	Op    UpdateOp    `json:"op" required:"true"`
 	Path  string      `json:"path" required:"true"`
 	Value interface{} `json:"value" required:"true"`
 }
+
+type UpdateOp string
+
+const (
+	ReplaceOp UpdateOp = "replace"
+	AddOp     UpdateOp = "add"
+	RemoveOp  UpdateOp = "remove"
+)
 
 // ToQueueUpdateMap constructs a request body from UpdateOpts.
 func (opts UpdateOpts) ToQueueUpdateMap() (map[string]interface{}, error) {
