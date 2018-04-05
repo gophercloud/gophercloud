@@ -84,3 +84,17 @@ func TestListAllL7Policies(t *testing.T) {
 	th.CheckDeepEquals(t, L7PolicyToURL, actual[0])
 	th.CheckDeepEquals(t, L7PolicyToPool, actual[1])
 }
+
+func TestGetL7Policy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleL7PolicyGetSuccessfully(t)
+
+	client := fake.ServiceClient()
+	actual, err := l7policies.Get(client, "8a1412f0-4c32-4257-8b07-af4770b604fd").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, L7PolicyToURL, *actual)
+}

@@ -131,3 +131,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		return L7PolicyPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// Get retrieves a particular l7policy based on its unique ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
+}
