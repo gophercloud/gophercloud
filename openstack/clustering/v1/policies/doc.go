@@ -22,5 +22,31 @@ Example to List Policies
 		fmt.Printf("%+v\n", policy)
 	}
 
+
+Example to Create a policy
+
+	opts := policies.CreateOpts{
+		Name: "new_policy",
+		Spec: policies.Spec{
+			Description: "new policy description",
+			Properties: map[string]interface{}{
+				"hooks": map[string]interface{}{
+					"type": "zaqar",
+					"params": map[string]interface{}{
+						"queue": "my_zaqar_queue",
+					},
+					"timeout": 10,
+				},
+			},
+			Type:    "senlin.policy.deletion",
+			Version: "1.1",
+		},
+	}
+
+	createdPolicy, err := policies.Create(client, opts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package policies

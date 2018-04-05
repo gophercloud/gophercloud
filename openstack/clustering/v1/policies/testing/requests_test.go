@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/policies"
@@ -38,4 +39,28 @@ func TestListPolicies(t *testing.T) {
 	if count != 2 {
 		t.Errorf("Expected 2 pages, got %d", count)
 	}
+}
+
+func TestCreatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandlePolicyCreate(t)
+
+	expected := ExpectedCreatePolicy
+
+	opts := policies.CreateOpts{
+		Name: ExpectedCreatePolicy.Name,
+		Spec: policies.Spec{
+			Description: ExpectedCreatePolicy.Spec["description"].(string),
+			Properties:  ExpectedCreatePolicy.Spec["properties"].(map[string]interface{}),
+			Type:        ExpectedCreatePolicy.Spec["type"].(string),
+			Version:     strconv.FormatFloat(ExpectedCreatePolicy.Spec["version"].(float64), 'f', -1, 64),
+		},
+	}
+
+	actual, err := policies.Create(fake.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, &expected, actual)
 }

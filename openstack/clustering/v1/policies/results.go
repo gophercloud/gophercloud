@@ -22,6 +22,8 @@ type Policy struct {
 	User      string                 `json:"user"`
 }
 
+type PolicyFromCreate Policy
+
 // ExtractPolicies interprets a page of results as a slice of Policy.
 func ExtractPolicies(r pagination.Page) ([]Policy, error) {
 	var s struct {
@@ -71,4 +73,63 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 	r.UpdatedAt = time.Time(s.UpdatedAt)
 
 	return nil
+}
+
+// Create Policy API returns time in RFC3339 with Z
+const RFC3339WithZ = "2006-01-02T15:04:05Z"
+
+type JSONRFC3339WithZ time.Time
+
+func (jt *JSONRFC3339WithZ) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	if s == "" {
+		return nil
+	}
+	t, err := time.Parse(RFC3339WithZ, s)
+	if err != nil {
+		return err
+	}
+	*jt = JSONRFC3339WithZ(t)
+	return nil
+}
+
+func (r *PolicyFromCreate) UnmarshalJSON(b []byte) error {
+	type tmp Policy
+	var s struct {
+		tmp
+		CreatedAt JSONRFC3339WithZ `json:"created_at,omitempty"`
+		UpdatedAt JSONRFC3339WithZ `json:"updated_at,omitempty"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = PolicyFromCreate(s.tmp)
+
+	r.CreatedAt = time.Time(s.CreatedAt)
+	r.UpdatedAt = time.Time(s.UpdatedAt)
+
+	return nil
+}
+
+type policyResult struct {
+	gophercloud.Result
+}
+
+func (r policyResult) Extract() (*Policy, error) {
+	var s struct {
+		Policy *PolicyFromCreate `json:"policy"`
+	}
+	err := r.ExtractInto(&s)
+
+	p := Policy(*s.Policy)
+
+	return &p, err
+}
+
+type CreateResult struct {
+	policyResult
 }
