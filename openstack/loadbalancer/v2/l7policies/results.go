@@ -135,3 +135,9 @@ func ExtractL7Policies(r pagination.Page) ([]L7Policy, error) {
 type GetResult struct {
 	commonResult
 }
+
+// DeleteResult represents the result of a Delete operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}

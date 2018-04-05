@@ -142,3 +142,13 @@ func HandleL7PolicyGetSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, SingleL7PolicyBody)
 	})
 }
+
+// HandleL7PolicyDeletionSuccessfully sets up the test server to respond to a l7policy deletion request.
+func HandleL7PolicyDeletionSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/l7policies/8a1412f0-4c32-4257-8b07-af4770b604fd", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
