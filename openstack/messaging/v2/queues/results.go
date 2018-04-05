@@ -1,7 +1,9 @@
 package queues
 
 import (
+	"encoding/json"
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/internal"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -27,14 +29,30 @@ type Queue struct {
 
 // QueueDetails represents the metadata of a queue.
 type QueueDetails struct {
-	DeadLetterQueue           string `json:"_dead_letter_queue"`
-	DeadLetterQueueMessageTTL int    `json:"_dead_letter_queue_messages_ttl"`
-	DefaultMessageDelay       int    `json:"_default_message_delay"`
-	DefaultMessageTTL         int    `json:"_default_message_ttl"`
-	MaxClaimCount             int    `json:"_max_claim_count"`
-	MaxMessagesPostSize       int    `json:"_max_messages_post_size"`
-	Description               string `json:"description"`
-	Flavor                    string `json:"flavor"`
+	// The queue the message will be moved to when the message can’t
+	// be processed successfully after the max claim count is met.
+	DeadLetterQueue string `json:"_dead_letter_queue"`
+
+	// The TTL setting for messages when moved to dead letter queue.
+	DeadLetterQueueMessageTTL int `json:"_dead_letter_queue_messages_ttl"`
+
+	// The delay of messages defined for the queue.
+	DefaultMessageDelay int `json:"_default_message_delay"`
+
+	// The default TTL of messages defined for the queue.
+	DefaultMessageTTL int `json:"_default_message_ttl"`
+
+	// Extra is a collection of miscellaneous key/values.
+	Extra map[string]interface{} `json:"-"`
+
+	// The max number the message can be claimed from the queue.
+	MaxClaimCount int `json:"_max_claim_count"`
+
+	// The max post size of messages defined for the queue.
+	MaxMessagesPostSize int `json:"_max_messages_post_size"`
+
+	// The flavor defined for the queue.
+	Flavor string `json:"flavor"`
 }
 
 // ExtractQueues interprets the results of a single page from a
@@ -64,4 +82,34 @@ func (page QueuePage) NextPageURL() (string, error) {
 		return "", err
 	}
 	return gophercloud.ExtractNextURL(s.Links)
+}
+
+func (r *QueueDetails) UnmarshalJSON(b []byte) error {
+	type tmp QueueDetails
+	var s struct {
+		tmp
+		Extra map[string]interface{} `json:"extra"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = QueueDetails(s.tmp)
+
+	// Collect other fields and bundle them into Extra
+	// but only if a field titled "extra" wasn't sent.
+	if s.Extra != nil {
+		r.Extra = s.Extra
+	} else {
+		var result interface{}
+		err := json.Unmarshal(b, &result)
+		if err != nil {
+			return err
+		}
+		if resultMap, ok := result.(map[string]interface{}); ok {
+			r.Extra = internal.RemainingKeys(QueueDetails{}, resultMap)
+		}
+	}
+
+	return err
 }
