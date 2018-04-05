@@ -12,5 +12,21 @@ Example to Create a L7Policy
 	if err != nil {
 		panic(err)
 	}
+
+Example to List L7Policies
+	listOpts := l7policies.ListOpts{
+		ListenerID: "c79a4468-d788-410c-bf79-9a8ef6354852",
+	}
+	allPages, err := l7policies.List(networkClient, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+	allL7Policies, err := l7policies.ExtractL7Policies(allPages)
+	if err != nil {
+		panic(err)
+	}
+	for _, l7policy := range allL7Policies {
+		fmt.Printf("%+v\n", l7policy)
+	}
 */
 package l7policies
