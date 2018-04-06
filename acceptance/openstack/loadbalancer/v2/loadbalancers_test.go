@@ -106,6 +106,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create l7 policy: %v", err)
 	}
+	defer DeleteL7Policy(t, lbClient, lb.ID, policy.ID)
 
 	newPolicy, err := l7policies.Get(lbClient, policy.ID).Extract()
 	if err != nil {
