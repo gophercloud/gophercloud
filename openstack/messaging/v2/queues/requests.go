@@ -152,11 +152,10 @@ func (opts UpdateOpts) ToQueueUpdateMap() (map[string]interface{}, error) {
 }
 
 // Update Updates the specified queue.
-func Update(client *gophercloud.ServiceClient, queueName string, clientID string, opts UpdateOptsBuilder) (r UpdateResult) {
+func Update(client *gophercloud.ServiceClient, queueName string, opts UpdateOptsBuilder) (r UpdateResult) {
 	_, r.Err = client.Patch(updateURL(client, queueName), opts, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 204},
 		MoreHeaders: map[string]string{
-			"Client-ID":    clientID,
 			"Content-Type": "application/openstack-messaging-v2.0-json-patch"},
 	})
 	return

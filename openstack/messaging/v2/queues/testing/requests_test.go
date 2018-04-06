@@ -69,7 +69,7 @@ func TestUpdate(t *testing.T) {
 		Extra: map[string]interface{}{"description": "Update queue description"},
 	}
 
-	actual, err := queues.Update(fake.ServiceClient(), QueueName, ClientID, updateOpts).Extract()
+	actual, err := queues.Update(fake.ServiceClient(), QueueName, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, updatedQueueResult, actual)
 }
