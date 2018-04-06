@@ -30,8 +30,7 @@ func (opts ListOpts) ToQueueListQuery() (string, error) {
 }
 
 // List instructs OpenStack to provide a list of queues.
-func List(client *gophercloud.ServiceClient, clientID string, opts ListOptsBuilder) pagination.Pager {
-	headers := map[string]string{"Client-ID": clientID}
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToQueueListQuery()
@@ -45,7 +44,6 @@ func List(client *gophercloud.ServiceClient, clientID string, opts ListOptsBuild
 		return QueuePage{pagination.LinkedPageBase{PageResult: r}}
 
 	})
-	pager.Headers = headers
 	return pager
 }
 

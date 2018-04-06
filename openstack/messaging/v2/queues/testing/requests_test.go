@@ -17,7 +17,7 @@ func TestList(t *testing.T) {
 	listOpts := queues.ListOpts{}
 
 	count := 0
-	err := queues.List(fake.ServiceClient(), ClientID, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+	err := queues.List(fake.ServiceClient(), listOpts).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := queues.ExtractQueues(page)
 		th.AssertNoErr(t, err)
