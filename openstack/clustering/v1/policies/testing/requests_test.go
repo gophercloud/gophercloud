@@ -58,3 +58,15 @@ func TestCreatePolicy(t *testing.T) {
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
+
+func TestDeletePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandlePolicyDelete(t)
+
+	actual, err := policies.Delete(fake.ServiceClient(), PolicyIDtoDelete).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, PolicyDeleteRequestID, actual.RequestID)
+}

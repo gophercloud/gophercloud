@@ -35,7 +35,7 @@ func TestPolicyList(t *testing.T) {
 	}
 }
 
-func TestPolicyCreate(t *testing.T) {
+func TestPolicyCreateAndDelete(t *testing.T) {
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -56,6 +56,8 @@ func TestPolicyCreate(t *testing.T) {
 
 	createdPolicy, err := policies.Create(client, opts).Extract()
 	th.AssertNoErr(t, err)
+
+	defer policies.Delete(client, createdPolicy.ID)
 
 	tools.PrintResource(t, createdPolicy)
 

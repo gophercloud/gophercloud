@@ -99,6 +99,8 @@ const PolicyCreateBody = `
 }
 `
 
+const PolicyDeleteRequestID = "req-7328d1b0-9945-456f-b2cd-5166b77d14a8"
+
 var (
 	ExpectedPolicyCreatedAt1, _      = time.Parse(time.RFC3339, "2018-04-02T21:43:30.000000Z")
 	ExpectedPolicyUpdatedAt1, _      = time.Parse(time.RFC3339, "2018-04-02T00:19:12.000000Z")
@@ -106,6 +108,9 @@ var (
 	ExpectedPolicyUpdatedAt2, _      = time.Parse(time.RFC3339, "2018-04-02T23:15:11.000000Z")
 	ExpectedCreatePolicyCreatedAt, _ = time.Parse(time.RFC3339, "2018-04-04T00:18:36.000000Z")
 	ZeroTime, _                      = time.Parse(time.RFC3339, "1-01-01T00:00:00.000000Z")
+
+	// Policy ID to delete
+	PolicyIDtoDelete = "1"
 
 	ExpectedPolicies = [][]policies.Policy{
 		{
@@ -220,5 +225,15 @@ func HandlePolicyCreate(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 
 		fmt.Fprintf(w, PolicyCreateBody)
+	})
+}
+
+func HandlePolicyDelete(t *testing.T) {
+	th.Mux.HandleFunc("/v1/policies/"+PolicyIDtoDelete, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "X-OpenStack-Request-ID", PolicyDeleteRequestID)
+
+		w.WriteHeader(http.StatusNoContent)
 	})
 }
