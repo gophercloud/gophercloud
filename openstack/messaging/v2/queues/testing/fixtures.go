@@ -12,9 +12,6 @@ import (
 // QueueName is the name of the queue
 var QueueName = "FakeTestQueue"
 
-// ClientID is a required parameter used the the Header.
-var ClientID = "1234567890"
-
 // CreateQueueRequest is a sample request to create a queue.
 const CreateQueueRequest = `
 {

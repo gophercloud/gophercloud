@@ -63,7 +63,7 @@ func (opts CreateOpts) ToQueueCreateMap() (map[string]interface{}, error) {
 }
 
 // Create requests the creation of a new queue.
-func Create(client *gophercloud.ServiceClient, clientID string, opts CreateOptsBuilder) (r CreateResult) {
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToQueueCreateMap()
 	if err != nil {
 		r.Err = err
@@ -74,8 +74,7 @@ func Create(client *gophercloud.ServiceClient, clientID string, opts CreateOptsB
 	delete(b, "queue_name")
 
 	_, r.Err = client.Put(createURL(client, queueName), b, r.Body, &gophercloud.RequestOpts{
-		OkCodes:     []int{201, 204},
-		MoreHeaders: map[string]string{"Client-ID": clientID},
+		OkCodes: []int{201, 204},
 	})
 	return
 }

@@ -16,7 +16,7 @@ Example to Create a Queue
 		Extra:                      map[string]interface{}{"description": "Test queue."},
 	}
 
-	err := queues.Create(client, clientID, createOpts).ExtractErr()
+	err := queues.Create(client, createOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

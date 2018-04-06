@@ -24,6 +24,6 @@ func TestCreate(t *testing.T) {
 		Extra:                      map[string]interface{}{"description": "Queue for unit testing."},
 	}
 
-	err := queues.Create(fake.ServiceClient(), ClientID, createOpts).ExtractErr()
+	err := queues.Create(fake.ServiceClient(), createOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
