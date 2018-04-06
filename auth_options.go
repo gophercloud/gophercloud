@@ -278,7 +278,7 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 	// If AuthOptions.Scope was not set, try to determine it.
 	// This works well for common scenarios.
 	if opts.Scope == nil {
-		opts.Scope = &AuthScope{}
+		opts.Scope = new(AuthScope)
 		if opts.TenantID != "" {
 			opts.Scope.ProjectID = opts.TenantID
 		} else {
