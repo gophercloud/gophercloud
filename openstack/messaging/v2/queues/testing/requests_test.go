@@ -61,7 +61,7 @@ func TestUpdate(t *testing.T) {
 	updateOpts := queues.UpdateOpts{
 		queues.UpdateQueueBody{
 			Op:    queues.ReplaceOp,
-			Path:  "/metadata/_max_claim_count",
+			Path:  "/metadata/description",
 			Value: 10,
 		},
 	}

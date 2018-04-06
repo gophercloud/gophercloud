@@ -82,7 +82,7 @@ const UpdateQueueRequest = `
 [
     {
         "op": "replace",
-        "path": "/metadata/_max_claim_count",
+        "path": "/metadata/description",
         "value": 10
     }
 ]`
