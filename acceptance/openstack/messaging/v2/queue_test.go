@@ -1,3 +1,5 @@
+// +build acceptance messaging queues
+
 package v2
 
 import (

@@ -128,7 +128,7 @@ type UpdateOptsBuilder interface {
 	ToQueueUpdateMap() ([]map[string]interface{}, error)
 }
 
-// UpdateOpts is an array of UpdateQueueBody.
+// BatchUpdateOpts is an array of UpdateOpts.
 type BatchUpdateOpts []UpdateOpts
 
 // UpdateOpts is the struct responsible for updating a property of a queue.
