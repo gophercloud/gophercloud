@@ -131,3 +131,14 @@ func HandleL7PolicyListSuccessfully(t *testing.T) {
 		}
 	})
 }
+
+// HandleL7PolicyGetSuccessfully sets up the test server to respond to a l7policy Get request.
+func HandleL7PolicyGetSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/l7policies/8a1412f0-4c32-4257-8b07-af4770b604fd", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, SingleL7PolicyBody)
+	})
+}

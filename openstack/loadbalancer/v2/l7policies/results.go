@@ -129,3 +129,9 @@ func ExtractL7Policies(r pagination.Page) ([]L7Policy, error) {
 	err := (r.(L7PolicyPage)).ExtractInto(&s)
 	return s.L7Policies, err
 }
+
+// GetResult represents the result of a Get operation. Call its Extract
+// method to interpret the result as a L7Policy.
+type GetResult struct {
+	commonResult
+}

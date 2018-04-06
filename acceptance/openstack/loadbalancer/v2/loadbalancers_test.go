@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/loadbalancers"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/monitors"
@@ -101,10 +102,17 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	tools.PrintResource(t, newListener)
 
 	// L7 policy
-	_, err = CreateL7Policy(t, lbClient, listener, lb)
+	policy, err := CreateL7Policy(t, lbClient, listener, lb)
 	if err != nil {
 		t.Fatalf("Unable to create l7 policy: %v", err)
 	}
+
+	newPolicy, err := l7policies.Get(lbClient, policy.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get l7 policy: %v", err)
+	}
+
+	tools.PrintResource(t, newPolicy)
 
 	// Pool
 	pool, err := CreatePool(t, lbClient, lb)
