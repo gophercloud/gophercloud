@@ -2,7 +2,31 @@
 Package messages provides information and interaction with the messages through
 the OpenStack Messaging(Zaqar) service.
 
+Example to List Messages
+
+	listOpts := messages.ListOpts{
+		Limit: 10,
+	}
+
+	queueName := "my_queue"
+
+	pager := messages.List(client, queueName, listOpts)
+
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		allMessages, err := queues.ExtractQueues(page)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, message := range allMessages {
+			fmt.Printf("%+v\n", message)
+		}
+
+		return true, nil
+	})
+
 Example to Create Messages
+
 	createOpts := messages.CreateOpts{
 		Messages:     []messages.Messages{
 			{
