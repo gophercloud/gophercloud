@@ -9,7 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/extensions/quotasets"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/quotasets"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
