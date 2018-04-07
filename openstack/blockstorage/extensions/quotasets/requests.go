@@ -5,8 +5,7 @@ import (
 )
 
 // Get returns public data about a previously created QuotaSet.
-func Get(client *gophercloud.ServiceClient, projectID string) GetResult {
-	var res GetResult
-	_, res.Err = client.Get(getURL(client, projectID), &res.Body, nil)
-	return res
+func Get(client *gophercloud.ServiceClient, projectID string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, projectID), &r.Body, nil)
+	return
 }

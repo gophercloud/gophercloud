@@ -13,9 +13,12 @@ import (
 const FirstTenantID = "555544443333222211110000ffffeeee"
 
 var successTestCases = []struct {
-	name, httpMethod, jsonBody, uriPath string
-	uriQueryParams                      map[string]string
-	expectedQuotaSet                    quotasets.QuotaSet
+	name             string
+	httpMethod       string
+	jsonBody         string
+	uriPath          string
+	uriQueryParams   map[string]string
+	expectedQuotaSet quotasets.QuotaSet
 }{
 	{
 		name: "simple GET request",
@@ -44,8 +47,7 @@ var successTestCases = []struct {
 }
 
 // HandleSuccessfulRequest configures the test server to respond to an HTTP request.
-func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput string,
-) {
+func HandleSuccessfulRequest(t *testing.T, httpMethod, uriPath, jsonOutput string) {
 
 	th.Mux.HandleFunc(uriPath, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, httpMethod)

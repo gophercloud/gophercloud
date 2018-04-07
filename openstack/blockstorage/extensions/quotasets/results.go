@@ -39,8 +39,8 @@ type QuotaSetPage struct {
 }
 
 // IsEmpty determines whether or not a QuotaSetsetPage is empty.
-func (page QuotaSetPage) IsEmpty() (bool, error) {
-	ks, err := ExtractQuotaSets(page)
+func (r QuotaSetPage) IsEmpty() (bool, error) {
+	ks, err := ExtractQuotaSets(r)
 	return len(ks) == 0, err
 }
 
