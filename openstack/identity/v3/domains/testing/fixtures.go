@@ -87,6 +87,16 @@ const UpdateOutput = `
 }
 `
 
+// BadNextPage is a sample of a bad next page to test pagination.
+const BadNextPageRequest = `
+{
+  "links": {
+      "self": "https://example.com/identity/v3/domains/9fe1d3",
+      "next": 42
+  }
+}
+`
+
 // FirstDomain is the first domain in the List request.
 var FirstDomain = domains.Domain{
 	Enabled: true,

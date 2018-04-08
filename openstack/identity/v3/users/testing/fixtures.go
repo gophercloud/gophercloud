@@ -241,6 +241,39 @@ const ListProjectsOutput = `
 }
 `
 
+// BadGetOutput provides a bad Get result.
+// The domain_id is a number instead of a string.
+const BadGetOutput = `
+{
+    "user": {
+        "default_project_id": "263fd9",
+        "domain_id": 2",
+        "enabled": true,
+        "id": "9fe1d3",
+        "links": {
+            "self": "https://example.com/identity/v3/users/9fe1d3"
+        },
+        "name": "jsmith",
+        "password_expires_at": "2016-11-06T15:32:17.000000",
+        "email": "jsmith@example.com",
+        "options": {
+            "ignore_password_expiry": true,
+            "multi_factor_auth_rules": [["password", "totp"], ["password", "custom-auth-method"]]
+        }
+    }
+}
+`
+
+// BadNextPage is a sample of a bad next page to test pagination.
+const BadNextPageRequest = `
+{
+  "links": {
+      "self": "https://example.com/identity/v3/users/9fe1d3",
+      "next": 42
+  }
+}
+`
+
 // FirstUser is the first user in the List request.
 var nilTime time.Time
 var FirstUser = users.User{
@@ -517,5 +550,19 @@ func HandleListInGroupSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, ListOutput)
+	})
+}
+
+// HandleBadGetUserSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that responds with a bad single user.
+func HandleBadGetUserSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, BadGetOutput)
 	})
 }

@@ -154,3 +154,31 @@ const SecurityGroupGetResponse = `
     }
 }
 `
+
+const IDFromNameSecurityGroupListResponse = `
+{
+    "security_groups": [
+        {
+            "description": "default",
+            "id": "85cc3048-abc3-43cc-89b3-377341426ac5",
+            "name": "default",
+            "security_group_rules": [],
+            "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550"
+        },
+        {
+            "description": "foo",
+            "id": "85cc3048-abc3-43cc-89b3-377341426acc",
+            "name": "foo",
+            "security_group_rules": [],
+            "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550"
+        },
+        {
+            "description": "foo",
+            "id": "85cc3048-abc3-43cc-89b3-377341426acd",
+            "name": "foo",
+            "security_group_rules": [],
+            "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550"
+        }
+    ]
+}
+`

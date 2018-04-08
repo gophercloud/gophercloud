@@ -158,6 +158,28 @@ const AggregateSetMetadataBody = `
 }
 `
 
+// BadAggregateGetBody is an example of a malformed Get response.
+// The created_at time is in the wrong format.
+const BadAggregateGetBody = `
+{
+    "aggregate": {
+            "name": "test-aggregate2",
+            "availability_zone": "test-az",
+            "deleted": false,
+            "created_at": "2017-12-22T10:16:07Z",
+            "updated_at": null,
+            "hosts": [
+                "cmp0"
+            ],
+            "deleted_at": null,
+            "id": 4,
+            "metadata": {
+                "availability_zone": "test-az"
+            }
+        }
+}
+`
+
 var (
 	// First aggregate from the AggregateListBody
 	FirstFakeAggregate = aggregates.Aggregate{
@@ -340,5 +362,16 @@ func HandleSetMetadataSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, AggregateSetMetadataBody)
+	})
+}
+
+func HandleBadGetSuccessfully(t *testing.T) {
+	v := strconv.Itoa(AggregateIDtoGet)
+	th.Mux.HandleFunc("/os-aggregates/"+v, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, BadAggregateGetBody)
 	})
 }

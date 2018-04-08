@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/dns/v2/zones"
@@ -25,6 +26,22 @@ func TestList(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, 1, count)
+}
+
+func TestAlternativeList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAlternativeListSuccessfully(t)
+
+	count := 0
+	err := zones.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		_, err := zones.ExtractZones(page)
+		th.AssertNoErr(t, err)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
 }
 
 func TestListAllPages(t *testing.T) {
@@ -102,4 +119,16 @@ func TestDelete(t *testing.T) {
 	actual, err := zones.Delete(client.ServiceClient(), DeletedZone.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &DeletedZone, actual)
+}
+
+func TestBadNextPageURL(t *testing.T) {
+	var page zones.ZonePage
+	var body map[string]interface{}
+	err := json.Unmarshal([]byte(BadNextPageRequest), &body)
+	th.AssertNoErr(t, err)
+	page.Body = body
+	_, err = page.NextPageURL()
+	if err == nil {
+		t.Fatalf("Expected an error")
+	}
 }

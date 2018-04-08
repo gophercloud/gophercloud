@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/regions"
@@ -102,4 +103,27 @@ func TestDeleteRegion(t *testing.T) {
 
 	res := regions.Delete(client.ServiceClient(), "RegionOne-West")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestBadGetRegion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBadGetRegionSuccessfully(t)
+
+	_, err := regions.Get(client.ServiceClient(), "RegionOne-West").Extract()
+	if err == nil {
+		t.Fatalf("Expected an unmarshal error")
+	}
+}
+
+func TestBadNextPageURL(t *testing.T) {
+	var page regions.RegionPage
+	var body map[string]interface{}
+	err := json.Unmarshal([]byte(BadNextPageRequest), &body)
+	th.AssertNoErr(t, err)
+	page.Body = body
+	_, err = page.NextPageURL()
+	if err == nil {
+		t.Fatal("Expected an error")
+	}
 }

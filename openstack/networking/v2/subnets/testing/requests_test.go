@@ -446,3 +446,33 @@ func TestDelete(t *testing.T) {
 	res := subnets.Delete(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestIDFromName(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/subnets", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, IDFromNameSubnetListResponse)
+	})
+
+	_, err := subnets.IDFromName(fake.ServiceClient(), "subnet")
+	if err == nil {
+		t.Fatalf("Expected an error about multiple results")
+	}
+
+	_, err = subnets.IDFromName(fake.ServiceClient(), "foobar")
+	if err == nil {
+		t.Fatalf("Expected an error about no results")
+	}
+
+	_, err = subnets.IDFromName(fake.ServiceClient(), "my_subnet")
+	if err != nil {
+		t.Fatalf("Unexpected error: %s", err)
+	}
+}

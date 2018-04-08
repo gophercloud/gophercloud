@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
@@ -292,4 +293,46 @@ func TestUpdatePortSecurity(t *testing.T) {
 	th.AssertEquals(t, networkWithExtensions.Shared, false)
 	th.AssertEquals(t, networkWithExtensions.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
 	th.AssertEquals(t, networkWithExtensions.PortSecurityEnabled, false)
+}
+
+func TestBadNextPageURL(t *testing.T) {
+	var page networks.NetworkPage
+	var body map[string]interface{}
+	err := json.Unmarshal([]byte(BadNextPageRequest), &body)
+	th.AssertNoErr(t, err)
+	page.Body = body
+	_, err = page.NextPageURL()
+	if err == nil {
+		t.Fatal("Expected an error")
+	}
+}
+
+func TestIDFromName(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, IDFromNameListResponse)
+	})
+
+	_, err := networks.IDFromName(fake.ServiceClient(), "private")
+	if err == nil {
+		t.Fatalf("Expected an error about multiple results")
+	}
+
+	_, err = networks.IDFromName(fake.ServiceClient(), "foobar")
+	if err == nil {
+		t.Fatalf("Expected an error about no results")
+	}
+
+	_, err = networks.IDFromName(fake.ServiceClient(), "public")
+	if err != nil {
+		t.Fatalf("Unexpected error: %s", err)
+	}
 }

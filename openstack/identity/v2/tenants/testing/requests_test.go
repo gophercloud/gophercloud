@@ -56,6 +56,19 @@ func TestCreateTenant(t *testing.T) {
 	th.AssertDeepEquals(t, expected, tenant)
 }
 
+func TestBadCreateTenant(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockCreateTenantResponse(t)
+
+	opts := tenants.CreateOpts{}
+	_, err := tenants.Create(client.ServiceClient(), opts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing Name")
+	}
+}
+
 func TestDeleteTenant(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

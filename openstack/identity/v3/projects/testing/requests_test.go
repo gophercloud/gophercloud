@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
@@ -76,4 +77,16 @@ func TestUpdateProject(t *testing.T) {
 	actual, err := projects.Update(client.ServiceClient(), "1234", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, UpdatedRedTeam, *actual)
+}
+
+func TestBadNextPageURL(t *testing.T) {
+	var page projects.ProjectPage
+	var body map[string]interface{}
+	err := json.Unmarshal([]byte(BadNextPageRequest), &body)
+	th.AssertNoErr(t, err)
+	page.Body = body
+	_, err = page.NextPageURL()
+	if err == nil {
+		t.Fatal("Expected an error")
+	}
 }

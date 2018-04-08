@@ -39,6 +39,17 @@ func TestCreate(t *testing.T) {
 	th.CheckDeepEquals(t, &CreatedFloatingIP, actual)
 }
 
+func TestBadCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSuccessfully(t)
+
+	_, err := floatingips.Create(client.ServiceClient(), floatingips.CreateOpts{}).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing Pool")
+	}
+}
+
 func TestCreateWithNumericID(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -83,6 +94,18 @@ func TestAssociate(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestBadAssociate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAssociateSuccessfully(t)
+
+	associateOpts := floatingips.AssociateOpts{}
+	err := floatingips.AssociateInstance(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", associateOpts).ExtractErr()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing FloatingIP")
+	}
+}
+
 func TestAssociateFixed(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -108,4 +131,27 @@ func TestDisassociateInstance(t *testing.T) {
 
 	err := floatingips.DisassociateInstance(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", disassociateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
+}
+
+func TestBadDisassociateInstance(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDisassociateSuccessfully(t)
+
+	disassociateOpts := floatingips.DisassociateOpts{}
+	err := floatingips.DisassociateInstance(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0", disassociateOpts).ExtractErr()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing Floating IP")
+	}
+}
+
+func TestBadGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBadGetSuccessfully(t)
+
+	_, err := floatingips.Get(client.ServiceClient(), "2").Extract()
+	if err == nil {
+		t.Fatalf("Expected an unmarshal error")
+	}
 }

@@ -68,6 +68,63 @@ const ListOutput = `
 }
 `
 
+// AlternativeListOutput is a sample response to a List call
+// with alternative serial formats.
+const AlternativeListOutput = `
+{
+    "links": {
+      "self": "http://example.com:9001/v2/zones"
+    },
+    "metadata": {
+      "total_count": 2
+    },
+    "zones": [
+        {
+            "id": "a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
+            "pool_id": "572ba08c-d929-4c70-8e42-03824bb24ca2",
+            "project_id": "4335d1f0-f793-11e2-b778-0800200c9a66",
+            "name": "example.org.",
+            "email": "joe@example.org",
+            "ttl": 7200,
+            "serial": "10",
+            "status": "ACTIVE",
+            "action": "CREATE",
+            "description": "This is an example zone.",
+            "masters": [],
+            "type": "PRIMARY",
+            "transferred_at": null,
+            "version": 1,
+            "created_at": "2014-07-07T18:25:31.275934",
+            "updated_at": null,
+            "links": {
+              "self": "https://127.0.0.1:9001/v2/zones/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3"
+            }
+        },
+        {
+            "id": "34c4561c-9205-4386-9df5-167436f5a222",
+            "pool_id": "572ba08c-d929-4c70-8e42-03824bb24ca2",
+            "project_id": "4335d1f0-f793-11e2-b778-0800200c9a66",
+            "name": "foo.example.com.",
+            "email": "joe@foo.example.com",
+            "ttl": 7200,
+            "serial": "",
+            "status": "ACTIVE",
+            "action": "CREATE",
+            "description": "This is another example zone.",
+            "masters": ["example.com."],
+            "type": "PRIMARY",
+            "transferred_at": null,
+            "version": 1,
+            "created_at": "2014-07-07T18:25:31.275934",
+            "updated_at": "2015-02-25T20:23:01.234567",
+            "links": {
+              "self": "https://127.0.0.1:9001/v2/zones/34c4561c-9205-4386-9df5-167436f5a222"
+            }
+        }
+    ]
+}
+`
+
 // GetOutput is a sample response to a Get call.
 const GetOutput = `
 {
@@ -150,6 +207,18 @@ func HandleListSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, ListOutput)
+	})
+}
+
+// HandleAlternativeListSuccessfully configures the test server to respond to
+// an Alternative List request.
+func HandleAlternativeListSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/zones", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, AlternativeListOutput)
 	})
 }
 
@@ -300,3 +369,14 @@ func HandleDeleteSuccessfully(t *testing.T) {
 			fmt.Fprintf(w, DeleteZoneResponse)
 		})
 }
+
+// BadNextPageRequest is a sample request to test bad pagination.
+// The "next" field is not a full URL.
+const BadNextPageRequest = `
+{
+  "links": {
+    "self": "http://127.0.0.1:9001/v2/zones?limit=1",
+    "next": 42
+  }
+}
+`

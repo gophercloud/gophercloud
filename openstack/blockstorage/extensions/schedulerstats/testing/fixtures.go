@@ -104,3 +104,60 @@ func HandleStoragePoolsListSuccessfully(t *testing.T) {
 		}
 	})
 }
+
+// BadStoragePoolListBodyDetail is an example of an erroneous JSON response.
+// The driver_version is a number rather than a string.
+const BadStoragePoolsListBodyDetail = `
+{
+    "pools": [
+        {
+            "capabilities": {
+                "driver_version": 1.2,
+                "filter_function": null,
+                "free_capacity_gb": 64765,
+                "goodness_function": null,
+                "multiattach": true,
+                "reserved_percentage": 0,
+                "storage_protocol": "ceph",
+                "timestamp": "2016-11-24T10:33:51.248360",
+                "total_capacity_gb": 787947.93,
+                "vendor_name": "Open Source",
+                "volume_backend_name": "cinder.volumes.ssd"
+            },
+            "name": "rbd:cinder.volumes.ssd@cinder.volumes.ssd#cinder.volumes.ssd"
+        },
+        {
+            "capabilities": {
+                "driver_version": 1.2,
+                "filter_function": null,
+                "free_capacity_gb": "unknown",
+                "goodness_function": null,
+                "multiattach": false,
+                "reserved_percentage": 0,
+                "storage_protocol": "ceph",
+                "timestamp": "2016-11-24T10:33:43.138628",
+                "total_capacity_gb": "infinite",
+                "vendor_name": "Open Source",
+                "volume_backend_name": "cinder.volumes.hdd"
+            },
+            "name": "rbd:cinder.volumes.hdd@cinder.volumes.hdd#cinder.volumes.hdd"
+        }
+    ]
+}
+`
+
+func HandleBadStoragePoolsListSuccessfully(t *testing.T) {
+	testhelper.Mux.HandleFunc("/scheduler-stats/get_pools", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+
+		r.ParseForm()
+		if r.FormValue("detail") == "true" {
+			fmt.Fprintf(w, BadStoragePoolsListBodyDetail)
+		} else {
+			fmt.Fprintf(w, StoragePoolsListBody)
+		}
+	})
+}

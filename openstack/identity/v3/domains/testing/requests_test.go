@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/domains"
@@ -65,6 +66,18 @@ func TestCreateDomain(t *testing.T) {
 	th.CheckDeepEquals(t, SecondDomain, *actual)
 }
 
+func TestBadCreateDomain(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateDomainSuccessfully(t)
+
+	createOpts := domains.CreateOpts{}
+	_, err := domains.Create(client.ServiceClient(), createOpts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing Name")
+	}
+}
+
 func TestDeleteDomain(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -86,4 +99,16 @@ func TestUpdateDomain(t *testing.T) {
 	actual, err := domains.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondDomainUpdated, *actual)
+}
+
+func TestBadNextPageURL(t *testing.T) {
+	var page domains.DomainPage
+	var body map[string]interface{}
+	err := json.Unmarshal([]byte(BadNextPageRequest), &body)
+	th.AssertNoErr(t, err)
+	page.Body = body
+	_, err = page.NextPageURL()
+	if err == nil {
+		t.Fatal("Expected an error")
+	}
 }

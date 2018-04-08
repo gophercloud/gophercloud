@@ -72,6 +72,20 @@ const CreateOutputWithNumericID = `
 }
 `
 
+// BadGetOutput is a sample bad response to a Get call.
+// The fixed_ip is a boolean instead of a string.
+const BadGetOutput = `
+{
+    "floating_ip": {
+        "fixed_ip": false,
+        "id": "2",
+        "instance_id": "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
+        "ip": "10.10.10.2",
+        "pool": "nova"
+    }
+}
+`
+
 // FirstFloatingIP is the first result in ListOutput.
 var FirstFloatingIP = floatingips.FloatingIP{
 	ID:   "1",
@@ -219,5 +233,17 @@ func HandleDisassociateSuccessfully(t *testing.T) {
 `)
 
 		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+// HandleBadGetSuccessfully configures the test server to respond to a bad Get
+// request for an existing floating ip
+func HandleBadGetSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/os-floating-ips/2", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, BadGetOutput)
 	})
 }

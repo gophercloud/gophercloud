@@ -39,9 +39,7 @@ const ListOutput = `
                 "self": "https://example.com/identity/v3/groups/9fe1d3"
             },
             "name": "support",
-            "extra": {
-                "email": "support@example.com"
-            }
+            "email": "support@example.com"
         }
     ]
 }

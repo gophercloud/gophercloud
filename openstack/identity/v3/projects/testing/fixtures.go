@@ -90,6 +90,16 @@ const UpdateOutput = `
 }
 `
 
+// BadNextPage is a sample of a bad next page to test pagination.
+const BadNextPageRequest = `
+{
+  "links": {
+      "self": "https://example.com/identity/v3/projects/9fe1d3",
+      "next": 42
+  }
+}
+`
+
 // RedTeam is a Project fixture.
 var RedTeam = projects.Project{
 	IsDomain:    false,

@@ -29,6 +29,23 @@ func TestListRoles(t *testing.T) {
 	th.CheckEquals(t, count, 1)
 }
 
+func TestDomainListRoles(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDomainListRolesSuccessfully(t)
+
+	listOpts := roles.ListOpts{
+		DomainID: "default",
+	}
+
+	allPages, err := roles.List(client.ServiceClient(), listOpts).AllPages()
+	th.AssertNoErr(t, err)
+	allRoles, err := roles.ExtractRoles(allPages)
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, allRoles, []roles.Role{FirstRole})
+}
+
 func TestListRolesAllPages(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -69,6 +86,24 @@ func TestCreateRole(t *testing.T) {
 	actual, err := roles.Create(client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondRole, *actual)
+}
+
+func TestBadCreateRole(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateRoleSuccessfully(t)
+
+	createOpts := roles.CreateOpts{
+		DomainID: "1789d1",
+		Extra: map[string]interface{}{
+			"description": "read-only support role",
+		},
+	}
+
+	_, err := roles.Create(client.ServiceClient(), createOpts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing name")
+	}
 }
 
 func TestUpdateRole(t *testing.T) {
@@ -145,6 +180,20 @@ func TestAssign(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestBadAssign(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAssignSuccessfully(t)
+
+	err := roles.Assign(client.ServiceClient(), "{role_id}", roles.AssignOpts{
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+
+	if err == nil {
+		t.Fatalf("Expected an error due to missing UserID/GroupID")
+	}
+}
+
 func TestUnassign(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -173,4 +222,18 @@ func TestUnassign(t *testing.T) {
 		DomainID: "{domain_id}",
 	}).ExtractErr()
 	th.AssertNoErr(t, err)
+}
+
+func TestBadUnassign(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUnassignSuccessfully(t)
+
+	err := roles.Unassign(client.ServiceClient(), "{role_id}", roles.UnassignOpts{
+		ProjectID: "{project_id}",
+	}).ExtractErr()
+
+	if err == nil {
+		t.Fatalf("Expected an error due to missing UserID/GroupID")
+	}
 }
