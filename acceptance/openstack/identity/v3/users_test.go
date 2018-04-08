@@ -250,7 +250,7 @@ func TestUsersAddToGroup(t *testing.T) {
 	}
 }
 
-func TestUsersCheckInGroup(t *testing.T) {
+func TestUsersIsMemberOfGroup(t *testing.T) {
 	client, err := clients.NewIdentityV3Client()
 	if err != nil {
 		t.Fatalf("Unable to obtain an identity client: %v", err)
