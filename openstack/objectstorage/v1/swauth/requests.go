@@ -10,10 +10,10 @@ type AuthOptsBuilder interface {
 // AuthOpts specifies an authentication request.
 type AuthOpts struct {
 	// User is an Swauth-based username in username:tenant format.
-	User string `h:"X-Auth-User" required:"true"`
+	User string `h:"X-Auth-User,required"`
 
 	// Key is a secret/password to authenticate the User with.
-	Key string `h:"X-Auth-Key" required:"true"`
+	Key string `h:"X-Auth-Key,required"`
 }
 
 // ToAuthOptsMap formats an AuthOpts structure into a request body.

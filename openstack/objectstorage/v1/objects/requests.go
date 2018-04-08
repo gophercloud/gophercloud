@@ -236,7 +236,7 @@ type CopyOpts struct {
 	ContentDisposition string `h:"Content-Disposition"`
 	ContentEncoding    string `h:"Content-Encoding"`
 	ContentType        string `h:"Content-Type"`
-	Destination        string `h:"Destination" required:"true"`
+	Destination        string `h:"Destination,required"`
 }
 
 // ToObjectCopyMap formats a CopyOpts into a map of headers.
