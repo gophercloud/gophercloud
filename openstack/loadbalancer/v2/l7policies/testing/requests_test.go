@@ -5,6 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -39,4 +40,70 @@ func TestRequiredL7PolicyCreateOpts(t *testing.T) {
 	if res.Err == nil {
 		t.Fatalf("Expected error, but got none")
 	}
+}
+
+func TestListL7Policies(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleL7PolicyListSuccessfully(t)
+
+	pages := 0
+	err := l7policies.List(fake.ServiceClient(), l7policies.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := l7policies.ExtractL7Policies(page)
+		if err != nil {
+			return false, err
+		}
+
+		if len(actual) != 2 {
+			t.Fatalf("Expected 2 l7policies, got %d", len(actual))
+		}
+		th.CheckDeepEquals(t, L7PolicyToURL, actual[0])
+		th.CheckDeepEquals(t, L7PolicyToPool, actual[1])
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+
+	if pages != 1 {
+		t.Errorf("Expected 1 page, saw %d", pages)
+	}
+}
+
+func TestListAllL7Policies(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleL7PolicyListSuccessfully(t)
+
+	allPages, err := l7policies.List(fake.ServiceClient(), l7policies.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := l7policies.ExtractL7Policies(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, L7PolicyToURL, actual[0])
+	th.CheckDeepEquals(t, L7PolicyToPool, actual[1])
+}
+
+func TestGetL7Policy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleL7PolicyGetSuccessfully(t)
+
+	client := fake.ServiceClient()
+	actual, err := l7policies.Get(client, "8a1412f0-4c32-4257-8b07-af4770b604fd").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, L7PolicyToURL, *actual)
+}
+
+func TestDeleteL7Policy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleL7PolicyDeletionSuccessfully(t)
+
+	res := l7policies.Delete(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd")
+	th.AssertNoErr(t, res.Err)
 }

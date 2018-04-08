@@ -2,6 +2,7 @@ package l7policies
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
@@ -80,5 +81,65 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		return
 	}
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return
+}
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToL7PolicyListQuery() (string, error)
+}
+
+// ListOpts allows the filtering and sorting of paginated collections through
+// the API.
+type ListOpts struct {
+	Name           string `q:"name"`
+	ListenerID     string `q:"listener_id"`
+	Action         string `q:"action"`
+	TenantID       string `q:"tenant_id"`
+	RedirectPoolID string `q:"redirect_pool_id"`
+	RedirectURL    string `q:"redirect_url"`
+	ID             string `q:"id"`
+	Limit          int    `q:"limit"`
+	Marker         string `q:"marker"`
+	SortKey        string `q:"sort_key"`
+	SortDir        string `q:"sort_dir"`
+}
+
+// ToL7PolicyListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToL7PolicyListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List returns a Pager which allows you to iterate over a collection of
+// l7policies. It accepts a ListOpts struct, which allows you to filter and sort
+// the returned collection for greater efficiency.
+//
+// Default policy settings return only those l7policies that are owned by the
+// tenant who submits the request, unless an admin user submits the request.
+func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := rootURL(c)
+	if opts != nil {
+		query, err := opts.ToL7PolicyListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return L7PolicyPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+// Get retrieves a particular l7policy based on its unique ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
+}
+
+// Delete will permanently delete a particular l7policy based on its unique ID.
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
 	return
 }

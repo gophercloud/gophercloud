@@ -10,13 +10,14 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestUsersList(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	var iTrue bool = true
 	listOpts := users.ListOpts{
@@ -24,56 +25,53 @@ func TestUsersList(t *testing.T) {
 	}
 
 	allPages, err := users.List(client, listOpts).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list users: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allUsers, err := users.ExtractUsers(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract users: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
+	var found bool
 	for _, user := range allUsers {
 		tools.PrintResource(t, user)
 		tools.PrintResource(t, user.Extra)
+
+		if user.Name == "admin" {
+			found = true
+		}
 	}
+
+	th.AssertEquals(t, found, true)
 }
 
 func TestUsersGet(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allPages, err := users.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list users: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allUsers, err := users.ExtractUsers(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract users: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	user := allUsers[0]
 	p, err := users.Get(client, user.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get user: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, p)
+
+	th.AssertEquals(t, user.Name, p.Name)
 }
 
 func TestUserCRUD(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	project, err := CreateProject(t, client, nil)
-	if err != nil {
-		t.Fatalf("Unable to create project: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteProject(t, client, project.ID)
 
 	tools.PrintResource(t, project)
@@ -95,9 +93,7 @@ func TestUserCRUD(t *testing.T) {
 	}
 
 	user, err := CreateUser(t, client, &createOpts)
-	if err != nil {
-		t.Fatalf("Unable to create user: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteUser(t, client, user.ID)
 
 	tools.PrintResource(t, user)
@@ -115,39 +111,27 @@ func TestUserCRUD(t *testing.T) {
 	}
 
 	newUser, err := users.Update(client, user.ID, updateOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update user: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newUser)
 	tools.PrintResource(t, newUser.Extra)
+
+	th.AssertEquals(t, newUser.Extra["disabled_reason"], "DDOS")
 }
 
 func TestUserChangePassword(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	createOpts := users.CreateOpts{
 		Password: "secretsecret",
 		DomainID: "default",
-		Options: map[users.Option]interface{}{
-			users.IgnorePasswordExpiry: true,
-			users.MultiFactorAuthRules: []interface{}{
-				[]string{"password", "totp"},
-				[]string{"password", "custom-auth-method"},
-			},
-		},
-		Extra: map[string]interface{}{
-			"email": "jsmith@example.com",
-		},
 	}
 
 	user, err := CreateUser(t, client, &createOpts)
-	if err != nil {
-		t.Fatalf("Unable to create user: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteUser(t, client, user.ID)
 
 	tools.PrintResource(t, user)
@@ -158,150 +142,78 @@ func TestUserChangePassword(t *testing.T) {
 		Password:         "new_secretsecret",
 	}
 	err = users.ChangePassword(client, user.ID, changePasswordOpts).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to change password for user: %v", err)
-	}
+	th.AssertNoErr(t, err)
 }
 
-func TestUsersListGroups(t *testing.T) {
+func TestUsersGroups(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
-	allUserPages, err := users.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list users: %v", err)
+	th.AssertNoErr(t, err)
+
+	createOpts := users.CreateOpts{
+		Password: "foobar",
+		DomainID: "default",
 	}
 
-	allUsers, err := users.ExtractUsers(allUserPages)
-	if err != nil {
-		t.Fatalf("Unable to extract users: %v", err)
+	user, err := CreateUser(t, client, &createOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteUser(t, client, user.ID)
+
+	tools.PrintResource(t, user)
+	tools.PrintResource(t, user.Extra)
+
+	createGroupOpts := groups.CreateOpts{
+		Name:     "testgroup",
+		DomainID: "default",
 	}
 
-	user := allUsers[0]
+	// Create Group in the default domain
+	group, err := CreateGroup(t, client, &createGroupOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteGroup(t, client, group.ID)
+
+	tools.PrintResource(t, group)
+	tools.PrintResource(t, group.Extra)
+
+	err = users.AddToGroup(client, group.ID, user.ID).ExtractErr()
+	th.AssertNoErr(t, err)
 
 	allGroupPages, err := users.ListGroups(client, user.ID).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list groups: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allGroups, err := groups.ExtractGroups(allGroupPages)
-	if err != nil {
-		t.Fatalf("Unable to extract groups: %v", err)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, g := range allGroups {
+		tools.PrintResource(t, g)
+		tools.PrintResource(t, g.Extra)
+
+		if g.ID == group.ID {
+			found = true
+		}
 	}
 
-	for _, group := range allGroups {
-		tools.PrintResource(t, group)
-		tools.PrintResource(t, group.Extra)
-	}
-}
+	th.AssertEquals(t, found, true)
 
-func TestUsersAddToGroup(t *testing.T) {
-	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
+	found = false
+	allUserPages, err := users.ListInGroup(client, group.ID, nil).AllPages()
+	th.AssertNoErr(t, err)
 
-	createOpts := users.CreateOpts{
-		Password: "foobar",
-		DomainID: "default",
-		Options: map[users.Option]interface{}{
-			users.IgnorePasswordExpiry: true,
-			users.MultiFactorAuthRules: []interface{}{
-				[]string{"password", "totp"},
-				[]string{"password", "custom-auth-method"},
-			},
-		},
-		Extra: map[string]interface{}{
-			"email": "jsmith@example.com",
-		},
+	allUsers, err := users.ExtractUsers(allUserPages)
+	th.AssertNoErr(t, err)
+
+	for _, u := range allUsers {
+		tools.PrintResource(t, user)
+		tools.PrintResource(t, user.Extra)
+
+		if u.ID == user.ID {
+			found = true
+		}
 	}
 
-	user, err := CreateUser(t, client, &createOpts)
-	if err != nil {
-		t.Fatalf("Unable to create user: %v", err)
-	}
-	defer DeleteUser(t, client, user.ID)
-
-	tools.PrintResource(t, user)
-	tools.PrintResource(t, user.Extra)
-
-	createGroupOpts := groups.CreateOpts{
-		Name:     "testgroup",
-		DomainID: "default",
-		Extra: map[string]interface{}{
-			"email": "testgroup@example.com",
-		},
-	}
-
-	// Create Group in the default domain
-	group, err := CreateGroup(t, client, &createGroupOpts)
-	if err != nil {
-		t.Fatalf("Unable to create group: %v", err)
-	}
-	defer DeleteGroup(t, client, group.ID)
-
-	tools.PrintResource(t, group)
-	tools.PrintResource(t, group.Extra)
-
-	err = users.AddToGroup(client, group.ID, user.ID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to add user to group: %v", err)
-	}
-}
-
-func TestUsersIsMemberOfGroup(t *testing.T) {
-	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
-
-	createOpts := users.CreateOpts{
-		Password: "foobar",
-		DomainID: "default",
-		Options: map[users.Option]interface{}{
-			users.IgnorePasswordExpiry: true,
-			users.MultiFactorAuthRules: []interface{}{
-				[]string{"password", "totp"},
-				[]string{"password", "custom-auth-method"},
-			},
-		},
-		Extra: map[string]interface{}{
-			"email": "jsmith@example.com",
-		},
-	}
-
-	user, err := CreateUser(t, client, &createOpts)
-	if err != nil {
-		t.Fatalf("Unable to create user: %v", err)
-	}
-	defer DeleteUser(t, client, user.ID)
-
-	tools.PrintResource(t, user)
-	tools.PrintResource(t, user.Extra)
-
-	createGroupOpts := groups.CreateOpts{
-		Name:     "testgroup",
-		DomainID: "default",
-		Extra: map[string]interface{}{
-			"email": "testgroup@example.com",
-		},
-	}
-
-	// Create Group in the default domain
-	group, err := CreateGroup(t, client, &createGroupOpts)
-	if err != nil {
-		t.Fatalf("Unable to create group: %v", err)
-	}
-	defer DeleteGroup(t, client, group.ID)
-
-	tools.PrintResource(t, group)
-	tools.PrintResource(t, group.Extra)
-
-	err = users.AddToGroup(client, group.ID, user.ID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to add user to group: %v", err)
-	}
+	th.AssertEquals(t, found, true)
 
 	ok, err := users.IsMemberOfGroup(client, group.ID, user.ID).Extract()
 	if err != nil {
@@ -310,128 +222,69 @@ func TestUsersIsMemberOfGroup(t *testing.T) {
 	if !ok {
 		t.Fatalf("User %s is expected to be a member of group %s", user.ID, group.ID)
 	}
-}
-
-func TestUsersRemoveFromGroup(t *testing.T) {
-	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
-
-	createOpts := users.CreateOpts{
-		Password: "foobar",
-		DomainID: "default",
-		Options: map[users.Option]interface{}{
-			users.IgnorePasswordExpiry: true,
-			users.MultiFactorAuthRules: []interface{}{
-				[]string{"password", "totp"},
-				[]string{"password", "custom-auth-method"},
-			},
-		},
-		Extra: map[string]interface{}{
-			"email": "jsmith@example.com",
-		},
-	}
-
-	user, err := CreateUser(t, client, &createOpts)
-	if err != nil {
-		t.Fatalf("Unable to create user: %v", err)
-	}
-	defer DeleteUser(t, client, user.ID)
-
-	tools.PrintResource(t, user)
-	tools.PrintResource(t, user.Extra)
-
-	createGroupOpts := groups.CreateOpts{
-		Name:     "testgroup",
-		DomainID: "default",
-		Extra: map[string]interface{}{
-			"email": "testgroup@example.com",
-		},
-	}
-
-	// Create Group in the default domain
-	group, err := CreateGroup(t, client, &createGroupOpts)
-	if err != nil {
-		t.Fatalf("Unable to create group: %v", err)
-	}
-	defer DeleteGroup(t, client, group.ID)
-
-	tools.PrintResource(t, group)
-	tools.PrintResource(t, group.Extra)
-
-	err = users.AddToGroup(client, group.ID, user.ID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to add user to group: %v", err)
-	}
 
 	err = users.RemoveFromGroup(client, group.ID, user.ID).ExtractErr()
-	if err != nil {
-		t.Fatalf("Unable to remove user from group: %v", err)
+	th.AssertNoErr(t, err)
+
+	allGroupPages, err = users.ListGroups(client, user.ID).AllPages()
+	th.AssertNoErr(t, err)
+
+	allGroups, err = groups.ExtractGroups(allGroupPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, g := range allGroups {
+		tools.PrintResource(t, g)
+		tools.PrintResource(t, g.Extra)
+
+		if g.ID == group.ID {
+			found = true
+		}
 	}
+
+	th.AssertEquals(t, found, false)
+
+	found = false
+	allUserPages, err = users.ListInGroup(client, group.ID, nil).AllPages()
+	th.AssertNoErr(t, err)
+
+	allUsers, err = users.ExtractUsers(allUserPages)
+	th.AssertNoErr(t, err)
+
+	for _, u := range allUsers {
+		tools.PrintResource(t, user)
+		tools.PrintResource(t, user.Extra)
+
+		if u.ID == user.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, false)
+
 }
 
 func TestUsersListProjects(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
+	th.AssertNoErr(t, err)
+
 	allUserPages, err := users.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list users: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allUsers, err := users.ExtractUsers(allUserPages)
-	if err != nil {
-		t.Fatalf("Unable to extract users: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	user := allUsers[0]
 
 	allProjectPages, err := users.ListProjects(client, user.ID).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list projects: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allProjects, err := projects.ExtractProjects(allProjectPages)
-	if err != nil {
-		t.Fatalf("Unable to extract projects: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	for _, project := range allProjects {
 		tools.PrintResource(t, project)
-	}
-}
-
-func TestUsersListInGroup(t *testing.T) {
-	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
-	allGroupPages, err := groups.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list groups: %v", err)
-	}
-
-	allGroups, err := groups.ExtractGroups(allGroupPages)
-	if err != nil {
-		t.Fatalf("Unable to extract groups: %v", err)
-	}
-
-	group := allGroups[0]
-
-	allUserPages, err := users.ListInGroup(client, group.ID, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list users: %v", err)
-	}
-
-	allUsers, err := users.ExtractUsers(allUserPages)
-	if err != nil {
-		t.Fatalf("Unable to extract users: %v", err)
-	}
-
-	for _, user := range allUsers {
-		tools.PrintResource(t, user)
-		tools.PrintResource(t, user.Extra)
 	}
 }
