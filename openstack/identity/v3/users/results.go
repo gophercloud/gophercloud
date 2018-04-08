@@ -116,9 +116,10 @@ type AddToGroupResult struct {
 	gophercloud.ErrResult
 }
 
-// CheckInGroupResult is the response from a CheckInGroup operation. Call its
+// IsMemberOfGroupResult is the response from a IsMemberOfGroup operation. Call its
 // ExtractErr method to determine if the request succeeded or failed.
-type CheckInGroupResult struct {
+type IsMemberOfGroupResult struct {
+	IsMember bool
 	gophercloud.ErrResult
 }
 
@@ -170,4 +171,9 @@ func (r userResult) Extract() (*User, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.User, err
+}
+
+// Extract extracts IsMemberOfGroupResult as bool and error values
+func (r IsMemberOfGroupResult) Extract() (bool, error) {
+	return r.IsMember, r.Err
 }

@@ -110,10 +110,13 @@ Example to Check Whether a User Belongs to a Group
 
 	groupID := "bede500ee1124ae9b0006ff859758b3a"
 	userID := "0fe36e73809d46aeae6705c39077b1b3"
-	err := users.CheckInGroup(identityClient, groupID, userID).ExtractErr()
+	ok, err := users.IsMemberOfGroup(identityClient, groupID, userID).Extract()
+	if err != nil {
+		panic(err)
+	}
 
-	if err == nil {
-		fmt.Printf("user with ID %s belongs to group with ID %s\n", userID, groupID)
+	if ok {
+		fmt.Printf("user %s is a member of group %s\n", userID, groupID)
 	}
 
 Example to Remove a User from a Group
