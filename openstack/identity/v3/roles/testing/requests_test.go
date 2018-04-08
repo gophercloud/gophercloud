@@ -129,7 +129,7 @@ func TestListAssignmentsOnResource(t *testing.T) {
 
 		actual, err := roles.ExtractRoles(page)
 		th.AssertNoErr(t, err)
-		th.CheckDeepEquals(t, ExpectedRolesForUserOnProjectSlice, actual)
+		th.CheckDeepEquals(t, ExpectedRolesOnResourceSlice, actual)
 
 		return true, nil
 	})
@@ -145,7 +145,7 @@ func TestListAssignmentsOnResource(t *testing.T) {
 
 		actual, err := roles.ExtractRoles(page)
 		th.AssertNoErr(t, err)
-		th.CheckDeepEquals(t, ExpectedRolesForUserOnProjectSlice, actual)
+		th.CheckDeepEquals(t, ExpectedRolesOnResourceSlice, actual)
 
 		return true, nil
 	})
@@ -161,7 +161,7 @@ func TestListAssignmentsOnResource(t *testing.T) {
 
 		actual, err := roles.ExtractRoles(page)
 		th.AssertNoErr(t, err)
-		th.CheckDeepEquals(t, ExpectedRolesForUserOnProjectSlice, actual)
+		th.CheckDeepEquals(t, ExpectedRolesOnResourceSlice, actual)
 
 		return true, nil
 	})
@@ -177,7 +177,7 @@ func TestListAssignmentsOnResource(t *testing.T) {
 
 		actual, err := roles.ExtractRoles(page)
 		th.AssertNoErr(t, err)
-		th.CheckDeepEquals(t, ExpectedRolesForUserOnProjectSlice, actual)
+		th.CheckDeepEquals(t, ExpectedRolesOnResourceSlice, actual)
 
 		return true, nil
 	})
