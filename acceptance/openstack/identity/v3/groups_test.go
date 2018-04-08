@@ -8,13 +8,14 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestGroupCRUD(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewIdentityV3Client()
-	if err != nil {
-		t.Fatalf("Unable to obtain an identity client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	createOpts := groups.CreateOpts{
 		Name:     "testgroup",
@@ -26,9 +27,7 @@ func TestGroupCRUD(t *testing.T) {
 
 	// Create Group in the default domain
 	group, err := CreateGroup(t, client, &createOpts)
-	if err != nil {
-		t.Fatalf("Unable to create group: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteGroup(t, client, group.ID)
 
 	tools.PrintResource(t, group)
@@ -42,9 +41,7 @@ func TestGroupCRUD(t *testing.T) {
 	}
 
 	newGroup, err := groups.Update(client, group.ID, updateOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update group: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newGroup)
 	tools.PrintResource(t, newGroup.Extra)
@@ -55,14 +52,10 @@ func TestGroupCRUD(t *testing.T) {
 
 	// List all Groups in default domain
 	allPages, err := groups.List(client, listOpts).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list groups: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allGroups, err := groups.ExtractGroups(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract groups: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	for _, g := range allGroups {
 		tools.PrintResource(t, g)
@@ -71,9 +64,7 @@ func TestGroupCRUD(t *testing.T) {
 
 	// Get the recently created group by ID
 	p, err := groups.Get(client, group.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get group: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, p)
 }
