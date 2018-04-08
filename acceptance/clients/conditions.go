@@ -12,6 +12,14 @@ func RequireAdmin(t *testing.T) {
 	}
 }
 
+// RequireDNS will restrict a test to only be run in environments
+// that support DNSaaS.
+func RequireDNS(t *testing.T) {
+	if os.Getenv("OS_DNS_ENVIRONMENT") == "" {
+		t.Skip("this test requires DNSaaS")
+	}
+}
+
 // RequireGuestAgent will restrict a test to only be run in
 // environments that support the QEMU guest agent.
 func RequireGuestAgent(t *testing.T) {
