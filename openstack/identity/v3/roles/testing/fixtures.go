@@ -141,8 +141,8 @@ const ListAssignmentOutput = `
 }
 `
 
-// ListAssignmentsForUserOnProjectOutput provides a result of ListAssignmentsForUserOnProject request.
-const ListAssignmentsForUserOnProjectOutput = `
+// ListAssignmentsOnResourceOutput provides a result of ListAssignmentsOnResource request.
+const ListAssignmentsOnResourceOutput = `
 {
     "links": {
         "next": null,
@@ -355,8 +355,8 @@ func HandleListRoleAssignmentsSuccessfully(t *testing.T) {
 	})
 }
 
-// RoleForUserOnProject is the role for user on project in the ListAssignmentsForUserOnProject request.
-var RoleForUserOnProject = roles.Role{
+// RoleOnResource is the role in the ListAssignmentsOnResource request.
+var RoleOnResource = roles.Role{
 	ID: "9fe1d3",
 	Links: map[string]interface{}{
 		"self": "https://example.com/identity/v3/roles/9fe1d3",
@@ -367,21 +367,23 @@ var RoleForUserOnProject = roles.Role{
 	},
 }
 
-// ExpectedRolesForUserOnProjectSlice is the slice of roles expected to be returned
-// from ListAssignmentsForUserOnProjectOutput.
-var ExpectedRolesForUserOnProjectSlice = []roles.Role{RoleForUserOnProject}
+// ExpectedRolesOnResourceSlice is the slice of roles expected to be returned
+// from ListAssignmentsOnResourceOutput.
+var ExpectedRolesOnResourceSlice = []roles.Role{RoleOnResource}
 
-// HandleListAssignmentsForUserOnProjectSuccessfully creates an HTTP handler at
-// `/projects/9e5a15/users/b964a9/roles` on the test handler mux that tests listing
-// role assignments for user on project.
-func HandleListAssignmentsForUserOnProjectSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/projects/9e5a15/users/b964a9/roles", func(w http.ResponseWriter, r *http.Request) {
+func HandleListAssignmentsOnResourceSuccessfully(t *testing.T) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListAssignmentsForUserOnProjectOutput)
-	})
+		fmt.Fprintf(w, ListAssignmentsOnResourceOutput)
+	}
+
+	th.Mux.HandleFunc("/projects/{project_id}/users/{user_id}/roles", fn)
+	th.Mux.HandleFunc("/projects/{project_id}/groups/{group_id}/roles", fn)
+	th.Mux.HandleFunc("/domains/{domain_id}/users/{user_id}/roles", fn)
+	th.Mux.HandleFunc("/domains/{domain_id}/groups/{group_id}/roles", fn)
 }

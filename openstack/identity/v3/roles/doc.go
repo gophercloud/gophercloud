@@ -83,8 +83,12 @@ Example to List Role Assignments for a User on a Project
 
 	projectID := "a99e9b4e620e4db09a2dfb6e42a01e66"
 	userID := "9df1a02f5eb2416a9781e8b0c022d3ae"
+	listAssignmentsOnResourceOpts := roles.ListAssignmentsOnResourceOpts{
+		UserID:    userID,
+		ProjectID: projectID,
+	}
 
-	allPages, err := roles.ListAssignmentsForUserOnProject(identityClient, projectID, userID).AllPages()
+	allPages, err := roles.ListAssignmentsOnResource(identityClient, listAssignmentsOnResourceOpts).AllPages()
 	if err != nil {
 		panic(err)
 	}

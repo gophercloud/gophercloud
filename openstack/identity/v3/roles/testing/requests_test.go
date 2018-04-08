@@ -115,13 +115,12 @@ func TestListAssignmentsSinglePage(t *testing.T) {
 	th.CheckEquals(t, count, 1)
 }
 
-func TestListAssignmentsForUserOnProject(t *testing.T) {
+func TestListAssignmentsOnResource(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListAssignmentsForUserOnProjectSuccessfully(t)
+	HandleListAssignmentsOnResourceSuccessfully(t)
 
-	count := 0
-	err := roles.ListAssignmentsForUserOnProject(client.ServiceClient(), "9e5a15", "b964a9").EachPage(func(page pagination.Page) (bool, error) {
+	fn := func(page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := roles.ExtractRoles(page)
@@ -129,7 +128,37 @@ func TestListAssignmentsForUserOnProject(t *testing.T) {
 		th.CheckDeepEquals(t, ExpectedRolesForUserOnProjectSlice, actual)
 
 		return true, nil
-	})
+	}
+
+	count := 0
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+	}).EachPage(fn)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+
+	count := 0
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+		UserID:   "{user_id}",
+		DomainID: "{domain_id}",
+	}).EachPage(fn)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+
+	count := 0
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).EachPage(fn)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+
+	count := 0
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+		GroupID:  "{group_id}",
+		DomainID: "{domain_id}",
+	}).EachPage(fn)
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, count, 1)
 }
