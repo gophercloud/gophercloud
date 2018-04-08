@@ -143,3 +143,47 @@ func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToL7PolicyUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts is the common options struct used in this package's Update
+// operation.
+type UpdateOpts struct {
+	// Name of the L7 policy.
+	Name string `json:"name,omitempty"`
+
+	// The L7 policy action. One of REDIRECT_TO_POOL, REDIRECT_TO_URL, or REJECT.
+	Action Action `json:"action,omitempty"`
+
+	// The position of this policy on the listener.
+	Position int32 `json:"position,omitempty"`
+
+	// A human-readable description for the resource.
+	Description string `json:"description,omitempty"`
+
+	// Requests matching this policy will be redirected to the pool with this ID.
+	// Only valid if action is REDIRECT_TO_POOL.
+	RedirectPoolID string `json:"redirect_pool_id,omitempty"`
+
+	// Requests matching this policy will be redirected to this URL.
+	// Only valid if action is REDIRECT_TO_URL.
+	RedirectURL string `json:"redirect_url,omitempty"`
+}
+
+// ToL7PolicyUpdateMap builds a request body from UpdateOpts.
+func (opts UpdateOpts) ToL7PolicyUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "l7policy")
+}
+
+// Update allows l7policy to be updated.
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, _ := opts.ToL7PolicyUpdateMap()
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

@@ -141,3 +141,9 @@ type GetResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+// UpdateResult represents the result of an Update operation. Call its Extract
+// method to interpret the result as a L7Policy.
+type UpdateResult struct {
+	commonResult
+}

@@ -108,6 +108,18 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	}
 	defer DeleteL7Policy(t, lbClient, lb.ID, policy.ID)
 
+	updateL7policyOpts := l7policies.UpdateOpts{
+		Description: "New l7 policy description",
+	}
+	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update l7 policy")
+	}
+
+	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
 	newPolicy, err := l7policies.Get(lbClient, policy.ID).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get l7 policy: %v", err)

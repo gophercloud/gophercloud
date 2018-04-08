@@ -46,5 +46,16 @@ Example to Delete a L7Policy
 	if err != nil {
 		panic(err)
 	}
+
+Example to Update a L7Policy
+
+	l7policyID := "d67d56a6-4a86-4688-a282-f46444705c64"
+	updateOpts := l7policies.UpdateOpts{
+		Name: "new-name",
+	}
+	l7policy, err := l7policies.Update(lbClient, l7policyID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package l7policies
