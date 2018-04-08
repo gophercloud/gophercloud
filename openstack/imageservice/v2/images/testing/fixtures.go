@@ -212,6 +212,7 @@ func HandleImageCreationSuccessfullyNulls(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 		th.TestJSONRequest(t, r, `{
 			"id": "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
+			"architecture": "x86_64",
 			"name": "Ubuntu 12.10",
 			"tags": [
 				"ubuntu",
@@ -222,6 +223,7 @@ func HandleImageCreationSuccessfullyNulls(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{
+			"architecture": "x86_64",
 			"status": "queued",
 			"name": "Ubuntu 12.10",
 			"protected": false,
