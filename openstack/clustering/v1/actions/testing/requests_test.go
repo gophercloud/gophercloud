@@ -27,27 +27,27 @@ func TestListActions(t *testing.T) {
 		{
 			"actions": [
 				{
-							"action": "NODE_DELETE",
-							"cause": "RPC Request",
-							"created_at": "2015-11-04T05:21:41Z",
-							"data": {},
-							"depended_by": [],
-							"depends_on": [],
-							"end_time": 1425550000.0,
-							"id": "edce3528-864f-41fb-8759-f4707925cc09",
-							"inputs": {},
-							"interval": -1,
-							"name": "node_delete_f0de9b9c",
-							"outputs": {},
-							"owner": null,
-							"project": "f1fe61dcda2f4618a14c10dc7abc214d",
-							"start_time": 1425550000.0,
-							"status": "SUCCEEDED",
-							"status_reason": "Action completed successfully.",
-							"target": "f0de9b9c-6d48-4a46-af21-2ca8607777fe",
-							"timeout": 3600,
-							"updated_at": "2016-11-04T05:21:41Z",
-							"user": "8bcd2cdca7684c02afc9e4f2fc0f0c79"
+					"action": "NODE_DELETE",
+					"cause": "RPC Request",
+					"created_at": "2015-11-04T05:21:41Z",
+					"data": {},
+					"depended_by": [],
+					"depends_on": [],
+					"end_time": 1425550000.0,
+					"id": "edce3528-864f-41fb-8759-f4707925cc09",
+					"inputs": {},
+					"interval": -1,
+					"name": "node_delete_f0de9b9c",
+					"outputs": {},
+					"owner": null,
+					"project": "f1fe61dcda2f4618a14c10dc7abc214d",
+					"start_time": 1425550000.0,
+					"status": "SUCCEEDED",
+					"status_reason": "Action completed successfully.",
+					"target": "f0de9b9c-6d48-4a46-af21-2ca8607777fe",
+					"timeout": 3600,
+					"updated_at": "2016-11-04T05:21:41Z",
+					"user": "8bcd2cdca7684c02afc9e4f2fc0f0c79"
 				}
 			]
 		}`)

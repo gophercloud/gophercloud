@@ -16,5 +16,6 @@ Example to list actions
 	for _, action := range allActions {
 		fmt.Printf("%+v\n", action)
 	}
+
 */
 package actions
