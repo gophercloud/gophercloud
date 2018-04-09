@@ -33,7 +33,7 @@ const PolicyListBody1 = `
         "version": 1
       },
       "type": "senlin.policy.deletion-1.0",
-      "updated_at": null,
+      "updated_at": "2018-04-02T00:19:12Z",
       "user": "fe43e41739154b72818565e0d2580819"
     }
   ]
@@ -62,7 +62,7 @@ const PolicyListBody2 = `
         "version": 1
       },
       "type": "senlin.policy.deletion-1.0",
-      "updated_at": null,
+      "updated_at": "2018-04-02T23:15:11.000000",
       "user": "fe43e41739154b72818565e0d2580819"
     }
   ]
@@ -101,7 +101,9 @@ const PolicyCreateBody = `
 
 var (
 	ExpectedPolicyCreatedAt1, _      = time.Parse(time.RFC3339, "2018-04-02T21:43:30.000000Z")
+	ExpectedPolicyUpdatedAt1, _      = time.Parse(time.RFC3339, "2018-04-02T00:19:12.000000Z")
 	ExpectedPolicyCreatedAt2, _      = time.Parse(time.RFC3339, "2018-04-02T22:29:36.000000Z")
+	ExpectedPolicyUpdatedAt2, _      = time.Parse(time.RFC3339, "2018-04-02T23:15:11.000000Z")
 	ExpectedCreatePolicyCreatedAt, _ = time.Parse(time.RFC3339, "2018-04-04T00:18:36.000000Z")
 	ZeroTime, _                      = time.Parse(time.RFC3339, "1-01-01T00:00:00.000000Z")
 
@@ -128,7 +130,7 @@ var (
 				},
 				Type:      "senlin.policy.deletion-1.0",
 				User:      "fe43e41739154b72818565e0d2580819",
-				UpdatedAt: ZeroTime,
+				UpdatedAt: ExpectedPolicyUpdatedAt1,
 			},
 		},
 		{
@@ -153,7 +155,7 @@ var (
 				},
 				Type:      "senlin.policy.deletion-1.0",
 				User:      "fe43e41739154b72818565e0d2580819",
-				UpdatedAt: ZeroTime,
+				UpdatedAt: ExpectedPolicyUpdatedAt2,
 			},
 		},
 	}
