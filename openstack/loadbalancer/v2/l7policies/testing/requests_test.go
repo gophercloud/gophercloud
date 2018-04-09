@@ -114,11 +114,13 @@ func TestUpdateL7Policy(t *testing.T) {
 	HandleL7PolicyUpdateSuccessfully(t)
 
 	client := fake.ServiceClient()
-	actual, err := l7policies.Update(client, "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.UpdateOpts{
-		Name:        "NewL7PolicyName",
-		Action:      l7policies.ActionRedirectToURL,
-		RedirectURL: "http://www.new-example.com",
-	}).Extract()
+	newName := "NewL7PolicyName"
+	actual, err := l7policies.Update(client, "8a1412f0-4c32-4257-8b07-af4770b604fd",
+		l7policies.UpdateOpts{
+			Name:        &newName,
+			Action:      l7policies.ActionRedirectToURL,
+			RedirectURL: "http://www.new-example.com",
+		}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
 	}

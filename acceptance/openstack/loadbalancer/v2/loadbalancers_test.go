@@ -108,8 +108,9 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	}
 	defer DeleteL7Policy(t, lbClient, lb.ID, policy.ID)
 
+	newDescription := "New l7 policy description"
 	updateL7policyOpts := l7policies.UpdateOpts{
-		Description: "New l7 policy description",
+		Description: &newDescription,
 	}
 	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
 	if err != nil {

@@ -153,8 +153,8 @@ type UpdateOptsBuilder interface {
 // UpdateOpts is the common options struct used in this package's Update
 // operation.
 type UpdateOpts struct {
-	// Name of the L7 policy.
-	Name string `json:"name,omitempty"`
+	// Name of the L7 policy, empty string is allowed.
+	Name *string `json:"name,omitempty"`
 
 	// The L7 policy action. One of REDIRECT_TO_POOL, REDIRECT_TO_URL, or REJECT.
 	Action Action `json:"action,omitempty"`
@@ -162,8 +162,8 @@ type UpdateOpts struct {
 	// The position of this policy on the listener.
 	Position int32 `json:"position,omitempty"`
 
-	// A human-readable description for the resource.
-	Description string `json:"description,omitempty"`
+	// A human-readable description for the resource, empty string is allowed.
+	Description *string `json:"description,omitempty"`
 
 	// Requests matching this policy will be redirected to the pool with this ID.
 	// Only valid if action is REDIRECT_TO_POOL.
