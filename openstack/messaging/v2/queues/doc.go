@@ -57,9 +57,7 @@ Example to Update a Queue
 		},
 	}
 
-	clientID := "3381af92-2b9e-11e3-b191-71861300734d"
-
-	updateResult, err := queues.Update(client, queueName, clientID, updateOpts).Extract()
+	updateResult, err := queues.Update(client, queueName, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

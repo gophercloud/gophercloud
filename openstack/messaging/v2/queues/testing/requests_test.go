@@ -62,7 +62,7 @@ func TestUpdate(t *testing.T) {
 		queues.UpdateQueueBody{
 			Op:    queues.ReplaceOp,
 			Path:  "/metadata/description",
-			Value: 10,
+			Value: "Update queue description",
 		},
 	}
 	updatedQueueResult := queues.QueueDetails{

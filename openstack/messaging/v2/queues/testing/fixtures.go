@@ -83,7 +83,7 @@ const UpdateQueueRequest = `
     {
         "op": "replace",
         "path": "/metadata/description",
-        "value": 10
+        "value": "Update queue description"
     }
 ]`
 
