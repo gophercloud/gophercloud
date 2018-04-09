@@ -96,12 +96,12 @@ func (v *Version) UnmarshalJSON(b []byte) error {
 	}
 
 	if f == 1 {
-		blah := fmt.Sprintf("%.1f", f)
-		*v = Version(blah)
+		version := fmt.Sprintf("%.1f", f)
+		*v = Version(version)
 		return nil
 	} else {
-		blah := strconv.FormatFloat(f, 'f', -1, 64)
-		*v = Version(blah)
+		version := strconv.FormatFloat(f, 'f', -1, 64)
+		*v = Version(version)
 		return nil
 	}
 }
