@@ -150,7 +150,7 @@ type PolicyDeleteResult struct {
 
 // DeleteResult contains the delete information from a delete policy request
 type DeleteResult struct {
-	RequestID      string `json:"X-OpenStack-Request-ID"`
+	RequestID string `json:"X-OpenStack-Request-ID"`
 }
 
 func (r PolicyDeleteResult) Extract() (*DeleteResult, error) {

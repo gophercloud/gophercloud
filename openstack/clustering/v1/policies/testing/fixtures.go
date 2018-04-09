@@ -232,8 +232,8 @@ func HandlePolicyDelete(t *testing.T) {
 	th.Mux.HandleFunc("/v1/policies/"+PolicyIDtoDelete, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-		th.TestHeader(t, r, "X-OpenStack-Request-ID", PolicyDeleteRequestID)
 
+		w.Header().Add("X-OpenStack-Request-ID", PolicyDeleteRequestID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }

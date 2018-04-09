@@ -1,9 +1,10 @@
 package policies
 
 import (
+	"net/http"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
-	"net/http"
 )
 
 // ListOptsBuilder Builder.
