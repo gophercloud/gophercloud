@@ -131,14 +131,17 @@ func TestRoleListAssignmentForUserOnProject(t *testing.T) {
 	allRoles, err := roles.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
 
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
+	t.Logf("Role assignments of user %s on project %s:", user.Name, project.Name)
+	var found bool
+	for _, _role := range allRoles {
+		tools.PrintResource(t, _role)
+
+		if _role.ID == role.ID {
+			found = true
+		}
 	}
 
-	t.Logf("Role assignments of user %s on project %s:", user.Name, project.Name)
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
-	}
+	th.AssertEquals(t, found, true)
 }
 
 func TestRoleListAssignmentForUserOnDomain(t *testing.T) {
@@ -189,14 +192,17 @@ func TestRoleListAssignmentForUserOnDomain(t *testing.T) {
 	allRoles, err := roles.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
 
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
+	t.Logf("Role assignments of user %s on domain %s:", user.Name, domain.Name)
+	var found bool
+	for _, _role := range allRoles {
+		tools.PrintResource(t, _role)
+
+		if _role.ID == role.ID {
+			found = true
+		}
 	}
 
-	t.Logf("Role assignments of user %s on domain %s:", user.Name, domain.Name)
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
-	}
+	th.AssertEquals(t, found, true)
 }
 
 func TestRoleListAssignmentForGroupOnProject(t *testing.T) {
@@ -244,14 +250,17 @@ func TestRoleListAssignmentForGroupOnProject(t *testing.T) {
 	allRoles, err := roles.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
 
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
+	t.Logf("Role assignments of group %s on project %s:", group.Name, project.Name)
+	var found bool
+	for _, _role := range allRoles {
+		tools.PrintResource(t, _role)
+
+		if _role.ID == role.ID {
+			found = true
+		}
 	}
 
-	t.Logf("Role assignments of group %s on project %s:", group.Name, project.Name)
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
-	}
+	th.AssertEquals(t, found, true)
 }
 
 func TestRoleListAssignmentForGroupOnDomain(t *testing.T) {
@@ -302,14 +311,17 @@ func TestRoleListAssignmentForGroupOnDomain(t *testing.T) {
 	allRoles, err := roles.ExtractRoles(allPages)
 	th.AssertNoErr(t, err)
 
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
+	t.Logf("Role assignments of group %s on domain %s:", group.Name, domain.Name)
+	var found bool
+	for _, _role := range allRoles {
+		tools.PrintResource(t, _role)
+
+		if _role.ID == role.ID {
+			found = true
+		}
 	}
 
-	t.Logf("Role assignments of group %s on domain %s:", group.Name, domain.Name)
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
-	}
+	th.AssertEquals(t, found, true)
 }
 
 func TestRolesAssignToUserOnProject(t *testing.T) {
