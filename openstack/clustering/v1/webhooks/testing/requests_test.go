@@ -29,25 +29,29 @@ func TestWebhookTrigger(t *testing.T) {
 			}`)
 	})
 
-	result, err := webhooks.Trigger(fake.ServiceClient(),
-		"f93f83f6-762b-41b6-b757-80507834d394",
-		webhooks.TriggerOpts{V: "1", Params: map[string]string{"foo": "bar", "bar": "baz"}}).Extract()
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, result, "290c44fa-c60f-4d75-a0eb-87433ba982a3")
-}
-
-// Test webhook with params that generates query strings
-func TestWebhookParams(t *testing.T) {
-	to := webhooks.TriggerOpts{
+	triggerOpts := webhooks.TriggerOpts{
 		V: "1",
 		Params: map[string]string{
 			"foo": "bar",
 			"bar": "baz",
 		},
 	}
+	result, err := webhooks.Trigger(fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", triggerOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, result, "290c44fa-c60f-4d75-a0eb-87433ba982a3")
+}
 
+// Test webhook with params that generates query strings
+func TestWebhookParams(t *testing.T) {
+	triggerOpts := webhooks.TriggerOpts{
+		V: "1",
+		Params: map[string]string{
+			"foo": "bar",
+			"bar": "baz",
+		},
+	}
 	expected := "?V=1&bar=baz&foo=bar"
-	actual, err := to.ToWebhookTriggerQuery()
+	actual, err := triggerOpts.ToWebhookTriggerQuery()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, actual, expected)
 }
@@ -70,9 +74,14 @@ func TestWebhooksInvalidAction(t *testing.T) {
 			}`)
 	})
 
-	_, err := webhooks.Trigger(fake.ServiceClient(),
-		"f93f83f6-762b-41b6-b757-80507834d394",
-		webhooks.TriggerOpts{V: "1"}).Extract()
+	triggerOpts := webhooks.TriggerOpts{
+		V: "1",
+		Params: map[string]string{
+			"foo": "bar",
+			"bar": "baz",
+		},
+	}
+	_, err := webhooks.Trigger(fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", triggerOpts).Extract()
 	isValid := err.(*json.UnmarshalTypeError) == nil
 	th.AssertEquals(t, false, isValid)
 }
@@ -95,9 +104,7 @@ func TestWebhookTriggerInvalidEmptyOpt(t *testing.T) {
 			}`)
 	})
 
-	_, err := webhooks.Trigger(fake.ServiceClient(),
-		"f93f83f6-762b-41b6-b757-80507834d394",
-		webhooks.TriggerOpts{}).Extract()
+	_, err := webhooks.Trigger(fake.ServiceClient(), "f93f83f6-762b-41b6-b757-80507834d394", webhooks.TriggerOpts{}).Extract()
 	if err == nil {
 		t.Errorf("Expected error without V param")
 	}

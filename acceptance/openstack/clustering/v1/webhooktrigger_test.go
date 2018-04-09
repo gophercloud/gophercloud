@@ -27,6 +27,6 @@ func TestClusteringWebhookTrigger(t *testing.T) {
 		t.Logf("Webhook trigger action id %s", actionID)
 	}
 
-	// TODO: Need to compare make sure action ID exists
+	// TODO: Need to compare to make sure action ID exists
 	th.AssertEquals(t, true, true)
 }
