@@ -2,6 +2,7 @@ package l7policies
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // L7Policy is a collection of L7 rules associated with a Listener, and which
@@ -90,4 +91,53 @@ func (r commonResult) Extract() (*L7Policy, error) {
 // method to interpret the result as a L7Policy.
 type CreateResult struct {
 	commonResult
+}
+
+// L7PolicyPage is the page returned by a pager when traversing over a
+// collection of l7policies.
+type L7PolicyPage struct {
+	pagination.LinkedPageBase
+}
+
+// NextPageURL is invoked when a paginated collection of l7policies has reached
+// the end of a page and the pager seeks to traverse over a new one. In order
+// to do this, it needs to construct the next page's URL.
+func (r L7PolicyPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"l7policies_links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
+}
+
+// IsEmpty checks whether a L7PolicyPage struct is empty.
+func (r L7PolicyPage) IsEmpty() (bool, error) {
+	is, err := ExtractL7Policies(r)
+	return len(is) == 0, err
+}
+
+// ExtractL7Policies accepts a Page struct, specifically a L7PolicyPage struct,
+// and extracts the elements into a slice of L7Policy structs. In other words,
+// a generic collection is mapped into a relevant slice.
+func ExtractL7Policies(r pagination.Page) ([]L7Policy, error) {
+	var s struct {
+		L7Policies []L7Policy `json:"l7policies"`
+	}
+	err := (r.(L7PolicyPage)).ExtractInto(&s)
+	return s.L7Policies, err
+}
+
+// GetResult represents the result of a Get operation. Call its Extract
+// method to interpret the result as a L7Policy.
+type GetResult struct {
+	commonResult
+}
+
+// DeleteResult represents the result of a Delete operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
 }

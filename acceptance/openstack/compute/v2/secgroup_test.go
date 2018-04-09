@@ -101,10 +101,6 @@ func TestSecGroupsAddGroupToServer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecurityGroupRule(t, client, rule.ID)
 
-	server, err = CreateServer(t, client)
-	th.AssertNoErr(t, err)
-	defer DeleteServer(t, client, server)
-
 	t.Logf("Adding group %s to server %s", securityGroup.ID, server.ID)
 	err = secgroups.AddServer(client, server.ID, securityGroup.Name).ExtractErr()
 	th.AssertNoErr(t, err)
