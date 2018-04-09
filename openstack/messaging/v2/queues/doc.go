@@ -10,9 +10,7 @@ Example to List Queues
 		Limit: 10,
 	}
 
-	clientID := "3381af92-2b9e-11e3-b191-71861300734d"
-
-	pager := queues.List(client, clientID, listOpts)
+	pager := queues.List(client, listOpts)
 	err = pager.EachPage(func(page pagination.Page) (bool, error) {
 		queues, err := queues.ExtractQueues(page)
 		if err != nil {

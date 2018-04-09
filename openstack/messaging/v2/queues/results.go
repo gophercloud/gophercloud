@@ -2,6 +2,7 @@ package queues
 
 import (
 	"encoding/json"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/internal"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -66,22 +67,27 @@ func ExtractQueues(r pagination.Page) ([]Queue, error) {
 }
 
 // IsEmpty determines if a QueuesPage contains any results.
-func (page QueuePage) IsEmpty() (bool, error) {
-	s, err := ExtractQueues(page)
+func (r QueuePage) IsEmpty() (bool, error) {
+	s, err := ExtractQueues(r)
 	return len(s) == 0, err
 }
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (page QueuePage) NextPageURL() (string, error) {
+func (r QueuePage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
-	return gophercloud.ExtractNextURL(s.Links)
+
+	next, err := gophercloud.ExtractNextURL(s.Links)
+	if err != nil {
+		return "", err
+	}
+	return nextPageURL(r.URL.String(), next)
 }
 
 func (r *QueueDetails) UnmarshalJSON(b []byte) error {

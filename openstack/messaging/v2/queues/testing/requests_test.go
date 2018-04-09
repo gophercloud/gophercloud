@@ -14,20 +14,23 @@ func TestList(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleListSuccessfully(t)
 
-	listOpts := queues.ListOpts{}
+	listOpts := queues.ListOpts{
+		Limit: 1,
+	}
 
 	count := 0
 	err := queues.List(fake.ServiceClient(), listOpts).EachPage(func(page pagination.Page) (bool, error) {
-		count++
 		actual, err := queues.ExtractQueues(page)
 		th.AssertNoErr(t, err)
-		th.CheckDeepEquals(t, ExpectedQueueSlice, actual)
+
+		th.CheckDeepEquals(t, ExpectedQueueSlice[count], actual)
+		count++
 
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
 
-	th.CheckEquals(t, 1, count)
+	th.CheckEquals(t, 2, count)
 }
 
 func TestCreate(t *testing.T) {

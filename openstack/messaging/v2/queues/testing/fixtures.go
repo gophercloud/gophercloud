@@ -25,56 +25,60 @@ const CreateQueueRequest = `
     "description": "Queue for unit testing."
 }`
 
-// ListQueuesResponse is a sample response to a List queues.
-const ListQueuesResponse = `
+// ListQueuesResponse1 is a sample response to a List queues.
+const ListQueuesResponse1 = `
 {
-   "queues":[
-      {
-         "href": "/v2/queues/beijing",
-         "name": "beijing",
-         "metadata": {
-                "_dead_letter_queue": "fake_queue",
-                "_dead_letter_queue_messages_ttl": 3500,
-                "_default_message_delay": 25,
-                "_default_message_ttl": 3700,
-                "_max_claim_count": 10,
-                "_max_messages_post_size": 262143,
-                "description": "Test queue."
+    "queues":[
+        {
+            "href":"/v2/queues/london",
+            "name":"london",
+            "metadata":{
+                "_dead_letter_queue":"fake_queue",
+                "_dead_letter_queue_messages_ttl":3500,
+                "_default_message_delay":25,
+                "_default_message_ttl":3700,
+                "_max_claim_count":10,
+                "_max_messages_post_size":262143,
+                "description":"Test queue."
             }
-      },
-      {
-         "href": "/v2/queues/london",
-         "name": "london",
-		 "metadata": {
-                "_dead_letter_queue": "fake_queue",
-                "_dead_letter_queue_messages_ttl": 3500,
-                "_default_message_delay": 25,
-                "_default_message_ttl": 3700,
-                "_max_claim_count": 10,
-                "_max_messages_post_size": 262143,
-                "description": "Test queue."
+        }
+    ],
+    "links":[
+        {
+            "href":"/v2/queues?marker=london",
+            "rel":"next"
+        }
+    ]
+}`
+
+// ListQueuesResponse2 is a sample response to a List queues.
+const ListQueuesResponse2 = `
+{
+    "queues":[
+		{
+            "href":"/v2/queues/beijing",
+            "name":"beijing",
+            "metadata":{
+                "_dead_letter_queue":"fake_queue",
+                "_dead_letter_queue_messages_ttl":3500,
+                "_default_message_delay":25,
+                "_default_message_ttl":3700,
+                "_max_claim_count":10,
+                "_max_messages_post_size":262143,
+                "description":"Test queue."
             }
-      }
-   ]
+        }
+    ],
+    "links":[
+        {
+            "href":"/v2/queues?marker=beijing",
+            "rel":"next"
+        }
+    ]
 }`
 
 // FirstQueue is the first result in a List.
 var FirstQueue = queues.Queue{
-	Href: "/v2/queues/beijing",
-	Name: "beijing",
-	Metadata: queues.QueueDetails{
-		DeadLetterQueue:           "fake_queue",
-		DeadLetterQueueMessageTTL: 3500,
-		DefaultMessageDelay:       25,
-		DefaultMessageTTL:         3700,
-		MaxClaimCount:             10,
-		MaxMessagesPostSize:       262143,
-		Extra:                     map[string]interface{}{"description": "Test queue."},
-	},
-}
-
-// SecondQueue is the second result in a List.
-var SecondQueue = queues.Queue{
 	Href: "/v2/queues/london",
 	Name: "london",
 	Metadata: queues.QueueDetails{
@@ -88,8 +92,23 @@ var SecondQueue = queues.Queue{
 	},
 }
 
+// SecondQueue is the second result in a List.
+var SecondQueue = queues.Queue{
+	Href: "/v2/queues/beijing",
+	Name: "beijing",
+	Metadata: queues.QueueDetails{
+		DeadLetterQueue:           "fake_queue",
+		DeadLetterQueueMessageTTL: 3500,
+		DefaultMessageDelay:       25,
+		DefaultMessageTTL:         3700,
+		MaxClaimCount:             10,
+		MaxMessagesPostSize:       262143,
+		Extra:                     map[string]interface{}{"description": "Test queue."},
+	},
+}
+
 // ExpectedQueueSlice is the expected result in a List.
-var ExpectedQueueSlice = []queues.Queue{FirstQueue, SecondQueue}
+var ExpectedQueueSlice = [][]queues.Queue{{FirstQueue}, {SecondQueue}}
 
 // HandleListSuccessfully configures the test server to respond to a List request.
 func HandleListSuccessfully(t *testing.T) {
@@ -99,7 +118,17 @@ func HandleListSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 			w.Header().Add("Content-Type", "application/json")
-			fmt.Fprintf(w, ListQueuesResponse)
+			next := r.RequestURI
+
+			switch next {
+			case "/v2/queues?limit=1":
+				fmt.Fprintf(w, ListQueuesResponse1)
+			case "/v2/queues?marker=london":
+				fmt.Fprint(w, ListQueuesResponse2)
+			case "/v2/queues?marker=beijing":
+				fmt.Fprint(w, `{ "queues": [] }`)
+			}
+
 		})
 }
 

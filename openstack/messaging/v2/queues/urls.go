@@ -1,6 +1,10 @@
 package queues
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"net/url"
+
+	"github.com/gophercloud/gophercloud"
+)
 
 const ApiVersion = "v2"
 const ApiName = "queues"
@@ -15,4 +19,17 @@ func createURL(client *gophercloud.ServiceClient, queueName string) string {
 
 func listURL(client *gophercloud.ServiceClient) string {
 	return commonURL(client)
+}
+
+// builds next page full url based on current url
+func nextPageURL(currentURL string, next string) (string, error) {
+	base, err := url.Parse(currentURL)
+	if err != nil {
+		return "", err
+	}
+	rel, err := url.Parse(next)
+	if err != nil {
+		return "", err
+	}
+	return base.ResolveReference(rel).String(), nil
 }
