@@ -117,10 +117,10 @@ type AddToGroupResult struct {
 }
 
 // IsMemberOfGroupResult is the response from a IsMemberOfGroup operation. Call its
-// ExtractErr method to determine if the request succeeded or failed.
+// Extract method to determine if the request succeeded or failed.
 type IsMemberOfGroupResult struct {
 	IsMember bool
-	gophercloud.ErrResult
+	gophercloud.Result
 }
 
 // RemoveFromGroupResult is the response from a RemoveFromGroup operation. Call its
