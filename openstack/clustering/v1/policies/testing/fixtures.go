@@ -115,16 +115,16 @@ var (
 				Name:      "delpol",
 				Project:   "018cd0909fb44cd5bc9b7a3cd664920e",
 
-				Spec: map[string]interface{}{
-					"description": "A policy for choosing victim node(s) from a cluster for deletion.",
-					"properties": map[string]interface{}{
+				Spec: policies.Spec{
+					Description: "A policy for choosing victim node(s) from a cluster for deletion.",
+					Properties: map[string]interface{}{
 						"criteria":                "OLDEST_FIRST",
 						"destroy_after_deletion":  true,
 						"grace_period":            float64(60),
 						"reduce_desired_capacity": false,
 					},
-					"type":    "senlin.policy.deletion",
-					"version": float64(1),
+					Type:    "senlin.policy.deletion",
+					Version: "1.0",
 				},
 				Type:      "senlin.policy.deletion-1.0",
 				User:      "fe43e41739154b72818565e0d2580819",
@@ -140,16 +140,16 @@ var (
 				Name:      "delpol2",
 				Project:   "018cd0909fb44cd5bc9b7a3cd664920e",
 
-				Spec: map[string]interface{}{
-					"description": "A policy for choosing victim node(s) from a cluster for deletion.",
-					"properties": map[string]interface{}{
+				Spec: policies.Spec{
+					Description: "A policy for choosing victim node(s) from a cluster for deletion.",
+					Properties: map[string]interface{}{
 						"criteria":                "OLDEST_FIRST",
 						"destroy_after_deletion":  true,
 						"grace_period":            float64(60),
 						"reduce_desired_capacity": false,
 					},
-					"type":    "senlin.policy.deletion",
-					"version": float64(1),
+					Type:    "senlin.policy.deletion",
+					Version: "1.0",
 				},
 				Type:      "senlin.policy.deletion-1.0",
 				User:      "fe43e41739154b72818565e0d2580819",
@@ -166,9 +166,9 @@ var (
 		Name:      "delpol4",
 		Project:   "018cd0909fb44cd5bc9b7a3cd664920e",
 
-		Spec: map[string]interface{}{
-			"description": "A policy for choosing victim node(s) from a cluster for deletion.",
-			"properties": map[string]interface{}{
+		Spec: policies.Spec{
+			Description: "A policy for choosing victim node(s) from a cluster for deletion.",
+			Properties: map[string]interface{}{
 				"hooks": map[string]interface{}{
 					"params": map[string]interface{}{
 						"queue": "zaqar_queue_name",
@@ -177,8 +177,8 @@ var (
 					"type":    "zaqar",
 				},
 			},
-			"type":    "senlin.policy.deletion",
-			"version": float64(1.1),
+			Type:    "senlin.policy.deletion",
+			Version: "1.1",
 		},
 		Type:      "senlin.policy.deletion-1.1",
 		User:      "fe43e41739154b72818565e0d2580819",

@@ -40,20 +40,17 @@ func TestPolicyCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	opts := policies.CreateOpts{
-		Name: "new_policy",
+		Name: "new_policy2",
 		Spec: policies.Spec{
 			Description: "new policy description",
 			Properties: map[string]interface{}{
-				"hooks": map[string]interface{}{
-					"type": "zaqar",
-					"params": map[string]interface{}{
-						"queue": "my_zaqar_queue",
-					},
-					"timeout": 10,
-				},
+				"destroy_after_deletion":  true,
+				"grace_period":            60,
+				"reduce_desired_capacity": false,
+				"criteria":                "OLDEST_FIRST",
 			},
 			Type:    "senlin.policy.deletion",
-			Version: "1.1",
+			Version: "1.0",
 		},
 	}
 

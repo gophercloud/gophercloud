@@ -1,7 +1,6 @@
 package testing
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/policies"
@@ -51,12 +50,7 @@ func TestCreatePolicy(t *testing.T) {
 
 	opts := policies.CreateOpts{
 		Name: ExpectedCreatePolicy.Name,
-		Spec: policies.Spec{
-			Description: ExpectedCreatePolicy.Spec["description"].(string),
-			Properties:  ExpectedCreatePolicy.Spec["properties"].(map[string]interface{}),
-			Type:        ExpectedCreatePolicy.Spec["type"].(string),
-			Version:     strconv.FormatFloat(ExpectedCreatePolicy.Spec["version"].(float64), 'f', -1, 64),
-		},
+		Spec: ExpectedCreatePolicy.Spec,
 	}
 
 	actual, err := policies.Create(fake.ServiceClient(), opts).Extract()
