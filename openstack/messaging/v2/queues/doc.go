@@ -44,13 +44,13 @@ Example to Create a Queue
 
 Example to Update a Queue
 
-	updateOpts := queues.UpdateOpts{
-		queues.UpdateQueueBody{
+	updateOpts := queues.BatchUpdateOpts{
+		queues.UpdateOpts{
 			Op:    "replace",
 			Path:  "/metadata/_max_claim_count",
 			Value: 15,
 		},
-		queues.UpdateQueueBody{
+		queues.UpdateOpts{
 			Op: "replace",
 			Path: "/metadata/description",
 			Value: "Updated description test queue.",

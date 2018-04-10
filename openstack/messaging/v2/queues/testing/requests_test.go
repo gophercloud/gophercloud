@@ -58,8 +58,8 @@ func TestUpdate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateSuccessfully(t)
 
-	updateOpts := queues.UpdateOpts{
-		queues.UpdateQueueBody{
+	updateOpts := queues.BatchUpdateOpts{
+		queues.UpdateOpts{
 			Op:    queues.ReplaceOp,
 			Path:  "/metadata/description",
 			Value: "Update queue description",
