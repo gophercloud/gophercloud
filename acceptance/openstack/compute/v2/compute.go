@@ -775,7 +775,9 @@ func DeleteServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 		t.Fatalf("Error deleting server %s: %s", server.ID, err)
 	}
 
-	t.Fatalf("Could not delete server: %s", server.ID)
+	// If we reach this point, the API returned an actual DELETED status
+	// which is a very short window of time, but happens occasionally.
+	t.Logf("Deleted server: %s", server.ID)
 }
 
 // DeleteServerGroup will delete a server group. A fatal error will occur if
