@@ -28,7 +28,7 @@ type Spec struct {
 	Description string                 `json:"description"`
 	Properties  map[string]interface{} `json:"properties"`
 	Type        string                 `json:"type"`
-	Version     interface{}            `json:"version"`
+	Version     string                 `json:"version"`
 }
 
 // ExtractPolicies interprets a page of results as a slice of Policy.
@@ -98,15 +98,30 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	switch t := s.tmp.Spec.Version.(type) {
+	return nil
+}
+
+func (r *Spec) UnmarshalJSON(b []byte) error {
+	type tmp Spec
+	var s struct {
+		tmp
+		Version interface{} `json:"version"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Spec(s.tmp)
+
+	switch t := s.Version.(type) {
 	case float64:
 		if t == 1 {
-			r.Spec.Version = fmt.Sprintf("%.1f", t)
+			r.Version = fmt.Sprintf("%.1f", t)
 		} else {
-			r.Spec.Version = strconv.FormatFloat(t, 'f', -1, 64)
+			r.Version = strconv.FormatFloat(t, 'f', -1, 64)
 		}
 	case string:
-		r.Spec.Version = t
+		r.Version = t
 	}
 
 	return nil
