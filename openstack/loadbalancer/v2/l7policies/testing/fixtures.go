@@ -56,6 +56,19 @@ var (
 		AdminStateUp:   true,
 		Rules:          []l7policies.Rule{},
 	}
+	L7PolicyUpdated = l7policies.L7Policy{
+		ID:             "8a1412f0-4c32-4257-8b07-af4770b604fd",
+		Name:           "NewL7PolicyName",
+		ListenerID:     "023f2e34-7806-443b-bfae-16c324569a3d",
+		Action:         "REDIRECT_TO_URL",
+		Position:       1,
+		Description:    "Redirect requests to example.com",
+		TenantID:       "e3cd678b11784734bc366148aa37580e",
+		RedirectPoolID: "",
+		RedirectURL:    "http://www.new-example.com",
+		AdminStateUp:   true,
+		Rules:          []l7policies.Rule{},
+	}
 )
 
 // HandleL7PolicyCreationSuccessfully sets up the test server to respond to a l7policy creation request
@@ -112,6 +125,25 @@ const L7PoliciesListBody = `
 }
 `
 
+// PostUpdateL7PolicyBody is the canned response body of a Update request on an existing l7policy.
+const PostUpdateL7PolicyBody = `
+{
+	"l7policy": {
+		"listener_id": "023f2e34-7806-443b-bfae-16c324569a3d",
+		"description": "Redirect requests to example.com",
+		"admin_state_up": true,
+		"redirect_pool_id": null,
+		"redirect_url": "http://www.new-example.com",
+		"action": "REDIRECT_TO_URL",
+		"position": 1,
+		"tenant_id": "e3cd678b11784734bc366148aa37580e",
+		"id": "8a1412f0-4c32-4257-8b07-af4770b604fd",
+		"name": "NewL7PolicyName",
+		"rules": []
+	}
+}
+`
+
 // HandleL7PolicyListSuccessfully sets up the test server to respond to a l7policy List request.
 func HandleL7PolicyListSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v2.0/lbaas/l7policies", func(w http.ResponseWriter, r *http.Request) {
@@ -150,5 +182,24 @@ func HandleL7PolicyDeletionSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleL7PolicyUpdateSuccessfully sets up the test server to respond to a l7policy Update request.
+func HandleL7PolicyUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/l7policies/8a1412f0-4c32-4257-8b07-af4770b604fd", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{
+			"l7policy": {
+				"name": "NewL7PolicyName",
+				"action": "REDIRECT_TO_URL",
+				"redirect_url": "http://www.new-example.com"
+			}
+		}`)
+
+		fmt.Fprintf(w, PostUpdateL7PolicyBody)
 	})
 }
