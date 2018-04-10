@@ -59,7 +59,7 @@ const PolicyListBody2 = `
           "reduce_desired_capacity": false
         },
         "type": "senlin.policy.deletion",
-        "version": 1
+        "version": "1.0"
       },
       "type": "senlin.policy.deletion-1.0",
       "updated_at": "2018-04-02T23:15:11.000000",

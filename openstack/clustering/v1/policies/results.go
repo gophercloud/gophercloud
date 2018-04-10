@@ -2,6 +2,8 @@ package policies
 
 import (
 	"encoding/json"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -22,7 +24,12 @@ type Policy struct {
 	User      string                 `json:"user"`
 }
 
-type PolicyFromCreate Policy
+type Spec struct {
+	Description string                 `json:"description"`
+	Properties  map[string]interface{} `json:"properties"`
+	Type        string                 `json:"type"`
+	Version     interface{}            `json:"version"`
+}
 
 // ExtractPolicies interprets a page of results as a slice of Policy.
 func ExtractPolicies(r pagination.Page) ([]Policy, error) {
@@ -89,6 +96,17 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 				return err
 			}
 		}
+	}
+
+	switch t := s.tmp.Spec.Version.(type) {
+	case float64:
+		if t == 1 {
+			r.Spec.Version = fmt.Sprintf("%.1f", t)
+		} else {
+			r.Spec.Version = strconv.FormatFloat(t, 'f', -1, 64)
+		}
+	case string:
+		r.Spec.Version = t
 	}
 
 	return nil

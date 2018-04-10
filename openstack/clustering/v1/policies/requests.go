@@ -1,10 +1,6 @@
 package policies
 
 import (
-	"encoding/json"
-	"fmt"
-	"strconv"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -65,13 +61,6 @@ type CreateOpts struct {
 	Spec Spec   `json:"spec"`
 }
 
-type Spec struct {
-	Description string                 `json:"description"`
-	Properties  map[string]interface{} `json:"properties"`
-	Type        string                 `json:"type"`
-	Version     Version                `json:"version"`
-}
-
 // ToPolicyCreateMap formats a CreateOpts into a body map.
 func (opts CreateOpts) ToPolicyCreateMap() (map[string]interface{}, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
@@ -80,30 +69,6 @@ func (opts CreateOpts) ToPolicyCreateMap() (map[string]interface{}, error) {
 	}
 
 	return map[string]interface{}{"policy": b}, nil
-}
-
-type Version string
-
-// custom unmarshal function to handle Version returned as either float64 or string
-func (v *Version) UnmarshalJSON(b []byte) error {
-	if b[0] == '"' {
-		return json.Unmarshal(b, (*string)(v))
-	}
-
-	var f float64
-	if err := json.Unmarshal(b, &f); err != nil {
-		return err
-	}
-
-	if f == 1 {
-		version := fmt.Sprintf("%.1f", f)
-		*v = Version(version)
-		return nil
-	} else {
-		version := strconv.FormatFloat(f, 'f', -1, 64)
-		*v = Version(version)
-		return nil
-	}
 }
 
 // Create makes a request against the API to create a policy
