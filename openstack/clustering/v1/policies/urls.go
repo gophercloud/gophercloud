@@ -10,3 +10,7 @@ const (
 func policyListURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL(apiVersion, apiName)
 }
+
+func policyCreateURL(client *gophercloud.ServiceClient) string {
+	return client.ServiceURL(apiVersion, apiName)
+}

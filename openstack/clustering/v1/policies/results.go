@@ -2,6 +2,8 @@ package policies
 
 import (
 	"encoding/json"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -16,10 +18,17 @@ type Policy struct {
 	ID        string                 `json:"id"`
 	Name      string                 `json:"name"`
 	Project   string                 `json:"project"`
-	Spec      map[string]interface{} `json:"spec"`
+	Spec      Spec                   `json:"spec"`
 	Type      string                 `json:"type"`
 	UpdatedAt time.Time              `json:"-"`
 	User      string                 `json:"user"`
+}
+
+type Spec struct {
+	Description string                 `json:"description"`
+	Properties  map[string]interface{} `json:"properties"`
+	Type        string                 `json:"type"`
+	Version     string                 `json:"version"`
 }
 
 // ExtractPolicies interprets a page of results as a slice of Policy.
@@ -54,12 +63,14 @@ func (r PolicyPage) LastMarker() (string, error) {
 	return policies[len(policies)-1].ID, nil
 }
 
+const RFC3339WithZ = "2006-01-02T15:04:05Z"
+
 func (r *Policy) UnmarshalJSON(b []byte) error {
 	type tmp Policy
 	var s struct {
 		tmp
-		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at,omitempty"`
-		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at,omitempty"`
+		CreatedAt string `json:"created_at,omitempty"`
+		UpdatedAt string `json:"updated_at,omitempty"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -67,8 +78,68 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 	}
 	*r = Policy(s.tmp)
 
-	r.CreatedAt = time.Time(s.CreatedAt)
-	r.UpdatedAt = time.Time(s.UpdatedAt)
+	if s.CreatedAt != "" {
+		r.CreatedAt, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.CreatedAt)
+		if err != nil {
+			r.CreatedAt, err = time.Parse(RFC3339WithZ, s.CreatedAt)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if s.UpdatedAt != "" {
+		r.UpdatedAt, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.UpdatedAt)
+		if err != nil {
+			r.UpdatedAt, err = time.Parse(RFC3339WithZ, s.UpdatedAt)
+			if err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
+}
+
+func (r *Spec) UnmarshalJSON(b []byte) error {
+	type tmp Spec
+	var s struct {
+		tmp
+		Version interface{} `json:"version"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Spec(s.tmp)
+
+	switch t := s.Version.(type) {
+	case float64:
+		if t == 1 {
+			r.Version = fmt.Sprintf("%.1f", t)
+		} else {
+			r.Version = strconv.FormatFloat(t, 'f', -1, 64)
+		}
+	case string:
+		r.Version = t
+	}
+
+	return nil
+}
+
+type policyResult struct {
+	gophercloud.Result
+}
+
+func (r policyResult) Extract() (*Policy, error) {
+	var s struct {
+		Policy *Policy `json:"policy"`
+	}
+	err := r.ExtractInto(&s)
+
+	return s.Policy, err
+}
+
+type CreateResult struct {
+	policyResult
 }

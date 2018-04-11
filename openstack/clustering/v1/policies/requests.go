@@ -54,3 +54,32 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		return p
 	})
 }
+
+// CreateOpts params
+type CreateOpts struct {
+	Name string `json:"name"`
+	Spec Spec   `json:"spec"`
+}
+
+// ToPolicyCreateMap formats a CreateOpts into a body map.
+func (opts CreateOpts) ToPolicyCreateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]interface{}{"policy": b}, nil
+}
+
+// Create makes a request against the API to create a policy
+func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult) {
+	b, err := opts.ToPolicyCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(policyCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}

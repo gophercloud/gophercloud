@@ -34,3 +34,37 @@ func TestPolicyList(t *testing.T) {
 		}
 	}
 }
+
+func TestPolicyCreate(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	opts := policies.CreateOpts{
+		Name: "new_policy2",
+		Spec: policies.Spec{
+			Description: "new policy description",
+			Properties: map[string]interface{}{
+				"destroy_after_deletion":  true,
+				"grace_period":            60,
+				"reduce_desired_capacity": false,
+				"criteria":                "OLDEST_FIRST",
+			},
+			Type:    "senlin.policy.deletion",
+			Version: "1.0",
+		},
+	}
+
+	createdPolicy, err := policies.Create(client, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, createdPolicy)
+
+	if createdPolicy.CreatedAt.IsZero() {
+		t.Fatalf("CreatedAt value should not be zero")
+	}
+	t.Log("Created at: " + createdPolicy.CreatedAt.String())
+
+	if !createdPolicy.UpdatedAt.IsZero() {
+		t.Log("Updated at: " + createdPolicy.UpdatedAt.String())
+	}
+}

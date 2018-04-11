@@ -39,3 +39,22 @@ func TestListPolicies(t *testing.T) {
 		t.Errorf("Expected 2 pages, got %d", count)
 	}
 }
+
+func TestCreatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandlePolicyCreate(t)
+
+	expected := ExpectedCreatePolicy
+
+	opts := policies.CreateOpts{
+		Name: ExpectedCreatePolicy.Name,
+		Spec: ExpectedCreatePolicy.Spec,
+	}
+
+	actual, err := policies.Create(fake.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, &expected, actual)
+}
