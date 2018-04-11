@@ -77,6 +77,22 @@ const ListQueuesResponse2 = `
     ]
 }`
 
+// UpdateQueueRequest is a sample request to update a queue.
+const UpdateQueueRequest = `
+[
+    {
+        "op": "replace",
+        "path": "/metadata/description",
+        "value": "Update queue description"
+    }
+]`
+
+// UpdateQueueResponse is a sample response to a update queue.
+const UpdateQueueResponse = `
+{
+	"description": "Update queue description"
+}`
+
 // FirstQueue is the first result in a List.
 var FirstQueue = queues.Queue{
 	Href: "/v2/queues/london",
@@ -128,7 +144,6 @@ func HandleListSuccessfully(t *testing.T) {
 			case "/v2/queues?marker=beijing":
 				fmt.Fprint(w, `{ "queues": [] }`)
 			}
-
 		})
 }
 
@@ -141,5 +156,18 @@ func HandleCreateSuccessfully(t *testing.T) {
 			th.TestJSONRequest(t, r, CreateQueueRequest)
 
 			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+// HandleUpdateSuccessfully configures the test server to respond to an Update request.
+func HandleUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s", QueueName),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PATCH")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestJSONRequest(t, r, UpdateQueueRequest)
+
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprintf(w, UpdateQueueResponse)
 		})
 }

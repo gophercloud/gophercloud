@@ -11,7 +11,8 @@ Example to List Queues
 	}
 
 	pager := queues.List(client, listOpts)
-	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+
+    err = pager.EachPage(func(page pagination.Page) (bool, error) {
 		queues, err := queues.ExtractQueues(page)
 		if err != nil {
 			panic(err)
@@ -37,6 +38,26 @@ Example to Create a Queue
 	}
 
 	err := queues.Create(client, createOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Update a Queue
+
+	updateOpts := queues.BatchUpdateOpts{
+		queues.UpdateOpts{
+			Op:    "replace",
+			Path:  "/metadata/_max_claim_count",
+			Value: 15,
+		},
+		queues.UpdateOpts{
+			Op: "replace",
+			Path: "/metadata/description",
+			Value: "Updated description test queue.",
+		},
+	}
+
+	updateResult, err := queues.Update(client, queueName, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

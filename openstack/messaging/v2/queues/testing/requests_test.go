@@ -52,3 +52,24 @@ func TestCreate(t *testing.T) {
 	err := queues.Create(fake.ServiceClient(), createOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateSuccessfully(t)
+
+	updateOpts := queues.BatchUpdateOpts{
+		queues.UpdateOpts{
+			Op:    queues.ReplaceOp,
+			Path:  "/metadata/description",
+			Value: "Update queue description",
+		},
+	}
+	updatedQueueResult := queues.QueueDetails{
+		Extra: map[string]interface{}{"description": "Update queue description"},
+	}
+
+	actual, err := queues.Update(fake.ServiceClient(), QueueName, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, updatedQueueResult, actual)
+}

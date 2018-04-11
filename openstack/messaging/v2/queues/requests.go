@@ -121,3 +121,55 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// update request.
+type UpdateOptsBuilder interface {
+	ToQueueUpdateMap() ([]map[string]interface{}, error)
+}
+
+// UpdateOpts is an array of UpdateQueueBody.
+type BatchUpdateOpts []UpdateOpts
+
+// UpdateOpts is the struct responsible for updating a property of a queue.
+type UpdateOpts struct {
+	Op    UpdateOp    `json:"op" required:"true"`
+	Path  string      `json:"path" required:"true"`
+	Value interface{} `json:"value" required:"true"`
+}
+
+type UpdateOp string
+
+const (
+	ReplaceOp UpdateOp = "replace"
+	AddOp     UpdateOp = "add"
+	RemoveOp  UpdateOp = "remove"
+)
+
+// ToQueueUpdateMap constructs a request body from UpdateOpts.
+func (opts BatchUpdateOpts) ToQueueUpdateMap() ([]map[string]interface{}, error) {
+	queuesUpdates := make([]map[string]interface{}, len(opts))
+	for i, queue := range opts {
+		queueMap, err := queue.ToMap()
+		if err != nil {
+			return nil, err
+		}
+		queuesUpdates[i] = queueMap
+	}
+	return queuesUpdates, nil
+}
+
+// ToMap constructs a request body from UpdateOpts.
+func (opts UpdateOpts) ToMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// Update Updates the specified queue.
+func Update(client *gophercloud.ServiceClient, queueName string, opts UpdateOptsBuilder) (r UpdateResult) {
+	_, r.Err = client.Patch(updateURL(client, queueName), opts, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 204},
+		MoreHeaders: map[string]string{
+			"Content-Type": "application/openstack-messaging-v2.0-json-patch"},
+	})
+	return
+}
