@@ -69,6 +69,16 @@ var (
 		AdminStateUp:   true,
 		Rules:          []l7policies.Rule{},
 	}
+	RulePath = l7policies.Rule{
+		ID:           "16621dbb-a736-4888-a57a-3ecd53df784c",
+		RuleType:     "PATH",
+		CompareType:  "REGEX",
+		Value:        "/images*",
+		TenantID:     "e3cd678b11784734bc366148aa37580e",
+		Key:          "",
+		Invert:       false,
+		AdminStateUp: true,
+	}
 )
 
 // HandleL7PolicyCreationSuccessfully sets up the test server to respond to a l7policy creation request
@@ -201,5 +211,41 @@ func HandleL7PolicyUpdateSuccessfully(t *testing.T) {
 		}`)
 
 		fmt.Fprintf(w, PostUpdateL7PolicyBody)
+	})
+}
+
+// SingleRuleBody is the canned body of a Get request on an existing rule.
+const SingleRuleBody = `
+{
+	"rule": {
+		"compare_type": "REGEX",
+		"invert": false,
+		"admin_state_up": true,
+		"value": "/images*",
+		"key": null,
+		"tenant_id": "e3cd678b11784734bc366148aa37580e",
+		"type": "PATH",
+		"id": "16621dbb-a736-4888-a57a-3ecd53df784c"
+	}
+}
+`
+
+// HandleRuleCreationSuccessfully sets up the test server to respond to a rule creation request
+// with a given response.
+func HandleRuleCreationSuccessfully(t *testing.T, response string) {
+	th.Mux.HandleFunc("/v2.0/lbaas/l7policies/8a1412f0-4c32-4257-8b07-af4770b604fd/rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"rule": {
+				"compare_type": "REGEX",
+				"type": "PATH",
+				"value": "/images*"
+			}
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
 	})
 }

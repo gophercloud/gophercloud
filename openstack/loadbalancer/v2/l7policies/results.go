@@ -147,3 +147,22 @@ type DeleteResult struct {
 type UpdateResult struct {
 	commonResult
 }
+
+type commonRuleResult struct {
+	gophercloud.Result
+}
+
+// Extract is a function that accepts a result and extracts a rule.
+func (r commonRuleResult) Extract() (*Rule, error) {
+	var s struct {
+		Rule *Rule `json:"rule"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Rule, err
+}
+
+// CreateRuleResult represents the result of a CreateRule operation.
+// Call its Extract method to interpret it as a Rule.
+type CreateRuleResult struct {
+	commonRuleResult
+}

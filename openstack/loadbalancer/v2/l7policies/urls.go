@@ -5,6 +5,7 @@ import "github.com/gophercloud/gophercloud"
 const (
 	rootPath     = "lbaas"
 	resourcePath = "l7policies"
+	rulePath     = "rules"
 )
 
 func rootURL(c *gophercloud.ServiceClient) string {
@@ -13,4 +14,8 @@ func rootURL(c *gophercloud.ServiceClient) string {
 
 func resourceURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(rootPath, resourcePath, id)
+}
+
+func ruleRootURL(c *gophercloud.ServiceClient, policyID string) string {
+	return c.ServiceURL(rootPath, resourcePath, policyID, rulePath)
 }

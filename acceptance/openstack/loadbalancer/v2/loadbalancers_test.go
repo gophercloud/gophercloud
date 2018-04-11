@@ -128,6 +128,12 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newPolicy)
 
+	// L7 rule
+	_, err = CreateL7Rule(t, lbClient, newPolicy.ID, lb)
+	if err != nil {
+		t.Fatalf("Unable to create l7 rule: %v", err)
+	}
+
 	// Pool
 	pool, err := CreatePool(t, lbClient, lb)
 	if err != nil {

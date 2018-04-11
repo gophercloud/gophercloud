@@ -127,3 +127,50 @@ func TestUpdateL7Policy(t *testing.T) {
 
 	th.CheckDeepEquals(t, L7PolicyUpdated, *actual)
 }
+
+func TestCreateRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRuleCreationSuccessfully(t, SingleRuleBody)
+
+	actual, err := l7policies.CreateRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+		RuleType:    l7policies.TypePath,
+		CompareType: l7policies.CompareTypeRegex,
+		Value:       "/images*",
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, RulePath, *actual)
+}
+
+func TestRequiredRuleCreateOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	res := l7policies.CreateRule(fake.ServiceClient(), "", l7policies.CreateRuleOpts{})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+	res = l7policies.CreateRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+		RuleType: l7policies.TypePath,
+	})
+	if res.Err == nil {
+		t.Fatalf("Expected error, but got none")
+	}
+	res = l7policies.CreateRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+		RuleType:    l7policies.RuleType("invalid"),
+		CompareType: l7policies.CompareTypeRegex,
+		Value:       "/images*",
+	})
+	if res.Err == nil {
+		t.Fatalf("Expected error, but got none")
+	}
+	res = l7policies.CreateRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.CreateRuleOpts{
+		RuleType:    l7policies.TypePath,
+		CompareType: l7policies.CompareType("invalid"),
+		Value:       "/images*",
+	})
+	if res.Err == nil {
+		t.Fatalf("Expected error, but got none")
+	}
+}

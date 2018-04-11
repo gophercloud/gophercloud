@@ -202,6 +202,30 @@ func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *l
 	return policy, nil
 }
 
+// CreateL7Rule creates a l7 rule for specified l7 policy.
+func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID string, lb *loadbalancers.LoadBalancer) (*l7policies.Rule, error) {
+	t.Logf("Attempting to create l7 rule for policy %s", policyID)
+
+	createOpts := l7policies.CreateRuleOpts{
+		RuleType:    l7policies.TypePath,
+		CompareType: l7policies.CompareTypeStartWith,
+		Value:       "/api",
+	}
+
+	rule, err := l7policies.CreateRule(client, policyID, createOpts).Extract()
+	if err != nil {
+		return rule, err
+	}
+
+	t.Logf("Successfully created l7 rule for policy %s", policyID)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		return rule, fmt.Errorf("Timed out waiting for loadbalancer to become active")
+	}
+
+	return rule, nil
+}
+
 // DeleteL7Policy will delete a specified l7 policy. A fatal error will occur if
 // the l7 policy could not be deleted. This works best when used as a deferred
 // function.
