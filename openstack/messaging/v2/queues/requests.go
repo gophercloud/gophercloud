@@ -224,11 +224,11 @@ type ShareOpts struct {
 // ShareOptsBuilder allows extensions to add additional attributes to the
 // Share request.
 type ShareOptsBuilder interface {
-	ToQueuesShareMap() (map[string]interface{}, error)
+	ToQueueShareMap() (map[string]interface{}, error)
 }
 
 // ToShareQueueMap formats a ShareOpts structure into a request body.
-func (opts ShareOpts) ToQueuesShareMap() (map[string]interface{}, error) {
+func (opts ShareOpts) ToQueueShareMap() (map[string]interface{}, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -238,13 +238,55 @@ func (opts ShareOpts) ToQueuesShareMap() (map[string]interface{}, error) {
 
 // Share creates a pre-signed URL for a given queue.
 func Share(client *gophercloud.ServiceClient, queueName string, opts ShareOptsBuilder) (r ShareResult) {
-	b, err := opts.ToQueuesShareMap()
+	b, err := opts.ToQueueShareMap()
 	if err != nil {
 		r.Err = err
 		return r
 	}
 	_, r.Err = client.Post(shareURL(client, queueName), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
+	})
+	return
+}
+
+type PurgeResource string
+
+const (
+	ResourceMessages      PurgeResource = "messages"
+	ResourceSubscriptions PurgeResource = "subscriptions"
+)
+
+// PurgeOpts specifies the purge parameters.
+type PurgeOpts struct {
+	ResourceTypes []PurgeResource `json:"resource_types" required:"true"`
+}
+
+// PurgeOptsBuilder allows extensions to add additional attributes to the
+// Purge request.
+type PurgeOptsBuilder interface {
+	ToQueuePurgeMap() (map[string]interface{}, error)
+}
+
+// ToPurgeQueueMap formats a PurgeOpts structure into a request body
+func (opts PurgeOpts) ToQueuePurgeMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+// Purge purges particular resource of the queue.
+func Purge(client *gophercloud.ServiceClient, queueName string, opts PurgeOptsBuilder) (r PurgeResult) {
+	b, err := opts.ToQueuePurgeMap()
+	if err != nil {
+		r.Err = err
+		return r
+	}
+
+	_, r.Err = client.Post(purgeURL(client, queueName), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
 	})
 	return
 }

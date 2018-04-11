@@ -94,5 +94,18 @@ Example to Share a queue
 	if err != nil {
 		panic(err)
 	}
+
+Example to Purge a queue
+
+	purgeOpts := queues.PurgeOpts{
+		ResourceTypes: []queues.PurgeResource{
+			queues.ResourceMessages,
+		},
+	}
+
+	err := queues.Purge(client, queueName, purgeOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package queues

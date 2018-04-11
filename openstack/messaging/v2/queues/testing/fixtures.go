@@ -33,6 +33,12 @@ const CreateShareRequest = `
   "expires": "2016-09-01T00:00:00"
 }`
 
+// CreatePurgeRequest is a sample request to a purge.
+const CreatePurgeRequest = `
+{
+    "resource_types": ["messages", "subscriptions"]
+}`
+
 // ListQueuesResponse1 is a sample response to a List queues.
 const ListQueuesResponse1 = `
 {
@@ -293,5 +299,17 @@ func HandleShareSuccessfully(t *testing.T) {
 
 			w.Header().Add("Content-Type", "application/json")
 			fmt.Fprintf(w, CreateShareResponse)
+		})
+}
+
+// HandlePurgeSuccessfully configures the test server to respond to a Purge request.
+func HandlePurgeSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/purge", QueueName),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestJSONRequest(t, r, CreatePurgeRequest)
+
+			w.WriteHeader(http.StatusNoContent)
 		})
 }
