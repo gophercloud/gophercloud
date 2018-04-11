@@ -87,7 +87,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult)
 }
 
 // Create makes a request against the API to delete a policy
-func Delete(client *gophercloud.ServiceClient, policyID string) (r PolicyDeleteResult) {
+func Delete(client *gophercloud.ServiceClient, policyID string) (r DeleteResult) {
 	var result *http.Response
 	result, r.Err = client.Delete(policyDeleteURL(client, policyID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
