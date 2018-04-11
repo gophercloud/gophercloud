@@ -102,3 +102,19 @@ func TestGetStat(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedStats, actual)
 }
+
+func TestShare(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleShareSuccessfully(t)
+
+	shareOpts := queues.ShareOpts{
+		Paths:   []queues.SharePath{queues.PathMessages, queues.PathClaims, queues.PathSubscriptions},
+		Methods: []queues.ShareMethod{queues.MethodGet, queues.MethodPost, queues.MethodPut, queues.MethodPatch},
+		Expires: "2016-09-01T00:00:00",
+	}
+
+	actual, err := queues.Share(fake.ServiceClient(), QueueName, shareOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedShare, actual)
+}

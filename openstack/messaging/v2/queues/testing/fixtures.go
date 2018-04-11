@@ -25,6 +25,14 @@ const CreateQueueRequest = `
     "description": "Queue for unit testing."
 }`
 
+// CreateShareRequest is a sample request to a share.
+const CreateShareRequest = `
+{
+  "paths": ["messages", "claims", "subscriptions"],
+  "methods": ["GET", "POST", "PUT", "PATCH"],
+  "expires": "2016-09-01T00:00:00"
+}`
+
 // ListQueuesResponse1 is a sample response to a List queues.
 const ListQueuesResponse1 = `
 {
@@ -111,6 +119,25 @@ const GetStatsResponse = `
     }
 }`
 
+// CreateShareResponse is a sample response to a share request.
+const CreateShareResponse = `
+{
+    "project": "2887aabf368046a3bb0070f1c0413470",
+    "paths": [
+        "/v2/queues/test/messages",
+        "/v2/queues/test/claims",
+        "/v2/queues/test/subscriptions"
+    ],
+    "expires": "2016-09-01T00:00:00",
+    "methods": [
+        "GET",
+        "PATCH",
+        "POST",
+        "PUT"
+    ],
+    "signature": "6a63d63242ebd18c3518871dda6fdcb6273db2672c599bf985469241e9a1c799"
+}`
+
 // FirstQueue is the first result in a List.
 var FirstQueue = queues.Queue{
 	Href: "/v2/queues/london",
@@ -156,6 +183,24 @@ var ExpectedStats = queues.Stats{
 	Claimed: 10,
 	Total:   20,
 	Free:    10,
+}
+
+// ExpectedShare is the expected result in Share.
+var ExpectedShare = queues.QueueShare{
+	Project: "2887aabf368046a3bb0070f1c0413470",
+	Paths: []string{
+		"/v2/queues/test/messages",
+		"/v2/queues/test/claims",
+		"/v2/queues/test/subscriptions",
+	},
+	Expires: "2016-09-01T00:00:00",
+	Methods: []string{
+		"GET",
+		"PATCH",
+		"POST",
+		"PUT",
+	},
+	Signature: "6a63d63242ebd18c3518871dda6fdcb6273db2672c599bf985469241e9a1c799",
 }
 
 // HandleListSuccessfully configures the test server to respond to a List request.
@@ -235,5 +280,18 @@ func HandleGetStatsSuccessfully(t *testing.T) {
 
 			w.Header().Add("Content-Type", "application/json")
 			fmt.Fprintf(w, GetStatsResponse)
+		})
+}
+
+// HandleShareSuccessfully configures the test server to respond to a Share request.
+func HandleShareSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/share", QueueName),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestJSONRequest(t, r, CreateShareRequest)
+
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprintf(w, CreateShareResponse)
 		})
 }

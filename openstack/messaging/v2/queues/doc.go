@@ -82,5 +82,17 @@ Example to Get Message Stats of a Queue
 	if err != nil {
 		panic(err)
 	}
+
+Example to Share a queue
+
+	shareOpts := queues.ShareOpts{
+		Paths:   []queues.SharePath{queues.ShareMessages},
+		Methods: []queues.ShareMethod{queues.MethodGet},
+	}
+
+	queueShare, err := queues.Share(client, queueName, shareOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package queues
