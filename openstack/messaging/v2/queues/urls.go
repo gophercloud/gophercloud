@@ -45,3 +45,7 @@ func getURL(client *gophercloud.ServiceClient, queueName string) string {
 func deleteURL(client *gophercloud.ServiceClient, queueName string) string {
 	return client.ServiceURL(ApiVersion, ApiName, queueName)
 }
+
+func statURL(client *gophercloud.ServiceClient, queueName string) string {
+	return client.ServiceURL(ApiVersion, ApiName, queueName, "stats")
+}

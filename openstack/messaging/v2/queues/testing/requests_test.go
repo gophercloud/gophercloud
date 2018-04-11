@@ -92,3 +92,13 @@ func TestDelete(t *testing.T) {
 	err := queues.Delete(fake.ServiceClient(), QueueName).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestGetStat(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetStatsSuccessfully(t)
+
+	actual, err := queues.GetStats(fake.ServiceClient(), QueueName).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedStats, actual)
+}

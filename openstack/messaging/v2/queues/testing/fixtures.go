@@ -101,6 +101,16 @@ const GetQueueResponse = `
 	"description": "Queue used for unit testing."
 }`
 
+// GetStatsResponse is a sample response to a stats request.
+const GetStatsResponse = `
+{
+    "messages":{
+         "claimed": 10,
+         "total": 20,
+         "free": 10
+    }
+}`
+
 // FirstQueue is the first result in a List.
 var FirstQueue = queues.Queue{
 	Href: "/v2/queues/london",
@@ -139,6 +149,13 @@ var QueueDetails = queues.QueueDetails{
 	DefaultMessageTTL:   3600,
 	MaxMessagesPostSize: 262144,
 	Extra:               map[string]interface{}{"description": "Queue used for unit testing."},
+}
+
+// ExpectedStats is the expected result in a GetStats.
+var ExpectedStats = queues.Stats{
+	Claimed: 10,
+	Total:   20,
+	Free:    10,
 }
 
 // HandleListSuccessfully configures the test server to respond to a List request.
@@ -206,5 +223,17 @@ func HandleDeleteSuccessfully(t *testing.T) {
 			th.TestMethod(t, r, "DELETE")
 			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
+// HandleGetSuccessfully configures the test server to respond to a Get request.
+func HandleGetStatsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/stats", QueueName),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprintf(w, GetStatsResponse)
 		})
 }

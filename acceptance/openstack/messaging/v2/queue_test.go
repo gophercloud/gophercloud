@@ -84,3 +84,22 @@ func TestListQueues(t *testing.T) {
 		return true, nil
 	})
 }
+
+func TestStatQueue(t *testing.T) {
+	clientID := "3381af92-2b9e-11e3-b191-71861300734c"
+
+	client, err := clients.NewMessagingV2Client(clientID)
+	if err != nil {
+		t.Fatalf("Unable to create a messaging service client: %v", err)
+	}
+
+	createdQueueName, err := CreateQueue(t, client)
+	defer DeleteQueue(t, client, createdQueueName)
+
+	queueStats, err := queues.GetStats(client, createdQueueName).Extract()
+	if err != nil {
+		t.Fatalf("Unable to stat queue: %v", err)
+	}
+
+	tools.PrintResource(t, queueStats)
+}
