@@ -51,10 +51,6 @@ type CreateOpts struct {
 	// A human-readable description for the resource.
 	Description string `json:"description,omitempty"`
 
-	// TenantID is the UUID of the project who owns the L7 policy in neutron-lbaas.
-	// Only administrative users can specify a project UUID other than their own.
-	TenantID string `json:"tenant_id,omitempty"`
-
 	// ProjectID is the UUID of the project who owns the L7 policy in octavia.
 	// Only administrative users can specify a project UUID other than their own.
 	ProjectID string `json:"project_id,omitempty"`
@@ -96,7 +92,7 @@ type ListOpts struct {
 	Name           string `q:"name"`
 	ListenerID     string `q:"listener_id"`
 	Action         string `q:"action"`
-	TenantID       string `q:"tenant_id"`
+	ProjectID      string `q:"project_id"`
 	RedirectPoolID string `q:"redirect_pool_id"`
 	RedirectURL    string `q:"redirect_url"`
 	ID             string `q:"id"`
@@ -200,9 +196,9 @@ type CreateRuleOpts struct {
 	// The value to use for the comparison. For example, the file type to compare.
 	Value string `json:"value" required:"true"`
 
-	// TenantID is the UUID of the project who owns the rule in neutron-lbaas.
+	// ProjectID is the UUID of the project who owns the rule in octavia.
 	// Only administrative users can specify a project UUID other than their own.
-	TenantID string `json:"tenant_id,omitempty"`
+	ProjectID string `json:"project_id,omitempty"`
 
 	// The key to use for the comparison. For example, the name of the cookie to evaluate.
 	Key string `json:"key,omitempty"`

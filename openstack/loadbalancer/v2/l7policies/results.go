@@ -26,9 +26,9 @@ type L7Policy struct {
 	// A human-readable description for the resource.
 	Description string `json:"description"`
 
-	// TenantID is the UUID of the project who owns the L7 policy in neutron-lbaas.
+	// ProjectID is the UUID of the project who owns the L7 policy in octavia.
 	// Only administrative users can specify a project UUID other than their own.
-	TenantID string `json:"tenant_id"`
+	ProjectID string `json:"project_id"`
 
 	// Requests matching this policy will be redirected to the pool with this ID.
 	// Only valid if action is REDIRECT_TO_POOL.
@@ -59,9 +59,9 @@ type Rule struct {
 	// The value to use for the comparison. For example, the file type to compare.
 	Value string `json:"value"`
 
-	// TenantID is the UUID of the project who owns the rule in neutron-lbaas.
+	// ProjectID is the UUID of the project who owns the rule in octavia.
 	// Only administrative users can specify a project UUID other than their own.
-	TenantID string `json:"tenant_id"`
+	ProjectID string `json:"project_id"`
 
 	// The key to use for the comparison. For example, the name of the cookie to evaluate.
 	Key string `json:"key"`
