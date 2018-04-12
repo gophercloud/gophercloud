@@ -1,9 +1,10 @@
 package actions
 
 import (
-	"bytes"
 	"encoding/json"
 	"time"
+
+	"strings"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -26,27 +27,27 @@ type ActionPage struct {
 
 // Action represents a Detailed Action
 type Action struct {
-	Action       string                   `json:"action"`
-	Cause        string                   `json:"cause"`
-	CreatedAt    time.Time                `json:"-"`
-	Data         map[string]interface{}   `json:"data"`
-	DependedBy   []map[string]interface{} `json:"depended_by"`
-	DependsOn    []map[string]interface{} `json:"depends_on"`
-	StartTime    float32                  `json:"start_time"`
-	EndTime      float32                  `json:"end_time"`
-	ID           string                   `json:"id"`
-	Inputs       map[string]interface{}   `json:"inputs"`
-	Interval     int                      `json:"interval"`
-	Name         string                   `json:"name"`
-	Outputs      map[string]interface{}   `json:"outputs"`
-	Owner        string                   `json:"owner"`
-	Project      string                   `json:"project"`
-	Status       string                   `json:"status"`
-	StatusReason string                   `json:"status_reason"`
-	Target       string                   `json:"target"`
-	Timeout      int                      `json:"timeout"`
-	UpdatedAt    time.Time                `json:"-"`
-	User         string                   `json:"user"`
+	Action       string                 `json:"action"`
+	Cause        string                 `json:"cause"`
+	CreatedAt    time.Time              `json:"-"`
+	Data         map[string]interface{} `json:"data"`
+	DependedBy   []string               `json:"depended_by"`
+	DependsOn    []string               `json:"depends_on"`
+	StartTime    float32                `json:"start_time"`
+	EndTime      float32                `json:"end_time"`
+	ID           string                 `json:"id"`
+	Inputs       map[string]interface{} `json:"inputs"`
+	Interval     int                    `json:"interval"`
+	Name         string                 `json:"name"`
+	Outputs      map[string]interface{} `json:"outputs"`
+	Owner        string                 `json:"owner"`
+	Project      string                 `json:"project"`
+	Status       string                 `json:"status"`
+	StatusReason string                 `json:"status_reason"`
+	Target       string                 `json:"target"`
+	Timeout      int                    `json:"timeout"`
+	UpdatedAt    time.Time              `json:"-"`
+	User         string                 `json:"user"`
 }
 
 // ExtractActions provides access to the list of actions in a page acquired from the List operation.
@@ -64,36 +65,31 @@ func (r ActionPage) IsEmpty() (bool, error) {
 	return len(actions) == 0, err
 }
 
-type JSONRFC3339Milli time.Time
+type JSONRFC3339MilliAllowEmpty gophercloud.JSONRFC3339Milli
 
-const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
-
-func (jt *JSONRFC3339Milli) UnmarshalJSON(data []byte) error {
-	if string(data) == "null" {
-		*jt = JSONRFC3339Milli(time.Time{})
+func (jt *JSONRFC3339MilliAllowEmpty) UnmarshalJSON(data []byte) error {
+	d := string(data)
+	d = strings.Trim(d, "\"' ")
+	if len(d) == 0 || d == "null" {
+		// Allows empty or "null" field
+		*jt = JSONRFC3339MilliAllowEmpty(time.Time{})
 		return nil
 	}
 
-	b := bytes.NewBuffer(data)
-	dec := json.NewDecoder(b)
-	var s string
-	if err := dec.Decode(&s); err != nil {
-		return err
-	}
-	t, err := time.Parse(RFC3339Milli, s)
+	gt := gophercloud.JSONRFC3339Milli{}
+	err := gt.UnmarshalJSON(data)
 	if err != nil {
 		return err
 	}
-	*jt = JSONRFC3339Milli(t)
-	return nil
+	*jt = JSONRFC3339MilliAllowEmpty(gt)
+	return err
 }
-
 func (r *Action) UnmarshalJSON(b []byte) error {
 	type tmp Action
 	var s struct {
 		tmp
-		CreatedAt JSONRFC3339Milli `json:"created_at"`
-		UpdatedAt JSONRFC3339Milli `json:"updated_at"`
+		CreatedAt JSONRFC3339MilliAllowEmpty `json:"created_at"`
+		UpdatedAt JSONRFC3339MilliAllowEmpty `json:"updated_at"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {

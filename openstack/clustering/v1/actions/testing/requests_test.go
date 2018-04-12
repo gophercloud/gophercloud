@@ -16,13 +16,12 @@ func TestListActions(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v1/actions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-
 		fmt.Fprintf(w, `
 		{
 			"actions": [
@@ -31,8 +30,8 @@ func TestListActions(t *testing.T) {
 					"cause": "RPC Request",
 					"created_at": "2015-11-04T05:21:41Z",
 					"data": {},
-					"depended_by": [],
-					"depends_on": [],
+					"depended_by": ["ef67fe80-6547-40f2-ba1b-83e950aa38df"],
+					"depends_on": ["ef67fe80-6547-40f2-ba1b-83e950aa38df"],
 					"end_time": 1425550000.0,
 					"id": "edce3528-864f-41fb-8759-f4707925cc09",
 					"inputs": {},
@@ -70,8 +69,8 @@ func TestListActions(t *testing.T) {
 				Cause:        "RPC Request",
 				CreatedAt:    createdAt,
 				Data:         map[string]interface{}{},
-				DependedBy:   []map[string]interface{}{},
-				DependsOn:    []map[string]interface{}{},
+				DependedBy:   []string{"ef67fe80-6547-40f2-ba1b-83e950aa38df"},
+				DependsOn:    []string{"ef67fe80-6547-40f2-ba1b-83e950aa38df"},
 				EndTime:      1425550000.0,
 				ID:           "edce3528-864f-41fb-8759-f4707925cc09",
 				Inputs:       make(map[string]interface{}),

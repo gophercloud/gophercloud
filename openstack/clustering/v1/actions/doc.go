@@ -3,19 +3,21 @@ Package actions provides listing and retrieving of senlin actions for the OpenSt
 
 Example to list actions
 
-	allPages, err := actions.List(serviceClient, actions.ListOpts{Limit: 5}).AllPages()
-	if err != nil {
-		panic(err)
+	opts := actions.ListOpts{
+		Limit: 5,
 	}
 
-	allActions, err := actions.ExtractActions(allPages)
-	if err != nil {
-		panic(err)
-	}
+	err = actions.List(serviceClient, opts).EachPage(func(page pagination.Page) (bool, error) {
+		actionInfos, err := actions.ExtractActions(page)
+		if err != nil {
+			return false, err
+		}
 
-	for _, action := range allActions {
-		fmt.Printf("%+v\n", action)
-	}
+		for _, actionInfo := range actionInfos {
+			fmt.Println("%+v\n", actionInfo)
+		}
+		return true, nil
+	})
 
 */
 package actions

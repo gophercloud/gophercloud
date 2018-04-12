@@ -6,6 +6,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/actions"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 func TestActionsList(t *testing.T) {
@@ -14,17 +15,19 @@ func TestActionsList(t *testing.T) {
 		t.Fatalf("Unable to create a clustering client: %v", err)
 	}
 
-	allPages, err := actions.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list actions info: %v", err)
+	opts := actions.ListOpts{
+		Limit: 2,
 	}
 
-	actionInfos, err := actions.ExtractActions(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract actions info: %v", err)
-	}
+	err = actions.List(client, opts).EachPage(func(page pagination.Page) (bool, error) {
+		actionInfos, err := actions.ExtractActions(page)
+		if err != nil {
+			return false, err
+		}
 
-	for _, actionInfo := range actionInfos {
-		tools.PrintResource(t, actionInfo)
-	}
+		for _, actionInfo := range actionInfos {
+			tools.PrintResource(t, actionInfo)
+		}
+		return true, nil
+	})
 }
