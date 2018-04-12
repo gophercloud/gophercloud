@@ -132,6 +132,9 @@ func TestCreateImageNulls(t *testing.T) {
 		ID:   id,
 		Name: name,
 		Tags: []string{"ubuntu", "quantal"},
+		Properties: map[string]string{
+			"architecture": "x86_64",
+		},
 	}).Extract()
 
 	th.AssertNoErr(t, err)
@@ -145,6 +148,10 @@ func TestCreateImageNulls(t *testing.T) {
 	createdDate := actualImage.CreatedAt
 	lastUpdate := actualImage.UpdatedAt
 	schema := "/v2/schemas/image"
+	properties := map[string]interface{}{
+		"architecture": "x86_64",
+	}
+	sizeBytes := int64(0)
 
 	expectedImage := images.Image{
 		ID:   "e7db3b45-8db7-47ad-8109-3fb55c2c24fd",
@@ -166,6 +173,8 @@ func TestCreateImageNulls(t *testing.T) {
 		CreatedAt:  createdDate,
 		UpdatedAt:  lastUpdate,
 		Schema:     schema,
+		Properties: properties,
+		SizeBytes:  sizeBytes,
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)
