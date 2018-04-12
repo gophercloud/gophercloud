@@ -37,3 +37,11 @@ func nextPageURL(currentURL string, next string) (string, error) {
 func updateURL(client *gophercloud.ServiceClient, queueName string) string {
 	return client.ServiceURL(ApiVersion, ApiName, queueName)
 }
+
+func getURL(client *gophercloud.ServiceClient, queueName string) string {
+	return client.ServiceURL(ApiVersion, ApiName, queueName)
+}
+
+func deleteURL(client *gophercloud.ServiceClient, queueName string) string {
+	return client.ServiceURL(ApiVersion, ApiName, queueName)
+}

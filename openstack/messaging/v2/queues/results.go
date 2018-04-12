@@ -28,6 +28,17 @@ type UpdateResult struct {
 	commonResult
 }
 
+// GetResult is the response of a Get operation.
+type GetResult struct {
+	commonResult
+}
+
+// DeleteResult is the result from a Delete operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Queue represents a messaging queue.
 type Queue struct {
 	Href          string       `json:"href"`

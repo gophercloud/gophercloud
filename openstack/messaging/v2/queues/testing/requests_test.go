@@ -73,3 +73,22 @@ func TestUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, updatedQueueResult, actual)
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetSuccessfully(t)
+
+	actual, err := queues.Get(fake.ServiceClient(), QueueName).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, QueueDetails, actual)
+}
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfully(t)
+
+	err := queues.Delete(fake.ServiceClient(), QueueName).ExtractErr()
+	th.AssertNoErr(t, err)
+}
