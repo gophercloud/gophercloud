@@ -39,13 +39,13 @@ type Action struct {
 	Name         string                   `json:"name"`
 	Outputs      map[string]interface{}   `json:"outputs"`
 	Owner        string                   `json:"owner"`
-	ProjectUUID  string                   `json:"project"`
+	Project      string                   `json:"project"`
 	Status       string                   `json:"status"`
 	StatusReason string                   `json:"status_reason"`
 	Target       string                   `json:"target"`
 	Timeout      int                      `json:"timeout"`
 	UpdatedAt    time.Time                `json:"-"`
-	UserUUID     string                   `json:"user"`
+	User         string                   `json:"user"`
 }
 
 // ExtractActions provides access to the list of actions in a page acquired from the List operation.
@@ -57,7 +57,7 @@ func ExtractActions(r pagination.Page) ([]Action, error) {
 	return s.Actions, err
 }
 
-// IsEmpty determines if a ClusterPage contains any results.
+// IsEmpty determines if a ActionPage contains any results.
 func (r ActionPage) IsEmpty() (bool, error) {
 	actions, err := ExtractActions(r)
 	return len(actions) == 0, err

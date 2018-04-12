@@ -79,14 +79,14 @@ func TestListActions(t *testing.T) {
 				Name:         "node_delete_f0de9b9c",
 				Outputs:      make(map[string]interface{}),
 				Owner:        "",
-				ProjectUUID:  "f1fe61dcda2f4618a14c10dc7abc214d",
+				Project:      "f1fe61dcda2f4618a14c10dc7abc214d",
 				StartTime:    1425550000.0,
 				Status:       "SUCCEEDED",
 				StatusReason: "Action completed successfully.",
 				Target:       "f0de9b9c-6d48-4a46-af21-2ca8607777fe",
 				Timeout:      3600,
 				UpdatedAt:    updatedAt,
-				UserUUID:     "8bcd2cdca7684c02afc9e4f2fc0f0c79",
+				User:         "8bcd2cdca7684c02afc9e4f2fc0f0c79",
 			},
 		}
 
