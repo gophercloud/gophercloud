@@ -481,9 +481,9 @@ func NewLoadBalancerV2Client() (*gophercloud.ServiceClient, error) {
 	})
 }
 
-// NewClusteringV1Client returns a *ServiceClient for making calls to the
-// OpenStack Clustering v1 API. An error will be returned if authentication
-// or client creation was not possible.
+// NewClusteringV1Client returns a *ServiceClient for making calls
+// to the OpenStack Clustering v1 API. An error will be returned
+// if authentication or client creation was not possible.
 func NewClusteringV1Client() (*gophercloud.ServiceClient, error) {
 	ao, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
