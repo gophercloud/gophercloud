@@ -1,6 +1,8 @@
 package policies
 
 import (
+	"net/http"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -81,5 +83,15 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult)
 	_, r.Err = client.Post(policyCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
+	return
+}
+
+// Create makes a request against the API to delete a policy
+func Delete(client *gophercloud.ServiceClient, policyID string) (r DeleteResult) {
+	var result *http.Response
+	result, r.Err = client.Delete(policyDeleteURL(client, policyID), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	r.Header = result.Header
 	return
 }

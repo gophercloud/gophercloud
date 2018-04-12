@@ -131,7 +131,7 @@ type policyResult struct {
 	gophercloud.Result
 }
 
-func (r policyResult) Extract() (*Policy, error) {
+func (r CreateResult) Extract() (*Policy, error) {
 	var s struct {
 		Policy *Policy `json:"policy"`
 	}
@@ -142,4 +142,19 @@ func (r policyResult) Extract() (*Policy, error) {
 
 type CreateResult struct {
 	policyResult
+}
+
+type DeleteResult struct {
+	gophercloud.HeaderResult
+}
+
+// DeleteResult contains the delete information from a delete policy request
+type DeleteHeader struct {
+	RequestID string `json:"X-OpenStack-Request-ID"`
+}
+
+func (r DeleteResult) Extract() (*DeleteHeader, error) {
+	var s *DeleteHeader
+	err := r.HeaderResult.ExtractInto(&s)
+	return s, err
 }
