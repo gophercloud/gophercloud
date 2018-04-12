@@ -51,10 +51,6 @@ type CreateOpts struct {
 	// A human-readable description for the resource.
 	Description string `json:"description,omitempty"`
 
-	// TenantID is the UUID of the project who owns the L7 policy in neutron-lbaas.
-	// Only administrative users can specify a project UUID other than their own.
-	TenantID string `json:"tenant_id,omitempty"`
-
 	// ProjectID is the UUID of the project who owns the L7 policy in octavia.
 	// Only administrative users can specify a project UUID other than their own.
 	ProjectID string `json:"project_id,omitempty"`
@@ -96,7 +92,7 @@ type ListOpts struct {
 	Name           string `q:"name"`
 	ListenerID     string `q:"listener_id"`
 	Action         string `q:"action"`
-	TenantID       string `q:"tenant_id"`
+	ProjectID      string `q:"project_id"`
 	RedirectPoolID string `q:"redirect_pool_id"`
 	RedirectURL    string `q:"redirect_url"`
 	ID             string `q:"id"`
@@ -185,5 +181,45 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	return
+}
+
+// CreateRuleOpts is the common options struct used in this package's CreateRule
+// operation.
+type CreateRuleOpts struct {
+	// The L7 rule type. One of COOKIE, FILE_TYPE, HEADER, HOST_NAME, or PATH.
+	RuleType RuleType `json:"type" required:"true"`
+
+	// The comparison type for the L7 rule. One of CONTAINS, ENDS_WITH, EQUAL_TO, REGEX, or STARTS_WITH.
+	CompareType CompareType `json:"compare_type" required:"true"`
+
+	// The value to use for the comparison. For example, the file type to compare.
+	Value string `json:"value" required:"true"`
+
+	// ProjectID is the UUID of the project who owns the rule in octavia.
+	// Only administrative users can specify a project UUID other than their own.
+	ProjectID string `json:"project_id,omitempty"`
+
+	// The key to use for the comparison. For example, the name of the cookie to evaluate.
+	Key string `json:"key,omitempty"`
+
+	// When true the logic of the rule is inverted. For example, with invert true,
+	// equal to would become not equal to. Default is false.
+	Invert bool `json:"invert,omitempty"`
+}
+
+// ToRuleCreateMap builds a request body from CreateRuleOpts.
+func (opts CreateRuleOpts) ToRuleCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "rule")
+}
+
+// CreateRule will create and associate a Rule with a particular L7Policy.
+func CreateRule(c *gophercloud.ServiceClient, policyID string, opts CreateRuleOpts) (r CreateRuleResult) {
+	b, err := opts.ToRuleCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Post(ruleRootURL(c, policyID), b, &r.Body, nil)
 	return
 }
