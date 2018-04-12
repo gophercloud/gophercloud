@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"bytes"
 	"encoding/json"
 	"time"
 
@@ -59,41 +58,17 @@ func ExtractActions(r pagination.Page) ([]Action, error) {
 }
 
 // IsEmpty determines if a ClusterPage contains any results.
-func (page ActionPage) IsEmpty() (bool, error) {
-	actions, err := ExtractActions(page)
+func (r ActionPage) IsEmpty() (bool, error) {
+	actions, err := ExtractActions(r)
 	return len(actions) == 0, err
-}
-
-type JSONRFC3339Milli time.Time
-
-const RFC3339Milli = "2006-01-02T15:04:05.999999Z"
-
-func (jt *JSONRFC3339Milli) UnmarshalJSON(data []byte) error {
-	if string(data) == "null" {
-		*jt = JSONRFC3339Milli(time.Time{})
-		return nil
-	}
-
-	b := bytes.NewBuffer(data)
-	dec := json.NewDecoder(b)
-	var s string
-	if err := dec.Decode(&s); err != nil {
-		return err
-	}
-	t, err := time.Parse(RFC3339Milli, s)
-	if err != nil {
-		return err
-	}
-	*jt = JSONRFC3339Milli(t)
-	return nil
 }
 
 func (r *Action) UnmarshalJSON(b []byte) error {
 	type tmp Action
 	var s struct {
 		tmp
-		CreatedAt JSONRFC3339Milli `json:"created_at"`
-		UpdatedAt JSONRFC3339Milli `json:"updated_at"`
+		CreatedAt gophercloud.JSONRFC3339Milli `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339Milli `json:"updated_at"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
