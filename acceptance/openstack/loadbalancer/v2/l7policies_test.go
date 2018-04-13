@@ -13,7 +13,7 @@ import (
 func TestL7PoliciesList(t *testing.T) {
 	client, err := clients.NewLoadBalancerV2Client()
 	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
+		t.Fatalf("Unable to create a loadbalancer client: %v", err)
 	}
 
 	allPages, err := l7policies.List(client, nil).AllPages()

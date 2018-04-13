@@ -71,5 +71,23 @@ Example to Create a Rule
 	if err != nil {
 		panic(err)
 	}
+
+Example to List L7 Rules
+
+	l7policyID := "d67d56a6-4a86-4688-a282-f46444705c64"
+	listOpts := l7policies.ListRulesOpts{
+		RuleType: l7policies.TypePath,
+	}
+	allPages, err := l7policies.ListRules(lbClient, l7policyID, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+	allRules, err := l7policies.ExtractRules(allPages)
+	if err != nil {
+		panic(err)
+	}
+	for _, rule := allRules {
+		fmt.Printf("%+v\n", rule)
+	}
 */
 package l7policies

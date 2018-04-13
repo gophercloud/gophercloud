@@ -134,6 +134,18 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		t.Fatalf("Unable to create l7 rule: %v", err)
 	}
 
+	allPages, err = l7policies.ListRules(lbClient, policy.ID, l7policies.ListRulesOpts{}).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to get l7 rules: %v", err)
+	}
+	allRules, err = l7policies.ExtractRules(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract l7 rules: %v", err)
+	}
+	for _, rule := range allRules {
+		tools.PrintResource(t, rule)
+	}
+
 	// Pool
 	pool, err := CreatePool(t, lbClient, lb)
 	if err != nil {
