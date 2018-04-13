@@ -189,3 +189,10 @@ func Delete(client *gophercloud.ServiceClient, queueName string) (r DeleteResult
 	})
 	return
 }
+
+// GetStats returns statistics for the specified queue.
+func GetStats(client *gophercloud.ServiceClient, queueName string) (r StatResult) {
+	_, r.Err = client.Get(statURL(client, queueName), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200}})
+	return
+}

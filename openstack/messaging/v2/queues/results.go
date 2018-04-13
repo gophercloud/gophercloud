@@ -33,6 +33,11 @@ type GetResult struct {
 	commonResult
 }
 
+// StatResult contains the result of a Share operation.
+type StatResult struct {
+	gophercloud.Result
+}
+
 // DeleteResult is the result from a Delete operation. Call its ExtractErr
 // method to determine if the call succeeded or failed.
 type DeleteResult struct {
@@ -77,11 +82,32 @@ type QueueDetails struct {
 	Flavor string `json:"flavor"`
 }
 
+// Stats represents a stats response.
+type Stats struct {
+	// Number of Claimed messages for a queue
+	Claimed int `json:"claimed"`
+
+	// Total Messages for a queue
+	Total int `json:"total"`
+
+	// Number of free messages
+	Free int `json:"free"`
+}
+
 // Extract interprets any commonResult as a Queue.
 func (r commonResult) Extract() (QueueDetails, error) {
 	var s QueueDetails
 	err := r.ExtractInto(&s)
 	return s, err
+}
+
+// Extract interprets any StatResult as a Stats.
+func (r StatResult) Extract() (Stats, error) {
+	var s struct {
+		Stats Stats `json:"messages"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Stats, err
 }
 
 // ExtractQueues interprets the results of a single page from a

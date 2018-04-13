@@ -75,5 +75,12 @@ Example to Delete a Queue
 	if err != nil {
 		panic(err)
 	}
+
+Example to Get Message Stats of a Queue
+
+	queueStats, err := queues.GetStats(client, queueName).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package queues
