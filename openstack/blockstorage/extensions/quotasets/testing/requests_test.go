@@ -11,7 +11,7 @@ import (
 var emptyQuotaSet = quotasets.QuotaSet{}
 var emptyQuotaDetailSet = quotasets.QuotaDetailSet{}
 
-func testSuccessTestCase(t *testing.T, httpMethod, uriPath, jsonBody string, uriQueryParams map[string]string, expectedQuotaSet quotasets.QuotaSet, expectedQuotaDetailSet quotasets.QuotaDetailSet,) error {
+func testSuccessTestCase(t *testing.T, httpMethod, uriPath, jsonBody string, uriQueryParams map[string]string, expectedQuotaSet quotasets.QuotaSet, expectedQuotaDetailSet quotasets.QuotaDetailSet) error {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleSuccessfulRequest(t, httpMethod, uriPath, jsonBody, uriQueryParams)
@@ -34,7 +34,7 @@ func testSuccessTestCase(t *testing.T, httpMethod, uriPath, jsonBody string, uri
 
 func TestSuccessTestCases(t *testing.T) {
 	for _, tt := range successTestCases {
-		err := testSuccessTestCase(t, tt.httpMethod, tt.uriPath, tt.jsonBody, tt.uriQueryParams, tt.expectedQuotaSet, tt.expectedQuotaDetailSet,)
+		err := testSuccessTestCase(t, tt.httpMethod, tt.uriPath, tt.jsonBody, tt.uriQueryParams, tt.expectedQuotaSet, tt.expectedQuotaDetailSet)
 		if err != nil {
 			t.Fatalf("Test case '%s' failed with error:\n%s", tt.name, err)
 		}
