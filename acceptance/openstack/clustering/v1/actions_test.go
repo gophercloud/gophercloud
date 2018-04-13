@@ -16,7 +16,7 @@ func TestActionsList(t *testing.T) {
 	}
 
 	opts := actions.ListOpts{
-		Limit: 2,
+		Limit: 200,
 	}
 
 	err = actions.List(client, opts).EachPage(func(page pagination.Page) (bool, error) {

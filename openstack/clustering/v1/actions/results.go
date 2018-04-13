@@ -84,6 +84,7 @@ func (jt *JSONRFC3339MilliAllowEmpty) UnmarshalJSON(data []byte) error {
 	*jt = JSONRFC3339MilliAllowEmpty(gt)
 	return err
 }
+
 func (r *Action) UnmarshalJSON(b []byte) error {
 	type tmp Action
 	var s struct {
