@@ -223,3 +223,47 @@ func CreateRule(c *gophercloud.ServiceClient, policyID string, opts CreateRuleOp
 	_, r.Err = c.Post(ruleRootURL(c, policyID), b, &r.Body, nil)
 	return
 }
+
+// ListRulesOptsBuilder allows extensions to add additional parameters to the
+// ListRules request.
+type ListRulesOptsBuilder interface {
+	ToRulesListQuery() (string, error)
+}
+
+// ListRulesOpts allows the filtering and sorting of paginated collections
+// through the API.
+type ListRulesOpts struct {
+	RuleType  RuleType `q:"type"`
+	ProjectID string   `q:"project_id"`
+	ID        string   `q:"id"`
+	Limit     int      `q:"limit"`
+	Marker    string   `q:"marker"`
+	SortKey   string   `q:"sort_key"`
+	SortDir   string   `q:"sort_dir"`
+}
+
+// ToRulesListQuery formats a ListOpts into a query string.
+func (opts ListRulesOpts) ToRulesListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// ListRules returns a Pager which allows you to iterate over a collection of
+// rules. It accepts a ListRulesOptsBuilder, which allows you to filter and
+// sort the returned collection for greater efficiency.
+//
+// Default policy settings return only those rules that are owned by the
+// tenant who submits the request, unless an admin user submits the request.
+func ListRules(c *gophercloud.ServiceClient, policyID string, opts ListRulesOptsBuilder) pagination.Pager {
+	url := ruleRootURL(c, policyID)
+	if opts != nil {
+		query, err := opts.ToRulesListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return RulePage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}

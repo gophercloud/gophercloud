@@ -174,3 +174,47 @@ func TestRequiredRuleCreateOpts(t *testing.T) {
 		t.Fatalf("Expected error, but got none")
 	}
 }
+
+func TestListRules(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRuleListSuccessfully(t)
+
+	pages := 0
+	err := l7policies.ListRules(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.ListRulesOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := l7policies.ExtractRules(page)
+		if err != nil {
+			return false, err
+		}
+
+		if len(actual) != 2 {
+			t.Fatalf("Expected 2 rules, got %d", len(actual))
+		}
+		th.CheckDeepEquals(t, RulePath, actual[0])
+		th.CheckDeepEquals(t, RuleHostName, actual[1])
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+
+	if pages != 1 {
+		t.Errorf("Expected 1 page, saw %d", pages)
+	}
+}
+
+func TestListAllRules(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRuleListSuccessfully(t)
+
+	allPages, err := l7policies.ListRules(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.ListRulesOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+
+	actual, err := l7policies.ExtractRules(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, RulePath, actual[0])
+	th.CheckDeepEquals(t, RuleHostName, actual[1])
+}

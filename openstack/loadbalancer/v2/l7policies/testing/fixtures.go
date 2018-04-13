@@ -79,6 +79,16 @@ var (
 		Invert:       false,
 		AdminStateUp: true,
 	}
+	RuleHostName = l7policies.Rule{
+		ID:           "d24521a0-df84-4468-861a-a531af116d1e",
+		RuleType:     "HOST_NAME",
+		CompareType:  "EQUAL_TO",
+		Value:        "www.example.com",
+		ProjectID:    "e3cd678b11784734bc366148aa37580e",
+		Key:          "",
+		Invert:       false,
+		AdminStateUp: true,
+	}
 )
 
 // HandleL7PolicyCreationSuccessfully sets up the test server to respond to a l7policy creation request
@@ -247,5 +257,53 @@ func HandleRuleCreationSuccessfully(t *testing.T, response string) {
 		w.WriteHeader(http.StatusAccepted)
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, response)
+	})
+}
+
+// RulesListBody contains the canned body of a rule list response.
+const RulesListBody = `
+{
+	"rules":[
+		{
+            "compare_type": "REGEX",
+            "invert": false,
+            "admin_state_up": true,
+            "value": "/images*",
+            "key": null,
+            "project_id": "e3cd678b11784734bc366148aa37580e",
+            "type": "PATH",
+            "id": "16621dbb-a736-4888-a57a-3ecd53df784c"
+		},
+		{
+            "compare_type": "EQUAL_TO",
+            "invert": false,
+            "admin_state_up": true,
+            "value": "www.example.com",
+            "key": null,
+            "project_id": "e3cd678b11784734bc366148aa37580e",
+            "type": "HOST_NAME",
+            "id": "d24521a0-df84-4468-861a-a531af116d1e"
+		}
+	]
+}
+`
+
+// HandleRuleListSuccessfully sets up the test server to respond to a rule List request.
+func HandleRuleListSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/l7policies/8a1412f0-4c32-4257-8b07-af4770b604fd/rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, RulesListBody)
+		case "45e08a3e-a78f-4b40-a229-1e7e23eee1ab":
+			fmt.Fprintf(w, `{ "rules": [] }`)
+		default:
+			t.Fatalf("/v2.0/lbaas/l7policies/8a1412f0-4c32-4257-8b07-af4770b604fd/rules invoked with unexpected marker=[%s]", marker)
+		}
 	})
 }
