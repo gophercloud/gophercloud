@@ -1,6 +1,8 @@
 package quotasets
 
 import (
+	"fmt"
+
 	"github.com/gophercloud/gophercloud"
 )
 
@@ -18,6 +20,7 @@ func GetDefaults(client *gophercloud.ServiceClient, projectID string) (r GetResu
 
 // GetUsage returns detailed public data about a previously created QuotaSet.
 func GetUsage(client *gophercloud.ServiceClient, projectID string) (r GetUsageResult) {
-	_, r.Err = client.Get(getUsageURL(client, projectID), &r.Body, nil)
+	u := fmt.Sprintf("%s?usage=true", getURL(client, projectID))
+	_, r.Err = client.Get(u, &r.Body, nil)
 	return
 }
