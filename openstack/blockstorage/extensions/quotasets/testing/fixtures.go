@@ -13,13 +13,13 @@ import (
 const FirstTenantID = "555544443333222211110000ffffeeee"
 
 var successTestCases = []struct {
-	name                   string
-	httpMethod             string
-	jsonBody               string
-	uriPath                string
-	uriQueryParams         map[string]string
-	expectedQuotaSet       quotasets.QuotaSet
-	expectedQuotaDetailSet quotasets.QuotaDetailSet
+	name                  string
+	httpMethod            string
+	jsonBody              string
+	uriPath               string
+	uriQueryParams        map[string]string
+	expectedQuotaSet      quotasets.QuotaSet
+	expectedQuotaUsageSet quotasets.QuotaUsageSet
 }{
 	{
 		name: "simple GET request",
@@ -85,14 +85,14 @@ var successTestCases = []struct {
 		}
 	}
 }`,
-		expectedQuotaDetailSet: quotasets.QuotaDetailSet{
+		expectedQuotaUsageSet: quotasets.QuotaUsageSet{
 			ID:                 FirstTenantID,
-			Volumes:            quotasets.QuotaDetail{InUse: 15, Limit: 16, Reserved: 17},
-			Snapshots:          quotasets.QuotaDetail{InUse: 18, Limit: 19, Reserved: 20},
-			Gigabytes:          quotasets.QuotaDetail{InUse: 21, Limit: 22, Reserved: 23},
-			PerVolumeGigabytes: quotasets.QuotaDetail{InUse: 24, Limit: 25, Reserved: 26},
-			Backups:            quotasets.QuotaDetail{InUse: 27, Limit: 28, Reserved: 29},
-			BackupGigabytes:    quotasets.QuotaDetail{InUse: 30, Limit: 31, Reserved: 32},
+			Volumes:            quotasets.QuotaUsage{InUse: 15, Limit: 16, Reserved: 17},
+			Snapshots:          quotasets.QuotaUsage{InUse: 18, Limit: 19, Reserved: 20},
+			Gigabytes:          quotasets.QuotaUsage{InUse: 21, Limit: 22, Reserved: 23},
+			PerVolumeGigabytes: quotasets.QuotaUsage{InUse: 24, Limit: 25, Reserved: 26},
+			Backups:            quotasets.QuotaUsage{InUse: 27, Limit: 28, Reserved: 29},
+			BackupGigabytes:    quotasets.QuotaUsage{InUse: 30, Limit: 31, Reserved: 32},
 		},
 		uriPath:        "/os-quota-sets/" + FirstTenantID,
 		uriQueryParams: map[string]string{"usage": "true"},

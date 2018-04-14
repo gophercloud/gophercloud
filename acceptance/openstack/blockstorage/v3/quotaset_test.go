@@ -31,13 +31,13 @@ func TestQuotasetGetDefaults(t *testing.T) {
 	tools.PrintResource(t, quotaSet)
 }
 
-func TestQuotasetGetDetailed(t *testing.T) {
+func TestQuotasetGetUsage(t *testing.T) {
 	client, projectID := getClientAndProject(t)
 
-	detailedQuotaSet, err := quotasets.GetDetail(client, projectID).Extract()
+	quotaSetUsage, err := quotasets.GetUsage(client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
-	tools.PrintResource(t, detailedQuotaSet)
+	tools.PrintResource(t, quotaSetUsage)
 }
 
 // getClientAndProject reduces boilerplate by returning a new blockstorage v3

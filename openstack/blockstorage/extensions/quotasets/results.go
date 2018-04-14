@@ -33,55 +33,54 @@ type QuotaSet struct {
 	BackupGigabytes int `json:"backup_gigabytes"`
 }
 
-// QuotaDetailSet represents details of both operational limits of block
+// QuotaUsageSet represents details of both operational limits of block
 // storage resources and the current usage of those resources.
-type QuotaDetailSet struct {
-	// ID is the project ID associated with this QuotaDetailSet.
+type QuotaUsageSet struct {
+	// ID is the project ID associated with this QuotaUsageSet.
 	ID string `json:"id"`
 
 	// Volumes is the volume usage information for this project, including
 	// in_use, limit, reserved and allocated attributes. Note: allocated
 	// attribute is available only when nested quota is enabled.
-	Volumes QuotaDetail `json:"volumes"`
+	Volumes QuotaUsage `json:"volumes"`
 
 	// Snapshots is the snapshot usage information for this project, including
 	// in_use, limit, reserved and allocated attributes. Note: allocated
 	// attribute is available only when nested quota is enabled.
-	Snapshots QuotaDetail `json:"snapshots"`
+	Snapshots QuotaUsage `json:"snapshots"`
 
 	// Gigabytes is the size (GB) usage information of volumes and snapshots
 	// for this project, including in_use, limit, reserved and allocated
 	// attributes. Note: allocated attribute is available only when nested
 	// quota is enabled.
-	Gigabytes QuotaDetail `json:"gigabytes"`
+	Gigabytes QuotaUsage `json:"gigabytes"`
 
 	// PerVolumeGigabytes is the size (GB) usage information for each volume,
 	// including in_use, limit, reserved and allocated attributes. Note:
 	// allocated attribute is available only when nested quota is enabled and
 	// only limit is meaningful here.
-	PerVolumeGigabytes QuotaDetail `json:"per_volume_gigabytes"`
+	PerVolumeGigabytes QuotaUsage `json:"per_volume_gigabytes"`
 
 	// Backups is the backup usage information for this project, including
 	// in_use, limit, reserved and allocated attributes. Note: allocated
 	// attribute is available only when nested quota is enabled.
-	Backups QuotaDetail `json:"backups"`
+	Backups QuotaUsage `json:"backups"`
 
 	// BackupGigabytes is the size (GB) usage information of backup for this
 	// project, including in_use, limit, reserved and allocated attributes.
 	// Note: allocated attribute is available only when nested quota is
 	// enabled.
-	BackupGigabytes QuotaDetail `json:"backup_gigabytes"`
+	BackupGigabytes QuotaUsage `json:"backup_gigabytes"`
 }
 
-// QuotaDetail is a set of details about a single operational limit that allows
+// QuotaUsage is a set of details about a single operational limit that allows
 // for control of block storage usage.
-type QuotaDetail struct {
+type QuotaUsage struct {
 	// InUse is the current number of provisioned resources of the given type.
 	InUse int `json:"in_use"`
 
 	// Allocated is the current number of resources of a given type allocated
-	// for use.  It is only available when nested quota is enabled. It tells
-	// how
+	// for use.  It is only available when nested quota is enabled.
 	Allocated int `json:"allocated"`
 
 	// Reserved is a transitional state when a claim against quota has been made
@@ -133,21 +132,21 @@ type GetResult struct {
 	quotaResult
 }
 
-type quotaDetailResult struct {
+type quotaUsageResult struct {
 	gophercloud.Result
 }
 
-// GetDetailResult is the response from a Get operation. Call its Extract
+// GetUsageResult is the response from a Get operation. Call its Extract
 // method to interpret it as a QuotaSet.
-type GetDetailResult struct {
-	quotaDetailResult
+type GetUsageResult struct {
+	quotaUsageResult
 }
 
-// Extract is a method that attempts to interpret any QuotaDetailSet
-// resource response as a set of QuotaDetailSet structs.
-func (r quotaDetailResult) Extract() (QuotaDetailSet, error) {
+// Extract is a method that attempts to interpret any QuotaUsageSet resource
+// response as a set of QuotaUsageSet structs.
+func (r quotaUsageResult) Extract() (QuotaUsageSet, error) {
 	var s struct {
-		QuotaData QuotaDetailSet `json:"quota_set"`
+		QuotaData QuotaUsageSet `json:"quota_set"`
 	}
 	err := r.ExtractInto(&s)
 	return s.QuotaData, err

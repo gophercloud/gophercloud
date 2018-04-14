@@ -16,8 +16,8 @@ func GetDefaults(client *gophercloud.ServiceClient, projectID string) (r GetResu
 	return
 }
 
-// GetDetail returns detailed public data about a previously created QuotaSet.
-func GetDetail(client *gophercloud.ServiceClient, projectID string) (r GetDetailResult) {
-	_, r.Err = client.Get(getDetailURL(client, projectID), &r.Body, nil)
+// GetUsage returns detailed public data about a previously created QuotaSet.
+func GetUsage(client *gophercloud.ServiceClient, projectID string) (r GetUsageResult) {
+	_, r.Err = client.Get(getUsageURL(client, projectID), &r.Body, nil)
 	return
 }
