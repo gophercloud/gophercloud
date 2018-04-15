@@ -129,22 +129,33 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	tools.PrintResource(t, newPolicy)
 
 	// L7 rule
-	_, err = CreateL7Rule(t, lbClient, newPolicy.ID, lb)
+	rule, err := CreateL7Rule(t, lbClient, newPolicy.ID, lb)
 	if err != nil {
 		t.Fatalf("Unable to create l7 rule: %v", err)
 	}
 
-	allPages, err = l7policies.ListRules(lbClient, policy.ID, l7policies.ListRulesOpts{}).AllPages()
+	allPages, err := l7policies.ListRules(lbClient, policy.ID, l7policies.ListRulesOpts{}).AllPages()
 	if err != nil {
 		t.Fatalf("Unable to get l7 rules: %v", err)
 	}
-	allRules, err = l7policies.ExtractRules(allPages)
+	allRules, err := l7policies.ExtractRules(allPages)
 	if err != nil {
 		t.Fatalf("Unable to extract l7 rules: %v", err)
 	}
 	for _, rule := range allRules {
 		tools.PrintResource(t, rule)
 	}
+
+	newRule, err := l7policies.GetRule(lbClient, newPolicy.ID, rule.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get l7 rule: %v", err)
+	}
+
+	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	tools.PrintResource(t, newRule)
 
 	// Pool
 	pool, err := CreatePool(t, lbClient, lb)

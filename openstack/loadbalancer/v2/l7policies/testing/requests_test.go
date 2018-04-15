@@ -218,3 +218,17 @@ func TestListAllRules(t *testing.T) {
 	th.CheckDeepEquals(t, RulePath, actual[0])
 	th.CheckDeepEquals(t, RuleHostName, actual[1])
 }
+
+func TestGetRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRuleGetSuccessfully(t)
+
+	client := fake.ServiceClient()
+	actual, err := l7policies.GetRule(client, "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, RulePath, *actual)
+}

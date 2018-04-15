@@ -307,3 +307,14 @@ func HandleRuleListSuccessfully(t *testing.T) {
 		}
 	})
 }
+
+// HandleRuleGetSuccessfully sets up the test server to respond to a rule Get request.
+func HandleRuleGetSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/l7policies/8a1412f0-4c32-4257-8b07-af4770b604fd/rules/16621dbb-a736-4888-a57a-3ecd53df784c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, SingleRuleBody)
+	})
+}

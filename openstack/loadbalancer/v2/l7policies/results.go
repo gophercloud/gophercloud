@@ -203,3 +203,9 @@ func ExtractRules(r pagination.Page) ([]Rule, error) {
 	err := (r.(RulePage)).ExtractInto(&s)
 	return s.Rules, err
 }
+
+// GetRuleResult represents the result of a GetRule operation.
+// Call its Extract method to interpret it as a Rule.
+type GetRuleResult struct {
+	commonRuleResult
+}
