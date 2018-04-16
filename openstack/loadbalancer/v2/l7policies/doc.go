@@ -89,5 +89,12 @@ Example to List L7 Rules
 	for _, rule := allRules {
 		fmt.Printf("%+v\n", rule)
 	}
+
+Example to Get a l7 rule
+
+	l7rule, err := l7policies.GetRule(lbClient, "023f2e34-7806-443b-bfae-16c324569a3d", "53ad8ab8-40fa-11e8-a508-00224d6b7bc1").Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package l7policies

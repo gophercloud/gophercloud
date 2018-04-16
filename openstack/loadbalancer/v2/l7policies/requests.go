@@ -267,3 +267,9 @@ func ListRules(c *gophercloud.ServiceClient, policyID string, opts ListRulesOpts
 		return RulePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// GetRule retrieves a particular L7Policy Rule based on its unique ID.
+func GetRule(c *gophercloud.ServiceClient, policyID string, ruleID string) (r GetRuleResult) {
+	_, r.Err = c.Get(ruleResourceURL(c, policyID, ruleID), &r.Body, nil)
+	return
+}

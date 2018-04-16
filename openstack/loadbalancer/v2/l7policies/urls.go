@@ -19,3 +19,7 @@ func resourceURL(c *gophercloud.ServiceClient, id string) string {
 func ruleRootURL(c *gophercloud.ServiceClient, policyID string) string {
 	return c.ServiceURL(rootPath, resourcePath, policyID, rulePath)
 }
+
+func ruleResourceURL(c *gophercloud.ServiceClient, policyID string, ruleID string) string {
+	return c.ServiceURL(rootPath, resourcePath, policyID, rulePath, ruleID)
+}
