@@ -243,6 +243,23 @@ func DeleteL7Policy(t *testing.T, client *gophercloud.ServiceClient, lbID, polic
 	t.Logf("Successfully deleted l7 policy %s", policyID)
 }
 
+// DeleteL7Rule will delete a specified l7 rule. A fatal error will occur if
+// the l7 rule could not be deleted. This works best when used as a deferred
+// function.
+func DeleteL7Rule(t *testing.T, client *gophercloud.ServiceClient, lbID, policyID, ruleID string) {
+	t.Logf("Attempting to delete l7 rule %s", ruleID)
+
+	if err := l7policies.DeleteRule(client, policyID, ruleID).ExtractErr(); err != nil {
+		t.Fatalf("Unable to delete l7 rule: %v", err)
+	}
+
+	if err := WaitForLoadBalancerState(client, lbID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	t.Logf("Successfully deleted l7 rule %s", ruleID)
+}
+
 // DeleteListener will delete a specified listener. A fatal error will occur if
 // the listener could not be deleted. This works best when used as a deferred
 // function.

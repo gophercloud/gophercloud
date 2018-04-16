@@ -133,6 +133,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create l7 rule: %v", err)
 	}
+	defer DeleteL7Rule(t, lbClient, lb.ID, policy.ID, rule.ID)
 
 	allPages, err := l7policies.ListRules(lbClient, policy.ID, l7policies.ListRulesOpts{}).AllPages()
 	if err != nil {

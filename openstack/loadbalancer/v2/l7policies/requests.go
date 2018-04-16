@@ -273,3 +273,9 @@ func GetRule(c *gophercloud.ServiceClient, policyID string, ruleID string) (r Ge
 	_, r.Err = c.Get(ruleResourceURL(c, policyID, ruleID), &r.Body, nil)
 	return
 }
+
+// DeleteRule will remove a Rule from a particular L7Policy.
+func DeleteRule(c *gophercloud.ServiceClient, policyID string, ruleID string) (r DeleteRuleResult) {
+	_, r.Err = c.Delete(ruleResourceURL(c, policyID, ruleID), nil)
+	return
+}

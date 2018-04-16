@@ -232,3 +232,12 @@ func TestGetRule(t *testing.T) {
 
 	th.CheckDeepEquals(t, RulePath, *actual)
 }
+
+func TestDeleteRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRuleDeletionSuccessfully(t)
+
+	res := l7policies.DeleteRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c")
+	th.AssertNoErr(t, res.Err)
+}
