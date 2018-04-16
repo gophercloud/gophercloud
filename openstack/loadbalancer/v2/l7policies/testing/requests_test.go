@@ -241,3 +241,21 @@ func TestDeleteRule(t *testing.T) {
 	res := l7policies.DeleteRule(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestUpdateRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRuleUpdateSuccessfully(t)
+
+	client := fake.ServiceClient()
+	actual, err := l7policies.UpdateRule(client, "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c", l7policies.UpdateRuleOpts{
+		RuleType:    l7policies.TypePath,
+		CompareType: l7policies.CompareTypeRegex,
+		Value:       "/images/special*",
+	}).Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Update error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, RuleUpdated, *actual)
+}

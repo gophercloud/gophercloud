@@ -89,6 +89,16 @@ var (
 		Invert:       false,
 		AdminStateUp: true,
 	}
+	RuleUpdated = l7policies.Rule{
+		ID:           "16621dbb-a736-4888-a57a-3ecd53df784c",
+		RuleType:     "PATH",
+		CompareType:  "REGEX",
+		Value:        "/images/special*",
+		ProjectID:    "e3cd678b11784734bc366148aa37580e",
+		Key:          "",
+		Invert:       false,
+		AdminStateUp: true,
+	}
 )
 
 // HandleL7PolicyCreationSuccessfully sets up the test server to respond to a l7policy creation request
@@ -326,5 +336,40 @@ func HandleRuleDeletionSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// PostUpdateRuleBody is the canned response body of a Update request on an existing rule.
+const PostUpdateRuleBody = `
+{
+	"rule": {
+		"compare_type": "REGEX",
+		"invert": false,
+		"admin_state_up": true,
+		"value": "/images/special*",
+		"key": null,
+		"project_id": "e3cd678b11784734bc366148aa37580e",
+		"type": "PATH",
+		"id": "16621dbb-a736-4888-a57a-3ecd53df784c"
+	}
+}
+`
+
+// HandleRuleUpdateSuccessfully sets up the test server to respond to a rule Update request.
+func HandleRuleUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/l7policies/8a1412f0-4c32-4257-8b07-af4770b604fd/rules/16621dbb-a736-4888-a57a-3ecd53df784c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{
+			"rule": {
+				"compare_type": "REGEX",
+				"type": "PATH",
+				"value": "/images/special*"
+			}
+		}`)
+
+		fmt.Fprintf(w, PostUpdateRuleBody)
 	})
 }

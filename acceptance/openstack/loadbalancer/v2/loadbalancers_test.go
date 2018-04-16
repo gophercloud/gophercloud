@@ -147,13 +147,23 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		tools.PrintResource(t, rule)
 	}
 
-	newRule, err := l7policies.GetRule(lbClient, newPolicy.ID, rule.ID).Extract()
+	updateL7ruleOpts := l7policies.UpdateRuleOpts{
+		RuleType:    l7policies.TypePath,
+		CompareType: l7policies.CompareTypeRegex,
+		Value:       "/images/special*",
+	}
+	_, err = l7policies.UpdateRule(lbClient, policy.ID, rule.ID, updateL7ruleOpts).Extract()
 	if err != nil {
-		t.Fatalf("Unable to get l7 rule: %v", err)
+		t.Fatalf("Unable to update l7 rule: %v", err)
 	}
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newRule, err := l7policies.GetRule(lbClient, newPolicy.ID, rule.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get l7 rule: %v", err)
 	}
 
 	tools.PrintResource(t, newRule)

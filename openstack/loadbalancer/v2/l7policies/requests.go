@@ -279,3 +279,42 @@ func DeleteRule(c *gophercloud.ServiceClient, policyID string, ruleID string) (r
 	_, r.Err = c.Delete(ruleResourceURL(c, policyID, ruleID), nil)
 	return
 }
+
+// UpdateRuleOptsBuilder allows to add additional parameters to the PUT request.
+type UpdateRuleOptsBuilder interface {
+	ToRuleUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateRuleOpts is the common options struct used in this package's Update
+// operation.
+type UpdateRuleOpts struct {
+	// The L7 rule type. One of COOKIE, FILE_TYPE, HEADER, HOST_NAME, or PATH.
+	RuleType RuleType `json:"type,omitempty"`
+
+	// The comparison type for the L7 rule. One of CONTAINS, ENDS_WITH, EQUAL_TO, REGEX, or STARTS_WITH.
+	CompareType CompareType `json:"compare_type,omitempty"`
+
+	// The value to use for the comparison. For example, the file type to compare.
+	Value string `json:"value,omitempty"`
+
+	// The key to use for the comparison. For example, the name of the cookie to evaluate.
+	Key string `json:"key,omitempty"`
+
+	// When true the logic of the rule is inverted. For example, with invert true,
+	// equal to would become not equal to. Default is false.
+	Invert bool `json:"invert,omitempty"`
+}
+
+// ToRuleUpdateMap builds a request body from UpdateRuleOpts.
+func (opts UpdateRuleOpts) ToRuleUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "rule")
+}
+
+// UpdateRule allows Rule to be updated.
+func UpdateRule(c *gophercloud.ServiceClient, policyID string, ruleID string, opts UpdateRuleOptsBuilder) (r UpdateRuleResult) {
+	b, _ := opts.ToRuleUpdateMap()
+	_, r.Err = c.Put(ruleResourceURL(c, policyID, ruleID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 202},
+	})
+	return
+}

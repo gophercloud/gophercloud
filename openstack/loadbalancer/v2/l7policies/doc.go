@@ -105,5 +105,19 @@ Example to Delete a l7 rule
 	if err != nil {
 		panic(err)
 	}
+
+Example to Update a Rule
+
+	l7policyID := "d67d56a6-4a86-4688-a282-f46444705c64"
+	ruleID := "64dba99f-8af8-4200-8882-e32a0660f23e"
+	updateOpts := l7policies.UpdateRuleOpts{
+		RuleType:    l7policies.TypePath,
+		CompareType: l7policies.CompareTypeRegex,
+		Value:       "/images/special*",
+	}
+	rule, err := l7policies.UpdateRule(lbClient, l7policyID, ruleID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package l7policies
