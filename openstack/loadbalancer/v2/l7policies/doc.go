@@ -96,5 +96,14 @@ Example to Get a l7 rule
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete a l7 rule
+
+	l7policyID := "d67d56a6-4a86-4688-a282-f46444705c64"
+	ruleID := "64dba99f-8af8-4200-8882-e32a0660f23e"
+	err := l7policies.DeleteRule(lbClient, l7policyID, ruleID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package l7policies

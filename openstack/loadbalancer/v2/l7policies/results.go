@@ -209,3 +209,9 @@ func ExtractRules(r pagination.Page) ([]Rule, error) {
 type GetRuleResult struct {
 	commonRuleResult
 }
+
+// DeleteRuleResult represents the result of a DeleteRule operation.
+// Call its ExtractErr method to determine if the request succeeded or failed.
+type DeleteRuleResult struct {
+	gophercloud.ErrResult
+}
