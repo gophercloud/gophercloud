@@ -10,9 +10,9 @@ Example to Get a Quota Set
 
 	fmt.Printf("%+v\n", quotaset)
 
-Example to Get a Detailed Quota Set
+Example to Get Quota Set Usage
 
-	quotaset, err := quotasets.GetDetail(blockStorageClient, "project-id").Extract()
+	quotaset, err := quotasets.GetUsage(blockStorageClient, "project-id").Extract()
 	if err != nil {
 		panic(err)
 	}

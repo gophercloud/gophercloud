@@ -146,8 +146,8 @@ type GetUsageResult struct {
 // response as a set of QuotaUsageSet structs.
 func (r quotaUsageResult) Extract() (QuotaUsageSet, error) {
 	var s struct {
-		QuotaData QuotaUsageSet `json:"quota_set"`
+		QuotaUsageSet QuotaUsageSet `json:"quota_set"`
 	}
 	err := r.ExtractInto(&s)
-	return s.QuotaData, err
+	return s.QuotaUsageSet, err
 }
