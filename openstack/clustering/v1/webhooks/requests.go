@@ -9,7 +9,7 @@ import (
 
 // TriggerOpts represents options used for triggering an action
 type TriggerOpts struct {
-	V      string `q:"V,required"`
+	V      string `q:"V" required:"true"`
 	Params map[string]string
 }
 
