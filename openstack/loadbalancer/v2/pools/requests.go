@@ -25,7 +25,6 @@ type ListOpts struct {
 	Name           string `q:"name"`
 	ID             string `q:"id"`
 	LoadbalancerID string `q:"loadbalancer_id"`
-	ListenerID     string `q:"listener_id"`
 	Limit          int    `q:"limit"`
 	Marker         string `q:"marker"`
 	SortKey        string `q:"sort_key"`
