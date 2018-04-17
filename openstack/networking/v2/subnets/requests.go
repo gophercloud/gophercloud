@@ -80,7 +80,7 @@ type CreateOpts struct {
 	NetworkID string `json:"network_id" required:"true"`
 
 	// CIDR is the address CIDR of the subnet.
-	CIDR string `json:"cidr"`
+	CIDR string `json:"cidr,omitempty"`
 
 	// Name is a human-readable name of the subnet.
 	Name string `json:"name,omitempty"`
