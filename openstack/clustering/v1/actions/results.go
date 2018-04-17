@@ -33,8 +33,8 @@ type Action struct {
 	Data         map[string]interface{} `json:"data"`
 	DependedBy   []string               `json:"depended_by"`
 	DependsOn    []string               `json:"depends_on"`
-	StartTime    float32                `json:"start_time"`
-	EndTime      float32                `json:"end_time"`
+	StartTime    time.Time              `json:"-"`
+	EndTime      time.Time              `json:"-"`
 	ID           string                 `json:"id"`
 	Inputs       map[string]interface{} `json:"inputs"`
 	Interval     int                    `json:"interval"`
@@ -69,6 +69,8 @@ func (r *Action) UnmarshalJSON(b []byte) error {
 	type tmp Action
 	var s struct {
 		tmp
+		StartTime float64     `json:"start_time"`
+		EndTime   float64     `json:"end_time"`
 		CreatedAt interface{} `json:"created_at"`
 		UpdatedAt interface{} `json:"updated_at"`
 	}
@@ -78,6 +80,9 @@ func (r *Action) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	*r = Action(s.tmp)
+
+	r.StartTime = time.Unix(int64(s.StartTime), 0)
+	r.EndTime = time.Unix(int64(s.EndTime), 0)
 
 	switch t := s.CreatedAt.(type) {
 	case string:
@@ -90,7 +95,7 @@ func (r *Action) UnmarshalJSON(b []byte) error {
 	case nil:
 		// Valid continue
 	default:
-		return fmt.Errorf("type=%v", reflect.TypeOf(s.CreatedAt))
+		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.CreatedAt))
 	}
 
 	switch t := s.UpdatedAt.(type) {
@@ -104,7 +109,7 @@ func (r *Action) UnmarshalJSON(b []byte) error {
 	case nil:
 		// Valid continue
 	default:
-		return fmt.Errorf("type=%v", reflect.TypeOf(s.UpdatedAt))
+		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.UpdatedAt))
 	}
 
 	return nil
