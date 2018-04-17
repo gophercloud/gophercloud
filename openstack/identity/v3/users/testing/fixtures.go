@@ -481,6 +481,17 @@ func HandleAddToGroupSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleIsMemberOfGroupSuccessfully creates an HTTP handler at /groups/{groupID}/users/{userID}
+// on the test handler mux that tests checking whether user belongs to group.
+func HandleIsMemberOfGroupSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/groups/ea167b/users/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "HEAD")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
 // HandleRemoveFromGroupSuccessfully creates an HTTP handler at /groups/{groupID}/users/{userID}
 // on the test handler mux that tests removing user from group.
 func HandleRemoveFromGroupSuccessfully(t *testing.T) {

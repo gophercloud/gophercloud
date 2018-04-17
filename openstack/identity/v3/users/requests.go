@@ -1,6 +1,8 @@
 package users
 
 import (
+	"net/http"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
@@ -263,6 +265,22 @@ func AddToGroup(client *gophercloud.ServiceClient, groupID, userID string) (r Ad
 	_, r.Err = client.Put(url, nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
+	return
+}
+
+// IsMemberOfGroup checks whether a user belongs to a group.
+func IsMemberOfGroup(client *gophercloud.ServiceClient, groupID, userID string) (r IsMemberOfGroupResult) {
+	url := isMemberOfGroupURL(client, groupID, userID)
+	var response *http.Response
+	response, r.Err = client.Request("HEAD", url, &gophercloud.RequestOpts{
+		OkCodes: []int{204, 404},
+	})
+	if r.Err == nil && response != nil {
+		if (*response).StatusCode == 204 {
+			r.isMember = true
+		}
+	}
+
 	return
 }
 

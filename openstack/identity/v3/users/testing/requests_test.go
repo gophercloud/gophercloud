@@ -170,6 +170,15 @@ func TestAddToGroup(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
+func TestIsMemberOfGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleIsMemberOfGroupSuccessfully(t)
+	ok, err := users.IsMemberOfGroup(client.ServiceClient(), "ea167b", "9fe1d3").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, ok)
+}
+
 func TestRemoveFromGroup(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

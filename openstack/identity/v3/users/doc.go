@@ -106,6 +106,19 @@ Example to Add a User to a Group
 		panic(err)
 	}
 
+Example to Check Whether a User Belongs to a Group
+
+	groupID := "bede500ee1124ae9b0006ff859758b3a"
+	userID := "0fe36e73809d46aeae6705c39077b1b3"
+	ok, err := users.IsMemberOfGroup(identityClient, groupID, userID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	if ok {
+		fmt.Printf("user %s is a member of group %s\n", userID, groupID)
+	}
+
 Example to Remove a User from a Group
 
 	groupID := "bede500ee1124ae9b0006ff859758b3a"

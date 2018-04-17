@@ -215,6 +215,14 @@ func TestUsersGroups(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
+	ok, err := users.IsMemberOfGroup(client, group.ID, user.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to check whether user belongs to group: %v", err)
+	}
+	if !ok {
+		t.Fatalf("User %s is expected to be a member of group %s", user.ID, group.ID)
+	}
+
 	err = users.RemoveFromGroup(client, group.ID, user.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
