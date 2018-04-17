@@ -2,9 +2,9 @@ package actions
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
 	"time"
-
-	"strings"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -65,41 +65,47 @@ func (r ActionPage) IsEmpty() (bool, error) {
 	return len(actions) == 0, err
 }
 
-type JSONRFC3339MilliAllowEmpty gophercloud.JSONRFC3339Milli
-
-func (jt *JSONRFC3339MilliAllowEmpty) UnmarshalJSON(data []byte) error {
-	d := string(data)
-	d = strings.Trim(d, "\"' ")
-	if len(d) == 0 || d == "null" {
-		// Allows empty or "null" field
-		*jt = JSONRFC3339MilliAllowEmpty(time.Time{})
-		return nil
-	}
-
-	gt := gophercloud.JSONRFC3339Milli{}
-	err := gt.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-	*jt = JSONRFC3339MilliAllowEmpty(gt)
-	return err
-}
-
 func (r *Action) UnmarshalJSON(b []byte) error {
 	type tmp Action
 	var s struct {
 		tmp
-		CreatedAt JSONRFC3339MilliAllowEmpty `json:"created_at"`
-		UpdatedAt JSONRFC3339MilliAllowEmpty `json:"updated_at"`
+		CreatedAt interface{} `json:"created_at"`
+		UpdatedAt interface{} `json:"updated_at"`
 	}
+
 	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
 	}
 	*r = Action(s.tmp)
 
-	r.CreatedAt = time.Time(s.CreatedAt)
-	r.UpdatedAt = time.Time(s.UpdatedAt)
+	switch t := s.CreatedAt.(type) {
+	case string:
+		if t != "" {
+			r.CreatedAt, err = time.Parse(gophercloud.RFC3339Milli, t)
+			if err != nil {
+				return err
+			}
+		}
+	case nil:
+		// Valid continue
+	default:
+		return fmt.Errorf("type=%v", reflect.TypeOf(s.CreatedAt))
+	}
+
+	switch t := s.UpdatedAt.(type) {
+	case string:
+		if t != "" {
+			r.UpdatedAt, err = time.Parse(gophercloud.RFC3339Milli, t)
+			if err != nil {
+				return err
+			}
+		}
+	case nil:
+		// Valid continue
+	default:
+		return fmt.Errorf("type=%v", reflect.TypeOf(s.UpdatedAt))
+	}
 
 	return nil
 }
