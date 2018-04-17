@@ -177,7 +177,11 @@ func (opts UpdateOpts) ToL7PolicyUpdateMap() (map[string]interface{}, error) {
 
 // Update allows l7policy to be updated.
 func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
-	b, _ := opts.ToL7PolicyUpdateMap()
+	b, err := opts.ToL7PolicyUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
 	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
@@ -312,7 +316,11 @@ func (opts UpdateRuleOpts) ToRuleUpdateMap() (map[string]interface{}, error) {
 
 // UpdateRule allows Rule to be updated.
 func UpdateRule(c *gophercloud.ServiceClient, policyID string, ruleID string, opts UpdateRuleOptsBuilder) (r UpdateRuleResult) {
-	b, _ := opts.ToRuleUpdateMap()
+	b, err := opts.ToRuleUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
 	_, r.Err = c.Put(ruleResourceURL(c, policyID, ruleID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})

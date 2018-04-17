@@ -128,6 +128,18 @@ func TestUpdateL7Policy(t *testing.T) {
 	th.CheckDeepEquals(t, L7PolicyUpdated, *actual)
 }
 
+func TestUpdateL7PolicyWithInvalidOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	res := l7policies.Update(fake.ServiceClient(), "8a1412f0-4c32-4257-8b07-af4770b604fd", l7policies.UpdateOpts{
+		Action: l7policies.Action("invalid"),
+	})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+}
+
 func TestCreateRule(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -258,4 +270,23 @@ func TestUpdateRule(t *testing.T) {
 	}
 
 	th.CheckDeepEquals(t, RuleUpdated, *actual)
+}
+
+func TestUpdateRuleWithInvalidOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	res := l7policies.UpdateRule(fake.ServiceClient(), "", "", l7policies.UpdateRuleOpts{
+		RuleType: l7policies.RuleType("invalid"),
+	})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+
+	res = l7policies.UpdateRule(fake.ServiceClient(), "", "", l7policies.UpdateRuleOpts{
+		CompareType: l7policies.CompareType("invalid"),
+	})
+	if res.Err == nil {
+		t.Fatalf("Expected error, got none")
+	}
 }
