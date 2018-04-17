@@ -215,3 +215,9 @@ type GetRuleResult struct {
 type DeleteRuleResult struct {
 	gophercloud.ErrResult
 }
+
+// UpdateRuleResult represents the result of an UpdateRule operation.
+// Call its Extract method to interpret it as a Rule.
+type UpdateRuleResult struct {
+	commonRuleResult
+}
