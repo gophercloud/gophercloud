@@ -119,7 +119,7 @@ type AddToGroupResult struct {
 // IsMemberOfGroupResult is the response from a IsMemberOfGroup operation. Call its
 // Extract method to determine if the request succeeded or failed.
 type IsMemberOfGroupResult struct {
-	IsMember bool
+	isMember bool
 	gophercloud.Result
 }
 
@@ -175,5 +175,5 @@ func (r userResult) Extract() (*User, error) {
 
 // Extract extracts IsMemberOfGroupResult as bool and error values
 func (r IsMemberOfGroupResult) Extract() (bool, error) {
-	return r.IsMember, r.Err
+	return r.isMember, r.Err
 }

@@ -275,9 +275,9 @@ func IsMemberOfGroup(client *gophercloud.ServiceClient, groupID, userID string) 
 	response, r.Err = client.Request("HEAD", url, &gophercloud.RequestOpts{
 		OkCodes: []int{204, 404},
 	})
-	if r.Err == nil {
+	if r.Err == nil && response != nil {
 		if (*response).StatusCode == 204 {
-			r.IsMember = true
+			r.isMember = true
 		}
 	}
 
