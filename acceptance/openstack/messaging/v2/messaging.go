@@ -52,3 +52,16 @@ func GetQueue(t *testing.T, client *gophercloud.ServiceClient, queueName string)
 	}
 	return queue, nil
 }
+
+func CreateShare(t *testing.T, client *gophercloud.ServiceClient, queueName string, clientID string) (queues.QueueShare, error) {
+	t.Logf("Attempting to create share for queue: %s", queueName)
+
+	shareOpts := queues.ShareOpts{
+		Paths:   []queues.SharePath{queues.PathMessages},
+		Methods: []queues.ShareMethod{queues.MethodPost},
+	}
+
+	share, err := queues.Share(client, queueName, shareOpts).Extract()
+
+	return share, err
+}

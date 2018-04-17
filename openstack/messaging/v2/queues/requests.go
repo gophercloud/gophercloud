@@ -196,3 +196,55 @@ func GetStats(client *gophercloud.ServiceClient, queueName string) (r StatResult
 		OkCodes: []int{200}})
 	return
 }
+
+type SharePath string
+
+const (
+	PathMessages      SharePath = "messages"
+	PathClaims        SharePath = "claims"
+	PathSubscriptions SharePath = "subscriptions"
+)
+
+type ShareMethod string
+
+const (
+	MethodGet   ShareMethod = "GET"
+	MethodPatch ShareMethod = "PATCH"
+	MethodPost  ShareMethod = "POST"
+	MethodPut   ShareMethod = "PUT"
+)
+
+// ShareOpts specifies share creation parameters.
+type ShareOpts struct {
+	Paths   []SharePath   `json:"paths,omitempty"`
+	Methods []ShareMethod `json:"methods,omitempty"`
+	Expires string        `json:"expires,omitempty"`
+}
+
+// ShareOptsBuilder allows extensions to add additional attributes to the
+// Share request.
+type ShareOptsBuilder interface {
+	ToQueuesShareMap() (map[string]interface{}, error)
+}
+
+// ToShareQueueMap formats a ShareOpts structure into a request body.
+func (opts ShareOpts) ToQueuesShareMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// Share creates a pre-signed URL for a given queue.
+func Share(client *gophercloud.ServiceClient, queueName string, opts ShareOptsBuilder) (r ShareResult) {
+	b, err := opts.ToQueuesShareMap()
+	if err != nil {
+		r.Err = err
+		return r
+	}
+	_, r.Err = client.Post(shareURL(client, queueName), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

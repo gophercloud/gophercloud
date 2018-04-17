@@ -103,3 +103,26 @@ func TestStatQueue(t *testing.T) {
 
 	tools.PrintResource(t, queueStats)
 }
+
+func TestShare(t *testing.T) {
+	clientID := "3381af92-2b9e-11e3-b191-71861300734c"
+
+	client, err := clients.NewMessagingV2Client(clientID)
+	if err != nil {
+		t.Fatalf("Unable to create a messaging service client: %v", err)
+	}
+
+	queueName, err := CreateQueue(t, client)
+	if err != nil {
+		t.Logf("Unable to create queue for share.")
+	}
+	defer DeleteQueue(t, client, queueName)
+
+	t.Logf("Attempting to create share for queue: %s", queueName)
+	share, shareErr := CreateShare(t, client, queueName, clientID)
+	if shareErr != nil {
+		t.Fatalf("Unable to create share: %v", shareErr)
+	}
+
+	tools.PrintResource(t, share)
+}

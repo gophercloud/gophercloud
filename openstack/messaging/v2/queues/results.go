@@ -44,6 +44,11 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// ShareResult contains the result of a Share operation.
+type ShareResult struct {
+	gophercloud.Result
+}
+
 // Queue represents a messaging queue.
 type Queue struct {
 	Href          string       `json:"href"`
@@ -94,6 +99,15 @@ type Stats struct {
 	Free int `json:"free"`
 }
 
+// QueueShare represents a share response.
+type QueueShare struct {
+	Project   string   `json:"project"`
+	Paths     []string `json:"paths"`
+	Expires   string   `json:"expires"`
+	Methods   []string `json:"methods"`
+	Signature string   `json:"signature"`
+}
+
 // Extract interprets any commonResult as a Queue.
 func (r commonResult) Extract() (QueueDetails, error) {
 	var s QueueDetails
@@ -108,6 +122,13 @@ func (r StatResult) Extract() (Stats, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.Stats, err
+}
+
+// Extract interprets any ShareResult as a QueueShare.
+func (r ShareResult) Extract() (QueueShare, error) {
+	var s QueueShare
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // ExtractQueues interprets the results of a single page from a
