@@ -88,7 +88,7 @@ func (r *Action) UnmarshalJSON(b []byte) error {
 			}
 		}
 	case nil:
-		// Valid continue
+		r.CreatedAt = time.Time{}
 	default:
 		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.CreatedAt))
 	}
@@ -102,7 +102,7 @@ func (r *Action) UnmarshalJSON(b []byte) error {
 			}
 		}
 	case nil:
-		// Valid continue
+		r.UpdatedAt = time.Time{}
 	default:
 		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.UpdatedAt))
 	}
