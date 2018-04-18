@@ -49,6 +49,11 @@ type ShareResult struct {
 	gophercloud.Result
 }
 
+// PurgeResult is the response of a Purge operation.
+type PurgeResult struct {
+	gophercloud.ErrResult
+}
+
 // Queue represents a messaging queue.
 type Queue struct {
 	Href          string       `json:"href"`

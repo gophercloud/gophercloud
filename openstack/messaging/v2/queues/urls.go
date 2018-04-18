@@ -53,3 +53,7 @@ func statURL(client *gophercloud.ServiceClient, queueName string) string {
 func shareURL(client *gophercloud.ServiceClient, queueName string) string {
 	return client.ServiceURL(ApiVersion, ApiName, queueName, "share")
 }
+
+func purgeURL(client *gophercloud.ServiceClient, queueName string) string {
+	return client.ServiceURL(ApiVersion, ApiName, queueName, "purge")
+}

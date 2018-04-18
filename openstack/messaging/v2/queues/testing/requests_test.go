@@ -118,3 +118,16 @@ func TestShare(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedShare, actual)
 }
+
+func TestPurge(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandlePurgeSuccessfully(t)
+
+	purgeOpts := queues.PurgeOpts{
+		ResourceTypes: []queues.PurgeResource{queues.ResourceMessages, queues.ResourceSubscriptions},
+	}
+
+	err := queues.Purge(fake.ServiceClient(), QueueName, purgeOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+}

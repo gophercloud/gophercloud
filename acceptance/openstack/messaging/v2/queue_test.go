@@ -126,3 +126,27 @@ func TestShare(t *testing.T) {
 
 	tools.PrintResource(t, share)
 }
+
+func TestPurge(t *testing.T) {
+	clientID := "3381af92-2b9e-11e3-b191-71861300734c"
+
+	client, err := clients.NewMessagingV2Client(clientID)
+	if err != nil {
+		t.Fatalf("Unable to create a messaging service client: %v", err)
+	}
+
+	queueName, err := CreateQueue(t, client)
+	defer DeleteQueue(t, client, queueName)
+
+	purgeOpts := queues.PurgeOpts{
+		ResourceTypes: []queues.PurgeResource{
+			queues.ResourceMessages,
+		},
+	}
+
+	t.Logf("Attempting to purge queue: %s", queueName)
+	purgeErr := queues.Purge(client, queueName, purgeOpts).ExtractErr()
+	if purgeErr != nil {
+		t.Fatalf("Unable to purge queue %s: %v", queueName, purgeErr)
+	}
+}
