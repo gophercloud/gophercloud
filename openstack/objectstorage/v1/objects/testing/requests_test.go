@@ -44,9 +44,10 @@ func TestDownloadExtraction(t *testing.T) {
 	th.CheckEquals(t, "Successful download with Gophercloud", string(bytes))
 
 	expected := &objects.DownloadHeader{
-		ContentLength: 36,
-		ContentType:   "text/plain; charset=utf-8",
-		Date:          time.Date(2009, time.November, 10, 23, 0, 0, 0, loc),
+		ContentLength:     36,
+		ContentType:       "text/plain; charset=utf-8",
+		Date:              time.Date(2009, time.November, 10, 23, 0, 0, 0, loc),
+		StaticLargeObject: true,
 	}
 	actual, err := response.Extract()
 	th.AssertNoErr(t, err)
@@ -232,4 +233,8 @@ func TestGetObject(t *testing.T) {
 	actual, err := objects.Get(fake.ServiceClient(), "testContainer", "testObject", nil).ExtractMetadata()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
+
+	actualHeaders, err := objects.Get(fake.ServiceClient(), "testContainer", "testObject", nil).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, actualHeaders.StaticLargeObject, true)
 }
