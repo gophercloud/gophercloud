@@ -40,6 +40,51 @@ func TestQuotasetGetUsage(t *testing.T) {
 	tools.PrintResource(t, quotaSetUsage)
 }
 
+var UpdateQuotaOpts = quotasets.UpdateOpts{
+	Volumes:            gophercloud.IntToPointer(100),
+	Snapshots:          gophercloud.IntToPointer(200),
+	Gigabytes:          gophercloud.IntToPointer(300),
+	PerVolumeGigabytes: gophercloud.IntToPointer(50),
+	Backups:            gophercloud.IntToPointer(2),
+	BackupGigabytes:    gophercloud.IntToPointer(300),
+}
+
+var UpdatedQuotas = quotasets.QuotaSet{
+	Volumes:            100,
+	Snapshots:          200,
+	Gigabytes:          300,
+	PerVolumeGigabytes: 50,
+	Backups:            2,
+	BackupGigabytes:    300,
+}
+
+func TestQuotasetUpdate(t *testing.T) {
+	client, projectID := getClientAndProject(t)
+
+	// save original quotas
+	orig, err := quotasets.Get(client, projectID).Extract()
+	th.AssertNoErr(t, err)
+
+	defer func() {
+		restore := quotasets.UpdateOpts{}
+		FillUpdateOptsFromQuotaSet(*orig, &restore)
+
+		_, err = quotasets.Update(client, projectID, restore).Extract()
+		th.AssertNoErr(t, err)
+	}()
+
+	// test Update
+	resultQuotas, err := quotasets.Update(client, projectID, UpdateQuotaOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, UpdatedQuotas, *resultQuotas)
+
+	// We dont know the default quotas, so just check if the quotas are not the
+	// same as before
+	newQuotas, err := quotasets.Get(client, projectID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, resultQuotas.Volumes, newQuotas.Volumes)
+}
+
 // getClientAndProject reduces boilerplate by returning a new blockstorage v3
 // ServiceClient and a project ID obtained from the OS_PROJECT_NAME envvar.
 func getClientAndProject(t *testing.T) (*gophercloud.ServiceClient, string) {
@@ -49,4 +94,13 @@ func getClientAndProject(t *testing.T) (*gophercloud.ServiceClient, string) {
 	projectID := os.Getenv("OS_PROJECT_NAME")
 	th.AssertNoErr(t, err)
 	return client, projectID
+}
+
+func FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet, dest *quotasets.UpdateOpts) {
+	dest.Volumes = &src.Volumes
+	dest.Snapshots = &src.Snapshots
+	dest.Gigabytes = &src.Gigabytes
+	dest.PerVolumeGigabytes = &src.PerVolumeGigabytes
+	dest.Backups = &src.Backups
+	dest.BackupGigabytes = &src.BackupGigabytes
 }

@@ -11,3 +11,7 @@ func getURL(c *gophercloud.ServiceClient, projectID string) string {
 func getDefaultsURL(c *gophercloud.ServiceClient, projectID string) string {
 	return c.ServiceURL(resourcePath, projectID, "defaults")
 }
+
+func updateURL(c *gophercloud.ServiceClient, projectID string) string {
+	return getURL(c, projectID)
+}
