@@ -131,11 +131,14 @@ type policyResult struct {
 	gophercloud.Result
 }
 
-func (r CreateResult) Extract() (*Policy, error) {
+func (r policyResult) Extract() (*Policy, error) {
 	var s struct {
 		Policy *Policy `json:"policy"`
 	}
 	err := r.ExtractInto(&s)
+	if err != nil {
+		s.Policy = &Policy{}
+	}
 
 	return s.Policy, err
 }
@@ -146,6 +149,10 @@ type CreateResult struct {
 
 type DeleteResult struct {
 	gophercloud.HeaderResult
+}
+
+type ValidateResult struct {
+	policyResult
 }
 
 // DeleteResult contains the delete information from a delete policy request

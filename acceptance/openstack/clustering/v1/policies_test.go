@@ -35,12 +35,14 @@ func TestPolicyList(t *testing.T) {
 	}
 }
 
-func TestPolicyCreateAndDelete(t *testing.T) {
+func TestPolicyCreateUpdateValidateDelete(t *testing.T) {
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
+	testName := tools.RandomString("TESTACC-", 8)
+	client.Microversion = "1.5"
 
-	opts := policies.CreateOpts{
-		Name: "new_policy2",
+	createOpts := policies.CreateOpts{
+		Name: testName,
 		Spec: policies.Spec{
 			Description: "new policy description",
 			Properties: map[string]interface{}{
@@ -54,7 +56,7 @@ func TestPolicyCreateAndDelete(t *testing.T) {
 		},
 	}
 
-	createdPolicy, err := policies.Create(client, opts).Extract()
+	createdPolicy, err := policies.Create(client, createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	defer policies.Delete(client, createdPolicy.ID)
@@ -62,11 +64,28 @@ func TestPolicyCreateAndDelete(t *testing.T) {
 	tools.PrintResource(t, createdPolicy)
 
 	if createdPolicy.CreatedAt.IsZero() {
-		t.Fatalf("CreatedAt value should not be zero")
+		t.Fatalf("CreatePolicy's CreatedAt value should not be zero")
 	}
-	t.Log("Created at: " + createdPolicy.CreatedAt.String())
+	t.Log("CreatePolicy created at: " + createdPolicy.CreatedAt.String())
 
 	if !createdPolicy.UpdatedAt.IsZero() {
-		t.Log("Updated at: " + createdPolicy.UpdatedAt.String())
+		t.Log("CreatePolicy updated at: " + createdPolicy.UpdatedAt.String())
+	}
+
+	validateOpts := policies.ValidateOpts{
+		Spec: createOpts.Spec,
+	}
+
+	validatePolicy, err := policies.Validate(client, validateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, validatePolicy)
+
+	if validatePolicy.Name != "validated_policy" {
+		t.Fatalf("ValidatePolicy's Name value should be 'validated_policy'")
+	}
+
+	if validatePolicy.Spec.Version != createOpts.Spec.Version {
+		t.Fatalf("ValidatePolicy's Version value should be ", createOpts.Spec.Version)
 	}
 }
