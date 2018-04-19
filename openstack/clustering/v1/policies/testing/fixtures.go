@@ -99,6 +99,66 @@ const PolicyCreateBody = `
 }
 `
 
+const PolicyUpdateBody = `
+{
+  "policy": {
+    "created_at": "2018-04-02T21:43:30.000000",
+    "data": {},
+    "domain": null,
+    "id": "b99b3ab4-3aa6-4fba-b827-69b88b9c544a",
+    "name": "delpol4",
+    "project": "018cd0909fb44cd5bc9b7a3cd664920e",
+    "spec": {
+      "description": "A policy for choosing victim node(s) from a cluster for deletion.",
+      "properties": {
+        "hooks": {
+          "params": {
+            "queue": "zaqar_queue_name"
+          },
+          "timeout": 180,
+          "type": "zaqar"
+        }
+      },
+      "type": "senlin.policy.deletion",
+      "version": 1.1
+    },
+    "type": "senlin.policy.deletion-1.1",
+    "updated_at": null,
+    "user": "fe43e41739154b72818565e0d2580819"
+  }
+}
+`
+
+const PolicyBadUpdateBody = `
+{
+  "policy": {
+    "created_at": "invalid",
+    "data": {},
+    "domain": null,
+    "id": "b99b3ab4-3aa6-4fba-b827-69b88b9c544a",
+    "name": "delpol4",
+    "project": "018cd0909fb44cd5bc9b7a3cd664920e",
+    "spec": {
+      "description": "A policy for choosing victim node(s) from a cluster for deletion.",
+      "properties": {
+        "hooks": {
+          "params": {
+            "queue": "zaqar_queue_name"
+          },
+          "timeout": 180,
+          "type": "zaqar"
+        }
+      },
+      "type": "senlin.policy.deletion",
+      "version": 1.1
+    },
+    "type": "invalid",
+    "updated_at": null,
+    "user": "fe43e41739154b72818565e0d2580819"
+  }
+}
+`
+
 const PolicyValidateBody = `
 {
   "policy": {
@@ -172,6 +232,9 @@ var (
 	// Policy ID to delete
 	PolicyIDtoDelete = "1"
 
+	// Policy ID to update
+	PolicyIDtoUpdate = "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
+
 	ExpectedPolicies = [][]policies.Policy{
 		{
 			{
@@ -227,6 +290,33 @@ var (
 
 	ExpectedCreatePolicy = policies.Policy{
 		CreatedAt: ExpectedCreatePolicyCreatedAt,
+		Data:      map[string]interface{}{},
+		Domain:    "",
+		ID:        "b99b3ab4-3aa6-4fba-b827-69b88b9c544a",
+		Name:      "delpol4",
+		Project:   "018cd0909fb44cd5bc9b7a3cd664920e",
+
+		Spec: policies.Spec{
+			Description: "A policy for choosing victim node(s) from a cluster for deletion.",
+			Properties: map[string]interface{}{
+				"hooks": map[string]interface{}{
+					"params": map[string]interface{}{
+						"queue": "zaqar_queue_name",
+					},
+					"timeout": float64(180),
+					"type":    "zaqar",
+				},
+			},
+			Type:    "senlin.policy.deletion",
+			Version: "1.1",
+		},
+		Type:      "senlin.policy.deletion-1.1",
+		User:      "fe43e41739154b72818565e0d2580819",
+		UpdatedAt: ZeroTime,
+	}
+
+	ExpectedUpdatePolicy = policies.Policy{
+		CreatedAt: ExpectedPolicyCreatedAt1,
 		Data:      map[string]interface{}{},
 		Domain:    "",
 		ID:        "b99b3ab4-3aa6-4fba-b827-69b88b9c544a",
@@ -322,6 +412,30 @@ func HandlePolicyDelete(t *testing.T) {
 
 		w.Header().Add("X-OpenStack-Request-ID", PolicyDeleteRequestID)
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandlePolicyUpdate(t *testing.T) {
+	th.Mux.HandleFunc("/v1/policies/"+PolicyIDtoUpdate, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, PolicyUpdateBody)
+	})
+}
+
+func HandleBadPolicyUpdate(t *testing.T) {
+	th.Mux.HandleFunc("/v1/policies/"+PolicyIDtoUpdate, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, PolicyBadUpdateBody)
 	})
 }
 

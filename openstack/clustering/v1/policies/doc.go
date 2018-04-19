@@ -48,6 +48,17 @@ Example to Create a policy
 		panic(err)
 	}
 
+Example to Update a policy
+
+	opts := policies.UpdateOpts{
+		Name: "update_policy",
+	}
+
+	updatePolicy, err := policies.Update(client, opts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Validate a policy
 
 	opts := policies.ValidateOpts{
