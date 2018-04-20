@@ -5,6 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/messaging/v2/messages"
 	"github.com/gophercloud/gophercloud/openstack/messaging/v2/queues"
 )
 
@@ -64,4 +65,23 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient, queueName stri
 	share, err := queues.Share(client, queueName, shareOpts).Extract()
 
 	return share, err
+}
+
+func CreateMessage(t *testing.T, client *gophercloud.ServiceClient, queueName string) (messages.ResourceList, error) {
+	t.Logf("Attempting to add message to Queue: %s", queueName)
+	createOpts := messages.BatchCreateOpts{
+		messages.CreateOpts{
+			TTL:  300,
+			Body: map[string]interface{}{"Key": tools.RandomString("ACPTTEST", 8)},
+		},
+	}
+
+	resource, err := messages.Create(client, queueName, createOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to add message to queue %s: %v", queueName, err)
+	} else {
+		t.Logf("Successfully added message to queue: %s", queueName)
+	}
+
+	return resource, err
 }
