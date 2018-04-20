@@ -1,3 +1,5 @@
+// +build acceptance clustering actions
+
 package v1
 
 import (
