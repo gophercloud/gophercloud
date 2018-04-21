@@ -2,6 +2,8 @@ package testing
 
 import (
 	"bytes"
+	"crypto/md5"
+	"fmt"
 	"io"
 	"strings"
 	"testing"
@@ -237,4 +239,30 @@ func TestGetObject(t *testing.T) {
 	actualHeaders, err := objects.Get(fake.ServiceClient(), "testContainer", "testObject", nil).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, actualHeaders.StaticLargeObject, true)
+}
+
+func TestETag(t *testing.T) {
+	content := "some example object"
+	createOpts := objects.CreateOpts{
+		Content: strings.NewReader(content),
+		NoETag:  true,
+	}
+
+	_, headers, _, err := createOpts.ToObjectCreateParams()
+	th.AssertNoErr(t, err)
+	_, ok := headers["ETag"]
+	th.AssertEquals(t, ok, false)
+
+	hash := md5.New()
+	io.WriteString(hash, content)
+	localChecksum := fmt.Sprintf("%x", hash.Sum(nil))
+
+	createOpts = objects.CreateOpts{
+		Content: strings.NewReader(content),
+		ETag:    localChecksum,
+	}
+
+	_, headers, _, err = createOpts.ToObjectCreateParams()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, headers["ETag"], localChecksum)
 }
