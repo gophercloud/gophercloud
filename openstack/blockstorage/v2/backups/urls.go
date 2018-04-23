@@ -1,13 +1,13 @@
-package snapshots
+package backups
 
 import "github.com/gophercloud/gophercloud"
 
 func createURL(c *gophercloud.ServiceClient) string {
-	return c.ServiceURL("snapshots")
+	return c.ServiceURL("backups")
 }
 
 func deleteURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL("snapshots", id)
+	return c.ServiceURL("backups", id)
 }
 
 func getURL(c *gophercloud.ServiceClient, id string) string {
@@ -19,7 +19,7 @@ func listURL(c *gophercloud.ServiceClient) string {
 }
 
 func metadataURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL("snapshots", id, "metadata")
+	return c.ServiceURL("backups", id, "metadata")
 }
 
 func updateMetadataURL(c *gophercloud.ServiceClient, id string) string {

@@ -1,4 +1,4 @@
-package snapshots
+package backups
 
 import (
 	"github.com/gophercloud/gophercloud"
