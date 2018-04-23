@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/snapshots"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/backups"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -18,18 +18,18 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	snapshots.List(client.ServiceClient(), &snapshots.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	backups.List(client.ServiceClient(), &backups.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
-		actual, err := snapshots.ExtractSnapshots(page)
+		actual, err := backups.ExtractBackups(page)
 		if err != nil {
-			t.Errorf("Failed to extract snapshots: %v", err)
+			t.Errorf("Failed to extract backups: %v", err)
 			return false, err
 		}
 
-		expected := []snapshots.Snapshot{
+		expected := []backups.Backup{
 			{
 				ID:          "289da7f8-6440-407c-9fb4-7db01ec49164",
-				Name:        "snapshot-001",
+				Name:        "backup-001",
 				VolumeID:    "521752a6-acf6-4b2d-bc7a-119f9148cd8c",
 				Status:      "available",
 				Size:        30,
@@ -38,7 +38,7 @@ func TestList(t *testing.T) {
 			},
 			{
 				ID:          "96c3bda7-c82a-4f50-be73-ca7621794835",
-				Name:        "snapshot-002",
+				Name:        "backup-002",
 				VolumeID:    "76b8950a-8594-4e5b-8dce-0dfa9c696358",
 				Status:      "available",
 				Size:        25,
@@ -63,10 +63,10 @@ func TestGet(t *testing.T) {
 
 	MockGetResponse(t)
 
-	v, err := snapshots.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	v, err := backups.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, v.Name, "snapshot-001")
+	th.AssertEquals(t, v.Name, "backup-001")
 	th.AssertEquals(t, v.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
 
@@ -76,12 +76,12 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t)
 
-	options := snapshots.CreateOpts{VolumeID: "1234", Name: "snapshot-001"}
-	n, err := snapshots.Create(client.ServiceClient(), options).Extract()
+	options := backups.CreateOpts{VolumeID: "1234", Name: "backup-001"}
+	n, err := backups.Create(client.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.VolumeID, "1234")
-	th.AssertEquals(t, n.Name, "snapshot-001")
+	th.AssertEquals(t, n.Name, "backup-001")
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
 
@@ -93,13 +93,13 @@ func TestUpdateMetadata(t *testing.T) {
 
 	expected := map[string]interface{}{"key": "v1"}
 
-	options := &snapshots.UpdateMetadataOpts{
+	options := &backups.UpdateMetadataOpts{
 		Metadata: map[string]interface{}{
 			"key": "v1",
 		},
 	}
 
-	actual, err := snapshots.UpdateMetadata(client.ServiceClient(), "123", options).ExtractMetadata()
+	actual, err := backups.UpdateMetadata(client.ServiceClient(), "123", options).ExtractMetadata()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, actual, expected)
@@ -111,6 +111,6 @@ func TestDelete(t *testing.T) {
 
 	MockDeleteResponse(t)
 
-	res := snapshots.Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	res := backups.Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }

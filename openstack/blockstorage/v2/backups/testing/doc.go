@@ -1,2 +1,2 @@
-// snapshots_v2
+// backups_v2
 package testing

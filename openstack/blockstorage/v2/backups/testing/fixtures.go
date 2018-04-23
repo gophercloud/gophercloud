@@ -10,7 +10,7 @@ import (
 )
 
 func MockListResponse(t *testing.T) {
-	th.Mux.HandleFunc("/snapshots", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -19,10 +19,10 @@ func MockListResponse(t *testing.T) {
 
 		fmt.Fprintf(w, `
     {
-      "snapshots": [
+      "backups": [
         {
           "id": "289da7f8-6440-407c-9fb4-7db01ec49164",
-          "name": "snapshot-001",
+          "name": "backup-001",
           "volume_id": "521752a6-acf6-4b2d-bc7a-119f9148cd8c",
           "description": "Daily Backup",
           "status": "available",
@@ -31,7 +31,7 @@ func MockListResponse(t *testing.T) {
         },
         {
           "id": "96c3bda7-c82a-4f50-be73-ca7621794835",
-          "name": "snapshot-002",
+          "name": "backup-002",
           "volume_id": "76b8950a-8594-4e5b-8dce-0dfa9c696358",
           "description": "Weekly Backup",
           "status": "available",
@@ -45,7 +45,7 @@ func MockListResponse(t *testing.T) {
 }
 
 func MockGetResponse(t *testing.T) {
-	th.Mux.HandleFunc("/snapshots/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
@@ -53,9 +53,9 @@ func MockGetResponse(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `
 {
-    "snapshot": {
+    "backup": {
         "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
-        "name": "snapshot-001",
+        "name": "backup-001",
         "description": "Daily backup",
         "volume_id": "521752a6-acf6-4b2d-bc7a-119f9148cd8c",
         "status": "available",
@@ -68,16 +68,16 @@ func MockGetResponse(t *testing.T) {
 }
 
 func MockCreateResponse(t *testing.T) {
-	th.Mux.HandleFunc("/snapshots", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, `
 {
-    "snapshot": {
+    "backup": {
         "volume_id": "1234",
-        "name": "snapshot-001"
+        "name": "backup-001"
     }
 }
       `)
@@ -87,9 +87,9 @@ func MockCreateResponse(t *testing.T) {
 
 		fmt.Fprintf(w, `
 {
-    "snapshot": {
+    "backup": {
         "volume_id": "1234",
-        "name": "snapshot-001",
+        "name": "backup-001",
         "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
         "description": "Daily backup",
         "volume_id": "1234",
@@ -103,7 +103,7 @@ func MockCreateResponse(t *testing.T) {
 }
 
 func MockUpdateMetadataResponse(t *testing.T) {
-	th.Mux.HandleFunc("/snapshots/123/metadata", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/backups/123/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "application/json")
@@ -126,7 +126,7 @@ func MockUpdateMetadataResponse(t *testing.T) {
 }
 
 func MockDeleteResponse(t *testing.T) {
-	th.Mux.HandleFunc("/snapshots/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
