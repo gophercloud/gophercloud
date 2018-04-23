@@ -60,3 +60,30 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedResources, actual)
 }
+
+func TestDeleteMessages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteMessagesSuccessfully(t)
+
+	deleteMessagesOpts := messages.DeleteMessagesOpts{
+		IDs: []string{"9988776655"},
+	}
+
+	err := messages.DeleteMessages(fake.ServiceClient(), QueueName, deleteMessagesOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestPopMessages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandlePopSuccessfully(t)
+
+	popMessagesOpts := messages.PopMessagesOpts{
+		Pop: 1,
+	}
+
+	actual, err := messages.PopMessages(fake.ServiceClient(), QueueName, popMessagesOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedPopMessage, actual)
+}

@@ -60,3 +60,102 @@ func TestCreateMessages(t *testing.T) {
 
 	CreateMessage(t, client, createdQueueName)
 }
+
+func TestDeleteMessagesIDs(t *testing.T) {
+	clientID := "3381af92-2b9e-11e3-b191-718613007343"
+
+	client, err := clients.NewMessagingV2Client(clientID)
+	if err != nil {
+		t.Fatalf("Unable to create a messaging service client: %v", err)
+	}
+
+	createdQueueName, err := CreateQueue(t, client)
+	defer DeleteQueue(t, client, createdQueueName)
+
+	CreateMessage(t, client, createdQueueName)
+	CreateMessage(t, client, createdQueueName)
+
+	// Use a different client/clientID in order to see messages on the Queue
+	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
+
+	client, err = clients.NewMessagingV2Client(clientID)
+
+	listOpts := messages.ListOpts{}
+
+	var messageIDs []string
+
+	pager := messages.List(client, createdQueueName, listOpts)
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		allMessages, err := messages.ExtractMessages(page)
+		if err != nil {
+			t.Fatalf("Unable to extract messages: %v", err)
+		}
+
+		for _, message := range allMessages {
+			messageIDs = append(messageIDs, message.ID)
+			tools.PrintResource(t, message)
+		}
+
+		return true, nil
+	})
+
+	deleteOpts := messages.DeleteMessagesOpts{
+		IDs: messageIDs,
+	}
+
+	t.Logf("Attempting to delete messages: %v", messageIDs)
+	deleteErr := messages.DeleteMessages(client, createdQueueName, deleteOpts).ExtractErr()
+	if deleteErr != nil {
+		t.Fatalf("Unable to delete messages: %v", deleteErr)
+	}
+
+	t.Logf("Attempting to list messages.")
+	messageList, err := ListMessages(t, client, createdQueueName)
+
+	if len(messageList) > 0 {
+		t.Fatalf("Did not delete all specified messages in the queue.")
+	}
+}
+
+func TestDeleteMessagesPop(t *testing.T) {
+	clientID := "3381af92-2b9e-11e3-b191-718613007343"
+
+	client, err := clients.NewMessagingV2Client(clientID)
+	if err != nil {
+		t.Fatalf("Unable to create a messaging service client: %v", err)
+	}
+
+	createdQueueName, err := CreateQueue(t, client)
+	defer DeleteQueue(t, client, createdQueueName)
+
+	for i := 0; i < 5; i++ {
+		CreateMessage(t, client, createdQueueName)
+	}
+
+	// Use a different client/clientID in order to see messages on the Queue
+	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
+
+	client, err = clients.NewMessagingV2Client(clientID)
+
+	messageList, err := ListMessages(t, client, createdQueueName)
+
+	messagesNumber := len(messageList)
+	popNumber := 3
+
+	PopOpts := messages.PopMessagesOpts{
+		Pop: popNumber,
+	}
+
+	t.Logf("Attempting to Pop last %v messages.", popNumber)
+	popMessages, deleteErr := messages.PopMessages(client, createdQueueName, PopOpts).Extract()
+	if deleteErr != nil {
+		t.Fatalf("Unable to Pop messages: %v", deleteErr)
+	}
+
+	tools.PrintResource(t, popMessages)
+
+	messageList, err = ListMessages(t, client, createdQueueName)
+	if len(messageList) != messagesNumber-popNumber {
+		t.Fatalf("Unable to Pop specified number of messages.")
+	}
+}
