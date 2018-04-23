@@ -1,4 +1,4 @@
-package snapshots
+package backups
 
 import (
 	"encoding/json"
@@ -8,8 +8,8 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// Snapshot contains all the information associated with a Cinder Snapshot.
-type Snapshot struct {
+// Backup contains all the information associated with a Cinder Backup.
+type Backup struct {
 	// Unique identifier.
 	ID string `json:"id"`
 
@@ -25,13 +25,13 @@ type Snapshot struct {
 	// Display description.
 	Description string `json:"description"`
 
-	// ID of the Volume from which this Snapshot was created.
+	// ID of the Volume from which this Backup was created.
 	VolumeID string `json:"volume_id"`
 
-	// Currect status of the Snapshot.
+	// Currect status of the Backup.
 	Status string `json:"status"`
 
-	// Size of the Snapshot, in GB.
+	// Size of the Backup, in GB.
 	Size int `json:"size"`
 
 	// User-defined key-value pairs.
@@ -53,13 +53,13 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
-// SnapshotPage is a pagination.Pager that is returned from a call to the List function.
-type SnapshotPage struct {
+// BackupPage is a pagination.Pager that is returned from a call to the List function.
+type BackupPage struct {
 	pagination.SinglePageBase
 }
 
-func (r *Snapshot) UnmarshalJSON(b []byte) error {
-	type tmp Snapshot
+func (r *Backup) UnmarshalJSON(b []byte) error {
+	type tmp Backup
 	var s struct {
 		tmp
 		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
@@ -69,7 +69,7 @@ func (r *Snapshot) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	*r = Snapshot(s.tmp)
+	*r = Backup(s.tmp)
 
 	r.CreatedAt = time.Time(s.CreatedAt)
 	r.UpdatedAt = time.Time(s.UpdatedAt)
@@ -77,19 +77,19 @@ func (r *Snapshot) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// IsEmpty returns true if a SnapshotPage contains no Snapshots.
-func (r SnapshotPage) IsEmpty() (bool, error) {
-	volumes, err := ExtractSnapshots(r)
+// IsEmpty returns true if a BackupPage contains no Backups.
+func (r BackupPage) IsEmpty() (bool, error) {
+	volumes, err := ExtractBackups(r)
 	return len(volumes) == 0, err
 }
 
-// ExtractSnapshots extracts and returns Snapshots. It is used while iterating over a snapshots.List call.
-func ExtractSnapshots(r pagination.Page) ([]Snapshot, error) {
+// ExtractBackups extracts and returns Backups. It is used while iterating over a backups.List call.
+func ExtractBackups(r pagination.Page) ([]Backup, error) {
 	var s struct {
-		Snapshots []Snapshot `json:"snapshots"`
+		Backups []Backup `json:"backups"`
 	}
-	err := (r.(SnapshotPage)).ExtractInto(&s)
-	return s.Snapshots, err
+	err := (r.(BackupPage)).ExtractInto(&s)
+	return s.Backups, err
 }
 
 // UpdateMetadataResult contains the response body and error from an UpdateMetadata request.
@@ -97,7 +97,7 @@ type UpdateMetadataResult struct {
 	commonResult
 }
 
-// ExtractMetadata returns the metadata from a response from snapshots.UpdateMetadata.
+// ExtractMetadata returns the metadata from a response from backups.UpdateMetadata.
 func (r UpdateMetadataResult) ExtractMetadata() (map[string]interface{}, error) {
 	if r.Err != nil {
 		return nil, r.Err
@@ -110,11 +110,11 @@ type commonResult struct {
 	gophercloud.Result
 }
 
-// Extract will get the Snapshot object out of the commonResult object.
-func (r commonResult) Extract() (*Snapshot, error) {
+// Extract will get the Backup object out of the commonResult object.
+func (r commonResult) Extract() (*Backup, error) {
 	var s struct {
-		Snapshot *Snapshot `json:"snapshot"`
+		Backup *Backup `json:"backup"`
 	}
 	err := r.ExtractInto(&s)
-	return s.Snapshot, err
+	return s.Backup, err
 }
