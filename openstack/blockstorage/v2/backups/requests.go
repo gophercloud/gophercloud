@@ -20,6 +20,9 @@ type CreateOpts struct {
 	Name        string            `json:"name,omitempty"`
 	Description string            `json:"description,omitempty"`
 	Metadata    map[string]string `json:"metadata,omitempty"`
+	Container   string            `json:"container,omitempty"`
+	Incremental bool              `json:"incremental,omitempty"`
+	SnapshotID  string            `json:"snapshot_id,omitempty"`
 }
 
 // ToBackupCreateMap assembles a request body based on the contents of a
