@@ -42,6 +42,28 @@ const ListOutput = `
 }
 `
 
+// DomainListOutput provides a single page of Role results
+// filtered by domain.
+const DomainListOutput = `
+{
+    "links": {
+        "next": null,
+        "previous": null,
+        "self": "http://example.com/identity/v3/roles"
+    },
+    "roles": [
+        {
+            "domain_id": "default",
+            "id": "2844b2a08be147a08ef58317d6471f1f",
+            "links": {
+                "self": "http://example.com/identity/v3/roles/2844b2a08be147a08ef58317d6471f1f"
+            },
+            "name": "admin-read-only"
+        }
+    ]
+}
+`
+
 // GetOutput provides a Get result.
 const GetOutput = `
 {
@@ -215,6 +237,20 @@ func HandleListRolesSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, ListOutput)
+	})
+}
+
+// HandleDomainListRolesSuccessfully creates an HTTP handler at `/roles` on the
+// test handler mux that responds with a list of two roles.
+func HandleDomainListRolesSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/roles", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, DomainListOutput)
 	})
 }
 

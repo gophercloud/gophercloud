@@ -114,6 +114,35 @@ const UpdateOutput = `
 }
 `
 
+// BadGetOutput provides a bad Get result.
+// The ID is a number instead of a string.
+const BadGetOutput = `
+{
+    "region": {
+        "id": 1,
+        "description": "West sub-region of RegionOne",
+        "links": {
+            "self": "https://example.com/identity/v3/regions/RegionOne-West"
+        },
+        "name": "support",
+        "extra": {
+            "email": "westsupport@example.com"
+        },
+        "parent_region_id": "RegionOne"
+    }
+}
+`
+
+// BadNextPage is a sample of a bad next page to test pagination.
+const BadNextPageRequest = `
+{
+  "links": {
+      "self": "https://example.com/identity/v3/domains/9fe1d3",
+      "next": 42
+  }
+}
+`
+
 // FirstRegion is the first region in the List request.
 var FirstRegion = regions.Region{
 	ID: "RegionOne-East",
@@ -224,5 +253,19 @@ func HandleDeleteRegionSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleBadGetRegionSuccessfully creates an HTTP handler at `/regions` on the
+// test handler mux that responds with a single bad formated region.
+func HandleBadGetRegionSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/regions/RegionOne-West", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, BadGetOutput)
 	})
 }

@@ -57,6 +57,21 @@ func TestCreateAggregates(t *testing.T) {
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
+func TestBadCreateAggregates(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSuccessfully(t)
+
+	opts := aggregates.CreateOpts{
+		AvailabilityZone: "london",
+	}
+
+	_, err := aggregates.Create(client.ServiceClient(), opts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing name")
+	}
+}
+
 func TestDeleteAggregates(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -114,6 +129,20 @@ func TestAddHostAggregate(t *testing.T) {
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
+func TestBadAddHostAggregate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAddHostSuccessfully(t)
+
+	expected := AggregateWithAddedHost
+	opts := aggregates.AddHostOpts{}
+
+	_, err := aggregates.AddHost(client.ServiceClient(), expected.ID, opts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing host")
+	}
+}
+
 func TestRemoveHostAggregate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -131,6 +160,20 @@ func TestRemoveHostAggregate(t *testing.T) {
 	th.AssertDeepEquals(t, &expected, actual)
 }
 
+func TestBadRemoveHostAggregate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRemoveHostSuccessfully(t)
+
+	expected := AggregateWithRemovedHost
+	opts := aggregates.RemoveHostOpts{}
+
+	_, err := aggregates.RemoveHost(client.ServiceClient(), expected.ID, opts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing host")
+	}
+}
+
 func TestSetMetadataAggregate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -146,4 +189,29 @@ func TestSetMetadataAggregate(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, &expected, actual)
+}
+
+func TestBadSetMetadataAggregate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleSetMetadataSuccessfully(t)
+
+	expected := AggregateWithUpdatedMetadata
+	opts := aggregates.SetMetadataOpts{}
+
+	_, err := aggregates.SetMetadata(client.ServiceClient(), expected.ID, opts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing metadata")
+	}
+}
+
+func TestBadGetAggregates(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBadGetSuccessfully(t)
+
+	_, err := aggregates.Get(client.ServiceClient(), AggregateIDtoGet).Extract()
+	if err == nil {
+		t.Fatalf("Expected an unmarshal error")
+	}
 }

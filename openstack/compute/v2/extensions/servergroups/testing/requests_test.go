@@ -58,3 +58,16 @@ func TestDelete(t *testing.T) {
 	err := servergroups.Delete(client.ServiceClient(), "616fb98f-46ca-475e-917e-2563e5a8cd19").ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestBadCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSuccessfully(t)
+
+	_, err := servergroups.Create(client.ServiceClient(), servergroups.CreateOpts{
+		Policies: []string{"anti-affinity"},
+	}).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error")
+	}
+}

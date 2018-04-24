@@ -132,3 +132,33 @@ func TestDelete(t *testing.T) {
 	res := groups.Delete(fake.ServiceClient(), "4ec89087-d057-4e2c-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestIDFromName(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/security-groups", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, IDFromNameSecurityGroupListResponse)
+	})
+
+	_, err := groups.IDFromName(fake.ServiceClient(), "foo")
+	if err == nil {
+		t.Fatalf("Expected an error about multiple results")
+	}
+
+	_, err = groups.IDFromName(fake.ServiceClient(), "foobar")
+	if err == nil {
+		t.Fatalf("Expected an error about no results")
+	}
+
+	_, err = groups.IDFromName(fake.ServiceClient(), "default")
+	if err != nil {
+		t.Fatalf("Unexpected error: %s", err)
+	}
+}

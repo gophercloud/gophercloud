@@ -36,3 +36,16 @@ func TestListStoragePoolsDetail(t *testing.T) {
 		t.Errorf("Expected 1 page, saw %d", pages)
 	}
 }
+
+func TestListBadStoragePoolsDetail(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+	HandleBadStoragePoolsListSuccessfully(t)
+
+	allPages, err := schedulerstats.List(client.ServiceClient(), schedulerstats.ListOpts{Detail: true}).AllPages()
+	_, err = schedulerstats.ExtractStoragePools(allPages)
+
+	if err == nil {
+		t.Errorf("Expected an unmarshal error")
+	}
+}

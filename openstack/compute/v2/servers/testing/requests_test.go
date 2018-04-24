@@ -3,6 +3,7 @@ package testing
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -507,6 +508,19 @@ func TestListAddressesByNetwork(t *testing.T) {
 	th.CheckEquals(t, 1, pages)
 }
 
+func TestBadListAddressesByNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBadNetworkAddressListSuccessfully(t)
+
+	allPages, err := servers.ListAddressesByNetwork(client.ServiceClient(), "asdfasdfasdf", "public").AllPages()
+	th.AssertNoErr(t, err)
+	_, err = servers.ExtractNetworkAddresses(allPages)
+	if err == nil {
+		t.Fatalf("Expected an error")
+	}
+}
+
 func TestCreateServerImage(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -514,6 +528,39 @@ func TestCreateServerImage(t *testing.T) {
 
 	_, err := servers.CreateImage(client.ServiceClient(), "serverimage", servers.CreateImageOpts{Name: "test"}).ExtractImageID()
 	th.AssertNoErr(t, err)
+}
+
+func TestBadCreateServerImageMissingHeader(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBadCreateServerImageSuccessfully(t)
+
+	_, err := servers.CreateImage(client.ServiceClient(), "serverimage", servers.CreateImageOpts{Name: "test"}).ExtractImageID()
+	if err == nil {
+		t.Fatalf("Expected an error")
+	}
+}
+
+func TestBadCreateServerImage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateServerImageSuccessfully(t)
+
+	_, err := servers.CreateImage(client.ServiceClient(), "serverimage", servers.CreateImageOpts{}).ExtractImageID()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing Name")
+	}
+}
+
+func TestBadCreateServerImageURL(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBadCreateServerImageURLSuccessfully(t)
+
+	_, err := servers.CreateImage(client.ServiceClient(), "serverimage", servers.CreateImageOpts{Name: "test"}).ExtractImageID()
+	if err == nil {
+		t.Fatalf("Expected an error")
+	}
 }
 
 func TestMarshalPersonality(t *testing.T) {
@@ -548,5 +595,117 @@ func TestMarshalPersonality(t *testing.T) {
 
 	if actual[0]["contents"] != base64.StdEncoding.EncodeToString(contents) {
 		t.Fatal("file contents incorrect")
+	}
+}
+
+func TestBadCreateMap(t *testing.T) {
+	createOpts := servers.CreateOpts{}
+	_, err := createOpts.ToServerCreateMap()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing name")
+	}
+
+	createOpts = servers.CreateOpts{
+		Name:           "derp",
+		ImageName:      "cirros-0.3.2-x86_64-disk",
+		SecurityGroups: []string{"foo", "bar"},
+		FlavorName:     "",
+	}
+	_, err = createOpts.ToServerCreateMap()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing flavor name")
+	}
+
+	createOpts = servers.CreateOpts{
+		Name:      "derp",
+		ImageName: "cirros-0.3.2-x86_64-disk",
+		Networks: []servers.Network{
+			{
+				UUID:    "foo",
+				Port:    "bar",
+				FixedIP: "baz",
+			},
+		},
+		FlavorRef:     "1",
+		ServiceClient: nil,
+	}
+	_, err = createOpts.ToServerCreateMap()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing service client")
+	}
+}
+
+func TestBadRebuild(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRebuildSuccessfully(t, SingleServerBody)
+
+	rebuildOpts := servers.RebuildOpts{
+		ImageName:     "cirros-0.3.2-x86_64-disk",
+		ServiceClient: nil,
+	}
+
+	_, err := servers.Rebuild(client.ServiceClient(), "1234asdf", rebuildOpts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing service client")
+	}
+}
+
+func TestBadResize(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "resize": { "flavorRef": "2" } }`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	resizeOpts := servers.ResizeOpts{}
+	res := servers.Resize(client.ServiceClient(), "1234asdf", resizeOpts)
+	if res.Err == nil {
+		t.Fatalf("Expected an error due to missing FlavorRef")
+	}
+}
+
+func TestBadMetadataCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleMetadatumCreateSuccessfully(t)
+
+	_, err := servers.CreateMetadatum(client.ServiceClient(), "1234asdf", servers.MetadatumOpts{}).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing metadata")
+	}
+}
+
+func TestIDFromName(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/servers/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, IDFromNameServerListResults)
+	})
+
+	_, err := servers.IDFromName(client.ServiceClient(), "herp")
+	if err == nil {
+		t.Fatalf("Expected an error about multiple results")
+	}
+
+	_, err = servers.IDFromName(client.ServiceClient(), "foobar")
+	if err == nil {
+		t.Fatalf("Expected an error about no results")
+	}
+
+	_, err = servers.IDFromName(client.ServiceClient(), "merp")
+	if err != nil {
+		t.Fatalf("Unexpected error: %s", err)
 	}
 }

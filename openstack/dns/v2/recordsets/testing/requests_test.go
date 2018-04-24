@@ -104,6 +104,18 @@ func TestCreate(t *testing.T) {
 	th.CheckDeepEquals(t, &CreatedRecordSet, actual)
 }
 
+func TestBadCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSuccessfully(t)
+
+	createOpts := recordsets.CreateOpts{}
+	_, err := recordsets.Create(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", createOpts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing Name")
+	}
+}
+
 func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -142,4 +154,15 @@ func TestDelete(t *testing.T) {
 	err := recordsets.Delete(client.ServiceClient(), DeletedRecordSet.ZoneID, DeletedRecordSet.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 	//th.CheckDeepEquals(t, &DeletedZone, actual)
+}
+
+func TestBadGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBadGetSuccessfully(t)
+
+	_, err := recordsets.Get(client.ServiceClient(), "2150b1bf-dee2-4221-9d85-11f7886fb15f", "f7b10e9b-0cae-4a91-b162-562bc6096648").Extract()
+	if err == nil {
+		t.Fatalf("Expected an unmarshal error")
+	}
 }

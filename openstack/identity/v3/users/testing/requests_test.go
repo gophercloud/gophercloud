@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
@@ -83,6 +84,18 @@ func TestCreateUser(t *testing.T) {
 	actual, err := users.Create(client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, SecondUser, *actual)
+}
+
+func TestBadCreateUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateUserSuccessfully(t)
+
+	createOpts := users.CreateOpts{}
+	_, err := users.Create(client.ServiceClient(), createOpts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing Name")
+	}
 }
 
 func TestCreateNoOptionsUser(t *testing.T) {
@@ -213,4 +226,27 @@ func TestListInGroup(t *testing.T) {
 	actual, err := users.ExtractUsers(allPages)
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedUsersSlice, actual)
+}
+
+func TestBadGetUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBadGetUserSuccessfully(t)
+
+	_, err := users.Get(client.ServiceClient(), "9fe1d3").Extract()
+	if err == nil {
+		t.Fatalf("Expected an unmarshal error")
+	}
+}
+
+func TestBadNextPageURL(t *testing.T) {
+	var page users.UserPage
+	var body map[string]interface{}
+	err := json.Unmarshal([]byte(BadNextPageRequest), &body)
+	th.AssertNoErr(t, err)
+	page.Body = body
+	_, err = page.NextPageURL()
+	if err == nil {
+		t.Fatal("Expected an error")
+	}
 }

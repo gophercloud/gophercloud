@@ -74,6 +74,18 @@ func TestCreateGroup(t *testing.T) {
 	th.CheckDeepEquals(t, SecondGroup, *actual)
 }
 
+func TestBadCreateGroup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateGroupSuccessfully(t)
+
+	createOpts := groups.CreateOpts{}
+	_, err := groups.Create(client.ServiceClient(), createOpts).Extract()
+	if err == nil {
+		t.Fatalf("Expected an error due to missing name")
+	}
+}
+
 func TestUpdateGroup(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
