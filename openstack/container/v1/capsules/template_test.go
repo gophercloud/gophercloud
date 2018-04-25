@@ -6,18 +6,6 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestTemplateValidation(t *testing.T) {
-	templateJSON := new(Template)
-	templateJSON.Bin = []byte(ValidJSONTemplate)
-	err := templateJSON.Validate()
-	th.AssertNoErr(t, err)
-
-	templateYAML := new(Template)
-	templateYAML.Bin = []byte(ValidYAMLTemplate)
-	err = templateYAML.Validate()
-	th.AssertNoErr(t, err)
-}
-
 func TestTemplateParsing(t *testing.T) {
 	templateJSON := new(Template)
 	templateJSON.Bin = []byte(ValidJSONTemplate)
