@@ -481,9 +481,9 @@ func NewLoadBalancerV2Client() (*gophercloud.ServiceClient, error) {
 	})
 }
 
-// NewClusteringV1Client returns a *ServiceClient for making calls to the
-// OpenStack Clustering v1 API. An error will be returned if authentication
-// or client creation was not possible.
+// NewClusteringV1Client returns a *ServiceClient for making calls
+// to the OpenStack Clustering v1 API. An error will be returned
+// if authentication or client creation was not possible.
 func NewClusteringV1Client() (*gophercloud.ServiceClient, error) {
 	ao, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
@@ -496,6 +496,46 @@ func NewClusteringV1Client() (*gophercloud.ServiceClient, error) {
 	}
 
 	return openstack.NewClusteringV1(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
+// NewMessagingV2Client returns a *ServiceClient for making calls
+// to the OpenStack Messaging (Zaqar) v2 API. An error will be returned
+// if authentication or client creation was not possible.
+func NewMessagingV2Client(clientID string) (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	client = configureDebug(client)
+
+	return openstack.NewMessagingV2(client, clientID, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
+// NewContainerV1Client returns a *ServiceClient for making calls
+// to the OpenStack Container V1 API. An error will be returned
+// if authentication or client creation was not possible.
+func NewContainerV1Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	return openstack.NewContainerV1(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }

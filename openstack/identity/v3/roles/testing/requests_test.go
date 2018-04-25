@@ -115,6 +115,76 @@ func TestListAssignmentsSinglePage(t *testing.T) {
 	th.CheckEquals(t, count, 1)
 }
 
+func TestListAssignmentsOnResource(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListAssignmentsOnResourceSuccessfully(t)
+
+	count := 0
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+		UserID:    "{user_id}",
+		ProjectID: "{project_id}",
+	}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := roles.ExtractRoles(page)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, ExpectedRolesOnResourceSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+
+	count = 0
+	err = roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+		UserID:   "{user_id}",
+		DomainID: "{domain_id}",
+	}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := roles.ExtractRoles(page)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, ExpectedRolesOnResourceSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+
+	count = 0
+	err = roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+		GroupID:   "{group_id}",
+		ProjectID: "{project_id}",
+	}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := roles.ExtractRoles(page)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, ExpectedRolesOnResourceSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+
+	count = 0
+	err = roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+		GroupID:  "{group_id}",
+		DomainID: "{domain_id}",
+	}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := roles.ExtractRoles(page)
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, ExpectedRolesOnResourceSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+}
+
 func TestAssign(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/loadbalancers"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/monitors"
@@ -99,6 +100,73 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	}
 
 	tools.PrintResource(t, newListener)
+
+	// L7 policy
+	policy, err := CreateL7Policy(t, lbClient, listener, lb)
+	if err != nil {
+		t.Fatalf("Unable to create l7 policy: %v", err)
+	}
+	defer DeleteL7Policy(t, lbClient, lb.ID, policy.ID)
+
+	newDescription := "New l7 policy description"
+	updateL7policyOpts := l7policies.UpdateOpts{
+		Description: &newDescription,
+	}
+	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update l7 policy")
+	}
+
+	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newPolicy, err := l7policies.Get(lbClient, policy.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get l7 policy: %v", err)
+	}
+
+	tools.PrintResource(t, newPolicy)
+
+	// L7 rule
+	rule, err := CreateL7Rule(t, lbClient, newPolicy.ID, lb)
+	if err != nil {
+		t.Fatalf("Unable to create l7 rule: %v", err)
+	}
+	defer DeleteL7Rule(t, lbClient, lb.ID, policy.ID, rule.ID)
+
+	allPages, err := l7policies.ListRules(lbClient, policy.ID, l7policies.ListRulesOpts{}).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to get l7 rules: %v", err)
+	}
+	allRules, err := l7policies.ExtractRules(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract l7 rules: %v", err)
+	}
+	for _, rule := range allRules {
+		tools.PrintResource(t, rule)
+	}
+
+	updateL7ruleOpts := l7policies.UpdateRuleOpts{
+		RuleType:    l7policies.TypePath,
+		CompareType: l7policies.CompareTypeRegex,
+		Value:       "/images/special*",
+	}
+	_, err = l7policies.UpdateRule(lbClient, policy.ID, rule.ID, updateL7ruleOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update l7 rule: %v", err)
+	}
+
+	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newRule, err := l7policies.GetRule(lbClient, newPolicy.ID, rule.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get l7 rule: %v", err)
+	}
+
+	tools.PrintResource(t, newRule)
 
 	// Pool
 	pool, err := CreatePool(t, lbClient, lb)

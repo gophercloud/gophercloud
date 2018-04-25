@@ -12,11 +12,27 @@ func RequireAdmin(t *testing.T) {
 	}
 }
 
+// RequireDNS will restrict a test to only be run in environments
+// that support DNSaaS.
+func RequireDNS(t *testing.T) {
+	if os.Getenv("OS_DNS_ENVIRONMENT") == "" {
+		t.Skip("this test requires DNSaaS")
+	}
+}
+
 // RequireGuestAgent will restrict a test to only be run in
 // environments that support the QEMU guest agent.
 func RequireGuestAgent(t *testing.T) {
 	if os.Getenv("OS_GUEST_AGENT") == "" {
 		t.Skip("this test requires support for qemu guest agent and to set OS_GUEST_AGENT to 1")
+	}
+}
+
+// RequireIdentityV2 will restrict a test to only be run in
+// environments that support the Identity V2 API.
+func RequireIdentityV2(t *testing.T) {
+	if os.Getenv("OS_IDENTITY_API_VERSION") != "2.0" {
+		t.Skip("this test requires support for the identity v2 API")
 	}
 }
 
