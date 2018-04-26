@@ -39,8 +39,8 @@ func (t *Template) Validate() error {
 }
 
 // GetFileContents recursively parses a template to search for urls. These urls
-// are assumed to point to other templates.
-// The contents of these urls are fetched and stored in the `Files`
+// are assumed to point to other templates (known in OpenStack Heat as child
+// templates). The contents of these urls are fetched and stored in the `Files`
 // parameter of the template structure. This is the only way that a user can
 // use child templates that are located in their filesystem; urls located on the
 // web (e.g. on github or swift) can be fetched directly by Heat engine.
