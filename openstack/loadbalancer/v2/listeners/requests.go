@@ -30,7 +30,6 @@ type ListOpts struct {
 	ID              string `q:"id"`
 	Name            string `q:"name"`
 	AdminStateUp    *bool  `q:"admin_state_up"`
-	TenantID        string `q:"tenant_id"`
 	ProjectID       string `q:"project_id"`
 	LoadbalancerID  string `q:"loadbalancer_id"`
 	DefaultPoolID   string `q:"default_pool_id"`
@@ -54,7 +53,7 @@ func (opts ListOpts) ToListenerListQuery() (string, error) {
 // the returned collection for greater efficiency.
 //
 // Default policy settings return only those listeners that are owned by the
-// tenant who submits the request, unless an admin user submits the request.
+// project who submits the request, unless an admin user submits the request.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
@@ -85,10 +84,6 @@ type CreateOpts struct {
 
 	// The port on which to listen for client traffic.
 	ProtocolPort int `json:"protocol_port" required:"true"`
-
-	// TenantID is only required if the caller has an admin role and wants
-	// to create a pool for another project.
-	TenantID string `json:"tenant_id,omitempty"`
 
 	// ProjectID is only required if the caller has an admin role and wants
 	// to create a pool for another project.
@@ -127,8 +122,8 @@ func (opts CreateOpts) ToListenerCreateMap() (map[string]interface{}, error) {
 // validated and progress has started on the provisioning process, a
 // CreateResult will be returned.
 //
-// Users with an admin role can create Listeners on behalf of other tenants by
-// specifying a TenantID attribute different than their own.
+// Users with an admin role can create Listeners on behalf of other projects by
+// specifying a ProjectID attribute different than their own.
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToListenerCreateMap()
 	if err != nil {

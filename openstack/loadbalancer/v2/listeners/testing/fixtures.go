@@ -16,7 +16,7 @@ const ListenersListBody = `
 	"listeners":[
 		{
 			"id": "db902c0c-d5ff-4753-b465-668ad9656918",
-			"tenant_id": "310df60f-2a10-4ee5-9554-98393092194c",
+			"project_id": "310df60f-2a10-4ee5-9554-98393092194c",
 			"name": "web",
 			"description": "listener config for the web tier",
 			"loadbalancers": [{"id": "53306cda-815d-4354-9444-59e09da9c3c5"}],
@@ -29,7 +29,7 @@ const ListenersListBody = `
 		},
 		{
 			"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-			"tenant_id": "310df60f-2a10-4ee5-9554-98393092194c",
+			"project_id": "310df60f-2a10-4ee5-9554-98393092194c",
 			"name": "db",
 			"description": "listener config for the db tier",
 			"loadbalancers": [{"id": "79e05663-7f03-45d2-a092-8b94062f22ab"}],
@@ -50,7 +50,7 @@ const SingleListenerBody = `
 {
 	"listener": {
 		"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-		"tenant_id": "310df60f-2a10-4ee5-9554-98393092194c",
+		"project_id": "310df60f-2a10-4ee5-9554-98393092194c",
 		"name": "db",
 		"description": "listener config for the db tier",
 		"loadbalancers": [{"id": "79e05663-7f03-45d2-a092-8b94062f22ab"}],
@@ -70,7 +70,7 @@ const PostUpdateListenerBody = `
 {
 	"listener": {
 		"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-		"tenant_id": "310df60f-2a10-4ee5-9554-98393092194c",
+		"project_id": "310df60f-2a10-4ee5-9554-98393092194c",
 		"name": "NewListenerName",
 		"description": "listener config for the db tier",
 		"loadbalancers": [{"id": "79e05663-7f03-45d2-a092-8b94062f22ab"}],
@@ -88,7 +88,7 @@ const PostUpdateListenerBody = `
 var (
 	ListenerWeb = listeners.Listener{
 		ID:                     "db902c0c-d5ff-4753-b465-668ad9656918",
-		TenantID:               "310df60f-2a10-4ee5-9554-98393092194c",
+		ProjectID:              "310df60f-2a10-4ee5-9554-98393092194c",
 		Name:                   "web",
 		Description:            "listener config for the web tier",
 		Loadbalancers:          []listeners.LoadBalancerID{{ID: "53306cda-815d-4354-9444-59e09da9c3c5"}},
@@ -101,7 +101,7 @@ var (
 	}
 	ListenerDb = listeners.Listener{
 		ID:                     "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-		TenantID:               "310df60f-2a10-4ee5-9554-98393092194c",
+		ProjectID:              "310df60f-2a10-4ee5-9554-98393092194c",
 		Name:                   "db",
 		Description:            "listener config for the db tier",
 		Loadbalancers:          []listeners.LoadBalancerID{{ID: "79e05663-7f03-45d2-a092-8b94062f22ab"}},
@@ -115,7 +115,7 @@ var (
 	}
 	ListenerUpdated = listeners.Listener{
 		ID:                     "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-		TenantID:               "310df60f-2a10-4ee5-9554-98393092194c",
+		ProjectID:              "310df60f-2a10-4ee5-9554-98393092194c",
 		Name:                   "NewListenerName",
 		Description:            "listener config for the db tier",
 		Loadbalancers:          []listeners.LoadBalancerID{{ID: "79e05663-7f03-45d2-a092-8b94062f22ab"}},

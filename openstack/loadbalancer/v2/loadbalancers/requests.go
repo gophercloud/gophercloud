@@ -19,7 +19,6 @@ type ListOptsBuilder interface {
 type ListOpts struct {
 	Description        string `q:"description"`
 	AdminStateUp       *bool  `q:"admin_state_up"`
-	TenantID           string `q:"tenant_id"`
 	ProjectID          string `q:"project_id"`
 	ProvisioningStatus string `q:"provisioning_status"`
 	VipAddress         string `q:"vip_address"`
@@ -47,7 +46,7 @@ func (opts ListOpts) ToLoadBalancerListQuery() (string, error) {
 // and sort the returned collection for greater efficiency.
 //
 // Default policy settings return only those load balancers that are owned by
-// the tenant who submits the request, unless an admin user submits the request.
+// the project who submits the request, unless an admin user submits the request.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
@@ -77,14 +76,10 @@ type CreateOpts struct {
 	// Human-readable description for the Loadbalancer.
 	Description string `json:"description,omitempty"`
 
-	// The network on which to allocate the Loadbalancer's address. A tenant can
+	// The network on which to allocate the Loadbalancer's address. A project can
 	// only create Loadbalancers on networks authorized by policy (e.g. networks
 	// that belong to them or networks that are shared).
 	VipSubnetID string `json:"vip_subnet_id" required:"true"`
-
-	// TenantID is the UUID of the project who owns the Loadbalancer.
-	// Only administrative users can specify a project UUID other than their own.
-	TenantID string `json:"tenant_id,omitempty"`
 
 	// ProjectID is the UUID of the project who owns the Loadbalancer.
 	// Only administrative users can specify a project UUID other than their own.

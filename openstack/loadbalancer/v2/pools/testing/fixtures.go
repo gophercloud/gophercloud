@@ -25,7 +25,7 @@ const PoolsListBody = `
 			"id":"72741b06-df4d-4715-b142-276b6bce75ab",
 			"name":"web",
 			"admin_state_up":true,
-			"tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
+			"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
 			"provider": "haproxy"
 		},
 		{
@@ -39,7 +39,7 @@ const PoolsListBody = `
 			"id":"c3741b06-df4d-4715-b142-276b6bce75ab",
 			"name":"db",
 			"admin_state_up":true,
-			"tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
+			"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
 			"provider": "haproxy"
 		}
 	]
@@ -60,7 +60,7 @@ const SinglePoolBody = `
 		"id":"c3741b06-df4d-4715-b142-276b6bce75ab",
 		"name":"db",
 		"admin_state_up":true,
-		"tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
+		"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
 		"provider": "haproxy"
 	}
 }
@@ -80,7 +80,7 @@ const PostUpdatePoolBody = `
 		"id":"c3741b06-df4d-4715-b142-276b6bce75ab",
 		"name":"db",
 		"admin_state_up":true,
-		"tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
+		"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
 		"provider": "haproxy"
 	}
 }
@@ -92,7 +92,7 @@ var (
 		Protocol:      "HTTP",
 		Description:   "",
 		MonitorID:     "466c8345-28d8-4f84-a246-e04380b0461d",
-		TenantID:      "83657cfcdfe44cd5920adaf26c48ceea",
+		ProjectID:     "83657cfcdfe44cd5920adaf26c48ceea",
 		AdminStateUp:  true,
 		Name:          "web",
 		Members:       []pools.Member{{ID: "53306cda-815d-4354-9fe4-59e09da9c3c5"}},
@@ -106,7 +106,7 @@ var (
 		Protocol:      "HTTP",
 		Description:   "",
 		MonitorID:     "5f6c8345-28d8-4f84-a246-e04380b0461d",
-		TenantID:      "83657cfcdfe44cd5920adaf26c48ceea",
+		ProjectID:     "83657cfcdfe44cd5920adaf26c48ceea",
 		AdminStateUp:  true,
 		Name:          "db",
 		Members:       []pools.Member{{ID: "67306cda-815d-4354-9fe4-59e09da9c3c5"}},
@@ -120,7 +120,7 @@ var (
 		Protocol:      "HTTP",
 		Description:   "",
 		MonitorID:     "5f6c8345-28d8-4f84-a246-e04380b0461d",
-		TenantID:      "83657cfcdfe44cd5920adaf26c48ceea",
+		ProjectID:     "83657cfcdfe44cd5920adaf26c48ceea",
 		AdminStateUp:  true,
 		Name:          "db",
 		Members:       []pools.Member{{ID: "67306cda-815d-4354-9fe4-59e09da9c3c5"}},
@@ -162,7 +162,7 @@ func HandlePoolCreationSuccessfully(t *testing.T, response string) {
 			        "lb_algorithm": "ROUND_ROBIN",
 			        "protocol": "HTTP",
 			        "name": "Example pool",
-			        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
+			        "project_id": "2ffc6e22aae24e4795f87155d24c896f",
 			        "loadbalancer_id": "79e05663-7f03-45d2-a092-8b94062f22ab"
 			}
 		}`)
@@ -222,7 +222,7 @@ const MembersListBody = `
 			"weight": 5,
 			"name": "web",
 			"subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-			"tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
+			"project_id": "2ffc6e22aae24e4795f87155d24c896f",
 			"admin_state_up":true,
 			"protocol_port": 80
 		},
@@ -232,7 +232,7 @@ const MembersListBody = `
 			"weight": 10,
 			"name": "db",
 			"subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-			"tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
+			"project_id": "2ffc6e22aae24e4795f87155d24c896f",
 			"admin_state_up":false,
 			"protocol_port": 80
 		}
@@ -249,7 +249,7 @@ const SingleMemberBody = `
 		"weight": 10,
 		"name": "db",
 		"subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-		"tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
+		"project_id": "2ffc6e22aae24e4795f87155d24c896f",
 		"admin_state_up":false,
 		"protocol_port": 80
 	}
@@ -265,7 +265,7 @@ const PostUpdateMemberBody = `
 		"weight": 10,
 		"name": "db",
 		"subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-		"tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
+		"project_id": "2ffc6e22aae24e4795f87155d24c896f",
 		"admin_state_up":false,
 		"protocol_port": 80
 	}
@@ -275,7 +275,7 @@ const PostUpdateMemberBody = `
 var (
 	MemberWeb = pools.Member{
 		SubnetID:     "1981f108-3c48-48d2-b908-30f7d28532c9",
-		TenantID:     "2ffc6e22aae24e4795f87155d24c896f",
+		ProjectID:    "2ffc6e22aae24e4795f87155d24c896f",
 		AdminStateUp: true,
 		Name:         "web",
 		ID:           "2a280670-c202-4b0b-a562-34077415aabf",
@@ -285,7 +285,7 @@ var (
 	}
 	MemberDb = pools.Member{
 		SubnetID:     "1981f108-3c48-48d2-b908-30f7d28532c9",
-		TenantID:     "2ffc6e22aae24e4795f87155d24c896f",
+		ProjectID:    "2ffc6e22aae24e4795f87155d24c896f",
 		AdminStateUp: false,
 		Name:         "db",
 		ID:           "fad389a3-9a4a-4762-a365-8c7038508b5d",
@@ -295,7 +295,7 @@ var (
 	}
 	MemberUpdated = pools.Member{
 		SubnetID:     "1981f108-3c48-48d2-b908-30f7d28532c9",
-		TenantID:     "2ffc6e22aae24e4795f87155d24c896f",
+		ProjectID:    "2ffc6e22aae24e4795f87155d24c896f",
 		AdminStateUp: false,
 		Name:         "db",
 		ID:           "fad389a3-9a4a-4762-a365-8c7038508b5d",
@@ -337,7 +337,7 @@ func HandleMemberCreationSuccessfully(t *testing.T, response string) {
 			        "weight": 10,
 			        "name": "db",
 			        "subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
-			        "tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
+			        "project_id": "2ffc6e22aae24e4795f87155d24c896f",
 			        "protocol_port": 80
 			}
 		}`)

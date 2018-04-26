@@ -18,7 +18,7 @@ type LoadBalancer struct {
 	AdminStateUp bool `json:"admin_state_up"`
 
 	// Owner of the LoadBalancer.
-	TenantID string `json:"tenant_id"`
+	ProjectID string `json:"project_id"`
 
 	// The provisioning status of the LoadBalancer.
 	// This value is ACTIVE, PENDING_CREATE or ERROR.
