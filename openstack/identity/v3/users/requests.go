@@ -272,7 +272,7 @@ func AddToGroup(client *gophercloud.ServiceClient, groupID, userID string) (r Ad
 func IsMemberOfGroup(client *gophercloud.ServiceClient, groupID, userID string) (r IsMemberOfGroupResult) {
 	url := isMemberOfGroupURL(client, groupID, userID)
 	var response *http.Response
-	response, r.Err = client.HEAD(url, &gophercloud.RequestOpts{
+	response, r.Err = client.Head(url, &gophercloud.RequestOpts{
 		OkCodes: []int{204, 404},
 	})
 	if r.Err == nil && response != nil {
