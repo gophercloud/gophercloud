@@ -81,15 +81,15 @@ func TestRequiredCreateOpts(t *testing.T) {
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(fake.ServiceClient(), listeners.CreateOpts{Name: "foo", TenantID: "bar"})
+	res = listeners.Create(fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(fake.ServiceClient(), listeners.CreateOpts{Name: "foo", TenantID: "bar", Protocol: "bar"})
+	res = listeners.Create(fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar", Protocol: "bar"})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
-	res = listeners.Create(fake.ServiceClient(), listeners.CreateOpts{Name: "foo", TenantID: "bar", Protocol: "bar", ProtocolPort: 80})
+	res = listeners.Create(fake.ServiceClient(), listeners.CreateOpts{Name: "foo", ProjectID: "bar", Protocol: "bar", ProtocolPort: 80})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}

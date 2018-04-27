@@ -31,8 +31,8 @@ type Monitor struct {
 	// The Name of the Monitor.
 	Name string `json:"name"`
 
-	// TenantID is the owner of the Monitor.
-	TenantID string `json:"tenant_id"`
+	// The owner of the Monitor.
+	ProjectID string `json:"project_id"`
 
 	// The type of probe sent by the load balancer to verify the member state,
 	// which is PING, TCP, HTTP, or HTTPS.

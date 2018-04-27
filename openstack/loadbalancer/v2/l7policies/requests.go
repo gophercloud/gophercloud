@@ -113,7 +113,7 @@ func (opts ListOpts) ToL7PolicyListQuery() (string, error) {
 // the returned collection for greater efficiency.
 //
 // Default policy settings return only those l7policies that are owned by the
-// tenant who submits the request, unless an admin user submits the request.
+// project who submits the request, unless an admin user submits the request.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
@@ -257,7 +257,7 @@ func (opts ListRulesOpts) ToRulesListQuery() (string, error) {
 // sort the returned collection for greater efficiency.
 //
 // Default policy settings return only those rules that are owned by the
-// tenant who submits the request, unless an admin user submits the request.
+// project who submits the request, unless an admin user submits the request.
 func ListRules(c *gophercloud.ServiceClient, policyID string, opts ListRulesOptsBuilder) pagination.Pager {
 	url := ruleRootURL(c, policyID)
 	if opts != nil {

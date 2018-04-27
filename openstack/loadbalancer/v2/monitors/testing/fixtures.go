@@ -16,7 +16,7 @@ const HealthmonitorsListBody = `
 	"healthmonitors":[
 		{
 			"admin_state_up":true,
-			"tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
+			"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
 			"delay":10,
 			"name":"web",
 			"max_retries":1,
@@ -27,7 +27,7 @@ const HealthmonitorsListBody = `
 		},
 		{
 			"admin_state_up":true,
-			"tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
+			"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
 			"delay":5,
 			"name":"db",
 			"expected_codes":"200",
@@ -48,7 +48,7 @@ const SingleHealthmonitorBody = `
 {
 	"healthmonitor": {
 		"admin_state_up":true,
-		"tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
+		"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
 		"delay":5,
 		"name":"db",
 		"expected_codes":"200",
@@ -68,7 +68,7 @@ const PostUpdateHealthmonitorBody = `
 {
 	"healthmonitor": {
 		"admin_state_up":true,
-		"tenant_id":"83657cfcdfe44cd5920adaf26c48ceea",
+		"project_id":"83657cfcdfe44cd5920adaf26c48ceea",
 		"delay":3,
 		"name":"NewHealthmonitorName",
 		"expected_codes":"301",
@@ -87,7 +87,7 @@ var (
 	HealthmonitorWeb = monitors.Monitor{
 		AdminStateUp: true,
 		Name:         "web",
-		TenantID:     "83657cfcdfe44cd5920adaf26c48ceea",
+		ProjectID:    "83657cfcdfe44cd5920adaf26c48ceea",
 		Delay:        10,
 		MaxRetries:   1,
 		Timeout:      1,
@@ -98,7 +98,7 @@ var (
 	HealthmonitorDb = monitors.Monitor{
 		AdminStateUp:  true,
 		Name:          "db",
-		TenantID:      "83657cfcdfe44cd5920adaf26c48ceea",
+		ProjectID:     "83657cfcdfe44cd5920adaf26c48ceea",
 		Delay:         5,
 		ExpectedCodes: "200",
 		MaxRetries:    2,
@@ -112,7 +112,7 @@ var (
 	HealthmonitorUpdated = monitors.Monitor{
 		AdminStateUp:  true,
 		Name:          "NewHealthmonitorName",
-		TenantID:      "83657cfcdfe44cd5920adaf26c48ceea",
+		ProjectID:     "83657cfcdfe44cd5920adaf26c48ceea",
 		Delay:         3,
 		ExpectedCodes: "301",
 		MaxRetries:    10,
@@ -155,7 +155,7 @@ func HandleHealthmonitorCreationSuccessfully(t *testing.T, response string) {
 			"healthmonitor": {
 				"type":"HTTP",
 				"pool_id":"84f1b61f-58c4-45bf-a8a9-2dafb9e5214d",
-				"tenant_id":"453105b9-1754-413f-aab1-55f1af620750",
+				"project_id":"453105b9-1754-413f-aab1-55f1af620750",
 				"delay":20,
 				"name":"db",
 				"timeout":10,
