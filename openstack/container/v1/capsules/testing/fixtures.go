@@ -9,11 +9,6 @@ import (
 	fakeclient "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-type imageEntry struct {
-	ID   string
-	JSON string
-}
-
 // HandleImageGetSuccessfully test setup
 func HandleCapsuleGetSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e", func(w http.ResponseWriter, r *http.Request) {
@@ -64,5 +59,17 @@ func HandleCapsuleGetSuccessfully(t *testing.T) {
 				]
 			}
 		}`)
+	})
+}
+
+// HandleCapsuleCreateSuccessfully creates an HTTP handler at `/capsules` on the test handler mux
+// that responds with a `Create` response.
+func HandleCapsuleCreateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/capsules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+		fmt.Fprintf(w, `{}`)
 	})
 }

@@ -18,7 +18,7 @@ type Listener struct {
 	ID string `json:"id"`
 
 	// Owner of the Listener.
-	TenantID string `json:"tenant_id"`
+	ProjectID string `json:"project_id"`
 
 	// Human-readable name for the Listener. Does not have to be unique.
 	Name string `json:"name"`

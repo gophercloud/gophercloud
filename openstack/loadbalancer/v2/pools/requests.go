@@ -19,7 +19,6 @@ type ListOptsBuilder interface {
 type ListOpts struct {
 	LBMethod       string `q:"lb_algorithm"`
 	Protocol       string `q:"protocol"`
-	TenantID       string `q:"tenant_id"`
 	ProjectID      string `q:"project_id"`
 	AdminStateUp   *bool  `q:"admin_state_up"`
 	Name           string `q:"name"`
@@ -42,7 +41,7 @@ func (opts ListOpts) ToPoolListQuery() (string, error) {
 // the returned collection for greater efficiency.
 //
 // Default policy settings return only those pools that are owned by the
-// tenant who submits the request, unless an admin user submits the request.
+// project who submits the request, unless an admin user submits the request.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := rootURL(c)
 	if opts != nil {
@@ -96,10 +95,6 @@ type CreateOpts struct {
 	// The Listener on which the members of the pool will be associated with.
 	// Note: one of LoadbalancerID or ListenerID must be provided.
 	ListenerID string `json:"listener_id,omitempty" xor:"LoadbalancerID"`
-
-	// TenantID is the UUID of the project who owns the Pool.
-	// Only administrative users can specify a project UUID other than their own.
-	TenantID string `json:"tenant_id,omitempty"`
 
 	// ProjectID is the UUID of the project who owns the Pool.
 	// Only administrative users can specify a project UUID other than their own.
@@ -207,7 +202,7 @@ type ListMembersOpts struct {
 	Name         string `q:"name"`
 	Weight       int    `q:"weight"`
 	AdminStateUp *bool  `q:"admin_state_up"`
-	TenantID     string `q:"tenant_id"`
+	ProjectID    string `q:"project_id"`
 	Address      string `q:"address"`
 	ProtocolPort int    `q:"protocol_port"`
 	ID           string `q:"id"`
@@ -228,7 +223,7 @@ func (opts ListMembersOpts) ToMembersListQuery() (string, error) {
 // sort the returned collection for greater efficiency.
 //
 // Default policy settings return only those members that are owned by the
-// tenant who submits the request, unless an admin user submits the request.
+// project who submits the request, unless an admin user submits the request.
 func ListMembers(c *gophercloud.ServiceClient, poolID string, opts ListMembersOptsBuilder) pagination.Pager {
 	url := memberRootURL(c, poolID)
 	if opts != nil {
@@ -260,10 +255,6 @@ type CreateMemberOpts struct {
 
 	// Name of the Member.
 	Name string `json:"name,omitempty"`
-
-	// TenantID is the UUID of the project who owns the Member.
-	// Only administrative users can specify a project UUID other than their own.
-	TenantID string `json:"tenant_id,omitempty"`
 
 	// ProjectID is the UUID of the project who owns the Member.
 	// Only administrative users can specify a project UUID other than their own.

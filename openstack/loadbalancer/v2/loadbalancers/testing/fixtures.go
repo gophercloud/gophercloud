@@ -20,7 +20,7 @@ const LoadbalancersListBody = `
 	"loadbalancers":[
 	         {
 			"id": "c331058c-6a40-4144-948e-b9fb1df9db4b",
-			"tenant_id": "54030507-44f7-473c-9342-b4d14a95f692",
+			"project_id": "54030507-44f7-473c-9342-b4d14a95f692",
 			"name": "web_lb",
 			"description": "lb config for the web tier",
 			"vip_subnet_id": "8a49c438-848f-467b-9655-ea1548708154",
@@ -34,7 +34,7 @@ const LoadbalancersListBody = `
 		},
 		{
 			"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-			"tenant_id": "54030507-44f7-473c-9342-b4d14a95f692",
+			"project_id": "54030507-44f7-473c-9342-b4d14a95f692",
 			"name": "db_lb",
 			"description": "lb config for the db tier",
 			"vip_subnet_id": "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
@@ -55,7 +55,7 @@ const SingleLoadbalancerBody = `
 {
 	"loadbalancer": {
 		"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-		"tenant_id": "54030507-44f7-473c-9342-b4d14a95f692",
+		"project_id": "54030507-44f7-473c-9342-b4d14a95f692",
 		"name": "db_lb",
 		"description": "lb config for the db tier",
 		"vip_subnet_id": "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
@@ -75,7 +75,7 @@ const PostUpdateLoadbalancerBody = `
 {
 	"loadbalancer": {
 		"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-		"tenant_id": "54030507-44f7-473c-9342-b4d14a95f692",
+		"project_id": "54030507-44f7-473c-9342-b4d14a95f692",
 		"name": "NewLoadbalancerName",
 		"description": "lb config for the db tier",
 		"vip_subnet_id": "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
@@ -125,7 +125,7 @@ const LoadbalancerStatuesesTree = `
 var (
 	LoadbalancerWeb = loadbalancers.LoadBalancer{
 		ID:                 "c331058c-6a40-4144-948e-b9fb1df9db4b",
-		TenantID:           "54030507-44f7-473c-9342-b4d14a95f692",
+		ProjectID:          "54030507-44f7-473c-9342-b4d14a95f692",
 		Name:               "web_lb",
 		Description:        "lb config for the web tier",
 		VipSubnetID:        "8a49c438-848f-467b-9655-ea1548708154",
@@ -139,7 +139,7 @@ var (
 	}
 	LoadbalancerDb = loadbalancers.LoadBalancer{
 		ID:                 "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-		TenantID:           "54030507-44f7-473c-9342-b4d14a95f692",
+		ProjectID:          "54030507-44f7-473c-9342-b4d14a95f692",
 		Name:               "db_lb",
 		Description:        "lb config for the db tier",
 		VipSubnetID:        "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
@@ -153,7 +153,7 @@ var (
 	}
 	LoadbalancerUpdated = loadbalancers.LoadBalancer{
 		ID:                 "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-		TenantID:           "54030507-44f7-473c-9342-b4d14a95f692",
+		ProjectID:          "54030507-44f7-473c-9342-b4d14a95f692",
 		Name:               "NewLoadbalancerName",
 		Description:        "lb config for the db tier",
 		VipSubnetID:        "9cedb85d-0759-4898-8a4b-fa5a5ea10086",

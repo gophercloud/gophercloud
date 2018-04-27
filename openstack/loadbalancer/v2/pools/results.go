@@ -69,7 +69,7 @@ type Pool struct {
 	SubnetID string `json:"subnet_id"`
 
 	// Owner of the Pool.
-	TenantID string `json:"tenant_id"`
+	ProjectID string `json:"project_id"`
 
 	// The administrative state of the Pool, which is up (true) or down (false).
 	AdminStateUp bool `json:"admin_state_up"`
@@ -180,7 +180,7 @@ type Member struct {
 	AdminStateUp bool `json:"admin_state_up"`
 
 	// Owner of the Member.
-	TenantID string `json:"tenant_id"`
+	ProjectID string `json:"project_id"`
 
 	// Parameter value for the subnet UUID.
 	SubnetID string `json:"subnet_id"`

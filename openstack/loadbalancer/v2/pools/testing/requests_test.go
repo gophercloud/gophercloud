@@ -61,7 +61,7 @@ func TestCreatePool(t *testing.T) {
 		LBMethod:       pools.LBMethodRoundRobin,
 		Protocol:       "HTTP",
 		Name:           "Example pool",
-		TenantID:       "2ffc6e22aae24e4795f87155d24c896f",
+		ProjectID:      "2ffc6e22aae24e4795f87155d24c896f",
 		LoadbalancerID: "79e05663-7f03-45d2-a092-8b94062f22ab",
 	}).Extract()
 	th.AssertNoErr(t, err)
@@ -192,7 +192,7 @@ func TestCreateMember(t *testing.T) {
 	actual, err := pools.CreateMember(fake.ServiceClient(), "332abe93-f488-41ba-870b-2ac66be7f853", pools.CreateMemberOpts{
 		Name:         "db",
 		SubnetID:     "1981f108-3c48-48d2-b908-30f7d28532c9",
-		TenantID:     "2ffc6e22aae24e4795f87155d24c896f",
+		ProjectID:    "2ffc6e22aae24e4795f87155d24c896f",
 		Address:      "10.0.2.11",
 		ProtocolPort: 80,
 		Weight:       10,

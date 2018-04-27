@@ -61,7 +61,7 @@ func TestCreateHealthmonitor(t *testing.T) {
 		Type:          "HTTP",
 		Name:          "db",
 		PoolID:        "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d",
-		TenantID:      "453105b9-1754-413f-aab1-55f1af620750",
+		ProjectID:     "453105b9-1754-413f-aab1-55f1af620750",
 		Delay:         20,
 		Timeout:       10,
 		MaxRetries:    5,
