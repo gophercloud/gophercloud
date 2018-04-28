@@ -1,6 +1,9 @@
 package gophercloud
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // BaseError is an error type that all other error types embed.
 type BaseError struct {
@@ -40,6 +43,33 @@ type ErrInvalidInput struct {
 
 func (e ErrInvalidInput) Error() string {
 	e.DefaultErrString = fmt.Sprintf("Invalid input provided for argument [%s]: [%+v]", e.Argument, e.Value)
+	return e.choseErrString()
+}
+
+// ErrMissingEnvironmentVariable is the error when environment variable is required
+// in a particular situation but not provided by the user
+type ErrMissingEnvironmentVariable struct {
+	BaseError
+	EnvironmentVariable string
+}
+
+func (e ErrMissingEnvironmentVariable) Error() string {
+	e.DefaultErrString = fmt.Sprintf("Missing environment variable [%s]", e.EnvironmentVariable)
+	return e.choseErrString()
+}
+
+// ErrMissingAnyoneOfEnvironmentVariables is the error when anyone of the environment variables
+// is required in a particular situation but not provided by the user
+type ErrMissingAnyoneOfEnvironmentVariables struct {
+	BaseError
+	EnvironmentVariables []string
+}
+
+func (e ErrMissingAnyoneOfEnvironmentVariables) Error() string {
+	e.DefaultErrString = fmt.Sprintf(
+		"Missing one of the following environment variables [%s]",
+		strings.Join(e.EnvironmentVariables, ", "),
+	)
 	return e.choseErrString()
 }
 
