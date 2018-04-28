@@ -66,8 +66,10 @@ type ErrMissingAnyoneOfEnvironmentVariables struct {
 }
 
 func (e ErrMissingAnyoneOfEnvironmentVariables) Error() string {
-	e.DefaultErrString = fmt.Sprintf("Missing anyone of environment variables [%s]",
-		strings.Join(e.EnvironmentVariables, ", "))
+	e.DefaultErrString = fmt.Sprintf(
+		"Missing one of the following environment variables [%s]",
+		strings.Join(e.EnvironmentVariables, ", "),
+	)
 	return e.choseErrString()
 }
 
