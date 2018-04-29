@@ -19,5 +19,13 @@ Example to list actions
 		return true, nil
 	})
 
+Example to get an action
+
+	action, err := actions.Get(serviceClient, "edce3528-864f-41fb-8759-f4707925cc09").Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Action %+v: ", action)
+
 */
 package actions

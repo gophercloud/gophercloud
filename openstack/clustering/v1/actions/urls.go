@@ -12,3 +12,11 @@ func commonURL(client *gophercloud.ServiceClient) string {
 func listURL(client *gophercloud.ServiceClient) string {
 	return commonURL(client)
 }
+
+func idURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL(apiVersion, apiName, id)
+}
+
+func getURL(client *gophercloud.ServiceClient, id string) string {
+	return idURL(client, id)
+}
