@@ -136,9 +136,6 @@ func (r policyResult) Extract() (*Policy, error) {
 		Policy *Policy `json:"policy"`
 	}
 	err := r.ExtractInto(&s)
-	if err != nil {
-		s.Policy = &Policy{}
-	}
 
 	return s.Policy, err
 }
