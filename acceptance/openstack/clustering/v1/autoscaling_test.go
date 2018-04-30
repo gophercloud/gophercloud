@@ -1,3 +1,5 @@
+// +build acceptance clustering autoscaling profiles
+
 package v1
 
 import (
