@@ -19,3 +19,4 @@
     recheck-queens:
       jobs:
         - gophercloud-acceptance-test-queens
+
