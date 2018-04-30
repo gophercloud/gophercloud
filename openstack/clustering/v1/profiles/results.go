@@ -29,6 +29,12 @@ func (r commonResult) Extract() (*Profile, error) {
 	return s.Profile, err
 }
 
+type Spec struct {
+	Type       string                 `json:"type"`
+	Version    string                 `json:"version"`
+	Properties map[string]interface{} `json:"properties"`
+}
+
 // Profile represent a detailed profile
 type Profile struct {
 	CreatedAt time.Time              `json:"-"`
@@ -37,7 +43,7 @@ type Profile struct {
 	Metadata  map[string]interface{} `json:"metadata"`
 	Name      string                 `json:"name"`
 	Project   string                 `json:"project"`
-	Spec      map[string]interface{} `json:"spec"`
+	Spec      Spec                   `json:"spec"`
 	Type      string                 `json:"type"`
 	UpdatedAt time.Time              `json:"-"`
 	User      string                 `json:"user"`

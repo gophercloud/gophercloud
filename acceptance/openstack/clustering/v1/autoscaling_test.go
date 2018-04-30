@@ -29,7 +29,7 @@ func profileCreate(t *testing.T) {
 		{"network": "sandbox-internal-net"},
 	}
 
-	props := &map[string]interface{}{
+	props := map[string]interface{}{
 		"name":            "centos-server",
 		"flavor":          "t2.micro",
 		"image":           "centos7.3-latest",
@@ -44,10 +44,10 @@ func profileCreate(t *testing.T) {
 			"test": "123",
 		},
 		Name: profileName,
-		Spec: map[string]interface{}{
-			"type":       "os.nova.server",
-			"version":    "1.0",
-			"properties": props,
+		Spec: profiles.Spec{
+			Type:       "os.nova.server",
+			Version:    "1.0",
+			Properties: props,
 		},
 	}
 
@@ -59,6 +59,6 @@ func profileCreate(t *testing.T) {
 	}
 
 	th.AssertEquals(t, profileName, profile.Name)
-	th.AssertEquals(t, "os.nova.server", (map[string]interface{})(profile.Spec)["type"])
-	th.AssertEquals(t, "1.0", (map[string]interface{})(profile.Spec)["version"])
+	th.AssertEquals(t, "os.nova.server", profile.Spec.Type)
+	th.AssertEquals(t, "1.0", profile.Spec.Version)
 }

@@ -43,7 +43,7 @@ func TestCreateProfile(t *testing.T) {
 						]
 					},
 					"type": "os.nova.server",
-					"version": 1.0
+					"version": "1.0"
 				},
 				"type": "os.nova.server-1.0",
 				"updated_at": "2016-01-03T17:22:23Z",
@@ -56,7 +56,7 @@ func TestCreateProfile(t *testing.T) {
 		{"network": "private-network"},
 	}
 
-	props := &map[string]interface{}{
+	props := map[string]interface{}{
 		"name":            "test_gopher_cloud_profile",
 		"flavor":          "t2.small",
 		"image":           "centos7.3-latest",
@@ -66,10 +66,10 @@ func TestCreateProfile(t *testing.T) {
 
 	optsProfile := &profiles.CreateOpts{
 		Name: "TestProfile",
-		Spec: map[string]interface{}{
-			"type":       "os.nova.server",
-			"version":    "1.0",
-			"properties": props,
+		Spec: profiles.Spec{
+			Type:       "os.nova.server",
+			Version:    "1.0",
+			Properties: props,
 		},
 	}
 
@@ -88,8 +88,8 @@ func TestCreateProfile(t *testing.T) {
 		Metadata:  map[string]interface{}{},
 		Name:      "test-profile",
 		Project:   "42d9e9663331431f97b75e25136307ff",
-		Spec: map[string]interface{}{
-			"properties": map[string]interface{}{
+		Spec: profiles.Spec{
+			Properties: map[string]interface{}{
 				"flavor": "t2.small",
 				"image":  "centos7.3-latest",
 				"name":   "centos_server",
@@ -97,8 +97,8 @@ func TestCreateProfile(t *testing.T) {
 					map[string]interface{}{"network": "private-network"},
 				},
 			},
-			"type":    "os.nova.server",
-			"version": 1.0,
+			Type:    "os.nova.server",
+			Version: "1.0",
 		},
 		Type:      "os.nova.server-1.0",
 		UpdatedAt: updatedAt,

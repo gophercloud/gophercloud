@@ -5,7 +5,7 @@ Example to Create a profile
 		{"network": "test-network"},
 	}
 
-	props := &map[string]interface{}{
+	props := map[string]interface{}{
 		"name":            "test_gophercloud_profile",
 		"flavor":          "t2.micro",
 		"image":           "centos7.3-latest",
@@ -15,10 +15,10 @@ Example to Create a profile
 
 	createOpts := profiles.CreateOpts {
 		Name: "test_profile",
-		Spec: map[string]interface{}{
-			"type":       "os.nova.server",
-			"version":    "1.0",
-			"properties": props,
+		Spec: profiles.Spec{
+			Type:       "os.nova.server",
+			Version:    "1.0",
+			Properties: props,
 		},
 	}
 

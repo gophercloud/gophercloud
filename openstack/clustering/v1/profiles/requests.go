@@ -15,7 +15,7 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	Name     string                 `json:"name" required:"true"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
-	Spec     map[string]interface{} `json:"spec" required:"true"`
+	Spec     Spec                   `json:"spec" required:"true"`
 }
 
 // ToProfileCreateMap constructs a request body from CreateOpts.
