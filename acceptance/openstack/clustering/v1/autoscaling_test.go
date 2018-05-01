@@ -51,7 +51,13 @@ func profileCreate(t *testing.T) {
 		},
 	}
 
-	profile, err := profiles.Create(client, optsProfile).Extract()
+	createResult := profiles.Create(client, optsProfile)
+	th.AssertNoErr(t, createResult.Err)
+
+	requestID := createResult.Header.Get("X-OpenStack-Request-Id")
+	th.AssertEquals(t, true, requestID != "")
+
+	profile, err := createResult.Extract()
 	if err != nil {
 		t.Fatalf("Unable to create profile %s: %v", profileName, err)
 	} else {
