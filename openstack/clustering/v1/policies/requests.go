@@ -80,9 +80,13 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult)
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(policyCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	var result *http.Response
+	result, r.Err = client.Post(policyCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
 	return
 }
 

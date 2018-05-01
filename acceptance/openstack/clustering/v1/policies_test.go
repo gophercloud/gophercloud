@@ -52,11 +52,17 @@ func TestPolicyCreateUpdateValidateDelete(t *testing.T) {
 				"criteria":                "OLDEST_FIRST",
 			},
 			Type:    "senlin.policy.deletion",
-			Version: "1.0",
+			Version: "1.1",
 		},
 	}
 
-	createdPolicy, err := policies.Create(client, createOpts).Extract()
+	createResult := policies.Create(client, createOpts)
+	th.AssertNoErr(t, createResult.Err)
+
+	requestID := createResult.Header.Get("X-Openstack-Request-ID")
+	th.AssertEquals(t, true, requestID != "")
+
+	createdPolicy, err := createResult.Extract()
 	th.AssertNoErr(t, err)
 
 	defer policies.Delete(client, createdPolicy.ID)
