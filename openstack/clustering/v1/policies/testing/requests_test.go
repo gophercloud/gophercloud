@@ -70,3 +70,34 @@ func TestDeletePolicy(t *testing.T) {
 
 	th.AssertEquals(t, PolicyDeleteRequestID, actual.RequestID)
 }
+
+func TestValidatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandlePolicyValidate(t)
+
+	expected := ExpectedValidatePolicy
+
+	opts := policies.ValidateOpts{
+		Spec: ExpectedValidatePolicy.Spec,
+	}
+
+	actual, err := policies.Validate(fake.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, &expected, actual)
+}
+
+func TestBadValidatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleBadPolicyValidate(t)
+
+	opts := policies.ValidateOpts{
+		Spec: ExpectedValidatePolicy.Spec,
+	}
+
+	_, err := policies.Validate(fake.ServiceClient(), opts).Extract()
+	th.AssertEquals(t, false, err == nil)
+}

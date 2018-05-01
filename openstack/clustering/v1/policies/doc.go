@@ -48,5 +48,29 @@ Example to Create a policy
 		panic(err)
 	}
 
+Example to Validate a policy
+
+	opts := policies.ValidateOpts{
+		Spec: policies.Spec{
+			Description: "new policy description",
+			Properties: map[string]interface{}{
+				"hooks": map[string]interface{}{
+					"type": "zaqar",
+					"params": map[string]interface{}{
+						"queue": "my_zaqar_queue",
+					},
+					"timeout": 10,
+				},
+			},
+			Type:    "senlin.policy.deletion",
+			Version: "1.1",
+		},
+	}
+
+	validatePolicy, err := policies.Validate(client, opts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package policies
