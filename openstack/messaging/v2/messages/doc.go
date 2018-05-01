@@ -53,5 +53,31 @@ Example to Create Messages
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete a set of Messages
+
+	queueName := "my_queue"
+
+	deleteMessagesOpts := messages.DeleteMessagesOpts{
+		IDs: []string{"9988776655"},
+	}
+
+	err := messages.DeleteMessages(client, queueName, deleteMessagesOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Pop a set of Messages
+
+	queueName := "my_queue"
+
+	deleteMessagesOpts := messages.DeleteMessageOpts{
+		Pop: 5,
+	}
+
+	resources, err := messages.PopMessages(client, queueName, deleteMessagesOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package messages

@@ -29,3 +29,7 @@ func nextPageURL(currentURL string, next string) (string, error) {
 	}
 	return base.ResolveReference(rel).String(), nil
 }
+
+func deleteURL(client *gophercloud.ServiceClient, queueName string) string {
+	return client.ServiceURL(ApiVersion, ApiName, queueName, "messages")
+}
