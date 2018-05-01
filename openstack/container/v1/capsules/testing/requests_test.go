@@ -30,7 +30,7 @@ func TestGetCapsule(t *testing.T) {
 	metaName := "test"
 
 	createdAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:25+00:00")
-	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:25+01:00")
+	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:26+00:00")
 	links := []interface{}{
 		map[string]interface{}{
 			"href": "http://10.10.10.10/v1/capsules/cc654059-1a77-47a3-bfcf-715bde5aad9e",
@@ -48,7 +48,6 @@ func TestGetCapsule(t *testing.T) {
 	}
 	containersUUIDs := []string{
 		"1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
-		"d1469e8d-bcbc-43fc-b163-8b9b6a740930",
 	}
 	addresses := map[string][]capsules.Address{
 		"b1295212-64e1-471d-aa01-25ff46f9818d": []capsules.Address{
@@ -63,8 +62,95 @@ func TestGetCapsule(t *testing.T) {
 	}
 	volumesInfo := map[string][]string{
 		"67618d54-dd55-4f7e-91b3-39ffb3ba7f5f": []string{
-			"4b725a92-2197-497b-b6b1-fb8caa4cb99b",
+			"1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
 		},
+	}
+	host := "test-host"
+	statusReason := "No reason"
+
+	capsuleID := 1
+	containerID := 1
+	containerName := "test-demo-omicron-13"
+	containerUUID := "1739e28a-d391-4fd9-93a5-3ba3f29a4c9b"
+	containerImage := "test"
+	labels := map[string]string{
+		"foo": "bar",
+	}
+	meta := map[string]string{
+		"key1": "value1",
+	}
+	workDir := "/root"
+	disk := 0
+
+	containerIDBackend := "5109ebe2ca595777e994416208bd681b561b25ce493c34a234a1b68457cb53fb"
+	command := "testcmd"
+	ports := []int{
+		80,
+	}
+	securityGroups := []string{
+		"default",
+	}
+	imagePullPolicy := "ifnotpresent"
+	runTime := "runc"
+	taskState := "Creating"
+	hostName := "test-hostname"
+	environment := map[string]string{
+		"USER1": "test",
+	}
+	websocketToken := "2ba16a5a-552f-422f-b511-bd786102691f"
+	websocketUrl := "ws://10.10.10.10/"
+	containerStatusReason := "No reason"
+	statusDetail := "Just created"
+	imageDriver := "docker"
+	interactive := true
+	autoRemove := false
+	autoHeal := false
+	containerRestartPolicy := map[string]string{
+		"MaximumRetryCount": "0",
+		"Name": "always",
+	}
+
+	container1 := capsules.Container{
+		Addresses:       addresses,
+		CreatedAt:       createdAt,
+		UpdatedAt:       updatedAt,
+		UUID:            containerUUID,
+		ID:              containerID,
+		UserID:          userID,
+		ProjectID:       projectID,
+		CPU:             cpu,
+		Status:          status,
+		Memory:          memory,
+		Host:            host,
+		ContainerID:     containerIDBackend,
+		CapsuleID:		 capsuleID,
+		Name:   containerName,
+		Image:  containerImage,
+		Labels:          labels,
+		Meta:            meta,
+		WorkDir:         workDir,
+		Disk:            disk,
+		Command:         command,
+		Ports:           ports,
+		SecurityGroups:  securityGroups,
+		ImagePullPolicy: imagePullPolicy,
+		Runtime:         runTime,
+		TaskState:       taskState,
+		HostName:        hostName,
+		Environment:     environment,
+		WebsocketToken:  websocketToken,
+		WebsocketUrl:     websocketUrl,
+		StatusReason: containerStatusReason,
+		StatusDetail:      statusDetail,
+		ImageDriver: imageDriver,
+		AutoHeal: autoHeal,
+		AutoRemove: autoRemove,
+		Interactive: interactive,
+		RestartPolicy: containerRestartPolicy,
+
+	}
+	containers := []capsules.Container{
+		container1,
 	}
 
 	expectedCapsule := capsules.Capsule{
@@ -85,6 +171,9 @@ func TestGetCapsule(t *testing.T) {
 		ContainersUUIDs: containersUUIDs,
 		Addresses:       addresses,
 		VolumesInfo:     volumesInfo,
+		StatusReason:    statusReason,
+		Host:            host,
+		Containers:      containers,
 	}
 
 	th.AssertDeepEquals(t, &expectedCapsule, actualCapsule)
