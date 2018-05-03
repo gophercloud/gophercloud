@@ -109,8 +109,7 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts params
 type UpdateOpts struct {
-	Policy map[string]interface{} `json:"-"`
-	Name   string                 `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // ToPolicyUpdateMap formats a UpdateOpts into a body map.
