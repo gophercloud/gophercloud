@@ -61,6 +61,54 @@ func TestCreateMessages(t *testing.T) {
 	CreateMessage(t, client, createdQueueName)
 }
 
+func TestGetMessages(t *testing.T) {
+	clientID := "3381af92-2b9e-11e3-b191-718613007343"
+
+	client, err := clients.NewMessagingV2Client(clientID)
+	if err != nil {
+		t.Fatalf("Unable to create a messaging service client: %v", err)
+	}
+
+	createdQueueName, err := CreateQueue(t, client)
+	defer DeleteQueue(t, client, createdQueueName)
+
+	CreateMessage(t, client, createdQueueName)
+	CreateMessage(t, client, createdQueueName)
+
+	// Use a different client/clientID in order to see messages on the Queue
+	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
+	client, err = clients.NewMessagingV2Client(clientID)
+
+	listOpts := messages.ListOpts{}
+
+	var messageIDs []string
+
+	pager := messages.List(client, createdQueueName, listOpts)
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		allMessages, err := messages.ExtractMessages(page)
+		if err != nil {
+			t.Fatalf("Unable to extract messages: %v", err)
+		}
+
+		for _, message := range allMessages {
+			messageIDs = append(messageIDs, message.ID)
+		}
+
+		return true, nil
+	})
+
+	getMessageOpts := messages.GetMessagesOpts{
+		IDs: messageIDs,
+	}
+	t.Logf("Attempting to get messages from queue %s with ids: %v", createdQueueName, messageIDs)
+	messagesList, err := messages.GetMessages(client, createdQueueName, getMessageOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get messages from queue: %s", createdQueueName)
+	}
+
+	tools.PrintResource(t, messagesList)
+}
+
 func TestDeleteMessagesIDs(t *testing.T) {
 	clientID := "3381af92-2b9e-11e3-b191-718613007343"
 

@@ -174,3 +174,37 @@ func PopMessages(client *gophercloud.ServiceClient, queueName string, opts PopMe
 	r.Err = err
 	return
 }
+
+// GetMessagesOptsBuilder allows extensions to add additional parameters to the
+// GetMessages request.
+type GetMessagesOptsBuilder interface {
+	ToGetMessagesListQuery() (string, error)
+}
+
+// GetMessagesOpts params to be used with GetMessages.
+type GetMessagesOpts struct {
+	IDs []string `q:"ids,omitempty"`
+}
+
+// ToGetMessagesListQuery formats a GetMessagesOpts structure into a query string.
+func (opts GetMessagesOpts) ToGetMessagesListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// GetMessages requests details on a multiple messages, by IDs.
+func GetMessages(client *gophercloud.ServiceClient, queueName string, opts GetMessagesOptsBuilder) (r GetMessagesResult) {
+	url := getURL(client, queueName)
+	if opts != nil {
+		query, err := opts.ToGetMessagesListQuery()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += query
+	}
+	_, r.Err = client.Get(url, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

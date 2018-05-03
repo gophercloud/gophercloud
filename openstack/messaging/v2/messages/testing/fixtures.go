@@ -95,6 +95,24 @@ const ListMessagesResponse2 = `
 
 }`
 
+// GetMessagesResponse is a sample response to GetMessages.
+const GetMessagesResponse = `
+{
+    "messages": [
+        {
+            "body": {
+                "current_bytes": "0",
+                "event": "BackupProgress",
+                "total_bytes": "99614720"
+            },
+            "age": 443,
+            "href": "/v2/queues/beijing/messages/578f0055508f153f256f717f",
+            "id": "578f0055508f153f256f717f",
+            "ttl": 3600
+        }
+    ]
+}`
+
 // PopMessageResponse is a sample reponse to pop messages
 const PopMessageResponse = `
 {
@@ -153,6 +171,22 @@ var SecondMessage = messages.Message{
 // ExpectedMessagesSlice is the expected result in a List.
 var ExpectedMessagesSlice = [][]messages.Message{{FirstMessage}, {SecondMessage}}
 
+// ExpectedMessagesSet is the expected result in GetMessages
+var ExpectedMessagesSet = []messages.Message{
+	{
+		Body: map[string]interface{}{
+			"total_bytes":   "99614720",
+			"current_bytes": "0",
+			"event":         "BackupProgress",
+		},
+		Age:      443,
+		Href:     "/v2/queues/beijing/messages/578f0055508f153f256f717f",
+		ID:       "578f0055508f153f256f717f",
+		TTL:      3600,
+		Checksum: "",
+	},
+}
+
 // ExpectedPopMessage is the expected result of a Pop.
 var ExpectedPopMessage = []messages.PopMessage{{
 	Body: map[string]interface{}{
@@ -199,6 +233,18 @@ func HandleListSuccessfully(t *testing.T) {
 			case fmt.Sprintf("/v2/queues/%s/messages?marker=2", QueueName):
 				fmt.Fprint(w, `{ "messages": [] }`)
 			}
+		})
+}
+
+// HandleGetMessagesSuccessfully configures the test server to respond to a GetMessages request.
+func HandleGetMessagesSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/messages", QueueName),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprintf(w, GetMessagesResponse)
 		})
 }
 

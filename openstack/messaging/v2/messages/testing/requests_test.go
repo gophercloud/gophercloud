@@ -61,6 +61,20 @@ func TestCreate(t *testing.T) {
 	th.CheckDeepEquals(t, ExpectedResources, actual)
 }
 
+func TestGetMessages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetMessagesSuccessfully(t)
+
+	getMessagesOpts := messages.GetMessagesOpts{
+		IDs: []string{"9988776655"},
+	}
+
+	actual, err := messages.GetMessages(fake.ServiceClient(), QueueName, getMessagesOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedMessagesSet, actual)
+}
+
 func TestDeleteMessages(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
