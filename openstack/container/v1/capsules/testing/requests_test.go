@@ -107,7 +107,7 @@ func TestGetCapsule(t *testing.T) {
 	autoHeal := false
 	containerRestartPolicy := map[string]string{
 		"MaximumRetryCount": "0",
-		"Name": "always",
+		"Name":              "always",
 	}
 
 	container1 := capsules.Container{
@@ -123,9 +123,9 @@ func TestGetCapsule(t *testing.T) {
 		Memory:          memory,
 		Host:            host,
 		ContainerID:     containerIDBackend,
-		CapsuleID:		 capsuleID,
-		Name:   containerName,
-		Image:  containerImage,
+		CapsuleID:       capsuleID,
+		Name:            containerName,
+		Image:           containerImage,
 		Labels:          labels,
 		Meta:            meta,
 		WorkDir:         workDir,
@@ -139,15 +139,14 @@ func TestGetCapsule(t *testing.T) {
 		HostName:        hostName,
 		Environment:     environment,
 		WebsocketToken:  websocketToken,
-		WebsocketUrl:     websocketUrl,
-		StatusReason: containerStatusReason,
-		StatusDetail:      statusDetail,
-		ImageDriver: imageDriver,
-		AutoHeal: autoHeal,
-		AutoRemove: autoRemove,
-		Interactive: interactive,
-		RestartPolicy: containerRestartPolicy,
-
+		WebsocketUrl:    websocketUrl,
+		StatusReason:    containerStatusReason,
+		StatusDetail:    statusDetail,
+		ImageDriver:     imageDriver,
+		AutoHeal:        autoHeal,
+		AutoRemove:      autoRemove,
+		Interactive:     interactive,
+		RestartPolicy:   containerRestartPolicy,
 	}
 	containers := []capsules.Container{
 		container1,
