@@ -1,4 +1,4 @@
-// +build acceptance clustering autoscaling profiles
+// +build acceptance clustering autoscaling clusters profiles
 
 package v1
 
@@ -89,7 +89,21 @@ func clusterCreate(t *testing.T) {
 		Config:          map[string]interface{}{},
 	}
 
-	cluster, err := clusters.Create(client, optsCluster).Extract()
+	createResult := clusters.Create(client, optsCluster)
+	th.AssertNoErr(t, createResult.Err)
+
+	requestID := createResult.Header.Get("X-OpenStack-Request-Id")
+	th.AssertEquals(t, true, requestID != "")
+
+	location := createResult.Header.Get("Location")
+	th.AssertEquals(t, true, location != "")
+
+	actionID, err := clusters.ExtractActionFromLocation(location)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, actionID != "")
+	t.Logf("Cluster create action id: %s", actionID)
+
+	cluster, err := createResult.Extract()
 	if err != nil {
 		t.Fatalf("Unable to create cluster %s: %v", clusterName, err)
 	} else {
@@ -105,4 +119,3 @@ func clusterCreate(t *testing.T) {
 	th.CheckDeepEquals(t, optsCluster.Metadata, cluster.Metadata)
 	th.CheckDeepEquals(t, optsCluster.Config, cluster.Config)
 }
-

@@ -22,7 +22,6 @@ type CreateResult struct {
 }
 
 type Cluster struct {
-	ActionID        string                 `json:"-"`
 	Config          map[string]interface{} `json:"config"`
 	CreatedAt       time.Time              `json:"-"`
 	Data            map[string]interface{} `json:"data"`
@@ -47,18 +46,12 @@ type Cluster struct {
 	User            string                 `json:"user"`
 }
 
-func (r commonResult) ExtractActionFromLocation() (string, error) {
-	if len(r.Header) > 0 {
-		location := r.Header.Get("Location")
-		actionID := strings.Split(location, "actions/")
-		if len(actionID) >= 2 {
-			return actionID[1], nil
-		} else {
-			return "", fmt.Errorf("ExtractAction failed. actionID=%s", actionID)
-		}
+func ExtractActionFromLocation(location string) (string, error) {
+	actionID := strings.Split(location, "actions/")
+	if len(actionID) >= 2 {
+		return actionID[1], nil
 	}
-
-	return "", fmt.Errorf("ExtractAction failed. Header=%s", r.Header)
+	return "", fmt.Errorf("ExtractAction failed. Location=%s", location)
 }
 
 func (r commonResult) Extract() (*Cluster, error) {
@@ -67,15 +60,10 @@ func (r commonResult) Extract() (*Cluster, error) {
 	}
 	err := r.ExtractInto(&s)
 	if err != nil {
-		return &Cluster{}, err
+		return s.Cluster, err
 	}
 
-	action, errAction := r.ExtractActionFromLocation()
-	if errAction == nil {
-		s.Cluster.ActionID = action
-	}
-
-	return s.Cluster, err
+	return s.Cluster, nil
 }
 
 func (r *Cluster) UnmarshalJSON(b []byte) error {

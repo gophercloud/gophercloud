@@ -20,6 +20,8 @@ func TestCreateCluster(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("X-OpenStack-Request-ID", "req-781e9bdc-4163-46eb-91c9-786c53188bbb")
+		w.Header().Add("Location", "http://senlin.cloud.blizzard.net:8778/v1/actions/625628cd-f877-44be-bde0-fec79f84e13d")
 		w.WriteHeader(http.StatusOK)
 
 		fmt.Fprintf(w, `
@@ -69,7 +71,22 @@ func TestCreateCluster(t *testing.T) {
 	createdAt, _ := time.Parse(time.RFC3339, "2015-02-10T14:26:14Z")
 	initAt, _ := time.Parse(time.RFC3339, "2015-02-10T15:26:14Z")
 	updatedAt, _ := time.Parse(time.RFC3339, "2015-02-10T16:26:14Z")
-	actual, err := clusters.Create(fake.ServiceClient(), opts).Extract()
+
+	createResult := clusters.Create(fake.ServiceClient(), opts)
+	if createResult.Err != nil {
+		t.Error("Error creating cluster. error=", createResult.Err)
+	}
+
+	location := createResult.Header.Get("Location")
+	th.AssertEquals(t, "http://senlin.cloud.blizzard.net:8778/v1/actions/625628cd-f877-44be-bde0-fec79f84e13d", location)
+
+	actionID, err := clusters.ExtractActionFromLocation(location)
+	if err != nil {
+		t.Error("Error Extracting Action ID. error=", err)
+	}
+	th.AssertEquals(t, "625628cd-f877-44be-bde0-fec79f84e13d", actionID)
+
+	actual, err := createResult.Extract()
 	if err != nil {
 		t.Error("Error creating cluster. error=", err)
 	} else {
