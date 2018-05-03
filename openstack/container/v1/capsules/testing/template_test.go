@@ -1,25 +1,26 @@
-package capsules
+package testing
 
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud/openstack/container/v1/capsules"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestTemplateParsing(t *testing.T) {
-	templateJSON := new(Template)
+	templateJSON := new(capsules.Template)
 	templateJSON.Bin = []byte(ValidJSONTemplate)
 	err := templateJSON.Parse()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ValidJSONTemplateParsed, templateJSON.Parsed)
 
-	templateYAML := new(Template)
+	templateYAML := new(capsules.Template)
 	templateYAML.Bin = []byte(ValidYAMLTemplate)
 	err = templateYAML.Parse()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ValidYAMLTemplateParsed, templateYAML.Parsed)
 
-	templateInvalid := new(Template)
+	templateInvalid := new(capsules.Template)
 	templateInvalid.Bin = []byte("Keep Austin Weird")
 	err = templateInvalid.Parse()
 	if err == nil {
