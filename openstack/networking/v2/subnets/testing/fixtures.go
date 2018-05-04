@@ -449,12 +449,12 @@ const SubnetUpdateHostRoutesRequest = `
 {
     "subnet": {
         "name": "my_new_subnet",
-				"host_routes": [
-					{
-						"destination": "192.168.1.1/24",
-						"nexthop": "bar"
-					}
-				] 
+        "host_routes": [
+          {
+            "destination": "192.168.1.1/24",
+            "nexthop": "bar"
+          }
+        ]
     }
 }
 `
@@ -476,12 +476,12 @@ const SubnetUpdateHostRoutesResponse = `
         "host_routes": [],
         "ip_version": 4,
         "gateway_ip": "10.0.0.1",
-				"host_routes": [
-					{
-						"destination": "192.168.1.1/24",
-						"netxhop": "bar"
-					}
-				],
+        "host_routes": [
+          {
+            "destination": "192.168.1.1/24",
+            "netxhop": "bar"
+          }
+        ],
         "cidr": "10.0.0.0/24",
         "id": "08eae331-0402-425a-923c-34f7cfe39c1b"
     }
