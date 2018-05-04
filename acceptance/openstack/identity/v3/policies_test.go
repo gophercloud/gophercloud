@@ -42,7 +42,7 @@ func TestPoliciesCreate(t *testing.T) {
 		},
 	}
 
-	policy, err := policies.Create(t, client, &createOpts).Extract()
+	policy, err := policies.Create(client, &createOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, policy)
