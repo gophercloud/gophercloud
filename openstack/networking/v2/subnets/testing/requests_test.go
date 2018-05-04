@@ -371,7 +371,7 @@ func TestUpdate(t *testing.T) {
 	opts := subnets.UpdateOpts{
 		Name:           "my_new_subnet",
 		DNSNameservers: []string{"foo"},
-		HostRoutes: []subnets.HostRoute{
+		HostRoutes: &[]subnets.HostRoute{
 			{NextHop: "bar"},
 		},
 	}
@@ -459,7 +459,7 @@ func TestUpdateHostRoutes(t *testing.T) {
 		fmt.Fprintf(w, SubnetUpdateHostRoutesResponse)
 	})
 
-	var HostRoutes = []subnets.HostRoute{
+	HostRoutes := []subnets.HostRoute{
 		{
 			DestinationCIDR: "192.168.1.1/24",
 			NextHop:         "bar",
@@ -468,7 +468,7 @@ func TestUpdateHostRoutes(t *testing.T) {
 
 	opts := subnets.UpdateOpts{
 		Name:       "my_new_subnet",
-		HostRoutes: HostRoutes,
+		HostRoutes: &HostRoutes,
 	}
 	s, err := subnets.Update(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
 	th.AssertNoErr(t, err)
@@ -497,14 +497,14 @@ func TestUpdateRemoveHostRoutes(t *testing.T) {
 
 	noHostRoutes := []subnets.HostRoute{}
 	opts := subnets.UpdateOpts{
-		HostRoutes: noHostRoutes,
+		HostRoutes: &noHostRoutes,
 	}
 	s, err := subnets.Update(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, s.Name, "my_new_subnet")
 	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
-	th.AssertEquals(t, s.HostRoutes, "")
+	th.AssertEquals(t, s.HostRoutes, &noHostRoutes)
 }
 
 func TestUpdateAllocationPool(t *testing.T) {

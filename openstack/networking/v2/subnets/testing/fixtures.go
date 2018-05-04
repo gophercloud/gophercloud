@@ -473,13 +473,12 @@ const SubnetUpdateHostRoutesResponse = `
                 "end": "10.0.0.254"
             }
         ],
-        "host_routes": [],
         "ip_version": 4,
         "gateway_ip": "10.0.0.1",
         "host_routes": [
           {
             "destination": "192.168.1.1/24",
-            "netxhop": "bar"
+            "nexthop": "bar"
           }
         ],
         "cidr": "10.0.0.0/24",
