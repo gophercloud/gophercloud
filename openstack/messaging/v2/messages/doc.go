@@ -67,6 +67,16 @@ Example to Get a set of Messages
 		panic(err)
 	}
 
+Example to get a singular Message
+
+	queueName := "my_queue"
+	messageID := "123456"
+
+	message, err := messages.Get(client, queueName, messageID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Delete a set of Messages
 
 	queueName := "my_queue"

@@ -208,3 +208,11 @@ func GetMessages(client *gophercloud.ServiceClient, queueName string, opts GetMe
 	})
 	return
 }
+
+// Get requests details on a single message, by ID.
+func Get(client *gophercloud.ServiceClient, queueName string, messageID string) (r GetResult) {
+	_, r.Err = client.Get(messageURL(client, queueName, messageID), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
