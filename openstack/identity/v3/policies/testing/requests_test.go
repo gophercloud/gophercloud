@@ -55,3 +55,21 @@ func TestListPoliciesWithFilter(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, []policies.Policy{SecondPolicy}, actual)
 }
+
+func TestCreatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreatePolicySuccessfully(t)
+
+	createOpts := policies.CreateOpts{
+		Type: "application/json",
+		Blob: "{'bar_user': 'role:network-user'}",
+		Extra: map[string]interface{}{
+			"description": "policy for bar_user",
+		},
+	}
+
+	actual, err := policies.Create(client.ServiceClient(), createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondPolicy, *actual)
+}

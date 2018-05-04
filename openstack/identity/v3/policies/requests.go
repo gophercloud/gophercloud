@@ -24,7 +24,7 @@ func (opts ListOpts) ToPolicyListQuery() (string, error) {
 	return q.String(), err
 }
 
-// List enumerates the roles to which the current token has access.
+// List enumerates the policies to which the current token has access.
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
@@ -38,4 +38,53 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return PolicyPage{pagination.LinkedPageBase{PageResult: r}}
 	})
+}
+
+// CreateOptsBuilder allows extensions to add additional parameters to
+// the Create request.
+type CreateOptsBuilder interface {
+	ToPolicyCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts provides options used to create a policy.
+type CreateOpts struct {
+	// Type is the MIME media type of the serialized policy blob.
+	Type string `json:"type" required:"true"`
+
+	// Blob is the policy rule as a serialized blob.
+	Blob string `json:"blob" required:"true"`
+
+	// Extra is free-form extra key/value pairs to describe the policy.
+	Extra map[string]interface{} `json:"-"`
+}
+
+// ToPolicyCreateMap formats a CreateOpts into a create request.
+func (opts CreateOpts) ToPolicyCreateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "policy")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		if v, ok := b["policy"].(map[string]interface{}); ok {
+			for key, value := range opts.Extra {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
+}
+
+// Create creates a new Policy.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToPolicyCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
 }
