@@ -378,25 +378,6 @@ func BuildQueryString(opts interface{}) (*url.URL, error) {
 }
 
 /*
-BuildQueryStringWithFilters is an internal function to be used by request methods in
-individual resource packages.
-
-It accepts a tagged structure and a map and expands them into a URL struct.
-*/
-func BuildQueryStringWithFilters(opts interface{}, filters map[string]string) (*url.URL, error) {
-	u, err := BuildQueryString(opts)
-	if err != nil {
-		return nil, err
-	}
-
-	params := u.Query()
-	for k, v := range filters {
-		params.Add(k, v)
-	}
-	return &url.URL{RawQuery: params.Encode()}, nil
-}
-
-/*
 BuildHeaders is an internal function to be used by request methods in
 individual resource packages.
 

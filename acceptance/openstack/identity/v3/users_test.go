@@ -43,7 +43,7 @@ func TestUsersList(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	listOpts.Filters = map[string]string{
-		"name_contains": "dmi",
+		"name__contains": "dmi",
 	}
 
 	allPages, err = users.List(client, listOpts).AllPages()
@@ -65,7 +65,7 @@ func TestUsersList(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	listOpts.Filters = map[string]string{
-		"name_contains": "foo",
+		"name__contains": "foo",
 	}
 
 	allPages, err = users.List(client, listOpts).AllPages()

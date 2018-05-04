@@ -2,6 +2,7 @@ package users
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
@@ -57,7 +58,14 @@ type ListOpts struct {
 
 // ToUserListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToUserListQuery() (string, error) {
-	q, err := gophercloud.BuildQueryStringWithFilters(opts, opts.Filters)
+	q, err := gophercloud.BuildQueryString(opts)
+
+	params := q.Query()
+	for k, v := range opts.Filters {
+		params.Add(k, v)
+	}
+	q = &url.URL{RawQuery: params.Encode()}
+
 	return q.String(), err
 }
 
