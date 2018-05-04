@@ -51,8 +51,8 @@ type ListOpts struct {
 	// UniqueID filters the response by unique ID.
 	UniqueID string `q:"unique_id"`
 
-	// Filters filters the response by some custom filters such as
-	// 'name_contains=foo'
+	// Filters filters the response by custom filters such as
+	// 'name__contains=foo'
 	Filters map[string]string `q:"-"`
 }
 
