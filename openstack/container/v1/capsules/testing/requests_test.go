@@ -294,8 +294,8 @@ func TestListCapsule(t *testing.T) {
 				"4b725a92-2197-497b-b6b1-fb8caa4cb99b",
 			},
 		}
-                host := "test-host"
-                statusReason := "No reason"
+		host := "test-host"
+		statusReason := "No reason"
 
 		expected := []capsules.Capsule{
 			{
