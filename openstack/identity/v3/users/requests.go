@@ -49,11 +49,15 @@ type ListOpts struct {
 
 	// UniqueID filters the response by unique ID.
 	UniqueID string `q:"unique_id"`
+
+	// Filters filters the response by some custom filters such as
+	// 'name_contains=foo'
+	Filters map[string]string `q:"-"`
 }
 
 // ToUserListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToUserListQuery() (string, error) {
-	q, err := gophercloud.BuildQueryString(opts)
+	q, err := gophercloud.BuildQueryStringWithFilters(opts, opts.Filters)
 	return q.String(), err
 }
 
