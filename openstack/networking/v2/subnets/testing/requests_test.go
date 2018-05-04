@@ -475,7 +475,7 @@ func TestUpdateHostRoutes(t *testing.T) {
 
 	th.AssertEquals(t, s.Name, "my_new_subnet")
 	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
-	th.AssertEquals(t, s.HostRoutes, &HostRoutes)
+	th.AssertDeepEquals(t, s.HostRoutes, HostRoutes)
 }
 
 func TestUpdateRemoveHostRoutes(t *testing.T) {
@@ -504,7 +504,7 @@ func TestUpdateRemoveHostRoutes(t *testing.T) {
 
 	th.AssertEquals(t, s.Name, "my_new_subnet")
 	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
-	th.AssertEquals(t, s.HostRoutes, &noHostRoutes)
+	th.AssertDeepEquals(t, s.HostRoutes, noHostRoutes)
 }
 
 func TestUpdateAllocationPool(t *testing.T) {
