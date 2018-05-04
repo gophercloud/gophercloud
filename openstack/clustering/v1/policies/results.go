@@ -148,6 +148,11 @@ type DeleteResult struct {
 	gophercloud.HeaderResult
 }
 
+// UpdateResult is the response of a Update operations.
+type UpdateResult struct {
+	policyResult
+}
+
 type ValidateResult struct {
 	policyResult
 }

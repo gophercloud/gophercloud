@@ -90,13 +90,51 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult)
 	return
 }
 
-// Create makes a request against the API to delete a policy
+// Delete makes a request against the API to delete a policy
 func Delete(client *gophercloud.ServiceClient, policyID string) (r DeleteResult) {
 	var result *http.Response
 	result, r.Err = client.Delete(policyDeleteURL(client, policyID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
-	r.Header = result.Header
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
+}
+
+// UpdateOptsBuilder builder
+type UpdateOptsBuilder interface {
+	ToPolicyUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts params
+type UpdateOpts struct {
+	Name string `json:"name,omitempty"`
+}
+
+// ToPolicyUpdateMap formats a UpdateOpts into a body map.
+func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "policy")
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// Update implements profile updated request.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToPolicyUpdateMap()
+	if err != nil {
+		r.Err = err
+		return r
+	}
+	var result *http.Response
+	result, r.Err = client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
 	return
 }
 

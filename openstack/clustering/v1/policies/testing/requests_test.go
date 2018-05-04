@@ -71,6 +71,38 @@ func TestDeletePolicy(t *testing.T) {
 	th.AssertEquals(t, PolicyDeleteRequestID, actual.RequestID)
 }
 
+func TestUpdatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandlePolicyUpdate(t)
+
+	expected := ExpectedUpdatePolicy
+
+	opts := policies.UpdateOpts{
+		Name: ExpectedUpdatePolicy.Name,
+	}
+
+	actual, err := policies.Update(fake.ServiceClient(), PolicyIDtoUpdate, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, &expected, actual)
+}
+
+func TestBadUpdatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleBadPolicyUpdate(t)
+
+	opts := policies.UpdateOpts{
+		Name: ExpectedUpdatePolicy.Name,
+	}
+
+	_, err := policies.Update(fake.ServiceClient(), PolicyIDtoUpdate, opts).Extract()
+	th.AssertEquals(t, false, err == nil)
+}
+
 func TestValidatePolicy(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

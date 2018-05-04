@@ -78,6 +78,24 @@ func TestPolicyCreateUpdateValidateDelete(t *testing.T) {
 		t.Log("CreatePolicy updated at: " + createdPolicy.UpdatedAt.String())
 	}
 
+	updateOpts := policies.UpdateOpts{
+		Name: testName + "-UPDATE",
+	}
+
+	updatePolicy, err := policies.Update(client, createdPolicy.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatePolicy)
+
+	if updatePolicy.CreatedAt.IsZero() {
+		t.Fatalf("UpdatePolicy's CreatedAt value should not be zero")
+	}
+	t.Log("UpdatePolicy created at: " + updatePolicy.CreatedAt.String())
+
+	if !updatePolicy.UpdatedAt.IsZero() {
+		t.Log("UpdatePolicy updated at: " + updatePolicy.UpdatedAt.String())
+	}
+
 	validateOpts := policies.ValidateOpts{
 		Spec: createOpts.Spec,
 	}
