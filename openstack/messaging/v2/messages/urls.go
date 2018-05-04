@@ -17,6 +17,10 @@ func listURL(client *gophercloud.ServiceClient, queueName string) string {
 	return client.ServiceURL(ApiVersion, ApiName, queueName, "messages")
 }
 
+func getURL(client *gophercloud.ServiceClient, queueName string) string {
+	return client.ServiceURL(ApiVersion, ApiName, queueName, "messages")
+}
+
 // Builds next page full url based on current url.
 func nextPageURL(currentURL string, next string) (string, error) {
 	base, err := url.Parse(currentURL)

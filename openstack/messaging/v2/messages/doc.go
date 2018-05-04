@@ -27,6 +27,8 @@ Example to List Messages
 
 Example to Create Messages
 
+	queueName = "my_queue"
+
 	createOpts := messages.CreateOpts{
 		Messages:     []messages.Messages{
 			{
@@ -47,9 +49,20 @@ Example to Create Messages
 		},
 	}
 
-	queueName = "my_queue"
-
 	resources, err := messages.Create(client, queueName, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Get a set of Messages
+
+	queueName := "my_queue"
+
+	getMessageOpts := messages.GetMessagesOpts{
+		IDs: "123456",
+	}
+
+	messagesList, err := messages.GetMessages(client, createdQueueName, getMessageOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -71,11 +84,11 @@ Example to Pop a set of Messages
 
 	queueName := "my_queue"
 
-	deleteMessagesOpts := messages.DeleteMessageOpts{
+	popMessagesOpts := messages.PopMessagesOpts{
 		Pop: 5,
 	}
 
-	resources, err := messages.PopMessages(client, queueName, deleteMessagesOpts).Extract()
+	resources, err := messages.PopMessages(client, queueName, popMessagesOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
