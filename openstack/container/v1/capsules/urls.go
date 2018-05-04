@@ -9,3 +9,9 @@ func getURL(client *gophercloud.ServiceClient, id string) string {
 func createURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("capsules")
 }
+
+// `listURL` is a pure function. `listURL(c)` is a URL for which a GET
+// request will respond with a list of capsules in the service `c`.
+func listURL(c *gophercloud.ServiceClient) string {
+	return c.ServiceURL("capsules")
+}
