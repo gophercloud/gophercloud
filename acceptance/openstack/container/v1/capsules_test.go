@@ -82,3 +82,25 @@ func TestCapsuleCreate(t *testing.T) {
 	err = capsules.Create(client, createOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestCapsuleList(t *testing.T) {
+	client, err := clients.NewContainerV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create an container v1 client: %v", err)
+	}
+	th.AssertNoErr(t, err)
+	pager := capsules.List(client, nil)
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		t.Logf("--- Page ---")
+
+		CapsuleList, err := capsules.ExtractCapsules(page)
+		th.AssertNoErr(t, err)
+
+		for _, m := range CapsuleList {
+			t.Logf("Capsule: UUID [%s] Name [%s] Status [%s]",
+				m.UUID, m.MetaName, m.Status)
+		}
+		return true, nil
+	})
+	th.CheckNoErr(t, err)
+}

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 type commonResult struct {
@@ -27,6 +28,10 @@ type GetResult struct {
 // method to interpret it as a Server.
 type CreateResult struct {
 	gophercloud.ErrResult
+}
+
+type CapsulePage struct {
+	pagination.LinkedPageBase
 }
 
 // Represents a Container Orchestration Engine Bay, i.e. a cluster
@@ -213,6 +218,37 @@ type Address struct {
 	Port             string  `json:"port"`
 	Version          float64 `json:"version"`
 	SubnetID         string  `json:"subnet_id"`
+}
+
+// NextPageURL is invoked when a paginated collection of capsules has reached
+// the end of a page and the pager seeks to traverse over a new one. In order
+// to do this, it needs to construct the next page's URL.
+func (r CapsulePage) NextPageURL() (string, error) {
+	var s struct {
+		Next string `json:"next"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return s.Next, nil
+}
+
+// IsEmpty checks whether a CapsulePage struct is empty.
+func (r CapsulePage) IsEmpty() (bool, error) {
+	is, err := ExtractCapsules(r)
+	return len(is) == 0, err
+}
+
+// ExtractCapsules accepts a Page struct, specifically a CapsulePage struct,
+// and extracts the elements into a slice of Capsule structs. In other words,
+// a generic collection is mapped into a relevant slice.
+func ExtractCapsules(r pagination.Page) ([]Capsule, error) {
+	var s struct {
+		Capsules []Capsule `json:"capsules"`
+	}
+	err := (r.(CapsulePage)).ExtractInto(&s)
+	return s.Capsules, err
 }
 
 func (r *Capsule) UnmarshalJSON(b []byte) error {
