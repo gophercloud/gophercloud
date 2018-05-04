@@ -371,7 +371,7 @@ func TestUpdate(t *testing.T) {
 	opts := subnets.UpdateOpts{
 		Name:           "my_new_subnet",
 		DNSNameservers: []string{"foo"},
-		HostRoutes: []subnets.HostRoute{
+		HostRoutes: &[]subnets.HostRoute{
 			{NextHop: "bar"},
 		},
 	}
@@ -440,6 +440,71 @@ func TestUpdateRemoveGateway(t *testing.T) {
 	th.AssertEquals(t, s.Name, "my_new_subnet")
 	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
 	th.AssertEquals(t, s.GatewayIP, "")
+}
+
+func TestUpdateHostRoutes(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/subnets/08eae331-0402-425a-923c-34f7cfe39c1b", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, SubnetUpdateHostRoutesRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, SubnetUpdateHostRoutesResponse)
+	})
+
+	HostRoutes := []subnets.HostRoute{
+		{
+			DestinationCIDR: "192.168.1.1/24",
+			NextHop:         "bar",
+		},
+	}
+
+	opts := subnets.UpdateOpts{
+		Name:       "my_new_subnet",
+		HostRoutes: &HostRoutes,
+	}
+	s, err := subnets.Update(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, s.Name, "my_new_subnet")
+	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
+	th.AssertDeepEquals(t, s.HostRoutes, HostRoutes)
+}
+
+func TestUpdateRemoveHostRoutes(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/subnets/08eae331-0402-425a-923c-34f7cfe39c1b", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, SubnetUpdateRemoveHostRoutesRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, SubnetUpdateRemoveHostRoutesResponse)
+	})
+
+	noHostRoutes := []subnets.HostRoute{}
+	opts := subnets.UpdateOpts{
+		HostRoutes: &noHostRoutes,
+	}
+	s, err := subnets.Update(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, s.Name, "my_new_subnet")
+	th.AssertEquals(t, s.ID, "08eae331-0402-425a-923c-34f7cfe39c1b")
+	th.AssertDeepEquals(t, s.HostRoutes, noHostRoutes)
 }
 
 func TestUpdateAllocationPool(t *testing.T) {

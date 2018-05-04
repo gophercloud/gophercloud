@@ -176,7 +176,7 @@ type UpdateOpts struct {
 	DNSNameservers []string `json:"dns_nameservers,omitempty"`
 
 	// HostRoutes are any static host routes to be set via DHCP.
-	HostRoutes []HostRoute `json:"host_routes,omitempty"`
+	HostRoutes *[]HostRoute `json:"host_routes,omitempty"`
 
 	// EnableDHCP will either enable to disable the DHCP service.
 	EnableDHCP *bool `json:"enable_dhcp,omitempty"`
