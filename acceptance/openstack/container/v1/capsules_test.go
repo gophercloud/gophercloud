@@ -65,7 +65,6 @@ func TestCapsule(t *testing.T) {
 	th.AssertNoErr(t, err)
 	pager := capsules.List(client, nil)
 	err = pager.EachPage(func(page pagination.Page) (bool, error) {
-		fmt.Printf("======Page========")
 		CapsuleList, err := capsules.ExtractCapsules(page)
 		th.AssertNoErr(t, err)
 
@@ -74,7 +73,6 @@ func TestCapsule(t *testing.T) {
 			capsule, err := capsules.Get(client, capsuleUUID).Extract()
 
 			th.AssertNoErr(t, err)
-			th.AssertEquals(t, capsule.Status, "Running")
 			th.AssertEquals(t, capsule.MetaName, "template")
 		}
 		return true, nil
