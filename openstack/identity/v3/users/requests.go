@@ -1,8 +1,10 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
@@ -56,16 +58,38 @@ type ListOpts struct {
 	Filters map[string]string `q:"-"`
 }
 
+// InvalidListFilter is returned by the ToUserListQuery method when validation of
+// a filter does not pass
+type InvalidListFilter struct {
+	FilterName string
+}
+
+func (e InvalidListFilter) Error() string {
+	s := fmt.Sprintf(
+		"Invalid filter name [%s]: it must be in format of NAME__COMPARATOR",
+		e.FilterName,
+	)
+	return s
+}
+
 // ToUserListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToUserListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
 
 	params := q.Query()
 	for k, v := range opts.Filters {
-		params.Add(k, v)
+		i := strings.Index(k, "__")
+		if i > 0 && i < len(k)-2 {
+			params.Add(k, v)
+		} else {
+			return "", InvalidListFilter{FilterName: k}
+		}
 	}
-	q = &url.URL{RawQuery: params.Encode()}
 
+	q = &url.URL{RawQuery: params.Encode()}
 	return q.String(), err
 }
 
