@@ -33,11 +33,34 @@ func TestGroupCRUD(t *testing.T) {
 	tools.PrintResource(t, group)
 	tools.PrintResource(t, group.Extra)
 
-	allPages, err := groups.List(client, nil).AllPages()
+	updateOpts := groups.UpdateOpts{
+		Description: "Test Groups",
+		Extra: map[string]interface{}{
+			"email": "thetestgroup@example.com",
+		},
+	}
+
+	newGroup, err := groups.Update(client, group.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newGroup)
+	tools.PrintResource(t, newGroup.Extra)
+
+	listOpts := groups.ListOpts{
+		DomainID: "default",
+	}
+
+	// List all Groups in default domain
+	allPages, err := groups.List(client, listOpts).AllPages()
 	th.AssertNoErr(t, err)
 
 	allGroups, err := groups.ExtractGroups(allPages)
 	th.AssertNoErr(t, err)
+
+	for _, g := range allGroups {
+		tools.PrintResource(t, g)
+		tools.PrintResource(t, g.Extra)
+	}
 
 	var found bool
 	for _, group := range allGroups {
@@ -94,35 +117,6 @@ func TestGroupCRUD(t *testing.T) {
 	}
 
 	th.AssertEquals(t, found, false)
-
-	updateOpts := groups.UpdateOpts{
-		Description: "Test Groups",
-		Extra: map[string]interface{}{
-			"email": "thetestgroup@example.com",
-		},
-	}
-
-	newGroup, err := groups.Update(client, group.ID, updateOpts).Extract()
-	th.AssertNoErr(t, err)
-
-	tools.PrintResource(t, newGroup)
-	tools.PrintResource(t, newGroup.Extra)
-
-	listOpts := groups.ListOpts{
-		DomainID: "default",
-	}
-
-	// List all Groups in default domain
-	allPages, err := groups.List(client, listOpts).AllPages()
-	th.AssertNoErr(t, err)
-
-	allGroups, err := groups.ExtractGroups(allPages)
-	th.AssertNoErr(t, err)
-
-	for _, g := range allGroups {
-		tools.PrintResource(t, g)
-		tools.PrintResource(t, g.Extra)
-	}
 
 	// Get the recently created group by ID
 	p, err := groups.Get(client, group.ID).Extract()
