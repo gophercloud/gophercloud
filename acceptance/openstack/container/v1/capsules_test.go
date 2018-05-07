@@ -74,6 +74,10 @@ func TestCapsule(t *testing.T) {
 
 			th.AssertNoErr(t, err)
 			th.AssertEquals(t, capsule.MetaName, "template")
+
+			err = capsules.Delete(client, capsuleUUID).ExtractErr()
+			th.AssertNoErr(t, err)
+
 		}
 		return true, nil
 	})
