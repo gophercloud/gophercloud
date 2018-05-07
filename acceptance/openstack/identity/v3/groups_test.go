@@ -33,8 +33,70 @@ func TestGroupCRUD(t *testing.T) {
 	tools.PrintResource(t, group)
 	tools.PrintResource(t, group.Extra)
 
+	allPages, err := groups.List(client, nil).AllPages()
+	th.AssertNoErr(t, err)
+
+	allGroups, err := groups.ExtractGroups(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, group := range allGroups {
+		tools.PrintResource(t, group)
+		tools.PrintResource(t, group.Extra)
+
+		if group.Name == "testgroup" {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	listOpts.Filters = map[string]string{
+		"name__contains": "stg",
+	}
+
+	allPages, err = groups.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allGroups, err = groups.ExtractGroups(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, group := range allGroups {
+		tools.PrintResource(t, group)
+		tools.PrintResource(t, group.Extra)
+
+		if group.Name == "testgroup" {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	listOpts.Filters = map[string]string{
+		"name__contains": "foo",
+	}
+
+	allPages, err = groups.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allGroups, err = groups.ExtractGroups(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, group := range allGroups {
+		tools.PrintResource(t, group)
+		tools.PrintResource(t, group.Extra)
+
+		if group.Name == "testgroup" {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, false)
+
 	updateOpts := groups.UpdateOpts{
-		Description: "Test Users",
+		Description: "Test Groups",
 		Extra: map[string]interface{}{
 			"email": "thetestgroup@example.com",
 		},
