@@ -38,6 +38,48 @@ func TestProjectsList(t *testing.T) {
 	}
 
 	th.AssertEquals(t, found, true)
+
+	listOpts.Filters = map[string]string{
+		"name__contains": "dmi",
+	}
+
+	allPages, err = projects.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allProjects, err = projects.ExtractProjects(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, project := range allProjects {
+		tools.PrintResource(t, project)
+
+		if project.Name == "admin" {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	listOpts.Filters = map[string]string{
+		"name__contains": "foo",
+	}
+
+	allPages, err = projects.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allProjects, err = projects.ExtractProjects(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, project := range allProjects {
+		tools.PrintResource(t, project)
+
+		if project.Name == "admin" {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, false)
 }
 
 func TestProjectsGet(t *testing.T) {
