@@ -5,6 +5,8 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+const createOptsTypeMaxLength = 255
+
 // ListOptsBuilder allows extensions to add additional parameters to
 // the List request
 type ListOptsBuilder interface {
@@ -52,7 +54,7 @@ type CreateOpts struct {
 	Type string `json:"type" required:"true"`
 
 	// Blob is the policy rule as a serialized blob.
-	Blob string `json:"blob" required:"true"`
+	Blob []byte `json:"-" required:"true"`
 
 	// Extra is free-form extra key/value pairs to describe the policy.
 	Extra map[string]interface{} `json:"-"`
@@ -60,13 +62,22 @@ type CreateOpts struct {
 
 // ToPolicyCreateMap formats a CreateOpts into a create request.
 func (opts CreateOpts) ToPolicyCreateMap() (map[string]interface{}, error) {
+	if len(opts.Type) > createOptsTypeMaxLength {
+		return nil, StringFieldLengthExceedsLimit{
+			Field: "type",
+			Limit: createOptsTypeMaxLength,
+		}
+	}
+
 	b, err := gophercloud.BuildRequestBody(opts, "policy")
 	if err != nil {
 		return nil, err
 	}
 
-	if opts.Extra != nil {
-		if v, ok := b["policy"].(map[string]interface{}); ok {
+	if v, ok := b["policy"].(map[string]interface{}); ok {
+		v["blob"] = string(opts.Blob)
+
+		if opts.Extra != nil {
 			for key, value := range opts.Extra {
 				v[key] = value
 			}

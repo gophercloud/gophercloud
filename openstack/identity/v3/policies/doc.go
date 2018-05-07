@@ -26,7 +26,7 @@ Example to Create a Policy
 
 	createOpts := policies.CreateOpts{
 		Type: "application/json",
-		Blob: "{'foobar_user': 'role:compute-user'}",
+		Blob: []byte("{'foobar_user': 'role:compute-user'}"),
 		Extra: map[string]interface{}{
 			"description": "policy for foobar_user",
 		},
