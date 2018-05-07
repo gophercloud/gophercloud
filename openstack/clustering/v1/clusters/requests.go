@@ -14,9 +14,9 @@ type CreateOptsBuilder interface {
 // CreateOpts params
 type CreateOpts struct {
 	Name            string                 `json:"name" required:"true"`
-	DesiredCapacity int                    `json:"desired_capacity" required:"false"`
+	DesiredCapacity int                    `json:"desired_capacity"`
 	ProfileID       string                 `json:"profile_id" required:"true"`
-	MinSize         int                    `json:"min_size,omitempty"`
+	MinSize         *int                   `json:"min_size,omitempty"`
 	Timeout         int                    `json:"timeout,omitempty"`
 	MaxSize         int                    `json:"max_size,omitempty"`
 	Metadata        map[string]interface{} `json:"metadata,omitempty"`

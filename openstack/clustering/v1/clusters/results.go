@@ -3,10 +3,8 @@ package clusters
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
-	"time"
-
 	"reflect"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 )
@@ -44,14 +42,6 @@ type Cluster struct {
 	Timeout         int                    `json:"timeout"`
 	UpdatedAt       time.Time              `json:"-"`
 	User            string                 `json:"user"`
-}
-
-func ExtractActionFromLocation(location string) (string, error) {
-	actionID := strings.Split(location, "actions/")
-	if len(actionID) >= 2 {
-		return actionID[1], nil
-	}
-	return "", fmt.Errorf("ExtractAction failed. Location=%s", location)
 }
 
 func (r commonResult) Extract() (*Cluster, error) {

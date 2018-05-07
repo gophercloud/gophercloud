@@ -3,6 +3,7 @@
 package v1
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -82,11 +83,19 @@ func clusterCreate(t *testing.T) {
 		Name:            clusterName,
 		DesiredCapacity: 3,
 		ProfileID:       testName,
-		MinSize:         1,
+		MinSize:         new(int),
 		MaxSize:         20,
 		Timeout:         3600,
-		Metadata:        map[string]interface{}{},
-		Config:          map[string]interface{}{},
+		Metadata: map[string]interface{}{
+			"foo": "bar",
+			"test": map[string]interface{}{
+				"nil_interface": interface{}(nil),
+				"float_value":   float64(123.3),
+				"string_value":  "test_string",
+				"bool_value":    false,
+			},
+		},
+		Config: map[string]interface{}{},
 	}
 
 	createResult := clusters.Create(client, optsCluster)
@@ -98,8 +107,11 @@ func clusterCreate(t *testing.T) {
 	location := createResult.Header.Get("Location")
 	th.AssertEquals(t, true, location != "")
 
-	actionID, err := clusters.ExtractActionFromLocation(location)
-	th.AssertNoErr(t, err)
+	actionID := ""
+	locationFields := strings.Split(location, "actions/")
+	if len(locationFields) >= 2 {
+		actionID = locationFields[1]
+	}
 	th.AssertEquals(t, true, actionID != "")
 	t.Logf("Cluster create action id: %s", actionID)
 
@@ -113,7 +125,7 @@ func clusterCreate(t *testing.T) {
 	th.AssertEquals(t, optsCluster.Name, cluster.Name)
 	th.AssertEquals(t, optsCluster.DesiredCapacity, cluster.DesiredCapacity)
 	th.AssertEquals(t, optsCluster.ProfileID, cluster.ProfileName)
-	th.AssertEquals(t, optsCluster.MinSize, cluster.MinSize)
+	th.AssertEquals(t, *optsCluster.MinSize, cluster.MinSize)
 	th.AssertEquals(t, optsCluster.MaxSize, cluster.MaxSize)
 	th.AssertEquals(t, optsCluster.Timeout, cluster.Timeout)
 	th.CheckDeepEquals(t, optsCluster.Metadata, cluster.Metadata)
