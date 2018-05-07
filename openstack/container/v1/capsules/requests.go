@@ -94,3 +94,9 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		return CapsulePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// Delete implements Capsule delete request.
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
+}

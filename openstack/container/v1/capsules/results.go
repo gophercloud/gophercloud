@@ -30,6 +30,11 @@ type CreateResult struct {
 	gophercloud.ErrResult
 }
 
+// DeleteResult represents the result of a delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 type CapsulePage struct {
 	pagination.LinkedPageBase
 }
