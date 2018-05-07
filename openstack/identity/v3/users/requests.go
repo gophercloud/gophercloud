@@ -1,7 +1,6 @@
 package users
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -56,20 +55,6 @@ type ListOpts struct {
 	// Filters filters the response by custom filters such as
 	// 'name__contains=foo'
 	Filters map[string]string `q:"-"`
-}
-
-// InvalidListFilter is returned by the ToUserListQuery method when validation of
-// a filter does not pass
-type InvalidListFilter struct {
-	FilterName string
-}
-
-func (e InvalidListFilter) Error() string {
-	s := fmt.Sprintf(
-		"Invalid filter name [%s]: it must be in format of NAME__COMPARATOR",
-		e.FilterName,
-	)
-	return s
 }
 
 // ToUserListQuery formats a ListOpts into a query string.
