@@ -3,11 +3,8 @@ package nodes
 import (
 	"encoding/json"
 	"fmt"
-	"time"
-
-	"strings"
-
 	"reflect"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 )
@@ -20,14 +17,6 @@ type commonResult struct {
 // CreateResult is the response of a Create operations.
 type CreateResult struct {
 	commonResult
-}
-
-func ExtractActionFromLocation(location string) (string, error) {
-	actionID := strings.Split(location, "actions/")
-	if len(actionID) >= 2 {
-		return actionID[1], nil
-	}
-	return "", fmt.Errorf("ExtractAction failed. Location=%s", location)
 }
 
 // Extract provides access to the individual node returned by Get and Create

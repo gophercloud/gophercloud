@@ -418,3 +418,68 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 		}
 	})
 }
+
+func nodeCreate(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	nodeName := testName
+	optsNode := nodes.CreateOpts{
+		ClusterID: testName,
+		Metadata:  map[string]interface{}{},
+		Name:      nodeName,
+		ProfileID: testName,
+		Role:      "",
+
+	nodeName := testName
+	optsNode := nodes.CreateOpts{
+		ClusterID: testName,
+		Metadata: map[string]interface{}{
+			"foo": "bar",
+			"test": map[string]interface{}{
+				"nil_interface": interface{}(nil),
+				"float_value":   float64(123.3),
+				"string_value":  "test_string",
+				"bool_value":    false,
+			},
+		},
+		Name:      nodeName,
+		ProfileID: testName,
+		Role:      "",
+	}
+
+	createResult := nodes.Create(client, optsNode)
+	th.AssertNoErr(t, createResult.Err)
+
+	requestID := createResult.Header.Get("X-OpenStack-Request-Id")
+	th.AssertEquals(t, true, requestID != "")
+
+	location := createResult.Header.Get("Location")
+	th.AssertEquals(t, true, location != "")
+
+	actionID, err := nodes.ExtractActionFromLocation(location)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, actionID != "")
+	t.Logf("Node create action id: %s", actionID)
+
+	actionID := ""
+	locationFields := strings.Split(location, "actions/")
+	if len(locationFields) >= 2 {
+		actionID = locationFields[1]
+	}
+	th.AssertEquals(t, true, actionID != "")
+	t.Logf("Node create action id: %s", actionID)
+
+	node, err := createResult.Extract()
+	if err != nil {
+		t.Fatalf("Unable to create node %s: %v", nodeName, err)
+	} else {
+		t.Logf("Node created %+v", node)
+	}
+
+	th.AssertDeepEquals(t, optsNode.Metadata, (map[string]interface{})(optsNode.Metadata))
+	th.AssertEquals(t, optsNode.ProfileID, node.ProfileName)
+	th.AssertEquals(t, optsNode.Role, node.Role)
+}

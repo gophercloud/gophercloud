@@ -3,6 +3,7 @@ package testing
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -31,30 +32,38 @@ func TestCreateNode(t *testing.T) {
 				"cluster_id": "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
 				"created_at": "2016-05-13T07:02:20Z",
 				"data": {
-							"internal_ports": [
+					"internal_ports": [
+						{
+							"network_id": "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
+							"security_group_ids": ["8db277ab-1d98-4148-ba72-724721789427"],
+							"fixed_ips": [
 								{
-									"network_id": "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
-									"security_group_ids": ["8db277ab-1d98-4148-ba72-724721789427"],
-									"fixed_ips": [
-										{
-										  "subnet_id": "863b20c0-c011-4650-85c2-ad531f4570a4",
-										  "ip_address": "10.63.177.162"
-										}
-									],
-									"id": "43aa53d7-a70b-4f40-812f-4feecb687018",
-									"remove": true
+								  "subnet_id": "863b20c0-c011-4650-85c2-ad531f4570a4",
+								  "ip_address": "10.63.177.162"
 								}
-                            ],
-                            "placement": {
-								"zone": "nova"
-                            }
-						},
+							],
+							"id": "43aa53d7-a70b-4f40-812f-4feecb687018",
+							"remove": true
+						}
+					],
+					"placement": {
+						"zone": "nova"
+					}
+				},
 				"dependents": {},
 				"domain": "1235be1e-8d8e-43bb-bd6c-943eccf76a6d",
 				"id": "82fe28e0-9fcb-42ca-a2fa-6eb7dddd75a1",
 				"index": 2,
 				"init_at": "2016-05-13T08:02:04Z",
-				"metadata": {},
+				"metadata": {
+					"test": {
+						"nil_interface": null,
+						"bool_value": false,
+						"string_value": "test_string",
+						"float_value": 123.3
+					},
+					"foo": "bar"
+				},
 				"name": "node-e395be1e-002",
 				"physical_id": "66a81d68-bf48-4af5-897b-a3bfef7279a8",
 				"profile_id": "d8a48377-f6a3-4af4-bbbb-6e8bcaa0cbc0",
@@ -71,7 +80,15 @@ func TestCreateNode(t *testing.T) {
 
 	opts := nodes.CreateOpts{
 		ClusterID: "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
-		Metadata:  map[string]interface{}{},
+		Metadata: map[string]interface{}{
+			"foo": "bar",
+			"test": map[string]interface{}{
+				"nil_interface": interface{}(nil),
+				"float_value":   float64(123.3),
+				"string_value":  "test_string",
+				"bool_value":    false,
+			},
+		},
 		Name:      "node-e395be1e-002",
 		ProfileID: "d8a48377-f6a3-4af4-bbbb-6e8bcaa0cbc0",
 		Role:      "",
@@ -88,9 +105,10 @@ func TestCreateNode(t *testing.T) {
 	location := createResult.Header.Get("Location")
 	th.AssertEquals(t, "http://senlin.cloud.blizzard.net:8778/v1/actions/ffd94dd8-6266-4887-9a8c-5b78b72136da", location)
 
-	actionID, err := nodes.ExtractActionFromLocation(location)
-	if err != nil {
-		t.Error("Error Extracting Action ID. error=", err)
+	actionID := ""
+	locationFields := strings.Split(location, "actions/")
+	if len(locationFields) >= 2 {
+		actionID = locationFields[1]
 	}
 	th.AssertEquals(t, "ffd94dd8-6266-4887-9a8c-5b78b72136da", actionID)
 
@@ -122,12 +140,20 @@ func TestCreateNode(t *testing.T) {
 				},
 				Placement: nodes.Placement{Zone: "nova"},
 			},
-			Dependents:   map[string]interface{}{},
-			Domain:       "1235be1e-8d8e-43bb-bd6c-943eccf76a6d",
-			ID:           "82fe28e0-9fcb-42ca-a2fa-6eb7dddd75a1",
-			Index:        2,
-			InitAt:       initAt,
-			Metadata:     map[string]interface{}{},
+			Dependents: map[string]interface{}{},
+			Domain:     "1235be1e-8d8e-43bb-bd6c-943eccf76a6d",
+			ID:         "82fe28e0-9fcb-42ca-a2fa-6eb7dddd75a1",
+			Index:      2,
+			InitAt:     initAt,
+			Metadata: map[string]interface{}{
+				"foo": "bar",
+				"test": map[string]interface{}{
+					"nil_interface": interface{}(nil),
+					"float_value":   float64(123.3),
+					"string_value":  "test_string",
+					"bool_value":    false,
+				},
+			},
 			Name:         "node-e395be1e-002",
 			PhysicalID:   "66a81d68-bf48-4af5-897b-a3bfef7279a8",
 			ProfileID:    "d8a48377-f6a3-4af4-bbbb-6e8bcaa0cbc0",
@@ -160,24 +186,24 @@ func TestCreateNodeEmptyTime(t *testing.T) {
 				"cluster_id": "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
 				"created_at": null,
 				"data": {
-							"internal_ports": [
+					"internal_ports": [
+						{
+							"network_id": "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
+							"security_group_ids": ["8db277ab-1d98-4148-ba72-724721789427"],
+							"fixed_ips": [
 								{
-									"network_id": "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
-									"security_group_ids": ["8db277ab-1d98-4148-ba72-724721789427"],
-									"fixed_ips": [
-										{
-										  "subnet_id": "863b20c0-c011-4650-85c2-ad531f4570a4",
-										  "ip_address": "10.63.177.162"
-										}
-									],
-									"id": "43aa53d7-a70b-4f40-812f-4feecb687018",
-									"remove": true
+								  "subnet_id": "863b20c0-c011-4650-85c2-ad531f4570a4",
+								  "ip_address": "10.63.177.162"
 								}
-                            ],
-                            "placement": {
-								"zone": "nova"
-                            }
-						},
+							],
+							"id": "43aa53d7-a70b-4f40-812f-4feecb687018",
+							"remove": true
+						}
+					],
+					"placement": {
+						"zone": "nova"
+					}
+				},
 				"dependents": {},
 				"domain": "1235be1e-8d8e-43bb-bd6c-943eccf76a6d",
 				"id": "82fe28e0-9fcb-42ca-a2fa-6eb7dddd75a1",
@@ -268,24 +294,24 @@ func TestCreateNodeInvalidTimeFloat(t *testing.T) {
 				"cluster_id": "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
 				"created_at": 123456789.0,
 				"data": {
-							"internal_ports": [
+					"internal_ports": [
+						{
+							"network_id": "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
+							"security_group_ids": ["8db277ab-1d98-4148-ba72-724721789427"],
+							"fixed_ips": [
 								{
-									"network_id": "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
-									"security_group_ids": ["8db277ab-1d98-4148-ba72-724721789427"],
-									"fixed_ips": [
-										{
-										  "subnet_id": "863b20c0-c011-4650-85c2-ad531f4570a4",
-										  "ip_address": "10.63.177.162"
-										}
-									],
-									"id": "43aa53d7-a70b-4f40-812f-4feecb687018",
-									"remove": true
+								  "subnet_id": "863b20c0-c011-4650-85c2-ad531f4570a4",
+								  "ip_address": "10.63.177.162"
 								}
-                            ],
-                            "placement": {
-								"zone": "nova"
-                            }
-						},
+							],
+							"id": "43aa53d7-a70b-4f40-812f-4feecb687018",
+							"remove": true
+						}
+					],
+					"placement": {
+						"zone": "nova"
+					}
+				},
 				"dependents": {},
 				"domain": "1235be1e-8d8e-43bb-bd6c-943eccf76a6d",
 				"id": "82fe28e0-9fcb-42ca-a2fa-6eb7dddd75a1",
@@ -335,24 +361,24 @@ func TestCreateNodeInvalidTimeString(t *testing.T) {
 				"cluster_id": "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
 				"created_at": "invalid",
 				"data": {
-							"internal_ports": [
+					"internal_ports": [
+						{
+							"network_id": "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
+							"security_group_ids": ["8db277ab-1d98-4148-ba72-724721789427"],
+							"fixed_ips": [
 								{
-									"network_id": "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
-									"security_group_ids": ["8db277ab-1d98-4148-ba72-724721789427"],
-									"fixed_ips": [
-										{
-										  "subnet_id": "863b20c0-c011-4650-85c2-ad531f4570a4",
-										  "ip_address": "10.63.177.162"
-										}
-									],
-									"id": "43aa53d7-a70b-4f40-812f-4feecb687018",
-									"remove": true
+								  "subnet_id": "863b20c0-c011-4650-85c2-ad531f4570a4",
+								  "ip_address": "10.63.177.162"
 								}
-                            ],
-                            "placement": {
-								"zone": "nova"
-                            }
-						},
+							],
+							"id": "43aa53d7-a70b-4f40-812f-4feecb687018",
+							"remove": true
+						}
+					],
+					"placement": {
+						"zone": "nova"
+					}
+				},
 				"dependents": {},
 				"domain": "1235be1e-8d8e-43bb-bd6c-943eccf76a6d",
 				"id": "82fe28e0-9fcb-42ca-a2fa-6eb7dddd75a1",
