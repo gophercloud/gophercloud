@@ -41,6 +41,50 @@ func TestUsersList(t *testing.T) {
 	}
 
 	th.AssertEquals(t, found, true)
+
+	listOpts.Filters = map[string]string{
+		"name__contains": "dmi",
+	}
+
+	allPages, err = users.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allUsers, err = users.ExtractUsers(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, user := range allUsers {
+		tools.PrintResource(t, user)
+		tools.PrintResource(t, user.Extra)
+
+		if user.Name == "admin" {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	listOpts.Filters = map[string]string{
+		"name__contains": "foo",
+	}
+
+	allPages, err = users.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allUsers, err = users.ExtractUsers(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, user := range allUsers {
+		tools.PrintResource(t, user)
+		tools.PrintResource(t, user.Extra)
+
+		if user.Name == "admin" {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, false)
 }
 
 func TestUsersGet(t *testing.T) {
