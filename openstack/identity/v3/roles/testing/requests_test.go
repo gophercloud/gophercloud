@@ -42,6 +42,38 @@ func TestListRolesAllPages(t *testing.T) {
 	th.AssertEquals(t, ExpectedRolesSlice[1].Extra["description"], "read-only support role")
 }
 
+func TestListUsersFiltersCheck(t *testing.T) {
+	type test struct {
+		filterName string
+		wantErr    bool
+	}
+	tests := []test{
+		{"foo__contains", false},
+		{"foo", true},
+		{"foo_contains", true},
+		{"foo__", true},
+		{"__foo", true},
+	}
+
+	var listOpts roles.ListOpts
+	for _, _test := range tests {
+		listOpts.Filters = map[string]string{_test.filterName: "bar"}
+		_, err := listOpts.ToRoleListQuery()
+
+		if !_test.wantErr {
+			th.AssertNoErr(t, err)
+		} else {
+			switch _t := err.(type) {
+			case nil:
+				t.Fatal("error expected but got a nil")
+			case roles.InvalidListFilter:
+			default:
+				t.Fatalf("unexpected error type: [%T]", _t)
+			}
+		}
+	}
+}
+
 func TestGetRole(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
