@@ -46,10 +46,6 @@ func TestListUsersAllPages(t *testing.T) {
 }
 
 func TestListUsersFiltersCheck(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-	HandleListUsersSuccessfully(t)
-
 	type test struct {
 		filterName string
 		wantErr    bool
@@ -65,12 +61,12 @@ func TestListUsersFiltersCheck(t *testing.T) {
 	var listOpts users.ListOpts
 	for _, _test := range tests {
 		listOpts.Filters = map[string]string{_test.filterName: "bar"}
-		pager := users.List(client.ServiceClient(), listOpts)
+		_, err := listOpts.ToUserListQuery()
 
 		if !_test.wantErr {
-			th.AssertNoErr(t, pager.Err)
+			th.AssertNoErr(t, err)
 		} else {
-			switch _t := pager.Err.(type) {
+			switch _t := err.(type) {
 			case nil:
 				t.Fatal("error expected but got a nil")
 			case users.InvalidListFilter:
