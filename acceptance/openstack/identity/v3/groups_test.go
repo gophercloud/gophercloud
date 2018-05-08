@@ -67,7 +67,7 @@ func TestGroupCRUD(t *testing.T) {
 		tools.PrintResource(t, group)
 		tools.PrintResource(t, group.Extra)
 
-		if group.Name == "testgroup" {
+		if group.Name == newGroup.Name {
 			found = true
 		}
 	}
@@ -75,7 +75,7 @@ func TestGroupCRUD(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	listOpts.Filters = map[string]string{
-		"name__contains": "stg",
+		"name__contains": "TEST",
 	}
 
 	allPages, err = groups.List(client, listOpts).AllPages()
@@ -89,7 +89,7 @@ func TestGroupCRUD(t *testing.T) {
 		tools.PrintResource(t, group)
 		tools.PrintResource(t, group.Extra)
 
-		if group.Name == "testgroup" {
+		if group.Name == newGroup.Name {
 			found = true
 		}
 	}
@@ -111,7 +111,7 @@ func TestGroupCRUD(t *testing.T) {
 		tools.PrintResource(t, group)
 		tools.PrintResource(t, group.Extra)
 
-		if group.Name == "testgroup" {
+		if group.Name == newGroup.Name {
 			found = true
 		}
 	}
