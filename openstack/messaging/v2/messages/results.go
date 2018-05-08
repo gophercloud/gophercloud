@@ -33,7 +33,12 @@ type PopResult struct {
 
 // GetMessagesResult is the response of a GetMessages operations.
 type GetMessagesResult struct {
-	commonResult
+	gophercloud.Result
+}
+
+// GetResult is the response of a Get operations.
+type GetResult struct {
+	gophercloud.Result
 }
 
 // Message represents a message on a queue.
@@ -84,6 +89,13 @@ func (r GetMessagesResult) Extract() ([]Message, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.Messages, err
+}
+
+// Extract interprets any GetResult as a Message.
+func (r GetResult) Extract() (Message, error) {
+	var s Message
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // ExtractMessage extracts message into a  list of Message.
