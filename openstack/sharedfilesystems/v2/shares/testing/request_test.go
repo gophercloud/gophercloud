@@ -149,7 +149,7 @@ func TestListAccessRightsSuccess(t *testing.T) {
 	s, err := shares.ListAccessRights(c, shareID).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, s, []*shares.AccessRight{
+	th.AssertDeepEquals(t, s, []shares.AccessRight{
 		{
 			ShareID:     "011d21e2-fbc3-4e4a-9993-9ea223f73264",
 			AccessType:  "ip",
