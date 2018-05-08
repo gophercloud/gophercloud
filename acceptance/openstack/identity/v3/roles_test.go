@@ -78,11 +78,11 @@ func TestRolesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	var found bool
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
-		tools.PrintResource(t, role.Extra)
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		tools.PrintResource(t, r.Extra)
 
-		if role.Name == "testrole" {
+		if r.Name == role.Name {
 			found = true
 		}
 	}
@@ -91,7 +91,7 @@ func TestRolesCRUD(t *testing.T) {
 
 	var listOpts roles.ListOpts
 	listOpts.Filters = map[string]string{
-		"name__contains": "str",
+		"name__contains": "TEST",
 	}
 
 	allPages, err = roles.List(client, listOpts).AllPages()
@@ -101,11 +101,11 @@ func TestRolesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	found = false
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
-		tools.PrintResource(t, role.Extra)
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		tools.PrintResource(t, r.Extra)
 
-		if role.Name == "testrole" {
+		if r.Name == role.Name {
 			found = true
 		}
 	}
@@ -123,11 +123,11 @@ func TestRolesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	found = false
-	for _, role := range allRoles {
-		tools.PrintResource(t, role)
-		tools.PrintResource(t, role.Extra)
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		tools.PrintResource(t, r.Extra)
 
-		if role.Name == "testrole" {
+		if r.Name == role.Name {
 			found = true
 		}
 	}
