@@ -123,7 +123,7 @@ func TestCreateNode(t *testing.T) {
 		expected := nodes.Node{
 			ClusterID: "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
 			CreatedAt: createdAt,
-			Data: nodes.DataType{
+			Data: nodes.Data{
 				InternalPorts: []nodes.InternalPort{
 					{
 						FixedIps: []nodes.FixedIp{
@@ -196,6 +196,12 @@ func TestCreateNodeEmptyTime(t *testing.T) {
 								  "ip_address": "10.63.177.162"
 								}
 							],
+							"floating": {
+								"id": "e906af80-ce13-4ec3-9fba-fa20581c2695",
+							  	"floating_network_id": "c87774b5-95a4-4efb-8e6b-883e2212d67b",
+							  	"floating_ip_address": "10.0.0.20",
+								"remove": false
+							},
 							"id": "43aa53d7-a70b-4f40-812f-4feecb687018",
 							"remove": true
 						}
@@ -239,7 +245,7 @@ func TestCreateNodeEmptyTime(t *testing.T) {
 		expected := nodes.Node{
 			ClusterID: "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
 			CreatedAt: time.Time{},
-			Data: nodes.DataType{
+			Data: nodes.Data{
 				InternalPorts: []nodes.InternalPort{
 					{
 						FixedIps: []nodes.FixedIp{
@@ -247,6 +253,11 @@ func TestCreateNodeEmptyTime(t *testing.T) {
 								SubnetID:  "863b20c0-c011-4650-85c2-ad531f4570a4",
 								IPAddress: "10.63.177.162",
 							},
+						},
+						Floating: nodes.Floating{
+							ID:                "e906af80-ce13-4ec3-9fba-fa20581c2695",
+							FloatingIPAddress: "10.0.0.20",
+							FloatingNetworkID: "c87774b5-95a4-4efb-8e6b-883e2212d67b",
 						},
 						ID:               "43aa53d7-a70b-4f40-812f-4feecb687018",
 						NetworkID:        "847e4f65-1ff1-42b1-9e74-74e6a109ad11",

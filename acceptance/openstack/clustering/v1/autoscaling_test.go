@@ -428,14 +428,6 @@ func nodeCreate(t *testing.T) {
 	nodeName := testName
 	optsNode := nodes.CreateOpts{
 		ClusterID: testName,
-		Metadata:  map[string]interface{}{},
-		Name:      nodeName,
-		ProfileID: testName,
-		Role:      "",
-
-	nodeName := testName
-	optsNode := nodes.CreateOpts{
-		ClusterID: testName,
 		Metadata: map[string]interface{}{
 			"foo": "bar",
 			"test": map[string]interface{}{
@@ -458,11 +450,6 @@ func nodeCreate(t *testing.T) {
 
 	location := createResult.Header.Get("Location")
 	th.AssertEquals(t, true, location != "")
-
-	actionID, err := nodes.ExtractActionFromLocation(location)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, true, actionID != "")
-	t.Logf("Node create action id: %s", actionID)
 
 	actionID := ""
 	locationFields := strings.Split(location, "actions/")

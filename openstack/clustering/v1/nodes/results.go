@@ -35,6 +35,7 @@ type Placement struct {
 
 type InternalPort struct {
 	FixedIps         []FixedIp `json:"fixed_ips"`
+	Floating         Floating  `json:"floating"`
 	ID               string    `json:"id"`
 	NetworkID        string    `json:"network_id"`
 	Remove           bool      `json:"remove"`
@@ -46,7 +47,14 @@ type FixedIp struct {
 	SubnetID  string `json:"subnet_id"`
 }
 
-type DataType struct {
+type Floating struct {
+	ID                string `json:"id"`
+	FloatingIPAddress string `json:"floating_ip_address"`
+	FloatingNetworkID string `json:"floating_network_id"`
+	Remove            bool   `json:"remove"`
+}
+
+type Data struct {
 	InternalPorts []InternalPort `json:"internal_ports"`
 	Placement     Placement      `json:"placement"`
 }
@@ -55,7 +63,7 @@ type DataType struct {
 type Node struct {
 	ClusterID    string                 `json:"cluster_id"`
 	CreatedAt    time.Time              `json:"-"`
-	Data         DataType               `json:"data"`
+	Data         Data                   `json:"data"`
 	Dependents   map[string]interface{} `json:"dependents"`
 	Domain       string                 `json:"domain"`
 	ID           string                 `json:"id"`
