@@ -252,3 +252,50 @@ func TestDeleteMessagesPop(t *testing.T) {
 		t.Fatalf("Unable to Pop specified number of messages.")
 	}
 }
+
+func TestDeleteMessage(t *testing.T) {
+	clientID := "3381af92-2b9e-11e3-b191-718613007343"
+
+	client, err := clients.NewMessagingV2Client(clientID)
+	if err != nil {
+		t.Fatalf("Unable to create a messaging service client: %v", err)
+	}
+
+	createdQueueName, err := CreateQueue(t, client)
+	defer DeleteQueue(t, client, createdQueueName)
+
+	CreateMessage(t, client, createdQueueName)
+
+	// Use a different client/clientID in order to see messages on the Queue
+	clientID = "3381af92-2b9e-11e3-b191-71861300734d"
+	client, err = clients.NewMessagingV2Client(clientID)
+
+	listOpts := messages.ListOpts{}
+
+	var messageIDs []string
+
+	pager := messages.List(client, createdQueueName, listOpts)
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		allMessages, err := messages.ExtractMessages(page)
+		if err != nil {
+			t.Fatalf("Unable to extract messages: %v", err)
+		}
+
+		for _, message := range allMessages {
+			messageIDs = append(messageIDs, message.ID)
+		}
+
+		return true, nil
+	})
+
+	for _, messageID := range messageIDs {
+		t.Logf("Attempting to delete message from queue %s: %s", createdQueueName, messageID)
+		deleteOpts := messages.DeleteOpts{}
+		deleteErr := messages.Delete(client, createdQueueName, messageID, deleteOpts).ExtractErr()
+		if deleteErr != nil {
+			t.Fatalf("Unable to delete message from queue %s: %s", createdQueueName, messageID)
+		} else {
+			t.Logf("Successfully deleted message: %s", messageID)
+		}
+	}
+}

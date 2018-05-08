@@ -102,5 +102,20 @@ Example to Pop a set of Messages
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete a singular Message
+
+	clientID := "3381af92-2b9e-11e3-b191-71861300734d"
+	queueName := "my_queue"
+	messageID := "123456"
+
+	deleteOpts := messages.DeleteOpts{
+		ClaimID: "12345",
+	}
+
+	err := messages.Delete(client), queueName, messageID, deleteOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package messages
