@@ -89,7 +89,7 @@ func TestRolesCRUD(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
-	var listOpts roles.ListOpts
+	listOpts := roles.ListOpts{DomainID: role.DomainID}
 	listOpts.Filters = map[string]string{
 		"name__contains": "TEST",
 	}
