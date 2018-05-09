@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strconv"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -45,7 +46,7 @@ func ExtractProfiles(r pagination.Page) ([]Profile, error) {
 
 type Spec struct {
 	Type       string                 `json:"type"`
-	Version    interface{}            `json:"version"`
+	Version    string                 `json:"version"`
 	Properties map[string]interface{} `json:"properties"`
 }
 
@@ -74,9 +75,16 @@ func (page ProfilePage) IsEmpty() (bool, error) {
 }
 
 func (r *Profile) UnmarshalJSON(b []byte) error {
+	type tmpSpec Spec
+	type t struct {
+		tmpSpec
+		Version interface{} `json:"version"`
+	}
+
 	type tmp Profile
 	var s struct {
 		tmp
+		Spec      t           `json:"spec"`
 		CreatedAt interface{} `json:"created_at"`
 		UpdatedAt interface{} `json:"updated_at"`
 	}
@@ -113,6 +121,22 @@ func (r *Profile) UnmarshalJSON(b []byte) error {
 		r.UpdatedAt = time.Time{}
 	default:
 		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.UpdatedAt))
+	}
+
+	r.Spec = Spec(s.Spec.tmpSpec)
+	if s.Spec.Version != "" {
+		switch s.Spec.Version.(type) {
+		case nil:
+			r.Spec.Version = ""
+		case float32, float64:
+			r.Spec.Version = strconv.FormatFloat(s.Spec.Version.(float64), 'f', -1, 64)
+		case int, int32, int64:
+			r.Spec.Version = strconv.FormatInt(s.Spec.Version.(int64), 10)
+		case string:
+			r.Spec.Version = s.Spec.Version.(string)
+		default:
+			return fmt.Errorf("Invalid type for Spec Version. type=%v", reflect.TypeOf(s.Spec.Version))
+		}
 	}
 
 	return nil

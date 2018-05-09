@@ -11,7 +11,6 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
 	"github.com/gophercloud/gophercloud/pagination"
-
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 

@@ -419,7 +419,7 @@ func TestListProfiles(t *testing.T) {
 							]
 						},
 						"type": "os.nova.server",
-						"version": "1.0"
+						"version": 1.0
 					},
 					"type": "os.nova.server-1.0",
 					"updated_at": "2016-01-03T17:22:23Z",
@@ -445,7 +445,7 @@ func TestListProfiles(t *testing.T) {
 							]
 						},
 						"type": "os.nova.server",
-						"version": "1.0"
+						"version": 1.0
 					},
 					"type": "os.nova.server-1.0",
 					"updated_at": null,
@@ -512,7 +512,7 @@ func TestListProfiles(t *testing.T) {
 						},
 					},
 					Type:    "os.nova.server",
-					Version: "1.0",
+					Version: "1",
 				},
 				Type:      "os.nova.server-1.0",
 				UpdatedAt: updatedAt,
@@ -536,7 +536,7 @@ func TestListProfiles(t *testing.T) {
 						},
 					},
 					Type:    "os.nova.server",
-					Version: "1.0",
+					Version: "1",
 				},
 				Type:      "os.nova.server-1.0",
 				UpdatedAt: time.Time{},

@@ -3,10 +3,9 @@ package testing
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
-
-	"strings"
 
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
 	th "github.com/gophercloud/gophercloud/testhelper"
