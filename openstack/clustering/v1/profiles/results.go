@@ -34,7 +34,7 @@ func (r commonResult) Extract() (*Profile, error) {
 	return s.Profile, err
 }
 
-// ExtractProfiles provides access to the list of profiles in a page from the ListDetail operation.
+// ExtractProfiles provides access to the list of profiles in a page from the List operation.
 func ExtractProfiles(r pagination.Page) ([]Profile, error) {
 	var s struct {
 		Profiles []Profile `json:"profiles"`
@@ -45,7 +45,7 @@ func ExtractProfiles(r pagination.Page) ([]Profile, error) {
 
 type Spec struct {
 	Type       string                 `json:"type"`
-	Version    string                 `json:"version"`
+	Version    interface{}            `json:"version"`
 	Properties map[string]interface{} `json:"properties"`
 }
 

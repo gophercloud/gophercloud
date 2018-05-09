@@ -75,7 +75,7 @@ func (opts ListOpts) ToProfileListQuery() (string, error) {
 	return q.String(), err
 }
 
-// ListDetail instructs OpenStack to provide a list of profiles.
+// List instructs OpenStack to provide a list of profiles.
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {

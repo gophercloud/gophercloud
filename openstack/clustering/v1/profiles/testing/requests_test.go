@@ -408,7 +408,7 @@ func TestListProfiles(t *testing.T) {
 					"project": "42d9e9663331431f97b75e25136307ff",
 					"spec": {
 						"properties": {
-							"flavor": 1,
+							"flavor": "t2.small",
 							"image": "cirros-0.3.4-x86_64-uec",
 							"key_name": "oskey",
 							"name": "cirros_server",
@@ -419,7 +419,7 @@ func TestListProfiles(t *testing.T) {
 							]
 						},
 						"type": "os.nova.server",
-						"version": 1.0
+						"version": "1.0"
 					},
 					"type": "os.nova.server-1.0",
 					"updated_at": "2016-01-03T17:22:23Z",
@@ -434,7 +434,7 @@ func TestListProfiles(t *testing.T) {
 					"project": "42d9e9663331431f97b75e25136307ff",
 					"spec": {
 						"properties": {
-							"flavor": 1,
+							"flavor": "t2.small",
 							"image": "cirros-0.3.4-x86_64-uec",
 							"key_name": "oskey",
 							"name": "cirros_server",
@@ -445,7 +445,7 @@ func TestListProfiles(t *testing.T) {
 							]
 						},
 						"type": "os.nova.server",
-						"version": 1.0
+						"version": "1.0"
 					},
 					"type": "os.nova.server-1.0",
 					"updated_at": null,
@@ -460,7 +460,7 @@ func TestListProfiles(t *testing.T) {
 					"project": "42d9e9663331431f97b75e25136307ff",
 					"spec": {
 						"properties": {
-							"flavor": 1,
+							"flavor": "t2.small",
 							"image": "cirros-0.3.4-x86_64-uec",
 							"key_name": "oskey",
 							"name": "cirros_server",
@@ -471,7 +471,7 @@ func TestListProfiles(t *testing.T) {
 							]
 						},
 						"type": "os.nova.server",
-						"version": 1.0
+						"version": "1.0"
 					},
 					"type": "os.nova.server-1.0",
 					"updated_at": "",
@@ -482,7 +482,7 @@ func TestListProfiles(t *testing.T) {
 	})
 
 	count := 0
-	profiles.ListDetail(fake.ServiceClient(), profiles.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	profiles.List(fake.ServiceClient(), profiles.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := profiles.ExtractProfiles(page)
 		if err != nil {
@@ -501,9 +501,9 @@ func TestListProfiles(t *testing.T) {
 				Metadata:  map[string]interface{}{},
 				Name:      "pserver",
 				Project:   "42d9e9663331431f97b75e25136307ff",
-				Spec: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"flavor":   float64(1),
+				Spec: profiles.Spec{
+					Properties: map[string]interface{}{
+						"flavor":   "t2.small",
 						"image":    "cirros-0.3.4-x86_64-uec",
 						"key_name": "oskey",
 						"name":     "cirros_server",
@@ -511,8 +511,8 @@ func TestListProfiles(t *testing.T) {
 							map[string]interface{}{"network": "private"},
 						},
 					},
-					"type":    "os.nova.server",
-					"version": 1.0,
+					Type:    "os.nova.server",
+					Version: "1.0",
 				},
 				Type:      "os.nova.server-1.0",
 				UpdatedAt: updatedAt,
@@ -525,9 +525,9 @@ func TestListProfiles(t *testing.T) {
 				Metadata:  map[string]interface{}{},
 				Name:      "pserver",
 				Project:   "42d9e9663331431f97b75e25136307ff",
-				Spec: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"flavor":   float64(1),
+				Spec: profiles.Spec{
+					Properties: map[string]interface{}{
+						"flavor":   "t2.small",
 						"image":    "cirros-0.3.4-x86_64-uec",
 						"key_name": "oskey",
 						"name":     "cirros_server",
@@ -535,8 +535,8 @@ func TestListProfiles(t *testing.T) {
 							map[string]interface{}{"network": "private"},
 						},
 					},
-					"type":    "os.nova.server",
-					"version": 1.0,
+					Type:    "os.nova.server",
+					Version: "1.0",
 				},
 				Type:      "os.nova.server-1.0",
 				UpdatedAt: time.Time{},
@@ -549,9 +549,9 @@ func TestListProfiles(t *testing.T) {
 				Metadata:  map[string]interface{}{},
 				Name:      "pserver",
 				Project:   "42d9e9663331431f97b75e25136307ff",
-				Spec: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"flavor":   float64(1),
+				Spec: profiles.Spec{
+					Properties: map[string]interface{}{
+						"flavor":   "t2.small",
 						"image":    "cirros-0.3.4-x86_64-uec",
 						"key_name": "oskey",
 						"name":     "cirros_server",
@@ -559,8 +559,8 @@ func TestListProfiles(t *testing.T) {
 							map[string]interface{}{"network": "private"},
 						},
 					},
-					"type":    "os.nova.server",
-					"version": 1.0,
+					Type:    "os.nova.server",
+					Version: "1.0",
 				},
 				Type:      "os.nova.server-1.0",
 				UpdatedAt: time.Time{},
@@ -623,7 +623,7 @@ func TestListProfilesInvalidTimeFloat(t *testing.T) {
 	})
 
 	count := 0
-	err := profiles.ListDetail(fake.ServiceClient(), profiles.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := profiles.List(fake.ServiceClient(), profiles.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		return true, nil
 	})
@@ -679,7 +679,7 @@ func TestListProfilesInvalidTimeString(t *testing.T) {
 	})
 
 	count := 0
-	err := profiles.ListDetail(fake.ServiceClient(), profiles.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := profiles.List(fake.ServiceClient(), profiles.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		return true, nil
 	})

@@ -150,14 +150,13 @@ func profileGet(t *testing.T) {
 }
 
 func profileList(t *testing.T) {
-
 	client, err := clients.NewClusteringV1Client()
 	if err != nil {
 		t.Fatalf("Unable to create clustering client: %v", err)
 	}
 
 	testProfileFound := false
-	profiles.ListDetail(client, profiles.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	profiles.List(client, profiles.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		allProfiles, err := profiles.ExtractProfiles(page)
 		if err != nil {
 			t.Fatalf("Error extracting page of profiles: %v", err)
@@ -167,6 +166,7 @@ func profileList(t *testing.T) {
 			tools.PrintResource(t, profile)
 			if profile.Name == testName {
 				testProfileFound = true
+				break
 			}
 		}
 
