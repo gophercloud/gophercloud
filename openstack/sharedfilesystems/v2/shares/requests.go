@@ -123,3 +123,14 @@ func GrantAccess(client *gophercloud.ServiceClient, id string, opts GrantAccessO
 	})
 	return
 }
+
+// ListAccessRights lists all access rules assigned to a Share based on its id. To extract
+// the AccessRight slice from the response, call the Extract method on the ListAccessRightsResult.
+// Client must have Microversion set; minimum supported microversion for ListAccessRights is 2.7.
+func ListAccessRights(client *gophercloud.ServiceClient, id string) (r ListAccessRightsResult) {
+	requestBody := map[string]interface{}{"access_list": nil}
+	_, r.Err = client.Post(listAccessRightsURL(client, id), requestBody, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
