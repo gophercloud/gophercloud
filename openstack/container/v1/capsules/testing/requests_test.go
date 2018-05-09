@@ -330,3 +330,13 @@ func TestListCapsule(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleCapsuleDeleteSuccessfully(t)
+
+	res := capsules.Delete(fakeclient.ServiceClient(), "963a239d-3946-452b-be5a-055eab65a421")
+	th.AssertNoErr(t, res.Err)
+}

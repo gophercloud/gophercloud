@@ -355,3 +355,11 @@ func HandleCapsuleListSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, CapsuleListBody)
 	})
 }
+
+func HandleCapsuleDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/capsules/963a239d-3946-452b-be5a-055eab65a421", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
