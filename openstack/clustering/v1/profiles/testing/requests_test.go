@@ -482,7 +482,7 @@ func TestListProfiles(t *testing.T) {
 	})
 
 	count := 0
-	profiles.List(fake.ServiceClient(), profiles.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	profiles.List(fake.ServiceClient(), profiles.ListOpts{GlobalProject: new(bool)}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := profiles.ExtractProfiles(page)
 		if err != nil {
@@ -512,7 +512,7 @@ func TestListProfiles(t *testing.T) {
 						},
 					},
 					Type:    "os.nova.server",
-					Version: "1",
+					Version: "1.0",
 				},
 				Type:      "os.nova.server-1.0",
 				UpdatedAt: updatedAt,
@@ -536,7 +536,7 @@ func TestListProfiles(t *testing.T) {
 						},
 					},
 					Type:    "os.nova.server",
-					Version: "1",
+					Version: "1.0",
 				},
 				Type:      "os.nova.server-1.0",
 				UpdatedAt: time.Time{},

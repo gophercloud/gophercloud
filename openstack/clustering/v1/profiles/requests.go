@@ -61,7 +61,7 @@ type ListOptsBuilder interface {
 
 // ListOpts params
 type ListOpts struct {
-	GlobalProject bool   `q:"global_project"`
+	GlobalProject *bool  `q:"global_project"`
 	Limit         int    `q:"limit"`
 	Marker        string `q:"marker"`
 	Name          string `q:"name"`

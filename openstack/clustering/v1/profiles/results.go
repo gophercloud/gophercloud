@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -74,17 +75,40 @@ func (page ProfilePage) IsEmpty() (bool, error) {
 	return len(profiles) == 0, err
 }
 
-func (r *Profile) UnmarshalJSON(b []byte) error {
-	type tmpSpec Spec
-	type t struct {
-		tmpSpec
+func (r *Spec) UnmarshalJSON(b []byte) error {
+	type tmp Spec
+	var s struct {
+		tmp
 		Version interface{} `json:"version"`
 	}
 
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Spec(s.tmp)
+
+	switch s.Version.(type) {
+	case nil:
+		r.Version = ""
+	case float32, float64, int, int32, int64:
+		r.Version = strconv.FormatFloat(s.Version.(float64), 'f', -1, 64)
+		if !strings.Contains(r.Version, ".") {
+			r.Version = strconv.FormatFloat(s.Version.(float64), 'f', 1, 64)
+		}
+	case string:
+		r.Version = s.Version.(string)
+	default:
+		return fmt.Errorf("Invalid type for Spec Version. type=%v", reflect.TypeOf(s.Version))
+	}
+
+	return nil
+}
+
+func (r *Profile) UnmarshalJSON(b []byte) error {
 	type tmp Profile
 	var s struct {
 		tmp
-		Spec      t           `json:"spec"`
 		CreatedAt interface{} `json:"created_at"`
 		UpdatedAt interface{} `json:"updated_at"`
 	}
@@ -121,22 +145,6 @@ func (r *Profile) UnmarshalJSON(b []byte) error {
 		r.UpdatedAt = time.Time{}
 	default:
 		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.UpdatedAt))
-	}
-
-	r.Spec = Spec(s.Spec.tmpSpec)
-	if s.Spec.Version != "" {
-		switch s.Spec.Version.(type) {
-		case nil:
-			r.Spec.Version = ""
-		case float32, float64:
-			r.Spec.Version = strconv.FormatFloat(s.Spec.Version.(float64), 'f', -1, 64)
-		case int, int32, int64:
-			r.Spec.Version = strconv.FormatInt(s.Spec.Version.(int64), 10)
-		case string:
-			r.Spec.Version = s.Spec.Version.(string)
-		default:
-			return fmt.Errorf("Invalid type for Spec Version. type=%v", reflect.TypeOf(s.Spec.Version))
-		}
 	}
 
 	return nil
