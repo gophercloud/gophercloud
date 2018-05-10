@@ -216,3 +216,38 @@ func Get(client *gophercloud.ServiceClient, queueName string, messageID string) 
 	})
 	return
 }
+
+// DeleteOptsBuilder allows extensions to add additional parameters to the
+// delete request.
+type DeleteOptsBuilder interface {
+	ToMessageDeleteQuery() (string, error)
+}
+
+// DeleteOpts params to be used with Delete.
+type DeleteOpts struct {
+	// ClaimID instructs Delete to delete a message that is associated with a claim ID
+	ClaimID string `q:"claim_id,omitempty"`
+}
+
+// ToMessageDeleteQuery formats a DeleteOpts structure into a query string.
+func (opts DeleteOpts) ToMessageDeleteQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// Delete deletes a specific message from the queue.
+func Delete(client *gophercloud.ServiceClient, queueName string, messageID string, opts DeleteOptsBuilder) (r DeleteResult) {
+	url := DeleteMessageURL(client, queueName, messageID)
+	if opts != nil {
+		query, err := opts.ToMessageDeleteQuery()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += query
+	}
+	_, r.Err = client.Delete(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}

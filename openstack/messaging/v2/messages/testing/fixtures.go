@@ -302,3 +302,15 @@ func HandlePopSuccessfully(t *testing.T) {
 			fmt.Fprintf(w, PopMessageResponse)
 		})
 }
+
+// HandleGetSuccessfully configures the test server to respond to a Get request.
+func HandleDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/messages/%s", QueueName, MessageID),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNoContent)
+		})
+}

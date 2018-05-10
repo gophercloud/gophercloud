@@ -111,3 +111,16 @@ func TestPopMessages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedPopMessage, actual)
 }
+
+func TestDeleteMessage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfully(t)
+
+	deleteOpts := messages.DeleteOpts{
+		ClaimID: "12345",
+	}
+
+	err := messages.Delete(fake.ServiceClient(), QueueName, MessageID, deleteOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
