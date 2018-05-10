@@ -49,6 +49,6 @@ func TestPoliciesCreate(t *testing.T) {
 	tools.PrintResource(t, policy.Extra)
 
 	th.AssertEquals(t, policy.Type, createOpts.Type)
-	th.AssertEquals(t, policy.Blob, createOpts.Blob)
+	th.AssertEquals(t, policy.Blob, string(createOpts.Blob))
 	th.AssertEquals(t, policy.Extra["description"], createOpts.Extra["description"])
 }
