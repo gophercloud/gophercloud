@@ -1,5 +1,5 @@
 #!/bin/bash
 #
 # Run the unit tests.
-
+echo -n "THIS IS JUST A TEST"
 exec go test ./testing ./.../testing $@
