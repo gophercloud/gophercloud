@@ -75,6 +75,16 @@ func TestGetMessages(t *testing.T) {
 	th.CheckDeepEquals(t, ExpectedMessagesSet, actual)
 }
 
+func TestGetMessage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetSuccessfully(t)
+
+	actual, err := messages.Get(fake.ServiceClient(), QueueName, MessageID).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, FirstMessage, actual)
+}
+
 func TestDeleteMessages(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -100,4 +110,17 @@ func TestPopMessages(t *testing.T) {
 	actual, err := messages.PopMessages(fake.ServiceClient(), QueueName, popMessagesOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedPopMessage, actual)
+}
+
+func TestDeleteMessage(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfully(t)
+
+	deleteOpts := messages.DeleteOpts{
+		ClaimID: "12345",
+	}
+
+	err := messages.Delete(fake.ServiceClient(), QueueName, MessageID, deleteOpts).ExtractErr()
+	th.AssertNoErr(t, err)
 }

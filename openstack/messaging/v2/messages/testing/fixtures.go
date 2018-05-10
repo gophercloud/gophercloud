@@ -13,6 +13,9 @@ import (
 // QueueName is the name of the queue
 var QueueName = "FakeTestQueue"
 
+// MessageID is the id of the message
+var MessageID = "9988776655"
+
 // CreateMessageResponse is a sample response to a Create message.
 const CreateMessageResponse = `
 {
@@ -111,6 +114,21 @@ const GetMessagesResponse = `
             "ttl": 3600
         }
     ]
+}`
+
+// GetMessageResponse is a sample response to Get.
+const GetMessageResponse = `
+{
+    "body": {
+        "current_bytes": "0",
+        "event": "BackupProgress",
+        "total_bytes": "99614720"
+    },
+    "age": 482,
+    "href": "/v2/queues/FakeTestQueue/messages/578edfe6508f153f256f717b",
+    "id": "578edfe6508f153f256f717b",
+    "ttl": 3600,
+    "checksum": "MD5:abf7213555626e29c3cb3e5dc58b3515"
 }`
 
 // PopMessageResponse is a sample reponse to pop messages
@@ -248,6 +266,18 @@ func HandleGetMessagesSuccessfully(t *testing.T) {
 		})
 }
 
+// HandleGetSuccessfully configures the test server to respond to a Get request.
+func HandleGetSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/messages/%s", QueueName, MessageID),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprintf(w, GetMessageResponse)
+		})
+}
+
 // HandleDeleteMessagesSuccessfully configures the test server to respond to a Delete request.
 func HandleDeleteMessagesSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/messages", QueueName),
@@ -270,5 +300,17 @@ func HandlePopSuccessfully(t *testing.T) {
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprintf(w, PopMessageResponse)
+		})
+}
+
+// HandleGetSuccessfully configures the test server to respond to a Get request.
+func HandleDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/messages/%s", QueueName, MessageID),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNoContent)
 		})
 }

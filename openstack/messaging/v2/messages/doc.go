@@ -67,6 +67,16 @@ Example to Get a set of Messages
 		panic(err)
 	}
 
+Example to get a singular Message
+
+	queueName := "my_queue"
+	messageID := "123456"
+
+	message, err := messages.Get(client, queueName, messageID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Delete a set of Messages
 
 	queueName := "my_queue"
@@ -89,6 +99,21 @@ Example to Pop a set of Messages
 	}
 
 	resources, err := messages.PopMessages(client, queueName, popMessagesOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Delete a singular Message
+
+	clientID := "3381af92-2b9e-11e3-b191-71861300734d"
+	queueName := "my_queue"
+	messageID := "123456"
+
+	deleteOpts := messages.DeleteOpts{
+		ClaimID: "12345",
+	}
+
+	err := messages.Delete(client), queueName, messageID, deleteOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

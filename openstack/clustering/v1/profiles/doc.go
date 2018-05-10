@@ -28,5 +28,15 @@ Example to Create a profile
 	}
 
 	fmt.Println("Profile", profile)
+
+Example to Get profile
+
+	profile, err := profiles.Get(serviceClient, "profile-name").Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Print("profile", profile)
+
 */
 package profiles

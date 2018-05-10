@@ -3,9 +3,8 @@ package profiles
 import (
 	"encoding/json"
 	"fmt"
-	"time"
-
 	"reflect"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 )
@@ -17,6 +16,11 @@ type commonResult struct {
 
 // CreateResult is the response of a Create operation.
 type CreateResult struct {
+	commonResult
+}
+
+// GetResult is the response of a Get operations.
+type GetResult struct {
 	commonResult
 }
 

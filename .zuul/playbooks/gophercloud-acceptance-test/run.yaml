@@ -1,0 +1,61 @@
+- hosts: all
+  become: yes
+  roles:
+    - clone-devstack-gate-to-workspace
+    - role: create-devstack-local-conf
+      enable_services:
+        - 'manila'
+        - 'designate'
+        - 'zun'
+    - install-devstack
+  tasks:
+    - name: Run acceptance tests with gophercloud
+      shell:
+        cmd: |
+          set -e
+          set -o pipefail
+          set -x
+
+          # Prep the testing environment by creating the required testing resources and environment variables
+          pushd /opt/stack/new/devstack
+          source openrc admin admin
+          openstack flavor create m1.acctest --id 99 --ram 512 --disk 5 --vcpu 1 --ephemeral 10
+          openstack flavor create m1.resize --id 98 --ram 512 --disk 6 --vcpu 1 --ephemeral 10
+          _NETWORK_ID=$(openstack network show private -c id -f value)
+          _EXTGW_ID=$(openstack network show public -c id -f value)
+          _IMAGE=$(openstack image list | grep -i cirros | head -n 1)
+          _IMAGE_ID=$(echo $_IMAGE | awk -F\| '{print $2}' | tr -d ' ')
+          _IMAGE_NAME=$(echo $_IMAGE | awk -F\| '{print $3}' | tr -d ' ')
+          echo export OS_IMAGE_NAME="$_IMAGE_NAME" >> openrc
+          echo export OS_IMAGE_ID="$_IMAGE_ID" >> openrc
+          echo export OS_NETWORK_ID=$_NETWORK_ID >> openrc
+          echo export OS_EXTGW_ID=$_EXTGW_ID >> openrc
+          echo export OS_POOL_NAME="public" >> openrc
+          echo export OS_FLAVOR_ID=99 >> openrc
+          echo export OS_FLAVOR_ID_RESIZE=98 >> openrc
+          echo export OS_SHARE_NETWORK_ID=foobar >> openrc
+          echo export OS_DOMAIN_ID=default >> openrc
+          source openrc admin admin
+          popd
+
+          go get ./... || true
+          # Temporally enable all tests with openlab repo and only enable part tests with official repo
+          if [[ '{{ zuul.project.src_dir }}' =~ "theopenlab" ]];then
+              go test -v -tags "fixtures acceptance" ./acceptance/openstack/... 2>&1 | tee $TEST_RESULTS_TXT
+          else
+              {
+              # Only enable these successful test cases
+              go test -v -tags "fixtures acceptance" ./acceptance/openstack/identity/v3/
+              go test -v -tags "fixtures acceptance" ./acceptance/openstack/networking/v2/
+              go test -v -tags "fixtures acceptance" ./acceptance/openstack/blockstorage/v2/
+              go test -v -tags "fixtures acceptance" -run "SecGroup|Flavor" ./acceptance/openstack/compute/v2/
+              go test -v -tags "fixtures acceptance" ./acceptance/openstack/container/v1/
+              # To enable more after the fix of https://github.com/gophercloud/gophercloud/issues/608
+              # go test -v -tags "fixtures acceptance" ./acceptance/openstack/imageservice/v2/
+              # go test -v -tags "fixtures acceptance" ./acceptance/openstack/identity/v2/
+              # go test -v -tags "fixtures acceptance" ./acceptance/openstack/compute/v2/
+              } 2>&1 | tee $TEST_RESULTS_TXT
+          fi
+        executable: /bin/bash
+        chdir: '{{ zuul.project.src_dir }}'
+      environment: '{{ golang_env }}'
