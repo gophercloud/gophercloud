@@ -69,7 +69,7 @@ type ListOpts struct {
 	Limit         int    `q:"limit"`
 	Marker        string `q:"marker"`
 	Sort          string `q:"sort"`
-	GlobalProject string `q:"global_project"`
+	GlobalProject *bool  `q:"global_project"`
 	Name          string `q:"name,omitempty"`
 	Status        string `q:"status,omitempty"`
 }

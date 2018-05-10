@@ -780,7 +780,7 @@ func TestListClusters(t *testing.T) {
 
 	count := 0
 
-	clusters.List(fake.ServiceClient(), clusters.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	clusters.List(fake.ServiceClient(), clusters.ListOpts{GlobalProject: new(bool)}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := clusters.ExtractClusters(page)
 		if err != nil {
