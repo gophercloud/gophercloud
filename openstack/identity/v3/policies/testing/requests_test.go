@@ -118,6 +118,18 @@ func TestCreatePolicyTypeLengthCheck(t *testing.T) {
 	}
 }
 
+func TestGetPolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetPolicySuccessfully(t)
+
+	id := "b49884da9d31494ea02aff38d4b4e701"
+	actual, err := policies.Get(client.ServiceClient(), id).Extract()
+
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondPolicy, *actual)
+}
+
 func TestDeletePolicy(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

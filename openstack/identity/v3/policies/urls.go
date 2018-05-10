@@ -12,6 +12,10 @@ func createURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL(policyPath)
 }
 
+func getURL(client *gophercloud.ServiceClient, policyID string) string {
+	return client.ServiceURL(policyPath, policyID)
+}
+
 func deleteURL(client *gophercloud.ServiceClient, policyID string) string {
 	return client.ServiceURL(policyPath, policyID)
 }
