@@ -47,6 +47,25 @@ Example to Get a Policy
 
 	fmt.Printf("%+v\n", policy)
 
+Example to Update a Policy
+
+	policyID := "0fe36e73809d46aeae6705c39077b1b3"
+
+	updateOpts := policies.UpdateOpts{
+		Type: "application/json",
+		Blob: []byte("{'foobar_user': 'role:compute-user'}"),
+		Extra: map[string]interface{}{
+			"description": "policy for foobar_user",
+		},
+	}
+
+	policy, err := policies.Update(identityClient, policyID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v\n", policy)
+
 Example to Delete a Policy
 
 	policyID := "0fe36e73809d46aeae6705c39077b1b3"

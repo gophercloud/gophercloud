@@ -28,7 +28,7 @@ func TestPoliciesList(t *testing.T) {
 	}
 }
 
-func TestPoliciesCreate(t *testing.T) {
+func TestPoliciesCRUD(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV3Client()
@@ -51,54 +51,46 @@ func TestPoliciesCreate(t *testing.T) {
 	th.AssertEquals(t, policy.Type, createOpts.Type)
 	th.AssertEquals(t, policy.Blob, string(createOpts.Blob))
 	th.AssertEquals(t, policy.Extra["description"], createOpts.Extra["description"])
-}
 
-func TestPoliciesGet(t *testing.T) {
-	clients.RequireAdmin(t)
-
-	client, err := clients.NewIdentityV3Client()
+	allPages, err := policies.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
 
-	createOpts := policies.CreateOpts{
-		Type: "application/json",
-		Blob: []byte("{'foobar_user': 'role:compute-user'}"),
-		Extra: map[string]interface{}{
-			"description": "policy for foobar_user",
-		},
+	allPolicies, err := policies.ExtractPolicies(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, p := range allPolicies {
+		tools.PrintResource(t, p)
+		tools.PrintResource(t, p.Extra)
+
+		if p.ID == policy.ID {
+			found = true
+		}
 	}
 
-	policy, err := policies.Create(client, &createOpts).Extract()
-	th.AssertNoErr(t, err)
-
-	defer policies.Delete(client, policy.ID)
-
-	tools.PrintResource(t, policy)
-	tools.PrintResource(t, policy.Extra)
+	th.AssertEquals(t, true, found)
 
 	gotPolicy, err := policies.Get(client, policy.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, policy, gotPolicy)
-}
 
-func TestPoliciesDelete(t *testing.T) {
-	clients.RequireAdmin(t)
-
-	client, err := clients.NewIdentityV3Client()
-	th.AssertNoErr(t, err)
-
-	createOpts := policies.CreateOpts{
-		Type: "application/json",
-		Blob: []byte("{'foobar_user': 'role:compute-user'}"),
+	updateOpts := policies.UpdateOpts{
+		Type: "text/plain",
+		Blob: []byte("'foobar_user': 'role:compute-user'"),
 		Extra: map[string]interface{}{
-			"description": "policy for foobar_user",
+			"description": "updated policy for foobar_user",
 		},
 	}
 
-	policy, err := policies.Create(client, &createOpts).Extract()
+	updatedPolicy, err := policies.Update(client, policy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	tools.PrintResource(t, policy)
-	tools.PrintResource(t, policy.Extra)
+	tools.PrintResource(t, updatedPolicy)
+	tools.PrintResource(t, updatedPolicy.Extra)
+
+	th.AssertEquals(t, updatedPolicy.Type, updateOpts.Type)
+	th.AssertEquals(t, updatedPolicy.Blob, string(updateOpts.Blob))
+	th.AssertEquals(t, updatedPolicy.Extra["description"], updateOpts.Extra["description"])
 
 	err = policies.Delete(client, policy.ID).ExtractErr()
 	th.AssertNoErr(t, err)
