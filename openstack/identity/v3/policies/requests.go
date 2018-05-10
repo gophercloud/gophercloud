@@ -99,3 +99,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// Delete deletes a policy.
+func Delete(client *gophercloud.ServiceClient, policyID string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, policyID), nil)
+	return
+}

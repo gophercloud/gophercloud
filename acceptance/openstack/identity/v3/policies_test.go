@@ -52,3 +52,27 @@ func TestPoliciesCreate(t *testing.T) {
 	th.AssertEquals(t, policy.Blob, string(createOpts.Blob))
 	th.AssertEquals(t, policy.Extra["description"], createOpts.Extra["description"])
 }
+
+func TestPoliciesDelete(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	createOpts := policies.CreateOpts{
+		Type: "application/json",
+		Blob: []byte("{'foobar_user': 'role:compute-user'}"),
+		Extra: map[string]interface{}{
+			"description": "policy for foobar_user",
+		},
+	}
+
+	policy, err := policies.Create(client, &createOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, policy)
+	tools.PrintResource(t, policy.Extra)
+
+	err = policies.Delete(client, policy.ID).ExtractErr()
+	th.AssertNoErr(t, err)
+}

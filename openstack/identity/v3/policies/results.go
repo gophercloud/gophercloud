@@ -67,6 +67,12 @@ type CreateResult struct {
 	policyResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // PolicyPage is a single page of Policy results.
 type PolicyPage struct {
 	pagination.LinkedPageBase

@@ -36,5 +36,13 @@ Example to Create a Policy
 	if err != nil {
 		panic(err)
 	}
+
+Example to Delete a Policy
+
+	policyID := "0fe36e73809d46aeae6705c39077b1b3"
+	err := policies.Delete(identityClient, policyID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package policies

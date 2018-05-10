@@ -117,3 +117,12 @@ func TestCreatePolicyTypeLengthCheck(t *testing.T) {
 		}
 	}
 }
+
+func TestDeletePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeletePolicySuccessfully(t)
+
+	res := policies.Delete(client.ServiceClient(), "9fe1d3")
+	th.AssertNoErr(t, res.Err)
+}
