@@ -56,8 +56,7 @@ func TestRolesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	createOpts := roles.CreateOpts{
-		Name:     "testrole",
-		DomainID: "default",
+		Name: "testrole",
 		Extra: map[string]interface{}{
 			"description": "test role description",
 		},
@@ -71,7 +70,8 @@ func TestRolesCRUD(t *testing.T) {
 	tools.PrintResource(t, role)
 	tools.PrintResource(t, role.Extra)
 
-	allPages, err := roles.List(client, nil).AllPages()
+	var listOpts roles.ListOpts
+	allPages, err := roles.List(client, listOpts).AllPages()
 	th.AssertNoErr(t, err)
 
 	allRoles, err := roles.ExtractRoles(allPages)
@@ -89,7 +89,6 @@ func TestRolesCRUD(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
-	listOpts := roles.ListOpts{DomainID: role.DomainID}
 	listOpts.Filters = map[string]string{
 		"name__contains": "TEST",
 	}
