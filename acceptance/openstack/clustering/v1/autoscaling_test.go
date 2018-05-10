@@ -7,10 +7,9 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
-
-	"github.com/gophercloud/gophercloud/acceptance/tools"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -19,6 +18,7 @@ var testName string
 func TestAutoScaling(t *testing.T) {
 	testName = tools.RandomString("TESTACC-", 8)
 	profileCreate(t)
+	profileGet(t)
 	clusterCreate(t)
 }
 
@@ -130,4 +130,18 @@ func clusterCreate(t *testing.T) {
 	th.AssertEquals(t, optsCluster.Timeout, cluster.Timeout)
 	th.CheckDeepEquals(t, optsCluster.Metadata, cluster.Metadata)
 	th.CheckDeepEquals(t, optsCluster.Config, cluster.Config)
+}
+
+func profileGet(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	profileName := testName
+	profile, err := profiles.Get(client, profileName).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, profileName, profile.Name)
+
+	tools.PrintResource(t, profile)
 }
