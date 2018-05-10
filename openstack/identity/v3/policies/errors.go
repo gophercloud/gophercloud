@@ -1,8 +1,6 @@
 package policies
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // StringFieldLengthExceedsLimit xxx
 type StringFieldLengthExceedsLimit struct {
