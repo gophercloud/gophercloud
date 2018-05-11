@@ -101,8 +101,8 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // Get retrieves details on a single policy, by ID.
-func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+func Get(client *gophercloud.ServiceClient, policyID string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, policyID), &r.Body, nil)
 	return
 }
 
