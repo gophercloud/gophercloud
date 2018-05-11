@@ -56,8 +56,7 @@ func TestRolesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	createOpts := roles.CreateOpts{
-		Name:     "testrole",
-		DomainID: "default",
+		Name: "testrole",
 		Extra: map[string]interface{}{
 			"description": "test role description",
 		},
@@ -70,6 +69,69 @@ func TestRolesCRUD(t *testing.T) {
 
 	tools.PrintResource(t, role)
 	tools.PrintResource(t, role.Extra)
+
+	var listOpts roles.ListOpts
+	allPages, err := roles.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allRoles, err := roles.ExtractRoles(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		tools.PrintResource(t, r.Extra)
+
+		if r.Name == role.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	listOpts.Filters = map[string]string{
+		"name__contains": "TEST",
+	}
+
+	allPages, err = roles.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allRoles, err = roles.ExtractRoles(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		tools.PrintResource(t, r.Extra)
+
+		if r.Name == role.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	listOpts.Filters = map[string]string{
+		"name__contains": "foo",
+	}
+
+	allPages, err = roles.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allRoles, err = roles.ExtractRoles(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		tools.PrintResource(t, r.Extra)
+
+		if r.Name == role.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, false)
 
 	updateOpts := roles.UpdateOpts{
 		Extra: map[string]interface{}{
