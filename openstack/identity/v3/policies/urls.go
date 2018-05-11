@@ -7,3 +7,7 @@ const policyPath = "policies"
 func listURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL(policyPath)
 }
+
+func createURL(client *gophercloud.ServiceClient) string {
+	return client.ServiceURL(policyPath)
+}

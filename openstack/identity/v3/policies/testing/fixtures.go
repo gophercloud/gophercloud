@@ -62,6 +62,32 @@ const ListWithFilterOutput = `
 }
 `
 
+// GetOutput provides a Get result.
+const GetOutput = `
+{
+    "policy": {
+        "type": "application/json",
+        "id": "b49884da9d31494ea02aff38d4b4e701",
+        "links": {
+            "self": "http://example.com/identity/v3/policies/b49884da9d31494ea02aff38d4b4e701"
+        },
+        "blob": "{'bar_user': 'role:network-user'}",
+        "description": "policy for bar_user"
+    }
+}
+`
+
+// CreateRequest provides the input to a Create request.
+const CreateRequest = `
+{
+    "policy": {
+        "blob": "{'bar_user': 'role:network-user'}",
+        "description": "policy for bar_user",
+        "type": "application/json"
+    }
+}
+`
+
 // FirstPolicy is the first policy in the List request.
 var FirstPolicy = policies.Policy{
 	ID:   "2844b2a08be147a08ef58317d6471f1f",
@@ -107,5 +133,18 @@ func HandleListPoliciesSuccessfully(t *testing.T) {
 		default:
 			w.WriteHeader(http.StatusBadRequest)
 		}
+	})
+}
+
+// HandleCreatePolicySuccessfully creates an HTTP handler at `/policies` on the
+// test handler mux that tests policy creation.
+func HandleCreatePolicySuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/policies", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, CreateRequest)
+
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, GetOutput)
 	})
 }
