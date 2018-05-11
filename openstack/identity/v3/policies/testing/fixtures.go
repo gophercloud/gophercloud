@@ -148,3 +148,14 @@ func HandleCreatePolicySuccessfully(t *testing.T) {
 		fmt.Fprintf(w, GetOutput)
 	})
 }
+
+// HandleDeletePolicySuccessfully creates an HTTP handler at `/policies` on the
+// test handler mux that tests policy deletion.
+func HandleDeletePolicySuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/policies/9fe1d3", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
