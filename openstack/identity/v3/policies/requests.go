@@ -100,6 +100,12 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
+// Get retrieves details on a single policy, by ID.
+func Get(client *gophercloud.ServiceClient, policyID string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, policyID), &r.Body, nil)
+	return
+}
+
 // Delete deletes a policy.
 func Delete(client *gophercloud.ServiceClient, policyID string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, policyID), nil)

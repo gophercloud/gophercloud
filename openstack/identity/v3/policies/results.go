@@ -67,6 +67,12 @@ type CreateResult struct {
 	policyResult
 }
 
+// GetResult is the response from a Get operation. Call its Extract method
+// to interpret it as a Policy.
+type GetResult struct {
+	policyResult
+}
+
 // DeleteResult is the response from a Delete operation. Call its ExtractErr to
 // determine if the request succeeded or failed.
 type DeleteResult struct {

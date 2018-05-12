@@ -37,6 +37,16 @@ Example to Create a Policy
 		panic(err)
 	}
 
+Example to Get a Policy
+
+	policyID := "0fe36e73809d46aeae6705c39077b1b3"
+	policy, err := policies.Get(identityClient, policyID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v\n", policy)
+
 Example to Delete a Policy
 
 	policyID := "0fe36e73809d46aeae6705c39077b1b3"
