@@ -38,5 +38,20 @@ Example to Get profile
 
 	fmt.Print("profile", profile)
 
+
+Example to List profiles
+
+	profiles.List(serviceClient, profiles.ListOpts{Limit: 2}).EachPage(func(page pagination.Page) (bool, error) {
+		allProfiles, err := profiles.ExtractProfiles(page)
+		if err != nil {
+			panic(err)
+		}
+
+		for _, profile := range allProfiles {
+			fmt.Printf("%+v\n", profile)
+		}
+		return true, nil
+	})
+
 */
 package profiles
