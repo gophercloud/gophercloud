@@ -1,4 +1,4 @@
-// +build acceptance clustering autoscaling clusters profiles
+// +build acceptance clustering autoscaling clusters nodes profiles
 
 package v1
 
@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/nodes"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -22,6 +23,7 @@ func TestAutoScaling(t *testing.T) {
 	profileGet(t)
 	profileList(t)
 	clusterCreate(t)
+	nodeGet(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -180,4 +182,18 @@ func clusterCreate(t *testing.T) {
 	th.AssertEquals(t, optsCluster.Timeout, cluster.Timeout)
 	th.CheckDeepEquals(t, optsCluster.Metadata, cluster.Metadata)
 	th.CheckDeepEquals(t, optsCluster.Config, cluster.Config)
+}
+
+func nodeGet(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	nodeName := testName
+	node, err := nodes.Get(client, nodeName).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, nodeName, node.Name)
+
+	tools.PrintResource(t, node)
 }
