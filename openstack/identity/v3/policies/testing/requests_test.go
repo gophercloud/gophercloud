@@ -130,6 +130,63 @@ func TestGetPolicy(t *testing.T) {
 	th.CheckDeepEquals(t, SecondPolicy, *actual)
 }
 
+func TestUpdatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdatePolicySuccessfully(t)
+
+	updateOpts := policies.UpdateOpts{
+		Extra: map[string]interface{}{
+			"description": "updated policy for bar_user",
+		},
+	}
+
+	id := "b49884da9d31494ea02aff38d4b4e701"
+	actual, err := policies.Update(client.ServiceClient(), id, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, SecondPolicyUpdated, *actual)
+}
+
+func TestUpdatePolicyTypeLengthCheck(t *testing.T) {
+	// strGenerator generates a string of fixed length filled with '0'
+	strGenerator := func(length int) string {
+		return fmt.Sprintf(fmt.Sprintf("%%0%dd", length), 0)
+	}
+
+	type test struct {
+		length  int
+		wantErr bool
+	}
+
+	tests := []test{
+		{100, false},
+		{255, false},
+		{256, true},
+		{300, true},
+	}
+
+	var updateOpts policies.UpdateOpts
+	for _, _test := range tests {
+		updateOpts.Type = strGenerator(_test.length)
+		if len(updateOpts.Type) != _test.length {
+			t.Fatal("function strGenerator does not work properly")
+		}
+
+		_, err := updateOpts.ToPolicyUpdateMap()
+		if !_test.wantErr {
+			th.AssertNoErr(t, err)
+		} else {
+			switch _t := err.(type) {
+			case nil:
+				t.Fatal("error expected but got a nil")
+			case policies.StringFieldLengthExceedsLimit:
+			default:
+				t.Fatalf("unexpected error type: [%T]", _t)
+			}
+		}
+	}
+}
+
 func TestDeletePolicy(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

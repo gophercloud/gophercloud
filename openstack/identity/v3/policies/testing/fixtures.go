@@ -88,6 +88,30 @@ const CreateRequest = `
 }
 `
 
+// UpdateRequest provides the input to as Update request.
+const UpdateRequest = `
+{
+    "policy": {
+        "description": "updated policy for bar_user"
+    }
+}
+`
+
+// UpdateOutput provides an update result.
+const UpdateOutput = `
+{
+    "policy": {
+        "type": "application/json",
+        "id": "b49884da9d31494ea02aff38d4b4e701",
+        "links": {
+            "self": "http://example.com/identity/v3/policies/b49884da9d31494ea02aff38d4b4e701"
+        },
+        "blob": "{'bar_user': 'role:network-user'}",
+        "description": "updated policy for bar_user"
+    }
+}
+`
+
 // FirstPolicy is the first policy in the List request.
 var FirstPolicy = policies.Policy{
 	ID:   "2844b2a08be147a08ef58317d6471f1f",
@@ -109,6 +133,19 @@ var SecondPolicy = policies.Policy{
 	},
 	Extra: map[string]interface{}{
 		"description": "policy for bar_user",
+	},
+}
+
+// SecondPolicyUpdated is the policy in the Update request.
+var SecondPolicyUpdated = policies.Policy{
+	ID:   "b49884da9d31494ea02aff38d4b4e701",
+	Blob: "{'bar_user': 'role:network-user'}",
+	Type: "application/json",
+	Links: map[string]interface{}{
+		"self": "http://example.com/identity/v3/policies/b49884da9d31494ea02aff38d4b4e701",
+	},
+	Extra: map[string]interface{}{
+		"description": "updated policy for bar_user",
 	},
 }
 
@@ -161,6 +198,21 @@ func HandleGetPolicySuccessfully(t *testing.T) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprintf(w, GetOutput)
+		},
+	)
+}
+
+// HandleUpdatePolicySuccessfully creates an HTTP handler at `/policies` on the
+// test handler mux that tests role update.
+func HandleUpdatePolicySuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/policies/b49884da9d31494ea02aff38d4b4e701",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PATCH")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestJSONRequest(t, r, UpdateRequest)
+
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprintf(w, UpdateOutput)
 		},
 	)
 }
