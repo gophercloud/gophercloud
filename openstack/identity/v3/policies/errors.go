@@ -2,7 +2,9 @@ package policies
 
 import "fmt"
 
-// StringFieldLengthExceedsLimit xxx
+// StringFieldLengthExceedsLimit is returned by the
+// ToPolicyCreateMap/ToPolicyUpdateMap methods when validation of
+// a type does not pass
 type StringFieldLengthExceedsLimit struct {
 	Field string
 	Limit int
