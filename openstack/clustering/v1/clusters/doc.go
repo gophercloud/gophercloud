@@ -15,5 +15,14 @@ Example to Create a cluster
 		panic(err)
 	}
 
+Example to Get Clusters
+
+	clusterName := "cluster123"
+	cluster, err := clusters.Get(serviceClient, clusterName).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", cluster)
+
 */
 package clusters

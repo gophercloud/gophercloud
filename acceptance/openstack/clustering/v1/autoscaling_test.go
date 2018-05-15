@@ -22,6 +22,7 @@ func TestAutoScaling(t *testing.T) {
 	profileGet(t)
 	profileList(t)
 	clusterCreate(t)
+	clusterGet(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -180,4 +181,18 @@ func clusterCreate(t *testing.T) {
 	th.AssertEquals(t, optsCluster.Timeout, cluster.Timeout)
 	th.CheckDeepEquals(t, optsCluster.Metadata, cluster.Metadata)
 	th.CheckDeepEquals(t, optsCluster.Config, cluster.Config)
+}
+
+func clusterGet(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+	cluster, err := clusters.Get(client, clusterName).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, clusterName, cluster.Name)
+
+	tools.PrintResource(t, cluster)
 }
