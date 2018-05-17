@@ -160,6 +160,28 @@ func HandleCreateTextObjectSuccessfully(t *testing.T, content string) {
 	})
 }
 
+// HandleCreateTextObjectWithoutChecksumSuccessfully creates an HTTP handler at `/testContainer/testObject`
+// on the test handler mux that responds with a `Create` response. No ETag header may be present in request
+func HandleCreateTextObjectWithoutChecksumSuccessfully(t *testing.T, content string) {
+	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "text/plain")
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		if etag, present := r.Header["ETag"]; present {
+			t.Errorf("Expected ETag header to be omitted, but was %#v", etag)
+		}
+
+		hash := md5.New()
+		io.WriteString(hash, content)
+		localChecksum := hash.Sum(nil)
+
+		w.Header().Set("ETag", fmt.Sprintf("%x", localChecksum))
+		w.WriteHeader(http.StatusCreated)
+	})
+}
+
 // HandleCreateTextWithCacheControlSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler
 // mux that responds with a `Create` response. A Cache-Control of `max-age="3600", public` is expected.
 func HandleCreateTextWithCacheControlSuccessfully(t *testing.T, content string) {
