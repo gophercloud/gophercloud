@@ -38,6 +38,7 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 	tenantName := os.Getenv("OS_TENANT_NAME")
 	domainID := os.Getenv("OS_DOMAIN_ID")
 	domainName := os.Getenv("OS_DOMAIN_NAME")
+	tokenID := os.Getenv("OS_TOKEN")
 
 	// If OS_PROJECT_ID is set, overwrite tenantID with the value.
 	if v := os.Getenv("OS_PROJECT_ID"); v != "" {
@@ -56,18 +57,25 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 		return nilOptions, err
 	}
 
-	if username == "" && userID == "" {
-		err := gophercloud.ErrMissingAnyoneOfEnvironmentVariables{
-			EnvironmentVariables: []string{"OS_USERNAME", "OS_USERID"},
-		}
-		return nilOptions, err
+	// If OS_AUTH_TOKEN is set, overwrite tokenID with the value.
+	if v := os.Getenv("OS_AUTH_TOKEN"); v != "" {
+		tokenID = v
 	}
 
-	if password == "" {
-		err := gophercloud.ErrMissingEnvironmentVariable{
-			EnvironmentVariable: "OS_PASSWORD",
+	if tokenID == "" {
+		if username == "" && userID == "" {
+			err := gophercloud.ErrMissingAnyoneOfEnvironmentVariables{
+				EnvironmentVariables: []string{"OS_USERNAME", "OS_USERID"},
+			}
+			return nilOptions, err
 		}
-		return nilOptions, err
+
+		if password == "" {
+			err := gophercloud.ErrMissingEnvironmentVariable{
+				EnvironmentVariable: "OS_PASSWORD",
+			}
+			return nilOptions, err
+		}
 	}
 
 	ao := gophercloud.AuthOptions{
@@ -79,6 +87,7 @@ func AuthOptionsFromEnv() (gophercloud.AuthOptions, error) {
 		TenantName:       tenantName,
 		DomainID:         domainID,
 		DomainName:       domainName,
+		TokenID:          tokenID,
 	}
 
 	return ao, nil
