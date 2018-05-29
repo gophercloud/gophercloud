@@ -28,6 +28,7 @@ type ListOpts struct {
 	Limit        int    `q:"limit"`
 	SortKey      string `q:"sort_key"`
 	SortDir      string `q:"sort_dir"`
+	External     *bool  `q:"router:external"`
 }
 
 // ToNetworkListQuery formats a ListOpts into a query string.
