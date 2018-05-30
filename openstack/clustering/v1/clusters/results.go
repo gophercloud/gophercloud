@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // commonResult is the response of a base result.
@@ -59,6 +60,25 @@ func (r commonResult) Extract() (*Cluster, error) {
 	}
 
 	return s.Cluster, nil
+}
+
+// ClusterPage contains a single page of all clusters from a List call.
+type ClusterPage struct {
+	pagination.LinkedPageBase
+}
+
+func (page ClusterPage) IsEmpty() (bool, error) {
+	clusters, err := ExtractClusters(page)
+	return len(clusters) == 0, err
+}
+
+// ExtractCluster provides access to the list of clusters in a page acquired from the List operation.
+func ExtractClusters(r pagination.Page) ([]Cluster, error) {
+	var s struct {
+		Clusters []Cluster `json:"clusters"`
+	}
+	err := (r.(ClusterPage)).ExtractInto(&s)
+	return s.Clusters, err
 }
 
 func (r *Cluster) UnmarshalJSON(b []byte) error {

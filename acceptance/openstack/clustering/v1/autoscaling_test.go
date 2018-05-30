@@ -23,6 +23,7 @@ func TestAutoScaling(t *testing.T) {
 	profileList(t)
 	clusterCreate(t)
 	clusterGet(t)
+	clusterList(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -195,4 +196,36 @@ func clusterGet(t *testing.T) {
 	th.AssertEquals(t, clusterName, cluster.Name)
 
 	tools.PrintResource(t, cluster)
+}
+
+func clusterList(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	testClusterFound := false
+	clusters.List(client, clusters.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		allClusters, err := clusters.ExtractClusters(page)
+		if err != nil {
+			t.Fatalf("Error extracting page of clusters: %v", err)
+		}
+
+		for _, cluster := range allClusters {
+			if cluster.Name == testName {
+				testClusterFound = true
+			}
+		}
+
+		empty, err := page.IsEmpty()
+
+		th.AssertNoErr(t, err)
+
+		// Expect the page IS NOT empty
+		th.AssertEquals(t, false, empty)
+
+		return true, nil
+	})
+
+	th.AssertEquals(t, true, testClusterFound)
 }

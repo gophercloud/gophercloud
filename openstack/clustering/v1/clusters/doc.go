@@ -24,5 +24,25 @@ Example to Get Clusters
 	}
 	fmt.Printf("%+v\n", cluster)
 
+Example to List Clusters
+
+	listOpts := clusters.ListOpts{
+		Name: "testcluster",
+	}
+
+	allPages, err := clusters.ListDetail(serviceClient, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allClusters, err := clusters.ExtractClusters(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, cluster := range allClusters {
+		fmt.Printf("%+v\n", cluster)
+	}
+
 */
 package clusters
