@@ -30,11 +30,30 @@ type Flavor struct {
 type Fault struct {
 	// Indicates the time when the fault occured
 	Created time.Time `json:"-"`
+
 	// A message describing the fault reason
 	Message string
+
 	// More details about the fault, for example a stack trace. Only filled
 	// in for admin users.
 	Details string
+}
+
+func (r *Fault) UnmarshalJSON(b []byte) error {
+	type tmp Fault
+	var s struct {
+		tmp
+		Created gophercloud.JSONRFC3339NoZ `json:"created"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Fault(s.tmp)
+
+	r.Created = time.Time(s.Created)
+
+	return nil
 }
 
 // Instance represents a remote MySQL instance.
@@ -73,7 +92,7 @@ type Instance struct {
 	Status string
 
 	// Fault information (only available when the instance has errored)
-	Fault Fault
+	Fault *Fault
 
 	// Information about the attached volume of the instance.
 	Volume Volume
@@ -97,23 +116,6 @@ func (r *Instance) UnmarshalJSON(b []byte) error {
 
 	r.Created = time.Time(s.Created)
 	r.Updated = time.Time(s.Updated)
-
-	return nil
-}
-
-func (r *Fault) UnmarshalJSON(b []byte) error {
-	type tmp Fault
-	var s struct {
-		tmp
-		Created gophercloud.JSONRFC3339NoZ `json:"created"`
-	}
-	err := json.Unmarshal(b, &s)
-	if err != nil {
-		return err
-	}
-	*r = Fault(s.tmp)
-
-	r.Created = time.Time(s.Created)
 
 	return nil
 }
