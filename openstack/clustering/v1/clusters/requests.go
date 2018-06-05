@@ -101,7 +101,7 @@ type UpdateOpts struct {
 	Config      string                 `json:"config,omitempty"`
 	Name        string                 `json:"name,omitempty"`
 	ProfileID   string                 `json:"profile_id,omitempty"`
-	Timeout     int                    `json:"timeout,omitempty"`
+	Timeout     *int                   `json:"timeout,omitempty"`
 	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 	ProfileOnly *bool                  `json:"profile_only,omitempty"`
 }
