@@ -7,8 +7,10 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/external"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/portsecurity"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestNetworksList(t *testing.T) {
@@ -37,6 +39,70 @@ func TestNetworksList(t *testing.T) {
 	for _, network := range allNetworks {
 		tools.PrintResource(t, network)
 	}
+}
+
+func TestNetworksExternalList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatalf("Unable to fetch environment information: %s", err)
+	}
+
+	type networkWithExt struct {
+		networks.Network
+		external.NetworkExternalExt
+	}
+
+	var allNetworks []networkWithExt
+
+	iTrue := true
+	networkListOpts := networks.ListOpts{
+		ID: choices.ExternalNetworkID,
+	}
+	listOpts := external.ListOptsExt{
+		ListOptsBuilder: networkListOpts,
+		External:        &iTrue,
+	}
+
+	allPages, err := networks.List(client, listOpts).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list networks: %v", err)
+	}
+
+	err = networks.ExtractNetworksInto(allPages, &allNetworks)
+	if err != nil {
+		t.Fatalf("Unable to extract networks: %v", err)
+	}
+
+	var found bool
+	for _, network := range allNetworks {
+		if network.External == true && network.ID == choices.ExternalNetworkID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	iFalse := false
+	networkListOpts = networks.ListOpts{
+		ID: choices.ExternalNetworkID,
+	}
+	listOpts = external.ListOptsExt{
+		ListOptsBuilder: networkListOpts,
+		External:        &iFalse,
+	}
+
+	allPages, err = networks.List(client, listOpts).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list networks: %v", err)
+	}
+
+	v, err := networks.ExtractNetworks(allPages)
+	th.AssertEquals(t, len(v), 0)
 }
 
 func TestNetworksCRUD(t *testing.T) {
