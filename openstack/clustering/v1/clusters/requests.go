@@ -95,3 +95,48 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		return ClusterPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// UpdateOpts implements UpdateOpts
+type UpdateOpts struct {
+	Config      string                 `json:"config,omitempty"`
+	Name        string                 `json:"name,omitempty"`
+	ProfileID   string                 `json:"profile_id,omitempty"`
+	Timeout     *int                   `json:"timeout,omitempty"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	ProfileOnly *bool                  `json:"profile_only,omitempty"`
+}
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToClusterUpdateMap() (map[string]interface{}, error)
+}
+
+// ToClusterUpdateMap assembles a request body based on the contents of
+// UpdateOpts.
+func (opts UpdateOpts) ToClusterUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "cluster")
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// Update implements profile updated request.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToClusterUpdateMap()
+	if err != nil {
+		r.Err = err
+		return r
+	}
+
+	var result *http.Response
+	result, r.Err = client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 202},
+	})
+
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
+}

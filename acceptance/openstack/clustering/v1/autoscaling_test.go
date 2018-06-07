@@ -3,11 +3,14 @@
 package v1
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/actions"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -24,6 +27,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterCreate(t)
 	clusterGet(t)
 	clusterList(t)
+	clusterUpdate(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -228,4 +232,94 @@ func clusterList(t *testing.T) {
 	})
 
 	th.AssertEquals(t, true, testClusterFound)
+}
+
+func clusterUpdate(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+	newClusterName := clusterName + "-TEST-UPDATE_CLUSTER"
+
+	cluster, err := clusters.Get(client, clusterName).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get cluster %s: %v", clusterName, err)
+	}
+	th.AssertEquals(t, clusterName, cluster.Name)
+	clusterID := cluster.ID
+
+	// Update to new cluster name
+	updateOpts := clusters.UpdateOpts{
+		Name: newClusterName,
+	}
+
+	updateResult := clusters.Update(client, clusterID, updateOpts)
+	location := updateResult.Header.Get("Location")
+	th.AssertEquals(t, true, location != "")
+
+	actionID := ""
+	locationFields := strings.Split(location, "actions/")
+	if len(locationFields) >= 2 {
+		actionID = locationFields[1]
+	}
+
+	err = WaitForClusterToUpdate(client, actionID, 15)
+	if err != nil {
+		t.Fatalf("Error waiting for cluster to update: %v", err)
+	}
+
+	cluster, err = clusters.Get(client, clusterID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get cluster: %v", err)
+	}
+	th.AssertEquals(t, newClusterName, cluster.Name)
+
+	// Revert back to original cluster name
+	updateOpts = clusters.UpdateOpts{
+		Name: clusterName,
+	}
+
+	updateResult = clusters.Update(client, clusterID, updateOpts)
+	location = updateResult.Header.Get("Location")
+	th.AssertEquals(t, true, location != "")
+
+	actionID = ""
+	locationFields = strings.Split(location, "actions/")
+	if len(locationFields) >= 2 {
+		actionID = locationFields[1]
+	}
+
+	err = WaitForClusterToUpdate(client, actionID, 15)
+	if err != nil {
+		t.Fatalf("Error waiting for cluster to update: %v", err)
+	}
+
+	cluster, err = clusters.Get(client, clusterID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get cluster: %v", err)
+	}
+	th.AssertEquals(t, clusterName, cluster.Name)
+}
+
+func WaitForClusterToUpdate(client *gophercloud.ServiceClient, actionID string, sleepTimeSecs int) error {
+	return gophercloud.WaitFor(sleepTimeSecs, func() (bool, error) {
+		if actionID == "" {
+			return false, fmt.Errorf("Invalid action id. id=%s", actionID)
+		}
+
+		action, err := actions.Get(client, actionID).Extract()
+		if err != nil {
+			return false, err
+		}
+		switch action.Status {
+		case "SUCCEEDED":
+			return true, nil
+		case "READY", "RUNNING":
+			return false, nil
+		default:
+			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
+		}
+	})
 }
