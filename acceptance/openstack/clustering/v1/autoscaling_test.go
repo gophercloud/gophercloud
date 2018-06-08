@@ -31,6 +31,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	clusterCheck(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -355,7 +356,7 @@ func WaitForClusterToUpdate(client *gophercloud.ServiceClient, actionID string, 
 		switch action.Status {
 		case "SUCCEEDED":
 			return true, nil
-		case "READY", "RUNNING":
+		case "READY", "RUNNING", "WAITING":
 			return false, nil
 		default:
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
@@ -414,6 +415,51 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 			return false, nil
 		default:
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
+		}
+	})
+}
+
+func clusterCheck(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+	checkOpts := clusters.CheckOpts{}
+
+	// Check cluster
+	actionID, err := clusters.Check(client, clusterName, checkOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to check cluster: %v", err)
+	}
+
+	err = WaitForClusterToCheck(client, actionID, 15)
+	if err != nil {
+		t.Fatalf("Error waiting for cluster to check: %v", err)
+	}
+
+	t.Log("clusterCheck Complete")
+}
+
+func WaitForClusterToCheck(client *gophercloud.ServiceClient, actionID string, secs int) error {
+	return gophercloud.WaitFor(secs, func() (bool, error) {
+		if actionID == "" {
+			return false, fmt.Errorf("Invalid action id. id=%s", actionID)
+		}
+
+		action, err := actions.Get(client, actionID).Extract()
+		if err != nil {
+			return false, err
+		}
+		switch action.Status {
+		case "SUCCEEDED":
+			return true, nil
+		case "READY", "RUNNING", "WAITING":
+			return false, nil
+		default:
+			return false, fmt.Errorf("Error WaitForClusterToCheck ActionID=%s. Received status=%v",
+				actionID, action.Status)
 		}
 	})
 }
