@@ -396,3 +396,26 @@ func TestClusterScaleOut(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
+
+func TestClusterCheck(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/clusters/edce3528-864f-41fb-8759-f4707925cc09/actions", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+		{
+			"action": "2a0ff107-e789-4660-a122-3816c43af703"
+		}`)
+	})
+
+	recoverOpts := clusters.CheckOpts{}
+	result, err := clusters.Check(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", recoverOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, result, "2a0ff107-e789-4660-a122-3816c43af703")
+}

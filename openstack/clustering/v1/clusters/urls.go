@@ -13,6 +13,10 @@ func idURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL(apiVersion, apiName, id)
 }
 
+func actionURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL(apiVersion, apiName, id, "actions")
+}
+
 func createURL(client *gophercloud.ServiceClient) string {
 	return commonURL(client)
 }
@@ -41,6 +45,6 @@ func getPolicyURL(client *gophercloud.ServiceClient, clusterID string, policyID 
 	return client.ServiceURL(apiVersion, apiName, clusterID, "policies", policyID)
 }
 
-func actionURL(client *gophercloud.ServiceClient, id string) string {
-	return client.ServiceURL(apiVersion, apiName, id, "actions")
+func checkURL(client *gophercloud.ServiceClient, id string) string {
+	return actionURL(client, id)
 }
