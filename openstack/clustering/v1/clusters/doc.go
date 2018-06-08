@@ -66,6 +66,7 @@ Example to Delete a cluster
 		panic(err)
 	}
 
+<<<<<<< HEAD
 Example to Resize a cluster
 
 	number := 1
@@ -129,6 +130,23 @@ Example to Get a Cluster Policy
 	}
 
 	fmt.Printf("%+v\n", clusterPolicy)
+
+Example to Recover a cluster
+
+	check := true
+	checkCapacity := true
+	recoverOpts := clusters.RecoverOpts{
+		Operation:     "rebuild",
+		Check:         &check,
+		CheckCapacity: &checkCapacity,
+	}
+
+	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	actionID, err := clusters.Recover(computeClient, clusterID, recoverOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("action=", actionID)
 
 */
 package clusters

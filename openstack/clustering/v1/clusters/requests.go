@@ -131,7 +131,7 @@ func (opts UpdateOpts) ToClusterUpdateMap() (map[string]interface{}, error) {
 	return b, nil
 }
 
-// Update implements profile updated request.
+// Update implements cluster updated request.
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToClusterUpdateMap()
 	if err != nil {
@@ -224,9 +224,42 @@ func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOpts) (r 
 		r.Err = err
 		return
 	}
-
 	var result *http.Response
 	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 202},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
+	return
+}
+
+// Cluster Recover
+type RecoverOpts struct {
+	Operation     string `json:"operation,omitempty"`
+	Check         *bool  `json:"check,omitempty"`
+	CheckCapacity *bool  `json:"check_capacity,omitempty"`
+}
+
+func (opts RecoverOpts) ToClusterRecoverMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "recover")
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// Recover implements cluster recover request.
+func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r RecoverResult) {
+	b, err := opts.ToClusterRecoverMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	var result *http.Response
+	result, r.Err = client.Post(recoverURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
 	if r.Err == nil {
