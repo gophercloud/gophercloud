@@ -689,3 +689,179 @@ func TestListProfilesInvalidTimeString(t *testing.T) {
 		t.Errorf("Expected 0 page of profiles, got %d pages instead", count)
 	}
 }
+
+func TestUpdateProfile(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/profiles/9e1c6f42-acf5-4688-be2c-8ce954ef0f23", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+		{
+			"profile": {
+				"created_at": "2016-01-03T16:22:23Z",
+				"domain": null,
+				"id": "9e1c6f42-acf5-4688-be2c-8ce954ef0f23",
+				"metadata": {
+					"foo": "bar"
+				},
+				"name": "pserver",
+				"project": "42d9e9663331431f97b75e25136307ff",
+				"spec": {
+					"properties": {
+						"flavor": 1,
+						"image": "cirros-0.3.4-x86_64-uec",
+						"key_name": "oskey",
+						"name": "cirros_server",
+						"networks": [
+							{
+								"network": "private"
+							}
+						]
+					},
+					"type": "os.nova.server",
+					"version": "1.0"
+				},
+				"type": "os.nova.server-1.0",
+				"updated_at": "2016-01-03T17:22:23Z",
+				"user": "5e5bf8027826429c96af157f68dc9072"
+			}
+		}`)
+	})
+
+	actual, err := profiles.Update(fake.ServiceClient(), "9e1c6f42-acf5-4688-be2c-8ce954ef0f23", profiles.UpdateOpts{Name: "pserver"}).Extract()
+	if err != nil {
+		t.Errorf("Failed to get profile. %v", err)
+	} else {
+		createdAt, _ := time.Parse(time.RFC3339, "2016-01-03T16:22:23Z")
+		updatedAt, _ := time.Parse(time.RFC3339, "2016-01-03T17:22:23Z")
+
+		expected := profiles.Profile{
+			CreatedAt: createdAt,
+			Domain:    "",
+			ID:        "9e1c6f42-acf5-4688-be2c-8ce954ef0f23",
+			Metadata:  map[string]interface{}{"foo": "bar"},
+			Name:      "pserver",
+			Project:   "42d9e9663331431f97b75e25136307ff",
+			Spec: profiles.Spec{
+				Properties: map[string]interface{}{
+					"flavor":   float64(1),
+					"image":    "cirros-0.3.4-x86_64-uec",
+					"key_name": "oskey",
+					"name":     "cirros_server",
+					"networks": []interface{}{
+						map[string]interface{}{"network": "private"},
+					},
+				},
+				Type:    "os.nova.server",
+				Version: "1.0",
+			},
+			Type:      "os.nova.server-1.0",
+			UpdatedAt: updatedAt,
+			User:      "5e5bf8027826429c96af157f68dc9072",
+		}
+
+		th.AssertDeepEquals(t, expected, *actual)
+	}
+}
+
+func TestUpdateProfilesInvalidTimeFloat(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/profiles", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+		{
+			"profiles": [
+				{
+					"created_at": 123456789.0,
+					"domain": null,
+					"id": "9e1c6f42-acf5-4688-be2c-8ce954ef0f23",
+					"metadata": {},
+					"name": "pserver",
+					"project": "42d9e9663331431f97b75e25136307ff",
+					"spec": {
+						"properties": {
+							"flavor": 1,
+							"image": "cirros-0.3.4-x86_64-uec",
+							"key_name": "oskey",
+							"name": "cirros_server",
+							"networks": [
+								{
+									"network": "private"
+								}
+							]
+						},
+						"type": "os.nova.server",
+						"version": 1.0
+					},
+					"type": "os.nova.server-1.0",
+					"updated_at": 123456789.0,
+					"user": "5e5bf8027826429c96af157f68dc9072"
+				}
+		    ]
+		}`)
+	})
+
+	_, err := profiles.Update(fake.ServiceClient(), "9e1c6f42-acf5-4688-be2c-8ce954ef0f23", profiles.UpdateOpts{Name: "pserver"}).Extract()
+	th.AssertEquals(t, false, err == nil)
+}
+
+func TestUpdateProfilesInvalidTimeString(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/profiles", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+		{
+			"profiles": [
+				{
+					"created_at": "invalid",
+					"domain": null,
+					"id": "9e1c6f42-acf5-4688-be2c-8ce954ef0f23",
+					"metadata": {},
+					"name": "pserver",
+					"project": "42d9e9663331431f97b75e25136307ff",
+					"spec": {
+						"properties": {
+							"flavor": 1,
+							"image": "cirros-0.3.4-x86_64-uec",
+							"key_name": "oskey",
+							"name": "cirros_server",
+							"networks": [
+								{
+									"network": "private"
+								}
+							]
+						},
+						"type": "os.nova.server",
+						"version": 1.0
+					},
+					"type": "os.nova.server-1.0",
+					"updated_at": "invalid",
+					"user": "5e5bf8027826429c96af157f68dc9072"
+				}
+		    ]
+		}`)
+	})
+
+	_, err := profiles.Update(fake.ServiceClient(), "9e1c6f42-acf5-4688-be2c-8ce954ef0f23", profiles.UpdateOpts{Name: "pserver"}).Extract()
+	th.AssertEquals(t, false, err == nil)
+}

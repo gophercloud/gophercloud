@@ -27,6 +27,11 @@ type GetResult struct {
 	commonResult
 }
 
+// UpdateResult is the response of a Update operations.
+type UpdateResult struct {
+	commonResult
+}
+
 // Extract provides access to Profile returned by the Get and Create functions.
 func (r commonResult) Extract() (*Profile, error) {
 	var s struct {

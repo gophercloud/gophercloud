@@ -53,5 +53,14 @@ Example to List profiles
 		return true, nil
 	})
 
+Example to Update profile
+
+	profile, err := profiles.Update(serviceClient, profileName, profiles.UpdateOpts{Name: newProfileName}).Extract()
+    if err != nil {
+		panic(err)
+    }
+
+    fmt.Print("profile", profile)
+
 */
 package profiles
