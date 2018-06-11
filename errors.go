@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// test
 // BaseError is an error type that all other error types embed.
 type BaseError struct {
 	DefaultErrString string
