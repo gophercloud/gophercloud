@@ -40,3 +40,7 @@ func deleteURL(client *gophercloud.ServiceClient, id string) string {
 func listPoliciesURL(client *gophercloud.ServiceClient, clusterID string) string {
 	return client.ServiceURL(apiVersion, apiName, clusterID, "policies")
 }
+
+func getPolicyURL(client *gophercloud.ServiceClient, clusterID string, policyID string) string {
+	return client.ServiceURL(apiVersion, apiName, clusterID, "policies", policyID)
+}

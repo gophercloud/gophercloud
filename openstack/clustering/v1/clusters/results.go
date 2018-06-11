@@ -191,3 +191,21 @@ func (page ClusterPolicyPage) IsEmpty() (bool, error) {
 	clusterPolicies, err := ExtractClusterPolicies(page)
 	return len(clusterPolicies) == 0, err
 }
+
+// GetPolicyResult is the response of a Get operations.
+type GetPolicyResult struct {
+	commonResult
+}
+
+// Extract provides access to the individual Policy returned by the Get and
+// Create functions.
+func (r GetPolicyResult) Extract() (*ClusterPolicy, error) {
+	var s struct {
+		ClusterPolicy *ClusterPolicy `json:"cluster_policy"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return nil, err
+	}
+	return s.ClusterPolicy, err
+}
