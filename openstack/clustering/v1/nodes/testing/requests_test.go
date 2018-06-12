@@ -123,22 +123,26 @@ func TestCreateNode(t *testing.T) {
 		expected := nodes.Node{
 			ClusterID: "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
 			CreatedAt: createdAt,
-			Data: nodes.Data{
-				InternalPorts: []nodes.InternalPort{
+			Data: map[string]interface{}{
+				"internal_ports": []map[string]interface{}{
 					{
-						FixedIps: []nodes.FixedIp{
-							{
-								SubnetID:  "863b20c0-c011-4650-85c2-ad531f4570a4",
-								IPAddress: "10.63.177.162",
+						"network_id": "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
+						"security_group_ids": []interface{}{
+							"8db277ab-1d98-4148-ba72-724721789427",
+						},
+						"fixed_ips": []interface{}{
+							map[string]interface{}{
+								"subnet_id":  "863b20c0-c011-4650-85c2-ad531f4570a4",
+								"ip_address": "10.63.177.162",
 							},
 						},
-						ID:               "43aa53d7-a70b-4f40-812f-4feecb687018",
-						NetworkID:        "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
-						Remove:           true,
-						SecurityGroupIds: []string{"8db277ab-1d98-4148-ba72-724721789427"},
+						"id":     "43aa53d7-a70b-4f40-812f-4feecb687018",
+						"remove": true,
 					},
 				},
-				Placement: nodes.Placement{Zone: "nova"},
+				"placement": map[string]interface{}{
+					"zone": "nova",
+				},
 			},
 			Dependents: map[string]interface{}{},
 			Domain:     "1235be1e-8d8e-43bb-bd6c-943eccf76a6d",
@@ -245,28 +249,34 @@ func TestCreateNodeEmptyTime(t *testing.T) {
 		expected := nodes.Node{
 			ClusterID: "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
 			CreatedAt: time.Time{},
-			Data: nodes.Data{
-				InternalPorts: []nodes.InternalPort{
+			Data: map[string]interface{}{
+				"internal_ports": []map[string]interface{}{
 					{
-						FixedIps: []nodes.FixedIp{
-							{
-								SubnetID:  "863b20c0-c011-4650-85c2-ad531f4570a4",
-								IPAddress: "10.63.177.162",
+						"network_id": "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
+						"security_group_ids": []interface{}{
+							"8db277ab-1d98-4148-ba72-724721789427",
+						},
+						"fixed_ips": []interface{}{
+							map[string]interface{}{
+								"subnet_id":  "863b20c0-c011-4650-85c2-ad531f4570a4",
+								"ip_address": "10.63.177.162",
 							},
 						},
-						Floating: nodes.Floating{
-							ID:                "e906af80-ce13-4ec3-9fba-fa20581c2695",
-							FloatingIPAddress: "10.0.0.20",
-							FloatingNetworkID: "c87774b5-95a4-4efb-8e6b-883e2212d67b",
+						"floating": map[string]interface{}{
+							"floating_network_id": "c87774b5-95a4-4efb-8e6b-883e2212d67b",
+							"floating_ip_address": "10.0.0.20",
+							"remove":              false,
+							"id":                  "e906af80-ce13-4ec3-9fba-fa20581c2695",
 						},
-						ID:               "43aa53d7-a70b-4f40-812f-4feecb687018",
-						NetworkID:        "847e4f65-1ff1-42b1-9e74-74e6a109ad11",
-						Remove:           true,
-						SecurityGroupIds: []string{"8db277ab-1d98-4148-ba72-724721789427"},
+						"id":     "43aa53d7-a70b-4f40-812f-4feecb687018",
+						"remove": true,
 					},
 				},
-				Placement: nodes.Placement{Zone: "nova"},
+				"placement": map[string]interface{}{
+					"zone": "nova",
+				},
 			},
+
 			Dependents:   map[string]interface{}{},
 			Domain:       "1235be1e-8d8e-43bb-bd6c-943eccf76a6d",
 			ID:           "82fe28e0-9fcb-42ca-a2fa-6eb7dddd75a1",
