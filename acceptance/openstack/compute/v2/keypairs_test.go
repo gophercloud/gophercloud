@@ -16,7 +16,10 @@ import (
 
 const keyName = "gophercloud_test_key_pair"
 
-func TestKeypairsCreateDelete(t *testing.T) {
+func TestKeypairsParse(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
@@ -29,6 +32,17 @@ func TestKeypairsCreateDelete(t *testing.T) {
 	// This checks if the issue is happening again.
 	_, err = ssh.ParsePrivateKey([]byte(keyPair.PrivateKey))
 	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, keyPair)
+}
+
+func TestKeypairsCreateDelete(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+
+	keyPair, err := CreateKeyPair(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteKeyPair(t, client, keyPair)
 
 	tools.PrintResource(t, keyPair)
 
