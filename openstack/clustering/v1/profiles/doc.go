@@ -62,5 +62,13 @@ Example to Update profile
 
     fmt.Print("profile", profile)
 
+Example to Delete profile
+
+	profileID := "6dc6d336e3fc4c0a951b5698cd1236ee"
+	err := profiles.Delete(serviceClient, profileID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package profiles

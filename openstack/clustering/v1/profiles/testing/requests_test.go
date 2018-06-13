@@ -865,3 +865,19 @@ func TestUpdateProfilesInvalidTimeString(t *testing.T) {
 	_, err := profiles.Update(fake.ServiceClient(), "9e1c6f42-acf5-4688-be2c-8ce954ef0f23", profiles.UpdateOpts{Name: "pserver"}).Extract()
 	th.AssertEquals(t, false, err == nil)
 }
+
+func TestDeleteProfile(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v1/profiles/6dc6d336e3fc4c0a951b5698cd1236ee", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	deleteResult := profiles.Delete(fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee")
+	th.AssertNoErr(t, deleteResult.ExtractErr())
+}
