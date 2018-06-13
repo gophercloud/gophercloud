@@ -750,7 +750,7 @@ type ShowConsoleOutputOptsBuilder interface {
 type ShowConsoleOutputOpts struct {
 	// The number of lines to fetch from the end of console log.
 	// All lines will be returned if this is not specified.
-	Length string `json:"length,omitempty"`
+	Length int `json:"length,omitempty"`
 }
 
 // ToServerShowConsoleOutputMap formats a ShowConsoleOutputOpts structure into a request body.
@@ -765,10 +765,8 @@ func ShowConsoleOutput(client *gophercloud.ServiceClient, id string, opts ShowCo
 		r.Err = err
 		return
 	}
-	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	r.Err = err
-	r.Header = resp.Header
-	return r
+	return
 }

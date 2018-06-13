@@ -258,17 +258,13 @@ func TestShowConsoleOutput(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleShowConsoleOutputSuccessfully(t, ConsoleOutputBody)
 
-	Actual, err := servers.ShowConsoleOutput(client.ServiceClient(), "1234asdf", &servers.ShowConsoleOutputOpts{
-		Length: "50"}).ExtractConsoleOutput()
+	outputOpts := &servers.ShowConsoleOutputOpts{
+		Length: 50,
+	}
+	actual, err := servers.ShowConsoleOutput(client.ServiceClient(), "1234asdf", outputOpts).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertByteArrayEquals(t, []byte(ConsoleOutput), []byte(Actual))
-}
-
-func TestHostKeyFromConsoleOutput(t *testing.T) {
-	hostkey, err := servers.GetHostKeyFromConsole(HostKeyConsoleOutput)
-	th.AssertNoErr(t, err)
-	th.AssertByteArrayEquals(t, []byte(HostKey), []byte(hostkey))
+	th.AssertByteArrayEquals(t, []byte(ConsoleOutput), []byte(actual))
 }
 
 func TestGetPassword(t *testing.T) {
