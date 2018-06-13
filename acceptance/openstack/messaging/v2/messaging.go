@@ -5,6 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/messaging/v2/claims"
 	"github.com/gophercloud/gophercloud/openstack/messaging/v2/messages"
 	"github.com/gophercloud/gophercloud/openstack/messaging/v2/queues"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -107,4 +108,17 @@ func ListMessages(t *testing.T, client *gophercloud.ServiceClient, queueName str
 		return true, nil
 	})
 	return allMessages, err
+}
+
+func CreateClaim(t *testing.T, client *gophercloud.ServiceClient, queueName string) ([]claims.Messages, error) {
+	createOpts := claims.CreateOpts{}
+
+	t.Logf("Attempting to create claim on queue: %s", queueName)
+	claimedMessages, err := claims.Create(client, queueName, createOpts).Extract()
+	tools.PrintResource(t, claimedMessages)
+	if err != nil {
+		t.Fatalf("Unable to create claim: %v", err)
+	}
+
+	return claimedMessages, err
 }
