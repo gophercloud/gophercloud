@@ -456,3 +456,27 @@ func TestServersActionLock(t *testing.T) {
 	err = WaitForComputeStatus(client, server, "ACTIVE")
 	th.AssertNoErr(t, err)
 }
+
+func TestServersConsoleOutput(t *testing.T) {
+	client, err := clients.NewComputeV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a compute client: %v", err)
+	}
+
+	server, err := CreateServer(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create server: %v", err)
+	}
+
+	defer DeleteServer(t, client, server)
+
+	outputOpts := &servers.ShowConsoleOutputOpts{
+		Length: 4,
+	}
+	output, err := servers.ShowConsoleOutput(client, server.ID, outputOpts).Extract()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tools.PrintResource(t, output)
+}
