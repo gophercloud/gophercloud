@@ -5,6 +5,8 @@ package v2
 import (
 	"testing"
 
+	"golang.org/x/crypto/ssh"
+
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/keypairs"
@@ -21,6 +23,12 @@ func TestKeypairsCreateDelete(t *testing.T) {
 	keyPair, err := CreateKeyPair(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteKeyPair(t, client, keyPair)
+
+	// There was a series of OpenStack releases, between Liberty and Ocata,
+	// where the returned SSH key was not parsable by Go.
+	// This checks if the issue is happening again.
+	_, err = ssh.ParsePrivateKey([]byte(keyPair.PrivateKey))
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, keyPair)
 
