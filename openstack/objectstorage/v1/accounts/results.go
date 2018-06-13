@@ -61,9 +61,8 @@ func (r UpdateResult) Extract() (*UpdateHeader, error) {
 
 // GetHeader represents the headers returned in the response from a Get request.
 type GetHeader struct {
-	BytesUsed int64 `json:"-"`
-	//QuotaBytes will be -1 if no account quota is set.
-	QuotaBytes     int64     `json:"-"`
+	BytesUsed      int64     `json:"-"`
+	QuotaBytes     *int64    `json:"-"`
 	ContainerCount int64     `json:"-"`
 	ContentLength  int64     `json:"-"`
 	ObjectCount    int64     `json:"-"`
@@ -104,12 +103,13 @@ func (r *GetHeader) UnmarshalJSON(b []byte) error {
 
 	switch s.QuotaBytes {
 	case "":
-		r.QuotaBytes = -1 //OpenStack convention is to represent "no quota" as -1
+		r.QuotaBytes = nil
 	default:
-		r.QuotaBytes, err = strconv.ParseInt(s.QuotaBytes, 10, 64)
+		v, err := strconv.ParseInt(s.QuotaBytes, 10, 64)
 		if err != nil {
 			return err
 		}
+		r.QuotaBytes = &v
 	}
 
 	switch s.ContentLength {

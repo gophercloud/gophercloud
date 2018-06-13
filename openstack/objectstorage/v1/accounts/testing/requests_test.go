@@ -43,8 +43,34 @@ func TestGetAccount(t *testing.T) {
 	_, err := res.Extract()
 	th.AssertNoErr(t, err)
 
+	var quotaBytes int64 = 42
 	expected := &accounts.GetHeader{
-		QuotaBytes:     42,
+		QuotaBytes:     &quotaBytes,
+		ContainerCount: 2,
+		ObjectCount:    5,
+		BytesUsed:      14,
+		Date:           time.Date(2014, time.January, 17, 16, 9, 56, 0, loc), // Fri, 17 Jan 2014 16:09:56 GMT
+	}
+	actual, err := res.Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestGetAccountNoQuota(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetAccountNoQuotaSuccessfully(t)
+
+	expectedMetadata := map[string]string{"Subject": "books"}
+	res := accounts.Get(fake.ServiceClient(), &accounts.GetOpts{})
+	th.AssertNoErr(t, res.Err)
+	actualMetadata, _ := res.ExtractMetadata()
+	th.CheckDeepEquals(t, expectedMetadata, actualMetadata)
+	_, err := res.Extract()
+	th.AssertNoErr(t, err)
+
+	expected := &accounts.GetHeader{
+		QuotaBytes:     nil,
 		ContainerCount: 2,
 		ObjectCount:    5,
 		BytesUsed:      14,
