@@ -258,38 +258,80 @@ func ExtractCapsules(r pagination.Page) ([]Capsule, error) {
 
 func (r *Capsule) UnmarshalJSON(b []byte) error {
 	type tmp Capsule
-	var s struct {
+
+	// Support for "older" zun time formats.
+	var s1 struct {
 		tmp
 		CreatedAt gophercloud.JSONRFC3339ZNoT `json:"created_at"`
 		UpdatedAt gophercloud.JSONRFC3339ZNoT `json:"updated_at"`
 	}
-	err := json.Unmarshal(b, &s)
+
+	err := json.Unmarshal(b, &s1)
+	if err == nil {
+		*r = Capsule(s1.tmp)
+
+		r.CreatedAt = time.Time(s1.CreatedAt)
+		r.UpdatedAt = time.Time(s1.UpdatedAt)
+
+		return nil
+	}
+
+	// Support for "new" zun time formats.
+	var s2 struct {
+		tmp
+		CreatedAt gophercloud.JSONRFC3339ZNoTNoZ `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339ZNoTNoZ `json:"updated_at"`
+	}
+
+	err = json.Unmarshal(b, &s2)
 	if err != nil {
 		return err
 	}
-	*r = Capsule(s.tmp)
 
-	r.CreatedAt = time.Time(s.CreatedAt)
-	r.UpdatedAt = time.Time(s.UpdatedAt)
+	*r = Capsule(s2.tmp)
+
+	r.CreatedAt = time.Time(s2.CreatedAt)
+	r.UpdatedAt = time.Time(s2.UpdatedAt)
 
 	return nil
 }
 
 func (r *Container) UnmarshalJSON(b []byte) error {
 	type tmp Container
-	var s struct {
+
+	// Support for "older" zun time formats.
+	var s1 struct {
 		tmp
 		CreatedAt gophercloud.JSONRFC3339ZNoT `json:"created_at"`
 		UpdatedAt gophercloud.JSONRFC3339ZNoT `json:"updated_at"`
 	}
-	err := json.Unmarshal(b, &s)
+
+	err := json.Unmarshal(b, &s1)
+	if err == nil {
+		*r = Container(s1.tmp)
+
+		r.CreatedAt = time.Time(s1.CreatedAt)
+		r.UpdatedAt = time.Time(s1.UpdatedAt)
+
+		return nil
+	}
+
+	// Support for "new" zun time formats.
+	var s2 struct {
+		tmp
+		CreatedAt gophercloud.JSONRFC3339ZNoTNoZ `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339ZNoTNoZ `json:"updated_at"`
+	}
+
+	err = json.Unmarshal(b, &s2)
 	if err != nil {
 		return err
 	}
-	*r = Container(s.tmp)
 
-	r.CreatedAt = time.Time(s.CreatedAt)
-	r.UpdatedAt = time.Time(s.UpdatedAt)
+	*r = Container(s2.tmp)
+
+	r.CreatedAt = time.Time(s2.CreatedAt)
+	r.UpdatedAt = time.Time(s2.UpdatedAt)
 
 	return nil
 }
