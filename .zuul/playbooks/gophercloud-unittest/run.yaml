@@ -1,4 +1,5 @@
 - hosts: all
+  become: yes
   roles:
     - config-golang
   tasks:
