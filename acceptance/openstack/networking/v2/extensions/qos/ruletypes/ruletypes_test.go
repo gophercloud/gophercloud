@@ -1,4 +1,4 @@
-package qos
+package ruletypes
 
 import (
 	"testing"
