@@ -36,6 +36,6 @@ func TestListRuleTypes(t *testing.T) {
 		return
 	}
 
-	expected := []ruletypes.RuleType{{Type: "bandwidth_limit"}, {Type: "dscp_marking"}, {Type:"minimum_bandwidth"}}
+	expected := []ruletypes.RuleType{{Type: "bandwidth_limit"}, {Type: "dscp_marking"}, {Type: "minimum_bandwidth"}}
 	th.AssertDeepEquals(t, expected, rules)
 }
