@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/qos"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/qos/ruletypes"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -24,11 +24,18 @@ func TestListRuleTypes(t *testing.T) {
 		fmt.Fprint(w, ListRuleTypesResponse)
 	})
 
-	versions, err := qos.ListRuleTypes(fake.ServiceClient()).Extract()
+	page, err := ruletypes.ListRuleTypes(fake.ServiceClient()).AllPages()
 	if err != nil {
-		t.Errorf("Failed to list rule types: %s", err.Error())
+		t.Errorf("Failed to list rule types pages: %v", err)
 		return
 	}
 
-	th.AssertDeepEquals(t, []string{"bandwidth_limit", "dscp_marking", "minimum_bandwidth"}, versions)
+	rules, err := ruletypes.ExtractRuleTypes(page)
+	if err != nil {
+		t.Errorf("Failed to list rule types: %v", err)
+		return
+	}
+
+	expected := []ruletypes.RuleType{{"bandwidth_limit"}, {"dscp_marking"}, {"minimum_bandwidth"}}
+	th.AssertDeepEquals(t, expected, rules)
 }

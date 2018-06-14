@@ -5,7 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/qos"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/qos/ruletypes"
 )
 
 func TestListRuleTypes(t *testing.T) {
@@ -15,7 +15,13 @@ func TestListRuleTypes(t *testing.T) {
 		return
 	}
 
-	ruleTypes, err := qos.ListRuleTypes(client).Extract()
+	page, err := ruletypes.ListRuleTypes(client).AllPages()
+	if err != nil {
+		t.Fatalf("Failed to list rule types pages: %v", err)
+		return
+	}
+
+	ruleTypes, err := ruletypes.ExtractRuleTypes(page)
 	if err != nil {
 		t.Fatalf("Failed to list rule types: %v", err)
 		return

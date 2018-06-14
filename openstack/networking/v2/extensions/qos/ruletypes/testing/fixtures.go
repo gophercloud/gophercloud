@@ -14,5 +14,6 @@ const (
             "type": "minimum_bandwidth"
         }
     ]
-}`
+}
+`
 )
