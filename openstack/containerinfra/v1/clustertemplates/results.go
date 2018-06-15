@@ -27,6 +27,11 @@ type GetResult struct {
 	commonResult
 }
 
+// UpdateResult is the response of a Update operations.
+type UpdateResult struct {
+	commonResult
+}
+
 // Extract is a function that accepts a result and extracts a cluster-template resource.
 func (r commonResult) Extract() (*ClusterTemplate, error) {
 	var s *ClusterTemplate

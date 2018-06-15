@@ -1,6 +1,7 @@
 package clustertemplates
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gophercloud/gophercloud"
@@ -118,6 +119,54 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	var result *http.Response
 	result, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
+}
+
+type UpdateOpts struct {
+	Path  string `json:"path" required:"true"`
+	Value string `json:"value,omitempty"`
+	Op    string `json:"op" required:"true"`
+}
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToClusterTemplateUpdateMap() (map[string]interface{}, error)
+}
+
+// ToClusterUpdateMap assembles a request body based on the contents of
+// UpdateOpts.
+func (opts UpdateOpts) ToClusterTemplateUpdateMap() (map[string]interface{}, error) {
+	if opts.Op != "remove" && opts.Value == "" {
+		return nil, fmt.Errorf("Value field must be provied for Op=[%s]. Only when Op=remove can have empty Value field", opts.Op)
+	}
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+// Update implements cluster updated request.
+func Update(client *gophercloud.ServiceClient, id string, opts []UpdateOptsBuilder) (r UpdateResult) {
+	var o []map[string]interface{}
+	for _, opt := range opts {
+		b, err := opt.ToClusterTemplateUpdateMap()
+		if err != nil {
+			r.Err = err
+			return r
+		}
+		o = append(o, b)
+	}
+	var result *http.Response
+	result, r.Err = client.Patch(updateURL(client, id), o, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 202},
+	})
+
 	if r.Err == nil {
 		r.Header = result.Header
 	}
