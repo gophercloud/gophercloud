@@ -2,8 +2,6 @@ package clusters
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -59,12 +57,9 @@ func (r commonResult) Extract() (*Cluster, error) {
 	var s struct {
 		Cluster *Cluster `json:"cluster"`
 	}
-	err := r.ExtractInto(&s)
-	if err != nil {
-		return s.Cluster, err
-	}
 
-	return s.Cluster, nil
+	err := r.ExtractInto(&s)
+	return s.Cluster, err
 }
 
 // ClusterPage contains a single page of all clusters from a List call.
@@ -90,9 +85,9 @@ func (r *Cluster) UnmarshalJSON(b []byte) error {
 	type tmp Cluster
 	var s struct {
 		tmp
-		CreatedAt interface{} `json:"created_at"`
-		InitAt    interface{} `json:"init_at"`
-		UpdatedAt interface{} `json:"updated_at"`
+		CreatedAt string `json:"created_at"`
+		InitAt    string `json:"init_at"`
+		UpdatedAt string `json:"updated_at"`
 	}
 
 	err := json.Unmarshal(b, &s)
@@ -101,46 +96,25 @@ func (r *Cluster) UnmarshalJSON(b []byte) error {
 	}
 	*r = Cluster(s.tmp)
 
-	switch t := s.CreatedAt.(type) {
-	case string:
-		if t != "" {
-			r.CreatedAt, err = time.Parse(gophercloud.RFC3339Milli, t)
-			if err != nil {
-				return err
-			}
+	if s.CreatedAt != "" {
+		r.CreatedAt, err = time.Parse(gophercloud.RFC3339Milli, s.CreatedAt)
+		if err != nil {
+			return err
 		}
-	case nil:
-		r.CreatedAt = time.Time{}
-	default:
-		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.CreatedAt))
 	}
 
-	switch t := s.InitAt.(type) {
-	case string:
-		if t != "" {
-			r.InitAt, err = time.Parse(gophercloud.RFC3339Milli, t)
-			if err != nil {
-				return err
-			}
+	if s.InitAt != "" {
+		r.InitAt, err = time.Parse(gophercloud.RFC3339Milli, s.InitAt)
+		if err != nil {
+			return err
 		}
-	case nil:
-		r.InitAt = time.Time{}
-	default:
-		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.InitAt))
 	}
 
-	switch t := s.UpdatedAt.(type) {
-	case string:
-		if t != "" {
-			r.UpdatedAt, err = time.Parse(gophercloud.RFC3339Milli, t)
-			if err != nil {
-				return err
-			}
+	if s.UpdatedAt != "" {
+		r.UpdatedAt, err = time.Parse(gophercloud.RFC3339Milli, s.UpdatedAt)
+		if err != nil {
+			return err
 		}
-	case nil:
-		r.UpdatedAt = time.Time{}
-	default:
-		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.UpdatedAt))
 	}
 
 	return nil
