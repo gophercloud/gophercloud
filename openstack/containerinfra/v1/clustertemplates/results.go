@@ -1,6 +1,7 @@
 package clustertemplates
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -13,6 +14,12 @@ type commonResult struct {
 // CreateResult is the response of a Create operations.
 type CreateResult struct {
 	commonResult
+}
+
+// DeleteResult is the result from a Delete operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
 }
 
 // Extract is a function that accepts a result and extracts a cluster-template resource.
@@ -57,4 +64,18 @@ type ClusterTemplate struct {
 	UpdatedAt           time.Time          `json:"updated_at"`
 	UserID              string             `json:"user_id"`
 	VolumeDriver        string             `json:"volume_driver"`
+}
+
+func (r DeleteResult) Extract() (string, error) {
+	uuid := ""
+	idKey := "X-Openstack-Request-Id"
+	if len(r.Header[idKey]) > 0 {
+		uuid = r.Header[idKey][0]
+		if uuid == "" {
+			return "", fmt.Errorf("No uuid value in response header %s", idKey)
+		}
+	} else {
+		return "", fmt.Errorf("Missing [%s] in response header", idKey)
+	}
+	return uuid, r.ExtractErr()
 }

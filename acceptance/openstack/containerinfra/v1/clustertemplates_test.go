@@ -18,9 +18,9 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 	clusterTemplate, err := CreateClusterTemplate(t, client)
 	th.AssertNoErr(t, err)
 	t.Log(clusterTemplate.Name)
-	/*
-		defer DeleteClusterTemplate(t, client, clusterTemplate.UUID)
 
+	defer DeleteClusterTemplate(t, client, clusterTemplate.UUID)
+	/*
 		// Test clusters list
 		allPages, err := clustertemplates.List(client, nil).AllPages()
 		th.AssertNoErr(t, err)

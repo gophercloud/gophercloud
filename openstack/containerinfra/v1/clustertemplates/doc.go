@@ -38,5 +38,13 @@ Example to Create Cluster Template
 		panic(err)
 	}
 
+Example to Delete Cluster Template
+
+	clusterTemplateID := "dc6d336e3fc4c0a951b5698cd1236ee"
+	err := clustertemplates.Delete(serviceClient, clusterTemplateID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package clustertemplates

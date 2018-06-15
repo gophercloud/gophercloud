@@ -112,3 +112,44 @@ func HandleCreateClusterTemplateSuccessfully(t *testing.T) {
 		fmt.Fprint(w, ClusterTemplateResponse)
 	})
 }
+
+func HandleDeleteClusterSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clustertemplates/6dc6d336e3fc4c0a951b5698cd1236ee", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("OpenStack-API-Minimum-Version", "container-infra 1.1")
+		w.Header().Add("OpenStack-API-Maximum-Version", "container-infra 1.6")
+		w.Header().Add("OpenStack-API-Version", "container-infra 1.1")
+		w.Header().Add("X-OpenStack-Request-Id", "req-781e9bdc-4163-46eb-91c9-786c53188bbb")
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleDeleteCluster_NoRequestIDHeader(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clustertemplates/6dc6d336e3fc4c0a951b5698cd1236ee", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("OpenStack-API-Minimum-Version", "container-infra 1.1")
+		w.Header().Add("OpenStack-API-Maximum-Version", "container-infra 1.6")
+		w.Header().Add("OpenStack-API-Version", "container-infra 1.1")
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleDeleteCluster_EmptyRequestID(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clustertemplates/6dc6d336e3fc4c0a951b5698cd1236ee", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("OpenStack-API-Minimum-Version", "container-infra 1.1")
+		w.Header().Add("OpenStack-API-Maximum-Version", "container-infra 1.6")
+		w.Header().Add("OpenStack-API-Version", "container-infra 1.1")
+		w.Header().Add("X-OpenStack-Request-Id", "")
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
