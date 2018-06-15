@@ -22,6 +22,11 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// GetResult is the response of a Get operations.
+type GetResult struct {
+	commonResult
+}
+
 // Extract is a function that accepts a result and extracts a cluster-template resource.
 func (r commonResult) Extract() (*ClusterTemplate, error) {
 	var s *ClusterTemplate

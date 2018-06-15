@@ -113,3 +113,13 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		return ClusterTemplatePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// Get retrieves a specific cluster-template based on its unique ID.
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	var result *http.Response
+	result, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
+}

@@ -99,3 +99,31 @@ func TestListClusterTemplates(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestGetClusterTemplate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleGetClusterTemplateSuccessfully(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	actual, err := clustertemplates.Get(sc, "7d85f602-a948-4a30-afd4-e84f47471c15").Extract()
+	th.AssertNoErr(t, err)
+	actual.CreatedAt = actual.CreatedAt.UTC()
+	th.AssertDeepEquals(t, ExpectedClusterTemplate, *actual)
+}
+
+func TestGetClusterTemplateEmptyTime(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleGetClusterTemplateEmptyTimeSuccessfully(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	actual, err := clustertemplates.Get(sc, "7d85f602-a948-4a30-afd4-e84f47471c15").Extract()
+	th.AssertNoErr(t, err)
+	actual.CreatedAt = actual.CreatedAt.UTC()
+	th.AssertDeepEquals(t, ExpectedClusterTemplate_EmptyTime, *actual)
+}
