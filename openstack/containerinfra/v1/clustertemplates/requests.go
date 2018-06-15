@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // CreateOptsBuilder Builder.
@@ -71,4 +72,44 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	result, r.Err = client.Delete(deleteURL(client, id), nil)
 	r.Header = result.Header
 	return
+}
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToClusterTemplateListQuery() (string, error)
+}
+
+// ListOpts allows the sorting of paginated collections through
+// the API. SortKey allows you to sort by a particular cluster templates attribute.
+// SortDir sets the direction, and is either `asc' or `desc'.
+// Marker and Limit are used for pagination.
+type ListOpts struct {
+	Marker  string `q:"marker"`
+	Limit   int    `q:"limit"`
+	SortKey string `q:"sort_key"`
+	SortDir string `q:"sort_dir"`
+}
+
+// ToClusterTemplateListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToClusterTemplateListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List returns a Pager which allows you to iterate over a collection of
+// cluster-templates. It accepts a ListOptsBuilder, which allows you to sort
+// the returned collection for greater efficiency.
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listURL(client)
+	if opts != nil {
+		query, err := opts.ToClusterTemplateListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return ClusterTemplatePage{pagination.LinkedPageBase{PageResult: r}}
+	})
 }
