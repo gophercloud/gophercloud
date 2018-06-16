@@ -3,9 +3,7 @@ package profiles
 import (
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -93,18 +91,15 @@ func (r *Spec) UnmarshalJSON(b []byte) error {
 	}
 	*r = Spec(s.tmp)
 
-	switch s.Version.(type) {
-	case nil:
-		r.Version = ""
-	case float32, float64, int, int32, int64:
-		r.Version = strconv.FormatFloat(s.Version.(float64), 'f', -1, 64)
-		if !strings.Contains(r.Version, ".") {
-			r.Version = strconv.FormatFloat(s.Version.(float64), 'f', 1, 64)
+	switch t := s.Version.(type) {
+	case float64:
+		if t == 1 {
+			r.Version = fmt.Sprintf("%.1f", t)
+		} else {
+			r.Version = strconv.FormatFloat(t, 'f', -1, 64)
 		}
 	case string:
-		r.Version = s.Version.(string)
-	default:
-		return fmt.Errorf("Invalid type for Spec Version. type=%v", reflect.TypeOf(s.Version))
+		r.Version = t
 	}
 
 	return nil
@@ -114,8 +109,8 @@ func (r *Profile) UnmarshalJSON(b []byte) error {
 	type tmp Profile
 	var s struct {
 		tmp
-		CreatedAt interface{} `json:"created_at"`
-		UpdatedAt interface{} `json:"updated_at"`
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
 	}
 
 	err := json.Unmarshal(b, &s)
@@ -124,32 +119,18 @@ func (r *Profile) UnmarshalJSON(b []byte) error {
 	}
 	*r = Profile(s.tmp)
 
-	switch t := s.CreatedAt.(type) {
-	case string:
-		if t != "" {
-			r.CreatedAt, err = time.Parse(gophercloud.RFC3339Milli, t)
-			if err != nil {
-				return err
-			}
+	if s.CreatedAt != "" {
+		r.CreatedAt, err = time.Parse(time.RFC3339, s.CreatedAt)
+		if err != nil {
+			return err
 		}
-	case nil:
-		r.CreatedAt = time.Time{}
-	default:
-		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.CreatedAt))
 	}
 
-	switch t := s.UpdatedAt.(type) {
-	case string:
-		if t != "" {
-			r.UpdatedAt, err = time.Parse(gophercloud.RFC3339Milli, t)
-			if err != nil {
-				return err
-			}
+	if s.UpdatedAt != "" {
+		r.UpdatedAt, err = time.Parse(time.RFC3339, s.UpdatedAt)
+		if err != nil {
+			return err
 		}
-	case nil:
-		r.UpdatedAt = time.Time{}
-	default:
-		return fmt.Errorf("Invalid type for time. type=%v", reflect.TypeOf(s.UpdatedAt))
 	}
 
 	return nil
