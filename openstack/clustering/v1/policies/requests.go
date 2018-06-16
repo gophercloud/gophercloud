@@ -17,19 +17,22 @@ type ListOpts struct {
 	// Limit limits the number of Policies to return.
 	Limit int `q:"limit"`
 
-	// Marker and Limit control paging. Marker instructs List where to start listing from.
+	// Marker and Limit control paging. Marker instructs List where to start
+	// listing from.
 	Marker string `q:"marker"`
 
-	// Sorts the response by one or more attribute and optional sort direction combinations.
+	// Sorts the response by one or more attribute and optional sort direction
+	// combinations.
 	Sort string `q:"sort"`
 
-	// GlobalProject indicates whether to include resources for all projects or resources for the current project
+	// GlobalProject indicates whether to include resources for all projects or
+	// resources for the current project.
 	GlobalProject *bool `q:"global_project"`
 
-	// Name to filter the response by the specified name property of the object
+	// Name to filter the response by the specified name property of the object.
 	Name string `q:"name"`
 
-	// Filter the response by the specified type property of the object
+	// Filter the response by the specified type property of the object.
 	Type string `q:"type"`
 }
 

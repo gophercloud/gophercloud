@@ -63,8 +63,6 @@ func (r PolicyPage) LastMarker() (string, error) {
 	return policies[len(policies)-1].ID, nil
 }
 
-const RFC3339WithZ = "2006-01-02T15:04:05Z"
-
 func (r *Policy) UnmarshalJSON(b []byte) error {
 	type tmp Policy
 	var s struct {
@@ -81,7 +79,7 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 	if s.CreatedAt != "" {
 		r.CreatedAt, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.CreatedAt)
 		if err != nil {
-			r.CreatedAt, err = time.Parse(RFC3339WithZ, s.CreatedAt)
+			r.CreatedAt, err = time.Parse(time.RFC3339, s.CreatedAt)
 			if err != nil {
 				return err
 			}
@@ -91,7 +89,7 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 	if s.UpdatedAt != "" {
 		r.UpdatedAt, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.UpdatedAt)
 		if err != nil {
-			r.UpdatedAt, err = time.Parse(RFC3339WithZ, s.UpdatedAt)
+			r.UpdatedAt, err = time.Parse(time.RFC3339, s.UpdatedAt)
 			if err != nil {
 				return err
 			}
