@@ -13,7 +13,7 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 	})
 }
 
-// Get makes a request against the API to get details for a policy type
+// Get makes a request against the API to get details for a policy type.
 func Get(client *gophercloud.ServiceClient, policyTypeName string) (r GetResult) {
 	_, r.Err = client.Get(policyTypeGetURL(client, policyTypeName), &r.Body,
 		&gophercloud.RequestOpts{OkCodes: []int{200}})
