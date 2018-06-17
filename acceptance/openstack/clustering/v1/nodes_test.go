@@ -24,6 +24,7 @@ func TestNodesCRUD(t *testing.T) {
 
 	node, err := CreateNode(t, client, cluster.ID, profile.ID)
 	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node.ID)
 
 	// Test nodes list
 	allPages, err := nodes.List(client, nil).AllPages()

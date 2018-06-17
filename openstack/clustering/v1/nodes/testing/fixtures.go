@@ -186,3 +186,13 @@ func HandleListSuccessfully(t *testing.T) {
 		fmt.Fprint(w, ListResponse)
 	})
 }
+
+func HandleDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/nodes/6dc6d336e3fc4c0a951b5698cd1236ee", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

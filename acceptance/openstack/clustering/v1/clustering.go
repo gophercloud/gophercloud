@@ -261,6 +261,21 @@ func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	return
 }
 
+// DeleteNode will delete a given node. A fatal error will occur if the
+// node could not be deleted. This works best as a deferred function.
+func DeleteNode(t *testing.T, client *gophercloud.ServiceClient, id string) {
+	t.Logf("Attempting to delete node: %s", id)
+
+	err := nodes.Delete(client, id).ExtractErr()
+	if err != nil {
+		t.Fatalf("Error deleting node %s: %s:", id, err)
+	}
+
+	t.Logf("Successfully deleted node: %s", id)
+
+	return
+}
+
 // DeletePolicy will delete a given policy. A fatal error will occur if the
 // policy could not be deleted. This works best as a deferred function.
 func DeletePolicy(t *testing.T, client *gophercloud.ServiceClient, id string) {
