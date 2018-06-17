@@ -54,7 +54,7 @@ type ListOpts struct {
 	Limit         int    `q:"limit"`
 	Marker        string `q:"marker"`
 	Sort          string `q:"sort"`
-	GlobalProject string `q:"global_project"`
+	GlobalProject *bool  `q:"global_project"`
 	ClusterID     string `q:"cluster_id"`
 	Name          string `q:"name"`
 	Status        string `q:"status"`
@@ -66,8 +66,8 @@ func (opts ListOpts) ToNodeListQuery() (string, error) {
 	return q.String(), err
 }
 
-// ListDetail instructs OpenStack to provide a list of nodes.
-func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+// List instructs OpenStack to provide a list of nodes.
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToNodeListQuery()

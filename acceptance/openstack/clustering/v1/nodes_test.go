@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/nodes"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -21,6 +22,22 @@ func TestNodesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteCluster(t, client, cluster.ID)
 
-	_, err = CreateNode(t, client, cluster.ID, profile.ID)
+	node, err := CreateNode(t, client, cluster.ID, profile.ID)
 	th.AssertNoErr(t, err)
+
+	// Test nodes list
+	allPages, err := nodes.List(client, nil).AllPages()
+	th.AssertNoErr(t, err)
+
+	allNodes, err := nodes.ExtractNodes(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, v := range allNodes {
+		if v.ID == node.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
 }

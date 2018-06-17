@@ -33,7 +33,8 @@ type GetResult struct {
 	commonResult
 }
 
-// ExtractNodes provides access to the list of nodes in a page acquired from the ListDetail operation.
+// ExtractNodes provides access to the list of nodes in a page acquired from
+// the List operation.
 func ExtractNodes(r pagination.Page) ([]Node, error) {
 	var s struct {
 		Nodes []Node `json:"nodes"`
@@ -42,7 +43,7 @@ func ExtractNodes(r pagination.Page) ([]Node, error) {
 	return s.Nodes, err
 }
 
-// NodePage contains a single page of all nodes from a ListDetails call.
+// NodePage contains a single page of all nodes from a List call.
 type NodePage struct {
 	pagination.LinkedPageBase
 }
