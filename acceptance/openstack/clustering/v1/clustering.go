@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/actions"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/nodes"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/policies"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -84,6 +85,62 @@ func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, profileID st
 	th.AssertEquals(t, profileID, cluster.ProfileID)
 
 	return cluster, nil
+}
+
+// CreateNode creates a random node. An error will be returned if
+// the node could not be created.
+func CreateNode(t *testing.T, client *gophercloud.ServiceClient, clusterID, profileID string) (*nodes.Node, error) {
+	name := tools.RandomString("TESTACC-", 8)
+	t.Logf("Attempting to create node: %s", name)
+
+	createOpts := nodes.CreateOpts{
+		ClusterID: clusterID,
+		Metadata: map[string]interface{}{
+			"foo": "bar",
+			"test": map[string]interface{}{
+				"nil_interface": interface{}(nil),
+				"float_value":   float64(123.3),
+				"string_value":  "test_string",
+				"bool_value":    false,
+			},
+		},
+		Name:      name,
+		ProfileID: profileID,
+		Role:      "",
+	}
+
+	res := nodes.Create(client, createOpts)
+	if res.Err != nil {
+		return nil, res.Err
+	}
+
+	requestID := res.Header.Get("X-OpenStack-Request-Id")
+	th.AssertEquals(t, true, requestID != "")
+	t.Logf("Node %s request ID: %s", name, requestID)
+
+	actionID, err := GetActionID(res.Header)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, actionID != "")
+	t.Logf("Node %s action ID: %s", name, actionID)
+
+	err = WaitForAction(client, actionID, 600)
+	th.AssertNoErr(t, err)
+
+	node, err := res.Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created node: %s", node.ID)
+
+	tools.PrintResource(t, node)
+	tools.PrintResource(t, node.CreatedAt)
+
+	th.AssertEquals(t, profileID, node.ProfileID)
+	th.AssertEquals(t, clusterID, node.ClusterID)
+	th.AssertDeepEquals(t, createOpts.Metadata, node.Metadata)
+
+	return node, nil
 }
 
 // CreatePolicy creates a random policy. An error will be returned if the
