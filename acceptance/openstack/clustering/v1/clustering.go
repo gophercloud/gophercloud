@@ -68,7 +68,7 @@ func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, profileID st
 	th.AssertEquals(t, true, actionID != "")
 	t.Logf("Cluster %s action ID: %s", name, actionID)
 
-	err = WaitForAction(client, actionID, 600)
+	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
 	cluster, err := res.Extract()
@@ -123,13 +123,16 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient, clusterID, prof
 	th.AssertEquals(t, true, actionID != "")
 	t.Logf("Node %s action ID: %s", name, actionID)
 
-	err = WaitForAction(client, actionID, 600)
+	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
 	node, err := res.Extract()
 	if err != nil {
 		return nil, err
 	}
+
+	err = WaitForNodeStatus(client, node.ID, "ACTIVE")
+	th.AssertNoErr(t, err)
 
 	t.Logf("Successfully created node: %s", node.ID)
 
@@ -251,7 +254,7 @@ func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
 		t.Fatalf("Error deleting cluster %s: %s:", id, res.Err)
 	}
 
-	err = WaitForAction(client, actionID, 600)
+	err = WaitForAction(client, actionID)
 	if err != nil {
 		t.Fatalf("Error deleting cluster %s: %s:", id, res.Err)
 	}
@@ -269,6 +272,11 @@ func DeleteNode(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	err := nodes.Delete(client, id).ExtractErr()
 	if err != nil {
 		t.Fatalf("Error deleting node %s: %s:", id, err)
+	}
+
+	err = WaitForNodeStatus(client, id, "DELETED")
+	if err != nil {
+		t.Fatalf("Error deleting node %s: %s", id, err)
 	}
 
 	t.Logf("Successfully deleted node: %s", id)
@@ -319,8 +327,8 @@ func GetActionID(headers http.Header) (string, error) {
 	return actionID, nil
 }
 
-func WaitForAction(client *gophercloud.ServiceClient, actionID string, sleepTimeSecs int) error {
-	return gophercloud.WaitFor(sleepTimeSecs, func() (bool, error) {
+func WaitForAction(client *gophercloud.ServiceClient, actionID string) error {
+	return tools.WaitFor(func() (bool, error) {
 		action, err := actions.Get(client, actionID).Extract()
 		if err != nil {
 			return false, err
@@ -328,6 +336,33 @@ func WaitForAction(client *gophercloud.ServiceClient, actionID string, sleepTime
 
 		if action.Status == "SUCCEEDED" {
 			return true, nil
+		}
+
+		if action.Status == "FAILED" {
+			return false, fmt.Errorf("Action %s in FAILED state", actionID)
+		}
+
+		return false, nil
+	})
+}
+
+func WaitForNodeStatus(client *gophercloud.ServiceClient, id string, status string) error {
+	return tools.WaitFor(func() (bool, error) {
+		latest, err := nodes.Get(client, id).Extract()
+		if err != nil {
+			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "DELETED" {
+				return true, nil
+			}
+
+			return false, err
+		}
+
+		if latest.Status == status {
+			return true, nil
+		}
+
+		if latest.Status == "ERROR" {
+			return false, fmt.Errorf("Node %s in ERROR state", id)
 		}
 
 		return false, nil

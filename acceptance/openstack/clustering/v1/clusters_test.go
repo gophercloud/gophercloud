@@ -50,7 +50,7 @@ func TestClustersCRUD(t *testing.T) {
 	actionID, err := GetActionID(res.Header)
 	th.AssertNoErr(t, err)
 
-	err = WaitForAction(client, actionID, 600)
+	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
 	newCluster, err := clusters.Get(client, cluster.ID).Extract()
