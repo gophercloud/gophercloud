@@ -28,6 +28,12 @@ if [[ $? != 0 ]]; then
   failed=1
 fi
 
+# Block Storage v3
+go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/blockstorage/v3/
+if [[ $? != 0 ]]; then
+  failed=1
+fi
+
 # Compute v2
 go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/compute/v2/
 if [[ $? != 0 ]]; then
