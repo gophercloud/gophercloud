@@ -25,6 +25,11 @@ type GetResult struct {
 	commonResult
 }
 
+// ResizeResult is the response of a Get operations.
+type ResizeResult struct {
+	commonResult
+}
+
 // UpdateResult is the response of a Update operations.
 type UpdateResult struct {
 	commonResult
@@ -65,6 +70,20 @@ func (r commonResult) Extract() (*Cluster, error) {
 	}
 
 	return s.Cluster, nil
+}
+
+type Action struct {
+	Action string `json:"action"`
+}
+
+func (r ResizeResult) Extract() (string, error) {
+	var s Action
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return s.Action, err
+	}
+
+	return s.Action, nil
 }
 
 // ClusterPage contains a single page of all clusters from a List call.
