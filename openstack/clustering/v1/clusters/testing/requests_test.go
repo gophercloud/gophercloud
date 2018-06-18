@@ -203,7 +203,7 @@ func TestResizeCluster(t *testing.T) {
 
 	actionID, err := clusters.Resize(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, ExpectedResizeActionID, actionID)
+	th.AssertEquals(t, ExpectedActionID, actionID)
 }
 
 // Test case for Number field having a float value
@@ -279,24 +279,13 @@ func TestClusterScaleIn(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v1/clusters/edce3528-864f-41fb-8759-f4707925cc09/actions", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-		{
-			"action": "2a0ff107-e789-4660-a122-3816c43af703"
-		}`)
-	})
+	HandleScaleInSuccessfully(t)
 
 	count := 5
 	scaleOpts := clusters.ScaleInOpts{
 		Count: &count,
 	}
-	result, err := clusters.ScaleIn(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", scaleOpts).Extract()
+	actionID, err := clusters.ScaleIn(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", scaleOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, result, "2a0ff107-e789-4660-a122-3816c43af703")
+	th.AssertEquals(t, ExpectedActionID, actionID)
 }

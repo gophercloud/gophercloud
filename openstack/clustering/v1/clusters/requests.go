@@ -218,7 +218,6 @@ func (opts ScaleInOpts) ToClusterScaleInMap(scaleAction string) (map[string]inte
 	return gophercloud.BuildRequestBody(opts, scaleAction)
 }
 
-// ScaleIn CLI
 func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOpts) (r ScaleInResult) {
 	b, err := opts.ToClusterScaleInMap("scale_in")
 	if err != nil {

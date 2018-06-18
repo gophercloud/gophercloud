@@ -91,3 +91,34 @@ func TestClustersResize(t *testing.T) {
 
 	tools.PrintResource(t, newCluster)
 }
+
+func TestClustersScale(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	// reduce cluster size to 0
+	count := 1
+	scaleInOpts := clusters.ScaleInOpts{
+		Count: &count,
+	}
+
+	actionID, err := clusters.ScaleIn(client, cluster.ID, scaleInOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	newCluster, err := clusters.Get(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newCluster.DesiredCapacity, 0)
+
+	tools.PrintResource(t, newCluster)
+}
