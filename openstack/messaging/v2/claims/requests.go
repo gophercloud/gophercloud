@@ -64,3 +64,11 @@ func Create(client *gophercloud.ServiceClient, queueName string, opts CreateOpts
 	}
 	return
 }
+
+// Get queries the specified claim for the specified queue.
+func Get(client *gophercloud.ServiceClient, queueName string, claimID string) (r GetResult) {
+	_, r.Err = client.Get(getURL(client, queueName, claimID), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

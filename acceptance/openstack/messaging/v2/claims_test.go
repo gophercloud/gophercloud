@@ -32,6 +32,16 @@ func TestCRUDClaim(t *testing.T) {
 
 	clientID = "3381af92-2b9e-11e3-b191-7186130073dd"
 	claimedMessages, err := CreateClaim(t, client, createdQueueName)
+	claimIDs, _ := ExtractIDs(claimedMessages)
 
 	tools.PrintResource(t, claimedMessages)
+
+	for _, claimID := range claimIDs {
+		updatedClaim, getErr := GetClaim(t, client, createdQueueName, claimID)
+		if getErr != nil {
+			t.Fatalf("Unable to retrieve claim %s: %v", claimID, getErr)
+		}
+
+		tools.PrintResource(t, updatedClaim)
+	}
 }

@@ -23,3 +23,13 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, CreatedClaim, actual)
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetSuccessfully(t)
+
+	actual, err := claims.Get(fake.ServiceClient(), QueueName, ClaimID).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &FirstClaim, actual)
+}

@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
@@ -121,4 +122,41 @@ func CreateClaim(t *testing.T, client *gophercloud.ServiceClient, queueName stri
 	}
 
 	return claimedMessages, err
+}
+
+func GetClaim(t *testing.T, client *gophercloud.ServiceClient, queueName string, claimID string) (*claims.Claim, error) {
+	t.Logf("Attempting to get claim: %s", claimID)
+	claim, err := claims.Get(client, queueName, claimID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get claim: %s", claimID)
+	}
+
+	return claim, err
+}
+
+func ExtractIDs(claim []claims.Messages) ([]string, []string) {
+	var claimIDs []string
+	var messageID []string
+
+	for _, msg := range claim {
+		parts := strings.Split(msg.Href, "?claim_id=")
+		if len(parts) == 2 {
+			pieces := strings.Split(parts[0], "/")
+			if len(pieces) > 0 {
+				messageID = append(messageID, pieces[len(pieces)-1])
+			}
+			claimIDs = append(claimIDs, parts[1])
+		}
+	}
+	encountered := map[string]bool{}
+	for v := range claimIDs {
+		encountered[claimIDs[v]] = true
+	}
+
+	var uniqueClaimIDs []string
+
+	for key := range encountered {
+		uniqueClaimIDs = append(uniqueClaimIDs, key)
+	}
+	return uniqueClaimIDs, messageID
 }
