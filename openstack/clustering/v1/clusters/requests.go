@@ -3,10 +3,17 @@ package clusters
 import (
 	"fmt"
 	"net/http"
-	"reflect"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
+)
+
+type AdjustmentType string
+
+const (
+	ExactCapacityAdjustment      AdjustmentType = "EXACT_CAPACITY"
+	ChangeInCapacityAdjustment   AdjustmentType = "CHANGE_IN_CAPACITY"
+	ChangeInPercentageAdjustment AdjustmentType = "CHANGE_IN_PERCENTAGE"
 )
 
 // CreateOptsBuilder Builder.
@@ -155,39 +162,35 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 
 // ResizeOpts params
 type ResizeOpts struct {
-	AdjustmentType string      `json:"adjustment_type,omitempty"`
-	Number         interface{} `json:"number,omitempty"`
-	MinSize        *int        `json:"min_size,omitempty"`
-	MaxSize        *int        `json:"max_size,omitempty"`
-	MinStep        *int        `json:"min_step,omitempty"`
-	Strict         *bool       `json:"strict,omitempty"`
+	AdjustmentType AdjustmentType `json:"adjustment_type,omitempty"`
+	Number         interface{}    `json:"number,omitempty"`
+	MinSize        *int           `json:"min_size,omitempty"`
+	MaxSize        *int           `json:"max_size,omitempty"`
+	MinStep        *int           `json:"min_step,omitempty"`
+	Strict         *bool          `json:"strict,omitempty"`
 }
 
 // ToClusterResizeMap constructs a request body from ResizeOpts.
 func (opts ResizeOpts) ToClusterResizeMap() (map[string]interface{}, error) {
+	if opts.AdjustmentType != "" && opts.Number == nil {
+		return nil, fmt.Errorf("Number field MUST NOT be empty when AdjustmentType field used")
+	}
+
+	switch opts.Number.(type) {
+	case nil, int, int32, int64:
+		// Valid type. Always allow
+	case float32, float64:
+		if opts.AdjustmentType != ChangeInPercentageAdjustment {
+			return nil, fmt.Errorf("Only ChangeInPercentageAdjustment allows float value for Number field")
+		}
+	default:
+		return nil, fmt.Errorf("Number field must be either int, float, or omitted")
+	}
+
 	return gophercloud.BuildRequestBody(opts, "resize")
 }
 
 func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOpts) (r ResizeResult) {
-	if opts.AdjustmentType != "" && opts.Number == nil {
-		r.Err = fmt.Errorf("Number field MUST NOT be empty when AdjustmentType field used")
-		return
-	}
-
-	switch opts.Number.(type) {
-	case int, int32, int64, *int, *int32, *int64:
-		// Valid type. Always allow
-	case float32, float64, *float32, *float64:
-		if opts.AdjustmentType != "CHANGE_IN_PERCENTAGE" {
-			r.Err = fmt.Errorf("Only AdjustmentType=CHANGE_IN_PERCENTAGE allows float value for Number field"+
-				"AdjustmentType=%s", opts.AdjustmentType)
-			return
-		}
-	default:
-		r.Err = fmt.Errorf("Number field must be either int or float %s", reflect.TypeOf(opts.Number))
-		return
-	}
-
 	b, err := opts.ToClusterResizeMap()
 	if err != nil {
 		r.Err = err

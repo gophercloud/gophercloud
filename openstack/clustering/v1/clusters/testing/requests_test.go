@@ -187,18 +187,7 @@ func TestResizeCluster(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v1/clusters/7d85f602-a948-4a30-afd4-e84f47471c15/actions", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-		{
-  			"action": "2a0ff107-e789-4660-a122-3816c43af703"
-		}`)
-	})
+	HandleResizeSuccessfully(t)
 
 	maxSize := 5
 	minSize := 1
@@ -208,33 +197,17 @@ func TestResizeCluster(t *testing.T) {
 		AdjustmentType: "CHANGE_IN_CAPACITY",
 		MaxSize:        &maxSize,
 		MinSize:        &minSize,
-		Number:         &number,
+		Number:         number,
 		Strict:         &strict,
 	}
 
 	actionID, err := clusters.Resize(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, actionID, "2a0ff107-e789-4660-a122-3816c43af703")
+	th.AssertEquals(t, ExpectedResizeActionID, actionID)
 }
 
 // Test case for Number field having a float value
 func TestResizeClusterNumberFloat(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/v1/clusters/7d85f602-a948-4a30-afd4-e84f47471c15/actions", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-		{
-  			"action": "2a0ff107-e789-4660-a122-3816c43af703"
-		}`)
-	})
-
 	maxSize := 5
 	minSize := 1
 	number := 100.0
@@ -243,33 +216,31 @@ func TestResizeClusterNumberFloat(t *testing.T) {
 		AdjustmentType: "CHANGE_IN_PERCENTAGE",
 		MaxSize:        &maxSize,
 		MinSize:        &minSize,
-		Number:         &number,
+		Number:         number,
 		Strict:         &strict,
 	}
 
-	result, err := clusters.Resize(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	_, err := opts.ToClusterResizeMap()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, result, "2a0ff107-e789-4660-a122-3816c43af703")
 }
 
-// Negative test case for missing Number field which is required when AdjustmentType is specified
+// Test case for missing Number field.
+func TestResizeClusterMissingNumber(t *testing.T) {
+	maxSize := 5
+	minSize := 1
+	strict := true
+	opts := clusters.ResizeOpts{
+		MaxSize: &maxSize,
+		MinSize: &minSize,
+		Strict:  &strict,
+	}
+
+	_, err := opts.ToClusterResizeMap()
+	th.AssertNoErr(t, err)
+}
+
+// Test case for missing Number field which is required when AdjustmentType is specified
 func TestResizeClusterInvalidParamsMissingNumber(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/v1/clusters/7d85f602-a948-4a30-afd4-e84f47471c15/actions", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-		{
-  			"action": "2a0ff107-e789-4660-a122-3816c43af703"
-		}`)
-	})
-
 	maxSize := 5
 	minSize := 1
 	strict := true
@@ -277,34 +248,16 @@ func TestResizeClusterInvalidParamsMissingNumber(t *testing.T) {
 		AdjustmentType: "CHANGE_IN_CAPACITY",
 		MaxSize:        &maxSize,
 		MinSize:        &minSize,
-		//Number:       MISSING,
-		Strict: &strict,
+		Strict:         &strict,
 	}
 
-	_, err := clusters.Resize(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	_, err := opts.ToClusterResizeMap()
 	isValid := err == nil
 	th.AssertEquals(t, false, isValid)
 }
 
-// Negative test case for missing Number field which is required when AdjustmentType is specified
+// Test case for float Number field which is only valid for CHANGE_IN_PERCENTAGE.
 func TestResizeClusterInvalidParamsNumberFloat(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	th.Mux.HandleFunc("/v1/clusters/7d85f602-a948-4a30-afd4-e84f47471c15/actions", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-		{
-  			"action": "2a0ff107-e789-4660-a122-3816c43af703"
-		}`)
-	})
-
 	maxSize := 5
 	minSize := 1
 	number := 100.0
@@ -313,11 +266,11 @@ func TestResizeClusterInvalidParamsNumberFloat(t *testing.T) {
 		AdjustmentType: "CHANGE_IN_CAPACITY",
 		MaxSize:        &maxSize,
 		MinSize:        &minSize,
-		Number:         &number,
+		Number:         number,
 		Strict:         &strict,
 	}
 
-	_, err := clusters.Resize(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	_, err := opts.ToClusterResizeMap()
 	isValid := err == nil
 	th.AssertEquals(t, false, isValid)
 }

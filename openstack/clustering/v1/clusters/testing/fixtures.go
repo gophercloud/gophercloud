@@ -335,6 +335,13 @@ const UpdateResponse_EmptyTime = `
   }
 }`
 
+const ResizeResult = `
+{
+  "action": "2a0ff107-e789-4660-a122-3816c43af703"
+}`
+
+const ExpectedResizeActionID = "2a0ff107-e789-4660-a122-3816c43af703"
+
 func HandleCreateClusterSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
@@ -440,5 +447,17 @@ func HandleDeleteClusterSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleResizeSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/7d85f602-a948-4a30-afd4-e84f47471c15/actions", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, ResizeResult)
 	})
 }

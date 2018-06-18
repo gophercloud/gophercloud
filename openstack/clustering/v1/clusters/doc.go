@@ -52,7 +52,7 @@ Example to Update a cluster
 	}
 
 	clusterID := "7d85f602-a948-4a30-afd4-e84f47471c15"
-	cluster, err := clusters.Update(serviceClient, clusterName, clusters.UpdateOpts{Name: newClusterName}).Extract()
+	cluster, err := clusters.Update(serviceClient, clusterName, opts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +68,6 @@ Example to Delete a cluster
 
 Example to Resize a cluster
 
-	adjustmentType := "CHANGE_IN_CAPACITY"
 	number := 1
 	maxSize := 5
 	minSize := 1
@@ -76,7 +75,7 @@ Example to Resize a cluster
 	strict := true
 
 	resizeOpts := clusters.ResizeOpts{
-		AdjustmentType: adjustmentType,
+		AdjustmentType: clusters.ChangeInCapacityAdjustment,
 		Number:         number,
 		MaxSize:        &maxSize,
 		MinSize:        &minSize,

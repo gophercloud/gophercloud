@@ -59,3 +59,35 @@ func TestClustersCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newCluster)
 }
+
+func TestClustersResize(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	iTrue := true
+	resizeOpts := clusters.ResizeOpts{
+		AdjustmentType: clusters.ChangeInCapacityAdjustment,
+		Number:         1,
+		Strict:         &iTrue,
+	}
+
+	actionID, err := clusters.Resize(client, cluster.ID, resizeOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	newCluster, err := clusters.Get(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newCluster.DesiredCapacity, 2)
+
+	tools.PrintResource(t, newCluster)
+}
