@@ -145,3 +145,31 @@ func TestClustersPolicies(t *testing.T) {
 		tools.PrintResource(t, v)
 	}
 }
+
+func TestClustersRecovery(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	recoverOpts := clusters.RecoverOpts{
+		Operation: clusters.RebuildRecovery,
+	}
+
+	actionID, err := clusters.Recover(client, cluster.ID, recoverOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	newCluster, err := clusters.Get(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newCluster)
+}

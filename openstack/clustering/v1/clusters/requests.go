@@ -16,6 +16,14 @@ const (
 	ChangeInPercentageAdjustment AdjustmentType = "CHANGE_IN_PERCENTAGE"
 )
 
+type RecoveryAction string
+
+const (
+	RebootRecovery   RecoveryAction = "REBOOT"
+	RebuildRecovery  RecoveryAction = "REBUILD"
+	RecreateRecovery RecoveryAction = "RECREATE"
+)
+
 // CreateOptsBuilder Builder.
 type CreateOptsBuilder interface {
 	ToClusterCreateMap() (map[string]interface{}, error)
@@ -190,7 +198,7 @@ func (opts ResizeOpts) ToClusterResizeMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "resize")
 }
 
-func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOpts) (r ResizeResult) {
+func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOpts) (r ActionResult) {
 	b, err := opts.ToClusterResizeMap()
 	if err != nil {
 		r.Err = err
@@ -214,12 +222,12 @@ type ScaleInOpts struct {
 }
 
 // ToClusterScaleInMap constructs a request body from ScaleInOpts.
-func (opts ScaleInOpts) ToClusterScaleInMap(scaleAction string) (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, scaleAction)
+func (opts ScaleInOpts) ToClusterScaleInMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "scale_in")
 }
 
-func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOpts) (r ScaleInResult) {
-	b, err := opts.ToClusterScaleInMap("scale_in")
+func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOpts) (r ActionResult) {
+	b, err := opts.ToClusterScaleInMap()
 	if err != nil {
 		r.Err = err
 		return
@@ -237,9 +245,9 @@ func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOpts) (r 
 
 // Cluster Recover
 type RecoverOpts struct {
-	Operation     string `json:"operation,omitempty"`
-	Check         *bool  `json:"check,omitempty"`
-	CheckCapacity *bool  `json:"check_capacity,omitempty"`
+	Operation     RecoveryAction `json:"operation,omitempty"`
+	Check         *bool          `json:"check,omitempty"`
+	CheckCapacity *bool          `json:"check_capacity,omitempty"`
 }
 
 func (opts RecoverOpts) ToClusterRecoverMap() (map[string]interface{}, error) {
@@ -251,7 +259,7 @@ func (opts RecoverOpts) ToClusterRecoverMap() (map[string]interface{}, error) {
 }
 
 // Recover implements cluster recover request.
-func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r RecoverResult) {
+func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r ActionResult) {
 	b, err := opts.ToClusterRecoverMap()
 	if err != nil {
 		r.Err = err

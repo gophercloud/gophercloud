@@ -136,7 +136,7 @@ Example to Recover a cluster
 	check := true
 	checkCapacity := true
 	recoverOpts := clusters.RecoverOpts{
-		Operation:     "rebuild",
+		Operation:     clusters.RebuildRecovery,
 		Check:         &check,
 		CheckCapacity: &checkCapacity,
 	}

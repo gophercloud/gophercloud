@@ -39,16 +39,6 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
-// ResizeResult is the response of a Get operations.
-type ResizeResult struct {
-	commonResult
-}
-
-// ScaleInResult is the response of a ScaleIn operations.
-type ScaleInResult struct {
-	commonResult
-}
-
 // ClusterPolicyPage contains a single page of all policies from a ListDetails call.
 type ClusterPolicyPage struct {
 	pagination.SinglePageBase
@@ -97,26 +87,17 @@ type Action struct {
 	Action string `json:"action"`
 }
 
-func (r ResizeResult) Extract() (string, error) {
-	var s Action
-	err := r.ExtractInto(&s)
-	if err != nil {
-		return s.Action, err
-	}
-
-	return s.Action, nil
+// ActionResult is the response of Senlin actions.
+type ActionResult struct {
+	commonResult
 }
 
-func (r ScaleInResult) Extract() (string, error) {
+func (r ActionResult) Extract() (string, error) {
 	var s struct {
 		Action string `json:"action"`
 	}
 	err := r.ExtractInto(&s)
-	if err != nil {
-		return "", err
-	}
-
-	return s.Action, nil
+	return s.Action, err
 }
 
 // ClusterPage contains a single page of all clusters from a List call.
