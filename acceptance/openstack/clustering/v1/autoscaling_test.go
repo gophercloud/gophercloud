@@ -12,6 +12,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/actions"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/policies"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -31,6 +32,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	clusterAttachPolicy(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -411,6 +413,91 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 		case "SUCCEEDED":
 			return true, nil
 		case "READY", "RUNNING", "DELETING", "WAITING":
+			return false, nil
+		default:
+			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
+		}
+	})
+}
+
+func clusterAttachPolicy(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	client.Microversion = "1.5"
+
+	createOpts := policies.CreateOpts{
+		Name: testName,
+		Spec: policies.Spec{
+			Description: "new policy description",
+			Properties: map[string]interface{}{
+				"adjustment": map[string]interface{}{
+					"min_step":    1,
+					"cooldown":    60,
+					"best_effort": false,
+					"number":      1,
+					"type":        "CHANGE_IN_CAPACITY",
+				},
+				"event": "CLUSTER_SCALE_IN",
+			},
+			Type:    "senlin.policy.scaling",
+			Version: "1.1",
+		},
+	}
+
+	createResult := policies.Create(client, createOpts)
+	th.AssertNoErr(t, createResult.Err)
+
+	requestID := createResult.Header.Get("X-Openstack-Request-ID")
+	th.AssertEquals(t, true, requestID != "")
+
+	createdPolicy, err := createResult.Extract()
+	th.AssertNoErr(t, err)
+
+	defer policies.Delete(client, createdPolicy.ID)
+
+	clusterName := testName
+	policyName := testName
+	enabled := true
+	policyOpts := clusters.AttachPolicyOpts{
+		PolicyID: policyName,
+		Enabled:  &enabled,
+	}
+	actionID, err := clusters.AttachPolicy(client, clusterName, policyOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable attach policy to cluster: %v", err)
+	}
+
+	WaitForClusterToAttach(client, actionID, 15)
+
+	// TODO: clusterpolicies need to be approved first
+	/*
+		clusterpolicy, err := clusterpolicies.Get(client, policyName).Extract()
+		if err != nil {
+			t.Fatalf("Unable to get cluster: %v", err)
+		}
+		th.AssertEquals(t, clusterName, clusterpolicy.ClusterName)
+		th.AssertEquals(t, policyName, clusterpolicy.PolicyName)
+		th.AssertEquals(t, enabled, clusterpolicy.Enabled)
+	*/
+}
+
+func WaitForClusterToAttach(client *gophercloud.ServiceClient, actionID string, sleepTimeSecs int) error {
+	return gophercloud.WaitFor(sleepTimeSecs, func() (bool, error) {
+		if actionID == "" {
+			return false, fmt.Errorf("Invalid action id. id=%s", actionID)
+		}
+
+		action, err := actions.Get(client, actionID).Extract()
+		if err != nil {
+			return false, err
+		}
+		switch action.Status {
+		case "SUCCEEDED":
+			return true, nil
+		case "READY", "RUNNING", "WAITING":
 			return false, nil
 		default:
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
