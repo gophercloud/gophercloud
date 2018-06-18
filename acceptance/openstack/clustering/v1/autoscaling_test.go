@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/actions"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusterpolicies"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -31,6 +32,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	clusterPolicyList(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -416,4 +418,23 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
 		}
 	})
+}
+
+func clusterPolicyList(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	clusterName := testName
+
+	allPages, err := clusterpolicies.List(client, clusterName, clusterpolicies.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+
+	allPolicies, err := clusterpolicies.ExtractClusterPolicies(allPages)
+	th.AssertNoErr(t, err)
+
+	for _, v := range allPolicies {
+		tools.PrintResource(t, v)
+		th.AssertEquals(t, clusterName, v.ClusterName)
+	}
+	t.Logf("ClusterPolicyList Completed for cluster [%s]. Total ClusterPolicies[%d]", clusterName, len(allPolicies))
 }
