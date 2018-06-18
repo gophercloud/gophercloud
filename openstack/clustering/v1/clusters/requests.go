@@ -250,19 +250,19 @@ type AttachPolicyOpts struct {
 }
 
 // ToClusterPolicyMap constructs a request body from PolicyOpts
-func (opts AttachPolicyOpts) ToClusterAttachPolicyMap(policyAction string) (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, policyAction)
+func (opts AttachPolicyOpts) ToClusterAttachPolicyMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "policy_attach")
 }
 
 // Attach Policy
-func AttachPolicy(client *gophercloud.ServiceClient, id string, opts AttachPolicyOpts) (r AttachPolicyResult) {
-	b, err := opts.ToClusterAttachPolicyMap("policy_attach")
+func AttachPolicy(client *gophercloud.ServiceClient, id string, opts AttachPolicyOpts) (r ActionResult) {
+	b, err := opts.ToClusterAttachPolicyMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 	var result *http.Response
-	result, r.Err = client.Post(policyURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
 	if r.Err == nil {
@@ -296,7 +296,7 @@ func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r 
 	}
 
 	var result *http.Response
-	result, r.Err = client.Post(recoverURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
 	if r.Err == nil {

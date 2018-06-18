@@ -126,6 +126,7 @@ func TestClustersScale(t *testing.T) {
 func TestClustersPolicies(t *testing.T) {
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
+	client.Microversion = "1.5"
 
 	profile, err := CreateProfile(t, client)
 	th.AssertNoErr(t, err)
@@ -135,15 +136,37 @@ func TestClustersPolicies(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteCluster(t, client, cluster.ID)
 
+	policy, err := CreatePolicy(t, client)
+	th.AssertNoErr(t, err)
+	defer DeletePolicy(t, client, policy.ID)
+
+	iTrue := true
+	attachPolicyOpts := clusters.AttachPolicyOpts{
+		PolicyID: policy.ID,
+		Enabled:  &iTrue,
+	}
+
+	actionID, err := clusters.AttachPolicy(client, cluster.ID, attachPolicyOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
 	allPages, err := clusters.ListPolicies(client, cluster.ID, nil).AllPages()
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := clusters.ExtractClusterPolicies(allPages)
 	th.AssertNoErr(t, err)
 
+	var found bool
 	for _, v := range allPolicies {
 		tools.PrintResource(t, v)
+		if v.PolicyID == policy.ID {
+			found = true
+		}
 	}
+
+	th.AssertEquals(t, found, true)
 }
 
 func TestClustersRecovery(t *testing.T) {
