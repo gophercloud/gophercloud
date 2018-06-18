@@ -235,3 +235,38 @@ func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOpts) (r 
 
 	return
 }
+
+// ListPoliciesOptsBuilder Builder.
+type ListPoliciesOptsBuilder interface {
+	ToClusterListPoliciesQuery() (string, error)
+}
+
+// ListPoliciesOpts params
+type ListPoliciesOpts struct {
+	Enabled *bool  `q:"enabled"`
+	Name    string `q:"policy_name"`
+	Type    string `q:"policy_type"`
+	Sort    string `q:"sort"`
+}
+
+// ToClusterPoliciesListQuery formats a ListOpts into a query string.
+func (opts ListPoliciesOpts) ToClusterPoliciesListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// ListPolicies instructs OpenStack to provide a list of policies for a cluster.
+func ListPolicies(client *gophercloud.ServiceClient, clusterID string, opts ListPoliciesOptsBuilder) pagination.Pager {
+	url := listPoliciesURL(client, clusterID)
+	if opts != nil {
+		query, err := opts.ToClusterListPoliciesQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return ClusterPolicyPage{pagination.SinglePageBase(r)}
+	})
+}

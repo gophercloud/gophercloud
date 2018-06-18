@@ -289,3 +289,23 @@ func TestClusterScaleIn(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
+
+func TestListClusterPolicies(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleListPoliciesSuccessfully(t)
+
+	pageCount := 0
+	err := clusters.ListPolicies(fake.ServiceClient(), ExpectedClusterPolicy.ClusterID, nil).EachPage(func(page pagination.Page) (bool, error) {
+		pageCount++
+		actual, err := clusters.ExtractClusterPolicies(page)
+		th.AssertNoErr(t, err)
+		th.AssertDeepEquals(t, ExpectedListPolicies, actual)
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, pageCount, 1)
+}

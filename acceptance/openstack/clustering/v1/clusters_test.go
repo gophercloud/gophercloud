@@ -122,3 +122,26 @@ func TestClustersScale(t *testing.T) {
 
 	tools.PrintResource(t, newCluster)
 }
+
+func TestClustersPolicies(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	allPages, err := clusters.ListPolicies(client, cluster.ID, nil).AllPages()
+	th.AssertNoErr(t, err)
+
+	allPolicies, err := clusters.ExtractClusterPolicies(allPages)
+	th.AssertNoErr(t, err)
+
+	for _, v := range allPolicies {
+		tools.PrintResource(t, v)
+	}
+}

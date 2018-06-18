@@ -7,7 +7,7 @@ Example to Create a cluster
 	createOpts := clusters.CreateOpts{
 		Name:            "test-cluster",
 		DesiredCapacity: 1,
-		ProfileUUID:     "b7b870ee-d3c5-4a93-b9d7-846c53b2c2da",
+		ProfileID:       "b7b870ee-d3c5-4a93-b9d7-846c53b2c2da",
 	}
 
 	cluster, err := clusters.Create(serviceClient, createOpts).Extract()
@@ -101,5 +101,23 @@ Example to ScaleIn a cluster
 	if err != nil {
 		panic(err)
 	}
+
+Example to list Policies for a Cluster
+
+	clusterID := "7d85f602-a948-4a30-afd4-e84f47471c15"
+	allPages, err := clusters.ListPolicies(serviceClient, clusterID, nil).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allClusterPolicies, err := clusters.ExtractClusterPolicies(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, clusterPolicy := range allClusterPolicies {
+		fmt.Printf("%+v\n", clusterPolicy)
+	}
+
 */
 package clusters

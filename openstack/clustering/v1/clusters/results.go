@@ -23,19 +23,30 @@ type GetResult struct {
 	commonResult
 }
 
-// ResizeResult is the response of a Get operations.
-type ResizeResult struct {
+// UpdateResult is the response of a Update operations.
+type UpdateResult struct {
 	commonResult
 }
 
-// UpdateResult is the response of a Update operations.
-type UpdateResult struct {
+// DeleteResult is the result from a Delete operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// ResizeResult is the response of a Get operations.
+type ResizeResult struct {
 	commonResult
 }
 
 // ScaleInResult is the response of a ScaleIn operations.
 type ScaleInResult struct {
 	commonResult
+}
+
+// ClusterPolicyPage contains a single page of all policies from a ListDetails call.
+type ClusterPolicyPage struct {
+	pagination.SinglePageBase
 }
 
 type Cluster struct {
@@ -156,8 +167,27 @@ func (r *Cluster) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// DeleteResult is the result from a Delete operation. Call its ExtractErr
-// method to determine if the call succeeded or failed.
-type DeleteResult struct {
-	gophercloud.ErrResult
+type ClusterPolicy struct {
+	ClusterID   string `json:"cluster_id"`
+	ClusterName string `json:"cluster_name"`
+	Enabled     bool   `json:"enabled"`
+	ID          string `json:"id"`
+	PolicyID    string `json:"policy_id"`
+	PolicyName  string `json:"policy_name"`
+	PolicyType  string `json:"policy_type"`
+}
+
+// ExtractClusterPolicies provides access to the list of profiles in a page acquired from the ListDetail operation.
+func ExtractClusterPolicies(r pagination.Page) ([]ClusterPolicy, error) {
+	var s struct {
+		ClusterPolicies []ClusterPolicy `json:"cluster_policies"`
+	}
+	err := (r.(ClusterPolicyPage)).ExtractInto(&s)
+	return s.ClusterPolicies, err
+}
+
+// IsEmpty determines if ClusterPolicyPage contains any results.
+func (page ClusterPolicyPage) IsEmpty() (bool, error) {
+	clusterPolicies, err := ExtractClusterPolicies(page)
+	return len(clusterPolicies) == 0, err
 }
