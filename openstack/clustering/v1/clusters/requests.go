@@ -311,19 +311,19 @@ type DetachPolicyOpts struct {
 	PolicyID string `json:"policy_id" required:"true"`
 }
 
-func (opts DetachPolicyOpts) ToClusterDetachPolicyMap(policyAction string) (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, policyAction)
+func (opts DetachPolicyOpts) ToClusterDetachPolicyMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "policy_detach")
 }
 
-func DetachPolicy(client *gophercloud.ServiceClient, id string, opts DetachPolicyOpts) (r DetachPolicyResult) {
-	b, err := opts.ToClusterDetachPolicyMap("policy_detach")
+func DetachPolicy(client *gophercloud.ServiceClient, id string, opts DetachPolicyOpts) (r ActionResult) {
+	b, err := opts.ToClusterDetachPolicyMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 
 	var result *http.Response
-	result, r.Err = client.Post(policyURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
 	if r.Err == nil {

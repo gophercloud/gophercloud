@@ -119,21 +119,6 @@ func ExtractClusters(r pagination.Page) ([]Cluster, error) {
 	return s.Clusters, err
 }
 
-// PostResult is the response of a Post operations.
-type RecoverResult struct {
-	PostResult
-}
-
-// Extract retrieves the response action
-func (r RecoverResult) Extract() (string, error) {
-	var s *Action
-	err := r.ExtractInto(&s)
-	if err != nil {
-		return "", err
-	}
-	return s.Action, err
-}
-
 func (r *Cluster) UnmarshalJSON(b []byte) error {
 	type tmp Cluster
 	var s struct {
@@ -206,18 +191,4 @@ func (r GetPolicyResult) Extract() (*ClusterPolicy, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.ClusterPolicy, err
-}
-
-type DetachPolicyResult struct {
-	PostResult
-}
-
-// Extract retrieves the response action
-func (r DetachPolicyResult) Extract() (string, error) {
-	var s *Action
-	err := r.ExtractInto(&s)
-	if err != nil {
-		return "", err
-	}
-	return s.Action, err
 }

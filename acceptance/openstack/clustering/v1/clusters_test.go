@@ -152,6 +152,8 @@ func TestClustersPolicies(t *testing.T) {
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
+	// List all policies in the cluster to see if the policy was
+	// successfully attached.
 	allPages, err := clusters.ListPolicies(client, cluster.ID, nil).AllPages()
 	th.AssertNoErr(t, err)
 
@@ -167,6 +169,34 @@ func TestClustersPolicies(t *testing.T) {
 	}
 
 	th.AssertEquals(t, found, true)
+
+	detachPolicyOpts := clusters.DetachPolicyOpts{
+		PolicyID: policy.ID,
+	}
+
+	actionID, err = clusters.DetachPolicy(client, cluster.ID, detachPolicyOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	// List all policies in the cluster to see if the policy was
+	// successfully detached.
+	allPages, err = clusters.ListPolicies(client, cluster.ID, nil).AllPages()
+	th.AssertNoErr(t, err)
+
+	allPolicies, err = clusters.ExtractClusterPolicies(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, v := range allPolicies {
+		tools.PrintResource(t, v)
+		if v.PolicyID == policy.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, false)
 }
 
 func TestClustersRecovery(t *testing.T) {
