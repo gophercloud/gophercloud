@@ -136,6 +136,9 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient, clusterID, prof
 
 	t.Logf("Successfully created node: %s", node.ID)
 
+	node, err = nodes.Get(client, node.ID).Extract()
+	th.AssertNoErr(t, err)
+
 	tools.PrintResource(t, node)
 	tools.PrintResource(t, node.CreatedAt)
 

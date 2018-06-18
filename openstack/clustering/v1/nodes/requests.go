@@ -47,7 +47,6 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 
 // UpdateOpts params
 type UpdateOpts struct {
-	Node      map[string]interface{} `json:"-"`
 	Name      string                 `json:"name,omitempty"`
 	ProfileID string                 `json:"profile_id,omitempty"`
 	Role      string                 `json:"role,omitempty"`

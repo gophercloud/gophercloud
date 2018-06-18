@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/nodes"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -41,4 +42,28 @@ func TestNodesCRUD(t *testing.T) {
 	}
 
 	th.AssertEquals(t, found, true)
+
+	// Test nodes update
+	t.Logf("Attempting to update node %s", node.ID)
+
+	updateOpts := nodes.UpdateOpts{
+		Metadata: map[string]interface{}{
+			"bar": "baz",
+		},
+	}
+
+	res := nodes.Update(client, node.ID, updateOpts)
+	th.AssertNoErr(t, res.Err)
+
+	actionID, err := GetActionID(res.Header)
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	node, err = nodes.Get(client, node.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, node)
+	tools.PrintResource(t, node.Metadata)
 }
