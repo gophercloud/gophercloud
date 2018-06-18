@@ -25,6 +25,11 @@ type GetResult struct {
 	commonResult
 }
 
+// PostResult is the response of a Post operations.
+type PostResult struct {
+	commonResult
+}
+
 // UpdateResult is the response of a Update operations.
 type UpdateResult struct {
 	commonResult
@@ -150,4 +155,21 @@ func (r *Cluster) UnmarshalJSON(b []byte) error {
 // method to determine if the call succeeded or failed.
 type DeleteResult struct {
 	gophercloud.ErrResult
+}
+
+type UpdatePolicyResult struct {
+	PostResult
+}
+
+type Action struct {
+	Action string `json:"action"`
+}
+
+func (r UpdatePolicyResult) Extract() (string, error) {
+	var s *Action
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return s.Action, err
 }

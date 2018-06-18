@@ -66,5 +66,19 @@ Example to Delete a cluster
 		panic(err)
 	}
 
+Example to update a policy to a cluster
+
+	enabled := true
+	updatePolicyOpts := clusters.UpdatePolicyOpts{
+		PolicyID: "policy-123",
+		Enabled:  &enabled,
+	}
+	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	actionID, err := clusters.UpdatePolicy(serviceClient, clusterID, updatePolicyOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Update Policy actionID", actionID)
+
 */
 package clusters
