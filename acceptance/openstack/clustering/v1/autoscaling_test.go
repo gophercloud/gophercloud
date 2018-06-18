@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/actions"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusterpolicies"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -31,6 +32,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	clusterPolicyGet(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -416,4 +418,19 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
 		}
 	})
+}
+
+func clusterPolicyGet(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+	policyName := testName
+	clusterPolicy, err := clusterpolicies.Get(client, clusterName, policyName).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, policyName, clusterPolicy.PolicyName)
+	th.AssertEquals(t, clusterName, clusterPolicy.ClusterName)
+	tools.PrintResource(t, clusterPolicy)
 }
