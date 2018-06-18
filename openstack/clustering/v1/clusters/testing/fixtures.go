@@ -368,6 +368,19 @@ var ExpectedClusterPolicy = clusters.ClusterPolicy{
 
 var ExpectedListPolicies = []clusters.ClusterPolicy{ExpectedClusterPolicy}
 
+const GetPolicyResponse = `
+{
+  "cluster_policy": {
+    "cluster_id":   "7d85f602-a948-4a30-afd4-e84f47471c15",
+    "cluster_name": "cluster4",
+    "enabled":      true,
+    "id":           "06be3a1f-b238-4a96-a737-ceec5714087e",
+    "policy_id":    "714fe676-a08f-4196-b7af-61d52eeded15",
+    "policy_name":  "dp01",
+    "policy_type":  "senlin.policy.deletion-1.0"
+  }
+}`
+
 func HandleCreateClusterSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
@@ -509,5 +522,17 @@ func HandleListPoliciesSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 
 		fmt.Fprint(w, ListPoliciesResult)
+	})
+}
+
+func HandleGetPolicySuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/7d85f602-a948-4a30-afd4-e84f47471c15/policies/714fe676-a08f-4196-b7af-61d52eeded15", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, GetPolicyResponse)
 	})
 }

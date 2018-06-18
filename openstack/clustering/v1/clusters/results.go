@@ -49,6 +49,11 @@ type ClusterPolicyPage struct {
 	pagination.SinglePageBase
 }
 
+// GetPolicyResult is the response of a Get operations.
+type GetPolicyResult struct {
+	commonResult
+}
+
 type Cluster struct {
 	Config          map[string]interface{} `json:"config"`
 	CreatedAt       time.Time              `json:"-"`
@@ -192,11 +197,6 @@ func (page ClusterPolicyPage) IsEmpty() (bool, error) {
 	return len(clusterPolicies) == 0, err
 }
 
-// GetPolicyResult is the response of a Get operations.
-type GetPolicyResult struct {
-	commonResult
-}
-
 // Extract provides access to the individual Policy returned by the Get and
 // Create functions.
 func (r GetPolicyResult) Extract() (*ClusterPolicy, error) {
@@ -204,8 +204,5 @@ func (r GetPolicyResult) Extract() (*ClusterPolicy, error) {
 		ClusterPolicy *ClusterPolicy `json:"cluster_policy"`
 	}
 	err := r.ExtractInto(&s)
-	if err != nil {
-		return nil, err
-	}
 	return s.ClusterPolicy, err
 }

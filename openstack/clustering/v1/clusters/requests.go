@@ -271,9 +271,8 @@ func ListPolicies(client *gophercloud.ServiceClient, clusterID string, opts List
 	})
 }
 
-// Get retrieves details of a single cluster-policy. Use Extract to convert its
-// result into a Node.
-func Get(client *gophercloud.ServiceClient, clusterID string, policyID string) (r GetResult) {
-	_, r.Err = client.Get(getURL(client, clusterID, policyID), &r.Body, nil)
+// GetPolicy retrieves details of a cluster policy.
+func GetPolicy(client *gophercloud.ServiceClient, clusterID string, policyID string) (r GetPolicyResult) {
+	_, r.Err = client.Get(getPolicyURL(client, clusterID, policyID), &r.Body, nil)
 	return
 }

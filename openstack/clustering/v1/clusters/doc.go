@@ -119,12 +119,16 @@ Example to list Policies for a Cluster
 		fmt.Printf("%+v\n", clusterPolicy)
 	}
 
-Example to get cluster-policies
+Example to Get a Cluster Policy
 
 	clusterID := "7d85f602-a948-4a30-afd4-e84f47471c15"
 	profileID := "714fe676-a08f-4196-b7af-61d52eeded15"
 	clusterPolicy, err := clusterpolicies.Get(serviceCLient, clusterID, profileID).Extract()
-	fmt.Println("ClusterPolicy=", clusterPolicy)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v\n", clusterPolicy)
 
 */
 package clusters
