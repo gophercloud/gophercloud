@@ -31,6 +31,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	clusterRecover(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -414,6 +415,58 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 			return false, nil
 		default:
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
+		}
+	})
+}
+
+func clusterRecover(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+
+	check := true
+	checkCapacity := true
+	recoverOpts := clusters.RecoverOpts{
+		Operation:     "rebuild",
+		Check:         &check,
+		CheckCapacity: &checkCapacity,
+	}
+
+	// Recover cluster
+	actionID, err := clusters.Recover(client, clusterName, recoverOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to recover cluster: %v", err)
+	}
+
+	err = WaitForClusterToRecover(client, actionID, 15)
+	if err != nil {
+		t.Fatalf("Error waiting for cluster to recover: %v", err)
+	}
+
+	t.Log("clusterRecover Complete")
+}
+
+func WaitForClusterToRecover(client *gophercloud.ServiceClient, actionID string, secs int) error {
+	return gophercloud.WaitFor(secs, func() (bool, error) {
+		if actionID == "" {
+			return false, fmt.Errorf("Invalid action id. id=%s", actionID)
+		}
+
+		action, err := actions.Get(client, actionID).Extract()
+		if err != nil {
+			return false, err
+		}
+		switch action.Status {
+		case "SUCCEEDED":
+			return true, nil
+		case "READY", "RUNNING", "WAITING":
+			return false, nil
+		default:
+			return false, fmt.Errorf("Error WaitForClusterToRecover ActionID=%s. Received status=%v",
+				actionID, action.Status)
 		}
 	})
 }
