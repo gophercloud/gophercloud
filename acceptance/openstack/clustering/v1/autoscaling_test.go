@@ -31,6 +31,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	clusterScaleIn(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -411,6 +412,85 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 		case "SUCCEEDED":
 			return true, nil
 		case "READY", "RUNNING", "DELETING", "WAITING":
+			return false, nil
+		default:
+			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
+		}
+	})
+}
+
+func clusterScaleIn(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+
+	cluster, err := clusters.Get(client, clusterName).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get cluster: %v", err)
+	}
+	th.AssertEquals(t, clusterName, cluster.Name)
+	originalCount := len(cluster.Nodes)
+
+	newCount := originalCount + 1
+	scaleOpts := clusters.ScaleInOpts{
+		Count: &newCount,
+	}
+
+	// Update to new cluster size
+	actionID, err := clusters.ScaleIn(client, clusterName, scaleOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update cluster: %v", err)
+	}
+
+	WaitForClusterToScale(client, actionID, 15)
+
+	cluster, err = clusters.Get(client, clusterName).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get cluster: %v", err)
+	}
+	th.AssertEquals(t, clusterName, cluster.Name)
+	currentCount := len(cluster.Nodes)
+	th.AssertEquals(t, clusterName, cluster.Name)
+	th.AssertEquals(t, currentCount, originalCount+1)
+
+	// Revert back to original cluster size
+	scaleOpts = clusters.ScaleInOpts{
+		Count: &originalCount,
+	}
+	actionID, err = clusters.ScaleIn(client, clusterName, scaleOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to scale-in cluster: %v", err)
+	}
+
+	WaitForClusterToScale(client, actionID, 15)
+
+	cluster, err = clusters.Get(client, clusterName).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get cluster: %v", err)
+	}
+	th.AssertEquals(t, clusterName, cluster.Name)
+	currentCount = len(cluster.Nodes)
+	th.AssertEquals(t, clusterName, cluster.Name)
+	th.AssertEquals(t, currentCount, originalCount)
+}
+
+func WaitForClusterToScale(client *gophercloud.ServiceClient, actionID string, sleepTimeSecs int) error {
+	return gophercloud.WaitFor(sleepTimeSecs, func() (bool, error) {
+		if actionID == "" {
+			return false, fmt.Errorf("Invalid action id. id=%s", actionID)
+		}
+
+		action, err := actions.Get(client, actionID).Extract()
+		if err != nil {
+			return false, err
+		}
+		switch action.Status {
+		case "SUCCEEDED":
+			return true, nil
+		case "READY", "RUNNING", "WAITING":
 			return false, nil
 		default:
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
