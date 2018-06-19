@@ -331,23 +331,7 @@ type RecoverOpts struct {
 }
 
 func (opts RecoverOpts) ToClusterRecoverMap() (map[string]interface{}, error) {
-	b, err := gophercloud.BuildRequestBody(opts, "recover")
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
-}
-
-// Cluster Check
-type CheckOpts struct {
-}
-
-func (opts CheckOpts) ToClusterCheckMap() (map[string]interface{}, error) {
-	b, err := gophercloud.BuildRequestBody(opts, "check")
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
+	return gophercloud.BuildRequestBody(opts, "recover")
 }
 
 // Recover implements cluster recover request.
@@ -368,15 +352,13 @@ func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r 
 	return
 }
 
-func Check(client *gophercloud.ServiceClient, id string, opts CheckOpts) (r CheckResult) {
-	b, err := opts.ToClusterCheckMap()
-	if err != nil {
-		r.Err = err
-		return
+func Check(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	b := map[string]interface{}{
+		"check": map[string]interface{}{},
 	}
 
 	var result *http.Response
-	result, r.Err = client.Post(checkURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
 	if r.Err == nil {

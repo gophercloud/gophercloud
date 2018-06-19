@@ -335,7 +335,7 @@ const UpdateResponse_EmptyTime = `
   }
 }`
 
-const ActionResult = `
+const ActionResponse = `
 {
   "action": "2a0ff107-e789-4660-a122-3816c43af703"
 }`
@@ -497,7 +497,7 @@ func HandleResizeSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprint(w, ActionResult)
+		fmt.Fprint(w, ActionResponse)
 	})
 }
 
@@ -509,7 +509,7 @@ func HandleScaleInSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprint(w, ActionResult)
+		fmt.Fprint(w, ActionResponse)
 	})
 }
 
@@ -521,7 +521,7 @@ func HandleScaleOutSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprint(w, ActionResult)
+		fmt.Fprint(w, ActionResponse)
 	})
 }
 
@@ -557,7 +557,7 @@ func HandleRecoverSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprint(w, ActionResult)
+		fmt.Fprint(w, ActionResponse)
 	})
 }
 
@@ -569,7 +569,7 @@ func HandleAttachPolicySuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprint(w, ActionResult)
+		fmt.Fprint(w, ActionResponse)
 	})
 }
 
@@ -581,7 +581,7 @@ func HandleDetachPolicySuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprint(w, ActionResult)
+		fmt.Fprint(w, ActionResponse)
 	})
 }
 
@@ -593,6 +593,18 @@ func HandleUpdatePolicySuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprint(w, ActionResult)
+		fmt.Fprint(w, ActionResponse)
+	})
+}
+
+func HandleCheckSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/edce3528-864f-41fb-8759-f4707925cc09/actions", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, ActionResponse)
 	})
 }

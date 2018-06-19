@@ -58,6 +58,13 @@ func TestClustersCRUD(t *testing.T) {
 	th.AssertEquals(t, newCluster.Name, cluster.Name+"-UPDATED")
 
 	tools.PrintResource(t, newCluster)
+
+	// Test cluster health
+	actionID, err = clusters.Check(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
 }
 
 func TestClustersResize(t *testing.T) {
