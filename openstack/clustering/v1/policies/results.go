@@ -10,7 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// Policy represents a clustering policy in the Openstack cloud
+// Policy represents a clustering policy in the Openstack cloud.
 type Policy struct {
 	CreatedAt time.Time              `json:"-"`
 	Data      map[string]interface{} `json:"data"`
@@ -22,45 +22,6 @@ type Policy struct {
 	Type      string                 `json:"type"`
 	UpdatedAt time.Time              `json:"-"`
 	User      string                 `json:"user"`
-}
-
-type Spec struct {
-	Description string                 `json:"description"`
-	Properties  map[string]interface{} `json:"properties"`
-	Type        string                 `json:"type"`
-	Version     string                 `json:"version"`
-}
-
-// ExtractPolicies interprets a page of results as a slice of Policy.
-func ExtractPolicies(r pagination.Page) ([]Policy, error) {
-	var s struct {
-		Policies []Policy `json:"policies"`
-	}
-	err := (r.(PolicyPage)).ExtractInto(&s)
-	return s.Policies, err
-}
-
-// PolicyPage contains a list page of all policies from a List call.
-type PolicyPage struct {
-	pagination.MarkerPageBase
-}
-
-// IsEmpty determines if a PolicyPage contains any results.
-func (page PolicyPage) IsEmpty() (bool, error) {
-	policies, err := ExtractPolicies(page)
-	return len(policies) == 0, err
-}
-
-// LastMarker returns the last policy ID in a ListResult.
-func (r PolicyPage) LastMarker() (string, error) {
-	policies, err := ExtractPolicies(r)
-	if err != nil {
-		return "", err
-	}
-	if len(policies) == 0 {
-		return "", nil
-	}
-	return policies[len(policies)-1].ID, nil
 }
 
 func (r *Policy) UnmarshalJSON(b []byte) error {
@@ -99,6 +60,14 @@ func (r *Policy) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// Spec represents an OpenStack clustering policy spec.
+type Spec struct {
+	Description string                 `json:"description"`
+	Properties  map[string]interface{} `json:"properties"`
+	Type        string                 `json:"type"`
+	Version     string                 `json:"version"`
+}
+
 func (r *Spec) UnmarshalJSON(b []byte) error {
 	type tmp Spec
 	var s struct {
@@ -125,10 +94,12 @@ func (r *Spec) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// policyResult is the resposne of a base Policy result.
 type policyResult struct {
 	gophercloud.Result
 }
 
+// Extract interpets any policyResult-base result as a Policy.
 func (r policyResult) Extract() (*Policy, error) {
 	var s struct {
 		Policy *Policy `json:"policy"`
@@ -138,24 +109,31 @@ func (r policyResult) Extract() (*Policy, error) {
 	return s.Policy, err
 }
 
+// CreateResult is the result of an Update operation. Call its Extract
+// method to interpret it as a Policy.
 type CreateResult struct {
 	policyResult
 }
 
-type DeleteResult struct {
-	gophercloud.HeaderResult
-}
-
-// UpdateResult is the response of a Update operations.
+// UpdateResult is the result of an Update operation. Call its Extract
+// method to interpret it as a Policy.
 type UpdateResult struct {
 	policyResult
 }
 
+// ValidateResult is the result of a Validate operation. Call its Extract
+// method to interpret it as a Policy.
 type ValidateResult struct {
 	policyResult
 }
 
-// DeleteResult contains the delete information from a delete policy request
+// DeleteResult is the result of a Delete operation. Call its Extract
+// method to interpret it as a DeleteHeader.
+type DeleteResult struct {
+	gophercloud.HeaderResult
+}
+
+// DeleteHeader contains the delete information from a delete policy request.
 type DeleteHeader struct {
 	RequestID string `json:"X-OpenStack-Request-ID"`
 }
@@ -164,4 +142,36 @@ func (r DeleteResult) Extract() (*DeleteHeader, error) {
 	var s *DeleteHeader
 	err := r.HeaderResult.ExtractInto(&s)
 	return s, err
+}
+
+// PolicyPage contains a list page of all policies from a List call.
+type PolicyPage struct {
+	pagination.MarkerPageBase
+}
+
+// IsEmpty determines if a PolicyPage contains any results.
+func (page PolicyPage) IsEmpty() (bool, error) {
+	policies, err := ExtractPolicies(page)
+	return len(policies) == 0, err
+}
+
+// LastMarker returns the last policy ID in a ListResult.
+func (r PolicyPage) LastMarker() (string, error) {
+	policies, err := ExtractPolicies(r)
+	if err != nil {
+		return "", err
+	}
+	if len(policies) == 0 {
+		return "", nil
+	}
+	return policies[len(policies)-1].ID, nil
+}
+
+// ExtractPolicies returns a slice of Policies from the List operation.
+func ExtractPolicies(r pagination.Page) ([]Policy, error) {
+	var s struct {
+		Policies []Policy `json:"policies"`
+	}
+	err := (r.(PolicyPage)).ExtractInto(&s)
+	return s.Policies, err
 }
