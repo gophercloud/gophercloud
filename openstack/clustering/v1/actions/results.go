@@ -8,22 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// commonResult is the response of a base result.
-type commonResult struct {
-	gophercloud.Result
-}
-
-// GetResult is the response of a Get operations.
-type GetResult struct {
-	commonResult
-}
-
-// ActionPage contains a single page of all actions from a ListDetails call.
-type ActionPage struct {
-	pagination.LinkedPageBase
-}
-
-// Action represents a Detailed Action
+// Action represents a detailed Action.
 type Action struct {
 	Action       string                 `json:"action"`
 	Cause        string                 `json:"cause"`
@@ -46,29 +31,6 @@ type Action struct {
 	Timeout      int                    `json:"timeout"`
 	UpdatedAt    time.Time              `json:"-"`
 	User         string                 `json:"user"`
-}
-
-func (r commonResult) Extract() (*Action, error) {
-	var s struct {
-		Action *Action `json:"action"`
-	}
-	err := r.ExtractInto(&s)
-	return s.Action, err
-}
-
-// ExtractActions provides access to the list of actions in a page acquired from the List operation.
-func ExtractActions(r pagination.Page) ([]Action, error) {
-	var s struct {
-		Actions []Action `json:"actions"`
-	}
-	err := (r.(ActionPage)).ExtractInto(&s)
-	return s.Actions, err
-}
-
-// IsEmpty determines if a ActionPage contains any results.
-func (r ActionPage) IsEmpty() (bool, error) {
-	actions, err := ExtractActions(r)
-	return len(actions) == 0, err
 }
 
 func (r *Action) UnmarshalJSON(b []byte) error {
@@ -101,4 +63,44 @@ func (r *Action) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
+}
+
+// commonResult is the response of a base result.
+type commonResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any commonResult-based result as an Action.
+func (r commonResult) Extract() (*Action, error) {
+	var s struct {
+		Action *Action `json:"action"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Action, err
+}
+
+// GetResult is the response of a Get operations. Call its Extract method to
+// interpret it as an Action.
+type GetResult struct {
+	commonResult
+}
+
+// ActionPage contains a single page of all actions from a List call.
+type ActionPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines if a ActionPage contains any results.
+func (r ActionPage) IsEmpty() (bool, error) {
+	actions, err := ExtractActions(r)
+	return len(actions) == 0, err
+}
+
+// ExtractActions returns a slice of Actions from the List operation.
+func ExtractActions(r pagination.Page) ([]Action, error) {
+	var s struct {
+		Actions []Action `json:"actions"`
+	}
+	err := (r.(ActionPage)).ExtractInto(&s)
+	return s.Actions, err
 }
