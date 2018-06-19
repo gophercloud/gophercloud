@@ -7,12 +7,13 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// CreateOptsBuilder Builder.
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
 type CreateOptsBuilder interface {
 	ToNodeCreateMap() (map[string]interface{}, error)
 }
 
-// CreateOpts params
+// CreateOpts represents options used to create a Node.
 type CreateOpts struct {
 	Role      string                 `json:"role,omitempty"`
 	ProfileID string                 `json:"profile_id" required:"true"`
@@ -45,7 +46,13 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
-// UpdateOpts params
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToNodeUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents options used to update a Node.
 type UpdateOpts struct {
 	Name      string                 `json:"name,omitempty"`
 	ProfileID string                 `json:"profile_id,omitempty"`
@@ -53,12 +60,7 @@ type UpdateOpts struct {
 	Metadata  map[string]interface{} `json:"metadata,omitempty"`
 }
 
-// UpdateOptsBuilder params
-type UpdateOptsBuilder interface {
-	ToNodeUpdateMap() (map[string]interface{}, error)
-}
-
-// ToClusterUpdateMap constructs a request body from CreateOpts.
+// ToClusterUpdateMap constructs a request body from UpdateOpts.
 func (opts UpdateOpts) ToNodeUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "node")
 }
@@ -82,12 +84,13 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	return
 }
 
-// ListOptsBuilder Builder.
+// ListOptsBuilder allows extensions to add additional parmeters to the
+// List request.
 type ListOptsBuilder interface {
 	ToNodeListQuery() (string, error)
 }
 
-// ListOpts params
+// ListOpts represents options used to list nodes.
 type ListOpts struct {
 	Limit         int    `q:"limit"`
 	Marker        string `q:"marker"`
@@ -120,7 +123,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// Delete deletes the specified node ID.
+// Delete deletes the specified node.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	var result *http.Response
 	result, r.Err = client.Delete(deleteURL(client, id), nil)
@@ -133,7 +136,9 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 // Get makes a request against senlin to get a details of a node type
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	var result *http.Response
-	result, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	result, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
 	if r.Err == nil {
 		r.Header = result.Header
 	}

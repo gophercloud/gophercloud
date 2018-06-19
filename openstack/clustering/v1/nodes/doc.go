@@ -2,7 +2,7 @@
 Package nodes provides information and interaction with the nodes through
 the OpenStack Clustering service.
 
-Example to Create Nodes
+Example to Create a Node
 
 	opts := nodes.CreateOpts{
 		ClusterID: "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
@@ -16,6 +16,7 @@ Example to Create Nodes
 	if err != nil {
 		panic(err)
 	}
+
 	fmt.Printf("node", node)
 
 Example to List Nodes
@@ -38,7 +39,7 @@ Example to List Nodes
 		fmt.Printf("%+v\n", node)
 	}
 
-Example to Update Nodes
+Example to Update a Node
 
 	opts := nodes.UpdateOpts{
 		Name: "new-node-name",
@@ -60,7 +61,7 @@ Example to Delete a Node
 		panic(err)
 	}
 
-Example to Get Node
+Example to Get a Node
 
 	nodeID := "node123"
 	node, err := nodes.Get(serviceClient, nodeID).Extract()
@@ -69,6 +70,5 @@ Example to Get Node
 	}
 
 	fmt.Printf("%+v\n", node)
-
 */
 package nodes

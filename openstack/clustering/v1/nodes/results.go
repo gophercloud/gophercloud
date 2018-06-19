@@ -8,58 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// commonResult is the response of a base result.
-type commonResult struct {
-	gophercloud.Result
-}
-
-// CreateResult is the response of a Create operations.
-type CreateResult struct {
-	commonResult
-}
-
-// Extract provides access to the individual node returned by Get and Create
-// GetResult is the response of a Get operations.
-type GetResult struct {
-	commonResult
-}
-
-// DeleteResult is the result from a Delete operation. Call ExtractErr
-// method to determine if the call succeeded or failed.
-type DeleteResult struct {
-	gophercloud.ErrResult
-}
-
-// UpdateResult is the response of a Update operations.
-type UpdateResult struct {
-	commonResult
-}
-
-// Extract provides access to the individual node returned by Get and extracts Node
-func (r commonResult) Extract() (*Node, error) {
-	var s struct {
-		Node *Node `json:"node"`
-	}
-	err := r.ExtractInto(&s)
-	return s.Node, err
-}
-
-// ExtractNodes provides access to the list of nodes in a page acquired from
-// the List operation.
-func ExtractNodes(r pagination.Page) ([]Node, error) {
-	var s struct {
-		Nodes []Node `json:"nodes"`
-	}
-	err := (r.(NodePage)).ExtractInto(&s)
-	return s.Nodes, err
-}
-
-// NodePage contains a single page of all nodes from a List call.
-type NodePage struct {
-	pagination.LinkedPageBase
-}
-
-// Node represents a node structure
+// Node represents an OpenStack clustering node.
 type Node struct {
 	ClusterID    string                 `json:"cluster_id"`
 	CreatedAt    time.Time              `json:"-"`
@@ -80,12 +29,6 @@ type Node struct {
 	StatusReason string                 `json:"status_reason"`
 	UpdatedAt    time.Time              `json:"-"`
 	User         string                 `json:"user"`
-}
-
-// IsEmpty determines if a NodePage contains any results.
-func (page NodePage) IsEmpty() (bool, error) {
-	nodes, err := ExtractNodes(page)
-	return len(nodes) == 0, err
 }
 
 func (r *Node) UnmarshalJSON(b []byte) error {
@@ -125,4 +68,62 @@ func (r *Node) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
+}
+
+// commonResult is the response of a base result.
+type commonResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any commonResult-based result as a Node.
+func (r commonResult) Extract() (*Node, error) {
+	var s struct {
+		Node *Node `json:"node"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Node, err
+}
+
+// CreateResult is the result of a Create operation. Call its Extract
+// method to intepret it as a Node.
+type CreateResult struct {
+	commonResult
+}
+
+// GetResult is the result of a Get operation. Call its Extract method to
+// interpret it as a Node.
+type GetResult struct {
+	commonResult
+}
+
+// DeleteResult is the result from a Delete operation. Call ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// UpdateResult is the result of an Update operation. Call its Extract method
+// to interpet it as a Node.
+type UpdateResult struct {
+	commonResult
+}
+
+// NodePage contains a single page of all nodes from a List call.
+type NodePage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines if a NodePage contains any results.
+func (page NodePage) IsEmpty() (bool, error) {
+	nodes, err := ExtractNodes(page)
+	return len(nodes) == 0, err
+}
+
+// ExtractNodes returns a slice of Nodes from the List operation.
+func ExtractNodes(r pagination.Page) ([]Node, error) {
+	var s struct {
+		Nodes []Node `json:"nodes"`
+	}
+	err := (r.(NodePage)).ExtractInto(&s)
+	return s.Nodes, err
 }
