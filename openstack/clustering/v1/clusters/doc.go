@@ -66,5 +66,13 @@ Example to Delete a cluster
 		panic(err)
 	}
 
+Example to Check a cluster
+
+	clusterID :=  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	action, err := clusters.Check(computeClient, clusterID, clusters.CheckOpts{}).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package clusters
