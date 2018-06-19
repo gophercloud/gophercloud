@@ -1,5 +1,8 @@
 /*
-Example to Create a profile
+Package profiles provides information and interaction with profiles through
+the OpenStack Clustering service.
+
+Example to Create a Profile
 
 	networks := []map[string]interface{} {
 		{"network": "test-network"},
@@ -29,7 +32,7 @@ Example to Create a profile
 
 	fmt.Println("Profile", profile)
 
-Example to Get profile
+Example to Get a Profile
 
 	profile, err := profiles.Get(serviceClient, "profile-name").Extract()
 	if err != nil {
@@ -39,9 +42,13 @@ Example to Get profile
 	fmt.Print("profile", profile)
 
 
-Example to List profiles
+Example to List Profiles
 
-	profiles.List(serviceClient, profiles.ListOpts{Limit: 2}).EachPage(func(page pagination.Page) (bool, error) {
+	listOpts := profiles.ListOpts{
+		Limit: 2,
+	}
+
+	profiles.List(serviceClient, listOpts).EachPage(func(page pagination.Page) (bool, error) {
 		allProfiles, err := profiles.ExtractProfiles(page)
 		if err != nil {
 			panic(err)
@@ -53,16 +60,20 @@ Example to List profiles
 		return true, nil
 	})
 
-Example to Update profile
+Example to Update a Profile
 
-	profile, err := profiles.Update(serviceClient, profileName, profiles.UpdateOpts{Name: newProfileName}).Extract()
-    if err != nil {
+	updateOpts := profiles.UpdateOpts{
+		Name: "new-name",
+	}
+
+	profile, err := profiles.Update(serviceClient, profileName, updateOpts).Extract()
+	if err != nil {
 		panic(err)
-    }
+	}
 
-    fmt.Print("profile", profile)
+	fmt.Print("profile", profile)
 
-Example to Delete profile
+Example to Delete a Profile
 
 	profileID := "6dc6d336e3fc4c0a951b5698cd1236ee"
 	err := profiles.Delete(serviceClient, profileID).ExtractErr()
