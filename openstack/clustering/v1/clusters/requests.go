@@ -150,3 +150,27 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	}
 	return
 }
+
+type ScaleOutOpts struct {
+	Count int `json:"count,omitempty"`
+}
+
+func (opts ScaleOutOpts) ToClusterScaleOutMap(scaleOutAction string) (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, scaleOutAction)
+}
+
+func ScaleOut(client *gophercloud.ServiceClient, id string, opts ScaleOutOpts) (r ScaleOutResult) {
+	b, err := opts.ToClusterScaleOutMap("scale_out")
+	if err != nil {
+		r.Err = err
+		return
+	}
+	var result *http.Response
+	result, r.Err = client.Post(scaleURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 202},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
+}

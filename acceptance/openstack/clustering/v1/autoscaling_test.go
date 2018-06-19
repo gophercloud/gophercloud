@@ -31,6 +31,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	clusterScaleOut(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -411,6 +412,54 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 		case "SUCCEEDED":
 			return true, nil
 		case "READY", "RUNNING", "DELETING", "WAITING":
+			return false, nil
+		default:
+			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
+		}
+	})
+}
+
+// TODO: Depended on AttachPolicy
+func clusterScaleOut(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	clusterName := testName
+	scaleOutOpts := clusters.ScaleOutOpts{
+		Count: 3,
+	}
+
+	// Update to new cluster size
+	actionID, err := clusters.ScaleOut(client, clusterName, scaleOutOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to scale-out cluster: %v", err)
+	}
+
+	WaitForClusterToScaleOut(client, actionID, 15)
+
+	cluster, err := clusters.Get(client, actionID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get cluster: %v", err)
+	}
+	th.AssertEquals(t, 3, len(cluster.Nodes))
+}
+
+func WaitForClusterToScaleOut(client *gophercloud.ServiceClient, actionID string, sleepTimeSecs int) error {
+	return gophercloud.WaitFor(sleepTimeSecs, func() (bool, error) {
+		if actionID == "" {
+			return false, fmt.Errorf("Invalid action id. id=%s", actionID)
+		}
+
+		action, err := actions.Get(client, actionID).Extract()
+		if err != nil {
+			return false, err
+		}
+		switch action.Status {
+		case "SUCCEEDED":
+			return true, nil
+		case "READY", "RUNNING", "WAITING":
 			return false, nil
 		default:
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
