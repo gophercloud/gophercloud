@@ -391,7 +391,7 @@ func HandleCreateClusterSuccessfully(t *testing.T) {
 		w.Header().Add("Location", "http://senlin.cloud.blizzard.net:8778/v1/actions/625628cd-f877-44be-bde0-fec79f84e13d")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ClusterResponse)
+		fmt.Fprint(w, ClusterResponse)
 	})
 }
 
@@ -403,7 +403,7 @@ func HandleCreateClusterEmptyTimeSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ClusterResponse_EmptyTime)
+		fmt.Fprint(w, ClusterResponse_EmptyTime)
 	})
 }
 
@@ -415,7 +415,7 @@ func HandleCreateClusterMetadataSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ClusterResponse_Metadata)
+		fmt.Fprint(w, ClusterResponse_Metadata)
 	})
 }
 
@@ -427,7 +427,7 @@ func HandleGetClusterSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ClusterResponse)
+		fmt.Fprint(w, ClusterResponse)
 	})
 }
 
@@ -439,7 +439,7 @@ func HandleGetClusterEmptyTimeSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ClusterResponse_EmptyTime)
+		fmt.Fprint(w, ClusterResponse_EmptyTime)
 	})
 }
 
@@ -451,7 +451,7 @@ func HandleListClusterSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ListResponse)
+		fmt.Fprint(w, ListResponse)
 	})
 }
 
@@ -513,6 +513,18 @@ func HandleScaleInSuccessfully(t *testing.T) {
 	})
 }
 
+func HandleScaleOutSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/edce3528-864f-41fb-8759-f4707925cc09/actions", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, ActionResult)
+	})
+}
+
 func HandleListPoliciesSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/7d85f602-a948-4a30-afd4-e84f47471c15/policies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -533,7 +545,7 @@ func HandleGetPolicySuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetPolicyResponse)
+		fmt.Fprint(w, GetPolicyResponse)
 	})
 }
 
@@ -581,6 +593,6 @@ func HandleUpdatePolicySuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, ActionResult)
+		fmt.Fprint(w, ActionResult)
 	})
 }

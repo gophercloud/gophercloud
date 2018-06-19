@@ -302,18 +302,18 @@ type ScaleOutOpts struct {
 	Count int `json:"count,omitempty"`
 }
 
-func (opts ScaleOutOpts) ToClusterScaleOutMap(scaleOutAction string) (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, scaleOutAction)
+func (opts ScaleOutOpts) ToClusterScaleOutMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "scale_out")
 }
 
-func ScaleOut(client *gophercloud.ServiceClient, id string, opts ScaleOutOpts) (r ScaleOutResult) {
-	b, err := opts.ToClusterScaleOutMap("scale_out")
+func ScaleOut(client *gophercloud.ServiceClient, id string, opts ScaleOutOpts) (r ActionResult) {
+	b, err := opts.ToClusterScaleOutMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
 	var result *http.Response
-	result, r.Err = client.Post(scaleURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
 	if r.Err == nil {

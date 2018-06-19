@@ -104,19 +104,33 @@ func TestClustersScale(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteCluster(t, client, cluster.ID)
 
-	// reduce cluster size to 0
-	count := 1
-	scaleInOpts := clusters.ScaleInOpts{
-		Count: &count,
+	// increase cluster size to 2
+	scaleOutOpts := clusters.ScaleOutOpts{
+		Count: 1,
 	}
-
-	actionID, err := clusters.ScaleIn(client, cluster.ID, scaleInOpts).Extract()
+	actionID, err := clusters.ScaleOut(client, cluster.ID, scaleOutOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
 
 	newCluster, err := clusters.Get(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newCluster.DesiredCapacity, 2)
+
+	// reduce cluster size to 0
+	count := 2
+	scaleInOpts := clusters.ScaleInOpts{
+		Count: &count,
+	}
+
+	actionID, err = clusters.ScaleIn(client, cluster.ID, scaleInOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	newCluster, err = clusters.Get(client, cluster.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, newCluster.DesiredCapacity, 0)
 
