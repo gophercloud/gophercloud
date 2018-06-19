@@ -7,15 +7,25 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// CreateOptsBuilder Builder.
+// ReceiverType represents a valid type of receiver
+type ReceiverType string
+
+const (
+	WebhookReceiver ReceiverType = "webhook"
+	MessageReceiver ReceiverType = "message"
+)
+
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
 type CreateOptsBuilder interface {
 	ToReceiverCreateMap() (map[string]interface{}, error)
 }
 
+// CreatOpts represents options used to create a receiver.
 type CreateOpts struct {
 	Name      string                 `json:"name" required:"true"`
 	ClusterID string                 `json:"cluster_id,omitempty"`
-	Type      string                 `json:"type" required:"true"`
+	Type      ReceiverType           `json:"type" required:"true"`
 	Action    string                 `json:"action,omitempty"`
 	Actor     map[string]interface{} `json:"actor,omitempty"`
 	Params    map[string]interface{} `json:"params,omitempty"`
@@ -40,17 +50,20 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
-// UpdateOpts params
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToReceiverUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents options used to update a receiver.
 type UpdateOpts struct {
 	Name   string                 `json:"name,omitempty"`
 	Action string                 `json:"action,omitempty"`
 	Params map[string]interface{} `json:"params,omitempty"`
 }
 
-type UpdateOptsBuilder interface {
-	ToReceiverUpdateMap() (map[string]interface{}, error)
-}
-
+// ToReceiverUpdateMap constructs a request body from UpdateOpts.
 func (opts UpdateOpts) ToReceiverUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "receiver")
 }
@@ -84,22 +97,23 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	return
 }
 
-// ListOpts params
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToReceiverListQuery() (string, error)
+}
+
+// ListOpts represents options used to list recievers.
 type ListOpts struct {
 	Limit         int    `q:"limit"`
 	Marker        string `q:"marker"`
 	Sort          string `q:"sort"`
-	GlobalProject string `q:"global_project"`
+	GlobalProject *bool  `q:"global_project"`
 	Name          string `q:"name"`
 	Type          string `q:"type"`
 	ClusterID     string `q:"cluster_id"`
 	Action        string `q:"action"`
 	User          string `q:"user"`
-}
-
-// ListOptsBuilder Builder.
-type ListOptsBuilder interface {
-	ToReceiverListQuery() (string, error)
 }
 
 // ToReceiverListQuery formats a ListOpts into a query string.

@@ -14,6 +14,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/nodes"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/policies"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/receivers"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -69,7 +70,9 @@ func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, profileID st
 	t.Logf("Cluster %s action ID: %s", name, actionID)
 
 	err = WaitForAction(client, actionID)
-	th.AssertNoErr(t, err)
+	if err != nil {
+		return nil, err
+	}
 
 	cluster, err := res.Extract()
 	if err != nil {
@@ -124,7 +127,9 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient, clusterID, prof
 	t.Logf("Node %s action ID: %s", name, actionID)
 
 	err = WaitForAction(client, actionID)
-	th.AssertNoErr(t, err)
+	if err != nil {
+		return nil, err
+	}
 
 	node, err := res.Extract()
 	if err != nil {
@@ -132,12 +137,16 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient, clusterID, prof
 	}
 
 	err = WaitForNodeStatus(client, node.ID, "ACTIVE")
-	th.AssertNoErr(t, err)
+	if err != nil {
+		return nil, err
+	}
 
 	t.Logf("Successfully created node: %s", node.ID)
 
 	node, err = nodes.Get(client, node.ID).Extract()
-	th.AssertNoErr(t, err)
+	if err != nil {
+		return nil, err
+	}
 
 	tools.PrintResource(t, node)
 	tools.PrintResource(t, node.CreatedAt)
@@ -189,7 +198,9 @@ func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient) (*policies.Po
 // profile could not be created.
 func CreateProfile(t *testing.T, client *gophercloud.ServiceClient) (*profiles.Profile, error) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	th.AssertNoErr(t, err)
+	if err != nil {
+		return nil, err
+	}
 
 	name := tools.RandomString("TESTACC-", 8)
 	t.Logf("Attempting to create profile: %s", name)
@@ -240,6 +251,40 @@ func CreateProfile(t *testing.T, client *gophercloud.ServiceClient) (*profiles.P
 	th.AssertEquals(t, profile.Spec.Version, "1.0")
 
 	return profile, nil
+}
+
+// CreateReceiver will create a random profile. An error will be returned if the
+// profile could not be created.
+func CreateReceiver(t *testing.T, client *gophercloud.ServiceClient, clusterID string) (*receivers.Receiver, error) {
+	name := tools.RandomString("TESTACC-", 8)
+	t.Logf("Attempting to create receiver: %s", name)
+
+	createOpts := receivers.CreateOpts{
+		Name:      name,
+		ClusterID: clusterID,
+		Type:      receivers.WebhookReceiver,
+		Action:    "CLUSTER_SCALE_OUT",
+	}
+
+	res := receivers.Create(client, createOpts)
+	if res.Err != nil {
+		return nil, res.Err
+	}
+
+	receiver, err := res.Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created receiver: %s", receiver.ID)
+
+	tools.PrintResource(t, receiver)
+	tools.PrintResource(t, receiver.CreatedAt)
+
+	th.AssertEquals(t, name, receiver.Name)
+	th.AssertEquals(t, createOpts.Action, receiver.Action)
+
+	return receiver, nil
 }
 
 // DeleteCluster will delete a given policy. A fatal error will occur if the
@@ -313,6 +358,21 @@ func DeleteProfile(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	}
 
 	t.Logf("Successfully deleted profile: %s", id)
+
+	return
+}
+
+// DeleteReceiver will delete a given receiver. A fatal error will occur if the
+// receiver could not be deleted. This works best as a deferred function.
+func DeleteReceiver(t *testing.T, client *gophercloud.ServiceClient, id string) {
+	t.Logf("Attempting to delete Receiver: %s", id)
+
+	res := receivers.Delete(client, id)
+	if res.Err != nil {
+		t.Fatalf("Error deleting receiver %s: %s:", id, res.Err)
+	}
+
+	t.Logf("Successfully deleted receiver: %s", id)
 
 	return
 }

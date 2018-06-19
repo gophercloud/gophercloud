@@ -8,14 +8,15 @@ Example to Create a Receiver
 		Action:     "CLUSTER_DEL_NODES",
 		ClusterID:  "b7b870ee-d3c5-4a93-b9d7-846c53b2c2dc",
 		Name:       "test_receiver",
-		Type:       "webhook",
+		Type:       receivers.WebhookReceiver,
 	}
 
 	receiver, err := receivers.Create(serviceClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("receiver", receiver)
+
+	fmt.Printf("%v\n", receiver)
 
 Example to Get a Receiver
 
@@ -24,7 +25,7 @@ Example to Get a Receiver
 		panic(err)
 	}
 
-	fmt.Print("receiver", receiver)
+	fmt.Printf("%v\n", receiver)
 
 Example to Delete receiver
 
@@ -34,20 +35,29 @@ Example to Delete receiver
 		panic(err)
 	}
 
-	fmt.Print("receiver", receiver)
+	fmt.Printf("%v\n", receiver)
 
 Example to Update Receiver
 
-	receiver, err := receivers.Update(serviceClient, receiverName, receivers.UpdateOpts{Name: newReceiverName}).Extract()
+	updateOpts := receivers.UpdateOpts{
+		Name: "new-name",
+	}
+
+	receiverID := "6dc6d336e3fc4c0a951b5698cd1236ee"
+	receiver, err := receivers.Update(serviceClient, receiverID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Print("receiver", receiver)
+	fmt.Printf("%v\n", receiver)
 
 Example to List Receivers
 
-	receivers.List(serviceClient, receivers.ListOpts{Limit: 2}).EachPage(func(page pagination.Page) (bool, error) {
+	listOpts := receivers.ListOpts{
+		Limit: 2,
+	}
+
+	receivers.List(serviceClient, listOpts).EachPage(func(page pagination.Page) (bool, error) {
 		allReceivers, err := receivers.ExtractReceivers(page)
 		if err != nil {
 			panic(err)
