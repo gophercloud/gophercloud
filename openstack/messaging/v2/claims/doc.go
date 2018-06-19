@@ -17,5 +17,14 @@ Example to Create a Claim on a specified Zaqar queue
 		panic(err)
 	}
 
+Example to get a claim for a specified Zaqar queue
+
+	queueName := "my_queue"
+
+	claim, err := claims.Get(messagingClient, queueName, claimID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package claims
