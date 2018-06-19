@@ -13,6 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/actions"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/profiles"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/receivers"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -31,6 +32,7 @@ func TestAutoScaling(t *testing.T) {
 	clusterGet(t)
 	clusterList(t)
 	clusterUpdate(t)
+	receiverList(t)
 }
 
 func profileCreate(t *testing.T) {
@@ -416,4 +418,38 @@ func WaitForClusterToDelete(client *gophercloud.ServiceClient, actionID string, 
 			return false, fmt.Errorf("Error WaitFor ActionID=%s. Received status=%v", actionID, action.Status)
 		}
 	})
+}
+
+func receiverList(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create clustering client: %v", err)
+	}
+
+	testReceiverFound := false
+	opts := receivers.ListOpts{
+		Limit: 1,
+	}
+	receivers.List(client, opts).EachPage(func(page pagination.Page) (bool, error) {
+		allReceivers, err := receivers.ExtractReceivers(page)
+		if err != nil {
+			t.Fatalf("Error extracting page of receivers: %v", err)
+		}
+
+		for _, receiver := range allReceivers {
+			if receiver.Name == testName {
+				testReceiverFound = true
+			}
+		}
+
+		empty, err := page.IsEmpty()
+		th.AssertNoErr(t, err)
+
+		// Expect the page IS NOT empty
+		th.AssertEquals(t, false, empty)
+
+		return true, nil
+	})
+
+	th.AssertEquals(t, true, testReceiverFound)
 }
