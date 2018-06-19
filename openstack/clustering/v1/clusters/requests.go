@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+// AdjustmentType represents valid values for resizing a cluster.
 type AdjustmentType string
 
 const (
@@ -16,6 +17,7 @@ const (
 	ChangeInPercentageAdjustment AdjustmentType = "CHANGE_IN_PERCENTAGE"
 )
 
+// RecoveryAction represents valid values for recovering a cluster.
 type RecoveryAction string
 
 const (
@@ -24,12 +26,13 @@ const (
 	RecreateRecovery RecoveryAction = "RECREATE"
 )
 
-// CreateOptsBuilder Builder.
+// CreateOptsBuilder allows extensions to add additional parameters
+// to the Create request.
 type CreateOptsBuilder interface {
 	ToClusterCreateMap() (map[string]interface{}, error)
 }
 
-// CreateOpts params
+// CreateOpts represents options used to create a cluster.
 type CreateOpts struct {
 	Name            string                 `json:"name" required:"true"`
 	DesiredCapacity int                    `json:"desired_capacity"`
@@ -65,23 +68,27 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
-// Get retrieves details of a single cluster. Use Extract to convert its
-// result into a Cluster.
+// Get retrieves details of a single cluster.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	var result *http.Response
-	result, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	result, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+
 	if r.Err == nil {
 		r.Header = result.Header
 	}
+
 	return
 }
 
-// ListOptsBuilder Builder.
+// ListOptsBuilder allows extensions to add additional parameters to
+// the List request.
 type ListOptsBuilder interface {
 	ToClusterListQuery() (string, error)
 }
 
-// ListOpts params
+// ListOpts represents options to list clusters.
 type ListOpts struct {
 	Limit         int    `q:"limit"`
 	Marker        string `q:"marker"`
@@ -113,7 +120,13 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// UpdateOpts implements UpdateOpts
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToClusterUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents options to update a cluster.
 type UpdateOpts struct {
 	Config      string                 `json:"config,omitempty"`
 	Name        string                 `json:"name,omitempty"`
@@ -121,12 +134,6 @@ type UpdateOpts struct {
 	Timeout     *int                   `json:"timeout,omitempty"`
 	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 	ProfileOnly *bool                  `json:"profile_only,omitempty"`
-}
-
-// UpdateOptsBuilder allows extensions to add additional parameters to the
-// Update request.
-type UpdateOptsBuilder interface {
-	ToClusterUpdateMap() (map[string]interface{}, error)
 }
 
 // ToClusterUpdateMap assembles a request body based on the contents of
@@ -139,7 +146,7 @@ func (opts UpdateOpts) ToClusterUpdateMap() (map[string]interface{}, error) {
 	return b, nil
 }
 
-// Update implements cluster updated request.
+// Update will update an existing cluster.
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToClusterUpdateMap()
 	if err != nil {
@@ -168,7 +175,13 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	return
 }
 
-// ResizeOpts params
+// ResizeOptsBuilder allows extensions to add additional parameters to the
+// resize request.
+type ResizeOptsBuilder interface {
+	ToClusterResizeMap() (map[string]interface{}, error)
+}
+
+// ResizeOpts represents options for resizing a cluster.
 type ResizeOpts struct {
 	AdjustmentType AdjustmentType `json:"adjustment_type,omitempty"`
 	Number         interface{}    `json:"number,omitempty"`
@@ -198,7 +211,7 @@ func (opts ResizeOpts) ToClusterResizeMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "resize")
 }
 
-func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOpts) (r ActionResult) {
+func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder) (r ActionResult) {
 	b, err := opts.ToClusterResizeMap()
 	if err != nil {
 		r.Err = err
@@ -216,7 +229,13 @@ func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOpts) (r Ac
 	return
 }
 
-// ScaleInOpts params
+// ScaleInOptsBuilder allows extensions to add additional parameters to the
+// ScaleIn request.
+type ScaleInOptsBuilder interface {
+	ToClusterScaleInMap() (map[string]interface{}, error)
+}
+
+// ScaleInOpts represents options used to scale-in a cluster.
 type ScaleInOpts struct {
 	Count *int `json:"count,omitempty"`
 }
@@ -226,7 +245,8 @@ func (opts ScaleInOpts) ToClusterScaleInMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "scale_in")
 }
 
-func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOpts) (r ActionResult) {
+// ScaleIn will reduce the capacity of a cluster.
+func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOptsBuilder) (r ActionResult) {
 	b, err := opts.ToClusterScaleInMap()
 	if err != nil {
 		r.Err = err
@@ -243,70 +263,24 @@ func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOpts) (r 
 	return
 }
 
-// PolicyOpts params
-type AttachPolicyOpts struct {
-	PolicyID string `json:"policy_id" required:"true"`
-	Enabled  *bool  `json:"enabled,omitempty"`
+// ScaleOutOptsBuilder allows extensions to add additional parameters to the
+// ScaleOut request.
+type ScaleOutOptsBuilder interface {
+	ToClusterScaleOutMap() (map[string]interface{}, error)
 }
 
-// ToClusterPolicyMap constructs a request body from PolicyOpts
-func (opts AttachPolicyOpts) ToClusterAttachPolicyMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "policy_attach")
-}
-
-// Attach Policy
-func AttachPolicy(client *gophercloud.ServiceClient, id string, opts AttachPolicyOpts) (r ActionResult) {
-	b, err := opts.ToClusterAttachPolicyMap()
-	if err != nil {
-		r.Err = err
-		return
-	}
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 201, 202},
-	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
-	return
-}
-
-type UpdatePolicyOpts struct {
-	PolicyID string `json:"policy_id" required:"true"`
-	Enabled  *bool  `json:"enabled,omitempty" required:"true"`
-}
-
-func (opts UpdatePolicyOpts) ToClusterUpdatePolicyMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "policy_update")
-}
-
-func UpdatePolicy(client *gophercloud.ServiceClient, id string, opts UpdatePolicyOpts) (r ActionResult) {
-	b, err := opts.ToClusterUpdatePolicyMap()
-	if err != nil {
-		r.Err = err
-		return
-	}
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 201, 202},
-	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
-	return
-}
-
+// ScaleOutOpts represents options used to scale-out a cluster.
 type ScaleOutOpts struct {
 	Count int `json:"count,omitempty"`
 }
 
+// ToClusterScaleOutMap constructs a request body from ScaleOutOpts.
 func (opts ScaleOutOpts) ToClusterScaleOutMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "scale_out")
 }
 
-func ScaleOut(client *gophercloud.ServiceClient, id string, opts ScaleOutOpts) (r ActionResult) {
+// ScaleOut will increase the capacity of a cluster.
+func ScaleOut(client *gophercloud.ServiceClient, id string, opts ScaleOutOptsBuilder) (r ActionResult) {
 	b, err := opts.ToClusterScaleOutMap()
 	if err != nil {
 		r.Err = err
@@ -323,20 +297,26 @@ func ScaleOut(client *gophercloud.ServiceClient, id string, opts ScaleOutOpts) (
 	return
 }
 
-// Cluster Recover
-type RecoverOpts struct {
-	Operation     RecoveryAction `json:"operation,omitempty"`
-	Check         *bool          `json:"check,omitempty"`
-	CheckCapacity *bool          `json:"check_capacity,omitempty"`
+// AttachPolicyOptsBuilder allows extensions to add additional parameters to the
+// AttachPolicy request.
+type AttachPolicyOptsBuilder interface {
+	ToClusterAttachPolicyMap() (map[string]interface{}, error)
 }
 
-func (opts RecoverOpts) ToClusterRecoverMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "recover")
+// PolicyOpts params
+type AttachPolicyOpts struct {
+	PolicyID string `json:"policy_id" required:"true"`
+	Enabled  *bool  `json:"enabled,omitempty"`
 }
 
-// Recover implements cluster recover request.
-func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r ActionResult) {
-	b, err := opts.ToClusterRecoverMap()
+// ToClusterAttachPolicyMap constructs a request body from AttachPolicyOpts.
+func (opts AttachPolicyOpts) ToClusterAttachPolicyMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "policy_attach")
+}
+
+// Attach Policy will attach a policy to a cluster.
+func AttachPolicy(client *gophercloud.ServiceClient, id string, opts AttachPolicyOptsBuilder) (r ActionResult) {
+	b, err := opts.ToClusterAttachPolicyMap()
 	if err != nil {
 		r.Err = err
 		return
@@ -352,11 +332,30 @@ func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r 
 	return
 }
 
-func Check(client *gophercloud.ServiceClient, id string) (r ActionResult) {
-	b := map[string]interface{}{
-		"check": map[string]interface{}{},
-	}
+// UpdatePolicyOptsBuilder allows extensions to add additional parameters to the
+// UpdatePolicy request.
+type UpdatePolicyOptsBuilder interface {
+	ToClusterUpdatePolicyMap() (map[string]interface{}, error)
+}
 
+// UpdatePolicyOpts represents options used to update a cluster policy.
+type UpdatePolicyOpts struct {
+	PolicyID string `json:"policy_id" required:"true"`
+	Enabled  *bool  `json:"enabled,omitempty" required:"true"`
+}
+
+// ToClusterUpdatePolicyMap constructs a request body from UpdatePolicyOpts.
+func (opts UpdatePolicyOpts) ToClusterUpdatePolicyMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "policy_update")
+}
+
+// UpdatePolicy will update a cluster's policy.
+func UpdatePolicy(client *gophercloud.ServiceClient, id string, opts UpdatePolicyOptsBuilder) (r ActionResult) {
+	b, err := opts.ToClusterUpdatePolicyMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
 	var result *http.Response
 	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
@@ -368,16 +367,24 @@ func Check(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 	return
 }
 
-// DetachPolicyOpts params
+// DetachPolicyOptsBuilder allows extensions to add additional parameters to the
+// DetachPolicy request.
+type DetachPolicyOptsBuilder interface {
+	ToClusterDetachPolicyMap() (map[string]interface{}, error)
+}
+
+// DetachPolicyOpts represents options used to detach a policy from a cluster.
 type DetachPolicyOpts struct {
 	PolicyID string `json:"policy_id" required:"true"`
 }
 
+// ToClusterDetachPolicyMap constructs a request body from DetachPolicyOpts.
 func (opts DetachPolicyOpts) ToClusterDetachPolicyMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "policy_detach")
 }
 
-func DetachPolicy(client *gophercloud.ServiceClient, id string, opts DetachPolicyOpts) (r ActionResult) {
+// DetachPolicy will detach a policy from a cluster.
+func DetachPolicy(client *gophercloud.ServiceClient, id string, opts DetachPolicyOptsBuilder) (r ActionResult) {
 	b, err := opts.ToClusterDetachPolicyMap()
 	if err != nil {
 		r.Err = err
@@ -395,12 +402,13 @@ func DetachPolicy(client *gophercloud.ServiceClient, id string, opts DetachPolic
 	return
 }
 
-// ListPoliciesOptsBuilder Builder.
+// ListPolicyOptsBuilder allows extensions to add additional parameters to the
+// ListPolicies request.
 type ListPoliciesOptsBuilder interface {
 	ToClusterListPoliciesQuery() (string, error)
 }
 
-// ListPoliciesOpts params
+// ListPoliciesOpts represents options to list a cluster's policies.
 type ListPoliciesOpts struct {
 	Enabled *bool  `q:"enabled"`
 	Name    string `q:"policy_name"`
@@ -433,5 +441,58 @@ func ListPolicies(client *gophercloud.ServiceClient, clusterID string, opts List
 // GetPolicy retrieves details of a cluster policy.
 func GetPolicy(client *gophercloud.ServiceClient, clusterID string, policyID string) (r GetPolicyResult) {
 	_, r.Err = client.Get(getPolicyURL(client, clusterID, policyID), &r.Body, nil)
+	return
+}
+
+// RecoverOptsBuilder allows extensions to add additional parameters to the
+// Recover request.
+type RecoverOptsBuilder interface {
+	ToClusterRecoverMap() (map[string]interface{}, error)
+}
+
+// RecoverOpts represents options used to recover a cluster.
+type RecoverOpts struct {
+	Operation     RecoveryAction `json:"operation,omitempty"`
+	Check         *bool          `json:"check,omitempty"`
+	CheckCapacity *bool          `json:"check_capacity,omitempty"`
+}
+
+// ToClusterRecovermap constructs a request body from RecoverOpts.
+func (opts RecoverOpts) ToClusterRecoverMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "recover")
+}
+
+// Recover implements cluster recover request.
+func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOptsBuilder) (r ActionResult) {
+	b, err := opts.ToClusterRecoverMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	var result *http.Response
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 202},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
+	return
+}
+
+// Check will perform a health check on a cluster.
+func Check(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	b := map[string]interface{}{
+		"check": map[string]interface{}{},
+	}
+
+	var result *http.Response
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 202},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
 	return
 }

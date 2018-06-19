@@ -2,7 +2,7 @@
 Package clusters provides information and interaction with the clusters through
 the OpenStack Clustering service.
 
-Example to Create a cluster
+Example to Create a Cluster
 
 	createOpts := clusters.CreateOpts{
 		Name:            "test-cluster",
@@ -15,7 +15,7 @@ Example to Create a cluster
 		panic(err)
 	}
 
-Example to Get Clusters
+Example to Get a Cluster
 
 	clusterName := "cluster123"
 	cluster, err := clusters.Get(serviceClient, clusterName).Extract()
@@ -44,7 +44,7 @@ Example to List Clusters
 		fmt.Printf("%+v\n", cluster)
 	}
 
-Example to Update a cluster
+Example to Update a Cluster
 
 	updateOpts := clusters.UpdateOpts{
 		Name:       "testcluster",
@@ -58,7 +58,7 @@ Example to Update a cluster
 	}
 	fmt.Printf("%+v\n", cluster)
 
-Example to Delete a cluster
+Example to Delete a Cluster
 
 	clusterID := "dc6d336e3fc4c0a951b5698cd1236ee"
 	err := clusters.Delete(serviceClient, clusterID).ExtractErr()
@@ -66,7 +66,7 @@ Example to Delete a cluster
 		panic(err)
 	}
 
-Example to Resize a cluster
+Example to Resize a Cluster
 
 	number := 1
 	maxSize := 5
@@ -89,7 +89,7 @@ Example to Resize a cluster
 	}
 	fmt.Println("Resize actionID", actionID)
 
-Example to ScaleIn a cluster
+Example to ScaleIn a Cluster
 
 	count := 2
 	scaleInOpts := clusters.ScaleInOpts{
@@ -102,7 +102,19 @@ Example to ScaleIn a cluster
 		panic(err)
 	}
 
-Example to list Policies for a Cluster
+Example to ScaleOut a cluster
+
+	scaleOutOpts := clusters.ScaleOutOpts{
+		Count: 2,
+	}
+	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+
+	actionID, err := clusters.ScaleOut(computeClient, clusterID, scaleOutOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to List Policies for a Cluster
 
 	clusterID := "7d85f602-a948-4a30-afd4-e84f47471c15"
 	allPages, err := clusters.ListPolicies(serviceClient, clusterID, nil).AllPages()
@@ -130,7 +142,53 @@ Example to Get a Cluster Policy
 
 	fmt.Printf("%+v\n", clusterPolicy)
 
-Example to Recover a cluster
+Example to Attach a Policy to a Cluster
+
+	enabled := true
+	attachPolicyOpts := clusters.AttachPolicyOpts{
+		PolicyID: "policy-123",
+		Enabled:  &enabled,
+	}
+
+	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	actionID, err := clusters.AttachPolicy(serviceClient, clusterID, attachPolicyOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Attach Policy actionID", actionID)
+
+Example to Detach a Policy to Cluster
+
+	detachpolicyOpts := clusters.DetachPolicyOpts{
+		PolicyID: "policy-123",
+	}
+
+	clusterID :=  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	actionID, err := clusters.DetachPolicy(serviceClient, clusterID, detachpolicyOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Update Policy actionID", actionID)
+
+Example to Update a Policy to a Cluster
+
+	enabled := true
+	updatePolicyOpts := clusters.UpdatePolicyOpts{
+		PolicyID: "policy-123",
+		Enabled:  &enabled,
+	}
+
+	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	actionID, err := clusters.UpdatePolicy(serviceClient, clusterID, updatePolicyOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Attach Policy actionID", actionID)
+
+Example to Recover a Cluster
 
 	check := true
 	checkCapacity := true
@@ -147,70 +205,12 @@ Example to Recover a cluster
 	}
 	fmt.Println("action=", actionID)
 
-Example to attach a policy to a cluster
-
-	enabled := true
-	attachPolicyOpts := clusters.AttachPolicyOpts{
-		PolicyID: "policy-123",
-		Enabled:  &enabled,
-	}
-	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	actionID, err := clusters.AttachPolicy(serviceClient, clusterID, attachPolicyOpts).Extract()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Attach Policy actionID", actionID)
-
-Example to update a policy to a cluster
-
-	enabled := true
-	updatePolicyOpts := clusters.UpdatePolicyOpts{
-		PolicyID: "policy-123",
-		Enabled:  &enabled,
-	}
-	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	actionID, err := clusters.AttachPolicy(serviceClient, clusterID, attachPolicyOpts).Extract()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Attach Policy actionID", actionID)
-
-Example to detach a policy to cluster
-
-	detachpolicyOpts := clusters.DetachPolicyOpts{
-		PolicyID: "policy-123",
-	}
-	clusterID :=  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	actionID, err := clusters.DetachPolicy(serviceClient, clusterID, detachpolicyOpts).Extract()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("DetachPolicy actionID", actionID)
-	actionID, err := clusters.UpdatePolicy(serviceClient, clusterID, updatePolicyOpts).Extract()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Update Policy actionID", actionID)
-
-Example to ScaleOut a cluster
-
-	scaleOutOpts := clusters.ScaleOutOpts{
-		Count: 2,
-	}
-	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-
-	actionID, err := clusters.ScaleOut(computeClient, clusterID, scaleOutOpts).Extract()
-	if err != nil {
-		panic(err)
-	}
-
-Example to Check a cluster
+Example to Check a Cluster
 
 	clusterID :=  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
-	action, err := clusters.Check(computeClient, clusterID, clusters.CheckOpts{}).Extract()
+	action, err := clusters.Check(computeClient, clusterID).Extract()
 	if err != nil {
 		panic(err)
 	}
-
 */
 package clusters

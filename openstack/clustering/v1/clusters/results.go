@@ -8,47 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// commonResult is the response of a base result.
-type commonResult struct {
-	gophercloud.Result
-}
-
-// CreateResult is the response of a Create operations.
-type CreateResult struct {
-	commonResult
-}
-
-// GetResult is the response of a Get operations.
-type GetResult struct {
-	commonResult
-}
-
-// PostResult is the response of a Post operations.
-type PostResult struct {
-	commonResult
-}
-
-// UpdateResult is the response of a Update operations.
-type UpdateResult struct {
-	commonResult
-}
-
-// DeleteResult is the result from a Delete operation. Call its ExtractErr
-// method to determine if the call succeeded or failed.
-type DeleteResult struct {
-	gophercloud.ErrResult
-}
-
-// ClusterPolicyPage contains a single page of all policies from a ListDetails call.
-type ClusterPolicyPage struct {
-	pagination.SinglePageBase
-}
-
-// GetPolicyResult is the response of a Get operations.
-type GetPolicyResult struct {
-	commonResult
-}
-
+// Cluster represents an OpenStack Clustering cluster.
 type Cluster struct {
 	Config          map[string]interface{} `json:"config"`
 	CreatedAt       time.Time              `json:"-"`
@@ -72,51 +32,6 @@ type Cluster struct {
 	Timeout         int                    `json:"timeout"`
 	UpdatedAt       time.Time              `json:"-"`
 	User            string                 `json:"user"`
-}
-
-func (r commonResult) Extract() (*Cluster, error) {
-	var s struct {
-		Cluster *Cluster `json:"cluster"`
-	}
-
-	err := r.ExtractInto(&s)
-	return s.Cluster, err
-}
-
-type Action struct {
-	Action string `json:"action"`
-}
-
-// ActionResult is the response of Senlin actions.
-type ActionResult struct {
-	commonResult
-}
-
-func (r ActionResult) Extract() (string, error) {
-	var s struct {
-		Action string `json:"action"`
-	}
-	err := r.ExtractInto(&s)
-	return s.Action, err
-}
-
-// ClusterPage contains a single page of all clusters from a List call.
-type ClusterPage struct {
-	pagination.LinkedPageBase
-}
-
-func (page ClusterPage) IsEmpty() (bool, error) {
-	clusters, err := ExtractClusters(page)
-	return len(clusters) == 0, err
-}
-
-// ExtractCluster provides access to the list of clusters in a page acquired from the List operation.
-func ExtractClusters(r pagination.Page) ([]Cluster, error) {
-	var s struct {
-		Clusters []Cluster `json:"clusters"`
-	}
-	err := (r.(ClusterPage)).ExtractInto(&s)
-	return s.Clusters, err
 }
 
 func (r *Cluster) UnmarshalJSON(b []byte) error {
@@ -158,6 +73,7 @@ func (r *Cluster) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// ClusterPolicy represents and OpenStack Clustering cluster policy.
 type ClusterPolicy struct {
 	ClusterID   string `json:"cluster_id"`
 	ClusterName string `json:"cluster_name"`
@@ -168,27 +84,118 @@ type ClusterPolicy struct {
 	PolicyType  string `json:"policy_type"`
 }
 
-// ExtractClusterPolicies provides access to the list of profiles in a page acquired from the ListDetail operation.
-func ExtractClusterPolicies(r pagination.Page) ([]ClusterPolicy, error) {
+// Action represents an OpenStack Clustering action.
+type Action struct {
+	Action string `json:"action"`
+}
+
+// commonResult is the response of a base result.
+type commonResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any commonResult-based result as a Cluster.
+func (r commonResult) Extract() (*Cluster, error) {
 	var s struct {
-		ClusterPolicies []ClusterPolicy `json:"cluster_policies"`
+		Cluster *Cluster `json:"cluster"`
 	}
-	err := (r.(ClusterPolicyPage)).ExtractInto(&s)
-	return s.ClusterPolicies, err
+
+	err := r.ExtractInto(&s)
+	return s.Cluster, err
 }
 
-// IsEmpty determines if ClusterPolicyPage contains any results.
-func (page ClusterPolicyPage) IsEmpty() (bool, error) {
-	clusterPolicies, err := ExtractClusterPolicies(page)
-	return len(clusterPolicies) == 0, err
+// CreateResult is the response of a Create operations. Call its Extract method
+// to interpret it as a Cluster.
+type CreateResult struct {
+	commonResult
 }
 
-// Extract provides access to the individual Policy returned by the Get and
-// Create functions.
+// GetResult is the response of a Get operations. Call its Extract method to
+// interpret it as a Cluster.
+type GetResult struct {
+	commonResult
+}
+
+// UpdateResult is the response of a Update operations. Call its Extract method
+// to interpret it as a Cluster.
+type UpdateResult struct {
+	commonResult
+}
+
+// GetPolicyResult is the response of a Get operations. Call its Extract method
+// to interpret it as a ClusterPolicy.
+type GetPolicyResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a GetPolicyResult as a ClusterPolicy.
 func (r GetPolicyResult) Extract() (*ClusterPolicy, error) {
 	var s struct {
 		ClusterPolicy *ClusterPolicy `json:"cluster_policy"`
 	}
 	err := r.ExtractInto(&s)
 	return s.ClusterPolicy, err
+}
+
+// DeleteResult is the result from a Delete operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// ClusterPage contains a single page of all clusters from a List call.
+type ClusterPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines whether or not a page of Clusters contains any results.
+func (page ClusterPage) IsEmpty() (bool, error) {
+	clusters, err := ExtractClusters(page)
+	return len(clusters) == 0, err
+}
+
+// ClusterPolicyPage contains a single page of all policies from a List call
+type ClusterPolicyPage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty determines whether or not a page of ClusterPolicies contains any
+// results.
+func (page ClusterPolicyPage) IsEmpty() (bool, error) {
+	clusterPolicies, err := ExtractClusterPolicies(page)
+	return len(clusterPolicies) == 0, err
+}
+
+// ActionResult is the response of Senlin actions. Call its Extract method to
+// obtain the Action ID of the action.
+type ActionResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any Action result as an Action.
+func (r ActionResult) Extract() (string, error) {
+	var s struct {
+		Action string `json:"action"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Action, err
+}
+
+// ExtractClusters returns a slice of Clusters from the List operation.
+func ExtractClusters(r pagination.Page) ([]Cluster, error) {
+	var s struct {
+		Clusters []Cluster `json:"clusters"`
+	}
+	err := (r.(ClusterPage)).ExtractInto(&s)
+	return s.Clusters, err
+}
+
+// ExtractClusterPolicies returns a slice of ClusterPolicies from the
+// ListClusterPolicies operation.
+func ExtractClusterPolicies(r pagination.Page) ([]ClusterPolicy, error) {
+	var s struct {
+		ClusterPolicies []ClusterPolicy `json:"cluster_policies"`
+	}
+	err := (r.(ClusterPolicyPage)).ExtractInto(&s)
+	return s.ClusterPolicies, err
 }
