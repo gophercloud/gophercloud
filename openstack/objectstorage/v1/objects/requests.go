@@ -125,7 +125,7 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 
 	resp, err := c.Get(url, nil, &gophercloud.RequestOpts{
 		MoreHeaders: h,
-		OkCodes:     []int{200, 304},
+		OkCodes:     []int{200, 206, 304},
 	})
 	if resp != nil {
 		r.Header = resp.Header
