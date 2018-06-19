@@ -170,6 +170,24 @@ func TestClustersPolicies(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
+	// Set the policy to disabled
+	iFalse := false
+	updatePolicyOpts := clusters.UpdatePolicyOpts{
+		PolicyID: policy.ID,
+		Enabled:  &iFalse,
+	}
+
+	actionID, err = clusters.UpdatePolicy(client, cluster.ID, updatePolicyOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	clusterPolicy, err := clusters.GetPolicy(client, cluster.ID, policy.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, clusterPolicy.Enabled, false)
+
+	// Detach the policy
 	detachPolicyOpts := clusters.DetachPolicyOpts{
 		PolicyID: policy.ID,
 	}

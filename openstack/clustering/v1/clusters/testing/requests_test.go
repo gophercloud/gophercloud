@@ -371,18 +371,7 @@ func TestUpdatePolicy(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v1/clusters/7d85f602-a948-4a30-afd4-e84f47471c15/actions", func(w http.ResponseWriter, r *http.Request) {
-		th.TestMethod(t, r, "POST")
-		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		fmt.Fprintf(w, `
-		{
-  			"action": "2a0ff107-e789-4660-a122-3816c43af703"
-		}`)
-	})
+	HandleUpdatePolicySuccessfully(t)
 
 	enabled := true
 	opts := clusters.UpdatePolicyOpts{
@@ -391,5 +380,5 @@ func TestUpdatePolicy(t *testing.T) {
 	}
 	actionID, err := clusters.UpdatePolicy(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, actionID, "2a0ff107-e789-4660-a122-3816c43af703")
+	th.AssertEquals(t, ExpectedActionID, actionID)
 }

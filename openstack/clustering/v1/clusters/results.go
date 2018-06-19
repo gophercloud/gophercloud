@@ -192,16 +192,3 @@ func (r GetPolicyResult) Extract() (*ClusterPolicy, error) {
 	err := r.ExtractInto(&s)
 	return s.ClusterPolicy, err
 }
-
-type UpdatePolicyResult struct {
-	PostResult
-}
-
-func (r UpdatePolicyResult) Extract() (string, error) {
-	var s *Action
-	err := r.ExtractInto(&s)
-	if err != nil {
-		return "", err
-	}
-	return s.Action, err
-}
