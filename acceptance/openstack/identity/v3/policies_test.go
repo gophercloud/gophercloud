@@ -82,6 +82,7 @@ func TestPoliciesCRUD(t *testing.T) {
 	allPolicies, err = policies.ExtractPolicies(allPages)
 	th.AssertNoErr(t, err)
 
+	found = false
 	for _, p := range allPolicies {
 		tools.PrintResource(t, p)
 		tools.PrintResource(t, p.Extra)
@@ -103,6 +104,7 @@ func TestPoliciesCRUD(t *testing.T) {
 	allPolicies, err = policies.ExtractPolicies(allPages)
 	th.AssertNoErr(t, err)
 
+	found = false
 	for _, p := range allPolicies {
 		tools.PrintResource(t, p)
 		tools.PrintResource(t, p.Extra)
