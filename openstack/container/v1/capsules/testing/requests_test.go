@@ -19,11 +19,13 @@ func TestGetCapsule_OldTime(t *testing.T) {
 
 	createdAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:25+00:00")
 	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:26+00:00")
+	startedAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:26+00:00")
 
 	ExpectedCapsule.CreatedAt = createdAt
 	ExpectedCapsule.UpdatedAt = updatedAt
 	ExpectedCapsule.Containers[0].CreatedAt = createdAt
 	ExpectedCapsule.Containers[0].UpdatedAt = updatedAt
+	ExpectedCapsule.Containers[0].StartedAt = startedAt
 
 	actualCapsule, err := capsules.Get(fakeclient.ServiceClient(), ExpectedCapsule.UUID).Extract()
 	th.AssertNoErr(t, err)
@@ -39,11 +41,13 @@ func TestGetCapsule_NewTime(t *testing.T) {
 
 	createdAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:25")
 	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:26")
+	startedAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:26")
 
 	ExpectedCapsule.CreatedAt = createdAt
 	ExpectedCapsule.UpdatedAt = updatedAt
 	ExpectedCapsule.Containers[0].CreatedAt = createdAt
 	ExpectedCapsule.Containers[0].UpdatedAt = updatedAt
+	ExpectedCapsule.Containers[0].StartedAt = startedAt
 
 	actualCapsule, err := capsules.Get(fakeclient.ServiceClient(), ExpectedCapsule.UUID).Extract()
 	th.AssertNoErr(t, err)

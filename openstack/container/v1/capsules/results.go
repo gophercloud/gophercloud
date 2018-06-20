@@ -137,6 +137,9 @@ type Container struct {
 	// The updated time of the container
 	UpdatedAt time.Time `json:"-"`
 
+	// The started time of the container
+	StartedAt time.Time `json:"-"`
+
 	// Name for the container
 	Name string `json:"name"`
 
@@ -304,6 +307,7 @@ func (r *Container) UnmarshalJSON(b []byte) error {
 		tmp
 		CreatedAt gophercloud.JSONRFC3339ZNoT `json:"created_at"`
 		UpdatedAt gophercloud.JSONRFC3339ZNoT `json:"updated_at"`
+		StartedAt gophercloud.JSONRFC3339ZNoT `json:"started_at"`
 	}
 
 	err := json.Unmarshal(b, &s1)
@@ -312,6 +316,7 @@ func (r *Container) UnmarshalJSON(b []byte) error {
 
 		r.CreatedAt = time.Time(s1.CreatedAt)
 		r.UpdatedAt = time.Time(s1.UpdatedAt)
+		r.StartedAt = time.Time(s1.StartedAt)
 
 		return nil
 	}
@@ -321,6 +326,7 @@ func (r *Container) UnmarshalJSON(b []byte) error {
 		tmp
 		CreatedAt gophercloud.JSONRFC3339ZNoTNoZ `json:"created_at"`
 		UpdatedAt gophercloud.JSONRFC3339ZNoTNoZ `json:"updated_at"`
+		StartedAt gophercloud.JSONRFC3339ZNoTNoZ `json:"started_at"`
 	}
 
 	err = json.Unmarshal(b, &s2)
@@ -332,6 +338,7 @@ func (r *Container) UnmarshalJSON(b []byte) error {
 
 	r.CreatedAt = time.Time(s2.CreatedAt)
 	r.UpdatedAt = time.Time(s2.UpdatedAt)
+	r.StartedAt = time.Time(s2.StartedAt)
 
 	return nil
 }
