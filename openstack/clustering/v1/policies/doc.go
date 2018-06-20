@@ -23,7 +23,7 @@ Example to List Policies
 	}
 
 
-Example to Create a policy
+Example to Create a Policy
 
 	opts := policies.CreateOpts{
 		Name: "new_policy",
@@ -48,7 +48,7 @@ Example to Create a policy
 		panic(err)
 	}
 
-Example to Update a policy
+Example to Update a Policy
 
 	opts := policies.UpdateOpts{
 		Name: "update_policy",
@@ -59,7 +59,7 @@ Example to Update a policy
 		panic(err)
 	}
 
-Example to Validate a policy
+Example to Validate a Policy
 
 	opts := policies.ValidateOpts{
 		Spec: policies.Spec{
@@ -82,6 +82,5 @@ Example to Validate a policy
 	if err != nil {
 		panic(err)
 	}
-
 */
 package policies

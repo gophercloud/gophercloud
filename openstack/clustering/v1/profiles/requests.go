@@ -7,12 +7,13 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// CreateOptsBuilder for options used for creating a profile.
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
 type CreateOptsBuilder interface {
 	ToProfileCreateMap() (map[string]interface{}, error)
 }
 
-// CreateOpts represents options used for creating a profile
+// CreateOpts represents options used for creating a profile.
 type CreateOpts struct {
 	Name     string                 `json:"name" required:"true"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
@@ -42,11 +43,12 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
-// Get retrieves detail of a single profile. Use Extract to convert its
-// result into a Profile.
+// Get retrieves detail of a single profile.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	var result *http.Response
-	result, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	result, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
 
 	if r.Err == nil {
 		r.Header = result.Header
@@ -54,12 +56,13 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	return
 }
 
-// ListOptsBuilder Builder.
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
 type ListOptsBuilder interface {
 	ToProfileListQuery() (string, error)
 }
 
-// ListOpts params
+// ListOpts represents options used to list profiles.
 type ListOpts struct {
 	GlobalProject *bool  `q:"global_project"`
 	Limit         int    `q:"limit"`
@@ -97,23 +100,18 @@ type UpdateOptsBuilder interface {
 	ToProfileUpdateMap() (map[string]interface{}, error)
 }
 
-// UpdateOpts implements Profile's UpdateOpts
+// UpdateOpts represents options used to update a profile.
 type UpdateOpts struct {
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 	Name     string                 `json:"name,omitempty"`
 }
 
-// ToProfileUpdateMap assembles a request body based on the contents of
-// UpdateOpts.
+// ToProfileUpdateMap constructs a request body from UpdateOpts.
 func (opts UpdateOpts) ToProfileUpdateMap() (map[string]interface{}, error) {
-	b, err := gophercloud.BuildRequestBody(opts, "profile")
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
+	return gophercloud.BuildRequestBody(opts, "profile")
 }
 
-// Update implements profile update request.
+// Update updates a profile.
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToProfileUpdateMap()
 	if err != nil {
