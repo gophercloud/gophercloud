@@ -11,8 +11,8 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-// ListResult provides a single page of RESOURCE results.
-const ListResult = `
+// ListResponse provides a single page of RESOURCE results.
+const ListResponse = `
 {
     "secrets": [
         {
@@ -51,8 +51,8 @@ const ListResult = `
     "total": 2
 }`
 
-// GetResult provides a Get result.
-const GetResult = `
+// GetResponse provides a Get result.
+const GetResponse = `
 {
     "algorithm": "aes",
     "bit_length": 256,
@@ -70,8 +70,8 @@ const GetResult = `
     "updated": "2018-06-21T02:49:48"
 }`
 
-// GetPayloadResult provides a payload result.
-const GetPayloadResult = `foobar`
+// GetPayloadResponse provides a payload result.
+const GetPayloadResponse = `foobar`
 
 // CreateRequest provides the input to a Create request.
 const CreateRequest = `
@@ -85,8 +85,8 @@ const CreateRequest = `
     "secret_type": "opaque"
 }`
 
-// CreateResult provides a Create result.
-const CreateResult = `
+// CreateResponse provides a Create result.
+const CreateResponse = `
 {
 	"secret_ref": "http://barbican:9311/v1/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c"
 }`
@@ -128,12 +128,63 @@ var SecondSecret = secrets.Secret{
 	Updated:    time.Date(2018, 6, 21, 5, 18, 45, 0, time.UTC),
 }
 
-// ExpectedSecretsSlice is the slice of secrets expected to be returned from ListResult.
+// ExpectedSecretsSlice is the slice of secrets expected to be returned from ListResponse.
 var ExpectedSecretsSlice = []secrets.Secret{FirstSecret, SecondSecret}
 
 // ExpectedCreateResult is the result of a create request
 var ExpectedCreateResult = secrets.Secret{
 	SecretRef: "http://barbican:9311/v1/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c",
+}
+
+const GetMetadataResponse = `
+{
+  "metadata": {
+    "foo": "bar",
+    "something": "something else"
+    }
+}`
+
+// ExpectedMetadata is the result of a Get or Create request.
+var ExpectedMetadata = map[string]string{
+	"foo":       "bar",
+	"something": "something else",
+}
+
+const CreateMetadataRequest = `
+{
+  "metadata": {
+    "foo": "bar",
+    "something": "something else"
+  }
+}`
+
+const CreateMetadataResponse = `
+{
+    "metadata_ref": "http://barbican:9311/v1/secrets/1b12b69a-8822-442e-a303-da24ade648ac/metadata"
+}`
+
+// ExpectedCreateMetadataResult is the result of a Metadata create request.
+var ExpectedCreateMetadataResult = map[string]string{
+	"metadata_ref": "http://barbican:9311/v1/secrets/1b12b69a-8822-442e-a303-da24ade648ac/metadata",
+}
+
+const MetadatumRequest = `
+{
+  "key": "foo",
+  "value": "bar"
+}`
+
+const MetadatumResponse = `
+{
+  "key": "foo",
+  "value": "bar"
+}`
+
+// ExpectedMetadatum is the result of a Metadatum Get, Create, or Update
+// request
+var ExpectedMetadatum = secrets.Metadatum{
+	Key:   "foo",
+	Value: "bar",
 }
 
 // HandleListSecretsSuccessfully creates an HTTP handler at `/secrets` on the
@@ -146,7 +197,7 @@ func HandleListSecretsSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, ListResult)
+		fmt.Fprintf(w, ListResponse)
 	})
 }
 
@@ -160,7 +211,7 @@ func HandleGetSecretSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetResult)
+		fmt.Fprintf(w, GetResponse)
 	})
 }
 
@@ -173,7 +224,7 @@ func HandleGetPayloadSuccessfully(t *testing.T) {
 
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, GetPayloadResult)
+		fmt.Fprintf(w, GetPayloadResponse)
 	})
 }
 
@@ -186,7 +237,7 @@ func HandleCreateSecretSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, CreateRequest)
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintf(w, CreateResult)
+		fmt.Fprintf(w, CreateResponse)
 	})
 }
 
@@ -209,6 +260,96 @@ func HandleUpdateSecretSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
 		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleGetMetadataSuccessfully creates an HTTP handler at
+// `/secrets/uuid/metadata` on the test handler mux that responds with
+// retrieved metadata.
+func HandleGetMetadataSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/metadata", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetMetadataResponse)
+	})
+}
+
+// HandleCreateMetadataSuccessfully creates an HTTP handler at
+// `/secrets/uuid/metadata` on the test handler mux that responds with
+// a metadata reference URL.
+func HandleCreateMetadataSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/metadata", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, CreateMetadataRequest)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, CreateMetadataResponse)
+	})
+}
+
+// HandleGetMetadatumSuccessfully creates an HTTP handler at
+// `/secrets/uuid/metadata/foo` on the test handler mux that responds with a
+// single metadatum.
+func HandleGetMetadatumSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, MetadatumResponse)
+	})
+}
+
+// HandleCreateMetadatumSuccessfully creates an HTTP handler at
+// `/secrets/uuid/metadata` on the test handler mux that responds with
+// a single created metadata.
+func HandleCreateMetadatumSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/metadata", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, MetadatumRequest)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, MetadatumResponse)
+	})
+}
+
+// HandleUpdateMetadatumSuccessfully creates an HTTP handler at
+// `/secrets/uuid/metadata/foo` on the test handler mux that responds with a
+// single updated metadatum.
+func HandleUpdateMetadatumSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, MetadatumRequest)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, MetadatumResponse)
+	})
+}
+
+// HandleDeleteMetadatumSuccessfully creates an HTTP handler at
+// `/secrets/uuid/metadata/key` on the test handler mux that tests metadata
+// deletion.
+func HandleDeleteMetadatumSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c/metadata/foo", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
 		w.WriteHeader(http.StatusNoContent)
 	})
 }

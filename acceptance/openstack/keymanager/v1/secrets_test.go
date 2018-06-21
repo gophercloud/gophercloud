@@ -78,3 +78,78 @@ func TestSecretsDelayedPayload(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, payload, string(actual))
 }
+
+func TestSecretsMetadataCRUD(t *testing.T) {
+	client, err := clients.NewKeyManagerV1Client()
+	th.AssertNoErr(t, err)
+
+	payload := tools.RandomString("SUPERSECRET-", 8)
+	secret, err := CreateSecretWithPayload(t, client, payload)
+	th.AssertNoErr(t, err)
+	secretID, err := ParseSecretID(secret.SecretRef)
+	th.AssertNoErr(t, err)
+	defer DeleteSecret(t, client, secretID)
+
+	// Create some metadata
+	createOpts := secrets.MetadataOpts{
+		"foo":       "bar",
+		"something": "something else",
+	}
+
+	ref, err := secrets.CreateMetadata(client, secretID, createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, ref["metadata_ref"], secret.SecretRef+"/metadata")
+
+	// Get the metadata
+	metadata, err := secrets.GetMetadata(client, secretID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, metadata)
+	th.AssertEquals(t, metadata["foo"], "bar")
+	th.AssertEquals(t, metadata["something"], "something else")
+
+	// Add a single metadatum
+	metadatumOpts := secrets.MetadatumOpts{
+		Key:   "bar",
+		Value: "baz",
+	}
+
+	err = secrets.CreateMetadatum(client, secretID, metadatumOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	metadata, err = secrets.GetMetadata(client, secretID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, metadata)
+	th.AssertEquals(t, len(metadata), 3)
+	th.AssertEquals(t, metadata["foo"], "bar")
+	th.AssertEquals(t, metadata["something"], "something else")
+	th.AssertEquals(t, metadata["bar"], "baz")
+
+	// Update a metadatum
+	metadatumOpts.Key = "foo"
+	metadatumOpts.Value = "foo"
+
+	metadatum, err := secrets.UpdateMetadatum(client, secretID, metadatumOpts).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, metadatum)
+	th.AssertDeepEquals(t, metadatum.Key, "foo")
+	th.AssertDeepEquals(t, metadatum.Value, "foo")
+
+	metadata, err = secrets.GetMetadata(client, secretID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, metadata)
+	th.AssertEquals(t, len(metadata), 3)
+	th.AssertEquals(t, metadata["foo"], "foo")
+	th.AssertEquals(t, metadata["something"], "something else")
+	th.AssertEquals(t, metadata["bar"], "baz")
+
+	// Delete a metadatum
+	err = secrets.DeleteMetadatum(client, secretID, "foo").ExtractErr()
+	th.AssertNoErr(t, err)
+
+	metadata, err = secrets.GetMetadata(client, secretID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, metadata)
+	th.AssertEquals(t, len(metadata), 2)
+	th.AssertEquals(t, metadata["something"], "something else")
+	th.AssertEquals(t, metadata["bar"], "baz")
+}

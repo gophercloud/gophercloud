@@ -283,3 +283,103 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 
 	return
 }
+
+// GetMetadata will list metadata for a given secret.
+func GetMetadata(client *gophercloud.ServiceClient, secretID string) (r MetadataResult) {
+	_, r.Err = client.Get(metadataURL(client, secretID), &r.Body, nil)
+	return
+}
+
+// MetadataOpts is a map that contains key-value pairs for secret metadata.
+type MetadataOpts map[string]string
+
+// CreateMetadataOptsBuilder allows extensions to add additional parameters to
+// the CreateMetadata request.
+type CreateMetadataOptsBuilder interface {
+	ToMetadataCreateMap() (map[string]interface{}, error)
+}
+
+// ToMetadataCreateMap converts a MetadataOpts into a request body.
+func (opts MetadataOpts) ToMetadataCreateMap() (map[string]interface{}, error) {
+	return map[string]interface{}{"metadata": opts}, nil
+}
+
+// CreateMetadata will set metadata for a given secret.
+func CreateMetadata(client *gophercloud.ServiceClient, secretID string, opts CreateMetadataOptsBuilder) (r MetadataCreateResult) {
+	b, err := opts.ToMetadataCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Put(metadataURL(client, secretID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}
+
+// GetMetadatum will get a single key/value metadata from a secret.
+func GetMetadatum(client *gophercloud.ServiceClient, secretID string, key string) (r MetadatumResult) {
+	_, r.Err = client.Get(metadatumURL(client, secretID, key), &r.Body, nil)
+	return
+}
+
+// MetadatumOpts represents a single metadata.
+type MetadatumOpts struct {
+	Key   string `json:"key" required:"true"`
+	Value string `json:"value" required:"true"`
+}
+
+// CreateMetadatumOptsBuilder allows extensions to add additional parameters to
+// the CreateMetadatum request.
+type CreateMetadatumOptsBuilder interface {
+	ToMetadatumCreateMap() (map[string]interface{}, error)
+}
+
+// ToMetadatumCreateMap converts a MetadatumOpts into a request body.
+func (opts MetadatumOpts) ToMetadatumCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// CreateMetadatum will add a single key/value metadata to a secret.
+func CreateMetadatum(client *gophercloud.ServiceClient, secretID string, opts CreateMetadatumOptsBuilder) (r MetadatumCreateResult) {
+	b, err := opts.ToMetadatumCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(metadataURL(client, secretID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}
+
+// UpdateMetadatumOptsBuilder allows extensions to add additional parameters to
+// the UpdateMetadatum request.
+type UpdateMetadatumOptsBuilder interface {
+	ToMetadatumUpdateMap() (map[string]interface{}, string, error)
+}
+
+// ToMetadatumUpdateMap converts a MetadataOpts into a request body.
+func (opts MetadatumOpts) ToMetadatumUpdateMap() (map[string]interface{}, string, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	return b, opts.Key, err
+}
+
+// UpdateMetadatum will update a single key/value metadata to a secret.
+func UpdateMetadatum(client *gophercloud.ServiceClient, secretID string, opts UpdateMetadatumOptsBuilder) (r MetadatumResult) {
+	b, key, err := opts.ToMetadatumUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Put(metadatumURL(client, secretID, key), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+// DeleteMetadatum will delete an individual metadatum from a secret.
+func DeleteMetadatum(client *gophercloud.ServiceClient, secretID string, key string) (r MetadatumDeleteResult) {
+	_, r.Err = client.Delete(metadatumURL(client, secretID, key), nil)
+	return
+}

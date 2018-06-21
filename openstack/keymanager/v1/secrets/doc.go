@@ -83,5 +83,60 @@ Example to Delete a Secrets
 		panic(err)
 	}
 
+Example to Create Metadata for a Secret
+
+	createOpts := secrets.MetadataOpts{
+		"foo":       "bar",
+		"something": "something else",
+	}
+
+	ref, err := secrets.CreateMetadata(client, secretID, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%v\n", ref)
+
+Example to Get Metadata for a Secret
+
+	metadata, err := secrets.GetMetadata(client, secretID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%v\n", metadata)
+
+Example to Add Metadata to a Secret
+
+	metadatumOpts := secrets.MetadatumOpts{
+		Key:   "foo",
+		Value: "bar",
+	}
+
+	err := secrets.CreateMetadatum(client, secretID, metadatumOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Update Metadata of a Secret
+
+	metadatumOpts := secrets.MetadatumOpts{
+		Key:   "foo",
+		Value: "bar",
+	}
+
+	metadatum, err := secrets.UpdateMetadatum(client, secretID, metadatumOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%v\n", metadatum)
+
+Example to Delete Metadata of a Secret
+
+	err := secrets.DeleteMetadatum(client, secretID, "foo").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package secrets

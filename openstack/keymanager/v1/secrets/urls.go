@@ -25,3 +25,11 @@ func updateURL(client *gophercloud.ServiceClient, id string) string {
 func payloadURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("secrets", id, "payload")
 }
+
+func metadataURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("secrets", id, "metadata")
+}
+
+func metadatumURL(client *gophercloud.ServiceClient, id, key string) string {
+	return client.ServiceURL("secrets", id, "metadata", key)
+}

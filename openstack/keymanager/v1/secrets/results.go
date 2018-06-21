@@ -163,3 +163,65 @@ func ExtractSecrets(r pagination.Page) ([]Secret, error) {
 	err := (r.(SecretPage)).ExtractInto(&s)
 	return s.Secrets, err
 }
+
+// MetadataResult is the result of a metadata request. Call its Extract method
+// to interpret it as a map[string]string.
+type MetadataResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any MetadataResult as map[string]string.
+func (r MetadataResult) Extract() (map[string]string, error) {
+	var s struct {
+		Metadata map[string]string `json:"metadata"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Metadata, err
+}
+
+// MetadataCreateResult is the result of a metadata create request. Call its
+// Extract method to interpret it as a map[string]string.
+type MetadataCreateResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any MetadataCreateResult as a map[string]string.
+func (r MetadataCreateResult) Extract() (map[string]string, error) {
+	var s map[string]string
+	err := r.ExtractInto(&s)
+	return s, err
+}
+
+// Metadatum represents an individual metadata.
+type Metadatum struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+// MetadatumResult is the result of a metadatum request. Call its
+// Extract method to interpret it as a map[string]string.
+type MetadatumResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any MetadatumResult as a map[string]string.
+func (r MetadatumResult) Extract() (*Metadatum, error) {
+	var s *Metadatum
+	err := r.ExtractInto(&s)
+	return s, err
+}
+
+// MetadatumCreateResult is the response from a metadata Create operation. Call
+// it's ExtractErr to determine if the request succeeded or failed.
+//
+// NOTE: This could be a MetadatumResponse but, at the time of testing, it looks
+// like Barbican was returning errneous JSON in the response.
+type MetadatumCreateResult struct {
+	gophercloud.ErrResult
+}
+
+// MetadatumDeleteResult is the response from a metadatum Delete operation. Call
+// its ExtractErr to determine if the request succeeded or failed.
+type MetadatumDeleteResult struct {
+	gophercloud.ErrResult
+}

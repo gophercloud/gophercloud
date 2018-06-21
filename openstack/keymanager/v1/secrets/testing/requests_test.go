@@ -102,5 +102,79 @@ func TestGetPayloadSecret(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 	payload, err := res.Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, GetPayloadResult, string(payload))
+	th.CheckDeepEquals(t, GetPayloadResponse, string(payload))
+}
+
+func TestGetMetadataSuccessfully(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetMetadataSuccessfully(t)
+
+	actual, err := secrets.GetMetadata(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedMetadata, actual)
+}
+
+func TestCreateMetadataSuccessfully(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateMetadataSuccessfully(t)
+
+	createOpts := secrets.MetadataOpts{
+		"foo":       "bar",
+		"something": "something else",
+	}
+
+	actual, err := secrets.CreateMetadata(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedCreateMetadataResult, actual)
+}
+
+func TestGetMetadatumSuccessfully(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetMetadatumSuccessfully(t)
+
+	actual, err := secrets.GetMetadatum(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", "foo").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedMetadatum, *actual)
+}
+
+func TestCreateMetadatumSuccessfully(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateMetadatumSuccessfully(t)
+
+	createOpts := secrets.MetadatumOpts{
+		Key:   "foo",
+		Value: "bar",
+	}
+
+	actual, err := secrets.CreateMetadatum(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedMetadatum, *actual)
+}
+
+func TestUpdateMetadatumSuccessfully(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateMetadatumSuccessfully(t)
+
+	updateOpts := secrets.MetadatumOpts{
+		Key:   "foo",
+		Value: "bar",
+	}
+
+	actual, err := secrets.UpdateMetadatum(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedMetadatum, *actual)
+}
+
+func TestDeleteMetadatumSuccessfully(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteMetadatumSuccessfully(t)
+
+	err := secrets.DeleteMetadatum(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", "foo").ExtractErr()
+	th.AssertNoErr(t, err)
 }
