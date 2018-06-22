@@ -19,3 +19,10 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 		return ProfileTypePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+func ListOps(client *gophercloud.ServiceClient, id string) pagination.Pager {
+	url := listOpsURL(client, id)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return OperationPage{pagination.SinglePageBase(r)}
+	})
+}

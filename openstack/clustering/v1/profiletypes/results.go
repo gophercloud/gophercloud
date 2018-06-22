@@ -51,3 +51,17 @@ func (page ProfileTypePage) IsEmpty() (bool, error) {
 	profileTypes, err := ExtractProfileTypes(page)
 	return len(profileTypes) == 0, err
 }
+
+// OperationPage contains a single page of all profile type operations from a ListOps call.
+type OperationPage struct {
+	pagination.SinglePageBase
+}
+
+// ExtractOps provides access to the list of operations in a page acquired from the ListOps operation.
+func ExtractOps(r pagination.Page) (map[string]interface{}, error) {
+	var s struct {
+		Operations map[string]interface{} `json:"operations"`
+	}
+	err := (r.(OperationPage)).ExtractInto(&s)
+	return s.Operations, err
+}

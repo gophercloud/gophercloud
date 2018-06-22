@@ -242,3 +242,55 @@ func HandleGet15Successfully(t *testing.T, id string) {
 		fmt.Fprintf(w, GetResponse15)
 	})
 }
+
+const ProfileTypeName = "os.nova.server-1.0"
+
+const ListOpsResponse = `
+{
+	"operations": {
+		"pause": {
+			"description": "Pause the server from running.",
+			"parameter": null
+		},
+		"change_password": {
+			"description": "Change the administrator password.",
+			"parameters": {
+				"admin_pass": {
+					"description": "New password for the administrator.",
+					"required":    false,
+					"type":        "String"
+				}
+			}
+		}
+	}
+}
+`
+
+var ExpectedOps = map[string]interface{}{
+	"change_password": map[string]interface{}{
+		"description": "Change the administrator password.",
+		"parameters": map[string]interface{}{
+			"admin_pass": map[string]interface{}{
+				"description": "New password for the administrator.",
+				"required":    false,
+				"type":        "String",
+			},
+		},
+	},
+	"pause": map[string]interface{}{
+		"description": "Pause the server from running.",
+		"parameter":   nil,
+	},
+}
+
+func HandleListOpsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/profile-types/"+ProfileTypeName+"/ops", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("X-OpenStack-Request-ID", ProfileTypeRequestID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListOpsResponse)
+	})
+}

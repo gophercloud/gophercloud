@@ -27,3 +27,21 @@ func TestProfileTypesList(t *testing.T) {
 		tools.PrintResource(t, profileType)
 	}
 }
+func TestProfileTypesOpsList(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.5"
+
+	profileTypeName := "os.nova.server-1.0"
+	allPages, err := profiletypes.ListOps(client, profileTypeName).AllPages()
+	th.AssertNoErr(t, err)
+
+	ops, err := profiletypes.ExtractOps(allPages)
+	th.AssertNoErr(t, err)
+
+	for k, v := range ops {
+		tools.PrintResource(t, k)
+		tools.PrintResource(t, v)
+	}
+}
