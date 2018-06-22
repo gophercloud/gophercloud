@@ -147,13 +147,40 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	return
 }
 
+// GetPayloadOpts represents options used for obtaining a payload.
+type GetPayloadOpts struct {
+	PayloadContentType string `h:"Accept"`
+}
+
+// GetPayloadOptsBuilder allows extensions to add additional parameters to
+// the GetPayload request.
+type GetPayloadOptsBuilder interface {
+	ToSecretPayloadGetParams() (map[string]string, error)
+}
+
+// ToSecretPayloadGetParams formats a GetPayloadOpts into a query string.
+func (opts GetPayloadOpts) ToSecretPayloadGetParams() (map[string]string, error) {
+	return gophercloud.BuildHeaders(opts)
+}
+
 // GetPayload retrieves the payload of a secret.
-func GetPayload(client *gophercloud.ServiceClient, id string) (r PayloadResult) {
-	headers := map[string]string{"Accept": "text/plain", "Content-Type": "text/plain"}
+func GetPayload(client *gophercloud.ServiceClient, id string, opts GetPayloadOptsBuilder) (r PayloadResult) {
+	h := map[string]string{"Accept": "text/plain"}
+
+	if opts != nil {
+		headers, err := opts.ToSecretPayloadGetParams()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		for k, v := range headers {
+			h[k] = v
+		}
+	}
 
 	url := payloadURL(client, id)
 	resp, err := client.Get(url, nil, &gophercloud.RequestOpts{
-		MoreHeaders: headers,
+		MoreHeaders: h,
 		OkCodes:     []int{200},
 	})
 

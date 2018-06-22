@@ -98,7 +98,7 @@ func TestGetPayloadSecret(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetPayloadSuccessfully(t)
 
-	res := secrets.GetPayload(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c")
+	res := secrets.GetPayload(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", nil)
 	th.AssertNoErr(t, res.Err)
 	payload, err := res.Extract()
 	th.AssertNoErr(t, err)
@@ -150,9 +150,8 @@ func TestCreateMetadatumSuccessfully(t *testing.T) {
 		Value: "bar",
 	}
 
-	actual, err := secrets.CreateMetadatum(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", createOpts).Extract()
+	err := secrets.CreateMetadatum(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", createOpts).ExtractErr()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, ExpectedMetadatum, *actual)
 }
 
 func TestUpdateMetadatumSuccessfully(t *testing.T) {

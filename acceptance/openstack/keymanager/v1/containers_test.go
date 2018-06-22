@@ -59,7 +59,7 @@ func TestCertificateContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID).Extract()
+	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Private Payload: %s", string(payload))
 
@@ -69,7 +69,7 @@ func TestCertificateContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err = secrets.GetPayload(client, secretID).Extract()
+	payload, err = secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Certificate Payload: %s", string(payload))
 
@@ -79,7 +79,7 @@ func TestCertificateContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err = secrets.GetPayload(client, secretID).Extract()
+	payload, err = secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Passphrase Payload: %s", string(payload))
 
@@ -103,7 +103,7 @@ func TestRSAContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID).Extract()
+	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Private Payload: %s", string(payload))
 
@@ -113,7 +113,7 @@ func TestRSAContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err = secrets.GetPayload(client, secretID).Extract()
+	payload, err = secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Public Payload: %s", string(payload))
 
@@ -123,7 +123,7 @@ func TestRSAContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err = secrets.GetPayload(client, secretID).Extract()
+	payload, err = secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	t.Logf("Passphrase Payload: %s", string(payload))
 

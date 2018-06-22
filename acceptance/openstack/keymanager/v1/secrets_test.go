@@ -24,7 +24,7 @@ func TestSecretsCRUD(t *testing.T) {
 	defer DeleteSecret(t, client, secretID)
 
 	// Test payload retrieval
-	actual, err := secrets.GetPayload(client, secretID).Extract()
+	actual, err := secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, payload, string(actual))
 
@@ -74,7 +74,7 @@ func TestSecretsDelayedPayload(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Test payload retrieval
-	actual, err := secrets.GetPayload(client, secretID).Extract()
+	actual, err := secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, payload, string(actual))
 }
@@ -164,7 +164,7 @@ func TestSymmetricSecret(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID).Extract()
+	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, string(payload))
 }
@@ -183,7 +183,7 @@ func TestCertificateSecret(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID).Extract()
+	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, string(payload))
 }
@@ -202,7 +202,7 @@ func TestPrivateSecret(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID).Extract()
+	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, string(payload))
 }
@@ -220,7 +220,7 @@ func TestPublicSecret(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID).Extract()
+	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, string(payload))
 }
@@ -236,7 +236,7 @@ func TestPassphraseSecret(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
-	payload, err := secrets.GetPayload(client, secretID).Extract()
+	payload, err := secrets.GetPayload(client, secretID, nil).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, string(payload))
 }
