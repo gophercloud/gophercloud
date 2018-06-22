@@ -49,8 +49,14 @@ const CreateClaimRequest = `
 {
 	"ttl": 3600,
 	"grace": 3600
-}
-`
+}`
+
+// UpdateClaimRequest is a sample request to update a claim.
+const UpdateClaimRequest = `
+{
+	"ttl": 1200,
+	"grace": 1600
+}`
 
 // CreatedClaim is the result of a create request.
 var CreatedClaim = []claims.Messages{
@@ -100,5 +106,17 @@ func HandleGetSuccessfully(t *testing.T) {
 
 			w.Header().Add("Content-Type", "application/json")
 			fmt.Fprintf(w, GetClaimResponse)
+		})
+}
+
+// HandleUpdateSuccessfully configures the test server to respond to a Update request.
+func HandleUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/claims/%s", QueueName, ClaimID),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PATCH")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestJSONRequest(t, r, UpdateClaimRequest)
+
+			w.WriteHeader(http.StatusNoContent)
 		})
 }

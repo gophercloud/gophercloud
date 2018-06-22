@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/messaging/v2/claims"
 )
 
 func TestCRUDClaim(t *testing.T) {
@@ -36,7 +37,21 @@ func TestCRUDClaim(t *testing.T) {
 
 	tools.PrintResource(t, claimedMessages)
 
+	updateOpts := claims.UpdateOpts{
+		TTL:   600,
+		Grace: 500,
+	}
+
 	for _, claimID := range claimIDs {
+		t.Logf("Attempting to update claim: %s", claimID)
+		updateErr := claims.Update(client, createdQueueName, claimID, updateOpts).ExtractErr()
+
+		if updateErr != nil {
+			t.Fatalf("Unable to update claim %s: %v", claimID, err)
+		} else {
+			t.Logf("Successfully updated claim: %s", claimID)
+		}
+
 		updatedClaim, getErr := GetClaim(t, client, createdQueueName, claimID)
 		if getErr != nil {
 			t.Fatalf("Unable to retrieve claim %s: %v", claimID, getErr)

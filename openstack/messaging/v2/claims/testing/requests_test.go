@@ -33,3 +33,17 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstClaim, actual)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateSuccessfully(t)
+
+	updateOpts := claims.UpdateOpts{
+		Grace: 1600,
+		TTL:   1200,
+	}
+
+	err := claims.Update(fake.ServiceClient(), QueueName, ClaimID, updateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+}

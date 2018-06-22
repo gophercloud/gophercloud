@@ -26,6 +26,11 @@ type GetResult struct {
 	gophercloud.Result
 }
 
+// UpdateResult is the response of a Update operations.
+type UpdateResult struct {
+	gophercloud.ErrResult
+}
+
 type Messages struct {
 	Age  float32                `json:"age"`
 	Href string                 `json:"href"`

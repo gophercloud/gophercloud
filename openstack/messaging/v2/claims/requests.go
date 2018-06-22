@@ -72,3 +72,41 @@ func Get(client *gophercloud.ServiceClient, queueName string, claimID string) (r
 	})
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToClaimUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts implements UpdateOpts.
+type UpdateOpts struct {
+	// Update the TTL for the specified Claim.
+	TTL int `json:"ttl,omitempty"`
+
+	// Update the grace period for Messages in a specified Claim.
+	Grace int `json:"grace,omitempty"`
+}
+
+// ToClaimUpdateMap assembles a request body based on the contents of
+// UpdateOpts.
+func (opts UpdateOpts) ToClaimUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// Update will update the options for a specified claim.
+func Update(client *gophercloud.ServiceClient, queueName string, claimID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToClaimUpdateMap()
+	if err != nil {
+		r.Err = err
+		return r
+	}
+	_, r.Err = client.Patch(updateURL(client, queueName, claimID), &b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
