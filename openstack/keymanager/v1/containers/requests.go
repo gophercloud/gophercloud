@@ -100,3 +100,113 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
 	return
 }
+
+// ListConsumersOptsBuilder allows extensions to add additional parameters to
+// the ListConsumers request
+type ListConsumersOptsBuilder interface {
+	ToContainerListConsumersQuery() (string, error)
+}
+
+// ListConsumersOpts provides options to filter the List results.
+type ListConsumersOpts struct {
+	// Limit is the amount of consumers to retrieve.
+	Limit int `q:"limit"`
+
+	// Offset is the index within the list to retrieve.
+	Offset int `q:"offset"`
+}
+
+// ToContainerListConsumersQuery formats a ListConsumersOpts into a query
+// string.
+func (opts ListOpts) ToContainerListConsumersQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// ListConsumers retrieves a list of consumers from a container.
+func ListConsumers(client *gophercloud.ServiceClient, containerID string, opts ListConsumersOptsBuilder) pagination.Pager {
+	url := listConsumersURL(client, containerID)
+	if opts != nil {
+		query, err := opts.ToContainerListConsumersQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return ConsumerPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+// CreateConsumerOptsBuilder allows extensions to add additional parameters to
+// the Create request.
+type CreateConsumerOptsBuilder interface {
+	ToContainerConsumerCreateMap() (map[string]interface{}, error)
+}
+
+// CreateConsumerOpts provides options used to create a container.
+type CreateConsumerOpts struct {
+	// Name is the name of the consumer.
+	Name string `json:"name"`
+
+	// URL is the URL to the consumer resource.
+	URL string `json:"URL"`
+}
+
+// ToContainerConsumerCreateMap formats a CreateConsumerOpts into a create
+// request.
+func (opts CreateConsumerOpts) ToContainerConsumerCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// CreateConsumer creates a new consumer.
+func CreateConsumer(client *gophercloud.ServiceClient, containerID string, opts CreateConsumerOptsBuilder) (r CreateConsumerResult) {
+	b, err := opts.ToContainerConsumerCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createConsumerURL(client, containerID), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+// DeleteConsumerOptsBuilder allows extensions to add additional parameters to
+// the Delete request.
+type DeleteConsumerOptsBuilder interface {
+	ToContainerConsumerDeleteMap() (map[string]interface{}, error)
+}
+
+// DeleteConsumerOpts represents options used for deleting a consumer.
+type DeleteConsumerOpts struct {
+	// Name is the name of the consumer.
+	Name string `json:"name"`
+
+	// URL is the URL to the consumer resource.
+	URL string `json:"URL"`
+}
+
+// ToContainerConsumerDeleteMap formats a DeleteConsumerOpts into a create
+// request.
+func (opts DeleteConsumerOpts) ToContainerConsumerDeleteMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// DeleteConsumer deletes a consumer.
+func DeleteConsumer(client *gophercloud.ServiceClient, containerID string, opts DeleteConsumerOptsBuilder) (r DeleteConsumerResult) {
+	url := deleteConsumerURL(client, containerID)
+
+	b, err := opts.ToContainerConsumerDeleteMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Request("DELETE", url, &gophercloud.RequestOpts{
+		JSONBody:     b,
+		JSONResponse: &r.Body,
+		OkCodes:      []int{200},
+	})
+	return
+}

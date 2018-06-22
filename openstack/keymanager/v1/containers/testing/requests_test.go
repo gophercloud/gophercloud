@@ -80,3 +80,65 @@ func TestDeleteContainer(t *testing.T) {
 	res := containers.Delete(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestListConsumers(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListConsumersSuccessfully(t)
+
+	count := 0
+	err := containers.ListConsumers(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", nil).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := containers.ExtractConsumers(page)
+		th.AssertNoErr(t, err)
+
+		th.CheckDeepEquals(t, ExpectedConsumersSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+}
+
+func TestListConsumersAllPages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListConsumersSuccessfully(t)
+
+	allPages, err := containers.ListConsumers(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", nil).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := containers.ExtractConsumers(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedConsumersSlice, actual)
+}
+
+func TestCreateConsumer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateConsumerSuccessfully(t)
+
+	createOpts := containers.CreateConsumerOpts{
+		Name: "CONSUMER-LZILN1zq",
+		URL:  "http://example.com",
+	}
+
+	actual, err := containers.CreateConsumer(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedCreatedConsumer, *actual)
+}
+
+func TestDeleteConsumer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteConsumerSuccessfully(t)
+
+	deleteOpts := containers.DeleteConsumerOpts{
+		Name: "CONSUMER-LZILN1zq",
+		URL:  "http://example.com",
+	}
+
+	actual, err := containers.DeleteConsumer(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", deleteOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, FirstContainer, *actual)
+}

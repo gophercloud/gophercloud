@@ -132,3 +132,57 @@ func TestRSAContainer(t *testing.T) {
 	containerID, err := ParseID(container.ContainerRef)
 	defer DeleteContainer(t, client, containerID)
 }
+
+func TestContainerConsumersCRUD(t *testing.T) {
+	client, err := clients.NewKeyManagerV1Client()
+	th.AssertNoErr(t, err)
+
+	payload := tools.RandomString("SUPERSECRET-", 8)
+	secret, err := CreateSecretWithPayload(t, client, payload)
+	th.AssertNoErr(t, err)
+	secretID, err := ParseID(secret.SecretRef)
+	th.AssertNoErr(t, err)
+	defer DeleteSecret(t, client, secretID)
+
+	container, err := CreateGenericContainer(t, client, secret)
+	th.AssertNoErr(t, err)
+	containerID, err := ParseID(container.ContainerRef)
+	th.AssertNoErr(t, err)
+	defer DeleteContainer(t, client, containerID)
+
+	consumerName := tools.RandomString("CONSUMER-", 8)
+	consumerCreateOpts := containers.CreateConsumerOpts{
+		Name: consumerName,
+		URL:  "http://example.com",
+	}
+
+	container, err = containers.CreateConsumer(client, containerID, consumerCreateOpts).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, container.Consumers)
+	th.AssertEquals(t, len(container.Consumers), 1)
+	defer func() {
+		deleteOpts := containers.DeleteConsumerOpts{
+			Name: consumerName,
+			URL:  "http://example.com",
+		}
+
+		container, err := containers.DeleteConsumer(client, containerID, deleteOpts).Extract()
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, len(container.Consumers), 0)
+	}()
+
+	allPages, err := containers.ListConsumers(client, containerID, nil).AllPages()
+	th.AssertNoErr(t, err)
+
+	allConsumers, err := containers.ExtractConsumers(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, v := range allConsumers {
+		if v.Name == consumerName {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+}

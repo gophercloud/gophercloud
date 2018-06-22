@@ -11,7 +11,7 @@ import (
 // Container represents a container in the key manager service.
 type Container struct {
 	// Consumers are the consumers of the container.
-	Consumers []Consumer `json:"consumers"`
+	Consumers []ConsumerRef `json:"consumers"`
 
 	// ContainerRef is the URL to the container
 	ContainerRef string `json:"container_ref"`
@@ -57,8 +57,8 @@ func (r *Container) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Consumer represents a consumer.
-type Consumer struct {
+// ConsumerRef represents a consumer reference in a container.
+type ConsumerRef struct {
 	// Name is the name of the consumer.
 	Name string `json:"name"`
 
@@ -74,6 +74,13 @@ type SecretRef struct {
 
 type commonResult struct {
 	gophercloud.Result
+}
+
+// Extract interprets any commonResult as a Container.
+func (r commonResult) Extract() (*Container, error) {
+	var s *Container
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 // GetResult is the response from a Get operation. Call its Extract method
@@ -92,12 +99,6 @@ type CreateResult struct {
 // determine if the request succeeded or failed.
 type DeleteResult struct {
 	gophercloud.ErrResult
-}
-
-// UpdateResult is the result of an Update request. Call its Extract method to
-// interpret it as a container.
-type UpdateResult struct {
-	commonResult
 }
 
 // ContainerPage is a single page of container results.
@@ -134,9 +135,98 @@ func ExtractContainers(r pagination.Page) ([]Container, error) {
 	return s.Containers, err
 }
 
-// Extract interprets any commonResult as a Container.
-func (r commonResult) Extract() (*Container, error) {
-	var s *Container
+// Consumer represents a consumer in a container.
+type Consumer struct {
+	// Created is the date the container was created.
+	Created time.Time `json:"-"`
+
+	// Name is the name of the container.
+	Name string `json:"name"`
+
+	// Status is the status of the container.
+	Status string `json:"status"`
+
+	// Updated is the date the container was updated.
+	Updated time.Time `json:"-"`
+
+	// URL is the url to the consumer.
+	URL string `json:"url"`
+}
+
+func (r *Consumer) UnmarshalJSON(b []byte) error {
+	type tmp Consumer
+	var s struct {
+		tmp
+		Created gophercloud.JSONRFC3339NoZ `json:"created"`
+		Updated gophercloud.JSONRFC3339NoZ `json:"updated"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = Consumer(s.tmp)
+
+	r.Created = time.Time(s.Created)
+	r.Updated = time.Time(s.Updated)
+
+	return nil
+}
+
+type consumerResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any consumerResult as a Consumer.
+func (r consumerResult) Extract() (*Consumer, error) {
+	var s *Consumer
 	err := r.ExtractInto(&s)
 	return s, err
+}
+
+// CreateConsumerResult is the response from a CreateConsumer operation.
+// Call its Extract method to interpret it as a container.
+type CreateConsumerResult struct {
+	// This is not a typo.
+	commonResult
+}
+
+// DeleteConsumerResult is the response from a DeleteConsumer operation.
+// Call its Extract to interpret it as a container.
+type DeleteConsumerResult struct {
+	// This is not a typo.
+	commonResult
+}
+
+// ConsumerPage is a single page of consumer results.
+type ConsumerPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines whether or not a page of consumers contains any results.
+func (r ConsumerPage) IsEmpty() (bool, error) {
+	consumers, err := ExtractConsumers(r)
+	return len(consumers) == 0, err
+}
+
+// NextPageURL extracts the "next" link from the links section of the result.
+func (r ConsumerPage) NextPageURL() (string, error) {
+	var s struct {
+		Next     string `json:"next"`
+		Previous string `json:"previous"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return s.Next, err
+}
+
+// ExtractConsumers returns a slice of Consumers contained in a single page of
+// results.
+func ExtractConsumers(r pagination.Page) ([]Consumer, error) {
+	var s struct {
+		Consumers []Consumer `json:"consumers"`
+	}
+	err := (r.(ConsumerPage)).ExtractInto(&s)
+	return s.Consumers, err
 }
