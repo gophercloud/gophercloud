@@ -17,9 +17,55 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/keymanager/v1/containers"
+	"github.com/gophercloud/gophercloud/openstack/keymanager/v1/orders"
 	"github.com/gophercloud/gophercloud/openstack/keymanager/v1/secrets"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
+
+// CreateAsymmetric Order will create a random asymmetric order.
+// An error will be returned if the order could not be created.
+func CreateAsymmetricOrder(t *testing.T, client *gophercloud.ServiceClient) (*orders.Order, error) {
+	name := tools.RandomString("TESTACC-", 8)
+	t.Logf("Attempting to create order %s", name)
+
+	expiration := time.Date(2049, 1, 1, 1, 1, 1, 0, time.UTC)
+	createOpts := orders.CreateOpts{
+		Type: orders.AsymmetricOrder,
+		Meta: orders.MetaOpts{
+			Name:       name,
+			Algorithm:  "rsa",
+			BitLength:  2048,
+			Mode:       "cbc",
+			Expiration: &expiration,
+		},
+	}
+
+	order, err := orders.Create(client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	orderID, err := ParseID(order.OrderRef)
+	if err != nil {
+		return nil, err
+	}
+
+	err = WaitForOrder(client, orderID)
+	th.AssertNoErr(t, err)
+
+	order, err = orders.Get(client, orderID).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	tools.PrintResource(t, order)
+	tools.PrintResource(t, order.Meta.Expiration)
+
+	th.AssertEquals(t, order.Meta.Name, name)
+	th.AssertEquals(t, order.Type, "asymmetric")
+
+	return order, nil
+}
 
 // CreateCertificateContainer will create a random certificate container.
 // An error will be returned if the container could not be created.
@@ -70,6 +116,48 @@ func CreateCertificateContainer(t *testing.T, client *gophercloud.ServiceClient,
 	th.AssertEquals(t, container.Type, "certificate")
 
 	return container, nil
+}
+
+// CreateKeyOrder will create a random key order.
+// An error will be returned if the order could not be created.
+func CreateKeyOrder(t *testing.T, client *gophercloud.ServiceClient) (*orders.Order, error) {
+	name := tools.RandomString("TESTACC-", 8)
+	t.Logf("Attempting to create order %s", name)
+
+	expiration := time.Date(2049, 1, 1, 1, 1, 1, 0, time.UTC)
+	createOpts := orders.CreateOpts{
+		Type: orders.KeyOrder,
+		Meta: orders.MetaOpts{
+			Name:       name,
+			Algorithm:  "aes",
+			BitLength:  256,
+			Mode:       "cbc",
+			Expiration: &expiration,
+		},
+	}
+
+	order, err := orders.Create(client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	orderID, err := ParseID(order.OrderRef)
+	if err != nil {
+		return nil, err
+	}
+
+	order, err = orders.Get(client, orderID).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	tools.PrintResource(t, order)
+	tools.PrintResource(t, order.Meta.Expiration)
+
+	th.AssertEquals(t, order.Meta.Name, name)
+	th.AssertEquals(t, order.Type, "key")
+
+	return order, nil
 }
 
 // CreateRSAContainer will create a random RSA container.
@@ -476,6 +564,20 @@ func DeleteContainer(t *testing.T, client *gophercloud.ServiceClient, id string)
 	t.Logf("Successfully deleted container %s", id)
 }
 
+// DeleteOrder will delete an order. A fatal error will occur if the
+// order could not be deleted. This works best when used as a deferred
+// function.
+func DeleteOrder(t *testing.T, client *gophercloud.ServiceClient, id string) {
+	t.Logf("Attempting to delete order %s", id)
+
+	err := orders.Delete(client, id).ExtractErr()
+	if err != nil {
+		t.Fatalf("Could not delete order: %s", err)
+	}
+
+	t.Logf("Successfully deleted order %s", id)
+}
+
 // DeleteSecret will delete a secret. A fatal error will occur if the secret
 // could not be deleted. This works best when used as a deferred function.
 func DeleteSecret(t *testing.T, client *gophercloud.ServiceClient, id string) {
@@ -585,4 +687,27 @@ func CreateRSAKeyPair(t *testing.T, passphrase string) ([]byte, []byte, error) {
 	pubPem := pem.EncodeToMemory(block)
 
 	return keyPem, pubPem, nil
+}
+
+func WaitForOrder(client *gophercloud.ServiceClient, orderID string) error {
+	return tools.WaitFor(func() (bool, error) {
+		order, err := orders.Get(client, orderID).Extract()
+		if err != nil {
+			return false, err
+		}
+
+		if order.SecretRef != "" {
+			return true, nil
+		}
+
+		if order.ContainerRef != "" {
+			return true, nil
+		}
+
+		if order.Status == "ERROR" {
+			return false, fmt.Errorf("Order %s in ERROR state", orderID)
+		}
+
+		return false, nil
+	})
 }
