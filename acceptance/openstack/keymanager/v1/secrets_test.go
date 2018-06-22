@@ -1,4 +1,4 @@
-// +build acceptance clustering policies
+// +build acceptance keymanager secrets
 
 package v1
 
@@ -19,7 +19,7 @@ func TestSecretsCRUD(t *testing.T) {
 	payload := tools.RandomString("SUPERSECRET-", 8)
 	secret, err := CreateSecretWithPayload(t, client, payload)
 	th.AssertNoErr(t, err)
-	secretID, err := ParseSecretID(secret.SecretRef)
+	secretID, err := ParseID(secret.SecretRef)
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
@@ -60,7 +60,7 @@ func TestSecretsDelayedPayload(t *testing.T) {
 
 	secret, err := CreateEmptySecret(t, client)
 	th.AssertNoErr(t, err)
-	secretID, err := ParseSecretID(secret.SecretRef)
+	secretID, err := ParseID(secret.SecretRef)
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
@@ -86,7 +86,7 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 	payload := tools.RandomString("SUPERSECRET-", 8)
 	secret, err := CreateSecretWithPayload(t, client, payload)
 	th.AssertNoErr(t, err)
-	secretID, err := ParseSecretID(secret.SecretRef)
+	secretID, err := ParseID(secret.SecretRef)
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
@@ -152,4 +152,91 @@ func TestSecretsMetadataCRUD(t *testing.T) {
 	th.AssertEquals(t, len(metadata), 2)
 	th.AssertEquals(t, metadata["something"], "something else")
 	th.AssertEquals(t, metadata["bar"], "baz")
+}
+
+func TestSymmetricSecret(t *testing.T) {
+	client, err := clients.NewKeyManagerV1Client()
+	th.AssertNoErr(t, err)
+
+	secret, err := CreateSymmetricSecret(t, client)
+	th.AssertNoErr(t, err)
+	secretID, err := ParseID(secret.SecretRef)
+	th.AssertNoErr(t, err)
+	defer DeleteSecret(t, client, secretID)
+
+	payload, err := secrets.GetPayload(client, secretID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, string(payload))
+}
+
+func TestCertificateSecret(t *testing.T) {
+	client, err := clients.NewKeyManagerV1Client()
+	th.AssertNoErr(t, err)
+
+	pass := tools.RandomString("", 16)
+	cert, _, err := CreateCertificate(t, pass)
+	th.AssertNoErr(t, err)
+
+	secret, err := CreateCertificateSecret(t, client, cert)
+	th.AssertNoErr(t, err)
+	secretID, err := ParseID(secret.SecretRef)
+	th.AssertNoErr(t, err)
+	defer DeleteSecret(t, client, secretID)
+
+	payload, err := secrets.GetPayload(client, secretID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, string(payload))
+}
+
+func TestPrivateSecret(t *testing.T) {
+	client, err := clients.NewKeyManagerV1Client()
+	th.AssertNoErr(t, err)
+
+	pass := tools.RandomString("", 16)
+	priv, _, err := CreateCertificate(t, pass)
+	th.AssertNoErr(t, err)
+
+	secret, err := CreatePrivateSecret(t, client, priv)
+	th.AssertNoErr(t, err)
+	secretID, err := ParseID(secret.SecretRef)
+	th.AssertNoErr(t, err)
+	defer DeleteSecret(t, client, secretID)
+
+	payload, err := secrets.GetPayload(client, secretID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, string(payload))
+}
+
+func TestPublicSecret(t *testing.T) {
+	client, err := clients.NewKeyManagerV1Client()
+	th.AssertNoErr(t, err)
+
+	_, pub, err := CreateRSAKeyPair(t, "")
+	th.AssertNoErr(t, err)
+
+	secret, err := CreatePublicSecret(t, client, pub)
+	th.AssertNoErr(t, err)
+	secretID, err := ParseID(secret.SecretRef)
+	th.AssertNoErr(t, err)
+	defer DeleteSecret(t, client, secretID)
+
+	payload, err := secrets.GetPayload(client, secretID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, string(payload))
+}
+
+func TestPassphraseSecret(t *testing.T) {
+	client, err := clients.NewKeyManagerV1Client()
+	th.AssertNoErr(t, err)
+
+	pass := tools.RandomString("", 16)
+	secret, err := CreatePassphraseSecret(t, client, pass)
+	th.AssertNoErr(t, err)
+	secretID, err := ParseID(secret.SecretRef)
+	th.AssertNoErr(t, err)
+	defer DeleteSecret(t, client, secretID)
+
+	payload, err := secrets.GetPayload(client, secretID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, string(payload))
 }
