@@ -542,6 +542,27 @@ func NewContainerV1Client() (*gophercloud.ServiceClient, error) {
 	})
 }
 
+// NewKeyManagerV1Client returns a *ServiceClient for making calls
+// to the OpenStack Key Manager (Barbican) v1 API. An error will be
+// returned if authentication or client creation was not possible.
+func NewKeyManagerV1Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	client = configureDebug(client)
+
+	return openstack.NewKeyManagerV1(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
 // configureDebug will configure the provider client to print the API
 // requests and responses if OS_DEBUG is enabled.
 func configureDebug(client *gophercloud.ProviderClient) *gophercloud.ProviderClient {
