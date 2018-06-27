@@ -1,7 +1,7 @@
 package clustertemplates
 
 import (
-	"encoding/json"
+//	"encoding/json"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -28,15 +28,17 @@ type ClusterTemplate struct {
 	InsecureRegistry    string             `json:"insecure_registry"`
 	Links               []gophercloud.Link `json:"links"`
 	HTTPProxy           string             `json:"http_proxy"`
-	UpdatedAt           time.Time          `json:"-"`
+	UpdatedAt           time.Time          `json:"updated_at"`
 	FloatingIPEnabled   bool               `json:"floating_ip_enabled"`
 	FixedSubnet         string             `json:"fixed_subnet"`
 	MasterFlavorID      string             `json:"master_flavor_id"`
+	UserID              string             `json:"user_id"`
 	UUID                string             `json:"uuid"`
 	NoProxy             string             `json:"no_proxy"`
 	HTTPSProxy          string             `json:"https_proxy"`
 	TLSDisabled         bool               `json:"tls_disabled"`
 	KeyPairID           string             `json:"keypair_id"`
+	ProjectID           string             `json:"project_id"`
 	Public              bool               `json:"public"`
 	Labels              map[string]string  `json:"labels"`
 	DockerVolumeSize    int                `json:"docker_volume_size"`
@@ -49,41 +51,11 @@ type ClusterTemplate struct {
 	DockerStorageDriver string             `json:"docker_storage_driver"`
 	APIServerPort       string             `json:"apiserver_port"`
 	Name                string             `json:"name"`
-	CreatedAt           time.Time          `json:"-"`
+	CreatedAt           time.Time          `json:"created_at"`
 	NetworkDriver       string             `json:"network_driver"`
 	FixedNetwork        string             `json:"fixed_network"`
 	COE                 string             `json:"coe"`
 	FlavorID            string             `json:"flavor_id"`
 	MasterLBEnabled     bool               `json:"master_lb_enabled"`
 	DNSNameServer       string             `json:"dns_nameserver"`
-}
-
-func (r *ClusterTemplate) UnmarshalJSON(b []byte) error {
-	type tmp ClusterTemplate
-	var s struct {
-		tmp
-		CreatedAt string `json:"created_at"`
-		UpdatedAt string `json:"updated_at"`
-	}
-
-	err := json.Unmarshal(b, &s)
-	if err != nil {
-		return err
-	}
-	*r = ClusterTemplate(s.tmp)
-
-	if s.CreatedAt != "" {
-		r.CreatedAt, err = time.Parse(time.RFC3339, s.CreatedAt)
-		if err != nil {
-			return err
-		}
-	}
-
-	if s.UpdatedAt != "" {
-		r.UpdatedAt, err = time.Parse(time.RFC3339, s.UpdatedAt)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }
