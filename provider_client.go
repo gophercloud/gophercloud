@@ -71,7 +71,6 @@ type ProviderClient struct {
 	// authentication functions for different Identity service versions.
 	ReauthFunc func() error
 
-
 	mut *reauthlock
 }
 
