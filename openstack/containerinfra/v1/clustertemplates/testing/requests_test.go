@@ -15,7 +15,7 @@ func TestCreateClusterTemplate(t *testing.T) {
 	HandleCreateClusterTemplateSuccessfully(t)
 
 	opts := clustertemplates.CreateOpts{
-		Name:                "test-cluster-template",
+		Name:                "kubernetes-dev",
 		Labels:              map[string]string{},
 		FixedSubnet:         "",
 		MasterFlavorID:      "",
@@ -28,7 +28,7 @@ func TestCreateClusterTemplate(t *testing.T) {
 		DockerVolumeSize:    3,
 		ServerType:          "vm",
 		ExternalNetworkID:   "public",
-		ImageID:             "fedora-atomic-latest",
+		ImageID:             "Fedora-Atomic-27-20180212.2.x86_64",
 		VolumeDriver:        "cinder",
 		RegistryEnabled:     false,
 		DockerStorageDriver: "devicemapper",
