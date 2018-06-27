@@ -1,7 +1,6 @@
 package clustertemplates
 
 import (
-//	"encoding/json"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
