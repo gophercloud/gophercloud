@@ -71,9 +71,8 @@ type ProviderClient struct {
 	// authentication functions for different Identity service versions.
 	ReauthFunc func() error
 
-	mut *sync.RWMutex
 
-	reauthmut *reauthlock
+	mut *reauthlock
 }
 
 type reauthlock struct {
@@ -84,14 +83,6 @@ type reauthlock struct {
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
 // authenticated service requests.
 func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
-	if client.reauthmut != nil {
-		client.reauthmut.RLock()
-		if client.reauthmut.reauthing {
-			client.reauthmut.RUnlock()
-			return
-		}
-		client.reauthmut.RUnlock()
-	}
 	t := client.Token()
 	if t == "" {
 		return
@@ -102,17 +93,11 @@ func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
 // UseTokenLock creates a mutex that is used to allow safe concurrent access to the auth token.
 // If the application's ProviderClient is not used concurrently, this doesn't need to be called.
 func (client *ProviderClient) UseTokenLock() {
-	client.mut = new(sync.RWMutex)
-	client.reauthmut = new(reauthlock)
+	client.mut = new(reauthlock)
 }
 
-// Token safely reads the value of the auth token from the ProviderClient. Applications should
-// call this method to access the token instead of the TokenID field
+// Get the tokenId in client
 func (client *ProviderClient) Token() string {
-	if client.mut != nil {
-		client.mut.RLock()
-		defer client.mut.RUnlock()
-	}
 	return client.TokenID
 }
 
@@ -140,19 +125,14 @@ func (client *ProviderClient) Reauthenticate(previousToken string) (err error) {
 		return client.ReauthFunc()
 	}
 	client.mut.Lock()
+	client.mut.reauthing = true
 	defer client.mut.Unlock()
-
-	client.reauthmut.Lock()
-	client.reauthmut.reauthing = true
-	client.reauthmut.Unlock()
 
 	if previousToken == "" || client.TokenID == previousToken {
 		err = client.ReauthFunc()
 	}
 
-	client.reauthmut.Lock()
-	client.reauthmut.reauthing = false
-	client.reauthmut.Unlock()
+	client.mut.reauthing = true
 	return
 }
 
