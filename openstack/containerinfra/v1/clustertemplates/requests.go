@@ -26,7 +26,6 @@ type CreateOpts struct {
 	NetworkDriver       string            `json:"network_driver,omitempty"`
 	APIServerPort       int               `json:"apiserver_port,omitempty"`
 	DockerVolumeSize    int               `json:"docker_volume_size,omitempty"`
-	ClusterDistro       string            `json:"cluster_distro,omitempty"`
 	HTTPProxy           string            `json:"http_proxy,omitempty"`
 	HTTPSProxy          string            `json:"https_proxy,omitempty"`
 	NoProxy             string            `json:"no_proxy,omitempty"`
