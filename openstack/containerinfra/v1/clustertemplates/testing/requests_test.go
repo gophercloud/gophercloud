@@ -40,7 +40,9 @@ func TestCreateClusterTemplate(t *testing.T) {
 		DNSNameServer:       "8.8.8.8",
 	}
 
-	res := clustertemplates.Create(fake.ServiceClient(), opts)
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	res := clustertemplates.Create(sc, opts)
 	th.AssertNoErr(t, res.Err)
 
 	requestID := res.Header.Get("X-OpenStack-Request-Id")
