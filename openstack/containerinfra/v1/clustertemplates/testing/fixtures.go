@@ -107,7 +107,7 @@ func HandleCreateClusterTemplateSuccessfully(t *testing.T) {
 		w.Header().Add("OpenStack-API-Maximum-Version", "container-infra 1.6")
 		w.Header().Add("OpenStack-API-Version", "container-infra 1.1")
 		w.Header().Add("X-OpenStack-Request-Id", "req-781e9bdc-4163-46eb-91c9-786c53188bbb")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusCreated)
 
 		fmt.Fprint(w, ClusterTemplateResponse)
 	})
