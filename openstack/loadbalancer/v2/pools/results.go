@@ -93,7 +93,7 @@ type Pool struct {
 	// The Monitor associated with this Pool.
 	Monitor monitors.Monitor `json:"healthmonitor"`
 
-	// The provisioning status of the pool. Showing the pool detail API does not use this value.
+	// The provisioning status of the pool.
 	// This value is ACTIVE, PENDING_* or ERROR.
 	ProvisioningStatus string `json:"provisioning_status"`
 }
@@ -201,7 +201,7 @@ type Member struct {
 	// The unique ID for the Member.
 	ID string `json:"id"`
 
-	// The provisioning status of the pool. Showing the pool detail API does not use this value.
+	// The provisioning status of the pool.
 	// This value is ACTIVE, PENDING_* or ERROR.
 	ProvisioningStatus string `json:"provisioning_status"`
 }

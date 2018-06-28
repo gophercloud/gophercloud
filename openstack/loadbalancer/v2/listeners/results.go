@@ -55,7 +55,7 @@ type Listener struct {
 	// Pools are the pools which are part of this listener.
 	Pools []pools.Pool `json:"pools"`
 
-	// The provisioning status of the Listener. Showing the listener detail API does not use this value.
+	// The provisioning status of the Listener.
 	// This value is ACTIVE, PENDING_* or ERROR.
 	ProvisioningStatus string `json:"provisioning_status"`
 }
