@@ -198,6 +198,25 @@ func MockGrantAccessResponse(t *testing.T) {
 	})
 }
 
+var revokeAccessRequest = `{
+	"deny_access": {
+		"access_id": "a2f226a5-cee8-430b-8a03-78a59bd84ee8"
+	}
+}`
+
+func MockRevokeAccessResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, revokeAccessRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, grantAccessResponse)
+	})
+}
+
 var listAccessRightsRequest = `{
 		"access_list": null
 	}`
