@@ -178,6 +178,11 @@ type GrantAccessResult struct {
 	gophercloud.Result
 }
 
+// RevokeAccessResult contains the response body and error from a Revoke access request.
+type RevokeAccessResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract will get a slice of AccessRight objects from the commonResult
 func (r ListAccessRightsResult) Extract() ([]AccessRight, error) {
 	var s struct {

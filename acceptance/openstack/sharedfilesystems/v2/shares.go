@@ -53,6 +53,14 @@ func GrantAccess(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 	}).Extract()
 }
 
+// RevokeAccess will revoke an exisiting access of a share. A fatal error will occur
+// if this operation fails.
+func RevokeAccess(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share, accessRight *shares.AccessRight) error {
+	return shares.RevokeAccess(client, share.ID, shares.RevokeAccessOpts{
+		AccessID: accessRight.ID,
+	}).ExtractErr()
+}
+
 // GetAccessRightsSlice will retrieve all access rules assigned to a share.
 // A fatal error will occur if this operation fails.
 func GetAccessRightsSlice(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share) ([]shares.AccessRight, error) {

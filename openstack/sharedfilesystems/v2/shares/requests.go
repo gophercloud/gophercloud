@@ -124,6 +124,43 @@ func GrantAccess(client *gophercloud.ServiceClient, id string, opts GrantAccessO
 	return
 }
 
+// RevokeAccessOptsBuilder allows extensions to add additional parameters to the
+// RevokeAccess request.
+type RevokeAccessOptsBuilder interface {
+	ToRevokeAccessMap() (map[string]interface{}, error)
+}
+
+// RevokeAccessOpts contains the options for creation of a RevokeAccess request.
+// For more information about these parameters, please, refer to the shared file systems API v2,
+// Share Actions, Revoke Access documentation
+type RevokeAccessOpts struct {
+	AccessID string `json:"access_id"`
+}
+
+// ToRevokeAccessMap assembles a request body based on the contents of a
+// RevokeAccessOpts.
+func (opts RevokeAccessOpts) ToRevokeAccessMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "deny_access")
+}
+
+// RevokeAccess will revoke an existing access to a Share based on the values in RevokeAccessOpts.
+// RevokeAccessResult contains only the error. To extract it, call the ExtractErr method on
+// the RevokeAccessResult. Client must have Microversion set; minimum supported microversion
+// for RevokeAccess is 2.7.
+func RevokeAccess(client *gophercloud.ServiceClient, id string, opts RevokeAccessOptsBuilder) (r RevokeAccessResult) {
+	b, err := opts.ToRevokeAccessMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(revokeAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 202},
+	})
+
+	return
+}
+
 // ListAccessRights lists all access rules assigned to a Share based on its id. To extract
 // the AccessRight slice from the response, call the Extract method on the ListAccessRightsResult.
 // Client must have Microversion set; minimum supported microversion for ListAccessRights is 2.7.
