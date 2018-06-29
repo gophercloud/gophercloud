@@ -48,7 +48,7 @@ var ExpectedReceiver = receivers.Receiver{
 	Channel: map[string]interface{}{
 		"alarm_url": "http://node1:8778/v1/webhooks/e03dd2e5-8f2e-4ec1-8c6a-74ba891e5422/trigger?V=1&count=1",
 	},
-	Cluster:   "ae63a10b-4a90-452c-aef1-113a0b255ee3",
+	ClusterID: "ae63a10b-4a90-452c-aef1-113a0b255ee3",
 	CreatedAt: time.Date(2015, 11, 4, 5, 21, 41, 0, time.UTC),
 	Domain:    "Default",
 	ID:        "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",
@@ -126,7 +126,7 @@ var ExpectedUpdateReceiver = receivers.Receiver{
 	Channel: map[string]interface{}{
 		"alarm_url": "http://node1:8778/v1/webhooks/e03dd2e5-8f2e-4ec1-8c6a-74ba891e5422/trigger?V=1&count=1",
 	},
-	Cluster:   "ae63a10b-4a90-452c-aef1-113a0b255ee3",
+	ClusterID: "ae63a10b-4a90-452c-aef1-113a0b255ee3",
 	CreatedAt: time.Date(2015, 6, 27, 5, 9, 43, 0, time.UTC),
 	Domain:    "Default",
 	ID:        "573aa1ba-bf45-49fd-907d-6b5d6e6adfd3",

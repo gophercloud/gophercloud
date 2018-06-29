@@ -13,7 +13,7 @@ type Receiver struct {
 	Action    string                 `json:"action"`
 	Actor     map[string]interface{} `json:"actor"`
 	Channel   map[string]interface{} `json:"channel"`
-	Cluster   string                 `json:"cluster_id"`
+	ClusterID string                 `json:"cluster_id"`
 	CreatedAt time.Time              `json:"-"`
 	Domain    string                 `json:"domain"`
 	ID        string                 `json:"id"`
