@@ -212,8 +212,7 @@ func MockRevokeAccessResponse(t *testing.T) {
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestJSONRequest(t, r, revokeAccessRequest)
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, grantAccessResponse)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 
