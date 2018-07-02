@@ -8,6 +8,7 @@
         - 'manila'
         - 'designate'
         - 'zun'
+        - 'octavia'
     - install-devstack
   tasks:
     - name: Run acceptance tests with gophercloud
