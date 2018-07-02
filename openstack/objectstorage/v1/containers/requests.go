@@ -107,6 +107,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 	})
 	if resp != nil {
 		r.Header = resp.Header
+		resp.Body.Close()
 	}
 	r.Err = err
 	return

@@ -147,10 +147,10 @@ func TestListAssignmentsSinglePage(t *testing.T) {
 	th.CheckEquals(t, count, 1)
 }
 
-func TestListAssignmentsOnResource(t *testing.T) {
+func TestListAssignmentsOnResource_ProjectsUsers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleListAssignmentsOnResourceSuccessfully(t)
+	HandleListAssignmentsOnResourceSuccessfully_ProjectsUsers(t)
 
 	count := 0
 	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
@@ -167,9 +167,15 @@ func TestListAssignmentsOnResource(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, count, 1)
+}
 
-	count = 0
-	err = roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+func TestListAssignmentsOnResource_DomainsUsers(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListAssignmentsOnResourceSuccessfully_DomainsUsers(t)
+
+	count := 0
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
 		UserID:   "{user_id}",
 		DomainID: "{domain_id}",
 	}).EachPage(func(page pagination.Page) (bool, error) {
@@ -183,9 +189,15 @@ func TestListAssignmentsOnResource(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, count, 1)
+}
 
-	count = 0
-	err = roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+func TestListAssignmentsOnResource_ProjectsGroups(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListAssignmentsOnResourceSuccessfully_ProjectsGroups(t)
+
+	count := 0
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
 		GroupID:   "{group_id}",
 		ProjectID: "{project_id}",
 	}).EachPage(func(page pagination.Page) (bool, error) {
@@ -199,9 +211,15 @@ func TestListAssignmentsOnResource(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	th.CheckEquals(t, count, 1)
+}
 
-	count = 0
-	err = roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
+func TestListAssignmentsOnResource_DomainsGroups(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListAssignmentsOnResourceSuccessfully_DomainsGroups(t)
+
+	count := 0
+	err := roles.ListAssignmentsOnResource(client.ServiceClient(), roles.ListAssignmentsOnResourceOpts{
 		GroupID:  "{group_id}",
 		DomainID: "{domain_id}",
 	}).EachPage(func(page pagination.Page) (bool, error) {

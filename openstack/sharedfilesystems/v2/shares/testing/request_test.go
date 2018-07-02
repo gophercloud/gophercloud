@@ -136,6 +136,22 @@ func TestGrantAcessSuccess(t *testing.T) {
 	})
 }
 
+func TestRevokeAccessSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockRevokeAccessResponse(t)
+
+	c := client.ServiceClient()
+	// Client c must have Microversion set; minimum supported microversion for Revoke Access is 2.7
+	c.Microversion = "2.7"
+
+	options := &shares.RevokeAccessOpts{AccessID: "a2f226a5-cee8-430b-8a03-78a59bd84ee8"}
+
+	err := shares.RevokeAccess(c, shareID, options).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
 func TestListAccessRightsSuccess(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
