@@ -32,7 +32,7 @@ func TestListProfileTypes(t *testing.T) {
 	}
 }
 
-func TestGetProfileType1(t *testing.T) {
+func TestGetProfileType10(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 

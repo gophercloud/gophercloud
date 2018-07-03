@@ -15,10 +15,13 @@ type GetResult struct {
 	commonResult
 }
 
+type Schema map[string]interface{}
+type SupportStatus map[string]interface{}
+
 type ProfileType struct {
-	Name          string                 `json:"name"`
-	Schema        map[string]interface{} `json:"schema"`
-	SupportStatus map[string]interface{} `json:"support_status"`
+	Name          string                     `json:"name"`
+	Schema        map[string]Schema          `json:"schema"`
+	SupportStatus map[string][]SupportStatus `json:"support_status"`
 }
 
 func (r commonResult) Extract() (*ProfileType, error) {

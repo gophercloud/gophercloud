@@ -146,14 +146,14 @@ const GetResponse15 = `
 
 var ExpectedProfileType1 = profiletypes.ProfileType{
 	Name: "os.nova.server-1.0",
-	Schema: map[string]interface{}{
-		"context": map[string]interface{}{
+	Schema: map[string]profiletypes.Schema{
+		"context": {
 			"description": "Customized security context for operating containers.",
 			"required":    false,
 			"type":        "Map",
 			"updatable":   false,
 		},
-		"name": map[string]interface{}{
+		"name": {
 			"description": "The name of the container.",
 			"required":    false,
 			"type":        "Map",
@@ -164,29 +164,29 @@ var ExpectedProfileType1 = profiletypes.ProfileType{
 
 var ExpectedProfileType15 = profiletypes.ProfileType{
 	Name: "os.heat.stack-1.0",
-	Schema: map[string]interface{}{
-		"context": map[string]interface{}{
+	Schema: map[string]profiletypes.Schema{
+		"context": {
 			"default":     map[string]interface{}{},
 			"description": "A dictionary for specifying the customized context for stack operations",
 			"required":    false,
 			"type":        "Map",
 			"updatable":   false,
 		},
-		"disable_rollback": map[string]interface{}{
+		"disable_rollback": {
 			"default":     true,
 			"description": "A boolean specifying whether a stack operation can be rolled back.",
 			"required":    false,
 			"type":        "Boolean",
 			"updatable":   true,
 		},
-		"environment": map[string]interface{}{
+		"environment": {
 			"default":     map[string]interface{}{},
 			"description": "A map that specifies the environment used for stack operations.",
 			"required":    false,
 			"type":        "Map",
 			"updatable":   true,
 		},
-		"files": map[string]interface{}{
+		"files": {
 			"default":     map[string]interface{}{},
 			"description": "Contents of files referenced by the template, if any.",
 			"required":    false,
@@ -194,8 +194,8 @@ var ExpectedProfileType15 = profiletypes.ProfileType{
 			"updatable":   true,
 		},
 	},
-	SupportStatus: map[string]interface{}{
-		"1.0": []map[string]interface{}{
+	SupportStatus: map[string][]profiletypes.SupportStatus{
+		"1.0": {
 			{
 				"status": "SUPPORTED",
 				"since":  "2016.04",
