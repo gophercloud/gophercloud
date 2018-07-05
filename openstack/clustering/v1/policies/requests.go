@@ -180,3 +180,14 @@ func Validate(client *gophercloud.ServiceClient, opts ValidateOptsBuilder) (r Va
 	}
 	return
 }
+
+// Get makes a request against the API to get details for a policy.
+func Get(client *gophercloud.ServiceClient, policyTypeName string) (r GetResult) {
+	url := policyGetURL(client, policyTypeName)
+
+	_, r.Err = client.Get(url, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+
+	return
+}

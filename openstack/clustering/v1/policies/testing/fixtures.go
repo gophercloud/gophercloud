@@ -99,6 +99,33 @@ const PolicyCreateBody = `
 }
 `
 
+const PolicyGetBody = `
+{
+  "policy": {
+      "created_at": "2018-04-02T21:43:30.000000",
+      "data": {},
+      "domain": null,
+      "id": "b99b3ab4-3aa6-4fba-b827-69b88b9c544a",
+      "name": "delpol",
+      "project": "018cd0909fb44cd5bc9b7a3cd664920e",
+      "spec": {
+        "description": "A policy for choosing victim node(s) from a cluster for deletion.",
+        "properties": {
+          "criteria": "OLDEST_FIRST",
+          "destroy_after_deletion": true,
+          "grace_period": 60,
+          "reduce_desired_capacity": false
+        },
+        "type": "senlin.policy.deletion",
+        "version": 1
+      },
+      "type": "senlin.policy.deletion-1.0",
+      "updated_at": "2018-04-02T00:19:12Z",
+      "user": "fe43e41739154b72818565e0d2580819"
+  }
+}
+`
+
 const PolicyUpdateBody = `
 {
   "policy": {
@@ -221,6 +248,7 @@ const PolicyBadValidateBody = `
 
 const PolicyDeleteRequestID = "req-7328d1b0-9945-456f-b2cd-5166b77d14a8"
 const PolicyIDtoUpdate = "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
+const PolicyIDtoGet = "b99b3ab4-3aa6-4fba-b827-69b88b9c544a"
 const PolicyIDtoDelete = "1"
 
 var ExpectedPolicy1 = policies.Policy{
@@ -300,6 +328,30 @@ var ExpectedCreatePolicy = policies.Policy{
 	},
 	Type: "senlin.policy.deletion-1.1",
 	User: "fe43e41739154b72818565e0d2580819",
+}
+
+var ExpectedGetPolicy = policies.Policy{
+	CreatedAt: time.Date(2018, 4, 2, 21, 43, 30, 0, time.UTC),
+	Data:      map[string]interface{}{},
+	Domain:    "",
+	ID:        "b99b3ab4-3aa6-4fba-b827-69b88b9c544a",
+	Name:      "delpol",
+	Project:   "018cd0909fb44cd5bc9b7a3cd664920e",
+
+	Spec: policies.Spec{
+		Description: "A policy for choosing victim node(s) from a cluster for deletion.",
+		Properties: map[string]interface{}{
+			"criteria":                "OLDEST_FIRST",
+			"destroy_after_deletion":  true,
+			"grace_period":            float64(60),
+			"reduce_desired_capacity": false,
+		},
+		Type:    "senlin.policy.deletion",
+		Version: "1.0",
+	},
+	Type:      "senlin.policy.deletion-1.0",
+	User:      "fe43e41739154b72818565e0d2580819",
+	UpdatedAt: time.Date(2018, 4, 2, 0, 19, 12, 0, time.UTC),
 }
 
 var ExpectedUpdatePolicy = policies.Policy{
@@ -397,6 +449,19 @@ func HandlePolicyDelete(t *testing.T) {
 		w.Header().Add("X-OpenStack-Request-ID", PolicyDeleteRequestID)
 		w.WriteHeader(http.StatusNoContent)
 	})
+}
+
+func HandlePolicyGet(t *testing.T) {
+	th.Mux.HandleFunc("/v1/policies/"+PolicyIDtoGet,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprintf(w, PolicyGetBody)
+		})
 }
 
 func HandlePolicyUpdate(t *testing.T) {

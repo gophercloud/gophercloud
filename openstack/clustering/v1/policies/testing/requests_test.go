@@ -133,3 +133,15 @@ func TestBadValidatePolicy(t *testing.T) {
 	_, err := policies.Validate(fake.ServiceClient(), opts).Extract()
 	th.AssertEquals(t, false, err == nil)
 }
+
+func TestGetPolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandlePolicyGet(t)
+
+	actual, err := policies.Get(fake.ServiceClient(), PolicyIDtoGet).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, ExpectedGetPolicy, *actual)
+}

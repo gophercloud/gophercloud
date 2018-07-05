@@ -48,6 +48,16 @@ Example to Create a Policy
 		panic(err)
 	}
 
+Example to Get a Policy
+
+    policyName := "get_policy"
+    policyDetail, err := policies.Get(clusteringClient, policyName).Extract()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("%+v\n", policyDetail)
+
 Example to Update a Policy
 
 	opts := policies.UpdateOpts{

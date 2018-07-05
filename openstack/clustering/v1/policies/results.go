@@ -115,6 +115,12 @@ type CreateResult struct {
 	policyResult
 }
 
+// GetResult is the result of a Get operation. Call its Extract method to
+// interpret it as a Policy.
+type GetResult struct {
+	policyResult
+}
+
 // UpdateResult is the result of an Update operation. Call its Extract
 // method to interpret it as a Policy.
 type UpdateResult struct {
