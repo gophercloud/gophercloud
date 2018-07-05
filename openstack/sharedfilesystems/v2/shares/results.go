@@ -8,8 +8,6 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
-
-	"spew"
 )
 
 // Share contains all information associated with an OpenStack Share
@@ -180,7 +178,7 @@ func ExtractShares(r pagination.Page) ([]Share, error) {
 	}
 
 	err := (r.(SharePage)).ExtractInto(&s)
-	spew.Dump(err)
+
 	return s.Shares, err
 }
 
