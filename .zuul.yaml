@@ -80,3 +80,7 @@
     recheck-queens:
       jobs:
         - gophercloud-acceptance-test-queens
+    periodic:
+      jobs:
+        - gophercloud-unittest
+        - gophercloud-acceptance-test
