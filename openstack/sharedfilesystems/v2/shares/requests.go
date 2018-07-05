@@ -1,6 +1,9 @@
 package shares
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
 // Create request.
@@ -64,6 +67,81 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		OkCodes: []int{200, 201},
 	})
 	return
+}
+
+// ListOpts holds options for listing Shares. It is passed to the
+// shares.List function.
+type ListOpts struct {
+	// (Admin only). Defines whether to list the requested resources for all projects.
+	AllTenants bool `q:"all_tenants"`
+	// The share name.
+	Name string `q:"name"`
+	// Filters by a share status.
+	Status string `q:"status"`
+	// The UUID of the share server.
+	ShareServerID string `q:"share_server_id"`
+	// The UUID of the share type.
+	ShareTypeID string `q:"share_type_id"`
+	// The maximum number of shares to return.
+	Limit int `q:"limit"`
+	// The offset to define start point of share or share group listing.
+	Offset int `q:"offset"`
+	// The key to sort a list of shares.
+	SortKey string `q:"sort_key"`
+	// The direction to sort a list of shares.
+	SortDir string `q:"sort_dir"`
+	// The UUID of the share’s base snapshot to filter the request based on.
+	SnapshotID string `q:"snapshot_id"`
+	// The share host name.
+	Host string `q:"host"`
+	// The share network ID.
+	ShareNetworkID string `q:"share_network_id"`
+	// The UUID of the project in which the share was created. Useful with all_tenants parameter.
+	ProjectID string `q:"project_id"`
+	// The level of visibility for the share.
+	IsPublic *bool `q:"is_public"`
+	// The UUID of a share group to filter resource.
+	ShareGroupID string `q:"share_group_id"`
+	// The export location UUID that can be used to filter shares or share instances.
+	ExportLocationID string `q:"export_location_id"`
+	// The export location path that can be used to filter shares or share instances.
+	ExportLocationPath string `q:"export_location_path"`
+	// The name pattern that can be used to filter shares, share snapshots, share networks or share groups.
+	NamePattern string `q:"name~"`
+	// The description pattern that can be used to filter shares, share snapshots, share networks or share groups.
+	DescriptionPattern string `q:"description~"`
+	// Whether to show count in API response or not, default is False.
+	WithCount bool `q:"with_count"`
+}
+
+// ListOptsBuilder allows extensions to add additional parameters to the List
+// request.
+type ListOptsBuilder interface {
+	ToShareListQuery() (string, error)
+}
+
+// ToShareListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToShareListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// ListDetail returns []Share optionally limited by the conditions provided in ListOpts.
+func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listDetailURL(client)
+	if opts != nil {
+		query, err := opts.ToShareListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		p := SharePage{pagination.MarkerPageBase{PageResult: r}}
+		p.MarkerPageBase.Owner = p
+		return p
+	})
 }
 
 // Delete will delete an existing Share with the given UUID.
