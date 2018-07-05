@@ -266,7 +266,7 @@ const CapsuleGetBody_OldTime = `
       },
       "ports": [80],
       "meta": {"key1": "value1"},
-      "command": "testcmd",
+      "command": ["testcmd"],
       "capsule_id": 1,
       "runtime": "runc",
       "cpu": 1,
@@ -366,7 +366,7 @@ const CapsuleGetBody_NewTime = `
       },
       "ports": [80],
       "meta": {"key1": "value1"},
-      "command": "testcmd",
+      "command": ["testcmd"],
       "capsule_id": 1,
       "runtime": "runc",
       "cpu": 1,
@@ -446,7 +446,9 @@ var ExpectedContainer1 = capsules.Container{
 	WorkDir:     "/root",
 	Disk:        0,
 	ContainerID: "5109ebe2ca595777e994416208bd681b561b25ce493c34a234a1b68457cb53fb",
-	Command:     "testcmd",
+	Command: []string{
+		"testcmd",
+	},
 	Ports: []int{
 		80,
 	},
