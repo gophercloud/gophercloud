@@ -39,7 +39,7 @@ type CapsulePage struct {
 	pagination.LinkedPageBase
 }
 
-// Represents a Container Orchestration Engine Bay, i.e. a cluster
+// Represents a Container Orchestration Engine Cluster, i.e. a cluster
 type Capsule struct {
 	// UUID for the capsule
 	UUID string `json:"uuid"`
