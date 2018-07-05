@@ -196,7 +196,7 @@ type Container struct {
 	ImageDriver string `json:"image_driver"`
 
 	// Command for the container
-	Command string `json:"command"`
+	Command []string `json:"command"`
 
 	// Capsule ID for the container
 	CapsuleID int `json:"capsule_id"`
