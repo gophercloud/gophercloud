@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 	"time"
@@ -265,4 +266,44 @@ func TestETag(t *testing.T) {
 	_, headers, _, err = createOpts.ToObjectCreateParams()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, headers["ETag"], localChecksum)
+}
+
+func TestObjectCreateParamsWithoutSeek(t *testing.T) {
+	content := "I do not implement Seek()"
+	buf := bytes.NewBuffer([]byte(content))
+
+	createOpts := objects.CreateOpts{Content: buf}
+	reader, headers, _, err := createOpts.ToObjectCreateParams()
+
+	th.AssertNoErr(t, err)
+
+	_, ok := reader.(io.ReadSeeker)
+	th.AssertEquals(t, ok, true)
+
+	c, err := ioutil.ReadAll(reader)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, content, string(c))
+
+	_, ok = headers["ETag"]
+	th.AssertEquals(t, true, ok)
+}
+
+func TestObjectCreateParamsWithSeek(t *testing.T) {
+	content := "I implement Seek()"
+	createOpts := objects.CreateOpts{Content: strings.NewReader(content)}
+	reader, headers, _, err := createOpts.ToObjectCreateParams()
+
+	th.AssertNoErr(t, err)
+
+	_, ok := reader.(io.ReadSeeker)
+	th.AssertEquals(t, ok, true)
+
+	c, err := ioutil.ReadAll(reader)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, content, string(c))
+
+	_, ok = headers["ETag"]
+	th.AssertEquals(t, true, ok)
 }

@@ -7,6 +7,7 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"strings"
 	"time"
 
@@ -189,29 +190,28 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 		return opts.Content, h, q.String(), nil
 	}
 
-	hash := md5.New()
-
-	if readSeeker, isReadSeeker := opts.Content.(io.ReadSeeker); isReadSeeker {
-		if _, err := io.Copy(hash, readSeeker); err != nil {
+	// When we're dealing with big files an io.ReadSeeker allows us to efficiently calculate
+	// the md5 sum. An io.Reader is only readable once which means we have to copy the entire
+	// file content into memory first.
+	readSeeker, isReadSeeker := opts.Content.(io.ReadSeeker)
+	if !isReadSeeker {
+		data, err := ioutil.ReadAll(opts.Content)
+		if err != nil {
 			return nil, nil, "", err
 		}
-		readSeeker.Seek(0, io.SeekStart)
-
-		h["ETag"] = fmt.Sprintf("%x", hash.Sum(nil))
-
-		return readSeeker, h, q.String(), nil
+		readSeeker = bytes.NewReader(data)
 	}
 
-	// If ETag isn't set by the caller and the Content isn't a ReadSeeker we need to
-	// copy the content into a buffer to be able to calculate the md5 sum.
-	buf := bytes.NewBuffer([]byte{})
-	if _, err = io.Copy(io.MultiWriter(hash, buf), opts.Content); err != nil {
+	hash := md5.New()
+	// io.Copy into md5 is very efficient as it's done in small chunks.
+	if _, err := io.Copy(hash, readSeeker); err != nil {
 		return nil, nil, "", err
 	}
+	readSeeker.Seek(0, io.SeekStart)
 
 	h["ETag"] = fmt.Sprintf("%x", hash.Sum(nil))
 
-	return buf, h, q.String(), nil
+	return readSeeker, h, q.String(), nil
 }
 
 // Create is a function that creates a new object or replaces an existing
