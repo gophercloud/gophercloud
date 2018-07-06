@@ -190,13 +190,26 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 	}
 
 	hash := md5.New()
+
+	if readSeeker, isReadSeeker := opts.Content.(io.ReadSeeker); isReadSeeker {
+		if _, err := io.Copy(hash, readSeeker); err != nil {
+			return nil, nil, "", err
+		}
+		readSeeker.Seek(0, io.SeekStart)
+
+		h["ETag"] = fmt.Sprintf("%x", hash.Sum(nil))
+
+		return readSeeker, h, q.String(), nil
+	}
+
+	// If ETag isn't set by the caller and the Content isn't a ReadSeeker we need to
+	// copy the content into a buffer to be able to calculate the md5 sum.
 	buf := bytes.NewBuffer([]byte{})
-	_, err = io.Copy(io.MultiWriter(hash, buf), opts.Content)
-	if err != nil {
+	if _, err = io.Copy(io.MultiWriter(hash, buf), opts.Content); err != nil {
 		return nil, nil, "", err
 	}
-	localChecksum := fmt.Sprintf("%x", hash.Sum(nil))
-	h["ETag"] = localChecksum
+
+	h["ETag"] = fmt.Sprintf("%x", hash.Sum(nil))
 
 	return buf, h, q.String(), nil
 }
