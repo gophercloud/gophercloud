@@ -10,6 +10,10 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+const (
+	invalidMarker = "-1"
+)
+
 // Share contains all information associated with an OpenStack Share
 type Share struct {
 	// The availability zone of the share
@@ -116,6 +120,9 @@ func (r SharePage) NextPageURL() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if mark == invalidMarker {
+		return "", nil
+	}
 
 	q := currentURL.Query()
 	q.Set("offset", mark)
@@ -125,18 +132,17 @@ func (r SharePage) NextPageURL() (string, error) {
 
 // LastMarker returns the last offset in a ListResult.
 func (r SharePage) LastMarker() (string, error) {
-	maxInt := strconv.Itoa(int(^uint(0) >> 1))
 	shares, err := ExtractShares(r)
 	if err != nil {
-		return maxInt, err
+		return invalidMarker, err
 	}
 	if len(shares) == 0 {
-		return maxInt, nil
+		return invalidMarker, nil
 	}
 
 	u, err := url.Parse(r.URL.String())
 	if err != nil {
-		return maxInt, err
+		return invalidMarker, err
 	}
 	queryParams := u.Query()
 	offset := queryParams.Get("offset")
@@ -144,19 +150,19 @@ func (r SharePage) LastMarker() (string, error) {
 
 	// Limit is not present, only one page required
 	if limit == "" {
-		return maxInt, nil
+		return invalidMarker, nil
 	}
 
 	iOffset := 0
 	if offset != "" {
 		iOffset, err = strconv.Atoi(offset)
 		if err != nil {
-			return maxInt, err
+			return invalidMarker, err
 		}
 	}
 	iLimit, err := strconv.Atoi(limit)
 	if err != nil {
-		return maxInt, err
+		return invalidMarker, err
 	}
 	iOffset = iOffset + iLimit
 	offset = strconv.Itoa(iOffset)
