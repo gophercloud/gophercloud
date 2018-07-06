@@ -2,9 +2,16 @@ package shares
 
 import (
 	"encoding/json"
+	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
+
+const (
+	invalidMarker = "-1"
 )
 
 // Share contains all information associated with an OpenStack Share
@@ -99,6 +106,86 @@ func (r commonResult) Extract() (*Share, error) {
 // CreateResult contains the response body and error from a Create request.
 type CreateResult struct {
 	commonResult
+}
+
+// SharePage is a pagination.pager that is returned from a call to the List function.
+type SharePage struct {
+	pagination.MarkerPageBase
+}
+
+// NextPageURL generates the URL for the page of results after this one.
+func (r SharePage) NextPageURL() (string, error) {
+	currentURL := r.URL
+	mark, err := r.Owner.LastMarker()
+	if err != nil {
+		return "", err
+	}
+	if mark == invalidMarker {
+		return "", nil
+	}
+
+	q := currentURL.Query()
+	q.Set("offset", mark)
+	currentURL.RawQuery = q.Encode()
+	return currentURL.String(), nil
+}
+
+// LastMarker returns the last offset in a ListResult.
+func (r SharePage) LastMarker() (string, error) {
+	shares, err := ExtractShares(r)
+	if err != nil {
+		return invalidMarker, err
+	}
+	if len(shares) == 0 {
+		return invalidMarker, nil
+	}
+
+	u, err := url.Parse(r.URL.String())
+	if err != nil {
+		return invalidMarker, err
+	}
+	queryParams := u.Query()
+	offset := queryParams.Get("offset")
+	limit := queryParams.Get("limit")
+
+	// Limit is not present, only one page required
+	if limit == "" {
+		return invalidMarker, nil
+	}
+
+	iOffset := 0
+	if offset != "" {
+		iOffset, err = strconv.Atoi(offset)
+		if err != nil {
+			return invalidMarker, err
+		}
+	}
+	iLimit, err := strconv.Atoi(limit)
+	if err != nil {
+		return invalidMarker, err
+	}
+	iOffset = iOffset + iLimit
+	offset = strconv.Itoa(iOffset)
+
+	return offset, nil
+}
+
+// IsEmpty satisifies the IsEmpty method of the Page interface
+func (r SharePage) IsEmpty() (bool, error) {
+	shares, err := ExtractShares(r)
+	return len(shares) == 0, err
+}
+
+// ExtractShares extracts and returns a Share slice. It is used while
+// iterating over a shares.List call.
+func ExtractShares(r pagination.Page) ([]Share, error) {
+	var s struct {
+		Shares []Share `json:"shares"`
+	}
+
+	err := (r.(SharePage)).ExtractInto(&s)
+
+	return s.Shares, err
 }
 
 // DeleteResult contains the response body and error from a Delete request.
