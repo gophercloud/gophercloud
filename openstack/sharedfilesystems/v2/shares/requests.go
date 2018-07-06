@@ -27,7 +27,7 @@ type CreateOpts struct {
 	// DisplayName is equivalent to Name. The API supports using both
 	// This is an inherited attribute from the block storage API
 	DisplayName string `json:"display_name,omitempty"`
-	// DisplayDescription is equivalent to Description. The API supports using bot
+	// DisplayDescription is equivalent to Description. The API supports using both
 	// This is an inherited attribute from the block storage API
 	DisplayDescription string `json:"display_description,omitempty"`
 	// ShareType defines the sharetype. If omitted, a default share type is used
@@ -80,6 +80,10 @@ type ListOpts struct {
 	Status string `q:"status"`
 	// The UUID of the share server.
 	ShareServerID string `q:"share_server_id"`
+	// One or more metadata key and value pairs as a dictionary of strings.
+	Metadata map[string]string `q:"metadata"`
+	// The extra specifications for the share type.
+	ExtraSpecs map[string]string `q:"extra_specs"`
 	// The UUID of the share type.
 	ShareTypeID string `q:"share_type_id"`
 	// The maximum number of shares to return.
@@ -112,6 +116,20 @@ type ListOpts struct {
 	DescriptionPattern string `q:"description~"`
 	// Whether to show count in API response or not, default is False.
 	WithCount bool `q:"with_count"`
+	// DisplayName is equivalent to Name. The API supports using both
+	// This is an inherited attribute from the block storage API
+	DisplayName string `q:"display_name"`
+	// Equivalent to NamePattern.
+	DisplayNamePattern string `q:"display_name~"`
+	// VolumeTypeID is deprecated but supported. Either ShareTypeID or VolumeTypeID can be used
+	VolumeTypeID string `q:"volume_type_id"`
+	// The UUID of the share group snapshot.
+	ShareGroupSnapshotID string `q:"share_group_snapshot_id"`
+	// DisplayDescription is equivalent to Description. The API supports using both
+	// This is an inherited attribute from the block storage API
+	DisplayDescription string `q:"display_description"`
+	// Equivalent to DescriptionPattern
+	DisplayDescriptionPattern string `q:"display_description~"`
 }
 
 // ListOptsBuilder allows extensions to add additional parameters to the List
