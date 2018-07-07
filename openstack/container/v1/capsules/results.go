@@ -39,7 +39,7 @@ type CapsulePage struct {
 	pagination.LinkedPageBase
 }
 
-// Represents a Container Orchestration Engine Bay, i.e. a cluster
+// Represents a Capsule
 type Capsule struct {
 	// UUID for the capsule
 	UUID string `json:"uuid"`
@@ -75,7 +75,7 @@ type Capsule struct {
 	UpdatedAt time.Time `json:"-"`
 
 	// Links includes HTTP references to the itself, useful for passing along to
-	// other APIs that might want a server reference.
+	// other APIs that might want a capsule reference.
 	Links []interface{} `json:"links"`
 
 	// The capsule version
@@ -144,7 +144,7 @@ type Container struct {
 	Name string `json:"name"`
 
 	// Links includes HTTP references to the itself, useful for passing along to
-	// other APIs that might want a server reference.
+	// other APIs that might want a capsule reference.
 	Links []interface{} `json:"links"`
 
 	// Container ID for the container
