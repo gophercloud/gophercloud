@@ -66,8 +66,10 @@ func TestCreateCapsule(t *testing.T) {
 	createOpts := capsules.CreateOpts{
 		TemplateOpts: template,
 	}
-	err := capsules.Create(fakeclient.ServiceClient(), createOpts).ExtractErr()
+	actualCapsule, err := capsules.Create(fakeclient.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, &ExpectedCapsule, actualCapsule)
 }
 
 func TestListCapsule(t *testing.T) {

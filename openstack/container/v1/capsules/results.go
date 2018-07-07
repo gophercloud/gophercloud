@@ -25,9 +25,9 @@ type GetResult struct {
 }
 
 // CreateResult is the response from a Create operation. Call its Extract
-// method to interpret it as a Server.
+// method to interpret it as a Capsule.
 type CreateResult struct {
-	gophercloud.ErrResult
+	commonResult
 }
 
 // DeleteResult represents the result of a delete operation.
