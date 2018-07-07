@@ -22,8 +22,8 @@ const ValidJSONTemplate = `
     },
     "name": "template"
   },
-  "restartPolicy": "Always",
   "spec": {
+    "restartPolicy": "Always",
     "containers": [
       {
         "command": [
@@ -65,8 +65,8 @@ metadata:
   labels:
     app: web
     app1: web1
-restartPolicy: Always
 spec:
+  restartPolicy: Always
   containers:
   - image: ubuntu
     command:
@@ -91,7 +91,6 @@ spec:
 var ValidJSONTemplateParsed = map[string]interface{}{
 	"capsuleVersion": "beta",
 	"kind":           "capsule",
-	"restartPolicy":  "Always",
 	"metadata": map[string]interface{}{
 		"name": "template",
 		"labels": map[string]string{
@@ -100,6 +99,7 @@ var ValidJSONTemplateParsed = map[string]interface{}{
 		},
 	},
 	"spec": map[string]interface{}{
+		"restartPolicy": "Always",
 		"containers": []map[string]interface{}{
 			map[string]interface{}{
 				"image": "ubuntu",
@@ -135,7 +135,6 @@ var ValidJSONTemplateParsed = map[string]interface{}{
 var ValidYAMLTemplateParsed = map[string]interface{}{
 	"capsuleVersion": "beta",
 	"kind":           "capsule",
-	"restartPolicy":  "Always",
 	"metadata": map[string]interface{}{
 		"name": "template",
 		"labels": map[string]string{
@@ -144,6 +143,7 @@ var ValidYAMLTemplateParsed = map[string]interface{}{
 		},
 	},
 	"spec": map[interface{}]interface{}{
+		"restartPolicy": "Always",
 		"containers": []map[interface{}]interface{}{
 			map[interface{}]interface{}{
 				"image": "ubuntu",
