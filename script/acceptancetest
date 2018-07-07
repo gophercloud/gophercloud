@@ -46,6 +46,12 @@ if [[ $? != 0 ]]; then
   failed=1
 fi
 
+# Image Service v2
+go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/imageservice/v2/
+if [[ $? != 0 ]]; then
+  failed=1
+fi
+
 # If any of the test suites failed, exit 1
 if [[ -n $failed ]]; then
   exit 1

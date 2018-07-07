@@ -47,6 +47,14 @@ func TestBaseEndpoint(t *testing.T) {
 			BaseEndpoint: "http://example.com/identity/",
 		},
 		{
+			Endpoint:     "http://example.com/identity/v2.0/projects",
+			BaseEndpoint: "http://example.com/identity/",
+		},
+		{
+			Endpoint:     "http://example.com/v2.0/projects",
+			BaseEndpoint: "http://example.com/",
+		},
+		{
 			Endpoint:     "http://example.com/identity/",
 			BaseEndpoint: "http://example.com/identity/",
 		},
