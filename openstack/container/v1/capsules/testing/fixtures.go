@@ -179,7 +179,6 @@ const CapsuleGetBody_OldTime = `
 {
   "uuid": "cc654059-1a77-47a3-bfcf-715bde5aad9e",
   "status": "Running",
-  "id": 1,
   "user_id": "d33b18c384574fd2a3299447aac285f0",
   "project_id": "6b8ffef2a0ac42ee87887b9cc98bdf68",
   "cpu": 1,
@@ -239,7 +238,6 @@ const CapsuleGetBody_OldTime = `
       "started_at": "2018-01-12 09:37:26+00:00",
       "workdir": "/root",
       "disk": 0,
-      "id": 1,
       "security_groups": ["default"],
       "image_pull_policy": "ifnotpresent",
       "task_state": "Creating",
@@ -251,23 +249,18 @@ const CapsuleGetBody_OldTime = `
       "memory": "1024M",
       "status": "Running",
       "auto_remove": false,
-      "container_id": "5109ebe2ca595777e994416208bd681b561b25ce493c34a234a1b68457cb53fb",
-      "websocket_url": "ws://10.10.10.10/",
       "auto_heal": false,
       "host": "test-host",
       "image_driver": "docker",
       "status_detail": "Just created",
       "status_reason": "No reason",
-      "websocket_token": "2ba16a5a-552f-422f-b511-bd786102691f",
       "name": "test-demo-omicron-13",
       "restart_policy": {
         "MaximumRetryCount": "0",
         "Name": "always"
       },
       "ports": [80],
-      "meta": {"key1": "value1"},
       "command": ["testcmd"],
-      "capsule_id": 1,
       "runtime": "runc",
       "cpu": 1,
       "interactive": true
@@ -279,7 +272,6 @@ const CapsuleGetBody_NewTime = `
 {
   "uuid": "cc654059-1a77-47a3-bfcf-715bde5aad9e",
   "status": "Running",
-  "id": 1,
   "user_id": "d33b18c384574fd2a3299447aac285f0",
   "project_id": "6b8ffef2a0ac42ee87887b9cc98bdf68",
   "cpu": 1,
@@ -339,7 +331,6 @@ const CapsuleGetBody_NewTime = `
       "started_at": "2018-01-12 09:37:26",
       "workdir": "/root",
       "disk": 0,
-      "id": 1,
       "security_groups": ["default"],
       "image_pull_policy": "ifnotpresent",
       "task_state": "Creating",
@@ -351,23 +342,18 @@ const CapsuleGetBody_NewTime = `
       "memory": "1024M",
       "status": "Running",
       "auto_remove": false,
-      "container_id": "5109ebe2ca595777e994416208bd681b561b25ce493c34a234a1b68457cb53fb",
-      "websocket_url": "ws://10.10.10.10/",
       "auto_heal": false,
       "host": "test-host",
       "image_driver": "docker",
       "status_detail": "Just created",
       "status_reason": "No reason",
-      "websocket_token": "2ba16a5a-552f-422f-b511-bd786102691f",
       "name": "test-demo-omicron-13",
       "restart_policy": {
         "MaximumRetryCount": "0",
         "Name": "always"
       },
       "ports": [80],
-      "meta": {"key1": "value1"},
       "command": ["testcmd"],
-      "capsule_id": 1,
       "runtime": "runc",
       "cpu": 1,
       "interactive": true
@@ -381,7 +367,6 @@ const CapsuleListBody = `
     {
       "uuid": "cc654059-1a77-47a3-bfcf-715bde5aad9e",
       "status": "Running",
-      "id": 1,
       "user_id": "d33b18c384574fd2a3299447aac285f0",
       "project_id": "6b8ffef2a0ac42ee87887b9cc98bdf68",
       "cpu": 1,
@@ -426,8 +411,6 @@ const CapsuleListBody = `
 }`
 
 var ExpectedContainer1 = capsules.Container{
-	CapsuleID: 1,
-	ID:        1,
 	Name:      "test-demo-omicron-13",
 	UUID:      "1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
 	UserID:    "d33b18c384574fd2a3299447aac285f0",
@@ -440,12 +423,8 @@ var ExpectedContainer1 = capsules.Container{
 	Labels: map[string]string{
 		"foo": "bar",
 	},
-	Meta: map[string]string{
-		"key1": "value1",
-	},
-	WorkDir:     "/root",
-	Disk:        0,
-	ContainerID: "5109ebe2ca595777e994416208bd681b561b25ce493c34a234a1b68457cb53fb",
+	WorkDir: "/root",
+	Disk:    0,
 	Command: []string{
 		"testcmd",
 	},
@@ -462,14 +441,12 @@ var ExpectedContainer1 = capsules.Container{
 	Environment: map[string]string{
 		"USER1": "test",
 	},
-	WebsocketToken: "2ba16a5a-552f-422f-b511-bd786102691f",
-	WebsocketUrl:   "ws://10.10.10.10/",
-	StatusReason:   "No reason",
-	StatusDetail:   "Just created",
-	ImageDriver:    "docker",
-	Interactive:    true,
-	AutoRemove:     false,
-	AutoHeal:       false,
+	StatusReason: "No reason",
+	StatusDetail: "Just created",
+	ImageDriver:  "docker",
+	Interactive:  true,
+	AutoRemove:   false,
+	AutoHeal:     false,
 	RestartPolicy: map[string]string{
 		"MaximumRetryCount": "0",
 		"Name":              "always",
@@ -490,7 +467,6 @@ var ExpectedContainer1 = capsules.Container{
 var ExpectedCapsule = capsules.Capsule{
 	UUID:      "cc654059-1a77-47a3-bfcf-715bde5aad9e",
 	Status:    "Running",
-	ID:        1,
 	UserID:    "d33b18c384574fd2a3299447aac285f0",
 	ProjectID: "6b8ffef2a0ac42ee87887b9cc98bdf68",
 	CPU:       float64(1),
