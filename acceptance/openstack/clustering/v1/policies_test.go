@@ -36,6 +36,11 @@ func TestPoliciesCRUD(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
+	// Test Get policy
+	getPolicy, err := policies.Get(client, policy.ID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, getPolicy)
+
 	// Test updating policy
 	updateOpts := policies.UpdateOpts{
 		Name: policy.Name + "-UPDATE",
