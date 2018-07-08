@@ -569,7 +569,7 @@ func HandleCapsuleCreateSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.WriteHeader(http.StatusAccepted)
-		fmt.Fprintf(w, `{}`)
+		fmt.Fprintf(w, CapsuleGetBody_NewTime)
 	})
 }
 
