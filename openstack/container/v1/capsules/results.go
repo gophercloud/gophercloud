@@ -44,9 +44,6 @@ type Capsule struct {
 	// UUID for the capsule
 	UUID string `json:"uuid"`
 
-	// ID for the capsule
-	ID int `json:"id"`
-
 	// User ID for the capsule
 	UserID string `json:"user_id"`
 
@@ -110,9 +107,6 @@ type Container struct {
 	// UUID for the container
 	UUID string `json:"uuid"`
 
-	// ID for the container
-	ID int `json:"id"`
-
 	// User ID for the container
 	UserID string `json:"user_id"`
 
@@ -146,15 +140,6 @@ type Container struct {
 	// Links includes HTTP references to the itself, useful for passing along to
 	// other APIs that might want a capsule reference.
 	Links []interface{} `json:"links"`
-
-	// Container ID for the container
-	ContainerID string `json:"container_id"`
-
-	// Websocket url for the container
-	WebsocketUrl string `json:"websocket_url"`
-
-	// Websocket token for the container
-	WebsocketToken string `json:"websocket_token"`
 
 	// auto remove flag token for the container
 	AutoRemove bool `json:"auto_remove"`
@@ -198,9 +183,6 @@ type Container struct {
 	// Command for the container
 	Command []string `json:"command"`
 
-	// Capsule ID for the container
-	CapsuleID int `json:"capsule_id"`
-
 	// Image for the container
 	Runtime string `json:"runtime"`
 
@@ -212,9 +194,6 @@ type Container struct {
 
 	// Ports information for the container
 	Ports []int `json:"ports"`
-
-	// Meta for the container
-	Meta map[string]string `json:"meta"`
 
 	// Security groups for the container
 	SecurityGroups []string `json:"security_groups"`
