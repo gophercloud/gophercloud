@@ -26,8 +26,8 @@ func TestCapsule(t *testing.T) {
 			},
 			"name": "template"
 		},
-		"restartPolicy": "Always",
 		"spec": {
+			"restartPolicy": "Always",
 			"containers": [
 				{
 					"command": [
