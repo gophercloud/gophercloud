@@ -431,3 +431,30 @@ func WaitForNodeStatus(client *gophercloud.ServiceClient, id string, status stri
 		return false, nil
 	})
 }
+
+func AttachPolicy(t *testing.T, client *gophercloud.ServiceClient, clusterID string, policyID string) error {
+	t.Logf("Attempting to attach policy: %s to cluster: %s", policyID, clusterID)
+	iTrue := true
+	attachPolicyOpts := clusters.AttachPolicyOpts{
+		PolicyID: policyID,
+		Enabled:  &iTrue,
+	}
+	actionID, err := clusters.AttachPolicy(client, clusterID, attachPolicyOpts).Extract()
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+	t.Logf("Successfully attach policy: %s to cluster: %s", policyID, clusterID)
+	return nil
+}
+
+func DetachPolicy(t *testing.T, client *gophercloud.ServiceClient, clusterID string, policyID string) error {
+	t.Logf("Attempting to detach policy: %s from cluster: %s", policyID, clusterID)
+	opts := clusters.DetachPolicyOpts{
+		PolicyID: policyID,
+	}
+	actionID, err := clusters.DetachPolicy(client, clusterID, opts).Extract()
+	th.AssertNoErr(t, err)
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+	t.Logf("Successfully detach policy: %s from cluster: %s", policyID, clusterID)
+	return nil
+}
