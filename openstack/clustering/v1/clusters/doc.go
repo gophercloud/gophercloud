@@ -212,5 +212,16 @@ Example to Check a Cluster
 	if err != nil {
 		panic(err)
 	}
+
+Example to Complete Life Cycle
+
+	clusterID :=  "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	lifeCycleOpts := clusters.CompleteLifeCycleOpts{LifeCycleActionTokenID: "2b827124-69e1-496e-9484-33ca769fe4df"}
+
+	action, err := clusters.CompleteLifeCycle(computeClient, clusterID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package clusters
