@@ -274,3 +274,138 @@ func TestBuildRequestBody(t *testing.T) {
 	th.AssertDeepEquals(t, expectedComplexFields, actual)
 
 }
+
+func TestCompareMicroversion(t *testing.T) {
+	var testCases = []struct {
+		Rule      string
+		Requested string
+		Error     error
+	}{
+		{
+			Rule:      "min:2.51",
+			Requested: "2.51",
+			Error:     nil,
+		},
+		{
+			Rule:      "min:2.51",
+			Requested: "2.60",
+			Error:     nil,
+		},
+		{
+			Rule:      "min:2.51",
+			Requested: "2.48",
+			Error:     gophercloud.ErrMicroversionIncompatible{Microversion: "2.48"},
+		},
+		{
+			Rule:      "max:2.51",
+			Requested: "2.51",
+			Error:     nil,
+		},
+		{
+			Rule:      "max:2.51",
+			Requested: "2.48",
+			Error:     nil,
+		},
+		{
+			Rule:      "max:2.51",
+			Requested: "2.60",
+			Error:     gophercloud.ErrMicroversionIncompatible{Microversion: "2.60"},
+		},
+		{
+			Rule:      "eq:2.51",
+			Requested: "2.51",
+			Error:     nil,
+		},
+		{
+			Rule:      "eq:2.51",
+			Requested: "2.60",
+			Error:     gophercloud.ErrMicroversionIncompatible{Microversion: "2.60"},
+		},
+		{
+			Rule:      "2.51",
+			Requested: "2.51",
+			Error:     gophercloud.ErrMicroversionInvalidRule{Rule: "2.51"},
+		},
+		{
+			Rule:      "min:2",
+			Requested: "2.51",
+			Error:     gophercloud.ErrMicroversionInvalidFormat{Microversion: "2"},
+		},
+		{
+			Rule:      "min:2.51",
+			Requested: "2",
+			Error:     gophercloud.ErrMicroversionInvalidFormat{Microversion: "2"},
+		},
+		{
+			Rule:      "min:foo.bar",
+			Requested: "2.51",
+			Error:     gophercloud.ErrMicroversionInvalidFormat{Microversion: "foo.bar"},
+		},
+	}
+
+	for _, testCase := range testCases {
+		err := gophercloud.CompareMicroversion(testCase.Rule, testCase.Requested)
+		th.AssertEquals(t, err, testCase.Error)
+	}
+}
+
+func TestValidateMicroversionRequest(t *testing.T) {
+	type Something struct {
+		Foo string `mv:"min:2.51"`
+		Bar string `mv:"min:2.51,max:2.65"`
+	}
+
+	var testCases = []struct {
+		Opts                  Something
+		RequestedMicroversion string
+		Error                 error
+	}{
+		{
+			Opts: Something{
+				Foo: "foo",
+			},
+			RequestedMicroversion: "2.51",
+			Error: nil,
+		},
+		{
+			Opts: Something{
+				Foo: "foo",
+			},
+			RequestedMicroversion: "2.48",
+			Error: gophercloud.ErrMicroversionIncompatible{Microversion: "2.48", Resource: "Foo"},
+		},
+		{
+			Opts: Something{
+				Foo: "foo",
+			},
+			RequestedMicroversion: "2",
+			Error: gophercloud.ErrMicroversionInvalidFormat{Microversion: "2"},
+		},
+		{
+			Opts: Something{
+				Bar: "foo",
+			},
+			RequestedMicroversion: "2.52",
+			Error: nil,
+		},
+		{
+			Opts: Something{
+				Bar: "foo",
+			},
+			RequestedMicroversion: "2.48",
+			Error: gophercloud.ErrMicroversionIncompatible{Microversion: "2.48", Resource: "Bar"},
+		},
+		{
+			Opts: Something{
+				Bar: "foo",
+			},
+			RequestedMicroversion: "2.70",
+			Error: gophercloud.ErrMicroversionIncompatible{Microversion: "2.70", Resource: "Bar"},
+		},
+	}
+
+	for _, testCase := range testCases {
+		err := gophercloud.ValidateMicroversionRequest(testCase.RequestedMicroversion, testCase.Opts)
+		th.AssertEquals(t, err, testCase.Error)
+	}
+}

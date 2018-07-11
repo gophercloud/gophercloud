@@ -489,3 +489,140 @@ func IDSliceToQueryString(name string, ids []int) string {
 func IntWithinRange(val, min, max int) bool {
 	return val > min && val < max
 }
+
+// ValidateMicroversionRequest will check a given struct for
+// microversion-specific fields and ensure the client's specified
+// microversion is compatible.
+func ValidateMicroversionRequest(mvRequested string, opts interface{}) error {
+	optsValue := reflect.ValueOf(opts)
+	if optsValue.Kind() == reflect.Ptr {
+		optsValue = optsValue.Elem()
+	}
+
+	optsType := reflect.TypeOf(opts)
+	if optsType.Kind() == reflect.Ptr {
+		optsType = optsType.Elem()
+	}
+
+	if optsValue.Kind() == reflect.Struct {
+		for i := 0; i < optsValue.NumField(); i++ {
+			v := optsValue.Field(i)
+			f := optsType.Field(i)
+
+			if f.Name != strings.Title(f.Name) {
+				continue
+			}
+
+			zero := isZero(v)
+			if zero {
+				continue
+			}
+
+			if mvTag := f.Tag.Get("mv"); mvTag != "" {
+				microversions := strings.Split(mvTag, ",")
+				for _, mv := range microversions {
+					err := CompareMicroversion(mv, mvRequested)
+					if err != nil {
+						if err, ok := err.(ErrMicroversionIncompatible); ok {
+							err.Resource = f.Name
+							return err
+						}
+						return err
+					}
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+// CompareMicroversion will compare a specified microversion to a microversion
+// rule. Rules are in the format of:
+//
+// min:2.51
+// max:2.51
+// eq:2.51
+//
+func CompareMicroversion(mvRule, mvRequested string) error {
+	// Make sure the requested microversion is formatted correctly.
+	v := strings.Split(mvRequested, ".")
+	if len(v) != 2 {
+		err := ErrMicroversionInvalidFormat{}
+		err.Microversion = mvRequested
+		return err
+	}
+
+	mvRequestedMajor, err := strconv.Atoi(v[0])
+	if err != nil {
+		err := ErrMicroversionInvalidFormat{}
+		err.Microversion = mvRequested
+		return err
+	}
+
+	mvRequestedMinor, err := strconv.Atoi(v[1])
+	if err != nil {
+		err := ErrMicroversionInvalidFormat{}
+		err.Microversion = mvRequested
+		return err
+	}
+
+	// Make sure the microversion rule is formatted correctly.
+	v = strings.Split(mvRule, ":")
+	if len(v) != 2 {
+		err := ErrMicroversionInvalidRule{}
+		err.Rule = mvRule
+		return err
+	}
+
+	mvComparison := v[0]
+	mvRequired := v[1]
+
+	// Make sure the required microversion is formatted correctly.
+	v = strings.Split(mvRequired, ".")
+	if len(v) != 2 {
+		err := ErrMicroversionInvalidFormat{}
+		err.Microversion = mvRequired
+		return err
+	}
+
+	mvRequiredMajor, err := strconv.Atoi(v[0])
+	if err != nil {
+		err := ErrMicroversionInvalidFormat{}
+		err.Microversion = mvRequired
+		return err
+	}
+
+	mvRequiredMinor, err := strconv.Atoi(v[1])
+	if err != nil {
+		err := ErrMicroversionInvalidFormat{}
+		err.Microversion = mvRequired
+		return err
+	}
+
+	var valid bool
+	switch mvComparison {
+	case "min":
+		if mvRequestedMajor >= mvRequiredMajor && mvRequestedMinor >= mvRequiredMinor {
+			valid = true
+		}
+	case "max":
+		if mvRequestedMajor <= mvRequiredMajor && mvRequestedMinor <= mvRequiredMinor {
+			valid = true
+		}
+	case "eq":
+		if mvRequestedMajor == mvRequiredMajor && mvRequestedMinor == mvRequiredMinor {
+			valid = true
+		}
+	default:
+		valid = false
+	}
+
+	if !valid {
+		err := ErrMicroversionIncompatible{}
+		err.Microversion = mvRequested
+		return err
+	}
+
+	return nil
+}
