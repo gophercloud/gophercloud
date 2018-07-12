@@ -417,7 +417,7 @@ type ListPoliciesOpts struct {
 }
 
 // ToClusterPoliciesListQuery formats a ListOpts into a query string.
-func (opts ListPoliciesOpts) ToClusterPoliciesListQuery() (string, error) {
+func (opts ListPoliciesOpts) ToClusterListPoliciesQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
 }

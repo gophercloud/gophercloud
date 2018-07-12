@@ -297,7 +297,7 @@ func TestListClusterPolicies(t *testing.T) {
 	HandleListPoliciesSuccessfully(t)
 
 	pageCount := 0
-	err := clusters.ListPolicies(fake.ServiceClient(), ExpectedClusterPolicy.ClusterID, nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := clusters.ListPolicies(fake.ServiceClient(), ExpectedClusterPolicy.ClusterID, clusters.ListPoliciesOpts{Name: "Test"}).EachPage(func(page pagination.Page) (bool, error) {
 		pageCount++
 		actual, err := clusters.ExtractClusterPolicies(page)
 		th.AssertNoErr(t, err)
