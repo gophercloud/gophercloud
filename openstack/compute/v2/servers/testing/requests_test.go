@@ -560,15 +560,22 @@ func TestCreateServerWithTags(t *testing.T) {
 	c := client.ServiceClient()
 	c.Microversion = "2.52"
 
+	tags := servers.Tags{"foo", "bar"}
 	createOpts := servers.CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
 		FlavorRef: "1",
-		Tags:      []string{"foo", "bar"},
+		Tags:      tags,
 	}
-	actual, err := servers.Create(c, createOpts).Extract()
+	res := servers.Create(c, createOpts)
+	th.AssertNoErr(t, res.Err)
+	actualServer, err := res.Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, ServerDerp, *actual)
+	th.CheckDeepEquals(t, ServerDerp, *actualServer)
+
+	actualTags, err := res.ExtractTags()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, tags, actualTags)
 
 	c.Microversion = "2.48"
 	_, err = servers.Create(c, createOpts).Extract()
