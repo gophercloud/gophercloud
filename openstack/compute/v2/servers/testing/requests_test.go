@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/diskconfig"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/extendedstatus"
@@ -549,4 +550,32 @@ func TestMarshalPersonality(t *testing.T) {
 	if actual[0]["contents"] != base64.StdEncoding.EncodeToString(contents) {
 		t.Fatal("file contents incorrect")
 	}
+}
+
+func TestCreateServerWithTags(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerWithTagsCreationSuccessfully(t)
+
+	c := client.ServiceClient()
+	c.Microversion = "2.52"
+
+	createOpts := servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		Tags:      []string{"foo", "bar"},
+	}
+	actual, err := servers.Create(c, createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+
+	c.Microversion = "2.48"
+	_, err = servers.Create(c, createOpts).Extract()
+	expectedErr := gophercloud.ErrMicroversionIncompatible{
+		Microversion: "2.48",
+		Resource:     "Tags",
+	}
+
+	th.AssertEquals(t, err, expectedErr)
 }

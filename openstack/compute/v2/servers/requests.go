@@ -189,6 +189,10 @@ type CreateOpts struct {
 	// ServiceClient will allow calls to be made to retrieve an image or
 	// flavor ID by name.
 	ServiceClient *gophercloud.ServiceClient `json:"-"`
+
+	// Tags allows a server to be tagged with single-word metadata.
+	// Requires microversion 2.52 or later.
+	Tags []string `json:"tags,omitempty" mv:"min:2.52"`
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a
@@ -277,6 +281,12 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 
 // Create requests a server to be provisioned to the user in the current tenant.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	err := gophercloud.ValidateMicroversionRequest(client.Microversion, opts)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
 	reqBody, err := opts.ToServerCreateMap()
 	if err != nil {
 		r.Err = err
