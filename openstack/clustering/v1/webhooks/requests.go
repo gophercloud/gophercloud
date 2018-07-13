@@ -4,7 +4,7 @@ import (
 	"net/url"
 
 	"github.com/gophercloud/gophercloud"
-	"golang.org/x/crypto/openpgp/errors"
+	"fmt"
 )
 
 // TriggerOpts represents options used for triggering an action
@@ -42,7 +42,7 @@ func Trigger(client *gophercloud.ServiceClient, id string, opts TriggerOptsBuild
 		}
 		url += query
 	} else {
-		r.Err = errors.InvalidArgumentError("Must contain V for TriggerOpt")
+		r.Err = fmt.Errorf("Must contain V for TriggerOpt")
 		return
 	}
 
