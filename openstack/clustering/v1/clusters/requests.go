@@ -405,7 +405,7 @@ func DetachPolicy(client *gophercloud.ServiceClient, id string, opts DetachPolic
 // ListPolicyOptsBuilder allows extensions to add additional parameters to the
 // ListPolicies request.
 type ListPoliciesOptsBuilder interface {
-	ToClusterListPoliciesQuery() (string, error)
+	ToClusterPoliciesListQuery() (string, error)
 }
 
 // ListPoliciesOpts represents options to list a cluster's policies.
@@ -426,7 +426,7 @@ func (opts ListPoliciesOpts) ToClusterPoliciesListQuery() (string, error) {
 func ListPolicies(client *gophercloud.ServiceClient, clusterID string, opts ListPoliciesOptsBuilder) pagination.Pager {
 	url := listPoliciesURL(client, clusterID)
 	if opts != nil {
-		query, err := opts.ToClusterListPoliciesQuery()
+		query, err := opts.ToClusterPoliciesListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
