@@ -31,6 +31,12 @@ type UpdateResult struct {
 	gophercloud.ErrResult
 }
 
+// DeleteResult is the result from a Delete operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 type Messages struct {
 	Age  float32                `json:"age"`
 	Href string                 `json:"href"`

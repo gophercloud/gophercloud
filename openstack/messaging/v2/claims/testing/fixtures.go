@@ -120,3 +120,14 @@ func HandleUpdateSuccessfully(t *testing.T) {
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
+
+// HandleDeleteSuccessfully configures the test server to respond to an Delete request.
+func HandleDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/claims/%s", QueueName, ClaimID),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}

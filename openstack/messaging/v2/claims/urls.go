@@ -18,3 +18,7 @@ func getURL(client *gophercloud.ServiceClient, queueName string, claimID string)
 func updateURL(client *gophercloud.ServiceClient, queueName string, claimID string) string {
 	return client.ServiceURL(apiVersion, apiName, queueName, "claims", claimID)
 }
+
+func deleteURL(client *gophercloud.ServiceClient, queueName string, claimID string) string {
+	return client.ServiceURL(apiVersion, apiName, queueName, "claims", claimID)
+}

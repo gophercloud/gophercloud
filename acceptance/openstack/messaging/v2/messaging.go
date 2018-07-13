@@ -134,6 +134,17 @@ func GetClaim(t *testing.T, client *gophercloud.ServiceClient, queueName string,
 	return claim, err
 }
 
+func DeleteClaim(t *testing.T, client *gophercloud.ServiceClient, queueName string, claimID string) error {
+	t.Logf("Attempting to delete claim: %s", claimID)
+	err := claims.Delete(client, queueName, claimID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete claim: %s", claimID)
+	}
+	t.Logf("Sucessfully deleted claim: %s", claimID)
+
+	return err
+}
+
 func ExtractIDs(claim []claims.Messages) ([]string, []string) {
 	var claimIDs []string
 	var messageID []string
