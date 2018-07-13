@@ -338,20 +338,28 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 // GetOptsBuilder allows extensions to add additional parameters to the
 // Get request.
 type GetOptsBuilder interface {
-	ToObjectGetQuery() (string, error)
+	ToObjectGetParams() (map[string]string, string, error)
 }
 
 // GetOpts is a structure that holds parameters for getting an object's
 // metadata.
 type GetOpts struct {
+	Newest    bool   `h:"X-Newest"`
 	Expires   string `q:"expires"`
 	Signature string `q:"signature"`
 }
 
-// ToObjectGetQuery formats a GetOpts into a query string.
-func (opts GetOpts) ToObjectGetQuery() (string, error) {
+// ToObjectGetParams formats a GetOpts into a query string and a map of headers.
+func (opts GetOpts) ToObjectGetParams() (map[string]string, string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	return q.String(), err
+	if err != nil {
+		return nil, "", err
+	}
+	h, err := gophercloud.BuildHeaders(opts)
+	if err != nil {
+		return nil, q.String(), err
+	}
+	return h, q.String(), nil
 }
 
 // Get is a function that retrieves the metadata of an object. To extract just
@@ -359,16 +367,22 @@ func (opts GetOpts) ToObjectGetQuery() (string, error) {
 // function.
 func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts GetOptsBuilder) (r GetResult) {
 	url := getURL(c, containerName, objectName)
+	h := make(map[string]string)
 	if opts != nil {
-		query, err := opts.ToObjectGetQuery()
+		headers, query, err := opts.ToObjectGetParams()
 		if err != nil {
 			r.Err = err
 			return
 		}
+		for k, v := range headers {
+			h[k] = v
+		}
 		url += query
 	}
+
 	resp, err := c.Head(url, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 204},
+		MoreHeaders: h,
+		OkCodes:     []int{200, 204},
 	})
 	if resp != nil {
 		r.Header = resp.Header

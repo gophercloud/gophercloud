@@ -237,7 +237,10 @@ func TestGetObject(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 
-	actualHeaders, err := objects.Get(fake.ServiceClient(), "testContainer", "testObject", nil).Extract()
+	getOpts := objects.GetOpts{
+		Newest: true,
+	}
+	actualHeaders, err := objects.Get(fake.ServiceClient(), "testContainer", "testObject", getOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, actualHeaders.StaticLargeObject, true)
 }
