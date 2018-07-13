@@ -23,7 +23,7 @@ type Node struct {
 	PhysicalID   string                 `json:"physical_id"`
 	ProfileID    string                 `json:"profile_id"`
 	ProfileName  string                 `json:"profile_name"`
-	ProjectID    string                 `json:"project_id"`
+	Project      string                 `json:"project"`
 	Role         string                 `json:"role"`
 	Status       string                 `json:"status"`
 	StatusReason string                 `json:"status_reason"`
