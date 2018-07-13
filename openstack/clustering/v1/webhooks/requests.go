@@ -1,10 +1,10 @@
 package webhooks
 
 import (
+	"fmt"
 	"net/url"
 
 	"github.com/gophercloud/gophercloud"
-	"fmt"
 )
 
 // TriggerOpts represents options used for triggering an action
