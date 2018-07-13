@@ -86,6 +86,7 @@ type DownloadOpts struct {
 	IfModifiedSince   time.Time `h:"If-Modified-Since"`
 	IfNoneMatch       string    `h:"If-None-Match"`
 	IfUnmodifiedSince time.Time `h:"If-Unmodified-Since"`
+	Newest            bool      `h:"X-Newest"`
 	Range             string    `h:"Range"`
 	Expires           string    `q:"expires"`
 	MultipartManifest string    `q:"multipart-manifest"`
