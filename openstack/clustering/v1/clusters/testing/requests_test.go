@@ -408,17 +408,17 @@ func TestClusterCheck(t *testing.T) {
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
 
-func TestLifeCycle(t *testing.T) {
+func TestLifecycle(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleLifeCycleSuccessfully(t)
+	HandleLifecycleSuccessfully(t)
 
-	opts := clusters.CompleteLifeCycleOpts{
-		LifeCycleActionTokenID: "976528c6-dcf6-4d8d-9f4c-588f4e675f29",
+	opts := clusters.CompleteLifecycleOpts{
+		LifecycleActionTokenID: "976528c6-dcf6-4d8d-9f4c-588f4e675f29",
 	}
 
-	res := clusters.CompleteLifeCycle(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", opts)
+	res := clusters.CompleteLifecycle(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", opts)
 	location := res.Header.Get("Location")
 	th.AssertEquals(t, "http://senlin.cloud.blizzard.net:8778/v1/actions/2a0ff107-e789-4660-a122-3816c43af703", location)
 

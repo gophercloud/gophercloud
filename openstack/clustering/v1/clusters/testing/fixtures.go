@@ -609,7 +609,7 @@ func HandleCheckSuccessfully(t *testing.T) {
 	})
 }
 
-func HandleLifeCycleSuccessfully(t *testing.T) {
+func HandleLifecycleSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/edce3528-864f-41fb-8759-f4707925cc09/actions", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
