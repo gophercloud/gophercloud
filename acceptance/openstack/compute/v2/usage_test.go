@@ -35,15 +35,52 @@ func TestUsageSingleTenant(t *testing.T) {
 		End:   &end,
 	}
 
-	page, err := usage.SingleTenant(client, tenantID, opts).AllPages()
+	allPages, err := usage.SingleTenant(client, tenantID, opts).AllPages()
 	th.AssertNoErr(t, err)
 
-	tenantUsage, err := usage.ExtractSingleTenant(page)
+	tenantUsage, err := usage.ExtractSingleTenant(allPages)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, tenantUsage)
 
 	if tenantUsage.TotalHours == 0 {
+		t.Fatalf("TotalHours should not be 0")
+	}
+}
+
+func TestUsageAllTenants(t *testing.T) {
+	t.Skip("This is not passing in OpenLab. Works locally")
+
+	clients.RequireLong(t)
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+
+	server, err := CreateServer(t, client)
+	th.AssertNoErr(t, err)
+	DeleteServer(t, client, server)
+
+	end := time.Now()
+	start := end.AddDate(0, -1, 0)
+	opts := usage.AllTenantsOpts{
+		Detailed: true,
+		Start:    &start,
+		End:      &end,
+	}
+
+	allPages, err := usage.AllTenants(client, opts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allUsage, err := usage.ExtractAllTenants(allPages)
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, allUsage)
+
+	if len(allUsage) == 0 {
+		t.Fatalf("No usage returned")
+	}
+
+	if allUsage[0].TotalHours == 0 {
 		t.Fatalf("TotalHours should not be 0")
 	}
 }

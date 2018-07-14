@@ -19,3 +19,19 @@ func TestGetTenant(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &SingleTenantUsageResults, actual)
 }
+
+func TestAllTenants(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetAllTenantsSuccessfully(t)
+
+	getOpts := usage.AllTenantsOpts{
+		Detailed: true,
+	}
+
+	page, err := usage.AllTenants(client.ServiceClient(), getOpts).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := usage.ExtractAllTenants(page)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, AllTenantsUsageResult, actual)
+}

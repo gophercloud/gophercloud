@@ -135,3 +135,19 @@ func ExtractSingleTenant(page pagination.Page) (*TenantUsage, error) {
 	err := (page.(SingleTenantPage)).ExtractInto(&s)
 	return s.TenantUsage, err
 }
+
+// AllTenantsPage stores a single, only page of TenantUsage results from a
+// AllTenants call.
+type AllTenantsPage struct {
+	pagination.SinglePageBase
+}
+
+// ExtractAllTenants interprets a AllTenantsPage as a TenantUsage result.
+func ExtractAllTenants(page pagination.Page) ([]TenantUsage, error) {
+	var s struct {
+		TenantUsages     []TenantUsage      `json:"tenant_usages"`
+		TenantUsageLinks []gophercloud.Link `json:"tenant_usage_links"`
+	}
+	err := (page.(AllTenantsPage)).ExtractInto(&s)
+	return s.TenantUsages, err
+}
