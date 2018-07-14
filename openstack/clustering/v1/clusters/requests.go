@@ -496,3 +496,30 @@ func Check(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 
 	return
 }
+
+// ToClusterCompleteLifecycleMap constructs a request body from CompleteLifecycleOpts.
+func (opts CompleteLifecycleOpts) ToClusterCompleteLifecycleMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "complete_lifecycle")
+}
+
+type CompleteLifecycleOpts struct {
+	LifecycleActionTokenID string `json:"lifecycle_action_token" required:"true"`
+}
+
+func CompleteLifecycle(client *gophercloud.ServiceClient, id string, opts CompleteLifecycleOpts) (r ActionResult) {
+	b, err := opts.ToClusterCompleteLifecycleMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	var result *http.Response
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
+	return
+}
