@@ -49,7 +49,7 @@ func SingleTenant(client *gophercloud.ServiceClient, tenantID string, opts Singl
 		url += query
 	}
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return SingleTenantPage{pagination.SinglePageBase(r)}
+		return SingleTenantPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
 
@@ -101,6 +101,6 @@ func AllTenants(client *gophercloud.ServiceClient, opts AllTenantsOptsBuilder) p
 		url += query
 	}
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
-		return AllTenantsPage{pagination.SinglePageBase(r)}
+		return AllTenantsPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
