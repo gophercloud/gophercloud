@@ -3,7 +3,6 @@
 package v3
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -15,6 +14,8 @@ import (
 )
 
 func TestQuotasetGet(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, projectID := getClientAndProject(t)
 
 	quotaSet, err := quotasets.Get(client, projectID).Extract()
@@ -24,6 +25,8 @@ func TestQuotasetGet(t *testing.T) {
 }
 
 func TestQuotasetGetDefaults(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, projectID := getClientAndProject(t)
 
 	quotaSet, err := quotasets.GetDefaults(client, projectID).Extract()
@@ -33,21 +36,14 @@ func TestQuotasetGetDefaults(t *testing.T) {
 }
 
 func TestQuotasetGetUsage(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, projectID := getClientAndProject(t)
 
 	quotaSetUsage, err := quotasets.GetUsage(client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotaSetUsage)
-}
-
-func TestQuotasetGetDetailed(t *testing.T) {
-	client, projectID := getClientAndProject(t)
-
-	detailedQuotaSet, err := quotasets.GetDetail(client, projectID).Extract()
-	th.AssertNoErr(t, err)
-
-	tools.PrintResource(t, detailedQuotaSet)
 }
 
 var UpdateQuotaOpts = quotasets.UpdateOpts{
@@ -69,6 +65,8 @@ var UpdatedQuotas = quotasets.QuotaSet{
 }
 
 func TestQuotasetUpdate(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, projectID := getClientAndProject(t)
 
 	// save original quotas
@@ -92,17 +90,12 @@ func TestQuotasetUpdate(t *testing.T) {
 	// same as before
 	newQuotas, err := quotasets.Get(client, projectID).Extract()
 	th.AssertNoErr(t, err)
-	if newQuotas.Volumes != resultQuotas.Volumes {
-		t.Fatalf(
-			fmt.Sprintf("Failed to update quotas\n\texpected: %d\t actual: %d",
-				resultQuotas.Volumes,
-				newQuotas.Volumes,
-			),
-		)
-	}
+	th.AssertEquals(t, resultQuotas.Volumes, newQuotas.Volumes)
 }
 
 func TestQuotasetDelete(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, projectID := getClientAndProject(t)
 
 	// save original quotas
@@ -122,15 +115,13 @@ func TestQuotasetDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Test Delete
-	_, err = quotasets.Delete(client, projectID).Extract()
+	err = quotasets.Delete(client, projectID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	newQuotas, err := quotasets.Get(client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
-	if newQuotas.Volumes != defaultQuotaSet.Volumes {
-		t.Fatalf("Failed to delete quotas!")
-	}
+	th.AssertEquals(t, newQuotas.Volumes, defaultQuotaSet.Volumes)
 }
 
 // getClientAndProject reduces boilerplate by returning a new blockstorage v3
