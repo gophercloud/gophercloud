@@ -40,5 +40,14 @@ Example to update a claim for a specified Zaqar queue
 	if err != nil {
 		panic(err)
 	}
+
+Example to delete a claim for a specified Zaqar queue
+
+	queueName := "my_queue"
+
+	err := claims.Delete(messagingClient, queueName, claimID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package claims

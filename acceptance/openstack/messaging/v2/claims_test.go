@@ -58,5 +58,6 @@ func TestCRUDClaim(t *testing.T) {
 		}
 
 		tools.PrintResource(t, updatedClaim)
+		DeleteClaim(t, client, createdQueueName, claimID)
 	}
 }

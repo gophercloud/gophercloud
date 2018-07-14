@@ -47,3 +47,12 @@ func TestUpdate(t *testing.T) {
 	err := claims.Update(fake.ServiceClient(), QueueName, ClaimID, updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfully(t)
+
+	err := claims.Delete(fake.ServiceClient(), QueueName, ClaimID).ExtractErr()
+	th.AssertNoErr(t, err)
+}

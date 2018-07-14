@@ -110,3 +110,11 @@ func Update(client *gophercloud.ServiceClient, queueName string, claimID string,
 	})
 	return
 }
+
+// Delete will delete a Claim for a specified Queue.
+func Delete(client *gophercloud.ServiceClient, queueName string, claimID string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, queueName, claimID), &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
