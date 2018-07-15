@@ -21,12 +21,12 @@ func TestListContainers(t *testing.T) {
 		actual, err := containers.ExtractContainers(page)
 		th.AssertNoErr(t, err)
 
-		th.CheckDeepEquals(t, ExpectedContainersSlice, actual)
+		th.AssertDeepEquals(t, ExpectedContainersSlice, actual)
 
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.AssertEquals(t, count, 1)
 }
 
 func TestListContainersAllPages(t *testing.T) {
@@ -38,7 +38,7 @@ func TestListContainersAllPages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	actual, err := containers.ExtractContainers(allPages)
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, ExpectedContainersSlice, actual)
+	th.AssertDeepEquals(t, ExpectedContainersSlice, actual)
 }
 
 func TestGetContainer(t *testing.T) {
@@ -48,7 +48,7 @@ func TestGetContainer(t *testing.T) {
 
 	actual, err := containers.Get(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0").Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, FirstContainer, *actual)
+	th.AssertDeepEquals(t, FirstContainer, *actual)
 }
 
 func TestCreateContainer(t *testing.T) {
@@ -69,7 +69,7 @@ func TestCreateContainer(t *testing.T) {
 
 	actual, err := containers.Create(client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, FirstContainer, *actual)
+	th.AssertDeepEquals(t, FirstContainer, *actual)
 }
 
 func TestDeleteContainer(t *testing.T) {
@@ -93,12 +93,12 @@ func TestListConsumers(t *testing.T) {
 		actual, err := containers.ExtractConsumers(page)
 		th.AssertNoErr(t, err)
 
-		th.CheckDeepEquals(t, ExpectedConsumersSlice, actual)
+		th.AssertDeepEquals(t, ExpectedConsumersSlice, actual)
 
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.AssertEquals(t, count, 1)
 }
 
 func TestListConsumersAllPages(t *testing.T) {
@@ -110,7 +110,7 @@ func TestListConsumersAllPages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	actual, err := containers.ExtractConsumers(allPages)
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, ExpectedConsumersSlice, actual)
+	th.AssertDeepEquals(t, ExpectedConsumersSlice, actual)
 }
 
 func TestCreateConsumer(t *testing.T) {
@@ -125,7 +125,7 @@ func TestCreateConsumer(t *testing.T) {
 
 	actual, err := containers.CreateConsumer(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", createOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, ExpectedCreatedConsumer, *actual)
+	th.AssertDeepEquals(t, ExpectedCreatedConsumer, *actual)
 }
 
 func TestDeleteConsumer(t *testing.T) {
@@ -140,5 +140,5 @@ func TestDeleteConsumer(t *testing.T) {
 
 	actual, err := containers.DeleteConsumer(client.ServiceClient(), "dfdb88f3-4ddb-4525-9da6-066453caa9b0", deleteOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, FirstContainer, *actual)
+	th.AssertDeepEquals(t, FirstContainer, *actual)
 }

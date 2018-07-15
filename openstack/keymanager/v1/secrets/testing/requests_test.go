@@ -21,12 +21,12 @@ func TestListSecrets(t *testing.T) {
 		actual, err := secrets.ExtractSecrets(page)
 		th.AssertNoErr(t, err)
 
-		th.CheckDeepEquals(t, ExpectedSecretsSlice, actual)
+		th.AssertDeepEquals(t, ExpectedSecretsSlice, actual)
 
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.AssertEquals(t, count, 1)
 }
 
 func TestListSecretsAllPages(t *testing.T) {
@@ -38,7 +38,7 @@ func TestListSecretsAllPages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	actual, err := secrets.ExtractSecrets(allPages)
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, ExpectedSecretsSlice, actual)
+	th.AssertDeepEquals(t, ExpectedSecretsSlice, actual)
 }
 
 func TestGetSecret(t *testing.T) {
@@ -48,7 +48,7 @@ func TestGetSecret(t *testing.T) {
 
 	actual, err := secrets.Get(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c").Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, FirstSecret, *actual)
+	th.AssertDeepEquals(t, FirstSecret, *actual)
 }
 
 func TestCreateSecret(t *testing.T) {
@@ -68,7 +68,7 @@ func TestCreateSecret(t *testing.T) {
 
 	actual, err := secrets.Create(client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, ExpectedCreateResult, *actual)
+	th.AssertDeepEquals(t, ExpectedCreateResult, *actual)
 }
 
 func TestDeleteSecret(t *testing.T) {
@@ -102,7 +102,7 @@ func TestGetPayloadSecret(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 	payload, err := res.Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, GetPayloadResponse, string(payload))
+	th.AssertDeepEquals(t, GetPayloadResponse, string(payload))
 }
 
 func TestGetMetadataSuccessfully(t *testing.T) {
