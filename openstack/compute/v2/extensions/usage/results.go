@@ -121,18 +121,18 @@ type SingleTenantPage struct {
 }
 
 // IsEmpty determines whether or not a SingleTenantPage is empty.
-func (page SingleTenantPage) IsEmpty() (bool, error) {
-	ks, err := ExtractSingleTenant(page)
+func (r SingleTenantPage) IsEmpty() (bool, error) {
+	ks, err := ExtractSingleTenant(r)
 	return ks == nil, err
 }
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (page SingleTenantPage) NextPageURL() (string, error) {
+func (r SingleTenantPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"tenant_usage_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}
@@ -164,18 +164,18 @@ func ExtractAllTenants(page pagination.Page) ([]TenantUsage, error) {
 }
 
 // IsEmpty determines whether or not an AllTenantsPage is empty.
-func (page AllTenantsPage) IsEmpty() (bool, error) {
-	usages, err := ExtractAllTenants(page)
+func (r AllTenantsPage) IsEmpty() (bool, error) {
+	usages, err := ExtractAllTenants(r)
 	return len(usages) == 0, err
 }
 
 // NextPageURL uses the response's embedded link reference to navigate to the
 // next page of results.
-func (page AllTenantsPage) NextPageURL() (string, error) {
+func (r AllTenantsPage) NextPageURL() (string, error) {
 	var s struct {
 		Links []gophercloud.Link `json:"tenant_usages_links"`
 	}
-	err := page.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	if err != nil {
 		return "", err
 	}

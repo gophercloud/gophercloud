@@ -10,6 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/usage"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -35,17 +36,19 @@ func TestUsageSingleTenant(t *testing.T) {
 		End:   &end,
 	}
 
-	allPages, err := usage.SingleTenant(client, tenantID, opts).AllPages()
+	err = usage.SingleTenant(client, tenantID, opts).EachPage(func(page pagination.Page) (bool, error) {
+		tenantUsage, err := usage.ExtractSingleTenant(page)
+		th.AssertNoErr(t, err)
+
+		tools.PrintResource(t, tenantUsage)
+		if tenantUsage.TotalHours == 0 {
+			t.Fatalf("TotalHours should not be 0")
+		}
+
+		return true, nil
+	})
+
 	th.AssertNoErr(t, err)
-
-	tenantUsage, err := usage.ExtractSingleTenant(allPages)
-	th.AssertNoErr(t, err)
-
-	tools.PrintResource(t, tenantUsage)
-
-	if tenantUsage.TotalHours == 0 {
-		t.Fatalf("TotalHours should not be 0")
-	}
 }
 
 func TestUsageAllTenants(t *testing.T) {
@@ -68,19 +71,21 @@ func TestUsageAllTenants(t *testing.T) {
 		End:      &end,
 	}
 
-	allPages, err := usage.AllTenants(client, opts).AllPages()
+	err = usage.AllTenants(client, opts).EachPage(func(page pagination.Page) (bool, error) {
+		allUsage, err := usage.ExtractAllTenants(page)
+		th.AssertNoErr(t, err)
+
+		tools.PrintResource(t, allUsage)
+
+		if len(allUsage) == 0 {
+			t.Fatalf("No usage returned")
+		}
+
+		if allUsage[0].TotalHours == 0 {
+			t.Fatalf("TotalHours should not be 0")
+		}
+		return true, nil
+	})
+
 	th.AssertNoErr(t, err)
-
-	allUsage, err := usage.ExtractAllTenants(allPages)
-	th.AssertNoErr(t, err)
-
-	tools.PrintResource(t, allUsage)
-
-	if len(allUsage) == 0 {
-		t.Fatalf("No usage returned")
-	}
-
-	if allUsage[0].TotalHours == 0 {
-		t.Fatalf("TotalHours should not be 0")
-	}
 }
