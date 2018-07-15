@@ -21,12 +21,12 @@ func TestListResources(t *testing.T) {
 		actual, err := resources.ExtractResources(page)
 		th.AssertNoErr(t, err)
 
-		th.CheckDeepEquals(t, ExpectedResourcesSlice, actual)
+		th.AssertDeepEquals(t, ExpectedResourcesSlice, actual)
 
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.AssertEquals(t, count, 1)
 }
 
 func TestListResourcesAllPages(t *testing.T) {
@@ -38,7 +38,7 @@ func TestListResourcesAllPages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	actual, err := resources.ExtractResources(allPages)
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, ExpectedResourcesSlice, actual)
+	th.AssertDeepEquals(t, ExpectedResourcesSlice, actual)
 }
 
 func TestGetResource(t *testing.T) {
@@ -48,7 +48,7 @@ func TestGetResource(t *testing.T) {
 
 	actual, err := resources.Get(client.ServiceClient(), "9fe1d3").Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, SecondResource, *actual)
+	th.AssertDeepEquals(t, SecondResource, *actual)
 }
 
 func TestCreateResource(t *testing.T) {
@@ -62,7 +62,7 @@ func TestCreateResource(t *testing.T) {
 
 	actual, err := resources.Create(client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, SecondResource, *actual)
+	th.AssertDeepEquals(t, SecondResource, *actual)
 }
 
 func TestDeleteResource(t *testing.T) {
@@ -85,5 +85,5 @@ func TestUpdateResource(t *testing.T) {
 
 	actual, err := resources.Update(client.ServiceClient(), "9fe1d3", updateOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, SecondResourceUpdated, *actual)
+	th.AssertDeepEquals(t, SecondResourceUpdated, *actual)
 }

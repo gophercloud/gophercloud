@@ -21,12 +21,12 @@ func TestListOrders(t *testing.T) {
 		actual, err := orders.ExtractOrders(page)
 		th.AssertNoErr(t, err)
 
-		th.CheckDeepEquals(t, ExpectedOrdersSlice, actual)
+		th.AssertDeepEquals(t, ExpectedOrdersSlice, actual)
 
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
-	th.CheckEquals(t, count, 1)
+	th.AssertEquals(t, count, 1)
 }
 
 func TestListOrdersAllPages(t *testing.T) {
@@ -38,7 +38,7 @@ func TestListOrdersAllPages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	actual, err := orders.ExtractOrders(allPages)
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, ExpectedOrdersSlice, actual)
+	th.AssertDeepEquals(t, ExpectedOrdersSlice, actual)
 }
 
 func TestGetOrder(t *testing.T) {
@@ -48,7 +48,7 @@ func TestGetOrder(t *testing.T) {
 
 	actual, err := orders.Get(client.ServiceClient(), "46f73695-82bb-447a-bf96-6635f0fb0ce7").Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, SecondOrder, *actual)
+	th.AssertDeepEquals(t, SecondOrder, *actual)
 }
 
 func TestCreateOrder(t *testing.T) {
@@ -68,7 +68,7 @@ func TestCreateOrder(t *testing.T) {
 
 	actual, err := orders.Create(client.ServiceClient(), createOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.CheckDeepEquals(t, SecondOrder, *actual)
+	th.AssertDeepEquals(t, SecondOrder, *actual)
 }
 
 func TestDeleteOrder(t *testing.T) {
