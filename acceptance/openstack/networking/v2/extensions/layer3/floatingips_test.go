@@ -138,7 +138,7 @@ func TestLayer3FloatingIPsCreateDeleteBySubnetID(t *testing.T) {
 
 	fip, err := floatingips.Create(client, createOpts).Extract()
 	if err != nil {
-		t.Fatalf("Unable to create floating IP: %v")
+		t.Fatalf("Unable to create floating IP: %v", err)
 	}
 
 	tools.PrintResource(t, fip)
