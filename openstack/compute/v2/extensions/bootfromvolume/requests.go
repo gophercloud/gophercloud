@@ -68,10 +68,12 @@ type BlockDevice struct {
 	// omitted for existing volumes.
 	VolumeSize int `json:"volume_size,omitempty"`
 
-	// DeviceType [optional] low level details that some hypervisors (currently only libvirt) may support. device_type value may be disk, cdrom, floppy, lun.
+	// DeviceType specifies the device type of the block devices.
+	// Examples of this are disk, cdrom, floppy, lun, etc.
 	DeviceType string `json:"device_type,omitempty"`
 
-	// DiskBus values can be: ide, usb, virtio, scsi
+	// DiskBus is the bus type of the block devices.
+	// Examples of this are ide, usb, virtio, scsi, etc.
 	DiskBus string `json:"disk_bus,omitempty"`
 }
 
