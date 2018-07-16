@@ -133,10 +133,42 @@ func TestUpdateStack(t *testing.T) {
 				}
 			}
 		}`)
-	updateOpts := stacks.UpdateOpts{
+	updateOpts := &stacks.UpdateOpts{
 		TemplateOpts: template,
 	}
 	err := stacks.Update(fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada", updateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestUpdateStackNoTemplate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateSuccessfully(t)
+
+	parameters := make(map[string]interface{})
+	parameters["flavor"] = "m1.tiny"
+
+	updateOpts := &stacks.UpdateOpts{
+		Parameters: parameters,
+	}
+	expected := stacks.ErrTemplateRequired{}
+
+	err := stacks.Update(fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada", updateOpts).ExtractErr()
+	th.AssertEquals(t, expected, err)
+}
+
+func TestUpdatePatchStack(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdatePatchSuccessfully(t)
+
+	parameters := make(map[string]interface{})
+	parameters["flavor"] = "m1.tiny"
+
+	updateOpts := &stacks.UpdateOpts{
+		Parameters: parameters,
+	}
+	err := stacks.UpdatePatch(fake.ServiceClient(), "gophercloud-test-stack-2", "db6977b2-27aa-4775-9ae7-6213212d4ada", updateOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 

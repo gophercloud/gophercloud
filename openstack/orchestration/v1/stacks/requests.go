@@ -262,7 +262,7 @@ func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
 // to be used in the Update operation in this package.
 type UpdateOptsBuilder interface {
-	ToStackUpdateMap() (map[string]interface{}, error)
+	ToStackUpdateMap(existing bool) (map[string]interface{}, error)
 }
 
 // UpdateOpts contains the common options struct used in this package's Update
@@ -270,37 +270,44 @@ type UpdateOptsBuilder interface {
 type UpdateOpts struct {
 	// A structure that contains either the template file or url. Call the
 	// associated methods to extract the information relevant to send in a create request.
-	TemplateOpts *Template `json:"-" required:"true"`
+	TemplateOpts *Template `json:"-"`
 	// A structure that contains details for the environment of the stack.
 	EnvironmentOpts *Environment `json:"-"`
 	// User-defined parameters to pass to the template.
-	Parameters map[string]string `json:"parameters,omitempty"`
+	Parameters map[string]interface{} `json:"parameters,omitempty"`
 	// The timeout for stack creation in minutes.
 	Timeout int `json:"timeout_mins,omitempty"`
-	// A list of tags to assosciate with the Stack
+	// A list of tags to associate with the Stack
 	Tags []string `json:"-"`
 }
 
 // ToStackUpdateMap casts a CreateOpts struct to a map.
-func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
+// If the param "existing" == false, TemplateOpts is required.
+func (opts UpdateOpts) ToStackUpdateMap(existing bool) (map[string]interface{}, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
 	}
 
-	if err := opts.TemplateOpts.Parse(); err != nil {
-		return nil, err
-	}
-
-	if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
-		return nil, err
-	}
-	opts.TemplateOpts.fixFileRefs()
-	b["template"] = string(opts.TemplateOpts.Bin)
-
 	files := make(map[string]string)
-	for k, v := range opts.TemplateOpts.Files {
-		files[k] = v
+
+	// Template is only required on PUT update
+	if opts.TemplateOpts != nil {
+		if err := opts.TemplateOpts.Parse(); err != nil {
+			return nil, err
+		}
+
+		if err := opts.TemplateOpts.getFileContents(opts.TemplateOpts.Parsed, ignoreIfTemplate, true); err != nil {
+			return nil, err
+		}
+		opts.TemplateOpts.fixFileRefs()
+		b["template"] = string(opts.TemplateOpts.Bin)
+
+		for k, v := range opts.TemplateOpts.Files {
+			files[k] = v
+		}
+	} else if !existing {
+		return nil, ErrTemplateRequired{}
 	}
 
 	if opts.EnvironmentOpts != nil {
@@ -331,12 +338,26 @@ func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
 // Update accepts an UpdateOpts struct and updates an existing stack using the values
 // provided.
 func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdateOptsBuilder) (r UpdateResult) {
-	b, err := opts.ToStackUpdateMap()
+	const existing = false
+	b, err := opts.ToStackUpdateMap(existing)
 	if err != nil {
 		r.Err = err
 		return
 	}
 	_, r.Err = c.Put(updateURL(c, stackName, stackID), b, nil, nil)
+	return
+}
+
+// UpdatePatch accepts an UpdateOpts struct and updates an existing stack using the
+// parameters provided.  opts.TemplateOpts is optional
+func UpdatePatch(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	const existing = true
+	b, err := opts.ToStackUpdateMap(existing)
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Patch(updateURL(c, stackName, stackID), b, nil, nil)
 	return
 }
 

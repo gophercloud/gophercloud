@@ -5,4 +5,121 @@
 // application framework or component specified (in the template). A stack is a
 // running instance of a template. The result of creating a stack is a deployment
 // of the application framework or component.
+
+/* Update Stack examples using the different update methods.
+Summary of behavior between the different methods :
+
+Function | Test Case | Result
+
+Update()	| Template AND Parameters WITH Conflict | Parameter takes priority, parameters are set in raw_template.environment overlay
+Update()	| Template ONLY | Template updates, raw_template.environment overlay is removed
+Update()	| Parameters ONLY | No update, template is required
+
+UpdatePatch() 	| Template AND Parameters WITH Conflict | Parameter takes priority, parameters are set in raw_template.environment overlay
+UpdatePatch() 	| Template ONLY | Template updates, but raw_template.environment overlay is not removed, existing parameter values will remain
+UpdatePatch() 	| Parameters ONLY | Parameters (raw_template.environment) is updated, excluded values are unchanged
+
+The PUT Update() function will remove parameters from the raw_template.environment overlay
+if they are excluded from the operation, whereas PATCH Update() will never be destructive to the
+raw_template.environment overlay.  It is not possible to expose the raw_template values with a
+patch update once they have been added to the environment overlay with the PATCH verb, but
+newly added values that do not have a corresponding key in the overlay will display the
+raw_template value.
+*/
+
+// example stack update using the Update() (PUT) method
+
+/*
+t := make(map[string]interface{})
+f, err := ioutil.ReadFile("template.yaml")
+if err != nil {
+	panic(err)
+}
+err = yaml.Unmarshal(f, t)
+if err != nil {
+	panic(err)
+}
+
+template := stacks.Template{}
+template.TE = stacks.TE{
+	Bin: f,
+}
+
+var params = make(map[string]interface{})
+params["number_of_nodes"] = 2
+
+stackName := "my_stack"
+stackId := "d68cc349-ccc5-4b44-a17d-07f068c01e5a"
+
+stackOpts := &stacks.UpdateOpts{
+	Parameters: params,
+	TemplateOpts: &template,
+}
+
+// client is an instance of *gophercloud.ServiceClient
+res := stacks.Update(client, stackName, stackId, stackOpts)
+if res.Err != nil {
+	panic(res.Err)
+}
+
+//example template.yaml of a Heat::ResourceGroup with 3 nodes
+*/
+
+//example stack update using the UpdatePatch()  (PATCH) method
+
+/*
+var params = make(map[string]interface{})
+params["number_of_nodes"] = 2
+
+stackName := "my_stack"
+stackId := "d68cc349-ccc5-4b44-a17d-07f068c01e5a"
+
+stackOpts := &stacks.UpdateOpts{
+	Parameters: params,
+}
+
+res := stacks.UpdatePatch(client, stackName, stackId, stackOpts)
+if res.Err != nil {
+	panic(res.Err)
+}
+
+
+//example template.yaml of a Heat::ResourceGroup with 3 nodes
+*/
+
+/*
+heat_template_version: 2016-04-08
+
+parameters:
+	number_of_nodes:
+		type: number
+		default: 3
+		description: the number of nodes
+	node_flavor:
+		type: string
+		default: m1.small
+		description: node flavor
+	node_image:
+		type: string
+		default: centos7.5-latest
+		description: node os image
+	node_network:
+		type: string
+		default: my-node-network
+		description: node network name
+
+resources:
+	resource_group:
+		type: OS::Heat::ResourceGroup
+		properties:
+		count: { get_param: number_of_nodes }
+		resource_def:
+			type: OS::Nova::Server
+			properties:
+				name: my_nova_server_%index%
+				image: { get_param: node_image }
+				flavor: { get_param: node_flavor }
+				networks:
+					- network: {get_param: node_network}
+*/
 package stacks
