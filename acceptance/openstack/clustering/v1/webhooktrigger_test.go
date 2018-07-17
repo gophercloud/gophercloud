@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/webhooks"
 
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/nodes"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -18,17 +19,47 @@ func TestClusteringWebhookTrigger(t *testing.T) {
 		t.Fatalf("Unable to create clustering client: %v", err)
 	}
 
-	// TODO: need to have cluster receiver created
-	receiverUUID := "f93f83f6-762b-41b6-b757-80507834d394"
-	actionID, err := webhooks.Trigger(client, receiverUUID, nil).Extract()
+	opts := webhooks.TriggerOpts{
+		V: "1",
+	}
+
+	// create profile, cluster and receiver first
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	receiver, err := CreateReceiver(t, client, cluster.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteReceiver(t, client, receiver.ID)
+
+	// trigger webhook
+	actionID, err := webhooks.Trigger(client, receiver.ID, opts).Extract()
 	if err != nil {
-		// TODO: Uncomment next line once using real receiver
-		//t.Fatalf("Unable to extract webhooks trigger: %v", err)
-		t.Logf("TODO: Need to implement webhook trigger once PR receiver")
+		t.Fatalf("Unable to extract webhooks trigger: %v", err)
 	} else {
 		t.Logf("Webhook trigger action id %s", actionID)
 	}
 
-	// TODO: Need to compare to make sure action ID exists
-	th.AssertEquals(t, true, true)
+	err = WaitForAction(client, actionID)
+	if err != nil {
+		t.Fatalf("Error scaling out cluster %s as a result from webhook trigger: %s:", cluster.ID, err)
+	}
+
+	// check that new node was created
+	nodelistopts := nodes.ListOpts{
+		ClusterID: cluster.ID,
+	}
+
+	allPages, err := nodes.List(client, nodelistopts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allNodes, err := nodes.ExtractNodes(allPages)
+	th.AssertNoErr(t, err)
+
+	// there should be 2 nodes in the cluster after triggering webhook
+	th.AssertEquals(t, len(allNodes), 2)
 }
