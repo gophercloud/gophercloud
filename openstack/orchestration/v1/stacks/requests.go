@@ -262,11 +262,15 @@ func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) 
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
 // to be used in the Update operation in this package.
 type UpdateOptsBuilder interface {
-	ToStackUpdateMap(existing bool) (map[string]interface{}, error)
+	ToStackUpdateMap() (map[string]interface{}, error)
+}
+
+type UpdatePatchOptsBuilder interface {
+	ToStackUpdatePatchMap() (map[string]interface{}, error)
 }
 
 // UpdateOpts contains the common options struct used in this package's Update
-// operation.
+// and UpdatePatch operations.
 type UpdateOpts struct {
 	// A structure that contains either the template file or url. Call the
 	// associated methods to extract the information relevant to send in a create request.
@@ -281,9 +285,23 @@ type UpdateOpts struct {
 	Tags []string `json:"-"`
 }
 
+// ToStackUpdateMap validates that a template was supplied and calls
+// the toStackUpdateMap private function.
+func (opts UpdateOpts) ToStackUpdateMap() (map[string]interface{}, error) {
+	if opts.TemplateOpts == nil {
+		return nil, ErrTemplateRequired{}
+	}
+	return toStackUpdateMap(opts)
+}
+
+// ToStackUpdatePatchMap calls the private function toStackUpdateMap
+// directly.
+func (opts UpdateOpts) ToStackUpdatePatchMap() (map[string]interface{}, error) {
+	return toStackUpdateMap(opts)
+}
+
 // ToStackUpdateMap casts a CreateOpts struct to a map.
-// If the param "existing" == false, TemplateOpts is required.
-func (opts UpdateOpts) ToStackUpdateMap(existing bool) (map[string]interface{}, error) {
+func toStackUpdateMap(opts UpdateOpts) (map[string]interface{}, error) {
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err
@@ -306,8 +324,6 @@ func (opts UpdateOpts) ToStackUpdateMap(existing bool) (map[string]interface{}, 
 		for k, v := range opts.TemplateOpts.Files {
 			files[k] = v
 		}
-	} else if !existing {
-		return nil, ErrTemplateRequired{}
 	}
 
 	if opts.EnvironmentOpts != nil {
@@ -335,11 +351,10 @@ func (opts UpdateOpts) ToStackUpdateMap(existing bool) (map[string]interface{}, 
 	return b, nil
 }
 
-// Update accepts an UpdateOpts struct and updates an existing stack using the values
-// provided.
+// Update accepts an UpdateOpts struct and updates an existing stack using the
+//  http PUT verb with the values provided. opts.TemplateOpts is required.
 func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdateOptsBuilder) (r UpdateResult) {
-	const existing = false
-	b, err := opts.ToStackUpdateMap(existing)
+	b, err := opts.ToStackUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
@@ -348,11 +363,10 @@ func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts Update
 	return
 }
 
-// UpdatePatch accepts an UpdateOpts struct and updates an existing stack using the
-// parameters provided.  opts.TemplateOpts is optional
-func UpdatePatch(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdateOptsBuilder) (r UpdateResult) {
-	const existing = true
-	b, err := opts.ToStackUpdateMap(existing)
+// Update accepts an UpdateOpts struct and updates an existing stack using the
+//  http PATCH verb with the values provided. opts.TemplateOpts is required.
+func UpdatePatch(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdatePatchOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToStackUpdatePatchMap()
 	if err != nil {
 		r.Err = err
 		return
