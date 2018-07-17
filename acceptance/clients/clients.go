@@ -576,3 +576,24 @@ func configureDebug(client *gophercloud.ProviderClient) *gophercloud.ProviderCli
 
 	return client
 }
+
+// NewContainerInfraV1Client returns a *ServiceClient for making calls
+// to the OpenStack Container Infra Management v1 API. An error will be returned
+// if authentication or client creation was not possible.
+func NewContainerInfraV1Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	client = configureDebug(client)
+
+	return openstack.NewContainerInfraV1(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
