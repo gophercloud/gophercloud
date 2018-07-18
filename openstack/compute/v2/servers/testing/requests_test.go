@@ -560,7 +560,7 @@ func TestCreateServerWithTags(t *testing.T) {
 	c := client.ServiceClient()
 	c.Microversion = "2.52"
 
-	tags := servers.Tags{"foo", "bar"}
+	tags := []string{"foo", "bar"}
 	createOpts := servers.CreateOpts{
 		Name:      "derp",
 		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
