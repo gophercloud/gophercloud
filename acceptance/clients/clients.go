@@ -19,6 +19,9 @@ type AcceptanceTestChoices struct {
 	// ImageID contains the ID of a valid image.
 	ImageID string
 
+	// COEImageID contains the ID of a valid image to create COE.
+	COEImageID string
+
 	// FlavorID contains the ID of a valid flavor.
 	FlavorID string
 
@@ -49,6 +52,7 @@ type AcceptanceTestChoices struct {
 // If any required state is missing, an `error` will be returned that enumerates the missing properties.
 func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	imageID := os.Getenv("OS_IMAGE_ID")
+	coeImageID := os.Getenv("OS_COE_IMAGE_ID")
 	flavorID := os.Getenv("OS_FLAVOR_ID")
 	flavorIDResize := os.Getenv("OS_FLAVOR_ID_RESIZE")
 	networkName := os.Getenv("OS_NETWORK_NAME")
@@ -61,6 +65,9 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	missing := make([]string, 0, 3)
 	if imageID == "" {
 		missing = append(missing, "OS_IMAGE_ID")
+	}
+	if coeImageID == "" {
+		missing = append(missing, "OS_COE_IMAGE_ID")
 	}
 	if flavorID == "" {
 		missing = append(missing, "OS_FLAVOR_ID")
@@ -99,6 +106,7 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 
 	return &AcceptanceTestChoices{
 		ImageID:            imageID,
+		COEImageID:         coeImageID,
 		FlavorID:           flavorID,
 		FlavorIDResize:     flavorIDResize,
 		FloatingIPPoolName: floatingIPPoolName,
@@ -559,6 +567,27 @@ func NewKeyManagerV1Client() (*gophercloud.ServiceClient, error) {
 	client = configureDebug(client)
 
 	return openstack.NewKeyManagerV1(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
+// NewContainerInfraV1Client returns a *ServiceClient for making calls
+// to the OpenStack Container Infra (Magnum) V1 API. An error will be returned
+// if authentication or client creation was not possible.
+func NewContainerInfraV1Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	client = configureDebug(client)
+
+	return openstack.NewContainerInfraV1(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }
