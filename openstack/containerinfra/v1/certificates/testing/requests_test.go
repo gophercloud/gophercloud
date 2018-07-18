@@ -21,3 +21,22 @@ func TestGetCertificates(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCertificate, *actual)
 }
+
+func TestCreateCertificates(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleCreateCertificateSuccessfully(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	opts := certificates.CreateOpts{
+		BayUUID:	"d564b18a-2890-4152-be3d-e05d784ff727",
+		Csr:		"FAKE_CERTIFICATE_CSR",
+	}
+
+	actual, err := certificates.Create(sc, opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedCreateCertificateResponse, *actual)
+}
