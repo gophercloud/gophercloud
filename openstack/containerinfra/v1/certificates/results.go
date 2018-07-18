@@ -24,6 +24,6 @@ func (r commonResult) Extract() (*Certificate, error) {
 type Certificate struct {
 	ClusterUUID string             `json:"cluster_uuid"`
 	BayUUID     string             `json:"bay_uuid"`
-	Links     []gophercloud.Link `json:"links"`
-	Pem       string             `json:"pem"`
+	Links       []gophercloud.Link `json:"links"`
+	Pem         string             `json:"pem"`
 }

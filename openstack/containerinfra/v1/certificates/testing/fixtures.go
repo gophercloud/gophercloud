@@ -31,7 +31,7 @@ const CertificateResponse = `
 var ExpectedCertificate = certificates.Certificate{
 	ClusterUUID: "d564b18a-2890-4152-be3d-e05d784ff727",
 	BayUUID:     "d564b18a-2890-4152-be3d-e05d784ff727",
-	Pem:       "FAKE_CERTIFICATE",
+	Pem:         "FAKE_CERTIFICATE",
 	Links: []gophercloud.Link{
 		{Href: "http://10.63.176.154:9511/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff727", Rel: "self"},
 		{Href: "http://10.63.176.154:9511/certificates/d564b18a-2890-4152-be3d-e05d784ff727", Rel: "bookmark"},
