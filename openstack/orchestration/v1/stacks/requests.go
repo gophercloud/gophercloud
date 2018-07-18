@@ -265,6 +265,8 @@ type UpdateOptsBuilder interface {
 	ToStackUpdateMap() (map[string]interface{}, error)
 }
 
+// UpdatePatchOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the UpdatePatch operation in this package
 type UpdatePatchOptsBuilder interface {
 	ToStackUpdatePatchMap() (map[string]interface{}, error)
 }
@@ -309,7 +311,6 @@ func toStackUpdateMap(opts UpdateOpts) (map[string]interface{}, error) {
 
 	files := make(map[string]string)
 
-	// Template is only required on PUT update
 	if opts.TemplateOpts != nil {
 		if err := opts.TemplateOpts.Parse(); err != nil {
 			return nil, err
@@ -364,7 +365,7 @@ func Update(c *gophercloud.ServiceClient, stackName, stackID string, opts Update
 }
 
 // Update accepts an UpdateOpts struct and updates an existing stack using the
-//  http PATCH verb with the values provided. opts.TemplateOpts is required.
+//  http PATCH verb with the values provided. opts.TemplateOpts is not required.
 func UpdatePatch(c *gophercloud.ServiceClient, stackName, stackID string, opts UpdatePatchOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToStackUpdatePatchMap()
 	if err != nil {
