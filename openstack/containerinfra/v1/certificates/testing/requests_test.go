@@ -32,8 +32,8 @@ func TestCreateCertificates(t *testing.T) {
 	sc.Endpoint = sc.Endpoint + "v1/"
 
 	opts := certificates.CreateOpts{
-		BayUUID:	"d564b18a-2890-4152-be3d-e05d784ff727",
-		Csr:		"FAKE_CERTIFICATE_CSR",
+		BayUUID: "d564b18a-2890-4152-be3d-e05d784ff727",
+		Csr:     "FAKE_CERTIFICATE_CSR",
 	}
 
 	actual, err := certificates.Create(sc, opts).Extract()

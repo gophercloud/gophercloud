@@ -46,9 +46,8 @@ type Certificate struct {
 
 // Represents a Certificate Create Response
 type CreateCertificateResponse struct {
-	BayUUID     string             `json:"bay_uuid"`
-	Links       []gophercloud.Link `json:"links"`
-	Pem         string             `json:"pem"`
-	Csr         string             `json:"csr"`
+	BayUUID string             `json:"bay_uuid"`
+	Links   []gophercloud.Link `json:"links"`
+	Pem     string             `json:"pem"`
+	Csr     string             `json:"csr"`
 }
-

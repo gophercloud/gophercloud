@@ -56,9 +56,9 @@ var ExpectedCertificate = certificates.Certificate{
 }
 
 var ExpectedCreateCertificateResponse = certificates.CreateCertificateResponse{
-	BayUUID:     "d564b18a-2890-4152-be3d-e05d784ff727",
-	Pem:         "FAKE_CERTIFICATE_PEM",
-	Csr:         "FAKE_CERTIFICATE_CSR",
+	BayUUID: "d564b18a-2890-4152-be3d-e05d784ff727",
+	Pem:     "FAKE_CERTIFICATE_PEM",
+	Csr:     "FAKE_CERTIFICATE_CSR",
 	Links: []gophercloud.Link{
 		{Href: "http://10.63.176.154:9511/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff727", Rel: "self"},
 		{Href: "http://10.63.176.154:9511/certificates/d564b18a-2890-4152-be3d-e05d784ff727", Rel: "bookmark"},
@@ -96,4 +96,3 @@ func HandleCreateCertificateSuccessfully(t *testing.T) {
 		fmt.Fprint(w, CreateCertificateResponse)
 	})
 }
-

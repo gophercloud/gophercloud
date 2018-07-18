@@ -13,8 +13,8 @@ type CreateOptsBuilder interface {
 
 // CreateOpts represents options used to create a certificate.
 type CreateOpts struct {
-	BayUUID     string             `json:"bay_uuid" required:"true"`
-	Csr         string             `json:"csr" required:"true"`
+	BayUUID string `json:"bay_uuid" required:"true"`
+	Csr     string `json:"csr" required:"true"`
 }
 
 // ToCertificateCreateMap constructs a request body from CreateOpts.
