@@ -22,8 +22,8 @@ func (r commonResult) Extract() (*Certificate, error) {
 
 // Represents a template for a Cluster Template
 type Certificate struct {
-	ClusterID string             `json:"cluster_uuid"`
-	BayID     string             `json:"bay_uuid"`
+	ClusterUUID string             `json:"cluster_uuid"`
+	BayUUID     string             `json:"bay_uuid"`
 	Links     []gophercloud.Link `json:"links"`
 	Pem       string             `json:"pem"`
 }
