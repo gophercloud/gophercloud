@@ -6,6 +6,8 @@ the OpenStack Container Infra service.
 
 Example to Create Cluster Template
 
+	boolFalse := false
+	boolTrue := true
 	createOpts := clustertemplates.CreateOpts{
 		Name:                "test-cluster-template",
 		Labels:              map[string]string{},
@@ -13,22 +15,22 @@ Example to Create Cluster Template
 		MasterFlavorID:      "",
 		NoProxy:             "10.0.0.0/8,172.0.0.0/8,192.0.0.0/8,localhost",
 		HTTPSProxy:          "http://10.164.177.169:8080",
-		TLSDisabled:         false,
+		TLSDisabled:         &boolFalse,
 		KeyPairID:           "kp",
-		Public:              false,
+		Public:              &boolFalse,
 		HTTPProxy:           "http://10.164.177.169:8080",
 		DockerVolumeSize:    3,
 		ServerType:          "vm",
 		ExternalNetworkID:   "public",
 		ImageID:             "fedora-atomic-latest",
 		VolumeDriver:        "cinder",
-		RegistryEnabled:     false,
+		RegistryEnabled:     &boolFalse,
 		DockerStorageDriver: "devicemapper",
 		NetworkDriver:       "flannel",
 		FixedNetwork:        "",
 		COE:                 "kubernetes",
 		FlavorID:            "m1.small",
-		MasterLBEnabled:     true,
+		MasterLBEnabled:     &boolTrue,
 		DNSNameServer:       "8.8.8.8",
 	}
 

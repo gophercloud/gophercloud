@@ -21,6 +21,8 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 	name := tools.RandomString("TESTACC-", 8)
 	t.Logf("Attempting to create cluster template: %s", name)
 
+	boolFalse := false
+	boolTrue := true
 	createOpts := clustertemplates.CreateOpts{
 		Name:                name,
 		Labels:              map[string]string{},
@@ -28,22 +30,22 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 		MasterFlavorID:      "",
 		NoProxy:             "10.0.0.0/8,172.0.0.0/8,192.0.0.0/8,localhost",
 		HTTPSProxy:          "http://10.164.177.169:8080",
-		TLSDisabled:         false,
+		TLSDisabled:         &boolFalse,
 		KeyPairID:           "kp",
-		Public:              false,
+		Public:              &boolFalse,
 		HTTPProxy:           "http://10.164.177.169:8080",
 		DockerVolumeSize:    3,
 		ServerType:          "vm",
 		ExternalNetworkID:   choices.ExternalNetworkID,
 		ImageID:             choices.ImageID,
 		VolumeDriver:        "cinder",
-		RegistryEnabled:     false,
+		RegistryEnabled:     &boolFalse,
 		DockerStorageDriver: "devicemapper",
 		NetworkDriver:       "flannel",
 		FixedNetwork:        "",
 		COE:                 "kubernetes",
 		FlavorID:            "m1.small",
-		MasterLBEnabled:     true,
+		MasterLBEnabled:     &boolTrue,
 		DNSNameServer:       "8.8.8.8",
 	}
 

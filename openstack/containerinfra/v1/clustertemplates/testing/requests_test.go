@@ -14,6 +14,8 @@ func TestCreateClusterTemplate(t *testing.T) {
 
 	HandleCreateClusterTemplateSuccessfully(t)
 
+	boolFalse := false
+	boolTrue := true
 	opts := clustertemplates.CreateOpts{
 		Name:                "kubernetes-dev",
 		Labels:              map[string]string{},
@@ -21,22 +23,22 @@ func TestCreateClusterTemplate(t *testing.T) {
 		MasterFlavorID:      "",
 		NoProxy:             "10.0.0.0/8,172.0.0.0/8,192.0.0.0/8,localhost",
 		HTTPSProxy:          "http://10.164.177.169:8080",
-		TLSDisabled:         false,
+		TLSDisabled:         &boolFalse,
 		KeyPairID:           "kp",
-		Public:              false,
+		Public:              &boolFalse,
 		HTTPProxy:           "http://10.164.177.169:8080",
 		DockerVolumeSize:    3,
 		ServerType:          "vm",
 		ExternalNetworkID:   "public",
 		ImageID:             "Fedora-Atomic-27-20180212.2.x86_64",
 		VolumeDriver:        "cinder",
-		RegistryEnabled:     false,
+		RegistryEnabled:     &boolFalse,
 		DockerStorageDriver: "devicemapper",
 		NetworkDriver:       "flannel",
 		FixedNetwork:        "",
 		COE:                 "kubernetes",
 		FlavorID:            "m1.small",
-		MasterLBEnabled:     true,
+		MasterLBEnabled:     &boolTrue,
 		DNSNameServer:       "8.8.8.8",
 	}
 

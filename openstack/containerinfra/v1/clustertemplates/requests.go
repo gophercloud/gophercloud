@@ -30,15 +30,15 @@ type CreateOpts struct {
 	HTTPSProxy          string            `json:"https_proxy,omitempty"`
 	NoProxy             string            `json:"no_proxy,omitempty"`
 	VolumeDriver        string            `json:"volume_driver,omitempty"`
-	RegistryEnabled     bool              `json:"registry_enabled,omitempty"`
+	RegistryEnabled     *bool             `json:"registry_enabled,omitempty"`
 	Labels              map[string]string `json:"labels,omitempty"`
-	TLSDisabled         bool              `json:"tls_disabled,omitempty"`
-	Public              bool              `json:"public,omitempty"`
+	TLSDisabled         *bool             `json:"tls_disabled,omitempty"`
+	Public              *bool             `json:"public,omitempty"`
 	ServerType          string            `json:"server_type,omitempty"`
 	InsecureRegistry    string            `json:"insecure_registry,omitempty"`
 	DockerStorageDriver string            `json:"docker_storage_driver,omitempty"`
-	MasterLBEnabled     bool              `json:"master_lb_enabled,omitempty"`
-	FloatingIPEnabled   bool              `json:"floating_ip_enabled,omitempty"`
+	MasterLBEnabled     *bool             `json:"master_lb_enabled,omitempty"`
+	FloatingIPEnabled   *bool             `json:"floating_ip_enabled,omitempty"`
 }
 
 // ToClusterCreateMap constructs a request body from CreateOpts.
