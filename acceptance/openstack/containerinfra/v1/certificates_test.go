@@ -18,7 +18,7 @@ func TestCertificatesCRUD(t *testing.T) {
 
 	opts := certificates.CreateOpts{
 		BayUUID: clusterUUID,
-		Csr: "-----BEGIN CERTIFICATE REQUEST-----\n" +
+		CSR: "-----BEGIN CERTIFICATE REQUEST-----\n" +
 			"MIIByjCCATMCAQAwgYkxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlh" +
 			"MRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRMwEQYDVQQKEwpHb29nbGUgSW5jMR8w" +
 			"HQYDVQQLExZJbmZvcm1hdGlvbiBUZWNobm9sb2d5MRcwFQYDVQQDEw53d3cuZ29v" +
@@ -34,9 +34,9 @@ func TestCertificatesCRUD(t *testing.T) {
 
 	createResponse, err := certificates.Create(client, opts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, opts.Csr, createResponse.Csr)
+	th.AssertEquals(t, opts.CSR, createResponse.CSR)
 
 	certificate, err := certificates.Get(client, clusterUUID).Extract()
 	th.AssertNoErr(t, err)
-	t.Log(certificate.Pem)
+	t.Log(certificate.PEM)
 }

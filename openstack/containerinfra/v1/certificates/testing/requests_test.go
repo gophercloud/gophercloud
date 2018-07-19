@@ -33,7 +33,7 @@ func TestCreateCertificates(t *testing.T) {
 
 	opts := certificates.CreateOpts{
 		BayUUID: "d564b18a-2890-4152-be3d-e05d784ff727",
-		Csr:     "FAKE_CERTIFICATE_CSR",
+		CSR:     "FAKE_CERTIFICATE_CSR",
 	}
 
 	actual, err := certificates.Create(sc, opts).Extract()

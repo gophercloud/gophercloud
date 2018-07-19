@@ -48,17 +48,17 @@ const CreateCertificateResponse = `
 var ExpectedCertificate = certificates.Certificate{
 	ClusterUUID: "d564b18a-2890-4152-be3d-e05d784ff727",
 	BayUUID:     "d564b18a-2890-4152-be3d-e05d784ff727",
-	Pem:         "FAKE_CERTIFICATE",
+	PEM:         "FAKE_CERTIFICATE",
 	Links: []gophercloud.Link{
 		{Href: "http://10.63.176.154:9511/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff727", Rel: "self"},
 		{Href: "http://10.63.176.154:9511/certificates/d564b18a-2890-4152-be3d-e05d784ff727", Rel: "bookmark"},
 	},
 }
 
-var ExpectedCreateCertificateResponse = certificates.CreateCertificateResponse{
+var ExpectedCreateCertificateResponse = certificates.Certificate{
 	BayUUID: "d564b18a-2890-4152-be3d-e05d784ff727",
-	Pem:     "FAKE_CERTIFICATE_PEM",
-	Csr:     "FAKE_CERTIFICATE_CSR",
+	PEM:     "FAKE_CERTIFICATE_PEM",
+	CSR:     "FAKE_CERTIFICATE_CSR",
 	Links: []gophercloud.Link{
 		{Href: "http://10.63.176.154:9511/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff727", Rel: "self"},
 		{Href: "http://10.63.176.154:9511/certificates/d564b18a-2890-4152-be3d-e05d784ff727", Rel: "bookmark"},
