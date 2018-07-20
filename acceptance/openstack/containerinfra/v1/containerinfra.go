@@ -10,6 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clustertemplates"
+	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/quotas"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -176,4 +177,45 @@ func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status 
 
 		return false, nil
 	})
+}
+
+// CreateQuota will create a random quota. An error will be returned if the
+// quota could not be created.
+func CreateQuota(t *testing.T, client *gophercloud.ServiceClient) (*quotas.Quotas, error) {
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	name := tools.RandomString("TESTACC-", 8)
+	t.Logf("Attempting to create quota: %s", name)
+
+	createOpts := quotas.CreateOpts{
+		Resource:  "Cluster",
+		ProjectID: choices.MagnumProjectID,
+		HardLimit: 10,
+	}
+
+	res := quotas.Create(client, createOpts)
+	if res.Err != nil {
+		return nil, res.Err
+	}
+
+	requestID := res.Header.Get("X-OpenStack-Request-Id")
+	th.AssertEquals(t, true, requestID != "")
+
+	t.Logf("Quota %s request ID: %s", name, requestID)
+
+	quota, err := res.Extract()
+	if err == nil {
+		t.Logf("Successfully created quota: %s", quota.ProjectID)
+
+		tools.PrintResource(t, quota)
+
+		th.AssertEquals(t, choices.MagnumProjectID, quota.ProjectID)
+		th.AssertEquals(t, "Cluster", quota.Resource)
+		th.AssertEquals(t, 10, quota.HardLimit)
+	}
+
+	return quota, err
 }
