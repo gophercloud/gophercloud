@@ -44,7 +44,7 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 		NetworkDriver:       "flannel",
 		FixedNetwork:        "",
 		COE:                 "kubernetes",
-		FlavorID:            "m1.small",
+		FlavorID:            choices.FlavorID,
 		MasterLBEnabled:     &boolTrue,
 		DNSNameServer:       "8.8.8.8",
 	}
