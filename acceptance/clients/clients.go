@@ -29,6 +29,9 @@ type AcceptanceTestChoices struct {
 	// FloatingIPPool contains the name of the pool from where to obtain floating IPs.
 	FloatingIPPoolName string
 
+	// MagnumImageID contains the ID of a valid magnum image.
+	MagnumImageID string
+
 	// NetworkName is the name of a network to launch the instance on.
 	NetworkName string
 
@@ -51,6 +54,7 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	imageID := os.Getenv("OS_IMAGE_ID")
 	flavorID := os.Getenv("OS_FLAVOR_ID")
 	flavorIDResize := os.Getenv("OS_FLAVOR_ID_RESIZE")
+	magnumImageID := os.Getenv("OS_MAGNUM_IMAGE_ID")
 	networkName := os.Getenv("OS_NETWORK_NAME")
 	floatingIPPoolName := os.Getenv("OS_POOL_NAME")
 	externalNetworkID := os.Getenv("OS_EXTGW_ID")
@@ -102,6 +106,7 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 		FlavorID:           flavorID,
 		FlavorIDResize:     flavorIDResize,
 		FloatingIPPoolName: floatingIPPoolName,
+		MagnumImageID:      magnumImageID,
 		NetworkName:        networkName,
 		ExternalNetworkID:  externalNetworkID,
 		ShareNetworkID:     shareNetworkID,

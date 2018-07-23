@@ -22,32 +22,20 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 	t.Logf("Attempting to create cluster template: %s", name)
 
 	boolFalse := false
-	boolTrue := true
-	dockerVolumeSize := 3
 	createOpts := clustertemplates.CreateOpts{
 		Name:                name,
-		Labels:              map[string]string{},
-		FixedSubnet:         "",
-		MasterFlavorID:      "",
-		NoProxy:             "10.0.0.0/8,172.0.0.0/8,192.0.0.0/8,localhost",
-		HTTPSProxy:          "http://10.164.177.169:8080",
-		TLSDisabled:         &boolFalse,
-		KeyPairID:           "kp",
+		MasterFlavorID:      "m1.small",
 		Public:              &boolFalse,
-		HTTPProxy:           "http://10.164.177.169:8080",
-		DockerVolumeSize:    &dockerVolumeSize,
 		ServerType:          "vm",
 		ExternalNetworkID:   choices.ExternalNetworkID,
-		ImageID:             choices.ImageID,
-		VolumeDriver:        "cinder",
+		ImageID:             choices.MagnumImageID,
 		RegistryEnabled:     &boolFalse,
 		DockerStorageDriver: "devicemapper",
-		NetworkDriver:       "flannel",
-		FixedNetwork:        "",
-		COE:                 "kubernetes",
+		COE:                 "swarm",
 		FlavorID:            choices.FlavorID,
-		MasterLBEnabled:     &boolTrue,
+		MasterLBEnabled:     &boolFalse,
 		DNSNameServer:       "8.8.8.8",
+		FloatingIPEnabled:   &boolFalse,
 	}
 
 	res := clustertemplates.Create(client, createOpts)
@@ -72,7 +60,7 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 
 	th.AssertEquals(t, name, clusterTemplate.Name)
 	th.AssertEquals(t, choices.ExternalNetworkID, clusterTemplate.ExternalNetworkID)
-	th.AssertEquals(t, choices.ImageID, clusterTemplate.ImageID)
+	th.AssertEquals(t, choices.MagnumImageID, clusterTemplate.ImageID)
 
 	return clusterTemplate, nil
 }
