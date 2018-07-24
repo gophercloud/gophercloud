@@ -16,6 +16,7 @@ func TestCreateClusterTemplate(t *testing.T) {
 
 	boolFalse := false
 	boolTrue := true
+	dockerVolumeSize := 3
 	opts := clustertemplates.CreateOpts{
 		Name:                "kubernetes-dev",
 		Labels:              map[string]string{},
@@ -27,7 +28,7 @@ func TestCreateClusterTemplate(t *testing.T) {
 		KeyPairID:           "kp",
 		Public:              &boolFalse,
 		HTTPProxy:           "http://10.164.177.169:8080",
-		DockerVolumeSize:    3,
+		DockerVolumeSize:    &dockerVolumeSize,
 		ServerType:          "vm",
 		ExternalNetworkID:   "public",
 		ImageID:             "Fedora-Atomic-27-20180212.2.x86_64",

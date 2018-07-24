@@ -13,11 +13,11 @@ type CreateOptsBuilder interface {
 
 // CreateOpts params
 type CreateOpts struct {
-	APIServerPort       int               `json:"apiserver_port,omitempty"`
+	APIServerPort       *int              `json:"apiserver_port,omitempty"`
 	COE                 string            `json:"coe" required:"true"`
 	DNSNameServer       string            `json:"dns_nameserver,omitempty"`
 	DockerStorageDriver string            `json:"docker_storage_driver,omitempty"`
-	DockerVolumeSize    int               `json:"docker_volume_size,omitempty"`
+	DockerVolumeSize    *int              `json:"docker_volume_size,omitempty"`
 	ExternalNetworkID   string            `json:"external_network_id,omitempty"`
 	FixedNetwork        string            `json:"fixed_network,omitempty"`
 	FixedSubnet         string            `json:"fixed_subnet,omitempty"`

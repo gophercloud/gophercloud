@@ -19,7 +19,6 @@ Example to Create Cluster Template
 		KeyPairID:           "kp",
 		Public:              &boolFalse,
 		HTTPProxy:           "http://10.164.177.169:8080",
-		DockerVolumeSize:    3,
 		ServerType:          "vm",
 		ExternalNetworkID:   "public",
 		ImageID:             "fedora-atomic-latest",

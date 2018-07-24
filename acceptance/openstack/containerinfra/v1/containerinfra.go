@@ -23,6 +23,7 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 
 	boolFalse := false
 	boolTrue := true
+	dockerVolumeSize := 3
 	createOpts := clustertemplates.CreateOpts{
 		Name:                name,
 		Labels:              map[string]string{},
@@ -34,7 +35,7 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 		KeyPairID:           "kp",
 		Public:              &boolFalse,
 		HTTPProxy:           "http://10.164.177.169:8080",
-		DockerVolumeSize:    3,
+		DockerVolumeSize:    &dockerVolumeSize,
 		ServerType:          "vm",
 		ExternalNetworkID:   choices.ExternalNetworkID,
 		ImageID:             choices.ImageID,
