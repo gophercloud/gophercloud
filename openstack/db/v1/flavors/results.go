@@ -22,8 +22,7 @@ func (r GetResult) Extract() (*Flavor, error) {
 // Flavor records represent (virtual) hardware configurations for server resources in a region.
 type Flavor struct {
 	// The flavor's unique identifier.
-	// Contains 0 if the ID is not an integer.
-	ID int `json:"id"`
+	ID string `json:"id"`
 
 	// The RAM capacity for the flavor.
 	RAM int `json:"ram"`
