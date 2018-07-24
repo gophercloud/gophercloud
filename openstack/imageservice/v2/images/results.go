@@ -162,6 +162,7 @@ type DeleteResult struct {
 
 // ImagePage represents the results of a List request.
 type ImagePage struct {
+	serviceURL string
 	pagination.LinkedPageBase
 }
 
@@ -186,7 +187,7 @@ func (r ImagePage) NextPageURL() (string, error) {
 		return "", nil
 	}
 
-	return nextPageURL(r.URL.String(), s.Next)
+	return nextPageURL(r.serviceURL, s.Next)
 }
 
 // ExtractImages interprets the results of a single page from a List() call,

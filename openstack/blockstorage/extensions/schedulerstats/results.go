@@ -23,7 +23,7 @@ type Capabilities struct {
 	LocationInfo             string  `json:"location_info"`
 	QoSSupport               bool    `json:"QoS_support"`
 	ProvisionedCapacityGB    float64 `json:"provisioned_capacity_gb"`
-	MaxOverSubscriptionRatio float64 `json:"max_over_subscription_ratio"`
+	MaxOverSubscriptionRatio string  `json:"max_over_subscription_ratio"`
 	ThinProvisioningSupport  bool    `json:"thin_provisioning_support"`
 	ThickProvisioningSupport bool    `json:"thick_provisioning_support"`
 	TotalVolumes             int64   `json:"total_volumes"`

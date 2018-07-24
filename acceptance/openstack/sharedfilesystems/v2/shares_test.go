@@ -27,6 +27,54 @@ func TestShareCreate(t *testing.T) {
 	PrintShare(t, created)
 }
 
+func TestShareListDetail(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a sharedfs client: %v", err)
+	}
+
+	share, err := CreateShare(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create a share: %v", err)
+	}
+
+	defer DeleteShare(t, client, share)
+
+	ss, err := ListShares(t, client)
+	if err != nil {
+		t.Fatalf("Unable to list shares: %v", err)
+	}
+
+	for i := range ss {
+		PrintShare(t, &ss[i])
+	}
+}
+
+func TestGrantAndRevokeAccess(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a sharedfs client: %v", err)
+	}
+
+	share, err := CreateShare(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create a share: %v", err)
+	}
+
+	defer DeleteShare(t, client, share)
+
+	accessRight, err := GrantAccess(t, client, share)
+	if err != nil {
+		t.Fatalf("Unable to grant access: %v", err)
+	}
+
+	PrintAccessRight(t, accessRight)
+
+	if err = RevokeAccess(t, client, share, accessRight); err != nil {
+		t.Fatalf("Unable to revoke access: %v", err)
+	}
+}
+
 func TestListAccessRights(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {

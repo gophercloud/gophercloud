@@ -387,6 +387,10 @@ const ServerPasswordBody = `
 }
 `
 
+const ConsoleOutputBody = `{
+	"output": "abc"
+}`
+
 var (
 	herpTimeCreated, _ = time.Parse(time.RFC3339, "2014-09-25T13:10:02Z")
 	herpTimeUpdated, _ = time.Parse(time.RFC3339, "2014-09-25T13:10:10Z")
@@ -503,6 +507,8 @@ var (
 			},
 		},
 	}
+
+	ConsoleOutput = "abc"
 
 	merpTimeCreated, _ = time.Parse(time.RFC3339, "2014-09-25T13:04:41Z")
 	merpTimeUpdated, _ = time.Parse(time.RFC3339, "2014-09-25T13:04:49Z")
@@ -844,6 +850,19 @@ func HandleRebootSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, `{ "reboot": { "type": "SOFT" } }`)
 
 		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+// HandleShowConsoleOutputSuccessfully sets up the test server to respond to a os-getConsoleOutput request with success.
+func HandleShowConsoleOutputSuccessfully(t *testing.T, response string) {
+	th.Mux.HandleFunc("/servers/1234asdf/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{ "os-getConsoleOutput": { "length": 50 } }`)
+
+		w.WriteHeader(http.StatusOK)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
 	})
 }
 

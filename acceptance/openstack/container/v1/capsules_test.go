@@ -26,12 +26,13 @@ func TestCapsule(t *testing.T) {
 			},
 			"name": "template"
 		},
-		"restartPolicy": "Always",
 		"spec": {
+			"restartPolicy": "Always",
 			"containers": [
 				{
 					"command": [
-						"/bin/bash"
+						"sleep",
+						"1000000"
 					],
 					"env": {
 						"ENV1": "/usr/local/bin",
@@ -61,7 +62,9 @@ func TestCapsule(t *testing.T) {
 	createOpts := capsules.CreateOpts{
 		TemplateOpts: template,
 	}
-	err = capsules.Create(client, createOpts).ExtractErr()
+	capsule, err := capsules.Create(client, createOpts).Extract()
+	th.AssertNoErr(t, err)
+	err = WaitForCapsuleStatus(client, capsule, "Running")
 	th.AssertNoErr(t, err)
 	pager := capsules.List(client, nil)
 	err = pager.EachPage(func(page pagination.Page) (bool, error) {

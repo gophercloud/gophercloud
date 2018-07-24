@@ -43,6 +43,17 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share
 	return share, nil
 }
 
+// ListShares lists all shares that belong to this tenant's project.
+// An error will be returned if the shares could not be listed..
+func ListShares(t *testing.T, client *gophercloud.ServiceClient) ([]shares.Share, error) {
+	r, err := shares.ListDetail(client, &shares.ListOpts{}).AllPages()
+	if err != nil {
+		return nil, err
+	}
+
+	return shares.ExtractShares(r)
+}
+
 // GrantAccess will grant access to an existing share. A fatal error will occur if
 // this operation fails.
 func GrantAccess(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share) (*shares.AccessRight, error) {
@@ -51,6 +62,14 @@ func GrantAccess(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 		AccessTo:    "0.0.0.0/32",
 		AccessLevel: "r",
 	}).Extract()
+}
+
+// RevokeAccess will revoke an exisiting access of a share. A fatal error will occur
+// if this operation fails.
+func RevokeAccess(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share, accessRight *shares.AccessRight) error {
+	return shares.RevokeAccess(client, share.ID, shares.RevokeAccessOpts{
+		AccessID: accessRight.ID,
+	}).ExtractErr()
 }
 
 // GetAccessRightsSlice will retrieve all access rules assigned to a share.

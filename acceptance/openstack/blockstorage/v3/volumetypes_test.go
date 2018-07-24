@@ -11,72 +11,41 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestVolumeTypesList(t *testing.T) {
+func TestVolumeTypes(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, err := clients.NewBlockStorageV3Client()
-	if err != nil {
-		t.Fatalf("Unable to create a blockstorage client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
-	listOpts := volumetypes.ListOpts{
-		Sort:  "name:asc",
-		Limit: 1,
-	}
+	vt, err := CreateVolumeType(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolumeType(t, client, vt)
 
-	allPages, err := volumetypes.List(client, listOpts).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to retrieve volumetypes: %v", err)
-	}
+	allPages, err := volumetypes.List(client, nil).AllPages()
+	th.AssertNoErr(t, err)
 
 	allVolumeTypes, err := volumetypes.ExtractVolumeTypes(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract volumetypes: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
-	for _, vt := range allVolumeTypes {
-		tools.PrintResource(t, vt)
-	}
-
-	if len(allVolumeTypes) > 0 {
-		vt, err := volumetypes.Get(client, allVolumeTypes[0].ID).Extract()
-		if err != nil {
-			t.Fatalf("Error retrieving volume type: %v", err)
+	var found bool
+	for _, v := range allVolumeTypes {
+		tools.PrintResource(t, v)
+		if v.ID == vt.ID {
+			found = true
 		}
-
-		tools.PrintResource(t, vt)
-	}
-}
-
-func TestVolumeTypesCRUD(t *testing.T) {
-	client, err := clients.NewBlockStorageV3Client()
-	if err != nil {
-		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
 
-	createOpts := volumetypes.CreateOpts{
-		Name:        "create_from_gophercloud",
-		ExtraSpecs:  map[string]string{"volume_backend_name": "fake_backend_name"},
-		Description: "create_from_gophercloud",
-	}
-
-	vt, err := volumetypes.Create(client, createOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to create volumetype: %v", err)
-	}
-
-	th.AssertEquals(t, true, vt.IsPublic)
-
-	tools.PrintResource(t, vt)
-
-	defer volumetypes.Delete(client, vt.ID)
+	th.AssertEquals(t, found, true)
 
 	var isPublic = false
-
-	newVT, err := volumetypes.Update(client, vt.ID, volumetypes.UpdateOpts{
-		Name:     "updated_volume_type",
+	updateOpts := volumetypes.UpdateOpts{
+		Name:     vt.Name + "-UPDATED",
 		IsPublic: &isPublic,
-	}).Extract()
+	}
 
-	th.AssertEquals(t, "updated_volume_type", newVT.Name)
+	newVT, err := volumetypes.Update(client, vt.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, vt.Name+"-UPDATED", newVT.Name)
 	th.AssertEquals(t, false, newVT.IsPublic)
 
 	tools.PrintResource(t, newVT)

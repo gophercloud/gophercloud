@@ -52,7 +52,9 @@ func TestPoliciesCRUD(t *testing.T) {
 	th.AssertEquals(t, policy.Blob, string(createOpts.Blob))
 	th.AssertEquals(t, policy.Extra["description"], createOpts.Extra["description"])
 
-	allPages, err := policies.List(client, nil).AllPages()
+	var listOpts policies.ListOpts
+
+	allPages, err := policies.List(client, listOpts).AllPages()
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := policies.ExtractPolicies(allPages)
@@ -69,6 +71,50 @@ func TestPoliciesCRUD(t *testing.T) {
 	}
 
 	th.AssertEquals(t, true, found)
+
+	listOpts.Filters = map[string]string{
+		"type__contains": "json",
+	}
+
+	allPages, err = policies.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allPolicies, err = policies.ExtractPolicies(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, p := range allPolicies {
+		tools.PrintResource(t, p)
+		tools.PrintResource(t, p.Extra)
+
+		if p.ID == policy.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, true, found)
+
+	listOpts.Filters = map[string]string{
+		"type__contains": "foobar",
+	}
+
+	allPages, err = policies.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allPolicies, err = policies.ExtractPolicies(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, p := range allPolicies {
+		tools.PrintResource(t, p)
+		tools.PrintResource(t, p.Extra)
+
+		if p.ID == policy.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, false, found)
 
 	gotPolicy, err := policies.Get(client, policy.ID).Extract()
 	th.AssertNoErr(t, err)

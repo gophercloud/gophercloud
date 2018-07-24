@@ -14,6 +14,8 @@ import (
 )
 
 func TestQuotasetGet(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, projectID := getClientAndProject(t)
 
 	quotaSet, err := quotasets.Get(client, projectID).Extract()
@@ -23,6 +25,8 @@ func TestQuotasetGet(t *testing.T) {
 }
 
 func TestQuotasetGetDefaults(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, projectID := getClientAndProject(t)
 
 	quotaSet, err := quotasets.GetDefaults(client, projectID).Extract()
@@ -32,6 +36,8 @@ func TestQuotasetGetDefaults(t *testing.T) {
 }
 
 func TestQuotasetGetUsage(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, projectID := getClientAndProject(t)
 
 	quotaSetUsage, err := quotasets.GetUsage(client, projectID).Extract()
@@ -59,6 +65,8 @@ var UpdatedQuotas = quotasets.QuotaSet{
 }
 
 func TestQuotasetUpdate(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	client, projectID := getClientAndProject(t)
 
 	// save original quotas
@@ -83,6 +91,37 @@ func TestQuotasetUpdate(t *testing.T) {
 	newQuotas, err := quotasets.Get(client, projectID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, resultQuotas.Volumes, newQuotas.Volumes)
+}
+
+func TestQuotasetDelete(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, projectID := getClientAndProject(t)
+
+	// save original quotas
+	orig, err := quotasets.Get(client, projectID).Extract()
+	th.AssertNoErr(t, err)
+
+	defer func() {
+		restore := quotasets.UpdateOpts{}
+		FillUpdateOptsFromQuotaSet(*orig, &restore)
+
+		_, err = quotasets.Update(client, projectID, restore).Extract()
+		th.AssertNoErr(t, err)
+	}()
+
+	// Obtain environment default quotaset values to validate deletion.
+	defaultQuotaSet, err := quotasets.GetDefaults(client, projectID).Extract()
+	th.AssertNoErr(t, err)
+
+	// Test Delete
+	err = quotasets.Delete(client, projectID).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	newQuotas, err := quotasets.Get(client, projectID).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, newQuotas.Volumes, defaultQuotaSet.Volumes)
 }
 
 // getClientAndProject reduces boilerplate by returning a new blockstorage v3

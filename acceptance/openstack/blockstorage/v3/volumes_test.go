@@ -6,68 +6,45 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes"
 	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestVolumesList(t *testing.T) {
+func TestVolumes(t *testing.T) {
+	clients.RequireLong(t)
+
 	client, err := clients.NewBlockStorageV3Client()
-	if err != nil {
-		t.Fatalf("Unable to create a blockstorage client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	volume1, err := CreateVolume(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create volume: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteVolume(t, client, volume1)
 
 	volume2, err := CreateVolume(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create volume: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteVolume(t, client, volume2)
 
-	pages := 0
-	err = volumes.List(client, volumes.ListOpts{Limit: 1}).EachPage(func(page pagination.Page) (bool, error) {
-		pages++
+	listOpts := volumes.ListOpts{
+		Limit: 1,
+	}
 
+	err = volumes.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
 		actual, err := volumes.ExtractVolumes(page)
-		if err != nil {
-			t.Fatalf("Unable to extract volumes: %v", err)
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, 1, len(actual))
+
+		var found bool
+		for _, v := range actual {
+			if v.ID == volume1.ID || v.ID == volume2.ID {
+				found = true
+			}
 		}
 
-		if len(actual) != 1 {
-			t.Fatalf("Expected 1 volume, got %d", len(actual))
-		}
-
-		tools.PrintResource(t, actual[0])
+		th.AssertEquals(t, found, true)
 
 		return true, nil
 	})
 
-	if pages != 2 {
-		t.Fatalf("Expected 2 pages, saw %d", pages)
-	}
-}
-
-func TestVolumesCreateDelete(t *testing.T) {
-	client, err := clients.NewBlockStorageV3Client()
-	if err != nil {
-		t.Fatalf("Unable to create blockstorage client: %v", err)
-	}
-
-	volume, err := CreateVolume(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create volume: %v", err)
-	}
-	defer DeleteVolume(t, client, volume)
-
-	newVolume, err := volumes.Get(client, volume.ID).Extract()
-	if err != nil {
-		t.Errorf("Unable to retrieve volume: %v", err)
-	}
-
-	tools.PrintResource(t, newVolume)
+	th.AssertNoErr(t, err)
 }
