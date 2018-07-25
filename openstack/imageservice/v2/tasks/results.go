@@ -11,23 +11,6 @@ type commonResult struct {
 	gophercloud.Result
 }
 
-// TaskStatus represents valid task status.
-type TaskStatus string
-
-const (
-	// TaskStatusPending represents status of the pending task.
-	TaskStatusPending TaskStatus = "pending"
-
-	// TaskStatusProcessing represents status of the processing task.
-	TaskStatusProcessing TaskStatus = "processing"
-
-	// TaskStatusSuccess represents status of the success task.
-	TaskStatusSuccess TaskStatus = "success"
-
-	// TaskStatusFailure represents status of the failure task.
-	TaskStatusFailure TaskStatus = "failure"
-)
-
 // Task represents a single task of the OpenStack Image service.
 type Task struct {
 	// ID is a unique identifier of the task.
@@ -37,7 +20,9 @@ type Task struct {
 	Type string `json:"type"`
 
 	// Status represents current status of the task.
-	Status TaskStatus `json:"status"`
+	// You can use the TaskStatus custom type to unmarshal raw JSON response into
+	// the pre-defined valid task status.
+	Status string `json:"status"`
 
 	// Input represents different parameters for the task.
 	Input map[string]interface{} `json:"input"`

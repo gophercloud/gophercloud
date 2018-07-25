@@ -5,6 +5,25 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+// TaskStatus represents valid task status.
+// You can use this type to compare the actual status of a task to a one of the
+// pre-defined statuses.
+type TaskStatus string
+
+const (
+	// TaskStatusPending represents status of the pending task.
+	TaskStatusPending TaskStatus = "pending"
+
+	// TaskStatusProcessing represents status of the processing task.
+	TaskStatusProcessing TaskStatus = "processing"
+
+	// TaskStatusSuccess represents status of the success task.
+	TaskStatusSuccess TaskStatus = "success"
+
+	// TaskStatusFailure represents status of the failure task.
+	TaskStatusFailure TaskStatus = "failure"
+)
+
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {

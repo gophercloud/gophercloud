@@ -39,7 +39,7 @@ const TasksListResult = `
 // Task1 is an expected representation of a first task from the TasksListResult.
 var Task1 = tasks.Task{
 	ID:        "1252f636-1246-4319-bfba-c47cde0efbe0",
-	Status:    tasks.TaskStatusPending,
+	Status:    string(tasks.TaskStatusPending),
 	Type:      "import",
 	Owner:     "424e7cf0243c468ca61732ba45973b3e",
 	CreatedAt: time.Date(2018, 7, 25, 8, 59, 13, 0, time.UTC),
@@ -51,7 +51,7 @@ var Task1 = tasks.Task{
 // Task2 is an expected representation of a first task from the TasksListResult.
 var Task2 = tasks.Task{
 	ID:        "349a51f4-d51d-47b6-82da-4fa516f0ca32",
-	Status:    tasks.TaskStatusProcessing,
+	Status:    string(tasks.TaskStatusProcessing),
 	Type:      "import",
 	Owner:     "fb57277ef2f84a0e85b9018ec2dedbf7",
 	CreatedAt: time.Date(2018, 7, 25, 8, 56, 17, 0, time.UTC),
