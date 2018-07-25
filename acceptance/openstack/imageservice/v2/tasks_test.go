@@ -49,3 +49,15 @@ func TestTasksListAllPages(t *testing.T) {
 		tools.PrintResource(t, i)
 	}
 }
+
+func TestTaskCreate(t *testing.T) {
+	client, err := clients.NewImageServiceV2Client()
+	th.AssertNoErr(t, err)
+
+	task, err := CreateTask(t, client, ImportImageURL)
+	if err != nil {
+		t.Fatalf("Unable to create an Imageservice task: %v", err)
+	}
+
+	tools.PrintResource(t, task)
+}

@@ -93,3 +93,36 @@ func Get(c *gophercloud.ServiceClient, taskID string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, taskID), &r.Body, nil)
 	return
 }
+
+// CreateOptsBuilder allows to add additional parameters to the Create request.
+type CreateOptsBuilder interface {
+	ToTaskCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts specifies parameters of a new Imageservice task.
+type CreateOpts struct {
+	Type  string                 `json:"type" required:"true"`
+	Input map[string]interface{} `json:"input"`
+}
+
+// ToTaskCreateMap constructs a request body from CreateOpts.
+func (opts CreateOpts) ToTaskCreateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// Create requests the creation of a new Imageservice task on the server.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToTaskCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}
