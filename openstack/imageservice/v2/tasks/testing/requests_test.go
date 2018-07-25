@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+<<<<<<< HEAD
 	"time"
+=======
+>>>>>>> Imageservice V2: implement tasks List method
 
 	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/tasks"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -50,6 +53,7 @@ func TestList(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+<<<<<<< HEAD
 
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
@@ -87,3 +91,5 @@ func TestGet(t *testing.T) {
 		},
 	})
 }
+=======
+>>>>>>> Imageservice V2: implement tasks List method
