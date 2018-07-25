@@ -21,5 +21,14 @@ Example to List Tasks
   for _, task := range allTasks {
     fmt.Printf("%+v\n", task)
   }
+
+Example to Get a Task
+
+  task, err := tasks.Get(imagesClient, "1252f636-1246-4319-bfba-c47cde0efbe0").Extract()
+  if err != nil {
+    panic(err)
+  }
+
+  fmt.Printf("%+v\n", task)
 */
 package tasks

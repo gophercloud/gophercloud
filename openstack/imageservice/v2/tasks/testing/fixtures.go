@@ -59,3 +59,27 @@ var Task2 = tasks.Task{
 	Self:      "/v2/tasks/349a51f4-d51d-47b6-82da-4fa516f0ca32",
 	Schema:    "/v2/schemas/task",
 }
+
+// TasksGetResult represents raw server response from a server to a get call.
+const TasksGetResult = `
+{
+    "status": "pending",
+    "created_at": "2018-07-25T08:59:13Z",
+    "updated_at": "2018-07-25T08:59:14Z",
+    "self": "/v2/tasks/1252f636-1246-4319-bfba-c47cde0efbe0",
+    "result": null,
+    "owner": "424e7cf0243c468ca61732ba45973b3e",
+    "input": {
+        "image_properties": {
+            "container_format": "bare",
+            "disk_format": "raw"
+        },
+        "import_from_format": "raw",
+        "import_from": "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
+    },
+    "message": "",
+    "type": "import",
+    "id": "1252f636-1246-4319-bfba-c47cde0efbe0",
+    "schema": "/v2/schemas/task"
+}
+`

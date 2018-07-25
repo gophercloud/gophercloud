@@ -87,3 +87,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		return taskPage
 	})
 }
+
+// Get retrieves a specific Imageservice task based on its ID.
+func Get(c *gophercloud.ServiceClient, taskID string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, taskID), &r.Body, nil)
+	return
+}

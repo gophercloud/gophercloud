@@ -11,6 +11,12 @@ type commonResult struct {
 	gophercloud.Result
 }
 
+// GetResult represents the result of a Get operation. Call its Extract
+// method to interpret it as a Task.
+type GetResult struct {
+	commonResult
+}
+
 // Task represents a single task of the OpenStack Image service.
 type Task struct {
 	// ID is a unique identifier of the task.

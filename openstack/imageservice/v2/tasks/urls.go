@@ -14,8 +14,16 @@ func rootURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL(resourcePath)
 }
 
+func resourceURL(c *gophercloud.ServiceClient, taskID string) string {
+	return c.ServiceURL(resourcePath, taskID)
+}
+
 func listURL(c *gophercloud.ServiceClient) string {
 	return rootURL(c)
+}
+
+func getURL(c *gophercloud.ServiceClient, taskID string) string {
+	return resourceURL(c, taskID)
 }
 
 func nextPageURL(serviceURL, requestedNext string) (string, error) {
