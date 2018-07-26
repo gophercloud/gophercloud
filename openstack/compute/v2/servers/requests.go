@@ -383,7 +383,7 @@ type RebootOpts struct {
 }
 
 // ToServerRebootMap builds a body for the reboot request.
-func (opts *RebootOpts) ToServerRebootMap() (map[string]interface{}, error) {
+func (opts RebootOpts) ToServerRebootMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "reboot")
 }
 
