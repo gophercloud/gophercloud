@@ -271,7 +271,7 @@ func TestServersActionReboot(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	rebootOpts := &servers.RebootOpts{
+	rebootOpts := servers.RebootOpts{
 		Type: servers.SoftReboot,
 	}
 
