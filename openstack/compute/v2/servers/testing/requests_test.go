@@ -311,7 +311,7 @@ func TestRebootServer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleRebootSuccessfully(t)
 
-	res := servers.Reboot(client.ServiceClient(), "1234asdf", &servers.RebootOpts{
+	res := servers.Reboot(client.ServiceClient(), "1234asdf", servers.RebootOpts{
 		Type: servers.SoftReboot,
 	})
 	th.AssertNoErr(t, res.Err)
