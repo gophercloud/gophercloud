@@ -1,8 +1,13 @@
 /*
 Package extendedserverattributes provides the ability to extend a
 server result with the extended usage information.
+You need to specify at least "2.3" microversion for the ComputeClient to
+retrieve most of the OS-EXT-SRV-ATTR fields.
 
 Example to Get an extended information:
+
+  computeClient, err := openstack.NewComputeV2(providerClient, endpointOptions)
+  computeClient.Microversion = "2.3"
 
   type serverAttributesExt struct {
     servers.Server

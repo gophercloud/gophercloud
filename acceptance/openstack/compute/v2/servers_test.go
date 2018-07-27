@@ -95,6 +95,8 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
+	client.Microversion = "2.3"
+
 	server, err := CreateServer(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
