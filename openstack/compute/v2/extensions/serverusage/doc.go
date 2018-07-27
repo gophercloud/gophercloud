@@ -10,7 +10,7 @@ Example to Get an extended information:
   }
   var serverWithUsageExt serverUsageExt
 
-  err := servers.Get(fake.ServiceClient(), "d650a0ce-17c3-497d-961a-43c4af80998a").ExtractInto(&serverWithUsageExt)
+  err := servers.Get(computeClient, "d650a0ce-17c3-497d-961a-43c4af80998a").ExtractInto(&serverWithUsageExt)
   if err != nil {
     panic(err)
   }
