@@ -20,6 +20,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/keypairs"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/networks"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/quotasets"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/remoteconsoles"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/rescueunrescue"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/schedulerhints"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/secgroups"
@@ -1062,4 +1063,21 @@ func UnrescueServer(t *testing.T, client *gophercloud.ServiceClient, server *ser
 	}
 
 	return nil
+}
+
+// CreateRemoteConsole will create a remote noVNC console for the specified server.
+func CreateRemoteConsole(t *testing.T, client *gophercloud.ServiceClient, serverID string) (*remoteconsoles.RemoteConsole, error) {
+	createOpts := remoteconsoles.CreateOpts{
+		Protocol: string(remoteconsoles.RemoteConsoleVNCProtocol),
+		Type:     string(remoteconsoles.RemoteConsoleNoVNCType),
+	}
+
+	t.Logf("Attempting to create a %s console for the server %s", createOpts.Type, serverID)
+	remoteConsole, err := remoteconsoles.Create(client, serverID, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created console: %s", remoteConsole.URL)
+	return remoteConsole, nil
 }
