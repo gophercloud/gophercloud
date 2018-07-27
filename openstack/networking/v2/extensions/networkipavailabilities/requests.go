@@ -20,6 +20,10 @@ type ListOpts struct {
 	// NetworkName allows to filter on the name of a network.
 	NetworkName string `q:"network_name"`
 
+	// IPVersion allows to filter on the version of the IP protocol.
+	// You can use the well-known IP versions with the gophercloud.IPVersion type.
+	IPVersion string `q:"ip_version"`
+
 	// ProjectID allows to filter on the Identity project field.
 	ProjectID string `q:"project_id"`
 
