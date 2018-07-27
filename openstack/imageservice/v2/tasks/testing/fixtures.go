@@ -83,3 +83,42 @@ const TasksGetResult = `
     "schema": "/v2/schemas/task"
 }
 `
+
+// TaskCreateRequest represents a request to create a task.
+const TaskCreateRequest = `
+{
+    "input": {
+        "image_properties": {
+            "container_format": "bare",
+            "disk_format": "raw"
+        },
+        "import_from_format": "raw",
+        "import_from": "https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img"
+    },
+    "type": "import"
+}
+`
+
+// TaskCreateResult represents a raw server response to the TaskCreateRequest.
+const TaskCreateResult = `
+{
+    "status": "pending",
+    "created_at": "2018-07-25T11:07:54Z",
+    "updated_at": "2018-07-25T11:07:54Z",
+    "self": "/v2/tasks/d550c87d-86ed-430a-9895-c7a1f5ce87e9",
+    "result": null,
+    "owner": "fb57277ef2f84a0e85b9018ec2dedbf7",
+    "input": {
+        "image_properties": {
+            "container_format": "bare",
+            "disk_format": "raw"
+        },
+        "import_from_format": "raw",
+        "import_from": "https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img"
+    },
+    "message": "",
+    "type": "import",
+    "id": "d550c87d-86ed-430a-9895-c7a1f5ce87e9",
+    "schema": "/v2/schemas/task"
+}
+`

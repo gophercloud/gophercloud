@@ -30,5 +30,26 @@ Example to Get a Task
   }
 
   fmt.Printf("%+v\n", task)
+
+Example to Create a Task
+
+  createOpts := tasks.CreateOpts{
+    Type: "import",
+    Input: map[string]interface{}{
+      "image_properties": map[string]interface{}{
+        "container_format": "bare",
+        "disk_format":      "raw",
+      },
+      "import_from_format": "raw",
+      "import_from":        "https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img",
+    },
+  }
+
+  task, err := tasks.Create(imagesClient, createOpts).Extract()
+  if err != nil {
+    panic(err)
+  }
+
+  fmt.Printf("%+v\n", task)
 */
 package tasks

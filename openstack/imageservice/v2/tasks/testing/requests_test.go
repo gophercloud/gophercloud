@@ -87,3 +87,52 @@ func TestGet(t *testing.T) {
 		},
 	})
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
+		th.TestJSONRequest(t, r, TaskCreateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, TaskCreateResult)
+	})
+
+	opts := tasks.CreateOpts{
+		Type: "import",
+		Input: map[string]interface{}{
+			"image_properties": map[string]interface{}{
+				"container_format": "bare",
+				"disk_format":      "raw",
+			},
+			"import_from_format": "raw",
+			"import_from":        "https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img",
+		},
+	}
+	s, err := tasks.Create(fakeclient.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, s.Status, string(tasks.TaskStatusPending))
+	th.AssertEquals(t, s.CreatedAt, time.Date(2018, 7, 25, 11, 7, 54, 0, time.UTC))
+	th.AssertEquals(t, s.UpdatedAt, time.Date(2018, 7, 25, 11, 7, 54, 0, time.UTC))
+	th.AssertEquals(t, s.Self, "/v2/tasks/d550c87d-86ed-430a-9895-c7a1f5ce87e9")
+	th.AssertEquals(t, s.Owner, "fb57277ef2f84a0e85b9018ec2dedbf7")
+	th.AssertEquals(t, s.Message, "")
+	th.AssertEquals(t, s.Type, "import")
+	th.AssertEquals(t, s.ID, "d550c87d-86ed-430a-9895-c7a1f5ce87e9")
+	th.AssertEquals(t, s.Schema, "/v2/schemas/task")
+	th.AssertDeepEquals(t, s.Result, map[string]interface{}(nil))
+	th.AssertDeepEquals(t, s.Input, map[string]interface{}{
+		"import_from":        "https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img",
+		"import_from_format": "raw",
+		"image_properties": map[string]interface{}{
+			"container_format": "bare",
+			"disk_format":      "raw",
+		},
+	})
+}

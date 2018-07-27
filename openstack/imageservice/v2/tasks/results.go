@@ -17,6 +17,12 @@ type GetResult struct {
 	commonResult
 }
 
+// CreateResult represents the result of a Create operation. Call its Extract
+// method to interpret it as a Task.
+type CreateResult struct {
+	commonResult
+}
+
 // Task represents a single task of the OpenStack Image service.
 type Task struct {
 	// ID is a unique identifier of the task.
