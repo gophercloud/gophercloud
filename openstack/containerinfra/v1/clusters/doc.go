@@ -24,5 +24,34 @@ Example to Create a Cluster
 		panic(err)
 	}
 
+Example to Get a Cluster
+
+	clusterName := "cluster123"
+	cluster, err := clusters.Get(serviceClient, clusterName).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", cluster)
+
+Example to List Clusters
+
+	listOpts := clusters.ListOpts{
+		Limit: 20,
+	}
+
+	allPages, err := clusters.List(serviceClient, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allClusters, err := clusters.ExtractClusters(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, cluster := range allClusters {
+		fmt.Printf("%+v\n", cluster)
+	}
+
 */
 package clusters
