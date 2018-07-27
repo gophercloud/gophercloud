@@ -86,3 +86,36 @@ func TestListClusters(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestUpdateCluster(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleUpdateClusterSuccessfully(t)
+
+	updateOpts := []clusters.UpdateOptsBuilder{
+		clusters.UpdateOpts{
+			Op:    clusters.ReplaceOp,
+			Path:  "/master_lb_enabled",
+			Value: "True",
+		},
+		clusters.UpdateOpts{
+			Op:    clusters.ReplaceOp,
+			Path:  "/registry_enabled",
+			Value: "True",
+		},
+	}
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	res := clusters.Update(sc, clusterUUID, updateOpts)
+	th.AssertNoErr(t, res.Err)
+
+	requestID := res.Header.Get("X-OpenStack-Request-Id")
+	th.AssertEquals(t, requestUUID, requestID)
+
+	actual, err := res.Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, clusterUUID, actual)
+}

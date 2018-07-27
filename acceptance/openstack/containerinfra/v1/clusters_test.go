@@ -35,4 +35,29 @@ func TestClustersCRUD(t *testing.T) {
 		}
 	}
 	th.AssertEquals(t, found, true)
+	updateOpts := []clusters.UpdateOptsBuilder{
+		clusters.UpdateOpts{
+			Op:    clusters.ReplaceOp,
+			Path:  "/node_count",
+			Value: "2",
+		},
+	}
+	updateResult := clusters.Update(client, clusterID, updateOpts)
+	th.AssertNoErr(t, updateResult.Err)
+
+	if len(updateResult.Header["X-Openstack-Request-Id"]) > 0 {
+		t.Logf("Cluster Update Request ID: %s", updateResult.Header["X-Openstack-Request-Id"][0])
+	}
+
+	clusterID, err = updateResult.Extract()
+	th.AssertNoErr(t, err)
+
+	err = WaitForCluster(client, clusterID, "SUCCESS")
+	th.AssertNoErr(t, err)
+
+	newCluster, err := clusters.Get(client, clusterID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newCluster.UUID, clusterID)
+
+	tools.PrintResource(t, newCluster)
 }
