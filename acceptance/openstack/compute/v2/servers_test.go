@@ -14,6 +14,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/extendedstatus"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/lockunlock"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/pauseunpause"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/serverusage"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/suspendresume"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -88,6 +89,7 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
 		extendedstatus.ServerExtendedStatusExt
+		serverusage.UsageExt
 	}
 
 	client, err := clients.NewComputeV2Client()
@@ -105,6 +107,7 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	th.AssertEquals(t, int(extendedServer.PowerState), extendedstatus.RUNNING)
 	th.AssertEquals(t, extendedServer.TaskState, "")
 	th.AssertEquals(t, extendedServer.VmState, "active")
+	th.AssertEquals(t, extendedServer.LaunchedAt, extendedServer.Updated)
 }
 
 func TestServersWithoutImageRef(t *testing.T) {
