@@ -9,6 +9,12 @@ type commonResult struct {
 	gophercloud.Result
 }
 
+// GetResult represents the result of a Get operation. Call its Extract
+// method to interpret it as a NetworkIPAvailability.
+type GetResult struct {
+	commonResult
+}
+
 // Extract is a function that accepts a result and extracts a NetworkIPAvailability.
 func (r commonResult) Extract() (*NetworkIPAvailability, error) {
 	var s struct {

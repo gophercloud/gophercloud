@@ -104,3 +104,27 @@ var NetworkIPAvailability2 = networkipavailabilities.NetworkIPAvailability{
 		},
 	},
 }
+
+// NetworkIPAvailabilityGetResult represents raw server response from a server to a get call.
+const NetworkIPAvailabilityGetResult = `
+{
+    "network_ip_availability": {
+        "network_id": "cf11ab78-2302-49fa-870f-851a08c7afb8",
+        "network_name": "public",
+        "project_id": "424e7cf0243c468ca61732ba45973b3e",
+        "subnet_ip_availability": [
+            {
+                "cidr": "203.0.113.0/24",
+                "ip_version": 4,
+                "subnet_id": "4afe6e5f-9649-40db-b18f-64c7ead942bd",
+                "subnet_name": "public-subnet",
+                "total_ips": 253,
+                "used_ips": 3
+            }
+        ],
+        "tenant_id": "424e7cf0243c468ca61732ba45973b3e",
+        "total_ips": 253,
+        "used_ips": 3
+    }
+}
+`

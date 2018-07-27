@@ -53,3 +53,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		return NetworkIPAvailabilityPage{pagination.SinglePageBase(r)}
 	})
 }
+
+// Get retrieves a specific NetworkIPAvailability based on its ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
+}
