@@ -1068,8 +1068,8 @@ func UnrescueServer(t *testing.T, client *gophercloud.ServiceClient, server *ser
 // CreateRemoteConsole will create a remote noVNC console for the specified server.
 func CreateRemoteConsole(t *testing.T, client *gophercloud.ServiceClient, serverID string) (*remoteconsoles.RemoteConsole, error) {
 	createOpts := remoteconsoles.CreateOpts{
-		Protocol: string(remoteconsoles.RemoteConsoleVNCProtocol),
-		Type:     string(remoteconsoles.RemoteConsoleNoVNCType),
+		Protocol: remoteconsoles.ConsoleProtocolVNC,
+		Type:     remoteconsoles.ConsoleTypeNoVNC,
 	}
 
 	t.Logf("Attempting to create a %s console for the server %s", createOpts.Type, serverID)

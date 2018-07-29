@@ -28,13 +28,13 @@ func TestCreate(t *testing.T) {
 	})
 
 	opts := remoteconsoles.CreateOpts{
-		Protocol: string(remoteconsoles.RemoteConsoleVNCProtocol),
-		Type:     string(remoteconsoles.RemoteConsoleNoVNCType),
+		Protocol: remoteconsoles.ConsoleProtocolVNC,
+		Type:     remoteconsoles.ConsoleTypeNoVNC,
 	}
 	s, err := remoteconsoles.Create(fake.ServiceClient(), "b16ba811-199d-4ffd-8839-ba96c1185a67", opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, s.Protocol, string(remoteconsoles.RemoteConsoleVNCProtocol))
-	th.AssertEquals(t, s.Type, string(remoteconsoles.RemoteConsoleNoVNCType))
+	th.AssertEquals(t, s.Protocol, string(remoteconsoles.ConsoleProtocolVNC))
+	th.AssertEquals(t, s.Type, string(remoteconsoles.ConsoleTypeNoVNC))
 	th.AssertEquals(t, s.URL, "http://192.168.0.4:6080/vnc_auto.html?token=9a2372b9-6a0e-4f71-aca1-56020e6bb677")
 }

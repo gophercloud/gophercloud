@@ -10,9 +10,9 @@ Example of Creating a new RemoteConsole
   computeClient.Microversion = "2.6"
 
   createOpts := remoteconsoles.CreateOpts{
-    Protocol: string(remoteconsoles.RemoteConsoleVNCProtocol),
-    Type:     string(remoteconsoles.RemoteConsoleNoVNCType),
-	}
+    Protocol: remoteconsoles.ConsoleProtocolVNC,
+    Type:     remoteconsoles.ConsoleTypeNoVNC,
+  }
   serverID := "b16ba811-199d-4ffd-8839-ba96c1185a67"
 
   remtoteConsole, err := remoteconsoles.Create(computeClient, serverID, createOpts).Extract()
@@ -20,6 +20,6 @@ Example of Creating a new RemoteConsole
     panic(err)
   }
 
-  fmt.Printf("%+v\n", task)
+  fmt.Printf("Console URL: %s\n", remtoteConsole.URL)
 */
 package remoteconsoles
