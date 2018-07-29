@@ -107,7 +107,8 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	th.AssertEquals(t, int(extendedServer.PowerState), extendedstatus.RUNNING)
 	th.AssertEquals(t, extendedServer.TaskState, "")
 	th.AssertEquals(t, extendedServer.VmState, "active")
-	th.AssertEquals(t, extendedServer.LaunchedAt, extendedServer.Updated)
+	th.AssertEquals(t, extendedServer.LaunchedAt.IsZero(), false)
+	th.AssertEquals(t, extendedServer.TerminatedAt.IsZero(), true)
 }
 
 func TestServersWithoutImageRef(t *testing.T) {
