@@ -95,8 +95,6 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	client.Microversion = "2.3"
-
 	server, err := CreateServer(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
@@ -109,7 +107,7 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	th.AssertEquals(t, int(extendedServer.PowerState), extendedstatus.RUNNING)
 	th.AssertEquals(t, extendedServer.TaskState, "")
 	th.AssertEquals(t, extendedServer.VmState, "active")
-	th.AssertEquals(t, extendedServer.Hostname, server.Name)
+	th.AssertEquals(t, extendedServer.InstanceName, server.Name)
 }
 
 func TestServersWithoutImageRef(t *testing.T) {
