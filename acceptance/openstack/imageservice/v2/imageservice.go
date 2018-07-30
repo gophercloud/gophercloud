@@ -3,10 +3,14 @@
 package v2
 
 import (
+	"io"
+	"net/http"
+	"os"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/imagedata"
 	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/imageimport"
 	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
 	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/tasks"
@@ -106,4 +110,50 @@ func GetImportInfo(t *testing.T, client *gophercloud.ServiceClient) (*imageimpor
 	}
 
 	return importInfo, nil
+}
+
+// StageImage will stage local image file to the referenced remote queued image.
+func StageImage(t *testing.T, client *gophercloud.ServiceClient, filepath, imageID string) error {
+	imageData, err := os.Open(filepath)
+	if err != nil {
+		return err
+	}
+	defer imageData.Close()
+
+	return imagedata.Stage(client, imageID, imageData).ExtractErr()
+}
+
+// DownloadImageFileFromURL will download an image from the specified URL and
+// place it into the specified path.
+func DownloadImageFileFromURL(t *testing.T, url, filepath string) error {
+	file, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	t.Logf("Attempting to download image from %s", url)
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	size, err := io.Copy(file, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	t.Logf("Downloaded image with size of %d bytes in %s", size, filepath)
+	return nil
+}
+
+// DeleteImageFile will delete local image file.
+func DeleteImageFile(t *testing.T, filepath string) {
+	err := os.Remove(filepath)
+	if err != nil {
+		t.Fatalf("Unable to delete image file %s", filepath)
+	}
+
+	t.Logf("Successfully deleted image file %s", filepath)
 }
