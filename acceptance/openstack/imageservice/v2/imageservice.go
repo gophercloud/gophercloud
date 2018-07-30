@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/imageimport"
 	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
 	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/tasks"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -94,4 +95,15 @@ func CreateTask(t *testing.T, client *gophercloud.ServiceClient, imageURL string
 	}
 
 	return newTask, nil
+}
+
+// GetImportInfo will retrieve Import API information.
+func GetImportInfo(t *testing.T, client *gophercloud.ServiceClient) (*imageimport.ImportInfo, error) {
+	t.Log("Attempting to get the Imageservice Import API information")
+	importInfo, err := imageimport.Get(client).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	return importInfo, nil
 }
