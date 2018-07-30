@@ -66,33 +66,8 @@ func TestDeleteClusterTemplate(t *testing.T) {
 
 	sc := fake.ServiceClient()
 	sc.Endpoint = sc.Endpoint + "v1/"
-	requestID, err := clustertemplates.Delete(sc, "6dc6d336e3fc4c0a951b5698cd1236ee").Extract()
-	th.AssertNoErr(t, err)
+	res := clustertemplates.Delete(sc, "6dc6d336e3fc4c0a951b5698cd1236ee")
+	th.AssertNoErr(t, res.Err)
+	requestID := res.Header["X-Openstack-Request-Id"][0]
 	th.AssertEquals(t, "req-781e9bdc-4163-46eb-91c9-786c53188bbb", requestID)
-}
-
-func TestDeleteClusterTemplate_NoRequestIDHeader(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	HandleDeleteCluster_NoRequestIDHeader(t)
-
-	sc := fake.ServiceClient()
-	sc.Endpoint = sc.Endpoint + "v1/"
-	requestID, err := clustertemplates.Delete(sc, "6dc6d336e3fc4c0a951b5698cd1236ee").Extract()
-	th.AssertEquals(t, true, err != nil)
-	th.AssertEquals(t, "", requestID)
-}
-
-func TestDeleteClusterTemplate_EmptyRequestID(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	HandleDeleteCluster_EmptyRequestID(t)
-
-	sc := fake.ServiceClient()
-	sc.Endpoint = sc.Endpoint + "v1/"
-	requestID, err := clustertemplates.Delete(sc, "6dc6d336e3fc4c0a951b5698cd1236ee").Extract()
-	th.AssertEquals(t, true, err != nil)
-	th.AssertEquals(t, "", requestID)
 }
