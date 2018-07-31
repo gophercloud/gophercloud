@@ -9,7 +9,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestServerRescue(t *testing.T) {
+func TestServerRescueUnrescue(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
@@ -19,4 +19,8 @@ func TestServerRescue(t *testing.T) {
 
 	err = RescueServer(t, client, server)
 	th.AssertNoErr(t, err)
+
+	// Enable unrescue call when it will be implemented.
+	// err = UnrescueServer(t, client, server)
+	// th.AssertNoErr(t, err)
 }
