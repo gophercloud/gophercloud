@@ -40,3 +40,16 @@ func TestCreateCertificates(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedCreateCertificateResponse, *actual)
 }
+
+func TestUpdateCertificates(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleUpdateCertificateSuccessfully(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	err := certificates.Update(sc, "d564b18a-2890-4152-be3d-e05d784ff72").ExtractErr()
+	th.AssertNoErr(t, err)
+}

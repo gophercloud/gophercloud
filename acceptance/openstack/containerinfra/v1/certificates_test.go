@@ -39,4 +39,7 @@ func TestCertificatesCRUD(t *testing.T) {
 	certificate, err := certificates.Get(client, clusterUUID).Extract()
 	th.AssertNoErr(t, err)
 	t.Log(certificate.PEM)
+
+	err = certificates.Update(client, clusterUUID).ExtractErr()
+	th.AssertNoErr(t, err)
 }

@@ -98,3 +98,14 @@ func HandleCreateCertificateSuccessfully(t *testing.T) {
 		fmt.Fprint(w, CreateCertificateResponse)
 	})
 }
+
+func HandleUpdateCertificateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/certificates/d564b18a-2890-4152-be3d-e05d784ff72",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "PATCH")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.WriteHeader(http.StatusAccepted)
+			fmt.Fprintf(w, `{}`)
+		})
+}
