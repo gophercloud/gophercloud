@@ -136,18 +136,7 @@ type ValidateResult struct {
 // DeleteResult is the result of a Delete operation. Call its Extract
 // method to interpret it as a DeleteHeader.
 type DeleteResult struct {
-	gophercloud.HeaderResult
-}
-
-// DeleteHeader contains the delete information from a delete policy request.
-type DeleteHeader struct {
-	RequestID string `json:"X-OpenStack-Request-ID"`
-}
-
-func (r DeleteResult) Extract() (*DeleteHeader, error) {
-	var s *DeleteHeader
-	err := r.HeaderResult.ExtractInto(&s)
-	return s, err
+	gophercloud.ErrResult
 }
 
 // PolicyPage contains a list page of all policies from a List call.
