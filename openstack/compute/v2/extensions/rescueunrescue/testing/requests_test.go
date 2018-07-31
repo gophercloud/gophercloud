@@ -1,6 +1,8 @@
 package testing
 
 import (
+	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/rescueunrescue"
@@ -12,12 +14,20 @@ func TestRescue(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleServerRescueSuccessfully(t)
+	th.Mux.HandleFunc("/servers/3f54d05f-3430-4d80-aa07-63e6af9e2488/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, RescueRequest)
 
-	res := rescueunrescue.Rescue(fake.ServiceClient(), "1234asdf", rescueunrescue.RescueOpts{
-		AdminPass: "1234567890",
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, RescueResult)
 	})
-	th.AssertNoErr(t, res.Err)
-	adminPass, _ := res.Extract()
-	th.AssertEquals(t, "1234567890", adminPass)
+
+	s, err := rescueunrescue.Rescue(fake.ServiceClient(), "3f54d05f-3430-4d80-aa07-63e6af9e2488", rescueunrescue.RescueOpts{
+		AdminPass:      "aUPtawPzE9NU",
+		RescueImageRef: "115e5c5b-72f0-4a0a-9067-60706545248c",
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "aUPtawPzE9NU", s)
 }

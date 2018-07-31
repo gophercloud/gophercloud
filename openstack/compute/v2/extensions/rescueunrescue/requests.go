@@ -12,8 +12,14 @@ type RescueOptsBuilder interface {
 // option.
 type RescueOpts struct {
 	// AdminPass is the desired administrative password for the instance in
-	// RESCUE mode. If it's left blank, the server will generate a password.
+	// RESCUE mode.
+	// If it's left blank, the server will generate a password.
 	AdminPass string `json:"adminPass,omitempty"`
+
+	// RescueImageRef contains reference on an image that needs to be used as
+	// rescue image.
+	// If it's left blank, the server will be rescued with the default image.
+	RescueImageRef string `json:"rescue_image_ref,omitempty"`
 }
 
 // ToServerRescueMap formats a RescueOpts as a map that can be used as a JSON
