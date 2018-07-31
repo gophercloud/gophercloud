@@ -57,3 +57,17 @@ func TestCreateClusterTemplate(t *testing.T) {
 	actual.CreatedAt = actual.CreatedAt.UTC()
 	th.AssertDeepEquals(t, ExpectedClusterTemplate, *actual)
 }
+
+func TestDeleteClusterTemplate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleDeleteClusterSuccessfully(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	res := clustertemplates.Delete(sc, "6dc6d336e3fc4c0a951b5698cd1236ee")
+	th.AssertNoErr(t, res.Err)
+	requestID := res.Header["X-Openstack-Request-Id"][0]
+	th.AssertEquals(t, "req-781e9bdc-4163-46eb-91c9-786c53188bbb", requestID)
+}

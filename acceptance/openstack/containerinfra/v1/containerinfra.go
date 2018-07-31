@@ -24,7 +24,7 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 	boolFalse := false
 	createOpts := clustertemplates.CreateOpts{
 		Name:                name,
-		MasterFlavorID:      "m1.small",
+		MasterFlavorID:      choices.FlavorID,
 		Public:              &boolFalse,
 		ServerType:          "vm",
 		ExternalNetworkID:   choices.ExternalNetworkID,
@@ -65,7 +65,6 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 	return clusterTemplate, nil
 }
 
-/*
 // DeleteClusterTemplate will delete a given cluster-template. A fatal error will occur if the
 // cluster-template could not be deleted. This works best as a deferred function.
 func DeleteClusterTemplate(t *testing.T, client *gophercloud.ServiceClient, id string) {
@@ -80,4 +79,3 @@ func DeleteClusterTemplate(t *testing.T, client *gophercloud.ServiceClient, id s
 
 	return
 }
-*/

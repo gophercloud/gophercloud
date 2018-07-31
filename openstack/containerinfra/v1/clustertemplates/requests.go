@@ -64,3 +64,11 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 
 	return
 }
+
+// Delete deletes the specified cluster ID.
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	var result *http.Response
+	result, r.Err = client.Delete(deleteURL(client, id), nil)
+	r.Header = result.Header
+	return
+}

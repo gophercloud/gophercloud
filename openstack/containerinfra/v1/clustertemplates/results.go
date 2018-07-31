@@ -15,6 +15,12 @@ type CreateResult struct {
 	commonResult
 }
 
+// DeleteResult is the result from a Delete operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract is a function that accepts a result and extracts a cluster-template resource.
 func (r commonResult) Extract() (*ClusterTemplate, error) {
 	var s *ClusterTemplate
