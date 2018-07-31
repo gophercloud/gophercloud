@@ -975,7 +975,7 @@ func FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet, dest *quotasets.UpdateOp
 	dest.MetadataItems = &src.MetadataItems
 }
 
-// RescueServer will put the specified server into rescue mode.
+// RescueServer will place the specified server into rescue mode.
 func RescueServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
 	t.Logf("Attempting to put server %s into rescue mode", server.ID)
 	_, err := rescueunrescue.Rescue(client, server.ID, rescueunrescue.RescueOpts{}).Extract()

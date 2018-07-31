@@ -1,6 +1,6 @@
 /*
-Package rescueunrescue provides the ability to send server to a rescue mode and
-to return it back.
+Package rescueunrescue provides the ability to place a server into rescue mode
+and to return it back.
 
 Example to Rescue a server
 
