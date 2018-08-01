@@ -23,19 +23,19 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 
 	boolFalse := false
 	createOpts := clustertemplates.CreateOpts{
-		Name:                name,
-		MasterFlavorID:      choices.FlavorID,
-		Public:              &boolFalse,
-		ServerType:          "vm",
-		ExternalNetworkID:   choices.ExternalNetworkID,
-		ImageID:             choices.MagnumImageID,
-		RegistryEnabled:     &boolFalse,
-		DockerStorageDriver: "devicemapper",
 		COE:                 "swarm",
-		FlavorID:            choices.FlavorID,
-		MasterLBEnabled:     &boolFalse,
 		DNSNameServer:       "8.8.8.8",
+		DockerStorageDriver: "devicemapper",
+		ExternalNetworkID:   choices.ExternalNetworkID,
+		FlavorID:            choices.FlavorID,
 		FloatingIPEnabled:   &boolFalse,
+		ImageID:             choices.MagnumImageID,
+		MasterFlavorID:      choices.FlavorID,
+		MasterLBEnabled:     &boolFalse,
+		Name:                name,
+		Public:              &boolFalse,
+		RegistryEnabled:     &boolFalse,
+		ServerType:          "vm",
 	}
 
 	res := clustertemplates.Create(client, createOpts)

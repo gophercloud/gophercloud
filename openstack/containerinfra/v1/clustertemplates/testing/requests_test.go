@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clustertemplates"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -70,4 +71,31 @@ func TestDeleteClusterTemplate(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 	requestID := res.Header["X-Openstack-Request-Id"][0]
 	th.AssertEquals(t, "req-781e9bdc-4163-46eb-91c9-786c53188bbb", requestID)
+}
+
+func TestListClusterTemplates(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleListClusterTemplateSuccessfully(t)
+
+	count := 0
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	clustertemplates.List(sc, clustertemplates.ListOpts{Limit: 2}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := clustertemplates.ExtractClusterTemplates(page)
+		th.AssertNoErr(t, err)
+		for idx, _ := range actual {
+			actual[idx].CreatedAt = actual[idx].CreatedAt.UTC()
+		}
+		th.AssertDeepEquals(t, ExpectedClusterTemplates, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }

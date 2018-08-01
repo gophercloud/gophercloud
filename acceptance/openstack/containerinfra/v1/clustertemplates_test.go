@@ -6,8 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
-	//"github.com/gophercloud/gophercloud/acceptance/tools"
-	//"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clustertemplates"
+	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clustertemplates"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -20,23 +19,24 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 	t.Log(clusterTemplate.Name)
 
 	defer DeleteClusterTemplate(t, client, clusterTemplate.UUID)
-	/*
-		// Test clusters list
-		allPages, err := clustertemplates.List(client, nil).AllPages()
-		th.AssertNoErr(t, err)
 
-		allClusterTemplates, err := clustertemplates.ExtractClusterTemplates(allPages)
-		th.AssertNoErr(t, err)
+	// Test clusters list
+	allPages, err := clustertemplates.List(client, nil).AllPages()
+	th.AssertNoErr(t, err)
 
-		var found bool
-		for _, v := range allClusterTemplates {
-			if v.UUID == clusterTemplate.UUID {
-				found = true
-			}
+	allClusterTemplates, err := clustertemplates.ExtractClusterTemplates(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, v := range allClusterTemplates {
+		if v.UUID == clusterTemplate.UUID {
+			found = true
 		}
+	}
 
-		th.AssertEquals(t, found, true)
+	th.AssertEquals(t, found, true)
 
+	/*
 		// Test cluster update
 		updateOpts := []clustertemplates.UpdateOptsBuilder{
 			clustertemplates.UpdateOpts{

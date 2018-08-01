@@ -46,5 +46,25 @@ Example to Delete Cluster Template
 		panic(err)
 	}
 
+Example to List Clusters Templates
+
+	listOpts := clustertemplates.ListOpts{
+		Limit: 20,
+	}
+
+	allPages, err := clustertemplates.List(serviceClient, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allClusterTemplates, err := clusters.ExtractClusterTemplates(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, clusterTemplate := range allClusterTemplates {
+		fmt.Printf("%+v\n", clusterTemplate)
+	}
+
 */
 package clustertemplates
