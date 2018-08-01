@@ -108,3 +108,43 @@ func TestListAccessRights(t *testing.T) {
 		PrintAccessRight(t, &r)
 	}
 }
+
+func TestExtendAndShrink(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a sharedfs client: %v", err)
+	}
+
+	share, err := CreateShare(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create a share: %v", err)
+	}
+
+	defer DeleteShare(t, client, share)
+
+	err = ExtendShare(t, client, share, 2)
+	if err != nil {
+		t.Fatalf("Unable to extend a share: %v", err)
+	}
+
+	// We need to wait till the Extend is done
+	err = waitForStatus(client, share.ID, "available", 120)
+	if err != nil {
+		t.Fatalf("Share status error: %v", err)
+	}
+
+	t.Logf("Share %s successfuly extended", share.ID)
+
+	err = ShrinkShare(t, client, share, 1)
+	if err != nil {
+		t.Fatalf("Unable to shrink a share: %v", err)
+	}
+
+	// We need to wait till the Shrink is done
+	err = waitForStatus(client, share.ID, "available", 120)
+	if err != nil {
+		t.Fatalf("Share status error: %v", err)
+	}
+
+	t.Logf("Share %s successfuly shrunk", share.ID)
+}
