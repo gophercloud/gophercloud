@@ -989,3 +989,17 @@ func RescueServer(t *testing.T, client *gophercloud.ServiceClient, server *serve
 
 	return nil
 }
+
+// UnrescueServer will return server from rescue mode.
+func UnrescueServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
+	t.Logf("Attempting to return server %s from rescue mode", server.ID)
+	if err := rescueunrescue.Unrescue(client, server.ID).ExtractErr(); err != nil {
+		return err
+	}
+
+	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
+		return err
+	}
+
+	return nil
+}

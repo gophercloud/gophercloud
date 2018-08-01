@@ -40,3 +40,9 @@ func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder
 	})
 	return
 }
+
+// Unrescue instructs the provider to return the server from RESCUE mode.
+func Unrescue(client *gophercloud.ServiceClient, id string) (r UnrescueResult) {
+	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"unrescue": nil}, nil, nil)
+	return
+}

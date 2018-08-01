@@ -12,6 +12,12 @@ type RescueResult struct {
 	commonResult
 }
 
+// UnrescueResult is the response from an UnRescue operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type UnrescueResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract interprets any RescueResult as an AdminPass, if possible.
 func (r RescueResult) Extract() (string, error) {
 	var s struct {

@@ -31,3 +31,19 @@ func TestRescue(t *testing.T) {
 
 	th.AssertEquals(t, "aUPtawPzE9NU", s)
 }
+
+func TestUnrescue(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/servers/3f54d05f-3430-4d80-aa07-63e6af9e2488/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, UnrescueRequest)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	err := rescueunrescue.Unrescue(fake.ServiceClient(), "3f54d05f-3430-4d80-aa07-63e6af9e2488").ExtractErr()
+	th.AssertNoErr(t, err)
+}

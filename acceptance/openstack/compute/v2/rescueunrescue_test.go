@@ -20,7 +20,6 @@ func TestServerRescueUnrescue(t *testing.T) {
 	err = RescueServer(t, client, server)
 	th.AssertNoErr(t, err)
 
-	// Enable unrescue call when it will be implemented.
-	// err = UnrescueServer(t, client, server)
-	// th.AssertNoErr(t, err)
+	err = UnrescueServer(t, client, server)
+	th.AssertNoErr(t, err)
 }

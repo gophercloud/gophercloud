@@ -16,5 +16,13 @@ Example to Rescue a server
   }
 
   fmt.Printf("adminPass of the rescued server %s: %s\n", serverID, adminPass)
+
+Example to Unrescue a server
+
+  serverID := "3f54d05f-3430-4d80-aa07-63e6af9e2488"
+
+  if err := rescueunrescue.Unrescue(computeClient, serverID).ExtractErr(); err != nil {
+    panic(err)
+  }
 */
 package rescueunrescue

@@ -16,3 +16,10 @@ const RescueResult = `
 	"adminPass": "aUPtawPzE9NU"
 }
 `
+
+// UnrescueRequest represents request to unrescue a server.
+const UnrescueRequest = `
+{
+    "unrescue": null
+}
+`
