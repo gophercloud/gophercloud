@@ -2,10 +2,14 @@ package rescueunrescue
 
 import "github.com/gophercloud/gophercloud"
 
-// RescueResult is the response from a Rescue operation. Call its ExtractErr
-// method to determine if the call succeeded or failed.
+type commonResult struct {
+	gophercloud.Result
+}
+
+// RescueResult is the response from a Rescue operation. Call its Extract
+// method to retrieve adminPass for a rescued server.
 type RescueResult struct {
-	gophercloud.ErrResult
+	commonResult
 }
 
 // Extract interprets any RescueResult as an AdminPass, if possible.
