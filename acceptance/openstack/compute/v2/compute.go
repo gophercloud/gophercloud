@@ -19,6 +19,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/keypairs"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/networks"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/quotasets"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/rescueunrescue"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/schedulerhints"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/secgroups"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/servergroups"
@@ -972,4 +973,19 @@ func FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet, dest *quotasets.UpdateOp
 	dest.ServerGroups = &src.ServerGroups
 	dest.ServerGroupMembers = &src.ServerGroupMembers
 	dest.MetadataItems = &src.MetadataItems
+}
+
+// RescueServer will place the specified server into rescue mode.
+func RescueServer(t *testing.T, client *gophercloud.ServiceClient, server *servers.Server) error {
+	t.Logf("Attempting to put server %s into rescue mode", server.ID)
+	_, err := rescueunrescue.Rescue(client, server.ID, rescueunrescue.RescueOpts{}).Extract()
+	if err != nil {
+		return err
+	}
+
+	if err := WaitForComputeStatus(client, server, "RESCUE"); err != nil {
+		return err
+	}
+
+	return nil
 }
