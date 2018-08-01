@@ -233,3 +233,31 @@ func TestListAccessRightsSuccess(t *testing.T) {
 		},
 	})
 }
+
+func TestExtendSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockExtendResponse(t)
+
+	c := client.ServiceClient()
+	// Client c must have Microversion set; minimum supported microversion for Grant Access is 2.7
+	c.Microversion = "2.7"
+
+	err := shares.Extend(c, shareID, &shares.ExtendOpts{NewSize: 2}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestShrinkSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockShrinkResponse(t)
+
+	c := client.ServiceClient()
+	// Client c must have Microversion set; minimum supported microversion for Grant Access is 2.7
+	c.Microversion = "2.7"
+
+	err := shares.Shrink(c, shareID, &shares.ShrinkOpts{NewSize: 1}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
