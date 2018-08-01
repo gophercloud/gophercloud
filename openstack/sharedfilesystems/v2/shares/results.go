@@ -305,3 +305,13 @@ func (r ListAccessRightsResult) Extract() ([]AccessRight, error) {
 type ListAccessRightsResult struct {
 	gophercloud.Result
 }
+
+// ExtendResult contains the response body and error from an Extend request.
+type ExtendResult struct {
+	gophercloud.ErrResult
+}
+
+// ShrinkResult contains the response body and error from a Shrink request.
+type ShrinkResult struct {
+	gophercloud.ErrResult
+}

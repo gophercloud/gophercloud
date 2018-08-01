@@ -267,3 +267,77 @@ func ListAccessRights(client *gophercloud.ServiceClient, id string) (r ListAcces
 	})
 	return
 }
+
+// ExtendOptsBuilder allows extensions to add additional parameters to the
+// Extend request.
+type ExtendOptsBuilder interface {
+	ToExtendMap() (map[string]interface{}, error)
+}
+
+// ExtendOpts contains the options for creation of a Extend request.
+// For more information about these parameters, please, refer to the shared file systems API v2,
+// Share Actions, Extend share documentation
+type ExtendOpts struct {
+	// New size in GBs.
+	NewSize int `json:"new_size"`
+}
+
+// ToExtendMap assembles a request body based on the contents of a
+// ExtendOpts.
+func (opts ExtendOpts) ToExtendMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "extend")
+}
+
+// Extend will extend the capacity of an existing share. ExtendResult contains only the error.
+// To extract it, call the ExtractErr method on the ExtendResult.
+// Client must have Microversion set; minimum supported microversion for Extend is 2.7.
+func Extend(client *gophercloud.ServiceClient, id string, opts ExtendOptsBuilder) (r ExtendResult) {
+	b, err := opts.ToExtendMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(extendURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}
+
+// ShrinkOptsBuilder allows extensions to add additional parameters to the
+// Shrink request.
+type ShrinkOptsBuilder interface {
+	ToShrinkMap() (map[string]interface{}, error)
+}
+
+// ShrinkOpts contains the options for creation of a Shrink request.
+// For more information about these parameters, please, refer to the shared file systems API v2,
+// Share Actions, Shrink share documentation
+type ShrinkOpts struct {
+	// New size in GBs.
+	NewSize int `json:"new_size"`
+}
+
+// ToShrinkMap assembles a request body based on the contents of a
+// ShrinkOpts.
+func (opts ShrinkOpts) ToShrinkMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "shrink")
+}
+
+// Shrink will shrink the capacity of an existing share. ShrinkResult contains only the error.
+// To extract it, call the ExtractErr method on the ShrinkResult.
+// Client must have Microversion set; minimum supported microversion for Shrink is 2.7.
+func Shrink(client *gophercloud.ServiceClient, id string, opts ShrinkOptsBuilder) (r ShrinkResult) {
+	b, err := opts.ToShrinkMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(shrinkURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}
