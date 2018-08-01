@@ -23,5 +23,11 @@ Example to create certificates
 		panic(err)
 	}
 
+Example to update certificates
+
+	err := certificates.Update(client, clusterUUID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package certificates

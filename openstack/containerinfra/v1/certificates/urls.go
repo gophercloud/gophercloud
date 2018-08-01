@@ -17,3 +17,7 @@ func getURL(client *gophercloud.ServiceClient, id string) string {
 func createURL(client *gophercloud.ServiceClient) string {
 	return commonURL(client)
 }
+
+func updateURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL(apiName, id)
+}

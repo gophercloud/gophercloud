@@ -18,6 +18,11 @@ type CreateResult struct {
 	commonResult
 }
 
+// UpdateResult is the response of an Update operations.
+type UpdateResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract is a function that accepts a result and extracts a certificate resource.
 func (r commonResult) Extract() (*Certificate, error) {
 	var s *Certificate

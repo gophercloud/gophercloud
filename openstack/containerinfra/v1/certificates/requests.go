@@ -54,3 +54,12 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 
 	return
 }
+
+// Update will rotate the CA certificate for a cluster
+func Update(client *gophercloud.ServiceClient, clusterID string) (r UpdateResult) {
+	_, r.Err = client.Patch(updateURL(client, clusterID), nil, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}
