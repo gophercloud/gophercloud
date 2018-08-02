@@ -127,7 +127,7 @@ func TestExtendAndShrink(t *testing.T) {
 		t.Fatalf("Unable to extend a share: %v", err)
 	}
 
-	// We need to wait till the Extend is done
+	// We need to wait till the Extend operation is done
 	err = waitForStatus(client, share.ID, "available", 120)
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
@@ -140,7 +140,7 @@ func TestExtendAndShrink(t *testing.T) {
 		t.Fatalf("Unable to shrink a share: %v", err)
 	}
 
-	// We need to wait till the Shrink is done
+	// We need to wait till the Shrink operation is done
 	err = waitForStatus(client, share.ID, "available", 120)
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)

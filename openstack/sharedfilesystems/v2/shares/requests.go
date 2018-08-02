@@ -271,10 +271,10 @@ func ListAccessRights(client *gophercloud.ServiceClient, id string) (r ListAcces
 // ExtendOptsBuilder allows extensions to add additional parameters to the
 // Extend request.
 type ExtendOptsBuilder interface {
-	ToExtendMap() (map[string]interface{}, error)
+	ToShareExtendMap() (map[string]interface{}, error)
 }
 
-// ExtendOpts contains the options for creation of a Extend request.
+// ExtendOpts contains options for extending a Share.
 // For more information about these parameters, please, refer to the shared file systems API v2,
 // Share Actions, Extend share documentation
 type ExtendOpts struct {
@@ -282,9 +282,9 @@ type ExtendOpts struct {
 	NewSize int `json:"new_size"`
 }
 
-// ToExtendMap assembles a request body based on the contents of a
+// ToShareExtendMap assembles a request body based on the contents of a
 // ExtendOpts.
-func (opts ExtendOpts) ToExtendMap() (map[string]interface{}, error) {
+func (opts ExtendOpts) ToShareExtendMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "extend")
 }
 
@@ -292,7 +292,7 @@ func (opts ExtendOpts) ToExtendMap() (map[string]interface{}, error) {
 // To extract it, call the ExtractErr method on the ExtendResult.
 // Client must have Microversion set; minimum supported microversion for Extend is 2.7.
 func Extend(client *gophercloud.ServiceClient, id string, opts ExtendOptsBuilder) (r ExtendResult) {
-	b, err := opts.ToExtendMap()
+	b, err := opts.ToShareExtendMap()
 	if err != nil {
 		r.Err = err
 		return
@@ -308,10 +308,10 @@ func Extend(client *gophercloud.ServiceClient, id string, opts ExtendOptsBuilder
 // ShrinkOptsBuilder allows extensions to add additional parameters to the
 // Shrink request.
 type ShrinkOptsBuilder interface {
-	ToShrinkMap() (map[string]interface{}, error)
+	ToShareShrinkMap() (map[string]interface{}, error)
 }
 
-// ShrinkOpts contains the options for creation of a Shrink request.
+// ShrinkOpts contains options for shrinking a Share.
 // For more information about these parameters, please, refer to the shared file systems API v2,
 // Share Actions, Shrink share documentation
 type ShrinkOpts struct {
@@ -319,9 +319,9 @@ type ShrinkOpts struct {
 	NewSize int `json:"new_size"`
 }
 
-// ToShrinkMap assembles a request body based on the contents of a
+// ToShareShrinkMap assembles a request body based on the contents of a
 // ShrinkOpts.
-func (opts ShrinkOpts) ToShrinkMap() (map[string]interface{}, error) {
+func (opts ShrinkOpts) ToShareShrinkMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "shrink")
 }
 
@@ -329,7 +329,7 @@ func (opts ShrinkOpts) ToShrinkMap() (map[string]interface{}, error) {
 // To extract it, call the ExtractErr method on the ShrinkResult.
 // Client must have Microversion set; minimum supported microversion for Shrink is 2.7.
 func Shrink(client *gophercloud.ServiceClient, id string, opts ShrinkOptsBuilder) (r ShrinkResult) {
-	b, err := opts.ToShrinkMap()
+	b, err := opts.ToShareShrinkMap()
 	if err != nil {
 		r.Err = err
 		return
