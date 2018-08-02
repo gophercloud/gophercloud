@@ -65,10 +65,11 @@ func TestDeletePolicy(t *testing.T) {
 
 	HandlePolicyDelete(t)
 
-	actual, err := policies.Delete(fake.ServiceClient(), PolicyIDtoDelete).Extract()
-	th.AssertNoErr(t, err)
+	res := policies.Delete(fake.ServiceClient(), PolicyIDtoDelete)
+	th.AssertNoErr(t, res.ExtractErr())
 
-	th.AssertEquals(t, PolicyDeleteRequestID, actual.RequestID)
+	requestID := res.Header["X-Openstack-Request-Id"][0]
+	th.AssertEquals(t, PolicyDeleteRequestID, requestID)
 }
 
 func TestUpdatePolicy(t *testing.T) {

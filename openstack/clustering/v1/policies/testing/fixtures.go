@@ -446,7 +446,7 @@ func HandlePolicyDelete(t *testing.T) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		w.Header().Add("X-OpenStack-Request-ID", PolicyDeleteRequestID)
+		w.Header().Add("X-OpenStack-Request-Id", PolicyDeleteRequestID)
 		w.WriteHeader(http.StatusNoContent)
 	})
 }

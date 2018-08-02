@@ -337,7 +337,7 @@ func DeleteNode(t *testing.T, client *gophercloud.ServiceClient, id string) {
 func DeletePolicy(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	t.Logf("Attempting to delete policy: %s", id)
 
-	_, err := policies.Delete(client, id).Extract()
+	err := policies.Delete(client, id).ExtractErr()
 	if err != nil {
 		t.Fatalf("Error deleting policy %s: %s:", id, err)
 	}
