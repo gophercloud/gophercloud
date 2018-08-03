@@ -109,6 +109,16 @@ func PrintAccessRight(t *testing.T, accessRight *shares.AccessRight) {
 	t.Logf("Access rule %s", string(asJSON))
 }
 
+// ExtendShare extends the capacity of an existing share
+func ExtendShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share, newSize int) error {
+	return shares.Extend(client, share.ID, &shares.ExtendOpts{NewSize: newSize}).ExtractErr()
+}
+
+// ShrinkShare shrinks the capacity of an existing share
+func ShrinkShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share, newSize int) error {
+	return shares.Shrink(client, share.ID, &shares.ShrinkOpts{NewSize: newSize}).ExtractErr()
+}
+
 func waitForStatus(c *gophercloud.ServiceClient, id, status string, secs int) error {
 	return gophercloud.WaitFor(secs, func() (bool, error) {
 		current, err := shares.Get(c, id).Extract()

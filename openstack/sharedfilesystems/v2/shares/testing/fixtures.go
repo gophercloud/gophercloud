@@ -188,7 +188,7 @@ var listDetailResponse = `{
 
 var listDetailEmptyResponse = `{"shares": []}`
 
-// MockDeleteResponse creates a mock detailed-list response
+// MockListDetailResponse creates a mock detailed-list response
 func MockListDetailResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/detail", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -272,6 +272,7 @@ var revokeAccessRequest = `{
 	}
 }`
 
+// MockRevokeAccessResponse creates a mock revoke access response
 func MockRevokeAccessResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
@@ -313,5 +314,43 @@ func MockListAccessRightsResponse(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, listAccessRightsResponse)
+	})
+}
+
+var extendRequest = `{
+		"extend": {
+			"new_size": 2
+		}
+	}`
+
+// MockExtendResponse creates a mock extend share response
+func MockExtendResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, extendRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+var shrinkRequest = `{
+		"shrink": {
+			"new_size": 1
+		}
+	}`
+
+// MockShrinkResponse creates a mock shrink share response
+func MockShrinkResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, shrinkRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
