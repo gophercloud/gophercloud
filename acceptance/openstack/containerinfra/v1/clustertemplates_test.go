@@ -36,6 +36,10 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 
+	template, err := clustertemplates.Get(client, clusterTemplate.UUID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, clusterTemplate.UUID, template.UUID)
+
 	/*
 		// Test cluster update
 		updateOpts := []clustertemplates.UpdateOptsBuilder{
