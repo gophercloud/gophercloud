@@ -421,6 +421,11 @@ const UpdateResponse_EmptyTime = `
 	"volume_driver": null
 }`
 
+const UpdateResponse_InvalidUpdate = `
+{
+    "errors": [{\"status\": 400, \"code\": \"client\", \"links\": [], \"title\": \"'add' and 'replace' operations needs value\", \"detail\": \"'add' and 'replace' operations needs value\", \"request_id\": \"\"}]
+}`
+
 var ExpectedUpdateClusterTemplate = clustertemplates.ClusterTemplate{
 	APIServerPort:       "",
 	COE:                 "kubernetes",
@@ -512,6 +517,18 @@ func HandleUpdateClusterTemplateEmptyTimeSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, UpdateResponse_EmptyTime)
+	})
+}
+
+func HandleUpdateClusterTemplateInvalidUpdate(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clustertemplates/7d85f602-a948-4a30-afd4-e84f47471c15", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
 
 		fmt.Fprint(w, UpdateResponse_EmptyTime)
 	})

@@ -1,7 +1,6 @@
 package clustertemplates
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gophercloud/gophercloud"
@@ -125,10 +124,18 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	return
 }
 
+type UpdateOp string
+
+const (
+	AddOp     UpdateOp = "add"
+	RemoveOp  UpdateOp = "remove"
+	ReplaceOp UpdateOp = "replace"
+)
+
 type UpdateOpts struct {
-	Path  string `json:"path" required:"true"`
-	Value string `json:"value,omitempty"`
-	Op    string `json:"op" required:"true"`
+	Op    UpdateOp `json:"op" required:"true"`
+	Path  string   `json:"path" required:"true"`
+	Value string   `json:"value,omitempty"`
 }
 
 // UpdateOptsBuilder allows extensions to add additional parameters to the
@@ -140,9 +147,6 @@ type UpdateOptsBuilder interface {
 // ToClusterUpdateMap assembles a request body based on the contents of
 // UpdateOpts.
 func (opts UpdateOpts) ToClusterTemplateUpdateMap() (map[string]interface{}, error) {
-	if opts.Op != "remove" && opts.Value == "" {
-		return nil, fmt.Errorf("Value field must be provied for Op=[%s]. Only when Op=remove can have empty Value field", opts.Op)
-	}
 	b, err := gophercloud.BuildRequestBody(opts, "")
 	if err != nil {
 		return nil, err

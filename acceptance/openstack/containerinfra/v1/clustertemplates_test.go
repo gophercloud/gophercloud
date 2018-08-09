@@ -44,19 +44,23 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 	// Test cluster update
 	updateOpts := []clustertemplates.UpdateOptsBuilder{
 		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
 			Path:  "/master_lb_enabled",
 			Value: "false",
-			Op:    "replace",
 		},
 		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
 			Path:  "/registry_enabled",
 			Value: "false",
-			Op:    "replace",
 		},
 		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.AddOp,
 			Path:  "/labels/test",
 			Value: "test",
-			Op:    "add",
+		},
+		clustertemplates.UpdateOpts{
+			Op:   clustertemplates.AddOp,
+			Path: "/labels/test1",
 		},
 	}
 

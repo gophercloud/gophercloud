@@ -138,12 +138,12 @@ func TestUpdateClusterTemplate(t *testing.T) {
 		clustertemplates.UpdateOpts{
 			Path:  "/master_lb_enabled",
 			Value: "True",
-			Op:    "replace",
+			Op:    clustertemplates.ReplaceOp,
 		},
 		clustertemplates.UpdateOpts{
 			Path:  "/registry_enabled",
 			Value: "True",
-			Op:    "replace",
+			Op:    clustertemplates.ReplaceOp,
 		},
 	}
 
@@ -166,14 +166,14 @@ func TestUpdateClusterTemplateEmptyTime(t *testing.T) {
 
 	updateOpts := []clustertemplates.UpdateOptsBuilder{
 		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
 			Path:  "/master_lb_enabled",
 			Value: "True",
-			Op:    "replace",
 		},
 		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
 			Path:  "/registry_enabled",
 			Value: "True",
-			Op:    "replace",
 		},
 	}
 
@@ -188,12 +188,20 @@ func TestUpdateClusterTemplateInvalidUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	HandleUpdateClusterTemplateSuccessfully(t)
+	HandleUpdateClusterTemplateInvalidUpdate(t)
 
 	updateOpts := []clustertemplates.UpdateOptsBuilder{
 		clustertemplates.UpdateOpts{
+			Op:   clustertemplates.ReplaceOp,
 			Path: "/master_lb_enabled",
-			Op:   "replace",
+		},
+		clustertemplates.UpdateOpts{
+			Op:   clustertemplates.RemoveOp,
+			Path: "/master_lb_enabled",
+		},
+		clustertemplates.UpdateOpts{
+			Op:   clustertemplates.AddOp,
+			Path: "/master_lb_enabled",
 		},
 	}
 

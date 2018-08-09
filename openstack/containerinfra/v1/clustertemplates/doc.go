@@ -70,14 +70,14 @@ Example to Update Cluster Template
 
 	updateOpts := []clustertemplates.UpdateOptsBuilder{
 		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
 			Path:  "/master_lb_enabled",
-			Value: true,
-			Op:    "replace",
+			Value: "True",
 		},
 		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
 			Path:  "/registry_enabled",
-			Value: true,
-			Op:    "replace",
+			Value: "True",
 		},
 	}
 
