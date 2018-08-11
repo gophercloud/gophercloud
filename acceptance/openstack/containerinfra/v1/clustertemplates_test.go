@@ -58,10 +58,6 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 			Path:  "/labels/test",
 			Value: "test",
 		},
-		clustertemplates.UpdateOpts{
-			Op:   clustertemplates.AddOp,
-			Path: "/labels/test1",
-		},
 	}
 
 	updateClusterTemplate, err := clustertemplates.Update(client, clusterTemplate.UUID, updateOpts).Extract()
