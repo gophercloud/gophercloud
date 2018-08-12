@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clustertemplates"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -40,32 +41,30 @@ func TestClusterTemplatesCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, clusterTemplate.UUID, template.UUID)
 
-	/*
-		// Test cluster update
-		updateOpts := []clustertemplates.UpdateOptsBuilder{
-			clustertemplates.UpdateOpts{
-				Path:  "/master_lb_enabled",
-				Value: "false",
-				Op:    "replace",
-			},
-			clustertemplates.UpdateOpts{
-				Path:  "/registry_enabled",
-				Value: "false",
-				Op:    "replace",
-			},
-			clustertemplates.UpdateOpts{
-				Path:  "/labels/test",
-				Value: "test",
-				Op:    "add",
-			},
-		}
+	// Test cluster update
+	updateOpts := []clustertemplates.UpdateOptsBuilder{
+		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
+			Path:  "/master_lb_enabled",
+			Value: "false",
+		},
+		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
+			Path:  "/registry_enabled",
+			Value: "false",
+		},
+		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.AddOp,
+			Path:  "/labels/test",
+			Value: "test",
+		},
+	}
 
-		updateClusterTemplate, err := clustertemplates.Update(client, clusterTemplate.UUID, updateOpts).Extract()
-		th.AssertNoErr(t, err)
-		th.AssertEquals(t, false, updateClusterTemplate.MasterLBEnabled)
-		th.AssertEquals(t, false, updateClusterTemplate.RegistryEnabled)
-		th.AssertEquals(t, "test", updateClusterTemplate.Labels["test"])
-		tools.PrintResource(t, updateClusterTemplate)
+	updateClusterTemplate, err := clustertemplates.Update(client, clusterTemplate.UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, false, updateClusterTemplate.MasterLBEnabled)
+	th.AssertEquals(t, false, updateClusterTemplate.RegistryEnabled)
+	th.AssertEquals(t, "test", updateClusterTemplate.Labels["test"])
+	tools.PrintResource(t, updateClusterTemplate)
 
-	*/
 }

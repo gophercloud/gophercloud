@@ -123,3 +123,56 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	}
 	return
 }
+
+type UpdateOp string
+
+const (
+	AddOp     UpdateOp = "add"
+	RemoveOp  UpdateOp = "remove"
+	ReplaceOp UpdateOp = "replace"
+)
+
+type UpdateOpts struct {
+	Op    UpdateOp `json:"op" required:"true"`
+	Path  string   `json:"path" required:"true"`
+	Value string   `json:"value,omitempty"`
+}
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToClusterTemplateUpdateMap() (map[string]interface{}, error)
+}
+
+// ToClusterUpdateMap assembles a request body based on the contents of
+// UpdateOpts.
+func (opts UpdateOpts) ToClusterTemplateUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+// Update implements cluster updated request.
+func Update(client *gophercloud.ServiceClient, id string, opts []UpdateOptsBuilder) (r UpdateResult) {
+	var o []map[string]interface{}
+	for _, opt := range opts {
+		b, err := opt.ToClusterTemplateUpdateMap()
+		if err != nil {
+			r.Err = err
+			return r
+		}
+		o = append(o, b)
+	}
+	var result *http.Response
+	result, r.Err = client.Patch(updateURL(client, id), o, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 202},
+	})
+
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
+}

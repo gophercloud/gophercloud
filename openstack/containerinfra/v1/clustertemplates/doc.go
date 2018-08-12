@@ -66,5 +66,25 @@ Example to List Clusters Templates
 		fmt.Printf("%+v\n", clusterTemplate)
 	}
 
+Example to Update Cluster Template
+
+	updateOpts := []clustertemplates.UpdateOptsBuilder{
+		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
+			Path:  "/master_lb_enabled",
+			Value: "True",
+		},
+		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
+			Path:  "/registry_enabled",
+			Value: "True",
+		},
+	}
+
+	clustertemplate, err := clustertemplates.Update(serviceClient, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package clustertemplates

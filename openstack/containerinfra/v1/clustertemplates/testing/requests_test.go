@@ -127,3 +127,86 @@ func TestGetClusterTemplateEmptyTime(t *testing.T) {
 	actual.CreatedAt = actual.CreatedAt.UTC()
 	th.AssertDeepEquals(t, ExpectedClusterTemplate_EmptyTime, *actual)
 }
+
+func TestUpdateClusterTemplate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleUpdateClusterTemplateSuccessfully(t)
+
+	updateOpts := []clustertemplates.UpdateOptsBuilder{
+		clustertemplates.UpdateOpts{
+			Path:  "/master_lb_enabled",
+			Value: "True",
+			Op:    clustertemplates.ReplaceOp,
+		},
+		clustertemplates.UpdateOpts{
+			Path:  "/registry_enabled",
+			Value: "True",
+			Op:    clustertemplates.ReplaceOp,
+		},
+	}
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	res := clustertemplates.Update(sc, "7d85f602-a948-4a30-afd4-e84f47471c15", updateOpts)
+	th.AssertNoErr(t, res.Err)
+
+	actual, err := res.Extract()
+	th.AssertNoErr(t, err)
+	actual.CreatedAt = actual.CreatedAt.UTC()
+	th.AssertDeepEquals(t, ExpectedUpdateClusterTemplate, *actual)
+}
+
+func TestUpdateClusterTemplateEmptyTime(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleUpdateClusterTemplateEmptyTimeSuccessfully(t)
+
+	updateOpts := []clustertemplates.UpdateOptsBuilder{
+		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
+			Path:  "/master_lb_enabled",
+			Value: "True",
+		},
+		clustertemplates.UpdateOpts{
+			Op:    clustertemplates.ReplaceOp,
+			Path:  "/registry_enabled",
+			Value: "True",
+		},
+	}
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	actual, err := clustertemplates.Update(sc, "7d85f602-a948-4a30-afd4-e84f47471c15", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedUpdateClusterTemplate_EmptyTime, *actual)
+}
+
+func TestUpdateClusterTemplateInvalidUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleUpdateClusterTemplateInvalidUpdate(t)
+
+	updateOpts := []clustertemplates.UpdateOptsBuilder{
+		clustertemplates.UpdateOpts{
+			Op:   clustertemplates.ReplaceOp,
+			Path: "/master_lb_enabled",
+		},
+		clustertemplates.UpdateOpts{
+			Op:   clustertemplates.RemoveOp,
+			Path: "/master_lb_enabled",
+		},
+		clustertemplates.UpdateOpts{
+			Op:   clustertemplates.AddOp,
+			Path: "/master_lb_enabled",
+		},
+	}
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	_, err := clustertemplates.Update(sc, "7d85f602-a948-4a30-afd4-e84f47471c15", updateOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+}
