@@ -21,16 +21,16 @@ type Amphora struct {
 	ComputeID string `json:"compute_id"`
 
 	// The IP address of the Virtual IP (VIP).
-	VIP string `json:"ha_ip"`
+	HAIP string `json:"ha_ip"`
 
 	// The ID of the Virtual IP (VIP) port.
-	VIPPortID string `json:"ha_port_id"`
+	HAPortID string `json:"ha_port_id"`
 
 	// The date the certificate for the amphora expires.
 	CertExpiration string `json:"cert_expiration"`
 
 	// Whether the certificate is in the process of being replaced.
-	IsCertBusy bool `json:"cert_busy"`
+	CertBusy bool `json:"cert_busy"`
 
 	// The role of the amphora. One of STANDALONE, MASTER, BACKUP.
 	Role string `json:"role"`
@@ -39,19 +39,19 @@ type Amphora struct {
 	Status string `json:"status"`
 
 	// The vrrp port’s ID in the networking system.
-	VrrpPortID string `json:"vrrp_port_id"`
+	VRRPPortID string `json:"vrrp_port_id"`
 
 	// The address of the vrrp port on the amphora.
-	VrrpIP string `json:"vrrp_ip"`
+	VRRPIP string `json:"vrrp_ip"`
 
 	// The bound interface name of the vrrp port on the amphora.
-	VrrpInterface string `json:"vrrp_interface"`
+	VRRPInterface string `json:"vrrp_interface"`
 
 	// The vrrp group’s ID for the amphora.
-	VrrpID int `json:"vrrp_id"`
+	VRRPID int `json:"vrrp_id"`
 
 	// The priority of the amphora in the vrrp group.
-	VrrpPriority int `json:"vrrp_priority"`
+	VRRPPriority int `json:"vrrp_priority"`
 
 	// The availability zone of a compute instance, cached at create time. This is not guaranteed to be current. May be
 	// an empty-string if the compute service does not use zones.
@@ -83,14 +83,14 @@ func (r AmphoraPage) NextPageURL() (string, error) {
 
 // IsEmpty checks whether a AmphoraPage struct is empty.
 func (r AmphoraPage) IsEmpty() (bool, error) {
-	is, err := ExtractAmphoare(r)
+	is, err := ExtractAmphorae(r)
 	return len(is) == 0, err
 }
 
-// ExtractAmphoare accepts a Page struct, specifically a AmphoraPage
+// ExtractAmphorae accepts a Page struct, specifically a AmphoraPage
 // struct, and extracts the elements into a slice of Amphora structs. In
 // other words, a generic collection is mapped into a relevant slice.
-func ExtractAmphoare(r pagination.Page) ([]Amphora, error) {
+func ExtractAmphorae(r pagination.Page) ([]Amphora, error) {
 	var s struct {
 		Amphorae []Amphora `json:"amphorae"`
 	}

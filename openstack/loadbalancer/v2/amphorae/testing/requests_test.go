@@ -18,7 +18,7 @@ func TestListAmphorae(t *testing.T) {
 	err := amphorae.List(fake.ServiceClient(), amphorae.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
-		actual, err := amphorae.ExtractAmphoare(page)
+		actual, err := amphorae.ExtractAmphorae(page)
 		if err != nil {
 			return false, err
 		}
@@ -44,7 +44,7 @@ func TestListAllAmphorae(t *testing.T) {
 
 	allPages, err := amphorae.List(fake.ServiceClient(), amphorae.ListOpts{}).AllPages()
 	th.AssertNoErr(t, err)
-	actual, err := amphorae.ExtractAmphoare(allPages)
+	actual, err := amphorae.ExtractAmphorae(allPages)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 2, len(actual))
 }

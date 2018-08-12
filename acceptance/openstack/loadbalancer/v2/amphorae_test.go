@@ -21,7 +21,7 @@ func TestAmphoraeList(t *testing.T) {
 		t.Fatalf("Unable to list amphorae: %v", err)
 	}
 
-	allAmphorae, err := amphorae.ExtractAmphoare(allPages)
+	allAmphorae, err := amphorae.ExtractAmphorae(allPages)
 	if err != nil {
 		t.Fatalf("Unable to extract amphorae: %v", err)
 	}

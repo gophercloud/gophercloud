@@ -21,8 +21,8 @@ type ListOpts struct {
 	ImageID        string `q:"image_id"`
 	Role           string `q:"role"`
 	Status         string `q:"status"`
-	VIPPortID      string `q:"ha_port_id"`
-	VrrpPortID     string `q:"vrrp_port_id"`
+	HAPortID       string `q:"ha_port_id"`
+	VRRPPortID     string `q:"vrrp_port_id"`
 	Limit          int    `q:"limit"`
 	Marker         string `q:"marker"`
 	SortKey        string `q:"sort_key"`
