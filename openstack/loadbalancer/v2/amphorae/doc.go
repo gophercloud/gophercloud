@@ -13,7 +13,7 @@ Example to List Amphorae
 		panic(err)
 	}
 
-	allAmphorae, err := amphorae.ExtractAmphoare(allPages)
+	allAmphorae, err := amphorae.ExtractAmphorae(allPages)
 	if err != nil {
 		panic(err)
 	}
