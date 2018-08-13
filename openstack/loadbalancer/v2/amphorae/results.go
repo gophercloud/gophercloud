@@ -1,6 +1,9 @@
 package amphorae
 
 import (
+	"encoding/json"
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -27,7 +30,7 @@ type Amphora struct {
 	HAPortID string `json:"ha_port_id"`
 
 	// The date the certificate for the amphora expires.
-	CertExpiration string `json:"cert_expiration"`
+	CertExpiration time.Time `json:"-"`
 
 	// Whether the certificate is in the process of being replaced.
 	CertBusy bool `json:"cert_busy"`
@@ -59,6 +62,33 @@ type Amphora struct {
 
 	// The ID of the glance image used for the amphora.
 	ImageID string `json:"image_id"`
+
+	// The UTC date and timestamp when the resource was created.
+	CreatedAt time.Time `json:"-"`
+
+	// The UTC date and timestamp when the resource was last updated.
+	UpdatedAt time.Time `json:"-"`
+}
+
+func (a *Amphora) UnmarshalJSON(b []byte) error {
+	type tmp Amphora
+	var s struct {
+		tmp
+		CertExpiration gophercloud.JSONRFC3339NoZ `json:"cert_expiration"`
+		CreatedAt      gophercloud.JSONRFC3339NoZ `json:"created_at"`
+		UpdatedAt      gophercloud.JSONRFC3339NoZ `json:"updated_at"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*a = Amphora(s.tmp)
+
+	a.CreatedAt = time.Time(s.CreatedAt)
+	a.UpdatedAt = time.Time(s.UpdatedAt)
+	a.CertExpiration = time.Time(s.CertExpiration)
+
+	return nil
 }
 
 // AmphoraPage is the page returned by a pager when traversing over a

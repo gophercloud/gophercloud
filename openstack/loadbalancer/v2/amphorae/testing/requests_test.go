@@ -47,4 +47,5 @@ func TestListAllAmphorae(t *testing.T) {
 	actual, err := amphorae.ExtractAmphorae(allPages)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 2, len(actual))
+	th.AssertDeepEquals(t, ExpectedAmphoraeSlice, actual)
 }
