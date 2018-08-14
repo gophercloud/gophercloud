@@ -41,7 +41,7 @@ func (r commonResult) Extract() (*ClusterTemplate, error) {
 
 // Represents a template for a Cluster Template
 type ClusterTemplate struct {
-	APIServerPort       string             `json:"apiserver_port"`
+	APIServerPort       int                `json:"apiserver_port"`
 	COE                 string             `json:"coe"`
 	ClusterDistro       string             `json:"cluster_distro"`
 	CreatedAt           time.Time          `json:"created_at"`
