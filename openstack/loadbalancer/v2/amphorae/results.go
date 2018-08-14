@@ -127,3 +127,22 @@ func ExtractAmphorae(r pagination.Page) ([]Amphora, error) {
 	err := (r.(AmphoraPage)).ExtractInto(&s)
 	return s.Amphorae, err
 }
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+// Extract is a function that accepts a result and extracts an amphora.
+func (r commonResult) Extract() (*Amphora, error) {
+	var s struct {
+		Amphora *Amphora `json:"amphora"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Amphora, err
+}
+
+// GetResult represents the result of a get operation. Call its Extract
+// method to interpret it as an amphora.
+type GetResult struct {
+	commonResult
+}

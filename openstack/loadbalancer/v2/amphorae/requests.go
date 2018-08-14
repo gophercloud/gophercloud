@@ -51,3 +51,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		return AmphoraPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// Get retrieves a particular amphora based on its unique ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	return
+}
