@@ -49,3 +49,17 @@ func TestListAllAmphorae(t *testing.T) {
 	th.AssertEquals(t, 2, len(actual))
 	th.AssertDeepEquals(t, ExpectedAmphoraeSlice, actual)
 }
+
+func TestGetAmphora(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAmphoraGetSuccessfully(t)
+
+	client := fake.ServiceClient()
+	actual, err := amphorae.Get(client, "45f40289-0551-483a-b089-47214bc2a8a4").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, FirstAmphora, *actual)
+}

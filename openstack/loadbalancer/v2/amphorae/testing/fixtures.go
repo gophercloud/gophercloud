@@ -63,6 +63,32 @@ const AmphoraeListBody = `
 }
 `
 
+const SingleAmphoraBody = `
+{
+	"amphora": {
+		"cached_zone": "nova",
+		"cert_busy": false,
+		"cert_expiration": "2020-08-08T23:44:31",
+		"compute_id": "667bb225-69aa-44b1-8908-694dc624c267",
+		"created_at": "2018-08-09T23:44:31",
+		"ha_ip": "10.0.0.6",
+		"ha_port_id": "35254b63-9361-4561-9b8f-2bb4e3be60e3",
+		"id": "45f40289-0551-483a-b089-47214bc2a8a4",
+		"image_id": "5d1aed06-2624-43f5-a413-9212263c3d53",
+		"lb_network_ip": "192.168.0.6",
+		"loadbalancer_id": "882f2a9d-9d53-4bd0-b0e9-08e9d0de11f9",
+		"role": "MASTER",
+		"status": "READY",
+		"updated_at": "2018-08-09T23:51:06",
+		"vrrp_id": 1,
+		"vrrp_interface": "eth1",
+		"vrrp_ip": "10.0.0.4",
+		"vrrp_port_id": "dcf0c8b5-6a08-4658-997d-eac97f2b9bbd",
+		"vrrp_priority": 100
+	}
+}
+`
+
 // FirstAmphora is the first resource in the List request.
 var FirstAmphora = amphorae.Amphora{
 	CachedZone:     "nova",
@@ -129,5 +155,16 @@ func HandleAmphoraListSuccessfully(t *testing.T) {
 		default:
 			t.Fatalf("/v2.0/octavia/amphorae invoked with unexpected marker=[%s]", marker)
 		}
+	})
+}
+
+// HandleAmphoraGetSuccessfully sets up the test server to respond to am amphora Get request.
+func HandleAmphoraGetSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/octavia/amphorae/45f40289-0551-483a-b089-47214bc2a8a4", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, SingleAmphoraBody)
 	})
 }
