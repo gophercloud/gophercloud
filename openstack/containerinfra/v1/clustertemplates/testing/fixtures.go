@@ -14,7 +14,7 @@ import (
 
 const ClusterTemplateResponse = `
 {
-	"apiserver_port": null,
+	"apiserver_port": 8081,
 	"cluster_distro": "fedora-atomic",
 	"coe": "kubernetes",
 	"created_at": "2018-06-27T16:52:21+00:00",
@@ -105,7 +105,7 @@ const ClusterTemplateListResponse = `
 {
 	"clustertemplates": [
 		{
-			"apiserver_port": null,
+			"apiserver_port": 8081,
 			"cluster_distro": "fedora-atomic",
 			"coe": "kubernetes",
 			"created_at": "2018-06-27T16:52:21+00:00",
@@ -193,7 +193,7 @@ const ClusterTemplateListResponse = `
 }`
 
 var ExpectedClusterTemplate = clustertemplates.ClusterTemplate{
-	APIServerPort:       "",
+	APIServerPort:       8081,
 	COE:                 "kubernetes",
 	ClusterDistro:       "fedora-atomic",
 	CreatedAt:           time.Date(2018, 6, 27, 16, 52, 21, 0, time.UTC),
@@ -232,7 +232,6 @@ var ExpectedClusterTemplate = clustertemplates.ClusterTemplate{
 }
 
 var ExpectedClusterTemplate_EmptyTime = clustertemplates.ClusterTemplate{
-	APIServerPort:       "",
 	COE:                 "kubernetes",
 	ClusterDistro:       "fedora-atomic",
 	CreatedAt:           time.Time{},
@@ -427,7 +426,6 @@ const UpdateResponse_InvalidUpdate = `
 }`
 
 var ExpectedUpdateClusterTemplate = clustertemplates.ClusterTemplate{
-	APIServerPort:       "",
 	COE:                 "kubernetes",
 	ClusterDistro:       "fedora-atomic",
 	CreatedAt:           time.Date(2016, 8, 10, 13, 47, 01, 0, time.UTC),
@@ -463,7 +461,6 @@ var ExpectedUpdateClusterTemplate = clustertemplates.ClusterTemplate{
 }
 
 var ExpectedUpdateClusterTemplate_EmptyTime = clustertemplates.ClusterTemplate{
-	APIServerPort:       "",
 	COE:                 "kubernetes",
 	ClusterDistro:       "fedora-atomic",
 	CreatedAt:           time.Time{},
