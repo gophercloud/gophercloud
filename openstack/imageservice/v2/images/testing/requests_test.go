@@ -388,3 +388,71 @@ func TestImageListByTags(t *testing.T) {
 
 	th.AssertDeepEquals(t, expectedImage, allImages[0])
 }
+
+func TestUpdateImageProperties(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleImageUpdatePropertiesSuccessfully(t)
+
+	actualImage, err := images.Update(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
+		images.UpdateImageProperty{
+			Op:    images.AddOp,
+			Name:  "hw_disk_bus",
+			Value: "scsi",
+		},
+		images.UpdateImageProperty{
+			Op:    images.AddOp,
+			Name:  "hw_disk_bus_model",
+			Value: "virtio-scsi",
+		},
+		images.UpdateImageProperty{
+			Op:    images.AddOp,
+			Name:  "hw_scsi_model",
+			Value: "virtio-scsi",
+		},
+	}).Extract()
+
+	th.AssertNoErr(t, err)
+
+	sizebytes := int64(2254249)
+	checksum := "2cec138d7dae2aa59038ef8c9aec2390"
+	file := actualImage.File
+	createdDate := actualImage.CreatedAt
+	lastUpdate := actualImage.UpdatedAt
+	schema := "/v2/schemas/image"
+
+	expectedImage := images.Image{
+		ID:         "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
+		Name:       "Fedora 17",
+		Status:     images.ImageStatusActive,
+		Visibility: images.ImageVisibilityPublic,
+
+		SizeBytes: sizebytes,
+		Checksum:  checksum,
+
+		Tags: []string{
+			"fedora",
+			"beefy",
+		},
+
+		Owner:            "",
+		MinRAMMegabytes:  0,
+		MinDiskGigabytes: 0,
+
+		DiskFormat:      "",
+		ContainerFormat: "",
+		File:            file,
+		CreatedAt:       createdDate,
+		UpdatedAt:       lastUpdate,
+		Schema:          schema,
+		VirtualSize:     0,
+		Properties: map[string]interface{}{
+			"hw_disk_bus":       "scsi",
+			"hw_disk_bus_model": "virtio-scsi",
+			"hw_scsi_model":     "virtio-scsi",
+		},
+	}
+
+	th.AssertDeepEquals(t, &expectedImage, actualImage)
+}
