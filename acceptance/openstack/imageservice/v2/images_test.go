@@ -138,3 +138,45 @@ func TestImagesFilter(t *testing.T) {
 		t.Fatalf("Query resulted in no results")
 	}
 }
+
+func TestImagesUpdate(t *testing.T) {
+	client, err := clients.NewImageServiceV2Client()
+	th.AssertNoErr(t, err)
+
+	image, err := CreateEmptyImage(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteImage(t, client, image)
+
+	newTags := []string{"foo", "bar"}
+
+	updateOpts := images.UpdateOpts{
+		images.ReplaceImageName{NewName: image.Name + "foo"},
+		images.ReplaceImageTags{NewTags: newTags},
+		images.UpdateImageProperty{
+			Op:    images.AddOp,
+			Name:  "hw_disk_bus",
+			Value: "scsi",
+		},
+		images.UpdateImageProperty{
+			Op:   images.RemoveOp,
+			Name: "architecture",
+		},
+	}
+
+	newImage, err := images.Update(client, image.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newImage)
+	tools.PrintResource(t, newImage.Properties)
+
+	th.AssertEquals(t, newImage.Name, image.Name+"foo")
+	th.AssertDeepEquals(t, newImage.Tags, newTags)
+
+	// Because OpenStack is now adding additional properties automatically,
+	// it's not possible to do an easy AssertDeepEquals.
+	th.AssertEquals(t, newImage.Properties["hw_disk_bus"], "scsi")
+
+	if _, ok := newImage.Properties["architecture"]; ok {
+		t.Fatal("architecture property still exists")
+	}
+}
