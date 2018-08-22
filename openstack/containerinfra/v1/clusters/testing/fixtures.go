@@ -16,9 +16,9 @@ const clusterUUID = "746e779a-751a-456b-a3e9-c883d734946f"
 const requestUUID = "req-781e9bdc-4163-46eb-91c9-786c53188bbb"
 
 var ClusterCreateResponse = fmt.Sprintf(`
-											{
-												"uuid":"%s"
-											}`, clusterUUID)
+										{
+											"uuid":"%s"
+										}`, clusterUUID)
 
 var ExpectedCluster = clusters.Cluster{
 	APIAddress:        "https://172.24.4.6:6443",
@@ -50,9 +50,7 @@ var ExpectedCluster = clusters.Cluster{
 	UUID:            clusterUUID,
 }
 
-var ExpectedClusterUUID = clusters.UUID{
-	UUID: clusterUUID,
-}
+var ExpectedClusterUUID = clusterUUID
 
 func HandleCreateClusterSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters", func(w http.ResponseWriter, r *http.Request) {

@@ -116,9 +116,9 @@ func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, clusterTempl
 	clusterID, err := createResult.Extract()
 	if err != nil {
 		return "", err
-	} else {
-		t.Logf("Cluster created: %+v", clusterID)
 	}
+
+	t.Logf("Cluster created: %+v", clusterID)
 
 	// TODO: Uncomment this later when GET is merged in
 	/*

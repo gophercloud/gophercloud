@@ -16,6 +16,7 @@ type CreateOpts struct {
 	ClusterTemplateID string            `json:"cluster_template_id" required:"true"`
 	CreateTimeout     *int              `json:"create_timeout"`
 	DiscoveryURL      string            `json:"discovery_url,omitempty"`
+	DockerVolumeSize  *int              `json:"docker_volume_size,omitempty"`
 	FlavorID          string            `json:"flavor_id,omitempty"`
 	Keypair           string            `json:"keypair,omitempty"`
 	Labels            map[string]string `json:"labels,omitempty"`
