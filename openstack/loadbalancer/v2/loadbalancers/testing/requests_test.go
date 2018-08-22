@@ -160,3 +160,17 @@ func TestCascadingDeleteLoadbalancer(t *testing.T) {
 	err = loadbalancers.Delete(sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestGetLoadbalancerStatsTree(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleLoadbalancerGetStatsTree(t)
+
+	client := fake.ServiceClient()
+	actual, err := loadbalancers.GetStats(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, LoadbalancerStatsTree, *actual)
+}

@@ -135,3 +135,17 @@ func TestUpdateListener(t *testing.T) {
 
 	th.CheckDeepEquals(t, ListenerUpdated, *actual)
 }
+
+func TestGetListenerStatsTree(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListenerGetStatsTree(t)
+
+	client := fake.ServiceClient()
+	actual, err := listeners.GetStats(client, "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, ListenerStatsTree, *actual)
+}
