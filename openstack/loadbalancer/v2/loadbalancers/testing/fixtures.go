@@ -90,8 +90,8 @@ const PostUpdateLoadbalancerBody = `
 }
 `
 
-// SingleLoadbalancerBody is the canned body of a Get request on an existing loadbalancer.
-const LoadbalancerStatuesesTree = `
+// GetLoadbalancerStatusesBody is the canned request body of a Get request on loadbalancer's status.
+const GetLoadbalancerStatusesBody = `
 {
 	"statuses" : {
 		"loadbalancer": {
@@ -169,33 +169,35 @@ var (
 		ProvisioningStatus: "PENDING_CREATE",
 		OperatingStatus:    "OFFLINE",
 	}
-	LoadbalancerStatusesTree = loadbalancers.LoadBalancer{
-		ID:                 "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-		Name:               "db_lb",
-		ProvisioningStatus: "PENDING_UPDATE",
-		OperatingStatus:    "ACTIVE",
-		Listeners: []listeners.Listener{{
-			ID:                 "db902c0c-d5ff-4753-b465-668ad9656918",
-			Name:               "db",
-			ProvisioningStatus: "ACTIVE",
-			Pools: []pools.Pool{{
-				ID:                 "fad389a3-9a4a-4762-a365-8c7038508b5d",
+	LoadbalancerStatusesTree = loadbalancers.StatusTree{
+		Loadbalancer: &loadbalancers.LoadBalancer{
+			ID:                 "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
+			Name:               "db_lb",
+			ProvisioningStatus: "PENDING_UPDATE",
+			OperatingStatus:    "ACTIVE",
+			Listeners: []listeners.Listener{{
+				ID:                 "db902c0c-d5ff-4753-b465-668ad9656918",
 				Name:               "db",
 				ProvisioningStatus: "ACTIVE",
-				Monitor: monitors.Monitor{
-					ID:                 "67306cda-815d-4354-9fe4-59e09da9c3c5",
-					Type:               "PING",
-					ProvisioningStatus: "ACTIVE",
-				},
-				Members: []pools.Member{{
-					ID:                 "2a280670-c202-4b0b-a562-34077415aabf",
+				Pools: []pools.Pool{{
+					ID:                 "fad389a3-9a4a-4762-a365-8c7038508b5d",
 					Name:               "db",
-					Address:            "10.0.2.11",
-					ProtocolPort:       80,
 					ProvisioningStatus: "ACTIVE",
+					Monitor: monitors.Monitor{
+						ID:                 "67306cda-815d-4354-9fe4-59e09da9c3c5",
+						Type:               "PING",
+						ProvisioningStatus: "ACTIVE",
+					},
+					Members: []pools.Member{{
+						ID:                 "2a280670-c202-4b0b-a562-34077415aabf",
+						Name:               "db",
+						Address:            "10.0.2.11",
+						ProtocolPort:       80,
+						ProvisioningStatus: "ACTIVE",
+					}},
 				}},
 			}},
-		}},
+		},
 	}
 )
 
@@ -260,7 +262,7 @@ func HandleLoadbalancerGetStatusesTree(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, LoadbalancerStatuesesTree)
+		fmt.Fprintf(w, GetLoadbalancerStatusesBody)
 	})
 }
 
