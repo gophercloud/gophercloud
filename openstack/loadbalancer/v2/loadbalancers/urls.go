@@ -5,7 +5,7 @@ import "github.com/gophercloud/gophercloud"
 const (
 	rootPath     = "lbaas"
 	resourcePath = "loadbalancers"
-	statusPath   = "statuses"
+	statusPath   = "status"
 )
 
 func rootURL(c *gophercloud.ServiceClient) string {
