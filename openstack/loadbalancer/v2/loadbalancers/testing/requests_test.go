@@ -115,7 +115,7 @@ func TestGetLoadbalancerStatusesTree(t *testing.T) {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
 
-	th.CheckDeepEquals(t, LoadbalancerStatusesTree, *(actual.Loadbalancer))
+	th.CheckDeepEquals(t, LoadbalancerStatusesTree, *actual)
 }
 
 func TestDeleteLoadbalancer(t *testing.T) {
