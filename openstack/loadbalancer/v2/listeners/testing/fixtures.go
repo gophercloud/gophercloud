@@ -140,7 +140,7 @@ var (
 		DefaultTlsContainerRef: "2c433435-20de-4411-84ae-9cc8917def76",
 		SniContainerRefs:       []string{"3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"},
 	}
-	ListenerStatsTree = listeners.StatsTree{
+	ListenerStatsTree = listeners.Stats{
 		ActiveConnections: 0,
 		BytesIn:           9532,
 		BytesOut:          22033,

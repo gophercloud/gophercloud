@@ -212,7 +212,7 @@ var (
 			}},
 		},
 	}
-	LoadbalancerStatsTree = loadbalancers.StatsTree{
+	LoadbalancerStatsTree = loadbalancers.Stats{
 		ActiveConnections: 0,
 		BytesIn:           9532,
 		BytesOut:          22033,

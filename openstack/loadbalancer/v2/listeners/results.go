@@ -60,7 +60,7 @@ type Listener struct {
 	ProvisioningStatus string `json:"provisioning_status"`
 }
 
-type StatsTree struct {
+type Stats struct {
 	// The currently active connections.
 	ActiveConnections int `json:"active_connections"`
 
@@ -151,17 +151,17 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
-// GetStatsResult represents the result of a GetStats operation.
-// Call its Extract method to interpret it as a StatsTree.
-type GetStatsResult struct {
+// StatsResult represents the result of a GetStats operation.
+// Call its Extract method to interpret it as a Stats.
+type StatsResult struct {
 	gophercloud.Result
 }
 
 // Extract is a function that accepts a result and extracts the status of
 // a Listener.
-func (r GetStatsResult) Extract() (*StatsTree, error) {
+func (r StatsResult) Extract() (*Stats, error) {
 	var s struct {
-		Stats *StatsTree `json:"stats"`
+		Stats *Stats `json:"stats"`
 	}
 	err := r.ExtractInto(&s)
 	return s.Stats, err

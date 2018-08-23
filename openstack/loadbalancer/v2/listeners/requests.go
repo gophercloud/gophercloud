@@ -194,7 +194,7 @@ func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 }
 
 // GetStats will return the shows the current statistics of a particular Listeners.
-func GetStats(c *gophercloud.ServiceClient, id string) (r GetStatsResult) {
+func GetStats(c *gophercloud.ServiceClient, id string) (r StatsResult) {
 	_, r.Err = c.Get(statisticsRootURL(c, id), &r.Body, nil)
 	return
 }
