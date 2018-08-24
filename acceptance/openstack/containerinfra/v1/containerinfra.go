@@ -6,6 +6,7 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clustertemplates"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -78,4 +79,55 @@ func DeleteClusterTemplate(t *testing.T, client *gophercloud.ServiceClient, id s
 	t.Logf("Successfully deleted cluster-template: %s", id)
 
 	return
+}
+
+// CreateCluster will create a random cluster. An error will be returned if the
+// cluster could not be created.
+func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, clusterTemplateID string) (string, error) {
+	clusterName := tools.RandomString("TESTACC-", 8)
+	t.Logf("Attempting to create cluster: %s using template %s", clusterName, clusterTemplateID)
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		return "", err
+	}
+
+	masterCount := 1
+	nodeCount := 1
+	createTimeout := 100
+	createOpts := clusters.CreateOpts{
+		ClusterTemplateID: clusterTemplateID,
+		CreateTimeout:     &createTimeout,
+		FlavorID:          choices.FlavorID,
+		Keypair:           choices.MagnumKeypair,
+		Labels:            map[string]string{},
+		MasterCount:       &masterCount,
+		MasterFlavorID:    choices.FlavorID,
+		Name:              clusterName,
+		NodeCount:         &nodeCount,
+	}
+
+	createResult := clusters.Create(client, createOpts)
+	th.AssertNoErr(t, createResult.Err)
+	if len(createResult.Header["X-Openstack-Request-Id"]) > 0 {
+		t.Logf("Cluster Create Request ID: %s", createResult.Header["X-Openstack-Request-Id"][0])
+	}
+
+	clusterID, err := createResult.Extract()
+	if err != nil {
+		return "", err
+	}
+
+	t.Logf("Cluster created: %+v", clusterID)
+
+	// TODO: Uncomment this later when GET is merged in
+	/*
+		err = WaitForCluster(client, clusterID, "CREATE_COMPLETE")
+		if err != nil {
+			return clusterID, err
+		}
+	*/
+
+	t.Logf("Successfully created cluster: %s id: %s", clusterName, clusterID)
+	return clusterID, nil
 }
