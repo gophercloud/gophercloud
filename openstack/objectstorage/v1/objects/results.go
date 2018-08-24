@@ -411,7 +411,7 @@ func (r UpdateResult) Extract() (*UpdateHeader, error) {
 // DeleteHeader represents the headers returned in the response from a
 // Delete request.
 type DeleteHeader struct {
-	ContentLength int64     `json:"Content-Length"`
+	ContentLength int64     `json:"-"`
 	ContentType   string    `json:"Content-Type"`
 	Date          time.Time `json:"-"`
 	TransID       string    `json:"X-Trans-Id"`
