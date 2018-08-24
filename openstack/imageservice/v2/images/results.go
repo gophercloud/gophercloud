@@ -57,7 +57,7 @@ type Image struct {
 	Checksum string `json:"checksum"`
 
 	// SizeBytes is the size of the data that's associated with the image.
-	SizeBytes int64 `json:"size"`
+	SizeBytes int64 `json:"-"`
 
 	// Metadata is a set of metadata associated with the image.
 	// Image metadata allow for meaningfully define the image properties
@@ -67,7 +67,7 @@ type Image struct {
 
 	// Properties is a set of key-value pairs, if any, that are associated with
 	// the image.
-	Properties map[string]interface{} `json:"-"`
+	Properties map[string]interface{}
 
 	// CreatedAt is the date when the image has been created.
 	CreatedAt time.Time `json:"created_at"`
@@ -119,6 +119,7 @@ func (r *Image) UnmarshalJSON(b []byte) error {
 	}
 	if resultMap, ok := result.(map[string]interface{}); ok {
 		delete(resultMap, "self")
+		delete(resultMap, "size")
 		r.Properties = internal.RemainingKeys(Image{}, resultMap)
 	}
 

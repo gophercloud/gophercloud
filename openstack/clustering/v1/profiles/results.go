@@ -58,7 +58,7 @@ func (r *Profile) UnmarshalJSON(b []byte) error {
 // Spec represents a profile spec.
 type Spec struct {
 	Type       string                 `json:"type"`
-	Version    string                 `json:"version"`
+	Version    string                 `json:"-"`
 	Properties map[string]interface{} `json:"properties"`
 }
 

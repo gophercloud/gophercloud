@@ -65,7 +65,7 @@ type Spec struct {
 	Description string                 `json:"description"`
 	Properties  map[string]interface{} `json:"properties"`
 	Type        string                 `json:"type"`
-	Version     string                 `json:"version"`
+	Version     string                 `json:"-"`
 }
 
 func (r *Spec) UnmarshalJSON(b []byte) error {
