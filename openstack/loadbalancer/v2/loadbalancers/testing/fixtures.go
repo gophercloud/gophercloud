@@ -126,6 +126,19 @@ const GetLoadbalancerStatusesBody = `
 }
 `
 
+// LoadbalancerStatsTree is the canned request body of a Get request on loadbalancer's statistics.
+const GetLoadbalancerStatsBody = `
+{
+    "stats": {
+        "active_connections": 0,
+        "bytes_in": 9532,
+        "bytes_out": 22033,
+        "request_errors": 46,
+        "total_connections": 112
+    }
+}
+`
+
 var (
 	LoadbalancerWeb = loadbalancers.LoadBalancer{
 		ID:                 "c331058c-6a40-4144-948e-b9fb1df9db4b",
@@ -198,6 +211,13 @@ var (
 				}},
 			}},
 		},
+	}
+	LoadbalancerStatsTree = loadbalancers.Stats{
+		ActiveConnections: 0,
+		BytesIn:           9532,
+		BytesOut:          22033,
+		RequestErrors:     46,
+		TotalConnections:  112,
 	}
 )
 
@@ -290,5 +310,16 @@ func HandleLoadbalancerUpdateSuccessfully(t *testing.T) {
 		}`)
 
 		fmt.Fprintf(w, PostUpdateLoadbalancerBody)
+	})
+}
+
+// HandleLoadbalancerGetStatsTree sets up the test server to respond to a loadbalancer Get stats tree request.
+func HandleLoadbalancerGetStatsTree(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab/stats", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, GetLoadbalancerStatsBody)
 	})
 }

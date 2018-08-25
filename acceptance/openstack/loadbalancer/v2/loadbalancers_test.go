@@ -72,6 +72,13 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newLB)
 
+	lbStats, err := loadbalancers.GetStats(lbClient, lb.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get loadbalancer's statistics: %v", err)
+	}
+
+	tools.PrintResource(t, lbStats)
+
 	// Because of the time it takes to create a loadbalancer,
 	// this test will include some other resources.
 
@@ -100,6 +107,13 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	}
 
 	tools.PrintResource(t, newListener)
+
+	listenerStats, err := listeners.GetStats(lbClient, listener.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get listener's statistics: %v", err)
+	}
+
+	tools.PrintResource(t, listenerStats)
 
 	// L7 policy
 	policy, err := CreateL7Policy(t, lbClient, listener, lb)
