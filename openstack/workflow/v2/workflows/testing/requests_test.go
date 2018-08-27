@@ -88,3 +88,18 @@ simple_echo:
 		t.Errorf("Expected %#v, but was %#v", expected, actual)
 	}
 }
+
+func TestDeleteWorkflow(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/workflows/1", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	res := workflows.Delete(fake.ServiceClient(), "1")
+	th.AssertNoErr(t, res.Err)
+}
