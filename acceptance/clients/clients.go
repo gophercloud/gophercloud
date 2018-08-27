@@ -607,3 +607,24 @@ func NewContainerInfraV1Client() (*gophercloud.ServiceClient, error) {
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }
+
+// NewWorkflowV2Client returns a *ServiceClient for making calls
+// to the OpenStack Workflow v2 API (Mistral). An error will be returned if
+// authentication or client creation failed.
+func NewWorkflowV2Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	client = configureDebug(client)
+
+	return openstack.NewWorkflowV2(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
