@@ -84,3 +84,18 @@ func TestCreateCronTrigger(t *testing.T) {
 		t.Errorf("Expected %#v, but was %#v", expected, actual)
 	}
 }
+
+func TestDeleteCronTrigger(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/cron_triggers/1", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	res := crontriggers.Delete(fake.ServiceClient(), "1")
+	th.AssertNoErr(t, res.Err)
+}
