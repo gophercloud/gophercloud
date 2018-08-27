@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
@@ -32,6 +33,26 @@ func CreateExecution(t *testing.T, client *gophercloud.ServiceClient, workflow *
 	t.Logf("Execution created: %s", executionDescription)
 
 	th.AssertEquals(t, execution.Description, executionDescription)
+
+	t.Logf("Wait for execution status SUCCESS: %s", executionDescription)
+	th.AssertNoErr(t, tools.WaitFor(func() (bool, error) {
+		latest, err := executions.Get(client, execution.ID).Extract()
+		if err != nil {
+			return false, err
+		}
+
+		if latest.State == "SUCCESS" {
+			execution = latest
+			return true, nil
+		}
+
+		if latest.State == "ERROR" {
+			return false, fmt.Errorf("Execution in ERROR state")
+		}
+
+		return false, nil
+	}))
+	t.Logf("Execution success: %s", executionDescription)
 
 	return execution, nil
 }

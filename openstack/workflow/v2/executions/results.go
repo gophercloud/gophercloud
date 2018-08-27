@@ -16,6 +16,11 @@ type CreateResult struct {
 	commonResult
 }
 
+// GetResult is the response of Get operations. Call its Extract method to interpret it as an Execution.
+type GetResult struct {
+	commonResult
+}
+
 // Extract helps to get an Execution struct from a Get or a Create function.
 func (r commonResult) Extract() (*Execution, error) {
 	var s Execution
