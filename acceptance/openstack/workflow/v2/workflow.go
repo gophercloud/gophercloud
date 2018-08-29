@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -10,21 +11,26 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-// CreateWorkflow creates a workflow on Mistral API.
-// The created workflow is a dummy workflow that performs a simple echo.
-func CreateWorkflow(t *testing.T, client *gophercloud.ServiceClient) (*workflows.Workflow, error) {
-	workflowName := tools.RandomString("workflow_create_vm_", 5)
-
-	definition := `---
+// GetEchoWorkflowDefinition returns a simple workflow definition that does nothing except a simple "echo" command.
+func GetEchoWorkflowDefinition(workflowName string) string {
+	return fmt.Sprintf(`---
 version: '2.0'
 
-` + workflowName + `:
+%s:
   description: Simple workflow example
   type: direct
 
   tasks:
     test:
-      action: std.echo output="Hello World!"`
+      action: std.echo output="Hello World!"`, workflowName)
+}
+
+// CreateWorkflow creates a workflow on Mistral API.
+// The created workflow is a dummy workflow that performs a simple echo.
+func CreateWorkflow(t *testing.T, client *gophercloud.ServiceClient) (*workflows.Workflow, error) {
+	workflowName := tools.RandomString("workflow_echo_", 5)
+
+	definition := GetEchoWorkflowDefinition(workflowName)
 
 	t.Logf("Attempting to create workflow: %s", workflowName)
 
