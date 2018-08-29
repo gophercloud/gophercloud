@@ -6,7 +6,9 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/workflow/v2/workflows"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
@@ -43,7 +45,7 @@ simple_echo:
 		fmt.Fprintf(w, `{
 			"workflows": [
 				{
-					"created_at": "1970-01-01T00:00:00.000000",
+					"created_at": "1970-01-01 00:00:00",
 					"definition": "Workflow Definition in Mistral DSL v2",
 					"id": "1",
 					"input": "param1, param2",
@@ -51,7 +53,7 @@ simple_echo:
 					"namespace": "some-namespace",
 					"project_id": "p1",
 					"scope": "private",
-					"updated_at": "1970-01-01T00:00:00.000000"
+					"updated_at": "1970-01-01 00:00:00"
 				}
 			]
 		}`)
@@ -77,6 +79,8 @@ simple_echo:
 			Input:      "param1, param2",
 			ProjectID:  "p1",
 			Scope:      "private",
+			CreatedAt:  gophercloud.JSONRFC3339ZNoTNoZ(time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)),
+			UpdatedAt:  gophercloud.JSONRFC3339ZNoTNoZ(time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)),
 		},
 	}
 

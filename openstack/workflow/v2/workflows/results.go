@@ -4,20 +4,9 @@ import (
 	"github.com/gophercloud/gophercloud"
 )
 
-type commonResult struct {
-	gophercloud.Result
-}
-
-// CreateResult is the response of a Post operations. Call its Extract method to interpret it as a Workflow.
+// CreateResult is the response of a Post operations. Call its Extract method to interpret it as a list of Workflows.
 type CreateResult struct {
-	commonResult
-}
-
-// Extract helps to get a Workflow struct from a Get function.
-func (r commonResult) Extract() (*Workflow, error) {
-	c := Workflow{}
-	err := r.ExtractInto(&c)
-	return &c, err
+	gophercloud.Result
 }
 
 // Extract helps to get created Workflow struct from a Create function.
@@ -53,4 +42,13 @@ type Workflow struct {
 	// Scope is the scope of the workflow.
 	// Values can be "private" or "public".
 	Scope string `json:"scope"`
+
+	// Tags is a list of tags associated to the workflow.
+	Tags []string `json:"tags"`
+
+	// CreatedAt is the creation date of the workflow.
+	CreatedAt gophercloud.JSONRFC3339ZNoTNoZ `json:"created_at"`
+
+	// UpdatedAt is the last update date of the workflow.
+	UpdatedAt *gophercloud.JSONRFC3339ZNoTNoZ `json:"updated_at"`
 }
