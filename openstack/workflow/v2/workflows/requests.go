@@ -8,7 +8,7 @@ import (
 
 // CreateOptsBuilder allows extension to add additional parameters to the Create request.
 type CreateOptsBuilder interface {
-	ToWorkflowCreateQuery() (io.Reader, string, error)
+	ToWorkflowCreateParams() (io.Reader, string, error)
 }
 
 // CreateOpts specifies parameters used to create a cron trigger.
@@ -24,8 +24,8 @@ type CreateOpts struct {
 	Definition io.Reader
 }
 
-// ToWorkflowCreateQuery constructs a request query string from CreateOpts.
-func (opts CreateOpts) ToWorkflowCreateQuery() (io.Reader, string, error) {
+// ToWorkflowCreateParams constructs a request query string from CreateOpts.
+func (opts CreateOpts) ToWorkflowCreateParams() (io.Reader, string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return opts.Definition, q.String(), err
 }
@@ -35,7 +35,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	url := createURL(client)
 	var b io.Reader
 	if opts != nil {
-		tmpB, query, err := opts.ToWorkflowCreateQuery()
+		tmpB, query, err := opts.ToWorkflowCreateParams()
 		if err != nil {
 			r.Err = err
 			return
