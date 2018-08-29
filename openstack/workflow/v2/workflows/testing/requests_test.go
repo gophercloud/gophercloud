@@ -70,6 +70,7 @@ simple_echo:
 		t.Fatalf("Unable to create workflow: %v", err)
 	}
 
+	updated := gophercloud.JSONRFC3339ZNoTNoZ(time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC))
 	expected := []workflows.Workflow{
 		workflows.Workflow{
 			ID:         "1",
@@ -80,7 +81,7 @@ simple_echo:
 			ProjectID:  "p1",
 			Scope:      "private",
 			CreatedAt:  gophercloud.JSONRFC3339ZNoTNoZ(time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)),
-			UpdatedAt:  gophercloud.JSONRFC3339ZNoTNoZ(time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)),
+			UpdatedAt:  &updated,
 		},
 	}
 
