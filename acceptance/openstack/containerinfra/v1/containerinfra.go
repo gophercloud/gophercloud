@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
@@ -120,14 +122,34 @@ func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, clusterTempl
 
 	t.Logf("Cluster created: %+v", clusterID)
 
-	// TODO: Uncomment this later when GET is merged in
-	/*
-		err = WaitForCluster(client, clusterID, "CREATE_COMPLETE")
-		if err != nil {
-			return clusterID, err
-		}
-	*/
+	err = WaitForCluster(client, clusterID, "CREATE_COMPLETE")
+	if err != nil {
+		return clusterID, err
+	}
 
 	t.Logf("Successfully created cluster: %s id: %s", clusterName, clusterID)
 	return clusterID, nil
+}
+
+func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status string) error {
+	return tools.WaitFor(func() (bool, error) {
+		cluster, err := clusters.Get(client, clusterID).Extract()
+		if err != nil {
+			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "DELETE_COMPLETE" {
+				return true, nil
+			}
+
+			return false, err
+		}
+
+		if cluster.Status == status {
+			return true, nil
+		}
+
+		if strings.Contains(cluster.Status, "FAILED") {
+			return false, fmt.Errorf("Cluster %s FAILED. Status=%s StatusReason=%s", clusterID, cluster.Status, cluster.StatusReason)
+		}
+
+		return false, nil
+	})
 }

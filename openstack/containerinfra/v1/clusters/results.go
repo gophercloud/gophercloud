@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 type commonResult struct {
@@ -15,12 +16,24 @@ type CreateResult struct {
 	commonResult
 }
 
+// GetResult represents the result of a get operation.
+type GetResult struct {
+	commonResult
+}
+
 func (r CreateResult) Extract() (clusterID string, err error) {
 	var s struct {
 		UUID string
 	}
 	err = r.ExtractInto(&s)
 	return s.UUID, err
+}
+
+// Extract is a function that accepts a result and extracts a cluster resource.
+func (r commonResult) Extract() (*Cluster, error) {
+	var s *Cluster
+	err := r.ExtractInto(&s)
+	return s, err
 }
 
 type Cluster struct {
@@ -50,4 +63,33 @@ type Cluster struct {
 	UUID              string             `json:"uuid"`
 	UpdatedAt         time.Time          `json:"updated_at"`
 	UserID            string             `json:"user_id"`
+}
+
+type ClusterPage struct {
+	pagination.LinkedPageBase
+}
+
+func (r ClusterPage) NextPageURL() (string, error) {
+	var s struct {
+		Next string `json:"next"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return s.Next, nil
+}
+
+// IsEmpty checks whether a ClusterPage struct is empty.
+func (r ClusterPage) IsEmpty() (bool, error) {
+	is, err := ExtractClusters(r)
+	return len(is) == 0, err
+}
+
+func ExtractClusters(r pagination.Page) ([]Cluster, error) {
+	var s struct {
+		Clusters []Cluster `json:"clusters"`
+	}
+	err := (r.(ClusterPage)).ExtractInto(&s)
+	return s.Clusters, err
 }
