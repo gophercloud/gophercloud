@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/workflow/v2/workflows"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
@@ -70,7 +69,7 @@ simple_echo:
 		t.Fatalf("Unable to create workflow: %v", err)
 	}
 
-	updated := gophercloud.JSONRFC3339ZNoTNoZ(time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC))
+	updated := time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
 	expected := []workflows.Workflow{
 		workflows.Workflow{
 			ID:         "1",
@@ -80,7 +79,7 @@ simple_echo:
 			Input:      "param1, param2",
 			ProjectID:  "p1",
 			Scope:      "private",
-			CreatedAt:  gophercloud.JSONRFC3339ZNoTNoZ(time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)),
+			CreatedAt:  time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
 			UpdatedAt:  &updated,
 		},
 	}

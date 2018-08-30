@@ -1,6 +1,9 @@
 package workflows
 
 import (
+	"encoding/json"
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 )
 
@@ -47,8 +50,33 @@ type Workflow struct {
 	Tags []string `json:"tags"`
 
 	// CreatedAt is the creation date of the workflow.
-	CreatedAt gophercloud.JSONRFC3339ZNoTNoZ `json:"created_at"`
+	CreatedAt time.Time `json:"-"`
 
 	// UpdatedAt is the last update date of the workflow.
-	UpdatedAt *gophercloud.JSONRFC3339ZNoTNoZ `json:"updated_at"`
+	UpdatedAt *time.Time `json:"-"`
+}
+
+// UnmarshalJSON implements unmarshalling custom types
+func (r *Workflow) UnmarshalJSON(b []byte) error {
+	type tmp Workflow
+	var s struct {
+		tmp
+		CreatedAt gophercloud.JSONRFC3339ZNoTNoZ  `json:"created_at"`
+		UpdatedAt *gophercloud.JSONRFC3339ZNoTNoZ `json:"updated_at"`
+	}
+
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+
+	*r = Workflow(s.tmp)
+
+	r.CreatedAt = time.Time(s.CreatedAt)
+	if s.UpdatedAt != nil {
+		t := time.Time(*s.UpdatedAt)
+		r.UpdatedAt = &t
+	}
+
+	return nil
 }
