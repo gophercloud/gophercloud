@@ -274,6 +274,12 @@ type UpdateMemberResult struct {
 	commonMemberResult
 }
 
+// UpdateMembersResult represents the result of an UpdateMembers operation.
+// Call its ExtractErr method to determine if the request succeeded or failed.
+type UpdateMembersResult struct {
+	gophercloud.ErrResult
+}
+
 // DeleteMemberResult represents the result of a DeleteMember operation.
 // Call its ExtractErr method to determine if the request succeeded or failed.
 type DeleteMemberResult struct {

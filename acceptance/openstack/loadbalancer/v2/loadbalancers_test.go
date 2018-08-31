@@ -235,6 +235,32 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newMember)
 
+	newWeight := tools.RandomInt(11, 100)
+	updateMembersOpts := pools.UpdateMembersOpts{
+		Members: []pools.CreateMemberOpts{
+			{
+				// Existing members are matched based on address/port combination.
+				Address:      member.Address,
+				ProtocolPort: member.ProtocolPort,
+				Weight:       newWeight,
+			},
+		},
+	}
+	if err := pools.UpdateMembers(lbClient, pool.ID, updateMembersOpts).ExtractErr(); err != nil {
+		t.Fatalf("Unable to batch update members")
+	}
+
+	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newMember, err = pools.GetMember(lbClient, pool.ID, member.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get member")
+	}
+
+	tools.PrintResource(t, newMember)
+
 	// Monitor
 	monitor, err := CreateMonitor(t, lbClient, lb, newPool)
 	if err != nil {
