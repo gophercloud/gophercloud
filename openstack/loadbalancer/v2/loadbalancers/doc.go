@@ -80,5 +80,14 @@ Example to Get the Statistics of a Load Balancer
 	if err != nil {
 		panic(err)
 	}
+
+Example to Failover a Load Balancers
+
+	lbID := "d67d56a6-4a86-4688-a282-f46444705c64"
+
+	err := loadbalancers.Failover(networkClient, lbID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package loadbalancers

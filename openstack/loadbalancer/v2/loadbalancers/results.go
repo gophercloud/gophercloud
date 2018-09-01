@@ -180,3 +180,9 @@ type UpdateResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+// FailoverResult represents the result of a failover operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type FailoverResult struct {
+	gophercloud.ErrResult
+}

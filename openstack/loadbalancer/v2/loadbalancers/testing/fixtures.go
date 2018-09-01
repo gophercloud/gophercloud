@@ -323,3 +323,13 @@ func HandleLoadbalancerGetStatsTree(t *testing.T) {
 		fmt.Fprintf(w, GetLoadbalancerStatsBody)
 	})
 }
+
+// HandleLoadbalancerFailoverSuccessfully sets up the test server to respond to a loadbalancer failover request.
+func HandleLoadbalancerFailoverSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab/failover", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}

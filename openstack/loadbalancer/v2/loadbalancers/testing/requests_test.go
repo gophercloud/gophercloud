@@ -174,3 +174,12 @@ func TestGetLoadbalancerStatsTree(t *testing.T) {
 
 	th.CheckDeepEquals(t, LoadbalancerStatsTree, *actual)
 }
+
+func TestFailoverLoadbalancer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleLoadbalancerFailoverSuccessfully(t)
+
+	res := loadbalancers.Failover(fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
+	th.AssertNoErr(t, res.Err)
+}
