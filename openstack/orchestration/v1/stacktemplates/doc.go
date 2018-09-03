@@ -1,5 +1,4 @@
 /*
-
 Package stacktemplates provides operations for working with Heat templates.
 A Cloud Orchestration template is a portable file, written in a user-readable
 language, that describes how a set of resources should be assembled and what
