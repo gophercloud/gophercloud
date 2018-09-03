@@ -75,9 +75,9 @@ func (r *ListedStack) UnmarshalJSON(b []byte) error {
 	*r = ListedStack(s.tmp)
 
 	if s.CreationTime != "" {
-		t, err := time.Parse(gophercloud.RFC3339Milli, s.CreationTime)
+		t, err := time.Parse(time.RFC3339, s.CreationTime)
 		if err != nil {
-			t, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.CreationTime)
+			t, err = time.Parse(gophercloud.RFC3339NoZ, s.CreationTime)
 			if err != nil {
 				return err
 			}
@@ -86,9 +86,9 @@ func (r *ListedStack) UnmarshalJSON(b []byte) error {
 	}
 
 	if s.UpdatedTime != "" {
-		t, err := time.Parse(gophercloud.RFC3339Milli, s.UpdatedTime)
+		t, err := time.Parse(time.RFC3339, s.UpdatedTime)
 		if err != nil {
-			t, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.UpdatedTime)
+			t, err = time.Parse(gophercloud.RFC3339NoZ, s.UpdatedTime)
 			if err != nil {
 				return err
 			}
@@ -145,9 +145,9 @@ func (r *RetrievedStack) UnmarshalJSON(b []byte) error {
 	*r = RetrievedStack(s.tmp)
 
 	if s.CreationTime != "" {
-		t, err := time.Parse(gophercloud.RFC3339Milli, s.CreationTime)
+		t, err := time.Parse(time.RFC3339, s.CreationTime)
 		if err != nil {
-			t, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.CreationTime)
+			t, err = time.Parse(gophercloud.RFC3339NoZ, s.CreationTime)
 			if err != nil {
 				return err
 			}
@@ -156,9 +156,9 @@ func (r *RetrievedStack) UnmarshalJSON(b []byte) error {
 	}
 
 	if s.UpdatedTime != "" {
-		t, err := time.Parse(gophercloud.RFC3339Milli, s.UpdatedTime)
+		t, err := time.Parse(time.RFC3339, s.UpdatedTime)
 		if err != nil {
-			t, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.UpdatedTime)
+			t, err = time.Parse(gophercloud.RFC3339NoZ, s.UpdatedTime)
 			if err != nil {
 				return err
 			}
@@ -227,9 +227,9 @@ func (r *PreviewedStack) UnmarshalJSON(b []byte) error {
 	*r = PreviewedStack(s.tmp)
 
 	if s.CreationTime != "" {
-		t, err := time.Parse(gophercloud.RFC3339Milli, s.CreationTime)
+		t, err := time.Parse(time.RFC3339, s.CreationTime)
 		if err != nil {
-			t, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.CreationTime)
+			t, err = time.Parse(gophercloud.RFC3339NoZ, s.CreationTime)
 			if err != nil {
 				return err
 			}
@@ -238,9 +238,9 @@ func (r *PreviewedStack) UnmarshalJSON(b []byte) error {
 	}
 
 	if s.UpdatedTime != "" {
-		t, err := time.Parse(gophercloud.RFC3339Milli, s.UpdatedTime)
+		t, err := time.Parse(time.RFC3339, s.UpdatedTime)
 		if err != nil {
-			t, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.UpdatedTime)
+			t, err = time.Parse(gophercloud.RFC3339NoZ, s.UpdatedTime)
 			if err != nil {
 				return err
 			}

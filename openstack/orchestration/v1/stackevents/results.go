@@ -45,9 +45,9 @@ func (r *Event) UnmarshalJSON(b []byte) error {
 	*r = Event(s.tmp)
 
 	if s.Time != "" {
-		t, err := time.Parse(gophercloud.RFC3339Milli, s.Time)
+		t, err := time.Parse(time.RFC3339, s.Time)
 		if err != nil {
-			t, err = time.Parse(gophercloud.RFC3339MilliNoZ, s.Time)
+			t, err = time.Parse(gophercloud.RFC3339NoZ, s.Time)
 			if err != nil {
 				return err
 			}
