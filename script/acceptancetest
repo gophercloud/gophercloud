@@ -52,6 +52,13 @@ if [[ $? != 0 ]]; then
   failed=1
 fi
 
+# Orchestration v1
+go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/orchestration/v1/
+if [[ $? != 0 ]]; then
+  failed=1
+fi
+
+
 # If any of the test suites failed, exit 1
 if [[ -n $failed ]]; then
   exit 1
