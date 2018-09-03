@@ -12,6 +12,13 @@ func RequireAdmin(t *testing.T) {
 	}
 }
 
+// RequireNonAdmin will restrict a test to only be run by non-admin users.
+func RequireNonAdmin(t *testing.T) {
+	if os.Getenv("OS_USERNAME") == "admin" {
+		t.Skip("must be a non-admin to run this test")
+	}
+}
+
 // RequireDNS will restrict a test to only be run in environments
 // that support DNSaaS.
 func RequireDNS(t *testing.T) {

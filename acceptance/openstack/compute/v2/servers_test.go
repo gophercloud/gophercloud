@@ -439,6 +439,7 @@ func TestServersActionSuspend(t *testing.T) {
 
 func TestServersActionLock(t *testing.T) {
 	clients.RequireLong(t)
+	clients.RequireNonAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
@@ -451,9 +452,11 @@ func TestServersActionLock(t *testing.T) {
 	err = lockunlock.Lock(client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
+	t.Logf("Attempting to delete locked server %s", server.ID)
 	err = servers.Delete(client, server.ID).ExtractErr()
-	th.AssertNoErr(t, err)
+	th.AssertEquals(t, err != nil, true)
 
+	t.Logf("Attempting to unlock server %s", server.ID)
 	err = lockunlock.Unlock(client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
