@@ -26,7 +26,7 @@ type Resource struct {
 
 func (r *Resource) UnmarshalJSON(b []byte) error {
 	type tmp Resource
-	var s *struct {
+	var s struct {
 		tmp
 		CreationTime string `json:"creation_time"`
 		UpdatedTime  string `json:"updated_time"`

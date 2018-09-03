@@ -61,7 +61,7 @@ type ListedStack struct {
 
 func (r *ListedStack) UnmarshalJSON(b []byte) error {
 	type tmp ListedStack
-	var s *struct {
+	var s struct {
 		tmp
 		CreationTime string `json:"creation_time"`
 		UpdatedTime  string `json:"updated_time"`
@@ -131,7 +131,7 @@ type RetrievedStack struct {
 
 func (r *RetrievedStack) UnmarshalJSON(b []byte) error {
 	type tmp RetrievedStack
-	var s *struct {
+	var s struct {
 		tmp
 		CreationTime string `json:"creation_time"`
 		UpdatedTime  string `json:"updated_time"`
@@ -213,7 +213,7 @@ type PreviewedStack struct {
 
 func (r *PreviewedStack) UnmarshalJSON(b []byte) error {
 	type tmp PreviewedStack
-	var s *struct {
+	var s struct {
 		tmp
 		CreationTime string `json:"creation_time"`
 		UpdatedTime  string `json:"updated_time"`

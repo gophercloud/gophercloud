@@ -32,7 +32,7 @@ type Event struct {
 
 func (r *Event) UnmarshalJSON(b []byte) error {
 	type tmp Event
-	var s *struct {
+	var s struct {
 		tmp
 		Time string `json:"event_time"`
 	}
