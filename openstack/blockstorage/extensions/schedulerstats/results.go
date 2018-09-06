@@ -29,7 +29,7 @@ type Capabilities struct {
 	TotalVolumes             int64   `json:"total_volumes"`
 	FilterFunction           string  `json:"filter_function"`
 	GoodnessFuction          string  `json:"goodness_function"`
-	Mutliattach              bool    `json:"multiattach"`
+	Multiattach              bool    `json:"multiattach"`
 	SparseCopyVolume         bool    `json:"sparse_copy_volume"`
 }
 
