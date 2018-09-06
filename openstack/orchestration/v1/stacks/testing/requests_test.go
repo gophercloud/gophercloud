@@ -39,6 +39,29 @@ func TestCreateStack(t *testing.T) {
 	th.AssertDeepEquals(t, expected, actual)
 }
 
+func TestCreateStackMissingRequiredInOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSuccessfully(t, CreateOutput)
+	template := new(stacks.Template)
+	template.Bin = []byte(`
+		{
+			"heat_template_version": "2013-05-23",
+			"description": "Simple template to test heat commands",
+			"parameters": {
+				"flavor": {
+					"default": "m1.tiny",
+					"type": "string"
+				}
+			}
+		}`)
+	createOpts := stacks.CreateOpts{
+		DisableRollback: gophercloud.Disabled,
+	}
+	r := stacks.Create(fake.ServiceClient(), createOpts)
+	th.AssertEquals(t, "Missing input for argument [Name]", r.Err.Error())
+}
+
 func TestAdoptStack(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

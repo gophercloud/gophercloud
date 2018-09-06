@@ -30,7 +30,7 @@ type CreateOpts struct {
 	// A structure that contains details for the environment of the stack.
 	EnvironmentOpts *Environment `json:"-"`
 	// User-defined parameters to pass to the template.
-	Parameters map[string]string `json:"parameters,omitempty"`
+	Parameters map[string]interface{} `json:"parameters,omitempty"`
 	// The timeout for stack creation in minutes.
 	Timeout int `json:"timeout_mins,omitempty"`
 	// A list of tags to assosciate with the Stack
@@ -127,7 +127,7 @@ type AdoptOpts struct {
 	// A structure that contains details for the environment of the stack.
 	EnvironmentOpts *Environment `json:"-"`
 	// User-defined parameters to pass to the template.
-	Parameters map[string]string `json:"parameters,omitempty"`
+	Parameters map[string]interface{} `json:"parameters,omitempty"`
 }
 
 // ToStackAdoptMap casts a CreateOpts struct to a map.
@@ -405,7 +405,7 @@ type PreviewOpts struct {
 	// A structure that contains details for the environment of the stack.
 	EnvironmentOpts *Environment `json:"-"`
 	// User-defined parameters to pass to the template.
-	Parameters map[string]string `json:"parameters,omitempty"`
+	Parameters map[string]interface{} `json:"parameters,omitempty"`
 }
 
 // ToStackPreviewMap casts a PreviewOpts struct to a map.
