@@ -100,6 +100,12 @@ type CreateResult struct {
 	gophercloud.Result
 }
 
+//IsAnAuthResult implements the gophercloud.AuthResult interface. This method
+//does not do anything, see documentation on type gophercloud.AuthResult for
+//details.
+func (CreateResult) IsAnAuthResult() {
+}
+
 // GetResult is the deferred response from a Get call, which is the same with a
 // Created token. Use ExtractUser() to interpret it as a User.
 type GetResult struct {

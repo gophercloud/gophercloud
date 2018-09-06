@@ -144,6 +144,12 @@ type CreateResult struct {
 	commonResult
 }
 
+//IsAnAuthResult implements the gophercloud.AuthResult interface. This method
+//does not do anything, see documentation on type gophercloud.AuthResult for
+//details.
+func (CreateResult) IsAnAuthResult() {
+}
+
 // GetResult is the response from a Get request. Use ExtractToken()
 // to interpret it as a Token, or ExtractServiceCatalog() to interpret it
 // as a service catalog.

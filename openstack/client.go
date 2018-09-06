@@ -152,7 +152,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		tac := *client
 		tac.IsThrowaway = true
 		tac.ReauthFunc = nil
-		tac.TokenID = ""
+		tac.SetTokenAndAuthResult("", nil)
 		tao := options
 		tao.AllowReauth = false
 		client.ReauthFunc = func() error {
@@ -160,11 +160,11 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 			if err != nil {
 				return err
 			}
-			client.TokenID = tac.TokenID
+			client.CopyTokenFrom(&tac)
 			return nil
 		}
 	}
-	client.TokenID = token.ID
+	client.SetTokenAndAuthResult(token.ID, result)
 	client.EndpointLocator = func(opts gophercloud.EndpointOpts) (string, error) {
 		return V2EndpointURL(catalog, opts)
 	}
@@ -200,7 +200,7 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, opts tokens3.Au
 		return err
 	}
 
-	client.TokenID = token.ID
+	client.SetTokenAndAuthResult(token.ID, result)
 
 	if opts.CanReauth() {
 		// here we're creating a throw-away client (tac). it's a copy of the user's provider client, but
@@ -209,7 +209,7 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, opts tokens3.Au
 		tac := *client
 		tac.IsThrowaway = true
 		tac.ReauthFunc = nil
-		tac.TokenID = ""
+		tac.SetTokenAndAuthResult("", nil)
 		var tao tokens3.AuthOptionsBuilder
 		switch ot := opts.(type) {
 		case *gophercloud.AuthOptions:
@@ -228,7 +228,7 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, opts tokens3.Au
 			if err != nil {
 				return err
 			}
-			client.TokenID = tac.TokenID
+			client.CopyTokenFrom(&tac)
 			return nil
 		}
 	}
