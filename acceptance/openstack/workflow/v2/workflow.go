@@ -53,3 +53,13 @@ func CreateWorkflow(t *testing.T, client *gophercloud.ServiceClient) (*workflows
 
 	return &workflow, nil
 }
+
+// DeleteWorkflow deletes the given workflow.
+func DeleteWorkflow(t *testing.T, client *gophercloud.ServiceClient, workflow *workflows.Workflow) {
+	err := workflows.Delete(client, workflow.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete workflows %s: %v", workflow.Name, err)
+	}
+
+	t.Logf("Deleted workflow: %s", workflow.Name)
+}
