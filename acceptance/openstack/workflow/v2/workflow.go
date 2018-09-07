@@ -63,3 +63,13 @@ func DeleteWorkflow(t *testing.T, client *gophercloud.ServiceClient, workflow *w
 
 	t.Logf("Deleted workflow: %s", workflow.Name)
 }
+
+// GetWorkflow gets a workflow.
+func GetWorkflow(t *testing.T, client *gophercloud.ServiceClient, id string) (*workflows.Workflow, error) {
+	workflow, err := workflows.Get(client, id).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get workflow %s: %v", id, err)
+	}
+	t.Logf("Workflow get: %s", workflow.Name)
+	return workflow, err
+}
