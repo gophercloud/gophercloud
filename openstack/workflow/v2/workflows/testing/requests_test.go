@@ -103,3 +103,46 @@ func TestDeleteWorkflow(t *testing.T) {
 	res := workflows.Delete(fake.ServiceClient(), "1")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestGetWorkflow(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	th.Mux.HandleFunc("/workflows/1", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-token", fake.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `
+			{
+				"created_at": "1970-01-01 00:00:00",
+				"definition": "Workflow Definition in Mistral DSL v2",
+				"id": "1",
+				"input": "param1, param2",
+				"name": "flow",
+				"namespace": "some-namespace",
+				"project_id": "p1",
+				"scope": "private",
+				"updated_at": "1970-01-01 00:00:00"
+			}
+		`)
+	})
+	actual, err := workflows.Get(fake.ServiceClient(), "1").Extract()
+	if err != nil {
+		t.Fatalf("Unable to get workflow: %v", err)
+	}
+
+	updated := time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
+	expected := &workflows.Workflow{
+		ID:         "1",
+		Definition: "Workflow Definition in Mistral DSL v2",
+		Name:       "flow",
+		Namespace:  "some-namespace",
+		Input:      "param1, param2",
+		ProjectID:  "p1",
+		Scope:      "private",
+		CreatedAt:  time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+		UpdatedAt:  &updated,
+	}
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %#v, but was %#v", expected, actual)
+	}
+}

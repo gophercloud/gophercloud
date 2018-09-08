@@ -26,6 +26,18 @@ func (r CreateResult) Extract() ([]Workflow, error) {
 	return s.Workflows, err
 }
 
+// GetResult is the response of Get operations. Call its Extract method to interpret it as a Workflow.
+type GetResult struct {
+	gophercloud.Result
+}
+
+// Extract helps to get a Workflow struct from a Get function.
+func (r GetResult) Extract() (*Workflow, error) {
+	var s Workflow
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
 // Workflow represents a workflow execution on OpenStack mistral API.
 type Workflow struct {
 	// ID is the workflow's unique ID.
