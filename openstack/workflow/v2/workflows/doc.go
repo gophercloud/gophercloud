@@ -24,6 +24,15 @@ Example to list workflows
 		fmt.Printf("%+v\n", workflow)
 	}
 
+Example to get a workflow by its ID
+
+	workflow, err := workflows.Get(mistralClient, "workflow-id").Extract()
+	if err != nil {
+		t.Fatalf("Unable to get workflow %s: %v", id, err)
+	}
+
+	fmt.Printf("%+v\n", workflow)
+
 Example to create a workflow
 
 	workflowDefinition := `---
@@ -59,7 +68,7 @@ tasks:
 		Namespace: "some-namespace",
 	}
 
-	execution, err := workflows.Create(fake.ServiceClient(), opts).Extract()
+	execution, err := workflows.Create(mistralClient, opts).Extract()
 	if err != nil {
 		panic(err)
 	}

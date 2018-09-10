@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // CreateResult is the response of a Post operations. Call its Extract method to interpret it as a list of Workflows.
@@ -96,4 +97,36 @@ func (r *Workflow) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
+}
+
+// WorkflowPage contains a single page of all workflows from a List call.
+type WorkflowPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty checks if an WorkflowPage contains any results.
+func (r WorkflowPage) IsEmpty() (bool, error) {
+	exec, err := ExtractWorkflows(r)
+	return len(exec) == 0, err
+}
+
+// NextPageURL finds the next page URL in a page in order to navigate to the next page of results.
+func (r WorkflowPage) NextPageURL() (string, error) {
+	var s struct {
+		Next string `json:"next"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return s.Next, nil
+}
+
+// ExtractWorkflows get the list of cron triggers from a page acquired from the List call.
+func ExtractWorkflows(r pagination.Page) ([]Workflow, error) {
+	var s struct {
+		Workflows []Workflow `json:"workflows"`
+	}
+	err := (r.(WorkflowPage)).ExtractInto(&s)
+	return s.Workflows, err
 }

@@ -73,3 +73,17 @@ func GetWorkflow(t *testing.T, client *gophercloud.ServiceClient, id string) (*w
 	t.Logf("Workflow get: %s", workflow.Name)
 	return workflow, err
 }
+
+// ListWorkflows lists the workflows.
+func ListWorkflows(t *testing.T, client *gophercloud.ServiceClient, opts workflows.ListOptsBuilder) ([]workflows.Workflow, error) {
+	allPages, err := workflows.List(client, opts).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list workflows: %v", err)
+	}
+	workflowsList, err := workflows.ExtractWorkflows(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract workflows: %v", err)
+	}
+	t.Logf("Workflows list find, length: %d", len(workflowsList))
+	return workflowsList, err
+}
