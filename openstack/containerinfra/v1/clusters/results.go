@@ -33,19 +33,19 @@ type UpdateResult struct {
 	commonResult
 }
 
-func (r CreateResult) Extract() (clusterID string, err error) {
+func (r CreateResult) Extract() (string, error) {
 	var s struct {
 		UUID string
 	}
-	err = r.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	return s.UUID, err
 }
 
-func (r UpdateResult) Extract() (clusterID string, err error) {
+func (r UpdateResult) Extract() (string, error) {
 	var s struct {
 		UUID string
 	}
-	err = r.ExtractInto(&s)
+	err := r.ExtractInto(&s)
 	return s.UUID, err
 }
 
