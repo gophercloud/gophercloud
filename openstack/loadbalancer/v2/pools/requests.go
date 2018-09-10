@@ -338,29 +338,31 @@ func UpdateMember(c *gophercloud.ServiceClient, poolID string, memberID string, 
 	return
 }
 
-// UpdateMembersOpts is the common options struct used for batch members update operation.
-type UpdateMembersOpts struct {
-	// List of the member definitions.
-	Members []CreateMemberOpts `json:"members" required:"true"`
+// BatchUpdateMemberOptsBuilder allows extensions to add additional parameters to the BatchUpdateMembers request.
+type BatchUpdateMemberOptsBuilder interface {
+	ToBatchMemberUpdateMap() (map[string]interface{}, error)
 }
 
-// ToMembersUpdateMap builds a request body from UpdateMemberOpts.
-func (opts UpdateMembersOpts) ToMembersUpdateMap() (map[string]interface{}, error) {
+type BatchUpdateMemberOpts CreateMemberOpts
+
+// ToBatchMemberUpdateMap builds a request body from BatchUpdateMemberOpts.
+func (opts BatchUpdateMemberOpts) ToBatchMemberUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-// UpdateMembersOptsBuilder allows extensions to add additional parameters to the UpdateMembers request.
-type UpdateMembersOptsBuilder interface {
-	ToMembersUpdateMap() (map[string]interface{}, error)
-}
-
-// UpdateMembers updates the pool members in batch
-func UpdateMembers(c *gophercloud.ServiceClient, poolID string, opts UpdateMembersOptsBuilder) (r UpdateMembersResult) {
-	b, err := opts.ToMembersUpdateMap()
-	if err != nil {
-		r.Err = err
-		return
+// BatchUpdateMembers updates the pool members in batch
+func BatchUpdateMembers(c *gophercloud.ServiceClient, poolID string, opts []BatchUpdateMemberOpts) (r UpdateMembersResult) {
+	var members []map[string]interface{}
+	for _, opt := range opts {
+		b, err := opt.ToBatchMemberUpdateMap()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		members = append(members, b)
 	}
+
+	b := map[string]interface{}{"members": members}
 
 	_, r.Err = c.Put(memberRootURL(c, poolID), b, nil, &gophercloud.RequestOpts{OkCodes: []int{202}})
 	return
