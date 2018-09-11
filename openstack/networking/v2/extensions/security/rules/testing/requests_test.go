@@ -114,7 +114,7 @@ func TestCreate(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "security_group_rule": {
-		"description": "test description of rule",
+        "description": "test description of rule",
         "direction": "ingress",
         "port_range_min": 80,
         "ethertype": "IPv4",
@@ -132,7 +132,7 @@ func TestCreate(t *testing.T) {
 		fmt.Fprintf(w, `
 {
     "security_group_rule": {
-		"description": "test description of rule",
+        "description": "test description of rule",
         "direction": "ingress",
         "ethertype": "IPv4",
         "id": "2bc0accf-312e-429a-956e-e4407625eb62",
