@@ -235,18 +235,14 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newMember)
 
-	newWeight := tools.RandomInt(11, 100)
-	updateMembersOpts := pools.UpdateMembersOpts{
-		Members: []pools.CreateMemberOpts{
-			{
-				// Existing members are matched based on address/port combination.
-				Address:      member.Address,
-				ProtocolPort: member.ProtocolPort,
-				Weight:       newWeight,
-			},
-		},
+	newWeight = tools.RandomInt(11, 100)
+	memberOpts := pools.BatchUpdateMemberOpts{
+		Address:      member.Address,
+		ProtocolPort: member.ProtocolPort,
+		Weight:       newWeight,
 	}
-	if err := pools.UpdateMembers(lbClient, pool.ID, updateMembersOpts).ExtractErr(); err != nil {
+	batchMembers := []pools.BatchUpdateMemberOpts{memberOpts}
+	if err := pools.BatchUpdateMembers(lbClient, pool.ID, batchMembers).ExtractErr(); err != nil {
 		t.Fatalf("Unable to batch update members")
 	}
 
