@@ -21,19 +21,32 @@ type GetResult struct {
 	commonResult
 }
 
-func (r CreateResult) Extract() (clusterID string, err error) {
-	var s struct {
-		UUID string
-	}
-	err = r.ExtractInto(&s)
-	return s.UUID, err
-}
-
 // Extract is a function that accepts a result and extracts a cluster resource.
 func (r commonResult) Extract() (*Cluster, error) {
 	var s *Cluster
 	err := r.ExtractInto(&s)
 	return s, err
+}
+
+// UpdateResult is the response of a Update operations.
+type UpdateResult struct {
+	commonResult
+}
+
+func (r CreateResult) Extract() (string, error) {
+	var s struct {
+		UUID string
+	}
+	err := r.ExtractInto(&s)
+	return s.UUID, err
+}
+
+func (r UpdateResult) Extract() (string, error) {
+	var s struct {
+		UUID string
+	}
+	err := r.ExtractInto(&s)
+	return s.UUID, err
 }
 
 type Cluster struct {

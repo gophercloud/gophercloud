@@ -10,6 +10,10 @@ func commonURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL(apiName)
 }
 
+func idURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL(apiName, id)
+}
+
 func createURL(client *gophercloud.ServiceClient) string {
 	return commonURL(client)
 }
@@ -20,4 +24,8 @@ func getURL(c *gophercloud.ServiceClient, id string) string {
 
 func listURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("clusters")
+}
+
+func updateURL(client *gophercloud.ServiceClient, id string) string {
+	return idURL(client, id)
 }

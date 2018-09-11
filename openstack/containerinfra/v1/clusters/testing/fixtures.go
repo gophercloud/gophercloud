@@ -229,3 +229,21 @@ func HandleListClusterSuccessfully(t *testing.T) {
 		fmt.Fprint(w, ClusterListResponse)
 	})
 }
+
+var UpdateResponse = fmt.Sprintf(`
+{
+	"uuid":"%s"
+}`, clusterUUID)
+
+func HandleUpdateClusterSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PATCH")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("X-OpenStack-Request-Id", requestUUID)
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, UpdateResponse)
+	})
+}

@@ -53,5 +53,25 @@ Example to List Clusters
 		fmt.Printf("%+v\n", cluster)
 	}
 
+Example to Update a Cluster
+
+	updateOpts := []clusters.UpdateOptsBuilder{
+		clusters.UpdateOpts{
+			Op:    clusters.ReplaceOp,
+			Path:  "/master_lb_enabled",
+			Value: "True",
+		},
+		clusters.UpdateOpts{
+			Op:    clusters.ReplaceOp,
+			Path:  "/registry_enabled",
+			Value: "True",
+		},
+	}
+	clusterUUID, err := clusters.Update(serviceClient, clusterUUID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s\n", clusterUUID)
+
 */
 package clusters
