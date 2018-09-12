@@ -33,6 +33,36 @@ fits within the request process as a whole rather than use it directly as shown
 above.
 */
 func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, error) {
+	if err := checkRequestBodyStruct(opts); err != nil {
+		return nil, err
+	}
+
+	optsMap := make(map[string]interface{})
+
+	//fmt.Printf("opts: %+v \n", opts)
+
+	b, err := json.Marshal(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	//fmt.Printf("string(b): %s\n", string(b))
+
+	err = json.Unmarshal(b, &optsMap)
+	if err != nil {
+		return nil, err
+	}
+
+	//fmt.Printf("optsMap: %+v\n", optsMap)
+
+	if parent != "" {
+		optsMap = map[string]interface{}{parent: optsMap}
+	}
+	//fmt.Printf("optsMap after parent added: %+v\n", optsMap)
+	return optsMap, nil
+}
+
+func checkRequestBodyStruct(opts interface{}) error {
 	optsValue := reflect.ValueOf(opts)
 	if optsValue.Kind() == reflect.Ptr {
 		optsValue = optsValue.Elem()
@@ -43,7 +73,6 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 		optsType = optsType.Elem()
 	}
 
-	optsMap := make(map[string]interface{})
 	if optsValue.Kind() == reflect.Struct {
 		//fmt.Printf("optsValue.Kind() is a reflect.Struct: %+v\n", optsValue.Kind())
 		for i := 0; i < optsValue.NumField(); i++ {
@@ -68,7 +97,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 					// if the field has a 'required' tag, it can't have a zero-value
 					err := ErrMissingInput{}
 					err.Argument = f.Name
-					return nil, err
+					return err
 				}
 			}
 
@@ -88,7 +117,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 					err := ErrMissingInput{}
 					err.Argument = fmt.Sprintf("%s/%s", f.Name, xorTag)
 					err.Info = fmt.Sprintf("Exactly one of %s and %s must be provided", f.Name, xorTag)
-					return nil, err
+					return err
 				}
 			}
 
@@ -110,7 +139,7 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 						err := ErrMissingInput{}
 						err.Argument = fmt.Sprintf("%s/%s", f.Name, orTag)
 						err.Info = fmt.Sprintf("At least one of %s and %s must be provided", f.Name, orTag)
-						return nil, err
+						return err
 					}
 				}
 			}
@@ -139,38 +168,18 @@ func BuildRequestBody(opts interface{}, parent string) (map[string]interface{}, 
 					continue
 				}
 
-				//fmt.Printf("Calling BuildRequestBody with:\n\tv: %+v\n\tf.Name:%s\n", v.Interface(), f.Name)
-				_, err := BuildRequestBody(v.Interface(), f.Name)
-				if err != nil {
-					return nil, err
+				// fmt.Printf("Calling BuildRequestBody with:\n\tv: %+v\n\tf.Name:%s\n", v.Interface(), f.Name)
+				if err := checkRequestBodyStruct(v.Interface()); err != nil {
+					return err
 				}
 			}
 		}
-
-		//fmt.Printf("opts: %+v \n", opts)
-
-		b, err := json.Marshal(opts)
-		if err != nil {
-			return nil, err
-		}
-
-		//fmt.Printf("string(b): %s\n", string(b))
-
-		err = json.Unmarshal(b, &optsMap)
-		if err != nil {
-			return nil, err
-		}
-
-		//fmt.Printf("optsMap: %+v\n", optsMap)
-
-		if parent != "" {
-			optsMap = map[string]interface{}{parent: optsMap}
-		}
-		//fmt.Printf("optsMap after parent added: %+v\n", optsMap)
-		return optsMap, nil
+	} else {
+		// Return an error if the underlying type of 'opts' isn't a struct.
+		return fmt.Errorf("Options type is not a struct.")
 	}
-	// Return an error if the underlying type of 'opts' isn't a struct.
-	return nil, fmt.Errorf("Options type is not a struct.")
+
+	return nil
 }
 
 // EnabledState is a convenience type, mostly used in Create and Update
