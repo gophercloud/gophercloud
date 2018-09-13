@@ -53,7 +53,7 @@ func TestClustersCRUD(t *testing.T) {
 	clusterID, err = updateResult.Extract()
 	th.AssertNoErr(t, err)
 
-	err = WaitForCluster(client, clusterID, "SUCCESS")
+	err = WaitForCluster(client, clusterID, "UPDATE_COMPLETE")
 	th.AssertNoErr(t, err)
 
 	newCluster, err := clusters.Get(client, clusterID).Extract()
