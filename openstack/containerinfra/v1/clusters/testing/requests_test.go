@@ -119,3 +119,29 @@ func TestUpdateCluster(t *testing.T) {
 
 	th.AssertDeepEquals(t, clusterUUID, actual)
 }
+
+func TestDeleteCluster(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleDeleteClusterSuccessfully(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	r := clusters.Delete(sc, clusterUUID)
+	err := r.ExtractErr()
+	th.AssertNoErr(t, err)
+
+	uuid := ""
+	idKey := "X-Openstack-Request-Id"
+	if len(r.Header[idKey]) > 0 {
+		uuid = r.Header[idKey][0]
+		if uuid == "" {
+			t.Errorf("No value for header [%s]", idKey)
+		}
+	} else {
+		t.Errorf("Missing header [%s]", idKey)
+	}
+
+	th.AssertEquals(t, requestUUID, uuid)
+}
