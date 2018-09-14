@@ -13,44 +13,12 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestNetworksList(t *testing.T) {
-	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
-	}
-
-	type networkWithExt struct {
-		networks.Network
-		portsecurity.PortSecurityExt
-	}
-
-	var allNetworks []networkWithExt
-
-	allPages, err := networks.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list networks: %v", err)
-	}
-
-	err = networks.ExtractNetworksInto(allPages, &allNetworks)
-	if err != nil {
-		t.Fatalf("Unable to extract networks: %v", err)
-	}
-
-	for _, network := range allNetworks {
-		tools.PrintResource(t, network)
-	}
-}
-
 func TestNetworksExternalList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatalf("Unable to fetch environment information: %s", err)
-	}
+	th.AssertNoErr(t, err)
 
 	type networkWithExt struct {
 		networks.Network
@@ -69,14 +37,10 @@ func TestNetworksExternalList(t *testing.T) {
 	}
 
 	allPages, err := networks.List(client, listOpts).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list networks: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	err = networks.ExtractNetworksInto(allPages, &allNetworks)
-	if err != nil {
-		t.Fatalf("Unable to extract networks: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	var found bool
 	for _, network := range allNetworks {
@@ -97,9 +61,7 @@ func TestNetworksExternalList(t *testing.T) {
 	}
 
 	allPages, err = networks.List(client, listOpts).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list networks: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	v, err := networks.ExtractNetworks(allPages)
 	th.AssertEquals(t, len(v), 0)
@@ -107,15 +69,11 @@ func TestNetworksExternalList(t *testing.T) {
 
 func TestNetworksCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	// Create a network
 	network, err := CreateNetwork(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create network: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteNetwork(t, client, network.ID)
 
 	tools.PrintResource(t, network)
@@ -126,23 +84,39 @@ func TestNetworksCRUD(t *testing.T) {
 	}
 
 	_, err = networks.Update(client, network.ID, updateOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update network: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	newNetwork, err := networks.Get(client, network.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to retrieve network: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newNetwork)
+
+	type networkWithExt struct {
+		networks.Network
+		portsecurity.PortSecurityExt
+	}
+
+	var allNetworks []networkWithExt
+
+	allPages, err := networks.List(client, nil).AllPages()
+	th.AssertNoErr(t, err)
+
+	err = networks.ExtractNetworksInto(allPages, &allNetworks)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, network := range allNetworks {
+		if network.ID == newNetwork.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
 }
 
 func TestNetworksPortSecurityCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	// Create a network without port security
 	network, err := CreateNetworkWithoutPortSecurity(t, client)
@@ -157,9 +131,7 @@ func TestNetworksPortSecurityCRUD(t *testing.T) {
 	}
 
 	err = networks.Get(client, network.ID).ExtractInto(&networkWithExtensions)
-	if err != nil {
-		t.Fatalf("Unable to retrieve network: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, networkWithExtensions)
 
@@ -171,9 +143,7 @@ func TestNetworksPortSecurityCRUD(t *testing.T) {
 	}
 
 	err = networks.Update(client, network.ID, updateOpts).ExtractInto(&networkWithExtensions)
-	if err != nil {
-		t.Fatalf("Unable to update network: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, networkWithExtensions)
 }

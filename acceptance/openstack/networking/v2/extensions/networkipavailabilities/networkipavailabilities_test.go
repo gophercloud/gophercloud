@@ -8,23 +8,18 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/networkipavailabilities"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestNetworkIPAvailabilityList(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a network client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allPages, err := networkipavailabilities.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list network IP availabilities: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allAvailabilities, err := networkipavailabilities.ExtractNetworkIPAvailabilities(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract network IP availabilities: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	for _, availability := range allAvailabilities {
 		tools.PrintResource(t, availability)

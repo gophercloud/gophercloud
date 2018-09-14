@@ -12,81 +12,75 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/subnets"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
-
-func TestLayer3FloatingIPsList(t *testing.T) {
-	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
-
-	listOpts := floatingips.ListOpts{
-		Status: "DOWN",
-	}
-	allPages, err := floatingips.List(client, listOpts).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list floating IPs: %v", err)
-	}
-
-	allFIPs, err := floatingips.ExtractFloatingIPs(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract floating IPs: %v", err)
-	}
-
-	for _, fip := range allFIPs {
-		tools.PrintResource(t, fip)
-	}
-}
 
 func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatalf("Unable to get choices: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
-	netid, err := networks.IDFromName(client, choices.NetworkName)
-	if err != nil {
-		t.Fatalf("Unable to find network id: %v", err)
-	}
-
-	subnet, err := networking.CreateSubnet(t, client, netid)
-	if err != nil {
-		t.Fatalf("Unable to create subnet: %v", err)
-	}
-	defer networking.DeleteSubnet(t, client, subnet.ID)
-
-	router, err := CreateExternalRouter(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create router: %v", err)
-	}
-	defer DeleteRouter(t, client, router.ID)
-
-	port, err := networking.CreatePort(t, client, netid, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create port: %v", err)
-	}
-
-	_, err = CreateRouterInterface(t, client, port.ID, router.ID)
-	if err != nil {
-		t.Fatalf("Unable to create router interface: %v", err)
-	}
-	defer DeleteRouterInterface(t, client, port.ID, router.ID)
-
-	fip, err := CreateFloatingIP(t, client, choices.ExternalNetworkID, port.ID)
-	if err != nil {
-		t.Fatalf("Unable to create floating IP: %v", err)
-	}
+	fip, err := CreateFloatingIP(t, client, choices.ExternalNetworkID, "")
+	th.AssertNoErr(t, err)
 	defer DeleteFloatingIP(t, client, fip.ID)
 
 	newFip, err := floatingips.Get(client, fip.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get floating ip: %v", err)
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newFip)
+
+	allPages, err := floatingips.List(client, floatingips.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+
+	allFIPs, err := floatingips.ExtractFloatingIPs(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, fip := range allFIPs {
+		if fip.ID == newFip.ID {
+			found = true
+		}
 	}
+
+	th.AssertEquals(t, found, true)
+}
+
+func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
+	clients.SkipRelease(t, "master")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	th.AssertNoErr(t, err)
+
+	netid, err := networks.IDFromName(client, choices.NetworkName)
+	th.AssertNoErr(t, err)
+
+	subnet, err := networking.CreateSubnet(t, client, netid)
+	th.AssertNoErr(t, err)
+	defer networking.DeleteSubnet(t, client, subnet.ID)
+
+	router, err := CreateExternalRouter(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteRouter(t, client, router.ID)
+
+	port, err := networking.CreatePort(t, client, netid, subnet.ID)
+	th.AssertNoErr(t, err)
+
+	_, err = CreateRouterInterface(t, client, port.ID, router.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteRouterInterface(t, client, port.ID, router.ID)
+
+	fip, err := CreateFloatingIP(t, client, choices.ExternalNetworkID, port.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteFloatingIP(t, client, fip.ID)
+
+	newFip, err := floatingips.Get(client, fip.ID).Extract()
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFip)
 
@@ -96,40 +90,32 @@ func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 	}
 
 	newFip, err = floatingips.Update(client, fip.ID, updateOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to disassociate floating IP: %v", err)
-	}
+	th.AssertNoErr(t, err)
 }
 
 func TestLayer3FloatingIPsCreateDeleteBySubnetID(t *testing.T) {
+	clients.RequireAdmin(t)
+
 	username := os.Getenv("OS_USERNAME")
 	if username != "admin" {
 		t.Skip("must be admin to run this test")
 	}
 
 	client, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		t.Fatalf("Unable to get choices: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	listOpts := subnets.ListOpts{
 		NetworkID: choices.ExternalNetworkID,
 	}
 
 	subnetPages, err := subnets.List(client, listOpts).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list subnets: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allSubnets, err := subnets.ExtractSubnets(subnetPages)
-	if err != nil {
-		t.Fatalf("Unable to extract subnets: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	createOpts := floatingips.CreateOpts{
 		FloatingNetworkID: choices.ExternalNetworkID,
@@ -137,9 +123,7 @@ func TestLayer3FloatingIPsCreateDeleteBySubnetID(t *testing.T) {
 	}
 
 	fip, err := floatingips.Create(client, createOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to create floating IP: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, fip)
 
