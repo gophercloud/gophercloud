@@ -20,9 +20,12 @@ version: '2.0'
   description: Simple workflow example
   type: direct
 
+  input:
+    - msg
+
   tasks:
     test:
-      action: std.echo output="Hello World!"`, workflowName)
+      action: std.echo output="<%% $.msg %%>"`, workflowName)
 }
 
 // CreateWorkflow creates a workflow on Mistral API.
