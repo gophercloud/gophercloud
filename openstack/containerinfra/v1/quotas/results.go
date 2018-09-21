@@ -47,7 +47,7 @@ func (r *Quotas) UnmarshalJSON(b []byte) error {
 	*r = Quotas(s.tmp)
 
 	switch t := s.ID.(type) {
-	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64:
+	case float64:
 		r.ID = fmt.Sprint(t)
 	case string:
 		r.ID = t

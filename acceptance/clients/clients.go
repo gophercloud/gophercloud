@@ -41,9 +41,6 @@ type AcceptanceTestChoices struct {
 	// ProjectName contains the name of a valid project.
 	ProjectName string
 
-	// MagnumProjectID contains the ID of a valid magnum image.
-	MagnumProjectID string
-
 	// ExternalNetworkID is the network ID of the external network.
 	ExternalNetworkID string
 
@@ -65,7 +62,6 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	flavorIDResize := os.Getenv("OS_FLAVOR_ID_RESIZE")
 	magnumImageID := os.Getenv("OS_MAGNUM_IMAGE_ID")
 	magnumKeypair := os.Getenv("OS_MAGNUM_KEYPAIR")
-	magnumProjectID := os.Getenv("OS_MAGNUM_PROJECT_ID")
 	networkName := os.Getenv("OS_NETWORK_NAME")
 	projectName := os.Getenv("OS_PROJECT_NAME")
 	floatingIPPoolName := os.Getenv("OS_POOL_NAME")
@@ -120,7 +116,6 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 		FloatingIPPoolName: floatingIPPoolName,
 		MagnumImageID:      magnumImageID,
 		MagnumKeypair:      magnumKeypair,
-		MagnumProjectID:    magnumProjectID,
 		NetworkName:        networkName,
 		ProjectName:        projectName,
 		ExternalNetworkID:  externalNetworkID,

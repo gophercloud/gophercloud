@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clustertemplates"
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/quotas"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -179,20 +180,63 @@ func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status 
 	})
 }
 
+// CreateProject will create a project with a random name.
+// It takes an optional createOpts parameter since creating a project
+// has so many options. An error will be returned if the project was
+// unable to be created.
+func CreateProject(t *testing.T, client *gophercloud.ServiceClient, c *projects.CreateOpts) (*projects.Project, error) {
+	name := tools.RandomString("ACPTTEST", 8)
+	t.Logf("Attempting to create project: %s", name)
+
+	var createOpts projects.CreateOpts
+	if c != nil {
+		createOpts = *c
+	} else {
+		createOpts = projects.CreateOpts{}
+	}
+
+	createOpts.Name = name
+
+	project, err := projects.Create(client, createOpts).Extract()
+	if err != nil {
+		return project, err
+	}
+
+	t.Logf("Successfully created project %s with ID %s", name, project.ID)
+
+	th.AssertEquals(t, project.Name, name)
+
+	return project, nil
+}
+
+// DeleteProject will delete a project by ID. A fatal error will occur if
+// the project ID failed to be deleted. This works best when using it as
+// a deferred function.
+func DeleteProject(t *testing.T, client *gophercloud.ServiceClient, projectID string) {
+	err := projects.Delete(client, projectID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete project %s: %v", projectID, err)
+	}
+
+	t.Logf("Deleted project: %s", projectID)
+}
+
 // CreateQuota will create a random quota. An error will be returned if the
 // quota could not be created.
 func CreateQuota(t *testing.T, client *gophercloud.ServiceClient) (*quotas.Quotas, error) {
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		return nil, err
-	}
-
 	name := tools.RandomString("TESTACC-", 8)
 	t.Logf("Attempting to create quota: %s", name)
 
+	idClient, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	project, err := CreateProject(t, idClient, nil)
+	th.AssertNoErr(t, err)
+	defer DeleteProject(t, idClient, project.ID)
+
 	createOpts := quotas.CreateOpts{
 		Resource:  "Cluster",
-		ProjectID: choices.MagnumProjectID,
+		ProjectID: project.ID,
 		HardLimit: 10,
 	}
 
@@ -212,7 +256,7 @@ func CreateQuota(t *testing.T, client *gophercloud.ServiceClient) (*quotas.Quota
 
 		tools.PrintResource(t, quota)
 
-		th.AssertEquals(t, choices.MagnumProjectID, quota.ProjectID)
+		th.AssertEquals(t, project.ID, quota.ProjectID)
 		th.AssertEquals(t, "Cluster", quota.Resource)
 		th.AssertEquals(t, 10, quota.HardLimit)
 	}
