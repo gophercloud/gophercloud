@@ -16,6 +16,11 @@ type CreateResult struct {
 	commonResult
 }
 
+// DeleteResult is the result from a Delete operation. Call its ExtractErr method to determine the success of the call.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract helps to get a CronTrigger struct from a Get or a Create function.
 func (r commonResult) Extract() (*CronTrigger, error) {
 	var s CronTrigger

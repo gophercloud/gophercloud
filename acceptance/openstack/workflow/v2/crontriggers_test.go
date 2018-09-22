@@ -14,9 +14,11 @@ func TestCronTriggersCreateDelete(t *testing.T) {
 
 	workflow, err := CreateWorkflow(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteWorkflow(t, client, workflow)
 
 	trigger, err := CreateCronTrigger(t, client, workflow)
 	th.AssertNoErr(t, err)
+	defer DeleteCronTrigger(t, client, trigger)
 
 	tools.PrintResource(t, trigger)
 }

@@ -34,3 +34,13 @@ func CreateCronTrigger(t *testing.T, client *gophercloud.ServiceClient, workflow
 	th.AssertEquals(t, crontrigger.Name, crontriggerName)
 	return crontrigger, nil
 }
+
+// DeleteCronTrigger deletes a cron trigger.
+func DeleteCronTrigger(t *testing.T, client *gophercloud.ServiceClient, crontrigger *crontriggers.CronTrigger) {
+	err := crontriggers.Delete(client, crontrigger.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete cron trigger %s: %v", crontrigger.Name, err)
+	}
+
+	t.Logf("Deleted crontrigger: %s", crontrigger.Name)
+}
