@@ -3,7 +3,6 @@
 package layer3
 
 import (
-	"os"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -96,11 +95,6 @@ func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
 func TestLayer3FloatingIPsCreateDeleteBySubnetID(t *testing.T) {
 	clients.RequireAdmin(t)
 
-	username := os.Getenv("OS_USERNAME")
-	if username != "admin" {
-		t.Skip("must be admin to run this test")
-	}
-
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -109,6 +103,7 @@ func TestLayer3FloatingIPsCreateDeleteBySubnetID(t *testing.T) {
 
 	listOpts := subnets.ListOpts{
 		NetworkID: choices.ExternalNetworkID,
+		IPVersion: 4,
 	}
 
 	subnetPages, err := subnets.List(client, listOpts).AllPages()
