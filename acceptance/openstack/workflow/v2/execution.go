@@ -56,3 +56,12 @@ func CreateExecution(t *testing.T, client *gophercloud.ServiceClient, workflow *
 
 	return execution, nil
 }
+
+// DeleteExecution deletes an execution.
+func DeleteExecution(t *testing.T, client *gophercloud.ServiceClient, execution *executions.Execution) {
+	err := executions.Delete(client, execution.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete executions %s: %v", execution.Description, err)
+	}
+	t.Logf("Deleted executions: %s", execution.Description)
+}

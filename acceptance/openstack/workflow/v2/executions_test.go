@@ -18,6 +18,7 @@ func TestExecutionsCreate(t *testing.T) {
 
 	execution, err := CreateExecution(t, client, workflow)
 	th.AssertNoErr(t, err)
+	defer DeleteExecution(t, client, execution)
 
 	tools.PrintResource(t, execution)
 }
