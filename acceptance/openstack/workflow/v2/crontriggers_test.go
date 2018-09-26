@@ -8,7 +8,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestCronTriggersCreateDelete(t *testing.T) {
+func TestCronTriggersCreateGetDelete(t *testing.T) {
 	client, err := clients.NewWorkflowV2Client()
 	th.AssertNoErr(t, err)
 
@@ -19,6 +19,11 @@ func TestCronTriggersCreateDelete(t *testing.T) {
 	trigger, err := CreateCronTrigger(t, client, workflow)
 	th.AssertNoErr(t, err)
 	defer DeleteCronTrigger(t, client, trigger)
+
+	gettrigger, err := GetCronTrigger(t, client, trigger.ID)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, trigger.ID, gettrigger.ID)
 
 	tools.PrintResource(t, trigger)
 }
