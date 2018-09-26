@@ -9,7 +9,6 @@ import (
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/subnets"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -47,7 +46,6 @@ func TestLayer3FloatingIPsCreateDelete(t *testing.T) {
 }
 
 func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
-	clients.SkipRelease(t, "master")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()
@@ -56,10 +54,12 @@ func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
-	netid, err := networks.IDFromName(client, choices.NetworkName)
+	// Create Network
+	network, err := networking.CreateNetwork(t, client)
 	th.AssertNoErr(t, err)
+	defer networking.DeleteNetwork(t, client, network.ID)
 
-	subnet, err := networking.CreateSubnet(t, client, netid)
+	subnet, err := networking.CreateSubnet(t, client, network.ID)
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, client, subnet.ID)
 
@@ -67,7 +67,7 @@ func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteRouter(t, client, router.ID)
 
-	port, err := networking.CreatePort(t, client, netid, subnet.ID)
+	port, err := networking.CreatePort(t, client, network.ID, subnet.ID)
 	th.AssertNoErr(t, err)
 
 	_, err = CreateRouterInterface(t, client, port.ID, router.ID)

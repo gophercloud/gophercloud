@@ -114,6 +114,8 @@ func TestRolesFilterList(t *testing.T) {
 	// For some reason this is not longer working.
 	// It might be a temporary issue.
 	clients.SkipRelease(t, "master")
+	clients.SkipRelease(t, "stable/queens")
+	clients.SkipRelease(t, "stable/rocky")
 
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)

@@ -9,7 +9,6 @@ import (
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -84,19 +83,17 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 }
 
 func TestLayer3RouterInterface(t *testing.T) {
-	clients.SkipRelease(t, "master")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	// Create Network
+	network, err := networking.CreateNetwork(t, client)
 	th.AssertNoErr(t, err)
+	defer networking.DeleteNetwork(t, client, network.ID)
 
-	netid, err := networks.IDFromName(client, choices.NetworkName)
-	th.AssertNoErr(t, err)
-
-	subnet, err := networking.CreateSubnet(t, client, netid)
+	subnet, err := networking.CreateSubnet(t, client, network.ID)
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, client, subnet.ID)
 
