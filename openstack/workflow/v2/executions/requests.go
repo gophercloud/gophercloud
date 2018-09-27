@@ -58,3 +58,9 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
 	return
 }
+
+// Delete deletes the specified execution.
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
+}

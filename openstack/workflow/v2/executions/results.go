@@ -28,6 +28,11 @@ func (r commonResult) Extract() (*Execution, error) {
 	return &s, err
 }
 
+// DeleteResult is the result from a Delete operation. Call its ExtractErr method to determine the success of the call.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Execution represents a workflow execution on OpenStack mistral API.
 type Execution struct {
 	// ID is the execution's unique ID.
