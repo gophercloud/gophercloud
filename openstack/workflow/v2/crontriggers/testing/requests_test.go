@@ -3,6 +3,7 @@ package testing
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"reflect"
 	"testing"
 	"time"
@@ -240,4 +241,35 @@ func TestListCronTriggers(t *testing.T) {
 	if pages != 1 {
 		t.Errorf("Expected one page, got %d", pages)
 	}
+}
+
+func TestToExecutionListQuery(t *testing.T) {
+	for expected, opts := range map[string]*crontriggers.ListOpts{
+		newValue("workflow_input", `{"msg":"Hello"}`): &crontriggers.ListOpts{
+			WorkflowInput: map[string]interface{}{
+				"msg": "Hello",
+			},
+		},
+		newValue("name", `neq:not_name`): &crontriggers.ListOpts{
+			Name: &crontriggers.ListFilter{
+				Filter: crontriggers.FilterNEQ,
+				Value:  "not_name",
+			},
+		},
+		newValue("created_at", `gt:2018-01-01 00:00:00`): &crontriggers.ListOpts{
+			CreatedAt: &crontriggers.ListDateFilter{
+				Filter: crontriggers.FilterGT,
+				Value:  time.Date(2018, time.January, 1, 0, 0, 0, 0, time.UTC),
+			},
+		},
+	} {
+		actual, _ := opts.ToCronTriggerListQuery()
+		th.AssertEquals(t, expected, actual)
+	}
+}
+
+func newValue(param, value string) string {
+	v := url.Values{}
+	v.Add(param, value)
+	return "?" + v.Encode()
 }

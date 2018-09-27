@@ -6,17 +6,30 @@ Once a trigger is created it will run a specified workflow according to its prop
 
 List cron triggers
 
+To filter cron triggers from a list request, you can use advanced filters with special FilterType to check for equality, non equality, values greater or lower, etc.
+Default Filter checks equality, but you can override it with provided filter type.
+
 	listOpts := crontriggers.ListOpts{
-		WorkflowID: "604a3a1e-94e3-4066-a34a-aa56873ef236",
+		WorkflowName: &executions.ListFilter{
+			Value: "Workflow1,Workflow2",
+			Filter: executions.FilterIN,
+		},
+		CreatedAt: &executions.ListDateFilter{
+			Value: time.Date(2018, time.January, 1, 0, 0, 0, 0, time.UTC),
+			Filter: executions.FilterGTE,
+		},
 	}
+
 	allPages, err := crontriggers.List(mistralClient, listOpts).AllPages()
 	if err != nil {
 		panic(err)
 	}
+
 	allCrontriggers, err := crontriggers.ExtractCronTriggers(allPages)
 	if err != nil {
 		panic(err)
 	}
+
 	for _, ct := range allCrontriggers {
 		fmt.Printf("%+v\n", ct)
 	}
@@ -24,10 +37,10 @@ List cron triggers
 Create a cron trigger. This example will start the workflow "echo" each day at 8am, and it will end after 10 executions.
 
 	createOpts := &crontriggers.CreateOpts{
-		Name: 				"daily",
-		Pattern: 			"0 8 * * *",
-		WorkflowName:     	"echo",
-		RemainingExecutions: 10,
+		Name:					"daily",
+		Pattern:				"0 8 * * *",
+		WorkflowName:			"echo",
+		RemainingExecutions:	10,
 		WorkflowParams: map[string]interface{}{
 			"msg": "hello",
 		},

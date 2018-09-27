@@ -1,6 +1,10 @@
 package crontriggers
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/url"
+	"reflect"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -91,16 +95,36 @@ type ListOpts struct {
 	WorkflowName string `q:"workflow_name"`
 	// WorkflowID allows to filter by workflow id.
 	WorkflowID string `q:"workflow_id"`
-	// Name allows to filter by trigger name.
-	Name string `q:"name"`
+	// WorkflowInput allows to filter by specific workflow inputs.
+	WorkflowInput map[string]interface{} `q:"-"`
+	// WorkflowParams allows to filter by specific workflow parameters.
+	WorkflowParams map[string]interface{} `q:"-"`
 	// Scope filters by the trigger's scope.
 	// Values can be "private" or "public".
 	Scope string `q:"scope"`
-	// SortDir allows to select sort direction.
+	// Name allows to filter by trigger name.
+	Name *ListFilter `q:"-"`
+	// Pattern allows to filter by pattern.
+	Pattern *ListFilter `q:"-"`
+	// RemainingExecutions allows to filter by remaining executions.
+	RemainingExecutions *ListIntFilter `q:"-"`
+	// FirstExecutionTime allows to filter by first execution time.
+	FirstExecutionTime *ListDateFilter `q:"-"`
+	// NextExecutionTime allows to filter by next execution time.
+	NextExecutionTime *ListDateFilter `q:"-"`
+	// CreatedAt allows to filter by trigger creation date.
+	CreatedAt *ListDateFilter `q:"-"`
+	// UpdatedAt allows to filter by trigger last update date.
+	UpdatedAt *ListDateFilter `q:"-"`
+	// ProjectID allows to filter by given project id. Admin required.
+	ProjectID string `q:"project_id"`
+	// AllProjects requests to get executions of all projects. Admin required.
+	AllProjects int `q:"all_projects"`
+	// SortDirs allows to select sort direction.
 	// It can be "asc" or "desc" (default).
-	SortDir string `q:"sort_dir"`
-	// SortKey allows to sort by one of the cron trigger attributes.
-	SortKey string `q:"sort_key"`
+	SortDirs string `q:"sort_dirs"`
+	// SortKeys allows to sort by one of the cron trigger attributes.
+	SortKeys string `q:"sort_key"`
 	// Marker and Limit control paging.
 	// Marker instructs List where to start listing from.
 	Marker string `q:"marker"`
@@ -109,10 +133,107 @@ type ListOpts struct {
 	Limit int `q:"limit"`
 }
 
+// ListFilter allows to filter string parameters with different filters.
+// Empty value for Filter checks for equality.
+type ListFilter struct {
+	Filter FilterType
+	Value  string
+}
+
+func (l ListFilter) String() string {
+	if l.Filter != "" {
+		return fmt.Sprintf("%s:%s", l.Filter, l.Value)
+	}
+	return l.Value
+}
+
+// ListDateFilter allows to filter date parameters with different filters.
+// Empty value for Filter checks for equality.
+type ListDateFilter struct {
+	Filter FilterType
+	Value  time.Time
+}
+
+func (l ListDateFilter) String() string {
+	v := l.Value.Format(gophercloud.RFC3339ZNoTNoZ)
+	if l.Filter != "" {
+		return fmt.Sprintf("%s:%s", l.Filter, v)
+	}
+	return v
+}
+
+// ListIntFilter allows to filter integer parameters with different filters.
+// Empty value for Filter checks for equality.
+type ListIntFilter struct {
+	Filter FilterType
+	Value  int
+}
+
+func (l ListIntFilter) String() string {
+	v := fmt.Sprintf("%d", l.Value)
+	if l.Filter != "" {
+		return fmt.Sprintf("%s:%s", l.Filter, v)
+	}
+	return v
+}
+
+// FilterType represents a valid filter to use for filtering executions.
+type FilterType string
+
+const (
+	// FilterEQ checks equality.
+	FilterEQ = "eq"
+	// FilterNEQ checks non equality.
+	FilterNEQ = "neq"
+	// FilterIN checks for belonging in a list, comma separated.
+	FilterIN = "in"
+	// FilterNIN checks for values that does not belong from a list, comma separated.
+	FilterNIN = "nin"
+	// FilterGT checks for values strictly greater.
+	FilterGT = "gt"
+	// FilterGTE checks for values greater or equal.
+	FilterGTE = "gte"
+	// FilterLT checks for values strictly lower.
+	FilterLT = "lt"
+	// FilterLTE checks for values lower or equal.
+	FilterLTE = "lte"
+	// FilterHas checks for values that contains the requested parameter.
+	FilterHas = "has"
+)
+
 // ToCronTriggerListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToCronTriggerListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	return q.String(), err
+	if err != nil {
+		return "", err
+	}
+	params := q.Query()
+
+	for queryParam, value := range map[string]map[string]interface{}{"workflow_params": opts.WorkflowParams, "workflow_input": opts.WorkflowInput} {
+		if value != nil {
+			b, err := json.Marshal(value)
+			if err != nil {
+				return "", err
+			}
+			params.Add(queryParam, string(b))
+		}
+	}
+
+	for queryParam, value := range map[string]fmt.Stringer{
+		"name":                 opts.Name,
+		"pattern":              opts.Pattern,
+		"remaining_executions": opts.RemainingExecutions,
+		"first_execution_time": opts.FirstExecutionTime,
+		"next_execution_time":  opts.NextExecutionTime,
+		"created_at":           opts.CreatedAt,
+		"updated_at":           opts.UpdatedAt,
+	} {
+		if !reflect.ValueOf(value).IsNil() {
+			params.Add(queryParam, value.String())
+		}
+	}
+	q = &url.URL{RawQuery: params.Encode()}
+	return q.String(), nil
 }
 
 // List performs a call to list cron triggers.

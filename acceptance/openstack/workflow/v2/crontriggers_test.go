@@ -2,6 +2,7 @@ package v2
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
@@ -39,7 +40,17 @@ func TestCronTriggersList(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteCronTrigger(t, client, trigger)
 	list, err := ListCronTriggers(t, client, &crontriggers.ListOpts{
-		Name: trigger.Name,
+		Name: &crontriggers.ListFilter{
+			Filter: crontriggers.FilterEQ,
+			Value:  trigger.Name,
+		},
+		Pattern: &crontriggers.ListFilter{
+			Value: "0 0 1 1 *",
+		},
+		CreatedAt: &crontriggers.ListDateFilter{
+			Filter: crontriggers.FilterGT,
+			Value:  time.Now().AddDate(-1, 0, 0),
+		},
 	})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, len(list))

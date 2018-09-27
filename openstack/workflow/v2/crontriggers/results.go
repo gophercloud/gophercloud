@@ -108,12 +108,16 @@ func (r *CronTrigger) UnmarshalJSON(b []byte) error {
 		r.NextExecutionTime = &t
 	}
 
-	if err := json.Unmarshal([]byte(s.WorkflowInput), &r.WorkflowInput); err != nil {
-		return err
+	if s.WorkflowInput != "" {
+		if err := json.Unmarshal([]byte(s.WorkflowInput), &r.WorkflowInput); err != nil {
+			return err
+		}
 	}
 
-	if err := json.Unmarshal([]byte(s.WorkflowParams), &r.WorkflowParams); err != nil {
-		return err
+	if s.WorkflowParams != "" {
+		if err := json.Unmarshal([]byte(s.WorkflowParams), &r.WorkflowParams); err != nil {
+			return err
+		}
 	}
 
 	return nil
