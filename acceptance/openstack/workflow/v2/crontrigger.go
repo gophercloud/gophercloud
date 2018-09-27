@@ -44,3 +44,13 @@ func DeleteCronTrigger(t *testing.T, client *gophercloud.ServiceClient, crontrig
 
 	t.Logf("Deleted crontrigger: %s", crontrigger.Name)
 }
+
+// GetCronTrigger gets a cron trigger.
+func GetCronTrigger(t *testing.T, client *gophercloud.ServiceClient, id string) (*crontriggers.CronTrigger, error) {
+	crontrigger, err := crontriggers.Get(client, id).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get cron trigger %s: %v", id, err)
+	}
+	t.Logf("Cron trigger %s get", id)
+	return crontrigger, err
+}

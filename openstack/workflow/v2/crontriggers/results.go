@@ -16,6 +16,11 @@ type CreateResult struct {
 	commonResult
 }
 
+// GetResult is the response of Get operations. Call its Extract method to interpret it as a CronTrigger.
+type GetResult struct {
+	commonResult
+}
+
 // DeleteResult is the result from a Delete operation. Call its ExtractErr method to determine the success of the call.
 type DeleteResult struct {
 	gophercloud.ErrResult
