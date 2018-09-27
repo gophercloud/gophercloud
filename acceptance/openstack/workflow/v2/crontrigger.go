@@ -54,3 +54,17 @@ func GetCronTrigger(t *testing.T, client *gophercloud.ServiceClient, id string) 
 	t.Logf("Cron trigger %s get", id)
 	return crontrigger, err
 }
+
+// ListCronTriggers lists cron triggers.
+func ListCronTriggers(t *testing.T, client *gophercloud.ServiceClient, opts crontriggers.ListOptsBuilder) ([]crontriggers.CronTrigger, error) {
+	allPages, err := crontriggers.List(client, opts).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list cron triggers: %v", err)
+	}
+	crontriggersList, err := crontriggers.ExtractCronTriggers(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract cron triggers: %v", err)
+	}
+	t.Logf("Cron triggers list found, length: %d", len(crontriggersList))
+	return crontriggersList, err
+}
