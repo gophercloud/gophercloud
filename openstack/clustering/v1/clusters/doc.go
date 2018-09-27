@@ -30,7 +30,7 @@ Example to List Clusters
 		Name: "testcluster",
 	}
 
-	allPages, err := clusters.ListDetail(serviceClient, listOpts).AllPages()
+	allPages, err := clusters.List(serviceClient, listOpts).AllPages()
 	if err != nil {
 		panic(err)
 	}
