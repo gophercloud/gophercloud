@@ -65,3 +65,19 @@ func DeleteExecution(t *testing.T, client *gophercloud.ServiceClient, execution 
 	}
 	t.Logf("Deleted executions: %s", execution.Description)
 }
+
+// ListExecutions lists the executions.
+func ListExecutions(t *testing.T, client *gophercloud.ServiceClient, opts executions.ListOptsBuilder) ([]executions.Execution, error) {
+	allPages, err := executions.List(client, opts).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list executions: %v", err)
+	}
+
+	executionsList, err := executions.ExtractExecutions(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract executions: %v", err)
+	}
+
+	t.Logf("Executions list find, length: %d", len(executionsList))
+	return executionsList, err
+}
