@@ -99,6 +99,7 @@ func (opts *AuthOptions) CanReauth() bool {
 func subjectTokenHeaders(c *gophercloud.ServiceClient, subjectToken string) map[string]string {
 	return map[string]string{
 		"X-Subject-Token": subjectToken,
+		"X-Auth-Token":    subjectToken,
 	}
 }
 
