@@ -89,6 +89,19 @@ func (r *Spec) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+func (r Spec) MarshalJSON() ([]byte, error) {
+	spec := struct {
+		Type       string                 `json:"type"`
+		Version    string                 `json:"version"`
+		Properties map[string]interface{} `json:"properties"`
+	}{
+		Type:       r.Type,
+		Version:    r.Version,
+		Properties: r.Properties,
+	}
+	return json.Marshal(spec)
+}
+
 // commonResult is the base result of a Profile operation.
 type commonResult struct {
 	gophercloud.Result
