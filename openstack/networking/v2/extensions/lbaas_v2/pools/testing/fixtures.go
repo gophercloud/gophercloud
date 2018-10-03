@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/pools"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -235,15 +234,7 @@ const MembersListBody = `
 			"subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
 			"tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
 			"admin_state_up":false,
-			"protocol_port": 80,
-			"provisioning_status": "ACTIVE",
-			"project_id": "9e761808ff1c45ac86577f614fdcccda",
-			"created_at": "2018-08-23T20:05:21",
-			"updated_at": "2018-08-23T21:22:53",
-			"operating_status": "ONLINE",
-			"backup": false,
-			"monitor_address": "192.168.1.111",
-			"monitor_port": 80
+			"protocol_port": 80
 		}
 	]
 }
@@ -260,15 +251,7 @@ const SingleMemberBody = `
 		"subnet_id": "1981f108-3c48-48d2-b908-30f7d28532c9",
 		"tenant_id": "2ffc6e22aae24e4795f87155d24c896f",
 		"admin_state_up":false,
-		"protocol_port": 80,
-		"provisioning_status": "ACTIVE",
-		"project_id": "9e761808ff1c45ac86577f614fdcccda",
-		"created_at": "2018-08-23T20:05:21",
-		"updated_at": "2018-08-23T21:22:53",
-		"operating_status": "ONLINE",
-		"backup": false,
-		"monitor_address": "192.168.1.111",
-		"monitor_port": 80
+		"protocol_port": 80
 	}
 }
 `
@@ -301,22 +284,14 @@ var (
 		ProtocolPort: 80,
 	}
 	MemberDb = pools.Member{
-		SubnetID:           "1981f108-3c48-48d2-b908-30f7d28532c9",
-		TenantID:           "2ffc6e22aae24e4795f87155d24c896f",
-		AdminStateUp:       false,
-		Name:               "db",
-		ID:                 "fad389a3-9a4a-4762-a365-8c7038508b5d",
-		Address:            "10.0.2.11",
-		Weight:             10,
-		ProtocolPort:       80,
-		ProvisioningStatus: "ACTIVE",
-		ProjectID:          "9e761808ff1c45ac86577f614fdcccda",
-		CreatedAt:          time.Date(2018, 8, 23, 20, 05, 21, 0, time.UTC),
-		UpdatedAt:          time.Date(2018, 8, 23, 21, 22, 53, 0, time.UTC),
-		OperatingStatus:    "ONLINE",
-		Backup:             false,
-		MonitorAddress:     "192.168.1.111",
-		MonitorPort:        80,
+		SubnetID:     "1981f108-3c48-48d2-b908-30f7d28532c9",
+		TenantID:     "2ffc6e22aae24e4795f87155d24c896f",
+		AdminStateUp: false,
+		Name:         "db",
+		ID:           "fad389a3-9a4a-4762-a365-8c7038508b5d",
+		Address:      "10.0.2.11",
+		Weight:       10,
+		ProtocolPort: 80,
 	}
 	MemberUpdated = pools.Member{
 		SubnetID:     "1981f108-3c48-48d2-b908-30f7d28532c9",

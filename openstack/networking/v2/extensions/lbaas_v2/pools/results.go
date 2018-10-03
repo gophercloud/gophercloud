@@ -1,9 +1,6 @@
 package pools
 
 import (
-	"encoding/json"
-	"time"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/monitors"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -207,27 +204,6 @@ type Member struct {
 	// The provisioning status of the member.
 	// This value is ACTIVE, PENDING_* or ERROR.
 	ProvisioningStatus string `json:"provisioning_status"`
-
-	// The Project to which the member belongs.
-	ProjectID string `json:"project_id"`
-
-	// DateTime when the member was created
-	CreatedAt time.Time `json:"-"`
-
-	// DateTime when the member was updated
-	UpdatedAt time.Time `json:"-"`
-
-	// The operating status of the member
-	OperatingStatus string `json:"operating_status"`
-
-	// Is the member a backup? Backup members only receive traffic when all non-backup members are down.
-	Backup bool `json:"backup"`
-
-	// An alternate IP address used for health monitoring a backend member.
-	MonitorAddress string `json:"monitor_address"`
-
-	// An alternate protocol port used for health monitoring a backend member.
-	MonitorPort int `json:"monitor_port"`
 }
 
 // MemberPage is the page returned by a pager when traversing over a
@@ -302,24 +278,4 @@ type UpdateMemberResult struct {
 // Call its ExtractErr method to determine if the request succeeded or failed.
 type DeleteMemberResult struct {
 	gophercloud.ErrResult
-}
-
-func (r *Member) UnmarshalJSON(b []byte) error {
-	type tmp Member
-	var s struct {
-		tmp
-		CreatedAt gophercloud.JSONRFC3339NoZ `json:"created_at"`
-		UpdatedAt gophercloud.JSONRFC3339NoZ `json:"updated_at"`
-	}
-
-	err := json.Unmarshal(b, &s)
-	if err != nil {
-		return err
-	}
-	*r = Member(s.tmp)
-
-	r.CreatedAt = time.Time(s.CreatedAt)
-	r.UpdatedAt = time.Time(s.UpdatedAt)
-
-	return nil
 }
