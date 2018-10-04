@@ -160,3 +160,36 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expectedTrunks[1], n)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/trunks/f6a9718c-5a64-43e3-944f-4deccad8e78c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, UpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, UpdateResponse)
+	})
+
+	iFalse := false
+	name := "updated_gophertrunk"
+	description := "gophertrunk updated by gophercloud"
+	options := trunks.UpdateOpts{
+		Name:         name,
+		AdminStateUp: &iFalse,
+		Description:  description,
+	}
+	n, err := trunks.Update(fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.Name, name)
+	th.AssertEquals(t, n.AdminStateUp, iFalse)
+	th.AssertEquals(t, n.Description, description)
+}

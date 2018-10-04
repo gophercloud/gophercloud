@@ -108,3 +108,29 @@ func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
 	return
 }
+
+type UpdateOptsBuilder interface {
+	ToTrunkUpdateMap() (map[string]interface{}, error)
+}
+
+type UpdateOpts struct {
+	AdminStateUp *bool  `json:"admin_state_up,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Description  string `json:"description,omitempty"`
+}
+
+func (opts UpdateOpts) ToTrunkUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "trunk")
+}
+
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	body, err := opts.ToTrunkUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(updateURL(c, id), body, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

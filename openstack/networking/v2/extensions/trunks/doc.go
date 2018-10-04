@@ -79,5 +79,21 @@ Example of getting a Trunk
 		panic(err)
 	}
 	fmt.Printf("%+v\n", trunk)
+
+Example of updating a Trunk
+
+	trunkID := "c36e7f2e-0c53-4742-8696-aee77c9df159"
+	subports, err := trunks.GetSubports(client, trunkID).Extract()
+	iFalse := false
+	updateOpts := trunks.UpdateOpts{
+		AdminStateUp: &iFalse,
+		Name:         "updated_gophertrunk",
+		Description:  "trunk updated by gophercloud",
+	}
+	trunk, err = trunks.Update(networkClient, trunkID, updateOpts).Extract()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%+v\n", trunk)
 */
 package trunks
