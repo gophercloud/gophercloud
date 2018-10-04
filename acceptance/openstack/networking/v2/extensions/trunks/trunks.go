@@ -34,3 +34,13 @@ func CreateTrunk(t *testing.T, client *gophercloud.ServiceClient, parentPortID s
 	}
 	return
 }
+
+func DeleteTrunk(t *testing.T, client *gophercloud.ServiceClient, trunkID string) {
+	t.Logf("Attempting to delete trunk: %s", trunkID)
+	err := trunks.Delete(client, trunkID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete trunk %s: %v", trunkID, err)
+	}
+
+	t.Logf("Deleted trunk: %s", trunkID)
+}

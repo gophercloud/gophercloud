@@ -39,3 +39,9 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 	_, r.Err = c.Post(createURL(c), body, &r.Body, nil)
 	return
 }
+
+// Delete accepts a unique ID and deletes the trunk associated with it.
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(deleteURL(c, id), nil)
+	return
+}

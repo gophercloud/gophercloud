@@ -47,5 +47,13 @@ Example of a new Trunk creation with 2 subports
 		panic(err)
 	}
 	fmt.Printf("%+v\n", trunk)
+
+Example of deleting a Trunk
+
+	trunkID := "c36e7f2e-0c53-4742-8696-aee77c9df159"
+	err := trunks.Delete(networkClient, trunkID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package trunks

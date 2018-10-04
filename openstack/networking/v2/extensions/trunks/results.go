@@ -22,6 +22,12 @@ type CreateResult struct {
 	commonResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 type Trunk struct {
 	// Indicates whether the trunk is currently operational. Possible values include
 	// `ACTIVE', `DOWN', `BUILD', 'DEGRADED' or `ERROR'.
