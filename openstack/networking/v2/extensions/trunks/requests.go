@@ -102,3 +102,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		return TrunkPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// Get retrieves a specific trunk based on its unique ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
+}

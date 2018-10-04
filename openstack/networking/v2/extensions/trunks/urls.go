@@ -23,3 +23,7 @@ func deleteURL(c *gophercloud.ServiceClient, id string) string {
 func listURL(c *gophercloud.ServiceClient) string {
 	return rootURL(c)
 }
+
+func getURL(c *gophercloud.ServiceClient, id string) string {
+	return resourceURL(c, id)
+}

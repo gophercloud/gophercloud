@@ -71,6 +71,13 @@ Example of listing Trunks
 		fmt.Printf("%+v\n", trunk)
 	}
 
+Example of getting a Trunk
 
+	trunkID = "52d8d124-3dc9-4563-9fef-bad3187ecf2d"
+	trunk, err := trunks.Get(networkClient, trunkID).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", trunk)
 */
 package trunks

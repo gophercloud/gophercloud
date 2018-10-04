@@ -29,6 +29,12 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
+// GetResult is the response from a Get operation. Call its Extract method
+// to interpret it as a Trunk.
+type GetResult struct {
+	commonResult
+}
+
 type Trunk struct {
 	// Indicates whether the trunk is currently operational. Possible values include
 	// `ACTIVE', `DOWN', `BUILD', 'DEGRADED' or `ERROR'.
