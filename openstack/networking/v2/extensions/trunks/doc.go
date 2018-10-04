@@ -55,5 +55,22 @@ Example of deleting a Trunk
 	if err != nil {
 		panic(err)
 	}
+
+Example of listing Trunks
+
+	listOpts := trunks.ListOpts{}
+	allPages, err := trunks.List(networkClient, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+	allTrunks, err := trunks.ExtractTrunks(allPages)
+	if err != nil {
+		panic(err)
+	}
+	for _, trunk := range allTrunks {
+		fmt.Printf("%+v\n", trunk)
+	}
+
+
 */
 package trunks

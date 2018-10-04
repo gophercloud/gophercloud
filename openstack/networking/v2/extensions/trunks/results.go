@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 type Subport struct {
@@ -77,4 +78,23 @@ func (r commonResult) Extract() (*Trunk, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.Trunk, err
+}
+
+// TrunkPage is the page returned by a pager when traversing a collection of
+// trunk resources.
+type TrunkPage struct {
+	pagination.LinkedPageBase
+}
+
+func (page TrunkPage) IsEmpty() (bool, error) {
+	trunks, err := ExtractTrunks(page)
+	return len(trunks) == 0, err
+}
+
+func ExtractTrunks(page pagination.Page) ([]Trunk, error) {
+	var a struct {
+		Trunks []Trunk `json:"trunks"`
+	}
+	err := (page.(TrunkPage)).ExtractInto(&a)
+	return a.Trunks, err
 }

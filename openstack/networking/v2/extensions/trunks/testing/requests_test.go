@@ -7,6 +7,7 @@ import (
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/trunks"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -100,4 +101,41 @@ func TestDelete(t *testing.T) {
 
 	res := trunks.Delete(fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/trunks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ListResponse)
+	})
+
+	client := fake.ServiceClient()
+	count := 0
+
+	trunks.List(client, trunks.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := trunks.ExtractTrunks(page)
+		if err != nil {
+			t.Errorf("Failed to extract trunks: %v", err)
+			return false, err
+		}
+
+		expected, err := ExpectedTrunkSlice()
+		th.AssertNoErr(t, err)
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }
