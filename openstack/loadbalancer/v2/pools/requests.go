@@ -66,6 +66,7 @@ const (
 	LBMethodSourceIp         LBMethod = "SOURCE_IP"
 
 	ProtocolTCP   Protocol = "TCP"
+	ProtocolUDP   Protocol = "UDP"
 	ProtocolHTTP  Protocol = "HTTP"
 	ProtocolHTTPS Protocol = "HTTPS"
 )
@@ -85,7 +86,7 @@ type CreateOpts struct {
 	LBMethod LBMethod `json:"lb_algorithm" required:"true"`
 
 	// The protocol used by the pool members, you can use either
-	// ProtocolTCP, ProtocolHTTP, or ProtocolHTTPS.
+	// ProtocolTCP, ProtocolUDP, ProtocolHTTP, or ProtocolHTTPS.
 	Protocol Protocol `json:"protocol" required:"true"`
 
 	// The Loadbalancer on which the members of the pool will be associated with.
