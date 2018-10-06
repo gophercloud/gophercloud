@@ -22,6 +22,12 @@ if [[ $? != 0 ]]; then
   failed=1
 fi
 
+# Networking v2 - extensions
+go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/networking/v2/extensions
+if [[ $? != 0 ]]; then
+  failed=1
+fi
+
 # Networking v2 - layer3
 go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/networking/v2/extensions/layer3
 if [[ $? != 0 ]]; then
