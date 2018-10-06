@@ -53,6 +53,12 @@ if [[ $? != 0 ]]; then
   failed=1
 fi
 
+# Networking v2 - trunks
+go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/networking/v2/extensions/trunks
+if [[ $? != 0 ]]; then
+  failed=1
+fi
+
 # Block Storage v2
 go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/blockstorage/v2/
 if [[ $? != 0 ]]; then
