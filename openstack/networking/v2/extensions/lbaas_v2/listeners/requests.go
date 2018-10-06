@@ -11,7 +11,6 @@ type Protocol string
 // Supported attributes for create/update operations.
 const (
 	ProtocolTCP   Protocol = "TCP"
-	ProtocolUDP   Protocol = "UDP"
 	ProtocolHTTP  Protocol = "HTTP"
 	ProtocolHTTPS Protocol = "HTTPS"
 )
