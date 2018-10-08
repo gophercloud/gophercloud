@@ -17,5 +17,9 @@ Example to ReplaceAll Resource Tags
 Example to List all Resource Tags
 
 	tags, err = attributestags.List(conn, "networks", network.ID).Extract()
+
+Example to Delete all Resource Tags
+
+	err = attributestags.DeleteAll(conn, "networks", network.ID).ExtractErr()
 */
 package attributestags

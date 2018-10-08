@@ -33,4 +33,11 @@ func TestTags(t *testing.T) {
 	tags, err = attributestags.List(client, "networks", network.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, tags, []string{"a", "b", "c"})
+
+	// Delete all tags
+	err = attributestags.DeleteAll(client, "networks", network.ID).ExtractErr()
+	th.AssertNoErr(t, err)
+	tags, err = attributestags.List(client, "networks", network.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, tags, []string{})
 }

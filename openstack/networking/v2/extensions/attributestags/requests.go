@@ -43,3 +43,12 @@ func List(client *gophercloud.ServiceClient, resourceType string, resourceID str
 	})
 	return
 }
+
+// DeleteAll deletes all tags on a resource
+func DeleteAll(client *gophercloud.ServiceClient, resourceType string, resourceID string) (r DeleteResult) {
+	url := deleteAllURL(client, resourceType, resourceID)
+	_, r.Err = client.Delete(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}

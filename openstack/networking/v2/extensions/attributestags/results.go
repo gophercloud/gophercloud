@@ -26,3 +26,9 @@ type ReplaceAllResult struct {
 type ListResult struct {
 	tagResult
 }
+
+// DeleteResult is the result from a Delete/DeleteAll operation.
+// Call its ExtractErr method to determine if the call succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
