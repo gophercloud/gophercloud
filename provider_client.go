@@ -365,7 +365,9 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 	// Parse the response body as JSON, if requested to do so.
 	if options.JSONResponse != nil {
 		defer resp.Body.Close()
-		if err := json.NewDecoder(resp.Body).Decode(options.JSONResponse); err != nil {
+		dec := json.NewDecoder(resp.Body)
+		dec.UseNumber()
+		if err := dec.Decode(options.JSONResponse); err != nil {
 			return nil, err
 		}
 	}
