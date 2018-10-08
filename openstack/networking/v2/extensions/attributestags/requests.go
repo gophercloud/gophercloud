@@ -34,3 +34,12 @@ func ReplaceAll(client *gophercloud.ServiceClient, resourceType string, resource
 	})
 	return
 }
+
+// List all tags on a resource
+func List(client *gophercloud.ServiceClient, resourceType string, resourceID string) (r ListResult) {
+	url := listURL(client, resourceType, resourceID)
+	_, r.Err = client.Get(url, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

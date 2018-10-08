@@ -22,3 +22,7 @@ func (r tagResult) Extract() ([]string, error) {
 type ReplaceAllResult struct {
 	tagResult
 }
+
+type ListResult struct {
+	tagResult
+}

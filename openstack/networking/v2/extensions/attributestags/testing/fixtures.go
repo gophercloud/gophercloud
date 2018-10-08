@@ -11,3 +11,9 @@ const attributestagsReplaceAllResult = `
 	"tags": ["abc", "xyz"]
 }
 `
+
+const attributestagsListResult = `
+{
+	"tags": ["abc", "xyz"]
+}
+`
