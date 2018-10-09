@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/trunks"
 )
 
 func TestTrunkCRUD(t *testing.T) {
@@ -56,4 +57,25 @@ func TestTrunkCRUD(t *testing.T) {
 	defer DeleteTrunk(t, client, trunk.ID)
 
 	tools.PrintResource(t, trunk)
+}
+
+func TestTrunkList(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a network client: %v", err)
+	}
+
+	allPages, err := trunks.List(client, nil).AllPages()
+	if err != nil {
+		t.Fatalf("Unable to list trunks: %v", err)
+	}
+
+	allTrunks, err := trunks.ExtractTrunks(allPages)
+	if err != nil {
+		t.Fatalf("Unable to extract trunks: %v", err)
+	}
+
+	for _, trunk := range allTrunks {
+		tools.PrintResource(t, trunk)
+	}
 }

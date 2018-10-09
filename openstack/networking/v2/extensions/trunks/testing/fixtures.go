@@ -88,6 +88,59 @@ const CreateNoSubportsResponse = `
   }
 }`
 
+const ListResponse = `
+{
+  "trunks": [
+    {
+      "admin_state_up": true,
+      "created_at": "2018-10-01T15:29:39Z",
+      "description": "",
+      "id": "3e72aa1b-d0da-48f2-831a-fd1c5f3f99c2",
+      "name": "mytrunk",
+      "port_id": "16c425d3-d7fc-40b8-b94c-cc95da45b270",
+      "project_id": "e153f3f9082240a5974f667cfe1036e3",
+      "revision_number": 3,
+      "status": "ACTIVE",
+      "sub_ports": [
+        {
+          "port_id": "424da4b7-7868-4db2-bb71-05155601c6e4",
+          "segmentation_id": 11,
+          "segmentation_type": "vlan"
+        }
+      ],
+      "tags": [],
+      "tenant_id": "e153f3f9082240a5974f667cfe1036e3",
+      "updated_at": "2018-10-01T15:43:04Z"
+    },
+    {
+      "admin_state_up": true,
+      "created_at": "2018-10-03T13:57:24Z",
+      "description": "Trunk created by gophercloud",
+      "id": "f6a9718c-5a64-43e3-944f-4deccad8e78c",
+      "name": "gophertrunk",
+      "port_id": "c373d2fa-3d3b-4492-924c-aff54dea19b6",
+      "project_id": "e153f3f9082240a5974f667cfe1036e3",
+      "revision_number": 1,
+      "status": "ACTIVE",
+      "sub_ports": [
+        {
+          "port_id": "28e452d7-4f8a-4be4-b1e6-7f3db4c0430b",
+          "segmentation_id": 1,
+          "segmentation_type": "vlan"
+        },
+        {
+          "port_id": "4c8b2bff-9824-4d4c-9b60-b3f6621b2bab",
+          "segmentation_id": 2,
+          "segmentation_type": "vlan"
+        }
+      ],
+      "tags": [],
+      "tenant_id": "e153f3f9082240a5974f667cfe1036e3",
+      "updated_at": "2018-10-03T13:57:26Z"
+    }
+  ]
+}`
+
 var ExpectedSubports = []trunks.Subport{
 	{
 		PortID:           "28e452d7-4f8a-4be4-b1e6-7f3db4c0430b",
