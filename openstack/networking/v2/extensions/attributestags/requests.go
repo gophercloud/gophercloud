@@ -70,3 +70,12 @@ func Delete(client *gophercloud.ServiceClient, resourceType string, resourceID s
 	})
 	return
 }
+
+// Confirm if a tag exists on a resource
+func Confirm(client *gophercloud.ServiceClient, resourceType string, resourceID string, tag string) (r ConfirmResult) {
+	url := confirmURL(client, resourceType, resourceID, tag)
+	_, r.Err = client.Get(url, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}

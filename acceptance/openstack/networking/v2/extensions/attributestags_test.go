@@ -52,6 +52,13 @@ func TestTags(t *testing.T) {
 	sort.Strings(tags)
 	th.AssertDeepEquals(t, []string{"b", "c", "d"}, tags)
 
+	// Confirm tags exist/don't exist
+	exists, err := attributestags.Confirm(client, "networks", network.ID, "d").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, exists)
+	noexists, err := attributestags.Confirm(client, "networks", network.ID, "a").Extract()
+	th.AssertEquals(t, false, noexists)
+
 	// Delete all tags
 	err = attributestags.DeleteAll(client, "networks", network.ID).ExtractErr()
 	th.AssertNoErr(t, err)

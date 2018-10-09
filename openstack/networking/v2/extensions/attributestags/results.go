@@ -38,3 +38,20 @@ type DeleteResult struct {
 type AddResult struct {
 	gophercloud.ErrResult
 }
+
+// ConfirmResult is the result from an Confirm operation.
+type ConfirmResult struct {
+	gophercloud.Result
+}
+
+func (r ConfirmResult) Extract() (bool, error) {
+	exists := r.Err == nil
+
+	if r.Err != nil {
+		if _, ok := r.Err.(gophercloud.ErrDefault404); ok {
+			r.Err = nil
+		}
+	}
+
+	return exists, r.Err
+}
