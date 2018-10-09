@@ -2,6 +2,7 @@ package testing
 
 import (
 	"fmt"
+	"math/big"
 	"net/http"
 	"testing"
 
@@ -72,16 +73,16 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.NetworkName, "public")
 	th.AssertEquals(t, s.ProjectID, "424e7cf0243c468ca61732ba45973b3e")
 	th.AssertEquals(t, s.TenantID, "424e7cf0243c468ca61732ba45973b3e")
-	th.AssertEquals(t, s.TotalIPs, 253)
-	th.AssertEquals(t, s.UsedIPs, 3)
+	th.AssertEquals(t, s.TotalIPs.String(), "253")
+	th.AssertEquals(t, s.UsedIPs.String(), "3")
 	th.AssertDeepEquals(t, s.SubnetIPAvailabilities, []networkipavailabilities.SubnetIPAvailability{
 		{
 			SubnetID:   "4afe6e5f-9649-40db-b18f-64c7ead942bd",
 			SubnetName: "public-subnet",
 			CIDR:       "203.0.113.0/24",
 			IPVersion:  int(gophercloud.IPv4),
-			TotalIPs:   253,
-			UsedIPs:    3,
+			TotalIPs:   *big.NewInt(253),
+			UsedIPs:    *big.NewInt(3),
 		},
 	})
 }

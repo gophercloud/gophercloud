@@ -1,6 +1,8 @@
 package networkipavailabilities
 
 import (
+	"math/big"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -43,10 +45,10 @@ type NetworkIPAvailability struct {
 	SubnetIPAvailabilities []SubnetIPAvailability `json:"subnet_ip_availability"`
 
 	// TotalIPs represents a number of IP addresses in the network.
-	TotalIPs int `json:"total_ips"`
+	TotalIPs big.Int `json:"total_ips"`
 
 	// UsedIPs represents a number of used IP addresses in the network.
-	UsedIPs int `json:"used_ips"`
+	UsedIPs big.Int `json:"used_ips"`
 }
 
 // SubnetIPAvailability represents availability details for a single subnet.
@@ -64,10 +66,10 @@ type SubnetIPAvailability struct {
 	IPVersion int `json:"ip_version"`
 
 	// TotalIPs represents a number of IP addresses in the subnet.
-	TotalIPs int `json:"total_ips"`
+	TotalIPs big.Int `json:"total_ips"`
 
 	// UsedIPs represents a number of used IP addresses in the subnet.
-	UsedIPs int `json:"used_ips"`
+	UsedIPs big.Int `json:"used_ips"`
 }
 
 // NetworkIPAvailabilityPage stores a single page of NetworkIPAvailabilities
