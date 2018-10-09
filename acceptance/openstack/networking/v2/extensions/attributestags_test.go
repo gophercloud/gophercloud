@@ -21,12 +21,16 @@ func TestTags(t *testing.T) {
 	defer networking.DeleteNetwork(t, client, network.ID)
 
 	tagReplaceAllOpts := attributestags.ReplaceAllOpts{
-		Tags: []string{"abc", "123"},
+		// Note Neutron returns tags sorted, and although the API
+		// docs say list of tags, it's a set e.g no duplicates
+		Tags: []string{"a", "b", "c"},
 	}
 	tags, err := attributestags.ReplaceAll(client, "networks", network.ID, tagReplaceAllOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, tags, []string{"abc", "123"})
+	th.AssertDeepEquals(t, tags, []string{"a", "b", "c"})
 
-	// FIXME(shardy) - when the networks Get schema supports tags we should
-	// verify the tags are set in the Get response
+	// Verify the tags are set in the List response
+	tags, err = attributestags.List(client, "networks", network.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, tags, []string{"a", "b", "c"})
 }

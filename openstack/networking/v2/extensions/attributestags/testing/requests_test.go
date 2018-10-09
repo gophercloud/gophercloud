@@ -35,3 +35,23 @@ func TestReplaceAll(t *testing.T) {
 
 	th.AssertDeepEquals(t, res, []string{"abc", "xyz"})
 }
+
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks/fakeid/tags", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, attributestagsListResult)
+	})
+
+	res, err := attributestags.List(fake.ServiceClient(), "networks", "fakeid").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, res, []string{"abc", "xyz"})
+}
