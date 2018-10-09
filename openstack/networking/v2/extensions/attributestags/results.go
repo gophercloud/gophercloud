@@ -32,3 +32,9 @@ type ListResult struct {
 type DeleteResult struct {
 	gophercloud.ErrResult
 }
+
+// AddResult is the result from an Add operation.
+// Call its ExtractErr method to determine if the call succeeded or failed.
+type AddResult struct {
+	gophercloud.ErrResult
+}
