@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 type commonResult struct {
@@ -103,17 +104,55 @@ func (r *Execution) UnmarshalJSON(b []byte) error {
 	r.CreatedAt = time.Time(s.CreatedAt)
 	r.UpdatedAt = time.Time(s.UpdatedAt)
 
-	if err := json.Unmarshal([]byte(s.Input), &r.Input); err != nil {
-		return err
+	if s.Input != "" {
+		if err := json.Unmarshal([]byte(s.Input), &r.Input); err != nil {
+			return err
+		}
 	}
 
-	if err := json.Unmarshal([]byte(s.Output), &r.Output); err != nil {
-		return err
+	if s.Output != "" {
+		if err := json.Unmarshal([]byte(s.Output), &r.Output); err != nil {
+			return err
+		}
 	}
 
-	if err := json.Unmarshal([]byte(s.Params), &r.Params); err != nil {
-		return err
+	if s.Params != "" {
+		if err := json.Unmarshal([]byte(s.Params), &r.Params); err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+// ExecutionPage contains a single page of all executions from a List call.
+type ExecutionPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty checks if an ExecutionPage contains any results.
+func (r ExecutionPage) IsEmpty() (bool, error) {
+	exec, err := ExtractExecutions(r)
+	return len(exec) == 0, err
+}
+
+// NextPageURL finds the next page URL in a page in order to navigate to the next page of results.
+func (r ExecutionPage) NextPageURL() (string, error) {
+	var s struct {
+		Next string `json:"next"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return s.Next, nil
+}
+
+// ExtractExecutions get the list of executions from a page acquired from the List call.
+func ExtractExecutions(r pagination.Page) ([]Execution, error) {
+	var s struct {
+		Executions []Execution `json:"executions"`
+	}
+	err := (r.(ExecutionPage)).ExtractInto(&s)
+	return s.Executions, err
 }
