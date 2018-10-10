@@ -3,6 +3,7 @@ package testing
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"reflect"
 	"strings"
 	"testing"
@@ -224,4 +225,32 @@ func TestListWorkflows(t *testing.T) {
 	if pages != 1 {
 		t.Errorf("Expected one page, got %d", pages)
 	}
+}
+
+func TestToWorkflowListQuery(t *testing.T) {
+	for expected, opts := range map[string]*workflows.ListOpts{
+		newValue("tags", `tag1,tag2`): &workflows.ListOpts{
+			Tags: []string{"tag1", "tag2"},
+		},
+		newValue("name", `neq:invalid_name`): &workflows.ListOpts{
+			Name: &workflows.ListFilter{
+				Filter: workflows.FilterNEQ,
+				Value:  "invalid_name",
+			},
+		},
+		newValue("created_at", `gt:2018-01-01 00:00:00`): &workflows.ListOpts{
+			CreatedAt: &workflows.ListDateFilter{
+				Filter: workflows.FilterGT,
+				Value:  time.Date(2018, time.January, 1, 0, 0, 0, 0, time.UTC),
+			},
+		},
+	} {
+		actual, _ := opts.ToWorkflowListQuery()
+		th.AssertEquals(t, expected, actual)
+	}
+}
+func newValue(param, value string) string {
+	v := url.Values{}
+	v.Add(param, value)
+	return "?" + v.Encode()
 }

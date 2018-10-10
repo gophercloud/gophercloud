@@ -37,10 +37,10 @@ Default Filter checks equality, but you can override it with provided filter typ
 Create a cron trigger. This example will start the workflow "echo" each day at 8am, and it will end after 10 executions.
 
 	createOpts := &crontriggers.CreateOpts{
-		Name:					"daily",
-		Pattern:				"0 8 * * *",
-		WorkflowName:			"echo",
-		RemainingExecutions:	10,
+		Name:                "daily",
+		Pattern:             "0 8 * * *",
+		WorkflowName:        "echo",
+		RemainingExecutions: 10,
 		WorkflowParams: map[string]interface{}{
 			"msg": "hello",
 		},

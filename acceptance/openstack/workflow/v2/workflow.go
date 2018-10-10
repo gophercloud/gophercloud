@@ -19,6 +19,9 @@ version: '2.0'
 %s:
   description: Simple workflow example
   type: direct
+  tags:
+    - tag1
+    - tag2
 
   input:
     - msg

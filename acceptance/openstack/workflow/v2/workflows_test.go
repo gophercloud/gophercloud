@@ -2,6 +2,7 @@ package v2
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
@@ -30,7 +31,14 @@ func TestWorkflowsList(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteWorkflow(t, client, workflow)
 	list, err := ListWorkflows(t, client, &workflows.ListOpts{
-		Name: workflow.Name,
+		Name: &workflows.ListFilter{
+			Value: workflow.Name,
+		},
+		Tags: []string{"tag1"},
+		CreatedAt: &workflows.ListDateFilter{
+			Filter: workflows.FilterGT,
+			Value:  time.Now().AddDate(-1, 0, 0),
+		},
 	})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 1, len(list))
