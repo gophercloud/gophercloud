@@ -13,3 +13,7 @@ func deleteURL(client *gophercloud.ServiceClient, id string) string {
 func getURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("cron_triggers", id)
 }
+
+func listURL(client *gophercloud.ServiceClient) string {
+	return client.ServiceURL("cron_triggers")
+}

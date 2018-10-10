@@ -21,13 +21,15 @@ func TestCreateWorkflow(t *testing.T) {
 	definition := `---
 version: '2.0'
 
-simple_echo:
+workflow_echo:
 	description: Simple workflow example
 	type: direct
+	input:
+		- msg
 
 	tasks:
-	test:
-		action: std.echo output="Hello World!"`
+		test:
+        	action: std.echo output="<% $.msg %>"`
 
 	th.Mux.HandleFunc("/workflows", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
@@ -45,15 +47,16 @@ simple_echo:
 		fmt.Fprintf(w, `{
 			"workflows": [
 				{
-					"created_at": "1970-01-01 00:00:00",
-					"definition": "Workflow Definition in Mistral DSL v2",
-					"id": "1",
-					"input": "param1, param2",
-					"name": "flow",
+					"created_at": "2018-09-12 15:48:17",
+					"definition": "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<%% $.msg %%>\"",
+					"id": "604a3a1e-94e3-4066-a34a-aa56873ef236",
+					"input": "msg",
+					"name": "workflow_echo",
 					"namespace": "some-namespace",
-					"project_id": "p1",
+					"project_id": "778c0f25df0d492a9a868ee9e2fbb513",
 					"scope": "private",
-					"updated_at": "1970-01-01 00:00:00"
+					"tags": [],
+					"updated_at": "2018-09-12 15:48:17"
 				}
 			]
 		}`)
@@ -70,17 +73,18 @@ simple_echo:
 		t.Fatalf("Unable to create workflow: %v", err)
 	}
 
-	updated := time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
+	updated := time.Date(2018, time.September, 12, 15, 48, 17, 0, time.UTC)
 	expected := []workflows.Workflow{
 		workflows.Workflow{
-			ID:         "1",
-			Definition: "Workflow Definition in Mistral DSL v2",
-			Name:       "flow",
+			ID:         "604a3a1e-94e3-4066-a34a-aa56873ef236",
+			Definition: "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<% $.msg %>\"",
+			Name:       "workflow_echo",
 			Namespace:  "some-namespace",
-			Input:      "param1, param2",
-			ProjectID:  "p1",
+			Input:      "msg",
+			ProjectID:  "778c0f25df0d492a9a868ee9e2fbb513",
 			Scope:      "private",
-			CreatedAt:  time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+			Tags:       []string{},
+			CreatedAt:  time.Date(2018, time.September, 12, 15, 48, 17, 0, time.UTC),
 			UpdatedAt:  &updated,
 		},
 	}
@@ -94,14 +98,14 @@ func TestDeleteWorkflow(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/workflows/1", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/workflows/604a3a1e-94e3-4066-a34a-aa56873ef236", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
 		w.WriteHeader(http.StatusAccepted)
 	})
 
-	res := workflows.Delete(fake.ServiceClient(), "1")
+	res := workflows.Delete(fake.ServiceClient(), "604a3a1e-94e3-4066-a34a-aa56873ef236")
 	th.AssertNoErr(t, res.Err)
 }
 
@@ -114,15 +118,16 @@ func TestGetWorkflow(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `
 			{
-				"created_at": "1970-01-01 00:00:00",
-				"definition": "Workflow Definition in Mistral DSL v2",
-				"id": "1",
-				"input": "param1, param2",
-				"name": "flow",
+				"created_at": "2018-09-12 15:48:17",
+				"definition": "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<%% $.msg %%>\"",
+				"id": "604a3a1e-94e3-4066-a34a-aa56873ef236",
+				"input": "msg",
+				"name": "workflow_echo",
 				"namespace": "some-namespace",
-				"project_id": "p1",
+				"project_id": "778c0f25df0d492a9a868ee9e2fbb513",
 				"scope": "private",
-				"updated_at": "1970-01-01 00:00:00"
+				"tags": [],
+				"updated_at": "2018-09-12 15:48:17"
 			}
 		`)
 	})
@@ -131,16 +136,17 @@ func TestGetWorkflow(t *testing.T) {
 		t.Fatalf("Unable to get workflow: %v", err)
 	}
 
-	updated := time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
+	updated := time.Date(2018, time.September, 12, 15, 48, 17, 0, time.UTC)
 	expected := &workflows.Workflow{
-		ID:         "1",
-		Definition: "Workflow Definition in Mistral DSL v2",
-		Name:       "flow",
+		ID:         "604a3a1e-94e3-4066-a34a-aa56873ef236",
+		Definition: "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<% $.msg %>\"",
+		Name:       "workflow_echo",
 		Namespace:  "some-namespace",
-		Input:      "param1, param2",
-		ProjectID:  "p1",
+		Input:      "msg",
+		ProjectID:  "778c0f25df0d492a9a868ee9e2fbb513",
 		Scope:      "private",
-		CreatedAt:  time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+		Tags:       []string{},
+		CreatedAt:  time.Date(2018, time.September, 12, 15, 48, 17, 0, time.UTC),
 		UpdatedAt:  &updated,
 	}
 	if !reflect.DeepEqual(expected, actual) {
@@ -160,22 +166,23 @@ func TestListWorkflows(t *testing.T) {
 		switch marker {
 		case "":
 			fmt.Fprintf(w, `{
-				"next": "%s/workflows?marker=1",
+				"next": "%s/workflows?marker=604a3a1e-94e3-4066-a34a-aa56873ef236",
 				"workflows": [
 					{
-						"created_at": "1970-01-01 00:00:00",
-						"definition": "Workflow Definition in Mistral DSL v2",
-						"id": "1",
-						"input": "param1, param2",
-						"name": "flow",
+						"created_at": "2018-09-12 15:48:17",
+						"definition": "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<%% $.msg %%>\"",
+						"id": "604a3a1e-94e3-4066-a34a-aa56873ef236",
+						"input": "msg",
+						"name": "workflow_echo",
 						"namespace": "some-namespace",
-						"project_id": "p1",
+						"project_id": "778c0f25df0d492a9a868ee9e2fbb513",
 						"scope": "private",
-						"updated_at": "1970-01-01 00:00:00"
+						"tags": [],
+						"updated_at": "2018-09-12 15:48:17"
 					}
 				]
 			}`, th.Server.URL)
-		case "1":
+		case "604a3a1e-94e3-4066-a34a-aa56873ef236":
 			fmt.Fprintf(w, `{ "workflows": [] }`)
 		default:
 			t.Fatalf("Unexpected marker: [%s]", marker)
@@ -189,10 +196,23 @@ func TestListWorkflows(t *testing.T) {
 		if err != nil {
 			return false, err
 		}
-		updated := time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
+
+		updated := time.Date(2018, time.September, 12, 15, 48, 17, 0, time.UTC)
 		expected := []workflows.Workflow{
-			{ID: "1", Definition: "Workflow Definition in Mistral DSL v2", Name: "flow", Namespace: "some-namespace", Input: "param1, param2", ProjectID: "p1", Scope: "private", CreatedAt: time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC), UpdatedAt: &updated},
+			workflows.Workflow{
+				ID:         "604a3a1e-94e3-4066-a34a-aa56873ef236",
+				Definition: "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<% $.msg %>\"",
+				Name:       "workflow_echo",
+				Namespace:  "some-namespace",
+				Input:      "msg",
+				ProjectID:  "778c0f25df0d492a9a868ee9e2fbb513",
+				Scope:      "private",
+				Tags:       []string{},
+				CreatedAt:  time.Date(2018, time.September, 12, 15, 48, 17, 0, time.UTC),
+				UpdatedAt:  &updated,
+			},
 		}
+
 		if !reflect.DeepEqual(expected, actual) {
 			t.Errorf("Expected %#v, but was %#v", expected, actual)
 		}

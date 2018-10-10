@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 type commonResult struct {
@@ -107,13 +108,49 @@ func (r *CronTrigger) UnmarshalJSON(b []byte) error {
 		r.NextExecutionTime = &t
 	}
 
-	if err := json.Unmarshal([]byte(s.WorkflowInput), &r.WorkflowInput); err != nil {
-		return err
+	if s.WorkflowInput != "" {
+		if err := json.Unmarshal([]byte(s.WorkflowInput), &r.WorkflowInput); err != nil {
+			return err
+		}
 	}
 
-	if err := json.Unmarshal([]byte(s.WorkflowParams), &r.WorkflowParams); err != nil {
-		return err
+	if s.WorkflowParams != "" {
+		if err := json.Unmarshal([]byte(s.WorkflowParams), &r.WorkflowParams); err != nil {
+			return err
+		}
 	}
 
 	return nil
+}
+
+// CronTriggerPage contains a single page of all cron triggers from a List call.
+type CronTriggerPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty checks if an CronTriggerPage contains any results.
+func (r CronTriggerPage) IsEmpty() (bool, error) {
+	exec, err := ExtractCronTriggers(r)
+	return len(exec) == 0, err
+}
+
+// NextPageURL finds the next page URL in a page in order to navigate to the next page of results.
+func (r CronTriggerPage) NextPageURL() (string, error) {
+	var s struct {
+		Next string `json:"next"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return s.Next, nil
+}
+
+// ExtractCronTriggers get the list of cron triggers from a page acquired from the List call.
+func ExtractCronTriggers(r pagination.Page) ([]CronTrigger, error) {
+	var s struct {
+		CronTriggers []CronTrigger `json:"cron_triggers"`
+	}
+	err := (r.(CronTriggerPage)).ExtractInto(&s)
+	return s.CronTriggers, err
 }
