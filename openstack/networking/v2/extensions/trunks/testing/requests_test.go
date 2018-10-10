@@ -139,3 +139,24 @@ func TestList(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/trunks/f6a9718c-5a64-43e3-944f-4deccad8e78c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, GetResponse)
+	})
+
+	n, err := trunks.Get(fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c").Extract()
+	th.AssertNoErr(t, err)
+	expectedTrunks, err := ExpectedTrunkSlice()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &expectedTrunks[1], n)
+}

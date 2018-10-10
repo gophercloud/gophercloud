@@ -56,6 +56,11 @@ func TestTrunkCRUD(t *testing.T) {
 	}
 	defer DeleteTrunk(t, client, trunk.ID)
 
+	_, err = trunks.Get(client, trunk.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get trunk: %v", err)
+	}
+
 	tools.PrintResource(t, trunk)
 }
 
