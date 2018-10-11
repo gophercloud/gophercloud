@@ -92,7 +92,7 @@ type ListOptsBuilder interface {
 // ListOpts filters the result returned by the List() function.
 type ListOpts struct {
 	// WorkflowName allows to filter by workflow name.
-	WorkflowName string `q:"workflow_name"`
+	WorkflowName *ListFilter `q:"-"`
 	// WorkflowID allows to filter by workflow id.
 	WorkflowID string `q:"workflow_id"`
 	// WorkflowInput allows to filter by specific workflow inputs.
@@ -220,6 +220,7 @@ func (opts ListOpts) ToCronTriggerListQuery() (string, error) {
 	}
 
 	for queryParam, value := range map[string]fmt.Stringer{
+		"workflow_name":        opts.WorkflowName,
 		"name":                 opts.Name,
 		"pattern":              opts.Pattern,
 		"remaining_executions": opts.RemainingExecutions,
