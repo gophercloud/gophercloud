@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/trunks"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestTrunkCRUD(t *testing.T) {
@@ -73,6 +74,14 @@ func TestTrunkCRUD(t *testing.T) {
 	if trunk.Name == updatedTrunk.Name {
 		t.Fatalf("Trunk name was not updated correctly")
 	}
+
+	// Get subports
+	subports, err := trunks.GetSubports(client, trunk.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to get subports from the Trunk: %v", err)
+	}
+	th.AssertDeepEquals(t, trunk.Subports[0], subports[0])
+	th.AssertDeepEquals(t, trunk.Subports[1], subports[1])
 
 	tools.PrintResource(t, trunk)
 }

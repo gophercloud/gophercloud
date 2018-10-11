@@ -95,5 +95,11 @@ Example of updating a Trunk
 		log.Fatal(err)
 	}
 	fmt.Printf("%+v\n", trunk)
+
+Example of showing subports of a Trunk
+
+	trunkID := "c36e7f2e-0c53-4742-8696-aee77c9df159"
+	subports, err := trunks.GetSubports(client, trunkID).Extract()
+	fmt.Printf("%+v\n", subports)
 */
 package trunks

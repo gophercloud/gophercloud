@@ -134,3 +134,10 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 	})
 	return
 }
+
+func GetSubports(c *gophercloud.ServiceClient, id string) (r GetSubportsResult) {
+	_, r.Err = c.Get(getSubportsURL(c, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

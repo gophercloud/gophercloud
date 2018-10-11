@@ -41,6 +41,12 @@ type UpdateResult struct {
 	commonResult
 }
 
+// GetSubportsResult is the result of a Get request on the trunks subports
+// resource. Call its Extract method to interpret it as a slice of Subport.
+type GetSubportsResult struct {
+	commonResult
+}
+
 type Trunk struct {
 	// Indicates whether the trunk is currently operational. Possible values include
 	// `ACTIVE', `DOWN', `BUILD', 'DEGRADED' or `ERROR'.
@@ -109,4 +115,12 @@ func ExtractTrunks(page pagination.Page) ([]Trunk, error) {
 	}
 	err := (page.(TrunkPage)).ExtractInto(&a)
 	return a.Trunks, err
+}
+
+func (r GetSubportsResult) Extract() ([]Subport, error) {
+	var s struct {
+		Subports []Subport `json:"sub_ports"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Subports, err
 }
