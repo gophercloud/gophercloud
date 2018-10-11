@@ -210,6 +210,22 @@ const UpdateResponse = `
   }
 }`
 
+const ListSubportsResponse = `
+{
+  "sub_ports": [
+    {
+      "port_id": "28e452d7-4f8a-4be4-b1e6-7f3db4c0430b",
+      "segmentation_id": 1,
+      "segmentation_type": "vlan"
+    },
+    {
+      "port_id": "4c8b2bff-9824-4d4c-9b60-b3f6621b2bab",
+      "segmentation_id": 2,
+      "segmentation_type": "vlan"
+    }
+  ]
+}`
+
 var ExpectedSubports = []trunks.Subport{
 	{
 		PortID:           "28e452d7-4f8a-4be4-b1e6-7f3db4c0430b",
