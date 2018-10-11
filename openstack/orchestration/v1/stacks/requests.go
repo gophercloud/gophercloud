@@ -261,7 +261,7 @@ func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) 
 
 // Find retrieves a stack based on the stack name or stack ID.
 func Find(c *gophercloud.ServiceClient, stackIdentity string) (r GetResult) {
-	_, r.Err =  c.Get(findURL(c, stackIdentity), &r.Body, nil)
+	_, r.Err = c.Get(findURL(c, stackIdentity), &r.Body, nil)
 	return
 }
 
