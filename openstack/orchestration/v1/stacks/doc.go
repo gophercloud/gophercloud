@@ -111,6 +111,18 @@ Example for Get Stack
     }
     fmt.Println("Get Stack: Name: ", stack.Name, ", ID: ", stack.ID, ", Status: ", stack.Status)
 
+Example for Find Stack
+
+	find_result  := stacks.Find(client, stackIdentity)
+	if find_result.Err != nil {
+		panic(find_result.Err)
+	}
+	stack, err := find_result.Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Find Stack: Name: ", stack.Name, ", ID: ", stack.ID, ", Status: ", stack.Status)
+
 Example for Delete Stack
 
     del_r := stacks.Delete(client, stackName, created_stack.ID)

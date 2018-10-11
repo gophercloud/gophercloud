@@ -259,6 +259,12 @@ func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) 
 	return
 }
 
+// Find retrieves a stack based on the stack name or stack ID.
+func Find(c *gophercloud.ServiceClient, stackIdentity string) (r GetResult) {
+	_, r.Err =  c.Get(findURL(c, stackIdentity), &r.Body, nil)
+	return
+}
+
 // UpdateOptsBuilder is the interface options structs have to satisfy in order
 // to be used in the Update operation in this package.
 type UpdateOptsBuilder interface {

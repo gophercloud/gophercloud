@@ -223,6 +223,18 @@ func HandleGetSuccessfully(t *testing.T, output string) {
 	})
 }
 
+func HandleFindSuccessfully(t *testing.T, output string) {
+	th.Mux.HandleFunc("/stacks/16ef0584-4458-41eb-87c8-0dc8d5f66c87", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, output)
+	})
+}
+
 // HandleUpdateSuccessfully creates an HTTP handler at `/stacks/postman_stack/16ef0584-4458-41eb-87c8-0dc8d5f66c87`
 // on the test handler mux that responds with an `Update` response.
 func HandleUpdateSuccessfully(t *testing.T) {
