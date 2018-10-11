@@ -61,6 +61,19 @@ func TestTrunkCRUD(t *testing.T) {
 		t.Fatalf("Unable to get trunk: %v", err)
 	}
 
+	// Update Trunk
+	updateOpts := trunks.UpdateOpts{
+		Name: "updated_gophertrunk",
+	}
+	updatedTrunk, err := trunks.Update(client, trunk.ID, updateOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update trunk: %v", err)
+	}
+
+	if trunk.Name == updatedTrunk.Name {
+		t.Fatalf("Trunk name was not updated correctly")
+	}
+
 	tools.PrintResource(t, trunk)
 }
 

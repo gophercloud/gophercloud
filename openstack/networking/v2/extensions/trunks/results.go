@@ -35,6 +35,12 @@ type GetResult struct {
 	commonResult
 }
 
+// UpdateResult is the result of an Update request. Call its Extract method to
+// interpret it as a Trunk.
+type UpdateResult struct {
+	commonResult
+}
+
 type Trunk struct {
 	// Indicates whether the trunk is currently operational. Possible values include
 	// `ACTIVE', `DOWN', `BUILD', 'DEGRADED' or `ERROR'.

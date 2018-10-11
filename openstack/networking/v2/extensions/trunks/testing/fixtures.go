@@ -171,6 +171,45 @@ const GetResponse = `
   }
 }`
 
+const UpdateRequest = `
+{
+  "trunk": {
+    "admin_state_up": false,
+    "description": "gophertrunk updated by gophercloud",
+    "name": "updated_gophertrunk"
+  }
+}`
+
+const UpdateResponse = `
+{
+  "trunk": {
+    "admin_state_up": false,
+    "created_at": "2018-10-03T13:57:24Z",
+    "description": "gophertrunk updated by gophercloud",
+    "id": "f6a9718c-5a64-43e3-944f-4deccad8e78c",
+    "name": "updated_gophertrunk",
+    "port_id": "c373d2fa-3d3b-4492-924c-aff54dea19b6",
+    "project_id": "e153f3f9082240a5974f667cfe1036e3",
+    "revision_number": 6,
+    "status": "ACTIVE",
+    "sub_ports": [
+      {
+        "port_id": "28e452d7-4f8a-4be4-b1e6-7f3db4c0430b",
+        "segmentation_id": 1,
+        "segmentation_type": "vlan"
+      },
+      {
+        "port_id": "4c8b2bff-9824-4d4c-9b60-b3f6621b2bab",
+        "segmentation_id": 2,
+        "segmentation_type": "vlan"
+      }
+    ],
+    "tags": [],
+    "tenant_id": "e153f3f9082240a5974f667cfe1036e3",
+    "updated_at": "2018-10-03T13:57:33Z"
+  }
+}`
+
 var ExpectedSubports = []trunks.Subport{
 	{
 		PortID:           "28e452d7-4f8a-4be4-b1e6-7f3db4c0430b",
