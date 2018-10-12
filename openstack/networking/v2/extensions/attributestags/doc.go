@@ -21,5 +21,10 @@ Example to List all Resource Tags
 Example to Delete all Resource Tags
 
 	err = attributestags.DeleteAll(conn, "networks", network.ID).ExtractErr()
+
+Example to Add a tag to a Resource
+
+    err = attributestags.Add(client, "networks", network.ID, "atag").ExtractErr()
+
 */
 package attributestags

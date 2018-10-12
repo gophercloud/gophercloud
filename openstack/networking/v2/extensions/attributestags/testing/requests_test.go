@@ -71,3 +71,19 @@ func TestDeleteAll(t *testing.T) {
 	err := attributestags.DeleteAll(fake.ServiceClient(), "networks", "fakeid").ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestAdd(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks/fakeid/tags/atag", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+	})
+
+	err := attributestags.Add(fake.ServiceClient(), "networks", "fakeid", "atag").ExtractErr()
+	th.AssertNoErr(t, err)
+}
