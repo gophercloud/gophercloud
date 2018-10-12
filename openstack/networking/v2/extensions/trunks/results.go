@@ -8,9 +8,9 @@ import (
 )
 
 type Subport struct {
-	SegmentationID   int    `json:"segmentation_id"`
-	SegmentationType string `json:"segmentation_type"`
-	PortID           string `json:"port_id"`
+	SegmentationID   int    `json:"segmentation_id" required:"true"`
+	SegmentationType string `json:"segmentation_type" required:"true"`
+	PortID           string `json:"port_id" required:"true"`
 }
 
 type commonResult struct {

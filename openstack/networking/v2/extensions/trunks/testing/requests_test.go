@@ -214,3 +214,33 @@ func TestGetSubports(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedSubports, subports)
 }
+
+func TestMissingFields(t *testing.T) {
+	iTrue := true
+	opts := trunks.CreateOpts{
+		Name:         "gophertrunk",
+		PortID:       "c373d2fa-3d3b-4492-924c-aff54dea19b6",
+		Description:  "Trunk created by gophercloud",
+		AdminStateUp: &iTrue,
+		Subports: []trunks.Subport{
+			{
+				SegmentationID:   1,
+				SegmentationType: "vlan",
+				PortID:           "28e452d7-4f8a-4be4-b1e6-7f3db4c0430b",
+			},
+			{
+				SegmentationID:   2,
+				SegmentationType: "vlan",
+				PortID:           "4c8b2bff-9824-4d4c-9b60-b3f6621b2bab",
+			},
+			{
+				PortID: "4c8b2bff-9824-4d4c-9b60-b3f6621b2bab",
+			},
+		},
+	}
+
+	_, err := opts.ToTrunkCreateMap()
+	if err == nil {
+		t.Fatalf("Failed to detect missing subport fields")
+	}
+}
