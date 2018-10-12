@@ -26,5 +26,8 @@ Example to Add a tag to a Resource
 
     err = attributestags.Add(client, "networks", network.ID, "atag").ExtractErr()
 
+Example to Delete a tag from a Resource
+
+    err = attributestags.Delete(client, "networks", network.ID, "atag").ExtractErr()
 */
 package attributestags
