@@ -13,3 +13,7 @@ func replaceURL(c *gophercloud.ServiceClient, r_type string, id string) string {
 func listURL(c *gophercloud.ServiceClient, r_type string, id string) string {
 	return c.ServiceURL(r_type, id, tagsPath)
 }
+
+func deleteAllURL(c *gophercloud.ServiceClient, r_type string, id string) string {
+	return c.ServiceURL(r_type, id, tagsPath)
+}
