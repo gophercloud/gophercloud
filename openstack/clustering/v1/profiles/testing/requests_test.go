@@ -107,3 +107,34 @@ func TestDeleteProfile(t *testing.T) {
 	deleteResult := profiles.Delete(fake.ServiceClient(), "6dc6d336e3fc4c0a951b5698cd1236ee")
 	th.AssertNoErr(t, deleteResult.ExtractErr())
 }
+
+func TestValidateProfile(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleValidateSuccessfully(t)
+
+	validateOpts := profiles.ValidateOpts{
+		Spec: profiles.Spec{
+			Properties: map[string]interface{}{
+				"flavor":   "t2.micro",
+				"image":    "cirros-0.3.4-x86_64-uec",
+				"key_name": "oskey",
+				"name":     "cirros_server",
+				"networks": []interface{}{
+					map[string]interface{}{"network": "private"},
+				},
+			},
+			Type:    "os.nova.server",
+			Version: "1.0",
+		},
+	}
+
+	client := fake.ServiceClient()
+	client.Microversion = "1.2"
+	client.Type = "clustering"
+
+	profile, err := profiles.Validate(client, validateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedValidate, *profile)
+}

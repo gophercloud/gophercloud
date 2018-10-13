@@ -47,3 +47,30 @@ func TestProfilesCRUD(t *testing.T) {
 	tools.PrintResource(t, newProfile)
 	tools.PrintResource(t, newProfile.UpdatedAt)
 }
+
+func TestProfileValidate(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.2"
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	opts := profiles.ValidateOpts{
+		Spec: profile.Spec,
+	}
+	validatedProfile, err := profiles.Validate(client, opts).Extract()
+	th.AssertNoErr(t, err)
+
+	// Do not validate the following fields for AssertDeepEquals() because the actual fields are either missing or hardcoded.
+	profile.CreatedAt = validatedProfile.CreatedAt
+	profile.Domain = validatedProfile.Domain
+	profile.ID = validatedProfile.ID
+	profile.Metadata = validatedProfile.Metadata
+	profile.Name = "validated_profile"
+	profile.UpdatedAt = validatedProfile.UpdatedAt
+
+	th.AssertDeepEquals(t, validatedProfile, profile)
+	tools.PrintResource(t, validatedProfile)
+}
