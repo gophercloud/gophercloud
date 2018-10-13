@@ -6,9 +6,8 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/openstack/clustering/v1/webhooks"
-
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/nodes"
+	"github.com/gophercloud/gophercloud/openstack/clustering/v1/webhooks"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 

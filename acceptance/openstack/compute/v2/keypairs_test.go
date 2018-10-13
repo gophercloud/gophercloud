@@ -5,13 +5,12 @@ package v2
 import (
 	"testing"
 
-	"golang.org/x/crypto/ssh"
-
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/keypairs"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/testhelper"
+	"golang.org/x/crypto/ssh"
 )
 
 const keyName = "gophercloud_test_key_pair"
