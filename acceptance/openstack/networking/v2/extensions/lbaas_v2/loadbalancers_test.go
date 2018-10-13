@@ -101,7 +101,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	newWeight := tools.RandomInt(11, 100)
 	updateMemberOpts := pools.UpdateMemberOpts{
-		Weight: newWeight,
+		Weight: &newWeight,
 	}
 	_, err = pools.UpdateMember(client, pool.ID, member.ID, updateMemberOpts).Extract()
 	th.AssertNoErr(t, err)
