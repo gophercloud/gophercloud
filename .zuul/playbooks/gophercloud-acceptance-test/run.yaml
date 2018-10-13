@@ -7,8 +7,8 @@
       enable_services:
         - 'manila'
         - 'designate'
-        - 'zun'
         - 'octavia'
+        #- 'zun'
     - install-devstack
   tasks:
     - name: Run acceptance tests with gophercloud
