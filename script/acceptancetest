@@ -84,10 +84,10 @@ if [[ $? != 0 ]]; then
 fi
 
 # Container v1
-go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/container/v1/
-if [[ $? != 0 ]]; then
-  failed=1
-fi
+#go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/container/v1/
+#if [[ $? != 0 ]]; then
+#  failed=1
+#fi
 
 # Image Service v2
 go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/imageservice/v2/
