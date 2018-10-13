@@ -217,7 +217,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	newWeight := tools.RandomInt(11, 100)
 	updateMemberOpts := pools.UpdateMemberOpts{
-		Weight: newWeight,
+		Weight: &newWeight,
 	}
 	_, err = pools.UpdateMember(lbClient, pool.ID, member.ID, updateMemberOpts).Extract()
 	if err != nil {
@@ -239,7 +239,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	memberOpts := pools.BatchUpdateMemberOpts{
 		Address:      member.Address,
 		ProtocolPort: member.ProtocolPort,
-		Weight:       newWeight,
+		Weight:       &newWeight,
 	}
 	batchMembers := []pools.BatchUpdateMemberOpts{memberOpts}
 	if err := pools.BatchUpdateMembers(lbClient, pool.ID, batchMembers).ExtractErr(); err != nil {
@@ -383,7 +383,7 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 
 	newWeight := tools.RandomInt(11, 100)
 	updateMemberOpts := pools.UpdateMemberOpts{
-		Weight: newWeight,
+		Weight: &newWeight,
 	}
 	_, err = pools.UpdateMember(lbClient, pool.ID, member.ID, updateMemberOpts).Extract()
 	if err != nil {
