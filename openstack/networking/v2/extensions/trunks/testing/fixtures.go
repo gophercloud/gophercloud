@@ -226,6 +226,36 @@ const ListSubportsResponse = `
   ]
 }`
 
+const AddSubportsRequest = ListSubportsResponse
+
+const AddSubportsResponse = `
+{
+  "admin_state_up": true,
+  "created_at": "2018-10-03T13:57:24Z",
+  "description": "Trunk created by gophercloud",
+  "id": "f6a9718c-5a64-43e3-944f-4deccad8e78c",
+  "name": "gophertrunk",
+  "port_id": "c373d2fa-3d3b-4492-924c-aff54dea19b6",
+  "project_id": "e153f3f9082240a5974f667cfe1036e3",
+  "revision_number": 2,
+  "status": "ACTIVE",
+  "sub_ports": [
+    {
+      "port_id": "28e452d7-4f8a-4be4-b1e6-7f3db4c0430b",
+      "segmentation_id": 1,
+      "segmentation_type": "vlan"
+    },
+    {
+      "port_id": "4c8b2bff-9824-4d4c-9b60-b3f6621b2bab",
+      "segmentation_id": 2,
+      "segmentation_type": "vlan"
+    }
+  ],
+  "tags": [],
+  "tenant_id": "e153f3f9082240a5974f667cfe1036e3",
+  "updated_at": "2018-10-03T13:57:30Z"
+}`
+
 var ExpectedSubports = []trunks.Subport{
 	{
 		PortID:           "28e452d7-4f8a-4be4-b1e6-7f3db4c0430b",
@@ -296,5 +326,17 @@ func ExpectedTrunkSlice() (exp []trunks.Trunk, err error) {
 		CreatedAt:      trunk2CreatedAt,
 		UpdatedAt:      trunk2UpdatedAt,
 	}
+	return
+}
+
+func ExpectedSubportsAddedTrunk() (exp trunks.Trunk, err error) {
+	trunkUpdatedAt, err := time.Parse(time.RFC3339, "2018-10-03T13:57:30Z")
+	expectedTrunks, err := ExpectedTrunkSlice()
+	if err != nil {
+		return
+	}
+	exp = expectedTrunks[1]
+	exp.RevisionNumber += 1
+	exp.UpdatedAt = trunkUpdatedAt
 	return
 }
