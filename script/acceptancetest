@@ -36,10 +36,10 @@ fi
 
 # Networking v2 - networkipavailabilities
 # requires bug fix
-#go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/networking/v2/extensions/networkipavailabilities
-#if [[ $? != 0 ]]; then
-#  failed=1
-#fi
+go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/networking/v2/extensions/networkipavailabilities
+if [[ $? != 0 ]]; then
+  failed=1
+fi
 
 # Networking v2 - portsbinding
 go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/networking/v2/extensions/portsbinding

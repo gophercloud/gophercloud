@@ -22,6 +22,10 @@ func TestNetworkIPAvailabilityList(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	for _, availability := range allAvailabilities {
-		tools.PrintResource(t, availability)
+		for _, subnet := range availability.SubnetIPAvailabilities {
+			tools.PrintResource(t, subnet)
+			tools.PrintResource(t, subnet.TotalIPs)
+			tools.PrintResource(t, subnet.UsedIPs)
+		}
 	}
 }

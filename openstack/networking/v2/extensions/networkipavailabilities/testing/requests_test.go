@@ -28,7 +28,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	networkipavailabilities.List(fake.ServiceClient(), networkipavailabilities.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := networkipavailabilities.List(fake.ServiceClient(), networkipavailabilities.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := networkipavailabilities.ExtractNetworkIPAvailabilities(page)
 		if err != nil {
@@ -45,6 +45,8 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
@@ -72,16 +74,16 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, s.NetworkName, "public")
 	th.AssertEquals(t, s.ProjectID, "424e7cf0243c468ca61732ba45973b3e")
 	th.AssertEquals(t, s.TenantID, "424e7cf0243c468ca61732ba45973b3e")
-	th.AssertEquals(t, s.TotalIPs, 253)
-	th.AssertEquals(t, s.UsedIPs, 3)
+	th.AssertEquals(t, s.TotalIPs, "253")
+	th.AssertEquals(t, s.UsedIPs, "3")
 	th.AssertDeepEquals(t, s.SubnetIPAvailabilities, []networkipavailabilities.SubnetIPAvailability{
 		{
 			SubnetID:   "4afe6e5f-9649-40db-b18f-64c7ead942bd",
 			SubnetName: "public-subnet",
 			CIDR:       "203.0.113.0/24",
 			IPVersion:  int(gophercloud.IPv4),
-			TotalIPs:   253,
-			UsedIPs:    3,
+			TotalIPs:   "253",
+			UsedIPs:    "3",
 		},
 	})
 }
