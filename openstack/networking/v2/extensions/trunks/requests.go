@@ -165,3 +165,31 @@ func AddSubports(c *gophercloud.ServiceClient, id string, opts AddSubportsOptsBu
 	})
 	return
 }
+
+type RemoveSubport struct {
+	PortID string `json:"port_id" required:"true"`
+}
+
+type RemoveSubportsOpts struct {
+	Subports []RemoveSubport `json:"sub_ports"`
+}
+
+type RemoveSubportsOptsBuilder interface {
+	ToTrunkRemoveSubportsMap() (map[string]interface{}, error)
+}
+
+func (opts RemoveSubportsOpts) ToTrunkRemoveSubportsMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+func RemoveSubports(c *gophercloud.ServiceClient, id string, opts RemoveSubportsOptsBuilder) (r UpdateSubportsResult) {
+	body, err := opts.ToTrunkRemoveSubportsMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(removeSubportsURL(c, id), body, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
