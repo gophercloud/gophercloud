@@ -256,6 +256,12 @@ func TestToExecutionListQuery(t *testing.T) {
 				Value:  "not_name",
 			},
 		},
+		newValue("workflow_name", `eq:workflow`): &crontriggers.ListOpts{
+			WorkflowName: &crontriggers.ListFilter{
+				Filter: crontriggers.FilterEQ,
+				Value:  "workflow",
+			},
+		},
 		newValue("created_at", `gt:2018-01-01 00:00:00`): &crontriggers.ListOpts{
 			CreatedAt: &crontriggers.ListDateFilter{
 				Filter: crontriggers.FilterGT,
