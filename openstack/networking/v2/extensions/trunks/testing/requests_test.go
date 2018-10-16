@@ -272,3 +272,34 @@ func TestAddSubports(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &expectedTrunk, trunk)
 }
+
+func TestRemoveSubports(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/trunks/f6a9718c-5a64-43e3-944f-4deccad8e78c/remove_subports", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, RemoveSubportsRequest)
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, RemoveSubportsResponse)
+	})
+
+	client := fake.ServiceClient()
+
+	opts := trunks.RemoveSubportsOpts{
+		Subports: []trunks.RemoveSubport{
+			{PortID: "28e452d7-4f8a-4be4-b1e6-7f3db4c0430b"},
+			{PortID: "4c8b2bff-9824-4d4c-9b60-b3f6621b2bab"},
+		},
+	}
+	trunk, err := trunks.RemoveSubports(client, "f6a9718c-5a64-43e3-944f-4deccad8e78c", opts).Extract()
+
+	th.AssertNoErr(t, err)
+	expectedTrunk, err := ExpectedSubportsRemovedTrunk()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &expectedTrunk, trunk)
+}

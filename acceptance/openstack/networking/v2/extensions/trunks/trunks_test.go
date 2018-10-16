@@ -174,4 +174,17 @@ func TestTrunkSubportOperation(t *testing.T) {
 	th.AssertEquals(t, 2, len(updatedTrunk.Subports))
 	th.AssertDeepEquals(t, addSubportsOpts.Subports[0], updatedTrunk.Subports[0])
 	th.AssertDeepEquals(t, addSubportsOpts.Subports[1], updatedTrunk.Subports[1])
+
+	// Remove the Subports from the trunk
+	subRemoveOpts := trunks.RemoveSubportsOpts{
+		Subports: []trunks.RemoveSubport{
+			{PortID: subport1.ID},
+			{PortID: subport2.ID},
+		},
+	}
+	updatedAgainTrunk, err := trunks.RemoveSubports(client, trunk.ID, subRemoveOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to remove subports from the Trunk: %v", err)
+	}
+	th.AssertDeepEquals(t, trunk.Subports, updatedAgainTrunk.Subports)
 }
