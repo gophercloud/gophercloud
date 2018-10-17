@@ -183,28 +183,19 @@ func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status 
 // CreateQuota will create a random quota. An error will be returned if the
 // quota could not be created.
 func CreateQuota(t *testing.T, client *gophercloud.ServiceClient) (*quotas.Quotas, error) {
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
-	if err != nil {
-		return nil, err
-	}
-
 	name := tools.RandomString("TESTACC-", 8)
 	t.Logf("Attempting to create quota: %s", name)
 
 	idClient, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	magnumProjectID := choices.MagnumProjectID
-	if choices.ProjectName == "" {
-		project, err := idv3.CreateProject(t, idClient, nil)
-		th.AssertNoErr(t, err)
-		defer idv3.DeleteProject(t, idClient, project.ID)
-		magnumProjectID = project.ID
-	}
+	project, err := idv3.CreateProject(t, idClient, nil)
+	th.AssertNoErr(t, err)
+	defer idv3.DeleteProject(t, idClient, project.ID)
 
 	createOpts := quotas.CreateOpts{
 		Resource:  "Cluster",
-		ProjectID: magnumProjectID,
+		ProjectID: project.ID,
 		HardLimit: 10,
 	}
 
@@ -224,7 +215,7 @@ func CreateQuota(t *testing.T, client *gophercloud.ServiceClient) (*quotas.Quota
 
 		tools.PrintResource(t, quota)
 
-		th.AssertEquals(t, magnumProjectID, quota.ProjectID)
+		th.AssertEquals(t, project.ID, quota.ProjectID)
 		th.AssertEquals(t, "Cluster", quota.Resource)
 		th.AssertEquals(t, 10, quota.HardLimit)
 	}
