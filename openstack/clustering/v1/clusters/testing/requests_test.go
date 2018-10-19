@@ -426,3 +426,17 @@ func TestLifecycle(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "2a0ff107-e789-4660-a122-3816c43af703", actionID)
 }
+
+func TestAddNodes(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleAddNodesSuccessfully(t)
+
+	opts := clusters.AddNodesOpts{
+		Nodes: []string{"node1", "node2", "node3"},
+	}
+	result, err := clusters.AddNodes(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, result, "2a0ff107-e789-4660-a122-3816c43af703")
+}
