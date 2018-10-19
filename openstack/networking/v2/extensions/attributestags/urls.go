@@ -25,3 +25,7 @@ func addURL(c *gophercloud.ServiceClient, r_type string, id string, tag string) 
 func deleteURL(c *gophercloud.ServiceClient, r_type string, id string, tag string) string {
 	return c.ServiceURL(r_type, id, tagsPath, tag)
 }
+
+func confirmURL(c *gophercloud.ServiceClient, r_type string, id string, tag string) string {
+	return c.ServiceURL(r_type, id, tagsPath, tag)
+}

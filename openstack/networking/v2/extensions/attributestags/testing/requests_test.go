@@ -103,3 +103,36 @@ func TestDelete(t *testing.T) {
 	err := attributestags.Delete(fake.ServiceClient(), "networks", "fakeid", "atag").ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestConfirmTrue(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks/fakeid/tags/atag", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	exists, err := attributestags.Confirm(fake.ServiceClient(), "networks", "fakeid", "atag").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, exists)
+}
+
+func TestConfirmFalse(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks/fakeid/tags/atag", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+	})
+
+	exists, _ := attributestags.Confirm(fake.ServiceClient(), "networks", "fakeid", "atag").Extract()
+	th.AssertEquals(t, false, exists)
+}
