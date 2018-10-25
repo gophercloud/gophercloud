@@ -130,7 +130,7 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) {
 	t.Logf("Attempting to delete volume: %s", volume.ID)
 
-	err := volumes.Delete(client, volume.ID).ExtractErr()
+	err := volumes.Delete(client, volume.ID, volumes.DeleteOpts{}).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete volume %s: %v", volume.ID, err)
 	}
