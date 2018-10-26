@@ -108,7 +108,7 @@ func TestVolumeConns(t *testing.T) {
         th.AssertNoErr(t, err)
 
         t.Logf("Deleting volume")
-        err = volumes.Delete(client, cv.ID).ExtractErr()
+        err = volumes.Delete(client, cv.ID, volumes.DeleteOpts{}).ExtractErr()
         th.AssertNoErr(t, err)
     }()
 
