@@ -29,7 +29,7 @@ func TestSchedulerHints(t *testing.T) {
 
 	err = volumes.WaitForStatus(client, volume1.ID, "available", 60)
 	th.AssertNoErr(t, err)
-	defer volumes.Delete(client, volume1.ID)
+	defer volumes.Delete(client, volume1.ID, volumes.DeleteOpts{})
 
 	volumeName = tools.RandomString("ACPTTEST", 16)
 	base := volumes.CreateOpts{
@@ -54,6 +54,6 @@ func TestSchedulerHints(t *testing.T) {
 	err = volumes.WaitForStatus(client, volume2.ID, "available", 60)
 	th.AssertNoErr(t, err)
 
-	err = volumes.Delete(client, volume2.ID).ExtractErr()
+	err = volumes.Delete(client, volume2.ID, volumes.DeleteOpts{}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
