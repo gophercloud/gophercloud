@@ -306,7 +306,7 @@ type UpdateRuleOpts struct {
 
 	// When true the logic of the rule is inverted. For example, with invert true,
 	// equal to would become not equal to. Default is false.
-	Invert bool `json:"invert,omitempty"`
+	Invert *bool `json:"invert,omitempty"`
 }
 
 // ToRuleUpdateMap builds a request body from UpdateRuleOpts.

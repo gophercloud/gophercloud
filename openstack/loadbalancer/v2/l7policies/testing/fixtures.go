@@ -76,7 +76,7 @@ var (
 		Value:        "/images*",
 		ProjectID:    "e3cd678b11784734bc366148aa37580e",
 		Key:          "",
-		Invert:       false,
+		Invert:       true,
 		AdminStateUp: true,
 	}
 	RuleHostName = l7policies.Rule{
@@ -239,7 +239,7 @@ const SingleRuleBody = `
 {
 	"rule": {
 		"compare_type": "REGEX",
-		"invert": false,
+		"invert": true,
 		"admin_state_up": true,
 		"value": "/images*",
 		"key": null,
@@ -276,7 +276,7 @@ const RulesListBody = `
 	"rules":[
 		{
             "compare_type": "REGEX",
-            "invert": false,
+            "invert": true,
             "admin_state_up": true,
             "value": "/images*",
             "key": null,
@@ -365,6 +365,7 @@ func HandleRuleUpdateSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, `{
 			"rule": {
 				"compare_type": "REGEX",
+				"invert": false,
 				"type": "PATH",
 				"value": "/images/special*"
 			}
