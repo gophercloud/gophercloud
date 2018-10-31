@@ -524,17 +524,16 @@ func CompleteLifecycle(client *gophercloud.ServiceClient, id string, opts Comple
 	return
 }
 
-func (opts AddNodesOpts) ToClusterNodeMap(nodeAction string) (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, nodeAction)
+func (opts AddNodesOpts) ToClusterAddNodeMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "add_nodes")
 }
 
-// NodeOpts params
 type AddNodesOpts struct {
 	Nodes []string `json:"nodes" required:"true"`
 }
 
 func AddNodes(client *gophercloud.ServiceClient, id string, opts AddNodesOpts) (r ActionResult) {
-	b, err := opts.ToClusterNodeMap("add_nodes")
+	b, err := opts.ToClusterAddNodeMap()
 	if err != nil {
 		r.Err = err
 		return
@@ -547,8 +546,8 @@ func AddNodes(client *gophercloud.ServiceClient, id string, opts AddNodesOpts) (
 	return
 }
 
-func (opts RemoveNodesOpts) ToClusterNodeMap(nodeAction string) (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, nodeAction)
+func (opts RemoveNodesOpts) ToClusterRemoveNodeMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "del_nodes")
 }
 
 type RemoveNodesOpts struct {
@@ -556,7 +555,7 @@ type RemoveNodesOpts struct {
 }
 
 func RemoveNodes(client *gophercloud.ServiceClient, clusterID string, opts RemoveNodesOpts) (r DeleteResult) {
-	b, err := opts.ToClusterNodeMap("del_nodes")
+	b, err := opts.ToClusterRemoveNodeMap()
 	if err != nil {
 		r.Err = err
 		return
