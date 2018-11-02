@@ -440,3 +440,14 @@ func TestAddNodes(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, result, "2a0ff107-e789-4660-a122-3816c43af703")
 }
+
+func TestRemoveNodes(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleRemoveNodesSuccessfully(t)
+	opts := clusters.RemoveNodesOpts{
+		Nodes: []string{"node1", "node2", "node3"},
+	}
+	err := clusters.RemoveNodes(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}

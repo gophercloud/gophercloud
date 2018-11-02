@@ -281,10 +281,12 @@ func TestClustersAddNode(t *testing.T) {
 
 	node1, err := CreateNode(t, client, "", profile.ID)
 	th.AssertNoErr(t, err)
+	// Even tho deleting the cluster will delete the nodes but only if added into cluster successfully.
 	defer DeleteNode(t, client, node1.ID)
 
 	node2, err := CreateNode(t, client, "", profile.ID)
 	th.AssertNoErr(t, err)
+	// Even tho deleting the cluster will delete the nodes but only if added into cluster successfully.
 	defer DeleteNode(t, client, node2.ID)
 
 	cluster, err = clusters.Get(client, cluster.ID).Extract()
@@ -315,6 +317,45 @@ func TestClustersAddNode(t *testing.T) {
 	tools.PrintResource(t, cluster.Nodes)
 
 	th.AssertDeepEquals(t, nodeIDs, cluster.Nodes)
+
+	tools.PrintResource(t, cluster)
+}
+
+func TestClustersRemoveNodeFromCluster(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, cluster)
+
+	opt := clusters.RemoveNodesOpts{Nodes: cluster.Nodes}
+	res := clusters.RemoveNodes(client, cluster.ID, opt)
+	err = res.ExtractErr()
+	th.AssertNoErr(t, err)
+
+	for _, n := range cluster.Nodes {
+		defer DeleteNode(t, client, n)
+	}
+
+	actionID, err := GetActionID(res.Header)
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	cluster, err = clusters.Get(client, cluster.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, 0, len(cluster.Nodes))
 
 	tools.PrintResource(t, cluster)
 }

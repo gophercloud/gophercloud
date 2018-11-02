@@ -235,5 +235,16 @@ Example to add nodes to a cluster
 	}
     fmt.Println("action=", actionID)
 
+Example to remove nodes from a cluster
+
+	removeNodesOpts := clusters.RemoveNodesOpts{
+		Nodes: []string{"node-123"},
+	}
+	clusterID := "b7b870e3-d3c5-4a93-b9d7-846c53b2c2da"
+	err := clusters.RemoveNodes(serviceClient, clusterID, removeNodesOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package clusters
