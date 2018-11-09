@@ -7,9 +7,11 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	idv3 "github.com/gophercloud/gophercloud/acceptance/openstack/identity/v3"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clusters"
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clustertemplates"
+	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/quotas"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -176,4 +178,47 @@ func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status 
 
 		return false, nil
 	})
+}
+
+// CreateQuota will create a random quota. An error will be returned if the
+// quota could not be created.
+func CreateQuota(t *testing.T, client *gophercloud.ServiceClient) (*quotas.Quotas, error) {
+	name := tools.RandomString("TESTACC-", 8)
+	t.Logf("Attempting to create quota: %s", name)
+
+	idClient, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	project, err := idv3.CreateProject(t, idClient, nil)
+	th.AssertNoErr(t, err)
+	defer idv3.DeleteProject(t, idClient, project.ID)
+
+	createOpts := quotas.CreateOpts{
+		Resource:  "Cluster",
+		ProjectID: project.ID,
+		HardLimit: 10,
+	}
+
+	res := quotas.Create(client, createOpts)
+	if res.Err != nil {
+		return nil, res.Err
+	}
+
+	requestID := res.Header.Get("X-OpenStack-Request-Id")
+	th.AssertEquals(t, true, requestID != "")
+
+	t.Logf("Quota %s request ID: %s", name, requestID)
+
+	quota, err := res.Extract()
+	if err == nil {
+		t.Logf("Successfully created quota: %s", quota.ProjectID)
+
+		tools.PrintResource(t, quota)
+
+		th.AssertEquals(t, project.ID, quota.ProjectID)
+		th.AssertEquals(t, "Cluster", quota.Resource)
+		th.AssertEquals(t, 10, quota.HardLimit)
+	}
+
+	return quota, err
 }
