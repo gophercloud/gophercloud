@@ -192,7 +192,7 @@ type CreateOpts struct {
 
 	// Tags allows a server to be tagged with single-word metadata.
 	// Requires microversion 2.52 or later.
-	Tags []string `json:"tags,omitempty" mv:"min:2.52"`
+	Tags []string `json:"tags,omitempty"`
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a
@@ -281,12 +281,6 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 
 // Create requests a server to be provisioned to the user in the current tenant.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
-	err := gophercloud.ValidateMicroversionRequest(client.Microversion, opts)
-	if err != nil {
-		r.Err = err
-		return
-	}
-
 	reqBody, err := opts.ToServerCreateMap()
 	if err != nil {
 		r.Err = err

@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/diskconfig"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/extendedstatus"
@@ -576,13 +575,4 @@ func TestCreateServerWithTags(t *testing.T) {
 	actualTags, err := res.ExtractTags()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, tags, actualTags)
-
-	c.Microversion = "2.48"
-	_, err = servers.Create(c, createOpts).Extract()
-	expectedErr := gophercloud.ErrMicroversionIncompatible{
-		Microversion: "2.48",
-		Resource:     "Tags",
-	}
-
-	th.AssertEquals(t, err, expectedErr)
 }
