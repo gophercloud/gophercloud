@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"reflect"
 	"sync"
 	"testing"
 	"time"
@@ -125,12 +124,33 @@ func TestConcurrentReauth(t *testing.T) {
 }
 
 func TestReauthEndLoop(t *testing.T) {
+	var info = struct {
+		reauthAttempts   int
+		maxReauthReached bool
+		mut              *sync.RWMutex
+	}{
+		0,
+		false,
+		new(sync.RWMutex),
+	}
+
+	numconc := 20
 
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
 	p.SetToken(client.TokenID)
 	p.ReauthFunc = func() error {
-		// Reauth func is working and returns no error
+		info.mut.Lock()
+		defer info.mut.Unlock()
+
+		if info.reauthAttempts > 5 {
+			info.maxReauthReached = true
+			return fmt.Errorf("Max reauthentication attempts reached")
+		}
+
+		p.AuthenticatedHeaders()
+		info.reauthAttempts++
+
 		return nil
 	}
 
@@ -144,13 +164,35 @@ func TestReauthEndLoop(t *testing.T) {
 	})
 
 	reqopts := new(gophercloud.RequestOpts)
-	_, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
-	if err == nil {
-		t.Errorf("request ends with a nil error")
-		return
+
+	// counters for the upcoming errors
+	errAfter := 0
+	errUnable := 0
+
+	wg := new(sync.WaitGroup)
+	for i := 0; i < numconc; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			_, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
+
+			// ErrErrorAfter... will happen after a successful reauthentication,
+			// but the service still responds with a 401.
+			if _, ok := err.(*gophercloud.ErrErrorAfterReauthentication); ok {
+				errAfter++
+			}
+
+			// ErrErrorUnable... will happen when the custom reauth func reports
+			// an error.
+			if _, ok := err.(*gophercloud.ErrUnableToReauthenticate); ok {
+				errUnable++
+			}
+		}()
 	}
 
-	if reflect.TypeOf(err) != reflect.TypeOf(&gophercloud.ErrErrorAfterReauthentication{}) {
-		t.Errorf("error is not an ErrErrorAfterReauthentication")
-	}
+	wg.Wait()
+	th.AssertEquals(t, info.reauthAttempts, 6)
+	th.AssertEquals(t, info.maxReauthReached, true)
+	th.AssertEquals(t, errAfter, 6)
+	th.AssertEquals(t, errUnable, 14)
 }
