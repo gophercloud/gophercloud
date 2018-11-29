@@ -3,6 +3,7 @@ package openstack
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/gophercloud/gophercloud"
 	tokens2 "github.com/gophercloud/gophercloud/openstack/identity/v2/tokens"
@@ -321,7 +322,9 @@ func NewComputeV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpt
 // package.
 func NewNetworkV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	sc, err := initClientOpts(client, eo, "network")
-	sc.ResourceBase = sc.Endpoint + "v2.0/"
+	if !strings.HasSuffix(sc.Endpoint, "v2.0/") {
+		sc.ResourceBase = sc.Endpoint + "v2.0/"
+	}
 	return sc, err
 }
 
