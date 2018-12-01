@@ -567,3 +567,25 @@ func RemoveNodes(client *gophercloud.ServiceClient, clusterID string, opts Remov
 	r.Header = result.Header
 	return
 }
+
+func (opts ReplaceNodesOpts) ToClusterReplaceNodeMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "replace_nodes")
+}
+
+type ReplaceNodesOpts struct {
+	Nodes map[string]string `json:"nodes" required:"true"`
+}
+
+func ReplaceNodes(client *gophercloud.ServiceClient, id string, opts ReplaceNodesOpts) (r ActionResult) {
+	b, err := opts.ToClusterReplaceNodeMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	var result *http.Response
+	result, r.Err = client.Post(nodeURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	r.Header = result.Header
+	return
+}
