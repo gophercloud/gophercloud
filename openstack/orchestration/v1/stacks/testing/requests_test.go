@@ -139,6 +139,18 @@ func TestGetStack(t *testing.T) {
 	th.AssertDeepEquals(t, expected, actual)
 }
 
+func TestFindStack(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleFindSuccessfully(t, GetOutput)
+
+	actual, err := stacks.Find(fake.ServiceClient(), "16ef0584-4458-41eb-87c8-0dc8d5f66c87").Extract()
+	th.AssertNoErr(t, err)
+
+	expected := GetExpected
+	th.AssertDeepEquals(t, expected, actual)
+}
+
 func TestUpdateStack(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
