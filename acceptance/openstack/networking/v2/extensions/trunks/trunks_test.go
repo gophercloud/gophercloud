@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
-	"github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
+	v2 "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/attributestags"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/trunks"
