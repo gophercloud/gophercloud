@@ -30,6 +30,20 @@ Example of Listing Networks with the vlan-transparent extension
 
     for _, network := range allNetworks {
         fmt.Println("%+v\n", network)
-    }
+	}
+
+Example of Getting a Network with the vlan-transparent extension
+
+	var network struct {
+		networks.Network
+		vlantransparent.TransparentExt
+	}
+
+	err := networks.Get(fake.ServiceClient(), "db193ab3-96e3-4cb3-8fc5-05f4296d0324").ExtractInto(&network)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("%+v\n", network)
 */
 package vlantransparent

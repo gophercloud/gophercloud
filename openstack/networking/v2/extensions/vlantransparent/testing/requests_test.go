@@ -8,7 +8,6 @@ import (
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vlantransparent"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
-	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -26,48 +25,56 @@ func TestList(t *testing.T) {
 		fmt.Fprintf(w, NetworksVLANTransparentListResult)
 	})
 
-	count := 0
-
-	iTrue := true
-	networkListOpts := networks.ListOpts{}
-	listOpts := vlantransparent.ListOptsExt{
-		ListOptsBuilder: networkListOpts,
-		VLANTransparent: &iTrue,
+	type networkVLANTransparentExt struct {
+		networks.Network
+		vlantransparent.TransparentExt
 	}
+	var actual []networkVLANTransparentExt
 
-	networks.List(fake.ServiceClient(), listOpts).EachPage(func(page pagination.Page) (bool, error) {
-		count++
+	allPages, err := networks.List(fake.ServiceClient(), networks.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
 
-		type networkVLANTransparentExt struct {
-			networks.Network
-			vlantransparent.TransparentExt
-		}
-		var networkWithVLANTransparentExt []networkVLANTransparentExt
+	err = networks.ExtractNetworksInto(allPages, &actual)
+	th.AssertNoErr(t, err)
 
-		err := networks.ExtractNetworksInto(page, &networkWithVLANTransparentExt)
-		if err != nil {
-			t.Errorf("Failed to extract networks: %v", err)
-			return false, nil
-		}
+	th.AssertEquals(t, "db193ab3-96e3-4cb3-8fc5-05f4296d0324", actual[0].ID)
+	th.AssertEquals(t, "private", actual[0].Name)
+	th.AssertEquals(t, true, actual[0].AdminStateUp)
+	th.AssertEquals(t, "ACTIVE", actual[0].Status)
+	th.AssertDeepEquals(t, []string{"08eae331-0402-425a-923c-34f7cfe39c1b"}, actual[0].Subnets)
+	th.AssertEquals(t, "26a7980765d0414dbc1fc1f88cdb7e6e", actual[0].TenantID)
+	th.AssertEquals(t, false, actual[0].Shared)
+	th.AssertEquals(t, true, actual[0].VLANTransparent)
+}
 
-		networksCount := len(networkWithVLANTransparentExt)
-		if networksCount != 2 {
-			t.Fatalf("Expected 2 networks, got %d", networksCount)
-		}
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
 
-		th.AssertEquals(t, "db193ab3-96e3-4cb3-8fc5-05f4296d0324", networkWithVLANTransparentExt[0].ID)
-		th.AssertEquals(t, "private", networkWithVLANTransparentExt[0].Name)
-		th.AssertEquals(t, true, networkWithVLANTransparentExt[0].AdminStateUp)
-		th.AssertEquals(t, "ACTIVE", networkWithVLANTransparentExt[0].Status)
-		th.AssertDeepEquals(t, []string{"08eae331-0402-425a-923c-34f7cfe39c1b"}, networkWithVLANTransparentExt[0].Subnets)
-		th.AssertEquals(t, "26a7980765d0414dbc1fc1f88cdb7e6e", networkWithVLANTransparentExt[0].TenantID)
-		th.AssertEquals(t, false, networkWithVLANTransparentExt[0].Shared)
-		th.AssertEquals(t, true, networkWithVLANTransparentExt[0].TransparentExt.VLANTransparent)
+	th.Mux.HandleFunc("/v2.0/networks/db193ab3-96e3-4cb3-8fc5-05f4296d0324", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		return true, nil
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, NetworksVLANTransparentGetResult)
 	})
 
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
+	var s struct {
+		networks.Network
+		vlantransparent.TransparentExt
 	}
+
+	err := networks.Get(fake.ServiceClient(), "db193ab3-96e3-4cb3-8fc5-05f4296d0324").ExtractInto(&s)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "db193ab3-96e3-4cb3-8fc5-05f4296d0324", s.ID)
+	th.AssertEquals(t, "private", s.Name)
+	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertEquals(t, "ACTIVE", s.Status)
+	th.AssertDeepEquals(t, []string{"08eae331-0402-425a-923c-34f7cfe39c1b"}, s.Subnets)
+	th.AssertEquals(t, "26a7980765d0414dbc1fc1f88cdb7e6e", s.TenantID)
+	th.AssertEquals(t, false, s.Shared)
+	th.AssertEquals(t, true, s.VLANTransparent)
 }
