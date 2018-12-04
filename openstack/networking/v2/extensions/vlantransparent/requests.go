@@ -57,3 +57,28 @@ func (opts CreateOptsExt) ToNetworkCreateMap() (map[string]interface{}, error) {
 
 	return base, nil
 }
+
+// UpdateOptsExt is the structure used when updating existing vlan-transparent
+// network resources. It embeds networks.UpdateOpts and so inherits all of its
+// required and optional fields, with the addition of the VLANTransparent field.
+type UpdateOptsExt struct {
+	networks.UpdateOptsBuilder
+	VLANTransparent *bool `json:"vlan_transparent,omitempty"`
+}
+
+// ToNetworkUpdateMap casts an UpdateOpts struct to a map.
+func (opts UpdateOptsExt) ToNetworkUpdateMap() (map[string]interface{}, error) {
+	base, err := opts.UpdateOptsBuilder.ToNetworkUpdateMap()
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.VLANTransparent == nil {
+		return base, nil
+	}
+
+	networkMap := base["network"].(map[string]interface{})
+	networkMap["vlan_transparent"] = opts.VLANTransparent
+
+	return base, nil
+}

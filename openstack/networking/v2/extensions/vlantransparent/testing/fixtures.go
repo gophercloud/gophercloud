@@ -97,3 +97,37 @@ const NetworksVLANTransparentCreateResult = `
     }
 }
 `
+
+// NetworksVLANTransparentUpdateRequest represents raw HTTP Update request.
+const NetworksVLANTransparentUpdateRequest = `
+{
+    "network": {
+        "name": "new_network_name",
+        "admin_state_up": false,
+        "vlan_transparent": false
+    }
+}`
+
+// NetworksVLANTransparentUpdateResult represents raw HTTP response for the
+// Update request.
+const NetworksVLANTransparentUpdateResult = `
+{
+    "network": {
+        "status": "ACTIVE",
+        "subnets": [
+            "08eae331-0402-425a-923c-34f7cfe39c1b"
+        ],
+        "name": "new_network_name",
+        "admin_state_up": false,
+        "tenant_id": "26a7980765d0414dbc1fc1f88cdb7e6e",
+        "shared": false,
+        "id": "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
+        "provider:segmentation_id": 1234567890,
+        "provider:physical_network": null,
+        "provider:network_type": "local",
+        "router:external": false,
+        "port_security_enabled": false,
+        "vlan_transparent": false
+    }
+}
+`

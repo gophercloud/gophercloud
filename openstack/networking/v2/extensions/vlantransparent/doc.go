@@ -69,5 +69,29 @@ Example of Creating Network with the vlan-transparent extension
 	}
 
 	fmt.Println("%+v\n", network)
+
+Example of Updating Network with the vlan-transparent extension
+
+	iFalse := false
+	networkUpdateOpts := networks.UpdateOpts{
+		Name:         "new_network_name",
+	}
+
+	createOpts := vlantransparent.CreateOptsExt{
+		CreateOptsBuilder: &networkUpdateOpts,
+		VLANTransparent:   &iFalse,
+	}
+
+	var network struct {
+		networks.Network
+		vlantransparent.TransparentExt
+	}
+
+	network, err := networks.Update(networkClient, createOpts).ExtractInto(&network)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("%+v\n", network)
 */
 package vlantransparent
