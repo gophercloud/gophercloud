@@ -31,3 +31,29 @@ func (opts ListOptsExt) ToNetworkListQuery() (string, error) {
 	q = &url.URL{RawQuery: params.Encode()}
 	return q.String(), err
 }
+
+// CreateOptsExt is the structure used when creating new vlan-transparent
+// network resources. It embeds networks.CreateOpts and so inherits all of its
+// required and optional fields, with the addition of the VLANTransparent field.
+type CreateOptsExt struct {
+	networks.CreateOptsBuilder
+	VLANTransparent *bool `json:"vlan_transparent,omitempty"`
+}
+
+// ToNetworkCreateMap adds the vlan_transparent option to the base network
+// creation options.
+func (opts CreateOptsExt) ToNetworkCreateMap() (map[string]interface{}, error) {
+	base, err := opts.CreateOptsBuilder.ToNetworkCreateMap()
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.VLANTransparent == nil {
+		return base, nil
+	}
+
+	networkMap := base["network"].(map[string]interface{})
+	networkMap["vlan_transparent"] = opts.VLANTransparent
+
+	return base, nil
+}

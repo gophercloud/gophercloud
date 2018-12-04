@@ -45,5 +45,29 @@ Example of Getting a Network with the vlan-transparent extension
 	}
 
 	fmt.Println("%+v\n", network)
+
+Example of Creating Network with the vlan-transparent extension
+
+	iTrue := true
+	networkCreateOpts := networks.CreateOpts{
+		Name:         "private",
+	}
+
+	createOpts := vlantransparent.CreateOptsExt{
+		CreateOptsBuilder: &networkCreateOpts,
+		VLANTransparent:   &iTrue,
+	}
+
+	var network struct {
+		networks.Network
+		vlantransparent.TransparentExt
+	}
+
+	network, err := networks.Create(networkClient, createOpts).ExtractInto(&network)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("%+v\n", network)
 */
 package vlantransparent

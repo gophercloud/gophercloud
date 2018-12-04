@@ -78,3 +78,48 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, false, s.Shared)
 	th.AssertEquals(t, true, s.VLANTransparent)
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, NetworksVLANTransparentCreateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, NetworksVLANTransparentCreateResult)
+	})
+
+	iTrue := true
+	networkCreateOpts := networks.CreateOpts{
+		Name:         "private",
+		AdminStateUp: &iTrue,
+	}
+	vlanTransparentCreateOpts := vlantransparent.CreateOptsExt{
+		CreateOptsBuilder: &networkCreateOpts,
+		VLANTransparent:   &iTrue,
+	}
+
+	var s struct {
+		networks.Network
+		vlantransparent.TransparentExt
+	}
+
+	err := networks.Create(fake.ServiceClient(), vlanTransparentCreateOpts).ExtractInto(&s)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "db193ab3-96e3-4cb3-8fc5-05f4296d0324", s.ID)
+	th.AssertEquals(t, "private", s.Name)
+	th.AssertEquals(t, true, s.AdminStateUp)
+	th.AssertEquals(t, "ACTIVE", s.Status)
+	th.AssertDeepEquals(t, []string{"08eae331-0402-425a-923c-34f7cfe39c1b"}, s.Subnets)
+	th.AssertEquals(t, "26a7980765d0414dbc1fc1f88cdb7e6e", s.TenantID)
+	th.AssertEquals(t, false, s.Shared)
+	th.AssertEquals(t, true, s.VLANTransparent)
+}

@@ -62,5 +62,38 @@ const NetworksVLANTransparentGetResult = `
         "port_security_enabled": false,
         "vlan_transparent": true
     }
+}`
+
+// NetworksVLANTransparentCreateRequest represents raw HTTP Create request.
+const NetworksVLANTransparentCreateRequest = `
+{
+    "network": {
+        "name": "private",
+        "admin_state_up": true,
+        "vlan_transparent": true
+    }
+}`
+
+// NetworksVLANTransparentCreateResult represents raw HTTP response for the
+// Create request.
+const NetworksVLANTransparentCreateResult = `
+{
+    "network": {
+        "status": "ACTIVE",
+        "subnets": [
+            "08eae331-0402-425a-923c-34f7cfe39c1b"
+        ],
+        "name": "private",
+        "admin_state_up": true,
+        "tenant_id": "26a7980765d0414dbc1fc1f88cdb7e6e",
+        "shared": false,
+        "id": "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
+        "provider:segmentation_id": 1234567890,
+        "provider:physical_network": null,
+        "provider:network_type": "local",
+        "router:external": false,
+        "port_security_enabled": false,
+        "vlan_transparent": true
+    }
 }
 `
