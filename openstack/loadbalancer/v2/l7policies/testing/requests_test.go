@@ -260,10 +260,12 @@ func TestUpdateRule(t *testing.T) {
 	HandleRuleUpdateSuccessfully(t)
 
 	client := fake.ServiceClient()
+	tmpBool := false
 	actual, err := l7policies.UpdateRule(client, "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c", l7policies.UpdateRuleOpts{
 		RuleType:    l7policies.TypePath,
 		CompareType: l7policies.CompareTypeRegex,
 		Value:       "/images/special*",
+		Invert:      &tmpBool,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
