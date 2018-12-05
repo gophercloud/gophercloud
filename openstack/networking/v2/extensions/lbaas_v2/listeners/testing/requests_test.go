@@ -125,8 +125,9 @@ func TestUpdateListener(t *testing.T) {
 
 	client := fake.ServiceClient()
 	i1001 := 1001
+	name := "NewListenerName"
 	actual, err := listeners.Update(client, "4ec89087-d057-4e2c-911f-60a3b47ee304", listeners.UpdateOpts{
-		Name:      "NewListenerName",
+		Name:      &name,
 		ConnLimit: &i1001,
 	}).Extract()
 	if err != nil {

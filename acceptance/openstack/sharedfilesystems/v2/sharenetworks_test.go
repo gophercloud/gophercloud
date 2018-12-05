@@ -52,13 +52,15 @@ func TestShareNetworkUpdate(t *testing.T) {
 		t.Errorf("Unable to retrieve shareNetwork: %v", err)
 	}
 
+	name := "NewName"
+	description := "New share network description"
 	options := sharenetworks.UpdateOpts{
-		Name:        "NewName",
-		Description: "New share network description",
+		Name:        &name,
+		Description: &description,
 	}
 
-	expectedShareNetwork.Name = options.Name
-	expectedShareNetwork.Description = options.Description
+	expectedShareNetwork.Name = *options.Name
+	expectedShareNetwork.Description = *options.Description
 
 	_, err = sharenetworks.Update(client, shareNetwork.ID, options).Extract()
 	if err != nil {

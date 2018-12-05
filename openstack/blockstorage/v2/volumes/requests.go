@@ -173,8 +173,8 @@ type UpdateOptsBuilder interface {
 // to the volumes.Update function. For more information about the parameters, see
 // the Volume object.
 type UpdateOpts struct {
-	Name        string            `json:"name,omitempty"`
-	Description string            `json:"description,omitempty"`
+	Name        *string           `json:"name,omitempty"`
+	Description *string           `json:"description,omitempty"`
 	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 

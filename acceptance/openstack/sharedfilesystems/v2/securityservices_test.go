@@ -108,9 +108,11 @@ func TestSecurityServiceUpdate(t *testing.T) {
 		t.Fatalf("Unable to create security service: %v", err)
 	}
 
+	name := "NewName"
+	description := "New security service description"
 	options := securityservices.UpdateOpts{
-		Name:        "NewName",
-		Description: "New security service description",
+		Name:        &name,
+		Description: &description,
 		Type:        "ldap",
 	}
 
@@ -124,12 +126,12 @@ func TestSecurityServiceUpdate(t *testing.T) {
 		t.Errorf("Unable to retrieve the security service: %v", err)
 	}
 
-	if newSecurityService.Name != options.Name {
-		t.Fatalf("Security service name was expeted to be: %s", options.Name)
+	if newSecurityService.Name != *options.Name {
+		t.Fatalf("Security service name was expeted to be: %s", *options.Name)
 	}
 
-	if newSecurityService.Description != options.Description {
-		t.Fatalf("Security service description was expeted to be: %s", options.Description)
+	if newSecurityService.Description != *options.Description {
+		t.Fatalf("Security service description was expeted to be: %s", *options.Description)
 	}
 
 	if newSecurityService.Type != options.Type {
