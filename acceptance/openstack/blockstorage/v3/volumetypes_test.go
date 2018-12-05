@@ -38,8 +38,9 @@ func TestVolumeTypes(t *testing.T) {
 	th.AssertEquals(t, found, true)
 
 	var isPublic = false
+	var name = vt.Name + "-UPDATED"
 	updateOpts := volumetypes.UpdateOpts{
-		Name:     vt.Name + "-UPDATED",
+		Name:     &name,
 		IsPublic: &isPublic,
 	}
 

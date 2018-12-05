@@ -26,8 +26,9 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 
 	tools.PrintResource(t, group)
 
+	var description = "A security group"
 	updateOpts := groups.UpdateOpts{
-		Description: "A security group",
+		Description: &description,
 	}
 
 	newGroup, err := groups.Update(client, group.ID, updateOpts).Extract()

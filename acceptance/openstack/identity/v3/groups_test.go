@@ -33,8 +33,9 @@ func TestGroupCRUD(t *testing.T) {
 	tools.PrintResource(t, group)
 	tools.PrintResource(t, group.Extra)
 
+	var description = "Test Groups"
 	updateOpts := groups.UpdateOpts{
-		Description: "Test Groups",
+		Description: &description,
 		Extra: map[string]interface{}{
 			"email": "thetestgroup@example.com",
 		},

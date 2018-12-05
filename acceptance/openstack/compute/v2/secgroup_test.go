@@ -45,9 +45,10 @@ func TestSecGroupsCRUD(t *testing.T) {
 	tools.PrintResource(t, securityGroup)
 
 	newName := tools.RandomString("secgroup_", 4)
+	description := tools.RandomString("dec_", 10)
 	updateOpts := secgroups.UpdateOpts{
 		Name:        newName,
-		Description: tools.RandomString("dec_", 10),
+		Description: &description,
 	}
 	updatedSecurityGroup, err := secgroups.Update(client, securityGroup.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)

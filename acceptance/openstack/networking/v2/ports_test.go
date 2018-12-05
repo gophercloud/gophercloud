@@ -42,7 +42,7 @@ func TestPortsCRUD(t *testing.T) {
 	// Update port
 	newPortName := tools.RandomString("TESTACC-", 8)
 	updateOpts := ports.UpdateOpts{
-		Name: newPortName,
+		Name: &newPortName,
 	}
 	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -146,8 +146,9 @@ func TestPortsDontAlterSecurityGroups(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	// Update the port again
+	var name = "some_port"
 	updateOpts = ports.UpdateOpts{
-		Name: "some_port",
+		Name: &name,
 	}
 	newPort, err = ports.Update(client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -262,8 +263,9 @@ func TestPortsDontUpdateAllowedAddressPairs(t *testing.T) {
 	tools.PrintResource(t, newPort)
 
 	// Remove the address pair
+	var name = "some_port"
 	updateOpts = ports.UpdateOpts{
-		Name: "some_port",
+		Name: &name,
 	}
 	newPort, err = ports.Update(client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -341,7 +343,7 @@ func TestPortsWithExtraDHCPOptsCRUD(t *testing.T) {
 	// Update the port with extra DHCP options.
 	newPortName := tools.RandomString("TESTACC-", 8)
 	portUpdateOpts := ports.UpdateOpts{
-		Name: newPortName,
+		Name: &newPortName,
 	}
 
 	existingOpt := port.ExtraDHCPOpts[0]
