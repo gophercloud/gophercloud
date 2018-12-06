@@ -23,11 +23,14 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share
 	}
 
 	t.Logf("Share network id %s", choices.ShareNetworkID)
+	iTrue := true
 	createOpts := shares.CreateOpts{
 		Size:           1,
 		Name:           "My Test Share",
+		Description:    "My Test Description",
 		ShareProto:     "NFS",
 		ShareNetworkID: choices.ShareNetworkID,
+		IsPublic:       &iTrue,
 	}
 
 	share, err := shares.Create(client, createOpts).Extract()
