@@ -75,8 +75,9 @@ func TestDomainsCRUD(t *testing.T) {
 	th.AssertEquals(t, domain.Description, "Testing Domain")
 
 	var iFalse bool = false
+	var description = "Staging Test Domain"
 	updateOpts := domains.UpdateOpts{
-		Description: "Staging Test Domain",
+		Description: &description,
 		Enabled:     &iFalse,
 	}
 

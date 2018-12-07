@@ -182,9 +182,9 @@ func TestUpdate(t *testing.T) {
 	name := "updated_gophertrunk"
 	description := "gophertrunk updated by gophercloud"
 	options := trunks.UpdateOpts{
-		Name:         name,
+		Name:         &name,
 		AdminStateUp: &iFalse,
-		Description:  description,
+		Description:  &description,
 	}
 	n, err := trunks.Update(fake.ServiceClient(), "f6a9718c-5a64-43e3-944f-4deccad8e78c", options).Extract()
 	th.AssertNoErr(t, err)

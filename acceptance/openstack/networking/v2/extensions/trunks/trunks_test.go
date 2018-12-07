@@ -65,8 +65,9 @@ func TestTrunkCRUD(t *testing.T) {
 	}
 
 	// Update Trunk
+	var name = "updated_gophertrunk"
 	updateOpts := trunks.UpdateOpts{
-		Name: "updated_gophertrunk",
+		Name: &name,
 	}
 	updatedTrunk, err := trunks.Update(client, trunk.ID, updateOpts).Extract()
 	if err != nil {

@@ -41,7 +41,7 @@ func TestPortsbindingCRUD(t *testing.T) {
 	// Update port
 	newPortName := tools.RandomString("TESTACC-", 8)
 	updateOpts := ports.UpdateOpts{
-		Name: newPortName,
+		Name: &newPortName,
 	}
 	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)

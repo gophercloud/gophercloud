@@ -163,11 +163,11 @@ type UpdateOpts struct {
 
 	// Requests matching this policy will be redirected to the pool with this ID.
 	// Only valid if action is REDIRECT_TO_POOL.
-	RedirectPoolID string `json:"redirect_pool_id,omitempty"`
+	RedirectPoolID *string `json:"redirect_pool_id,omitempty"`
 
 	// Requests matching this policy will be redirected to this URL.
 	// Only valid if action is REDIRECT_TO_URL.
-	RedirectURL string `json:"redirect_url,omitempty"`
+	RedirectURL *string `json:"redirect_url,omitempty"`
 }
 
 // ToL7PolicyUpdateMap builds a request body from UpdateOpts.
@@ -302,7 +302,7 @@ type UpdateRuleOpts struct {
 	Value string `json:"value,omitempty"`
 
 	// The key to use for the comparison. For example, the name of the cookie to evaluate.
-	Key string `json:"key,omitempty"`
+	Key *string `json:"key,omitempty"`
 
 	// When true the logic of the rule is inverted. For example, with invert true,
 	// equal to would become not equal to. Default is false.

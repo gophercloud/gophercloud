@@ -141,10 +141,10 @@ type UpdateOptsBuilder interface {
 // operation.
 type UpdateOpts struct {
 	// Human-readable name for the Loadbalancer. Does not have to be unique.
-	Name string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 
 	// Human-readable description for the Loadbalancer.
-	Description string `json:"description,omitempty"`
+	Description *string `json:"description,omitempty"`
 
 	// The administrative state of the Loadbalancer. A valid value is true (UP)
 	// or false (DOWN).
