@@ -74,3 +74,33 @@ func CreateVLANTransparentNetwork(t *testing.T, client *gophercloud.ServiceClien
 
 	return &network, nil
 }
+
+// UpdateVLANTransparentNetwork will update a network with the
+// "vlan-transparent" extension. An error will be returned if the network could
+// not be updated.
+func UpdateVLANTransparentNetwork(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*VLANTransparentNetwork, error) {
+	networkName := tools.RandomString("TESTACC-NEW-", 6)
+	networkUpdateOpts := networks.UpdateOpts{
+		Name: networkName,
+	}
+
+	iFalse := false
+	updateOpts := vlantransparent.UpdateOptsExt{
+		UpdateOptsBuilder: &networkUpdateOpts,
+		VLANTransparent:   &iFalse,
+	}
+
+	t.Logf("Attempting to update a VLAN-transparent network: %s", networkID)
+
+	var network VLANTransparentNetwork
+	err := networks.Update(client, networkID, updateOpts).ExtractInto(&network)
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully updated the network.")
+
+	th.AssertEquals(t, networkName, network.Name)
+
+	return &network, nil
+}

@@ -77,8 +77,8 @@ Example of Updating Network with the vlan-transparent extension
 		Name:         "new_network_name",
 	}
 
-	createOpts := vlantransparent.CreateOptsExt{
-		CreateOptsBuilder: &networkUpdateOpts,
+	updateOpts := vlantransparent.UpdateOptsExt{
+		UpdateOptsBuilder: &networkUpdateOpts,
 		VLANTransparent:   &iFalse,
 	}
 
@@ -87,7 +87,7 @@ Example of Updating Network with the vlan-transparent extension
 		vlantransparent.TransparentExt
 	}
 
-	network, err := networks.Update(networkClient, createOpts).ExtractInto(&network)
+	err := networks.Update(networkClient, updateOpts).ExtractInto(&network)
 	if err != nil {
 		panic(err)
 	}
