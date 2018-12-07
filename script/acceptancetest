@@ -108,7 +108,8 @@ if [[ $? != 0 ]]; then
 fi
 
 # Shared Filesystems v2
-go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/sharedfilesystems/v2/
+# Temporarily disabled, see https://github.com/gophercloud/gophercloud/issues/1345
+true || go test -v -timeout $timeout -tags "fixtures acceptance" ./acceptance/openstack/sharedfilesystems/v2/
 if [[ $? != 0 ]]; then
   failed=1
 fi

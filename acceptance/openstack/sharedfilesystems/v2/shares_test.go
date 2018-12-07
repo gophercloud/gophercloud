@@ -39,6 +39,8 @@ func TestShareUpdate(t *testing.T) {
 		t.Fatalf("Unable to create share: %v", err)
 	}
 
+	defer DeleteShare(t, client, share)
+
 	expectedShare, err := shares.Get(client, share.ID).Extract()
 	if err != nil {
 		t.Errorf("Unable to retrieve share: %v", err)
@@ -73,8 +75,6 @@ func TestShareUpdate(t *testing.T) {
 	th.CheckDeepEquals(t, expectedShare, updatedShare)
 
 	PrintShare(t, share)
-
-	defer DeleteShare(t, client, share)
 }
 
 func TestShareListDetail(t *testing.T) {
@@ -105,6 +105,7 @@ func TestGrantAndRevokeAccess(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a sharedfs client: %v", err)
 	}
+	client.Microversion = "2.7"
 
 	share, err := CreateShare(t, client)
 	if err != nil {
@@ -130,6 +131,7 @@ func TestListAccessRights(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a sharedfs client: %v", err)
 	}
+	client.Microversion = "2.7"
 
 	share, err := CreateShare(t, client)
 	if err != nil {
@@ -164,6 +166,7 @@ func TestExtendAndShrink(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a sharedfs client: %v", err)
 	}
+	client.Microversion = "2.7"
 
 	share, err := CreateShare(t, client)
 	if err != nil {
