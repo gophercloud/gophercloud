@@ -39,7 +39,7 @@ Example of Getting a Network with the vlan-transparent extension
 		vlantransparent.TransparentExt
 	}
 
-	err := networks.Get(fake.ServiceClient(), "db193ab3-96e3-4cb3-8fc5-05f4296d0324").ExtractInto(&network)
+	err := networks.Get(networkClient, "db193ab3-96e3-4cb3-8fc5-05f4296d0324").ExtractInto(&network)
 	if err != nil {
 		panic(err)
 	}
