@@ -156,6 +156,9 @@ type UpdateOpts struct {
 	// Human-readable name for the Listener. Does not have to be unique.
 	Name *string `json:"name,omitempty"`
 
+	// The ID of the default pool with which the Listener is associated.
+	DefaultPoolID *string `json:"default_pool_id,omitempty"`
+
 	// Human-readable description for the Listener.
 	Description *string `json:"description,omitempty"`
 
