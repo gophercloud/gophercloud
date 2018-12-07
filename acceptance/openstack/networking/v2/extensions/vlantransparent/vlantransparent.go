@@ -4,8 +4,10 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/vlantransparent"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 // VLANTransparentNetwork represents OpenStack V2 Networking Network with the
@@ -41,4 +43,34 @@ func ListVLANTransparentNetworks(t *testing.T, client *gophercloud.ServiceClient
 	t.Log("Successfully retrieved networks.")
 
 	return allNetworks, nil
+}
+
+// CreateVLANTransparentNetwork will create a network with the
+// "vlan-transparent" extension. An error will be returned if the network could
+// not be created.
+func CreateVLANTransparentNetwork(t *testing.T, client *gophercloud.ServiceClient) (*VLANTransparentNetwork, error) {
+	networkName := tools.RandomString("TESTACC-", 8)
+	networkCreateOpts := networks.CreateOpts{
+		Name: networkName,
+	}
+
+	iTrue := true
+	createOpts := vlantransparent.CreateOptsExt{
+		CreateOptsBuilder: &networkCreateOpts,
+		VLANTransparent:   &iTrue,
+	}
+
+	t.Logf("Attempting to create a VLAN-transparent network: %s", networkName)
+
+	var network VLANTransparentNetwork
+	err := networks.Create(client, createOpts).ExtractInto(&network)
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created the network.")
+
+	th.AssertEquals(t, networkName, network.Name)
+
+	return &network, nil
 }
