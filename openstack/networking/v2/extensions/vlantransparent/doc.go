@@ -63,7 +63,7 @@ Example of Creating Network with the vlan-transparent extension
 		vlantransparent.TransparentExt
 	}
 
-	network, err := networks.Create(networkClient, createOpts).ExtractInto(&network)
+	err := networks.Create(networkClient, createOpts).ExtractInto(&network)
 	if err != nil {
 		panic(err)
 	}
