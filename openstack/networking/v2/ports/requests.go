@@ -19,6 +19,7 @@ type ListOptsBuilder interface {
 type ListOpts struct {
 	Status       string `q:"status"`
 	Name         string `q:"name"`
+	Description  string `q:"description"`
 	AdminStateUp *bool  `q:"admin_state_up"`
 	NetworkID    string `q:"network_id"`
 	TenantID     string `q:"tenant_id"`
@@ -80,6 +81,7 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	NetworkID           string        `json:"network_id" required:"true"`
 	Name                string        `json:"name,omitempty"`
+	Description         string        `json:"description,omitempty"`
 	AdminStateUp        *bool         `json:"admin_state_up,omitempty"`
 	MACAddress          string        `json:"mac_address,omitempty"`
 	FixedIPs            interface{}   `json:"fixed_ips,omitempty"`
@@ -117,6 +119,7 @@ type UpdateOptsBuilder interface {
 // UpdateOpts represents the attributes used when updating an existing port.
 type UpdateOpts struct {
 	Name                *string        `json:"name,omitempty"`
+	Description         *string        `json:"description,omitempty"`
 	AdminStateUp        *bool          `json:"admin_state_up,omitempty"`
 	FixedIPs            interface{}    `json:"fixed_ips,omitempty"`
 	DeviceID            *string        `json:"device_id,omitempty"`
