@@ -87,24 +87,17 @@ func GetAccessRightsSlice(t *testing.T, client *gophercloud.ServiceClient, share
 // DeleteShare will delete a share. A fatal error will occur if the share
 // failed to be deleted. This works best when used as a deferred function.
 func DeleteShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share) {
-	done := make(chan bool)
-
-	go func() {
-		err := waitForStatus(client, share.ID, "deleted", 600)
-		if err != nil {
-			t.Errorf("Failed to wait for 'deleted' status for %s share: %v", share.ID, err)
-		} else {
-			t.Logf("Deleted share: %s", share.ID)
-		}
-		done <- true
-	}()
-
 	err := shares.Delete(client, share.ID).ExtractErr()
 	if err != nil {
 		t.Errorf("Unable to delete share %s: %v", share.ID, err)
 	}
 
-	<-done
+	err = waitForStatus(client, share.ID, "deleted", 600)
+	if err != nil {
+		t.Errorf("Failed to wait for 'deleted' status for %s share: %v", share.ID, err)
+	} else {
+		t.Logf("Deleted share: %s", share.ID)
+	}
 
 	DeleteShareNetwork(t, client, share.ShareNetworkID)
 }
