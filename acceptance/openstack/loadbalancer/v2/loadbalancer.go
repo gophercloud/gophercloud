@@ -22,12 +22,14 @@ const loadbalancerDeleteTimeoutSeconds = 300
 // be created.
 func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalancers.LoadBalancer) (*listeners.Listener, error) {
 	listenerName := tools.RandomString("TESTACCT-", 8)
+	listenerDescription := tools.RandomString("TESTACCT-DESC-", 8)
 	listenerPort := tools.RandomInt(1, 100)
 
 	t.Logf("Attempting to create listener %s on port %d", listenerName, listenerPort)
 
 	createOpts := listeners.CreateOpts{
 		Name:           listenerName,
+		Description:    listenerDescription,
 		LoadbalancerID: lb.ID,
 		Protocol:       "TCP",
 		ProtocolPort:   listenerPort,
@@ -51,11 +53,13 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 // subnet. An error will be returned if the loadbalancer could not be created.
 func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetID string) (*loadbalancers.LoadBalancer, error) {
 	lbName := tools.RandomString("TESTACCT-", 8)
+	lbDescription := tools.RandomString("TESTACCT-DESC-", 8)
 
 	t.Logf("Attempting to create loadbalancer %s on subnet %s", lbName, subnetID)
 
 	createOpts := loadbalancers.CreateOpts{
 		Name:         lbName,
+		Description:  lbDescription,
 		VipSubnetID:  subnetID,
 		AdminStateUp: gophercloud.Enabled,
 	}
@@ -149,11 +153,13 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 // created.
 func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalancers.LoadBalancer) (*pools.Pool, error) {
 	poolName := tools.RandomString("TESTACCT-", 8)
+	poolDescription := tools.RandomString("TESTACCT-DESC-", 8)
 
 	t.Logf("Attempting to create pool %s", poolName)
 
 	createOpts := pools.CreateOpts{
 		Name:           poolName,
+		Description:    poolDescription,
 		Protocol:       pools.ProtocolTCP,
 		LoadbalancerID: lb.ID,
 		LBMethod:       pools.LBMethodLeastConnections,
@@ -178,11 +184,13 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalance
 // created.
 func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *listeners.Listener, lb *loadbalancers.LoadBalancer) (*l7policies.L7Policy, error) {
 	policyName := tools.RandomString("TESTACCT-", 8)
+	policyDescription := tools.RandomString("TESTACCT-DESC-", 8)
 
 	t.Logf("Attempting to create l7 policy %s", policyName)
 
 	createOpts := l7policies.CreateOpts{
 		Name:        policyName,
+		Description: policyDescription,
 		ListenerID:  listener.ID,
 		Action:      l7policies.ActionRedirectToURL,
 		RedirectURL: "http://www.example.com",

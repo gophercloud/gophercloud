@@ -72,8 +72,9 @@ func TestRecordSetsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, &rs)
 
+	description := ""
 	updateOpts := recordsets.UpdateOpts{
-		Description: "New description",
+		Description: &description,
 		TTL:         0,
 	}
 
@@ -82,5 +83,5 @@ func TestRecordSetsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, &newRS)
 
-	th.AssertEquals(t, newRS.Description, "New description")
+	th.AssertEquals(t, newRS.Description, description)
 }

@@ -27,8 +27,11 @@ func TestPolicyCRUD(t *testing.T) {
 
 	tools.PrintResource(t, policy)
 
+	name := ""
+	description := ""
 	updateOpts := policies.UpdateOpts{
-		Description: "Some policy description",
+		Name:        &name,
+		Description: &description,
 	}
 
 	_, err = policies.Update(client, policy.ID, updateOpts).Extract()
@@ -38,6 +41,8 @@ func TestPolicyCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPolicy)
+	th.AssertEquals(t, newPolicy.Name, name)
+	th.AssertEquals(t, newPolicy.Description, description)
 
 	allPages, err := policies.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)

@@ -37,9 +37,9 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, volume *vol
 		return snapshot, err
 	}
 
+	tools.PrintResource(t, snapshot)
 	th.AssertEquals(t, snapshot.Name, snapshotName)
 	th.AssertEquals(t, snapshot.VolumeID, volume.ID)
-	tools.PrintResource(t, snapshot)
 
 	t.Logf("Successfully created snapshot: %s", snapshot.ID)
 
@@ -50,11 +50,13 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, volume *vol
 // error will be returned if the volume was unable to be created.
 func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Volume, error) {
 	volumeName := tools.RandomString("ACPTTEST", 16)
+	volumeDescription := tools.RandomString("ACPTTEST-DESC", 16)
 	t.Logf("Attempting to create volume: %s", volumeName)
 
 	createOpts := volumes.CreateOpts{
-		Size: 1,
-		Name: volumeName,
+		Size:        1,
+		Name:        volumeName,
+		Description: volumeDescription,
 	}
 
 	volume, err := volumes.Create(client, createOpts).Extract()
@@ -67,8 +69,10 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 		return volume, err
 	}
 
-	th.AssertEquals(t, volume.Name, volumeName)
 	tools.PrintResource(t, volume)
+	th.AssertEquals(t, volume.Name, volumeName)
+	th.AssertEquals(t, volume.Description, volumeDescription)
+	th.AssertEquals(t, volume.Size, 1)
 
 	t.Logf("Successfully created volume: %s", volume.ID)
 
@@ -79,12 +83,13 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 // error will be returned if the volume was unable to be created.
 func CreateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*volumetypes.VolumeType, error) {
 	name := tools.RandomString("ACPTTEST", 16)
+	description := "create_from_gophercloud"
 	t.Logf("Attempting to create volume type: %s", name)
 
 	createOpts := volumetypes.CreateOpts{
 		Name:        name,
 		ExtraSpecs:  map[string]string{"volume_backend_name": "fake_backend_name"},
-		Description: "create_from_gophercloud",
+		Description: description,
 	}
 
 	vt, err := volumetypes.Create(client, createOpts).Extract()
@@ -92,8 +97,13 @@ func CreateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*volumet
 		return nil, err
 	}
 
-	th.AssertEquals(t, vt.IsPublic, true)
 	tools.PrintResource(t, vt)
+	th.AssertEquals(t, vt.IsPublic, true)
+	th.AssertEquals(t, vt.Name, name)
+	th.AssertEquals(t, vt.Description, description)
+	// TODO: For some reason returned extra_specs are empty even in API reference: https://developer.openstack.org/api-ref/block-storage/v3/?expanded=create-a-volume-type-detail#volume-types-types
+	// "extra_specs": {}
+	// th.AssertEquals(t, vt.ExtraSpecs, createOpts.ExtraSpecs)
 
 	t.Logf("Successfully created volume type: %s", vt.ID)
 

@@ -79,8 +79,10 @@ func TestNetworksCRUD(t *testing.T) {
 	tools.PrintResource(t, network)
 
 	newName := tools.RandomString("TESTACC-", 8)
+	newDescription := ""
 	updateOpts := &networks.UpdateOpts{
-		Name: newName,
+		Name:        newName,
+		Description: &newDescription,
 	}
 
 	_, err = networks.Update(client, network.ID, updateOpts).Extract()
@@ -90,6 +92,8 @@ func TestNetworksCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newNetwork)
+	th.AssertEquals(t, newNetwork.Name, newName)
+	th.AssertEquals(t, newNetwork.Description, newDescription)
 
 	type networkWithExt struct {
 		networks.Network

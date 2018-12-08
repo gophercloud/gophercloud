@@ -22,12 +22,14 @@ const loadbalancerDeleteTimeoutSeconds = 300
 // be created.
 func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalancers.LoadBalancer) (*listeners.Listener, error) {
 	listenerName := tools.RandomString("TESTACCT-", 8)
+	listenerDescription := tools.RandomString("TESTACCT-DESC-", 8)
 	listenerPort := tools.RandomInt(1, 100)
 
 	t.Logf("Attempting to create listener %s on port %d", listenerName, listenerPort)
 
 	createOpts := listeners.CreateOpts{
 		Name:           listenerName,
+		Description:    listenerDescription,
 		LoadbalancerID: lb.ID,
 		Protocol:       "TCP",
 		ProtocolPort:   listenerPort,
@@ -44,6 +46,10 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 		return listener, fmt.Errorf("Timed out waiting for loadbalancer to become active")
 	}
 
+	th.AssertEquals(t, listener.Name, listenerName)
+	th.AssertEquals(t, listener.Description, listenerDescription)
+	th.AssertEquals(t, listener.Loadbalancers[0].ID, lb.ID)
+	th.AssertEquals(t, listener.Protocol, "TCP")
 	th.AssertEquals(t, listener.ProtocolPort, listenerPort)
 
 	return listener, nil
@@ -53,11 +59,13 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 // subnet. An error will be returned if the loadbalancer could not be created.
 func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetID string) (*loadbalancers.LoadBalancer, error) {
 	lbName := tools.RandomString("TESTACCT-", 8)
+	lbDescription := tools.RandomString("TESTACCT-DESC-", 8)
 
 	t.Logf("Attempting to create loadbalancer %s on subnet %s", lbName, subnetID)
 
 	createOpts := loadbalancers.CreateOpts{
 		Name:         lbName,
+		Description:  lbDescription,
 		VipSubnetID:  subnetID,
 		AdminStateUp: gophercloud.Enabled,
 	}
@@ -77,6 +85,9 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 	t.Logf("LoadBalancer %s is active", lbName)
 
 	th.AssertEquals(t, lb.Name, lbName)
+	th.AssertEquals(t, lb.Description, lbDescription)
+	th.AssertEquals(t, lb.VipSubnetID, subnetID)
+	th.AssertEquals(t, lb.AdminStateUp, gophercloud.Enabled)
 
 	return lb, nil
 }
@@ -157,11 +168,13 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 // created.
 func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalancers.LoadBalancer) (*pools.Pool, error) {
 	poolName := tools.RandomString("TESTACCT-", 8)
+	poolDescription := tools.RandomString("TESTACCT-DESC-", 8)
 
 	t.Logf("Attempting to create pool %s", poolName)
 
 	createOpts := pools.CreateOpts{
 		Name:           poolName,
+		Description:    poolDescription,
 		Protocol:       pools.ProtocolTCP,
 		LoadbalancerID: lb.ID,
 		LBMethod:       pools.LBMethodLeastConnections,
@@ -179,6 +192,10 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalance
 	}
 
 	th.AssertEquals(t, pool.Name, poolName)
+	th.AssertEquals(t, pool.Description, poolDescription)
+	th.AssertEquals(t, pool.Protocol, pools.ProtocolTCP)
+	th.AssertEquals(t, pool.Loadbalancers[0].ID, lb.ID)
+	th.AssertEquals(t, pool.LBMethod, pools.LBMethodLeastConnections)
 
 	return pool, nil
 }

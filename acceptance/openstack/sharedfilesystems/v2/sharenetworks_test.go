@@ -29,6 +29,10 @@ func TestShareNetworkCreateDestroy(t *testing.T) {
 		t.Fatalf("Share network name was expeted to be: %s", shareNetwork.Name)
 	}
 
+	if newShareNetwork.Description != shareNetwork.Description {
+		t.Fatalf("Share network description was expeted to be: %s", shareNetwork.Description)
+	}
+
 	PrintShareNetwork(t, shareNetwork)
 
 	defer DeleteShareNetwork(t, client, shareNetwork)
@@ -53,14 +57,14 @@ func TestShareNetworkUpdate(t *testing.T) {
 	}
 
 	name := "NewName"
-	description := "New share network description"
+	description := ""
 	options := sharenetworks.UpdateOpts{
 		Name:        &name,
 		Description: &description,
 	}
 
-	expectedShareNetwork.Name = *options.Name
-	expectedShareNetwork.Description = *options.Description
+	expectedShareNetwork.Name = name
+	expectedShareNetwork.Description = description
 
 	_, err = sharenetworks.Update(client, shareNetwork.ID, options).Extract()
 	if err != nil {

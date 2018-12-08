@@ -27,8 +27,10 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 	tools.PrintResource(t, router)
 
 	newName := tools.RandomString("TESTACC-", 8)
+	newDescription := ""
 	updateOpts := routers.UpdateOpts{
-		Name: newName,
+		Name:        newName,
+		Description: &newDescription,
 	}
 
 	_, err = routers.Update(client, router.ID, updateOpts).Extract()
@@ -38,6 +40,8 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRouter)
+	th.AssertEquals(t, newRouter.Name, newName)
+	th.AssertEquals(t, newRouter.Description, newDescription)
 
 	listOpts := routers.ListOpts{}
 	allPages, err := routers.List(client, listOpts).AllPages()
@@ -69,8 +73,10 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 	tools.PrintResource(t, router)
 
 	newName := tools.RandomString("TESTACC-", 8)
+	newDescription := ""
 	updateOpts := routers.UpdateOpts{
-		Name: newName,
+		Name:        newName,
+		Description: &newDescription,
 	}
 
 	_, err = routers.Update(client, router.ID, updateOpts).Extract()
@@ -80,6 +86,8 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRouter)
+	th.AssertEquals(t, newRouter.Name, newName)
+	th.AssertEquals(t, newRouter.Description, newDescription)
 }
 
 func TestLayer3RouterInterface(t *testing.T) {

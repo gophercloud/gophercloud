@@ -28,6 +28,20 @@ func TestVolumes(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteVolume(t, client, volume2)
 
+	// Update volume
+	updatedVolumeName := ""
+	updatedVolumeDescription := ""
+	updateOpts := volumes.UpdateOpts{
+		Name:        &updatedVolumeName,
+		Description: &updatedVolumeDescription,
+	}
+	updatedVolume, err := volumes.Update(client, volume1.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatedVolume)
+	th.AssertEquals(t, updatedVolume.Name, updatedVolumeName)
+	th.AssertEquals(t, updatedVolume.Description, updatedVolumeDescription)
+
 	listOpts := volumes.ListOpts{
 		Limit: 1,
 	}

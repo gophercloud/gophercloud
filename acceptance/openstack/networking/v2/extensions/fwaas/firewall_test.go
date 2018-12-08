@@ -39,18 +39,24 @@ func TestFirewallCRUD(t *testing.T) {
 
 	tools.PrintResource(t, firewall)
 
-	updateOpts := firewalls.UpdateOpts{
+	fwName := ""
+	fwDescription := ""
+	fwUpdateOpts := firewalls.UpdateOpts{
+		Name:        &fwName,
+		Description: &fwDescription,
 		PolicyID:    policy.ID,
-		Description: "Some firewall description",
 	}
 
-	_, err = firewalls.Update(client, firewall.ID, updateOpts).Extract()
+	_, err = firewalls.Update(client, firewall.ID, fwUpdateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	newFirewall, err := firewalls.Get(client, firewall.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newFirewall)
+	th.AssertEquals(t, newFirewall.Name, fwName)
+	th.AssertEquals(t, newFirewall.Description, fwDescription)
+	th.AssertEquals(t, newFirewall.PolicyID, policy.ID)
 
 	allPages, err := firewalls.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
@@ -98,9 +104,10 @@ func TestFirewallCRUDRouter(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer layer3.DeleteRouter(t, client, router2.ID)
 
+	description := "Some firewall description"
 	firewallUpdateOpts := firewalls.UpdateOpts{
 		PolicyID:    policy.ID,
-		Description: "Some firewall description",
+		Description: &description,
 	}
 
 	updateOpts := routerinsertion.UpdateOptsExt{
@@ -143,9 +150,10 @@ func TestFirewallCRUDRemoveRouter(t *testing.T) {
 
 	tools.PrintResource(t, firewall)
 
+	description := "Some firewall description"
 	firewallUpdateOpts := firewalls.UpdateOpts{
 		PolicyID:    policy.ID,
-		Description: "Some firewall description",
+		Description: &description,
 	}
 
 	updateOpts := routerinsertion.UpdateOptsExt{

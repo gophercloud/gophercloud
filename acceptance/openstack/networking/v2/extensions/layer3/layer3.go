@@ -17,7 +17,9 @@ import (
 func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, networkID, portID string) (*floatingips.FloatingIP, error) {
 	t.Logf("Attempting to create floating IP on port: %s", portID)
 
+	fipDescription := "Test floating IP"
 	createOpts := &floatingips.CreateOpts{
+		Description:       fipDescription,
 		FloatingNetworkID: networkID,
 		PortID:            portID,
 	}
@@ -28,6 +30,8 @@ func CreateFloatingIP(t *testing.T, client *gophercloud.ServiceClient, networkID
 	}
 
 	t.Logf("Created floating IP.")
+
+	th.AssertEquals(t, floatingIP.Description, fipDescription)
 
 	return floatingIP, err
 }
@@ -43,6 +47,7 @@ func CreateExternalRouter(t *testing.T, client *gophercloud.ServiceClient) (*rou
 	}
 
 	routerName := tools.RandomString("TESTACC-", 8)
+	routerDescription := tools.RandomString("TESTACC-DESC-", 8)
 
 	t.Logf("Attempting to create external router: %s", routerName)
 
@@ -55,6 +60,7 @@ func CreateExternalRouter(t *testing.T, client *gophercloud.ServiceClient) (*rou
 
 	createOpts := routers.CreateOpts{
 		Name:         routerName,
+		Description:  routerDescription,
 		AdminStateUp: &adminStateUp,
 		GatewayInfo:  &gatewayInfo,
 	}
@@ -71,6 +77,7 @@ func CreateExternalRouter(t *testing.T, client *gophercloud.ServiceClient) (*rou
 	t.Logf("Created router: %s", routerName)
 
 	th.AssertEquals(t, router.Name, routerName)
+	th.AssertEquals(t, router.Description, routerDescription)
 
 	return router, nil
 }
@@ -79,12 +86,14 @@ func CreateExternalRouter(t *testing.T, client *gophercloud.ServiceClient) (*rou
 // returned if the creation failed.
 func CreateRouter(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*routers.Router, error) {
 	routerName := tools.RandomString("TESTACC-", 8)
+	routerDescription := tools.RandomString("TESTACC-DESC-", 8)
 
 	t.Logf("Attempting to create router: %s", routerName)
 
 	adminStateUp := true
 	createOpts := routers.CreateOpts{
 		Name:         routerName,
+		Description:  routerDescription,
 		AdminStateUp: &adminStateUp,
 	}
 
@@ -100,6 +109,7 @@ func CreateRouter(t *testing.T, client *gophercloud.ServiceClient, networkID str
 	t.Logf("Created router: %s", routerName)
 
 	th.AssertEquals(t, router.Name, routerName)
+	th.AssertEquals(t, router.Description, routerDescription)
 
 	return router, nil
 }

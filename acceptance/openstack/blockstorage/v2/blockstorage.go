@@ -46,11 +46,13 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, volume *vol
 // error will be returned if the volume was unable to be created.
 func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Volume, error) {
 	volumeName := tools.RandomString("ACPTTEST", 16)
+	volumeDescription := tools.RandomString("ACPTTEST-DESC", 16)
 	t.Logf("Attempting to create volume: %s", volumeName)
 
 	createOpts := volumes.CreateOpts{
-		Size: 1,
-		Name: volumeName,
+		Size:        1,
+		Name:        volumeName,
+		Description: volumeDescription,
 	}
 
 	volume, err := volumes.Create(client, createOpts).Extract()
@@ -63,10 +65,10 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 		return volume, err
 	}
 
-	th.AssertEquals(t, volume.Name, volumeName)
-	th.AssertEquals(t, volume.Size, 1)
-
 	tools.PrintResource(t, volume)
+	th.AssertEquals(t, volume.Name, volumeName)
+	th.AssertEquals(t, volume.Description, volumeDescription)
+	th.AssertEquals(t, volume.Size, 1)
 
 	t.Logf("Successfully created volume: %s", volume.ID)
 

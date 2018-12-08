@@ -40,14 +40,19 @@ func TestPortsCRUD(t *testing.T) {
 	tools.PrintResource(t, port)
 
 	// Update port
-	newPortName := tools.RandomString("TESTACC-", 8)
+	newPortName := ""
+	newPortDescription := ""
 	updateOpts := ports.UpdateOpts{
-		Name: &newPortName,
+		Name:        &newPortName,
+		Description: &newPortDescription,
 	}
 	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
+
+	th.AssertEquals(t, newPort.Name, newPortName)
+	th.AssertEquals(t, newPort.Description, newPortDescription)
 
 	allPages, err := ports.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)

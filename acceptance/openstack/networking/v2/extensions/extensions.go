@@ -17,6 +17,7 @@ import (
 // returned if the creation failed.
 func CreateExternalNetwork(t *testing.T, client *gophercloud.ServiceClient) (*networks.Network, error) {
 	networkName := tools.RandomString("TESTACC-", 8)
+	networkDescription := tools.RandomString("TESTACC-DESC-", 8)
 
 	t.Logf("Attempting to create external network: %s", networkName)
 
@@ -25,6 +26,7 @@ func CreateExternalNetwork(t *testing.T, client *gophercloud.ServiceClient) (*ne
 
 	networkCreateOpts := networks.CreateOpts{
 		Name:         networkName,
+		Description:  networkDescription,
 		AdminStateUp: &adminStateUp,
 	}
 
@@ -41,6 +43,7 @@ func CreateExternalNetwork(t *testing.T, client *gophercloud.ServiceClient) (*ne
 	t.Logf("Created external network: %s", networkName)
 
 	th.AssertEquals(t, network.Name, networkName)
+	th.AssertEquals(t, network.Description, networkDescription)
 
 	return network, nil
 }
@@ -49,6 +52,7 @@ func CreateExternalNetwork(t *testing.T, client *gophercloud.ServiceClient) (*ne
 // attached. An error will be returned if the port could not be created.
 func CreatePortWithSecurityGroup(t *testing.T, client *gophercloud.ServiceClient, networkID, subnetID, secGroupID string) (*ports.Port, error) {
 	portName := tools.RandomString("TESTACC-", 8)
+	portDescription := tools.RandomString("TESTACC-DESC-", 8)
 	iFalse := false
 
 	t.Logf("Attempting to create port: %s", portName)
@@ -56,6 +60,7 @@ func CreatePortWithSecurityGroup(t *testing.T, client *gophercloud.ServiceClient
 	createOpts := ports.CreateOpts{
 		NetworkID:      networkID,
 		Name:           portName,
+		Description:    portDescription,
 		AdminStateUp:   &iFalse,
 		FixedIPs:       []ports.IP{ports.IP{SubnetID: subnetID}},
 		SecurityGroups: &[]string{secGroupID},
@@ -69,6 +74,7 @@ func CreatePortWithSecurityGroup(t *testing.T, client *gophercloud.ServiceClient
 	t.Logf("Successfully created port: %s", portName)
 
 	th.AssertEquals(t, port.Name, portName)
+	th.AssertEquals(t, port.Description, portDescription)
 	th.AssertEquals(t, port.NetworkID, networkID)
 
 	return port, nil
@@ -78,11 +84,13 @@ func CreatePortWithSecurityGroup(t *testing.T, client *gophercloud.ServiceClient
 // An error will be returned if one was failed to be created.
 func CreateSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (*groups.SecGroup, error) {
 	secGroupName := tools.RandomString("TESTACC-", 8)
+	secGroupDescription := tools.RandomString("TESTACC-DESC-", 8)
 
 	t.Logf("Attempting to create security group: %s", secGroupName)
 
 	createOpts := groups.CreateOpts{
-		Name: secGroupName,
+		Name:        secGroupName,
+		Description: secGroupDescription,
 	}
 
 	secGroup, err := groups.Create(client, createOpts).Extract()
@@ -93,6 +101,7 @@ func CreateSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (*grou
 	t.Logf("Created security group: %s", secGroup.ID)
 
 	th.AssertEquals(t, secGroup.Name, secGroupName)
+	th.AssertEquals(t, secGroup.Description, secGroupDescription)
 
 	return secGroup, nil
 }
@@ -103,10 +112,12 @@ func CreateSecurityGroup(t *testing.T, client *gophercloud.ServiceClient) (*grou
 func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, secGroupID string) (*rules.SecGroupRule, error) {
 	t.Logf("Attempting to create security group rule in group: %s", secGroupID)
 
+	description := "Rule description"
 	fromPort := tools.RandomInt(80, 89)
 	toPort := tools.RandomInt(90, 99)
 
 	createOpts := rules.CreateOpts{
+		Description:  description,
 		Direction:    "ingress",
 		EtherType:    "IPv4",
 		SecGroupID:   secGroupID,
@@ -123,6 +134,7 @@ func CreateSecurityGroupRule(t *testing.T, client *gophercloud.ServiceClient, se
 	t.Logf("Created security group rule: %s", rule.ID)
 
 	th.AssertEquals(t, rule.SecGroupID, secGroupID)
+	th.AssertEquals(t, rule.Description, description)
 
 	return rule, nil
 }
