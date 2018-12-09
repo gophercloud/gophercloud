@@ -86,12 +86,16 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	if externalNetworkID == "" {
 		missing = append(missing, "OS_EXTGW_ID")
 	}
+
+	/* // Temporarily disabled, see https://github.com/gophercloud/gophercloud/issues/1345
 	if networkID == "" {
 		missing = append(missing, "OS_NETWORK_ID")
 	}
 	if subnetID == "" {
 		missing = append(missing, "OS_SUBNET_ID")
 	}
+	*/
+
 	if networkName == "" {
 		networkName = "private"
 	}
