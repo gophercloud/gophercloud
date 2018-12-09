@@ -35,7 +35,7 @@ func TestShareNetworkCreateDestroy(t *testing.T) {
 
 	PrintShareNetwork(t, shareNetwork)
 
-	defer DeleteShareNetwork(t, client, shareNetwork)
+	defer DeleteShareNetwork(t, client, shareNetwork.ID)
 }
 
 // Create a share network and update the name and description. Get the share
@@ -83,7 +83,7 @@ func TestShareNetworkUpdate(t *testing.T) {
 
 	PrintShareNetwork(t, shareNetwork)
 
-	defer DeleteShareNetwork(t, client, shareNetwork)
+	defer DeleteShareNetwork(t, client, shareNetwork.ID)
 }
 
 func TestShareNetworkListDetail(t *testing.T) {
@@ -119,13 +119,13 @@ func TestShareNetworkListFiltering(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create share network: %v", err)
 	}
-	defer DeleteShareNetwork(t, client, shareNetwork)
+	defer DeleteShareNetwork(t, client, shareNetwork.ID)
 
 	shareNetwork, err = CreateShareNetwork(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create share network: %v", err)
 	}
-	defer DeleteShareNetwork(t, client, shareNetwork)
+	defer DeleteShareNetwork(t, client, shareNetwork.ID)
 
 	options := sharenetworks.ListOpts{
 		Name: shareNetwork.Name,
@@ -159,13 +159,13 @@ func TestShareNetworkListPagination(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create share network: %v", err)
 	}
-	defer DeleteShareNetwork(t, client, shareNetwork)
+	defer DeleteShareNetwork(t, client, shareNetwork.ID)
 
 	shareNetwork, err = CreateShareNetwork(t, client)
 	if err != nil {
 		t.Fatalf("Unable to create share network: %v", err)
 	}
-	defer DeleteShareNetwork(t, client, shareNetwork)
+	defer DeleteShareNetwork(t, client, shareNetwork.ID)
 
 	count := 0
 
@@ -205,7 +205,7 @@ func TestShareNetworkAddRemoveSecurityService(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create share network: %v", err)
 	}
-	defer DeleteShareNetwork(t, client, shareNetwork)
+	defer DeleteShareNetwork(t, client, shareNetwork.ID)
 
 	options := sharenetworks.AddSecurityServiceOpts{
 		SecurityServiceID: securityService.ID,

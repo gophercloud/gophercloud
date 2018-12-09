@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/sharenetworks"
 )
@@ -15,12 +16,19 @@ func CreateShareNetwork(t *testing.T, client *gophercloud.ServiceClient) (*share
 		t.Skip("Skipping test that requires share network creation in short mode.")
 	}
 
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
 	shareNetworkName := tools.RandomString("ACPTTEST", 16)
 	t.Logf("Attempting to create share network: %s", shareNetworkName)
 
 	createOpts := sharenetworks.CreateOpts{
-		Name:        shareNetworkName,
-		Description: "This is a shared network",
+		Name:            shareNetworkName,
+		NeutronNetID:    choices.NetworkID,
+		NeutronSubnetID: choices.SubnetID,
+		Description:     "This is a shared network",
 	}
 
 	shareNetwork, err := sharenetworks.Create(client, createOpts).Extract()
@@ -33,13 +41,13 @@ func CreateShareNetwork(t *testing.T, client *gophercloud.ServiceClient) (*share
 
 // DeleteShareNetwork will delete a share network. An error will occur if
 // the share network was unable to be deleted.
-func DeleteShareNetwork(t *testing.T, client *gophercloud.ServiceClient, shareNetwork *sharenetworks.ShareNetwork) {
-	err := sharenetworks.Delete(client, shareNetwork.ID).ExtractErr()
+func DeleteShareNetwork(t *testing.T, client *gophercloud.ServiceClient, shareNetworkID string) {
+	err := sharenetworks.Delete(client, shareNetworkID).ExtractErr()
 	if err != nil {
-		t.Fatalf("Failed to delete share network %s: %v", shareNetwork.ID, err)
+		t.Fatalf("Failed to delete share network %s: %v", shareNetworkID, err)
 	}
 
-	t.Logf("Deleted share network: %s", shareNetwork.ID)
+	t.Logf("Deleted share network: %s", shareNetworkID)
 }
 
 // PrintShareNetwork will print a share network and all of its attributes.
