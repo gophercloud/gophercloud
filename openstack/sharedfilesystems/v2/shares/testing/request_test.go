@@ -24,6 +24,28 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, n.ShareProto, "NFS")
 }
 
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUpdateResponse(t)
+
+	name := "my_new_test_share"
+	description := ""
+	iFalse := false
+	options := &shares.UpdateOpts{
+		DisplayName:        &name,
+		DisplayDescription: &description,
+		IsPublic:           &iFalse,
+	}
+	n, err := shares.Update(client.ServiceClient(), shareID, options).Extract()
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, n.Name, "my_new_test_share")
+	th.AssertEquals(t, n.Description, "")
+	th.AssertEquals(t, n.IsPublic, false)
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

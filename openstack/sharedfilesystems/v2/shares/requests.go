@@ -341,3 +341,41 @@ func Shrink(client *gophercloud.ServiceClient, id string, opts ShrinkOptsBuilder
 
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToShareUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contain options for updating an existing Share. This object is passed
+// to the share.Update function. For more information about the parameters, see
+// the Share object.
+type UpdateOpts struct {
+	// Share name. Manila share update logic doesn't have a "name" alias.
+	DisplayName *string `json:"display_name,omitempty"`
+	// Share description. Manila share update logic doesn't have a "description" alias.
+	DisplayDescription *string `json:"display_description,omitempty"`
+	// Determines whether or not the share is public
+	IsPublic *bool `json:"is_public,omitempty"`
+}
+
+// ToShareUpdateMap assembles a request body based on the contents of an
+// UpdateOpts.
+func (opts UpdateOpts) ToShareUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "share")
+}
+
+// Update will update the Share with provided information. To extract the updated
+// Share from the response, call the Extract method on the UpdateResult.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToShareUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

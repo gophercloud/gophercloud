@@ -5,6 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestShareCreate(t *testing.T) {
@@ -25,6 +26,55 @@ func TestShareCreate(t *testing.T) {
 		t.Errorf("Unable to retrieve share: %v", err)
 	}
 	PrintShare(t, created)
+}
+
+func TestShareUpdate(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create shared file system client: %v", err)
+	}
+
+	share, err := CreateShare(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create share: %v", err)
+	}
+
+	defer DeleteShare(t, client, share)
+
+	expectedShare, err := shares.Get(client, share.ID).Extract()
+	if err != nil {
+		t.Errorf("Unable to retrieve share: %v", err)
+	}
+
+	name := "NewName"
+	description := ""
+	iFalse := false
+	options := shares.UpdateOpts{
+		DisplayName:        &name,
+		DisplayDescription: &description,
+		IsPublic:           &iFalse,
+	}
+
+	expectedShare.Name = name
+	expectedShare.Description = description
+	expectedShare.IsPublic = iFalse
+
+	_, err = shares.Update(client, share.ID, options).Extract()
+	if err != nil {
+		t.Errorf("Unable to update share: %v", err)
+	}
+
+	updatedShare, err := shares.Get(client, share.ID).Extract()
+	if err != nil {
+		t.Errorf("Unable to retrieve share: %v", err)
+	}
+
+	// Update time has to be set in order to get the assert equal to pass
+	expectedShare.UpdatedAt = updatedShare.UpdatedAt
+
+	PrintShare(t, share)
+
+	th.CheckDeepEquals(t, expectedShare, updatedShare)
 }
 
 func TestShareListDetail(t *testing.T) {
@@ -55,6 +105,7 @@ func TestGrantAndRevokeAccess(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a sharedfs client: %v", err)
 	}
+	client.Microversion = "2.7"
 
 	share, err := CreateShare(t, client)
 	if err != nil {
@@ -80,6 +131,7 @@ func TestListAccessRights(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a sharedfs client: %v", err)
 	}
+	client.Microversion = "2.7"
 
 	share, err := CreateShare(t, client)
 	if err != nil {
@@ -114,6 +166,7 @@ func TestExtendAndShrink(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a sharedfs client: %v", err)
 	}
+	client.Microversion = "2.7"
 
 	share, err := CreateShare(t, client)
 	if err != nil {

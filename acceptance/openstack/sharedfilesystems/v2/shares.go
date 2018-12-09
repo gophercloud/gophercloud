@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
 )
 
@@ -17,26 +16,33 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share
 		t.Skip("Skipping test that requres share creation in short mode.")
 	}
 
-	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	shareNetwork, err := CreateShareNetwork(t, client)
 	if err != nil {
-		t.Fatalf("Unable to fetch environment information")
+		return nil, err
 	}
+	t.Logf("Share network id %s", shareNetwork.ID)
 
-	t.Logf("Share network id %s", choices.ShareNetworkID)
+	iTrue := true
 	createOpts := shares.CreateOpts{
 		Size:           1,
 		Name:           "My Test Share",
+		Description:    "My Test Description",
 		ShareProto:     "NFS",
-		ShareNetworkID: choices.ShareNetworkID,
+		ShareNetworkID: shareNetwork.ID,
+		IsPublic:       &iTrue,
 	}
 
 	share, err := shares.Create(client, createOpts).Extract()
 	if err != nil {
+		t.Logf("Failed to create %s share", share.ID)
+		DeleteShare(t, client, share)
 		return share, err
 	}
 
 	err = waitForStatus(client, share.ID, "available", 600)
 	if err != nil {
+		t.Logf("Failed to get %s share status", share.ID)
+		DeleteShare(t, client, share)
 		return share, err
 	}
 
@@ -60,7 +66,7 @@ func GrantAccess(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 	return shares.GrantAccess(client, share.ID, shares.GrantAccessOpts{
 		AccessType:  "ip",
 		AccessTo:    "0.0.0.0/32",
-		AccessLevel: "r",
+		AccessLevel: "ro",
 	}).Extract()
 }
 
@@ -83,10 +89,17 @@ func GetAccessRightsSlice(t *testing.T, client *gophercloud.ServiceClient, share
 func DeleteShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share) {
 	err := shares.Delete(client, share.ID).ExtractErr()
 	if err != nil {
-		t.Fatalf("Unable to delete share %s: %v", share.ID, err)
+		t.Errorf("Unable to delete share %s: %v", share.ID, err)
 	}
 
-	t.Logf("Deleted share: %s", share.ID)
+	err = waitForStatus(client, share.ID, "deleted", 600)
+	if err != nil {
+		t.Errorf("Failed to wait for 'deleted' status for %s share: %v", share.ID, err)
+	} else {
+		t.Logf("Deleted share: %s", share.ID)
+	}
+
+	DeleteShareNetwork(t, client, share.ShareNetworkID)
 }
 
 // PrintShare prints some information of the share
@@ -123,6 +136,14 @@ func waitForStatus(c *gophercloud.ServiceClient, id, status string, secs int) er
 	return gophercloud.WaitFor(secs, func() (bool, error) {
 		current, err := shares.Get(c, id).Extract()
 		if err != nil {
+			if _, ok := err.(gophercloud.ErrDefault404); ok {
+				switch status {
+				case "deleted":
+					return true, nil
+				default:
+					return false, err
+				}
+			}
 			return false, err
 		}
 

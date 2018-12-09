@@ -38,11 +38,14 @@ type AcceptanceTestChoices struct {
 	// NetworkName is the name of a network to launch the instance on.
 	NetworkName string
 
+	// NetworkID is the ID of a network to launch the instance on.
+	NetworkID string
+
+	// SubnetID is the ID of a subnet to launch the instance on.
+	SubnetID string
+
 	// ExternalNetworkID is the network ID of the external network.
 	ExternalNetworkID string
-
-	// ShareNetworkID is the Manila Share network ID
-	ShareNetworkID string
 
 	// DBDatastoreType is the datastore type for DB tests.
 	DBDatastoreType string
@@ -60,9 +63,10 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	magnumImageID := os.Getenv("OS_MAGNUM_IMAGE_ID")
 	magnumKeypair := os.Getenv("OS_MAGNUM_KEYPAIR")
 	networkName := os.Getenv("OS_NETWORK_NAME")
+	networkID := os.Getenv("OS_NETWORK_ID")
+	subnetID := os.Getenv("OS_SUBNET_ID")
 	floatingIPPoolName := os.Getenv("OS_POOL_NAME")
 	externalNetworkID := os.Getenv("OS_EXTGW_ID")
-	shareNetworkID := os.Getenv("OS_SHARE_NETWORK_ID")
 	dbDatastoreType := os.Getenv("OS_DB_DATASTORE_TYPE")
 	dbDatastoreVersion := os.Getenv("OS_DB_DATASTORE_VERSION")
 
@@ -82,11 +86,18 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	if externalNetworkID == "" {
 		missing = append(missing, "OS_EXTGW_ID")
 	}
+
+	/* // Temporarily disabled, see https://github.com/gophercloud/gophercloud/issues/1345
+	if networkID == "" {
+		missing = append(missing, "OS_NETWORK_ID")
+	}
+	if subnetID == "" {
+		missing = append(missing, "OS_SUBNET_ID")
+	}
+	*/
+
 	if networkName == "" {
 		networkName = "private"
-	}
-	if shareNetworkID == "" {
-		missing = append(missing, "OS_SHARE_NETWORK_ID")
 	}
 	notDistinct := ""
 	if flavorID == flavorIDResize {
@@ -113,8 +124,9 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 		MagnumImageID:      magnumImageID,
 		MagnumKeypair:      magnumKeypair,
 		NetworkName:        networkName,
+		NetworkID:          networkID,
+		SubnetID:           subnetID,
 		ExternalNetworkID:  externalNetworkID,
-		ShareNetworkID:     shareNetworkID,
 		DBDatastoreType:    dbDatastoreType,
 		DBDatastoreVersion: dbDatastoreVersion,
 	}, nil
