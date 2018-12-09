@@ -50,14 +50,14 @@ func TestShareUpdate(t *testing.T) {
 	description := ""
 	iFalse := false
 	options := shares.UpdateOpts{
-		Name:        &name,
-		Description: &description,
-		IsPublic:    &iFalse,
+		DisplayName:        &name,
+		DisplayDescription: &description,
+		IsPublic:           &iFalse,
 	}
 
-	expectedShare.Name = *options.Name
-	expectedShare.Description = *options.Description
-	expectedShare.IsPublic = *options.IsPublic
+	expectedShare.Name = name
+	expectedShare.Description = description
+	expectedShare.IsPublic = iFalse
 
 	_, err = shares.Update(client, share.ID, options).Extract()
 	if err != nil {
@@ -72,9 +72,9 @@ func TestShareUpdate(t *testing.T) {
 	// Update time has to be set in order to get the assert equal to pass
 	expectedShare.UpdatedAt = updatedShare.UpdatedAt
 
-	th.CheckDeepEquals(t, expectedShare, updatedShare)
-
 	PrintShare(t, share)
+
+	th.CheckDeepEquals(t, expectedShare, updatedShare)
 }
 
 func TestShareListDetail(t *testing.T) {

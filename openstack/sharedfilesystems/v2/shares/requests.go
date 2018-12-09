@@ -352,10 +352,10 @@ type UpdateOptsBuilder interface {
 // to the share.Update function. For more information about the parameters, see
 // the Share object.
 type UpdateOpts struct {
-	// Share name
-	Name *string `json:"display_name,omitempty"`
-	// Share description
-	Description *string `json:"display_description,omitempty"`
+	// Share name. Manila share update logic doesn't have a "name" alias.
+	DisplayName *string `json:"display_name,omitempty"`
+	// Share description. Manila share update logic doesn't have a "description" alias.
+	DisplayDescription *string `json:"display_description,omitempty"`
 	// Determines whether or not the share is public
 	IsPublic *bool `json:"is_public,omitempty"`
 }

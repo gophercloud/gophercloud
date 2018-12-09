@@ -34,9 +34,9 @@ func TestUpdate(t *testing.T) {
 	description := ""
 	iFalse := false
 	options := &shares.UpdateOpts{
-		Name:        &name,
-		Description: &description,
-		IsPublic:    &iFalse,
+		DisplayName:        &name,
+		DisplayDescription: &description,
+		IsPublic:           &iFalse,
 	}
 	n, err := shares.Update(client.ServiceClient(), shareID, options).Extract()
 
