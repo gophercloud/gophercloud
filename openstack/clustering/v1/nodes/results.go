@@ -127,3 +127,18 @@ func ExtractNodes(r pagination.Page) ([]Node, error) {
 	err := (r.(NodePage)).ExtractInto(&s)
 	return s.Nodes, err
 }
+
+// ActionResult is the response of Senlin actions. Call its Extract method to
+// obtain the Action ID of the action.
+type ActionResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any Action result as an Action.
+func (r ActionResult) Extract() (string, error) {
+	var s struct {
+		Action string `json:"action"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Action, err
+}

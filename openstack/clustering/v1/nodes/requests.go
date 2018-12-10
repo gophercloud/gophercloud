@@ -144,3 +144,64 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	}
 	return
 }
+
+// OperationName represents valid values for node operation
+type OperationName string
+
+const (
+	// Nova Profile Op Names
+	RebootOperation         OperationName = "reboot"
+	RebuildOperation        OperationName = "rebuild"
+	ChangePasswordOperation OperationName = "change_password"
+	PauseOperation          OperationName = "pause"
+	UnpauseOperation        OperationName = "unpause"
+	SuspendOperation        OperationName = "suspend"
+	ResumeOperation         OperationName = "resume"
+	LockOperation           OperationName = "lock"
+	UnlockOperation         OperationName = "unlock"
+	StartOperation          OperationName = "start"
+	StopOperation           OperationName = "stop"
+	RescueOperation         OperationName = "rescue"
+	UnrescueOperation       OperationName = "unrescue"
+	EvacuateOperation       OperationName = "evacuate"
+
+	// Heat Pofile Op Names
+	AbandonOperation OperationName = "abandon"
+)
+
+// ToNodeOpMap constructs a request body from OpOpts.
+func (opts OpOpts) ToNodeOpMap() (map[string]interface{}, error) {
+	optsMap := map[string]interface{}{string(opts.Operation): opts.Params}
+	return optsMap, nil
+}
+
+// OpOptsBuilder allows extensions to add additional parameters to the
+// Op request.
+type OpOptsBuilder interface {
+	ToNodeOpMap() (map[string]interface{}, error)
+}
+type OpParams map[string]interface{}
+
+// OpOpts represents options used to perform an operation on a node
+type OpOpts struct {
+	Operation OperationName `json:"operation,omitempty"`
+	Params    OpParams      `json:"params,omitempty"`
+}
+
+func Ops(client *gophercloud.ServiceClient, id string, opts OpOptsBuilder) (r ActionResult) {
+	b, err := opts.ToNodeOpMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	var result *http.Response
+	result, r.Err = client.Post(opsURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
+	return
+}

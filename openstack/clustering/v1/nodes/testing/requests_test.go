@@ -103,3 +103,17 @@ func TestUpdateNode(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedUpdate, *actual)
 }
+
+func TestOpsNode(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleOpsSuccessfully(t)
+
+	nodeOpts := nodes.OpOpts{
+		Operation: nodes.PauseOperation,
+	}
+	actual, err := nodes.Ops(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", nodeOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, OpsExpectedActionID, actual)
+}

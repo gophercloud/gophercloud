@@ -67,3 +67,57 @@ func TestNodesCRUD(t *testing.T) {
 	tools.PrintResource(t, node)
 	tools.PrintResource(t, node.Metadata)
 }
+
+// Performs an operation on a node
+func TestNodesOps(t *testing.T) {
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	th.AssertNoErr(t, err)
+
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.4"
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	node, err := CreateNode(t, client, cluster.ID, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node.ID)
+
+	ops := []nodes.OpOpts{
+		// TODO: Commented out due to backend returns error, as of 2018-12-14
+		//{Operation: nodes.RebuildOperation},
+		//{Operation: nodes.EvacuateOperation, Params: nodes.OpParams{"EvacuateHost": node.ID, "EvacuateForce", "True"}},
+		{Operation: nodes.RebootOperation, Params: nodes.OpParams{"type": "SOFT"}},
+		{Operation: nodes.ChangePasswordOperation, Params: nodes.OpParams{"admin_pass": "test"}},
+		{Operation: nodes.LockOperation},
+		{Operation: nodes.UnlockOperation},
+		{Operation: nodes.SuspendOperation},
+		{Operation: nodes.ResumeOperation},
+		{Operation: nodes.RescueOperation, Params: nodes.OpParams{"image_ref": choices.ImageID}},
+		{Operation: nodes.PauseOperation},
+		{Operation: nodes.UnpauseOperation},
+		{Operation: nodes.StopOperation},
+		{Operation: nodes.StartOperation},
+	}
+
+	for _, op := range ops {
+		opName := string(op.Operation)
+		t.Logf("Attempting to perform '%s' on node: %s", opName, node.ID)
+		actionID, res := nodes.Ops(client, node.ID, op).Extract()
+		th.AssertNoErr(t, res)
+
+		err = WaitForAction(client, actionID)
+		th.AssertNoErr(t, err)
+
+		node, err = nodes.Get(client, node.ID).Extract()
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, "Operation '"+opName+"' succeeded", node.StatusReason)
+		t.Logf("Successfully performed '%s' on node: %s", opName, node.ID)
+	}
+}

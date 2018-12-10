@@ -70,5 +70,19 @@ Example to Get a Node
 	}
 
 	fmt.Printf("%+v\n", node)
+
+Example to Perform an Operation on a Node
+
+	serviceClient.Microversion = "1.4"
+	nodeID := "node123"
+	opsOpts := nodes.OpOpts{
+		Operation: nodes.RebootOperation,
+		Params:    nodes.OpParams{"type": "SOFT"},
+	}
+    actionID, err := nodes.Ops(serviceClient, nodeID, opsOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package nodes
