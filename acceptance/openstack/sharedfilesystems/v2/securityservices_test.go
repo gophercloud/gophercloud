@@ -27,6 +27,10 @@ func TestSecurityServiceCreateDelete(t *testing.T) {
 		t.Fatalf("Security service name was expeted to be: %s", securityService.Name)
 	}
 
+	if newSecurityService.Description != securityService.Description {
+		t.Fatalf("Security service description was expeted to be: %s", securityService.Description)
+	}
+
 	PrintSecurityService(t, securityService)
 
 	defer DeleteSecurityService(t, client, securityService)
@@ -109,7 +113,7 @@ func TestSecurityServiceUpdate(t *testing.T) {
 	}
 
 	name := "NewName"
-	description := "New security service description"
+	description := ""
 	options := securityservices.UpdateOpts{
 		Name:        &name,
 		Description: &description,
@@ -126,12 +130,12 @@ func TestSecurityServiceUpdate(t *testing.T) {
 		t.Errorf("Unable to retrieve the security service: %v", err)
 	}
 
-	if newSecurityService.Name != *options.Name {
-		t.Fatalf("Security service name was expeted to be: %s", *options.Name)
+	if newSecurityService.Name != name {
+		t.Fatalf("Security service name was expeted to be: %s", name)
 	}
 
-	if newSecurityService.Description != *options.Description {
-		t.Fatalf("Security service description was expeted to be: %s", *options.Description)
+	if newSecurityService.Description != description {
+		t.Fatalf("Security service description was expeted to be: %s", description)
 	}
 
 	if newSecurityService.Type != options.Type {

@@ -32,8 +32,10 @@ func TestSubnetCRUD(t *testing.T) {
 
 	// Update Subnet
 	newSubnetName := tools.RandomString("TESTACC-", 8)
+	newSubnetDescription := ""
 	updateOpts := subnets.UpdateOpts{
-		Name: newSubnetName,
+		Name:        newSubnetName,
+		Description: &newSubnetDescription,
 	}
 	_, err = subnets.Update(client, subnet.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -43,6 +45,8 @@ func TestSubnetCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newSubnet)
+	th.AssertEquals(t, newSubnet.Name, newSubnetName)
+	th.AssertEquals(t, newSubnet.Description, newSubnetDescription)
 
 	allPages, err := subnets.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)

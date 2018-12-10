@@ -24,8 +24,10 @@ type PortWithExtraDHCPOpts struct {
 // network could not be created.
 func CreateNetwork(t *testing.T, client *gophercloud.ServiceClient) (*networks.Network, error) {
 	networkName := tools.RandomString("TESTACC-", 8)
+	networkDescription := tools.RandomString("TESTACC-DESC-", 8)
 	createOpts := networks.CreateOpts{
 		Name:         networkName,
+		Description:  networkDescription,
 		AdminStateUp: gophercloud.Enabled,
 	}
 
@@ -39,6 +41,7 @@ func CreateNetwork(t *testing.T, client *gophercloud.ServiceClient) (*networks.N
 	t.Logf("Successfully created network.")
 
 	th.AssertEquals(t, network.Name, networkName)
+	th.AssertEquals(t, network.Description, networkDescription)
 
 	return network, nil
 }
@@ -76,12 +79,14 @@ func CreateNetworkWithoutPortSecurity(t *testing.T, client *gophercloud.ServiceC
 // returned if the port could not be created.
 func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subnetID string) (*ports.Port, error) {
 	portName := tools.RandomString("TESTACC-", 8)
+	portDescription := tools.RandomString("TESTACC-DESC-", 8)
 
 	t.Logf("Attempting to create port: %s", portName)
 
 	createOpts := ports.CreateOpts{
 		NetworkID:    networkID,
 		Name:         portName,
+		Description:  portDescription,
 		AdminStateUp: gophercloud.Enabled,
 		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
 	}
@@ -103,6 +108,7 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subn
 	t.Logf("Successfully created port: %s", portName)
 
 	th.AssertEquals(t, port.Name, portName)
+	th.AssertEquals(t, port.Description, portDescription)
 
 	return newPort, nil
 }
@@ -233,16 +239,18 @@ func CreatePortWithExtraDHCPOpts(t *testing.T, client *gophercloud.ServiceClient
 // will be returned if the subnet could not be created.
 func CreateSubnet(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*subnets.Subnet, error) {
 	subnetName := tools.RandomString("TESTACC-", 8)
+	subnetDescription := tools.RandomString("TESTACC-DESC-", 8)
 	subnetOctet := tools.RandomInt(1, 250)
 	subnetCIDR := fmt.Sprintf("192.168.%d.0/24", subnetOctet)
 	subnetGateway := fmt.Sprintf("192.168.%d.1", subnetOctet)
 	createOpts := subnets.CreateOpts{
-		NetworkID:  networkID,
-		CIDR:       subnetCIDR,
-		IPVersion:  4,
-		Name:       subnetName,
-		EnableDHCP: gophercloud.Disabled,
-		GatewayIP:  &subnetGateway,
+		NetworkID:   networkID,
+		CIDR:        subnetCIDR,
+		IPVersion:   4,
+		Name:        subnetName,
+		Description: subnetDescription,
+		EnableDHCP:  gophercloud.Disabled,
+		GatewayIP:   &subnetGateway,
 	}
 
 	t.Logf("Attempting to create subnet: %s", subnetName)
@@ -255,6 +263,7 @@ func CreateSubnet(t *testing.T, client *gophercloud.ServiceClient, networkID str
 	t.Logf("Successfully created subnet.")
 
 	th.AssertEquals(t, subnet.Name, subnetName)
+	th.AssertEquals(t, subnet.Description, subnetDescription)
 	th.AssertEquals(t, subnet.GatewayIP, subnetGateway)
 	th.AssertEquals(t, subnet.CIDR, subnetCIDR)
 

@@ -23,8 +23,10 @@ func TestSubnetPoolsCRUD(t *testing.T) {
 	tools.PrintResource(t, subnetPool)
 
 	newName := tools.RandomString("TESTACC-", 8)
+	newDescription := ""
 	updateOpts := &subnetpools.UpdateOpts{
-		Name: newName,
+		Name:        newName,
+		Description: &newDescription,
 	}
 
 	_, err = subnetpools.Update(client, subnetPool.ID, updateOpts).Extract()
@@ -34,6 +36,8 @@ func TestSubnetPoolsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newSubnetPool)
+	th.AssertEquals(t, newSubnetPool.Name, newName)
+	th.AssertEquals(t, newSubnetPool.Description, newDescription)
 
 	allPages, err := subnetpools.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)

@@ -122,6 +122,7 @@ func TestUserCRUD(t *testing.T) {
 
 	createOpts := users.CreateOpts{
 		DefaultProjectID: project.ID,
+		Description:      "test description",
 		Password:         "foobar",
 		DomainID:         "default",
 		Options: map[users.Option]interface{}{
@@ -143,9 +144,16 @@ func TestUserCRUD(t *testing.T) {
 	tools.PrintResource(t, user)
 	tools.PrintResource(t, user.Extra)
 
+	th.AssertEquals(t, user.Description, createOpts.Description)
+	th.AssertEquals(t, user.DomainID, createOpts.DomainID)
+
 	iFalse := false
+	name := "newtestuser"
+	description := ""
 	updateOpts := users.UpdateOpts{
-		Enabled: &iFalse,
+		Name:        name,
+		Description: &description,
+		Enabled:     &iFalse,
 		Options: map[users.Option]interface{}{
 			users.MultiFactorAuthRules: nil,
 		},
@@ -160,6 +168,9 @@ func TestUserCRUD(t *testing.T) {
 	tools.PrintResource(t, newUser)
 	tools.PrintResource(t, newUser.Extra)
 
+	th.AssertEquals(t, newUser.Name, name)
+	th.AssertEquals(t, newUser.Description, description)
+	th.AssertEquals(t, newUser.Enabled, iFalse)
 	th.AssertEquals(t, newUser.Extra["disabled_reason"], "DDOS")
 }
 

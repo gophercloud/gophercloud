@@ -117,15 +117,19 @@ func TestProjectsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, project)
 
-	var iFalse bool = false
+	description := ""
+	iFalse := false
 	updateOpts := projects.UpdateOpts{
-		Enabled: &iFalse,
+		Description: &description,
+		Enabled:     &iFalse,
 	}
 
 	updatedProject, err := projects.Update(client, project.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, updatedProject)
+	th.AssertEquals(t, updatedProject.Description, description)
+	th.AssertEquals(t, updatedProject.Enabled, iFalse)
 }
 
 func TestProjectsDomain(t *testing.T) {

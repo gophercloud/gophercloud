@@ -18,12 +18,14 @@ import (
 // policy ID. An error will be returned if the firewall could not be created.
 func CreateFirewall(t *testing.T, client *gophercloud.ServiceClient, policyID string) (*firewalls.Firewall, error) {
 	firewallName := tools.RandomString("TESTACC-", 8)
+	firewallDescription := tools.RandomString("TESTACC-DESC-", 8)
 
 	t.Logf("Attempting to create firewall %s", firewallName)
 
 	iTrue := true
 	createOpts := firewalls.CreateOpts{
 		Name:         firewallName,
+		Description:  firewallDescription,
 		PolicyID:     policyID,
 		AdminStateUp: &iTrue,
 	}
@@ -41,6 +43,7 @@ func CreateFirewall(t *testing.T, client *gophercloud.ServiceClient, policyID st
 	t.Logf("Successfully created firewall %s", firewallName)
 
 	th.AssertEquals(t, firewall.Name, firewallName)
+	th.AssertEquals(t, firewall.Description, firewallDescription)
 
 	return firewall, nil
 }
@@ -50,12 +53,14 @@ func CreateFirewall(t *testing.T, client *gophercloud.ServiceClient, policyID st
 // returned if the firewall could not be created.
 func CreateFirewallOnRouter(t *testing.T, client *gophercloud.ServiceClient, policyID string, routerID string) (*firewalls.Firewall, error) {
 	firewallName := tools.RandomString("TESTACC-", 8)
+	firewallDescription := tools.RandomString("TESTACC-DESC-", 8)
 
 	t.Logf("Attempting to create firewall %s", firewallName)
 
 	firewallCreateOpts := firewalls.CreateOpts{
-		Name:     firewallName,
-		PolicyID: policyID,
+		Name:        firewallName,
+		Description: firewallDescription,
+		PolicyID:    policyID,
 	}
 
 	createOpts := routerinsertion.CreateOptsExt{
@@ -76,6 +81,7 @@ func CreateFirewallOnRouter(t *testing.T, client *gophercloud.ServiceClient, pol
 	t.Logf("Successfully created firewall %s", firewallName)
 
 	th.AssertEquals(t, firewall.Name, firewallName)
+	th.AssertEquals(t, firewall.Description, firewallDescription)
 
 	return firewall, nil
 }
@@ -84,11 +90,13 @@ func CreateFirewallOnRouter(t *testing.T, client *gophercloud.ServiceClient, pol
 // rule. An error will be returned if the rule could not be created.
 func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string) (*policies.Policy, error) {
 	policyName := tools.RandomString("TESTACC-", 8)
+	policyDescription := tools.RandomString("TESTACC-DESC-", 8)
 
 	t.Logf("Attempting to create policy %s", policyName)
 
 	createOpts := policies.CreateOpts{
-		Name: policyName,
+		Name:        policyName,
+		Description: policyDescription,
 		Rules: []string{
 			ruleID,
 		},
@@ -102,6 +110,7 @@ func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string
 	t.Logf("Successfully created policy %s", policyName)
 
 	th.AssertEquals(t, policy.Name, policyName)
+	th.AssertEquals(t, policy.Description, policyDescription)
 	th.AssertEquals(t, len(policy.Rules), 1)
 
 	return policy, nil

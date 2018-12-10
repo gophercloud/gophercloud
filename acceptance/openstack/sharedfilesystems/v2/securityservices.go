@@ -16,11 +16,13 @@ func CreateSecurityService(t *testing.T, client *gophercloud.ServiceClient) (*se
 	}
 
 	securityServiceName := tools.RandomString("ACPTTEST", 16)
+	securityServiceDescription := tools.RandomString("ACPTTEST-DESC", 16)
 	t.Logf("Attempting to create security service: %s", securityServiceName)
 
 	createOpts := securityservices.CreateOpts{
-		Name: securityServiceName,
-		Type: "kerberos",
+		Name:        securityServiceName,
+		Description: securityServiceDescription,
+		Type:        "kerberos",
 	}
 
 	securityService, err := securityservices.Create(client, createOpts).Extract()

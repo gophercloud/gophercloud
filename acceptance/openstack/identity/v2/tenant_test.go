@@ -52,8 +52,9 @@ func TestTenantsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, tenant)
 
+	description := ""
 	updateOpts := tenants.UpdateOpts{
-		Description: "some tenant",
+		Description: &description,
 	}
 
 	newTenant, err := tenants.Update(client, tenant.ID, updateOpts).Extract()
@@ -61,5 +62,5 @@ func TestTenantsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newTenant)
 
-	th.AssertEquals(t, newTenant.Description, "some tenant")
+	th.AssertEquals(t, newTenant.Description, description)
 }

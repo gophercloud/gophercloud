@@ -39,12 +39,16 @@ func TestPortsbindingCRUD(t *testing.T) {
 	tools.PrintResource(t, port)
 
 	// Update port
-	newPortName := tools.RandomString("TESTACC-", 8)
+	newPortName := ""
+	newPortDescription := ""
 	updateOpts := ports.UpdateOpts{
-		Name: &newPortName,
+		Name:        &newPortName,
+		Description: &newPortDescription,
 	}
 	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
+	th.AssertEquals(t, newPort.Description, newPortName)
+	th.AssertEquals(t, newPort.Description, newPortDescription)
 }

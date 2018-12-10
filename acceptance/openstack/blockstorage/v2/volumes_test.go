@@ -27,6 +27,20 @@ func TestVolumesCreateDestroy(t *testing.T) {
 	newVolume, err := volumes.Get(client, volume.ID).Extract()
 	th.AssertNoErr(t, err)
 
+	// Update volume
+	updatedVolumeName := ""
+	updatedVolumeDescription := ""
+	updateOpts := volumes.UpdateOpts{
+		Name:        &updatedVolumeName,
+		Description: &updatedVolumeDescription,
+	}
+	updatedVolume, err := volumes.Update(client, volume.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatedVolume)
+	th.AssertEquals(t, updatedVolume.Name, updatedVolumeName)
+	th.AssertEquals(t, updatedVolume.Description, updatedVolumeDescription)
+
 	allPages, err := volumes.List(client, volumes.ListOpts{}).AllPages()
 	th.AssertNoErr(t, err)
 

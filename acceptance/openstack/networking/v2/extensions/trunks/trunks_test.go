@@ -65,9 +65,11 @@ func TestTrunkCRUD(t *testing.T) {
 	}
 
 	// Update Trunk
-	var name = "updated_gophertrunk"
+	name := ""
+	description := ""
 	updateOpts := trunks.UpdateOpts{
-		Name: &name,
+		Name:        &name,
+		Description: &description,
 	}
 	updatedTrunk, err := trunks.Update(client, trunk.ID, updateOpts).Extract()
 	if err != nil {
@@ -77,6 +79,13 @@ func TestTrunkCRUD(t *testing.T) {
 	if trunk.Name == updatedTrunk.Name {
 		t.Fatalf("Trunk name was not updated correctly")
 	}
+
+	if trunk.Description == updatedTrunk.Description {
+		t.Fatalf("Trunk description was not updated correctly")
+	}
+
+	th.AssertDeepEquals(t, updatedTrunk.Name, name)
+	th.AssertDeepEquals(t, updatedTrunk.Description, description)
 
 	// Get subports
 	subports, err := trunks.GetSubports(client, trunk.ID).Extract()

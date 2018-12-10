@@ -26,8 +26,10 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 
 	tools.PrintResource(t, group)
 
-	var description = "A security group"
+	var name = "Update group"
+	var description = ""
 	updateOpts := groups.UpdateOpts{
+		Name:        name,
 		Description: &description,
 	}
 
@@ -35,6 +37,8 @@ func TestSecurityGroupsCreateUpdateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newGroup)
+	th.AssertEquals(t, newGroup.Name, name)
+	th.AssertEquals(t, newGroup.Description, description)
 
 	listOpts := groups.ListOpts{}
 	allPages, err := groups.List(client, listOpts).AllPages()
