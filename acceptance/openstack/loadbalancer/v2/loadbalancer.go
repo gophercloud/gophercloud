@@ -12,6 +12,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/loadbalancers"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/monitors"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/pools"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 const loadbalancerActiveTimeoutSeconds = 300
@@ -31,7 +32,7 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 		Name:           listenerName,
 		Description:    listenerDescription,
 		LoadbalancerID: lb.ID,
-		Protocol:       "TCP",
+		Protocol:       listeners.ProtocolTCP,
 		ProtocolPort:   listenerPort,
 	}
 
@@ -45,6 +46,12 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		return listener, fmt.Errorf("Timed out waiting for loadbalancer to become active")
 	}
+
+	th.AssertEquals(t, listener.Name, listenerName)
+	th.AssertEquals(t, listener.Description, listenerDescription)
+	th.AssertEquals(t, listener.Loadbalancers[0].ID, lb.ID)
+	th.AssertEquals(t, listener.Protocol, string(listeners.ProtocolTCP))
+	th.AssertEquals(t, listener.ProtocolPort, listenerPort)
 
 	return listener, nil
 }
@@ -77,6 +84,11 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 	}
 
 	t.Logf("LoadBalancer %s is active", lbName)
+
+	th.AssertEquals(t, lb.Name, lbName)
+	th.AssertEquals(t, lb.Description, lbDescription)
+	th.AssertEquals(t, lb.VipSubnetID, subnetID)
+	th.AssertEquals(t, lb.AdminStateUp, true)
 
 	return lb, nil
 }
@@ -115,6 +127,8 @@ func CreateMember(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalan
 		return member, fmt.Errorf("Timed out waiting for loadbalancer to become active")
 	}
 
+	th.AssertEquals(t, member.Name, memberName)
+
 	return member, nil
 }
 
@@ -131,7 +145,7 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 		Delay:      10,
 		Timeout:    5,
 		MaxRetries: 5,
-		Type:       "PING",
+		Type:       monitors.TypePING,
 	}
 
 	monitor, err := monitors.Create(client, createOpts).Extract()
@@ -144,6 +158,9 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		return monitor, fmt.Errorf("Timed out waiting for loadbalancer to become active")
 	}
+
+	th.AssertEquals(t, monitor.Name, monitorName)
+	th.AssertEquals(t, monitor.Type, monitors.TypePING)
 
 	return monitor, nil
 }
@@ -176,6 +193,12 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalance
 		return pool, fmt.Errorf("Timed out waiting for loadbalancer to become active")
 	}
 
+	th.AssertEquals(t, pool.Name, poolName)
+	th.AssertEquals(t, pool.Description, poolDescription)
+	th.AssertEquals(t, pool.Protocol, string(pools.ProtocolTCP))
+	th.AssertEquals(t, pool.Loadbalancers[0].ID, lb.ID)
+	th.AssertEquals(t, pool.LBMethod, string(pools.LBMethodLeastConnections))
+
 	return pool, nil
 }
 
@@ -207,6 +230,12 @@ func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *l
 		return policy, fmt.Errorf("Timed out waiting for loadbalancer to become active")
 	}
 
+	th.AssertEquals(t, policy.Name, policyName)
+	th.AssertEquals(t, policy.Description, policyDescription)
+	th.AssertEquals(t, policy.ListenerID, listener.ID)
+	th.AssertEquals(t, policy.Action, string(l7policies.ActionRedirectToURL))
+	th.AssertEquals(t, policy.RedirectURL, "http://www.example.com")
+
 	return policy, nil
 }
 
@@ -230,6 +259,10 @@ func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID stri
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		return rule, fmt.Errorf("Timed out waiting for loadbalancer to become active")
 	}
+
+	th.AssertEquals(t, rule.RuleType, string(l7policies.TypePath))
+	th.AssertEquals(t, rule.CompareType, string(l7policies.CompareTypeStartWith))
+	th.AssertEquals(t, rule.Value, "/api")
 
 	return rule, nil
 }

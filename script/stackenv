@@ -7,7 +7,7 @@ source openrc admin admin
 openstack flavor create m1.acctest --id 99 --ram 512 --disk 5 --vcpu 1 --ephemeral 10
 openstack flavor create m1.resize --id 98 --ram 512 --disk 6 --vcpu 1 --ephemeral 10
 _NETWORK_ID=$(openstack network show private -c id -f value)
-_SUBNET_ID=$(openstack network show private -c subnets -f value | cut -d, -f1)
+_SUBNET_ID=$(openstack subnet show private_subnet -c id -f value)
 _EXTGW_ID=$(openstack network show public -c id -f value)
 _IMAGE=$(openstack image list | grep -i cirros | head -n 1)
 _IMAGE_ID=$(echo $_IMAGE | awk -F\| '{print $2}' | tr -d ' ')

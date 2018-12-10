@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/listeners"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/loadbalancers"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/monitors"
@@ -31,7 +32,7 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 		Name:           listenerName,
 		Description:    listenerDescription,
 		LoadbalancerID: lb.ID,
-		Protocol:       "TCP",
+		Protocol:       listeners.ProtocolHTTP,
 		ProtocolPort:   listenerPort,
 	}
 
@@ -49,7 +50,7 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 	th.AssertEquals(t, listener.Name, listenerName)
 	th.AssertEquals(t, listener.Description, listenerDescription)
 	th.AssertEquals(t, listener.Loadbalancers[0].ID, lb.ID)
-	th.AssertEquals(t, listener.Protocol, "TCP")
+	th.AssertEquals(t, listener.Protocol, string(listeners.ProtocolHTTP))
 	th.AssertEquals(t, listener.ProtocolPort, listenerPort)
 
 	return listener, nil
@@ -87,7 +88,7 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 	th.AssertEquals(t, lb.Name, lbName)
 	th.AssertEquals(t, lb.Description, lbDescription)
 	th.AssertEquals(t, lb.VipSubnetID, subnetID)
-	th.AssertEquals(t, lb.AdminStateUp, gophercloud.Enabled)
+	th.AssertEquals(t, lb.AdminStateUp, true)
 
 	return lb, nil
 }
@@ -144,7 +145,7 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 		Delay:      10,
 		Timeout:    5,
 		MaxRetries: 5,
-		Type:       "PING",
+		Type:       monitors.TypePING,
 	}
 
 	monitor, err := monitors.Create(client, createOpts).Extract()
@@ -159,6 +160,7 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 	}
 
 	th.AssertEquals(t, monitor.Name, monitorName)
+	th.AssertEquals(t, monitor.Type, monitors.TypePING)
 
 	return monitor, nil
 }
@@ -175,7 +177,7 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalance
 	createOpts := pools.CreateOpts{
 		Name:           poolName,
 		Description:    poolDescription,
-		Protocol:       pools.ProtocolTCP,
+		Protocol:       pools.ProtocolHTTP,
 		LoadbalancerID: lb.ID,
 		LBMethod:       pools.LBMethodLeastConnections,
 	}
@@ -193,11 +195,110 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalance
 
 	th.AssertEquals(t, pool.Name, poolName)
 	th.AssertEquals(t, pool.Description, poolDescription)
-	th.AssertEquals(t, pool.Protocol, pools.ProtocolTCP)
+	th.AssertEquals(t, pool.Protocol, string(pools.ProtocolHTTP))
 	th.AssertEquals(t, pool.Loadbalancers[0].ID, lb.ID)
-	th.AssertEquals(t, pool.LBMethod, pools.LBMethodLeastConnections)
+	th.AssertEquals(t, pool.LBMethod, string(pools.LBMethodLeastConnections))
 
 	return pool, nil
+}
+
+// CreateL7Policy will create a l7 policy with a random name with a specified listener
+// and loadbalancer. An error will be returned if the l7 policy could not be
+// created.
+func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *listeners.Listener, lb *loadbalancers.LoadBalancer) (*l7policies.L7Policy, error) {
+	policyName := tools.RandomString("TESTACCT-", 8)
+	policyDescription := tools.RandomString("TESTACCT-DESC-", 8)
+
+	t.Logf("Attempting to create l7 policy %s on the %s listener ID", policyName, listener.ID)
+
+	createOpts := l7policies.CreateOpts{
+		Name:        policyName,
+		Description: policyDescription,
+		ListenerID:  listener.ID,
+		Action:      l7policies.ActionRedirectToURL,
+		RedirectURL: "http://www.example.com",
+	}
+
+	policy, err := l7policies.Create(client, createOpts).Extract()
+	if err != nil {
+		return policy, err
+	}
+
+	t.Logf("Successfully created l7 policy %s", policyName)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		return policy, fmt.Errorf("Timed out waiting for loadbalancer to become active")
+	}
+
+	th.AssertEquals(t, policy.Name, policyName)
+	th.AssertEquals(t, policy.Description, policyDescription)
+	th.AssertEquals(t, policy.ListenerID, listener.ID)
+	th.AssertEquals(t, policy.Action, string(l7policies.ActionRedirectToURL))
+	th.AssertEquals(t, policy.RedirectURL, "http://www.example.com")
+
+	return policy, nil
+}
+
+// CreateL7Rule creates a l7 rule for specified l7 policy.
+func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID string, lb *loadbalancers.LoadBalancer) (*l7policies.Rule, error) {
+	t.Logf("Attempting to create l7 rule for policy %s", policyID)
+
+	createOpts := l7policies.CreateRuleOpts{
+		RuleType:    l7policies.TypePath,
+		CompareType: l7policies.CompareTypeStartWith,
+		Value:       "/api",
+	}
+
+	rule, err := l7policies.CreateRule(client, policyID, createOpts).Extract()
+	if err != nil {
+		return rule, err
+	}
+
+	t.Logf("Successfully created l7 rule for policy %s", policyID)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		return rule, fmt.Errorf("Timed out waiting for loadbalancer to become active")
+	}
+
+	th.AssertEquals(t, rule.RuleType, string(l7policies.TypePath))
+	th.AssertEquals(t, rule.CompareType, string(l7policies.CompareTypeStartWith))
+	th.AssertEquals(t, rule.Value, "/api")
+
+	return rule, nil
+}
+
+// DeleteL7Policy will delete a specified l7 policy. A fatal error will occur if
+// the l7 policy could not be deleted. This works best when used as a deferred
+// function.
+func DeleteL7Policy(t *testing.T, client *gophercloud.ServiceClient, lbID, policyID string) {
+	t.Logf("Attempting to delete l7 policy %s", policyID)
+
+	if err := l7policies.Delete(client, policyID).ExtractErr(); err != nil {
+		t.Fatalf("Unable to delete l7 policy: %v", err)
+	}
+
+	if err := WaitForLoadBalancerState(client, lbID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	t.Logf("Successfully deleted l7 policy %s", policyID)
+}
+
+// DeleteL7Rule will delete a specified l7 rule. A fatal error will occur if
+// the l7 rule could not be deleted. This works best when used as a deferred
+// function.
+func DeleteL7Rule(t *testing.T, client *gophercloud.ServiceClient, lbID, policyID, ruleID string) {
+	t.Logf("Attempting to delete l7 rule %s", ruleID)
+
+	if err := l7policies.DeleteRule(client, policyID, ruleID).ExtractErr(); err != nil {
+		t.Fatalf("Unable to delete l7 rule: %v", err)
+	}
+
+	if err := WaitForLoadBalancerState(client, lbID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	t.Logf("Successfully deleted l7 rule %s", ruleID)
 }
 
 // DeleteListener will delete a specified listener. A fatal error will occur if
