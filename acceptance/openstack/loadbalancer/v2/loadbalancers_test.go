@@ -18,19 +18,13 @@ import (
 
 func TestLoadbalancersList(t *testing.T) {
 	client, err := clients.NewLoadBalancerV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a loadbalancer client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allPages, err := loadbalancers.List(client, nil).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to list loadbalancers: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	allLoadbalancers, err := loadbalancers.ExtractLoadBalancers(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract loadbalancers: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	for _, lb := range allLoadbalancers {
 		tools.PrintResource(t, lb)
@@ -39,63 +33,43 @@ func TestLoadbalancersList(t *testing.T) {
 
 func TestLoadbalancersCRUD(t *testing.T) {
 	netClient, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a networking client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	lbClient, err := clients.NewLoadBalancerV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a loadbalancer client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	network, err := networking.CreateNetwork(t, netClient)
-	if err != nil {
-		t.Fatalf("Unable to create network: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer networking.DeleteNetwork(t, netClient, network.ID)
 
 	subnet, err := networking.CreateSubnet(t, netClient, network.ID)
-	if err != nil {
-		t.Fatalf("Unable to create subnet: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
 
 	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create loadbalancer: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteLoadBalancer(t, lbClient, lb.ID)
-
-	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		t.Fatalf("Timed out waiting for loadbalancer to become active")
-	}
 
 	lbDescription := ""
 	updateLoadBalancerOpts := loadbalancers.UpdateOpts{
 		Description: &lbDescription,
 	}
 	_, err = loadbalancers.Update(lbClient, lb.ID, updateLoadBalancerOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update loadbalancer %v: ", err)
-	}
+	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newLB, err := loadbalancers.Get(lbClient, lb.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get loadbalancer: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newLB)
 
 	th.AssertEquals(t, newLB.Description, lbDescription)
 
 	lbStats, err := loadbalancers.GetStats(lbClient, lb.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get loadbalancer's statistics: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, lbStats)
 
@@ -104,49 +78,38 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	// Listener
 	listener, err := CreateListener(t, lbClient, lb)
-	if err != nil {
-		t.Fatalf("Unable to create listener: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteListener(t, lbClient, lb.ID, listener.ID)
 
-	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		t.Fatalf("Timed out waiting for loadbalancer to become active")
-	}
-
+	listenerName := ""
 	listenerDescription := ""
 	updateListenerOpts := listeners.UpdateOpts{
+		Name:        &listenerName,
 		Description: &listenerDescription,
 	}
 	_, err = listeners.Update(lbClient, listener.ID, updateListenerOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update listener")
-	}
+	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newListener, err := listeners.Get(lbClient, listener.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get listener")
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newListener)
 
+	th.AssertEquals(t, newListener.Name, listenerName)
 	th.AssertEquals(t, newListener.Description, listenerDescription)
 
 	listenerStats, err := listeners.GetStats(lbClient, listener.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get listener's statistics: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, listenerStats)
 
 	// L7 policy
 	policy, err := CreateL7Policy(t, lbClient, listener, lb)
-	if err != nil {
-		t.Fatalf("Unable to create l7 policy: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteL7Policy(t, lbClient, lb.ID, policy.ID)
 
 	newDescription := ""
@@ -154,18 +117,14 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		Description: &newDescription,
 	}
 	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update l7 policy")
-	}
+	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newPolicy, err := l7policies.Get(lbClient, policy.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get l7 policy: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPolicy)
 
@@ -173,19 +132,13 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	// L7 rule
 	rule, err := CreateL7Rule(t, lbClient, newPolicy.ID, lb)
-	if err != nil {
-		t.Fatalf("Unable to create l7 rule: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteL7Rule(t, lbClient, lb.ID, policy.ID, rule.ID)
 
 	allPages, err := l7policies.ListRules(lbClient, policy.ID, l7policies.ListRulesOpts{}).AllPages()
-	if err != nil {
-		t.Fatalf("Unable to get l7 rules: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	allRules, err := l7policies.ExtractRules(allPages)
-	if err != nil {
-		t.Fatalf("Unable to extract l7 rules: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	for _, rule := range allRules {
 		tools.PrintResource(t, rule)
 	}
@@ -196,55 +149,45 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		Value:       "/images/special*",
 	}
 	_, err = l7policies.UpdateRule(lbClient, policy.ID, rule.ID, updateL7ruleOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update l7 rule: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newRule, err := l7policies.GetRule(lbClient, newPolicy.ID, rule.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get l7 rule: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
 
 	// Pool
 	pool, err := CreatePool(t, lbClient, lb)
-	if err != nil {
-		t.Fatalf("Unable to create pool: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeletePool(t, lbClient, lb.ID, pool.ID)
 
+	poolName := ""
 	poolDescription := ""
 	updatePoolOpts := pools.UpdateOpts{
+		Name:        &poolName,
 		Description: &poolDescription,
 	}
 	_, err = pools.Update(lbClient, pool.ID, updatePoolOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update pool")
-	}
+	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newPool, err := pools.Get(lbClient, pool.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get pool")
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPool)
-
+	th.AssertEquals(t, newPool.Name, poolName)
 	th.AssertEquals(t, newPool.Description, poolDescription)
 
 	// Member
 	member, err := CreateMember(t, lbClient, lb, newPool, subnet.ID, subnet.CIDR)
-	if err != nil {
-		t.Fatalf("Unable to create member: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteMember(t, lbClient, lb.ID, pool.ID, member.ID)
 
 	memberName := ""
@@ -254,18 +197,14 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		Weight: &newWeight,
 	}
 	_, err = pools.UpdateMember(lbClient, pool.ID, member.ID, updateMemberOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update pool")
-	}
+	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newMember, err := pools.GetMember(lbClient, pool.ID, member.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get member")
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMember)
 	th.AssertEquals(t, newMember.Name, memberName)
@@ -286,17 +225,13 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	}
 
 	newMember, err = pools.GetMember(lbClient, pool.ID, member.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get member")
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMember)
 
 	// Monitor
 	monitor, err := CreateMonitor(t, lbClient, lb, newPool)
-	if err != nil {
-		t.Fatalf("Unable to create monitor: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer DeleteMonitor(t, lbClient, lb.ID, monitor.ID)
 
 	monName := ""
@@ -306,57 +241,42 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		Delay: newDelay,
 	}
 	_, err = monitors.Update(lbClient, monitor.ID, updateMonitorOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update monitor")
-	}
+	th.AssertNoErr(t, err)
 
 	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newMonitor, err := monitors.Get(lbClient, monitor.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get monitor")
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMonitor)
 
 	th.AssertEquals(t, newMonitor.Name, monName)
+	th.AssertEquals(t, newMonitor.Delay, newDelay)
 }
 
 func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	netClient, err := clients.NewNetworkV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a networking client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	lbClient, err := clients.NewLoadBalancerV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a loadbalancer client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	network, err := networking.CreateNetwork(t, netClient)
-	if err != nil {
-		t.Fatalf("Unable to create network: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer networking.DeleteNetwork(t, netClient, network.ID)
 
 	subnet, err := networking.CreateSubnet(t, netClient, network.ID)
-	if err != nil {
-		t.Fatalf("Unable to create subnet: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
 
 	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID)
-	if err != nil {
-		t.Fatalf("Unable to create loadbalancer: %v", err)
-	}
+	th.AssertNoErr(t, err)
 	defer CascadeDeleteLoadBalancer(t, lbClient, lb.ID)
 
 	newLB, err := loadbalancers.Get(lbClient, lb.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get loadbalancer: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newLB)
 
@@ -365,105 +285,81 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 
 	// Listener
 	listener, err := CreateListener(t, lbClient, lb)
-	if err != nil {
-		t.Fatalf("Unable to create listener: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	listenerDescription := "Some listener description"
 	updateListenerOpts := listeners.UpdateOpts{
 		Description: &listenerDescription,
 	}
 	_, err = listeners.Update(lbClient, listener.ID, updateListenerOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update listener")
-	}
+	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newListener, err := listeners.Get(lbClient, listener.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get listener")
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newListener)
 
 	// Pool
 	pool, err := CreatePool(t, lbClient, lb)
-	if err != nil {
-		t.Fatalf("Unable to create pool: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	poolDescription := "Some pool description"
 	updatePoolOpts := pools.UpdateOpts{
 		Description: &poolDescription,
 	}
 	_, err = pools.Update(lbClient, pool.ID, updatePoolOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update pool")
-	}
+	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newPool, err := pools.Get(lbClient, pool.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get pool")
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPool)
 
 	// Member
 	member, err := CreateMember(t, lbClient, lb, newPool, subnet.ID, subnet.CIDR)
-	if err != nil {
-		t.Fatalf("Unable to create member: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	newWeight := tools.RandomInt(11, 100)
 	updateMemberOpts := pools.UpdateMemberOpts{
 		Weight: &newWeight,
 	}
 	_, err = pools.UpdateMember(lbClient, pool.ID, member.ID, updateMemberOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update pool")
-	}
+	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newMember, err := pools.GetMember(lbClient, pool.ID, member.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get member")
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMember)
 
 	// Monitor
 	monitor, err := CreateMonitor(t, lbClient, lb, newPool)
-	if err != nil {
-		t.Fatalf("Unable to create monitor: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	newDelay := tools.RandomInt(20, 30)
 	updateMonitorOpts := monitors.UpdateOpts{
 		Delay: newDelay,
 	}
 	_, err = monitors.Update(lbClient, monitor.ID, updateMonitorOpts).Extract()
-	if err != nil {
-		t.Fatalf("Unable to update monitor")
-	}
+	th.AssertNoErr(t, err)
 
 	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
 	newMonitor, err := monitors.Get(lbClient, monitor.ID).Extract()
-	if err != nil {
-		t.Fatalf("Unable to get monitor")
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMonitor)
 

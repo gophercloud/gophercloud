@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/listeners"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/loadbalancers"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/lbaas_v2/monitors"
@@ -46,10 +47,28 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteLoadBalancer(t, client, lb.ID)
 
+	lbDescription := ""
+	updateLoadBalancerOpts := loadbalancers.UpdateOpts{
+		Description: &lbDescription,
+	}
+	_, err = loadbalancers.Update(client, lb.ID, updateLoadBalancerOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
 	newLB, err := loadbalancers.Get(client, lb.ID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newLB)
+
+	th.AssertEquals(t, newLB.Description, lbDescription)
+
+	lbStats, err := loadbalancers.GetStats(client, lb.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, lbStats)
 
 	// Because of the time it takes to create a loadbalancer,
 	// this test will include some other resources.
@@ -76,8 +95,63 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newListener)
+
 	th.AssertEquals(t, newListener.Name, listenerName)
 	th.AssertEquals(t, newListener.Description, listenerDescription)
+
+	// L7 policy
+	policy, err := CreateL7Policy(t, client, listener, lb)
+	th.AssertNoErr(t, err)
+	defer DeleteL7Policy(t, client, lb.ID, policy.ID)
+
+	newDescription := ""
+	updateL7policyOpts := l7policies.UpdateOpts{
+		Description: &newDescription,
+	}
+	_, err = l7policies.Update(client, policy.ID, updateL7policyOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newPolicy, err := l7policies.Get(client, policy.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newPolicy)
+
+	th.AssertEquals(t, newPolicy.Description, newDescription)
+
+	// L7 rule
+	rule, err := CreateL7Rule(t, client, newPolicy.ID, lb)
+	th.AssertNoErr(t, err)
+	defer DeleteL7Rule(t, client, lb.ID, policy.ID, rule.ID)
+
+	allPages, err := l7policies.ListRules(client, policy.ID, l7policies.ListRulesOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+	allRules, err := l7policies.ExtractRules(allPages)
+	th.AssertNoErr(t, err)
+	for _, rule := range allRules {
+		tools.PrintResource(t, rule)
+	}
+
+	/* NOT supported on F5 driver */
+	updateL7ruleOpts := l7policies.UpdateRuleOpts{
+		RuleType:    l7policies.TypePath,
+		CompareType: l7policies.CompareTypeRegex,
+		Value:       "/images/special*",
+	}
+	_, err = l7policies.UpdateRule(client, policy.ID, rule.ID, updateL7ruleOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newRule, err := l7policies.GetRule(client, newPolicy.ID, rule.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newRule)
 
 	// Pool
 	pool, err := CreatePool(t, client, lb)
@@ -151,6 +225,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMonitor)
-	th.AssertEquals(t, newMonitor.Name, newMonitor)
+
+	th.AssertEquals(t, newMonitor.Name, monName)
 	th.AssertEquals(t, newMonitor.Delay, newDelay)
 }

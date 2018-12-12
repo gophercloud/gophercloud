@@ -51,9 +51,9 @@ type CreateOpts struct {
 	// A human-readable description for the resource.
 	Description string `json:"description,omitempty"`
 
-	// ProjectID is the UUID of the project who owns the L7 policy in octavia.
+	// TenantID is the UUID of the tenant who owns the L7 policy in octavia.
 	// Only administrative users can specify a project UUID other than their own.
-	ProjectID string `json:"project_id,omitempty"`
+	TenantID string `json:"tenant_id,omitempty"`
 
 	// Requests matching this policy will be redirected to the pool with this ID.
 	// Only valid if action is REDIRECT_TO_POOL.
@@ -97,7 +97,7 @@ type ListOpts struct {
 	Description    string `q:"description"`
 	ListenerID     string `q:"listener_id"`
 	Action         string `q:"action"`
-	ProjectID      string `q:"project_id"`
+	TenantID       string `q:"tenant_id"`
 	RedirectPoolID string `q:"redirect_pool_id"`
 	RedirectURL    string `q:"redirect_url"`
 	Position       int32  `q:"position"`
@@ -211,9 +211,9 @@ type CreateRuleOpts struct {
 	// The value to use for the comparison. For example, the file type to compare.
 	Value string `json:"value" required:"true"`
 
-	// ProjectID is the UUID of the project who owns the rule in octavia.
+	// TenantID is the UUID of the tenant who owns the rule in octavia.
 	// Only administrative users can specify a project UUID other than their own.
-	ProjectID string `json:"project_id,omitempty"`
+	TenantID string `json:"tenant_id,omitempty"`
 
 	// The key to use for the comparison. For example, the name of the cookie to evaluate.
 	Key string `json:"key,omitempty"`
@@ -253,7 +253,7 @@ type ListRulesOptsBuilder interface {
 // through the API.
 type ListRulesOpts struct {
 	RuleType     RuleType    `q:"type"`
-	ProjectID    string      `q:"project_id"`
+	TenantID     string      `q:"tenant_id"`
 	CompareType  CompareType `q:"compare_type"`
 	Value        string      `q:"value"`
 	Key          string      `q:"key"`

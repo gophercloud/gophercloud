@@ -89,8 +89,8 @@ const PostUpdateLoadbalancerBody = `
 }
 `
 
-// SingleLoadbalancerBody is the canned body of a Get request on an existing loadbalancer.
-const LoadbalancerStatuesesTree = `
+// GetLoadbalancerStatusesBody is the canned request body of a Get request on loadbalancer's status.
+const GetLoadbalancerStatusesBody = `
 {
 	"statuses" : {
 		"loadbalancer": {
@@ -101,27 +101,40 @@ const LoadbalancerStatuesesTree = `
 			"listeners": [{
 				"id": "db902c0c-d5ff-4753-b465-668ad9656918",
 				"name": "db",
-				"provisioning_status": "PENDING_UPDATE",
+				"provisioning_status": "ACTIVE",
 				"pools": [{
 					"id": "fad389a3-9a4a-4762-a365-8c7038508b5d",
 					"name": "db",
-					"provisioning_status": "PENDING_UPDATE",
+					"provisioning_status": "ACTIVE",
 					"healthmonitor": {
 						"id": "67306cda-815d-4354-9fe4-59e09da9c3c5",
 						"type":"PING",
-						"provisioning_status": "PENDING_UPDATE"
+						"provisioning_status": "ACTIVE"
 					},
 					"members":[{
 						"id": "2a280670-c202-4b0b-a562-34077415aabf",
 						"name": "db",
 						"address": "10.0.2.11",
 						"protocol_port": 80,
-						"provisioning_status": "PENDING_UPDATE"
+						"provisioning_status": "ACTIVE"
 					}]
 				}]
 			}]
 		}
 	}
+}
+`
+
+// LoadbalancerStatsTree is the canned request body of a Get request on loadbalancer's statistics.
+const GetLoadbalancerStatsBody = `
+{
+    "stats": {
+        "active_connections": 0,
+        "bytes_in": 9532,
+        "bytes_out": 22033,
+        "request_errors": 46,
+        "total_connections": 112
+    }
 }
 `
 
@@ -168,33 +181,42 @@ var (
 		ProvisioningStatus: "PENDING_CREATE",
 		OperatingStatus:    "OFFLINE",
 	}
-	LoadbalancerStatusesTree = loadbalancers.LoadBalancer{
-		ID:                 "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
-		Name:               "db_lb",
-		ProvisioningStatus: "PENDING_UPDATE",
-		OperatingStatus:    "ACTIVE",
-		Listeners: []listeners.Listener{{
-			ID:                 "db902c0c-d5ff-4753-b465-668ad9656918",
-			Name:               "db",
+	LoadbalancerStatusesTree = loadbalancers.StatusTree{
+		Loadbalancer: &loadbalancers.LoadBalancer{
+			ID:                 "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
+			Name:               "db_lb",
 			ProvisioningStatus: "PENDING_UPDATE",
-			Pools: []pools.Pool{{
-				ID:                 "fad389a3-9a4a-4762-a365-8c7038508b5d",
+			OperatingStatus:    "ACTIVE",
+			Listeners: []listeners.Listener{{
+				ID:                 "db902c0c-d5ff-4753-b465-668ad9656918",
 				Name:               "db",
-				ProvisioningStatus: "PENDING_UPDATE",
-				Monitor: monitors.Monitor{
-					ID:                 "67306cda-815d-4354-9fe4-59e09da9c3c5",
-					Type:               "PING",
-					ProvisioningStatus: "PENDING_UPDATE",
-				},
-				Members: []pools.Member{{
-					ID:                 "2a280670-c202-4b0b-a562-34077415aabf",
+				ProvisioningStatus: "ACTIVE",
+				Pools: []pools.Pool{{
+					ID:                 "fad389a3-9a4a-4762-a365-8c7038508b5d",
 					Name:               "db",
-					Address:            "10.0.2.11",
-					ProtocolPort:       80,
-					ProvisioningStatus: "PENDING_UPDATE",
+					ProvisioningStatus: "ACTIVE",
+					Monitor: monitors.Monitor{
+						ID:                 "67306cda-815d-4354-9fe4-59e09da9c3c5",
+						Type:               "PING",
+						ProvisioningStatus: "ACTIVE",
+					},
+					Members: []pools.Member{{
+						ID:                 "2a280670-c202-4b0b-a562-34077415aabf",
+						Name:               "db",
+						Address:            "10.0.2.11",
+						ProtocolPort:       80,
+						ProvisioningStatus: "ACTIVE",
+					}},
 				}},
 			}},
-		}},
+		},
+	}
+	LoadbalancerStatsTree = loadbalancers.Stats{
+		ActiveConnections: 0,
+		BytesIn:           9532,
+		BytesOut:          22033,
+		RequestErrors:     46,
+		TotalConnections:  112,
 	}
 )
 
@@ -259,7 +281,7 @@ func HandleLoadbalancerGetStatusesTree(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 
-		fmt.Fprintf(w, LoadbalancerStatuesesTree)
+		fmt.Fprintf(w, GetLoadbalancerStatusesBody)
 	})
 }
 
@@ -287,5 +309,16 @@ func HandleLoadbalancerUpdateSuccessfully(t *testing.T) {
 		}`)
 
 		fmt.Fprintf(w, PostUpdateLoadbalancerBody)
+	})
+}
+
+// HandleLoadbalancerGetStatsTree sets up the test server to respond to a loadbalancer Get stats tree request.
+func HandleLoadbalancerGetStatsTree(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/loadbalancers/36e08a3e-a78f-4b40-a229-1e7e23eee1ab/stats", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, GetLoadbalancerStatsBody)
 	})
 }
