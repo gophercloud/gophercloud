@@ -62,6 +62,10 @@ type CreateOpts struct {
 	// Requests matching this policy will be redirected to this URL.
 	// Only valid if action is REDIRECT_TO_URL.
 	RedirectURL string `json:"redirect_url,omitempty"`
+
+	// The administrative state of the Loadbalancer. A valid value is true (UP)
+	// or false (DOWN).
+	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 }
 
 // ToL7PolicyCreateMap builds a request body from CreateOpts.
@@ -90,11 +94,14 @@ type ListOptsBuilder interface {
 // the API.
 type ListOpts struct {
 	Name           string `q:"name"`
+	Description    string `q:"description"`
 	ListenerID     string `q:"listener_id"`
 	Action         string `q:"action"`
 	ProjectID      string `q:"project_id"`
 	RedirectPoolID string `q:"redirect_pool_id"`
 	RedirectURL    string `q:"redirect_url"`
+	Position       int32  `q:"position"`
+	AdminStateUp   bool   `q:"admin_state_up"`
 	ID             string `q:"id"`
 	Limit          int    `q:"limit"`
 	Marker         string `q:"marker"`
@@ -168,6 +175,10 @@ type UpdateOpts struct {
 	// Requests matching this policy will be redirected to this URL.
 	// Only valid if action is REDIRECT_TO_URL.
 	RedirectURL *string `json:"redirect_url,omitempty"`
+
+	// The administrative state of the Loadbalancer. A valid value is true (UP)
+	// or false (DOWN).
+	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 }
 
 // ToL7PolicyUpdateMap builds a request body from UpdateOpts.
@@ -210,6 +221,10 @@ type CreateRuleOpts struct {
 	// When true the logic of the rule is inverted. For example, with invert true,
 	// equal to would become not equal to. Default is false.
 	Invert bool `json:"invert,omitempty"`
+
+	// The administrative state of the Loadbalancer. A valid value is true (UP)
+	// or false (DOWN).
+	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 }
 
 // ToRuleCreateMap builds a request body from CreateRuleOpts.
@@ -237,13 +252,18 @@ type ListRulesOptsBuilder interface {
 // ListRulesOpts allows the filtering and sorting of paginated collections
 // through the API.
 type ListRulesOpts struct {
-	RuleType  RuleType `q:"type"`
-	ProjectID string   `q:"project_id"`
-	ID        string   `q:"id"`
-	Limit     int      `q:"limit"`
-	Marker    string   `q:"marker"`
-	SortKey   string   `q:"sort_key"`
-	SortDir   string   `q:"sort_dir"`
+	RuleType     RuleType    `q:"type"`
+	ProjectID    string      `q:"project_id"`
+	CompareType  CompareType `q:"compare_type"`
+	Value        string      `q:"value"`
+	Key          string      `q:"key"`
+	Invert       bool        `q:"invert"`
+	AdminStateUp bool        `q:"admin_state_up"`
+	ID           string      `q:"id"`
+	Limit        int         `q:"limit"`
+	Marker       string      `q:"marker"`
+	SortKey      string      `q:"sort_key"`
+	SortDir      string      `q:"sort_dir"`
 }
 
 // ToRulesListQuery formats a ListOpts into a query string.
@@ -307,6 +327,10 @@ type UpdateRuleOpts struct {
 	// When true the logic of the rule is inverted. For example, with invert true,
 	// equal to would become not equal to. Default is false.
 	Invert *bool `json:"invert,omitempty"`
+
+	// The administrative state of the Loadbalancer. A valid value is true (UP)
+	// or false (DOWN).
+	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 }
 
 // ToRuleUpdateMap builds a request body from UpdateRuleOpts.
