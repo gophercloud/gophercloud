@@ -10,9 +10,10 @@ type Protocol string
 
 // Supported attributes for create/update operations.
 const (
-	ProtocolTCP   Protocol = "TCP"
-	ProtocolHTTP  Protocol = "HTTP"
-	ProtocolHTTPS Protocol = "HTTPS"
+	ProtocolTCP             Protocol = "TCP"
+	ProtocolHTTP            Protocol = "HTTP"
+	ProtocolHTTPS           Protocol = "HTTPS"
+	ProtocolTerminatedHTTPS Protocol = "TERMINATED_HTTPS"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
