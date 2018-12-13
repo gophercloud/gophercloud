@@ -115,6 +115,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	newDescription := ""
 	updateL7policyOpts := l7policies.UpdateOpts{
 		Description: &newDescription,
+		RedirectURL: &policy.RedirectURL,
 	}
 	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -129,6 +130,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	tools.PrintResource(t, newPolicy)
 
 	th.AssertEquals(t, newPolicy.Description, newDescription)
+	th.AssertEquals(t, newPolicy.RedirectURL, policy.RedirectURL)
 
 	// L7 rule
 	rule, err := CreateL7Rule(t, lbClient, newPolicy.ID, lb)
@@ -184,6 +186,31 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	tools.PrintResource(t, newPool)
 	th.AssertEquals(t, newPool.Name, poolName)
 	th.AssertEquals(t, newPool.Description, poolDescription)
+
+	// Update L7policy to redirect to pool
+	updateL7policyOpts = l7policies.UpdateOpts{
+		Action:         l7policies.ActionRedirectToPool,
+		RedirectPoolID: &newPool.ID,
+	}
+	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	if err := WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newPolicy, err = l7policies.Get(lbClient, policy.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newPolicy)
+
+	th.AssertEquals(t, newPolicy.Description, newDescription)
+	th.AssertEquals(t, newPolicy.Action, string(l7policies.ActionRedirectToPool))
+	th.AssertEquals(t, newPolicy.RedirectPoolID, newPool.ID)
+
+	// Workaround for proper delete order
+	defer DeleteL7Policy(t, lbClient, lb.ID, policy.ID)
+	defer DeleteL7Rule(t, lbClient, lb.ID, policy.ID, rule.ID)
 
 	// Member
 	member, err := CreateMember(t, lbClient, lb, newPool, subnet.ID, subnet.CIDR)

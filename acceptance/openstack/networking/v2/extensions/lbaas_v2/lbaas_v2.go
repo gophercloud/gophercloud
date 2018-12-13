@@ -44,7 +44,7 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 	t.Logf("Successfully created listener %s", listenerName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		return listener, fmt.Errorf("Timed out waiting for loadbalancer to become active")
+		return listener, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, listener.Name, listenerName)
@@ -124,7 +124,7 @@ func CreateMember(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalan
 	t.Logf("Successfully created member %s", memberName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		return member, fmt.Errorf("Timed out waiting for loadbalancer to become active")
+		return member, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, member.Name, memberName)
@@ -156,7 +156,7 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 	t.Logf("Successfully created monitor: %s", monitorName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		return monitor, fmt.Errorf("Timed out waiting for loadbalancer to become active")
+		return monitor, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, monitor.Name, monitorName)
@@ -190,7 +190,7 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalance
 	t.Logf("Successfully created pool %s", poolName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		return pool, fmt.Errorf("Timed out waiting for loadbalancer to become active")
+		return pool, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, pool.Name, poolName)
@@ -227,7 +227,7 @@ func CreateL7Policy(t *testing.T, client *gophercloud.ServiceClient, listener *l
 	t.Logf("Successfully created l7 policy %s", policyName)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		return policy, fmt.Errorf("Timed out waiting for loadbalancer to become active")
+		return policy, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, policy.Name, policyName)
@@ -257,7 +257,7 @@ func CreateL7Rule(t *testing.T, client *gophercloud.ServiceClient, policyID stri
 	t.Logf("Successfully created l7 rule for policy %s", policyID)
 
 	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		return rule, fmt.Errorf("Timed out waiting for loadbalancer to become active")
+		return rule, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	th.AssertEquals(t, rule.RuleType, string(l7policies.TypePath))
@@ -274,11 +274,13 @@ func DeleteL7Policy(t *testing.T, client *gophercloud.ServiceClient, lbID, polic
 	t.Logf("Attempting to delete l7 policy %s", policyID)
 
 	if err := l7policies.Delete(client, policyID).ExtractErr(); err != nil {
-		t.Fatalf("Unable to delete l7 policy: %v", err)
+		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+			t.Fatalf("Unable to delete l7 policy: %v", err)
+		}
 	}
 
 	if err := WaitForLoadBalancerState(client, lbID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		t.Fatalf("Timed out waiting for loadbalancer to become active")
+		t.Fatalf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	t.Logf("Successfully deleted l7 policy %s", policyID)
@@ -291,11 +293,13 @@ func DeleteL7Rule(t *testing.T, client *gophercloud.ServiceClient, lbID, policyI
 	t.Logf("Attempting to delete l7 rule %s", ruleID)
 
 	if err := l7policies.DeleteRule(client, policyID, ruleID).ExtractErr(); err != nil {
-		t.Fatalf("Unable to delete l7 rule: %v", err)
+		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+			t.Fatalf("Unable to delete l7 rule: %v", err)
+		}
 	}
 
 	if err := WaitForLoadBalancerState(client, lbID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		t.Fatalf("Timed out waiting for loadbalancer to become active")
+		t.Fatalf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	t.Logf("Successfully deleted l7 rule %s", ruleID)
@@ -308,11 +312,13 @@ func DeleteListener(t *testing.T, client *gophercloud.ServiceClient, lbID, liste
 	t.Logf("Attempting to delete listener %s", listenerID)
 
 	if err := listeners.Delete(client, listenerID).ExtractErr(); err != nil {
-		t.Fatalf("Unable to delete listener: %v", err)
+		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+			t.Fatalf("Unable to delete listener: %v", err)
+		}
 	}
 
 	if err := WaitForLoadBalancerState(client, lbID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		t.Fatalf("Timed out waiting for loadbalancer to become active")
+		t.Fatalf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	t.Logf("Successfully deleted listener %s", listenerID)
@@ -325,11 +331,13 @@ func DeleteMember(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID,
 	t.Logf("Attempting to delete member %s", memberID)
 
 	if err := pools.DeleteMember(client, poolID, memberID).ExtractErr(); err != nil {
-		t.Fatalf("Unable to delete member: %s", memberID)
+		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+			t.Fatalf("Unable to delete member: %s", memberID)
+		}
 	}
 
 	if err := WaitForLoadBalancerState(client, lbID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		t.Fatalf("Timed out waiting for loadbalancer to become active")
+		t.Fatalf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	t.Logf("Successfully deleted member %s", memberID)
@@ -342,13 +350,15 @@ func DeleteLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, lbID st
 	t.Logf("Attempting to delete loadbalancer %s", lbID)
 
 	if err := loadbalancers.Delete(client, lbID).ExtractErr(); err != nil {
-		t.Fatalf("Unable to delete loadbalancer: %v", err)
+		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+			t.Fatalf("Unable to delete loadbalancer: %v", err)
+		}
 	}
 
 	t.Logf("Waiting for loadbalancer %s to delete", lbID)
 
 	if err := WaitForLoadBalancerState(client, lbID, "DELETED", loadbalancerActiveTimeoutSeconds); err != nil {
-		t.Fatalf("Loadbalancer did not delete in time.")
+		t.Fatalf("Loadbalancer did not delete in time: %s", err)
 	}
 
 	t.Logf("Successfully deleted loadbalancer %s", lbID)
@@ -361,11 +371,13 @@ func DeleteMonitor(t *testing.T, client *gophercloud.ServiceClient, lbID, monito
 	t.Logf("Attempting to delete monitor %s", monitorID)
 
 	if err := monitors.Delete(client, monitorID).ExtractErr(); err != nil {
-		t.Fatalf("Unable to delete monitor: %v", err)
+		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+			t.Fatalf("Unable to delete monitor: %v", err)
+		}
 	}
 
 	if err := WaitForLoadBalancerState(client, lbID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		t.Fatalf("Timed out waiting for loadbalancer to become active")
+		t.Fatalf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	t.Logf("Successfully deleted monitor %s", monitorID)
@@ -377,11 +389,13 @@ func DeletePool(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID st
 	t.Logf("Attempting to delete pool %s", poolID)
 
 	if err := pools.Delete(client, poolID).ExtractErr(); err != nil {
-		t.Fatalf("Unable to delete pool: %v", err)
+		if _, ok := err.(gophercloud.ErrDefault404); !ok {
+			t.Fatalf("Unable to delete pool: %v", err)
+		}
 	}
 
 	if err := WaitForLoadBalancerState(client, lbID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
-		t.Fatalf("Timed out waiting for loadbalancer to become active")
+		t.Fatalf("Timed out waiting for loadbalancer to become active: %s", err)
 	}
 
 	t.Logf("Successfully deleted pool %s", poolID)
@@ -404,6 +418,10 @@ func WaitForLoadBalancerState(client *gophercloud.ServiceClient, lbID, status st
 
 		if current.ProvisioningStatus == status {
 			return true, nil
+		}
+
+		if current.ProvisioningStatus == "ERROR" {
+			return false, fmt.Errorf("Load balancer is in ERROR state")
 		}
 
 		return false, nil

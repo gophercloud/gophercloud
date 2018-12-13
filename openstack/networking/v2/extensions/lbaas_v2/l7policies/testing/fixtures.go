@@ -226,6 +226,7 @@ func HandleL7PolicyUpdateSuccessfully(t *testing.T) {
 			"l7policy": {
 				"name": "NewL7PolicyName",
 				"action": "REDIRECT_TO_URL",
+				"redirect_pool_id": null,
 				"redirect_url": "http://www.new-example.com"
 			}
 		}`)
@@ -366,6 +367,7 @@ func HandleRuleUpdateSuccessfully(t *testing.T) {
 			"rule": {
 				"compare_type": "REGEX",
 				"invert": false,
+				"key": null,
 				"type": "PATH",
 				"value": "/images/special*"
 			}
