@@ -170,11 +170,11 @@ type UpdateOpts struct {
 
 	// Requests matching this policy will be redirected to the pool with this ID.
 	// Only valid if action is REDIRECT_TO_POOL.
-	RedirectPoolID *string `json:"redirect_pool_id"`
+	RedirectPoolID *string `json:"redirect_pool_id,omitempty"`
 
 	// Requests matching this policy will be redirected to this URL.
 	// Only valid if action is REDIRECT_TO_URL.
-	RedirectURL *string `json:"redirect_url"`
+	RedirectURL *string `json:"redirect_url,omitempty"`
 
 	// The administrative state of the Loadbalancer. A valid value is true (UP)
 	// or false (DOWN).
@@ -183,7 +183,22 @@ type UpdateOpts struct {
 
 // ToL7PolicyUpdateMap builds a request body from UpdateOpts.
 func (opts UpdateOpts) ToL7PolicyUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "l7policy")
+	b, err := gophercloud.BuildRequestBody(opts, "l7policy")
+	if err != nil {
+		return nil, err
+	}
+
+	m := b["l7policy"].(map[string]interface{})
+
+	if m["redirect_pool_id"] == "" {
+		m["redirect_pool_id"] = nil
+	}
+
+	if m["redirect_url"] == "" {
+		m["redirect_url"] = nil
+	}
+
+	return b, nil
 }
 
 // Update allows l7policy to be updated.
@@ -322,7 +337,7 @@ type UpdateRuleOpts struct {
 	Value string `json:"value,omitempty"`
 
 	// The key to use for the comparison. For example, the name of the cookie to evaluate.
-	Key *string `json:"key"`
+	Key *string `json:"key,omitempty"`
 
 	// When true the logic of the rule is inverted. For example, with invert true,
 	// equal to would become not equal to. Default is false.
@@ -335,7 +350,16 @@ type UpdateRuleOpts struct {
 
 // ToRuleUpdateMap builds a request body from UpdateRuleOpts.
 func (opts UpdateRuleOpts) ToRuleUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "rule")
+	b, err := gophercloud.BuildRequestBody(opts, "rule")
+	if err != nil {
+		return nil, err
+	}
+
+	if m := b["rule"].(map[string]interface{}); m["key"] == "" {
+		m["key"] = nil
+	}
+
+	return b, nil
 }
 
 // UpdateRule allows Rule to be updated.
