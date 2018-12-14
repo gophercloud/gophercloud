@@ -238,3 +238,18 @@ func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r 
 	r.Header = result.Header
 	return
 }
+
+func Check(client *gophercloud.ServiceClient, id string) (r ActionResult) {
+	b := map[string]interface{}{
+		"check": map[string]interface{}{},
+	}
+
+	var result *http.Response
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+	return
+}

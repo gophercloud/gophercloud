@@ -351,3 +351,14 @@ func HandleRecoverSuccessfully(t *testing.T) {
 		fmt.Fprint(w, ActionResponse)
 	})
 }
+
+func HandleCheckSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/nodes/edce3528-864f-41fb-8759-f4707925cc09/actions", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("X-OpenStack-Request-ID", "req-edce3528-864f-41fb-8759-f4707925cc09")
+		w.WriteHeader(http.StatusAccepted)
+		fmt.Fprint(w, ActionResponse)
+	})
+}
