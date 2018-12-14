@@ -2,6 +2,7 @@ package listeners
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/pools"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -54,6 +55,9 @@ type Listener struct {
 
 	// Pools are the pools which are part of this listener.
 	Pools []pools.Pool `json:"pools"`
+
+	// L7policies are the L7 policies which are part of this listener.
+	L7Policies []l7policies.L7Policy `json:"l7policies"`
 
 	// The provisioning status of the Listener.
 	// This value is ACTIVE, PENDING_* or ERROR.
