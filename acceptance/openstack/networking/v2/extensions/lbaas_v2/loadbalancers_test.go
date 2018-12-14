@@ -206,6 +206,43 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	defer DeleteL7Policy(t, client, lb.ID, policy.ID)
 	defer DeleteL7Rule(t, client, lb.ID, policy.ID, rule.ID)
 
+	// Update listener's default pool ID
+	updateListenerOpts = listeners.UpdateOpts{
+		DefaultPoolID: &pool.ID,
+	}
+	_, err = listeners.Update(client, listener.ID, updateListenerOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newListener, err = listeners.Get(client, listener.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newListener)
+
+	th.AssertEquals(t, newListener.DefaultPoolID, pool.ID)
+
+	// Remove listener's default pool ID
+	emptyPoolID := ""
+	updateListenerOpts = listeners.UpdateOpts{
+		DefaultPoolID: &emptyPoolID,
+	}
+	_, err = listeners.Update(client, listener.ID, updateListenerOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	newListener, err = listeners.Get(client, listener.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newListener)
+
+	th.AssertEquals(t, newListener.DefaultPoolID, "")
+
 	// Member
 	member, err := CreateMember(t, client, lb, newPool, subnet.ID, subnet.CIDR)
 	th.AssertNoErr(t, err)
