@@ -179,7 +179,16 @@ type UpdateOpts struct {
 
 // ToListenerUpdateMap builds a request body from UpdateOpts.
 func (opts UpdateOpts) ToListenerUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "listener")
+	b, err := gophercloud.BuildRequestBody(opts, "listener")
+	if err != nil {
+		return nil, err
+	}
+
+	if m := b["listener"].(map[string]interface{}); m["default_pool_id"] == "" {
+		m["default_pool_id"] = nil
+	}
+
+	return b, nil
 }
 
 // Update is an operation which modifies the attributes of the specified
