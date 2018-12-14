@@ -205,3 +205,36 @@ func Ops(client *gophercloud.ServiceClient, id string, opts OperationOptsBuilder
 
 	return
 }
+
+func (opts RecoverOpts) ToNodeRecoverMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "recover")
+}
+
+// RecoverAction represents valid values for recovering a cluster.
+type RecoverAction string
+
+const (
+	RebootRecovery  RecoverAction = "REBOOT"
+	RebuildRecovery RecoverAction = "REBUILD"
+	// RECREATE is NOT supported. See https://github.com/openstack/senlin/blob/master/senlin/profiles/base.py#L533
+	// RecreateRecovery RecoverAction = "RECREATE"
+)
+
+type RecoverOpts struct {
+	Operation RecoverAction `json:"operation,omitempty"`
+	Check     *bool         `json:"check,omitempty"`
+}
+
+func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r ActionResult) {
+	b, err := opts.ToNodeRecoverMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	var result *http.Response
+	result, r.Err = client.Post(recoverURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	r.Header = result.Header
+	return
+}

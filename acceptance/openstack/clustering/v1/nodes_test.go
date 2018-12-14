@@ -121,3 +121,65 @@ func TestNodesOps(t *testing.T) {
 		t.Logf("Successfully performed '%s' on node: %s", opName, node.ID)
 	}
 }
+
+func TestNodesRecover(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.6"
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	node, err := CreateNode(t, client, cluster.ID, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node.ID)
+
+	checkTrue := true
+	checkFalse := false
+
+	// TODO: nodes.RebuildRecovery is commented out as of 12/14/2018 the API backend can't perform the action without returning error
+	ops := []nodes.RecoverOpts{
+		// Microversion < 1.6 legacy support where argument DOES NOT support Check
+		nodes.RecoverOpts{},
+		nodes.RecoverOpts{Operation: nodes.RebootRecovery},
+		// nodes.RecoverOpts{Operation: nodes.RebuildRecovery},
+
+		// MicroVersion >= 1.6 that supports Check where Check is true
+		nodes.RecoverOpts{Check: &checkTrue},
+		nodes.RecoverOpts{Operation: nodes.RebootRecovery, Check: &checkTrue},
+		//nodes.RecoverOpts{Operation: nodes.RebuildRecovery, Check: &checkTrue},
+
+		// MicroVersion >= 1.6 that supports Check where Check is false
+		nodes.RecoverOpts{Check: &checkFalse},
+		nodes.RecoverOpts{Operation: nodes.RebootRecovery, Check: &checkFalse},
+		//nodes.RecoverOpts{Operation: nodes.RebuildRecovery, Check: &checkFalse},
+	}
+
+	for _, recoverOpt := range ops {
+		if recoverOpt.Check != nil {
+			t.Logf("Attempting to recover by using '%s' check=%t on node: %s", recoverOpt.Operation, *recoverOpt.Check, node.ID)
+		} else {
+			t.Logf("Attempting to recover by using '%s' on node: %s", recoverOpt.Operation, node.ID)
+		}
+
+		actionID, err := nodes.Recover(client, node.ID, recoverOpt).Extract()
+		th.AssertNoErr(t, err)
+
+		err = WaitForAction(client, actionID)
+		th.AssertNoErr(t, err)
+		if recoverOpt.Check != nil {
+			t.Logf("Successfully recovered by using '%s' check=%t on node: %s", recoverOpt.Operation, *recoverOpt.Check, node.ID)
+		} else {
+			t.Logf("Successfully recovered by using '%s' on node: %s", recoverOpt.Operation, node.ID)
+		}
+
+		node, err := nodes.Get(client, node.ID).Extract()
+		th.AssertNoErr(t, err)
+		tools.PrintResource(t, node)
+	}
+}
