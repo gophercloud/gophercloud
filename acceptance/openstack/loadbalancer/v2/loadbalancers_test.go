@@ -115,7 +115,6 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	newDescription := ""
 	updateL7policyOpts := l7policies.UpdateOpts{
 		Description: &newDescription,
-		RedirectURL: &policy.RedirectURL,
 	}
 	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -130,7 +129,6 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	tools.PrintResource(t, newPolicy)
 
 	th.AssertEquals(t, newPolicy.Description, newDescription)
-	th.AssertEquals(t, newPolicy.RedirectURL, policy.RedirectURL)
 
 	// L7 rule
 	rule, err := CreateL7Rule(t, lbClient, newPolicy.ID, lb)
@@ -188,9 +186,11 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertEquals(t, newPool.Description, poolDescription)
 
 	// Update L7policy to redirect to pool
+	newRedirectURL := ""
 	updateL7policyOpts = l7policies.UpdateOpts{
 		Action:         l7policies.ActionRedirectToPool,
 		RedirectPoolID: &newPool.ID,
+		RedirectURL:    &newRedirectURL,
 	}
 	_, err = l7policies.Update(lbClient, policy.ID, updateL7policyOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -207,6 +207,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertEquals(t, newPolicy.Description, newDescription)
 	th.AssertEquals(t, newPolicy.Action, string(l7policies.ActionRedirectToPool))
 	th.AssertEquals(t, newPolicy.RedirectPoolID, newPool.ID)
+	th.AssertEquals(t, newPolicy.RedirectURL, newRedirectURL)
 
 	// Workaround for proper delete order
 	defer DeleteL7Policy(t, lbClient, lb.ID, policy.ID)
