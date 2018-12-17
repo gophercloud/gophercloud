@@ -102,6 +102,13 @@ func (r commonResult) ExtractToken() (*Token, error) {
 	return &s, err
 }
 
+// ExtractTokenID implements the gophercloud.AuthResult interface. The returned
+// string is the same as the ID field of the Token struct returned from
+// ExtractToken().
+func (r CreateResult) ExtractTokenID() (string, error) {
+	return r.Header.Get("X-Subject-Token"), r.Err
+}
+
 // ExtractServiceCatalog returns the ServiceCatalog that was generated along
 // with the user's Token.
 func (r commonResult) ExtractServiceCatalog() (*ServiceCatalog, error) {
@@ -142,12 +149,6 @@ func (r commonResult) ExtractProject() (*Project, error) {
 // as a service catalog.
 type CreateResult struct {
 	commonResult
-}
-
-//IsAnAuthResult implements the gophercloud.AuthResult interface. This method
-//does not do anything, see documentation on type gophercloud.AuthResult for
-//details.
-func (CreateResult) IsAnAuthResult() {
 }
 
 // GetResult is the response from a Get request. Use ExtractToken()

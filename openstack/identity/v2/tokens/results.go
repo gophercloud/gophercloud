@@ -100,12 +100,6 @@ type CreateResult struct {
 	gophercloud.Result
 }
 
-//IsAnAuthResult implements the gophercloud.AuthResult interface. This method
-//does not do anything, see documentation on type gophercloud.AuthResult for
-//details.
-func (CreateResult) IsAnAuthResult() {
-}
-
 // GetResult is the deferred response from a Get call, which is the same with a
 // Created token. Use ExtractUser() to interpret it as a User.
 type GetResult struct {
@@ -139,6 +133,21 @@ func (r CreateResult) ExtractToken() (*Token, error) {
 		ExpiresAt: expiresTs,
 		Tenant:    s.Access.Token.Tenant,
 	}, nil
+}
+
+// ExtractTokenID implements the gophercloud.AuthResult interface. The returned
+// string is the same as the ID field of the Token struct returned from
+// ExtractToken().
+func (r CreateResult) ExtractTokenID() (string, error) {
+	var s struct {
+		Access struct {
+			Token struct {
+				ID string `json:"id"`
+			} `json:"token"`
+		} `json:"access"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Access.Token.ID, err
 }
 
 // ExtractServiceCatalog returns the ServiceCatalog that was generated along

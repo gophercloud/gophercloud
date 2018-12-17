@@ -118,7 +118,7 @@ func (client *ProviderClient) UseTokenLock() {
 }
 
 //GetAuthResult returns the result from the request that was used to obtain a provider
-//client's Keystone token. It is returned from ProviderClient.GetAuthResult().
+//client's Keystone token.
 //
 //The result is nil when authentication has not yet taken place, when the token
 //was set manually with SetToken(), or when a ReauthFunc was used that does not
@@ -144,7 +144,7 @@ func (client *ProviderClient) Token() string {
 // SetToken safely sets the value of the auth token in the ProviderClient. Applications may
 // use this method in a custom ReauthFunc.
 //
-// WARNING: This function is deprecated. Use SetTokenAndAuthResult() instead.
+// WARNING: This function is deprecated. Use SetTokenFromAuthResult() instead.
 func (client *ProviderClient) SetToken(t string) {
 	if client.mut != nil {
 		client.mut.Lock()
@@ -154,16 +154,26 @@ func (client *ProviderClient) SetToken(t string) {
 	client.authResult = nil
 }
 
-//SetTokenAndAuthResult safely sets the value of the auth token in the ProviderClient
-//and also returns the AuthResult that was returned from the token creation
+//SetTokenFromAuthResult safely sets the value of the auth token in the ProviderClient
+//and also records the AuthResult that was returned from the token creation
 //request. Applications may use this method in a custom ReauthFunc.
-func (client *ProviderClient) SetTokenAndAuthResult(t string, r AuthResult) {
+func (client *ProviderClient) SetTokenFromAuthResult(r AuthResult) error {
+	tokenID := ""
+	var err error
+	if r != nil {
+		tokenID, err = r.ExtractTokenID()
+		if err != nil {
+			return err
+		}
+	}
+
 	if client.mut != nil {
 		client.mut.Lock()
 		defer client.mut.Unlock()
 	}
-	client.TokenID = t
+	client.TokenID = tokenID
 	client.authResult = r
+	return nil
 }
 
 //CopyTokenFrom safely copies the token from another ProviderClient into the

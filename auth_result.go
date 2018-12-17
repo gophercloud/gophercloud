@@ -9,10 +9,7 @@ The following types satisfy this interface:
     github.com/gophercloud/gophercloud/openstack/identity/v2/tokens.CreateResult
     github.com/gophercloud/gophercloud/openstack/identity/v3/tokens.CreateResult
 
-Unfortunately, those types do not share any common methods (or rather, none
-with identical type signatures), so this interface contains a bogus method
-implemented by both of them to ensure that other types cannot be used with this
-interface. Usage of this type might look like this:
+    Usage example:
 
   import (
     "github.com/gophercloud/gophercloud"
@@ -44,7 +41,12 @@ interface. Usage of this type might look like this:
       panic(fmt.Sprintf("got unexpected AuthResult type %t", r))
     }
   }
+
+  Both implementing types share a lot of methods by name, like ExtractUser() in
+  this example. But those methods cannot be part of the AuthResult interface
+  because the return types are different (in this case, type tokens2.User vs.
+  type tokens3.User).
 */
 type AuthResult interface {
-	IsAnAuthResult()
+	ExtractTokenID() (string, error)
 }
