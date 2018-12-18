@@ -41,6 +41,13 @@ type L7Policy struct {
 	// The administrative state of the L7 policy, which is up (true) or down (false).
 	AdminStateUp bool `json:"admin_state_up"`
 
+	// The provisioning status of the L7 policy.
+	// This value is ACTIVE, PENDING_* or ERROR.
+	ProvisioningStatus string `json:"provisioning_status"`
+
+	// The operating status of the L7 policy.
+	OperatingStatus string `json:"operating_status"`
+
 	// Rules are List of associated L7 rule IDs.
 	Rules []Rule `json:"rules"`
 }
@@ -72,6 +79,13 @@ type Rule struct {
 
 	// The administrative state of the L7 rule, which is up (true) or down (false).
 	AdminStateUp bool `json:"admin_state_up"`
+
+	// The provisioning status of the L7 rule.
+	// This value is ACTIVE, PENDING_* or ERROR.
+	ProvisioningStatus string `json:"provisioning_status"`
+
+	// The operating status of the L7 policy.
+	OperatingStatus string `json:"operating_status"`
 }
 
 type commonResult struct {
