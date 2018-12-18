@@ -75,11 +75,11 @@ Example to Perform an Operation on a Node
 
 	serviceClient.Microversion = "1.4"
 	nodeID := "node123"
-	opsOpts := nodes.OpOpts{
+	operationOpts := nodes.OperationOpts{
 		Operation: nodes.RebootOperation,
-		Params:    nodes.OpParams{"type": "SOFT"},
+		Params:    nodes.OperationParams{"type": "SOFT"},
 	}
-    actionID, err := nodes.Ops(serviceClient, nodeID, opsOpts).Extract()
+    actionID, err := nodes.Ops(serviceClient, nodeID, operationOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

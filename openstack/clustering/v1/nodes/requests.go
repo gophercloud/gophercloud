@@ -169,27 +169,27 @@ const (
 	AbandonOperation OperationName = "abandon"
 )
 
-// ToNodeOpMap constructs a request body from OpOpts.
-func (opts OpOpts) ToNodeOpMap() (map[string]interface{}, error) {
+// ToNodeOperationMap constructs a request body from OperationOpts.
+func (opts OperationOpts) ToNodeOperationMap() (map[string]interface{}, error) {
 	optsMap := map[string]interface{}{string(opts.Operation): opts.Params}
 	return optsMap, nil
 }
 
-// OpOptsBuilder allows extensions to add additional parameters to the
+// OperationOptsBuilder allows extensions to add additional parameters to the
 // Op request.
-type OpOptsBuilder interface {
-	ToNodeOpMap() (map[string]interface{}, error)
+type OperationOptsBuilder interface {
+	ToNodeOperationMap() (map[string]interface{}, error)
 }
-type OpParams map[string]interface{}
+type OperationParams map[string]interface{}
 
-// OpOpts represents options used to perform an operation on a node
-type OpOpts struct {
-	Operation OperationName `json:"operation,omitempty"`
-	Params    OpParams      `json:"params,omitempty"`
+// OperationOpts represents options used to perform an operation on a node
+type OperationOpts struct {
+	Operation OperationName   `json:"operation" required:"true"`
+	Params    OperationParams `json:"params,omitempty"`
 }
 
-func Ops(client *gophercloud.ServiceClient, id string, opts OpOptsBuilder) (r ActionResult) {
-	b, err := opts.ToNodeOpMap()
+func Ops(client *gophercloud.ServiceClient, id string, opts OperationOptsBuilder) (r ActionResult) {
+	b, err := opts.ToNodeOperationMap()
 	if err != nil {
 		r.Err = err
 		return

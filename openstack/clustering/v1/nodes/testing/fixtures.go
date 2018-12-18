@@ -254,12 +254,12 @@ var ExpectedUpdate = nodes.Node{
 	User:         "ab79b9647d074e46ac223a8fa297b846",
 }
 
-const OpsActionResponse = `
+const OperationActionResponse = `
 {
   "action": "2a0ff107-e789-4660-a122-3816c43af703"
 }`
 
-const OpsExpectedActionID = "2a0ff107-e789-4660-a122-3816c43af703"
+const OperationExpectedActionID = "2a0ff107-e789-4660-a122-3816c43af703"
 
 func HandleCreateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v1/nodes", func(w http.ResponseWriter, r *http.Request) {
@@ -330,6 +330,6 @@ func HandleOpsSuccessfully(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
 
-		fmt.Fprint(w, OpsActionResponse)
+		fmt.Fprint(w, OperationActionResponse)
 	})
 }

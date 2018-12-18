@@ -110,10 +110,10 @@ func TestOpsNode(t *testing.T) {
 
 	HandleOpsSuccessfully(t)
 
-	nodeOpts := nodes.OpOpts{
+	nodeOpts := nodes.OperationOpts{
 		Operation: nodes.PauseOperation,
 	}
 	actual, err := nodes.Ops(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", nodeOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, OpsExpectedActionID, actual)
+	th.AssertDeepEquals(t, OperationExpectedActionID, actual)
 }

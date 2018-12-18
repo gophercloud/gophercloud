@@ -89,17 +89,17 @@ func TestNodesOps(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteNode(t, client, node.ID)
 
-	ops := []nodes.OpOpts{
+	ops := []nodes.OperationOpts{
 		// TODO: Commented out due to backend returns error, as of 2018-12-14
 		//{Operation: nodes.RebuildOperation},
-		//{Operation: nodes.EvacuateOperation, Params: nodes.OpParams{"EvacuateHost": node.ID, "EvacuateForce", "True"}},
-		{Operation: nodes.RebootOperation, Params: nodes.OpParams{"type": "SOFT"}},
-		{Operation: nodes.ChangePasswordOperation, Params: nodes.OpParams{"admin_pass": "test"}},
+		//{Operation: nodes.EvacuateOperation, Params: nodes.OperationParams{"EvacuateHost": node.ID, "EvacuateForce", "True"}},
+		{Operation: nodes.RebootOperation, Params: nodes.OperationParams{"type": "SOFT"}},
+		{Operation: nodes.ChangePasswordOperation, Params: nodes.OperationParams{"admin_pass": "test"}},
 		{Operation: nodes.LockOperation},
 		{Operation: nodes.UnlockOperation},
 		{Operation: nodes.SuspendOperation},
 		{Operation: nodes.ResumeOperation},
-		{Operation: nodes.RescueOperation, Params: nodes.OpParams{"image_ref": choices.ImageID}},
+		{Operation: nodes.RescueOperation, Params: nodes.OperationParams{"image_ref": choices.ImageID}},
 		{Operation: nodes.PauseOperation},
 		{Operation: nodes.UnpauseOperation},
 		{Operation: nodes.StopOperation},
