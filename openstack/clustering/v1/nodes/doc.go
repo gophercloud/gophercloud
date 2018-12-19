@@ -79,7 +79,7 @@ Example to Perform an Operation on a Node
 		Operation: nodes.RebootOperation,
 		Params:    nodes.OperationParams{"type": "SOFT"},
 	}
-    actionID, err := nodes.Ops(serviceClient, nodeID, operationOpts).Extract()
+	actionID, err := nodes.Ops(serviceClient, nodeID, operationOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
