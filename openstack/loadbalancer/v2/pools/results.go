@@ -99,6 +99,9 @@ type Pool struct {
 	// The provisioning status of the pool.
 	// This value is ACTIVE, PENDING_* or ERROR.
 	ProvisioningStatus string `json:"provisioning_status"`
+
+	// The operating status of the pool.
+	OperatingStatus string `json:"operating_status"`
 }
 
 // PoolPage is the page returned by a pager when traversing over a
