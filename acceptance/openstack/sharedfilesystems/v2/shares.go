@@ -19,20 +19,14 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share
 		t.Skip("Skipping test that requres share creation in short mode.")
 	}
 
-	shareNetwork, err := CreateShareNetwork(t, client)
-	if err != nil {
-		return nil, err
-	}
-	t.Logf("Share network id %s", shareNetwork.ID)
-
 	iTrue := true
 	createOpts := shares.CreateOpts{
-		Size:           1,
-		Name:           "My Test Share",
-		Description:    "My Test Description",
-		ShareProto:     "NFS",
-		ShareNetworkID: shareNetwork.ID,
-		IsPublic:       &iTrue,
+		Size:        1,
+		Name:        "My Test Share",
+		Description: "My Test Description",
+		ShareProto:  "NFS",
+		ShareType:   "dhss_false",
+		IsPublic:    &iTrue,
 	}
 
 	share, err := shares.Create(client, createOpts).Extract()
@@ -101,8 +95,6 @@ func DeleteShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 	} else {
 		t.Logf("Deleted share: %s", share.ID)
 	}
-
-	DeleteShareNetwork(t, client, share.ShareNetworkID)
 }
 
 // PrintShare prints some information of the share
@@ -156,7 +148,7 @@ func printMessages(t *testing.T, c *gophercloud.ServiceClient, id string) error 
 }
 
 func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string, secs int) error {
-	return gophercloud.WaitFor(secs, func() (bool, error) {
+	err := gophercloud.WaitFor(secs, func() (bool, error) {
 		current, err := shares.Get(c, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
@@ -171,10 +163,6 @@ func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string
 		}
 
 		if current.Status == "error" {
-			err := printMessages(t, c, id)
-			if err != nil {
-				return true, fmt.Errorf("Share status is '%s' and unable to get manila messages: %s", current.Status, err)
-			}
 			return true, fmt.Errorf("An error occurred")
 		}
 
@@ -184,4 +172,13 @@ func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string
 
 		return false, nil
 	})
+
+	if err != nil {
+		mErr := printMessages(t, c, id)
+		if mErr != nil {
+			return fmt.Errorf("Share status is '%s' and unable to get manila messages: %s", err, mErr)
+		}
+	}
+
+	return err
 }
