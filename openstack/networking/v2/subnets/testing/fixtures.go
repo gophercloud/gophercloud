@@ -348,6 +348,19 @@ const SubnetCreateRequestWithNoCIDR = `
 }
 `
 
+const SubnetCreateRequestWithPrefixlen = `
+{
+    "subnet": {
+        "network_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+        "ip_version": 4,
+        "dns_nameservers": ["foo"],
+        "host_routes": [{"destination":"","nexthop": "bar"}],
+        "subnetpool_id": "b80340c7-9960-4f67-a99c-02501656284b",
+        "prefixlen": 12
+    }
+}
+`
+
 const SubnetUpdateRequest = `
 {
     "subnet": {

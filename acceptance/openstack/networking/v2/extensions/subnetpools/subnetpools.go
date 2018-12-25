@@ -18,9 +18,10 @@ func CreateSubnetPool(t *testing.T, client *gophercloud.ServiceClient) (*subnetp
 		"10.0.0.0/8",
 	}
 	createOpts := subnetpools.CreateOpts{
-		Name:        subnetPoolName,
-		Description: subnetPoolDescription,
-		Prefixes:    subnetPoolPrefixes,
+		Name:             subnetPoolName,
+		Description:      subnetPoolDescription,
+		Prefixes:         subnetPoolPrefixes,
+		DefaultPrefixLen: 24,
 	}
 
 	t.Logf("Attempting to create a subnetpool: %s", subnetPoolName)
