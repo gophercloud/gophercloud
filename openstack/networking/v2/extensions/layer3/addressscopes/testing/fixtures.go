@@ -47,3 +47,17 @@ var AddressScope2 = addressscopes.AddressScope{
 	IPversion: 6,
 	Shared:    true,
 }
+
+// AddressScopesGetResult represents raw response for the Get request.
+const AddressScopesGetResult = `
+{
+    "address_scope": {
+        "name": "scopev4",
+        "tenant_id": "4a9807b773404e979b19633f38370643",
+        "ip_version": 4,
+        "shared": false,
+        "project_id": "4a9807b773404e979b19633f38370643",
+        "id": "9cc35860-522a-4d35-974d-51d4b011801e"
+    }
+}
+`

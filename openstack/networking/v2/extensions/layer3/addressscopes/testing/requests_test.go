@@ -49,3 +49,28 @@ func TestList(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/addressscopes/9cc35860-522a-4d35-974d-51d4b011801e", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, AddressScopesGetResult)
+	})
+
+	s, err := addressscopes.Get(fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, s.ID, "9cc35860-522a-4d35-974d-51d4b011801e")
+	th.AssertEquals(t, s.Name, "scopev4")
+	th.AssertEquals(t, s.TenantID, "4a9807b773404e979b19633f38370643")
+	th.AssertEquals(t, s.ProjectID, "4a9807b773404e979b19633f38370643")
+	th.AssertEquals(t, s.IPversion, 4)
+	th.AssertEquals(t, s.Shared, false)
+}

@@ -18,6 +18,12 @@ func (r commonResult) Extract() (*AddressScope, error) {
 	return s.AddressScope, err
 }
 
+// GetResult represents the result of a get operation. Call its Extract
+// method to interpret it as a SubnetPool.
+type GetResult struct {
+	commonResult
+}
+
 // AddressScope represents a Neutron address-scope.
 type AddressScope struct {
 	// ID is the id of the address-scope.
