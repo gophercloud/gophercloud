@@ -194,7 +194,7 @@ func TestExtendAndShrink(t *testing.T) {
 	}
 
 	// We need to wait till the Shrink operation is done
-	err = waitForStatus(t, client, share.ID, "available", 120)
+	err = waitForStatus(t, client, share.ID, "available", 300)
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}

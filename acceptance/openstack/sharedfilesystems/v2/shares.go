@@ -3,6 +3,7 @@ package v2
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/tools"
@@ -130,7 +131,8 @@ func ShrinkShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 func printMessages(t *testing.T, c *gophercloud.ServiceClient, id string) error {
 	c.Microversion = "2.37"
 
-	allPages, err := messages.List(c, messages.ListOpts{ResourceID: id}).AllPages()
+	//allPages, err := messages.List(c, messages.ListOpts{ResourceID: id}).AllPages()
+	allPages, err := messages.List(c, messages.ListOpts{}).AllPages()
 	if err != nil {
 		return fmt.Errorf("Unable to retrieve messages: %v", err)
 	}
@@ -162,12 +164,12 @@ func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string
 			return false, err
 		}
 
-		if current.Status == "error" {
-			return true, fmt.Errorf("An error occurred")
-		}
-
 		if current.Status == status {
 			return true, nil
+		}
+
+		if strings.Contains(current.Status, "error") {
+			return true, fmt.Errorf("An error occurred, wrong status: %s", current.Status)
 		}
 
 		return false, nil
