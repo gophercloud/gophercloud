@@ -131,8 +131,7 @@ func ShrinkShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 func printMessages(t *testing.T, c *gophercloud.ServiceClient, id string) error {
 	c.Microversion = "2.37"
 
-	//allPages, err := messages.List(c, messages.ListOpts{ResourceID: id}).AllPages()
-	allPages, err := messages.List(c, messages.ListOpts{}).AllPages()
+	allPages, err := messages.List(c, messages.ListOpts{ResourceID: id}).AllPages()
 	if err != nil {
 		return fmt.Errorf("Unable to retrieve messages: %v", err)
 	}

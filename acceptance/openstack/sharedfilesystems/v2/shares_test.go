@@ -188,6 +188,7 @@ func TestExtendAndShrink(t *testing.T) {
 
 	t.Logf("Share %s successfuly extended", share.ID)
 
+	/* disable shrinking for the LVM dhss=false
 	err = ShrinkShare(t, client, share, 1)
 	if err != nil {
 		t.Fatalf("Unable to shrink a share: %v", err)
@@ -200,4 +201,5 @@ func TestExtendAndShrink(t *testing.T) {
 	}
 
 	t.Logf("Share %s successfuly shrunk", share.ID)
+	*/
 }
