@@ -181,23 +181,25 @@ func TestExtendAndShrink(t *testing.T) {
 	}
 
 	// We need to wait till the Extend operation is done
-	err = waitForStatus(client, share.ID, "available", 120)
+	err = waitForStatus(t, client, share.ID, "available", 120)
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
 
 	t.Logf("Share %s successfuly extended", share.ID)
 
+	/* disable shrinking for the LVM dhss=false
 	err = ShrinkShare(t, client, share, 1)
 	if err != nil {
 		t.Fatalf("Unable to shrink a share: %v", err)
 	}
 
 	// We need to wait till the Shrink operation is done
-	err = waitForStatus(client, share.ID, "available", 120)
+	err = waitForStatus(t, client, share.ID, "available", 300)
 	if err != nil {
 		t.Fatalf("Share status error: %v", err)
 	}
 
 	t.Logf("Share %s successfuly shrunk", share.ID)
+	*/
 }
