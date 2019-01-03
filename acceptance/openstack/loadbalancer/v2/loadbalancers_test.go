@@ -213,6 +213,9 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	defer DeleteL7Policy(t, lbClient, lb.ID, policy.ID)
 	defer DeleteL7Rule(t, lbClient, lb.ID, policy.ID, rule.ID)
 
+	// Delete pool, when it is used by l7policy
+	DeletePool(t, lbClient, lb.ID, pool.ID)
+
 	// Update listener's default pool ID
 	updateListenerOpts = listeners.UpdateOpts{
 		DefaultPoolID: &pool.ID,

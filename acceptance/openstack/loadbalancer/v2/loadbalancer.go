@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/errors"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/loadbalancers"
@@ -419,6 +420,12 @@ func DeletePool(t *testing.T, client *gophercloud.ServiceClient, lbID, poolID st
 		if _, ok := err.(gophercloud.ErrDefault404); !ok {
 			t.Fatalf("Unable to delete pool: %v", err)
 		}
+		var detailedErr errors.NeutronError
+		e := errors.ExtractErrorInto(err, &detailedErr)
+		if e != nil {
+			t.Logf("Unale to delete pool %s: %s: %s", poolID, err, e)
+		}
+		t.Logf("Unale to delete pool %s: %s: %s", poolID, detailedErr.Type, detailedErr.Message)
 	}
 
 	if err := WaitForLoadBalancerState(client, lbID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
