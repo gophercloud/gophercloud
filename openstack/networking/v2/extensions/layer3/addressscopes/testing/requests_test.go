@@ -54,7 +54,7 @@ func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	th.Mux.HandleFunc("/v2.0/addressscopes/9cc35860-522a-4d35-974d-51d4b011801e", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/v2.0/address-scopes/9cc35860-522a-4d35-974d-51d4b011801e", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
