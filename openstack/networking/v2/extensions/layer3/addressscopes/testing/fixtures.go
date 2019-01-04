@@ -61,3 +61,28 @@ const AddressScopesGetResult = `
     }
 }
 `
+
+// AddressScopeCreateRequest represents raw Create request.
+const AddressScopeCreateRequest = `
+{
+    "address_scope": {
+        "ip_version": 4,
+        "shared": true,
+        "name": "test0"
+    }
+}
+`
+
+// AddressScopeCreateResult represents raw Create response.
+const AddressScopeCreateResult = `
+{
+    "address_scope": {
+        "name": "test0",
+        "tenant_id": "4a9807b773404e979b19633f38370643",
+        "ip_version": 4,
+        "shared": true,
+        "project_id": "4a9807b773404e979b19633f38370643",
+        "id": "9cc35860-522a-4d35-974d-51d4b011801e"
+    }
+}
+`

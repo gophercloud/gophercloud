@@ -24,6 +24,12 @@ type GetResult struct {
 	commonResult
 }
 
+// CreateResult represents the result of a create operation. Call its Extract
+// method to interpret it as a SubnetPool.
+type CreateResult struct {
+	commonResult
+}
+
 // AddressScope represents a Neutron address-scope.
 type AddressScope struct {
 	// ID is the id of the address-scope.

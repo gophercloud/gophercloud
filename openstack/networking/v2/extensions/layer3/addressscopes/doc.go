@@ -27,6 +27,17 @@ Example to Get an Address scope
     addressScope, err := addressscopes.Get(networkClient, addressScopeID).Extract()
     if err != nil {
     	panic(err)
-    }
+	}
+
+Example to Create a new Address scope
+
+	addressScopeOpts := subnetpools.CreateOpts{
+        Name: "my_address_scope",
+        IPVersion: 6,
+	}
+	addressScope, err := addressscopes.Create(networkClient, addressScopeOpts).Extract()
+	if err != nil {
+        panic(err)
+	}
 */
 package addressscopes
