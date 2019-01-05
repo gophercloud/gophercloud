@@ -81,8 +81,8 @@ type CreateOpts struct {
 	// ProjectID is the id of the Identity project.
 	ProjectID string `json:"project_id,omitempty"`
 
-	// IPversion is the IP protocol version.
-	IPversion int `json:"ip_version"`
+	// IPVersion is the IP protocol version.
+	IPVersion int `json:"ip_version"`
 
 	// Shared indicates whether this address-scope is shared across all projects.
 	Shared bool `json:"shared,omitempty"`

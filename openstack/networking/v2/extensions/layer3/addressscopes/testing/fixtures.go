@@ -33,7 +33,7 @@ var AddressScope1 = addressscopes.AddressScope{
 	Name:      "scopev4",
 	TenantID:  "4a9807b773404e979b19633f38370643",
 	ProjectID: "4a9807b773404e979b19633f38370643",
-	IPversion: 4,
+	IPVersion: 4,
 	Shared:    false,
 }
 
@@ -44,7 +44,7 @@ var AddressScope2 = addressscopes.AddressScope{
 	Name:      "scopev6",
 	TenantID:  "4a9807b773404e979b19633f38370643",
 	ProjectID: "4a9807b773404e979b19633f38370643",
-	IPversion: 6,
+	IPVersion: 6,
 	Shared:    true,
 }
 
