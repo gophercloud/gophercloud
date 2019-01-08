@@ -232,7 +232,7 @@ func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r 
 		return
 	}
 	var result *http.Response
-	result, r.Err = client.Post(recoverURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	r.Header = result.Header

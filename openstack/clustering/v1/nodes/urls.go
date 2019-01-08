@@ -40,7 +40,3 @@ func updateURL(client *gophercloud.ServiceClient, id string) string {
 func opsURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL(apiVersion, apiName, id, "ops")
 }
-
-func recoverURL(client *gophercloud.ServiceClient, id string) string {
-	return actionURL(client, id)
-}
