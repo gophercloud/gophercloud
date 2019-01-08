@@ -60,7 +60,7 @@ type UpdateOpts struct {
 	Metadata  map[string]interface{} `json:"metadata,omitempty"`
 }
 
-// ToClusterUpdateMap constructs a request body from UpdateOpts.
+// ToNodeUpdateMap constructs a request body from UpdateOpts.
 func (opts UpdateOpts) ToNodeUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "node")
 }
@@ -210,7 +210,7 @@ func (opts RecoverOpts) ToNodeRecoverMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "recover")
 }
 
-// RecoverAction represents valid values for recovering a cluster.
+// RecoverAction represents valid values for recovering a node.
 type RecoverAction string
 
 const (
