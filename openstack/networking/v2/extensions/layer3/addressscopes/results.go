@@ -36,6 +36,12 @@ type UpdateResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a delete operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // AddressScope represents a Neutron address-scope.
 type AddressScope struct {
 	// ID is the id of the address-scope.

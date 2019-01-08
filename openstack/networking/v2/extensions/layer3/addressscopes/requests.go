@@ -139,3 +139,9 @@ func Update(c *gophercloud.ServiceClient, addressScopeID string, opts UpdateOpts
 	})
 	return
 }
+
+// Delete accepts a unique ID and deletes the address-scope associated with it.
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(deleteURL(c, id), nil)
+	return
+}
