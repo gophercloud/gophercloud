@@ -86,3 +86,27 @@ const AddressScopeCreateResult = `
     }
 }
 `
+
+// AddressScopeUpdateRequest represents raw Update request.
+const AddressScopeUpdateRequest = `
+{
+    "address_scope": {
+        "name": "test1",
+        "shared": true
+    }
+}
+`
+
+// AddressScopeUpdateResult represents raw Update response.
+const AddressScopeUpdateResult = `
+{
+    "address_scope": {
+        "name": "test1",
+        "tenant_id": "4a9807b773404e979b19633f38370643",
+        "ip_version": 4,
+        "shared": true,
+        "project_id": "4a9807b773404e979b19633f38370643",
+        "id": "9cc35860-522a-4d35-974d-51d4b011801e"
+    }
+}
+`

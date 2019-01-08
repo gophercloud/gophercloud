@@ -39,5 +39,17 @@ Example to Create a new Address scope
     if err != nil {
         panic(err)
     }
+
+Example to Update an Address scope
+
+    addressScopeID = "9cc35860-522a-4d35-974d-51d4b011801e"
+    updateOpts := addressscopes.UpdateOpts{
+        Name: "awesome_name",
+    }
+
+    addressScope, err := addressscopes.Update(networkClient, addressScopeID, updateOpts).Extract()
+    if err != nil {
+        panic(err)
+    }
 */
 package addressscopes

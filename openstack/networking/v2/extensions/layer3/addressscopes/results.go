@@ -30,6 +30,12 @@ type CreateResult struct {
 	commonResult
 }
 
+// UpdateResult represents the result of an update operation. Call its Extract
+// method to interpret it as an AddressScope.
+type UpdateResult struct {
+	commonResult
+}
+
 // AddressScope represents a Neutron address-scope.
 type AddressScope struct {
 	// ID is the id of the address-scope.
