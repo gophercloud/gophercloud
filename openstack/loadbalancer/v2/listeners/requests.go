@@ -28,19 +28,21 @@ type ListOptsBuilder interface {
 // sort by a particular listener attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	ID              string `q:"id"`
-	Name            string `q:"name"`
-	AdminStateUp    *bool  `q:"admin_state_up"`
-	ProjectID       string `q:"project_id"`
-	LoadbalancerID  string `q:"loadbalancer_id"`
-	DefaultPoolID   string `q:"default_pool_id"`
-	Protocol        string `q:"protocol"`
-	ProtocolPort    int    `q:"protocol_port"`
-	ConnectionLimit int    `q:"connection_limit"`
-	Limit           int    `q:"limit"`
-	Marker          string `q:"marker"`
-	SortKey         string `q:"sort_key"`
-	SortDir         string `q:"sort_dir"`
+	ID                string `q:"id"`
+	Name              string `q:"name"`
+	AdminStateUp      *bool  `q:"admin_state_up"`
+	ProjectID         string `q:"project_id"`
+	LoadbalancerID    string `q:"loadbalancer_id"`
+	DefaultPoolID     string `q:"default_pool_id"`
+	Protocol          string `q:"protocol"`
+	ProtocolPort      int    `q:"protocol_port"`
+	ConnectionLimit   int    `q:"connection_limit"`
+	Limit             int    `q:"limit"`
+	Marker            string `q:"marker"`
+	SortKey           string `q:"sort_key"`
+	SortDir           string `q:"sort_dir"`
+	TimeoutClientData *int   `q:"timeout_client_data"`
+	TimeoutMemberData *int   `q:"timeout_member_data"`
 }
 
 // ToListenerListQuery formats a ListOpts into a query string.
@@ -111,6 +113,12 @@ type CreateOpts struct {
 	// The administrative state of the Listener. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// Frontend client inactivity timeout in milliseconds
+	TimeoutClientData *int `json:"timeout_client_data,omitempty"`
+
+	// Backend member inactivity timeout in milliseconds
+	TimeoutMemberData *int `json:"timeout_member_data,omitempty"`
 }
 
 // ToListenerCreateMap builds a request body from CreateOpts.
@@ -170,6 +178,12 @@ type UpdateOpts struct {
 	// The administrative state of the Listener. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// Frontend client inactivity timeout in milliseconds
+	TimeoutClientData *int `json:"timeout_client_data,omitempty"`
+
+	// Backend member inactivity timeout in milliseconds
+	TimeoutMemberData *int `json:"timeout_member_data,omitempty"`
 }
 
 // ToListenerUpdateMap builds a request body from UpdateOpts.

@@ -62,6 +62,12 @@ type Listener struct {
 	// The provisioning status of the Listener.
 	// This value is ACTIVE, PENDING_* or ERROR.
 	ProvisioningStatus string `json:"provisioning_status"`
+
+	// Frontend client inactivity timeout in milliseconds
+	TimeoutClientData int `json:"timeout_client_data"`
+
+	// Backend member inactivity timeout in milliseconds
+	TimeoutMemberData int `json:"timeout_member_data"`
 }
 
 type Stats struct {
