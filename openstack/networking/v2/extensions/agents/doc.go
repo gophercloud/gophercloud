@@ -20,5 +20,13 @@ Example of Listing Agents
     for _, agent := range allAgents {
         fmt.Printf("%+v\n", agent)
     }
+
+Example to Get an Agent
+
+    agentID = "76af7b1f-d61b-4526-94f7-d2e14e2698df"
+    agent, err := agents.Get(networkClient, agentID).Extract()
+    if err != nil {
+        panic(err)
+    }
 */
 package agents

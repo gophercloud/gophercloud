@@ -58,3 +58,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 		return AgentPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// Get retrieves a specific agent based on its ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
+}

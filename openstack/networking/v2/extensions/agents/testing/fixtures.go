@@ -95,3 +95,31 @@ var Agent2 = agents.Agent{
 	Host:               "compute2",
 	Topic:              "N/A",
 }
+
+// AgentsGetResult represents raw response for the Get request.
+const AgentsGetResult = `
+{
+    "agent": {
+        "binary": "neutron-openvswitch-agent",
+        "description": null,
+        "availability_zone": null,
+        "heartbeat_timestamp": "2019-01-09 11:43:01",
+        "admin_state_up": true,
+        "alive": true,
+        "id": "43583cf5-472e-4dc8-af5b-6aed4c94ee3a",
+        "topic": "N/A",
+        "host": "compute3",
+        "agent_type": "Open vSwitch agent",
+        "started_at": "2018-06-26 21:46:20",
+        "created_at": "2017-07-26 23:02:05",
+        "configurations": {
+            "ovs_hybrid_plug": false,
+            "datapath_type": "system",
+            "vhostuser_socket_dir": "/var/run/openvswitch",
+            "log_agent_heartbeats": false,
+            "l2_population": true,
+            "enable_distributed_routing": false
+        }
+    }
+}
+`

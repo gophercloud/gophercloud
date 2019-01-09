@@ -12,6 +12,21 @@ type commonResult struct {
 	gophercloud.Result
 }
 
+// Extract is a function that accepts a result and extracts an agent resource.
+func (r commonResult) Extract() (*Agent, error) {
+	var s struct {
+		Agent *Agent `json:"agent"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Agent, err
+}
+
+// GetResult represents the result of a get operation. Call its Extract
+// method to interpret it as an Agent.
+type GetResult struct {
+	commonResult
+}
+
 // Agent represents a Neutron agent.
 type Agent struct {
 	// ID is the id of the agent.
