@@ -216,8 +216,8 @@ type RecoverAction string
 const (
 	RebootRecovery  RecoverAction = "REBOOT"
 	RebuildRecovery RecoverAction = "REBUILD"
-	// RECREATE is NOT supported. See https://github.com/openstack/senlin/blob/master/senlin/profiles/base.py#L533
-	// RecreateRecovery RecoverAction = "RECREATE"
+	// RECREATE currently is NOT supported. See https://github.com/openstack/senlin/blob/b30b2b8496b2b8af243ccd5292f38aec7a95664f/senlin/profiles/base.py#L533
+	RecreateRecovery RecoverAction = "RECREATE"
 )
 
 type RecoverOpts struct {
