@@ -126,8 +126,9 @@ func TestUpdate(t *testing.T) {
 	})
 
 	shared := true
+	newName := "test1"
 	updateOpts := addressscopes.UpdateOpts{
-		Name:   "test1",
+		Name:   &newName,
 		Shared: &shared,
 	}
 	s, err := addressscopes.Update(fake.ServiceClient(), "9cc35860-522a-4d35-974d-51d4b011801e", updateOpts).Extract()

@@ -115,7 +115,7 @@ type UpdateOptsBuilder interface {
 // UpdateOpts represents options used to update an address-scope.
 type UpdateOpts struct {
 	// Name is the human-readable name of the address-scope.
-	Name string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 
 	// Shared indicates whether this address-scope is shared across all projects.
 	Shared *bool `json:"shared,omitempty"`

@@ -24,7 +24,7 @@ func TestAddressScopesCRUD(t *testing.T) {
 
 	newName := tools.RandomString("TESTACC-", 8)
 	updateOpts := &addressscopes.UpdateOpts{
-		Name: newName,
+		Name: &newName,
 	}
 
 	_, err = addressscopes.Update(client, addressScope.ID, updateOpts).Extract()
