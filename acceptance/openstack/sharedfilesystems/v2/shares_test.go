@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/shares"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -11,7 +12,7 @@ import (
 func TestShareCreate(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
-		t.Fatalf("Unable to create a sharedfs client: %v", err)
+		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
 
 	share, err := CreateShare(t, client)
@@ -25,7 +26,7 @@ func TestShareCreate(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unable to retrieve share: %v", err)
 	}
-	PrintShare(t, created)
+	tools.PrintResource(t, created)
 }
 
 func TestShareUpdate(t *testing.T) {
@@ -72,7 +73,7 @@ func TestShareUpdate(t *testing.T) {
 	// Update time has to be set in order to get the assert equal to pass
 	expectedShare.UpdatedAt = updatedShare.UpdatedAt
 
-	PrintShare(t, share)
+	tools.PrintResource(t, share)
 
 	th.CheckDeepEquals(t, expectedShare, updatedShare)
 }
@@ -80,7 +81,7 @@ func TestShareUpdate(t *testing.T) {
 func TestShareListDetail(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
-		t.Fatalf("Unable to create a sharedfs client: %v", err)
+		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
 
 	share, err := CreateShare(t, client)
@@ -96,14 +97,14 @@ func TestShareListDetail(t *testing.T) {
 	}
 
 	for i := range ss {
-		PrintShare(t, &ss[i])
+		tools.PrintResource(t, &ss[i])
 	}
 }
 
 func TestGrantAndRevokeAccess(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
-		t.Fatalf("Unable to create a sharedfs client: %v", err)
+		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
 	client.Microversion = "2.7"
 
@@ -119,7 +120,7 @@ func TestGrantAndRevokeAccess(t *testing.T) {
 		t.Fatalf("Unable to grant access: %v", err)
 	}
 
-	PrintAccessRight(t, accessRight)
+	tools.PrintResource(t, accessRight)
 
 	if err = RevokeAccess(t, client, share, accessRight); err != nil {
 		t.Fatalf("Unable to revoke access: %v", err)
@@ -129,7 +130,7 @@ func TestGrantAndRevokeAccess(t *testing.T) {
 func TestListAccessRights(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
-		t.Fatalf("Unable to create a sharedfs client: %v", err)
+		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
 	client.Microversion = "2.7"
 
@@ -157,14 +158,14 @@ func TestListAccessRights(t *testing.T) {
 	t.Logf("Share %s has %d access rule(s):", share.ID, len(rs))
 
 	for _, r := range rs {
-		PrintAccessRight(t, &r)
+		tools.PrintResource(t, &r)
 	}
 }
 
 func TestExtendAndShrink(t *testing.T) {
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
-		t.Fatalf("Unable to create a sharedfs client: %v", err)
+		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
 	client.Microversion = "2.7"
 

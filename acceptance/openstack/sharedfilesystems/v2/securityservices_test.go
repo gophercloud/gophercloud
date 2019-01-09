@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/securityservices"
 )
 
@@ -31,7 +32,7 @@ func TestSecurityServiceCreateDelete(t *testing.T) {
 		t.Fatalf("Security service description was expeted to be: %s", securityService.Description)
 	}
 
-	PrintSecurityService(t, securityService)
+	tools.PrintResource(t, securityService)
 
 	defer DeleteSecurityService(t, client, securityService)
 }
@@ -53,7 +54,7 @@ func TestSecurityServiceList(t *testing.T) {
 	}
 
 	for _, securityService := range allSecurityServices {
-		PrintSecurityService(t, &securityService)
+		tools.PrintResource(t, &securityService)
 	}
 }
 
@@ -95,7 +96,7 @@ func TestSecurityServiceListFiltering(t *testing.T) {
 		if listedSecurityService.Name != securityService.Name {
 			t.Fatalf("The name of the security service was expected to be %s", securityService.Name)
 		}
-		PrintSecurityService(t, &listedSecurityService)
+		tools.PrintResource(t, &listedSecurityService)
 	}
 }
 
@@ -142,7 +143,7 @@ func TestSecurityServiceUpdate(t *testing.T) {
 		t.Fatalf("Security service type was expected to be: %s", options.Type)
 	}
 
-	PrintSecurityService(t, securityService)
+	tools.PrintResource(t, securityService)
 
 	defer DeleteSecurityService(t, client, securityService)
 }

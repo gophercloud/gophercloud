@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/sharenetworks"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -33,7 +34,7 @@ func TestShareNetworkCreateDestroy(t *testing.T) {
 		t.Fatalf("Share network description was expeted to be: %s", shareNetwork.Description)
 	}
 
-	PrintShareNetwork(t, shareNetwork)
+	tools.PrintResource(t, shareNetwork)
 
 	defer DeleteShareNetwork(t, client, shareNetwork.ID)
 }
@@ -81,7 +82,7 @@ func TestShareNetworkUpdate(t *testing.T) {
 
 	th.CheckDeepEquals(t, expectedShareNetwork, updatedShareNetwork)
 
-	PrintShareNetwork(t, shareNetwork)
+	tools.PrintResource(t, shareNetwork)
 
 	defer DeleteShareNetwork(t, client, shareNetwork.ID)
 }
@@ -103,7 +104,7 @@ func TestShareNetworkListDetail(t *testing.T) {
 	}
 
 	for _, shareNetwork := range allShareNetworks {
-		PrintShareNetwork(t, &shareNetwork)
+		tools.PrintResource(t, &shareNetwork)
 	}
 }
 
@@ -145,7 +146,7 @@ func TestShareNetworkListFiltering(t *testing.T) {
 		if listedShareNetwork.Name != shareNetwork.Name {
 			t.Fatalf("The name of the share network was expected to be %s", shareNetwork.Name)
 		}
-		PrintShareNetwork(t, &listedShareNetwork)
+		tools.PrintResource(t, &listedShareNetwork)
 	}
 }
 
@@ -225,5 +226,5 @@ func TestShareNetworkAddRemoveSecurityService(t *testing.T) {
 		t.Errorf("Unable to remove security service: %v", err)
 	}
 
-	PrintShareNetwork(t, shareNetwork)
+	tools.PrintResource(t, shareNetwork)
 }
