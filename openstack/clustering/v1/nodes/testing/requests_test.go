@@ -117,3 +117,17 @@ func TestOpsNode(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, OperationExpectedActionID, actual)
 }
+
+func TestNodeRecover(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleRecoverSuccessfully(t)
+	recoverOpts := nodes.RecoverOpts{
+		Operation: nodes.RebuildRecovery,
+		Check:     new(bool),
+	}
+	actionID, err := nodes.Recover(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09", recoverOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, ExpectedActionID, actionID)
+}

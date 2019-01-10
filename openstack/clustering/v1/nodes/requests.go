@@ -60,7 +60,7 @@ type UpdateOpts struct {
 	Metadata  map[string]interface{} `json:"metadata,omitempty"`
 }
 
-// ToClusterUpdateMap constructs a request body from UpdateOpts.
+// ToNodeUpdateMap constructs a request body from UpdateOpts.
 func (opts UpdateOpts) ToNodeUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "node")
 }
@@ -203,5 +203,38 @@ func Ops(client *gophercloud.ServiceClient, id string, opts OperationOptsBuilder
 		r.Header = result.Header
 	}
 
+	return
+}
+
+func (opts RecoverOpts) ToNodeRecoverMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "recover")
+}
+
+// RecoverAction represents valid values for recovering a node.
+type RecoverAction string
+
+const (
+	RebootRecovery  RecoverAction = "REBOOT"
+	RebuildRecovery RecoverAction = "REBUILD"
+	// RECREATE currently is NOT supported. See https://github.com/openstack/senlin/blob/b30b2b8496b2b8af243ccd5292f38aec7a95664f/senlin/profiles/base.py#L533
+	RecreateRecovery RecoverAction = "RECREATE"
+)
+
+type RecoverOpts struct {
+	Operation RecoverAction `json:"operation,omitempty"`
+	Check     *bool         `json:"check,omitempty"`
+}
+
+func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOpts) (r ActionResult) {
+	b, err := opts.ToNodeRecoverMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	var result *http.Response
+	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	r.Header = result.Header
 	return
 }
