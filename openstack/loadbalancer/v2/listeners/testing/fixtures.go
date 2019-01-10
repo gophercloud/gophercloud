@@ -39,7 +39,9 @@ const ListenersListBody = `
 			"connection_limit": 2000,
 			"admin_state_up": true,
 			"default_tls_container_ref": "2c433435-20de-4411-84ae-9cc8917def76",
-			"sni_container_refs": ["3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"]
+			"sni_container_refs": ["3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"],
+			"timeout_client_data": 50000,
+			"timeout_member_data": 50000
 		}
 	]
 }
@@ -60,7 +62,10 @@ const SingleListenerBody = `
 		"connection_limit": 2000,
 		"admin_state_up": true,
 		"default_tls_container_ref": "2c433435-20de-4411-84ae-9cc8917def76",
-		"sni_container_refs": ["3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"]
+		"sni_container_refs": ["3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"],
+		"timeout_client_data": 50000,
+		"timeout_member_data": 50000
+
 	}
 }
 `
@@ -80,7 +85,10 @@ const PostUpdateListenerBody = `
 		"connection_limit": 1000,
 		"admin_state_up": true,
 		"default_tls_container_ref": "2c433435-20de-4411-84ae-9cc8917def76",
-		"sni_container_refs": ["3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"]
+		"sni_container_refs": ["3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"],
+		"timeout_client_data": 181000,
+		"timeout_member_data": 181000
+
 	}
 }
 `
@@ -125,6 +133,8 @@ var (
 		AdminStateUp:           true,
 		DefaultTlsContainerRef: "2c433435-20de-4411-84ae-9cc8917def76",
 		SniContainerRefs:       []string{"3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"},
+		TimeoutClientData:      50000,
+		TimeoutMemberData:      50000,
 	}
 	ListenerUpdated = listeners.Listener{
 		ID:                     "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -139,6 +149,8 @@ var (
 		AdminStateUp:           true,
 		DefaultTlsContainerRef: "2c433435-20de-4411-84ae-9cc8917def76",
 		SniContainerRefs:       []string{"3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"},
+		TimeoutClientData:      181000,
+		TimeoutMemberData:      181000,
 	}
 	ListenerStatsTree = listeners.Stats{
 		ActiveConnections: 0,
@@ -225,7 +237,9 @@ func HandleListenerUpdateSuccessfully(t *testing.T) {
 			"listener": {
 				"name": "NewListenerName",
 				"default_pool_id": null,
-				"connection_limit": 1001
+				"connection_limit": 1001,
+				"timeout_client_data": 181000,
+				"timeout_member_data": 181000
 			}
 		}`)
 
