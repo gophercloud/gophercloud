@@ -123,3 +123,39 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToSnapshotUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contain options for updating an existing Snapshot. This object is passed
+// to the snapshot.Update function. For more information about the parameters, see
+// the Snapshot object.
+type UpdateOpts struct {
+	// Snapshot name. Manila snapshot update logic doesn't have a "name" alias.
+	DisplayName *string `json:"display_name,omitempty"`
+	// Snapshot description. Manila snapshot update logic doesn't have a "description" alias.
+	DisplayDescription *string `json:"display_description,omitempty"`
+}
+
+// ToSnapshotUpdateMap assembles a request body based on the contents of an
+// UpdateOpts.
+func (opts UpdateOpts) ToSnapshotUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "snapshot")
+}
+
+// Update will update the Snapshot with provided information. To extract the updated
+// Snapshot from the response, call the Extract method on the UpdateResult.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToSnapshotUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}

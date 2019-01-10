@@ -165,6 +165,11 @@ type GetResult struct {
 	commonResult
 }
 
+// UpdateResult contains the response body and error from an Update request.
+type UpdateResult struct {
+	commonResult
+}
+
 // IDFromName is a convenience function that returns a snapshot's ID given its name.
 func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
 	r, err := ListDetail(client, &ListOpts{Name: name}).AllPages()

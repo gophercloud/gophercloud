@@ -26,6 +26,25 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, n.Size, 1)
 }
 
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUpdateResponse(t)
+
+	name := "my_new_test_snapshot"
+	description := ""
+	options := &snapshots.UpdateOpts{
+		DisplayName:        &name,
+		DisplayDescription: &description,
+	}
+	n, err := snapshots.Update(client.ServiceClient(), snapshotID, options).Extract()
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, n.Name, "my_new_test_snapshot")
+	th.AssertEquals(t, n.Description, "")
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
