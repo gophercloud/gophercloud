@@ -105,3 +105,43 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToAddressScopeUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents options used to update an address-scope.
+type UpdateOpts struct {
+	// Name is the human-readable name of the address-scope.
+	Name *string `json:"name,omitempty"`
+
+	// Shared indicates whether this address-scope is shared across all projects.
+	Shared *bool `json:"shared,omitempty"`
+}
+
+// ToAddressScopeUpdateMap builds a request body from UpdateOpts.
+func (opts UpdateOpts) ToAddressScopeUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "address_scope")
+}
+
+// Update accepts a UpdateOpts struct and updates an existing address-scope
+// using the values provided.
+func Update(c *gophercloud.ServiceClient, addressScopeID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToAddressScopeUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(updateURL(c, addressScopeID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+// Delete accepts a unique ID and deletes the address-scope associated with it.
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(deleteURL(c, id), nil)
+	return
+}
