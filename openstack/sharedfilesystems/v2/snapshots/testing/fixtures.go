@@ -63,6 +63,15 @@ func MockCreateResponse(t *testing.T) {
 	})
 }
 
+// MockDeleteResponse creates a mock delete response
+func MockDeleteResponse(t *testing.T) {
+	th.Mux.HandleFunc(snapshotEndpoint+"/"+snapshotID, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
 var getResponse = `{
 	"snapshot": {
 		"status": "available",

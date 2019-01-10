@@ -112,6 +112,12 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 	})
 }
 
+// Delete will delete an existing Snapshot with the given UUID.
+func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	return
+}
+
 // Get will get a single snapshot with given UUID
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)

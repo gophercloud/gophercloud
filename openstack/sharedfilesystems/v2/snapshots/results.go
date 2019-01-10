@@ -155,6 +155,11 @@ func ExtractSnapshots(r pagination.Page) ([]Snapshot, error) {
 	return s.Snapshots, err
 }
 
+// DeleteResult contains the response body and error from a Delete request.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // GetResult contains the response body and error from a Get request.
 type GetResult struct {
 	commonResult

@@ -26,6 +26,16 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, n.Size, 1)
 }
 
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteResponse(t)
+
+	result := snapshots.Delete(client.ServiceClient(), snapshotID)
+	th.AssertNoErr(t, result.Err)
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
