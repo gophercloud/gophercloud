@@ -70,6 +70,11 @@ func (r commonResult) Extract() (*Snapshot, error) {
 	return s.Snapshot, err
 }
 
+// CreateResult contains the response body and error from a Create request.
+type CreateResult struct {
+	commonResult
+}
+
 // SnapshotPage is a pagination.pager that is returned from a call to the List function.
 type SnapshotPage struct {
 	pagination.MarkerPageBase

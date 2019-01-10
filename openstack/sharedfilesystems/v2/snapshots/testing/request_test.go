@@ -9,6 +9,24 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockCreateResponse(t)
+
+	force := false
+	options := &snapshots.CreateOpts{ShareID: shareID, Name: "test snapshot", Description: "test description", Force: &force}
+	n, err := snapshots.Create(client.ServiceClient(), options).Extract()
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, n.Name, "test snapshot")
+	th.AssertEquals(t, n.Description, "test description")
+	th.AssertEquals(t, n.ShareProto, "NFS")
+	th.AssertEquals(t, n.ShareSize, 1)
+	th.AssertEquals(t, n.Size, 1)
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

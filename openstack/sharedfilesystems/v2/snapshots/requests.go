@@ -5,6 +5,56 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type CreateOptsBuilder interface {
+	ToSnapshotCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts contains the options for create a Snapshot. This object is
+// passed to snapshots.Create(). For more information about these parameters,
+// please refer to the Snapshot object, or the shared file systems API v2
+// documentation
+type CreateOpts struct {
+	// The UUID of the share from which to create a snapshot
+	ShareID string `json:"share_id" required:"true"`
+	// Indicates whether snapshot creation must be attempted when a share’s status is not
+	// available. Set to true to force snapshot creation when the share is busy performing
+	// other operations. Default is false.
+	Force *bool `json:"force,omitempty"`
+	// Defines the snapshot name
+	Name string `json:"name,omitempty"`
+	// Defines the snapshot description
+	Description string `json:"description,omitempty"`
+	// DisplayName is equivalent to Name. The API supports using both
+	// This is an inherited attribute from the block storage API
+	DisplayName string `json:"display_name,omitempty"`
+	// DisplayDescription is equivalent to Description. The API supports using both
+	// This is an inherited attribute from the block storage API
+	DisplayDescription string `json:"display_description,omitempty"`
+}
+
+// ToSnapshotCreateMap assembles a request body based on the contents of a
+// CreateOpts.
+func (opts CreateOpts) ToSnapshotCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "snapshot")
+}
+
+// Create will create a new Snapshot based on the values in CreateOpts. To extract
+// the Snapshot object from the response, call the Extract method on the
+// CreateResult.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToSnapshotCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200, 201, 202},
+	})
+	return
+}
+
 // ListOpts holds options for listing Snapshots. It is passed to the
 // snapshots.List function.
 type ListOpts struct {
