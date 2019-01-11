@@ -182,3 +182,38 @@ func TestSubnetsWithSubnetPoolNoCIDR(t *testing.T) {
 		t.Fatalf("A subnet pool was not associated.")
 	}
 }
+
+func TestSubnetsWithSubnetPoolPrefixlen(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// Create Network
+	network, err := CreateNetwork(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteNetwork(t, client, network.ID)
+
+	// Create SubnetPool
+	subnetPool, err := subnetpools.CreateSubnetPool(t, client)
+	th.AssertNoErr(t, err)
+	defer subnetpools.DeleteSubnetPool(t, client, subnetPool.ID)
+
+	// Create Subnet
+	subnet, err := CreateSubnetWithSubnetPoolPrefixlen(t, client, network.ID, subnetPool.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteSubnet(t, client, subnet.ID)
+
+	tools.PrintResource(t, subnet)
+
+	if subnet.GatewayIP == "" {
+		t.Fatalf("A subnet pool was not associated.")
+	}
+
+	cidrParts := strings.Split(subnet.CIDR, "/")
+	if len(cidrParts) != 2 {
+		t.Fatalf("Got invalid CIDR for subnet '%s': %s", subnet.ID, subnet.CIDR)
+	}
+
+	if cidrParts[1] != "12" {
+		t.Fatalf("Got invalid prefix length for subnet '%s': wanted 12 but got '%s'", subnet.ID, cidrParts[1])
+	}
+}

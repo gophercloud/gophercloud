@@ -131,6 +131,10 @@ type CreateOpts struct {
 
 	// SubnetPoolID is the id of the subnet pool that subnet should be associated to.
 	SubnetPoolID string `json:"subnetpool_id,omitempty"`
+
+	// Prefixlen is used when user creates a subnet from the subnetpool. It will
+	// overwrite the "default_prefixlen" value of the referenced subnetpool.
+	Prefixlen int `json:"prefixlen,omitempty"`
 }
 
 // ToSubnetCreateMap builds a request body from CreateOpts.
