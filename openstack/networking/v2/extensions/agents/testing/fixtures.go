@@ -58,7 +58,7 @@ const AgentsListResult = `
 // AgentsListResult.
 var Agent1 = agents.Agent{
 	ID:           "59186d7b-b512-4fdf-bbaf-5804ffde8811",
-	AdminStateUP: true,
+	AdminStateUp: true,
 	AgentType:    "Open vSwitch agent",
 	Alive:        true,
 	Binary:       "neutron-openvswitch-agent",
@@ -79,7 +79,7 @@ var Agent1 = agents.Agent{
 // AgentsListResult.
 var Agent2 = agents.Agent{
 	ID:           "76af7b1f-d61b-4526-94f7-d2e14e2698df",
-	AdminStateUP: true,
+	AdminStateUp: true,
 	AgentType:    "Open vSwitch agent",
 	Alive:        true,
 	Binary:       "neutron-openvswitch-agent",

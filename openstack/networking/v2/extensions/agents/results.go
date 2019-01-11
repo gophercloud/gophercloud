@@ -17,8 +17,8 @@ type Agent struct {
 	// ID is the id of the agent.
 	ID string `json:"id"`
 
-	// AdminStateUP is an administrative state of the agent.
-	AdminStateUP bool `json:"admin_state_up"`
+	// AdminStateUp is an administrative state of the agent.
+	AdminStateUp bool `json:"admin_state_up"`
 
 	// AgentType is a type of the agent.
 	AgentType string `json:"agent_type"`
