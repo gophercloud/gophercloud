@@ -18,10 +18,6 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	// The UUID of the share from which to create a snapshot
 	ShareID string `json:"share_id" required:"true"`
-	// Indicates whether snapshot creation must be attempted when a share’s status is not
-	// available. Set to true to force snapshot creation when the share is busy performing
-	// other operations. Default is false.
-	Force *bool `json:"force,omitempty"`
 	// Defines the snapshot name
 	Name string `json:"name,omitempty"`
 	// Defines the snapshot description

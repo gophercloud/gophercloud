@@ -15,8 +15,7 @@ func TestCreate(t *testing.T) {
 
 	MockCreateResponse(t)
 
-	force := false
-	options := &snapshots.CreateOpts{ShareID: shareID, Name: "test snapshot", Description: "test description", Force: &force}
+	options := &snapshots.CreateOpts{ShareID: shareID, Name: "test snapshot", Description: "test description"}
 	n, err := snapshots.Create(client.ServiceClient(), options).Extract()
 
 	th.AssertNoErr(t, err)

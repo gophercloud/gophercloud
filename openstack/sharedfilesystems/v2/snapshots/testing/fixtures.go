@@ -18,7 +18,6 @@ const (
 var createRequest = `{
 	"snapshot": {
 		"share_id": "19865c43-3b91-48c9-85a0-7ac4d6bb0efe",
-		"force": false,
 		"name": "test snapshot",
 		"description": "test description"
 	}
