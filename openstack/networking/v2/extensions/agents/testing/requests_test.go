@@ -71,7 +71,7 @@ func TestGet(t *testing.T) {
 
 	th.AssertEquals(t, s.ID, "43583cf5-472e-4dc8-af5b-6aed4c94ee3a")
 	th.AssertEquals(t, s.Binary, "neutron-openvswitch-agent")
-	th.AssertEquals(t, s.AdminStateUP, true)
+	th.AssertEquals(t, s.AdminStateUp, true)
 	th.AssertEquals(t, s.Alive, true)
 	th.AssertEquals(t, s.Topic, "N/A")
 	th.AssertEquals(t, s.Host, "compute3")
