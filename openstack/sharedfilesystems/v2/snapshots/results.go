@@ -70,6 +70,11 @@ func (r commonResult) Extract() (*Snapshot, error) {
 	return s.Snapshot, err
 }
 
+// CreateResult contains the response body and error from a Create request.
+type CreateResult struct {
+	commonResult
+}
+
 // SnapshotPage is a pagination.pager that is returned from a call to the List function.
 type SnapshotPage struct {
 	pagination.MarkerPageBase
@@ -150,8 +155,18 @@ func ExtractSnapshots(r pagination.Page) ([]Snapshot, error) {
 	return s.Snapshots, err
 }
 
+// DeleteResult contains the response body and error from a Delete request.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // GetResult contains the response body and error from a Get request.
 type GetResult struct {
+	commonResult
+}
+
+// UpdateResult contains the response body and error from an Update request.
+type UpdateResult struct {
 	commonResult
 }
 

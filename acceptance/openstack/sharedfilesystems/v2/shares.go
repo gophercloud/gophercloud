@@ -1,7 +1,6 @@
 package v2
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"testing"
@@ -32,9 +31,8 @@ func CreateShare(t *testing.T, client *gophercloud.ServiceClient) (*shares.Share
 
 	share, err := shares.Create(client, createOpts).Extract()
 	if err != nil {
-		t.Logf("Failed to create %s share", share.ID)
-		DeleteShare(t, client, share)
-		return share, err
+		t.Logf("Failed to create share")
+		return nil, err
 	}
 
 	err = waitForStatus(t, client, share.ID, "available", 600)
@@ -98,26 +96,6 @@ func DeleteShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 	}
 }
 
-// PrintShare prints some information of the share
-func PrintShare(t *testing.T, share *shares.Share) {
-	asJSON, err := json.MarshalIndent(share, "", " ")
-	if err != nil {
-		t.Logf("Cannot print the contents of %s", share.ID)
-	}
-
-	t.Logf("Share %s", string(asJSON))
-}
-
-// PrintAccessRight prints contents of an access rule
-func PrintAccessRight(t *testing.T, accessRight *shares.AccessRight) {
-	asJSON, err := json.MarshalIndent(accessRight, "", " ")
-	if err != nil {
-		t.Logf("Cannot print access rule")
-	}
-
-	t.Logf("Access rule %s", string(asJSON))
-}
-
 // ExtendShare extends the capacity of an existing share
 func ExtendShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share, newSize int) error {
 	return shares.Extend(client, share.ID, &shares.ExtendOpts{NewSize: newSize}).ExtractErr()
@@ -128,7 +106,7 @@ func ShrinkShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.
 	return shares.Shrink(client, share.ID, &shares.ShrinkOpts{NewSize: newSize}).ExtractErr()
 }
 
-func printMessages(t *testing.T, c *gophercloud.ServiceClient, id string) error {
+func PrintMessages(t *testing.T, c *gophercloud.ServiceClient, id string) error {
 	c.Microversion = "2.37"
 
 	allPages, err := messages.List(c, messages.ListOpts{ResourceID: id}).AllPages()
@@ -175,7 +153,7 @@ func waitForStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string
 	})
 
 	if err != nil {
-		mErr := printMessages(t, c, id)
+		mErr := PrintMessages(t, c, id)
 		if mErr != nil {
 			return fmt.Errorf("Share status is '%s' and unable to get manila messages: %s", err, mErr)
 		}

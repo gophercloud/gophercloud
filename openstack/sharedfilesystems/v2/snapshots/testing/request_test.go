@@ -9,6 +9,52 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockCreateResponse(t)
+
+	options := &snapshots.CreateOpts{ShareID: shareID, Name: "test snapshot", Description: "test description"}
+	n, err := snapshots.Create(client.ServiceClient(), options).Extract()
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, n.Name, "test snapshot")
+	th.AssertEquals(t, n.Description, "test description")
+	th.AssertEquals(t, n.ShareProto, "NFS")
+	th.AssertEquals(t, n.ShareSize, 1)
+	th.AssertEquals(t, n.Size, 1)
+}
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUpdateResponse(t)
+
+	name := "my_new_test_snapshot"
+	description := ""
+	options := &snapshots.UpdateOpts{
+		DisplayName:        &name,
+		DisplayDescription: &description,
+	}
+	n, err := snapshots.Update(client.ServiceClient(), snapshotID, options).Extract()
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, n.Name, "my_new_test_snapshot")
+	th.AssertEquals(t, n.Description, "")
+}
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteResponse(t)
+
+	result := snapshots.Delete(client.ServiceClient(), snapshotID)
+	th.AssertNoErr(t, result.Err)
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

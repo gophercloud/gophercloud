@@ -43,20 +43,3 @@ func DeleteSecurityService(t *testing.T, client *gophercloud.ServiceClient, secu
 
 	t.Logf("Deleted security service: %s", securityService.ID)
 }
-
-// PrintSecurityService will print a security service and all of its attributes.
-func PrintSecurityService(t *testing.T, securityService *securityservices.SecurityService) {
-	t.Logf("ID: %s", securityService.ID)
-	t.Logf("Project ID: %s", securityService.ProjectID)
-	t.Logf("Domain: %s", securityService.Domain)
-	t.Logf("Status: %s", securityService.Status)
-	t.Logf("Type: %s", securityService.Type)
-	t.Logf("Name: %s", securityService.Name)
-	t.Logf("Description: %s", securityService.Description)
-	t.Logf("DNS IP: %s", securityService.DNSIP)
-	t.Logf("User: %s", securityService.User)
-	t.Logf("Password: %s", securityService.Password)
-	t.Logf("Server: %s", securityService.Server)
-	t.Logf("Created at: %v", securityService.CreatedAt)
-	t.Logf("Updated at: %v", securityService.UpdatedAt)
-}
