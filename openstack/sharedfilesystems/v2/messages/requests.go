@@ -34,6 +34,12 @@ type ListOpts struct {
 	ResourceID string `q:"resource_id"`
 	// The type of the resource for which the message was created
 	ResourceType string `q:"resource_type"`
+	// The key to sort a list of messages
+	SortKey string `q:"sort_key"`
+	// The key to sort a list of messages
+	SortDir string `q:"sort_dir"`
+	// The maximum number of messages to return
+	Limit int `q:"limit"`
 }
 
 // ToMessageListQuery formats a ListOpts into a query string.
