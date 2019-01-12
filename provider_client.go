@@ -3,6 +3,7 @@ package gophercloud
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -192,7 +193,7 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 	// io.ReadSeeker as-is. Default the content-type to application/json.
 	if options.JSONBody != nil {
 		if options.RawBody != nil {
-			panic("Please provide only one of JSONBody or RawBody to gophercloud.Request().")
+			return nil, errors.New("please provide only one of JSONBody or RawBody to gophercloud.Request()")
 		}
 
 		rendered, err := json.Marshal(options.JSONBody)
