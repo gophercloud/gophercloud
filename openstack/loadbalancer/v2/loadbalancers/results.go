@@ -55,6 +55,10 @@ type LoadBalancer struct {
 
 	// Pools are the pools related to this Loadbalancer.
 	Pools []pools.Pool `json:"pools"`
+
+	// Tags is a list of resource tags. Tags are arbitrarily defined strings
+	// attached to the resource.
+	Tags []string `json:"tags"`
 }
 
 // StatusTree represents the status of a loadbalancer.
