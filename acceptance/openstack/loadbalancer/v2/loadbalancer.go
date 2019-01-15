@@ -64,11 +64,13 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 
 	t.Logf("Attempting to create loadbalancer %s on subnet %s", lbName, subnetID)
 
+	tags := []string{"test"}
 	createOpts := loadbalancers.CreateOpts{
 		Name:         lbName,
 		Description:  lbDescription,
 		VipSubnetID:  subnetID,
 		AdminStateUp: gophercloud.Enabled,
+		Tags:         tags,
 	}
 
 	lb, err := loadbalancers.Create(client, createOpts).Extract()
@@ -89,6 +91,7 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 	th.AssertEquals(t, lb.Description, lbDescription)
 	th.AssertEquals(t, lb.VipSubnetID, subnetID)
 	th.AssertEquals(t, lb.AdminStateUp, true)
+	th.AssertDeepEquals(t, lb.Tags, tags)
 
 	return lb, nil
 }

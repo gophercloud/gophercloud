@@ -31,6 +31,7 @@ Example to Create a Load Balancer
 		VipAddress:   "10.30.176.48",
 		Flavor:       "medium",
 		Provider:     "haproxy",
+		Tags: 		  []string{"test", "stage"},
 	}
 
 	lb, err := loadbalancers.Create(networkClient, createOpts).Extract()

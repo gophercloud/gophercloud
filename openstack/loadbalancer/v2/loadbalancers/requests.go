@@ -97,6 +97,9 @@ type CreateOpts struct {
 
 	// The name of the provider.
 	Provider string `json:"provider,omitempty"`
+
+	// Tags is a set of resource tags.
+	Tags []string `json:"tags,omitempty"`
 }
 
 // ToLoadBalancerCreateMap builds a request body from CreateOpts.
