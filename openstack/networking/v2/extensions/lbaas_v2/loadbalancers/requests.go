@@ -27,6 +27,7 @@ type ListOpts struct {
 	VipAddress         string `q:"vip_address"`
 	VipPortID          string `q:"vip_port_id"`
 	VipSubnetID        string `q:"vip_subnet_id"`
+	VipNetworkID       string `q:"vip_network_id"`
 	ID                 string `q:"id"`
 	OperatingStatus    string `q:"operating_status"`
 	Name               string `q:"name"`
@@ -79,10 +80,15 @@ type CreateOpts struct {
 	// Human-readable description for the Loadbalancer.
 	Description string `json:"description,omitempty"`
 
+	// The subnet on which to allocate the Loadbalancer's address. A tenant can
+	// only create Loadbalancers on networks authorized by policy (e.g. networks
+	// that belong to them or networks that are shared).
+	VipSubnetID string `json:"vip_subnet_id,omitempty"`
+
 	// The network on which to allocate the Loadbalancer's address. A tenant can
 	// only create Loadbalancers on networks authorized by policy (e.g. networks
 	// that belong to them or networks that are shared).
-	VipSubnetID string `json:"vip_subnet_id" required:"true"`
+	VipNetworkID string `json:"vip_network_id,omitempty"`
 
 	// TenantID is the UUID of the project who owns the Loadbalancer.
 	// Only administrative users can specify a project UUID other than their own.
