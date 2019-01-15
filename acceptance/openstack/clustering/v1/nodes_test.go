@@ -183,3 +183,33 @@ func TestNodesRecover(t *testing.T) {
 		tools.PrintResource(t, node)
 	}
 }
+
+func TestNodeCheck(t *testing.T) {
+	client, err := clients.NewClusteringV1Client()
+	th.AssertNoErr(t, err)
+
+	profile, err := CreateProfile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteProfile(t, client, profile.ID)
+
+	cluster, err := CreateCluster(t, client, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteCluster(t, client, cluster.ID)
+
+	node, err := CreateNode(t, client, cluster.ID, profile.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteNode(t, client, node.ID)
+
+	t.Logf("Attempting to check on node: %s", node.ID)
+
+	actionID, err := nodes.Check(client, node.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	err = WaitForAction(client, actionID)
+	th.AssertNoErr(t, err)
+
+	node, err = nodes.Get(client, node.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "Check: Node is ACTIVE.", node.StatusReason)
+	tools.PrintResource(t, node)
+}

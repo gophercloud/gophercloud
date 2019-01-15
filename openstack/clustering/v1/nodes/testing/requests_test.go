@@ -131,3 +131,14 @@ func TestNodeRecover(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, ExpectedActionID, actionID)
 }
+
+func TestNodeCheck(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleCheckSuccessfully(t)
+
+	actionID, err := nodes.Check(fake.ServiceClient(), "edce3528-864f-41fb-8759-f4707925cc09").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, ExpectedActionID, actionID)
+}
