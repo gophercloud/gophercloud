@@ -123,13 +123,22 @@ type UpdateOptsBuilder interface {
 // ID. To disassociate the floating IP from all ports, provide an empty string.
 type UpdateOpts struct {
 	Description *string `json:"description,omitempty"`
-	PortID      *string `json:"port_id"`
+	PortID      *string `json:"port_id,omitempty"`
 }
 
 // ToFloatingIPUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder
 // interface
 func (opts UpdateOpts) ToFloatingIPUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "floatingip")
+	b, err := gophercloud.BuildRequestBody(opts, "floatingip")
+	if err != nil {
+		return nil, err
+	}
+
+	if m := b["floatingip"].(map[string]interface{}); m["port_id"] == "" {
+		m["port_id"] = nil
+	}
+
+	return b, nil
 }
 
 // Update allows floating IP resources to be updated. Currently, the only way to
