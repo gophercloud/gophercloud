@@ -65,6 +65,7 @@ func TestCreateLoadbalancer(t *testing.T) {
 		VipAddress:   "10.30.176.48",
 		Flavor:       "medium",
 		Provider:     "haproxy",
+		Tags:         []string{"test", "stage"},
 	}).Extract()
 	th.AssertNoErr(t, err)
 

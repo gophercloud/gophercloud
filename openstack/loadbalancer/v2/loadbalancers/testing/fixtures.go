@@ -29,7 +29,8 @@ const LoadbalancersListBody = `
 			"provider": "haproxy",
 			"admin_state_up": true,
 			"provisioning_status": "ACTIVE",
-			"operating_status": "ONLINE"
+			"operating_status": "ONLINE",
+			"tags": ["test", "stage"]
 		},
 		{
 			"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -43,7 +44,8 @@ const LoadbalancersListBody = `
 			"provider": "haproxy",
 			"admin_state_up": true,
 			"provisioning_status": "PENDING_CREATE",
-			"operating_status": "OFFLINE"
+			"operating_status": "OFFLINE",
+			"tags": ["test", "stage"]
 		}
 	]
 }
@@ -64,7 +66,8 @@ const SingleLoadbalancerBody = `
 		"provider": "haproxy",
 		"admin_state_up": true,
 		"provisioning_status": "PENDING_CREATE",
-		"operating_status": "OFFLINE"
+		"operating_status": "OFFLINE",
+		"tags": ["test", "stage"]
 	}
 }
 `
@@ -84,7 +87,8 @@ const PostUpdateLoadbalancerBody = `
 		"provider": "haproxy",
 		"admin_state_up": true,
 		"provisioning_status": "PENDING_CREATE",
-		"operating_status": "OFFLINE"
+		"operating_status": "OFFLINE",
+		"tags": ["test", "stage"]
 	}
 }
 `
@@ -98,6 +102,7 @@ const GetLoadbalancerStatusesBody = `
 			"name": "db_lb",
 			"provisioning_status": "PENDING_UPDATE",
 			"operating_status": "ACTIVE",
+			"tags": ["test", "stage"],
 			"listeners": [{
 				"id": "db902c0c-d5ff-4753-b465-668ad9656918",
 				"name": "db",
@@ -152,6 +157,7 @@ var (
 		AdminStateUp:       true,
 		ProvisioningStatus: "ACTIVE",
 		OperatingStatus:    "ONLINE",
+		Tags:               []string{"test", "stage"},
 	}
 	LoadbalancerDb = loadbalancers.LoadBalancer{
 		ID:                 "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -166,6 +172,7 @@ var (
 		AdminStateUp:       true,
 		ProvisioningStatus: "PENDING_CREATE",
 		OperatingStatus:    "OFFLINE",
+		Tags:               []string{"test", "stage"},
 	}
 	LoadbalancerUpdated = loadbalancers.LoadBalancer{
 		ID:                 "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -180,6 +187,7 @@ var (
 		AdminStateUp:       true,
 		ProvisioningStatus: "PENDING_CREATE",
 		OperatingStatus:    "OFFLINE",
+		Tags:               []string{"test", "stage"},
 	}
 	LoadbalancerStatusesTree = loadbalancers.StatusTree{
 		Loadbalancer: &loadbalancers.LoadBalancer{
@@ -187,6 +195,7 @@ var (
 			Name:               "db_lb",
 			ProvisioningStatus: "PENDING_UPDATE",
 			OperatingStatus:    "ACTIVE",
+			Tags:               []string{"test", "stage"},
 			Listeners: []listeners.Listener{{
 				ID:                 "db902c0c-d5ff-4753-b465-668ad9656918",
 				Name:               "db",
@@ -253,7 +262,8 @@ func HandleLoadbalancerCreationSuccessfully(t *testing.T, response string) {
 				"vip_address": "10.30.176.48",
 				"flavor": "medium",
 				"provider": "haproxy",
-				"admin_state_up": true
+				"admin_state_up": true,
+				"tags": ["test", "stage"]
 			}
 		}`)
 
