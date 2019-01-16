@@ -85,14 +85,15 @@ type reauthlock struct {
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
-// authenticated service requests. Blocks if Reauthenticate is in progress.
+// authenticated service requests.
 func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
 	if client.reauthmut != nil {
-		client.reauthmut.Lock()
-		for client.reauthmut.reauthing {
-			client.reauthmut.done.Wait()
+		client.reauthmut.RLock()
+		if client.reauthmut.reauthing {
+			client.reauthmut.RUnlock()
+			return
 		}
-		client.reauthmut.Unlock()
+		client.reauthmut.RUnlock()
 	}
 	t := client.Token()
 	if t == "" {

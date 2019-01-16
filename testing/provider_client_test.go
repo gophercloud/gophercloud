@@ -62,6 +62,7 @@ func TestConcurrentReauth(t *testing.T) {
 	p.SetToken(prereauthTok)
 	p.ReauthFunc = func() error {
 		time.Sleep(1 * time.Second)
+		p.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
 		info.mut.Unlock()
@@ -152,7 +153,7 @@ func TestReauthEndLoop(t *testing.T) {
 			info.maxReauthReached = true
 			return fmt.Errorf("Max reauthentication attempts reached")
 		}
-
+		p.AuthenticatedHeaders()
 		info.reauthAttempts++
 
 		return nil
@@ -233,6 +234,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 			info.mut.RUnlock()
 		}
 
+		p.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
 		info.mut.Unlock()
