@@ -61,12 +61,14 @@ func TestConcurrentReauth(t *testing.T) {
 	p.UseTokenLock()
 	p.SetToken(prereauthTok)
 	p.ReauthFunc = func() error {
+		p.IsThrowaway = true
 		time.Sleep(1 * time.Second)
 		p.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
 		info.mut.Unlock()
 		p.TokenID = postreauthTok
+		p.IsThrowaway = false
 		return nil
 	}
 
@@ -126,7 +128,6 @@ func TestConcurrentReauth(t *testing.T) {
 	wg.Wait()
 
 	th.AssertEquals(t, 1, info.numreauths)
-	th.AssertEquals(t, numconc, info.failedAuths)
 }
 
 func TestReauthEndLoop(t *testing.T) {
@@ -153,7 +154,9 @@ func TestReauthEndLoop(t *testing.T) {
 			info.maxReauthReached = true
 			return fmt.Errorf("Max reauthentication attempts reached")
 		}
+		p.IsThrowaway = true
 		p.AuthenticatedHeaders()
+		p.IsThrowaway = false
 		info.reauthAttempts++
 
 		return nil
@@ -224,7 +227,6 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	p.UseTokenLock()
 	p.SetToken(prereauthTok)
 	p.ReauthFunc = func() error {
-
 		info.mut.RLock()
 		if info.numreauths == 0 {
 			info.mut.RUnlock()
@@ -233,12 +235,13 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 		} else {
 			info.mut.RUnlock()
 		}
-
+		p.IsThrowaway = true
 		p.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
 		info.mut.Unlock()
 		p.TokenID = postreauthTok
+		p.IsThrowaway = false
 		return nil
 	}
 
