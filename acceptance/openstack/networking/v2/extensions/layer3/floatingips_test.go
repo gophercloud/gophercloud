@@ -85,7 +85,7 @@ func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
 
 	// Disassociate the floating IP
 	updateOpts := floatingips.UpdateOpts{
-		PortID: nil,
+		PortID: new(string),
 	}
 
 	newFip, err = floatingips.Update(client, fip.ID, updateOpts).Extract()
