@@ -135,8 +135,10 @@ func TestUpdateLoadbalancer(t *testing.T) {
 
 	client := fake.ServiceClient()
 	name := "NewLoadbalancerName"
+	tags := []string{"test"}
 	actual, err := loadbalancers.Update(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", loadbalancers.UpdateOpts{
 		Name: &name,
+		Tags: &tags,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)

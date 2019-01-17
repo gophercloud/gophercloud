@@ -88,7 +88,7 @@ const PostUpdateLoadbalancerBody = `
 		"admin_state_up": true,
 		"provisioning_status": "PENDING_CREATE",
 		"operating_status": "OFFLINE",
-		"tags": ["test", "stage"]
+		"tags": ["test"]
 	}
 }
 `
@@ -187,7 +187,7 @@ var (
 		AdminStateUp:       true,
 		ProvisioningStatus: "PENDING_CREATE",
 		OperatingStatus:    "OFFLINE",
-		Tags:               []string{"test", "stage"},
+		Tags:               []string{"test"},
 	}
 	LoadbalancerStatusesTree = loadbalancers.StatusTree{
 		Loadbalancer: &loadbalancers.LoadBalancer{
@@ -314,7 +314,8 @@ func HandleLoadbalancerUpdateSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "Content-Type", "application/json")
 		th.TestJSONRequest(t, r, `{
 			"loadbalancer": {
-				"name": "NewLoadbalancerName"
+				"name": "NewLoadbalancerName",
+				"tags": ["test"]
 			}
 		}`)
 
