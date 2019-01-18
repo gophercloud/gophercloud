@@ -43,9 +43,13 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, client, subnet.ID)
 
-	lb, err := CreateLoadBalancer(t, client, subnet.ID)
+	lb, err := CreateLoadBalancerWithSubnetId(t, client, subnet.ID)
 	th.AssertNoErr(t, err)
 	defer DeleteLoadBalancer(t, client, lb.ID)
+	
+	lb1, err := CreateLoadBalancerWithNetworkId(t, client, network.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteLoadBalancer(t, client, lb1.ID)
 
 	lbDescription := ""
 	updateLoadBalancerOpts := loadbalancers.UpdateOpts{
