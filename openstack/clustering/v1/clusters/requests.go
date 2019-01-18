@@ -589,3 +589,36 @@ func ReplaceNodes(client *gophercloud.ServiceClient, id string, opts ReplaceNode
 	r.Header = result.Header
 	return
 }
+
+type CollectOptsBuilder interface {
+	ToClusterCollectMap() (string, error)
+}
+
+// CollectOpts represents options to collect attribute values across a cluster
+type CollectOpts struct {
+	Path string `q:"path" required:"true"`
+}
+
+func (opts CollectOpts) ToClusterCollectMap() (string, error) {
+	return opts.Path, nil
+}
+
+// Collect instructs OpenStack to aggregate attribute values across a cluster
+func Collect(client *gophercloud.ServiceClient, id string, opts CollectOptsBuilder) (r CollectResult) {
+	query, err := opts.ToClusterCollectMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	var result *http.Response
+	result, r.Err = client.Get(collectURL(client, id, query), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
+	return
+}

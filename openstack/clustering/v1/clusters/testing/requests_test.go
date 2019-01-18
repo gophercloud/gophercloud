@@ -463,3 +463,15 @@ func TestReplaceNodes(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, actionID, "2a0ff107-e789-4660-a122-3816c43af703")
 }
+
+func TestClusterCollect(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleClusterCollectSuccessfully(t)
+	opts := clusters.CollectOpts{
+		Path: "foo.bar",
+	}
+	attributes, err := clusters.Collect(fake.ServiceClient(), "7d85f602-a948-4a30-afd4-e84f47471c15", opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedCollectAttributes, attributes)
+}

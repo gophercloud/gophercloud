@@ -84,6 +84,11 @@ type ClusterPolicy struct {
 	PolicyType  string `json:"policy_type"`
 }
 
+type ClusterAttributes struct {
+	ID    string      `json:"id"`
+	Value interface{} `json:"value"`
+}
+
 // Action represents an OpenStack Clustering action.
 type Action struct {
 	Action string `json:"action"`
@@ -181,6 +186,10 @@ func (r ActionResult) Extract() (string, error) {
 	return s.Action, err
 }
 
+type CollectResult struct {
+	gophercloud.Result
+}
+
 // ExtractClusters returns a slice of Clusters from the List operation.
 func ExtractClusters(r pagination.Page) ([]Cluster, error) {
 	var s struct {
@@ -198,4 +207,13 @@ func ExtractClusterPolicies(r pagination.Page) ([]ClusterPolicy, error) {
 	}
 	err := (r.(ClusterPolicyPage)).ExtractInto(&s)
 	return s.ClusterPolicies, err
+}
+
+// Extract returns collected attributes across a cluster
+func (r CollectResult) Extract() ([]ClusterAttributes, error) {
+	var s struct {
+		Attributes []ClusterAttributes `json:"cluster_attributes"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Attributes, err
 }
