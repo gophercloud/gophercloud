@@ -56,9 +56,9 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 	return listener, nil
 }
 
-// CreateLoadBalancer will create a load balancer with a random name on a given
+// CreateLoadBalancerWithSubnetId will create a load balancer with a random name on a given
 // subnet. An error will be returned if the loadbalancer could not be created.
-func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetID string) (*loadbalancers.LoadBalancer, error) {
+func CreateLoadBalancerWithSubnetId(t *testing.T, client *gophercloud.ServiceClient, subnetID string) (*loadbalancers.LoadBalancer, error) {
 	lbName := tools.RandomString("TESTACCT-", 8)
 	lbDescription := tools.RandomString("TESTACCT-DESC-", 8)
 
@@ -88,6 +88,44 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 	th.AssertEquals(t, lb.Name, lbName)
 	th.AssertEquals(t, lb.Description, lbDescription)
 	th.AssertEquals(t, lb.VipSubnetID, subnetID)
+	th.AssertEquals(t, lb.AdminStateUp, true)
+
+	return lb, nil
+}
+
+
+// CreateLoadBalancerWithNetworkId will create a load balancer with a random name on a given
+// network. An error will be returned if the loadbalancer could not be created.
+func CreateLoadBalancerWithNetworkId(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*loadbalancers.LoadBalancer, error) {
+	lbName := tools.RandomString("TESTACCT-", 8)
+	lbDescription := tools.RandomString("TESTACCT-DESC-", 8)
+
+	t.Logf("Attempting to create loadbalancer %s on subnet %s", lbName, networkID)
+
+	createOpts := loadbalancers.CreateOpts{
+		Name:         lbName,
+		Description:  lbDescription,
+		VipNetworkID:  networkID,
+		AdminStateUp: gophercloud.Enabled,
+	}
+
+	lb, err := loadbalancers.Create(client, createOpts).Extract()
+	if err != nil {
+		return lb, err
+	}
+
+	t.Logf("Successfully created loadbalancer %s on subnet %s", lbName, networkID)
+	t.Logf("Waiting for loadbalancer %s to become active", lbName)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		return lb, err
+	}
+
+	t.Logf("LoadBalancer %s is active", lbName)
+
+	th.AssertEquals(t, lb.Name, lbName)
+	th.AssertEquals(t, lb.Description, lbDescription)
+	th.AssertEquals(t, lb.VipNetworkID, networkID)
 	th.AssertEquals(t, lb.AdminStateUp, true)
 
 	return lb, nil
