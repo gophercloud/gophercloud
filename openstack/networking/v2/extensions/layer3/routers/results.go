@@ -16,7 +16,7 @@ type GatewayInfo struct {
 // ExternalFixedIP is the IP address and subnet ID of the external gateway of a
 // router.
 type ExternalFixedIP struct {
-	IPAddress string `json:"ip_address"`
+	IPAddress string `json:"ip_address,omitempty"`
 	SubnetID  string `json:"subnet_id"`
 }
 

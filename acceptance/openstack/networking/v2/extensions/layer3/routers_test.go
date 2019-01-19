@@ -72,11 +72,35 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 
 	tools.PrintResource(t, router)
 
+	efi := []routers.ExternalFixedIP{}
+	for _, extIP := range router.GatewayInfo.ExternalFixedIPs {
+		efi = append(efi,
+			routers.ExternalFixedIP{
+				IPAddress: extIP.IPAddress,
+				SubnetID:  extIP.SubnetID,
+			},
+		)
+	}
+	// Add a new external router IP
+	efi = append(efi,
+		routers.ExternalFixedIP{
+			SubnetID: router.GatewayInfo.ExternalFixedIPs[0].SubnetID,
+		},
+	)
+
+	enableSNAT := true
+	gatewayInfo := routers.GatewayInfo{
+		NetworkID:        router.GatewayInfo.NetworkID,
+		EnableSNAT:       &enableSNAT,
+		ExternalFixedIPs: efi,
+	}
+
 	newName := tools.RandomString("TESTACC-", 8)
 	newDescription := ""
 	updateOpts := routers.UpdateOpts{
 		Name:        newName,
 		Description: &newDescription,
+		GatewayInfo: &gatewayInfo,
 	}
 
 	_, err = routers.Update(client, router.ID, updateOpts).Extract()
@@ -88,6 +112,8 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 	tools.PrintResource(t, newRouter)
 	th.AssertEquals(t, newRouter.Name, newName)
 	th.AssertEquals(t, newRouter.Description, newDescription)
+	th.AssertEquals(t, *newRouter.GatewayInfo.EnableSNAT, enableSNAT)
+	th.AssertDeepEquals(t, newRouter.GatewayInfo.ExternalFixedIPs, efi)
 }
 
 func TestLayer3RouterInterface(t *testing.T) {
