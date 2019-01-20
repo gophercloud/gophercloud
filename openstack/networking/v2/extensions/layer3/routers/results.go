@@ -10,7 +10,7 @@ import (
 type GatewayInfo struct {
 	NetworkID        string            `json:"network_id"`
 	EnableSNAT       *bool             `json:"enable_snat,omitempty"`
-	ExternalFixedIPs []ExternalFixedIP `json:"external_fixed_ips,omitempty"`
+	ExternalFixedIPs []ExternalFixedIP `json:"external_fixed_ips"`
 }
 
 // ExternalFixedIP is the IP address and subnet ID of the external gateway of a
