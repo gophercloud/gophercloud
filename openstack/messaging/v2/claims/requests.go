@@ -56,6 +56,9 @@ func Create(client *gophercloud.ServiceClient, queueName string, opts CreateOpts
 	resp, r.Err = client.Post(url, b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201, 204},
 	})
+	if r.Err != nil {
+		return
+	}
 	// If the Claim has no content return an empty CreateResult
 	if resp.StatusCode == 204 {
 		r.Body = CreateResult{}
