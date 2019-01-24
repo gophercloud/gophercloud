@@ -68,10 +68,6 @@ type CreateOptsBuilder interface {
 	ToLoadBalancerCreateMap() (map[string]interface{}, error)
 }
 
-//
-// Add VipNetworkID to struct.
-//
-
 
 // CreateOpts is the common options struct used in this package's Create
 // operation.
