@@ -228,44 +228,40 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 			if opts.ApplicationCredentialSecret == "" {
 				return nil, ErrAppCredMissingSecret{}
 			}
-			userRequest, err := func(opts *AuthOptions) (*userReq, error) {
-				var userRequest *userReq
 
-				if opts.UserID != "" {
-					// UserID could be used without the domain information
-					userRequest = &userReq{
-						ID: &opts.UserID,
-					}
-					return userRequest, nil
+			var userRequest *userReq
+
+			if opts.UserID != "" {
+				// UserID could be used without the domain information
+				userRequest = &userReq{
+					ID: &opts.UserID,
 				}
-
-				if opts.Username == "" {
-					// Make sure that Username or UserID are provided
-					return nil, ErrUsernameOrUserID{}
-				}
-
-				if opts.DomainID != "" {
-					userRequest = &userReq{
-						Name:   &opts.Username,
-						Domain: &domainReq{ID: &opts.DomainID},
-					}
-					return userRequest, nil
-				}
-
-				if opts.DomainName != "" {
-					userRequest = &userReq{
-						Name:   &opts.Username,
-						Domain: &domainReq{Name: &opts.DomainName},
-					}
-					return userRequest, nil
-				}
-
-				// Make sure that DomainID or DomainName are provided among Username
-				return nil, ErrDomainIDOrDomainName{}
-			}(opts)
-			if err != nil {
-				return nil, err
 			}
+
+			if userRequest == nil && opts.Username == "" {
+				// Make sure that Username or UserID are provided
+				return nil, ErrUsernameOrUserID{}
+			}
+
+			if userRequest == nil && opts.DomainID != "" {
+				userRequest = &userReq{
+					Name:   &opts.Username,
+					Domain: &domainReq{ID: &opts.DomainID},
+				}
+			}
+
+			if userRequest == nil && opts.DomainName != "" {
+				userRequest = &userReq{
+					Name:   &opts.Username,
+					Domain: &domainReq{Name: &opts.DomainName},
+				}
+			}
+
+			// Make sure that DomainID or DomainName are provided among Username
+			if userRequest == nil {
+				return nil, ErrDomainIDOrDomainName{}
+			}
+
 			req.Auth.Identity.Methods = []string{"application_credential"}
 			req.Auth.Identity.ApplicationCredential = &applicationCredentialReq{
 				Name:   &opts.ApplicationCredentialName,
