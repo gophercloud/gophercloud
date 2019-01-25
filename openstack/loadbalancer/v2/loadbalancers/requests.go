@@ -68,7 +68,6 @@ type CreateOptsBuilder interface {
 	ToLoadBalancerCreateMap() (map[string]interface{}, error)
 }
 
-
 // CreateOpts is the common options struct used in this package's Create
 // operation.
 type CreateOpts struct {
@@ -82,7 +81,6 @@ type CreateOpts struct {
 	// only create Loadbalancers on networks authorized by policy (e.g. networks
 	// that belong to them or networks that are shared).
 	VipSubnetID string `json:"vip_subnet_id" required:"true"`
-
 
 	// The network on which to allocate the Loadbalancer's address. A tenant can
 	// only create Loadbalancers on networks authorized by policy (e.g. networks
