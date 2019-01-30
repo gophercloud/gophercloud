@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -174,8 +175,8 @@ func TestReauthEndLoop(t *testing.T) {
 	reqopts := new(gophercloud.RequestOpts)
 
 	// counters for the upcoming errors
-	errAfter := 0
-	errUnable := 0
+	var errAfter uint32 = 0
+	var errUnable uint32 = 0
 
 	wg := new(sync.WaitGroup)
 	for i := 0; i < numconc; i++ {
@@ -187,13 +188,13 @@ func TestReauthEndLoop(t *testing.T) {
 			// ErrErrorAfter... will happen after a successful reauthentication,
 			// but the service still responds with a 401.
 			if _, ok := err.(*gophercloud.ErrErrorAfterReauthentication); ok {
-				errAfter++
+				atomic.AddUint32(&errAfter, 1)
 			}
 
 			// ErrErrorUnable... will happen when the custom reauth func reports
 			// an error.
 			if _, ok := err.(*gophercloud.ErrUnableToReauthenticate); ok {
-				errUnable++
+				atomic.AddUint32(&errUnable, 1)
 			}
 		}()
 	}
@@ -201,8 +202,8 @@ func TestReauthEndLoop(t *testing.T) {
 	wg.Wait()
 	th.AssertEquals(t, info.reauthAttempts, 6)
 	th.AssertEquals(t, info.maxReauthReached, true)
-	th.AssertEquals(t, errAfter, 6)
-	th.AssertEquals(t, errUnable, 14)
+	th.AssertEquals(t, atomic.LoadUint32(&errAfter), uint32(6))
+	th.AssertEquals(t, atomic.LoadUint32(&errUnable), uint32(14))
 }
 
 func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
