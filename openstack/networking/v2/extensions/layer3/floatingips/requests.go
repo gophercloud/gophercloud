@@ -124,6 +124,7 @@ type UpdateOptsBuilder interface {
 type UpdateOpts struct {
 	Description *string `json:"description,omitempty"`
 	PortID      *string `json:"port_id,omitempty"`
+	FixedIP     string  `json:"fixed_ip_address,omitempty"`
 }
 
 // ToFloatingIPUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder
