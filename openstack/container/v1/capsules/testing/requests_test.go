@@ -81,11 +81,13 @@ func TestListCapsule(t *testing.T) {
 	createdAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:25+00:00")
 	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoT, "2018-01-12 09:37:25+01:00")
 
-	ExpectedCapsule.CreatedAt = createdAt
-	ExpectedCapsule.UpdatedAt = updatedAt
-	ExpectedCapsule.Containers = nil
+	ec := ExpectedCapsule
 
-	expected := []capsules.Capsule{ExpectedCapsule}
+	ec.CreatedAt = createdAt
+	ec.UpdatedAt = updatedAt
+	ec.Containers = nil
+
+	expected := []capsules.Capsule{ec}
 
 	count := 0
 	results := capsules.List(fakeclient.ServiceClient(), nil)
