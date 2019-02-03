@@ -29,6 +29,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/flavors"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/testhelper"
+
 	"golang.org/x/crypto/ssh"
 )
 
@@ -527,6 +528,66 @@ func CreateServerWithoutImageRef(t *testing.T, client *gophercloud.ServiceClient
 	}
 
 	return server, nil
+}
+
+// CreateServerWithTags creates a basic instance with a randomly generated name.
+// The flavor of the instance will be the value of the OS_FLAVOR_ID environment variable.
+// The image will be the value of the OS_IMAGE_ID environment variable.
+// The instance will be launched on the network specified in OS_NETWORK_NAME.
+// Two tags will be assigned to the server.
+// An error will be returned if the instance was unable to be created.
+func CreateServerWithTags(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*servers.Server, error) {
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	name := tools.RandomString("ACPTTEST", 16)
+	t.Logf("Attempting to create server: %s", name)
+
+	pwd := tools.MakeNewPassword("")
+
+	server, err := servers.Create(client, servers.CreateOpts{
+		Name:      name,
+		FlavorRef: choices.FlavorID,
+		ImageRef:  choices.ImageID,
+		AdminPass: pwd,
+		Networks: []servers.Network{
+			servers.Network{UUID: networkID},
+		},
+		Metadata: map[string]string{
+			"abc": "def",
+		},
+		Personality: servers.Personality{
+			&servers.File{
+				Path:     "/etc/test",
+				Contents: []byte("hello world"),
+			},
+		},
+		Tags: []string{"tag1", "tag2"},
+	}).Extract()
+	if err != nil {
+		return server, err
+	}
+
+	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
+		return nil, err
+	}
+
+	res := servers.Get(client, server.ID)
+	if res.Err != nil {
+		return nil, res.Err
+	}
+
+	newServer, err := res.Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newServer.Name, name)
+
+	tags, err := res.ExtractTags()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, tags, []string{"tag1", "tag2"})
+
+	return newServer, nil
 }
 
 // CreateServerGroup will create a server with a random name. An error will be

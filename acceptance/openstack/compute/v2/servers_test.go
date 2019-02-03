@@ -17,6 +17,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/serverusage"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/suspendresume"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -465,25 +466,43 @@ func TestServersActionLock(t *testing.T) {
 }
 
 func TestServersConsoleOutput(t *testing.T) {
+	clients.RequireLong(t)
+
 	client, err := clients.NewComputeV2Client()
-	if err != nil {
-		t.Fatalf("Unable to create a compute client: %v", err)
-	}
+	th.AssertNoErr(t, err)
 
 	server, err := CreateServer(t, client)
-	if err != nil {
-		t.Fatalf("Unable to create server: %v", err)
-	}
-
+	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
 	outputOpts := &servers.ShowConsoleOutputOpts{
 		Length: 4,
 	}
 	output, err := servers.ShowConsoleOutput(client, server.ID, outputOpts).Extract()
-	if err != nil {
-		t.Fatal(err)
-	}
+	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, output)
+}
+
+func TestServersTags(t *testing.T) {
+	clients.RequireLong(t)
+	clients.SkipRelease(t, "mitaka")
+	clients.SkipRelease(t, "newton")
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	th.AssertNoErr(t, err)
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "2.52"
+
+	networkClient, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	networkID, err := networks.IDFromName(networkClient, choices.NetworkName)
+	th.AssertNoErr(t, err)
+
+	server, err := CreateServerWithTags(t, client, networkID)
+	th.AssertNoErr(t, err)
+	defer DeleteServer(t, client, server)
 }
