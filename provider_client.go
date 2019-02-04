@@ -72,9 +72,9 @@ type ProviderClient struct {
 	// authentication functions for different Identity service versions.
 	ReauthFunc func() error
 
-	// IsThrowaway determines whether if this client is a throw-away client. It's a copy of user's provider client
+	// Throwaway determines whether if this client is a throw-away client. It's a copy of user's provider client
 	// with the token and reauth func zeroed. Such client can be used to perform reauthorization.
-	IsThrowaway bool
+	Throwaway bool
 
 	mut *sync.RWMutex
 
@@ -91,7 +91,7 @@ type reauthlock struct {
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
 // authenticated service requests. Blocks if Reauthenticate is in progress.
 func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
-	if client.IsThrowaway {
+	if client.IsThrowaway() {
 		return
 	}
 	if client.reauthmut != nil {
@@ -133,6 +133,24 @@ func (client *ProviderClient) SetToken(t string) {
 		defer client.mut.Unlock()
 	}
 	client.TokenID = t
+}
+
+// IsThrowaway safely reads the value of the client Throwaway field.
+func (client *ProviderClient) IsThrowaway() bool {
+	if client.reauthmut != nil {
+		client.reauthmut.RLock()
+		defer client.reauthmut.RUnlock()
+	}
+	return client.Throwaway
+}
+
+// SetThrowaway safely sets the value of the client Throwaway field.
+func (client *ProviderClient) SetThrowaway(v bool) {
+	if client.reauthmut != nil {
+		client.reauthmut.Lock()
+		defer client.reauthmut.Unlock()
+	}
+	client.Throwaway = v
 }
 
 // Reauthenticate calls client.ReauthFunc in a thread-safe way. If this is
@@ -276,13 +294,14 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 	}
 
 	// Allow default OkCodes if none explicitly set
-	if options.OkCodes == nil {
-		options.OkCodes = defaultOkCodes(method)
+	okc := options.OkCodes
+	if okc == nil {
+		okc = defaultOkCodes(method)
 	}
 
 	// Validate the HTTP response status.
 	var ok bool
-	for _, code := range options.OkCodes {
+	for _, code := range okc {
 		if resp.StatusCode == code {
 			ok = true
 			break

@@ -16,8 +16,6 @@ func TestListImage(t *testing.T) {
 
 	HandleImageListSuccessfully(t)
 
-	t.Logf("Test setup %+v\n", th.Server)
-
 	t.Logf("Id\tName\tOwner\tChecksum\tSizeBytes")
 
 	pager := images.List(fakeclient.ServiceClient(), images.ListOpts{Limit: 1})
