@@ -117,12 +117,12 @@ func (client *ProviderClient) UseTokenLock() {
 	client.reauthmut = new(reauthlock)
 }
 
-//GetAuthResult returns the result from the request that was used to obtain a provider
-//client's Keystone token.
+// GetAuthResult returns the result from the request that was used to obtain a
+// provider client's Keystone token.
 //
-//The result is nil when authentication has not yet taken place, when the token
-//was set manually with SetToken(), or when a ReauthFunc was used that does not
-//record the AuthResult.
+// The result is nil when authentication has not yet taken place, when the token
+// was set manually with SetToken(), or when a ReauthFunc was used that does not
+// record the AuthResult.
 func (client *ProviderClient) GetAuthResult() AuthResult {
 	if client.mut != nil {
 		client.mut.RLock()
@@ -144,7 +144,7 @@ func (client *ProviderClient) Token() string {
 // SetToken safely sets the value of the auth token in the ProviderClient. Applications may
 // use this method in a custom ReauthFunc.
 //
-// WARNING: This function is deprecated. Use SetTokenFromAuthResult() instead.
+// WARNING: This function is deprecated. Use SetTokenAndAuthResult() instead.
 func (client *ProviderClient) SetToken(t string) {
 	if client.mut != nil {
 		client.mut.Lock()
@@ -154,10 +154,10 @@ func (client *ProviderClient) SetToken(t string) {
 	client.authResult = nil
 }
 
-//SetTokenFromAuthResult safely sets the value of the auth token in the ProviderClient
-//and also records the AuthResult that was returned from the token creation
-//request. Applications may use this method in a custom ReauthFunc.
-func (client *ProviderClient) SetTokenFromAuthResult(r AuthResult) error {
+// SetTokenAndAuthResult safely sets the value of the auth token in the
+// ProviderClient and also records the AuthResult that was returned from the
+// token creation request. Applications may call this in a custom ReauthFunc.
+func (client *ProviderClient) SetTokenAndAuthResult(r AuthResult) error {
 	tokenID := ""
 	var err error
 	if r != nil {
@@ -176,8 +176,8 @@ func (client *ProviderClient) SetTokenFromAuthResult(r AuthResult) error {
 	return nil
 }
 
-//CopyTokenFrom safely copies the token from another ProviderClient into the
-//this one.
+// CopyTokenFrom safely copies the token from another ProviderClient into the
+// this one.
 func (client *ProviderClient) CopyTokenFrom(other *ProviderClient) {
 	if client.mut != nil {
 		client.mut.Lock()

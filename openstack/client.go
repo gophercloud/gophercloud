@@ -135,7 +135,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 
 	result := tokens2.Create(v2Client, v2Opts)
 
-	err = client.SetTokenFromAuthResult(result)
+	err = client.SetTokenAndAuthResult(result)
 	if err != nil {
 		return err
 	}
@@ -152,7 +152,7 @@ func v2auth(client *gophercloud.ProviderClient, endpoint string, options gopherc
 		tac := *client
 		tac.IsThrowaway = true
 		tac.ReauthFunc = nil
-		tac.SetTokenFromAuthResult(nil)
+		tac.SetTokenAndAuthResult(nil)
 		tao := options
 		tao.AllowReauth = false
 		client.ReauthFunc = func() error {
@@ -189,7 +189,7 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, opts tokens3.Au
 
 	result := tokens3.Create(v3Client, opts)
 
-	err = client.SetTokenFromAuthResult(result)
+	err = client.SetTokenAndAuthResult(result)
 	if err != nil {
 		return err
 	}
@@ -206,7 +206,7 @@ func v3auth(client *gophercloud.ProviderClient, endpoint string, opts tokens3.Au
 		tac := *client
 		tac.IsThrowaway = true
 		tac.ReauthFunc = nil
-		tac.SetTokenFromAuthResult(nil)
+		tac.SetTokenAndAuthResult(nil)
 		var tao tokens3.AuthOptionsBuilder
 		switch ot := opts.(type) {
 		case *gophercloud.AuthOptions:
