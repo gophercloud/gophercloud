@@ -25,13 +25,13 @@ Usage example:
 			return "", errors.New("no AuthResult available")
 		}
 		switch r := r.(type) {
-		case *tokens2.CreateResult:
+		case tokens2.CreateResult:
 			u, err := r.ExtractUser()
 			if err != nil {
 				return "", err
 			}
 			return u.ID, nil
-		case *tokens3.CreateResult:
+		case tokens3.CreateResult:
 			u, err := r.ExtractUser()
 			if err != nil {
 				return "", err
