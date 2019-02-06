@@ -29,8 +29,5 @@ func TestCreateImport(t *testing.T) {
 	defer DeleteImage(t, client, image)
 
 	err = ImportImage(t, client, image.ID)
-	if err.Error() == "EOF" {
-		err = nil
-	}
 	th.AssertNoErr(t, err)
 }

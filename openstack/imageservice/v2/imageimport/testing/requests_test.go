@@ -48,6 +48,7 @@ func TestCreate(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
+		fmt.Fprintf(w, `{}`)
 	})
 
 	opts := imageimport.CreateOpts{
@@ -55,8 +56,5 @@ func TestCreate(t *testing.T) {
 		URI:  "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img",
 	}
 	err := imageimport.Create(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", opts).ExtractErr()
-	if err.Error() == "EOF" {
-		err = nil
-	}
 	th.AssertNoErr(t, err)
 }
