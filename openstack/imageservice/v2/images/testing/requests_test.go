@@ -254,6 +254,7 @@ func TestUpdateImage(t *testing.T) {
 	actualImage, err := images.Update(fakeclient.ServiceClient(), "da3b75d9-3f4a-40e7-8a2c-bfab23927dea", images.UpdateOpts{
 		images.ReplaceImageName{NewName: "Fedora 17"},
 		images.ReplaceImageTags{NewTags: []string{"fedora", "beefy"}},
+		images.ReplaceImageMinDisk{NewMinDisk: 21},
 	}).Extract()
 
 	th.AssertNoErr(t, err)
@@ -281,7 +282,7 @@ func TestUpdateImage(t *testing.T) {
 
 		Owner:            "",
 		MinRAMMegabytes:  0,
-		MinDiskGigabytes: 0,
+		MinDiskGigabytes: 21,
 
 		DiskFormat:      "",
 		ContainerFormat: "",
