@@ -161,6 +161,9 @@ type Node struct {
 
 	// Reason the node is marked as protected.
 	ProtectedReason string `json:"protected_reason"`
+
+	// A string or UUID of the tenant who owns the baremetal node.
+	Owner string `json:"owner"`
 }
 
 // NodePage abstracts the raw results of making a List() request against

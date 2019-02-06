@@ -24,7 +24,7 @@ resource in the OpenStack Bare Metal service.
 	// Example to Create Node
 	createNode, err := nodes.Create(client, nodes.CreateOpts{
 		Driver:        "ipmi",
-		BootInterface: PXEBoot,
+		BootInterface: "pxe",
 		Name:          "coconuts",
 		DriverInfo: map[string]interface{}{
 			"ipmi_port":      "6230",

@@ -237,7 +237,7 @@ const (
 type UpdateOperation struct {
 	Op    UpdateOp `json:"op,required"`
 	Path  string   `json:"path,required"`
-	Value string   `json:"value,required"`
+	Value string   `json:"value,omitempty"`
 }
 
 func (opts UpdateOperation) ToNodeUpdateMap() map[string]interface{} {
