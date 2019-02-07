@@ -30,6 +30,10 @@ func listURL(client *gophercloud.ServiceClient) string {
 	return client.ServiceURL("clusters")
 }
 
+func listDetailURL(client *gophercloud.ServiceClient) string {
+	return client.ServiceURL("clusters", "detail")
+}
+
 func updateURL(client *gophercloud.ServiceClient, id string) string {
 	return idURL(client, id)
 }
