@@ -12,6 +12,7 @@ import (
 )
 
 func TestPoliciesCRUD(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.5"

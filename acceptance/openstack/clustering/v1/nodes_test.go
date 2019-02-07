@@ -12,6 +12,7 @@ import (
 )
 
 func TestNodesCRUD(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -70,6 +71,7 @@ func TestNodesCRUD(t *testing.T) {
 
 // Performs an operation on a node
 func TestNodesOps(t *testing.T) {
+	t.Parallel()
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 
@@ -123,6 +125,7 @@ func TestNodesOps(t *testing.T) {
 }
 
 func TestNodesRecover(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.6"
@@ -185,6 +188,7 @@ func TestNodesRecover(t *testing.T) {
 }
 
 func TestNodeCheck(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 

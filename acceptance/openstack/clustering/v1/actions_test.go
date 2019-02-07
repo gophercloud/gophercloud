@@ -12,6 +12,7 @@ import (
 )
 
 func TestActionsList(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 

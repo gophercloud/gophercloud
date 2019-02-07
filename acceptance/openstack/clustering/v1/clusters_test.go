@@ -15,6 +15,7 @@ import (
 )
 
 func TestClustersCRUD(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -71,6 +72,7 @@ func TestClustersCRUD(t *testing.T) {
 }
 
 func TestClustersResize(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -103,6 +105,7 @@ func TestClustersResize(t *testing.T) {
 }
 
 func TestClustersScale(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -148,6 +151,7 @@ func TestClustersScale(t *testing.T) {
 }
 
 func TestClustersPolicies(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.5"
@@ -242,6 +246,7 @@ func TestClustersPolicies(t *testing.T) {
 }
 
 func TestClustersRecovery(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -270,6 +275,7 @@ func TestClustersRecovery(t *testing.T) {
 }
 
 func TestClustersAddNode(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -324,6 +330,7 @@ func TestClustersAddNode(t *testing.T) {
 }
 
 func TestClustersRemoveNodeFromCluster(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -363,6 +370,7 @@ func TestClustersRemoveNodeFromCluster(t *testing.T) {
 }
 
 func TestClustersReplaceNode(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.3"
@@ -403,6 +411,7 @@ func TestClustersReplaceNode(t *testing.T) {
 }
 
 func TestClustersCollectAttributes(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.2"
@@ -452,6 +461,7 @@ func TestClustersCollectAttributes(t *testing.T) {
 
 // Performs an operation on a cluster
 func TestClustersOps(t *testing.T) {
+	t.Parallel()
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
 

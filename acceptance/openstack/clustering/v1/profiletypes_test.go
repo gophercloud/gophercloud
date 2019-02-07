@@ -12,6 +12,7 @@ import (
 )
 
 func TestProfileTypesList(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -27,7 +28,9 @@ func TestProfileTypesList(t *testing.T) {
 		tools.PrintResource(t, profileType)
 	}
 }
+
 func TestProfileTypesOpsList(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
