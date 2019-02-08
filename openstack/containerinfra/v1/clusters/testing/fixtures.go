@@ -230,6 +230,19 @@ func HandleListClusterSuccessfully(t *testing.T) {
 	})
 }
 
+func HandleListDetailClusterSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("X-OpenStack-Request-Id", requestUUID)
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, ClusterListResponse)
+	})
+}
+
 var UpdateResponse = fmt.Sprintf(`
 {
 	"uuid":"%s"
