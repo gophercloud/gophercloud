@@ -1,4 +1,4 @@
-// +build acceptance clustering policies
+// +build acceptance clustering clusters
 
 package v1
 
