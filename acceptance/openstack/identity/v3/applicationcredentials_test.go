@@ -17,6 +17,16 @@ import (
 func TestApplicationCredentialsCRD(t *testing.T) {
 	clients.RequireAdmin(t)
 
+	// maps are required, because Application Credential roles are returned in a random order
+	rolesToMap := func(roles []applicationcredentials.Role) map[string]bool {
+		rolesMap := map[string]bool{}
+		for _, role := range roles {
+			rolesMap[role.Name] = true
+			rolesMap[role.ID] = true
+		}
+		return rolesMap
+	}
+
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
@@ -90,11 +100,12 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	th.AssertEquals(t, applicationCredential.Unrestricted, false)
 	th.AssertEquals(t, applicationCredential.ProjectID, project.ID)
 
+	checkACroles := rolesToMap(applicationCredential.Roles)
 	for i, role := range roles {
 		if i%2 == 0 {
-			th.AssertEquals(t, applicationCredential.Roles[i].Name, role.Name)
+			th.AssertEquals(t, checkACroles[role.Name], true)
 		} else {
-			th.AssertEquals(t, applicationCredential.Roles[i].ID, role.ID)
+			th.AssertEquals(t, checkACroles[role.ID], true)
 		}
 		if i > 4 {
 			break
@@ -116,11 +127,12 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	th.AssertEquals(t, getApplicationCredential.Unrestricted, false)
 	th.AssertEquals(t, getApplicationCredential.ProjectID, project.ID)
 
+	checkACroles = rolesToMap(getApplicationCredential.Roles)
 	for i, role := range roles {
 		if i%2 == 0 {
-			th.AssertEquals(t, getApplicationCredential.Roles[i].Name, role.Name)
+			th.AssertEquals(t, checkACroles[role.Name], true)
 		} else {
-			th.AssertEquals(t, getApplicationCredential.Roles[i].ID, role.ID)
+			th.AssertEquals(t, checkACroles[role.ID], true)
 		}
 		if i > 4 {
 			break
@@ -148,8 +160,9 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	th.AssertEquals(t, newApplicationCredential.ExpiresAt.UTC(), time.Time{})
 	th.AssertEquals(t, newApplicationCredential.ProjectID, project.ID)
 
-	for i, role := range roles {
-		th.AssertEquals(t, newApplicationCredential.Roles[i].Name, role.Name)
-		th.AssertEquals(t, newApplicationCredential.Roles[i].ID, role.ID)
+	checkACroles = rolesToMap(newApplicationCredential.Roles)
+	for _, role := range roles {
+		th.AssertEquals(t, checkACroles[role.Name], true)
+		th.AssertEquals(t, checkACroles[role.ID], true)
 	}
 }
