@@ -18,11 +18,11 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	// maps are required, because Application Credential roles are returned in a random order
-	rolesToMap := func(roles []applicationcredentials.Role) map[string]bool {
-		rolesMap := map[string]bool{}
+	rolesToMap := func(roles []applicationcredentials.Role) map[string]string {
+		rolesMap := map[string]string{}
 		for _, role := range roles {
-			rolesMap[role.Name] = true
-			rolesMap[role.ID] = true
+			rolesMap[role.Name] = role.Name
+			rolesMap[role.ID] = role.ID
 		}
 		return rolesMap
 	}
@@ -103,9 +103,9 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	checkACroles := rolesToMap(applicationCredential.Roles)
 	for i, role := range roles {
 		if i%2 == 0 {
-			th.AssertEquals(t, checkACroles[role.Name], true)
+			th.AssertEquals(t, checkACroles[role.Name], role.Name)
 		} else {
-			th.AssertEquals(t, checkACroles[role.ID], true)
+			th.AssertEquals(t, checkACroles[role.ID], role.ID)
 		}
 		if i > 4 {
 			break
@@ -130,9 +130,9 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 	checkACroles = rolesToMap(getApplicationCredential.Roles)
 	for i, role := range roles {
 		if i%2 == 0 {
-			th.AssertEquals(t, checkACroles[role.Name], true)
+			th.AssertEquals(t, checkACroles[role.Name], role.Name)
 		} else {
-			th.AssertEquals(t, checkACroles[role.ID], true)
+			th.AssertEquals(t, checkACroles[role.ID], role.ID)
 		}
 		if i > 4 {
 			break
@@ -162,7 +162,7 @@ func TestApplicationCredentialsCRD(t *testing.T) {
 
 	checkACroles = rolesToMap(newApplicationCredential.Roles)
 	for _, role := range roles {
-		th.AssertEquals(t, checkACroles[role.Name], true)
-		th.AssertEquals(t, checkACroles[role.ID], true)
+		th.AssertEquals(t, checkACroles[role.Name], role.Name)
+		th.AssertEquals(t, checkACroles[role.ID], role.ID)
 	}
 }
