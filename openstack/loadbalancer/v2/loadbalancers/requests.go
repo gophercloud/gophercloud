@@ -17,23 +17,27 @@ type ListOptsBuilder interface {
 // sort by a particular attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	Description        string `q:"description"`
-	AdminStateUp       *bool  `q:"admin_state_up"`
-	ProjectID          string `q:"project_id"`
-	ProvisioningStatus string `q:"provisioning_status"`
-	VipAddress         string `q:"vip_address"`
-	VipPortID          string `q:"vip_port_id"`
-	VipSubnetID        string `q:"vip_subnet_id"`
-	VipNetworkID       string `q:"vip_network_id"`
-	ID                 string `q:"id"`
-	OperatingStatus    string `q:"operating_status"`
-	Name               string `q:"name"`
-	Flavor             string `q:"flavor"`
-	Provider           string `q:"provider"`
-	Limit              int    `q:"limit"`
-	Marker             string `q:"marker"`
-	SortKey            string `q:"sort_key"`
-	SortDir            string `q:"sort_dir"`
+	Description        string   `q:"description"`
+	AdminStateUp       *bool    `q:"admin_state_up"`
+	ProjectID          string   `q:"project_id"`
+	ProvisioningStatus string   `q:"provisioning_status"`
+	VipAddress         string   `q:"vip_address"`
+	VipPortID          string   `q:"vip_port_id"`
+	VipSubnetID        string   `q:"vip_subnet_id"`
+	VipNetworkID       string   `q:"vip_network_id"`
+	ID                 string   `q:"id"`
+	OperatingStatus    string   `q:"operating_status"`
+	Name               string   `q:"name"`
+	Flavor             string   `q:"flavor"`
+	Provider           string   `q:"provider"`
+	Limit              int      `q:"limit"`
+	Marker             string   `q:"marker"`
+	SortKey            string   `q:"sort_key"`
+	SortDir            string   `q:"sort_dir"`
+	Tags               []string `q:"tags"`
+	TagsAny            []string `q:"tags-any"`
+	TagsNot            []string `q:"not-tags"`
+	TagsNotAny         []string `q:"not-tags-any"`
 }
 
 // ToLoadBalancerListQuery formats a ListOpts into a query string.

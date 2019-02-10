@@ -550,3 +550,29 @@ func TestMarshalPersonality(t *testing.T) {
 		t.Fatal("file contents incorrect")
 	}
 }
+
+func TestCreateServerWithTags(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerWithTagsCreationSuccessfully(t)
+
+	c := client.ServiceClient()
+	c.Microversion = "2.52"
+
+	tags := []string{"foo", "bar"}
+	createOpts := servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		Tags:      tags,
+	}
+	res := servers.Create(c, createOpts)
+	th.AssertNoErr(t, res.Err)
+	actualServer, err := res.Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ServerDerp, *actualServer)
+
+	actualTags, err := res.ExtractTags()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, tags, actualTags)
+}

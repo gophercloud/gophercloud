@@ -43,9 +43,11 @@ func TestUserAgent(t *testing.T) {
 
 func TestConcurrentReauth(t *testing.T) {
 	var info = struct {
-		numreauths int
-		mut        *sync.RWMutex
+		numreauths  int
+		failedAuths int
+		mut         *sync.RWMutex
 	}{
+		0,
 		0,
 		new(sync.RWMutex),
 	}
@@ -59,12 +61,14 @@ func TestConcurrentReauth(t *testing.T) {
 	p.UseTokenLock()
 	p.SetToken(prereauthTok)
 	p.ReauthFunc = func() error {
+		p.SetThrowaway(true)
 		time.Sleep(1 * time.Second)
 		p.AuthenticatedHeaders()
 		info.mut.Lock()
 		info.numreauths++
 		info.mut.Unlock()
 		p.TokenID = postreauthTok
+		p.SetThrowaway(false)
 		return nil
 	}
 
@@ -74,6 +78,9 @@ func TestConcurrentReauth(t *testing.T) {
 	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("X-Auth-Token") != postreauthTok {
 			w.WriteHeader(http.StatusUnauthorized)
+			info.mut.Lock()
+			info.failedAuths++
+			info.mut.Unlock()
 			return
 		}
 		info.mut.RLock()
@@ -135,6 +142,7 @@ func TestReauthEndLoop(t *testing.T) {
 	}
 
 	numconc := 20
+	mut := new(sync.RWMutex)
 
 	p := new(gophercloud.ProviderClient)
 	p.UseTokenLock()
@@ -147,8 +155,9 @@ func TestReauthEndLoop(t *testing.T) {
 			info.maxReauthReached = true
 			return fmt.Errorf("Max reauthentication attempts reached")
 		}
-
+		p.SetThrowaway(true)
 		p.AuthenticatedHeaders()
+		p.SetThrowaway(false)
 		info.reauthAttempts++
 
 		return nil
@@ -176,6 +185,9 @@ func TestReauthEndLoop(t *testing.T) {
 			defer wg.Done()
 			_, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
 
+			mut.Lock()
+			defer mut.Unlock()
+
 			// ErrErrorAfter... will happen after a successful reauthentication,
 			// but the service still responds with a 401.
 			if _, ok := err.(*gophercloud.ErrErrorAfterReauthentication); ok {
@@ -193,6 +205,108 @@ func TestReauthEndLoop(t *testing.T) {
 	wg.Wait()
 	th.AssertEquals(t, info.reauthAttempts, 6)
 	th.AssertEquals(t, info.maxReauthReached, true)
-	th.AssertEquals(t, errAfter, 6)
-	th.AssertEquals(t, errUnable, 14)
+	th.AssertEquals(t, errAfter > 1, true)
+	th.AssertEquals(t, errUnable < 20, true)
+}
+
+func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
+	var info = struct {
+		numreauths  int
+		failedAuths int
+		reauthCh    chan struct{}
+		mut         *sync.RWMutex
+	}{
+		0,
+		0,
+		make(chan struct{}),
+		new(sync.RWMutex),
+	}
+
+	numconc := 20
+
+	prereauthTok := client.TokenID
+	postreauthTok := "12345678"
+
+	p := new(gophercloud.ProviderClient)
+	p.UseTokenLock()
+	p.SetToken(prereauthTok)
+	p.ReauthFunc = func() error {
+		info.mut.RLock()
+		if info.numreauths == 0 {
+			info.mut.RUnlock()
+			close(info.reauthCh)
+			time.Sleep(1 * time.Second)
+		} else {
+			info.mut.RUnlock()
+		}
+		p.SetThrowaway(true)
+		p.AuthenticatedHeaders()
+		info.mut.Lock()
+		info.numreauths++
+		info.mut.Unlock()
+		p.TokenID = postreauthTok
+		p.SetThrowaway(false)
+		return nil
+	}
+
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Auth-Token") != postreauthTok {
+			info.mut.Lock()
+			info.failedAuths++
+			info.mut.Unlock()
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		info.mut.RLock()
+		hasReauthed := info.numreauths != 0
+		info.mut.RUnlock()
+
+		if hasReauthed {
+			th.CheckEquals(t, p.Token(), postreauthTok)
+		}
+
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `{}`)
+	})
+
+	wg := new(sync.WaitGroup)
+	reqopts := new(gophercloud.RequestOpts)
+	reqopts.MoreHeaders = map[string]string{
+		"X-Auth-Token": prereauthTok,
+	}
+
+	for i := 0; i < numconc; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			if i != 0 {
+				<-info.reauthCh
+			}
+			resp, err := p.Request("GET", fmt.Sprintf("%s/route", th.Endpoint()), reqopts)
+			th.CheckNoErr(t, err)
+			if resp == nil {
+				t.Errorf("got a nil response")
+				return
+			}
+			if resp.Body == nil {
+				t.Errorf("response body was nil")
+				return
+			}
+			defer resp.Body.Close()
+			actual, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				t.Errorf("error reading response body: %s", err)
+				return
+			}
+			th.CheckByteArrayEquals(t, []byte(`{}`), actual)
+		}(i)
+	}
+
+	wg.Wait()
+
+	th.AssertEquals(t, 1, info.numreauths)
+	th.AssertEquals(t, 1, info.failedAuths)
 }

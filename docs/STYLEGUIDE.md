@@ -55,6 +55,8 @@
 
 - The following should be used in most cases:
 
+  - `microversions.go`: contains all the response methods for fields or actions
+    added in a microversion.
   - `requests.go`: contains all the functions that make HTTP requests and the
     types associated with the HTTP request (parameters for URL, body, etc)
   - `results.go`: contains all the response objects and their methods
@@ -77,3 +79,7 @@
   last parameter an `interface` named `<Action>OptsBuilder` (eg `ListOptsBuilder`).
   This `interface` should have at the least a method named `To<Resource><Action>Query`
   (eg `ToServerListQuery`).
+
+### Microversions
+
+- Please see our dedicated document [here](MICROVERSIONS.md).

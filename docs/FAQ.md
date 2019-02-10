@@ -1,5 +1,9 @@
 # Tips
 
+## Handling Microversions
+
+Please see our dedicated document [here](MICROVERSIONS.md).
+
 ## Implementing default logging and re-authentication attempts
 
 You can implement custom logging and/or limit re-auth attempts by creating a custom HTTP client
