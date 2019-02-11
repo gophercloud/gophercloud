@@ -9,15 +9,13 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-func TestListNodes(t *testing.T) {
+func TestListDetailNodes(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
-	HandleNodeListSuccessfully(t)
+	HandleNodeListDetailSuccessfully(t)
 
 	pages := 0
-	err := nodes.List(client.ServiceClient(), nodes.ListOpts{
-		Detail: true,
-	}).EachPage(func(page pagination.Page) (bool, error) {
+	err := nodes.ListDetail(client.ServiceClient(), nodes.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := nodes.ExtractNodes(page)
@@ -40,6 +38,52 @@ func TestListNodes(t *testing.T) {
 	if pages != 1 {
 		t.Errorf("Expected 1 page, saw %d", pages)
 	}
+}
+
+func TestListNodes(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleNodeListSuccessfully(t)
+
+	pages := 0
+	err := nodes.List(client.ServiceClient(), nodes.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := nodes.ExtractNodes(page)
+		if err != nil {
+			return false, err
+		}
+
+		if len(actual) != 3 {
+			t.Fatalf("Expected 3 nodes, got %d", len(actual))
+		}
+		th.AssertEquals(t, "foo", actual[0].Name)
+		th.AssertEquals(t, "bar", actual[1].Name)
+		th.AssertEquals(t, "baz", actual[2].Name)
+
+		return true, nil
+	})
+
+	th.AssertNoErr(t, err)
+
+	if pages != 1 {
+		t.Errorf("Expected 1 page, saw %d", pages)
+	}
+}
+
+func TestListOpts(t *testing.T) {
+	// Detail cannot take Fields
+	opts := nodes.ListOpts{
+		Fields: []string{"name", "uuid"},
+	}
+
+	_, err := opts.ToNodeListDetailQuery()
+	th.AssertEquals(t, err.Error(), "fields is not a valid option when getting a detailed listing of nodes")
+
+	// Regular ListOpts can
+	query, err := opts.ToNodeListQuery()
+	th.AssertEquals(t, query, "?fields=name&fields=uuid")
+	th.AssertNoErr(t, err)
 }
 
 func TestCreateNode(t *testing.T) {

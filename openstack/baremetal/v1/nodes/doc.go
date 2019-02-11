@@ -4,10 +4,24 @@ package nodes
 Package nodes provides information and interaction with the nodes API
 resource in the OpenStack Bare Metal service.
 
+	// Example to List Nodes with Detail
+	nodes.ListDetail(client, nodes.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		nodeList, err := nodes.ExtractNodes(page)
+		if err != nil {
+			return false, err
+		}
+
+		for _, n := range nodeList {
+			// Do something
+		}
+
+		return true, nil
+	})
+
 	// Example to List Nodes
 	nodes.List(client, nodes.ListOpts{
-		Detail: true,
 		ProvisionState: Deploying,
+		Fields: []string{"name"},
 	}).EachPage(func(page pagination.Page) (bool, error) {
 		nodeList, err := nodes.ExtractNodes(page)
 		if err != nil {

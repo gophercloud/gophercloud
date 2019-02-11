@@ -1,6 +1,8 @@
 package nodes
 
 import (
+	"fmt"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -9,6 +11,7 @@ import (
 // List request.
 type ListOptsBuilder interface {
 	ToNodeListQuery() (string, error)
+	ToNodeListDetailQuery() (string, error)
 }
 
 // Provision state reports the current provision state of the node, these are only used in filtering
@@ -16,30 +19,30 @@ type ProvisionState string
 
 const (
 	Enroll       ProvisionState = "enroll"
-	Verifying    ProvisionState = "verifying"
-	Manageable   ProvisionState = "manageable"
-	Available    ProvisionState = "available"
-	Active       ProvisionState = "active"
-	DeployWait   ProvisionState = "wait call-back"
-	Deploying    ProvisionState = "deploying"
-	DeployFail   ProvisionState = "deploy failed"
-	DeployDone   ProvisionState = "deploy complete"
-	Deleting     ProvisionState = "deleting"
-	Deleted      ProvisionState = "deleted"
-	Cleaning     ProvisionState = "cleaning"
-	CleanWait    ProvisionState = "clean wait"
-	CleanFail    ProvisionState = "clean failed"
-	Error        ProvisionState = "error"
-	Rebuild      ProvisionState = "rebuild"
-	Inpsecting   ProvisionState = "inspecting"
-	InspectFail  ProvisionState = "inspect failed"
-	InspectWait  ProvisionState = "inspect wait"
-	Adopting     ProvisionState = "adopting"
-	AdoptFail    ProvisionState = "adopt failed"
-	Rescue       ProvisionState = "rescue"
-	RescueFail   ProvisionState = "rescue failed"
-	Rescuing     ProvisionState = "rescuing"
-	UnrescueFail ProvisionState = "unrescue failed"
+	Verifying                   = "verifying"
+	Manageable                  = "manageable"
+	Available                   = "available"
+	Active                      = "active"
+	DeployWait                  = "wait call-back"
+	Deploying                   = "deploying"
+	DeployFail                  = "deploy failed"
+	DeployDone                  = "deploy complete"
+	Deleting                    = "deleting"
+	Deleted                     = "deleted"
+	Cleaning                    = "cleaning"
+	CleanWait                   = "clean wait"
+	CleanFail                   = "clean failed"
+	Error                       = "error"
+	Rebuild                     = "rebuild"
+	Inpsecting                  = "inspecting"
+	InspectFail                 = "inspect failed"
+	InspectWait                 = "inspect wait"
+	Adopting                    = "adopting"
+	AdoptFail                   = "adopt failed"
+	Rescue                      = "rescue"
+	RescueFail                  = "rescue failed"
+	Rescuing                    = "rescuing"
+	UnrescueFail                = "unrescue failed"
 )
 
 // ListOpts allows the filtering and sorting of paginated collections through
@@ -89,9 +92,6 @@ type ListOpts struct {
 	// Sorts the response by the this attribute value.
 	SortKey string `q:"sort_key"`
 
-	// Whether to show detailed information about the resource.
-	Detail bool `q:"detail"`
-
 	// A string or UUID of the tenant who owns the baremetal node.
 	Owner string `q:"owner"`
 }
@@ -107,6 +107,35 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	url := listURL(client)
 	if opts != nil {
 		query, err := opts.ToNodeListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return NodePage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+// ToNodeListDetailQuery formats a ListOpts into a query string for the list details API.
+func (opts ListOpts) ToNodeListDetailQuery() (string, error) {
+	// Detail endpoint can't filter by Fields
+	if len(opts.Fields) > 0 {
+		return "", fmt.Errorf("fields is not a valid option when getting a detailed listing of nodes")
+	}
+
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// Return a list of bare metal Nodes with complete details. Some filtering is possible by passing in flags in ListOpts,
+// but you cannot limit by the fields returned.
+func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	// This URL is deprecated. In the future, we should compare the microversion and if >= 1.43, hit the listURL
+	// with ListOpts{Detail: true,}
+	url := listDetailURL(client)
+	if opts != nil {
+		query, err := opts.ToNodeListDetailQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}

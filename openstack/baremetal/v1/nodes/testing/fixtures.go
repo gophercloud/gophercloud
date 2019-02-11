@@ -10,8 +10,67 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-// NodeListBody contains the canned body of a nodes.List response.
+// NodeListBody contains the canned body of a nodes.List response, without detail.
 const NodeListBody = `
+ {
+  "nodes": [
+    {
+      "instance_uuid": null,
+      "links": [
+        {
+          "href": "http://ironic.example.com:6385/v1/nodes/d2630783-6ec8-4836-b556-ab427c4b581e",
+          "rel": "self"
+        },
+        {
+          "href": "http://ironic.example.com:6385/nodes/d2630783-6ec8-4836-b556-ab427c4b581e",
+          "rel": "bookmark"
+        }
+      ],
+      "maintenance": false,
+      "name": "foo",
+      "power_state": null,
+      "provision_state": "enroll"
+    },
+    {
+      "instance_uuid": null,
+      "links": [
+        {
+          "href": "http://ironic.example.com:6385/v1/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662",
+          "rel": "self"
+        },
+        {
+          "href": "http://ironic.example.com:6385/nodes/08c84581-58f5-4ea2-a0c6-dd2e5d2b3662",
+          "rel": "bookmark"
+        }
+      ],
+      "maintenance": false,
+      "name": "bar",
+      "power_state": null,
+      "provision_state": "enroll"
+    },
+    {
+      "instance_uuid": null,
+      "links": [
+        {
+          "href": "http://ironic.example.com:6385/v1/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474",
+          "rel": "self"
+        },
+        {
+          "href": "http://ironic.example.com:6385/nodes/c9afd385-5d89-4ecb-9e1c-68194da6b474",
+          "rel": "bookmark"
+        }
+      ],
+      "maintenance": false,
+      "name": "baz",
+      "power_state": null,
+      "provision_state": "enroll"
+    }
+  ]
+}
+`
+
+// NodeListDetailBody contains the canned body of a nodes.ListDetail response.
+const NodeListDetailBody = `
  {
   "nodes": [
     {
@@ -577,6 +636,18 @@ func HandleNodeListSuccessfully(t *testing.T) {
 		default:
 			t.Fatalf("/nodes invoked with unexpected marker=[%s]", marker)
 		}
+	})
+}
+
+// HandleNodeListSuccessfully sets up the test server to respond to a server List request.
+func HandleNodeListDetailSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		r.ParseForm()
+
+		fmt.Fprintf(w, NodeListDetailBody)
 	})
 }
 
