@@ -41,3 +41,7 @@ func bootDeviceURL(client *gophercloud.ServiceClient, id string) string {
 func supportedBootDeviceURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("nodes", id, "management", "boot_device", "supported")
 }
+
+func provisionStateURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("nodes", id, "states", "provision")
+}

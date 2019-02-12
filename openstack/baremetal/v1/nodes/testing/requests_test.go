@@ -208,3 +208,39 @@ func TestGetSupportedBootDevices(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeSupportedBootDevice, bootDevices)
 }
+
+func TestNodeChangeProvisionStateActive(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleNodeChangeProvisionStateActive(t)
+
+	c := client.ServiceClient()
+	err := nodes.ChangeProvisionState(c, "1234asdf", nodes.ProvisionStateOpts{
+		Target:      nodes.TargetActive,
+		ConfigDrive: "http://127.0.0.1/images/test-node-config-drive.iso.gz",
+	}).ExtractErr()
+
+	th.AssertNoErr(t, err)
+}
+
+func TestNodeChangeProvisionStateClean(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleNodeChangeProvisionStateClean(t)
+
+	c := client.ServiceClient()
+	err := nodes.ChangeProvisionState(c, "1234asdf", nodes.ProvisionStateOpts{
+		Target: nodes.TargetClean,
+		CleanSteps: []nodes.CleanStep{
+			{
+				Interface: "deploy",
+				Step:      "upgrade_firmware",
+				Args: map[string]string{
+					"force": "True",
+				},
+			},
+		},
+	}).ExtractErr()
+
+	th.AssertNoErr(t, err)
+}

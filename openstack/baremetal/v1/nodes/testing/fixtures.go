@@ -541,6 +541,27 @@ const NodeSupportedBootDeviceBody = `
 }
 `
 
+const NodeProvisionStateActiveBody = `
+{
+    "target": "active",
+    "configdrive": "http://127.0.0.1/images/test-node-config-drive.iso.gz"
+}
+`
+const NodeProvisionStateCleanBody = `
+{
+    "target": "clean",
+    "clean_steps": [
+        {
+            "interface": "deploy",
+            "step": "upgrade_firmware",
+            "args": {
+                "force": "True"
+            }
+        }
+    ]
+}
+`
+
 var (
 	NodeFoo = nodes.Node{
 		UUID:                 "d2630783-6ec8-4836-b556-ab427c4b581e",
@@ -868,5 +889,23 @@ func HandleGetSupportedBootDeviceSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, NodeSupportedBootDeviceBody)
+	})
+}
+
+func HandleNodeChangeProvisionStateActive(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, NodeProvisionStateActiveBody)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func HandleNodeChangeProvisionStateClean(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, NodeProvisionStateCleanBody)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }

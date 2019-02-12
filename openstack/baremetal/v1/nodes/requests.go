@@ -45,6 +45,22 @@ const (
 	UnrescueFail                = "unrescue failed"
 )
 
+// TargetProvisionState is used when setting the provision state for a node.
+type TargetProvisionState string
+
+const (
+	TargetActive   TargetProvisionState = "active"
+	TargetDeleted                       = "deleted"
+	TargetManage                        = "manage"
+	TargetProvide                       = "provide"
+	TargetInspect                       = "inspect"
+	TargetAbort                         = "abort"
+	TargetClean                         = "clean"
+	TargetAdopt                         = "adopt"
+	TargetRescue                        = "rescue"
+	TargetUnrescue                      = "unrescue"
+)
+
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the node attributes you want to see returned. Marker and Limit are used
@@ -368,6 +384,55 @@ func GetBootDevice(client *gophercloud.ServiceClient, id string) (r BootDeviceRe
 func GetSupportedBootDevices(client *gophercloud.ServiceClient, id string) (r SupportedBootDeviceResult) {
 	_, r.Err = client.Get(supportedBootDeviceURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
+	})
+	return
+}
+
+// A cleaning step has required keys ‘interface’ and ‘step’, and optional key ‘args’. If specified,
+// the value for ‘args’ is a keyword variable argument dictionary that is passed to the cleaning step
+// method.
+type CleanStep struct {
+	Interface string            `json:"interface,required"`
+	Step      string            `json:"step,required"`
+	Args      map[string]string `json:"args,omitempty"`
+}
+
+// ProvisionStateOptsBuilder allows extensions to add additional parameters to the
+// ChangeProvisionState request.
+type ProvisionStateOptsBuilder interface {
+	ToProvisionStateMap() (map[string]interface{}, error)
+}
+
+// ProvisionStateOpts for a request to change a node's provision state. A config drive should be base64-encoded
+// gzipped ISO9660 image.
+type ProvisionStateOpts struct {
+	Target         TargetProvisionState `json:"target,required"`
+	ConfigDrive    string               `json:"configdrive,omitempty"`
+	CleanSteps     []CleanStep          `json:"clean_steps,omitempty"`
+	RescuePassword string               `json:"rescue_password,omitempty"`
+}
+
+// ToProvisionStateMap assembles a request body based on the contents of a CreateOpts.
+func (opts ProvisionStateOpts) ToProvisionStateMap() (map[string]interface{}, error) {
+	body, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
+
+// Request a change to the Node’s provision state. Acceptable target states depend on the Node’s current provision
+// state. More detailed documentation of the Ironic State Machine is available in the developer docs.
+func ChangeProvisionState(client *gophercloud.ServiceClient, id string, opts ProvisionStateOptsBuilder) (r ChangeStateResult) {
+	reqBody, err := opts.ToProvisionStateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Put(provisionStateURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
 	})
 	return
 }
