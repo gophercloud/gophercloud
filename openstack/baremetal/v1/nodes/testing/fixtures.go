@@ -480,6 +480,67 @@ const SingleNodeBody = `
 }
 `
 
+const NodeValidationBody = `
+{
+  "bios": {
+    "reason": "Driver ipmi does not support bios (disabled or not implemented).",
+    "result": false
+  },
+  "boot": {
+    "reason": "Cannot validate image information for node a62b8495-52e2-407b-b3cb-62775d04c2b8 because one or more parameters are missing from its instance_info and insufficent information is present to boot from a remote volume. Missing are: ['ramdisk', 'kernel', 'image_source']",
+    "result": false
+  },
+  "console": {
+    "reason": "Driver ipmi does not support console (disabled or not implemented).",
+    "result": false
+  },
+  "deploy": {
+    "reason": "Cannot validate image information for node a62b8495-52e2-407b-b3cb-62775d04c2b8 because one or more parameters are missing from its instance_info and insufficent information is present to boot from a remote volume. Missing are: ['ramdisk', 'kernel', 'image_source']",
+    "result": false
+  },
+  "inspect": {
+    "reason": "Driver ipmi does not support inspect (disabled or not implemented).",
+    "result": false
+  },
+  "management": {
+    "result": true
+  },
+  "network": {
+    "result": true
+  },
+  "power": {
+    "result": true
+  },
+  "raid": {
+    "reason": "Driver ipmi does not support raid (disabled or not implemented).",
+    "result": false
+  },
+  "rescue": {
+    "reason": "Driver ipmi does not support rescue (disabled or not implemented).",
+    "result": false
+  },
+  "storage": {
+    "result": true
+  }
+}
+`
+
+const NodeBootDeviceBody = `
+{
+  "boot_device":"pxe",
+  "persistent":false
+}
+`
+
+const NodeSupportedBootDeviceBody = `
+{
+  "supported_boot_devices": [
+    "pxe",
+    "disk"
+  ]
+}
+`
+
 var (
 	NodeFoo = nodes.Node{
 		UUID:                 "d2630783-6ec8-4836-b556-ab427c4b581e",
@@ -529,6 +590,55 @@ var (
 		ConductorGroup:      "",
 		Protected:           false,
 		ProtectedReason:     "",
+	}
+
+	NodeFooValidation = nodes.NodeValidation{
+		Boot: nodes.DriverValidation{
+			Result: false,
+			Reason: "Cannot validate image information for node a62b8495-52e2-407b-b3cb-62775d04c2b8 because one or more parameters are missing from its instance_info and insufficent information is present to boot from a remote volume. Missing are: ['ramdisk', 'kernel', 'image_source']",
+		},
+		Console: nodes.DriverValidation{
+			Result: false,
+			Reason: "Driver ipmi does not support console (disabled or not implemented).",
+		},
+		Deploy: nodes.DriverValidation{
+			Result: false,
+			Reason: "Cannot validate image information for node a62b8495-52e2-407b-b3cb-62775d04c2b8 because one or more parameters are missing from its instance_info and insufficent information is present to boot from a remote volume. Missing are: ['ramdisk', 'kernel', 'image_source']",
+		},
+		Inspect: nodes.DriverValidation{
+			Result: false,
+			Reason: "Driver ipmi does not support inspect (disabled or not implemented).",
+		},
+		Management: nodes.DriverValidation{
+			Result: true,
+		},
+		Network: nodes.DriverValidation{
+			Result: true,
+		},
+		Power: nodes.DriverValidation{
+			Result: true,
+		},
+		RAID: nodes.DriverValidation{
+			Result: false,
+			Reason: "Driver ipmi does not support raid (disabled or not implemented).",
+		},
+		Rescue: nodes.DriverValidation{
+			Result: false,
+			Reason: "Driver ipmi does not support rescue (disabled or not implemented).",
+		},
+		Storage: nodes.DriverValidation{
+			Result: true,
+		},
+	}
+
+	NodeBootDevice = nodes.BootDeviceOpts{
+		BootDevice: "pxe",
+		Persistent: false,
+	}
+
+	NodeSupportedBootDevice = []string{
+		"pxe",
+		"disk",
 	}
 
 	NodeBar = nodes.Node{
@@ -706,5 +816,57 @@ func HandleNodeUpdateSuccessfully(t *testing.T, response string) {
 		th.TestJSONRequest(t, r, `[{"op": "replace", "path": "/driver", "value": "new-driver"}]`)
 
 		fmt.Fprintf(w, response)
+	})
+}
+
+func HandleNodeValidateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/validate", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, NodeValidationBody)
+	})
+}
+
+// HandleInjectNMISuccessfully sets up the test server to respond to a node InjectNMI request
+func HandleInjectNMISuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/management/inject_nmi", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, "{}")
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleSetBootDeviceSuccessfully sets up the test server to respond to a set boot device request for a node
+func HandleSetBootDeviceSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/management/boot_device", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, NodeBootDeviceBody)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleGetBootDeviceSuccessfully sets up the test server to respond to a get boot device request for a node
+func HandleGetBootDeviceSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/management/boot_device", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, NodeBootDeviceBody)
+	})
+}
+
+// HandleGetBootDeviceSuccessfully sets up the test server to respond to a get boot device request for a node
+func HandleGetSupportedBootDeviceSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/management/boot_device/supported", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, NodeSupportedBootDeviceBody)
 	})
 }

@@ -301,3 +301,51 @@ func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, id), nil)
 	return
 }
+
+// Request that Ironic validate whether the Node’s driver has enough information to manage the Node. This polls each
+// interface on the driver, and returns the status of that interface.
+func Validate(client *gophercloud.ServiceClient, id string) (r ValidateResult) {
+	_, r.Err = client.Get(validateURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+// Inject NMI (Non-Masking Interrupts) for the given Node. This feature can be used for hardware diagnostics, and
+// actual support depends on a driver.
+func InjectNMI(client *gophercloud.ServiceClient, id string) (r InjectNMIResult) {
+	_, r.Err = client.Put(injectNMIURL(client, id), map[string]string{}, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
+type BootDeviceOpts struct {
+	BootDevice string `json:"boot_device"` // e.g., 'pxe', 'disk', etc.
+	Persistent bool   `json:"persistent"`  // Whether this is one-time or not
+}
+
+// Set the boot device for the given Node, and set it persistently or for one-time boot. The exact behaviour
+// of this depends on the hardware driver.
+func SetBootDevice(client *gophercloud.ServiceClient, id string, bootDevice BootDeviceOpts) (r gophercloud.ErrResult) {
+	_, r.Err = client.Put(bootDeviceURL(client, id), bootDevice, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
+
+// Get the current boot device for the given Node.
+func GetBootDevice(client *gophercloud.ServiceClient, id string) (r BootDeviceResult) {
+	_, r.Err = client.Get(bootDeviceURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+// Retrieve the acceptable set of supported boot devices for a specific Node.
+func GetSupportedBootDevices(client *gophercloud.ServiceClient, id string) (r SupportedBootDeviceResult) {
+	_, r.Err = client.Get(supportedBootDeviceURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
