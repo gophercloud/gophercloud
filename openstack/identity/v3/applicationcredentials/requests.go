@@ -53,7 +53,7 @@ type CreateOptsBuilder interface {
 // CreateOpts provides options used to create an application credential.
 type CreateOpts struct {
 	// The name of the application credential.
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" required:"true"`
 	// A description of the application credential’s purpose.
 	Description string `json:"description,omitempty"`
 	// A flag indicating whether the application credential may be used for creation or destruction of other application credentials or trusts.
