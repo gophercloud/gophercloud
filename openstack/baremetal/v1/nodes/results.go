@@ -271,6 +271,7 @@ type BootDeviceResult struct {
 type SetBootDeviceResult struct {
 	gophercloud.ErrResult
 }
+
 // SupportedBootDeviceResult is the response from a GetSupportedBootDevices operation. Call its Extract
 // method to interpret it as an array of supported boot device values.
 type SupportedBootDeviceResult struct {
