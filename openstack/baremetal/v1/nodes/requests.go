@@ -325,10 +325,32 @@ type BootDeviceOpts struct {
 	Persistent bool   `json:"persistent"`  // Whether this is one-time or not
 }
 
+// BootDeviceOptsBuilder allows extensions to add additional parameters to the
+// SetBootDevice request.
+type BootDeviceOptsBuilder interface {
+	ToBootDeviceMap() (map[string]interface{}, error)
+}
+
+// ToBootDeviceSetMap assembles a request body based on the contents of a BootDeviceOpts.
+func (opts BootDeviceOpts) ToBootDeviceMap() (map[string]interface{}, error) {
+	body, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
+
 // Set the boot device for the given Node, and set it persistently or for one-time boot. The exact behaviour
 // of this depends on the hardware driver.
-func SetBootDevice(client *gophercloud.ServiceClient, id string, bootDevice BootDeviceOpts) (r gophercloud.ErrResult) {
-	_, r.Err = client.Put(bootDeviceURL(client, id), bootDevice, nil, &gophercloud.RequestOpts{
+func SetBootDevice(client *gophercloud.ServiceClient, id string, bootDevice BootDeviceOptsBuilder) (r SetBootDeviceResult) {
+	reqBody, err := bootDevice.ToBootDeviceMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Put(bootDeviceURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
 	return

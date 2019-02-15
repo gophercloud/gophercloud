@@ -266,16 +266,15 @@ type BootDeviceResult struct {
 	gophercloud.Result
 }
 
+// BootDeviceResult is the response from a GetBootDevice operation. Call its Extract
+// method to interpret it as a BootDeviceOpts struct.
+type SetBootDeviceResult struct {
+	gophercloud.ErrResult
+}
 // SupportedBootDeviceResult is the response from a GetSupportedBootDevices operation. Call its Extract
 // method to interpret it as an array of supported boot device values.
 type SupportedBootDeviceResult struct {
 	gophercloud.Result
-}
-
-// ChangeStateResult is the response from any state change operation. Call its ExtractErr
-// method to determine if the call succeeded or failed.
-type ChangeStateResult struct {
-	gophercloud.ErrResult
 }
 
 // Each element in the response will contain a “result” variable, which will have a value of “true” or “false”, and
