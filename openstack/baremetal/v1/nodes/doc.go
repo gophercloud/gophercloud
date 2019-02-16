@@ -76,4 +76,22 @@ resource in the OpenStack Bare Metal service.
 	if err != nil {
 		panic(err)
 	}
+
+	// Example to Validate Node
+	validation, err := nodes.Validate(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
+
+	// Example to inject non-masking interrupts
+	err := nodes.InjectNMI(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").ExtractErr()
+
+	// Example to get array of supported boot devices for a node
+	bootDevices, err := nodes.GetSupportedBootDevices(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
+
+	// Example to set boot device for a node
+	err := nodes.SetBootDevice(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", nodes.BootDeviceOpts{
+		BootDevice: "pxe",
+		Persistent: false,
+	})
+
+	// Example to get boot device for a node
+	bootDevice, err := nodes.GetBootDevice(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8").Extract()
 */

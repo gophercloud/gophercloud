@@ -16,6 +16,30 @@ func (r nodeResult) Extract() (*Node, error) {
 	return &s, err
 }
 
+// Extract interprets a BootDeviceResult as BootDeviceOpts, if possible.
+func (r BootDeviceResult) Extract() (*BootDeviceOpts, error) {
+	var s BootDeviceOpts
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+// Extract interprets a SupportedBootDeviceResult as an array of supported boot devices, if possible.
+func (r SupportedBootDeviceResult) Extract() ([]string, error) {
+	var s struct {
+		Devices []string `json:"supported_boot_devices"`
+	}
+
+	err := r.ExtractInto(&s)
+	return s.Devices, err
+}
+
+// Extract interprets a ValidateResult as NodeValidation, if possible.
+func (r ValidateResult) Extract() (*NodeValidation, error) {
+	var s NodeValidation
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
 func (r nodeResult) ExtractInto(v interface{}) error {
 	return r.Result.ExtractIntoStructPtr(v, "")
 }
@@ -222,4 +246,56 @@ type UpdateResult struct {
 // method to determine if the call succeeded or failed.
 type DeleteResult struct {
 	gophercloud.ErrResult
+}
+
+// ValidateResult is the response from a Validate operation. Call its Extract
+// method to interpret it as a NodeValidation struct.
+type ValidateResult struct {
+	gophercloud.Result
+}
+
+// InjectNMIResult is the response from an InjectNMI operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type InjectNMIResult struct {
+	gophercloud.ErrResult
+}
+
+// BootDeviceResult is the response from a GetBootDevice operation. Call its Extract
+// method to interpret it as a BootDeviceOpts struct.
+type BootDeviceResult struct {
+	gophercloud.Result
+}
+
+// BootDeviceResult is the response from a GetBootDevice operation. Call its Extract
+// method to interpret it as a BootDeviceOpts struct.
+type SetBootDeviceResult struct {
+	gophercloud.ErrResult
+}
+
+// SupportedBootDeviceResult is the response from a GetSupportedBootDevices operation. Call its Extract
+// method to interpret it as an array of supported boot device values.
+type SupportedBootDeviceResult struct {
+	gophercloud.Result
+}
+
+// Each element in the response will contain a “result” variable, which will have a value of “true” or “false”, and
+// also potentially a reason. A value of nil indicates that the Node’s driver does not support that interface.
+type DriverValidation struct {
+	Result bool   `json:"result"`
+	Reason string `json:"reason"`
+}
+
+//  Ironic validates whether the Node’s driver has enough information to manage the Node. This polls each interface on
+//  the driver, and returns the status of that interface as an DriverValidation struct.
+type NodeValidation struct {
+	Boot       DriverValidation `json:"boot"`
+	Console    DriverValidation `json:"console"`
+	Deploy     DriverValidation `json:"deploy"`
+	Inspect    DriverValidation `json:"inspect"`
+	Management DriverValidation `json:"management"`
+	Network    DriverValidation `json:"network"`
+	Power      DriverValidation `json:"power"`
+	RAID       DriverValidation `json:"raid"`
+	Rescue     DriverValidation `json:"rescue"`
+	Storage    DriverValidation `json:"storage"`
 }

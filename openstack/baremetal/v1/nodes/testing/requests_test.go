@@ -152,3 +152,59 @@ func TestUpdateNode(t *testing.T) {
 	th.CheckDeepEquals(t, NodeFoo, *actual)
 
 }
+
+func TestValidateNode(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleNodeValidateSuccessfully(t)
+
+	c := client.ServiceClient()
+	actual, err := nodes.Validate(c, "1234asdf").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeFooValidation, *actual)
+}
+
+func TestInjectNMI(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleInjectNMISuccessfully(t)
+
+	c := client.ServiceClient()
+	err := nodes.InjectNMI(c, "1234asdf").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestSetBootDevice(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleSetBootDeviceSuccessfully(t)
+
+	c := client.ServiceClient()
+	err := nodes.SetBootDevice(c, "1234asdf", nodes.BootDeviceOpts{
+		BootDevice: "pxe",
+		Persistent: false,
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestGetBootDevice(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetBootDeviceSuccessfully(t)
+
+	c := client.ServiceClient()
+	bootDevice, err := nodes.GetBootDevice(c, "1234asdf").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeBootDevice, *bootDevice)
+}
+
+func TestGetSupportedBootDevices(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetSupportedBootDeviceSuccessfully(t)
+
+	c := client.ServiceClient()
+	bootDevices, err := nodes.GetSupportedBootDevices(c, "1234asdf").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeSupportedBootDevice, bootDevices)
+}
