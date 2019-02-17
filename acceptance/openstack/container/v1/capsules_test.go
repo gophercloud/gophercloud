@@ -73,6 +73,9 @@ func TestCapsule(t *testing.T) {
 
 		for _, m := range CapsuleList {
 			capsuleUUID := m.UUID
+			if capsuleUUID != capsule.UUID {
+				continue
+			}
 			capsule, err := capsules.Get(client, capsuleUUID).Extract()
 
 			th.AssertNoErr(t, err)

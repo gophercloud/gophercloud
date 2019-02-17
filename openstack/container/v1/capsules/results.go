@@ -57,7 +57,7 @@ type Capsule struct {
 	Memory string `json:"memory"`
 
 	// The name of the capsule
-	MetaName string `json:"meta_name"`
+	MetaName string `json:"name"`
 
 	// Indicates whether capsule is currently operational.
 	Status string `json:"status"`
@@ -75,23 +75,14 @@ type Capsule struct {
 	// other APIs that might want a capsule reference.
 	Links []interface{} `json:"links"`
 
-	// The capsule version
-	CapsuleVersion string `json:"capsule_version"`
-
 	// The capsule restart policy
-	RestartPolicy string `json:"restart_policy"`
+	RestartPolicy map[string]string `json:"restart_policy"`
 
 	// The capsule metadata labels
-	MetaLabels map[string]string `json:"meta_labels"`
-
-	// The list of containers uuids inside capsule.
-	ContainersUUIDs []string `json:"containers_uuids"`
+	MetaLabels map[string]string `json:"labels"`
 
 	// The capsule IP addresses
 	Addresses map[string][]Address `json:"addresses"`
-
-	// The capsule volume attached information
-	VolumesInfo map[string][]string `json:"volumes_info"`
 
 	// The container object inside capsule
 	Containers []Container `json:"containers"`

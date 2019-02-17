@@ -183,8 +183,8 @@ const CapsuleGetBody_OldTime = `
   "project_id": "6b8ffef2a0ac42ee87887b9cc98bdf68",
   "cpu": 1,
   "memory": "1024M",
-  "meta_name": "test",
-  "meta_labels": {"web": "app"},
+  "name": "test",
+  "labels": {"web": "app"},
   "created_at": "2018-01-12 09:37:25+00:00",
   "updated_at": "2018-01-12 09:37:26+00:00",
   "links": [
@@ -197,9 +197,10 @@ const CapsuleGetBody_OldTime = `
       "rel": "bookmark"
     }
   ],
-  "capsule_version": "beta",
-  "restart_policy":  "always",
-  "containers_uuids": ["1739e28a-d391-4fd9-93a5-3ba3f29a4c9b"],
+  "restart_policy": {
+    "MaximumRetryCount": "0",
+    "Name": "always"
+  },
   "addresses": {
     "b1295212-64e1-471d-aa01-25ff46f9818d": [
       {
@@ -209,11 +210,6 @@ const CapsuleGetBody_OldTime = `
         "port": "8439060f-381a-4386-a518-33d5a4058636",
         "subnet_id": "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a"
       }
-    ]
-  },
-  "volumes_info": {
-    "67618d54-dd55-4f7e-91b3-39ffb3ba7f5f": [
-      "1739e28a-d391-4fd9-93a5-3ba3f29a4c9b"
     ]
   },
   "host": "test-host",
@@ -276,8 +272,8 @@ const CapsuleGetBody_NewTime = `
   "project_id": "6b8ffef2a0ac42ee87887b9cc98bdf68",
   "cpu": 1,
   "memory": "1024M",
-  "meta_name": "test",
-  "meta_labels": {"web": "app"},
+  "name": "test",
+  "labels": {"web": "app"},
   "created_at": "2018-01-12 09:37:25",
   "updated_at": "2018-01-12 09:37:26",
   "links": [
@@ -290,9 +286,10 @@ const CapsuleGetBody_NewTime = `
       "rel": "bookmark"
     }
   ],
-  "capsule_version": "beta",
-  "restart_policy":  "always",
-  "containers_uuids": ["1739e28a-d391-4fd9-93a5-3ba3f29a4c9b"],
+  "restart_policy": {
+    "MaximumRetryCount": "0",
+    "Name": "always"
+  },
   "addresses": {
     "b1295212-64e1-471d-aa01-25ff46f9818d": [
       {
@@ -302,11 +299,6 @@ const CapsuleGetBody_NewTime = `
         "port": "8439060f-381a-4386-a518-33d5a4058636",
         "subnet_id": "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a"
       }
-    ]
-  },
-  "volumes_info": {
-    "67618d54-dd55-4f7e-91b3-39ffb3ba7f5f": [
-      "1739e28a-d391-4fd9-93a5-3ba3f29a4c9b"
     ]
   },
   "host": "test-host",
@@ -371,8 +363,8 @@ const CapsuleListBody = `
       "project_id": "6b8ffef2a0ac42ee87887b9cc98bdf68",
       "cpu": 1,
       "memory": "1024M",
-      "meta_name": "test",
-      "meta_labels": {"web": "app"},
+      "name": "test",
+      "labels": {"web": "app"},
       "created_at": "2018-01-12 09:37:25+00:00",
       "updated_at": "2018-01-12 09:37:25+01:00",
       "links": [
@@ -385,9 +377,10 @@ const CapsuleListBody = `
           "rel": "bookmark"
         }
       ],
-      "capsule_version": "beta",
-      "restart_policy":  "always",
-      "containers_uuids": ["1739e28a-d391-4fd9-93a5-3ba3f29a4c9b", "d1469e8d-bcbc-43fc-b163-8b9b6a740930"],
+      "restart_policy": {
+        "MaximumRetryCount": "0",
+        "Name": "always"
+      },
       "addresses": {
         "b1295212-64e1-471d-aa01-25ff46f9818d": [
           {
@@ -397,11 +390,6 @@ const CapsuleListBody = `
             "port": "8439060f-381a-4386-a518-33d5a4058636",
             "subnet_id": "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a"
           }
-        ]
-      },
-      "volumes_info": {
-        "67618d54-dd55-4f7e-91b3-39ffb3ba7f5f": [
-          "1739e28a-d391-4fd9-93a5-3ba3f29a4c9b"
         ]
       },
       "host": "test-host",
@@ -482,13 +470,12 @@ var ExpectedCapsule = capsules.Capsule{
 			"rel":  "bookmark",
 		},
 	},
-	CapsuleVersion: "beta",
-	RestartPolicy:  "always",
+	RestartPolicy: map[string]string{
+		"MaximumRetryCount": "0",
+		"Name":              "always",
+	},
 	MetaLabels: map[string]string{
 		"web": "app",
-	},
-	ContainersUUIDs: []string{
-		"1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
 	},
 	Addresses: map[string][]capsules.Address{
 		"b1295212-64e1-471d-aa01-25ff46f9818d": []capsules.Address{
@@ -499,11 +486,6 @@ var ExpectedCapsule = capsules.Capsule{
 				Version:          float64(4),
 				SubnetID:         "4a2bcd64-93ad-4436-9f48-3a7f9b267e0a",
 			},
-		},
-	},
-	VolumesInfo: map[string][]string{
-		"67618d54-dd55-4f7e-91b3-39ffb3ba7f5f": []string{
-			"1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
 		},
 	},
 	Host:         "test-host",
