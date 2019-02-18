@@ -5,18 +5,22 @@ package extensions
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
+	imageservice "github.com/gophercloud/gophercloud/acceptance/openstack/imageservice/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumeactions"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
-	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
+	compute_images "github.com/gophercloud/gophercloud/openstack/compute/v2/images"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
 )
 
-// CreateUploadImage will upload volume it as volume-baked image. An name of new image or err will be
-// returned
-func CreateUploadImage(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) (volumeactions.VolumeImage, error) {
+// CreateUploadImage will upload volume it as volume-backed image.
+// A VolumeImage or err will be returned.
+func CreateUploadImage(
+	t *testing.T, blockClient, imageClient *gophercloud.ServiceClient, volume *volumes.Volume) (volumeactions.VolumeImage, error) {
 	if testing.Short() {
 		t.Skip("Skipping test that requires volume-backed image uploading in short mode.")
 	}
@@ -27,14 +31,20 @@ func CreateUploadImage(t *testing.T, client *gophercloud.ServiceClient, volume *
 		Force:     true,
 	}
 
-	volumeImage, err := volumeactions.UploadImage(client, volume.ID, uploadImageOpts).Extract()
+	volumeImage, err := volumeactions.UploadImage(blockClient, volume.ID, uploadImageOpts).Extract()
 	if err != nil {
 		return volumeImage, err
 	}
 
 	t.Logf("Uploading volume %s as volume-backed image %s", volume.ID, imageName)
 
-	if err := volumes.WaitForStatus(client, volume.ID, "available", 60); err != nil {
+	if err := volumes.WaitForStatus(blockClient, volume.ID, "available", 60); err != nil {
+		return volumeImage, err
+	}
+
+	time.Sleep(60 * time.Second)
+
+	if err = imageservice.WaitForImageStatus(imageClient, volumeImage.ImageID, images.ImageStatusActive); err != nil {
 		return volumeImage, err
 	}
 
@@ -53,14 +63,14 @@ func DeleteUploadedImage(t *testing.T, client *gophercloud.ServiceClient, imageN
 
 	t.Logf("Getting image id for image name %s", imageName)
 
-	imageID, err := images.IDFromName(client, imageName)
+	imageID, err := compute_images.IDFromName(client, imageName)
 	if err != nil {
 		return err
 	}
 
 	t.Logf("Removing image %s", imageID)
 
-	err = images.Delete(client, imageID).ExtractErr()
+	err = compute_images.Delete(client, imageID).ExtractErr()
 	if err != nil {
 		return err
 	}

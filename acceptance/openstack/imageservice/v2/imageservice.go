@@ -157,3 +157,21 @@ func DeleteImageFile(t *testing.T, filepath string) {
 
 	t.Logf("Successfully deleted image file %s", filepath)
 }
+
+// WaitForImageStatus will poll an image's status until it matches
+// the specified status.
+func WaitForImageStatus(client *gophercloud.ServiceClient, id string, status images.ImageStatus) error {
+	return tools.WaitFor(func() (bool, error) {
+		latest, err := images.Get(client, id).Extract()
+		if err != nil {
+			return false, err
+		}
+
+		if latest.Status == status {
+			// Success!
+			return true, nil
+		}
+
+		return false, nil
+	})
+}
