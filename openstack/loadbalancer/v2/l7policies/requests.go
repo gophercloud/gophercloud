@@ -62,6 +62,10 @@ type CreateOpts struct {
 	// Requests matching this policy will be redirected to this URL.
 	// Only valid if action is REDIRECT_TO_URL.
 	RedirectURL string `json:"redirect_url,omitempty"`
+
+	// The administrative state of the Loadbalancer. A valid value is true (UP)
+	// or false (DOWN).
+	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 }
 
 // ToL7PolicyCreateMap builds a request body from CreateOpts.
@@ -90,11 +94,14 @@ type ListOptsBuilder interface {
 // the API.
 type ListOpts struct {
 	Name           string `q:"name"`
+	Description    string `q:"description"`
 	ListenerID     string `q:"listener_id"`
 	Action         string `q:"action"`
 	ProjectID      string `q:"project_id"`
 	RedirectPoolID string `q:"redirect_pool_id"`
 	RedirectURL    string `q:"redirect_url"`
+	Position       int32  `q:"position"`
+	AdminStateUp   bool   `q:"admin_state_up"`
 	ID             string `q:"id"`
 	Limit          int    `q:"limit"`
 	Marker         string `q:"marker"`
@@ -163,16 +170,35 @@ type UpdateOpts struct {
 
 	// Requests matching this policy will be redirected to the pool with this ID.
 	// Only valid if action is REDIRECT_TO_POOL.
-	RedirectPoolID string `json:"redirect_pool_id,omitempty"`
+	RedirectPoolID *string `json:"redirect_pool_id,omitempty"`
 
 	// Requests matching this policy will be redirected to this URL.
 	// Only valid if action is REDIRECT_TO_URL.
-	RedirectURL string `json:"redirect_url,omitempty"`
+	RedirectURL *string `json:"redirect_url,omitempty"`
+
+	// The administrative state of the Loadbalancer. A valid value is true (UP)
+	// or false (DOWN).
+	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 }
 
 // ToL7PolicyUpdateMap builds a request body from UpdateOpts.
 func (opts UpdateOpts) ToL7PolicyUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "l7policy")
+	b, err := gophercloud.BuildRequestBody(opts, "l7policy")
+	if err != nil {
+		return nil, err
+	}
+
+	m := b["l7policy"].(map[string]interface{})
+
+	if m["redirect_pool_id"] == "" {
+		m["redirect_pool_id"] = nil
+	}
+
+	if m["redirect_url"] == "" {
+		m["redirect_url"] = nil
+	}
+
+	return b, nil
 }
 
 // Update allows l7policy to be updated.
@@ -210,6 +236,10 @@ type CreateRuleOpts struct {
 	// When true the logic of the rule is inverted. For example, with invert true,
 	// equal to would become not equal to. Default is false.
 	Invert bool `json:"invert,omitempty"`
+
+	// The administrative state of the Loadbalancer. A valid value is true (UP)
+	// or false (DOWN).
+	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 }
 
 // ToRuleCreateMap builds a request body from CreateRuleOpts.
@@ -237,13 +267,18 @@ type ListRulesOptsBuilder interface {
 // ListRulesOpts allows the filtering and sorting of paginated collections
 // through the API.
 type ListRulesOpts struct {
-	RuleType  RuleType `q:"type"`
-	ProjectID string   `q:"project_id"`
-	ID        string   `q:"id"`
-	Limit     int      `q:"limit"`
-	Marker    string   `q:"marker"`
-	SortKey   string   `q:"sort_key"`
-	SortDir   string   `q:"sort_dir"`
+	RuleType     RuleType    `q:"type"`
+	ProjectID    string      `q:"project_id"`
+	CompareType  CompareType `q:"compare_type"`
+	Value        string      `q:"value"`
+	Key          string      `q:"key"`
+	Invert       bool        `q:"invert"`
+	AdminStateUp bool        `q:"admin_state_up"`
+	ID           string      `q:"id"`
+	Limit        int         `q:"limit"`
+	Marker       string      `q:"marker"`
+	SortKey      string      `q:"sort_key"`
+	SortDir      string      `q:"sort_dir"`
 }
 
 // ToRulesListQuery formats a ListOpts into a query string.
@@ -302,16 +337,29 @@ type UpdateRuleOpts struct {
 	Value string `json:"value,omitempty"`
 
 	// The key to use for the comparison. For example, the name of the cookie to evaluate.
-	Key string `json:"key,omitempty"`
+	Key *string `json:"key,omitempty"`
 
 	// When true the logic of the rule is inverted. For example, with invert true,
 	// equal to would become not equal to. Default is false.
-	Invert bool `json:"invert,omitempty"`
+	Invert *bool `json:"invert,omitempty"`
+
+	// The administrative state of the Loadbalancer. A valid value is true (UP)
+	// or false (DOWN).
+	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 }
 
 // ToRuleUpdateMap builds a request body from UpdateRuleOpts.
 func (opts UpdateRuleOpts) ToRuleUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "rule")
+	b, err := gophercloud.BuildRequestBody(opts, "rule")
+	if err != nil {
+		return nil, err
+	}
+
+	if m := b["rule"].(map[string]interface{}); m["key"] == "" {
+		m["key"] = nil
+	}
+
+	return b, nil
 }
 
 // UpdateRule allows Rule to be updated.

@@ -14,8 +14,10 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/extendedstatus"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/lockunlock"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/pauseunpause"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/serverusage"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/suspendresume"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -88,6 +90,7 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 		servers.Server
 		availabilityzones.ServerAvailabilityZoneExt
 		extendedstatus.ServerExtendedStatusExt
+		serverusage.UsageExt
 	}
 
 	client, err := clients.NewComputeV2Client()
@@ -105,6 +108,8 @@ func TestServersWithExtensionsCreateDestroy(t *testing.T) {
 	th.AssertEquals(t, int(extendedServer.PowerState), extendedstatus.RUNNING)
 	th.AssertEquals(t, extendedServer.TaskState, "")
 	th.AssertEquals(t, extendedServer.VmState, "active")
+	th.AssertEquals(t, extendedServer.LaunchedAt.IsZero(), false)
+	th.AssertEquals(t, extendedServer.TerminatedAt.IsZero(), true)
 }
 
 func TestServersWithoutImageRef(t *testing.T) {
@@ -114,7 +119,7 @@ func TestServersWithoutImageRef(t *testing.T) {
 	server, err := CreateServerWithoutImageRef(t, client)
 	if err != nil {
 		if err400, ok := err.(*gophercloud.ErrUnexpectedResponseCode); ok {
-			if !strings.Contains("Missing imageRef attribute", string(err400.Body)) {
+			if !strings.Contains(string(err400.Body), "Missing imageRef attribute") {
 				defer DeleteServer(t, client, server)
 			}
 		}
@@ -271,7 +276,7 @@ func TestServersActionReboot(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	rebootOpts := &servers.RebootOpts{
+	rebootOpts := servers.RebootOpts{
 		Type: servers.SoftReboot,
 	}
 
@@ -435,6 +440,7 @@ func TestServersActionSuspend(t *testing.T) {
 
 func TestServersActionLock(t *testing.T) {
 	clients.RequireLong(t)
+	clients.RequireNonAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
@@ -447,12 +453,56 @@ func TestServersActionLock(t *testing.T) {
 	err = lockunlock.Lock(client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
+	t.Logf("Attempting to delete locked server %s", server.ID)
 	err = servers.Delete(client, server.ID).ExtractErr()
-	th.AssertNoErr(t, err)
+	th.AssertEquals(t, err != nil, true)
 
+	t.Logf("Attempting to unlock server %s", server.ID)
 	err = lockunlock.Unlock(client, server.ID).ExtractErr()
 	th.AssertNoErr(t, err)
 
 	err = WaitForComputeStatus(client, server, "ACTIVE")
 	th.AssertNoErr(t, err)
+}
+
+func TestServersConsoleOutput(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+
+	server, err := CreateServer(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteServer(t, client, server)
+
+	outputOpts := &servers.ShowConsoleOutputOpts{
+		Length: 4,
+	}
+	output, err := servers.ShowConsoleOutput(client, server.ID, outputOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, output)
+}
+
+func TestServersTags(t *testing.T) {
+	clients.RequireLong(t)
+	clients.SkipRelease(t, "mitaka")
+	clients.SkipRelease(t, "newton")
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	th.AssertNoErr(t, err)
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "2.52"
+
+	networkClient, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	networkID, err := networks.IDFromName(networkClient, choices.NetworkName)
+	th.AssertNoErr(t, err)
+
+	server, err := CreateServerWithTags(t, client, networkID)
+	th.AssertNoErr(t, err)
+	defer DeleteServer(t, client, server)
 }

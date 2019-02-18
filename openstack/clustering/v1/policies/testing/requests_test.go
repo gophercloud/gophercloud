@@ -65,8 +65,84 @@ func TestDeletePolicy(t *testing.T) {
 
 	HandlePolicyDelete(t)
 
-	actual, err := policies.Delete(fake.ServiceClient(), PolicyIDtoDelete).Extract()
+	res := policies.Delete(fake.ServiceClient(), PolicyIDtoDelete)
+	th.AssertNoErr(t, res.ExtractErr())
+
+	requestID := res.Header["X-Openstack-Request-Id"][0]
+	th.AssertEquals(t, PolicyDeleteRequestID, requestID)
+}
+
+func TestUpdatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandlePolicyUpdate(t)
+
+	expected := ExpectedUpdatePolicy
+
+	opts := policies.UpdateOpts{
+		Name: ExpectedUpdatePolicy.Name,
+	}
+
+	actual, err := policies.Update(fake.ServiceClient(), PolicyIDtoUpdate, opts).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, PolicyDeleteRequestID, actual.RequestID)
+	th.AssertDeepEquals(t, &expected, actual)
+}
+
+func TestBadUpdatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleBadPolicyUpdate(t)
+
+	opts := policies.UpdateOpts{
+		Name: ExpectedUpdatePolicy.Name,
+	}
+
+	_, err := policies.Update(fake.ServiceClient(), PolicyIDtoUpdate, opts).Extract()
+	th.AssertEquals(t, false, err == nil)
+}
+
+func TestValidatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandlePolicyValidate(t)
+
+	expected := ExpectedValidatePolicy
+
+	opts := policies.ValidateOpts{
+		Spec: ExpectedValidatePolicy.Spec,
+	}
+
+	actual, err := policies.Validate(fake.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, &expected, actual)
+}
+
+func TestBadValidatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleBadPolicyValidate(t)
+
+	opts := policies.ValidateOpts{
+		Spec: ExpectedValidatePolicy.Spec,
+	}
+
+	_, err := policies.Validate(fake.ServiceClient(), opts).Extract()
+	th.AssertEquals(t, false, err == nil)
+}
+
+func TestGetPolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandlePolicyGet(t)
+
+	actual, err := policies.Get(fake.ServiceClient(), PolicyIDtoGet).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, ExpectedGetPolicy, *actual)
 }

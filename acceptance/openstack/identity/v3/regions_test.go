@@ -75,8 +75,9 @@ func TestRegionsCRUD(t *testing.T) {
 	tools.PrintResource(t, region)
 	tools.PrintResource(t, region.Extra)
 
+	var description = ""
 	updateOpts := regions.UpdateOpts{
-		Description: "Region A for testing",
+		Description: &description,
 		/*
 			// Due to a bug in Keystone, the Extra column of the Region table
 			// is not updatable, see: https://bugs.launchpad.net/keystone/+bug/1729933
@@ -93,4 +94,6 @@ func TestRegionsCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newRegion)
 	tools.PrintResource(t, newRegion.Extra)
+
+	th.AssertEquals(t, newRegion.Description, description)
 }

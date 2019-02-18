@@ -125,13 +125,33 @@ func TestUpdateListener(t *testing.T) {
 
 	client := fake.ServiceClient()
 	i1001 := 1001
+	i181000 := 181000
+	name := "NewListenerName"
+	defaultPoolID := ""
 	actual, err := listeners.Update(client, "4ec89087-d057-4e2c-911f-60a3b47ee304", listeners.UpdateOpts{
-		Name:      "NewListenerName",
-		ConnLimit: &i1001,
+		Name:              &name,
+		ConnLimit:         &i1001,
+		DefaultPoolID:     &defaultPoolID,
+		TimeoutMemberData: &i181000,
+		TimeoutClientData: &i181000,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
 	}
 
 	th.CheckDeepEquals(t, ListenerUpdated, *actual)
+}
+
+func TestGetListenerStatsTree(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListenerGetStatsTree(t)
+
+	client := fake.ServiceClient()
+	actual, err := listeners.GetStats(client, "4ec89087-d057-4e2c-911f-60a3b47ee304").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, ListenerStatsTree, *actual)
 }

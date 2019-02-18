@@ -69,6 +69,19 @@ var (
 		AdminStateUp:   true,
 		Rules:          []l7policies.Rule{},
 	}
+	L7PolicyNullRedirectURLUpdated = l7policies.L7Policy{
+		ID:             "8a1412f0-4c32-4257-8b07-af4770b604fd",
+		Name:           "NewL7PolicyName",
+		ListenerID:     "023f2e34-7806-443b-bfae-16c324569a3d",
+		Action:         "REDIRECT_TO_URL",
+		Position:       1,
+		Description:    "Redirect requests to example.com",
+		ProjectID:      "e3cd678b11784734bc366148aa37580e",
+		RedirectPoolID: "",
+		RedirectURL:    "",
+		AdminStateUp:   true,
+		Rules:          []l7policies.Rule{},
+	}
 	RulePath = l7policies.Rule{
 		ID:           "16621dbb-a736-4888-a57a-3ecd53df784c",
 		RuleType:     "PATH",
@@ -76,7 +89,7 @@ var (
 		Value:        "/images*",
 		ProjectID:    "e3cd678b11784734bc366148aa37580e",
 		Key:          "",
-		Invert:       false,
+		Invert:       true,
 		AdminStateUp: true,
 	}
 	RuleHostName = l7policies.Rule{
@@ -162,8 +175,26 @@ const PostUpdateL7PolicyBody = `
 		"listener_id": "023f2e34-7806-443b-bfae-16c324569a3d",
 		"description": "Redirect requests to example.com",
 		"admin_state_up": true,
-		"redirect_pool_id": null,
 		"redirect_url": "http://www.new-example.com",
+		"action": "REDIRECT_TO_URL",
+		"position": 1,
+		"project_id": "e3cd678b11784734bc366148aa37580e",
+		"id": "8a1412f0-4c32-4257-8b07-af4770b604fd",
+		"name": "NewL7PolicyName",
+		"rules": []
+	}
+}
+`
+
+// PostUpdateL7PolicyNullRedirectURLBody is the canned response body of a Update request
+// on an existing l7policy with a null redirect_url .
+const PostUpdateL7PolicyNullRedirectURLBody = `
+{
+	"l7policy": {
+		"listener_id": "023f2e34-7806-443b-bfae-16c324569a3d",
+		"description": "Redirect requests to example.com",
+		"admin_state_up": true,
+		"redirect_url": null,
 		"action": "REDIRECT_TO_URL",
 		"position": 1,
 		"project_id": "e3cd678b11784734bc366148aa37580e",
@@ -234,12 +265,30 @@ func HandleL7PolicyUpdateSuccessfully(t *testing.T) {
 	})
 }
 
+// HandleL7PolicyUpdateNullRedirectURLSuccessfully sets up the test server to respond to a l7policy Update request.
+func HandleL7PolicyUpdateNullRedirectURLSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/l7policies/8a1412f0-4c32-4257-8b07-af4770b604fd", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{
+			"l7policy": {
+				"name": "NewL7PolicyName",
+				"redirect_url": null
+			}
+		}`)
+
+		fmt.Fprintf(w, PostUpdateL7PolicyNullRedirectURLBody)
+	})
+}
+
 // SingleRuleBody is the canned body of a Get request on an existing rule.
 const SingleRuleBody = `
 {
 	"rule": {
 		"compare_type": "REGEX",
-		"invert": false,
+		"invert": true,
 		"admin_state_up": true,
 		"value": "/images*",
 		"key": null,
@@ -276,7 +325,7 @@ const RulesListBody = `
 	"rules":[
 		{
             "compare_type": "REGEX",
-            "invert": false,
+            "invert": true,
             "admin_state_up": true,
             "value": "/images*",
             "key": null,
@@ -365,6 +414,8 @@ func HandleRuleUpdateSuccessfully(t *testing.T) {
 		th.TestJSONRequest(t, r, `{
 			"rule": {
 				"compare_type": "REGEX",
+				"invert": false,
+				"key": null,
 				"type": "PATH",
 				"value": "/images/special*"
 			}

@@ -1,11 +1,10 @@
 package testing
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
-
-	"encoding/json"
 
 	"github.com/gophercloud/gophercloud/openstack/clustering/v1/webhooks"
 	th "github.com/gophercloud/gophercloud/testhelper"

@@ -65,6 +65,7 @@ func TestCreateLoadbalancer(t *testing.T) {
 		VipAddress:   "10.30.176.48",
 		Flavor:       "medium",
 		Provider:     "haproxy",
+		Tags:         []string{"test", "stage"},
 	}).Extract()
 	th.AssertNoErr(t, err)
 
@@ -115,7 +116,7 @@ func TestGetLoadbalancerStatusesTree(t *testing.T) {
 		t.Fatalf("Unexpected Get error: %v", err)
 	}
 
-	th.CheckDeepEquals(t, LoadbalancerStatusesTree, *(actual.Loadbalancer))
+	th.CheckDeepEquals(t, LoadbalancerStatusesTree, *actual)
 }
 
 func TestDeleteLoadbalancer(t *testing.T) {
@@ -133,8 +134,11 @@ func TestUpdateLoadbalancer(t *testing.T) {
 	HandleLoadbalancerUpdateSuccessfully(t)
 
 	client := fake.ServiceClient()
+	name := "NewLoadbalancerName"
+	tags := []string{"test"}
 	actual, err := loadbalancers.Update(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", loadbalancers.UpdateOpts{
-		Name: "NewLoadbalancerName",
+		Name: &name,
+		Tags: &tags,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
@@ -159,4 +163,27 @@ func TestCascadingDeleteLoadbalancer(t *testing.T) {
 
 	err = loadbalancers.Delete(sc, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab", deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)
+}
+
+func TestGetLoadbalancerStatsTree(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleLoadbalancerGetStatsTree(t)
+
+	client := fake.ServiceClient()
+	actual, err := loadbalancers.GetStats(client, "36e08a3e-a78f-4b40-a229-1e7e23eee1ab").Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Get error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, LoadbalancerStatsTree, *actual)
+}
+
+func TestFailoverLoadbalancer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleLoadbalancerFailoverSuccessfully(t)
+
+	res := loadbalancers.Failover(fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
+	th.AssertNoErr(t, res.Err)
 }

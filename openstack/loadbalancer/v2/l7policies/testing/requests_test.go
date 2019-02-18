@@ -115,17 +115,38 @@ func TestUpdateL7Policy(t *testing.T) {
 
 	client := fake.ServiceClient()
 	newName := "NewL7PolicyName"
+	redirectURL := "http://www.new-example.com"
 	actual, err := l7policies.Update(client, "8a1412f0-4c32-4257-8b07-af4770b604fd",
 		l7policies.UpdateOpts{
 			Name:        &newName,
 			Action:      l7policies.ActionRedirectToURL,
-			RedirectURL: "http://www.new-example.com",
+			RedirectURL: &redirectURL,
 		}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
 	}
 
 	th.CheckDeepEquals(t, L7PolicyUpdated, *actual)
+}
+
+func TestUpdateL7PolicyNullRedirectURL(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleL7PolicyUpdateNullRedirectURLSuccessfully(t)
+
+	client := fake.ServiceClient()
+	newName := "NewL7PolicyName"
+	redirectURL := ""
+	actual, err := l7policies.Update(client, "8a1412f0-4c32-4257-8b07-af4770b604fd",
+		l7policies.UpdateOpts{
+			Name:        &newName,
+			RedirectURL: &redirectURL,
+		}).Extract()
+	if err != nil {
+		t.Fatalf("Unexpected Update error: %v", err)
+	}
+
+	th.CheckDeepEquals(t, L7PolicyNullRedirectURLUpdated, *actual)
 }
 
 func TestUpdateL7PolicyWithInvalidOpts(t *testing.T) {
@@ -260,10 +281,14 @@ func TestUpdateRule(t *testing.T) {
 	HandleRuleUpdateSuccessfully(t)
 
 	client := fake.ServiceClient()
+	invert := false
+	key := ""
 	actual, err := l7policies.UpdateRule(client, "8a1412f0-4c32-4257-8b07-af4770b604fd", "16621dbb-a736-4888-a57a-3ecd53df784c", l7policies.UpdateRuleOpts{
 		RuleType:    l7policies.TypePath,
 		CompareType: l7policies.CompareTypeRegex,
 		Value:       "/images/special*",
+		Key:         &key,
+		Invert:      &invert,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)

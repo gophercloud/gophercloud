@@ -11,62 +11,59 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestPolicyList(t *testing.T) {
+func TestPoliciesCRUD(t *testing.T) {
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
+	client.Microversion = "1.5"
 
+	policy, err := CreatePolicy(t, client)
+	th.AssertNoErr(t, err)
+	defer DeletePolicy(t, client, policy.ID)
+
+	// Test listing policies
 	allPages, err := policies.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
 
 	allPolicies, err := policies.ExtractPolicies(allPages)
 	th.AssertNoErr(t, err)
 
+	var found bool
 	for _, v := range allPolicies {
-		tools.PrintResource(t, v)
-
-		if v.CreatedAt.IsZero() {
-			t.Fatalf("CreatedAt value should not be zero")
-		}
-		t.Log("Created at: " + v.CreatedAt.String())
-
-		if !v.UpdatedAt.IsZero() {
-			t.Log("Updated at: " + v.UpdatedAt.String())
+		if v.ID == policy.ID {
+			found = true
 		}
 	}
-}
 
-func TestPolicyCreateAndDelete(t *testing.T) {
-	client, err := clients.NewClusteringV1Client()
+	th.AssertEquals(t, found, true)
+
+	// Test Get policy
+	getPolicy, err := policies.Get(client, policy.ID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, getPolicy)
+
+	// Test updating policy
+	updateOpts := policies.UpdateOpts{
+		Name: policy.Name + "-UPDATE",
+	}
+
+	t.Logf("Attempting to update policy: %s", policy.ID)
+	updatePolicy, err := policies.Update(client, policy.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	opts := policies.CreateOpts{
-		Name: "new_policy2",
-		Spec: policies.Spec{
-			Description: "new policy description",
-			Properties: map[string]interface{}{
-				"destroy_after_deletion":  true,
-				"grace_period":            60,
-				"reduce_desired_capacity": false,
-				"criteria":                "OLDEST_FIRST",
-			},
-			Type:    "senlin.policy.deletion",
-			Version: "1.0",
-		},
+	tools.PrintResource(t, updatePolicy)
+	tools.PrintResource(t, updatePolicy.UpdatedAt)
+
+	// Test validating policy
+	t.Logf("Attempting to validate policy: %s", policy.ID)
+	validateOpts := policies.ValidateOpts{
+		Spec: TestPolicySpec,
 	}
 
-	createdPolicy, err := policies.Create(client, opts).Extract()
+	validatePolicy, err := policies.Validate(client, validateOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	defer policies.Delete(client, createdPolicy.ID)
+	tools.PrintResource(t, validatePolicy)
 
-	tools.PrintResource(t, createdPolicy)
-
-	if createdPolicy.CreatedAt.IsZero() {
-		t.Fatalf("CreatedAt value should not be zero")
-	}
-	t.Log("Created at: " + createdPolicy.CreatedAt.String())
-
-	if !createdPolicy.UpdatedAt.IsZero() {
-		t.Log("Updated at: " + createdPolicy.UpdatedAt.String())
-	}
+	th.AssertEquals(t, validatePolicy.Name, "validated_policy")
+	th.AssertEquals(t, validatePolicy.Spec.Version, TestPolicySpec.Version)
 }

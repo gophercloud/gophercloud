@@ -34,6 +34,7 @@ func AddUserRole(t *testing.T, client *gophercloud.ServiceClient, tenant *tenant
 // unable to be created.
 func CreateTenant(t *testing.T, client *gophercloud.ServiceClient, c *tenants.CreateOpts) (*tenants.Tenant, error) {
 	name := tools.RandomString("ACPTTEST", 8)
+	description := tools.RandomString("ACPTTEST-DESC", 8)
 	t.Logf("Attempting to create tenant: %s", name)
 
 	var createOpts tenants.CreateOpts
@@ -44,6 +45,7 @@ func CreateTenant(t *testing.T, client *gophercloud.ServiceClient, c *tenants.Cr
 	}
 
 	createOpts.Name = name
+	createOpts.Description = description
 
 	tenant, err := tenants.Create(client, createOpts).Extract()
 	if err != nil {
@@ -53,6 +55,7 @@ func CreateTenant(t *testing.T, client *gophercloud.ServiceClient, c *tenants.Cr
 	t.Logf("Successfully created project %s with ID %s", name, tenant.ID)
 
 	th.AssertEquals(t, name, tenant.Name)
+	th.AssertEquals(t, description, tenant.Description)
 
 	return tenant, nil
 }

@@ -69,3 +69,12 @@ func TestErrorInToBlockStorageQuotaUpdateMap(t *testing.T) {
 		t.Fatal("Error handling failed")
 	}
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfully(t)
+
+	err := quotasets.Delete(client.ServiceClient(), FirstTenantID).ExtractErr()
+	th.AssertNoErr(t, err)
+}

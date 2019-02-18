@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/domains"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/roles"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -71,6 +72,27 @@ func TestRolesCRUD(t *testing.T) {
 	tools.PrintResource(t, role)
 	tools.PrintResource(t, role.Extra)
 
+	listOpts := roles.ListOpts{
+		DomainID: "default",
+	}
+	allPages, err := roles.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allRoles, err := roles.ExtractRoles(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		tools.PrintResource(t, r.Extra)
+
+		if r.Name == role.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
 	updateOpts := roles.UpdateOpts{
 		Extra: map[string]interface{}{
 			"description": "updated test role description",
@@ -86,6 +108,77 @@ func TestRolesCRUD(t *testing.T) {
 	th.AssertEquals(t, newRole.Extra["description"], "updated test role description")
 }
 
+func TestRolesFilterList(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	// For some reason this is not longer working.
+	// It might be a temporary issue.
+	clients.SkipRelease(t, "master")
+	clients.SkipRelease(t, "stable/queens")
+	clients.SkipRelease(t, "stable/rocky")
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	createOpts := roles.CreateOpts{
+		Name:     "testrole",
+		DomainID: "default",
+		Extra: map[string]interface{}{
+			"description": "test role description",
+		},
+	}
+
+	// Create Role in the default domain
+	role, err := CreateRole(t, client, &createOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
+
+	var listOpts roles.ListOpts
+	listOpts.Filters = map[string]string{
+		"name__contains": "TEST",
+	}
+
+	allPages, err := roles.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allRoles, err := roles.ExtractRoles(allPages)
+	th.AssertNoErr(t, err)
+
+	found := false
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		tools.PrintResource(t, r.Extra)
+
+		if r.Name == role.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	listOpts.Filters = map[string]string{
+		"name__contains": "reader",
+	}
+
+	allPages, err = roles.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allRoles, err = roles.ExtractRoles(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, r := range allRoles {
+		tools.PrintResource(t, r)
+		tools.PrintResource(t, r.Extra)
+
+		if r.Name == role.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, false)
+}
+
 func TestRoleListAssignmentForUserOnProject(t *testing.T) {
 	clients.RequireAdmin(t)
 
@@ -96,8 +189,12 @@ func TestRoleListAssignmentForUserOnProject(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteProject(t, client, project.ID)
 
-	role, err := FindRole(t, client)
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
 	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
 
 	user, err := CreateUser(t, client, nil)
 	th.AssertNoErr(t, err)
@@ -156,8 +253,12 @@ func TestRoleListAssignmentForUserOnDomain(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteDomain(t, client, domain.ID)
 
-	role, err := FindRole(t, client)
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
 	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
 
 	user, err := CreateUser(t, client, nil)
 	th.AssertNoErr(t, err)
@@ -215,10 +316,17 @@ func TestRoleListAssignmentForGroupOnProject(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteProject(t, client, project.ID)
 
-	role, err := FindRole(t, client)
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
 	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
 
-	group, err := CreateGroup(t, client, nil)
+	groupCreateOpts := &groups.CreateOpts{
+		DomainID: "default",
+	}
+	group, err := CreateGroup(t, client, groupCreateOpts)
 	th.AssertNoErr(t, err)
 	defer DeleteGroup(t, client, group.ID)
 
@@ -275,10 +383,17 @@ func TestRoleListAssignmentForGroupOnDomain(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteDomain(t, client, domain.ID)
 
-	role, err := FindRole(t, client)
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
 	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
 
-	group, err := CreateGroup(t, client, nil)
+	groupCreateOpts := &groups.CreateOpts{
+		DomainID: "default",
+	}
+	group, err := CreateGroup(t, client, groupCreateOpts)
 	th.AssertNoErr(t, err)
 	defer DeleteGroup(t, client, group.ID)
 
@@ -334,8 +449,12 @@ func TestRolesAssignToUserOnProject(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteProject(t, client, project.ID)
 
-	role, err := FindRole(t, client)
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
 	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
 
 	user, err := CreateUser(t, client, nil)
 	th.AssertNoErr(t, err)
@@ -396,8 +515,12 @@ func TestRolesAssignToUserOnDomain(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteDomain(t, client, domain.ID)
 
-	role, err := FindRole(t, client)
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
 	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
 
 	user, err := CreateUser(t, client, nil)
 	th.AssertNoErr(t, err)
@@ -459,10 +582,17 @@ func TestRolesAssignToGroupOnDomain(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteDomain(t, client, domain.ID)
 
-	role, err := FindRole(t, client)
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
 	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
 
-	group, err := CreateGroup(t, client, nil)
+	groupCreateOpts := &groups.CreateOpts{
+		DomainID: "default",
+	}
+	group, err := CreateGroup(t, client, groupCreateOpts)
 	th.AssertNoErr(t, err)
 	defer DeleteGroup(t, client, group.ID)
 
@@ -520,10 +650,17 @@ func TestRolesAssignToGroupOnProject(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteProject(t, client, project.ID)
 
-	role, err := FindRole(t, client)
+	roleCreateOpts := roles.CreateOpts{
+		DomainID: "default",
+	}
+	role, err := CreateRole(t, client, &roleCreateOpts)
 	th.AssertNoErr(t, err)
+	defer DeleteRole(t, client, role.ID)
 
-	group, err := CreateGroup(t, client, nil)
+	groupCreateOpts := &groups.CreateOpts{
+		DomainID: "default",
+	}
+	group, err := CreateGroup(t, client, groupCreateOpts)
 	th.AssertNoErr(t, err)
 	defer DeleteGroup(t, client, group.ID)
 

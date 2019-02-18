@@ -121,7 +121,7 @@ func TestShare(t *testing.T) {
 	defer DeleteQueue(t, client, queueName)
 
 	t.Logf("Attempting to create share for queue: %s", queueName)
-	share, shareErr := CreateShare(t, client, queueName, clientID)
+	share, shareErr := CreateShare(t, client, queueName)
 	if shareErr != nil {
 		t.Fatalf("Unable to create share: %v", shareErr)
 	}
