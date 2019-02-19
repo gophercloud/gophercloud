@@ -42,23 +42,22 @@ func DeleteNode(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Nod
 }
 
 // CreatePort - creates a port with a fixed NodeUUID and Address
-func CreatePort(t *testing.T, client *gophercloud.ServiceClient) (*ports.Port, error){
+func CreatePort(t *testing.T, client *gophercloud.ServiceClient) (*ports.Port, error) {
 	nodeUUID := "1be26c0b-03f2-4d2e-ae87-c02d7f33c123"
 	address := "fe:54:00:77:07:d9"
 	t.Logf("Attempting to create Port for Node: %s with Address: %s", nodeUUID, address)
 
 	port, err := ports.Create(client, ports.CreateOpts{
-		UUID: "27e3153e-d5bf-4b7e-b517-fb518e17f34c",
-    NodeUUID: nodeUUID,
-    Address: address,
-    PXEEnabled: true,
+		NodeUUID:   nodeUUID,
+		Address:    address,
+		PXEEnabled: true,
 	}).Extract()
 
 	return port, err
 }
 
 // DeletePort - deletes a port via its UUID
-func DeletePort(t *testing.T, client *gophercloud.ServiceClient, port *ports.Port){
+func DeletePort(t *testing.T, client *gophercloud.ServiceClient, port *ports.Port) {
 	err := ports.Delete(client, port.UUID).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete port %s: %s", port.UUID, err)

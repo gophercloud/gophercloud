@@ -29,7 +29,6 @@ func TestListDetailPorts(t *testing.T) {
 		th.CheckDeepEquals(t, PortFoo, actual[0])
 		th.CheckDeepEquals(t, PortBar, actual[1])
 
-
 		return true, nil
 	})
 
@@ -59,7 +58,6 @@ func TestListPorts(t *testing.T) {
 		}
 		th.AssertEquals(t, PortFoo, actual[0].Name)
 		th.AssertEquals(t, PortBar, actual[1].Name)
-
 
 		return true, nil
 	})
@@ -92,9 +90,9 @@ func TestCreatePort(t *testing.T) {
 	HandlePortCreationSuccessfully(t, SinglePortBody)
 
 	actual, err := ports.Create(client.ServiceClient(), ports.CreateOpts{
-    NodeUUID: "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
-    Address: "52:54:00:4d:87:e6",
-    PXEEnabled: true,
+		NodeUUID:   "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
+		Address:    "52:54:00:4d:87:e6",
+		PXEEnabled: true,
 	}).Extract()
 	th.AssertNoErr(t, err)
 

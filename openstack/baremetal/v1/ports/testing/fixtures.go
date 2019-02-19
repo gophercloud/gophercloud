@@ -147,17 +147,17 @@ const SinglePortBody = `
 
 var (
 	PortFoo = ports.Port{
-    UUID: "f2845e11-dbd4-4728-a8c0-30d19f48924a",
-    NodeUUID: "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
-    Address: "52:54:00:4d:87:e6",
-    PXEEnabled: true,
+		UUID:       "f2845e11-dbd4-4728-a8c0-30d19f48924a",
+		NodeUUID:   "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
+		Address:    "52:54:00:4d:87:e6",
+		PXEEnabled: true,
 	}
 
 	PortBar = ports.Port{
-    UUID: "3abe3f36-9708-4e9f-b07e-0f898061d3a7",
-    NodeUUID: "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
-    Address: "52:54:00:0a:af:d1",
-    PXEEnabled: true,
+		UUID:       "3abe3f36-9708-4e9f-b07e-0f898061d3a7",
+		NodeUUID:   "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
+		Address:    "52:54:00:0a:af:d1",
+		PXEEnabled: true,
 	}
 )
 

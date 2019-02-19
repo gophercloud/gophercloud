@@ -5,27 +5,26 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-type portResult struct{
-  gophercloud.Result
+type portResult struct {
+	gophercloud.Result
 }
 
-func (r portResult) Extract() (*Port, error){
-  var s Port
-  err := r.ExtractInto(&s)
-  return &s, err
+func (r portResult) Extract() (*Port, error) {
+	var s Port
+	err := r.ExtractInto(&s)
+	return &s, err
 }
 
-func (r portResult) ExtractInto(v interface{}) error{
-  return r.Result.ExtractIntoStructPtr(v, "")
+func (r portResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, "")
 }
 
 func ExtractPortsInto(r pagination.Page, v interface{}) error {
-  return r.(PortPage).Result.ExtractIntoSlicePtr(v, "ports")
+	return r.(PortPage).Result.ExtractIntoSlicePtr(v, "ports")
 }
 
-
 // Port represents a port in the OpenStack Bare Metal API.
-type Port struct{
+type Port struct {
 	// UUID for the resource.
 	UUID string `json:"uuid"`
 
@@ -70,7 +69,7 @@ type Port struct{
 	Links []string `json:"links"`
 
 	// Indicates whether the Port is a Smart NIC port.
-	IsSmartnic bool `json:"is_smartnic"`
+	IsSmartNIC bool `json:"is_smartnic"`
 }
 
 // PortPage abstracts the raw results of making a List() request against

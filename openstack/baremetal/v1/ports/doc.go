@@ -40,7 +40,7 @@ package ports
  	// Example to Create a Port
  	createPort, err := ports.Create(client, ports.CreateOpts{
  		NodeUUID: "e8920409-e07e-41bb-8cc1-72acb103e2dd",
- 		Address: "00-1B-63-84-45-E6",
+		Address: "00:1B:63:84:45:E6",
     PhysicalNetwork: "my-network",
  	}).Extract()
  	if err != nil {

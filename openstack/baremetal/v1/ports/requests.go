@@ -1,51 +1,51 @@
 package ports
 
 import (
-  "fmt"
+	"fmt"
 
-  "github.com/gophercloud/gophercloud"
-  "github.com/gophercloud/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
 	ToPortListQuery() (string, error)
-  ToPortListDetailQuery() (string, error)
+	ToPortListDetailQuery() (string, error)
 }
 
 // ListOpts allows the filtering and sorting of paginated collections through
 // the API. Filtering is achieved by passing in struct field values that map to
 // the node attributes you want to see returned. Marker and Limit are used
 // for pagination.
-type ListOpts struct{
-  // Filter the list by the name or uuid of the Node
-  Node string `q:"node"`
+type ListOpts struct {
+	// Filter the list by the name or uuid of the Node
+	Node string `q:"node"`
 
-  // Filter the list by the Node uuid
-  NodeUUID string `q:"node_uuid"`
+	// Filter the list by the Node uuid
+	NodeUUID string `q:"node_uuid"`
 
-  // Filter the list with the specified Portgroup (name or UUID)
-  PortGroup string`q:"portgroup"`
+	// Filter the list with the specified Portgroup (name or UUID)
+	PortGroup string `q:"portgroup"`
 
-  // Filter the list with the specified physical hardware address, typically MAC
-  Address string `q:"address"`
+	// Filter the list with the specified physical hardware address, typically MAC
+	Address string `q:"address"`
 
-  // One or more fields to be returned in the response.
-  Fields []string `q:"fields"`
+	// One or more fields to be returned in the response.
+	Fields []string `q:"fields"`
 
-  // Requests a page size of items.
-  Limit int `q:"limit"`
+	// Requests a page size of items.
+	Limit int `q:"limit"`
 
-  // The ID of the last-seen item
-  Marker string `q:"marker"`
+	// The ID of the last-seen item
+	Marker string `q:"marker"`
 
-  // Sorts the response by the requested sort direction.
-  // Valid value is asc (ascending) or desc (descending). Default is asc.
-  SortDir string `q:"sort_dir"`
+	// Sorts the response by the requested sort direction.
+	// Valid value is asc (ascending) or desc (descending). Default is asc.
+	SortDir string `q:"sort_dir"`
 
-  // Sorts the response by the this attribute value. Default is id.
-  SortKey string `q:"sort_key"`
+	// Sorts the response by the this attribute value. Default is id.
+	SortKey string `q:"sort_key"`
 }
 
 // ToPortListQuery formats a ListOpts into a query string.
@@ -112,36 +112,35 @@ type CreateOptsBuilder interface {
 
 // CreateOpts specifies port creation parameters.
 type CreateOpts struct {
-  // UUID of the Node this resource belongs to.
-  NodeUUID string `json:"node_uuid,omitempty"`
+	// UUID of the Node this resource belongs to.
+	NodeUUID string `json:"node_uuid,omitempty"`
 
-  // Physical hardware address of this network Port,
-  // typically the hardware MAC address.
-  Address string `json:"address,omitempty"`
+	// Physical hardware address of this network Port,
+	// typically the hardware MAC address.
+	Address string `json:"address,omitempty"`
 
-  // UUID of the Portgroup this resource belongs to.
-  PortGroupUUID string `json:"portgroup_uuid,omitempty"`
+	// UUID of the Portgroup this resource belongs to.
+	PortGroupUUID string `json:"portgroup_uuid,omitempty"`
 
-  // The Port binding profile. If specified, must contain switch_id (only a MAC
-  // address or an OpenFlow based datapath_id of the switch are accepted in this
-  // field) and port_id (identifier of the physical port on the switch to which
-  // node’s port is connected to) fields. switch_info is an optional string
-  // field to be used to store any vendor-specific information.
-  LocalLinkConnection map[string]interface{} `json:"local_link_connection,omitempty"`
+	// The Port binding profile. If specified, must contain switch_id (only a MAC
+	// address or an OpenFlow based datapath_id of the switch are accepted in this
+	// field) and port_id (identifier of the physical port on the switch to which
+	// node’s port is connected to) fields. switch_info is an optional string
+	// field to be used to store any vendor-specific information.
+	LocalLinkConnection map[string]interface{} `json:"local_link_connection,omitempty"`
 
-  // Indicates whether PXE is enabled or disabled on the Port.
-  PXEEnabled bool `json:"pxe_enabled,omitempty"`
+	// Indicates whether PXE is enabled or disabled on the Port.
+	PXEEnabled bool `json:"pxe_enabled,omitempty"`
 
-  // The name of the physical network to which a port is connected. May be empty.
-  PhysicalNetwork string `json:"physical_network,omitempty"`
+	// The name of the physical network to which a port is connected. May be empty.
+	PhysicalNetwork string `json:"physical_network,omitempty"`
 
-  // A set of one or more arbitrary metadata key and value pairs.
-  Extra map[string]interface{} `json:"extra,omitempty"`
+	// A set of one or more arbitrary metadata key and value pairs.
+	Extra map[string]interface{} `json:"extra,omitempty"`
 
-  // Indicates whether the Port is a Smart NIC port.
-  IsSmartnic bool `json:"is_smartnic,omitempty"`
+	// Indicates whether the Port is a Smart NIC port.
+	IsSmartNIC bool `json:"is_smartnic,omitempty"`
 }
-
 
 // ToPortCreateMap assembles a request body based on the contents of a CreateOpts.
 func (opts CreateOpts) ToPortCreateMap() (map[string]interface{}, error) {
@@ -165,7 +164,6 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
-
 // TODO Update
 type Patch interface {
 	ToPortUpdateMap() map[string]interface{}
@@ -187,7 +185,6 @@ type UpdateOperation struct {
 	Path  string   `json:"path,required"`
 	Value string   `json:"value,omitempty"`
 }
-
 
 func (opts UpdateOperation) ToPortUpdateMap() map[string]interface{} {
 	return map[string]interface{}{
