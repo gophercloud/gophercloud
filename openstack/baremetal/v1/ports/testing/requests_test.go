@@ -56,8 +56,8 @@ func TestListPorts(t *testing.T) {
 		if len(actual) != 2 {
 			t.Fatalf("Expected 2 ports, got %d", len(actual))
 		}
-		th.AssertEquals(t, PortFoo, actual[0].Name)
-		th.AssertEquals(t, PortBar, actual[1].Name)
+		th.AssertEquals(t, PortFoo, actual[0])
+		th.AssertEquals(t, PortBar, actual[1])
 
 		return true, nil
 	})

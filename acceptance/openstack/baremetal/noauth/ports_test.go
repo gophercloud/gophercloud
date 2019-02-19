@@ -63,5 +63,5 @@ func TestPortsUpdate(t *testing.T) {
 	}).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, updated.Maintenance, true)
+	th.AssertEquals(t, updated.Address, "aa:bb:cc:dd:ee:ff")
 }
