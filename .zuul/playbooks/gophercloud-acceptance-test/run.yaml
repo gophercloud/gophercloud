@@ -8,7 +8,7 @@
         - 'manila'
         - 'designate'
         - 'zun'
-        - 'octavia'
+        #- 'octavia'
         - 'neutron-ext'
     - install-devstack
   tasks:
