@@ -41,15 +41,36 @@ func DeleteNode(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Nod
 	t.Logf("Deleted server: %s", node.UUID)
 }
 
-// CreatePort - creates a port with a fixed NodeUUID and Address
-func CreatePort(t *testing.T, client *gophercloud.ServiceClient) (*ports.Port, error) {
-	nodeUUID := "1be26c0b-03f2-4d2e-ae87-c02d7f33c123"
-	address := "fe:54:00:77:07:d9"
-	t.Logf("Attempting to create Port for Node: %s with Address: %s", nodeUUID, address)
+// CreateFakeNode creates a node with fake-hardware to use for port tests.
+func CreateFakeNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Node, error) {
+	name := tools.RandomString("ACPTTEST", 16)
+	t.Logf("Attempting to create bare metal node: %s", name)
+
+	node, err := nodes.Create(client, nodes.CreateOpts{
+		Name:          name,
+		Driver:        "fake-hardware",
+		BootInterface: "pxe",
+		DriverInfo: map[string]interface{}{
+			"ipmi_port":      "6230",
+			"ipmi_username":  "admin",
+			"deploy_kernel":  "http://172.22.0.1/images/tinyipa-stable-rocky.vmlinuz",
+			"ipmi_address":   "192.168.122.1",
+			"deploy_ramdisk": "http://172.22.0.1/images/tinyipa-stable-rocky.gz",
+			"ipmi_password":  "admin",
+		},
+	}).Extract()
+
+	return node, err
+}
+
+// CreatePort - creates a port for a node with a fixed Address
+func CreatePort(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Node) (*ports.Port, error) {
+	mac := "e6:72:1f:52:00:f4"
+	t.Logf("Attempting to create Port for Node: %s with Address: %s", node.UUID, mac)
 
 	port, err := ports.Create(client, ports.CreateOpts{
-		NodeUUID:   nodeUUID,
-		Address:    address,
+		NodeUUID:   node.UUID,
+		Address:    mac,
 		PXEEnabled: true,
 	}).Extract()
 

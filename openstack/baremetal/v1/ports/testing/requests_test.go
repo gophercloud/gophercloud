@@ -26,8 +26,8 @@ func TestListDetailPorts(t *testing.T) {
 		if len(actual) != 2 {
 			t.Fatalf("Expected 2 ports, got %d", len(actual))
 		}
-		th.CheckDeepEquals(t, PortFoo, actual[0])
-		th.CheckDeepEquals(t, PortBar, actual[1])
+		th.CheckDeepEquals(t, PortBar, actual[0])
+		th.CheckDeepEquals(t, PortFoo, actual[1])
 
 		return true, nil
 	})
@@ -56,8 +56,8 @@ func TestListPorts(t *testing.T) {
 		if len(actual) != 2 {
 			t.Fatalf("Expected 2 ports, got %d", len(actual))
 		}
-		th.AssertEquals(t, PortFoo, actual[0])
-		th.AssertEquals(t, PortBar, actual[1])
+		th.AssertEquals(t, "3abe3f36-9708-4e9f-b07e-0f898061d3a7", actual[0].UUID)
+		th.AssertEquals(t, "f2845e11-dbd4-4728-a8c0-30d19f48924a", actual[1].UUID)
 
 		return true, nil
 	})

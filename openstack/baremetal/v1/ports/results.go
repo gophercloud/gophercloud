@@ -66,7 +66,7 @@ type Port struct {
 	UpdatedAt string `json:"updated_at"`
 
 	// A list of relative links. Includes the self and bookmark links.
-	Links []string `json:"links"`
+	Links []interface{} `json:"links"`
 
 	// Indicates whether the Port is a Smart NIC port.
 	IsSmartNIC bool `json:"is_smartnic"`
