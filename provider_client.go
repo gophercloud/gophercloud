@@ -234,9 +234,6 @@ func (client *ProviderClient) Reauthenticate(previousToken string) (err error) {
 	}
 	client.reauthmut.Unlock()
 
-	client.mut.Lock()
-	defer client.mut.Unlock()
-
 	client.reauthmut.Lock()
 	client.reauthmut.reauthing = true
 	client.reauthmut.done = sync.NewCond(client.reauthmut)
