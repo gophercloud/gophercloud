@@ -224,7 +224,13 @@ func (r CapsulePage) NextPageURL() (string, error) {
 // IsEmpty checks whether a CapsulePage struct is empty.
 func (r CapsulePage) IsEmpty() (bool, error) {
 	is, err := ExtractCapsules(r)
-	return len(is) == 0, err
+	if err == nil {
+		return len(is) == 0, err
+	}
+
+	// Support for multiple capsule result types.
+	isV132, err := ExtractCapsulesV132(r)
+	return len(isV132) == 0, err
 }
 
 // ExtractCapsules accepts a Page struct, specifically a CapsulePage struct,
