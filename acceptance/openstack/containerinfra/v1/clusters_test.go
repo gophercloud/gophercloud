@@ -63,7 +63,7 @@ func TestClustersCRUD(t *testing.T) {
 	allPagesDetail, err := clusters.ListDetail(client, nil).AllPages()
 	th.AssertNoErr(t, err)
 
-	allClustersDetail, err := clusters.ExtractClusters(allPages)
+	allClustersDetail, err := clusters.ExtractClusters(allPagesDetail)
 	th.AssertNoErr(t, err)
 
 	var foundDetail bool
