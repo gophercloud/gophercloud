@@ -76,13 +76,18 @@ type ProviderClient struct {
 	// with the token and reauth func zeroed. Such client can be used to perform reauthorization.
 	Throwaway bool
 
+	// mut is a mutex for the client. It protects read and write access to client attributes such as getting
+	// and setting the TokenID.
 	mut *sync.RWMutex
 
+	// reauthmut is a mutex for reauthentication it attempts to ensure that only one reauthentication
+	// attempt happens at one time.
 	reauthmut *reauthlock
 
 	authResult AuthResult
 }
 
+// reauthlock represents a set of attributes used to help in the reauthentication process.
 type reauthlock struct {
 	sync.RWMutex
 	reauthing    bool
@@ -219,7 +224,7 @@ func (client *ProviderClient) Reauthenticate(previousToken string) (err error) {
 		return nil
 	}
 
-	if client.mut == nil {
+	if client.reauthmut == nil {
 		return client.ReauthFunc()
 	}
 
