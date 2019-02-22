@@ -590,6 +590,8 @@ func NewContainerV1Client() (*gophercloud.ServiceClient, error) {
 		return nil, err
 	}
 
+	client = configureDebug(client)
+
 	return openstack.NewContainerV1(client, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})

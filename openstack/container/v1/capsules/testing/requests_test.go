@@ -131,7 +131,7 @@ func TestListCapsuleV132(t *testing.T) {
 	results := capsules.List(fakeclient.ServiceClient(), nil)
 	err := results.EachPage(func(page pagination.Page) (bool, error) {
 		count++
-		actual, err := capsules.ExtractCapsulesV132(page)
+		actual, err := capsules.ExtractCapsules(page)
 		if err != nil {
 			t.Errorf("Failed to extract capsules: %v", err)
 			return false, err
