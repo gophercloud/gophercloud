@@ -1,3 +1,5 @@
+// +build acceptance containers capsules
+
 package v1
 
 import (
@@ -11,10 +13,10 @@ import (
 
 func TestCapsule(t *testing.T) {
 	client, err := clients.NewContainerV1Client()
-	if err != nil {
-		t.Fatalf("Unable to create an container v1 client: %v", err)
-	}
 	th.AssertNoErr(t, err)
+
+	client.Microversion = "1.32"
+
 	template := new(capsules.Template)
 	template.Bin = []byte(`{
 		"capsuleVersion": "beta",
@@ -59,20 +61,27 @@ func TestCapsule(t *testing.T) {
 			]
 		}
 	}`)
+
 	createOpts := capsules.CreateOpts{
 		TemplateOpts: template,
 	}
+
 	capsule, err := capsules.Create(client, createOpts).Extract()
 	th.AssertNoErr(t, err)
+
 	err = WaitForCapsuleStatus(client, capsule, "Running")
 	th.AssertNoErr(t, err)
+
 	pager := capsules.List(client, nil)
 	err = pager.EachPage(func(page pagination.Page) (bool, error) {
-		CapsuleList, err := capsules.ExtractCapsules(page)
+		CapsuleList, err := capsules.ExtractCapsulesV132(page)
 		th.AssertNoErr(t, err)
 
 		for _, m := range CapsuleList {
 			capsuleUUID := m.UUID
+			if capsuleUUID != capsule.UUID {
+				continue
+			}
 			capsule, err := capsules.Get(client, capsuleUUID).Extract()
 
 			th.AssertNoErr(t, err)
