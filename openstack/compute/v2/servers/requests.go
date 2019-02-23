@@ -290,10 +290,6 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 		b["max_count"] = opts.Max
 	}
 
-	if opts.ReturnReservationID {
-		b["return_reservation_id"] = "true"
-	}
-
 	return map[string]interface{}{"server": b}, nil
 }
 
