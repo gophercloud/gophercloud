@@ -192,9 +192,6 @@ type CreateOpts struct {
 	// Max specifies Maximum number of servers to launch.
 	Max int `json:"max_count,omitempty"`
 
-	// ReturnReservationID sets respond with reservation_id only.
-	ReturnReservationID bool `json:"return_reservation_id,omitempty"`
-
 	// ServiceClient will allow calls to be made to retrieve an image or
 	// flavor ID by name.
 	ServiceClient *gophercloud.ServiceClient `json:"-"`
