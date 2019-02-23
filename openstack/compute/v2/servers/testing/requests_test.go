@@ -100,6 +100,23 @@ func TestCreateServer(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestCreateServers(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServersCreationSuccessfully(t, SingleServerBody)
+
+	actual, err := servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		Min:       3,
+		Max:       3,
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+}
+
 func TestCreateServerWithCustomField(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
