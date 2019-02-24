@@ -11,57 +11,9 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-const capsuleTemplate = `
-	{
-		"capsuleVersion": "beta",
-		"kind": "capsule",
-		"metadata": {
-			"labels": {
-				"app": "web",
-				"app1": "web1"
-			},
-			"name": "template"
-		},
-		"spec": {
-			"restartPolicy": "Always",
-			"containers": [
-				{
-					"command": [
-						"sleep",
-						"1000000"
-					],
-					"env": {
-						"ENV1": "/usr/local/bin",
-						"ENV2": "/usr/bin"
-					},
-					"image": "ubuntu",
-					"imagePullPolicy": "ifnotpresent",
-					"ports": [
-						{
-							"containerPort": 80,
-							"hostPort": 80,
-							"name": "nginx-port",
-							"protocol": "TCP"
-						}
-					],
-					"resources": {
-						"requests": {
-							"cpu": 1,
-							"memory": 1024
-						}
-					},
-					"workDir": "/root"
-				}
-			]
-		}
-	}
-`
-
-func TestCapsule(t *testing.T) {
+func TestCapsuleBase(t *testing.T) {
 	client, err := clients.NewContainerV1Client()
 	th.AssertNoErr(t, err)
-
-	client.Microversion = "1.31"
 
 	template := new(capsules.Template)
 	template.Bin = []byte(capsuleTemplate)
@@ -72,9 +24,9 @@ func TestCapsule(t *testing.T) {
 
 	v, err := capsules.Create(client, createOpts).Extract()
 	th.AssertNoErr(t, err)
-	capsule := v.(capsules.Capsule)
+	capsule := v.(*capsules.Capsule)
 
-	err = WaitForCapsuleStatus(client, v, "Running")
+	err = WaitForCapsuleStatus(client, capsule.UUID, "Running")
 	th.AssertNoErr(t, err)
 
 	pager := capsules.List(client, nil)
@@ -102,7 +54,7 @@ func TestCapsule(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestCapsuleV123(t *testing.T) {
+func TestCapsuleV132(t *testing.T) {
 	client, err := clients.NewContainerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -118,7 +70,7 @@ func TestCapsuleV123(t *testing.T) {
 	capsule, err := capsules.Create(client, createOpts).ExtractV132()
 	th.AssertNoErr(t, err)
 
-	err = WaitForCapsuleStatus(client, capsule, "Running")
+	err = WaitForCapsuleStatus(client, capsule.UUID, "Running")
 	th.AssertNoErr(t, err)
 
 	pager := capsules.List(client, nil)
