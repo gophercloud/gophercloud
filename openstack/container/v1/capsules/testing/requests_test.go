@@ -110,6 +110,44 @@ func TestListCapsule(t *testing.T) {
 	}
 }
 
+func TestListCapsuleV132(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleCapsuleV132ListSuccessfully(t)
+
+	createdAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:25")
+	updatedAt, _ := time.Parse(gophercloud.RFC3339ZNoTNoZ, "2018-01-12 09:37:25")
+
+	ec := ExpectedCapsuleV132
+
+	ec.CreatedAt = createdAt
+	ec.UpdatedAt = updatedAt
+	ec.Containers = nil
+
+	expected := []capsules.CapsuleV132{ec}
+
+	count := 0
+	results := capsules.List(fakeclient.ServiceClient(), nil)
+	err := results.EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := capsules.ExtractCapsules(page)
+		if err != nil {
+			t.Errorf("Failed to extract capsules: %v", err)
+			return false, err
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
