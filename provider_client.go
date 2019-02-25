@@ -2,6 +2,7 @@ package gophercloud
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -75,6 +76,9 @@ type ProviderClient struct {
 	// Throwaway determines whether if this client is a throw-away client. It's a copy of user's provider client
 	// with the token and reauth func zeroed. Such client can be used to perform reauthorization.
 	Throwaway bool
+
+	// Context is the context passed to the HTTP request.
+	Context context.Context
 
 	// mut is a mutex for the client. It protects read and write access to client attributes such as getting
 	// and setting the TokenID.
@@ -313,6 +317,9 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
+	}
+	if client.Context != nil {
+		req = req.WithContext(client.Context)
 	}
 
 	// Populate the request headers. Apply options.MoreHeaders last, to give the caller the chance to
