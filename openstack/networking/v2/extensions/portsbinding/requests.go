@@ -54,7 +54,7 @@ type UpdateOptsExt struct {
 	ports.UpdateOptsBuilder
 
 	// The ID of the host where the port is allocated.
-	HostID string `json:"binding:host_id,omitempty"`
+	HostID *string `json:"binding:host_id,omitempty"`
 
 	// The virtual network interface card (vNIC) type that is bound to the
 	// neutron port.
@@ -75,8 +75,8 @@ func (opts UpdateOptsExt) ToPortUpdateMap() (map[string]interface{}, error) {
 
 	port := base["port"].(map[string]interface{})
 
-	if opts.HostID != "" {
-		port["binding:host_id"] = opts.HostID
+	if opts.HostID != nil {
+		port["binding:host_id"] = *opts.HostID
 	}
 
 	if opts.VNICType != "" {
