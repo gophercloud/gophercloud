@@ -80,7 +80,8 @@ func (opts ListOpts) ToPortListDetailQuery() (string, error) {
 	return q.String(), err
 }
 
-// Return a list ports with complete details. Some filtering is possible by passing in flags in ListOpts,
+// ListDetail - Return a list ports with complete details.
+// Some filtering is possible by passing in flags in "ListOpts",
 // but you cannot limit by the fields returned.
 func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listDetailURL(client)
@@ -130,7 +131,7 @@ type CreateOpts struct {
 	LocalLinkConnection map[string]interface{} `json:"local_link_connection,omitempty"`
 
 	// Indicates whether PXE is enabled or disabled on the Port.
-	PXEEnabled bool `json:"pxe_enabled,omitempty"`
+	PXEEnabled *bool `json:"pxe_enabled,omitempty"`
 
 	// The name of the physical network to which a port is connected. May be empty.
 	PhysicalNetwork string `json:"physical_network,omitempty"`
@@ -139,7 +140,7 @@ type CreateOpts struct {
 	Extra map[string]interface{} `json:"extra,omitempty"`
 
 	// Indicates whether the Port is a Smart NIC port.
-	IsSmartNIC bool `json:"is_smartnic,omitempty"`
+	IsSmartNIC *bool `json:"is_smartnic,omitempty"`
 }
 
 // ToPortCreateMap assembles a request body based on the contents of a CreateOpts.
@@ -181,9 +182,9 @@ const (
 )
 
 type UpdateOperation struct {
-	Op    UpdateOp `json:"op,required"`
-	Path  string   `json:"path,required"`
-	Value string   `json:"value,omitempty"`
+	Op    UpdateOp    `json:"op,required"`
+	Path  string      `json:"path,required"`
+	Value interface{} `json:"value,omitempty"`
 }
 
 func (opts UpdateOperation) ToPortUpdateMap() map[string]interface{} {

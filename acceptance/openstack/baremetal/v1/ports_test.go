@@ -1,3 +1,5 @@
+// +build acceptance baremetal ports
+
 package v1
 
 import (
