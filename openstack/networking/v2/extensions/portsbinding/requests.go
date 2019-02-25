@@ -20,7 +20,7 @@ type CreateOptsExt struct {
 	// A dictionary that enables the application running on the specified
 	// host to pass and receive virtual network interface (VIF) port-specific
 	// information to the plug-in.
-	Profile map[string]string `json:"binding:profile,omitempty"`
+	Profile map[string]interface{} `json:"binding:profile,omitempty"`
 }
 
 // ToPortCreateMap casts a CreateOpts struct to a map.
@@ -63,7 +63,7 @@ type UpdateOptsExt struct {
 	// A dictionary that enables the application running on the specified
 	// host to pass and receive virtual network interface (VIF) port-specific
 	// information to the plug-in.
-	Profile map[string]string `json:"binding:profile,omitempty"`
+	Profile map[string]interface{} `json:"binding:profile,omitempty"`
 }
 
 // ToPortUpdateMap casts an UpdateOpts struct to a map.
