@@ -299,3 +299,9 @@ type NodeValidation struct {
 	Rescue     DriverValidation `json:"rescue"`
 	Storage    DriverValidation `json:"storage"`
 }
+
+// ChangeStateResult is the response from any state change operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type ChangeStateResult struct {
+	gophercloud.ErrResult
+}
