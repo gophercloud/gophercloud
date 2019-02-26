@@ -89,10 +89,11 @@ func TestCreatePort(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandlePortCreationSuccessfully(t, SinglePortBody)
 
+	iTrue := true
 	actual, err := ports.Create(client.ServiceClient(), ports.CreateOpts{
 		NodeUUID:   "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
 		Address:    "52:54:00:4d:87:e6",
-		PXEEnabled: true,
+		PXEEnabled: &iTrue,
 	}).Extract()
 	th.AssertNoErr(t, err)
 
