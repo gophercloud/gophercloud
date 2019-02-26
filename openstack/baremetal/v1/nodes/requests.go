@@ -265,7 +265,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 type Patch interface {
-	ToNodeUpdateMap() map[string]interface{}
+	ToNodeUpdateMap() (map[string]interface{}, error)
 }
 
 // UpdateOpts is a slice of Patches used to update a node
@@ -280,24 +280,26 @@ const (
 )
 
 type UpdateOperation struct {
-	Op    UpdateOp `json:"op,required"`
-	Path  string   `json:"path,required"`
+	Op    UpdateOp `json:"op" required:"true"`
+	Path  string   `json:"path" required:"true"`
 	Value string   `json:"value,omitempty"`
 }
 
-func (opts UpdateOperation) ToNodeUpdateMap() map[string]interface{} {
-	return map[string]interface{}{
-		"op":    opts.Op,
-		"path":  opts.Path,
-		"value": opts.Value,
-	}
+func (opts UpdateOperation) ToNodeUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
 }
 
 // Update requests that a node be updated
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r UpdateResult) {
 	body := make([]map[string]interface{}, len(opts))
 	for i, patch := range opts {
-		body[i] = patch.ToNodeUpdateMap()
+		result, err := patch.ToNodeUpdateMap()
+		if err != nil {
+			r.Err = err
+			return
+		}
+
+		body[i] = result
 	}
 
 	resp, err := client.Request("PATCH", updateURL(client, id), &gophercloud.RequestOpts{

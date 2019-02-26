@@ -151,7 +151,35 @@ func TestUpdateNode(t *testing.T) {
 	}
 
 	th.CheckDeepEquals(t, NodeFoo, *actual)
+}
 
+func TestUpdateRequiredOp(t *testing.T) {
+	c := client.ServiceClient()
+	_, err := nodes.Update(c, "1234asdf", nodes.UpdateOpts{
+		nodes.UpdateOperation{
+			Path:  "/driver",
+			Value: "new-driver",
+		},
+	}).Extract()
+
+	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
+		t.Fatal("ErrMissingInput was expected to occur")
+	}
+
+}
+
+func TestUpdateRequiredPath(t *testing.T) {
+	c := client.ServiceClient()
+	_, err := nodes.Update(c, "1234asdf", nodes.UpdateOpts{
+		nodes.UpdateOperation{
+			Op:    nodes.ReplaceOp,
+			Value: "new-driver",
+		},
+	}).Extract()
+
+	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
+		t.Fatal("ErrMissingInput was expected to occur")
+	}
 }
 
 func TestValidateNode(t *testing.T) {
