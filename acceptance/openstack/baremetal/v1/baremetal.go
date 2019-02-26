@@ -72,7 +72,7 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Nod
 	port, err := ports.Create(client, ports.CreateOpts{
 		NodeUUID:   node.UUID,
 		Address:    mac,
-		PXEEnabled: &itrue,
+		PXEEnabled: &iTrue,
 	}).Extract()
 
 	return port, err
