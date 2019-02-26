@@ -311,3 +311,18 @@ func TestCleanStepRequiresStep(t *testing.T) {
 		t.Fatal("ErrMissingInput was expected to occur")
 	}
 }
+
+func TestChangePowerState(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleChangePowerStateSuccessfully(t)
+
+	opts := nodes.PowerStateOpts{
+		Target:  nodes.PowerOn,
+		Timeout: 100,
+	}
+
+	c := client.ServiceClient()
+	err := nodes.ChangePowerState(c, "1234asdf", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}

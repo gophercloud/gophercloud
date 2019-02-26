@@ -909,3 +909,17 @@ func HandleNodeChangeProvisionStateClean(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+// HandleChangePowerStateSuccessfully sets up the test server to respond to a change power state request for a node
+func HandleChangePowerStateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/states/power", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"target": "power on",
+			"timeout": 100
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
