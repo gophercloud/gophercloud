@@ -3,6 +3,7 @@ package testing
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/nodes"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -243,4 +244,42 @@ func TestNodeChangeProvisionStateClean(t *testing.T) {
 	}).ExtractErr()
 
 	th.AssertNoErr(t, err)
+}
+
+func TestCleanStepRequiresInterface(t *testing.T) {
+	c := client.ServiceClient()
+	err := nodes.ChangeProvisionState(c, "1234asdf", nodes.ProvisionStateOpts{
+		Target: nodes.TargetClean,
+		CleanSteps: []nodes.CleanStep{
+			{
+				Step: "upgrade_firmware",
+				Args: map[string]string{
+					"force": "True",
+				},
+			},
+		},
+	}).ExtractErr()
+
+	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
+		t.Fatal("ErrMissingInput was expected to occur")
+	}
+}
+
+func TestCleanStepRequiresStep(t *testing.T) {
+	c := client.ServiceClient()
+	err := nodes.ChangeProvisionState(c, "1234asdf", nodes.ProvisionStateOpts{
+		Target: nodes.TargetClean,
+		CleanSteps: []nodes.CleanStep{
+			{
+				Interface: "deploy",
+				Args: map[string]string{
+					"force": "True",
+				},
+			},
+		},
+	}).ExtractErr()
+
+	if _, ok := err.(gophercloud.ErrMissingInput); !ok {
+		t.Fatal("ErrMissingInput was expected to occur")
+	}
 }

@@ -392,8 +392,8 @@ func GetSupportedBootDevices(client *gophercloud.ServiceClient, id string) (r Su
 // the value for ‘args’ is a keyword variable argument dictionary that is passed to the cleaning step
 // method.
 type CleanStep struct {
-	Interface string            `json:"interface,required"`
-	Step      string            `json:"step,required"`
+	Interface string            `json:"interface" required:"true"`
+	Step      string            `json:"step" required:"true"`
 	Args      map[string]string `json:"args,omitempty"`
 }
 
@@ -406,7 +406,7 @@ type ProvisionStateOptsBuilder interface {
 // ProvisionStateOpts for a request to change a node's provision state. A config drive should be base64-encoded
 // gzipped ISO9660 image.
 type ProvisionStateOpts struct {
-	Target         TargetProvisionState `json:"target,required"`
+	Target         TargetProvisionState `json:"target" required:"true"`
 	ConfigDrive    string               `json:"configdrive,omitempty"`
 	CleanSteps     []CleanStep          `json:"clean_steps,omitempty"`
 	RescuePassword string               `json:"rescue_password,omitempty"`
