@@ -8,6 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	networking "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/portsbinding"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -37,18 +38,38 @@ func TestPortsbindingCRUD(t *testing.T) {
 	defer networking.DeletePort(t, client, port.ID)
 
 	tools.PrintResource(t, port)
+	th.AssertEquals(t, port.HostID, hostID)
+	th.AssertEquals(t, port.VNICType, "normal")
 
 	// Update port
 	newPortName := ""
 	newPortDescription := ""
+	newHostID := "127.0.0.1"
 	updateOpts := ports.UpdateOpts{
 		Name:        &newPortName,
 		Description: &newPortDescription,
 	}
-	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
+
+	var finalUpdateOpts ports.UpdateOptsBuilder
+
+	finalUpdateOpts = portsbinding.UpdateOptsExt{
+		UpdateOptsBuilder: updateOpts,
+		HostID:            &newHostID,
+		VNICType:          "baremetal",
+	}
+
+	var newPort PortWithBindingExt
+
+	_, err = ports.Update(client, port.ID, finalUpdateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	// Read the updated port
+	err = ports.Get(client, port.ID).ExtractInto(&newPort)
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newPort)
 	th.AssertEquals(t, newPort.Description, newPortName)
 	th.AssertEquals(t, newPort.Description, newPortDescription)
+	th.AssertEquals(t, newPort.HostID, newHostID)
+	th.AssertEquals(t, newPort.VNICType, "baremetal")
 }
