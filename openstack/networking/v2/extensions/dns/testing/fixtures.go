@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
+	floatingiptest "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips/testing"
 	porttest "github.com/gophercloud/gophercloud/openstack/networking/v2/ports/testing"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -158,5 +159,54 @@ func PortHandleUpdate(t *testing.T) {
     }
 }
     `)
+	})
+}
+
+func FloatingIPHandleList(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.AssertEquals(t, r.RequestURI, "/v2.0/floatingips?dns_domain=local&dns_name=test-fip")
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, floatingiptest.ListResponseDNS)
+	})
+}
+
+func FloatingIPHandleGet(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/floatingips/2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, fmt.Sprintf(`{"floatingip": %s}`, floatingiptest.FipDNS))
+	})
+}
+
+func FloatingIPHandleCreate(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/floatingips", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "floatingip": {
+        "floating_network_id": "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
+        "dns_name": "test-fip",
+        "dns_domain": "local"
+    }
+}
+                        `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, fmt.Sprintf(`{"floatingip": %s}`, floatingiptest.FipDNS))
 	})
 }

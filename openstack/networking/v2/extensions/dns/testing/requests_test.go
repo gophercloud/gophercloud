@@ -5,23 +5,31 @@ import (
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/dns"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestList(t *testing.T) {
+type PortDNS struct {
+	ports.Port
+	dns.PortDNSExt
+}
+
+type FloatingIPDNS struct {
+	floatingips.FloatingIP
+	dns.FloatingIPDNSExt
+}
+
+func TestPortList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	PortHandleListSuccessfully(t)
 
-	type PortWithExt struct {
-		ports.Port
-		dns.PortDNSExt
-	}
-	var actual []PortWithExt
+	var actual []PortDNS
 
-	expected := []PortWithExt{
+	expected := []PortDNS{
 		{
 			Port: ports.Port{
 				Status:       "ACTIVE",
@@ -69,16 +77,13 @@ func TestList(t *testing.T) {
 	th.CheckDeepEquals(t, expected, actual)
 }
 
-func TestGet(t *testing.T) {
+func TestPortGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	PortHandleGet(t)
 
-	var s struct {
-		ports.Port
-		dns.PortDNSExt
-	}
+	var s PortDNS
 
 	err := ports.Get(fake.ServiceClient(), "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2").ExtractInto(&s)
 	th.AssertNoErr(t, err)
@@ -107,16 +112,13 @@ func TestGet(t *testing.T) {
 	})
 }
 
-func TestCreate(t *testing.T) {
+func TestPortCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	PortHandleCreate(t)
 
-	var s struct {
-		ports.Port
-		dns.PortDNSExt
-	}
+	var s PortDNS
 
 	asu := true
 	portCreateOpts := ports.CreateOpts{
@@ -160,23 +162,20 @@ func TestCreate(t *testing.T) {
 	})
 }
 
-func TestRequiredCreateOpts(t *testing.T) {
+func TestPortRequiredCreateOpts(t *testing.T) {
 	res := ports.Create(fake.ServiceClient(), dns.PortCreateOptsExt{CreateOptsBuilder: ports.CreateOpts{}})
 	if res.Err == nil {
 		t.Fatalf("Expected error, got none")
 	}
 }
 
-func TestUpdate(t *testing.T) {
+func TestPortUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
 	PortHandleUpdate(t)
 
-	var s struct {
-		ports.Port
-		dns.PortDNSExt
-	}
+	var s PortDNS
 
 	name := "new_port_name"
 	portUpdateOpts := ports.UpdateOpts{
@@ -209,4 +208,128 @@ func TestUpdate(t *testing.T) {
 			"fqdn":       "test-port1.openstack.local.",
 		},
 	})
+}
+
+func TestFloatingIPList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	FloatingIPHandleList(t)
+
+	count := 0
+
+	var listOptsBuilder floatingips.ListOptsBuilder
+	listOptsBuilder = dns.FloatingIPListOptsExt{
+		ListOptsBuilder: floatingips.ListOpts{},
+		DNSName:         "test-fip",
+		DNSDomain:       "local",
+	}
+
+	floatingips.List(fake.ServiceClient(), listOptsBuilder).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		var actual []FloatingIPDNS
+		err := floatingips.ExtractFloatingIPsInto(page, &actual)
+		if err != nil {
+			t.Errorf("Failed to extract floating IPs: %v", err)
+			return false, err
+		}
+
+		expected := []FloatingIPDNS{
+			{
+				FloatingIP: floatingips.FloatingIP{
+					FloatingNetworkID: "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
+					FixedIP:           "",
+					FloatingIP:        "192.0.0.4",
+					TenantID:          "017d8de156df4177889f31a9bd6edc00",
+					Status:            "DOWN",
+					PortID:            "",
+					ID:                "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e",
+					RouterID:          "1117c30a-ddb4-49a1-bec3-a65b286b4170",
+				},
+				FloatingIPDNSExt: dns.FloatingIPDNSExt{
+					DNSName:   "test-fip",
+					DNSDomain: "local",
+				},
+			},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
+}
+
+func TestFloatingIPGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	FloatingIPHandleGet(t)
+
+	var actual FloatingIPDNS
+	err := floatingips.Get(fake.ServiceClient(), "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e").ExtractInto(&actual)
+	th.AssertNoErr(t, err)
+
+	expected := FloatingIPDNS{
+		FloatingIP: floatingips.FloatingIP{
+			FloatingNetworkID: "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
+			FixedIP:           "",
+			FloatingIP:        "192.0.0.4",
+			TenantID:          "017d8de156df4177889f31a9bd6edc00",
+			Status:            "DOWN",
+			PortID:            "",
+			ID:                "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e",
+			RouterID:          "1117c30a-ddb4-49a1-bec3-a65b286b4170",
+		},
+		FloatingIPDNSExt: dns.FloatingIPDNSExt{
+			DNSName:   "test-fip",
+			DNSDomain: "local",
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestFloatingIPCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	FloatingIPHandleCreate(t)
+
+	var actual FloatingIPDNS
+
+	fipCreateOpts := floatingips.CreateOpts{
+		FloatingNetworkID: "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
+	}
+
+	options := dns.FloatingIPCreateOptsExt{
+		CreateOptsBuilder: fipCreateOpts,
+		DNSName:           "test-fip",
+		DNSDomain:         "local",
+	}
+
+	err := floatingips.Create(fake.ServiceClient(), options).ExtractInto(&actual)
+	th.AssertNoErr(t, err)
+
+	expected := FloatingIPDNS{
+		FloatingIP: floatingips.FloatingIP{
+			FloatingNetworkID: "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
+			FixedIP:           "",
+			FloatingIP:        "192.0.0.4",
+			TenantID:          "017d8de156df4177889f31a9bd6edc00",
+			Status:            "DOWN",
+			PortID:            "",
+			ID:                "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e",
+			RouterID:          "1117c30a-ddb4-49a1-bec3-a65b286b4170",
+		},
+		FloatingIPDNSExt: dns.FloatingIPDNSExt{
+			DNSName:   "test-fip",
+			DNSDomain: "local",
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
 }
