@@ -14,7 +14,7 @@ type ListOptsBuilder interface {
 // ListOpts provides options to filter the List results.
 type ListOpts struct {
 	// Name filters the response by an application credential name
-	Name string `json:"name"`
+	Name string `q:"name"`
 }
 
 // ToApplicationCredentialListQuery formats a ListOpts into a query string.
