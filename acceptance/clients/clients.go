@@ -285,6 +285,27 @@ func NewBareMetalV1NoAuthClient() (*gophercloud.ServiceClient, error) {
 	})
 }
 
+// NewBareMetalIntrospectionV1Client returns a *ServiceClient for making calls
+// to the OpenStack Bare Metal Introspection v1 API. An error will be returned
+// if authentication or client creation was not possible.
+func NewBareMetalIntrospectionV1Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	client = configureDebug(client)
+
+	return openstack.NewBareMetalIntrospectionV1(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
+
 // NewDBV1Client returns a *ServiceClient for making calls
 // to the OpenStack Database v1 API. An error will be returned
 // if authentication or client creation was not possible.
