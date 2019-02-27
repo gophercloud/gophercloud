@@ -438,3 +438,49 @@ func ChangeProvisionState(client *gophercloud.ServiceClient, id string, opts Pro
 	})
 	return
 }
+
+type TargetPowerState string
+
+// TargetPowerState is used when changing the power state of a node.
+const (
+	PowerOn       TargetPowerState = "power on"
+	PowerOff                       = "power off"
+	Rebooting                      = "rebooting"
+	SoftPowerOff                   = "soft power off"
+	SoftRebooting                  = "soft rebooting"
+)
+
+// PowerStateOptsBuilder allows extensions to add additional parameters to the ChangePowerState request.
+type PowerStateOptsBuilder interface {
+	ToPowerStateMap() (map[string]interface{}, error)
+}
+
+// PowerStateOpts for a request to change a node's power state.
+type PowerStateOpts struct {
+	Target  TargetPowerState `json:"target" required:"true"`
+	Timeout int              `json:"timeout,omitempty"`
+}
+
+// ToPowerStateMap assembles a request body based on the contents of a PowerStateOpts.
+func (opts PowerStateOpts) ToPowerStateMap() (map[string]interface{}, error) {
+	body, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
+
+// Request to change a Node's power state.
+func ChangePowerState(client *gophercloud.ServiceClient, id string, opts PowerStateOptsBuilder) (r ChangePowerStateResult) {
+	reqBody, err := opts.ToPowerStateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Put(powerStateURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	return
+}

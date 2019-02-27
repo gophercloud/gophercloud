@@ -278,6 +278,12 @@ type SupportedBootDeviceResult struct {
 	gophercloud.Result
 }
 
+// ChangePowerStateResult is the response from a ChangePowerState operation. Call its ExtractErr
+// method to determine if the call succeeded or failed.
+type ChangePowerStateResult struct {
+	gophercloud.ErrResult
+}
+
 // Each element in the response will contain a “result” variable, which will have a value of “true” or “false”, and
 // also potentially a reason. A value of nil indicates that the Node’s driver does not support that interface.
 type DriverValidation struct {
