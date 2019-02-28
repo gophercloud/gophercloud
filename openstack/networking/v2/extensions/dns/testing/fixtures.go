@@ -7,9 +7,62 @@ import (
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	floatingiptest "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips/testing"
+	networktest "github.com/gophercloud/gophercloud/openstack/networking/v2/networks/testing"
 	porttest "github.com/gophercloud/gophercloud/openstack/networking/v2/ports/testing"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
+
+const NetworkCreateRequest = `
+{
+    "network": {
+        "name": "private",
+        "admin_state_up": true,
+        "dns_domain": "local."
+    }
+}`
+
+const NetworkCreateResponse = `
+{
+    "network": {
+        "status": "ACTIVE",
+        "subnets": ["08eae331-0402-425a-923c-34f7cfe39c1b"],
+        "name": "private",
+        "admin_state_up": true,
+        "tenant_id": "26a7980765d0414dbc1fc1f88cdb7e6e",
+        "shared": false,
+        "id": "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
+        "provider:segmentation_id": 9876543210,
+        "provider:physical_network": null,
+        "provider:network_type": "local.",
+        "dns_domain": "local."
+    }
+}`
+
+const NetworkUpdateRequest = `
+{
+    "network": {
+        "name": "new_network_name",
+        "admin_state_up": false,
+        "dns_domain": ""
+    }
+}`
+
+const NetworkUpdateResponse = `
+{
+    "network": {
+        "status": "ACTIVE",
+        "subnets": ["08eae331-0402-425a-923c-34f7cfe39c1b"],
+        "name": "new_network_name",
+        "admin_state_up": false,
+        "tenant_id": "26a7980765d0414dbc1fc1f88cdb7e6e",
+        "shared": false,
+        "id": "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
+        "provider:segmentation_id": 9876543210,
+        "provider:physical_network": null,
+        "provider:network_type": "local.",
+        "dns_domain": ""
+    }
+}`
 
 func PortHandleListSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/v2.0/ports", func(w http.ResponseWriter, r *http.Request) {
@@ -167,7 +220,7 @@ func FloatingIPHandleList(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 
-		th.AssertEquals(t, r.RequestURI, "/v2.0/floatingips?dns_domain=local&dns_name=test-fip")
+		th.AssertEquals(t, r.RequestURI, "/v2.0/floatingips?dns_domain=local.&dns_name=test-fip")
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -199,7 +252,7 @@ func FloatingIPHandleCreate(t *testing.T) {
     "floatingip": {
         "floating_network_id": "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
         "dns_name": "test-fip",
-        "dns_domain": "local"
+        "dns_domain": "local."
     }
 }
                         `)
@@ -208,5 +261,60 @@ func FloatingIPHandleCreate(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 
 		fmt.Fprintf(w, fmt.Sprintf(`{"floatingip": %s}`, floatingiptest.FipDNS))
+	})
+}
+
+func NetworkHandleList(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		th.AssertEquals(t, r.RequestURI, "/v2.0/networks?dns_domain=local.")
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, networktest.ListResponse)
+	})
+}
+
+func NetworkHandleGet(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/networks/d32019d3-bc6e-4319-9c1d-6722fc136a22", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, networktest.GetResponse)
+	})
+}
+
+func NetworkHandleCreate(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, NetworkCreateRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, NetworkCreateResponse)
+	})
+}
+
+func NetworkHandleUpdate(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/networks/db193ab3-96e3-4cb3-8fc5-05f4296d0324", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, NetworkUpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, NetworkUpdateResponse)
 	})
 }

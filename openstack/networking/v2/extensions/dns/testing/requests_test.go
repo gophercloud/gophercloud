@@ -6,6 +6,7 @@ import (
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/dns"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -19,6 +20,11 @@ type PortDNS struct {
 type FloatingIPDNS struct {
 	floatingips.FloatingIP
 	dns.FloatingIPDNSExt
+}
+
+type NetworkDNS struct {
+	networks.Network
+	dns.NetworkDNSExt
 }
 
 func TestPortList(t *testing.T) {
@@ -222,7 +228,7 @@ func TestFloatingIPList(t *testing.T) {
 	listOptsBuilder = dns.FloatingIPListOptsExt{
 		ListOptsBuilder: floatingips.ListOpts{},
 		DNSName:         "test-fip",
-		DNSDomain:       "local",
+		DNSDomain:       "local.",
 	}
 
 	floatingips.List(fake.ServiceClient(), listOptsBuilder).EachPage(func(page pagination.Page) (bool, error) {
@@ -248,7 +254,7 @@ func TestFloatingIPList(t *testing.T) {
 				},
 				FloatingIPDNSExt: dns.FloatingIPDNSExt{
 					DNSName:   "test-fip",
-					DNSDomain: "local",
+					DNSDomain: "local.",
 				},
 			},
 		}
@@ -286,7 +292,7 @@ func TestFloatingIPGet(t *testing.T) {
 		},
 		FloatingIPDNSExt: dns.FloatingIPDNSExt{
 			DNSName:   "test-fip",
-			DNSDomain: "local",
+			DNSDomain: "local.",
 		},
 	}
 
@@ -308,7 +314,7 @@ func TestFloatingIPCreate(t *testing.T) {
 	options := dns.FloatingIPCreateOptsExt{
 		CreateOptsBuilder: fipCreateOpts,
 		DNSName:           "test-fip",
-		DNSDomain:         "local",
+		DNSDomain:         "local.",
 	}
 
 	err := floatingips.Create(fake.ServiceClient(), options).ExtractInto(&actual)
@@ -327,7 +333,147 @@ func TestFloatingIPCreate(t *testing.T) {
 		},
 		FloatingIPDNSExt: dns.FloatingIPDNSExt{
 			DNSName:   "test-fip",
-			DNSDomain: "local",
+			DNSDomain: "local.",
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestNetworkList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	NetworkHandleList(t)
+
+	client := fake.ServiceClient()
+
+	var actual []NetworkDNS
+
+	var listOptsBuilder networks.ListOptsBuilder
+	listOptsBuilder = dns.NetworkListOptsExt{
+		ListOptsBuilder: networks.ListOpts{},
+		DNSDomain:       "local.",
+	}
+
+	allPages, err := networks.List(client, listOptsBuilder).AllPages()
+	th.AssertNoErr(t, err)
+
+	err = networks.ExtractNetworksInto(allPages, &actual)
+	th.AssertNoErr(t, err)
+
+	expected := NetworkDNS{
+		Network: networks.Network{
+			Name:         "public",
+			Subnets:      []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"},
+			Status:       "ACTIVE",
+			TenantID:     "4fd44f30292945e481c7b8a0c8908869",
+			AdminStateUp: true,
+			Shared:       true,
+			ID:           "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+		},
+		NetworkDNSExt: dns.NetworkDNSExt{
+			DNSDomain: "local.",
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual[0])
+}
+
+func TestNetworkGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	NetworkHandleGet(t)
+
+	var actual NetworkDNS
+
+	err := networks.Get(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").ExtractInto(&actual)
+	th.AssertNoErr(t, err)
+
+	expected := NetworkDNS{
+		Network: networks.Network{
+			Name:         "public",
+			Subnets:      []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"},
+			Status:       "ACTIVE",
+			TenantID:     "4fd44f30292945e481c7b8a0c8908869",
+			AdminStateUp: true,
+			Shared:       true,
+			ID:           "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+		},
+		NetworkDNSExt: dns.NetworkDNSExt{
+			DNSDomain: "local.",
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestNetworkCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	NetworkHandleCreate(t)
+
+	var actual NetworkDNS
+
+	iTrue := true
+	networkCreateOpts := networks.CreateOpts{Name: "private", AdminStateUp: &iTrue}
+	createOpts := dns.NetworkCreateOptsExt{
+		CreateOptsBuilder: networkCreateOpts,
+		DNSDomain:         "local.",
+	}
+
+	err := networks.Create(fake.ServiceClient(), createOpts).ExtractInto(&actual)
+	th.AssertNoErr(t, err)
+
+	expected := NetworkDNS{
+		Network: networks.Network{
+			Name:         "private",
+			Subnets:      []string{"08eae331-0402-425a-923c-34f7cfe39c1b"},
+			Status:       "ACTIVE",
+			TenantID:     "26a7980765d0414dbc1fc1f88cdb7e6e",
+			AdminStateUp: true,
+			Shared:       false,
+			ID:           "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
+		},
+		NetworkDNSExt: dns.NetworkDNSExt{
+			DNSDomain: "local.",
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestNetworkUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	NetworkHandleUpdate(t)
+
+	var actual NetworkDNS
+
+	networkUpdateOpts := networks.UpdateOpts{Name: "new_network_name", AdminStateUp: new(bool)}
+	updateOpts := dns.NetworkUpdateOptsExt{
+		UpdateOptsBuilder: networkUpdateOpts,
+		DNSDomain:         new(string),
+	}
+
+	err := networks.Update(fake.ServiceClient(), "db193ab3-96e3-4cb3-8fc5-05f4296d0324", updateOpts).ExtractInto(&actual)
+	th.AssertNoErr(t, err)
+
+	expected := NetworkDNS{
+		Network: networks.Network{
+			Name:         "new_network_name",
+			Subnets:      []string{"08eae331-0402-425a-923c-34f7cfe39c1b"},
+			Status:       "ACTIVE",
+			TenantID:     "26a7980765d0414dbc1fc1f88cdb7e6e",
+			AdminStateUp: false,
+			Shared:       false,
+			ID:           "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
+		},
+		NetworkDNSExt: dns.NetworkDNSExt{
+			DNSDomain: "",
 		},
 	}
 
