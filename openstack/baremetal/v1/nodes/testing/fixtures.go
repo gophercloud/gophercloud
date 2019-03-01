@@ -834,7 +834,7 @@ func HandleNodeUpdateSuccessfully(t *testing.T, response string) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "Content-Type", "application/json")
-		th.TestJSONRequest(t, r, `[{"op": "replace", "path": "/driver", "value": "new-driver"}]`)
+		th.TestJSONRequest(t, r, `[{"op": "replace", "path": "/properties", "value": {"root_gb": 25}}]`)
 
 		fmt.Fprintf(w, response)
 	})

@@ -141,9 +141,11 @@ func TestUpdateNode(t *testing.T) {
 	c := client.ServiceClient()
 	actual, err := nodes.Update(c, "1234asdf", nodes.UpdateOpts{
 		nodes.UpdateOperation{
-			Op:    nodes.ReplaceOp,
-			Path:  "/driver",
-			Value: "new-driver",
+			Op:   nodes.ReplaceOp,
+			Path: "/properties",
+			Value: map[string]interface{}{
+				"root_gb": 25,
+			},
 		},
 	}).Extract()
 	if err != nil {
