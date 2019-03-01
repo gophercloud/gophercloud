@@ -22,7 +22,8 @@ const ListResponse = `
             "provider:network_type": "local",
             "router:external": true,
             "port_security_enabled": true,
-            "dns_domain": "local."
+            "dns_domain": "local.",
+            "mtu": 1500
         },
         {
             "status": "ACTIVE",
@@ -39,7 +40,8 @@ const ListResponse = `
             "provider:network_type": "local",
             "router:external": false,
             "port_security_enabled": false,
-            "dns_domain": ""
+            "dns_domain": "",
+            "mtu": 1500
         }
     ]
 }`
@@ -61,7 +63,8 @@ const GetResponse = `
         "provider:network_type": "local",
         "router:external": true,
         "port_security_enabled": true,
-        "dns_domain": "local."
+        "dns_domain": "local.",
+        "mtu": 1500
     }
 }`
 
