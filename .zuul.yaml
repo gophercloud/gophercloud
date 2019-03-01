@@ -18,6 +18,11 @@
     parent: golang-test
     description: |
       Run gophercloud ironic acceptance test on master branch
+    required-projects:
+      - openstack/ironic
+      - openstack/ironic-lib
+      - openstack/ironic-python-agent
+      - openstack/python-ironicclient
     run: .zuul/playbooks/gophercloud-acceptance-test-ironic/run.yaml
 
 - job:
