@@ -280,9 +280,9 @@ const (
 )
 
 type UpdateOperation struct {
-	Op    UpdateOp `json:"op" required:"true"`
-	Path  string   `json:"path" required:"true"`
-	Value string   `json:"value,omitempty"`
+	Op    UpdateOp    `json:"op" required:"true"`
+	Path  string      `json:"path" required:"true"`
+	Value interface{} `json:"value,omitempty"`
 }
 
 func (opts UpdateOperation) ToNodeUpdateMap() (map[string]interface{}, error) {
@@ -307,9 +307,12 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r Up
 		OkCodes:  []int{200},
 	})
 
-	r.Body = resp.Body
-	r.Header = resp.Header
-	r.Err = err
+	if err != nil {
+		r.Err = err
+	} else {
+		r.Body = resp.Body
+		r.Header = resp.Header
+	}
 
 	return
 }
