@@ -8,7 +8,8 @@
         - 'ironic'
     - role: install-devstack
       environment:
-        OVERRIDE_ENABLED_SERVICES: g-api,g-reg,neutron-agent,neutron-api,neutron-dhcp,neutron-l3,neutron-metadata-agent,neutron-metering,key,mysql,rabbit,ir-api,ir-cond,s-account,s-container,s-object,s-proxy
+        OVERRIDE_ENABLED_SERVICES: 'g-api,g-reg,neutron-agent,neutron-api,neutron-dhcp,neutron-l3,neutron-metadata-agent,neutron-metering,key,mysql,rabbit,ir-api,ir-cond,s-account,s-container,s-object,s-proxy'
+        PROJECTS: 'openstack/ironic,openstack/ironic-lib,openstack/ironic-python-agent,openstack/python-ironicclient'
   tasks:
     - name: Run ironic acceptance tests with gophercloud
       shell:
