@@ -207,8 +207,8 @@ func TestDNSFloatingIPCRDL(t *testing.T) {
 	var listOpts floatingips.ListOptsBuilder
 	listOpts = dns.FloatingIPListOptsExt{
 		ListOptsBuilder: floatingips.ListOpts{},
-		DNSName:   fipDNSName,
-		DNSDomain: fipDNSDomain,
+		DNSName:         fipDNSName,
+		DNSDomain:       fipDNSDomain,
 	}
 	var listedFips []FloatingIPWithDNSExt
 	i := 0
@@ -249,13 +249,11 @@ func TestDNSNetwork(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer networking.DeleteNetwork(t, client, network.ID)
 
-	/* filtering by dns_domain is not yet supported
-	// https://bugs.launchpad.net/neutron/+bug/1818318
 	// List network successfully
 	var listOpts networks.ListOptsBuilder
 	listOpts = dns.NetworkListOptsExt{
 		ListOptsBuilder: networks.ListOpts{},
-		DNSDomain:         networkDNSDomain,
+		DNSDomain:       networkDNSDomain,
 	}
 	var listedNetworks []NetworkWithDNSExt
 	i := 0
@@ -280,7 +278,7 @@ func TestDNSNetwork(t *testing.T) {
 	// List network unsuccessfully
 	listOpts = dns.NetworkListOptsExt{
 		ListOptsBuilder: networks.ListOpts{},
-		DNSDomain:         "foo",
+		DNSDomain:       "foo",
 	}
 	i = 0
 	err = networks.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
@@ -300,7 +298,6 @@ func TestDNSNetwork(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 0, i)
-	*/
 
 	// Get network
 	var getNetwork NetworkWithDNSExt
