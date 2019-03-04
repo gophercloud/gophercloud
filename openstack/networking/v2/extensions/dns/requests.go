@@ -85,39 +85,6 @@ func (opts PortUpdateOptsExt) ToPortUpdateMap() (map[string]interface{}, error) 
 	return base, nil
 }
 
-// ListOptsExt adds the DNS floating IP options to the base ListOpts.
-type FloatingIPListOptsExt struct {
-	floatingips.ListOptsBuilder
-
-	// Set external DNS name to filter the floating IP
-	DNSName string `q:"dns_name"`
-
-	// Set external DNS domain to filter the floating IP
-	DNSDomain string `q:"dns_domain"`
-}
-
-// ToFloatingIPListQuery adds the DNS option to the base floating IP list
-// options.
-func (opts FloatingIPListOptsExt) ToFloatingIPListQuery() (string, error) {
-	q, err := gophercloud.BuildQueryString(opts.ListOptsBuilder)
-	if err != nil {
-		return "", err
-	}
-
-	params := q.Query()
-
-	if opts.DNSName != "" {
-		params.Add("dns_name", opts.DNSName)
-	}
-
-	if opts.DNSDomain != "" {
-		params.Add("dns_domain", opts.DNSDomain)
-	}
-
-	q = &url.URL{RawQuery: params.Encode()}
-	return q.String(), err
-}
-
 // CreateOptsExt adds floating IP DNS options to the base floatingips.CreateOpts.
 type FloatingIPCreateOptsExt struct {
 	// CreateOptsBuilder is the interface options structs have to satisfy in order

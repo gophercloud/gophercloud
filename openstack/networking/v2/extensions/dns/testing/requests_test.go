@@ -8,7 +8,6 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
-	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -214,59 +213,6 @@ func TestPortUpdate(t *testing.T) {
 			"fqdn":       "test-port1.openstack.local.",
 		},
 	})
-}
-
-func TestFloatingIPList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	FloatingIPHandleList(t)
-
-	count := 0
-
-	var listOptsBuilder floatingips.ListOptsBuilder
-	listOptsBuilder = dns.FloatingIPListOptsExt{
-		ListOptsBuilder: floatingips.ListOpts{},
-		DNSName:         "test-fip",
-		DNSDomain:       "local.",
-	}
-
-	floatingips.List(fake.ServiceClient(), listOptsBuilder).EachPage(func(page pagination.Page) (bool, error) {
-		count++
-		var actual []FloatingIPDNS
-		err := floatingips.ExtractFloatingIPsInto(page, &actual)
-		if err != nil {
-			t.Errorf("Failed to extract floating IPs: %v", err)
-			return false, err
-		}
-
-		expected := []FloatingIPDNS{
-			{
-				FloatingIP: floatingips.FloatingIP{
-					FloatingNetworkID: "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
-					FixedIP:           "",
-					FloatingIP:        "192.0.0.4",
-					TenantID:          "017d8de156df4177889f31a9bd6edc00",
-					Status:            "DOWN",
-					PortID:            "",
-					ID:                "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e",
-					RouterID:          "1117c30a-ddb4-49a1-bec3-a65b286b4170",
-				},
-				FloatingIPDNSExt: dns.FloatingIPDNSExt{
-					DNSName:   "test-fip",
-					DNSDomain: "local.",
-				},
-			},
-		}
-
-		th.CheckDeepEquals(t, expected, actual)
-
-		return true, nil
-	})
-
-	if count != 1 {
-		t.Errorf("Expected 1 page, got %d", count)
-	}
 }
 
 func TestFloatingIPGet(t *testing.T) {

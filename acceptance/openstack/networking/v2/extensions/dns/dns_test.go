@@ -3,6 +3,7 @@
 package dns
 
 import (
+	"os"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -204,33 +205,6 @@ func TestDNSFloatingIPCRDL(t *testing.T) {
 
 	tools.PrintResource(t, getFip)
 	th.AssertDeepEquals(t, *fip, getFip)
-
-	// List floating IP successfully
-	var listOpts floatingips.ListOptsBuilder
-	listOpts = dns.FloatingIPListOptsExt{
-		ListOptsBuilder: floatingips.ListOpts{},
-		DNSName:         fipDNSName,
-		DNSDomain:       fipDNSDomain,
-	}
-	var listedFips []FloatingIPWithDNSExt
-	i := 0
-	err = floatingips.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
-		i++
-		err := floatingips.ExtractFloatingIPsInto(page, &listedFips)
-		if err != nil {
-			t.Errorf("Failed to extract floating IPs: %v", err)
-			return false, err
-		}
-
-		tools.PrintResource(t, listedFips)
-
-		th.AssertEquals(t, 1, len(listedFips))
-		th.CheckDeepEquals(t, *fip, listedFips[0])
-
-		return true, nil
-	})
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, 1, i)
 }
 
 func TestDNSNetwork(t *testing.T) {
@@ -250,56 +224,6 @@ func TestDNSNetwork(t *testing.T) {
 	network, err := CreateNetworkDNS(t, client, networkDNSDomain)
 	th.AssertNoErr(t, err)
 	defer networking.DeleteNetwork(t, client, network.ID)
-
-	// List network successfully
-	var listOpts networks.ListOptsBuilder
-	listOpts = dns.NetworkListOptsExt{
-		ListOptsBuilder: networks.ListOpts{},
-		DNSDomain:       networkDNSDomain,
-	}
-	var listedNetworks []NetworkWithDNSExt
-	i := 0
-	err = networks.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
-		i++
-		err := networks.ExtractNetworksInto(page, &listedNetworks)
-		if err != nil {
-			t.Errorf("Failed to extract networks: %v", err)
-			return false, err
-		}
-
-		tools.PrintResource(t, listedNetworks)
-
-		th.AssertEquals(t, 1, len(listedNetworks))
-		th.CheckDeepEquals(t, *network, listedNetworks[0])
-
-		return true, nil
-	})
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, 1, i)
-
-	// List network unsuccessfully
-	listOpts = dns.NetworkListOptsExt{
-		ListOptsBuilder: networks.ListOpts{},
-		DNSDomain:       "foo",
-	}
-	i = 0
-	err = networks.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
-		i++
-		err := networks.ExtractNetworksInto(page, &listedNetworks)
-		if err != nil {
-			t.Errorf("Failed to extract networks: %v", err)
-			return false, err
-		}
-
-		tools.PrintResource(t, listedNetworks)
-
-		th.AssertEquals(t, 1, len(listedNetworks))
-		th.CheckDeepEquals(t, *network, listedNetworks[0])
-
-		return true, nil
-	})
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, 0, i)
 
 	// Get network
 	var getNetwork NetworkWithDNSExt
