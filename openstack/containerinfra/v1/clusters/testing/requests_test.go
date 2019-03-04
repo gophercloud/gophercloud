@@ -172,3 +172,30 @@ func TestDeleteCluster(t *testing.T) {
 
 	th.AssertEquals(t, requestUUID, uuid)
 }
+
+func TestResizeCluster(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleResizeClusterSuccessfully(t)
+
+	nodeCount := 2
+
+	var opts clusters.ResizeOptsBuilder
+	opts = clusters.ResizeOpts{
+		NodeCount: &nodeCount,
+	}
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	res := clusters.Resize(sc, clusterUUID, opts)
+	th.AssertNoErr(t, res.Err)
+
+	requestID := res.Header.Get("X-OpenStack-Request-Id")
+	th.AssertEquals(t, requestUUID, requestID)
+
+	actual, err := res.Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, nodeCount, actual.NodeCount)
+}
