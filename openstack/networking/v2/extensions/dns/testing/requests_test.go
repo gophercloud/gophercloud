@@ -340,46 +340,6 @@ func TestFloatingIPCreate(t *testing.T) {
 	th.CheckDeepEquals(t, expected, actual)
 }
 
-func TestNetworkList(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	NetworkHandleList(t)
-
-	client := fake.ServiceClient()
-
-	var actual []NetworkDNS
-
-	var listOptsBuilder networks.ListOptsBuilder
-	listOptsBuilder = dns.NetworkListOptsExt{
-		ListOptsBuilder: networks.ListOpts{},
-		DNSDomain:       "local.",
-	}
-
-	allPages, err := networks.List(client, listOptsBuilder).AllPages()
-	th.AssertNoErr(t, err)
-
-	err = networks.ExtractNetworksInto(allPages, &actual)
-	th.AssertNoErr(t, err)
-
-	expected := NetworkDNS{
-		Network: networks.Network{
-			Name:         "public",
-			Subnets:      []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"},
-			Status:       "ACTIVE",
-			TenantID:     "4fd44f30292945e481c7b8a0c8908869",
-			AdminStateUp: true,
-			Shared:       true,
-			ID:           "d32019d3-bc6e-4319-9c1d-6722fc136a22",
-		},
-		NetworkDNSExt: dns.NetworkDNSExt{
-			DNSDomain: "local.",
-		},
-	}
-
-	th.CheckDeepEquals(t, expected, actual[0])
-}
-
 func TestNetworkGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

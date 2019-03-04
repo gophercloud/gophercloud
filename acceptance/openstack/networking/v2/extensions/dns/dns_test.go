@@ -49,55 +49,57 @@ func TestDNSPortCRUDL(t *testing.T) {
 
 	tools.PrintResource(t, port)
 
-	// List port successfully
-	var listOpts ports.ListOptsBuilder
-	listOpts = dns.PortListOptsExt{
-		ListOptsBuilder: ports.ListOpts{},
-		DNSName:         portDNSName,
-	}
-	var listedPorts []PortWithDNSExt
-	i := 0
-	err = ports.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
-		i++
-		err := ports.ExtractPortsInto(page, &listedPorts)
-		if err != nil {
-			t.Errorf("Failed to extract ports: %v", err)
-			return false, err
+	if os.Getenv("OS_BRANCH") == "stable/mitaka" {
+		// List port successfully
+		var listOpts ports.ListOptsBuilder
+		listOpts = dns.PortListOptsExt{
+			ListOptsBuilder: ports.ListOpts{},
+			DNSName:         portDNSName,
 		}
+		var listedPorts []PortWithDNSExt
+		i := 0
+		err = ports.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+			i++
+			err := ports.ExtractPortsInto(page, &listedPorts)
+			if err != nil {
+				t.Errorf("Failed to extract ports: %v", err)
+				return false, err
+			}
 
-		tools.PrintResource(t, listedPorts)
+			tools.PrintResource(t, listedPorts)
 
-		th.AssertEquals(t, 1, len(listedPorts))
-		th.CheckDeepEquals(t, *port, listedPorts[0])
+			th.AssertEquals(t, 1, len(listedPorts))
+			th.CheckDeepEquals(t, *port, listedPorts[0])
 
-		return true, nil
-	})
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, 1, i)
+			return true, nil
+		})
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, 1, i)
 
-	// List port unsuccessfully
-	listOpts = dns.PortListOptsExt{
-		ListOptsBuilder: ports.ListOpts{},
-		DNSName:         "foo",
-	}
-	i = 0
-	err = ports.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
-		i++
-		err := ports.ExtractPortsInto(page, &listedPorts)
-		if err != nil {
-			t.Errorf("Failed to extract ports: %v", err)
-			return false, err
+		// List port unsuccessfully
+		listOpts = dns.PortListOptsExt{
+			ListOptsBuilder: ports.ListOpts{},
+			DNSName:         "foo",
 		}
+		i = 0
+		err = ports.List(client, listOpts).EachPage(func(page pagination.Page) (bool, error) {
+			i++
+			err := ports.ExtractPortsInto(page, &listedPorts)
+			if err != nil {
+				t.Errorf("Failed to extract ports: %v", err)
+				return false, err
+			}
 
-		tools.PrintResource(t, listedPorts)
+			tools.PrintResource(t, listedPorts)
 
-		th.AssertEquals(t, 1, len(listedPorts))
-		th.CheckDeepEquals(t, *port, listedPorts[0])
+			th.AssertEquals(t, 1, len(listedPorts))
+			th.CheckDeepEquals(t, *port, listedPorts[0])
 
-		return true, nil
-	})
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, 0, i)
+			return true, nil
+		})
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, 0, i)
+	}
 
 	// Get port
 	var getPort PortWithDNSExt

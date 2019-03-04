@@ -39,7 +39,7 @@ type PortCreateOptsExt struct {
 	// to be used in the main Create operation in this package.
 	ports.CreateOptsBuilder
 
-	// The ID of the host where the port is allocated
+	// Set DNS name to the port
 	DNSName string `json:"dns_name,omitempty"`
 }
 
@@ -59,13 +59,13 @@ func (opts PortCreateOptsExt) ToPortCreateMap() (map[string]interface{}, error) 
 	return base, nil
 }
 
-// UpdateOptsExt adds port binding options to the base ports.UpdateOpts
+// PortUpdateOptsExt adds port binding options to the base ports.UpdateOpts
 type PortUpdateOptsExt struct {
 	// UpdateOptsBuilder is the interface options structs have to satisfy in order
 	// to be used in the main Update operation in this package.
 	ports.UpdateOptsBuilder
 
-	// The ID of the host where the port is allocated.
+	// Set DNS name to the port
 	DNSName *string `json:"dns_name,omitempty"`
 }
 
@@ -85,18 +85,19 @@ func (opts PortUpdateOptsExt) ToPortUpdateMap() (map[string]interface{}, error) 
 	return base, nil
 }
 
-// ListOptsExt adds the external network options to the base ListOpts.
+// ListOptsExt adds the DNS floating IP options to the base ListOpts.
 type FloatingIPListOptsExt struct {
 	floatingips.ListOptsBuilder
 
+	// Set external DNS name to filter the floating IP
 	DNSName string `q:"dns_name"`
 
-	// The VIF type for the port.
+	// Set external DNS domain to filter the floating IP
 	DNSDomain string `q:"dns_domain"`
 }
 
-// ToNetworkListQuery adds the router:external option to the base network
-// list options.
+// ToFloatingIPListQuery adds the DNS option to the base floating IP list
+// options.
 func (opts FloatingIPListOptsExt) ToFloatingIPListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts.ListOptsBuilder)
 	if err != nil {
@@ -117,16 +118,16 @@ func (opts FloatingIPListOptsExt) ToFloatingIPListQuery() (string, error) {
 	return q.String(), err
 }
 
-// CreateOptsExt adds port binding options to the base floatingips.CreateOpts.
+// CreateOptsExt adds floating IP DNS options to the base floatingips.CreateOpts.
 type FloatingIPCreateOptsExt struct {
 	// CreateOptsBuilder is the interface options structs have to satisfy in order
 	// to be used in the main Create operation in this package.
 	floatingips.CreateOptsBuilder
 
-	// The ID of the host where the port is allocated
+	// Set DNS name to the floating IPs
 	DNSName string `json:"dns_name,omitempty"`
 
-	// The ID of the host where the port is allocated
+	// Set DNS domain to the floating IPs
 	DNSDomain string `json:"dns_domain,omitempty"`
 }
 
@@ -150,38 +151,13 @@ func (opts FloatingIPCreateOptsExt) ToFloatingIPCreateMap() (map[string]interfac
 	return base, nil
 }
 
-// ListOptsExt adds the external network options to the base ListOpts.
-type NetworkListOptsExt struct {
-	networks.ListOptsBuilder
-
-	DNSDomain string `q:"dns_domain"`
-}
-
-// ToNetworkListQuery adds the router:external option to the base network
-// list options.
-func (opts NetworkListOptsExt) ToNetworkListQuery() (string, error) {
-	q, err := gophercloud.BuildQueryString(opts.ListOptsBuilder)
-	if err != nil {
-		return "", err
-	}
-
-	params := q.Query()
-
-	if opts.DNSDomain != "" {
-		params.Add("dns_domain", opts.DNSDomain)
-	}
-
-	q = &url.URL{RawQuery: params.Encode()}
-	return q.String(), err
-}
-
-// CreateOptsExt adds port binding options to the base ports.CreateOpts.
+// CreateOptsExt adds network DNS options to the base networks.CreateOpts.
 type NetworkCreateOptsExt struct {
 	// CreateOptsBuilder is the interface options structs have to satisfy in order
 	// to be used in the main Create operation in this package.
 	networks.CreateOptsBuilder
 
-	// The ID of the host where the port is allocated
+	// Set DNS domain to filter the networks
 	DNSDomain string `json:"dns_domain,omitempty"`
 }
 
@@ -201,13 +177,13 @@ func (opts NetworkCreateOptsExt) ToNetworkCreateMap() (map[string]interface{}, e
 	return base, nil
 }
 
-// UpdateOptsExt adds port binding options to the base ports.UpdateOpts
+// NetworkUpdateOptsExt adds network DNS options to the base networks.UpdateOpts
 type NetworkUpdateOptsExt struct {
 	// UpdateOptsBuilder is the interface options structs have to satisfy in order
 	// to be used in the main Update operation in this package.
 	networks.UpdateOptsBuilder
 
-	// The ID of the host where the port is allocated.
+	// Set DNS domain to the network
 	DNSDomain *string `json:"dns_domain,omitempty"`
 }
 
