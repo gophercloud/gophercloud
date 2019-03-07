@@ -59,7 +59,7 @@ func (opts PortCreateOptsExt) ToPortCreateMap() (map[string]interface{}, error) 
 	return base, nil
 }
 
-// PortUpdateOptsExt adds port binding options to the base ports.UpdateOpts
+// PortUpdateOptsExt adds DNS options to the base ports.UpdateOpts
 type PortUpdateOptsExt struct {
 	// UpdateOptsBuilder is the interface options structs have to satisfy in order
 	// to be used in the main Update operation in this package.
@@ -85,7 +85,7 @@ func (opts PortUpdateOptsExt) ToPortUpdateMap() (map[string]interface{}, error) 
 	return base, nil
 }
 
-// CreateOptsExt adds floating IP DNS options to the base floatingips.CreateOpts.
+// FloatingIPCreateOptsExt adds floating IP DNS options to the base floatingips.CreateOpts.
 type FloatingIPCreateOptsExt struct {
 	// CreateOptsBuilder is the interface options structs have to satisfy in order
 	// to be used in the main Create operation in this package.
@@ -118,13 +118,13 @@ func (opts FloatingIPCreateOptsExt) ToFloatingIPCreateMap() (map[string]interfac
 	return base, nil
 }
 
-// CreateOptsExt adds network DNS options to the base networks.CreateOpts.
+// NetworkCreateOptsExt adds network DNS options to the base networks.CreateOpts.
 type NetworkCreateOptsExt struct {
 	// CreateOptsBuilder is the interface options structs have to satisfy in order
 	// to be used in the main Create operation in this package.
 	networks.CreateOptsBuilder
 
-	// Set DNS domain to filter the networks
+	// Set DNS domain to the network
 	DNSDomain string `json:"dns_domain,omitempty"`
 }
 

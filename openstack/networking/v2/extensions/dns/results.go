@@ -1,24 +1,30 @@
 package dns
 
-// PortsBindingExt represents a decorated form of a Port with the additional
-// port binding information.
+// PortDNSExt represents a decorated form of a Port with the additional
+// Port DNS information.
 type PortDNSExt struct {
-	// The ID of the host where the port is allocated.
+	// The DNS name of the port.
 	DNSName string `json:"dns_name"`
 
-	// The VIF type for the port.
+	// The DNS assignment of the port.
 	DNSAssignment []map[string]string `json:"dns_assignment"`
 }
 
+// FloatingIPDNSExt represents a decorated form of a Floating IP with the
+// additional Floating IP DNS information.
 type FloatingIPDNSExt struct {
-	// The ID of the host where the port is allocated.
+	// The DNS name of the floating IP, assigned to the external DNS
+	// service.
 	DNSName string `json:"dns_name"`
 
-	// The VIF type for the port.
+	// The DNS domain of the floating IP, assigned to the external DNS
+	// service.
 	DNSDomain string `json:"dns_domain"`
 }
 
+// NetworkDNSExt represents a decorated form of a Network with the additional
+// Network DNS information.
 type NetworkDNSExt struct {
-	// The VIF type for the port.
+	// The DNS domain of the network.
 	DNSDomain string `json:"dns_domain"`
 }
