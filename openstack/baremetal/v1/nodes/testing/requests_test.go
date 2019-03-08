@@ -274,6 +274,30 @@ func TestNodeChangeProvisionStateClean(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleNodeChangeProvisionStateCleanWithConflict(t)
+
+	c := client.ServiceClient()
+	err := nodes.ChangeProvisionState(c, "1234asdf", nodes.ProvisionStateOpts{
+		Target: nodes.TargetClean,
+		CleanSteps: []nodes.CleanStep{
+			{
+				Interface: "deploy",
+				Step:      "upgrade_firmware",
+				Args: map[string]string{
+					"force": "True",
+				},
+			},
+		},
+	}).ExtractErr()
+
+	if _, ok := err.(gophercloud.ErrDefault409); !ok {
+		t.Fatal("ErrDefault409 was expected to occur")
+	}
+}
+
 func TestCleanStepRequiresInterface(t *testing.T) {
 	c := client.ServiceClient()
 	err := nodes.ChangeProvisionState(c, "1234asdf", nodes.ProvisionStateOpts{
@@ -325,4 +349,21 @@ func TestChangePowerState(t *testing.T) {
 	c := client.ServiceClient()
 	err := nodes.ChangePowerState(c, "1234asdf", opts).ExtractErr()
 	th.AssertNoErr(t, err)
+}
+
+func TestChangePowerStateWithConflict(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleChangePowerStateWithConflict(t)
+
+	opts := nodes.PowerStateOpts{
+		Target:  nodes.PowerOn,
+		Timeout: 100,
+	}
+
+	c := client.ServiceClient()
+	err := nodes.ChangePowerState(c, "1234asdf", opts).ExtractErr()
+	if _, ok := err.(gophercloud.ErrDefault409); !ok {
+		t.Fatal("ErrDefault409 was expected to occur")
+	}
 }

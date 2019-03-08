@@ -910,6 +910,15 @@ func HandleNodeChangeProvisionStateClean(t *testing.T) {
 	})
 }
 
+func HandleNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, NodeProvisionStateCleanBody)
+		w.WriteHeader(http.StatusConflict)
+	})
+}
+
 // HandleChangePowerStateSuccessfully sets up the test server to respond to a change power state request for a node
 func HandleChangePowerStateSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/nodes/1234asdf/states/power", func(w http.ResponseWriter, r *http.Request) {
@@ -921,5 +930,19 @@ func HandleChangePowerStateSuccessfully(t *testing.T) {
 		}`)
 
 		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+// HandleChangePowerStateWithConflict sets up the test server to respond to a change power state request for a node with a 409 error
+func HandleChangePowerStateWithConflict(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/states/power", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"target": "power on",
+			"timeout": 100
+		}`)
+
+		w.WriteHeader(http.StatusConflict)
 	})
 }
