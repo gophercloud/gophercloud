@@ -148,7 +148,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 	case float64:
 		r.HypervisorVersion = int(t)
 	default:
-		return fmt.Errorf("Hypervisor version of unexpected type")
+		return fmt.Errorf("Hypervisor version has unexpected type: %T", t)
 	}
 
 	switch t := s.FreeDiskGB.(type) {
@@ -157,7 +157,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 	case float64:
 		r.FreeDiskGB = int(t)
 	default:
-		return fmt.Errorf("Free disk GB of unexpected type")
+		return fmt.Errorf("Free disk GB has unexpected type: %T", t)
 	}
 
 	switch t := s.LocalGB.(type) {
@@ -166,7 +166,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 	case float64:
 		r.LocalGB = int(t)
 	default:
-		return fmt.Errorf("Local GB of unexpected type")
+		return fmt.Errorf("Local GB has unexpected type: %T", t)
 	}
 
 	// OpenStack Compute service returns ID in string representation since
@@ -179,7 +179,7 @@ func (r *Hypervisor) UnmarshalJSON(b []byte) error {
 	case string:
 		r.ID = t
 	default:
-		return fmt.Errorf("ID of unexpected type: %+v", t)
+		return fmt.Errorf("ID has unexpected type: %T", t)
 	}
 
 	return nil
@@ -315,7 +315,7 @@ func (r *Uptime) UnmarshalJSON(b []byte) error {
 	case string:
 		r.ID = t
 	default:
-		return fmt.Errorf("ID of unexpected type: %+v", t)
+		return fmt.Errorf("ID has unexpected type: %T", t)
 	}
 
 	return nil
