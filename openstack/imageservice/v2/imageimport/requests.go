@@ -46,7 +46,7 @@ func Create(client *gophercloud.ServiceClient, imageID string, opts CreateOptsBu
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(importURL(client, imageID), b, &r.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Post(importURL(client, imageID), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	return
