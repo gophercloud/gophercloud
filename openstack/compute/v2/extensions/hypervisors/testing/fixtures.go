@@ -122,7 +122,7 @@ const HypervisorListBody = `
             "running_vms": 0,
             "service": {
                 "host": "e6a37ee802d74863ab8b91ade8f12a67",
-                "id": 2,
+                "id": "9c2566e7-7a54-4777-a1ae-c2662f0c407c",
                 "disabled_reason": null
             },
             "vcpus": 1,
@@ -148,7 +148,7 @@ const HypervisorListBody = `
             "running_vms": 0,
             "service": {
                 "host": "e6a37ee802d74863ab8b91ade8f12a67",
-                "id": 2,
+                "id": "9c2566e7-7a54-4777-a1ae-c2662f0c407c",
                 "disabled_reason": null
             },
             "vcpus": 1,
@@ -212,7 +212,7 @@ const HypervisorGetBody = `
         "running_vms":0,
         "service":{
             "host":"e6a37ee802d74863ab8b91ade8f12a67",
-            "id":2,
+            "id":"9c2566e7-7a54-4777-a1ae-c2662f0c407c",
             "disabled_reason":null
         },
         "vcpus":1,
@@ -269,7 +269,7 @@ var (
 		RunningVMs:         0,
 		Service: hypervisors.Service{
 			Host:           "e6a37ee802d74863ab8b91ade8f12a67",
-			ID:             2,
+			ID:             "2",
 			DisabledReason: "",
 		},
 		VCPUs:     1,
@@ -308,7 +308,7 @@ var (
 		RunningVMs:         0,
 		Service: hypervisors.Service{
 			Host:           "e6a37ee802d74863ab8b91ade8f12a67",
-			ID:             2,
+			ID:             "9c2566e7-7a54-4777-a1ae-c2662f0c407c",
 			DisabledReason: "",
 		},
 		VCPUs:     1,

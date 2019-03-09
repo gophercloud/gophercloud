@@ -28,8 +28,38 @@ type CPUInfo struct {
 // Service represents a Compute service running on the hypervisor.
 type Service struct {
 	Host           string `json:"host"`
-	ID             int    `json:"id"`
+	ID             string `json:"-"`
 	DisabledReason string `json:"disabled_reason"`
+}
+
+func (r *Service) UnmarshalJSON(b []byte) error {
+	type tmp Service
+	var s struct {
+		tmp
+		ID interface{} `json:"id"`
+	}
+
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+
+	*r = Service(s.tmp)
+
+	// OpenStack Compute service returns ID in string representation since
+	// 2.53 microversion API (Pike release).
+	switch t := s.ID.(type) {
+	case int:
+		r.ID = strconv.Itoa(t)
+	case float64:
+		r.ID = strconv.Itoa(int(t))
+	case string:
+		r.ID = t
+	default:
+		return fmt.Errorf("ID has unexpected type: %T", t)
+	}
+
+	return nil
 }
 
 // Hypervisor represents a hypervisor in the OpenStack cloud.
