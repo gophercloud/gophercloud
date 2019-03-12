@@ -47,6 +47,7 @@ acceptance/openstack/imageservice/v2
 
 acceptance/openstack/networking/v2
 acceptance/openstack/networking/v2/extensions
+acceptance/openstack/networking/v2/extensions/dns
 
 # Resource not found
 # acceptance/openstack/networking/v2/extensions/fwaas
