@@ -35,7 +35,7 @@ acceptance/openstack/container/v1
 # Unable to create a DB client: No suitable endpoint could be found in the service catalog.
 # acceptance/openstack/db/v1
 
-acceptance/openstack/dns/v2
+#acceptance/openstack/dns/v2
 acceptance/openstack/identity/v2
 acceptance/openstack/identity/v3
 acceptance/openstack/imageservice/v2

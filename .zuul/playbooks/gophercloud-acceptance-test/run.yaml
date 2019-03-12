@@ -6,7 +6,7 @@
     - role: create-devstack-local-conf
       enable_services:
         - 'manila'
-        - 'designate'
+        #- 'designate'
         - 'zun'
         #- 'octavia'
         - 'neutron-ext'
