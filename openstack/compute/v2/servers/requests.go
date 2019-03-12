@@ -225,6 +225,9 @@ type CreateOpts struct {
 	// Tags allows a server to be tagged with single-word metadata.
 	// Requires microversion 2.52 or later.
 	Tags []string `json:"tags,omitempty"`
+
+	// Description allows add description to a server
+	Description string `json:"description,omitempty"`
 }
 
 // ToServerCreateMap assembles a request body based on the contents of a
