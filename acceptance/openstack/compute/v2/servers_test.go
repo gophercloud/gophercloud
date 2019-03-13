@@ -11,6 +11,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/attachinterfaces"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/extendedserverattributes"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/extendedstatus"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/lockunlock"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/pauseunpause"
@@ -505,4 +506,57 @@ func TestServersTags(t *testing.T) {
 	server, err := CreateServerWithTags(t, client, networkID)
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
+}
+
+func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {
+	clients.RequireLong(t)
+	clients.RequireAdmin(t)
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+	client.Microversion = "2.3"
+
+	server, err := CreateServer(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteServer(t, client, server)
+
+	result := servers.Get(client, server.ID)
+	th.AssertNoErr(t, result.Err)
+
+	reservationID, err := extendedserverattributes.ExtractReservationID(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, reservationID != "", true)
+	t.Logf("reservationID: %s", reservationID)
+
+	launchIndex, err := extendedserverattributes.ExtractLaunchIndex(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, launchIndex, 0)
+	t.Logf("launchIndex: %d", launchIndex)
+
+	ramdiskID, err := extendedserverattributes.ExtractRamdiskID(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, ramdiskID == "", true)
+	t.Logf("ramdiskID: %s", ramdiskID)
+
+	kernelID, err := extendedserverattributes.ExtractKernelID(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, kernelID == "", true)
+	t.Logf("kernelID: %s", kernelID)
+
+	hostname, err := extendedserverattributes.ExtractHostname(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, hostname != "", true)
+	t.Logf("hostname: %s", hostname)
+
+	rootDeviceName, err := extendedserverattributes.ExtractRootDeviceName(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, rootDeviceName != "", true)
+	t.Logf("rootDeviceName: %s", rootDeviceName)
+
+	userData, err := extendedserverattributes.ExtractUserData(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, userData == "", true)
+	t.Logf("userData: %s", userData)
 }
