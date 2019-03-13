@@ -23,7 +23,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 
 	extension, err := extensions.Get(client, "net-mtu").Extract()
 	if err != nil {
-		t.Skip("This test requires dns-integration Neutron extension")
+		t.Skip("This test requires net-mtu Neutron extension")
 	}
 	tools.PrintResource(t, extension)
 
@@ -33,7 +33,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 	// Create Network
 	var networkMTU int
 	if mtuWritable != nil {
-		networkMTU = 1450
+		networkMTU = 1449
 	}
 	network, err := CreateNetworkWithMTU(t, client, &networkMTU)
 	th.AssertNoErr(t, err)
@@ -45,7 +45,7 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 		// List network successfully
 		var listOpts networks.ListOptsBuilder
 		listOpts = mtu.ListOptsExt{
-			ListOptsBuilder: networks.ListOpts{Name: network.Name},
+			ListOptsBuilder: networks.ListOpts{},
 			MTU:             networkMTU,
 		}
 		var listedNetworks []NetworkMTU
@@ -103,11 +103,9 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 
 	if mtuWritable != nil {
 		// Update network
-		newNetworkName := ""
 		newNetworkDescription := ""
 		newNetworkMTU := 1350
 		networkUpdateOpts := networks.UpdateOpts{
-			Name:        newNetworkName,
 			Description: &newNetworkDescription,
 		}
 		var updateOpts networks.UpdateOptsBuilder
@@ -121,7 +119,6 @@ func TestMTUNetworkCRUDL(t *testing.T) {
 		th.AssertNoErr(t, err)
 
 		tools.PrintResource(t, newNetwork)
-		th.AssertEquals(t, newNetwork.Description, newNetworkName)
 		th.AssertEquals(t, newNetwork.Description, newNetworkDescription)
 		th.AssertEquals(t, newNetwork.MTU, newNetworkMTU)
 
