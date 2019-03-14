@@ -12,7 +12,7 @@ Example of Show Hypervisor Details
 
 	fmt.Printf("%+v\n", hypervisor)
 
-Example of Show Hypervisor Details with Compute API microversion greater that 2.53
+Example of Show Hypervisor Details with Compute API microversion greater than 2.53
 
     hypervisorID := "c48f6247-abe4-4a24-824e-ea39e108874f"
     hypervisor, err := hypervisors.Get(computeClient, hypervisorID).Extract()
@@ -57,7 +57,7 @@ Example of Show Hypervisor Uptime
 
 	fmt.Printf("%+v\n", hypervisorUptime)
 
-Example of Show Hypervisor Uptime with Compute API microversion greater that 2.53
+Example of Show Hypervisor Uptime with Compute API microversion greater than 2.53
 
     hypervisorID := "c48f6247-abe4-4a24-824e-ea39e108874f"
     hypervisorUptime, err := hypervisors.GetUptime(computeClient, hypervisorID).Extract()
