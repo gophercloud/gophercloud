@@ -562,6 +562,27 @@ const NodeProvisionStateCleanBody = `
 }
 `
 
+const NodeProvisionStateConfigDriveBody = `
+{
+	"target": "active",
+	"configdrive": {
+		"user_data": {
+			"ignition": {
+			"version": "2.2.0"
+			},
+			"systemd": {
+				"units": [
+					{
+						"enabled": true,
+						"name": "example.service"
+					}
+				]
+			}
+		}
+	}
+}
+`
+
 var (
 	NodeFoo = nodes.Node{
 		UUID:                 "d2630783-6ec8-4836-b556-ab427c4b581e",
@@ -747,6 +768,21 @@ var (
 		Protected:            false,
 		ProtectedReason:      "",
 	}
+
+	ConfigDriveMap = nodes.ConfigDrive{
+		UserData: map[string]interface{}{
+			"ignition": map[string]string{
+				"version": "2.2.0",
+			},
+			"systemd": map[string]interface{}{
+				"units": []map[string]interface{}{{
+					"name":    "example.service",
+					"enabled": true,
+				},
+				},
+			},
+		},
+	}
 )
 
 // HandleNodeListSuccessfully sets up the test server to respond to a server List request.
@@ -916,6 +952,15 @@ func HandleNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeProvisionStateCleanBody)
 		w.WriteHeader(http.StatusConflict)
+	})
+}
+
+func HandleNodeChangeProvisionStateConfigDrive(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, NodeProvisionStateConfigDriveBody)
+		w.WriteHeader(http.StatusAccepted)
 	})
 }
 

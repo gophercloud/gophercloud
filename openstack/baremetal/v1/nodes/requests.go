@@ -399,11 +399,19 @@ type ProvisionStateOptsBuilder interface {
 	ToProvisionStateMap() (map[string]interface{}, error)
 }
 
+// Starting with Ironic API version 1.56, a configdrive may be a JSON object with structured data.
+// Prior to this version, it must be a base64-encoded, gzipped ISO9660 image.
+type ConfigDrive struct {
+	MetaData    map[string]interface{} `json:"meta_data,omitempty"`
+	NetworkData map[string]interface{} `json:"network_data,omitempty"`
+	UserData    interface{}            `json:"user_data,omitempty"`
+}
+
 // ProvisionStateOpts for a request to change a node's provision state. A config drive should be base64-encoded
 // gzipped ISO9660 image.
 type ProvisionStateOpts struct {
 	Target         TargetProvisionState `json:"target" required:"true"`
-	ConfigDrive    string               `json:"configdrive,omitempty"`
+	ConfigDrive    interface{}          `json:"configdrive,omitempty"`
 	CleanSteps     []CleanStep          `json:"clean_steps,omitempty"`
 	RescuePassword string               `json:"rescue_password,omitempty"`
 }
