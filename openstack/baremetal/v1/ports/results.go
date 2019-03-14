@@ -80,8 +80,8 @@ func (r *Port) UnmarshalJSON(b []byte) error {
 	type tmp Port
 	var s struct {
 		tmp
-		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
-		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+		CreatedAt gophercloud.JSONRFC3339ZNoT `json:"created_at"`
+		UpdatedAt gophercloud.JSONRFC3339ZNoT `json:"updated_at"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {

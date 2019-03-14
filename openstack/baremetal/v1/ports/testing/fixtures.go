@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/ports"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -137,10 +138,10 @@ const SinglePortBody = `
 `
 
 var (
-	fooCreated, _ = time.Parse(time.RFC3339, "2019-02-15T09:52:24+00:00")
-	fooUpdated, _ = time.Parse(time.RFC3339, "2019-02-15T09:55:19+00:00")
-	BarCreated, _ = time.Parse(time.RFC3339, "2019-02-15T09:52:23+00:00")
-	BarUpdated, _ = time.Parse(time.RFC3339, "2019-02-15T09:55:19+00:00")
+	fooCreated, _ = time.Parse(gophercloud.JSONRFC3339ZNoT, "2019-02-15T09:52:24+00:00")
+	fooUpdated, _ = time.Parse(gophercloud.JSONRFC3339ZNoT, "2019-02-15T09:55:19+00:00")
+	BarCreated, _ = time.Parse(gophercloud.JSONRFC3339ZNoT, "2019-02-15T09:52:23+00:00")
+	BarUpdated, _ = time.Parse(gophercloud.JSONRFC3339ZNoT, "2019-02-15T09:55:19+00:00")
 	PortFoo       = ports.Port{
 		UUID:                "f2845e11-dbd4-4728-a8c0-30d19f48924a",
 		NodeUUID:            "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
