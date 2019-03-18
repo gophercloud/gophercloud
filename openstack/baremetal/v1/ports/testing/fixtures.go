@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/ports"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -136,7 +137,11 @@ const SinglePortBody = `
 `
 
 var (
-	PortFoo = ports.Port{
+	fooCreated, _ = time.Parse(time.RFC3339, "2019-02-15T09:52:24+00:00")
+	fooUpdated, _ = time.Parse(time.RFC3339, "2019-02-15T09:55:19+00:00")
+	BarCreated, _ = time.Parse(time.RFC3339, "2019-02-15T09:52:23+00:00")
+	BarUpdated, _ = time.Parse(time.RFC3339, "2019-02-15T09:55:19+00:00")
+	PortFoo       = ports.Port{
 		UUID:                "f2845e11-dbd4-4728-a8c0-30d19f48924a",
 		NodeUUID:            "ddd06a60-b91e-4ab4-a6e7-56c0b25b6086",
 		Address:             "52:54:00:4d:87:e6",
@@ -144,8 +149,8 @@ var (
 		LocalLinkConnection: map[string]interface{}{},
 		InternalInfo:        map[string]interface{}{},
 		Extra:               map[string]interface{}{},
-		CreatedAt:           "2019-02-15T09:52:24+00:00",
-		UpdatedAt:           "2019-02-15T09:55:19+00:00",
+		CreatedAt:           fooCreated,
+		UpdatedAt:           fooUpdated,
 		Links:               []interface{}{map[string]interface{}{"href": "http://192.168.0.8/baremetal/v1/ports/f2845e11-dbd4-4728-a8c0-30d19f48924a", "rel": "self"}, map[string]interface{}{"href": "http://192.168.0.8/baremetal/ports/f2845e11-dbd4-4728-a8c0-30d19f48924a", "rel": "bookmark"}},
 	}
 
@@ -157,8 +162,8 @@ var (
 		LocalLinkConnection: map[string]interface{}{},
 		InternalInfo:        map[string]interface{}{},
 		Extra:               map[string]interface{}{},
-		CreatedAt:           "2019-02-15T09:52:23+00:00",
-		UpdatedAt:           "2019-02-15T09:55:19+00:00",
+		CreatedAt:           BarCreated,
+		UpdatedAt:           BarUpdated,
 		Links:               []interface{}{map[string]interface{}{"href": "http://192.168.0.8/baremetal/v1/ports/3abe3f36-9708-4e9f-b07e-0f898061d3a7", "rel": "self"}, map[string]interface{}{"rel": "bookmark", "href": "http://192.168.0.8/baremetal/ports/3abe3f36-9708-4e9f-b07e-0f898061d3a7"}},
 	}
 )

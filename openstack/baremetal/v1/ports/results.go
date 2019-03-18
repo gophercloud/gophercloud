@@ -1,6 +1,8 @@
 package ports
 
 import (
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -59,11 +61,11 @@ type Port struct {
 	Extra map[string]interface{} `json:"extra"`
 
 	// The UTC date and time when the resource was created, ISO 8601 format.
-	CreatedAt string `json:"created_at"`
+	CreatedAt time.Time `json:"created_at"`
 
 	// The UTC date and time when the resource was updated, ISO 8601 format.
 	// May be “null”.
-	UpdatedAt string `json:"updated_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 
 	// A list of relative links. Includes the self and bookmark links.
 	Links []interface{} `json:"links"`
