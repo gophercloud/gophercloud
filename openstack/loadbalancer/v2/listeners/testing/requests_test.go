@@ -66,6 +66,7 @@ func TestCreateListener(t *testing.T) {
 		DefaultTlsContainerRef: "2c433435-20de-4411-84ae-9cc8917def76",
 		DefaultPoolID:          "41efe233-7591-43c5-9cf7-923964759f9e",
 		ProtocolPort:           3306,
+		InsertHeaders:          map[string]string{"X-Forwarded-For": "true"},
 	}).Extract()
 	th.AssertNoErr(t, err)
 

@@ -120,6 +120,9 @@ type CreateOpts struct {
 
 	// Backend member inactivity timeout in milliseconds
 	TimeoutMemberData *int `json:"timeout_member_data,omitempty"`
+
+	// A dictionary of optional headers to insert into the request before it is sent to the backend member.
+	InsertHeaders map[string]string `json:"insert_headers,omitempty"`
 }
 
 // ToListenerCreateMap builds a request body from CreateOpts.
