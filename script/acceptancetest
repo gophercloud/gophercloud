@@ -39,8 +39,8 @@ acceptance/openstack/dns/v2
 acceptance/openstack/identity/v2
 acceptance/openstack/identity/v3
 acceptance/openstack/imageservice/v2
-#acceptance/openstack/keymanager/v1
-#acceptance/openstack/loadbalancer/v2
+acceptance/openstack/keymanager/v1
+acceptance/openstack/loadbalancer/v2
 
 # No suitable endpoint could be found in the service catalog.
 # acceptance/openstack/messaging/v2
