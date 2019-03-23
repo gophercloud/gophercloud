@@ -68,6 +68,9 @@ type Listener struct {
 
 	// Backend member inactivity timeout in milliseconds
 	TimeoutMemberData int `json:"timeout_member_data"`
+
+	// A dictionary of optional headers to insert into the request before it is sent to the backend member.
+	InsertHeaders map[string]string `json:"insert_headers"`
 }
 
 type Stats struct {

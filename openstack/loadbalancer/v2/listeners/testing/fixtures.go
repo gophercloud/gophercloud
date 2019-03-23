@@ -41,7 +41,10 @@ const ListenersListBody = `
 			"default_tls_container_ref": "2c433435-20de-4411-84ae-9cc8917def76",
 			"sni_container_refs": ["3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"],
 			"timeout_client_data": 50000,
-			"timeout_member_data": 50000
+			"timeout_member_data": 50000,
+			"insert_headers": {
+				"X-Forwarded-For": "true"
+			}
 		}
 	]
 }
@@ -64,8 +67,10 @@ const SingleListenerBody = `
 		"default_tls_container_ref": "2c433435-20de-4411-84ae-9cc8917def76",
 		"sni_container_refs": ["3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"],
 		"timeout_client_data": 50000,
-		"timeout_member_data": 50000
-
+		"timeout_member_data": 50000,
+        "insert_headers": {
+            "X-Forwarded-For": "true"
+        }
 	}
 }
 `
@@ -135,6 +140,7 @@ var (
 		SniContainerRefs:       []string{"3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"},
 		TimeoutClientData:      50000,
 		TimeoutMemberData:      50000,
+		InsertHeaders:          map[string]string{"X-Forwarded-For": "true"},
 	}
 	ListenerUpdated = listeners.Listener{
 		ID:                     "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -195,7 +201,10 @@ func HandleListenerCreationSuccessfully(t *testing.T, response string) {
 			        "admin_state_up": true,
 			        "default_tls_container_ref": "2c433435-20de-4411-84ae-9cc8917def76",
 			        "default_pool_id": "41efe233-7591-43c5-9cf7-923964759f9e",
-			        "protocol_port": 3306
+			        "protocol_port": 3306,
+					"insert_headers": {
+						"X-Forwarded-For": "true"
+					}
 			    }
 		}`)
 
