@@ -100,7 +100,3 @@
     recheck-rocky:
       jobs:
         - gophercloud-acceptance-test-rocky
-    periodic:
-      jobs:
-        - gophercloud-unittest
-        - gophercloud-acceptance-test
