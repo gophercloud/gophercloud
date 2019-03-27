@@ -1,3 +1,5 @@
+// +build acceptance baremetal nodes
+
 package v1
 
 import (
