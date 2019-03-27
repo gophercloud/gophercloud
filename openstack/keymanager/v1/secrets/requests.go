@@ -223,6 +223,9 @@ type CreateOpts struct {
 
 	// SecretType is the type of secret.
 	SecretType SecretType `json:"secret_type,omitempty"`
+
+	// If set, the secret will not be available after this time.
+	Expiration string `json:"expiration,omitempty"`
 }
 
 // ToSecretCreateMap formats a CreateOpts into a create request.
