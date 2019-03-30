@@ -5,6 +5,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/allocations"
 	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/nodes"
 	"github.com/gophercloud/gophercloud/openstack/baremetal/v1/ports"
 )
@@ -39,6 +40,29 @@ func DeleteNode(t *testing.T, client *gophercloud.ServiceClient, node *nodes.Nod
 	}
 
 	t.Logf("Deleted server: %s", node.UUID)
+}
+
+// CreateAllocation creates an allocation
+func CreateAllocation(t *testing.T, client *gophercloud.ServiceClient) (*allocations.Allocation, error) {
+	name := tools.RandomString("ACPTTEST", 16)
+	t.Logf("Attempting to create bare metal allocation: %s", name)
+
+	allocation, err := allocations.Create(client, allocations.CreateOpts{
+		Name:          name,
+		ResourceClass: "baremetal",
+	}).Extract()
+
+	return allocation, err
+}
+
+// DeleteAllocation deletes a bare metal allocation via its UUID.
+func DeleteAllocation(t *testing.T, client *gophercloud.ServiceClient, allocation *allocations.Allocation) {
+	err := allocations.Delete(client, allocation.UUID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete allocation %s: %s", allocation.UUID, err)
+	}
+
+	t.Logf("Deleted allocation: %s", allocation.UUID)
 }
 
 // CreateFakeNode creates a node with fake-hardware to use for port tests.
