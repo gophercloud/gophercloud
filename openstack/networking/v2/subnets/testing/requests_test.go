@@ -417,9 +417,10 @@ func TestUpdate(t *testing.T) {
 		fmt.Fprintf(w, SubnetUpdateResponse)
 	})
 
+	dnsNameservers := []string{"foo"}
 	opts := subnets.UpdateOpts{
 		Name:           "my_new_subnet",
-		DNSNameservers: []string{"foo"},
+		DNSNameservers: &dnsNameservers,
 		HostRoutes: &[]subnets.HostRoute{
 			{NextHop: "bar"},
 		},
