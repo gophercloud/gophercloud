@@ -173,7 +173,7 @@ type UpdateOptsBuilder interface {
 // UpdateOpts represents the attributes used when updating an existing subnet.
 type UpdateOpts struct {
 	// Name is a human-readable name of the subnet.
-	Name string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 
 	// Description of the subnet.
 	Description *string `json:"description,omitempty"`

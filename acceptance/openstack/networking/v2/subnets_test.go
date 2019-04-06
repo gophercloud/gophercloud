@@ -34,7 +34,7 @@ func TestSubnetCRUD(t *testing.T) {
 	newSubnetName := tools.RandomString("TESTACC-", 8)
 	newSubnetDescription := ""
 	updateOpts := subnets.UpdateOpts{
-		Name:        newSubnetName,
+		Name:        &newSubnetName,
 		Description: &newSubnetDescription,
 	}
 	_, err = subnets.Update(client, subnet.ID, updateOpts).Extract()

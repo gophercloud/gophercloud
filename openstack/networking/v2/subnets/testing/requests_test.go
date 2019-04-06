@@ -418,8 +418,9 @@ func TestUpdate(t *testing.T) {
 	})
 
 	dnsNameservers := []string{"foo"}
+	name := "my_new_subnet"
 	opts := subnets.UpdateOpts{
-		Name:           "my_new_subnet",
+		Name:           &name,
 		DNSNameservers: &dnsNameservers,
 		HostRoutes: &[]subnets.HostRoute{
 			{NextHop: "bar"},
@@ -450,8 +451,9 @@ func TestUpdateGateway(t *testing.T) {
 	})
 
 	var gatewayIP = "10.0.0.1"
+	name := "my_new_subnet"
 	opts := subnets.UpdateOpts{
-		Name:      "my_new_subnet",
+		Name:      &name,
 		GatewayIP: &gatewayIP,
 	}
 	s, err := subnets.Update(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
@@ -480,8 +482,9 @@ func TestUpdateRemoveGateway(t *testing.T) {
 	})
 
 	var noGateway = ""
+	name := "my_new_subnet"
 	opts := subnets.UpdateOpts{
-		Name:      "my_new_subnet",
+		Name:      &name,
 		GatewayIP: &noGateway,
 	}
 	s, err := subnets.Update(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
@@ -516,8 +519,9 @@ func TestUpdateHostRoutes(t *testing.T) {
 		},
 	}
 
+	name := "my_new_subnet"
 	opts := subnets.UpdateOpts{
-		Name:       "my_new_subnet",
+		Name:       &name,
 		HostRoutes: &HostRoutes,
 	}
 	s, err := subnets.Update(fake.ServiceClient(), "08eae331-0402-425a-923c-34f7cfe39c1b", opts).Extract()
@@ -574,8 +578,9 @@ func TestUpdateAllocationPool(t *testing.T) {
 		fmt.Fprintf(w, SubnetUpdateAllocationPoolResponse)
 	})
 
+	name := "my_new_subnet"
 	opts := subnets.UpdateOpts{
-		Name: "my_new_subnet",
+		Name: &name,
 		AllocationPools: []subnets.AllocationPool{
 			{
 				Start: "10.1.0.2",
