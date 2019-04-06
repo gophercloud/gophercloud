@@ -119,6 +119,18 @@ func TestGetHypervisor(t *testing.T) {
 	testhelper.CheckDeepEquals(t, &expected, actual)
 }
 
+func TestGetHypervisorEmptyCPUInfo(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+	HandleHypervisorGetEmptyCPUInfoSuccessfully(t)
+
+	expected := HypervisorEmptyCPUInfo
+
+	actual, err := hypervisors.Get(client.ServiceClient(), expected.ID).Extract()
+	testhelper.AssertNoErr(t, err)
+	testhelper.CheckDeepEquals(t, &expected, actual)
+}
+
 func TestHypervisorsUptime(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
