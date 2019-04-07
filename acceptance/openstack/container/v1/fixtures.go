@@ -24,7 +24,6 @@ const capsuleTemplate = `
 						"ENV2": "/usr/bin"
 					},
 					"image": "ubuntu",
-					"imagePullPolicy": "ifnotpresent",
 					"ports": [
 						{
 							"containerPort": 80,
