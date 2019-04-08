@@ -146,6 +146,8 @@ var (
 		SniContainerRefs:       []string{"3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"},
 		TimeoutClientData:      50000,
 		TimeoutMemberData:      50000,
+		TimeoutMemberConnect:   5000,
+		TimeoutTCPInspect:      0,
 		InsertHeaders:          map[string]string{"X-Forwarded-For": "true"},
 	}
 	ListenerUpdated = listeners.Listener{
@@ -163,6 +165,8 @@ var (
 		SniContainerRefs:       []string{"3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"},
 		TimeoutClientData:      181000,
 		TimeoutMemberData:      181000,
+		TimeoutMemberConnect:   181000,
+		TimeoutTCPInspect:      181000,
 	}
 	ListenerStatsTree = listeners.Stats{
 		ActiveConnections: 0,
