@@ -359,7 +359,8 @@ func TestNetworkUpdate(t *testing.T) {
 
 	var actual NetworkDNS
 
-	networkUpdateOpts := networks.UpdateOpts{Name: "new_network_name", AdminStateUp: new(bool)}
+	name := "new_network_name"
+	networkUpdateOpts := networks.UpdateOpts{Name: &name, AdminStateUp: new(bool)}
 	updateOpts := dns.NetworkUpdateOptsExt{
 		UpdateOptsBuilder: networkUpdateOpts,
 		DNSDomain:         new(string),

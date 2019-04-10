@@ -238,7 +238,7 @@ func TestDNSNetwork(t *testing.T) {
 	newNetworkDescription := ""
 	newNetworkDNSDomain := ""
 	networkUpdateOpts := networks.UpdateOpts{
-		Name:        newNetworkName,
+		Name:        &newNetworkName,
 		Description: &newNetworkDescription,
 	}
 	var updateOpts networks.UpdateOptsBuilder

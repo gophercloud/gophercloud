@@ -98,9 +98,10 @@ Example to Update a Subnet
 
 	subnetID := "db77d064-e34f-4d06-b060-f21e28a61c23"
 	dnsNameservers := []string{"8.8.8.8"}
+	name := "new_name"
 
 	updateOpts := subnets.UpdateOpts{
-		Name:           "new_name",
+		Name:           &name,
 		DNSNameservers: &dnsNameservers,
 	}
 
