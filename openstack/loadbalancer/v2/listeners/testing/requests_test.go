@@ -130,11 +130,13 @@ func TestUpdateListener(t *testing.T) {
 	name := "NewListenerName"
 	defaultPoolID := ""
 	actual, err := listeners.Update(client, "4ec89087-d057-4e2c-911f-60a3b47ee304", listeners.UpdateOpts{
-		Name:              &name,
-		ConnLimit:         &i1001,
-		DefaultPoolID:     &defaultPoolID,
-		TimeoutMemberData: &i181000,
-		TimeoutClientData: &i181000,
+		Name:                 &name,
+		ConnLimit:            &i1001,
+		DefaultPoolID:        &defaultPoolID,
+		TimeoutMemberData:    &i181000,
+		TimeoutClientData:    &i181000,
+		TimeoutMemberConnect: &i181000,
+		TimeoutTCPInspect:    &i181000,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
