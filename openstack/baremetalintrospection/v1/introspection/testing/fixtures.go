@@ -101,7 +101,7 @@ const IntrospectionDataJSONSample = `
       "bmc_address":"192.167.2.134",
       "interfaces":[
          {
-            "lldp":null,
+            "lldp":[],
             "product":"0x0001",
             "vendor":"0x1af4",
             "name":"eth1",
@@ -111,7 +111,7 @@ const IntrospectionDataJSONSample = `
             "mac_address":"52:54:00:47:20:4d"
          },
          {
-            "lldp":null,
+            "lldp":[],
             "product":"0x0001",
             "vendor":"0x1af4",
             "name":"eth0",
@@ -270,6 +270,7 @@ var (
 					Name:        "eth1",
 					Product:     "0x0001",
 					IPV4Address: "172.24.42.101",
+					LLDP:        []introspection.LLDPTLVType{},
 				},
 				introspection.InterfaceType{
 					IPV4Address: "172.24.42.100",
@@ -278,6 +279,7 @@ var (
 					Product:     "0x0001",
 					HasCarrier:  true,
 					Vendor:      "0x1af4",
+					LLDP:        []introspection.LLDPTLVType{},
 				},
 			},
 			Memory: introspection.MemoryType{
