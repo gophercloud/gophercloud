@@ -199,7 +199,7 @@ type InterfaceType struct {
 	HasCarrier  bool                   `json:"has_carrier"`
 	IPV4Address string                 `json:"ipv4_address"`
 	IPV6Address string                 `json:"ipv6_address"`
-	Lldp        map[string]interface{} `json:"lldp"`
+	LLDP        map[string]interface{} `json:"lldp"`
 	MACAddress  string                 `json:"mac_address"`
 	Name        string                 `json:"name"`
 	Product     string                 `json:"product"`
