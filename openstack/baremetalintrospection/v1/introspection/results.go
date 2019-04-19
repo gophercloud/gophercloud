@@ -2,6 +2,7 @@ package introspection
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
@@ -174,10 +175,11 @@ type Data struct {
 // Sub Types defined under Data and deeper in the structure
 
 type BaseInterfaceType struct {
-	ClientID string `json:"client_id"`
-	IP       string `json:"ip"`
-	MAC      string `json:"mac"`
-	PXE      bool   `json:"pxe"`
+	ClientID      string                 `json:"client_id"`
+	IP            string                 `json:"ip"`
+	MAC           string                 `json:"mac"`
+	PXE           bool                   `json:"pxe"`
+	LLDPProcessed map[string]interface{} `json:"lldp_processed"`
 }
 
 type BootInfoType struct {
@@ -193,17 +195,22 @@ type CPUType struct {
 	ModelName    string   `json:"model_name"`
 }
 
+type LLDPTLVType struct {
+	Type  int
+	Value string
+}
+
 type InterfaceType struct {
-	BIOSDevName string                 `json:"biosdevname"`
-	ClientID    string                 `json:"client_id"`
-	HasCarrier  bool                   `json:"has_carrier"`
-	IPV4Address string                 `json:"ipv4_address"`
-	IPV6Address string                 `json:"ipv6_address"`
-	Lldp        map[string]interface{} `json:"lldp"`
-	MACAddress  string                 `json:"mac_address"`
-	Name        string                 `json:"name"`
-	Product     string                 `json:"product"`
-	Vendor      string                 `json:"vendor"`
+	BIOSDevName string        `json:"biosdevname"`
+	ClientID    string        `json:"client_id"`
+	HasCarrier  bool          `json:"has_carrier"`
+	IPV4Address string        `json:"ipv4_address"`
+	IPV6Address string        `json:"ipv6_address"`
+	LLDP        []LLDPTLVType `json:"lldp"`
+	MACAddress  string        `json:"mac_address"`
+	Name        string        `json:"name"`
+	Product     string        `json:"product"`
+	Vendor      string        `json:"vendor"`
 }
 
 type InventoryType struct {
@@ -238,6 +245,32 @@ type SystemVendorType struct {
 	Manufacturer string `json:"manufacturer"`
 	ProductName  string `json:"product_name"`
 	SerialNumber string `json:"serial_number"`
+}
+
+// UnmarshalJSON interprets an LLDP TLV [key, value] pair as an LLDPTLVType structure
+func (r *LLDPTLVType) UnmarshalJSON(data []byte) error {
+	var list []interface{}
+	if err := json.Unmarshal(data, &list); err != nil {
+		return err
+	}
+
+	if len(list) != 2 {
+		return fmt.Errorf("Invalid LLDP TLV key-value pair")
+	}
+
+	fieldtype, ok := list[0].(float64)
+	if !ok {
+		return fmt.Errorf("LLDP TLV key is not number")
+	}
+
+	value, ok := list[1].(string)
+	if !ok {
+		return fmt.Errorf("LLDP TLV value is not string")
+	}
+
+	r.Type = int(fieldtype)
+	r.Value = value
+	return nil
 }
 
 // Extract interprets any IntrospectionDataResult as IntrospectionData, if possible.
