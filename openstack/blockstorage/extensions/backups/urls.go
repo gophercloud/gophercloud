@@ -11,17 +11,13 @@ func deleteURL(c *gophercloud.ServiceClient, id string) string {
 }
 
 func getURL(c *gophercloud.ServiceClient, id string) string {
-	return deleteURL(c, id)
+	return c.ServiceURL("backups", id)
 }
 
 func listURL(c *gophercloud.ServiceClient) string {
-	return createURL(c)
+	return c.ServiceURL("backups")
 }
 
-func metadataURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL("backups", id, "metadata")
-}
-
-func updateMetadataURL(c *gophercloud.ServiceClient, id string) string {
-	return metadataURL(c, id)
+func updateURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("backups", id)
 }

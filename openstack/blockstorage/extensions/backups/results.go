@@ -10,32 +10,54 @@ import (
 
 // Backup contains all the information associated with a Cinder Backup.
 type Backup struct {
-	// Unique identifier.
+	// ID is the Unique identifier of the backup.
 	ID string `json:"id"`
 
-	// Date created.
+	// CreatedAt is the date the backup was created.
 	CreatedAt time.Time `json:"-"`
 
-	// Date updated.
+	// UpdatedAt is the date the backup was updated.
 	UpdatedAt time.Time `json:"-"`
 
-	// Display name.
+	// Name is the display name of the backup.
 	Name string `json:"name"`
 
-	// Display description.
+	// Description is the description of the backup.
 	Description string `json:"description"`
 
-	// ID of the Volume from which this Backup was created.
+	// VolumeID is the ID of the Volume from which this backup was created.
 	VolumeID string `json:"volume_id"`
 
-	// Currect status of the Backup.
+	// SnapshotID is the ID of the snapshot from which this backup was created.
+	SnapshotID string `json:"snapshot_id"`
+
+	// Status is the status of the backup.
 	Status string `json:"status"`
 
-	// Size of the Backup, in GB.
+	// Size is the size of the backup, in GB.
 	Size int `json:"size"`
 
-	// User-defined key-value pairs.
-	Metadata map[string]string `json:"metadata"`
+	// Object Count is the number of objects in the backup.
+	ObjectCount int `json:"object_count"`
+
+	// Container is the container where the backup is stored.
+	Container string `json:"container"`
+
+	// AvailabilityZone is the availability zone of the backup.
+	AvailabilityZone string `json:"availability_zone"`
+
+	// HasDependentBackups is whether there are other backups
+	// depending on this backup.
+	HasDependentBackups bool `json:"has_dependent_backups"`
+
+	// FailReason has the reason for the backup failure.
+	FailReason string `json:"fail_reason"`
+
+	// IsIncremental is whether this is an incremental backup.
+	IsIncremental bool `json:"is_incremental"`
+
+	// DataTimestamp is the time when the data on the volume was first saved.
+	DataTimestamp time.Time `json:"-"`
 }
 
 // CreateResult contains the response body and error from a Create request.
@@ -63,8 +85,9 @@ func (r *Backup) UnmarshalJSON(b []byte) error {
 	type tmp Backup
 	var s struct {
 		tmp
-		CreatedAt gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
-		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+		CreatedAt     gophercloud.JSONRFC3339MilliNoZ `json:"created_at"`
+		UpdatedAt     gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
+		DataTimestamp gophercloud.JSONRFC3339MilliNoZ `json:"data_timestamp"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -74,6 +97,7 @@ func (r *Backup) UnmarshalJSON(b []byte) error {
 
 	r.CreatedAt = time.Time(s.CreatedAt)
 	r.UpdatedAt = time.Time(s.UpdatedAt)
+	r.DataTimestamp = time.Time(s.DataTimestamp)
 
 	return err
 }
@@ -104,18 +128,9 @@ func ExtractBackups(r pagination.Page) ([]Backup, error) {
 	return s.Backups, err
 }
 
-// UpdateMetadataResult contains the response body and error from an UpdateMetadata request.
-type UpdateMetadataResult struct {
+// UpdateResult contains the response body and error from an Update request.
+type UpdateResult struct {
 	commonResult
-}
-
-// ExtractMetadata returns the metadata from a response from backups.UpdateMetadata.
-func (r UpdateMetadataResult) ExtractMetadata() (map[string]interface{}, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-	m := r.Body.(map[string]interface{})["metadata"]
-	return m.(map[string]interface{}), nil
 }
 
 type commonResult struct {

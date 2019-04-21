@@ -15,14 +15,35 @@ type CreateOptsBuilder interface {
 // the backups.Create function. For more information about these parameters,
 // see the Backup object.
 type CreateOpts struct {
-	VolumeID    string            `json:"volume_id" required:"true"`
-	Force       bool              `json:"force,omitempty"`
-	Name        string            `json:"name,omitempty"`
-	Description string            `json:"description,omitempty"`
-	Metadata    map[string]string `json:"metadata,omitempty"`
-	Container   string            `json:"container,omitempty"`
-	Incremental bool              `json:"incremental,omitempty"`
-	SnapshotID  string            `json:"snapshot_id,omitempty"`
+	// VolumeID is the ID of the volume to create the backup from.
+	VolumeID string `json:"volume_id" required:"true"`
+
+	// Force will force the creation of a backup regardless of the
+	//volume's status.
+	Force bool `json:"force,omitempty"`
+
+	// Name is the name of the backup.
+	Name string `json:"name,omitempty"`
+
+	// Description is the description of the backup.
+	Description string `json:"description,omitempty"`
+
+	// Metadata is metadata for the backup.
+	// Requires microversion 3.43 or later.
+	Metadata map[string]string `json:"metadata,omitempty"`
+
+	// Container is a container to store the backup.
+	Container string `json:"container,omitempty"`
+
+	// Incremental is whether the backup should be incremental or not.
+	Incremental bool `json:"incremental,omitempty"`
+
+	// SnapshotID is the ID of a snapshot to backup.
+	SnapshotID string `json:"snapshot_id,omitempty"`
+
+	// AvailabilityZone is an availability zone to locate the volume or snapshot.
+	// Requires microversion 3.51 or later.
+	AvailabilityZone string `json:"availability_zone,omitempty"`
 }
 
 // ToBackupCreateMap assembles a request body based on the contents of a
@@ -70,9 +91,11 @@ type ListOpts struct {
 	AllTenants bool `q:"all_tenants"`
 
 	// Name will filter by the specified backup name.
+	// This does not work in later microversions.
 	Name string `q:"name"`
 
 	// Status will filter by the specified status.
+	// This does not work in later microversions.
 	Status string `q:"status"`
 
 	// TenantID will filter by a specific tenant/project ID.
@@ -80,6 +103,7 @@ type ListOpts struct {
 	TenantID string `q:"project_id"`
 
 	// VolumeID will filter by a specified volume ID.
+	// This does not work in later microversions.
 	VolumeID string `q:"volume_id"`
 
 	// Comma-separated list of sort keys and optional sort directions in the
@@ -118,67 +142,43 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// UpdateMetadataOptsBuilder allows extensions to add additional parameters to
+// UpdateOptsBuilder allows extensions to add additional parameters to
 // the Update request.
-type UpdateMetadataOptsBuilder interface {
-	ToBackupUpdateMetadataMap() (map[string]interface{}, error)
+type UpdateOptsBuilder interface {
+	ToBackupUpdateMap() (map[string]interface{}, error)
 }
 
-// UpdateMetadataOpts contain options for updating an existing Backup. This
-// object is passed to the backups.Update function. For more information
-// about the parameters, see the Backup object.
-type UpdateMetadataOpts struct {
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+// UpdateOpts contain options for updating an existing Backup.
+type UpdateOpts struct {
+	// Name is the name of the backup.
+	Name *string `json:"name,omitempty"`
+
+	// Description is the description of the backup.
+	Description *string `json:"description,omitempty"`
+
+	// Metadata is metadata for the backup.
+	// Requires microversion 3.43 or later.
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
-// ToBackupUpdateMetadataMap assembles a request body based on the contents of
-// an UpdateMetadataOpts.
-func (opts UpdateMetadataOpts) ToBackupUpdateMetadataMap() (map[string]interface{}, error) {
+// ToBackupUpdateMap assembles a request body based on the contents of
+// an UpdateOpts.
+func (opts UpdateOpts) ToBackupUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-// UpdateMetadata will update the Backup with provided information. To
-// extract the updated Backup from the response, call the ExtractMetadata
-// method on the UpdateMetadataResult.
-func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) (r UpdateMetadataResult) {
-	b, err := opts.ToBackupUpdateMetadataMap()
+// Update will update the Backup with provided information. To extract
+// the updated Backup from the response, call the Extract method on the
+// UpdateResult.
+// Requires microversion 3.9 or later.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToBackupUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Put(updateMetadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	return
-}
-
-// IDFromName is a convienience function that returns a backup's ID given its name.
-func IDFromName(client *gophercloud.ServiceClient, name string) (string, error) {
-	count := 0
-	id := ""
-	pages, err := List(client, nil).AllPages()
-	if err != nil {
-		return "", err
-	}
-
-	all, err := ExtractBackups(pages)
-	if err != nil {
-		return "", err
-	}
-
-	for _, s := range all {
-		if s.Name == name {
-			count++
-			id = s.ID
-		}
-	}
-
-	switch count {
-	case 0:
-		return "", gophercloud.ErrResourceNotFound{Name: name, ResourceType: "backup"}
-	case 1:
-		return id, nil
-	default:
-		return "", gophercloud.ErrMultipleResourcesFound{Name: name, Count: count, ResourceType: "backup"}
-	}
 }

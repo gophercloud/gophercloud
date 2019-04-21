@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/backups"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/backups"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -83,26 +83,6 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, n.VolumeID, "1234")
 	th.AssertEquals(t, n.Name, "backup-001")
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-}
-
-func TestUpdateMetadata(t *testing.T) {
-	th.SetupHTTP()
-	defer th.TeardownHTTP()
-
-	MockUpdateMetadataResponse(t)
-
-	expected := map[string]interface{}{"key": "v1"}
-
-	options := &backups.UpdateMetadataOpts{
-		Metadata: map[string]interface{}{
-			"key": "v1",
-		},
-	}
-
-	actual, err := backups.UpdateMetadata(client.ServiceClient(), "123", options).ExtractMetadata()
-
-	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, actual, expected)
 }
 
 func TestDelete(t *testing.T) {
