@@ -58,6 +58,10 @@ type Backup struct {
 
 	// DataTimestamp is the time when the data on the volume was first saved.
 	DataTimestamp time.Time `json:"-"`
+
+	// ProjectID is the ID of the project that owns the backup. This is
+	// an admin-only field.
+	ProjectID string `json:"os-backup-project-attr:project_id"`
 }
 
 // CreateResult contains the response body and error from a Create request.
@@ -121,11 +125,9 @@ func (page BackupPage) NextPageURL() (string, error) {
 
 // ExtractBackups extracts and returns Backups. It is used while iterating over a backups.List call.
 func ExtractBackups(r pagination.Page) ([]Backup, error) {
-	var s struct {
-		Backups []Backup `json:"backups"`
-	}
-	err := (r.(BackupPage)).ExtractInto(&s)
-	return s.Backups, err
+	var s []Backup
+	err := ExtractBackupsInto(r, &s)
+	return s, err
 }
 
 // UpdateResult contains the response body and error from an Update request.
@@ -139,9 +141,15 @@ type commonResult struct {
 
 // Extract will get the Backup object out of the commonResult object.
 func (r commonResult) Extract() (*Backup, error) {
-	var s struct {
-		Backup *Backup `json:"backup"`
-	}
+	var s Backup
 	err := r.ExtractInto(&s)
-	return s.Backup, err
+	return &s, err
+}
+
+func (r commonResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, "backup")
+}
+
+func ExtractBackupsInto(r pagination.Page, v interface{}) error {
+	return r.(BackupPage).Result.ExtractIntoSlicePtr(v, "backups")
 }
