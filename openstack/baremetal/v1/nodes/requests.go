@@ -34,7 +34,7 @@ const (
 	CleanFail                   = "clean failed"
 	Error                       = "error"
 	Rebuild                     = "rebuild"
-	Inpsecting                  = "inspecting"
+	Inspecting                  = "inspecting"
 	InspectFail                 = "inspect failed"
 	InspectWait                 = "inspect wait"
 	Adopting                    = "adopting"
