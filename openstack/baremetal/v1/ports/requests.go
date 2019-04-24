@@ -202,15 +202,10 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOpts) (r Up
 		body[i] = patch.ToPortUpdateMap()
 	}
 
-	resp, err := client.Request("PATCH", updateURL(client, id), &gophercloud.RequestOpts{
+	_, r.Err = client.Patch(updateURL(client, id), body, &r.Body, &gophercloud.RequestOpts{
 		JSONBody: &body,
 		OkCodes:  []int{200},
 	})
-
-	r.Body = resp.Body
-	r.Header = resp.Header
-	r.Err = err
-
 	return
 }
 
