@@ -53,3 +53,7 @@ func powerStateURL(client *gophercloud.ServiceClient, id string) string {
 func provisionStateURL(client *gophercloud.ServiceClient, id string) string {
 	return statesResourceURL(client, id, "provision")
 }
+
+func raidConfigURL(client *gophercloud.ServiceClient, id string) string {
+	return statesResourceURL(client, id, "raid")
+}

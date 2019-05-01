@@ -946,3 +946,43 @@ func HandleChangePowerStateWithConflict(t *testing.T) {
 		w.WriteHeader(http.StatusConflict)
 	})
 }
+
+func HandleSetRAIDConfig(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/states/raid", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `
+			{
+			   "logical_disks" : [
+				  {
+					 "size_gb" : 100,
+					 "is_root_volume" : true,
+					 "raid_level" : "1"
+				  }
+			   ]
+			}
+		`)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleSetRAIDConfigMaxSize(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/states/raid", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `
+			{
+			   "logical_disks" : [
+				  {
+					 "size_gb" : "MAX",
+					 "is_root_volume" : true,
+					 "raid_level" : "1"
+				  }
+			   ]
+			}
+		`)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
