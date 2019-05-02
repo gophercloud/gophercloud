@@ -254,6 +254,22 @@ func TestNodeChangeProvisionStateActive(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestHandleNodeChangeProvisionStateConfigDrive(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleNodeChangeProvisionStateConfigDrive(t)
+
+	c := client.ServiceClient()
+
+	err := nodes.ChangeProvisionState(c, "1234asdf", nodes.ProvisionStateOpts{
+		Target:      nodes.TargetActive,
+		ConfigDrive: ConfigDriveMap,
+	}).ExtractErr()
+
+	th.AssertNoErr(t, err)
+}
+
 func TestNodeChangeProvisionStateClean(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
