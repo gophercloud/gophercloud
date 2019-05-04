@@ -65,3 +65,31 @@ func TestNodesUpdate(t *testing.T) {
 
 	th.AssertEquals(t, updated.Maintenance, true)
 }
+
+func TestNodesRAIDConfig(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewBareMetalV1NoAuthClient()
+	th.AssertNoErr(t, err)
+	client.Microversion = "1.50"
+
+	node, err := v1.CreateNode(t, client)
+	th.AssertNoErr(t, err)
+	defer v1.DeleteNode(t, client, node)
+
+	sizeGB := 100
+	isTrue := true
+
+	err = nodes.SetRAIDConfig(client, node.UUID, nodes.RAIDConfigOpts{
+		LogicalDisks: []nodes.LogicalDisk{
+			{
+				SizeGB:                &sizeGB,
+				IsRootVolume:          &isTrue,
+				RAIDLevel:             nodes.RAID5,
+				DiskType:              nodes.HDD,
+				NumberOfPhysicalDisks: 5,
+			},
+		},
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+}

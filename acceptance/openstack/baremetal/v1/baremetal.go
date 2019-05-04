@@ -19,6 +19,7 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Node, e
 		Name:          name,
 		Driver:        "ipmi",
 		BootInterface: "pxe",
+		RAIDInterface: "agent",
 		DriverInfo: map[string]interface{}{
 			"ipmi_port":      "6230",
 			"ipmi_username":  "admin",
