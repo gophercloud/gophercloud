@@ -129,6 +129,9 @@ func (lrt *LogRoundTripper) formatJSON(raw []byte) string {
 					v["password"] = "***"
 				}
 			}
+			if v, ok := v["token"].(map[string]interface{}); ok {
+				v["id"] = "***"
+			}
 		}
 	}
 
