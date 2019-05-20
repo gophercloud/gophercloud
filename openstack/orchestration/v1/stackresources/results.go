@@ -204,3 +204,8 @@ func (r TemplateResult) Extract() ([]byte, error) {
 	template, err := json.MarshalIndent(r.Body, "", "  ")
 	return template, err
 }
+
+// MarkUnhealthyResult represents the result of a mark unhealthy operation.
+type MarkUnhealthyResult struct {
+	gophercloud.ErrResult
+}
