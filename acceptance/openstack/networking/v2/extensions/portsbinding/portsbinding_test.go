@@ -31,20 +31,23 @@ func TestPortsbindingCRUD(t *testing.T) {
 
 	// Define a host
 	hostID := "localhost"
+	profile := map[string]interface{}{"foo": "bar"}
 
 	// Create port
-	port, err := CreatePortsbinding(t, client, network.ID, subnet.ID, hostID)
+	port, err := CreatePortsbinding(t, client, network.ID, subnet.ID, hostID, profile)
 	th.AssertNoErr(t, err)
 	defer networking.DeletePort(t, client, port.ID)
 
 	tools.PrintResource(t, port)
 	th.AssertEquals(t, port.HostID, hostID)
 	th.AssertEquals(t, port.VNICType, "normal")
+	th.AssertDeepEquals(t, port.Profile, profile)
 
 	// Update port
 	newPortName := ""
 	newPortDescription := ""
 	newHostID := "127.0.0.1"
+	newProfile := map[string]interface{}{}
 	updateOpts := ports.UpdateOpts{
 		Name:        &newPortName,
 		Description: &newPortDescription,
@@ -56,6 +59,7 @@ func TestPortsbindingCRUD(t *testing.T) {
 		UpdateOptsBuilder: updateOpts,
 		HostID:            &newHostID,
 		VNICType:          "baremetal",
+		Profile:           newProfile,
 	}
 
 	var newPort PortWithBindingExt
@@ -72,4 +76,5 @@ func TestPortsbindingCRUD(t *testing.T) {
 	th.AssertEquals(t, newPort.Description, newPortDescription)
 	th.AssertEquals(t, newPort.HostID, newHostID)
 	th.AssertEquals(t, newPort.VNICType, "baremetal")
+	th.AssertDeepEquals(t, newPort.Profile, newProfile)
 }
