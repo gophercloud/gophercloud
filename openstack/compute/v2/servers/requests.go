@@ -810,3 +810,9 @@ func ShowConsoleOutput(client *gophercloud.ServiceClient, id string, opts ShowCo
 	})
 	return
 }
+
+// Diagnostics
+func GetServerDiagnostics(client *gophercloud.ServiceClient, serverId string) (r ServerDiagnosticsResult) {
+	_, r.Err = client.Get(serverDiagnosticsURL(client, serverId), &r.Body, nil)
+	return
+}

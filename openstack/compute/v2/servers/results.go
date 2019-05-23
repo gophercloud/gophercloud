@@ -412,3 +412,9 @@ func ExtractNetworkAddresses(r pagination.Page) ([]Address, error) {
 
 	return s[key], err
 }
+
+// Diagnostic result, response depends on nova api microversion so leaving as
+// generic result caller can ExtractInto an interface -- see test
+type ServerDiagnosticsResult struct {
+	gophercloud.Result
+}

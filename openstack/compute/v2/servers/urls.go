@@ -49,3 +49,7 @@ func listAddressesByNetworkURL(client *gophercloud.ServiceClient, id, network st
 func passwordURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("servers", id, "os-server-password")
 }
+
+func serverDiagnosticsURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("servers", id, "diagnostics")
+}
