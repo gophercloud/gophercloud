@@ -84,7 +84,12 @@ func (opts UpdateOptsExt) ToPortUpdateMap() (map[string]interface{}, error) {
 	}
 
 	if opts.Profile != nil {
-		port["binding:profile"] = opts.Profile
+		if len(opts.Profile) == 0 {
+			// send null instead of the empty json object ("{}")
+			port["binding:profile"] = nil
+		} else {
+			port["binding:profile"] = opts.Profile
+		}
 	}
 
 	return base, nil
