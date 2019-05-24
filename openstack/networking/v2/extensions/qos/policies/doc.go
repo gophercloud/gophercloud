@@ -42,7 +42,7 @@ Example to Create a Port with a QoS policy
 		panic(err)
 	}
 
-	fmt.Printf("port: %+v\n", portWithQoS)
+	fmt.Printf("Port: %+v\n", portWithQoS)
 
 Example to add a QoS policy to an existing Port
 
@@ -65,7 +65,7 @@ Example to add a QoS policy to an existing Port
         panic(err)
     }
 
-    fmt.Printf("port: %+v\n", portWithQoS)
+    fmt.Printf("Port: %+v\n", portWithQoS)
 
 Example to delete a QoS policy from the existing Port
 
@@ -88,7 +88,6 @@ Example to delete a QoS policy from the existing Port
         panic(err)
     }
 
-    fmt.Printf("port: %+v\n", portWithQoS)
-
- */
+    fmt.Printf("Port: %+v\n", portWithQoS)
+*/
 package policies

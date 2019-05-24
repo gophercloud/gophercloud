@@ -11,7 +11,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestGet(t *testing.T) {
+func TestGetPort(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -60,11 +60,11 @@ func TestCreatePort(t *testing.T) {
 		policies.QoSPolicyExt
 	}
 	portCreateOpts := ports.CreateOpts{
-		NetworkID:    "a87cc70a-3e15-4acf-8205-9b711a3531b7",
+		NetworkID: "a87cc70a-3e15-4acf-8205-9b711a3531b7",
 	}
 	createOpts := policies.PortCreateOptsExt{
 		CreateOptsBuilder: portCreateOpts,
-		QoSPolicyID: "591e0597-39a6-4665-8149-2111d8de9a08",
+		QoSPolicyID:       "591e0597-39a6-4665-8149-2111d8de9a08",
 	}
 	err := ports.Create(fake.ServiceClient(), createOpts).ExtractInto(&p)
 	th.AssertNoErr(t, err)
@@ -102,7 +102,7 @@ func TestUpdatePortWithPolicy(t *testing.T) {
 	portUpdateOpts := ports.UpdateOpts{}
 	updateOpts := policies.PortUpdateOptsExt{
 		UpdateOptsBuilder: portUpdateOpts,
-		QoSPolicyID: &policyID,
+		QoSPolicyID:       &policyID,
 	}
 	err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&p)
 	th.AssertNoErr(t, err)
@@ -140,7 +140,7 @@ func TestUpdatePortWithoutPolicy(t *testing.T) {
 	portUpdateOpts := ports.UpdateOpts{}
 	updateOpts := policies.PortUpdateOptsExt{
 		UpdateOptsBuilder: portUpdateOpts,
-		QoSPolicyID: &policyID,
+		QoSPolicyID:       &policyID,
 	}
 	err := ports.Update(fake.ServiceClient(), "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&p)
 	th.AssertNoErr(t, err)
