@@ -89,5 +89,93 @@ Example to delete a QoS policy from the existing Port
     }
 
     fmt.Printf("Port: %+v\n", portWithQoS)
+
+Example to Get a Network with a QoS policy
+
+    var networkWithQoS struct {
+        networks.Network
+        policies.QoSPolicyExt
+    }
+
+    networkID := "46d4bfb9-b26e-41f3-bd2e-e6dcc1ccedb2"
+
+    err = networks.Get(client, networkID).ExtractInto(&networkWithQoS)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Printf("Network: %+v\n", networkWithQoS)
+
+Example to Create a Network with a QoS policy
+
+    var networkWithQoS struct {
+        networks.Network
+        policies.QoSPolicyExt
+    }
+
+    policyID := "d6ae28ce-fcb5-4180-aa62-d260a27e09ae"
+    networkID := "7069db8d-e817-4b39-a654-d2dd76e73d36"
+
+    networkCreateOpts := networks.CreateOpts{
+        NetworkID: networkID,
+    }
+
+    createOpts := policies.NetworkCreateOptsExt{
+        CreateOptsBuilder: networkCreateOpts,
+        QoSPolicyID:       policyID,
+    }
+
+    err = networks.Create(client, createOpts).ExtractInto(&networkWithQoS)
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("Network: %+v\n", networkWithQoS)
+
+Example to add a QoS policy to an existing Network
+
+    var networkWithQoS struct {
+        networks.Network
+        policies.QoSPolicyExt
+    }
+
+    networkUpdateOpts := networks.UpdateOpts{}
+
+    policyID := "d6ae28ce-fcb5-4180-aa62-d260a27e09ae"
+
+    updateOpts := policies.NetworkUpdateOptsExt{
+        UpdateOptsBuilder: networkUpdateOpts,
+        QoSPolicyID: &policyID,
+    }
+
+    err := networks.Update(client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&networkWithQoS)
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("Network: %+v\n", networkWithQoS)
+
+Example to delete a QoS policy from the existing Network
+
+    var networkWithQoS struct {
+        networks.Network
+        policies.QoSPolicyExt
+    }
+
+    networkUpdateOpts := networks.UpdateOpts{}
+
+    policyID := ""
+
+    updateOpts := policies.NetworkUpdateOptsExt{
+        UpdateOptsBuilder: networkUpdateOpts,
+        QoSPolicyID: &policyID,
+    }
+
+    err := networks.Update(client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&networkWithQoS)
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("Network: %+v\n", networkWithQoS)
 */
 package policies
