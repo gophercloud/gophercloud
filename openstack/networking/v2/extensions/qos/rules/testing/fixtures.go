@@ -25,3 +25,24 @@ const BandwidthLimitRulesGetResult = `
     }
 }
 `
+
+// BandwidthLimitRulesCreateRequest represents a raw body of a Create BandwidthLimitRule call.
+const BandwidthLimitRulesCreateRequest = `
+{
+    "bandwidth_limit_rule": {
+        "max_kbps": 2000,
+        "max_burst_kbps": 200
+    }
+}
+`
+
+// BandwidthLimitRulesCreateResult represents a raw result of a Create BandwidthLimitRule call.
+const BandwidthLimitRulesCreateResult = `
+{
+    "bandwidth_limit_rule": {
+        "max_kbps": 2000,
+        "id": "30a57f4a-336b-4382-8275-d708babd2241",
+        "max_burst_kbps": 200
+    }
+}
+`

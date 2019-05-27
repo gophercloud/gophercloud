@@ -81,3 +81,31 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, r.MaxBurstKBps, 300)
 	th.AssertEquals(t, r.MaxKBps, 3000)
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies/501005fa-3b56-4061-aaca-3f24995112e1/bandwidth_limit_rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, BandwidthLimitRulesCreateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, BandwidthLimitRulesCreateResult)
+	})
+
+	opts := rules.CreateBandwidthLimitRuleOpts{
+		MaxKBps:      2000,
+		MaxBurstKBps: 200,
+	}
+	r, err := rules.CreateBandwidthLimitRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", opts).ExtractBandwidthLimitRule()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, 200, r.MaxBurstKBps)
+	th.AssertEquals(t, 2000, r.MaxKBps)
+}

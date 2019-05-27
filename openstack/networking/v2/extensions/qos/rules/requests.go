@@ -62,3 +62,39 @@ func GetBandwidthLimitRule(c *gophercloud.ServiceClient, policyID, ruleID string
 	_, r.Err = c.Get(getBandwidthLimitRuleURL(c, policyID, ruleID), &r.Body, nil)
 	return
 }
+
+// CreateBandwidthLimitRuleOptsBuilder allows to add additional parameters to the
+// CreateBandwidthLimitRule request.
+type CreateBandwidthLimitRuleOptsBuilder interface {
+	ToBandwidthLimitRuleCreateMap() (map[string]interface{}, error)
+}
+
+// CreateBandwidthLimitRuleOpts specifies parameters of a new BandwidthLimitRule.
+type CreateBandwidthLimitRuleOpts struct {
+	// MaxKBps is a maximum kilobits per second. It's a required parameter.
+	MaxKBps int `json:"max_kbps"`
+
+	// MaxBurstKBps is a maximum burst size in kilobits.
+	MaxBurstKBps int `json:"max_burst_kbps,omitempty"`
+
+	// Direction represents the direction of traffic.
+	Direction string `json:"direction,omitempty"`
+}
+
+// ToBandwidthLimitRuleCreateMap constructs a request body from CreateBandwidthLimitRuleOpts.
+func (opts CreateBandwidthLimitRuleOpts) ToBandwidthLimitRuleCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "bandwidth_limit_rule")
+}
+
+// CreateBandwidthLimitRule requests the creation of a new BandwidthLimitRule on the server.
+func CreateBandwidthLimitRule(client *gophercloud.ServiceClient, policyID string, opts CreateBandwidthLimitRuleOptsBuilder) (r CreateBandwidthLimitRuleResult) {
+	b, err := opts.ToBandwidthLimitRuleCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createBandwidthLimitRuleURL(client, policyID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}
