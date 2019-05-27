@@ -3,13 +3,13 @@ Package rules provides the ability to retrieve and manage QoS policy rules throu
 
 Example of Listing BandwidthLimitRules
 
-    listOpts := rules.BandwidthLimitRuleListOpts{
+    listOpts := rules.BandwidthLimitRulesListOpts{
         MaxKBps: 3000,
     }
 
     policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-    allPages, err := rules.BandwidthLimitRuleList(networkClient, policyID, listOpts).AllPages()
+    allPages, err := rules.BandwidthLimitRulesList(networkClient, policyID, listOpts).AllPages()
     if err != nil {
         panic(err)
     }

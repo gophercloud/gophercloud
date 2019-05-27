@@ -27,10 +27,10 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := rules.BandwidthLimitRuleList(
+	err := rules.BandwidthLimitRulesList(
 		fake.ServiceClient(),
 		"501005fa-3b56-4061-aaca-3f24995112e1",
-		rules.BandwidthLimitRuleListOpts{},
+		rules.BandwidthLimitRulesListOpts{},
 	).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := rules.ExtractBandwidthLimitRules(page)

@@ -1,16 +1,14 @@
 package rules
 
 import (
-	"fmt"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
-type ListOptsBuilder interface {
-	ToBandwidthLimitRuleListQuery() (string, error)
+type BandwidthLimitRulesListOptsBuilder interface {
+	ToBandwidthLimitRulesListQuery() (string, error)
 }
 
 // ListOpts allows the filtering and sorting of paginated collections through
@@ -19,7 +17,7 @@ type ListOptsBuilder interface {
 // SortKey allows you to sort by a particular BandwidthLimitRule attribute.
 // SortDir sets the direction, and is either `asc' or `desc'.
 // Marker and Limit are used for the pagination.
-type BandwidthLimitRuleListOpts struct {
+type BandwidthLimitRulesListOpts struct {
 	ID           string `q:"id"`
 	TenantID     string `q:"tenant_id"`
 	MaxKBps      int    `q:"max_kbps"`
@@ -35,8 +33,8 @@ type BandwidthLimitRuleListOpts struct {
 	NotTagsAny   string `q:"not-tags-any"`
 }
 
-// ToBandwidthLimitRuleListQuery formats a ListOpts into a query string.
-func (opts BandwidthLimitRuleListOpts) ToBandwidthLimitRuleListQuery() (string, error) {
+// ToBandwidthLimitRulesListQuery formats a ListOpts into a query string.
+func (opts BandwidthLimitRulesListOpts) ToBandwidthLimitRulesListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
 }
@@ -44,11 +42,10 @@ func (opts BandwidthLimitRuleListOpts) ToBandwidthLimitRuleListQuery() (string, 
 // BandwidthLimitRuleList returns a Pager which allows you to iterate over a collection of
 // BandwidthLimitRules. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
-func BandwidthLimitRuleList(c *gophercloud.ServiceClient, policyID string, opts ListOptsBuilder) pagination.Pager {
+func BandwidthLimitRulesList(c *gophercloud.ServiceClient, policyID string, opts BandwidthLimitRulesListOptsBuilder) pagination.Pager {
 	url := listBandwidthLimitRulesURL(c, policyID)
-	fmt.Printf("URL: %s\n", url)
 	if opts != nil {
-		query, err := opts.ToBandwidthLimitRuleListQuery()
+		query, err := opts.ToBandwidthLimitRulesListQuery()
 		if err != nil {
 			return pagination.Pager{Err: err}
 		}
