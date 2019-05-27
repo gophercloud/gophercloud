@@ -56,3 +56,9 @@ func BandwidthLimitRulesList(c *gophercloud.ServiceClient, policyID string, opts
 
 	})
 }
+
+// GetBandwidthLimitRule retrieves a specific BandwidthLimitRule based on its ID.
+func GetBandwidthLimitRule(c *gophercloud.ServiceClient, policyID, ruleID string) (r GetBandwidthLimitRuleResult) {
+	_, r.Err = c.Get(getBandwidthLimitRuleURL(c, policyID, ruleID), &r.Body, nil)
+	return
+}

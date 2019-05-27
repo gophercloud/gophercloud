@@ -1,8 +1,28 @@
 package rules
 
 import (
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
+
+type commonResult struct {
+	gophercloud.Result
+}
+
+// Extract is a function that accepts a result and extracts a BandwidthLimitRule.
+func (r commonResult) ExtractBandwidthLimitRule() (*BandwidthLimitRule, error) {
+	var s struct {
+		BandwidthLimitRule *BandwidthLimitRule `json:"bandwidth_limit_rule"`
+	}
+	err := r.ExtractInto(&s)
+	return s.BandwidthLimitRule, err
+}
+
+// GetBandwidthLimitRuleResult represents the result of a Get operation. Call its Extract
+// method to interpret it as a BandwidthLimitRule.
+type GetBandwidthLimitRuleResult struct {
+	commonResult
+}
 
 // BandwidthLimitRule represents a QoS policy rule to set bandwidth limits.
 type BandwidthLimitRule struct {

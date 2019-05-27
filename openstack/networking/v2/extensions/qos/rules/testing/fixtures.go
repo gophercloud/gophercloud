@@ -13,3 +13,15 @@ const BandwidthLimitRulesListResult = `
     ]
 }
 `
+
+// BandwidthLimitRulesGetResult represents a raw result of a Get call to a specific BandwidthLimitRule.
+const BandwidthLimitRulesGetResult = `
+{
+    "bandwidth_limit_rule": {
+        "max_kbps": 3000,
+        "direction": "egress",
+        "id": "30a57f4a-336b-4382-8275-d708babd2241",
+        "max_burst_kbps": 300
+    }
+}
+`
