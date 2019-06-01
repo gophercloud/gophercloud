@@ -134,3 +134,9 @@ func UpdateBandwidthLimitRule(client *gophercloud.ServiceClient, policyID, ruleI
 	})
 	return
 }
+
+// Delete accepts policy and rule ID and deletes the BandwidthLimitRule associated with them.
+func DeleteBandwidthLimitRule(c *gophercloud.ServiceClient, policyID, ruleID string) (r DeleteBandwidthLimitRuleResult) {
+	_, r.Err = c.Delete(deleteBandwidthLimitRuleURL(c, policyID, ruleID), nil)
+	return
+}

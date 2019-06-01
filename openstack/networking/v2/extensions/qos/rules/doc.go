@@ -71,5 +71,14 @@ Example of Updating a single BandwidthLimitRule
 
     fmt.Printf("Rule: %+v\n", rule)
 
+Example of Deleting a single BandwidthLimitRule
+
+    policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
+    ruleID   := "30a57f4a-336b-4382-8275-d708babd2241"
+
+    err := rules.DeleteBandwidthLimitRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractErr()
+    if err != nil {
+        panic(err)
+    }
 */
 package rules

@@ -36,6 +36,12 @@ type UpdateBandwidthLimitRuleResult struct {
 	commonResult
 }
 
+// DeleteBandwidthLimitRuleResult represents the result of a Delete operation. Call its Extract
+// method to interpret it as a BandwidthLimitRule.
+type DeleteBandwidthLimitRuleResult struct {
+	gophercloud.ErrResult
+}
+
 // BandwidthLimitRule represents a QoS policy rule to set bandwidth limits.
 type BandwidthLimitRule struct {
 	// ID is a unique ID of the policy.
