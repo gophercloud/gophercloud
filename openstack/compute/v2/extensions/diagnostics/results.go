@@ -4,7 +4,6 @@ import (
 	"github.com/gophercloud/gophercloud"
 )
 
-
 type serverDiagnosticsResult struct {
 	gophercloud.Result
 }
