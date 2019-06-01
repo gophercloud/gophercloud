@@ -31,3 +31,7 @@ func createBandwidthLimitRuleURL(c *gophercloud.ServiceClient, policyID string) 
 func updateBandwidthLimitRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
 	return bandwidthLimitRulesResourceURL(c, policyID, ruleID)
 }
+
+func deleteBandwidthLimitRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return bandwidthLimitRulesResourceURL(c, policyID, ruleID)
+}
