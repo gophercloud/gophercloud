@@ -39,10 +39,10 @@ func (opts BandwidthLimitRulesListOpts) ToBandwidthLimitRulesListQuery() (string
 	return q.String(), err
 }
 
-// BandwidthLimitRuleList returns a Pager which allows you to iterate over a collection of
+// ListBandwidthLimitRules returns a Pager which allows you to iterate over a collection of
 // BandwidthLimitRules. It accepts a ListOpts struct, which allows you to filter and sort
 // the returned collection for greater efficiency.
-func BandwidthLimitRulesList(c *gophercloud.ServiceClient, policyID string, opts BandwidthLimitRulesListOptsBuilder) pagination.Pager {
+func ListBandwidthLimitRules(c *gophercloud.ServiceClient, policyID string, opts BandwidthLimitRulesListOptsBuilder) pagination.Pager {
 	url := listBandwidthLimitRulesURL(c, policyID)
 	if opts != nil {
 		query, err := opts.ToBandwidthLimitRulesListQuery()

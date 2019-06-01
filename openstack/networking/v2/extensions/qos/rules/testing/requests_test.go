@@ -27,7 +27,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := rules.BandwidthLimitRulesList(
+	err := rules.ListBandwidthLimitRules(
 		fake.ServiceClient(),
 		"501005fa-3b56-4061-aaca-3f24995112e1",
 		rules.BandwidthLimitRulesListOpts{},

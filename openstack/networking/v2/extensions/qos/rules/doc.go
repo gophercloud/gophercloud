@@ -9,7 +9,7 @@ Example of Listing BandwidthLimitRules
 
     policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
 
-    allPages, err := rules.BandwidthLimitRulesList(networkClient, policyID, listOpts).AllPages()
+    allPages, err := rules.ListBandwidthLimitRules(networkClient, policyID, listOpts).AllPages()
     if err != nil {
         panic(err)
     }
