@@ -1,8 +1,10 @@
 package policies
 
 import (
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 // PortCreateOptsExt adds QoS options to the base ports.CreateOpts.
@@ -111,4 +113,58 @@ func (opts NetworkUpdateOptsExt) ToNetworkUpdateMap() (map[string]interface{}, e
 	}
 
 	return base, nil
+}
+
+// PolicyListOptsBuilder allows extensions to add additional parameters to the List request.
+type PolicyListOptsBuilder interface {
+	ToPolicyListQuery() (string, error)
+}
+
+// ListOpts allows the filtering and sorting of paginated collections through
+// the Neutron API. Filtering is achieved by passing in struct field values
+// that map to the Policy attributes you want to see returned.
+// SortKey allows you to sort by a particular BandwidthLimitRule attribute.
+// SortDir sets the direction, and is either `asc' or `desc'.
+// Marker and Limit are used for the pagination.
+type ListOpts struct {
+	ID             string `q:"id"`
+	TenantID       string `q:"tenant_id"`
+	ProjectID      string `q:"project_id"`
+	Name           string `q:"name"`
+	Description    string `q:"description"`
+	RevisionNumber *int   `q:"revision_number"`
+	IsDefault      *bool  `q:"is_default"`
+	Shared         *bool  `q:"shared"`
+	Limit          int    `q:"limit"`
+	Marker         string `q:"marker"`
+	SortKey        string `q:"sort_key"`
+	SortDir        string `q:"sort_dir"`
+	Tags           string `q:"tags"`
+	TagsAny        string `q:"tags-any"`
+	NotTags        string `q:"not-tags"`
+	NotTagsAny     string `q:"not-tags-any"`
+}
+
+// ToPolicyListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToPolicyListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List returns a Pager which allows you to iterate over a collection of
+// Policy. It accepts a ListOpts struct, which allows you to filter and sort
+// the returned collection for greater efficiency.
+func List(c *gophercloud.ServiceClient, opts PolicyListOptsBuilder) pagination.Pager {
+	url := listURL(c)
+	if opts != nil {
+		query, err := opts.ToPolicyListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return PolicyPage{pagination.LinkedPageBase{PageResult: r}}
+
+	})
 }

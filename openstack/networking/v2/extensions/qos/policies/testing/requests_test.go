@@ -9,6 +9,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/qos/policies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -291,4 +292,44 @@ func TestUpdateNetworkWithoutPolicy(t *testing.T) {
 	th.AssertEquals(t, n.TenantID, "4fd44f30292945e481c7b8a0c8908869")
 	th.AssertEquals(t, n.ID, "65c0ee9f-d634-4522-8954-51021b570b0d")
 	th.AssertEquals(t, n.QoSPolicyID, "")
+}
+
+func TestListPolicies(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ListPoliciesResponse)
+	})
+
+	count := 0
+
+	err := policies.List(fake.ServiceClient(), policies.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := policies.ExtractPolicies(page)
+		if err != nil {
+			t.Errorf("Failed to extract policies: %v", err)
+			return false, nil
+		}
+
+		expected := []policies.Policy{
+			Policy1,
+			Policy2,
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }
