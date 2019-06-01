@@ -11,7 +11,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestList(t *testing.T) {
+func TestListBandwidthLimitRule(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -27,7 +27,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	err := rules.BandwidthLimitRulesList(
+	err := rules.ListBandwidthLimitRules(
 		fake.ServiceClient(),
 		"501005fa-3b56-4061-aaca-3f24995112e1",
 		rules.BandwidthLimitRulesListOpts{},
@@ -59,7 +59,7 @@ func TestList(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
+func TestGetBandwidthLimitRule(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -82,7 +82,7 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, r.MaxKBps, 3000)
 }
 
-func TestCreate(t *testing.T) {
+func TestCreateBandwidthLimitRule(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -108,4 +108,34 @@ func TestCreate(t *testing.T) {
 
 	th.AssertEquals(t, 200, r.MaxBurstKBps)
 	th.AssertEquals(t, 2000, r.MaxKBps)
+}
+
+func TestUpdateBandwidthLimitRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies/501005fa-3b56-4061-aaca-3f24995112e1/bandwidth_limit_rules/30a57f4a-336b-4382-8275-d708babd2241", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, BandwidthLimitRulesUpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, BandwidthLimitRulesUpdateResult)
+	})
+
+	maxKBps := 500
+	maxBurstKBps := 0
+	opts := rules.UpdateBandwidthLimitRuleOpts{
+		MaxKBps:      &maxKBps,
+		MaxBurstKBps: &maxBurstKBps,
+	}
+	r, err := rules.UpdateBandwidthLimitRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241", opts).ExtractBandwidthLimitRule()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, 0, r.MaxBurstKBps)
+	th.AssertEquals(t, 500, r.MaxKBps)
 }
