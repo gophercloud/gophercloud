@@ -30,6 +30,12 @@ type CreateBandwidthLimitRuleResult struct {
 	commonResult
 }
 
+// UpdateBandwidthLimitRuleResult represents the result of a Update operation. Call its Extract
+// method to interpret it as a BandwidthLimitRule.
+type UpdateBandwidthLimitRuleResult struct {
+	commonResult
+}
+
 // BandwidthLimitRule represents a QoS policy rule to set bandwidth limits.
 type BandwidthLimitRule struct {
 	// ID is a unique ID of the policy.
