@@ -168,3 +168,9 @@ func List(c *gophercloud.ServiceClient, opts PolicyListOptsBuilder) pagination.P
 
 	})
 }
+
+// Get retrieves a specific QoS policy based on its ID.
+func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
+	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
+}

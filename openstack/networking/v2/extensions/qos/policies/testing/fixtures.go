@@ -215,3 +215,31 @@ var Policy2 = policies.Policy{
 	ProjectID:      "a77cbe0998374aed9a6798ad6c61677e",
 	ID:             "d6e7c2fe-24dc-43be-a088-24b47d4f8f88",
 }
+
+const GetPolicyResponse = `
+{
+    "policy": {
+        "name": "bw-limiter",
+        "tags": [],
+        "rules": [
+            {
+                "max_kbps": 3000,
+                "direction": "egress",
+                "qos_policy_id": "d6ae28ce-fcb5-4180-aa62-d260a27e09ae",
+                "type": "bandwidth_limit",
+                "id": "30a57f4a-336b-4382-8275-d708babd2241",
+                "max_burst_kbps": 300
+            }
+        ],
+        "tenant_id": "a77cbe0998374aed9a6798ad6c61677e",
+        "created_at": "2019-05-19T11:17:50Z",
+        "updated_at": "2019-05-19T11:17:57Z",
+        "is_default": false,
+        "revision_number": 1,
+        "shared": false,
+        "project_id": "a77cbe0998374aed9a6798ad6c61677e",
+        "id": "d6ae28ce-fcb5-4180-aa62-d260a27e09ae",
+        "description": ""
+    }
+}
+`

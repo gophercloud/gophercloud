@@ -4,7 +4,7 @@ for the OpenStack Networking service.
 
 Example to Get a Port with a QoS policy
 
-	var portWithQoS struct {
+    var portWithQoS struct {
         ports.Port
         policies.QoSPolicyExt
     }
@@ -20,31 +20,31 @@ Example to Get a Port with a QoS policy
 
 Example to Create a Port with a QoS policy
 
-	var portWithQoS struct {
-		ports.Port
-		policies.QoSPolicyExt
-	}
+    var portWithQoS struct {
+        ports.Port
+        policies.QoSPolicyExt
+    }
 
-	policyID := "d6ae28ce-fcb5-4180-aa62-d260a27e09ae"
-	networkID := "7069db8d-e817-4b39-a654-d2dd76e73d36"
+    policyID := "d6ae28ce-fcb5-4180-aa62-d260a27e09ae"
+    networkID := "7069db8d-e817-4b39-a654-d2dd76e73d36"
 
-	portCreateOpts := ports.CreateOpts{
-		NetworkID: networkID,
-	}
+    portCreateOpts := ports.CreateOpts{
+        NetworkID: networkID,
+    }
 
-	createOpts := policies.PortCreateOptsExt{
-		CreateOptsBuilder: portCreateOpts,
-		QoSPolicyID:       policyID,
-	}
+    createOpts := policies.PortCreateOptsExt{
+        CreateOptsBuilder: portCreateOpts,
+        QoSPolicyID:       policyID,
+    }
 
-	err = ports.Create(client, createOpts).ExtractInto(&portWithQoS)
-	if err != nil {
-		panic(err)
-	}
+    err = ports.Create(client, createOpts).ExtractInto(&portWithQoS)
+    if err != nil {
+        panic(err)
+    }
 
-	fmt.Printf("Port: %+v\n", portWithQoS)
+    fmt.Printf("Port: %+v\n", portWithQoS)
 
-Example to add a QoS policy to an existing Port
+Example to Add a QoS policy to an existing Port
 
     var portWithQoS struct {
         ports.Port
@@ -57,7 +57,7 @@ Example to add a QoS policy to an existing Port
 
     updateOpts := policies.PortUpdateOptsExt{
         UpdateOptsBuilder: portUpdateOpts,
-        QoSPolicyID: &policyID,
+        QoSPolicyID:       &policyID,
     }
 
     err := ports.Update(client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithQoS)
@@ -67,7 +67,7 @@ Example to add a QoS policy to an existing Port
 
     fmt.Printf("Port: %+v\n", portWithQoS)
 
-Example to delete a QoS policy from the existing Port
+Example to Delete a QoS policy from the existing Port
 
     var portWithQoS struct {
         ports.Port
@@ -80,7 +80,7 @@ Example to delete a QoS policy from the existing Port
 
     updateOpts := policies.PortUpdateOptsExt{
         UpdateOptsBuilder: portUpdateOpts,
-        QoSPolicyID: &policyID,
+        QoSPolicyID:       &policyID,
     }
 
     err := ports.Update(client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&portWithQoS)
@@ -145,7 +145,7 @@ Example to add a QoS policy to an existing Network
 
     updateOpts := policies.NetworkUpdateOptsExt{
         UpdateOptsBuilder: networkUpdateOpts,
-        QoSPolicyID: &policyID,
+        QoSPolicyID:       &policyID,
     }
 
     err := networks.Update(client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&networkWithQoS)
@@ -168,7 +168,7 @@ Example to delete a QoS policy from the existing Network
 
     updateOpts := policies.NetworkUpdateOptsExt{
         UpdateOptsBuilder: networkUpdateOpts,
-        QoSPolicyID: &policyID,
+        QoSPolicyID:       &policyID,
     }
 
     err := networks.Update(client, "65c0ee9f-d634-4522-8954-51021b570b0d", updateOpts).ExtractInto(&networkWithQoS)
@@ -178,7 +178,7 @@ Example to delete a QoS policy from the existing Network
 
     fmt.Printf("Network: %+v\n", networkWithQoS)
 
-Example to list QoS policies
+Example to List QoS policies
 
     shared := true
     listOpts := policies.ListOpts{
@@ -199,5 +199,16 @@ Example to list QoS policies
     for _, policy := range allPolicies {
         fmt.Printf("%+v\n", policy)
     }
+
+Example to Get a specific QoS policy
+
+    policyID := "30a57f4a-336b-4382-8275-d708babd2241"
+
+    policy, err := policies.Get(networkClient, policyID).Extract()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("%+v\n", policy)
 */
 package policies
