@@ -13,6 +13,25 @@ type QoSPolicyExt struct {
 	QoSPolicyID string `json:"qos_policy_id"`
 }
 
+type commonResult struct {
+	gophercloud.Result
+}
+
+// GetResult represents the result of a get operation. Call its Extract
+// method to interpret it as a QoS policy.
+type GetResult struct {
+	commonResult
+}
+
+// Extract is a function that accepts a result and extracts a QoS policy resource.
+func (r commonResult) Extract() (*Policy, error) {
+	var s struct {
+		Policy *Policy `json:"policy"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Policy, err
+}
+
 // Policy represents a QoS policy.
 type Policy struct {
 	// ID is the id of the policy.
