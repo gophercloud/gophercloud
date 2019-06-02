@@ -67,3 +67,15 @@ const BandwidthLimitRulesUpdateResult = `
     }
 }
 `
+
+// DSCPMarkingRulesListResult represents a raw result of a List call to DSCPMarkingRules.
+const DSCPMarkingRulesListResult = `
+{
+    "dscp_marking_rules": [
+        {
+            "id": "30a57f4a-336b-4382-8275-d708babd2241",
+            "dscp_mark": 20
+        }
+    ]
+}
+`

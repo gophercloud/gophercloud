@@ -80,5 +80,25 @@ Example of Deleting a single BandwidthLimitRule
     if err != nil {
         panic(err)
     }
+
+Example of Listing DSCP marking rules
+
+    listOpts := rules.DSCPMarkingRulesListOpts{}
+
+    policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
+
+    allPages, err := rules.ListDSCPMarkingRules(networkClient, policyID, listOpts).AllPages()
+    if err != nil {
+        panic(err)
+    }
+
+    allDSCPMarkingRules, err := rules.ExtractDSCPMarkingRules(allPages)
+    if err != nil {
+        panic(err)
+    }
+
+    for _, dscpMarkingRule := range allDSCPMarkingRules {
+        fmt.Printf("%+v\n", dscpMarkingRule)
+    }
 */
 package rules

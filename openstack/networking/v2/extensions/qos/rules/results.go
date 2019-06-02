@@ -86,3 +86,42 @@ func ExtractBandwidthLimitRules(r pagination.Page) ([]BandwidthLimitRule, error)
 func ExtractBandwidthLimitRulesInto(r pagination.Page, v interface{}) error {
 	return r.(BandwidthLimitRulePage).Result.ExtractIntoSlicePtr(v, "bandwidth_limit_rules")
 }
+
+// DSCPMarkingRule represents a QoS policy rule to set DSCP marking.
+type DSCPMarkingRule struct {
+	// ID is a unique ID of the policy.
+	ID string `json:"id"`
+
+	// TenantID is the ID of the Identity project.
+	TenantID string `json:"tenant_id"`
+
+	// DSCPMark contains DSCP mark value.
+	DSCPMark int `json:"dscp_mark"`
+
+	// Tags optionally set via extensions/attributestags.
+	Tags []string `json:"tags"`
+}
+
+// DSCPMarkingRulePage stores a single page of DSCPMarkingRules from a List() API call.
+type DSCPMarkingRulePage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty checks whether a DSCPMarkingRulePage is empty.
+func (r DSCPMarkingRulePage) IsEmpty() (bool, error) {
+	is, err := ExtractDSCPMarkingRules(r)
+	return len(is) == 0, err
+}
+
+// ExtractDSCPMarkingRules accepts a DSCPMarkingRulePage, and extracts the elements into a slice of
+// DSCPMarkingRules.
+func ExtractDSCPMarkingRules(r pagination.Page) ([]DSCPMarkingRule, error) {
+	var s []DSCPMarkingRule
+	err := ExtractDSCPMarkingRulesInto(r, &s)
+	return s, err
+}
+
+// ExtractDSCPMarkingRulesInto extracts the elements into a slice of RBAC Policy structs.
+func ExtractDSCPMarkingRulesInto(r pagination.Page, v interface{}) error {
+	return r.(DSCPMarkingRulePage).Result.ExtractIntoSlicePtr(v, "dscp_marking_rules")
+}
