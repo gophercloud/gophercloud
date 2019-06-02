@@ -123,7 +123,7 @@ type PolicyListOptsBuilder interface {
 // ListOpts allows the filtering and sorting of paginated collections through
 // the Neutron API. Filtering is achieved by passing in struct field values
 // that map to the Policy attributes you want to see returned.
-// SortKey allows you to sort by a particular BandwidthLimitRule attribute.
+// SortKey allows you to sort by a particular Policy attribute.
 // SortDir sets the direction, and is either `asc' or `desc'.
 // Marker and Limit are used for the pagination.
 type ListOpts struct {
@@ -172,5 +172,50 @@ func List(c *gophercloud.ServiceClient, opts PolicyListOptsBuilder) pagination.P
 // Get retrieves a specific QoS policy based on its ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	return
+}
+
+// CreateOptsBuilder allows to add additional parameters to the
+// Create request.
+type CreateOptsBuilder interface {
+	ToPolicyCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts specifies parameters of a new QoS policy.
+type CreateOpts struct {
+	// Name is the human-readable name of the QoS policy.
+	Name string `json:"name"`
+
+	// TenantID is the id of the Identity project.
+	TenantID string `json:"tenant_id,omitempty"`
+
+	// ProjectID is the id of the Identity project.
+	ProjectID string `json:"project_id,omitempty"`
+
+	// Shared indicates whether this QoS policy is shared across all projects.
+	Shared bool `json:"shared,omitempty"`
+
+	// Description is the human-readable description for the QoS policy.
+	Description string `json:"description,omitempty"`
+
+	// IsDefault indicates if this QoS policy is default policy or not.
+	IsDefault bool `json:"is_default,omitempty"`
+}
+
+// ToPolicyCreateMap constructs a request body from CreateOpts.
+func (opts CreateOpts) ToPolicyCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "policy")
+}
+
+// Create requests the creation of a new QoS policy on the server.
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToPolicyCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
 	return
 }
