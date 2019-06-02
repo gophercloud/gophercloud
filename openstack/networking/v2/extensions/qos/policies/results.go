@@ -23,6 +23,12 @@ type GetResult struct {
 	commonResult
 }
 
+// CreateResult represents the result of a Create operation. Call its Extract
+// method to interpret it as a QoS policy.
+type CreateResult struct {
+	commonResult
+}
+
 // Extract is a function that accepts a result and extracts a QoS policy resource.
 func (r commonResult) Extract() (*Policy, error) {
 	var s struct {

@@ -210,5 +210,20 @@ Example to Get a specific QoS policy
     }
 
     fmt.Printf("%+v\n", policy)
+
+Example to Create a QoS policy
+
+    opts := policies.CreateOpts{
+        Name:      "shared-default-policy",
+        Shared:    true,
+        IsDefault: true,
+    }
+
+    policy, err := policies.Create(networkClient, opts).Extract()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("%+v\n", policy)
 */
 package policies
