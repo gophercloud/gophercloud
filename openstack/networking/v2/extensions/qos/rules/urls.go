@@ -6,6 +6,7 @@ const (
 	rootPath = "qos/policies"
 
 	bandwidthLimitRulesResourcePath = "bandwidth_limit_rules"
+	dscpMarkingRulesResourcePath    = "dscp_marking_rules"
 )
 
 func bandwidthLimitRulesRootURL(c *gophercloud.ServiceClient, policyID string) string {
@@ -34,4 +35,12 @@ func updateBandwidthLimitRuleURL(c *gophercloud.ServiceClient, policyID, ruleID 
 
 func deleteBandwidthLimitRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
 	return bandwidthLimitRulesResourceURL(c, policyID, ruleID)
+}
+
+func dscpMarkingRulesRootURL(c *gophercloud.ServiceClient, policyID string) string {
+	return c.ServiceURL(rootPath, policyID, dscpMarkingRulesResourcePath)
+}
+
+func listDSCPMarkingRulesURL(c *gophercloud.ServiceClient, policyID string) string {
+	return dscpMarkingRulesRootURL(c, policyID)
 }

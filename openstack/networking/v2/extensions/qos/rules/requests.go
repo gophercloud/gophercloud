@@ -140,3 +140,53 @@ func DeleteBandwidthLimitRule(c *gophercloud.ServiceClient, policyID, ruleID str
 	_, r.Err = c.Delete(deleteBandwidthLimitRuleURL(c, policyID, ruleID), nil)
 	return
 }
+
+// DSCPMarkingRulesListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type DSCPMarkingRulesListOptsBuilder interface {
+	ToDSCPMarkingRulesListQuery() (string, error)
+}
+
+// DSCPMarkingRulesListOpts allows the filtering and sorting of paginated collections through
+// the Neutron API. Filtering is achieved by passing in struct field values
+// that map to the DSCPMarking attributes you want to see returned.
+// SortKey allows you to sort by a particular DSCPMarkingRule attribute.
+// SortDir sets the direction, and is either `asc' or `desc'.
+// Marker and Limit are used for the pagination.
+type DSCPMarkingRulesListOpts struct {
+	ID         string `q:"id"`
+	TenantID   string `q:"tenant_id"`
+	DSCPMark   int    `q:"dscp_mark"`
+	Limit      int    `q:"limit"`
+	Marker     string `q:"marker"`
+	SortKey    string `q:"sort_key"`
+	SortDir    string `q:"sort_dir"`
+	Tags       string `q:"tags"`
+	TagsAny    string `q:"tags-any"`
+	NotTags    string `q:"not-tags"`
+	NotTagsAny string `q:"not-tags-any"`
+}
+
+// ToDSCPMarkingRulesListQuery formats a ListOpts into a query string.
+func (opts DSCPMarkingRulesListOpts) ToDSCPMarkingRulesListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// ListDSCPMarkingRules returns a Pager which allows you to iterate over a collection of
+// DSCPMarkingRules. It accepts a ListOpts struct, which allows you to filter and sort
+// the returned collection for greater efficiency.
+func ListDSCPMarkingRules(c *gophercloud.ServiceClient, policyID string, opts DSCPMarkingRulesListOptsBuilder) pagination.Pager {
+	url := listDSCPMarkingRulesURL(c, policyID)
+	if opts != nil {
+		query, err := opts.ToDSCPMarkingRulesListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return DSCPMarkingRulePage{pagination.LinkedPageBase{PageResult: r}}
+
+	})
+}
