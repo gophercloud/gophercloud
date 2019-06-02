@@ -177,5 +177,27 @@ Example to delete a QoS policy from the existing Network
     }
 
     fmt.Printf("Network: %+v\n", networkWithQoS)
+
+Example to list QoS policies
+
+    shared := true
+    listOpts := policies.ListOpts{
+        Name:   "shared-policy",
+        Shared: &shared,
+    }
+
+    allPages, err := policies.List(networkClient, listOpts).AllPages()
+    if err != nil {
+        panic(err)
+    }
+
+	allPolicies, err := policies.ExtractPolicies(allPages)
+    if err != nil {
+        panic(err)
+    }
+
+    for _, policy := range allPolicies {
+        fmt.Printf("%+v\n", policy)
+    }
 */
 package policies
