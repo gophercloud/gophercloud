@@ -19,5 +19,5 @@ func TestGetDiagnostics(t *testing.T) {
 	res, err := diagnostics.Get(client.ServiceClient(), "1234asdf").Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertDeepEquals(t, &expected, res)
+	th.AssertDeepEquals(t, expected, res)
 }
