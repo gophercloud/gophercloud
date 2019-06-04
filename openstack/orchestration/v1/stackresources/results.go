@@ -16,13 +16,13 @@ type Resource struct {
 	Links          []gophercloud.Link     `json:"links"`
 	LogicalID      string                 `json:"logical_resource_id"`
 	Name           string                 `json:"resource_name"`
+	ParentResource string                 `json:"parent_resource"`
 	PhysicalID     string                 `json:"physical_resource_id"`
 	RequiredBy     []interface{}          `json:"required_by"`
 	Status         string                 `json:"resource_status"`
 	StatusReason   string                 `json:"resource_status_reason"`
 	Type           string                 `json:"resource_type"`
 	UpdatedTime    time.Time              `json:"-"`
-	ParentResource string                 `json:"parent_resource"`
 }
 
 func (r *Resource) UnmarshalJSON(b []byte) error {
