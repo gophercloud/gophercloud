@@ -448,3 +448,17 @@ func TestUpdatePolicy(t *testing.T) {
 	th.AssertEquals(t, 1, p.RevisionNumber)
 	th.AssertEquals(t, "d6ae28ce-fcb5-4180-aa62-d260a27e09ae", p.ID)
 }
+
+func TestDeletePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies/d6ae28ce-fcb5-4180-aa62-d260a27e09ae", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := policies.Delete(fake.ServiceClient(), "d6ae28ce-fcb5-4180-aa62-d260a27e09ae")
+	th.AssertNoErr(t, res.Err)
+}
