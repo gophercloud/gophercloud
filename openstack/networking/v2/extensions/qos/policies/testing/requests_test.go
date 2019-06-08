@@ -409,3 +409,42 @@ func TestCreatePolicy(t *testing.T) {
 	th.AssertEquals(t, 0, p.RevisionNumber)
 	th.AssertEquals(t, "d6ae28ce-fcb5-4180-aa62-d260a27e09ae", p.ID)
 }
+
+func TestUpdatePolicy(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies/d6ae28ce-fcb5-4180-aa62-d260a27e09ae", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, UpdatePolicyRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, UpdatePolicyResponse)
+	})
+
+	shared := true
+	description := ""
+	opts := policies.UpdateOpts{
+		Name:        "new-name",
+		Shared:      &shared,
+		Description: &description,
+	}
+	p, err := policies.Update(fake.ServiceClient(), "d6ae28ce-fcb5-4180-aa62-d260a27e09ae", opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "new-name", p.Name)
+	th.AssertEquals(t, true, p.Shared)
+	th.AssertEquals(t, false, p.IsDefault)
+	th.AssertEquals(t, "", p.Description)
+	th.AssertEquals(t, "a77cbe0998374aed9a6798ad6c61677e", p.TenantID)
+	th.AssertEquals(t, "a77cbe0998374aed9a6798ad6c61677e", p.ProjectID)
+	th.AssertEquals(t, time.Date(2019, 5, 19, 11, 17, 50, 0, time.UTC), p.CreatedAt)
+	th.AssertEquals(t, time.Date(2019, 6, 1, 13, 17, 57, 0, time.UTC), p.UpdatedAt)
+	th.AssertEquals(t, 1, p.RevisionNumber)
+	th.AssertEquals(t, "d6ae28ce-fcb5-4180-aa62-d260a27e09ae", p.ID)
+}

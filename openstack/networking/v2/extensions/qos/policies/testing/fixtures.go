@@ -273,3 +273,32 @@ const CreatePolicyResponse = `
     }
 }
 `
+
+const UpdatePolicyRequest = `
+{
+    "policy": {
+        "name": "new-name",
+        "shared": true,
+        "description": ""
+    }
+}
+`
+
+const UpdatePolicyResponse = `
+{
+    "policy": {
+        "name": "new-name",
+        "tags": [],
+        "rules": [],
+        "tenant_id": "a77cbe0998374aed9a6798ad6c61677e",
+        "created_at": "2019-05-19T11:17:50Z",
+        "updated_at": "2019-06-01T13:17:57Z",
+        "is_default": false,
+        "revision_number": 1,
+        "shared": true,
+        "project_id": "a77cbe0998374aed9a6798ad6c61677e",
+        "id": "d6ae28ce-fcb5-4180-aa62-d260a27e09ae",
+        "description": ""
+    }
+}
+`
