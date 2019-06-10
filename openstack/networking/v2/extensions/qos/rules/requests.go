@@ -190,3 +190,33 @@ func ListDSCPMarkingRules(c *gophercloud.ServiceClient, policyID string, opts DS
 
 	})
 }
+
+// CreateDSCPMarkingRuleOptsBuilder allows to add additional parameters to the
+// CreateDSCPMarkingRule request.
+type CreateDSCPMarkingRuleOptsBuilder interface {
+	ToDSCPMarkingRuleCreateMap() (map[string]interface{}, error)
+}
+
+// CreateDSCPMarkingRuleOpts specifies parameters of a new DSCPMarkingRule.
+type CreateDSCPMarkingRuleOpts struct {
+	// DSCPMark contains DSCP mark value.
+	DSCPMark int `json:"dscp_mark"`
+}
+
+// ToDSCPMarkingRuleCreateMap constructs a request body from CreateDSCPMarkingRuleOpts.
+func (opts CreateDSCPMarkingRuleOpts) ToDSCPMarkingRuleCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "dscp_marking_rule")
+}
+
+// CreateDSCPMarkingRule requests the creation of a new DSCPMarkingRule on the server.
+func CreateDSCPMarkingRule(client *gophercloud.ServiceClient, policyID string, opts CreateDSCPMarkingRuleOptsBuilder) (r CreateDSCPMarkingRuleResult) {
+	b, err := opts.ToDSCPMarkingRuleCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createDSCPMarkingRuleURL(client, policyID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}

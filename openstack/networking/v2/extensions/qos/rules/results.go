@@ -87,6 +87,21 @@ func ExtractBandwidthLimitRulesInto(r pagination.Page, v interface{}) error {
 	return r.(BandwidthLimitRulePage).Result.ExtractIntoSlicePtr(v, "bandwidth_limit_rules")
 }
 
+// Extract is a function that accepts a result and extracts a DSCPMarkingRule.
+func (r commonResult) ExtractDSCPMarkingRule() (*DSCPMarkingRule, error) {
+	var s struct {
+		DSCPMarkingRule *DSCPMarkingRule `json:"dscp_marking_rule"`
+	}
+	err := r.ExtractInto(&s)
+	return s.DSCPMarkingRule, err
+}
+
+// CreateDSCPMarkingRuleResult represents the result of a Create operation. Call its Extract
+// method to interpret it as a DSCPMarkingRule.
+type CreateDSCPMarkingRuleResult struct {
+	commonResult
+}
+
 // DSCPMarkingRule represents a QoS policy rule to set DSCP marking.
 type DSCPMarkingRule struct {
 	// ID is a unique ID of the policy.

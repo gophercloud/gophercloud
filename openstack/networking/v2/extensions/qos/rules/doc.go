@@ -100,5 +100,20 @@ Example of Listing DSCP marking rules
     for _, dscpMarkingRule := range allDSCPMarkingRules {
         fmt.Printf("%+v\n", dscpMarkingRule)
     }
+
+Example of Creating a single DSCPMarkingRule
+
+    opts := rules.CreateDSCPMarkingRuleOpts{
+        DSCPMark: 20,
+    }
+
+    policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
+
+    rule, err := rules.CreateDSCPMarkingRule(networkClient, policyID, opts).ExtractDSCPMarkingRule()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("Rule: %+v\n", rule)
 */
 package rules

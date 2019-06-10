@@ -44,3 +44,7 @@ func dscpMarkingRulesRootURL(c *gophercloud.ServiceClient, policyID string) stri
 func listDSCPMarkingRulesURL(c *gophercloud.ServiceClient, policyID string) string {
 	return dscpMarkingRulesRootURL(c, policyID)
 }
+
+func createDSCPMarkingRuleURL(c *gophercloud.ServiceClient, policyID string) string {
+	return dscpMarkingRulesRootURL(c, policyID)
+}
