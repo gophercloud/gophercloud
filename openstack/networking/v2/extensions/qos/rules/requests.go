@@ -252,7 +252,7 @@ func UpdateDSCPMarkingRule(client *gophercloud.ServiceClient, policyID, ruleID s
 		return
 	}
 	_, r.Err = client.Put(updateDSCPMarkingRuleURL(client, policyID, ruleID), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{202},
+		OkCodes: []int{200},
 	})
 	return
 }
