@@ -114,6 +114,12 @@ type UpdateDSCPMarkingRuleResult struct {
 	commonResult
 }
 
+// DeleteDSCPMarkingRuleResult represents the result of a Delete operation. Call its Extract
+// method to interpret it as a DSCPMarkingRule.
+type DeleteDSCPMarkingRuleResult struct {
+	gophercloud.ErrResult
+}
+
 // DSCPMarkingRule represents a QoS policy rule to set DSCP marking.
 type DSCPMarkingRule struct {
 	// ID is a unique ID of the policy.

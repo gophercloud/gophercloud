@@ -60,3 +60,7 @@ func createDSCPMarkingRuleURL(c *gophercloud.ServiceClient, policyID string) str
 func updateDSCPMarkingRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
 	return dscpMarkingRulesResourceURL(c, policyID, ruleID)
 }
+
+func deleteDSCPMarkingRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return dscpMarkingRulesResourceURL(c, policyID, ruleID)
+}

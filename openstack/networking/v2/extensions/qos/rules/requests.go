@@ -256,3 +256,9 @@ func UpdateDSCPMarkingRule(client *gophercloud.ServiceClient, policyID, ruleID s
 	})
 	return
 }
+
+// DeleteDSCPMarkingRule accepts policy and rule ID and deletes the DSCPMarkingRule associated with them.
+func DeleteDSCPMarkingRule(c *gophercloud.ServiceClient, policyID, ruleID string) (r DeleteDSCPMarkingRuleResult) {
+	_, r.Err = c.Delete(deleteDSCPMarkingRuleURL(c, policyID, ruleID), nil)
+	return
+}
