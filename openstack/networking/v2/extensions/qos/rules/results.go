@@ -102,6 +102,12 @@ type CreateDSCPMarkingRuleResult struct {
 	commonResult
 }
 
+// UpdateDSCPMarkingRuleResult represents the result of a Update operation. Call its Extract
+// method to interpret it as a DSCPMarkingRule.
+type UpdateDSCPMarkingRuleResult struct {
+	commonResult
+}
+
 // DSCPMarkingRule represents a QoS policy rule to set DSCP marking.
 type DSCPMarkingRule struct {
 	// ID is a unique ID of the policy.

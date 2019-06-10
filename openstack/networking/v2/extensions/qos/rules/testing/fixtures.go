@@ -98,3 +98,22 @@ const DSCPMarkingRuleCreateResult = `
     }
 }
 `
+
+// DSCPMarkingRuleUpdateRequest represents a raw body of a Update DSCPMarkingRule call.
+const DSCPMarkingRuleUpdateRequest = `
+{
+    "dscp_marking_rule": {
+        "dscp_mark": 26
+    }
+}
+`
+
+// DSCPMarkingRuleUpdateResult represents a raw result of a Update DSCPMarkingRule call.
+const DSCPMarkingRuleUpdateResult = `
+{
+    "dscp_marking_rule": {
+        "id": "30a57f4a-336b-4382-8275-d708babd2241",
+        "dscp_mark": 26
+    }
+}
+`

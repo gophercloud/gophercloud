@@ -226,3 +226,31 @@ func TestCreateDSCPMarkingRule(t *testing.T) {
 	th.AssertEquals(t, "30a57f4a-336b-4382-8275-d708babd2241", r.ID)
 	th.AssertEquals(t, 20, r.DSCPMark)
 }
+
+func TestUpdateDSCPMarkingRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies/501005fa-3b56-4061-aaca-3f24995112e1/dscp_marking_rules/30a57f4a-336b-4382-8275-d708babd2241", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, DSCPMarkingRuleUpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, DSCPMarkingRuleUpdateResult)
+	})
+
+	dscpMark := 26
+	opts := rules.UpdateDSCPMarkingRuleOpts{
+		DSCPMark: &dscpMark,
+	}
+	r, err := rules.UpdateDSCPMarkingRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241", opts).ExtractDSCPMarkingRule()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "30a57f4a-336b-4382-8275-d708babd2241", r.ID)
+	th.AssertEquals(t, 26, r.DSCPMark)
+}
