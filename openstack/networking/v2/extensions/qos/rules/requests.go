@@ -130,7 +130,7 @@ func UpdateBandwidthLimitRule(client *gophercloud.ServiceClient, policyID, ruleI
 		return
 	}
 	_, r.Err = client.Put(updateBandwidthLimitRuleURL(client, policyID, ruleID), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{202},
+		OkCodes: []int{200},
 	})
 	return
 }
