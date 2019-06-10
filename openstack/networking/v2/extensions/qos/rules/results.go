@@ -96,6 +96,12 @@ func (r commonResult) ExtractDSCPMarkingRule() (*DSCPMarkingRule, error) {
 	return s.DSCPMarkingRule, err
 }
 
+// GetDSCPMarkingRuleResult represents the result of a Get operation. Call its Extract
+// method to interpret it as a DSCPMarkingRule.
+type GetDSCPMarkingRuleResult struct {
+	commonResult
+}
+
 // CreateDSCPMarkingRuleResult represents the result of a Create operation. Call its Extract
 // method to interpret it as a DSCPMarkingRule.
 type CreateDSCPMarkingRuleResult struct {
@@ -106,6 +112,12 @@ type CreateDSCPMarkingRuleResult struct {
 // method to interpret it as a DSCPMarkingRule.
 type UpdateDSCPMarkingRuleResult struct {
 	commonResult
+}
+
+// DeleteDSCPMarkingRuleResult represents the result of a Delete operation. Call its Extract
+// method to interpret it as a DSCPMarkingRule.
+type DeleteDSCPMarkingRuleResult struct {
+	gophercloud.ErrResult
 }
 
 // DSCPMarkingRule represents a QoS policy rule to set DSCP marking.

@@ -191,6 +191,12 @@ func ListDSCPMarkingRules(c *gophercloud.ServiceClient, policyID string, opts DS
 	})
 }
 
+// GetDSCPMarkingRule retrieves a specific DSCPMarkingRule based on its ID.
+func GetDSCPMarkingRule(c *gophercloud.ServiceClient, policyID, ruleID string) (r GetDSCPMarkingRuleResult) {
+	_, r.Err = c.Get(getDSCPMarkingRuleURL(c, policyID, ruleID), &r.Body, nil)
+	return
+}
+
 // CreateDSCPMarkingRuleOptsBuilder allows to add additional parameters to the
 // CreateDSCPMarkingRule request.
 type CreateDSCPMarkingRuleOptsBuilder interface {
@@ -246,7 +252,13 @@ func UpdateDSCPMarkingRule(client *gophercloud.ServiceClient, policyID, ruleID s
 		return
 	}
 	_, r.Err = client.Put(updateDSCPMarkingRuleURL(client, policyID, ruleID), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{202},
+		OkCodes: []int{200},
 	})
+	return
+}
+
+// DeleteDSCPMarkingRule accepts policy and rule ID and deletes the DSCPMarkingRule associated with them.
+func DeleteDSCPMarkingRule(c *gophercloud.ServiceClient, policyID, ruleID string) (r DeleteDSCPMarkingRuleResult) {
+	_, r.Err = c.Delete(deleteDSCPMarkingRuleURL(c, policyID, ruleID), nil)
 	return
 }

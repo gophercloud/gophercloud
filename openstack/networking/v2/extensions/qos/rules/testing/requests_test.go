@@ -200,6 +200,27 @@ func TestListDSCPMarkingRule(t *testing.T) {
 	}
 }
 
+func TestGetDSCPMarkingRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies/501005fa-3b56-4061-aaca-3f24995112e1/dscp_marking_rules/30a57f4a-336b-4382-8275-d708babd2241", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, DSCPMarkingRuleGetResult)
+	})
+
+	r, err := rules.GetDSCPMarkingRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractDSCPMarkingRule()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, r.ID, "30a57f4a-336b-4382-8275-d708babd2241")
+	th.AssertEquals(t, 26, r.DSCPMark)
+}
+
 func TestCreateDSCPMarkingRule(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -239,7 +260,7 @@ func TestUpdateDSCPMarkingRule(t *testing.T) {
 		th.TestJSONRequest(t, r, DSCPMarkingRuleUpdateRequest)
 
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusAccepted)
+		w.WriteHeader(http.StatusOK)
 
 		fmt.Fprintf(w, DSCPMarkingRuleUpdateResult)
 	})
@@ -253,4 +274,18 @@ func TestUpdateDSCPMarkingRule(t *testing.T) {
 
 	th.AssertEquals(t, "30a57f4a-336b-4382-8275-d708babd2241", r.ID)
 	th.AssertEquals(t, 26, r.DSCPMark)
+}
+
+func TestDeleteDSCPMarkingRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies/501005fa-3b56-4061-aaca-3f24995112e1/dscp_marking_rules/30a57f4a-336b-4382-8275-d708babd2241", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := rules.DeleteDSCPMarkingRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241")
+	th.AssertNoErr(t, res.Err)
 }
