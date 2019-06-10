@@ -122,7 +122,7 @@ func TestUpdateBandwidthLimitRule(t *testing.T) {
 		th.TestJSONRequest(t, r, BandwidthLimitRulesUpdateRequest)
 
 		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusAccepted)
+		w.WriteHeader(http.StatusOK)
 
 		fmt.Fprintf(w, BandwidthLimitRulesUpdateResult)
 	})
