@@ -191,6 +191,12 @@ func ListDSCPMarkingRules(c *gophercloud.ServiceClient, policyID string, opts DS
 	})
 }
 
+// GetDSCPMarkingRule retrieves a specific DSCPMarkingRule based on its ID.
+func GetDSCPMarkingRule(c *gophercloud.ServiceClient, policyID, ruleID string) (r GetDSCPMarkingRuleResult) {
+	_, r.Err = c.Get(getDSCPMarkingRuleURL(c, policyID, ruleID), &r.Body, nil)
+	return
+}
+
 // CreateDSCPMarkingRuleOptsBuilder allows to add additional parameters to the
 // CreateDSCPMarkingRule request.
 type CreateDSCPMarkingRuleOptsBuilder interface {
