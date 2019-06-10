@@ -63,6 +63,7 @@ acceptance/openstack/networking/v2/extensions/layer3
 acceptance/openstack/networking/v2/extensions/mtu
 acceptance/openstack/networking/v2/extensions/networkipavailabilities
 acceptance/openstack/networking/v2/extensions/portsbinding
+acceptance/openstack/networking/v2/extensions/qos/policies
 acceptance/openstack/networking/v2/extensions/qos/ruletypes
 acceptance/openstack/networking/v2/extensions/rbacpolicies
 acceptance/openstack/networking/v2/extensions/subnetpools

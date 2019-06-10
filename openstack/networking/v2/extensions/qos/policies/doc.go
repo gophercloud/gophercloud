@@ -225,5 +225,33 @@ Example to Create a QoS policy
     }
 
     fmt.Printf("%+v\n", policy)
+
+Example to Update a QoS policy
+
+    shared := true
+    isDefault := false
+    opts := policies.UpdateOpts{
+        Name:      "new-name",
+        Shared:    &shared,
+        IsDefault: &isDefault,
+    }
+
+    policyID := "30a57f4a-336b-4382-8275-d708babd2241"
+
+    policy, err := policies.Update(networkClient, policyID, opts).Extract()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("%+v\n", policy)
+
+Example to Delete a QoS policy
+
+    policyID := "30a57f4a-336b-4382-8275-d708babd2241"
+
+    err := policies.Delete(networkClient, policyID).ExtractErr()
+    if err != nil {
+        panic(err)
+    }
 */
 package policies

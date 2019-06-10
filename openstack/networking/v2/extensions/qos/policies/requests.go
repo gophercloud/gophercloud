@@ -219,3 +219,49 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToPolicyUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts represents options used to update a QoS policy.
+type UpdateOpts struct {
+	// Name is the human-readable name of the QoS policy.
+	Name string `json:"name,omitempty"`
+
+	// Shared indicates whether this QoS policy is shared across all projects.
+	Shared *bool `json:"shared,omitempty"`
+
+	// Description is the human-readable description for the QoS policy.
+	Description *string `json:"description,omitempty"`
+
+	// IsDefault indicates if this QoS policy is default policy or not.
+	IsDefault *bool `json:"is_default,omitempty"`
+}
+
+// ToPolicyUpdateMap builds a request body from UpdateOpts.
+func (opts UpdateOpts) ToPolicyUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "policy")
+}
+
+// Update accepts a UpdateOpts struct and updates an existing policy using the
+// values provided.
+func Update(c *gophercloud.ServiceClient, policyID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToPolicyUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(updateURL(c, policyID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+// Delete accepts a unique ID and deletes the QoS policy associated with it.
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(deleteURL(c, id), nil)
+	return
+}
