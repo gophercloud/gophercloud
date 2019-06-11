@@ -155,5 +155,27 @@ Example of Deleting a single DSCPMarkingRule
     if err != nil {
         panic(err)
     }
+
+Example of Listing BandwidthLimitRules
+
+    listOpts := rules.MinimumBandwidthRulesListOpts{
+        MinKBps: 3000,
+    }
+
+    policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
+
+    allPages, err := rules.ListMinimumBandwidthRules(networkClient, policyID, listOpts).AllPages()
+    if err != nil {
+        panic(err)
+    }
+
+    allMinimumBandwidthRules, err := rules.ExtractMinimumBandwidthRules(allPages)
+    if err != nil {
+        panic(err)
+    }
+
+    for _, bandwidthLimitRule := range allMinimumBandwidthRules {
+        fmt.Printf("%+v\n", bandwidthLimitRule)
+    }
 */
 package rules

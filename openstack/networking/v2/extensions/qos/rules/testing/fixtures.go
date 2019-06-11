@@ -127,3 +127,16 @@ const DSCPMarkingRuleUpdateResult = `
     }
 }
 `
+
+// MinimumBandwidthRulesListResult represents a raw result of a List call to MinimumBandwidthRules.
+const MinimumBandwidthRulesListResult = `
+{
+    "minimum_bandwidth_rules": [
+        {
+            "min_kbps": 3000,
+            "direction": "egress",
+            "id": "30a57f4a-336b-4382-8275-d708babd2241"
+        }
+    ]
+}
+`
