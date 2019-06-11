@@ -25,9 +25,9 @@ Feature Request
 ---------------
 
 If you've noticed that a feature is missing from Gophercloud, you'll also
-need to create an issue before doing any work. This is start a discussion about
-whether or not the feature should be included in Gophercloud. We don't want to
-want to see you put in hours of work only to learn that the feature is out of
+need to create an issue before doing any work. This is to start a discussion 
+about whether or not the feature should be included in Gophercloud. We don't 
+want to see you put in hours of work only to learn that the feature is out of 
 scope of the project.
 
 Feature requests can come in different forms:
