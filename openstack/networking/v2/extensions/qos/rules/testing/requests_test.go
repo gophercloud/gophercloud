@@ -336,3 +336,25 @@ func TestListMinimumBandwidthRule(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestGetMinimumBandwidthRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies/501005fa-3b56-4061-aaca-3f24995112e1/minimum_bandwidth_rules/30a57f4a-336b-4382-8275-d708babd2241", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, MinimumBandwidthRulesGetResult)
+	})
+
+	r, err := rules.GetMinimumBandwidthRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241").ExtractMinimumBandwidthRule()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, r.ID, "30a57f4a-336b-4382-8275-d708babd2241")
+	th.AssertEquals(t, r.Direction, "egress")
+	th.AssertEquals(t, r.MinKBps, 3000)
+}

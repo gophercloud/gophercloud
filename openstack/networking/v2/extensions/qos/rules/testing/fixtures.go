@@ -140,3 +140,14 @@ const MinimumBandwidthRulesListResult = `
     ]
 }
 `
+
+// MinimumBandwidthRulesGetResult represents a raw result of a Get call to a specific MinimumBandwidthRule.
+const MinimumBandwidthRulesGetResult = `
+{
+    "minimum_bandwidth_rule": {
+        "min_kbps": 3000,
+        "direction": "egress",
+        "id": "30a57f4a-336b-4382-8275-d708babd2241"
+    }
+}
+`

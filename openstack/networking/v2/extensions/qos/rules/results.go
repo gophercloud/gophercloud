@@ -159,6 +159,21 @@ func ExtractDSCPMarkingRulesInto(r pagination.Page, v interface{}) error {
 	return r.(DSCPMarkingRulePage).Result.ExtractIntoSlicePtr(v, "dscp_marking_rules")
 }
 
+// Extract is a function that accepts a result and extracts a BandwidthLimitRule.
+func (r commonResult) ExtractMinimumBandwidthRule() (*MinimumBandwidthRule, error) {
+	var s struct {
+		MinimumBandwidthRule *MinimumBandwidthRule `json:"minimum_bandwidth_rule"`
+	}
+	err := r.ExtractInto(&s)
+	return s.MinimumBandwidthRule, err
+}
+
+// GetMinimumBandwidthRuleResult represents the result of a Get operation. Call its Extract
+// method to interpret it as a MinimumBandwidthRule.
+type GetMinimumBandwidthRuleResult struct {
+	commonResult
+}
+
 // MinimumBandwidthRule represents a QoS policy rule to set minimum bandwidth.
 type MinimumBandwidthRule struct {
 	// ID is a unique ID of the rule.

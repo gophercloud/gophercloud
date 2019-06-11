@@ -313,3 +313,9 @@ func ListMinimumBandwidthRules(c *gophercloud.ServiceClient, policyID string, op
 
 	})
 }
+
+// GetMinimumBandwidthRule retrieves a specific MinimumBandwidthRule based on its ID.
+func GetMinimumBandwidthRule(c *gophercloud.ServiceClient, policyID, ruleID string) (r GetMinimumBandwidthRuleResult) {
+	_, r.Err = c.Get(getMinimumBandwidthRuleURL(c, policyID, ruleID), &r.Body, nil)
+	return
+}
