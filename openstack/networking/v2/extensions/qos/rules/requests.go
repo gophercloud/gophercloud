@@ -319,3 +319,36 @@ func GetMinimumBandwidthRule(c *gophercloud.ServiceClient, policyID, ruleID stri
 	_, r.Err = c.Get(getMinimumBandwidthRuleURL(c, policyID, ruleID), &r.Body, nil)
 	return
 }
+
+// CreateMinimumBandwidthRuleOptsBuilder allows to add additional parameters to the
+// CreateMinimumBandwidthRule request.
+type CreateMinimumBandwidthRuleOptsBuilder interface {
+	ToMinimumBandwidthRuleCreateMap() (map[string]interface{}, error)
+}
+
+// CreateMinimumBandwidthRuleOpts specifies parameters of a new MinimumBandwidthRule.
+type CreateMinimumBandwidthRuleOpts struct {
+	// MaxKBps is a minimum kilobits per second. It's a required parameter.
+	MinKBps int `json:"min_kbps"`
+
+	// Direction represents the direction of traffic.
+	Direction string `json:"direction,omitempty"`
+}
+
+// ToMinimumBandwidthRuleCreateMap constructs a request body from CreateMinimumBandwidthRuleOpts.
+func (opts CreateMinimumBandwidthRuleOpts) ToMinimumBandwidthRuleCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "minimum_bandwidth_rule")
+}
+
+// CreateMinimumBandwidthRule requests the creation of a new MinimumBandwidthRule on the server.
+func CreateMinimumBandwidthRule(client *gophercloud.ServiceClient, policyID string, opts CreateMinimumBandwidthRuleOptsBuilder) (r CreateMinimumBandwidthRuleResult) {
+	b, err := opts.ToMinimumBandwidthRuleCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createMinimumBandwidthRuleURL(client, policyID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}

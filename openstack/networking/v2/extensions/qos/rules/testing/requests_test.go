@@ -358,3 +358,29 @@ func TestGetMinimumBandwidthRule(t *testing.T) {
 	th.AssertEquals(t, r.Direction, "egress")
 	th.AssertEquals(t, r.MinKBps, 3000)
 }
+
+func TestCreateMinimumBandwidthRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies/501005fa-3b56-4061-aaca-3f24995112e1/minimum_bandwidth_rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, MinimumBandwidthRulesCreateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, MinimumBandwidthRulesCreateResult)
+	})
+
+	opts := rules.CreateMinimumBandwidthRuleOpts{
+		MinKBps: 2000,
+	}
+	r, err := rules.CreateMinimumBandwidthRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", opts).ExtractMinimumBandwidthRule()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, 2000, r.MinKBps)
+}

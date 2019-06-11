@@ -174,6 +174,12 @@ type GetMinimumBandwidthRuleResult struct {
 	commonResult
 }
 
+// CreateMinimumBandwidthRuleResult represents the result of a Create operation. Call its Extract
+// method to interpret it as a MinimumBandwidthtRule.
+type CreateMinimumBandwidthRuleResult struct {
+	commonResult
+}
+
 // MinimumBandwidthRule represents a QoS policy rule to set minimum bandwidth.
 type MinimumBandwidthRule struct {
 	// ID is a unique ID of the rule.

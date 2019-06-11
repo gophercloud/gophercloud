@@ -189,5 +189,20 @@ Example of Getting a single MinimumBandwidthRule
     }
 
     fmt.Printf("Rule: %+v\n", rule)
+
+Example of Creating a single MinimumBandwidthRule
+
+    opts := rules.CreateMinimumBandwidthRuleOpts{
+        MinKBps: 2000,
+    }
+
+    policyID := "501005fa-3b56-4061-aaca-3f24995112e1"
+
+    rule, err := rules.CreateMinimumBandwidthRule(networkClient, policyID, opts).ExtractMinimumBandwidthRule()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("Rule: %+v\n", rule)
 */
 package rules
