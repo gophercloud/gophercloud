@@ -170,7 +170,7 @@ type Data struct {
 	MACs          []string                     `json:"macs"`
 	MemoryMB      int                          `json:"memory_mb"`
 	RootDisk      RootDiskType                 `json:"root_disk"`
-	Hostname      string                       `json:"hostname,omitempty"`
+	Hostname      string                       `json:"hostname"`
 }
 
 // Sub Types defined under Data and deeper in the structure
