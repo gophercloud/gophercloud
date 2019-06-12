@@ -294,7 +294,7 @@ func SetImageMetadata(client *gophercloud.ServiceClient, id string, opts SetImag
 		return
 	}
 	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{202},
+		OkCodes: []int{200},
 	})
 	return
 }

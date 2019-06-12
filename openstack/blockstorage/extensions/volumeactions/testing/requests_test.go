@@ -164,3 +164,19 @@ func TestForceDelete(t *testing.T) {
 	res := volumeactions.ForceDelete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestSetImageMetadata(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockSetImageMetadataResponse(t)
+
+	options := &volumeactions.SetImageMetadataOpts{
+		Metadata: map[string]string{
+			"label": "test",
+		},
+	}
+
+	err := volumeactions.SetImageMetadata(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	th.AssertNoErr(t, err)
+}
