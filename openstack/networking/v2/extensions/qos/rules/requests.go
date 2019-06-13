@@ -352,3 +352,42 @@ func CreateMinimumBandwidthRule(client *gophercloud.ServiceClient, policyID stri
 	})
 	return
 }
+
+// UpdateMinimumBandwidthRuleOptsBuilder allows to add additional parameters to the
+// UpdateMinimumBandwidthRule request.
+type UpdateMinimumBandwidthRuleOptsBuilder interface {
+	ToMinimumBandwidthRuleUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateMinimumBandwidthRuleOpts specifies parameters for the Update call.
+type UpdateMinimumBandwidthRuleOpts struct {
+	// MaxKBps is a minimum kilobits per second. It's a required parameter.
+	MinKBps *int `json:"min_kbps,omitempty"`
+
+	// Direction represents the direction of traffic.
+	Direction string `json:"direction,omitempty"`
+}
+
+// ToMinimumBandwidthRuleUpdateMap constructs a request body from UpdateMinimumBandwidthRuleOpts.
+func (opts UpdateMinimumBandwidthRuleOpts) ToMinimumBandwidthRuleUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "minimum_bandwidth_rule")
+}
+
+// UpdateMinimumBandwidthRule requests the creation of a new MinimumBandwidthRule on the server.
+func UpdateMinimumBandwidthRule(client *gophercloud.ServiceClient, policyID, ruleID string, opts UpdateMinimumBandwidthRuleOptsBuilder) (r UpdateMinimumBandwidthRuleResult) {
+	b, err := opts.ToMinimumBandwidthRuleUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Put(updateMinimumBandwidthRuleURL(client, policyID, ruleID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+// DeleteMinimumBandwidthRule accepts policy and rule ID and deletes the MinimumBandwidthRule associated with them.
+func DeleteMinimumBandwidthRule(c *gophercloud.ServiceClient, policyID, ruleID string) (r DeleteMinimumBandwidthRuleResult) {
+	_, r.Err = c.Delete(deleteMinimumBandwidthRuleURL(c, policyID, ruleID), nil)
+	return
+}

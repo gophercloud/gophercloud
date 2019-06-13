@@ -96,3 +96,46 @@ func TestDSCPMarkingRulesCRUD(t *testing.T) {
 
 	th.AssertEquals(t, found, true)
 }
+
+func TestMinimumBandwidthRulesCRUD(t *testing.T) {
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	// Create a QoS policy
+	policy, err := accpolicies.CreateQoSPolicy(t, client)
+	th.AssertNoErr(t, err)
+	defer policies.Delete(client, policy.ID)
+
+	tools.PrintResource(t, policy)
+
+	// Create a QoS policy rule.
+	rule, err := CreateMinimumBandwidthRule(t, client, policy.ID)
+	th.AssertNoErr(t, err)
+	defer rules.DeleteMinimumBandwidthRule(client, policy.ID, rule.ID)
+
+	// Update the QoS policy rule.
+	minKBps := 500
+	updateOpts := rules.UpdateMinimumBandwidthRuleOpts{
+		MinKBps: &minKBps,
+	}
+	newRule, err := rules.UpdateMinimumBandwidthRule(client, policy.ID, rule.ID, updateOpts).ExtractMinimumBandwidthRule()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newRule)
+	th.AssertEquals(t, newRule.MinKBps, 500)
+
+	allPages, err := rules.ListMinimumBandwidthRules(client, policy.ID, rules.MinimumBandwidthRulesListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+
+	allRules, err := rules.ExtractMinimumBandwidthRules(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, rule := range allRules {
+		if rule.ID == newRule.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+}

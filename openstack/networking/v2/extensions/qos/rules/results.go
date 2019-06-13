@@ -180,6 +180,18 @@ type CreateMinimumBandwidthRuleResult struct {
 	commonResult
 }
 
+// UpdateMinimumBandwidthRuleResult represents the result of a Update operation. Call its Extract
+// method to interpret it as a MinimumBandwidthRule.
+type UpdateMinimumBandwidthRuleResult struct {
+	commonResult
+}
+
+// DeleteMinimumBandwidthRuleResult represents the result of a Delete operation. Call its Extract
+// method to interpret it as a MinimumBandwidthRule.
+type DeleteMinimumBandwidthRuleResult struct {
+	gophercloud.ErrResult
+}
+
 // MinimumBandwidthRule represents a QoS policy rule to set minimum bandwidth.
 type MinimumBandwidthRule struct {
 	// ID is a unique ID of the rule.
