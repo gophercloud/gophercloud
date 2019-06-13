@@ -171,6 +171,7 @@ type Data struct {
 	MemoryMB      int                          `json:"memory_mb"`
 	RootDisk      RootDiskType                 `json:"root_disk"`
 	Hostname      string                       `json:"hostname"`
+	Extra         ExtraHardwareDataType        `json:"extra"`
 }
 
 // Sub Types defined under Data and deeper in the structure
@@ -246,6 +247,20 @@ type SystemVendorType struct {
 	Manufacturer string `json:"manufacturer"`
 	ProductName  string `json:"product_name"`
 	SerialNumber string `json:"serial_number"`
+}
+
+type ExtraHardwareData map[string]interface{}
+
+type ExtraHardwareDataSection map[string]ExtraHardwareData
+
+type ExtraHardwareDataType struct {
+	CPU      ExtraHardwareDataSection `json:"cpu"`
+	Disk     ExtraHardwareDataSection `json:"disk"`
+	Firmware ExtraHardwareDataSection `json:"firmware"`
+	IPMI     ExtraHardwareDataSection `json:"ipmi"`
+	Memory   ExtraHardwareDataSection `json:"memory"`
+	Network  ExtraHardwareDataSection `json:"network"`
+	System   ExtraHardwareDataSection `json:"system"`
 }
 
 // UnmarshalJSON interprets an LLDP TLV [key, value] pair as an LLDPTLVType structure
