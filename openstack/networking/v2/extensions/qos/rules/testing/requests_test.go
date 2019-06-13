@@ -411,3 +411,17 @@ func TestUpdateMinimumBandwidthRule(t *testing.T) {
 
 	th.AssertEquals(t, 500, r.MinKBps)
 }
+
+func TestDeleteMinimumBandwidthRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/qos/policies/501005fa-3b56-4061-aaca-3f24995112e1/minimum_bandwidth_rules/30a57f4a-336b-4382-8275-d708babd2241", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := rules.DeleteMinimumBandwidthRule(fake.ServiceClient(), "501005fa-3b56-4061-aaca-3f24995112e1", "30a57f4a-336b-4382-8275-d708babd2241")
+	th.AssertNoErr(t, res.Err)
+}

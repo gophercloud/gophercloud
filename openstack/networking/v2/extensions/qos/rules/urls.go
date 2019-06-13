@@ -89,3 +89,7 @@ func createMinimumBandwidthRuleURL(c *gophercloud.ServiceClient, policyID string
 func updateMinimumBandwidthRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
 	return minimumBandwidthRulesResourceURL(c, policyID, ruleID)
 }
+
+func deleteMinimumBandwidthRuleURL(c *gophercloud.ServiceClient, policyID, ruleID string) string {
+	return minimumBandwidthRulesResourceURL(c, policyID, ruleID)
+}

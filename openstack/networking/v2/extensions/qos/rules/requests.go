@@ -385,3 +385,9 @@ func UpdateMinimumBandwidthRule(client *gophercloud.ServiceClient, policyID, rul
 	})
 	return
 }
+
+// DeleteMinimumBandwidthRule accepts policy and rule ID and deletes the MinimumBandwidthRule associated with them.
+func DeleteMinimumBandwidthRule(c *gophercloud.ServiceClient, policyID, ruleID string) (r DeleteMinimumBandwidthRuleResult) {
+	_, r.Err = c.Delete(deleteMinimumBandwidthRuleURL(c, policyID, ruleID), nil)
+	return
+}
