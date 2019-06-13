@@ -286,7 +286,7 @@ func MockForceDeleteResponse(t *testing.T) {
 	})
 }
 
-func MockSetImageMetadataResponse(t *testing.T) {
+func MockImageMetadataResponse(t *testing.T) {
 	th.Mux.HandleFunc("/volumes/cd281d77-8217-4830-be95-9528227c105c/action", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)

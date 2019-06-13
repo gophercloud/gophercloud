@@ -268,27 +268,27 @@ func ForceDelete(client *gophercloud.ServiceClient, id string) (r ForceDeleteRes
 	return
 }
 
-// SetImageMetdataOptsBuilder allows extensions to add additional parameters to the
-// SetImageMetadataRequest request.
-type SetImageMetdataOptsBuilder interface {
-	ToSetImageMetadataMap() (map[string]interface{}, error)
+// ImageMetdataOptsBuilder allows extensions to add additional parameters to the
+// ImageMetadataRequest request.
+type ImageMetdataOptsBuilder interface {
+	ToImageMetadataMap() (map[string]interface{}, error)
 }
 
-// SetImageMetadataOpts contains options for setting image metadata to a volume.
-type SetImageMetadataOpts struct {
+// ImageMetadataOpts contains options for setting image metadata to a volume.
+type ImageMetadataOpts struct {
 	// The image metadata to add to the volume as a set of metadata key and value pairs.
 	Metadata map[string]string `json:"metadata"`
 }
 
-// ToSetImageMetadataMap assembles a request body based on the contents of a
-// SetImageMetadataOpts.
-func (opts SetImageMetadataOpts) ToSetImageMetadataMap() (map[string]interface{}, error) {
+// ToImageMetadataMap assembles a request body based on the contents of a
+// ImageMetadataOpts.
+func (opts ImageMetadataOpts) ToImageMetadataMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "os-set_image_metadata")
 }
 
-// SetImageMetadata will set image metadata on a volume based on the values in UploadImageOptsBuilder.
-func SetImageMetadata(client *gophercloud.ServiceClient, id string, opts SetImageMetdataOptsBuilder) (r SetImageMetadataResult) {
-	b, err := opts.ToSetImageMetadataMap()
+// ImageMetadata will set image metadata on a volume based on the values in ImageMetadataOptsBuilder.
+func ImageMetadata(client *gophercloud.ServiceClient, id string, opts ImageMetdataOptsBuilder) (r ImageMetadataResult) {
+	b, err := opts.ToImageMetadataMap()
 	if err != nil {
 		r.Err = err
 		return
