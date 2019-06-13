@@ -268,9 +268,9 @@ func ForceDelete(client *gophercloud.ServiceClient, id string) (r ForceDeleteRes
 	return
 }
 
-// ImageMetdataOptsBuilder allows extensions to add additional parameters to the
+// ImageMetadataOptsBuilder allows extensions to add additional parameters to the
 // ImageMetadataRequest request.
-type ImageMetdataOptsBuilder interface {
+type ImageMetadataOptsBuilder interface {
 	ToImageMetadataMap() (map[string]interface{}, error)
 }
 
@@ -287,7 +287,7 @@ func (opts ImageMetadataOpts) ToImageMetadataMap() (map[string]interface{}, erro
 }
 
 // ImageMetadata will set image metadata on a volume based on the values in ImageMetadataOptsBuilder.
-func ImageMetadata(client *gophercloud.ServiceClient, id string, opts ImageMetdataOptsBuilder) (r ImageMetadataResult) {
+func ImageMetadata(client *gophercloud.ServiceClient, id string, opts ImageMetadataOptsBuilder) (r ImageMetadataResult) {
 	b, err := opts.ToImageMetadataMap()
 	if err != nil {
 		r.Err = err
