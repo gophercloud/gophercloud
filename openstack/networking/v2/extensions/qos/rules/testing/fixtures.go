@@ -170,3 +170,22 @@ const MinimumBandwidthRulesCreateResult = `
     }
 }
 `
+
+// MinimumBandwidthRulesUpdateRequest represents a raw body of a Update MinimumBandwidthRule call.
+const MinimumBandwidthRulesUpdateRequest = `
+{
+    "minimum_bandwidth_rule": {
+        "min_kbps": 500
+    }
+}
+`
+
+// MinimumBandwidthRulesUpdateResult represents a raw result of a Update MinimumBandwidthRule call.
+const MinimumBandwidthRulesUpdateResult = `
+{
+    "minimum_bandwidth_rule": {
+        "min_kbps": 500,
+        "id": "30a57f4a-336b-4382-8275-d708babd2241"
+    }
+}
+`
