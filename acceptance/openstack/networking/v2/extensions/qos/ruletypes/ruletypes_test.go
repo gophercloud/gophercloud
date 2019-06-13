@@ -8,7 +8,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/qos/ruletypes"
 )
 
-func TestListRuleTypes(t *testing.T) {
+func TestRuleTypes(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)
@@ -28,4 +28,15 @@ func TestListRuleTypes(t *testing.T) {
 	}
 
 	tools.PrintResource(t, ruleTypes)
+
+	if len(ruleTypes) > 0 {
+		t.Logf("Trying to get rule type: %s", ruleTypes[0].Type)
+
+		ruleType, err := ruletypes.GetRuleType(client, ruleTypes[0].Type).Extract()
+		if err != nil {
+			t.Fatalf("Failed to get rule type %s: %s", ruleTypes[0].Type, err)
+		}
+
+		tools.PrintResource(t, ruleType)
+	}
 }
