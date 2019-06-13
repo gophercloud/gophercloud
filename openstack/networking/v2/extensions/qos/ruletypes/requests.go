@@ -11,3 +11,9 @@ func ListRuleTypes(c *gophercloud.ServiceClient) (result pagination.Pager) {
 		return ListRuleTypesPage{pagination.SinglePageBase(r)}
 	})
 }
+
+// GetRuleType retrieves a specific QoS RuleType based on its name.
+func GetRuleType(c *gophercloud.ServiceClient, name string) (r GetResult) {
+	_, r.Err = c.Get(getRuleTypeURL(c, name), &r.Body, nil)
+	return
+}
