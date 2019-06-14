@@ -29,9 +29,9 @@ type UploadImageResult struct {
 	gophercloud.Result
 }
 
-// ImageMetadataResult contains the response body and error from an SetImageMetadata
+// SetImageMetadataResult contains the response body and error from an SetImageMetadata
 // request.
-type ImageMetadataResult struct {
+type SetImageMetadataResult struct {
 	gophercloud.ErrResult
 }
 

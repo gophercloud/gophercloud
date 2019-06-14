@@ -99,7 +99,7 @@ func TestVolumeActionsImageMetadata(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer blockstorage.DeleteVolume(t, blockClient, volume)
 
-	err = ImageMetadata(t, blockClient, volume)
+	err = SetImageMetadata(t, blockClient, volume)
 	th.AssertNoErr(t, err)
 }
 

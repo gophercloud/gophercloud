@@ -286,8 +286,8 @@ func (opts ImageMetadataOpts) ToImageMetadataMap() (map[string]interface{}, erro
 	return gophercloud.BuildRequestBody(opts, "os-set_image_metadata")
 }
 
-// ImageMetadata will set image metadata on a volume based on the values in ImageMetadataOptsBuilder.
-func ImageMetadata(client *gophercloud.ServiceClient, id string, opts ImageMetadataOptsBuilder) (r ImageMetadataResult) {
+// SetImageMetadata will set image metadata on a volume based on the values in ImageMetadataOptsBuilder.
+func SetImageMetadata(client *gophercloud.ServiceClient, id string, opts ImageMetadataOptsBuilder) (r SetImageMetadataResult) {
 	b, err := opts.ToImageMetadataMap()
 	if err != nil {
 		r.Err = err

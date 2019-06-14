@@ -174,8 +174,8 @@ func ExtendVolumeSize(t *testing.T, client *gophercloud.ServiceClient, volume *v
 	return nil
 }
 
-// ImageMetadata will apply the metadata to a volume.
-func ImageMetadata(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) error {
+// SetImageMetadata will apply the metadata to a volume.
+func SetImageMetadata(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) error {
 	t.Logf("Attempting to apply image metadata to volume %s", volume.ID)
 
 	imageMetadataOpts := volumeactions.ImageMetadataOpts{
@@ -184,7 +184,7 @@ func ImageMetadata(t *testing.T, client *gophercloud.ServiceClient, volume *volu
 		},
 	}
 
-	err := volumeactions.ImageMetadata(client, volume.ID, imageMetadataOpts).ExtractErr()
+	err := volumeactions.SetImageMetadata(client, volume.ID, imageMetadataOpts).ExtractErr()
 	if err != nil {
 		return err
 	}
