@@ -1,4 +1,6 @@
-## 0.2.0 (Unreleased)
+## 0.3.0 (Unreleaesd)
+
+## 0.2.0 (June 17, 2019)
 
 IMPROVEMENTS
 
