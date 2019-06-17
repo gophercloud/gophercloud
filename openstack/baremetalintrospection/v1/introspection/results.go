@@ -170,7 +170,6 @@ type Data struct {
 	MACs          []string                     `json:"macs"`
 	MemoryMB      int                          `json:"memory_mb"`
 	RootDisk      RootDiskType                 `json:"root_disk"`
-	Hostname      string                       `json:"hostname"`
 	Extra         ExtraHardwareDataType        `json:"extra"`
 }
 
@@ -223,6 +222,7 @@ type InventoryType struct {
 	Interfaces   []InterfaceType  `json:"interfaces"`
 	Memory       MemoryType       `json:"memory"`
 	SystemVendor SystemVendorType `json:"system_vendor"`
+	Hostname     string           `json:"hostname"`
 }
 
 type MemoryType struct {

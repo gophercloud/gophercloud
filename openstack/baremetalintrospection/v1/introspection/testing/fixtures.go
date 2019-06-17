@@ -162,7 +162,8 @@ const IntrospectionDataJSONSample = `
         "sse2"
         ],
          "architecture":"x86_64"
-      }
+	  },
+	  "hostname": "myawesomehost"
    },
    "error":null,
    "local_gb":12,
@@ -302,6 +303,7 @@ var (
 				PhysicalMb: 2048.0,
 				Total:      2.105864192e+09,
 			},
+			Hostname: "myawesomehost",
 		},
 		Error:   "",
 		LocalGB: 12,
