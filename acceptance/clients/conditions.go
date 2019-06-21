@@ -66,10 +66,13 @@ func RequireNovaNetwork(t *testing.T) {
 	}
 }
 
-// SkipRelease will have the test be skipped on a certain
-// release. Releases are named such as 'stable/mitaka', master, etc.
-func SkipRelease(t *testing.T, release string) {
-	if os.Getenv("OS_BRANCH") == release {
-		t.Skipf("this is not supported in %s", release)
+// SkipReleases will have the test be skipped on the certain
+// releases. Releases are named such as 'stable/mitaka', 'master', etc.
+func SkipReleases(t *testing.T, releases []string) {
+	for _, r := range releases {
+		if os.Getenv("OS_BRANCH") == r {
+			t.Skipf("this is not supported in %s", r)
+			break
+		}
 	}
 }

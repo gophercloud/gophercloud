@@ -32,6 +32,8 @@ func TestLoadbalancersList(t *testing.T) {
 }
 
 func TestLoadbalancersListByTags(t *testing.T) {
+	releases := []string{"stable/mitaka", "stable/newton", "stable/ocata", "stable/pike", "stable/queen", "stable/rocky"}
+	clients.SkipRelease(t, releases)
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -108,9 +110,8 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	subnet, err := networking.CreateSubnet(t, netClient, network.ID)
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
-
-	tags := []string{"test"}
-	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags)
+	
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, []string{})
 	th.AssertNoErr(t, err)
 	defer DeleteLoadBalancer(t, lbClient, lb.ID)
 
@@ -399,9 +400,7 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	subnet, err := networking.CreateSubnet(t, netClient, network.ID)
 	th.AssertNoErr(t, err)
 	defer networking.DeleteSubnet(t, netClient, subnet.ID)
-
-	tags := []string{"test"}
-	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, tags)
+	lb, err := CreateLoadBalancer(t, lbClient, subnet.ID, []string{})
 	th.AssertNoErr(t, err)
 	defer CascadeDeleteLoadBalancer(t, lbClient, lb.ID)
 

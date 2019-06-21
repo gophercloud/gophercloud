@@ -487,8 +487,8 @@ func TestServersConsoleOutput(t *testing.T) {
 
 func TestServersTags(t *testing.T) {
 	clients.RequireLong(t)
-	clients.SkipRelease(t, "mitaka")
-	clients.SkipRelease(t, "newton")
+	releases := []string{"stable/mitaka", "stable/newton"}
+	clients.SkipRelease(t, releases)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
@@ -511,8 +511,8 @@ func TestServersTags(t *testing.T) {
 func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {
 	clients.RequireLong(t)
 	clients.RequireAdmin(t)
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
+	releases := []string{"stable/mitaka", "stable/newton"}
+	clients.SkipRelease(t, releases)
 
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)

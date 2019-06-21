@@ -55,6 +55,8 @@ func TestCapsuleBase(t *testing.T) {
 }
 
 func TestCapsuleV132(t *testing.T) {
+	releases := []string{"stable/mitaka", "stable/newton", "stable/ocata", "stable/pike", "stable/queen", "stable/rocky"}
+	clients.SkipRelease(t, releases)
 	client, err := clients.NewContainerV1Client()
 	th.AssertNoErr(t, err)
 
