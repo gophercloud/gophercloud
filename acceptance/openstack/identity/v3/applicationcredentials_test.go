@@ -16,6 +16,10 @@ import (
 
 func TestApplicationCredentialsCRD(t *testing.T) {
 	clients.RequireAdmin(t)
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
+	clients.SkipRelease(t, "stable/pike")
 
 	// maps are required, because Application Credential roles are returned in a random order
 	rolesToMap := func(roles []applicationcredentials.Role) map[string]string {

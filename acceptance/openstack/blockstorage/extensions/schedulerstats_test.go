@@ -13,6 +13,10 @@ import (
 
 func TestSchedulerStatsList(t *testing.T) {
 	clients.RequireAdmin(t)
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
+	clients.SkipRelease(t, "stable/pike")
 
 	blockClient, err := clients.NewBlockStorageV2Client()
 	th.AssertNoErr(t, err)

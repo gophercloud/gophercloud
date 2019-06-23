@@ -12,6 +12,10 @@ import (
 )
 
 func TestACLCRUD(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/queens")
+
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 

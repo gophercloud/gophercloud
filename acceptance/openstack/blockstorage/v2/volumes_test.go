@@ -79,7 +79,7 @@ func TestVolumesCreateForceDestroy(t *testing.T) {
 func TestVolumesCascadeDelete(t *testing.T) {
 	clients.RequireLong(t)
 
-	client, err := clients.NewBlockStorageV3Client()
+	client, err := clients.NewBlockStorageV2Client()
 	th.AssertNoErr(t, err)
 
 	vol, err := CreateVolume(t, client)

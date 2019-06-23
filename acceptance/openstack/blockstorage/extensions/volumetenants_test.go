@@ -13,6 +13,8 @@ import (
 )
 
 func TestVolumeTenants(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+
 	type volumeWithTenant struct {
 		volumes.Volume
 		volumetenants.VolumeTenantExt

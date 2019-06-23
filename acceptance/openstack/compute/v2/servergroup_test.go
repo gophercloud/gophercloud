@@ -71,6 +71,12 @@ func TestServergroupsAffinityPolicy(t *testing.T) {
 }
 
 func TestServergroupsMicroversionCreateDelete(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
+	clients.SkipRelease(t, "stable/pike")
+	clients.SkipRelease(t, "stable/queens")
+
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
