@@ -64,6 +64,42 @@ func CreateFloatingIPWithFixedIP(t *testing.T, client *gophercloud.ServiceClient
 	return floatingIP, err
 }
 
+// CreatePortForwarding creates a port forwarding for a given floating IP
+// and port. An error will be returned if the creation failed.
+func CreatePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID string, portID string, portFixedIPs []ports.IP) (*floatingips.PortForwarding, error) {
+	t.Logf("Attempting to create Port forwarding for floating IP with ID: %s", fipID)
+
+	fixedIP := portFixedIPs[0]
+	internalIP := fixedIP.IPAddress
+	createOpts := &floatingips.CreatePortForwardingOpts{
+		Protocol:         "tcp",
+		InternalPort:     25,
+		ExternalPort:     2230,
+		InternalIPAdress: internalIP,
+		InternalPortID:   portID,
+	}
+
+	pf, err := floatingips.CreatePortForwarding(client, fipID, createOpts).ExtractPortForwarding()
+	if err != nil {
+		return pf, err
+	}
+
+	t.Logf("Created Port Forwarding.")
+
+	th.AssertEquals(t, pf.Protocol, "tcp")
+
+	return pf, err
+}
+
+// DeletePortForwarding deletes a Port Forwarding with a given ID and a given floating IP ID.
+// A fatal error is returned if the deletion fails. Works best as a deferred function
+func DeletePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID string, pfID string) {
+	err := floatingips.DeletePortForwarding(client, fipID, pfID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Failed to delete Port forwarding with ID %s for floating IP with ID %s", pfID, fipID)
+	}
+}
+
 // CreateExternalRouter creates a router on the external network. This requires
 // the OS_EXTGW_ID environment variable to be set. An error is returned if the
 // creation failed.
@@ -80,10 +116,8 @@ func CreateExternalRouter(t *testing.T, client *gophercloud.ServiceClient) (*rou
 	t.Logf("Attempting to create external router: %s", routerName)
 
 	adminStateUp := true
-	enableSNAT := false
 	gatewayInfo := routers.GatewayInfo{
-		NetworkID:  choices.ExternalNetworkID,
-		EnableSNAT: &enableSNAT,
+		NetworkID: choices.ExternalNetworkID,
 	}
 
 	createOpts := routers.CreateOpts{

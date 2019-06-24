@@ -180,3 +180,37 @@ func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
 	_, r.Err = c.Delete(resourceURL(c, id), nil)
 	return
 }
+
+// CreatePortForwardingOpts contains all the values needed to create a new port forwarding
+// resource. All attributes are required.
+type CreatePortForwardingOpts struct {
+	InternalPortID   string `json:"internal_port_id"`
+	InternalIPAdress string `json:"internal_ip_address"`
+	InternalPort     int    `json:"internal_port"`
+	ExternalPort     int    `json:"external_port"`
+	Protocol         string `json:"protocol"`
+}
+
+// CreatePortForwardingOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type CreatePortForwardingOptsBuilder interface {
+	ToFloatingIPPortForwardingCreateMap() (map[string]interface{}, error)
+}
+
+// ToFloatingIPPortForwardingCreateMap allows CreatePortForwardingOpts to satisfy the CreatePortForwardingOptsBuilder
+// interface
+func (opts CreatePortForwardingOpts) ToFloatingIPPortForwardingCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "port_forwarding")
+}
+
+// CreatePortForwarding accepts a CreatePortForwardingOpts struct and uses the values provided to create a
+// new port forwarding for an existing floating IP.
+func CreatePortForwarding(c *gophercloud.ServiceClient, floatingIpId string, opts CreatePortForwardingOptsBuilder) (r CreateResult) {
+	b, err := opts.ToFloatingIPPortForwardingCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Post(portForwardingUrl(c, floatingIpId), b, &r.Body, nil)
+	return
+}
