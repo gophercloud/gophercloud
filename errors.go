@@ -92,6 +92,17 @@ func (e ErrUnexpectedResponseCode) Error() string {
 	return e.choseErrString()
 }
 
+// GetStatusCode returns the actual status code of the error.
+func (e ErrUnexpectedResponseCode) GetStatusCode() int {
+	return e.Actual
+}
+
+// GenericError can be used to easily get the error status code without doing switch case on all error types.
+type GenericError interface {
+	Error() string
+	GetStatusCode() int
+}
+
 // ErrDefault400 is the default error type returned on a 400 HTTP response code.
 type ErrDefault400 struct {
 	ErrUnexpectedResponseCode
