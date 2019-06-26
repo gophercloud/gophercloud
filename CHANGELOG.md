@@ -1,5 +1,8 @@
 ## 0.3.0 (Unreleaesd)
 
+* Added `openstack/baremetal/apiversions.List` [GH-1577]
+* Added `openstack/baremetal/apiversions.Get` [GH-1577]
+
 ## 0.2.0 (June 17, 2019)
 
 IMPROVEMENTS
