@@ -45,6 +45,10 @@ const GetOutput = `
         "policies": [
             "anti-affinity"
         ],
+        "policy": "anti-affinity",
+        "rules": {
+          "max_server_per_host": 3
+        },
         "members": [],
         "metadata": {}
     }

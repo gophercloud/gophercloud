@@ -45,9 +45,21 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := servergroups.Get(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0").Extract()
+	result := servergroups.Get(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0")
+
+	// Extract basic fields.
+	actual, err := result.Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstServerGroup, actual)
+
+	// Extract additional fields.
+	policy, err := servergroups.ExtractPolicy(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "anti-affinity", policy)
+
+	rules, err := servergroups.ExtractRules(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 3, rules.MaxServerPerHost)
 }
 
 func TestDelete(t *testing.T) {
