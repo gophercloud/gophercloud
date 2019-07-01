@@ -28,5 +28,5 @@ func ExtractRules(r gophercloud.Result) (Rules, error) {
 type Rules struct {
 	// MaxServerPerHost specifies how many servers can reside on a single compute host.
 	// It can be used only with the "anti-affinity" policy.
-	MaxServerPerHost int `json:"max_server_per_host"`
+	MaxServerPerHost int `json:"max_server_per_host,omitempty"`
 }

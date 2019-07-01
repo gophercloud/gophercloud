@@ -64,6 +64,10 @@ const CreateOutput = `
         "policies": [
             "anti-affinity"
         ],
+        "policy": "anti-affinity",
+        "rules": {
+          "max_server_per_host": 3
+        },
         "members": [],
         "metadata": {}
     }
@@ -142,7 +146,11 @@ func HandleCreateSuccessfully(t *testing.T) {
         "name": "test",
         "policies": [
             "anti-affinity"
-        ]
+        ],
+        "policy": "anti-affinity",
+        "rules": {
+            "max_server_per_host": 3
+        }
     }
 }
 `)

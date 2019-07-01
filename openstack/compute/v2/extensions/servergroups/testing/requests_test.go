@@ -32,12 +32,28 @@ func TestCreate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateSuccessfully(t)
 
-	actual, err := servergroups.Create(client.ServiceClient(), servergroups.CreateOpts{
+	result := servergroups.Create(client.ServiceClient(), servergroups.CreateOpts{
 		Name:     "test",
 		Policies: []string{"anti-affinity"},
-	}).Extract()
+		Policy:   "anti-affinity",
+		Rules: servergroups.Rules{
+			MaxServerPerHost: 3,
+		},
+	})
+
+	// Extract basic fields.
+	actual, err := result.Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedServerGroup, actual)
+
+	// Extract additional fields.
+	policy, err := servergroups.ExtractPolicy(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "anti-affinity", policy)
+
+	rules, err := servergroups.ExtractRules(result.Result)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 3, rules.MaxServerPerHost)
 }
 
 func TestGet(t *testing.T) {
