@@ -1,7 +1,13 @@
 ## 0.3.0 (Unreleaesd)
 
+IMPROVEMENTS
+
 * Added `openstack/baremetal/apiversions.List` [GH-1577]
 * Added `openstack/baremetal/apiversions.Get` [GH-1577]
+
+BUG FIXES
+
+* Changed `baremetal/v1/nodes.CleanStep.Args` from `map[string]string` to `map[string]interface{}` [GH-1638](https://github.com/gophercloud/gophercloud/pull/1638)
 
 ## 0.2.0 (June 17, 2019)
 
