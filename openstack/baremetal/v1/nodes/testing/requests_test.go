@@ -282,7 +282,7 @@ func TestNodeChangeProvisionStateClean(t *testing.T) {
 			{
 				Interface: "deploy",
 				Step:      "upgrade_firmware",
-				Args: map[string]string{
+				Args: map[string]interface{}{
 					"force": "True",
 				},
 			},
@@ -304,7 +304,7 @@ func TestNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
 			{
 				Interface: "deploy",
 				Step:      "upgrade_firmware",
-				Args: map[string]string{
+				Args: map[string]interface{}{
 					"force": "True",
 				},
 			},
@@ -323,7 +323,7 @@ func TestCleanStepRequiresInterface(t *testing.T) {
 		CleanSteps: []nodes.CleanStep{
 			{
 				Step: "upgrade_firmware",
-				Args: map[string]string{
+				Args: map[string]interface{}{
 					"force": "True",
 				},
 			},
@@ -342,7 +342,7 @@ func TestCleanStepRequiresStep(t *testing.T) {
 		CleanSteps: []nodes.CleanStep{
 			{
 				Interface: "deploy",
-				Args: map[string]string{
+				Args: map[string]interface{}{
 					"force": "True",
 				},
 			},
