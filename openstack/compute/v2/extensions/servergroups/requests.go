@@ -33,7 +33,7 @@ type CreateOpts struct {
 
 	// Rules specifies the set of rules.
 	// Requires microversion 2.64 or later.
-	Rules Rules `json:"rules,omitempty"`
+	Rules *Rules `json:"rules,omitempty"`
 }
 
 // ToServerGroupCreateMap constructs a request body from CreateOpts.

@@ -32,11 +32,24 @@ func TestCreate(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateSuccessfully(t)
 
+	actual, err := servergroups.Create(client.ServiceClient(), servergroups.CreateOpts{
+		Name:     "test",
+		Policies: []string{"anti-affinity"},
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &CreatedServerGroup, actual)
+}
+
+func TestCreateMicroversion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateMicroversionSuccessfully(t)
+
 	result := servergroups.Create(client.ServiceClient(), servergroups.CreateOpts{
 		Name:     "test",
 		Policies: []string{"anti-affinity"},
 		Policy:   "anti-affinity",
-		Rules: servergroups.Rules{
+		Rules: &servergroups.Rules{
 			MaxServerPerHost: 3,
 		},
 	})
@@ -60,6 +73,16 @@ func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
+
+	actual, err := servergroups.Get(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &FirstServerGroup, actual)
+}
+
+func TestGetMicroversion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetMicroversionSuccessfully(t)
 
 	result := servergroups.Get(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0")
 

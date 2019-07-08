@@ -34,7 +34,7 @@ Example to Create a Server Group with additional microversion 2.64 fields
     createOpts := servergroups.CreateOpts{
 		Name:   "my_sg",
 		Policy: "anti-affinity",
-        Rules: servergroups.Rules{
+        Rules: &servergroups.Rules{
             MaxServerPerHost: 3,
         },
 	}
