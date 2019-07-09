@@ -614,6 +614,34 @@ func CreateServerGroup(t *testing.T, client *gophercloud.ServiceClient, policy s
 	return sg, nil
 }
 
+// CreateServerGroupMicroversion will create a server with a random name using 2.64 microversion. An error will be
+// returned if the server group failed to be created.
+func CreateServerGroupMicroversion(t *testing.T, client *gophercloud.ServiceClient) (*servergroups.ServerGroup, error) {
+	name := tools.RandomString("ACPTTEST", 16)
+	policy := "anti-affinity"
+	maxServerPerHost := 3
+
+	t.Logf("Attempting to create %s server group with max server per host = %d: %s", policy, maxServerPerHost, name)
+
+	sg, err := servergroups.Create(client, &servergroups.CreateOpts{
+		Name:   name,
+		Policy: policy,
+		Rules: &servergroups.Rules{
+			MaxServerPerHost: maxServerPerHost,
+		},
+	}).Extract()
+
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created server group %s", name)
+
+	th.AssertEquals(t, sg.Name, name)
+
+	return sg, nil
+}
+
 // CreateServerInServerGroup works like CreateServer but places the instance in
 // a specified Server Group.
 func CreateServerInServerGroup(t *testing.T, client *gophercloud.ServiceClient, serverGroup *servergroups.ServerGroup) (*servers.Server, error) {
