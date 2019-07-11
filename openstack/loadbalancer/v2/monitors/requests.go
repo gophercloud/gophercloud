@@ -115,7 +115,8 @@ type CreateOpts struct {
 	HTTPMethod string `json:"http_method,omitempty"`
 
 	// Expected HTTP codes for a passing HTTP(S) Monitor. You can either specify
-	// a single status like "200", or a range like "200-202".
+	// a single status like "200", a range like "200-202", or a combination like
+	// "200-202, 401".
 	ExpectedCodes string `json:"expected_codes,omitempty"`
 
 	// TenantID is the UUID of the project who owns the Monitor.
