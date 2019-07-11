@@ -2,12 +2,15 @@
 
 IMPROVEMENTS
 
-* Added `openstack/baremetal/apiversions.List` [GH-1577]
-* Added `openstack/baremetal/apiversions.Get` [GH-1577]
+* Added `openstack/baremetal/apiversions.List` [GH-1577](https://github.com/gophercloud/gophercloud/pull/1577)
+* Added `openstack/baremetal/apiversions.Get` [GH-1577](https://github.com/gophercloud/gophercloud/pull/1577)
+* Added `openstack/compute/v2/extensions/servergroups.CreateOpts.Policy` [GH-1636](https://github.com/gophercloud/gophercloud/pull/1636)
 
 BUG FIXES
 
 * Changed `baremetal/v1/nodes.CleanStep.Args` from `map[string]string` to `map[string]interface{}` [GH-1638](https://github.com/gophercloud/gophercloud/pull/1638)
+* Removed `URLPath` and `ExpectedCodes` from `openstack/loadbalancer/v2/monitors.ToMonitorCreateMap` since Octavia now provides default values when these fields are not specified [GH-1640](https://github.com/gophercloud/gophercloud/pull/1540)
+
 
 ## 0.2.0 (June 17, 2019)
 
