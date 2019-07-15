@@ -109,3 +109,9 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	})
 	return
 }
+
+// Delete deletes a trust.
+func Delete(client *gophercloud.ServiceClient, trustID string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteURL(client, trustID), nil)
+	return
+}

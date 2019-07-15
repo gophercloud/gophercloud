@@ -12,6 +12,12 @@ type CreateResult struct {
 	trustResult
 }
 
+// DeleteResult is the response from a Delete operation. Call its ExtractErr to
+// determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract interprets any trust result as a Trust.
 func (r trustResult) Extract() (*Trust, error) {
 	var s struct {

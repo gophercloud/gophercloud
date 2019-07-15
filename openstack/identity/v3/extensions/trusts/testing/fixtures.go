@@ -122,3 +122,14 @@ func HandleCreateTrust(t *testing.T) {
 		testhelper.AssertNoErr(t, err)
 	})
 }
+
+// HandleDeleteUserSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that tests user deletion.
+func HandleDeleteTrust(t *testing.T) {
+	testhelper.Mux.HandleFunc("/OS-TRUST/trusts/3422b7c113894f5d90665e1a79655e23", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "DELETE")
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}

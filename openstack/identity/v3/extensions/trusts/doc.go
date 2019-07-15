@@ -46,5 +46,13 @@ Example to Create a Trust
     }
 
     fmt.Printf("Trust: %+v\n", trust)
+
+Example to Delete a Trust
+
+    trustID := "3422b7c113894f5d90665e1a79655e23"
+    err := trusts.Delete(identityClient, trustID).ExtractErr()
+    if err != nil {
+        panic(err)
+    }
 */
 package trusts

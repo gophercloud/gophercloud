@@ -98,3 +98,12 @@ func TestCreateTrust(t *testing.T) {
 	th.AssertEquals(t, true, result.Impersonation)
 	th.AssertEquals(t, 10, result.RedelegationCount)
 }
+
+func TestDeleteTrust(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteTrust(t)
+
+	res := trusts.Delete(client.ServiceClient(), "3422b7c113894f5d90665e1a79655e23")
+	th.AssertNoErr(t, res.Err)
+}
