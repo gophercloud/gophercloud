@@ -1,5 +1,26 @@
 package trusts
 
+import "github.com/gophercloud/gophercloud"
+
+type trustResult struct {
+	gophercloud.Result
+}
+
+// CreateResult is the response from a Create operation. Call its Extract method
+// to interpret it as a Trust.
+type CreateResult struct {
+	trustResult
+}
+
+// Extract interprets any trust result as a Trust.
+func (r trustResult) Extract() (*Trust, error) {
+	var s struct {
+		Trust *Trust `json:"trust"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Trust, err
+}
+
 // TrusteeUser represents the trusted user ID of a trust.
 type TrusteeUser struct {
 	ID string `json:"id"`
@@ -19,6 +40,12 @@ type Trust struct {
 	TrustorUser        TrustorUser `json:"trustor_user"`
 	RedelegatedTrustID string      `json:"redelegated_trust_id"`
 	RedelegationCount  int         `json:"redelegation_count"`
+}
+
+// Role specifies a single role that is granted to a trustee.
+type Role struct {
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // TokenExt represents an extension of the base token result.
