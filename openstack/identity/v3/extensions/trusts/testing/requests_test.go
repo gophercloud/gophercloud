@@ -81,7 +81,6 @@ func TestCreateTrust(t *testing.T) {
 	expiresAt := time.Date(2019, 12, 1, 14, 0, 0, 999999999, time.UTC)
 	result, err := trusts.Create(client.ServiceClient(), trusts.CreateOpts{
 		ExpiresAt:         &expiresAt,
-		Impersonation:     true,
 		AllowRedelegation: true,
 		ProjectID:         "9b71012f5a4a4aef9193f1995fe159b2",
 		Roles: []trusts.Role{
@@ -95,7 +94,7 @@ func TestCreateTrust(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, "3422b7c113894f5d90665e1a79655e23", result.ID)
-	th.AssertEquals(t, true, result.Impersonation)
+	th.AssertEquals(t, false, result.Impersonation)
 	th.AssertEquals(t, 10, result.RedelegationCount)
 }
 
