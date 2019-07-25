@@ -2,6 +2,7 @@ package testing
 
 import (
 	"testing"
+	"time"
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/dns"
@@ -225,12 +226,19 @@ func TestFloatingIPGet(t *testing.T) {
 	err := floatingips.Get(fake.ServiceClient(), "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e").ExtractInto(&actual)
 	th.AssertNoErr(t, err)
 
+	createdTime, err := time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
+	th.AssertNoErr(t, err)
+	updatedTime, err := time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
+	th.AssertNoErr(t, err)
+
 	expected := FloatingIPDNS{
 		FloatingIP: floatingips.FloatingIP{
 			FloatingNetworkID: "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
 			FixedIP:           "",
 			FloatingIP:        "192.0.0.4",
 			TenantID:          "017d8de156df4177889f31a9bd6edc00",
+			Created:           createdTime,
+			Updated:           updatedTime,
 			Status:            "DOWN",
 			PortID:            "",
 			ID:                "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e",
@@ -266,12 +274,19 @@ func TestFloatingIPCreate(t *testing.T) {
 	err := floatingips.Create(fake.ServiceClient(), options).ExtractInto(&actual)
 	th.AssertNoErr(t, err)
 
+	createdTime, err := time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
+	th.AssertNoErr(t, err)
+	updatedTime, err := time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
+	th.AssertNoErr(t, err)
+
 	expected := FloatingIPDNS{
 		FloatingIP: floatingips.FloatingIP{
 			FloatingNetworkID: "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
 			FixedIP:           "",
 			FloatingIP:        "192.0.0.4",
 			TenantID:          "017d8de156df4177889f31a9bd6edc00",
+			Created:           createdTime,
+			Updated:           updatedTime,
 			Status:            "DOWN",
 			PortID:            "",
 			ID:                "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e",
