@@ -39,10 +39,10 @@ type FloatingIP struct {
 	// specify a project identifier other than its own.
 	TenantID string `json:"tenant_id"`
 
-	// Updated and Created contain ISO-8601 timestamps of when the state of the
-	// floating ip last changed, and when it was created.
-	Updated time.Time `json:"updated_at"`
-	Created time.Time `json:"created_at"`
+	// UpdatedAt and CreatedAt contain ISO-8601 timestamps of when the state of
+	// the floating ip last changed, and when it was created.
+	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at"`
 
 	// ProjectID is the project owner of the floating IP.
 	ProjectID string `json:"project_id"`
