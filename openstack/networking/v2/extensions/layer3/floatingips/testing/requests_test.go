@@ -47,8 +47,8 @@ func TestList(t *testing.T) {
 				FixedIP:           "",
 				FloatingIP:        "192.0.0.4",
 				TenantID:          "017d8de156df4177889f31a9bd6edc00",
-				Created:           createdTime,
-				Updated:           updatedTime,
+				CreatedAt:         createdTime,
+				UpdatedAt:         updatedTime,
 				Status:            "DOWN",
 				PortID:            "",
 				ID:                "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e",
@@ -59,8 +59,8 @@ func TestList(t *testing.T) {
 				FixedIP:           "192.0.0.2",
 				FloatingIP:        "10.0.0.3",
 				TenantID:          "017d8de156df4177889f31a9bd6edc00",
-				Created:           createdTime,
-				Updated:           updatedTime,
+				CreatedAt:         createdTime,
+				UpdatedAt:         updatedTime,
 				Status:            "DOWN",
 				PortID:            "74a342ce-8e07-4e91-880c-9f834b68fa25",
 				ID:                "ada25a95-f321-4f59-b0e0-f3a970dd3d63",
@@ -154,8 +154,8 @@ func TestCreate(t *testing.T) {
 
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
 	th.AssertEquals(t, "4969c491a3c74ee4af974e6d800c62de", ip.TenantID)
-	th.AssertEquals(t, "2019-06-30T04:15:37Z", ip.Created.Format(time.RFC3339))
-	th.AssertEquals(t, "2019-06-30T05:18:49Z", ip.Updated.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", ip.CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", ip.UpdatedAt.Format(time.RFC3339))
 	th.AssertEquals(t, "376da547-b977-4cfe-9cba-275c80debf57", ip.FloatingNetworkID)
 	th.AssertEquals(t, "", ip.FloatingIP)
 	th.AssertEquals(t, "ce705c24-c1ef-408a-bda3-7bbd946164ab", ip.PortID)
@@ -207,8 +207,8 @@ func TestCreateEmptyPort(t *testing.T) {
 
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
 	th.AssertEquals(t, "4969c491a3c74ee4af974e6d800c62de", ip.TenantID)
-	th.AssertEquals(t, "2019-06-30T04:15:37Z", ip.Created.Format(time.RFC3339))
-	th.AssertEquals(t, "2019-06-30T05:18:49Z", ip.Updated.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", ip.CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", ip.UpdatedAt.Format(time.RFC3339))
 	th.AssertEquals(t, "376da547-b977-4cfe-9cba-275c80debf57", ip.FloatingNetworkID)
 	th.AssertEquals(t, "", ip.FloatingIP)
 	th.AssertEquals(t, "", ip.PortID)
@@ -263,8 +263,8 @@ func TestCreateWithSubnetID(t *testing.T) {
 
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
 	th.AssertEquals(t, "4969c491a3c74ee4af974e6d800c62de", ip.TenantID)
-	th.AssertEquals(t, "2019-06-30T04:15:37Z", ip.Created.Format(time.RFC3339))
-	th.AssertEquals(t, "2019-06-30T05:18:49Z", ip.Updated.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", ip.CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", ip.UpdatedAt.Format(time.RFC3339))
 	th.AssertEquals(t, "376da547-b977-4cfe-9cba-275c80debf57", ip.FloatingNetworkID)
 	th.AssertEquals(t, "172.24.4.3", ip.FloatingIP)
 	th.AssertEquals(t, "", ip.PortID)
@@ -308,8 +308,8 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "74a342ce-8e07-4e91-880c-9f834b68fa25", ip.PortID)
 	th.AssertEquals(t, "192.0.0.2", ip.FixedIP)
 	th.AssertEquals(t, "017d8de156df4177889f31a9bd6edc00", ip.TenantID)
-	th.AssertEquals(t, "2019-06-30T04:15:37Z", ip.Created.Format(time.RFC3339))
-	th.AssertEquals(t, "2019-06-30T05:18:49Z", ip.Updated.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", ip.CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", ip.UpdatedAt.Format(time.RFC3339))
 	th.AssertEquals(t, "DOWN", ip.Status)
 	th.AssertEquals(t, "2f245a7b-796b-4f26-9cf9-9e82d248fda7", ip.ID)
 	th.AssertEquals(t, "1117c30a-ddb4-49a1-bec3-a65b286b4170", ip.RouterID)
