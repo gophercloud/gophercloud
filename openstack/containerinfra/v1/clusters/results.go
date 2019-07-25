@@ -60,6 +60,14 @@ func (r UpdateResult) Extract() (string, error) {
 	return s.UUID, err
 }
 
+func (r ResizeResult) Extract() (string, error) {
+	var s struct {
+		UUID string
+	}
+	err := r.ExtractInto(&s)
+	return s.UUID, err
+}
+
 type Cluster struct {
 	APIAddress        string             `json:"api_address"`
 	COEVersion        string             `json:"coe_version"`
