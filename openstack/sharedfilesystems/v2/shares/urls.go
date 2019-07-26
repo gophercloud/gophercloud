@@ -45,3 +45,19 @@ func extendURL(c *gophercloud.ServiceClient, id string) string {
 func shrinkURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
+
+func showMetadataURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("shares", id, "metadata")
+}
+
+func setMetadataURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("shares", id, "metadata")
+}
+
+func updateMetadataURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("shares", id, "metadata")
+}
+
+func unsetMetadataURL(c *gophercloud.ServiceClient, id, key string) string {
+	return c.ServiceURL("shares", id, "metadata", key)
+}

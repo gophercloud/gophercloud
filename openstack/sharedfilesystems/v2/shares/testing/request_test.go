@@ -119,7 +119,7 @@ func TestListDetail(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, actual, []shares.Share{
-		shares.Share{
+		{
 			AvailabilityZone:   "nova",
 			ShareNetworkID:     "713df749-aac0-4a54-af52-10f6c991e80c",
 			ShareServerID:      "e268f4aa-d571-43dd-9ab3-f49ad06ffaef",

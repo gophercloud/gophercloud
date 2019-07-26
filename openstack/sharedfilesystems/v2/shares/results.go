@@ -324,3 +324,50 @@ type ExtendResult struct {
 type ShrinkResult struct {
 	gophercloud.ErrResult
 }
+
+// ShowMetadataResult contains the response body and error from a ShowMetadata request.
+type ShowMetadataResult struct {
+	gophercloud.Result
+}
+
+// Extract will get the string-string map from ShowMetadataResult
+func (r ShowMetadataResult) Extract() (map[string]string, error) {
+	var s struct {
+		Metadata map[string]string `json:"metadata"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Metadata, err
+}
+
+// SetMetadataResult contains the response body and error from a SetMetadata request.
+type SetMetadataResult struct {
+	gophercloud.Result
+}
+
+// Extract will get the string-string map from SetMetadataResult
+func (r SetMetadataResult) Extract() (map[string]string, error) {
+	var s struct {
+		Metadata map[string]string `json:"metadata"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Metadata, err
+}
+
+// UpdateMetadataResult contains the response body and error from a UpdateMetadata request.
+type UpdateMetadataResult struct {
+	gophercloud.Result
+}
+
+// Extract will get the string-string map from UpdateMetadataResult
+func (r UpdateMetadataResult) Extract() (map[string]string, error) {
+	var s struct {
+		Metadata map[string]string `json:"metadata"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Metadata, err
+}
+
+// UnsetMetadataResult contains the response body and error from a UnsetMetadata request.
+type UnsetMetadataResult struct {
+	gophercloud.ErrResult
+}
