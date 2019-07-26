@@ -35,3 +35,9 @@ func Create(c *gophercloud.ServiceClient, floatingIpId string, opts CreateOptsBu
 	_, r.Err = c.Post(portForwardingUrl(c, floatingIpId), b, &r.Body, nil)
 	return
 }
+
+// Delete will permanently delete a particular port forwarding for a given floating ID.
+func Delete(c *gophercloud.ServiceClient, floatingIpId string, pfId string) (r DeleteResult) {
+	_, r.Err = c.Delete(singlePortForwardingUrl(c, floatingIpId, pfId), nil)
+	return
+}

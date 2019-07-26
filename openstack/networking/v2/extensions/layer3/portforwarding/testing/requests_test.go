@@ -66,3 +66,17 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, 2230, pf.ExternalPort)
 	th.AssertEquals(t, "tcp", pf.Protocol)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7/port_forwardings/725ade3c-9760-4880-8080-8fc2dbab9acc", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := portforwarding.Delete(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", "725ade3c-9760-4880-8080-8fc2dbab9acc")
+	th.AssertNoErr(t, res.Err)
+}

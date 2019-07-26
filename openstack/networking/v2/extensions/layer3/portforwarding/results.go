@@ -36,6 +36,12 @@ type CreateResult struct {
 	commonResult
 }
 
+// DeleteResult represents the result of a delete operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // Extract will extract a Port Forwarding resource from a result.
 func (r commonResult) Extract() (*PortForwarding, error) {
 	var s PortForwarding
