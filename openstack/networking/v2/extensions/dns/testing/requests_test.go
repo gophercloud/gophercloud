@@ -27,6 +27,9 @@ type NetworkDNS struct {
 	dns.NetworkDNSExt
 }
 
+var createdTime, _ = time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
+var updatedTime, _ = time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
+
 func TestPortList(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -226,11 +229,6 @@ func TestFloatingIPGet(t *testing.T) {
 	err := floatingips.Get(fake.ServiceClient(), "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e").ExtractInto(&actual)
 	th.AssertNoErr(t, err)
 
-	createdTime, err := time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
-	th.AssertNoErr(t, err)
-	updatedTime, err := time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
-	th.AssertNoErr(t, err)
-
 	expected := FloatingIPDNS{
 		FloatingIP: floatingips.FloatingIP{
 			FloatingNetworkID: "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
@@ -274,11 +272,6 @@ func TestFloatingIPCreate(t *testing.T) {
 	err := floatingips.Create(fake.ServiceClient(), options).ExtractInto(&actual)
 	th.AssertNoErr(t, err)
 
-	createdTime, err := time.Parse(time.RFC3339, "2019-06-30T04:15:37Z")
-	th.AssertNoErr(t, err)
-	updatedTime, err := time.Parse(time.RFC3339, "2019-06-30T05:18:49Z")
-	th.AssertNoErr(t, err)
-
 	expected := FloatingIPDNS{
 		FloatingIP: floatingips.FloatingIP{
 			FloatingNetworkID: "6d67c30a-ddb4-49a1-bec3-a65b286b4170",
@@ -318,6 +311,8 @@ func TestNetworkGet(t *testing.T) {
 			Subnets:      []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"},
 			Status:       "ACTIVE",
 			TenantID:     "4fd44f30292945e481c7b8a0c8908869",
+			CreatedAt:    createdTime,
+			UpdatedAt:    updatedTime,
 			AdminStateUp: true,
 			Shared:       true,
 			ID:           "d32019d3-bc6e-4319-9c1d-6722fc136a22",
@@ -354,6 +349,8 @@ func TestNetworkCreate(t *testing.T) {
 			Subnets:      []string{"08eae331-0402-425a-923c-34f7cfe39c1b"},
 			Status:       "ACTIVE",
 			TenantID:     "26a7980765d0414dbc1fc1f88cdb7e6e",
+			CreatedAt:    createdTime,
+			UpdatedAt:    updatedTime,
 			AdminStateUp: true,
 			Shared:       false,
 			ID:           "db193ab3-96e3-4cb3-8fc5-05f4296d0324",
@@ -390,6 +387,8 @@ func TestNetworkUpdate(t *testing.T) {
 			Subnets:      []string{"08eae331-0402-425a-923c-34f7cfe39c1b"},
 			Status:       "ACTIVE",
 			TenantID:     "26a7980765d0414dbc1fc1f88cdb7e6e",
+			CreatedAt:    createdTime,
+			UpdatedAt:    updatedTime,
 			AdminStateUp: false,
 			Shared:       false,
 			ID:           "db193ab3-96e3-4cb3-8fc5-05f4296d0324",

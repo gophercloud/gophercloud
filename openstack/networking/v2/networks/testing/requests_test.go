@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/portsecurity"
@@ -80,6 +81,10 @@ func TestListWithExtensions(t *testing.T) {
 	th.AssertEquals(t, allNetworks[0].PortSecurityEnabled, true)
 	th.AssertEquals(t, allNetworks[0].Subnets[0], "54d6f61d-db07-451c-9ab3-b9609b6b6f0b")
 	th.AssertEquals(t, allNetworks[1].Subnets[0], "08eae331-0402-425a-923c-34f7cfe39c1b")
+	th.AssertEquals(t, allNetworks[0].CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
+	th.AssertEquals(t, allNetworks[0].UpdatedAt.Format(time.RFC3339), "2019-06-30T05:18:49Z")
+	th.AssertEquals(t, allNetworks[1].CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
+	th.AssertEquals(t, allNetworks[1].UpdatedAt.Format(time.RFC3339), "2019-06-30T05:18:49Z")
 }
 
 func TestGet(t *testing.T) {
@@ -99,6 +104,8 @@ func TestGet(t *testing.T) {
 	n, err := networks.Get(fake.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &Network1, n)
+	th.AssertEquals(t, n.CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
+	th.AssertEquals(t, n.UpdatedAt.Format(time.RFC3339), "2019-06-30T05:18:49Z")
 }
 
 func TestGetWithExtensions(t *testing.T) {
@@ -150,6 +157,8 @@ func TestCreate(t *testing.T) {
 
 	th.AssertEquals(t, n.Status, "ACTIVE")
 	th.AssertDeepEquals(t, &Network2, n)
+	th.AssertEquals(t, n.CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
+	th.AssertEquals(t, n.UpdatedAt.Format(time.RFC3339), "2019-06-30T05:18:49Z")
 }
 
 func TestCreateWithOptionalFields(t *testing.T) {
@@ -206,6 +215,8 @@ func TestUpdate(t *testing.T) {
 	th.AssertEquals(t, n.AdminStateUp, false)
 	th.AssertEquals(t, n.Shared, true)
 	th.AssertEquals(t, n.ID, "4e8e5957-649f-477b-9e5b-f1f75b21c03c")
+	th.AssertEquals(t, n.CreatedAt.Format(time.RFC3339), "2019-06-30T04:15:37Z")
+	th.AssertEquals(t, n.UpdatedAt.Format(time.RFC3339), "2019-06-30T05:18:49Z")
 }
 
 func TestDelete(t *testing.T) {
