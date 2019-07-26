@@ -1,6 +1,8 @@
 package groups
 
 import (
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/rules"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -24,6 +26,11 @@ type SecGroup struct {
 
 	// TenantID is the project owner of the security group.
 	TenantID string `json:"tenant_id"`
+
+	// UpdatedAt and CreatedAt contain ISO-8601 timestamps of when the state of the
+	// security group last changed, and when it was created.
+	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at"`
 
 	// ProjectID is the project owner of the security group.
 	ProjectID string `json:"project_id"`

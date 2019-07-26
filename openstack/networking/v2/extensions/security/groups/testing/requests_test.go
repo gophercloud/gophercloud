@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/security/groups"
@@ -93,6 +94,8 @@ func TestUpdate(t *testing.T) {
 	th.AssertEquals(t, "newer-webservers", sg.Name)
 	th.AssertEquals(t, "security group for webservers", sg.Description)
 	th.AssertEquals(t, "2076db17-a522-4506-91de-c6dd8e837028", sg.ID)
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", sg.CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", sg.UpdatedAt.Format(time.RFC3339))
 }
 
 func TestGet(t *testing.T) {
@@ -117,6 +120,8 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "default", sg.Name)
 	th.AssertEquals(t, 2, len(sg.Rules))
 	th.AssertEquals(t, "e4f50856753b4dc6afee5fa6b9b6c550", sg.TenantID)
+	th.AssertEquals(t, "2019-06-30T04:15:37Z", sg.CreatedAt.Format(time.RFC3339))
+	th.AssertEquals(t, "2019-06-30T05:18:49Z", sg.UpdatedAt.Format(time.RFC3339))
 }
 
 func TestDelete(t *testing.T) {
