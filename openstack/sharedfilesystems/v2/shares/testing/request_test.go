@@ -283,3 +283,54 @@ func TestShrinkSuccess(t *testing.T) {
 	err := shares.Shrink(c, shareID, &shares.ShrinkOpts{NewSize: 1}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestShowMetadataSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockShowMetadataResponse(t)
+
+	c := client.ServiceClient()
+
+	actual, err := shares.ShowMetadata(c, shareID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, map[string]string{"foo": "bar"}, actual)
+}
+
+func TestSetMetadataSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockSetMetadataResponse(t)
+
+	c := client.ServiceClient()
+
+	actual, err := shares.SetMetadata(c, shareID, &shares.SetMetadataOpts{Metadata: map[string]string{"foo": "bar"}}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, map[string]string{"foo": "bar"}, actual)
+}
+
+func TestUpdateMetadataSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUpdateMetadataResponse(t)
+
+	c := client.ServiceClient()
+
+	actual, err := shares.UpdateMetadata(c, shareID, &shares.UpdateMetadataOpts{Metadata: map[string]string{"foo": "bar"}}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, map[string]string{"foo": "bar"}, actual)
+}
+
+func TestUnsetMetadataSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUnsetMetadataResponse(t, "foo")
+
+	c := client.ServiceClient()
+
+	err := shares.UnsetMetadata(c, shareID, "foo").ExtractErr()
+	th.AssertNoErr(t, err)
+}

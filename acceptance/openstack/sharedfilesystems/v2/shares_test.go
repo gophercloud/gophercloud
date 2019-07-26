@@ -204,3 +204,56 @@ func TestExtendAndShrink(t *testing.T) {
 	t.Logf("Share %s successfuly shrunk", share.ID)
 	*/
 }
+
+func TestShareMetadata(t *testing.T) {
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a shared file system client: %v", err)
+	}
+	client.Microversion = "2.7"
+
+	share, err := CreateShare(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create a share: %v", err)
+	}
+
+	defer DeleteShare(t, client, share)
+
+	const (
+		k  = "key"
+		v1 = "value1"
+		v2 = "value2"
+	)
+
+	checkMetadataEq := func(m map[string]string, value string) {
+		if m == nil || len(m) != 1 || m[k] != value {
+			t.Fatalf("Unexpected metadata contents %v", m)
+		}
+	}
+
+	metadata, err := shares.SetMetadata(client, share.ID, shares.SetMetadataOpts{Metadata: map[string]string{k: v1}}).Extract()
+	if err != nil {
+		t.Fatalf("Unable to set share metadata: %v", err)
+	}
+	checkMetadataEq(metadata, v1)
+
+	metadata, err = shares.UpdateMetadata(client, share.ID, shares.UpdateMetadataOpts{Metadata: map[string]string{k: v2}}).Extract()
+	if err != nil {
+		t.Fatalf("Unable to update share metadata: %v", err)
+	}
+	checkMetadataEq(metadata, v2)
+
+	err = shares.UnsetMetadata(client, share.ID, k).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to unset share metadata: %v", err)
+	}
+
+	metadata, err = shares.ShowMetadata(client, share.ID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to show share metadata: %v", err)
+	}
+
+	if metadata == nil || len(metadata) != 0 {
+		t.Fatalf("Unexpected metadata contents %v, expected an empty map", metadata)
+	}
+}
