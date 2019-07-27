@@ -406,8 +406,10 @@ type SetMetadataOptsBuilder interface {
 	ToSetMetadataMap() (map[string]interface{}, error)
 }
 
-// SetMetadata sets metadata of the specified share. To extract the updated
-// metadata from the response, call the Extract method on the SetMetadataResult.
+// SetMetadata sets metadata of the specified share.
+// Existing metadata items are either kept or overwritten by the metadata from the request.
+// To extract the updated metadata from the response, call the Extract
+// method on the SetMetadataResult.
 func SetMetadata(client *gophercloud.ServiceClient, id string, opts SetMetadataOptsBuilder) (r SetMetadataResult) {
 	b, err := opts.ToSetMetadataMap()
 	if err != nil {
@@ -441,8 +443,10 @@ type UpdateMetadataOptsBuilder interface {
 	ToUpdateMetadataMap() (map[string]interface{}, error)
 }
 
-// UpdateMetadata updates metadata of the specified share. To extract the updated
-// metadata from the response, call the Extract method on the SetMetadataResult.
+// UpdateMetadata updates metadata of the specified share.
+// All existing metadata items are discarded and replaced by the metadata from the request.
+// To extract the updated metadata from the response, call the Extract
+// method on the SetMetadataResult.
 func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) (r UpdateMetadataResult) {
 	b, err := opts.ToUpdateMetadataMap()
 	if err != nil {
