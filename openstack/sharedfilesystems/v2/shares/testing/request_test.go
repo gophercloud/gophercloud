@@ -297,6 +297,19 @@ func TestGetMetadataSuccess(t *testing.T) {
 	th.AssertDeepEquals(t, map[string]string{"foo": "bar"}, actual)
 }
 
+func TestGetMetadatumSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetMetadatumResponse(t, "foo")
+
+	c := client.ServiceClient()
+
+	actual, err := shares.GetMetadatum(c, shareID, "foo").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "bar", actual)
+}
+
 func TestSetMetadataSuccess(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

@@ -387,6 +387,12 @@ func GetMetadata(client *gophercloud.ServiceClient, id string) (r GetMetadataRes
 	return
 }
 
+func GetMetadatum(client *gophercloud.ServiceClient, id, key string) (r GetMetadatumResult) {
+	_, r.Err = client.Get(getMetadatumURL(client, id, key), &r.Body, nil)
+	r.key = key
+	return
+}
+
 // SetMetadataOpts contains options for setting share metadata.
 // For more information about these parameters, please, refer to the shared file systems API v2,
 // Share Metadata, Show share metadata documentation.

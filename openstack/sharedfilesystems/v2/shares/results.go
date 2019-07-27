@@ -339,6 +339,21 @@ func (r GetMetadataResult) Extract() (map[string]string, error) {
 	return s.Metadata, err
 }
 
+// GetMetadatumResult contains the response body and error from a GetMetadatum request.
+type GetMetadatumResult struct {
+	gophercloud.Result
+	key string
+}
+
+// Extract will get the string value from GetMetadatumResult
+func (r GetMetadatumResult) Extract() (string, error) {
+	var s struct {
+		Meta map[string]string `json:"meta"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Meta[r.key], err
+}
+
 // SetMetadataResult contains the response body and error from a SetMetadata request.
 type SetMetadataResult struct {
 	gophercloud.Result

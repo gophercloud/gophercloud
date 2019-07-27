@@ -50,6 +50,10 @@ func getMetadataURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("shares", id, "metadata")
 }
 
+func getMetadatumURL(c *gophercloud.ServiceClient, id, key string) string {
+	return c.ServiceURL("shares", id, "metadata", key)
+}
+
 func setMetadataURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("shares", id, "metadata")
 }
