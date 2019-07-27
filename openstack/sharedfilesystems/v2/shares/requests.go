@@ -457,9 +457,9 @@ func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMet
 	return
 }
 
-// UnsetMetadata deletes a single key-value pair from the metadata of the specified share.
-func UnsetMetadata(client *gophercloud.ServiceClient, id, key string) (r UnsetMetadataResult) {
-	_, r.Err = client.Delete(unsetMetadataURL(client, id, key), &gophercloud.RequestOpts{
+// DeleteMetadatum deletes a single key-value pair from the metadata of the specified share.
+func DeleteMetadatum(client *gophercloud.ServiceClient, id, key string) (r DeleteMetadatumResult) {
+	_, r.Err = client.Delete(deleteMetadatumURL(client, id, key), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 

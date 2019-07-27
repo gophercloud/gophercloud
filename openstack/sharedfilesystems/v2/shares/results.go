@@ -367,7 +367,7 @@ func (r UpdateMetadataResult) Extract() (map[string]string, error) {
 	return s.Metadata, err
 }
 
-// UnsetMetadataResult contains the response body and error from a UnsetMetadata request.
-type UnsetMetadataResult struct {
+// DeleteMetadatumResult contains the response body and error from a DeleteMetadatum request.
+type DeleteMetadatumResult struct {
 	gophercloud.ErrResult
 }

@@ -58,6 +58,6 @@ func updateMetadataURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("shares", id, "metadata")
 }
 
-func unsetMetadataURL(c *gophercloud.ServiceClient, id, key string) string {
+func deleteMetadatumURL(c *gophercloud.ServiceClient, id, key string) string {
 	return c.ServiceURL("shares", id, "metadata", key)
 }

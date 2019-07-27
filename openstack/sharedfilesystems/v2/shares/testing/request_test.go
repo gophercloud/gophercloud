@@ -327,10 +327,10 @@ func TestUnsetMetadataSuccess(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockUnsetMetadataResponse(t, "foo")
+	MockDeleteMetadatumResponse(t, "foo")
 
 	c := client.ServiceClient()
 
-	err := shares.UnsetMetadata(c, shareID, "foo").ExtractErr()
+	err := shares.DeleteMetadatum(c, shareID, "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }

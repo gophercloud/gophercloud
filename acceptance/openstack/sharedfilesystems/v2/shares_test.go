@@ -243,9 +243,9 @@ func TestShareMetadata(t *testing.T) {
 	}
 	checkMetadataEq(metadata, v2)
 
-	err = shares.UnsetMetadata(client, share.ID, k).ExtractErr()
+	err = shares.DeleteMetadatum(client, share.ID, k).ExtractErr()
 	if err != nil {
-		t.Fatalf("Unable to unset share metadata: %v", err)
+		t.Fatalf("Unable to delete share metadatum: %v", err)
 	}
 
 	metadata, err = shares.ShowMetadata(client, share.ID).Extract()
