@@ -46,7 +46,7 @@ func shrinkURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
-func showMetadataURL(c *gophercloud.ServiceClient, id string) string {
+func getMetadataURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("shares", id, "metadata")
 }
 

@@ -380,10 +380,10 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	return
 }
 
-// ShowMetadata retrieves metadata of the specified share. To extract the retrieved
-// metadata from the response, call the Extract method on the ShowMetadataResult.
-func ShowMetadata(client *gophercloud.ServiceClient, id string) (r ShowMetadataResult) {
-	_, r.Err = client.Get(showMetadataURL(client, id), &r.Body, nil)
+// GetMetadata retrieves metadata of the specified share. To extract the retrieved
+// metadata from the response, call the Extract method on the GetMetadataResult.
+func GetMetadata(client *gophercloud.ServiceClient, id string) (r GetMetadataResult) {
+	_, r.Err = client.Get(getMetadataURL(client, id), &r.Body, nil)
 	return
 }
 

@@ -248,9 +248,9 @@ func TestShareMetadata(t *testing.T) {
 		t.Fatalf("Unable to delete share metadatum: %v", err)
 	}
 
-	metadata, err = shares.ShowMetadata(client, share.ID).Extract()
+	metadata, err = shares.GetMetadata(client, share.ID).Extract()
 	if err != nil {
-		t.Fatalf("Unable to show share metadata: %v", err)
+		t.Fatalf("Unable to get share metadata: %v", err)
 	}
 
 	if metadata == nil || len(metadata) != 0 {

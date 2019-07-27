@@ -325,13 +325,13 @@ type ShrinkResult struct {
 	gophercloud.ErrResult
 }
 
-// ShowMetadataResult contains the response body and error from a ShowMetadata request.
-type ShowMetadataResult struct {
+// GetMetadataResult contains the response body and error from a GetMetadata request.
+type GetMetadataResult struct {
 	gophercloud.Result
 }
 
-// Extract will get the string-string map from ShowMetadataResult
-func (r ShowMetadataResult) Extract() (map[string]string, error) {
+// Extract will get the string-string map from GetMetadataResult
+func (r GetMetadataResult) Extract() (map[string]string, error) {
 	var s struct {
 		Metadata map[string]string `json:"metadata"`
 	}

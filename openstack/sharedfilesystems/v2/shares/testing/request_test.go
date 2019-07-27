@@ -284,15 +284,15 @@ func TestShrinkSuccess(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestShowMetadataSuccess(t *testing.T) {
+func TestGetMetadataSuccess(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockShowMetadataResponse(t)
+	MockGetMetadataResponse(t)
 
 	c := client.ServiceClient()
 
-	actual, err := shares.ShowMetadata(c, shareID).Extract()
+	actual, err := shares.GetMetadata(c, shareID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, map[string]string{"foo": "bar"}, actual)
 }

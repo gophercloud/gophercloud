@@ -419,21 +419,21 @@ func MockShrinkResponse(t *testing.T) {
 	})
 }
 
-var showMetadataResponse = `{
+var getMetadataResponse = `{
 		"metadata": {
 			"foo": "bar"
 		}
 	}`
 
-// MockShowMetadataResponse creates a mock show metadata response
-func MockShowMetadataResponse(t *testing.T) {
+// MockGetMetadataResponse creates a mock show metadata response
+func MockGetMetadataResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, showMetadataResponse)
+		fmt.Fprint(w, getMetadataResponse)
 	})
 }
 
