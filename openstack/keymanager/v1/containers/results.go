@@ -230,3 +230,27 @@ func ExtractConsumers(r pagination.Page) ([]Consumer, error) {
 	err := (r.(ConsumerPage)).ExtractInto(&s)
 	return s.Consumers, err
 }
+
+type secretRefResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any secretRefResult as a SecretRef
+func (r secretRefResult) Extract() (*SecretRef, error) {
+	var s *SecretRef
+	err := r.ExtractInto(&s)
+	return s, err
+}
+
+// CreateSecretRefResult is the response from a CreateSecretRef operation.
+// Call its Extract method to interpret it as a container.
+type CreateSecretRefResult struct {
+	// This is not a typo.
+	commonResult
+}
+
+// DeleteSecretRefResult is the response from a DeleteSecretRef operation.
+// Call its Extract to interpret it as a container.
+type DeleteSecretRefResult struct {
+	gophercloud.ErrResult
+}
