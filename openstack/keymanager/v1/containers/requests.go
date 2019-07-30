@@ -74,7 +74,7 @@ type CreateOpts struct {
 	Name string `json:"name"`
 
 	// SecretRefs is a list of secret refs for the container.
-	SecretRefs []SecretRef `json:"secret_refs"`
+	SecretRefs []SecretRef `json:"secret_refs,omitempty"`
 }
 
 // ToContainerCreateMap formats a CreateOpts into a create request.
@@ -207,6 +207,48 @@ func DeleteConsumer(client *gophercloud.ServiceClient, containerID string, opts 
 		JSONBody:     b,
 		JSONResponse: &r.Body,
 		OkCodes:      []int{200},
+	})
+	return
+}
+
+// SecretRefBuilder allows extensions to add additional parameters to the
+// Create request.
+type SecretRefBuilder interface {
+	ToContainerSecretRefMap() (map[string]interface{}, error)
+}
+
+// ToContainerSecretRefMap formats a SecretRefBuilder into a create
+// request.
+func (opts SecretRef) ToContainerSecretRefMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// CreateSecret creates a new consumer.
+func CreateSecretRef(client *gophercloud.ServiceClient, containerID string, opts SecretRefBuilder) (r CreateSecretRefResult) {
+	b, err := opts.ToContainerSecretRefMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(createSecretRefURL(client, containerID), &b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}
+
+// DeleteSecret deletes a consumer.
+func DeleteSecretRef(client *gophercloud.ServiceClient, containerID string, opts SecretRefBuilder) (r DeleteSecretRefResult) {
+	url := deleteSecretRefURL(client, containerID)
+
+	b, err := opts.ToContainerSecretRefMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Request("DELETE", url, &gophercloud.RequestOpts{
+		JSONBody: b,
+		OkCodes:  []int{204},
 	})
 	return
 }

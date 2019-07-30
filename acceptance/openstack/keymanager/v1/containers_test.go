@@ -23,11 +23,21 @@ func TestGenericContainersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteSecret(t, client, secretID)
 
+	payload1 := tools.RandomString("SUPERSECRET-", 8)
+	secret1, err := CreateSecretWithPayload(t, client, payload1)
+	th.AssertNoErr(t, err)
+	secretID1, err := ParseID(secret1.SecretRef)
+	th.AssertNoErr(t, err)
+	defer DeleteSecret(t, client, secretID1)
+
 	container, err := CreateGenericContainer(t, client, secret)
 	th.AssertNoErr(t, err)
 	containerID, err := ParseID(container.ContainerRef)
 	th.AssertNoErr(t, err)
 	defer DeleteContainer(t, client, containerID)
+
+	err = ReplaceGenericContainerSecretRef(t, client, container, secret, secret1)
+	th.AssertNoErr(t, err)
 
 	allPages, err := containers.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
