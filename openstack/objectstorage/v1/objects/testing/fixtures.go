@@ -20,7 +20,7 @@ func HandleDownloadObjectSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
-		w.Header().Set("Date", "Wed, 10 Nov 2009 23:00:00 GMT")
+		w.Header().Set("Date", "Wed, 10 Nov 2009 23:00:00 UTC")
 		w.Header().Set("X-Static-Large-Object", "True")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "Successful download with Gophercloud")
@@ -32,7 +32,7 @@ func HandleDownloadObjectSuccessfully(t *testing.T) {
 var ExpectedListInfo = []objects.Object{
 	{
 		Hash:         "451e372e48e0f6b1114fa0724aa79fa1",
-		LastModified: time.Date(2016, time.August, 17, 22, 11, 58, 602650000, time.UTC), //"2016-08-17T22:11:58.602650"
+		LastModified: time.Date(2016, time.August, 17, 22, 11, 58, 602650000, time.UTC),
 		Bytes:        14,
 		Name:         "goodbye",
 		ContentType:  "application/octet-stream",
