@@ -1,6 +1,8 @@
 package networks
 
 import (
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -69,6 +71,11 @@ type Network struct {
 
 	// TenantID is the project owner of the network.
 	TenantID string `json:"tenant_id"`
+
+	// UpdatedAt and CreatedAt contain ISO-8601 timestamps of when the state of the
+	// network last changed, and when it was created.
+	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at"`
 
 	// ProjectID is the project owner of the network.
 	ProjectID string `json:"project_id"`
