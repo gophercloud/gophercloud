@@ -363,6 +363,12 @@ func ReplaceGenericContainerSecretRef(t *testing.T, client *gophercloud.ServiceC
 		return res2.Err
 	}
 
+	c, err := res2.Extract()
+	if err != nil {
+		return err
+	}
+	tools.PrintResource(t, c)
+
 	t.Logf("Successfully created new secret reference: %s", secretNew.SecretRef)
 
 	updatedContainer, err := containers.Get(client, containerID).Extract()
