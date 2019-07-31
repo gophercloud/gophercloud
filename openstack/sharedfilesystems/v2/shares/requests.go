@@ -381,15 +381,16 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 }
 
 // GetMetadata retrieves metadata of the specified share. To extract the retrieved
-// metadata from the response, call the Extract method on the GetMetadataResult.
-func GetMetadata(client *gophercloud.ServiceClient, id string) (r GetMetadataResult) {
+// metadata from the response, call the Extract method on the MetadataResult.
+func GetMetadata(client *gophercloud.ServiceClient, id string) (r MetadataResult) {
 	_, r.Err = client.Get(getMetadataURL(client, id), &r.Body, nil)
 	return
 }
 
+// GetMetadatum retrieves a single metadata item of the specified share. To extract the retrieved
+// metadata from the response, call the Extract method on the GetMetadatumResult.
 func GetMetadatum(client *gophercloud.ServiceClient, id, key string) (r GetMetadatumResult) {
 	_, r.Err = client.Get(getMetadatumURL(client, id, key), &r.Body, nil)
-	r.key = key
 	return
 }
 
@@ -415,8 +416,8 @@ type SetMetadataOptsBuilder interface {
 // SetMetadata sets metadata of the specified share.
 // Existing metadata items are either kept or overwritten by the metadata from the request.
 // To extract the updated metadata from the response, call the Extract
-// method on the SetMetadataResult.
-func SetMetadata(client *gophercloud.ServiceClient, id string, opts SetMetadataOptsBuilder) (r SetMetadataResult) {
+// method on the MetadataResult.
+func SetMetadata(client *gophercloud.ServiceClient, id string, opts SetMetadataOptsBuilder) (r MetadataResult) {
 	b, err := opts.ToSetMetadataMap()
 	if err != nil {
 		r.Err = err
@@ -452,8 +453,8 @@ type UpdateMetadataOptsBuilder interface {
 // UpdateMetadata updates metadata of the specified share.
 // All existing metadata items are discarded and replaced by the metadata from the request.
 // To extract the updated metadata from the response, call the Extract
-// method on the SetMetadataResult.
-func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) (r UpdateMetadataResult) {
+// method on the MetadataResult.
+func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMetadataOptsBuilder) (r MetadataResult) {
 	b, err := opts.ToUpdateMetadataMap()
 	if err != nil {
 		r.Err = err

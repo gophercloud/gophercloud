@@ -325,56 +325,27 @@ type ShrinkResult struct {
 	gophercloud.ErrResult
 }
 
-// GetMetadataResult contains the response body and error from a GetMetadata request.
-type GetMetadataResult struct {
-	gophercloud.Result
-}
-
-// Extract will get the string-string map from GetMetadataResult
-func (r GetMetadataResult) Extract() (map[string]string, error) {
-	var s struct {
-		Metadata map[string]string `json:"metadata"`
-	}
-	err := r.ExtractInto(&s)
-	return s.Metadata, err
-}
-
 // GetMetadatumResult contains the response body and error from a GetMetadatum request.
 type GetMetadatumResult struct {
 	gophercloud.Result
-	key string
 }
 
-// Extract will get the string value from GetMetadatumResult
-func (r GetMetadatumResult) Extract() (string, error) {
+// Extract will get the string-string map from GetMetadatumResult
+func (r GetMetadatumResult) Extract() (map[string]string, error) {
 	var s struct {
 		Meta map[string]string `json:"meta"`
 	}
 	err := r.ExtractInto(&s)
-	return s.Meta[r.key], err
+	return s.Meta, err
 }
 
-// SetMetadataResult contains the response body and error from a SetMetadata request.
-type SetMetadataResult struct {
+// MetadataResult contains the response body and error from GetMetadata, SetMetadata or UpdateMetadata requests.
+type MetadataResult struct {
 	gophercloud.Result
 }
 
-// Extract will get the string-string map from SetMetadataResult
-func (r SetMetadataResult) Extract() (map[string]string, error) {
-	var s struct {
-		Metadata map[string]string `json:"metadata"`
-	}
-	err := r.ExtractInto(&s)
-	return s.Metadata, err
-}
-
-// UpdateMetadataResult contains the response body and error from a UpdateMetadata request.
-type UpdateMetadataResult struct {
-	gophercloud.Result
-}
-
-// Extract will get the string-string map from UpdateMetadataResult
-func (r UpdateMetadataResult) Extract() (map[string]string, error) {
+// Extract will get the string-string map from MetadataResult
+func (r MetadataResult) Extract() (map[string]string, error) {
 	var s struct {
 		Metadata map[string]string `json:"metadata"`
 	}
