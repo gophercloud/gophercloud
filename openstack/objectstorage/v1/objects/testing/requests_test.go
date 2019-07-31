@@ -16,10 +16,6 @@ import (
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-var (
-	loc, _ = time.LoadLocation("GMT")
-)
-
 func TestDownloadReader(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -49,7 +45,7 @@ func TestDownloadExtraction(t *testing.T) {
 	expected := &objects.DownloadHeader{
 		ContentLength:     36,
 		ContentType:       "text/plain; charset=utf-8",
-		Date:              time.Date(2009, time.November, 10, 23, 0, 0, 0, loc),
+		Date:              time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
 		StaticLargeObject: true,
 	}
 	actual, err := response.Extract()

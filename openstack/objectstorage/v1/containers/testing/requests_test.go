@@ -12,7 +12,6 @@ import (
 
 var (
 	metadata = map[string]string{"gophercloud-test": "containers"}
-	loc, _   = time.LoadLocation("GMT")
 )
 
 func TestListContainerInfo(t *testing.T) {
@@ -92,7 +91,7 @@ func TestCreateContainer(t *testing.T) {
 	expected := &containers.CreateHeader{
 		ContentLength: 0,
 		ContentType:   "text/html; charset=UTF-8",
-		Date:          time.Date(2016, time.August, 17, 19, 25, 43, 0, loc), //Wed, 17 Aug 2016 19:25:43 GMT
+		Date:          time.Date(2016, time.August, 17, 19, 25, 43, 0, time.UTC),
 		TransID:       "tx554ed59667a64c61866f1-0058b4ba37",
 	}
 	actual, err := res.Extract()
@@ -135,7 +134,7 @@ func TestGetContainer(t *testing.T) {
 		AcceptRanges:  "bytes",
 		BytesUsed:     100,
 		ContentType:   "application/json; charset=utf-8",
-		Date:          time.Date(2016, time.August, 17, 19, 25, 43, 0, loc), //Wed, 17 Aug 2016 19:25:43 GMT
+		Date:          time.Date(2016, time.August, 17, 19, 25, 43, 0, time.UTC),
 		ObjectCount:   4,
 		Read:          []string{"test"},
 		TransID:       "tx554ed59667a64c61866f1-0057b4ba37",

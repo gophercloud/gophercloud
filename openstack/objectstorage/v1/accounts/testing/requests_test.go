@@ -9,10 +9,6 @@ import (
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
-var (
-	loc, _ = time.LoadLocation("GMT")
-)
-
 func TestUpdateAccount(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -23,7 +19,7 @@ func TestUpdateAccount(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 
 	expected := &accounts.UpdateHeader{
-		Date: time.Date(2014, time.January, 17, 16, 9, 56, 0, loc), // Fri, 17 Jan 2014 16:09:56 GMT
+		Date: time.Date(2014, time.January, 17, 16, 9, 56, 0, time.UTC),
 	}
 	actual, err := res.Extract()
 	th.AssertNoErr(t, err)
@@ -49,7 +45,7 @@ func TestGetAccount(t *testing.T) {
 		ContainerCount: 2,
 		ObjectCount:    5,
 		BytesUsed:      14,
-		Date:           time.Date(2014, time.January, 17, 16, 9, 56, 0, loc), // Fri, 17 Jan 2014 16:09:56 GMT
+		Date:           time.Date(2014, time.January, 17, 16, 9, 56, 0, time.UTC),
 	}
 	actual, err := res.Extract()
 	th.AssertNoErr(t, err)
@@ -74,7 +70,7 @@ func TestGetAccountNoQuota(t *testing.T) {
 		ContainerCount: 2,
 		ObjectCount:    5,
 		BytesUsed:      14,
-		Date:           time.Date(2014, time.January, 17, 16, 9, 56, 0, loc), // Fri, 17 Jan 2014 16:09:56 GMT
+		Date:           time.Date(2014, time.January, 17, 16, 9, 56, 0, time.UTC),
 	}
 	actual, err := res.Extract()
 	th.AssertNoErr(t, err)
