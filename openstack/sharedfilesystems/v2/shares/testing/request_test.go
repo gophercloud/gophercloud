@@ -307,7 +307,7 @@ func TestGetMetadatumSuccess(t *testing.T) {
 
 	actual, err := shares.GetMetadatum(c, shareID, "foo").Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, "bar", actual)
+	th.AssertDeepEquals(t, map[string]string{"foo": "bar"}, actual)
 }
 
 func TestSetMetadataSuccess(t *testing.T) {

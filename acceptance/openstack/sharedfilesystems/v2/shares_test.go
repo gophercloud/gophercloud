@@ -243,14 +243,11 @@ func TestShareMetadata(t *testing.T) {
 	}
 	checkMetadataEq(metadata, v2)
 
-	value, err := shares.GetMetadatum(client, share.ID, k).Extract()
+	metadata, err = shares.GetMetadatum(client, share.ID, k).Extract()
 	if err != nil {
 		t.Fatalf("Unable to get share metadatum: %v", err)
 	}
-
-	if value != v2 {
-		t.Fatalf("Unexpected value in share metadata: expected %q, got %q", v2, value)
-	}
+	checkMetadataEq(metadata, v2)
 
 	err = shares.DeleteMetadatum(client, share.ID, k).ExtractErr()
 	if err != nil {
