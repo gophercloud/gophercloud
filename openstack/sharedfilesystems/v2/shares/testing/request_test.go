@@ -119,7 +119,7 @@ func TestListDetail(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, actual, []shares.Share{
-		shares.Share{
+		{
 			AvailabilityZone:   "nova",
 			ShareNetworkID:     "713df749-aac0-4a54-af52-10f6c991e80c",
 			ShareServerID:      "e268f4aa-d571-43dd-9ab3-f49ad06ffaef",
@@ -281,5 +281,69 @@ func TestShrinkSuccess(t *testing.T) {
 	c.Microversion = "2.7"
 
 	err := shares.Shrink(c, shareID, &shares.ShrinkOpts{NewSize: 1}).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestGetMetadataSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetMetadataResponse(t)
+
+	c := client.ServiceClient()
+
+	actual, err := shares.GetMetadata(c, shareID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, map[string]string{"foo": "bar"}, actual)
+}
+
+func TestGetMetadatumSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetMetadatumResponse(t, "foo")
+
+	c := client.ServiceClient()
+
+	actual, err := shares.GetMetadatum(c, shareID, "foo").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, map[string]string{"foo": "bar"}, actual)
+}
+
+func TestSetMetadataSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockSetMetadataResponse(t)
+
+	c := client.ServiceClient()
+
+	actual, err := shares.SetMetadata(c, shareID, &shares.SetMetadataOpts{Metadata: map[string]string{"foo": "bar"}}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, map[string]string{"foo": "bar"}, actual)
+}
+
+func TestUpdateMetadataSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUpdateMetadataResponse(t)
+
+	c := client.ServiceClient()
+
+	actual, err := shares.UpdateMetadata(c, shareID, &shares.UpdateMetadataOpts{Metadata: map[string]string{"foo": "bar"}}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, map[string]string{"foo": "bar"}, actual)
+}
+
+func TestUnsetMetadataSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteMetadatumResponse(t, "foo")
+
+	c := client.ServiceClient()
+
+	err := shares.DeleteMetadatum(c, shareID, "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }

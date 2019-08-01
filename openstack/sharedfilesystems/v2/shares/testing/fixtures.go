@@ -418,3 +418,106 @@ func MockShrinkResponse(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+var getMetadataResponse = `{
+		"metadata": {
+			"foo": "bar"
+		}
+	}`
+
+// MockGetMetadataResponse creates a mock get metadata response
+func MockGetMetadataResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getMetadataResponse)
+	})
+}
+
+var getMetadatumResponse = `{
+		"meta": {
+			"foo": "bar"
+		}
+	}`
+
+// MockGetMetadatumResponse creates a mock get metadatum response
+func MockGetMetadatumResponse(t *testing.T, key string) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata/"+key, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, getMetadatumResponse)
+	})
+}
+
+var setMetadataRequest = `{
+		"metadata": {
+			"foo": "bar"
+		}
+	}`
+
+var setMetadataResponse = `{
+		"metadata": {
+			"foo": "bar"
+		}
+	}`
+
+// MockSetMetadataResponse creates a mock set metadata response
+func MockSetMetadataResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, setMetadataRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, setMetadataResponse)
+	})
+}
+
+var updateMetadataRequest = `{
+		"metadata": {
+			"foo": "bar"
+		}
+	}`
+
+var updateMetadataResponse = `{
+		"metadata": {
+			"foo": "bar"
+		}
+	}`
+
+// MockUpdateMetadataResponse creates a mock update metadata response
+func MockUpdateMetadataResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, updateMetadataRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, updateMetadataResponse)
+	})
+}
+
+var deleteMetadatumRequest = `{
+		"metadata": {
+			"foo": "bar"
+		}
+	}`
+
+// MockDeleteMetadatumResponse creates a mock unset metadata response
+func MockDeleteMetadatumResponse(t *testing.T, key string) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata/"+key, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusOK)
+	})
+}
