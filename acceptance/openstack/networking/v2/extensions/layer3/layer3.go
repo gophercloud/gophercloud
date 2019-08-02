@@ -9,6 +9,8 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/floatingips"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/portforwarding"
+
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/ports"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -66,20 +68,20 @@ func CreateFloatingIPWithFixedIP(t *testing.T, client *gophercloud.ServiceClient
 
 // CreatePortForwarding creates a port forwarding for a given floating IP
 // and port. An error will be returned if the creation failed.
-func CreatePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID string, portID string, portFixedIPs []ports.IP) (*floatingips.PortForwarding, error) {
+func CreatePortForwarding(t *testing.T, client *gophercloud.ServiceClient, fipID string, portID string, portFixedIPs []ports.IP) (*portforwarding.PortForwarding, error) {
 	t.Logf("Attempting to create Port forwarding for floating IP with ID: %s", fipID)
 
 	fixedIP := portFixedIPs[0]
 	internalIP := fixedIP.IPAddress
-	createOpts := &floatingips.CreatePortForwardingOpts{
-		Protocol:         "tcp",
-		InternalPort:     25,
-		ExternalPort:     2230,
-		InternalIPAdress: internalIP,
-		InternalPortID:   portID,
+	createOpts := &portforwarding.CreateOpts{
+		Protocol:          "tcp",
+		InternalPort:      25,
+		ExternalPort:      2230,
+		InternalIPAddress: internalIP,
+		InternalPortID:    portID,
 	}
 
-	pf, err := floatingips.CreatePortForwarding(client, fipID, createOpts).ExtractPortForwarding()
+	pf, err := portforwarding.Create(client, fipID, createOpts).Extract()
 	if err != nil {
 		return pf, err
 	}
