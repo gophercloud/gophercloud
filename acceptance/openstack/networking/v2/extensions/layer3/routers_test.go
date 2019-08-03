@@ -73,20 +73,21 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 	tools.PrintResource(t, router)
 
 	efi := []routers.ExternalFixedIP{}
-	for _, extIP := range router.GatewayInfo.ExternalFixedIPs {
+	/*	for _, extIP := range router.GatewayInfo.ExternalFixedIPs {
+			efi = append(efi,
+				routers.ExternalFixedIP{
+					IPAddress: extIP.IPAddress,
+					SubnetID:  extIP.SubnetID,
+				},
+			)
+		}
+		// Add a new external router IP
 		efi = append(efi,
 			routers.ExternalFixedIP{
-				IPAddress: extIP.IPAddress,
-				SubnetID:  extIP.SubnetID,
+				SubnetID: router.GatewayInfo.ExternalFixedIPs[0].SubnetID,
 			},
 		)
-	}
-	// Add a new external router IP
-	efi = append(efi,
-		routers.ExternalFixedIP{
-			SubnetID: router.GatewayInfo.ExternalFixedIPs[0].SubnetID,
-		},
-	)
+	*/
 
 	enableSNAT := true
 	gatewayInfo := routers.GatewayInfo{
@@ -103,7 +104,8 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 		GatewayInfo: &gatewayInfo,
 	}
 
-	_, err = routers.Update(client, router.ID, updateOpts).Extract()
+	updatedRouter, err := routers.Update(client, router.ID, updateOpts).Extract()
+	tools.PrintResource(t, updatedRouter)
 	th.AssertNoErr(t, err)
 
 	newRouter, err := routers.Get(client, router.ID).Extract()
