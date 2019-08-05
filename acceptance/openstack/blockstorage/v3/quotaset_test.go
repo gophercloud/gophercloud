@@ -53,6 +53,7 @@ var UpdateQuotaOpts = quotasets.UpdateOpts{
 	PerVolumeGigabytes: gophercloud.IntToPointer(50),
 	Backups:            gophercloud.IntToPointer(2),
 	BackupGigabytes:    gophercloud.IntToPointer(300),
+	Groups:             gophercloud.IntToPointer(350),
 }
 
 var UpdatedQuotas = quotasets.QuotaSet{
@@ -62,6 +63,7 @@ var UpdatedQuotas = quotasets.QuotaSet{
 	PerVolumeGigabytes: 50,
 	Backups:            2,
 	BackupGigabytes:    300,
+	Groups:             350,
 }
 
 func TestQuotasetUpdate(t *testing.T) {
@@ -142,4 +144,5 @@ func FillUpdateOptsFromQuotaSet(src quotasets.QuotaSet, dest *quotasets.UpdateOp
 	dest.PerVolumeGigabytes = &src.PerVolumeGigabytes
 	dest.Backups = &src.Backups
 	dest.BackupGigabytes = &src.BackupGigabytes
+	dest.Groups = &src.Groups
 }

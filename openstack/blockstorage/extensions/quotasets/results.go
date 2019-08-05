@@ -31,6 +31,9 @@ type QuotaSet struct {
 	// BackupGigabytes is the size (GB) of backups that are allowed for each
 	// project.
 	BackupGigabytes int `json:"backup_gigabytes"`
+
+	// Groups is the number of groups that are allowed for each project.
+	Groups int `json:"groups,omitempty"`
 }
 
 // QuotaUsageSet represents details of both operational limits of block
@@ -71,6 +74,11 @@ type QuotaUsageSet struct {
 	// Note: allocated attribute is available only when nested quota is
 	// enabled.
 	BackupGigabytes QuotaUsage `json:"backup_gigabytes"`
+
+	// Groups is the number of groups that are allowed for each project.
+	// Note: allocated attribute is available only when nested quota is
+	// enabled.
+	Groups QuotaUsage `json:"groups"`
 }
 
 // QuotaUsage is a set of details about a single operational limit that allows
