@@ -62,7 +62,7 @@ type ListOpts struct {
 	ServiceID string `q:"service_id"`
 
 	// RegionID is the ID of the region the Endpoint refers to.
-	RegionID int `q:"region_id"`
+	RegionID string `q:"region_id"`
 }
 
 // ToEndpointListParams builds a list request from the List options.
