@@ -1,5 +1,9 @@
 ## 0.4.0 (Unreleased)
 
+BUG FIXES
+
+* Changed `identity/v3/endpoints.ListOpts.RegionID` from `int` to `string` [GH-1664](https://github.com/gophercloud/gophercloud/pull/1664)
+
 ## 0.3.0 (July 31, 2019)
 
 IMPROVEMENTS
