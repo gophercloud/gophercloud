@@ -1,5 +1,10 @@
 ## 0.4.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Added `blockstorage/extensions/quotasets.results.QuotaSet.Groups` [GH-1668]
+* Added `blockstorage/extensions/quotasets.results.QuotaUsageSet.Groups` [GH-1668]
+
 BUG FIXES
 
 * Changed `identity/v3/endpoints.ListOpts.RegionID` from `int` to `string` [GH-1664](https://github.com/gophercloud/gophercloud/pull/1664)
