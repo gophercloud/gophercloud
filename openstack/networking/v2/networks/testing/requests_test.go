@@ -30,7 +30,7 @@ func TestList(t *testing.T) {
 	client := fake.ServiceClient()
 	count := 0
 
-	networks.List(client, networks.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := networks.List(client, networks.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := networks.ExtractNetworks(page)
 		if err != nil {
@@ -42,6 +42,8 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+
+	th.AssertNoErr(t, err)
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
