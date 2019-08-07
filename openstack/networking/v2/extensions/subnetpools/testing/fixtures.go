@@ -55,7 +55,7 @@ const SubnetPoolsListResult = `
         },
         {
             "address_scope_id": null,
-            "created_at": "2017-12-28T07:21:27Z",
+            "created_at": "2017-12-28T07:21:27",
             "default_prefixlen": "64",
             "default_quota": 4,
             "description": "PublicPool",
@@ -72,7 +72,7 @@ const SubnetPoolsListResult = `
             "revision_number": 1,
             "shared": true,
             "tenant_id": "ceb366d50ad54fe39717df3af60f9945",
-            "updated_at": "2017-12-28T07:21:27Z"
+            "updated_at": "2017-12-28T07:21:27"
         }
     ]
 }
@@ -159,11 +159,11 @@ const SubnetPoolGetResult = `
         "is_default": true,
         "project_id": "1e2b9857295a4a3e841809ef492812c5",
         "tenant_id": "1e2b9857295a4a3e841809ef492812c5",
-        "created_at": "2018-01-01T00:00:01Z",
+        "created_at": "2018-01-01T00:00:01",
         "prefixes": [
             "2001:db8::a3/64"
         ],
-        "updated_at": "2018-01-01T00:10:10Z",
+        "updated_at": "2018-01-01T00:10:10",
         "ip_version": 6,
         "shared": false,
         "description": "ipv6 prefixes",

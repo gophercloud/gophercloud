@@ -16,8 +16,8 @@ const SecurityGroupListResponse = `
             "name": "default",
             "security_group_rules": [],
             "tenant_id": "e4f50856753b4dc6afee5fa6b9b6c550",
-            "created_at": "2019-06-30T04:15:37Z",
-            "updated_at": "2019-06-30T05:18:49Z"
+            "created_at": "2019-06-30T04:15:37",
+            "updated_at": "2019-06-30T05:18:49"
         }
     ]
 }
