@@ -87,6 +87,7 @@ type Cluster struct {
 	UUID              string             `json:"uuid"`
 	UpdatedAt         time.Time          `json:"updated_at"`
 	UserID            string             `json:"user_id"`
+	FloatingIPEnabled bool               `json:"floating_ip_enabled"`
 	FixedNetwork      string             `json:"fixed_network"`
 	FixedSubnet       string             `json:"fixed_subnet"`
 }
