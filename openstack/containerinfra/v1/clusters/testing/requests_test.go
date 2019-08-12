@@ -29,6 +29,7 @@ func TestCreateCluster(t *testing.T) {
 		MasterFlavorID:    "m1.small",
 		Name:              "k8s",
 		NodeCount:         &nodeCount,
+		FixedNetwork:      "private_network",
 	}
 
 	sc := fake.ServiceClient()

@@ -49,6 +49,7 @@ var ExpectedCluster = clusters.Cluster{
 	StatusReason:    "Stack CREATE completed successfully",
 	UpdatedAt:       time.Date(2016, 8, 29, 6, 53, 24, 0, time.UTC),
 	UUID:            clusterUUID,
+	FixedNetwork:    "private_network",
 }
 
 var ExpectedCluster2 = clusters.Cluster{
@@ -79,6 +80,7 @@ var ExpectedCluster2 = clusters.Cluster{
 	StatusReason:    "Stack CREATE completed successfully",
 	UpdatedAt:       time.Date(2016, 8, 29, 6, 53, 24, 0, time.UTC),
 	UUID:            clusterUUID2,
+	FixedNetwork:    "private_network",
 }
 
 var ExpectedClusterUUID = clusterUUID
@@ -140,7 +142,8 @@ var ClusterGetResponse = fmt.Sprintf(`
 		],
 		"status_reason":"Stack CREATE completed successfully",
 		"create_timeout":60,
-		"name":"k8s"
+		"name":"k8s",
+		"fixed_network": "private_network"
 }`, clusterUUID)
 
 var ClusterListResponse = fmt.Sprintf(`
@@ -177,7 +180,8 @@ var ClusterListResponse = fmt.Sprintf(`
 			"status":"CREATE_COMPLETE",
 			"status_reason":"Stack CREATE completed successfully",
 			"updated_at":"2016-08-29T06:53:24+00:00",
-			"uuid":"%s"
+			"uuid":"%s",
+			"fixed_network": "private_network"
 		},
 		{
 			"api_address":"https://172.24.4.6:6443",
@@ -210,7 +214,8 @@ var ClusterListResponse = fmt.Sprintf(`
 			"status":"CREATE_COMPLETE",
 			"status_reason":"Stack CREATE completed successfully",
 			"updated_at":null,
-			"uuid":"%s"
+			"uuid":"%s",
+			"fixed_network": "private_network"
 		}
 	]
 }`, clusterUUID, clusterUUID2)
