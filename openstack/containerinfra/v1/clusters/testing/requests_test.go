@@ -3,6 +3,7 @@ package testing
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/containerinfra/v1/clusters"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -29,6 +30,7 @@ func TestCreateCluster(t *testing.T) {
 		MasterFlavorID:    "m1.small",
 		Name:              "k8s",
 		NodeCount:         &nodeCount,
+		FloatingIPEnabled: gophercloud.Enabled,
 		FixedNetwork:      "private_network",
 		FixedSubnet:       "private_subnet",
 	}
