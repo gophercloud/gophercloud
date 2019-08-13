@@ -6,6 +6,7 @@ IMPROVEMENTS
 * Added `blockstorage/extensions/quotasets.results.QuotaUsageSet.Groups` [GH-1668]
 * Added `containerinfra/v1/clusters.CreateOpts.FixedNetwork` [GH-1674]
 * Added `containerinfra/v1/clusters.CreateOpts.FixedSubnet` [GH-1676]
+* Added `containerinfra/v1/clusters.CreateOpts.FloatingIPEnabled` [GH-1677]
 
 BUG FIXES
 
