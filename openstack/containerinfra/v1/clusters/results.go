@@ -88,6 +88,7 @@ type Cluster struct {
 	UpdatedAt         time.Time          `json:"updated_at"`
 	UserID            string             `json:"user_id"`
 	FixedNetwork      string             `json:"fixed_network"`
+	FixedSubnet       string             `json:"fixed_subnet"`
 }
 
 type ClusterPage struct {

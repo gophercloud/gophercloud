@@ -30,6 +30,7 @@ func TestCreateCluster(t *testing.T) {
 		Name:              "k8s",
 		NodeCount:         &nodeCount,
 		FixedNetwork:      "private_network",
+		FixedSubnet:       "private_subnet",
 	}
 
 	sc := fake.ServiceClient()

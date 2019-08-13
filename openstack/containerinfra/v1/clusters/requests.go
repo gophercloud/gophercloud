@@ -26,6 +26,7 @@ type CreateOpts struct {
 	Name              string            `json:"name"`
 	NodeCount         *int              `json:"node_count,omitempty"`
 	FixedNetwork      string            `json:"fixed_network,omitempty"`
+	FixedSubnet       string            `json:"fixed_subnet,omitempty"`
 }
 
 // ToClusterCreateMap constructs a request body from CreateOpts.
