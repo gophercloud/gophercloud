@@ -85,6 +85,8 @@ func TestServersCreateDestroy(t *testing.T) {
 }
 
 func TestServersWithExtensionsCreateDestroy(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+
 	clients.RequireLong(t)
 
 	var extendedServer struct {
@@ -487,8 +489,9 @@ func TestServersConsoleOutput(t *testing.T) {
 
 func TestServersTags(t *testing.T) {
 	clients.RequireLong(t)
-	clients.SkipRelease(t, "mitaka")
-	clients.SkipRelease(t, "newton")
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	th.AssertNoErr(t, err)
@@ -513,6 +516,7 @@ func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {
 	clients.RequireAdmin(t)
 	clients.SkipRelease(t, "stable/mitaka")
 	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
 
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)

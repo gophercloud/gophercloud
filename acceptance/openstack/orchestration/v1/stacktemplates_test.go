@@ -12,6 +12,8 @@ import (
 )
 
 func TestStackTemplatesCRUD(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+
 	client, err := clients.NewOrchestrationV1Client()
 	th.AssertNoErr(t, err)
 
@@ -25,6 +27,8 @@ func TestStackTemplatesCRUD(t *testing.T) {
 }
 
 func TestStackTemplatesValidate(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+
 	client, err := clients.NewOrchestrationV1Client()
 	th.AssertNoErr(t, err)
 

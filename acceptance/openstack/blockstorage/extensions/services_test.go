@@ -12,6 +12,7 @@ import (
 )
 
 func TestServicesList(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireAdmin(t)
 
 	blockClient, err := clients.NewBlockStorageV3Client()

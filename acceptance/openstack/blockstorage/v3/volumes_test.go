@@ -15,6 +15,7 @@ import (
 )
 
 func TestVolumes(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireLong(t)
 
 	client, err := clients.NewBlockStorageV3Client()
@@ -68,6 +69,10 @@ func TestVolumes(t *testing.T) {
 
 func TestVolumesMultiAttach(t *testing.T) {
 	clients.RequireLong(t)
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
+	clients.SkipRelease(t, "stable/pike")
 
 	client, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
@@ -94,6 +99,7 @@ func TestVolumesMultiAttach(t *testing.T) {
 }
 
 func TestVolumesCascadeDelete(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireLong(t)
 
 	client, err := clients.NewBlockStorageV3Client()

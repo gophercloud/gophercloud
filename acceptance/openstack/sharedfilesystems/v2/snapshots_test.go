@@ -10,6 +10,9 @@ import (
 )
 
 func TestSnapshotCreate(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -38,6 +41,9 @@ func TestSnapshotCreate(t *testing.T) {
 }
 
 func TestSnapshotUpdate(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create shared file system client: %v", err)
@@ -88,6 +94,9 @@ func TestSnapshotUpdate(t *testing.T) {
 }
 
 func TestSnapshotListDetail(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)

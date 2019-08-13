@@ -13,6 +13,10 @@ import (
 )
 
 func TestGenericContainersCRUD(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/queens")
+
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -56,6 +60,10 @@ func TestGenericContainersCRUD(t *testing.T) {
 }
 
 func TestCertificateContainer(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/queens")
+
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -100,6 +108,10 @@ func TestCertificateContainer(t *testing.T) {
 }
 
 func TestRSAContainer(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/queens")
+
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 
@@ -144,6 +156,10 @@ func TestRSAContainer(t *testing.T) {
 }
 
 func TestContainerConsumersCRUD(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/queens")
+
 	client, err := clients.NewKeyManagerV1Client()
 	th.AssertNoErr(t, err)
 

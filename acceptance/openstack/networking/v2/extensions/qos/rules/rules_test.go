@@ -55,6 +55,8 @@ func TestBandwidthLimitRulesCRUD(t *testing.T) {
 }
 
 func TestDSCPMarkingRulesCRUD(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -98,6 +100,8 @@ func TestDSCPMarkingRulesCRUD(t *testing.T) {
 }
 
 func TestMinimumBandwidthRulesCRUD(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

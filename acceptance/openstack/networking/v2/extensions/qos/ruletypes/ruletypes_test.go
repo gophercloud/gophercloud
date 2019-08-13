@@ -9,6 +9,10 @@ import (
 )
 
 func TestRuleTypes(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
+
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)

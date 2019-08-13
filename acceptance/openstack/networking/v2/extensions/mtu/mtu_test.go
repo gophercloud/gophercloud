@@ -17,6 +17,9 @@ import (
 
 func TestMTUNetworkCRUDL(t *testing.T) {
 	clients.RequireAdmin(t)
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)

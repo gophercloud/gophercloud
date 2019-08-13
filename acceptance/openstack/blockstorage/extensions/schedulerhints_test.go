@@ -13,6 +13,8 @@ import (
 )
 
 func TestSchedulerHints(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+
 	clients.RequireLong(t)
 
 	client, err := clients.NewBlockStorageV3Client()
