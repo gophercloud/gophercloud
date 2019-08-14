@@ -10,3 +10,12 @@ func List(client *gophercloud.ServiceClient, serverID string) (r ListResult) {
 	})
 	return
 }
+
+// Check if a tag exists on a server.
+func Check(client *gophercloud.ServiceClient, serverID, tag string) (r CheckResult) {
+	url := checkURL(client, serverID, tag)
+	_, r.Err = client.Get(url, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}

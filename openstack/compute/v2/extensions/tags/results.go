@@ -2,12 +2,12 @@ package tags
 
 import "github.com/gophercloud/gophercloud"
 
-type tagResult struct {
+type commonResult struct {
 	gophercloud.Result
 }
 
-// Extract interprets tagResult to return the list of tags
-func (r tagResult) Extract() ([]string, error) {
+// Extract is a function that accepts a result and extracts a tags resource.
+func (r commonResult) Extract() ([]string, error) {
 	var s struct {
 		Tags []string `json:"tags"`
 	}
@@ -16,5 +16,22 @@ func (r tagResult) Extract() ([]string, error) {
 }
 
 type ListResult struct {
-	tagResult
+	commonResult
+}
+
+// CheckResult is the result from the Check operation.
+type CheckResult struct {
+	gophercloud.Result
+}
+
+func (r CheckResult) Extract() (bool, error) {
+	exists := r.Err == nil
+
+	if r.Err != nil {
+		if _, ok := r.Err.(gophercloud.ErrDefault404); ok {
+			r.Err = nil
+		}
+	}
+
+	return exists, r.Err
 }
