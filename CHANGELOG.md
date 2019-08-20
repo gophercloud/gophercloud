@@ -7,6 +7,7 @@ IMPROVEMENTS
 * Added `containerinfra/v1/clusters.CreateOpts.FixedNetwork` [GH-1674]
 * Added `containerinfra/v1/clusters.CreateOpts.FixedSubnet` [GH-1676]
 * Added `containerinfra/v1/clusters.CreateOpts.FloatingIPEnabled` [GH-1677]
+* Added `CreatedAt` and `UpdatedAt` to `loadbalancers/v2/loadbalancers.LoadBalancer` [GH-1681]
 
 BUG FIXES
 
