@@ -523,9 +523,9 @@ const (
 type InterfaceType string
 
 const (
-	SATA DiskType = "sata"
-	SCSI DiskType = "scsi"
-	SAS  DiskType = "sas"
+	SATA InterfaceType = "sata"
+	SCSI InterfaceType = "scsi"
+	SAS  InterfaceType = "sas"
 )
 
 type LogicalDisk struct {
