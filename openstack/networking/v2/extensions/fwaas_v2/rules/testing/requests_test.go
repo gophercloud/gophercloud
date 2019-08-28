@@ -121,7 +121,6 @@ func TestList(t *testing.T) {
 	}
 }
 
-
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -173,4 +172,3 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, 4, rule.IPVersion)
 	th.AssertEquals(t, false, rule.Shared)
 }
-

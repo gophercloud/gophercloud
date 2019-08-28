@@ -5,7 +5,6 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
