@@ -78,3 +78,8 @@ func (r commonResult) Extract() (*Rule, error) {
 type GetResult struct {
 	commonResult
 }
+
+// DeleteResult represents the result of a delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}

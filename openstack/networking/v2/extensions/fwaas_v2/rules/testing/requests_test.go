@@ -172,3 +172,17 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, 4, rule.IPVersion)
 	th.AssertEquals(t, false, rule.Shared)
 }
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_rules/4ec89077-d057-4a2b-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := rules.Delete(fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
+	th.AssertNoErr(t, res.Err)
+}
