@@ -24,9 +24,6 @@ type PortForwarding struct {
 	// The fixed IPv4 address of the Neutron port associated
 	// to the floating IP port forwarding.
 	InternalIPAddress string `json:"internal_ip_address"`
-
-	// The project ID
-	ProjectID string `json:"project_id"`
 }
 
 type commonResult struct {

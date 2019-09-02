@@ -2,13 +2,17 @@
 package portforwarding enables management and retrieval of port forwarding resources for Floating IPs from the
 OpenStack Networking service.
 
-Example to Create a Port Forwarding
+Example to Create a Port Forwarding for a floating IP
 
-	createOpts := floatingips.CreateOpts{
-		FloatingNetworkID: "a6917946-38ab-4ffd-a55a-26c0980ce5ee",
+	createOpts := &portforwarding.CreateOpts{
+		Protocol:          "tcp",
+		InternalPort:      25,
+		ExternalPort:      2230,
+		InternalIPAddress: internalIP,
+		InternalPortID:    portID,
 	}
 
-	fip, err := floatingips.Create(networkingClient, createOpts).Extract()
+	pf, err := portforwarding.Create(networkingClient, floatingIPID, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

@@ -10,7 +10,6 @@ type CreateOpts struct {
 	InternalPort      int    `json:"internal_port"`
 	ExternalPort      int    `json:"external_port"`
 	Protocol          string `json:"protocol"`
-	ProjectID         string `json:"project_id,omitempty"`
 }
 
 // CreateOptsBuilder allows extensions to add additional parameters to the
