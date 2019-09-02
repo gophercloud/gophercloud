@@ -9,6 +9,7 @@ IMPROVEMENTS
 * Added `containerinfra/v1/clusters.CreateOpts.FloatingIPEnabled` [GH-1677]
 * Added `CreatedAt` and `UpdatedAt` to `loadbalancers/v2/loadbalancers.LoadBalancer` [GH-1681]
 * Added `networking/v2/extensions/layer3/portforwarding.Create` [GH-1651]
+* Added `networking/v2/extensions/agents.ListDHCPNetworks` [GH-1686]
 
 BUG FIXES
 
