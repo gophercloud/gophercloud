@@ -88,3 +88,35 @@ func TestGet(t *testing.T) {
 		"enable_distributed_routing": false,
 	})
 }
+
+func TestListDHCPNetworks(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/dhcp-networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, AgentDHCPNetworksListResult)
+	})
+
+	s, err := agents.ListDHCPNetworks(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").Extract()
+	th.AssertNoErr(t, err)
+
+	var nilSlice []string
+	th.AssertEquals(t, len(s), 1)
+	th.AssertEquals(t, s[0].ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, s[0].AdminStateUp, true)
+	th.AssertEquals(t, s[0].ProjectID, "4fd44f30292945e481c7b8a0c8908869")
+	th.AssertEquals(t, s[0].Shared, false)
+	th.AssertEquals(t, s[0].Name, "net1")
+	th.AssertEquals(t, s[0].Status, "ACTIVE")
+	th.AssertDeepEquals(t, s[0].Tags, nilSlice)
+	th.AssertEquals(t, s[0].TenantID, "4fd44f30292945e481c7b8a0c8908869")
+	th.AssertDeepEquals(t, s[0].AvailabilityZoneHints, []string{})
+	th.AssertDeepEquals(t, s[0].Subnets, []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
+
+}

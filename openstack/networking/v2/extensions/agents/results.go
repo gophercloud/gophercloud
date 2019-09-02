@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -125,4 +126,20 @@ func ExtractAgents(r pagination.Page) ([]Agent, error) {
 	}
 	err := (r.(AgentPage)).ExtractInto(&s)
 	return s.Agents, err
+}
+
+// ListDHCPNetworksResult is the response from a List operation.
+// Call its Extract method to interpret it as networks.
+type ListDHCPNetworksResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any ListDHCPNetworksResult as an array of networks.
+func (r ListDHCPNetworksResult) Extract() ([]networks.Network, error) {
+	var s struct {
+		Networks []networks.Network `json:"networks"`
+	}
+
+	err := r.ExtractInto(&s)
+	return s.Networks, err
 }

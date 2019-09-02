@@ -64,3 +64,10 @@ func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
 	return
 }
+
+// ListDHCPNetworks returns a list of networks scheduled to a specific
+// dhcp agent
+func ListDHCPNetworks(c *gophercloud.ServiceClient, id string) (r ListDHCPNetworksResult) {
+	_, r.Err = c.Get(listDHCPNetworksURL(c, id), &r.Body, nil)
+	return
+}
