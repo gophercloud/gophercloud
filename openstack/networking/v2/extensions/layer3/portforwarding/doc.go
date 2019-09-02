@@ -12,40 +12,5 @@ Example to Create a Port Forwarding
 	if err != nil {
 		panic(err)
 	}
-
-Example to Update a Floating IP
-
-	fipID := "2f245a7b-796b-4f26-9cf9-9e82d248fda7"
-	portID := "76d0a61b-b8e5-490c-9892-4cf674f2bec8"
-
-	updateOpts := floatingips.UpdateOpts{
-		PortID: &portID,
-	}
-
-	fip, err := floatingips.Update(networkingClient, fipID, updateOpts).Extract()
-	if err != nil {
-		panic(err)
-	}
-
-Example to Disassociate a Floating IP with a Port
-
-	fipID := "2f245a7b-796b-4f26-9cf9-9e82d248fda7"
-
-	updateOpts := floatingips.UpdateOpts{
-		PortID: new(string),
-	}
-
-	fip, err := floatingips.Update(networkingClient, fipID, updateOpts).Extract()
-	if err != nil {
-		panic(err)
-	}
-
-Example to Delete a Floating IP
-
-	fipID := "2f245a7b-796b-4f26-9cf9-9e82d248fda7"
-	err := floatingips.Delete(networkClient, fipID).ExtractErr()
-	if err != nil {
-		panic(err)
-	}
 */
 package portforwarding

@@ -11,6 +11,8 @@ import (
 )
 
 func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
+	clients.RequirePortForwarding(t)
+
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
