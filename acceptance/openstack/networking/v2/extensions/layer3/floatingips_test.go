@@ -69,7 +69,7 @@ func TestLayer3FloatingIPsExternalCreateDelete(t *testing.T) {
 
 	port, err := networking.CreatePort(t, client, network.ID, subnet.ID)
 	th.AssertNoErr(t, err)
-	// not required, since "DeleteRouterInterface" above removes the port
+	// not required, since "DeleteRouterInterface" below removes the port
 	// defer networking.DeletePort(t, client, port.ID)
 
 	_, err = CreateRouterInterface(t, client, port.ID, router.ID)

@@ -19,6 +19,14 @@ func RequireNonAdmin(t *testing.T) {
 	}
 }
 
+// RequirePortForwarding will restrict a test to only be run in environments
+// that support port forwarding
+func RequirePortForwarding(t *testing.T) {
+	if os.Getenv("OS_PORTFORWARDING_ENVIRONMENT") == "" {
+		t.Skip("this test requires support for port forwarding")
+	}
+}
+
 // RequireDNS will restrict a test to only be run in environments
 // that support DNSaaS.
 func RequireDNS(t *testing.T) {
