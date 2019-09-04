@@ -10,6 +10,9 @@ IMPROVEMENTS
 * Added `CreatedAt` and `UpdatedAt` to `loadbalancers/v2/loadbalancers.LoadBalancer` [GH-1681]
 * Added `networking/v2/extensions/layer3/portforwarding.Create` [GH-1651]
 * Added `networking/v2/extensions/agents.ListDHCPNetworks` [GH-1686]
+* Added `networking/v2/extensions/layer3/portforwarding.Delete` [GH-1652]
+* Added `compute/v2/extensions/tags.List` [GH-1679]
+* Added `compute/v2/extensions/tags.Check` [GH-1679]
 
 BUG FIXES
 
