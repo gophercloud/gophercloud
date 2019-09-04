@@ -52,6 +52,7 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 
 	pf, err := CreatePortForwarding(t, client, fip.ID, port.ID, port.FixedIPs)
 	th.AssertNoErr(t, err)
+	defer DeletePortForwarding(t, client, fip.ID, pf.ID)
 	tools.PrintResource(t, pf)
 
 }
