@@ -35,7 +35,7 @@ func (opts ListOpts) ToPortForwardingListQuery() (string, error) {
 // List returns a Pager which allows you to iterate over a collection of
 // floating IP resources. It accepts a ListOpts struct, which allows you to
 // filter and sort the returned collection for greater efficiency.
-func ListPortForwardings(c *gophercloud.ServiceClient, opts ListOptsBuilder, id string) pagination.Pager {
+func List(c *gophercloud.ServiceClient, opts ListOptsBuilder, id string) pagination.Pager {
 	url := portForwardingUrl(c, id)
 	if opts != nil {
 		query, err := opts.ToPortForwardingListQuery()
