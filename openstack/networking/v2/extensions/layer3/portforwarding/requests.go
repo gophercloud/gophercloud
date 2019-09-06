@@ -26,14 +26,14 @@ type ListOpts struct {
 	Fields            string `q:"fields"`
 }
 
-// ToNetworkListQuery formats a ListOpts into a query string.
+// ToPortForwardingListQuery formats a ListOpts into a query string.
 func (opts ListOpts) ToPortForwardingListQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
 	return q.String(), err
 }
 
 // List returns a Pager which allows you to iterate over a collection of
-// floating IP resources. It accepts a ListOpts struct, which allows you to
+// Port Forwarding resources. It accepts a ListOpts struct, which allows you to
 // filter and sort the returned collection for greater efficiency.
 func List(c *gophercloud.ServiceClient, opts ListOptsBuilder, id string) pagination.Pager {
 	url := portForwardingUrl(c, id)

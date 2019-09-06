@@ -74,7 +74,7 @@ func (r PortForwardingPage) NextPageURL() (string, error) {
 	return gophercloud.ExtractNextURL(s.Links)
 }
 
-// IsEmpty checks whether a PortForwardinPage struct is empty.
+// IsEmpty checks whether a PortForwardingPage struct is empty.
 func (r PortForwardingPage) IsEmpty() (bool, error) {
 	is, err := ExtractPortForwardings(r)
 	return len(is) == 0, err

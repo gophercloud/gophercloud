@@ -12,13 +12,13 @@ const PoFw = `{
     }`
 
 const PoFw_second = `{
-	  "protocol": "tcp",
+      "protocol": "tcp",
       "internal_ip_address": "10.0.0.11",
       "internal_port": 25,
       "internal_port_id": "1238be08-a2a8-4b8d-addf-fb5e2250e480",
       "external_port": 2230,
       "id": "e0a0274e-4d19-4eab-9e12-9e77a8caf3ea"
-	}`
+    }`
 
 var ListResponse = fmt.Sprintf(`
 {
