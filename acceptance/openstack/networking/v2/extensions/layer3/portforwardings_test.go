@@ -2,7 +2,6 @@ package layer3
 
 import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/portforwarding"
-	"os"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -13,7 +12,6 @@ import (
 )
 
 func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
-	os.Setenv("OS_PORTFORWARDING_ENVIRONMENT", "bjkgk")
 	clients.RequirePortForwarding(t)
 
 	client, err := clients.NewNetworkV2Client()
