@@ -1,6 +1,8 @@
 package layer3
 
 import (
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/portforwarding"
+	"os"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -11,6 +13,7 @@ import (
 )
 
 func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
+	os.Setenv("OS_PORTFORWARDING_ENVIRONMENT", "bjkgk")
 	clients.RequirePortForwarding(t)
 
 	client, err := clients.NewNetworkV2Client()
@@ -54,5 +57,20 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeletePortForwarding(t, client, fip.ID, pf.ID)
 	tools.PrintResource(t, pf)
+
+	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fip.ID).AllPages()
+	th.AssertNoErr(t, err)
+
+	allPFs, err := portforwarding.ExtractPortForwardings(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, pf := range allPFs {
+		if pf.ID == pf.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, true, found)
 
 }
