@@ -273,3 +273,38 @@ var ImageAndExistingVolumeRequest = bootfromvolume.CreateOptsExt{
 		},
 	},
 }
+
+const ExpectedNewVolumeTypeRequest = `
+{
+	"server": {
+		"name":"createdserver",
+		"flavorRef":"performance1-1",
+		"imageRef":"",
+		"block_device_mapping_v2":[
+			{
+				"uuid":"123456",
+				"source_type":"image",
+				"destination_type":"volume",
+				"boot_index": 0,
+				"delete_on_termination": true,
+				"volume_size": 10,
+				"volume_type": "ssd"
+			}
+		]
+	}
+}
+`
+
+var NewVolumeTypeRequest = bootfromvolume.CreateOptsExt{
+	CreateOptsBuilder: BaseCreateOpts,
+	BlockDevice: []bootfromvolume.BlockDevice{
+		{
+			UUID:                "123456",
+			SourceType:          bootfromvolume.SourceImage,
+			DestinationType:     bootfromvolume.DestinationVolume,
+			VolumeSize:          10,
+			DeleteOnTermination: true,
+			VolumeType:          "ssd",
+		},
+	},
+}

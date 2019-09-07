@@ -7,7 +7,6 @@ import (
 )
 
 func TestBootFromNewVolume(t *testing.T) {
-
 	actual, err := NewVolumeRequest.ToServerCreateMap()
 	th.AssertNoErr(t, err)
 	th.CheckJSONEquals(t, ExpectedNewVolumeRequest, actual)
@@ -41,4 +40,10 @@ func TestAttachExistingVolume(t *testing.T) {
 	actual, err := ImageAndExistingVolumeRequest.ToServerCreateMap()
 	th.AssertNoErr(t, err)
 	th.CheckJSONEquals(t, ExpectedImageAndExistingVolumeRequest, actual)
+}
+
+func TestBootFromNewVolumeType(t *testing.T) {
+	actual, err := NewVolumeTypeRequest.ToServerCreateMap()
+	th.AssertNoErr(t, err)
+	th.CheckJSONEquals(t, ExpectedNewVolumeTypeRequest, actual)
 }
