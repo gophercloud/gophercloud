@@ -1,5 +1,9 @@
 ## 0.5.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Added `VolumeType` to `cmopute/v2/extensions/bootfromvolume.BlockDevice` [GH-1690]
+
 ## 0.4.0 (September 3, 2019)
 
 IMPROVEMENTS
