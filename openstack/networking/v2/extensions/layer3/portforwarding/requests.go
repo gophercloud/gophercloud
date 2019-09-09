@@ -24,6 +24,8 @@ type ListOpts struct {
 	SortKey           string `q:"sort_key"`
 	SortDir           string `q:"sort_dir"`
 	Fields            string `q:"fields"`
+	Limit             int    `q:"limit"`
+	Marker            string `q:"marker"`
 }
 
 // ToPortForwardingListQuery formats a ListOpts into a query string.
