@@ -121,6 +121,42 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, "tcp", pf.Protocol)
 }
 
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7/port_forwardings/725ade3c-9760-4880-8080-8fc2dbab9acc", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "port_forwarding": {
+    "protocol": "tcp",
+    "internal_ip_address": "10.0.0.11",
+    "internal_port": 25,
+    "internal_port_id": "1238be08-a2a8-4b8d-addf-fb5e2250e480",
+    "external_port": 2230,
+    "id": "725ade3c-9760-4880-8080-8fc2dbab9acc"
+  }
+}
+      `)
+	})
+
+	pf, err := portforwarding.Get(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", "725ade3c-9760-4880-8080-8fc2dbab9acc").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "tcp", pf.Protocol)
+	th.AssertEquals(t, "725ade3c-9760-4880-8080-8fc2dbab9acc", pf.ID)
+	th.AssertEquals(t, "10.0.0.11", pf.InternalIPAddress)
+	th.AssertEquals(t, 25, pf.InternalPort)
+	th.AssertEquals(t, "1238be08-a2a8-4b8d-addf-fb5e2250e480", pf.InternalPortID)
+	th.AssertEquals(t, 2230, pf.ExternalPort)
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

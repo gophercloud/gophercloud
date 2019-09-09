@@ -51,9 +51,9 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder, id string) paginat
 	})
 }
 
-// Get retrieves a particular floating IP port forwarding resource based on its unique ID.
-func GetPortForwarding(c *gophercloud.ServiceClient, id string, pfId string) (r GetResult) {
-	_, r.Err = c.Get(singlePortForwardingUrl(c, id, pfId), &r.Body, nil)
+// Get retrieves a particular port forwarding resource based on its unique ID.
+func Get(c *gophercloud.ServiceClient, floatingIpId string, pfId string) (r GetResult) {
+	_, r.Err = c.Get(singlePortForwardingUrl(c, floatingIpId, pfId), &r.Body, nil)
 	return
 }
 
