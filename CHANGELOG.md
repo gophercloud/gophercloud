@@ -3,6 +3,7 @@
 IMPROVEMENTS
 
 * Added `VolumeType` to `cmopute/v2/extensions/bootfromvolume.BlockDevice` [GH-1690]
+* Added `networking/v2/extensions/layer3/portforwarding.List` [GH-1688]
 
 ## 0.4.0 (September 3, 2019)
 
