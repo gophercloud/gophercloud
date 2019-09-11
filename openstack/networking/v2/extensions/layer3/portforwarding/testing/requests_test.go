@@ -7,8 +7,62 @@ import (
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/portforwarding"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
+
+func TestPortForwardingList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/floatingips/2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e/port_forwardings", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ListResponse)
+	})
+
+	count := 0
+
+	portforwarding.List(fake.ServiceClient(), portforwarding.ListOpts{}, "2f95fd2b-9f6a-4e8e-9e9a-2cbe286cbf9e").EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := portforwarding.ExtractPortForwardings(page)
+		if err != nil {
+			t.Errorf("Failed to extract port forwardings: %v", err)
+			return false, err
+		}
+
+		expected := []portforwarding.PortForwarding{
+			{
+				Protocol:          "tcp",
+				InternalIPAddress: "10.0.0.24",
+				InternalPort:      25,
+				InternalPortID:    "070ef0b2-0175-4299-be5c-01fea8cca522",
+				ExternalPort:      2229,
+				ID:                "1798dc82-c0ed-4b79-b12d-4c3c18f90eb2",
+			},
+			{
+				Protocol:          "tcp",
+				InternalIPAddress: "10.0.0.11",
+				InternalPort:      25,
+				InternalPortID:    "1238be08-a2a8-4b8d-addf-fb5e2250e480",
+				ExternalPort:      2230,
+				ID:                "e0a0274e-4d19-4eab-9e12-9e77a8caf3ea",
+			},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
+}
 
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
