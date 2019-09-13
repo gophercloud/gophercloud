@@ -7,15 +7,15 @@ const TagsListResponse = `
 }
 `
 
-// TagsReplaceRequest represents a raw tags Replace request.
-const TagsReplaceRequest = `
+// TagsReplaceAllRequest represents a raw tags Replace request.
+const TagsReplaceAllRequest = `
 {
     "tags": ["tag1", "tag2", "tag3"]
 }
 `
 
-// TagsReplaceResponse represents a raw tags Replace response.
-const TagsReplaceResponse = `
+// TagsReplaceAllResponse represents a raw tags Replace response.
+const TagsReplaceAllResponse = `
 {
     "tags": ["tag1", "tag2", "tag3"]
 }

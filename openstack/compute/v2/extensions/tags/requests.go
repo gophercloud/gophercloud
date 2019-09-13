@@ -20,25 +20,25 @@ func Check(client *gophercloud.ServiceClient, serverID, tag string) (r CheckResu
 	return
 }
 
-// ReplaceOptsBuilder allows to add additional parameters to the Replace request.
-type ReplaceOptsBuilder interface {
-	ToTagsReplaceMap() (map[string]interface{}, error)
+// ReplaceAllOptsBuilder allows to add additional parameters to the ReplaceAll request.
+type ReplaceAllOptsBuilder interface {
+	ToTagsReplaceAllMap() (map[string]interface{}, error)
 }
 
-// ReplaceOpts provides options used to replace Tags on a server.
-type ReplaceOpts struct {
+// ReplaceAllOpts provides options used to replace Tags on a server.
+type ReplaceAllOpts struct {
 	Tags []string `json:"tags" required:"true"`
 }
 
-// ToTagsReplaceMap formats a ReplaceOpts into the body of the replace request.
-func (opts ReplaceOpts) ToTagsReplaceMap() (map[string]interface{}, error) {
+// ToTagsReplaceAllMap formats a ReplaceALlOpts into the body of the ReplaceAll request.
+func (opts ReplaceAllOpts) ToTagsReplaceAllMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-// Replace replaces all tags on a server.
-func Replace(client *gophercloud.ServiceClient, serverID string, opts ReplaceOptsBuilder) (r ReplaceResult) {
-	b, err := opts.ToTagsReplaceMap()
-	url := replaceURL(client, serverID)
+// ReplaceAll replaces all tags on a server.
+func ReplaceAll(client *gophercloud.ServiceClient, serverID string, opts ReplaceAllOptsBuilder) (r ReplaceAllResult) {
+	b, err := opts.ToTagsReplaceAllMap()
+	url := replaceAllURL(client, serverID)
 	if err != nil {
 		r.Err = err
 		return

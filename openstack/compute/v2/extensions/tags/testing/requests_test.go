@@ -66,7 +66,7 @@ func TestCheckFail(t *testing.T) {
 	th.AssertEquals(t, false, exists)
 }
 
-func TestReplace(t *testing.T) {
+func TestReplaceAll(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -77,12 +77,12 @@ func TestReplace(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		_, err := fmt.Fprintf(w, TagsReplaceResponse)
+		_, err := fmt.Fprintf(w, TagsReplaceAllResponse)
 		th.AssertNoErr(t, err)
 	})
 
 	expected := []string{"tag1", "tag2", "tag3"}
-	actual, err := tags.Replace(client.ServiceClient(), "uuid1", tags.ReplaceOpts{Tags: []string{"tag1", "tag2", "tag3"}}).Extract()
+	actual, err := tags.ReplaceAll(client.ServiceClient(), "uuid1", tags.ReplaceAllOpts{Tags: []string{"tag1", "tag2", "tag3"}}).Extract()
 
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)

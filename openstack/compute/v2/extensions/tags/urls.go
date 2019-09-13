@@ -23,6 +23,6 @@ func checkURL(c *gophercloud.ServiceClient, serverID, tag string) string {
 	return resourceURL(c, serverID, tag)
 }
 
-func replaceURL(c *gophercloud.ServiceClient, serverID string) string {
+func replaceAllURL(c *gophercloud.ServiceClient, serverID string) string {
 	return rootURL(c, serverID)
 }

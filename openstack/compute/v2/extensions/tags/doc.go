@@ -33,7 +33,7 @@ Example to Replace all Tags on a server
 
     client.Microversion = "2.62"
 
-    newTags, err := tags.Replace(client, serverID, tags. tags.ReplaceOpts{Tags: []string{"foo", "bar"}}).Extract()
+    newTags, err := tags.ReplaceAll(client, serverID, tags. tags.ReplaceAllOpts{Tags: []string{"foo", "bar"}}).Extract()
     if err != nil {
         log.Fatal(err)
     }
