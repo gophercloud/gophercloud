@@ -94,7 +94,7 @@ func Create(c *gophercloud.ServiceClient, floatingIpId string, opts CreateOptsBu
 // UpdateOpts contains the values used when updating a port forwarding resource.
 type UpdateOpts struct {
 	InternalPortID    string `json:"internal_port_id,omitempty"`
-	InternalIPAddress string `json:"internal_ip_address"`
+	InternalIPAddress string `json:"internal_ip_address,omitempty"`
 	InternalPort      int    `json:"internal_port,omitempty"`
 	ExternalPort      int    `json:"external_port,omitempty"`
 	Protocol          string `json:"protocol"`
