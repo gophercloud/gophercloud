@@ -35,7 +35,7 @@ func (opts ReplaceAllOpts) ToTagsReplaceAllMap() (map[string]interface{}, error)
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-// ReplaceAll replaces all tags on a server.
+// ReplaceAll replaces all Tags on a server.
 func ReplaceAll(client *gophercloud.ServiceClient, serverID string, opts ReplaceAllOptsBuilder) (r ReplaceAllResult) {
 	b, err := opts.ToTagsReplaceAllMap()
 	url := replaceAllURL(client, serverID)
@@ -45,6 +45,15 @@ func ReplaceAll(client *gophercloud.ServiceClient, serverID string, opts Replace
 	}
 	_, r.Err = client.Put(url, &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
+	})
+	return
+}
+
+// Add adds a new Tag on a server.
+func Add(client *gophercloud.ServiceClient, serverID, tag string) (r AddResult) {
+	url := addURL(client, serverID, tag)
+	_, r.Err = client.Put(url, nil, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{201, 204},
 	})
 	return
 }

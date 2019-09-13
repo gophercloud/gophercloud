@@ -87,3 +87,35 @@ func TestReplaceAll(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
 }
+
+func TestAddCreated(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/servers/uuid1/tags/foo", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+	})
+
+	err := tags.Add(client.ServiceClient(), "uuid1", "foo").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestAddExists(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/servers/uuid1/tags/foo", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	err := tags.Add(client.ServiceClient(), "uuid1", "foo").ExtractErr()
+	th.AssertNoErr(t, err)
+}

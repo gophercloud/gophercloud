@@ -40,3 +40,8 @@ func (r CheckResult) Extract() (bool, error) {
 type ReplaceAllResult struct {
 	commonResult
 }
+
+// AddResult is the result from the Add operation.
+type AddResult struct {
+	gophercloud.ErrResult
+}

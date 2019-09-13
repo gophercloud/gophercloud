@@ -33,11 +33,20 @@ Example to Replace all Tags on a server
 
     client.Microversion = "2.62"
 
-    newTags, err := tags.ReplaceAll(client, serverID, tags. tags.ReplaceAllOpts{Tags: []string{"foo", "bar"}}).Extract()
+    newTags, err := tags.ReplaceAll(client, serverID, tags.ReplaceAllOpts{Tags: []string{"foo", "bar"}}).Extract()
     if err != nil {
         log.Fatal(err)
     }
 
     fmt.Printf("New tags: %v\n", newTags)
+
+Example to Add a new Tag on a server
+
+    client.Microversion = "2.62"
+
+    err := tags.Add(client, serverID, "foo").ExtractErr()
+    if err != nil {
+        log.Fatal(err)
+    }
 */
 package tags
