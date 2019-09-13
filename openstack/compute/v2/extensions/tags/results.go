@@ -35,3 +35,8 @@ func (r CheckResult) Extract() (bool, error) {
 
 	return exists, r.Err
 }
+
+// ReplaceResult is the result from the Replace operation.
+type ReplaceResult struct {
+	commonResult
+}
