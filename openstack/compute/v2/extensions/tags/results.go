@@ -35,3 +35,13 @@ func (r CheckResult) Extract() (bool, error) {
 
 	return exists, r.Err
 }
+
+// ReplaceAllResult is the result from the ReplaceAll operation.
+type ReplaceAllResult struct {
+	commonResult
+}
+
+// AddResult is the result from the Add operation.
+type AddResult struct {
+	gophercloud.ErrResult
+}

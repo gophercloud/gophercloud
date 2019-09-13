@@ -17,6 +17,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/pauseunpause"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/serverusage"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/suspendresume"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/tags"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -506,9 +507,34 @@ func TestServersTags(t *testing.T) {
 	networkID, err := networks.IDFromName(networkClient, choices.NetworkName)
 	th.AssertNoErr(t, err)
 
+	// Create server with tags.
 	server, err := CreateServerWithTags(t, client, networkID)
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
+
+	// Check all tags.
+	allTags, err := tags.List(client, server.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, []string{"tag1", "tag2"}, allTags)
+
+	// Check single tag.
+	exists, err := tags.Check(client, server.ID, "tag2").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, true, exists)
+
+	// Add new tag.
+	newTags, err := tags.ReplaceAll(client, server.ID, tags.ReplaceAllOpts{Tags: []string{"tag3", "tag4"}}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, []string{"tag3", "tag4"}, newTags)
+
+	// Add new single tag.
+	err = tags.Add(client, server.ID, "tag5").ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Check current tags.
+	newAllTags, err := tags.List(client, server.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, []string{"tag3", "tag4", "tag5"}, newAllTags)
 }
 
 func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {

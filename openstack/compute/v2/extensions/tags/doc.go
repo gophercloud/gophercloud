@@ -14,7 +14,7 @@ Example to List all server Tags
 
     fmt.Printf("Tags: %v\n", serverTags)
 
-Example to Check if the specific Tag exists on a server.
+Example to Check if the specific Tag exists on a server
 
     client.Microversion = "2.62"
 
@@ -27,6 +27,26 @@ Example to Check if the specific Tag exists on a server.
         log.Printf("Tag %s is set\n", tag)
     } else {
         log.Printf("Tag %s is not set\n", tag)
+    }
+
+Example to Replace all Tags on a server
+
+    client.Microversion = "2.62"
+
+    newTags, err := tags.ReplaceAll(client, serverID, tags.ReplaceAllOpts{Tags: []string{"foo", "bar"}}).Extract()
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Printf("New tags: %v\n", newTags)
+
+Example to Add a new Tag on a server
+
+    client.Microversion = "2.62"
+
+    err := tags.Add(client, serverID, "foo").ExtractErr()
+    if err != nil {
+        log.Fatal(err)
     }
 */
 package tags
