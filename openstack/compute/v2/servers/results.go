@@ -152,6 +152,9 @@ type Server struct {
 	// TenantID identifies the tenant owning this server resource.
 	TenantID string `json:"tenant_id"`
 
+	// AvailabilityZone identifies the availability zone name where resource located.
+	AvailabilityZone string `json:"OS-EXT-AZ:availability_zone"`
+
 	// UserID uniquely identifies the user account owning the tenant.
 	UserID string `json:"user_id"`
 
