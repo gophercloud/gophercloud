@@ -51,10 +51,13 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 
 	tools.PrintResource(t, newFip)
 
-	newPf, err := CreatePortForwarding(t, client, fip.ID, port.ID, port.FixedIPs)
+	pf, err := CreatePortForwarding(t, client, fip.ID, port.ID, port.FixedIPs)
 	th.AssertNoErr(t, err)
-	defer DeletePortForwarding(t, client, fip.ID, newPf.ID)
-	tools.PrintResource(t, newPf)
+	defer DeletePortForwarding(t, client, fip.ID, pf.ID)
+	tools.PrintResource(t, pf)
+
+	newPf, err := portforwarding.Get(client, fip.ID, pf.ID).Extract()
+	th.AssertNoErr(t, err)
 
 	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fip.ID).AllPages()
 	th.AssertNoErr(t, err)
