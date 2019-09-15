@@ -48,5 +48,23 @@ Example to Add a new Tag on a server
     if err != nil {
         log.Fatal(err)
     }
+
+Example to Delete a Tag on a server
+
+    client.Microversion = "2.62"
+
+    err := tags.Delete(client, serverID, "foo").ExtractErr()
+    if err != nil {
+        log.Fatal(err)
+    }
+
+Example to Delete all Tags on a server
+
+    client.Microversion = "2.62"
+
+    err := tags.DeleteAll(client, serverID).ExtractErr()
+    if err != nil {
+        log.Fatal(err)
+    }
 */
 package tags

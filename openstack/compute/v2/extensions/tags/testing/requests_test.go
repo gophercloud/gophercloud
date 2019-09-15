@@ -135,3 +135,19 @@ func TestDelete(t *testing.T) {
 	err := tags.Delete(client.ServiceClient(), "uuid1", "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestDeleteAll(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/servers/uuid1/tags", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodDelete)
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	err := tags.DeleteAll(client.ServiceClient(), "uuid1").ExtractErr()
+	th.AssertNoErr(t, err)
+}

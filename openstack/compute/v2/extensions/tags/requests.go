@@ -66,3 +66,12 @@ func Delete(client *gophercloud.ServiceClient, serverID, tag string) (r DeleteRe
 	})
 	return
 }
+
+// DeleteAll removes all tag from a server.
+func DeleteAll(client *gophercloud.ServiceClient, serverID string) (r DeleteResult) {
+	url := deleteAllURL(client, serverID)
+	_, r.Err = client.Delete(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
