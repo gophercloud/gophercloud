@@ -19,6 +19,16 @@ Example to list all Port Forwardings for a floating IP
 		fmt.Printf("%+v\n", pf)
 	}
 
+Example to Get a Port Forwarding with a certain ID
+
+	fipID := "2f245a7b-796b-4f26-9cf9-9e82d248fda7"
+	pfID := "725ade3c-9760-4880-8080-8fc2dbab9acc"
+	pf, err := portforwarding.Get(client, fipID, pfID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+
 Example to Create a Port Forwarding for a floating IP
 
 	createOpts := &portforwarding.CreateOpts{
