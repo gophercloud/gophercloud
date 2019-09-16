@@ -97,7 +97,7 @@ type UpdateOpts struct {
 	InternalIPAddress string `json:"internal_ip_address,omitempty"`
 	InternalPort      int    `json:"internal_port,omitempty"`
 	ExternalPort      int    `json:"external_port,omitempty"`
-	Protocol          string `json:"protocol"`
+	Protocol          string `json:"protocol,omitempty"`
 }
 
 // ToPortForwardingUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder
