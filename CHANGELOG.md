@@ -7,6 +7,7 @@ IMPROVEMENTS
 * Added `networking/v2/extensions/layer3/portforwarding.Get` [GH-1698]
 * Added `compute/v2/extensions/tags.ReplaceAll` [GH-1696]
 * Added `compute/v2/extensions/tags.Add` [GH-1696]
+* Added `networking/v2/extensions/layer3/portforwarding.Update` [GH-1703]
 
 ## 0.4.0 (September 3, 2019)
 
