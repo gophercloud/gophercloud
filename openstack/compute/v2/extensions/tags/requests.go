@@ -57,3 +57,12 @@ func Add(client *gophercloud.ServiceClient, serverID, tag string) (r AddResult) 
 	})
 	return
 }
+
+// Delete removes a tag from a server.
+func Delete(client *gophercloud.ServiceClient, serverID, tag string) (r DeleteResult) {
+	url := deleteURL(client, serverID, tag)
+	_, r.Err = client.Delete(url, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
+	})
+	return
+}
