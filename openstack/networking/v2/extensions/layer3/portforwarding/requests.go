@@ -91,6 +91,45 @@ func Create(c *gophercloud.ServiceClient, floatingIpId string, opts CreateOptsBu
 	return
 }
 
+// UpdateOpts contains the values used when updating a port forwarding resource.
+type UpdateOpts struct {
+	InternalPortID    string `json:"internal_port_id,omitempty"`
+	InternalIPAddress string `json:"internal_ip_address,omitempty"`
+	InternalPort      int    `json:"internal_port,omitempty"`
+	ExternalPort      int    `json:"external_port,omitempty"`
+	Protocol          string `json:"protocol,omitempty"`
+}
+
+// ToPortForwardingUpdateMap allows UpdateOpts to satisfy the UpdateOptsBuilder
+// interface
+func (opts UpdateOpts) ToPortForwardingUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "port_forwarding")
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToPortForwardingUpdateMap() (map[string]interface{}, error)
+}
+
+// Update allows port forwarding resources to be updated.
+func Update(c *gophercloud.ServiceClient, fipID string, pfID string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToPortForwardingUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(singlePortForwardingUrl(c, fipID, pfID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
 // Delete will permanently delete a particular port forwarding for a given floating ID.
 func Delete(c *gophercloud.ServiceClient, floatingIpId string, pfId string) (r DeleteResult) {
 	_, r.Err = c.Delete(singlePortForwardingUrl(c, floatingIpId, pfId), nil)

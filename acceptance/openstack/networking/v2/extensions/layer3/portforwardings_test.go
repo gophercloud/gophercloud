@@ -59,6 +59,18 @@ func TestLayer3PortForwardingsCreateDelete(t *testing.T) {
 	newPf, err := portforwarding.Get(client, fip.ID, pf.ID).Extract()
 	th.AssertNoErr(t, err)
 
+	updateOpts := portforwarding.UpdateOpts{
+		Protocol:     "udp",
+		InternalPort: 30,
+		ExternalPort: 678,
+	}
+
+	_, err = portforwarding.Update(client, fip.ID, newPf.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	newPf, err = portforwarding.Get(client, fip.ID, pf.ID).Extract()
+	th.AssertNoErr(t, err)
+
 	allPages, err := portforwarding.List(client, portforwarding.ListOpts{}, fip.ID).AllPages()
 	th.AssertNoErr(t, err)
 

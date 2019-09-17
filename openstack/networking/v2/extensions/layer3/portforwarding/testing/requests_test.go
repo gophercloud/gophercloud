@@ -170,3 +170,64 @@ func TestDelete(t *testing.T) {
 	res := portforwarding.Delete(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", "725ade3c-9760-4880-8080-8fc2dbab9acc")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/floatingips/2f245a7b-796b-4f26-9cf9-9e82d248fda7/port_forwardings/725ade3c-9760-4880-8080-8fc2dbab9acc", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+  "port_forwarding": {
+    "protocol": "udp",
+    "internal_port": 37,
+    "internal_port_id": "99889dc2-19a7-4edb-b9d0-d2ace8d1e144",
+    "external_port": 1960
+  }
+}
+			`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "port_forwarding": {
+    "protocol": "udp",
+    "internal_ip_address": "10.0.0.14",
+    "internal_port": 37,
+    "internal_port_id": "99889dc2-19a7-4edb-b9d0-d2ace8d1e144",
+    "external_port": 1960,
+    "id": "725ade3c-9760-4880-8080-8fc2dbab9acc"
+  }
+}
+`)
+	})
+
+	updatedProtocol := "udp"
+	updatedInternalPort := 37
+	updatedInternalPortID := "99889dc2-19a7-4edb-b9d0-d2ace8d1e144"
+	updatedExternalPort := 1960
+	options := portforwarding.UpdateOpts{
+		Protocol:       updatedProtocol,
+		InternalPort:   updatedInternalPort,
+		InternalPortID: updatedInternalPortID,
+		ExternalPort:   updatedExternalPort,
+	}
+
+	actual, err := portforwarding.Update(fake.ServiceClient(), "2f245a7b-796b-4f26-9cf9-9e82d248fda7", "725ade3c-9760-4880-8080-8fc2dbab9acc", options).Extract()
+	th.AssertNoErr(t, err)
+	expected := portforwarding.PortForwarding{
+		Protocol:          "udp",
+		InternalIPAddress: "10.0.0.14",
+		InternalPort:      37,
+		ID:                "725ade3c-9760-4880-8080-8fc2dbab9acc",
+		InternalPortID:    "99889dc2-19a7-4edb-b9d0-d2ace8d1e144",
+		ExternalPort:      1960,
+	}
+	th.AssertDeepEquals(t, expected, *actual)
+}
