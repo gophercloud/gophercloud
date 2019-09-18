@@ -67,6 +67,7 @@ func TestCreateListener(t *testing.T) {
 		DefaultPoolID:          "41efe233-7591-43c5-9cf7-923964759f9e",
 		ProtocolPort:           3306,
 		InsertHeaders:          map[string]string{"X-Forwarded-For": "true"},
+		AllowedCIDRs:           []string{"192.0.2.0/24", "198.51.100.0/24"},
 	}).Extract()
 	th.AssertNoErr(t, err)
 

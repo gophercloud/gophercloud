@@ -25,7 +25,11 @@ const ListenersListBody = `
 			"default_pool_id": "fad389a3-9a4a-4762-a365-8c7038508b5d",
 			"admin_state_up": true,
 			"default_tls_container_ref": "2c433435-20de-4411-84ae-9cc8917def76",
-			"sni_container_refs": ["3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"]
+			"sni_container_refs": ["3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"],
+			"allowed_cidrs": [
+				"192.0.2.0/24",
+				"198.51.100.0/24"
+			]
 		},
 		{
 			"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -46,7 +50,11 @@ const ListenersListBody = `
 			"timeout_tcp_inspect": 0,
 			"insert_headers": {
 				"X-Forwarded-For": "true"
-			}
+			},
+			"allowed_cidrs": [
+				"192.0.2.0/24",
+				"198.51.100.0/24"
+			]
 		}
 	]
 }
@@ -72,9 +80,13 @@ const SingleListenerBody = `
 		"timeout_member_data": 50000,
 		"timeout_member_connect": 5000,
 		"timeout_tcp_inspect": 0,
-        	"insert_headers": {
-            		"X-Forwarded-For": "true"
-        	}
+		"insert_headers": {
+			"X-Forwarded-For": "true"
+		},
+		"allowed_cidrs": [
+			"192.0.2.0/24",
+			"198.51.100.0/24"
+		]
 	}
 }
 `
@@ -99,7 +111,6 @@ const PostUpdateListenerBody = `
 		"timeout_member_data": 181000,
 		"timeout_member_connect": 181000,
 		"timeout_tcp_inspect": 181000
-
 	}
 }
 `
@@ -130,6 +141,7 @@ var (
 		AdminStateUp:           true,
 		DefaultTlsContainerRef: "2c433435-20de-4411-84ae-9cc8917def76",
 		SniContainerRefs:       []string{"3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"},
+		AllowedCIDRs:           []string{"192.0.2.0/24", "198.51.100.0/24"},
 	}
 	ListenerDb = listeners.Listener{
 		ID:                     "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -149,6 +161,7 @@ var (
 		TimeoutMemberConnect:   5000,
 		TimeoutTCPInspect:      0,
 		InsertHeaders:          map[string]string{"X-Forwarded-For": "true"},
+		AllowedCIDRs:           []string{"192.0.2.0/24", "198.51.100.0/24"},
 	}
 	ListenerUpdated = listeners.Listener{
 		ID:                     "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -204,18 +217,22 @@ func HandleListenerCreationSuccessfully(t *testing.T, response string) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, `{
-			    "listener": {
-			        "loadbalancer_id": "79e05663-7f03-45d2-a092-8b94062f22ab",
-			        "protocol": "TCP",
-			        "name": "db",
-			        "admin_state_up": true,
-			        "default_tls_container_ref": "2c433435-20de-4411-84ae-9cc8917def76",
-			        "default_pool_id": "41efe233-7591-43c5-9cf7-923964759f9e",
-			        "protocol_port": 3306,
+			"listener": {
+				"loadbalancer_id": "79e05663-7f03-45d2-a092-8b94062f22ab",
+				"protocol": "TCP",
+				"name": "db",
+				"admin_state_up": true,
+				"default_tls_container_ref": "2c433435-20de-4411-84ae-9cc8917def76",
+				"default_pool_id": "41efe233-7591-43c5-9cf7-923964759f9e",
+				"protocol_port": 3306,
 				"insert_headers": {
 					"X-Forwarded-For": "true"
-				}
-			    }
+				},
+				"allowed_cidrs": [
+					"192.0.2.0/24",
+					"198.51.100.0/24"
+				]
+			}
 		}`)
 
 		w.WriteHeader(http.StatusAccepted)
