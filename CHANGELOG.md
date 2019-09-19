@@ -8,6 +8,7 @@ IMPROVEMENTS
 * Added `compute/v2/extensions/tags.ReplaceAll` [GH-1696]
 * Added `compute/v2/extensions/tags.Add` [GH-1696]
 * Added `networking/v2/extensions/layer3/portforwarding.Update` [GH-1703]
+* Added `ExtractDomain` method to token results in `identity/v3/tokens` [GH-1712]
 
 ## 0.4.0 (September 3, 2019)
 
