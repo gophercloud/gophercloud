@@ -9,6 +9,9 @@ IMPROVEMENTS
 * Added `compute/v2/extensions/tags.Add` [GH-1696]
 * Added `networking/v2/extensions/layer3/portforwarding.Update` [GH-1703]
 * Added `ExtractDomain` method to token results in `identity/v3/tokens` [GH-1712]
+* Added `AllowedCIDRs` to `loadbalancer/v2/listeners.CreateOpts` [GH-1710]
+* Added `AllowedCIDRs` to `loadbalancer/v2/listeners.UpdateOpts` [GH-1710]
+* Added `AllowedCIDRs` to `loadbalancer/v2/listeners.Listener` [GH-1710]
 
 ## 0.4.0 (September 3, 2019)
 
