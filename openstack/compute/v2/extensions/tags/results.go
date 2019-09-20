@@ -45,3 +45,8 @@ type ReplaceAllResult struct {
 type AddResult struct {
 	gophercloud.ErrResult
 }
+
+// DeleteResult is the result from the Delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}

@@ -535,6 +535,24 @@ func TestServersTags(t *testing.T) {
 	newAllTags, err := tags.List(client, server.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, []string{"tag3", "tag4", "tag5"}, newAllTags)
+
+	// Remove single tag.
+	err = tags.Delete(client, server.ID, "tag4").ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Check that tag doesn't exist anymore.
+	exists, err = tags.Check(client, server.ID, "tag4").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, false, exists)
+
+	// Remove all tags.
+	err = tags.DeleteAll(client, server.ID).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Check that there are no more tags.
+	currentTags, err := tags.List(client, server.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 0, len(currentTags))
 }
 
 func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {

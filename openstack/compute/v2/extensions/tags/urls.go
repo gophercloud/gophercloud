@@ -30,3 +30,11 @@ func replaceAllURL(c *gophercloud.ServiceClient, serverID string) string {
 func addURL(c *gophercloud.ServiceClient, serverID, tag string) string {
 	return resourceURL(c, serverID, tag)
 }
+
+func deleteURL(c *gophercloud.ServiceClient, serverID, tag string) string {
+	return resourceURL(c, serverID, tag)
+}
+
+func deleteAllURL(c *gophercloud.ServiceClient, serverID string) string {
+	return rootURL(c, serverID)
+}
