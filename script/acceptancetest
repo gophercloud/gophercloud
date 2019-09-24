@@ -75,9 +75,7 @@ acceptance/openstack/networking/v2/extensions/trunks
 
 acceptance/openstack/objectstorage/v1
 acceptance/openstack/orchestration/v1
-
-# Disabled temporarily
-#acceptance/openstack/sharedfilesystems/v2
+acceptance/openstack/sharedfilesystems/v2
 
 # No suitable endpoint could be found in the service catalog
 # acceptance/openstack/workflow/v2
