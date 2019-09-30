@@ -21,6 +21,7 @@ BUG FIXES
 
 * Changed struct type for options in `networking/v2/extensions/lbaas_v2/listeners` to `UpdateOptsBuilder` interface instead of specific UpdateOpts type [GH-1705]
 * Changed struct type for options in `networking/v2/extensions/lbaas_v2/loadbalancers` to `UpdateOptsBuilder` interface instead of specific UpdateOpts type [GH-1706]
+* Fixed issue with `blockstorage/v1/volumes.Create` where the response was expected to be 202 [GH-1720]
 
 ## 0.4.0 (September 3, 2019)
 
