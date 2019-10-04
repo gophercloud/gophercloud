@@ -207,7 +207,7 @@ type UpdateOpts struct {
 	TimeoutTCPInspect *int `json:"timeout_tcp_inspect,omitempty"`
 
 	// A list of IPv4, IPv6 or mix of both CIDRs
-	AllowedCIDRs []string `json:"allowed_cidrs,omitempty"`
+	AllowedCIDRs *[]string `json:"allowed_cidrs,omitempty"`
 }
 
 // ToListenerUpdateMap builds a request body from UpdateOpts.
