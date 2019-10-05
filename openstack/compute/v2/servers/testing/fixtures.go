@@ -78,7 +78,11 @@ const ServerListBody = `
 			"created": "2014-09-25T13:10:02Z",
 			"tenant_id": "fcad67a6189847c4aecfa3c81a05783b",
 			"OS-DCF:diskConfig": "MANUAL",
-			"os-extended-volumes:volumes_attached": [],
+			"os-extended-volumes:volumes_attached": [
+				{
+					"id": "2bdbc40f-a277-45d4-94ac-d9881c777d33"
+				}
+			],
 			"accessIPv4": "",
 			"accessIPv6": "",
 			"progress": 0,
@@ -524,13 +528,17 @@ var (
 				},
 			},
 		},
-		ID:              "ef079b0c-e610-4dfb-b1aa-b49f07ac48e5",
-		UserID:          "9349aff8be7545ac9d2f1d00999a23cd",
-		Name:            "herp",
-		Created:         herpTimeCreated,
-		TenantID:        "fcad67a6189847c4aecfa3c81a05783b",
-		Metadata:        map[string]string{},
-		AttachedVolumes: []map[string]string{},
+		ID:       "ef079b0c-e610-4dfb-b1aa-b49f07ac48e5",
+		UserID:   "9349aff8be7545ac9d2f1d00999a23cd",
+		Name:     "herp",
+		Created:  herpTimeCreated,
+		TenantID: "fcad67a6189847c4aecfa3c81a05783b",
+		Metadata: map[string]string{},
+		AttachedVolumes: []map[string]string{
+			{
+				"id": "2bdbc40f-a277-45d4-94ac-d9881c777d33",
+			},
+		},
 		SecurityGroups: []map[string]interface{}{
 			map[string]interface{}{
 				"name": "default",
