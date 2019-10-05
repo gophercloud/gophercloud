@@ -530,6 +530,7 @@ var (
 		Created:  herpTimeCreated,
 		TenantID: "fcad67a6189847c4aecfa3c81a05783b",
 		Metadata: map[string]string{},
+		AttachedVolumes: []map[string]string{},
 		SecurityGroups: []map[string]interface{}{
 			map[string]interface{}{
 				"name": "default",
@@ -588,6 +589,7 @@ var (
 		Created:  derpTimeCreated,
 		TenantID: "fcad67a6189847c4aecfa3c81a05783b",
 		Metadata: map[string]string{},
+		AttachedVolumes: []map[string]string{},
 		SecurityGroups: []map[string]interface{}{
 			map[string]interface{}{
 				"name": "default",
@@ -640,6 +642,7 @@ var (
 		Created:  merpTimeCreated,
 		TenantID: "fcad67a6189847c4aecfa3c81a05783b",
 		Metadata: map[string]string{},
+		AttachedVolumes: []map[string]string{},
 		SecurityGroups: []map[string]interface{}{
 			map[string]interface{}{
 				"name": "default",
