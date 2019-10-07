@@ -534,9 +534,9 @@ var (
 		Created:  herpTimeCreated,
 		TenantID: "fcad67a6189847c4aecfa3c81a05783b",
 		Metadata: map[string]string{},
-		AttachedVolumes: []map[string]string{
+		AttachedVolumes: []servers.AttachedVolume{
 			{
-				"id": "2bdbc40f-a277-45d4-94ac-d9881c777d33",
+				ID: "2bdbc40f-a277-45d4-94ac-d9881c777d33",
 			},
 		},
 		SecurityGroups: []map[string]interface{}{
@@ -597,7 +597,7 @@ var (
 		Created:         derpTimeCreated,
 		TenantID:        "fcad67a6189847c4aecfa3c81a05783b",
 		Metadata:        map[string]string{},
-		AttachedVolumes: []map[string]string{},
+		AttachedVolumes: []servers.AttachedVolume{},
 		SecurityGroups: []map[string]interface{}{
 			map[string]interface{}{
 				"name": "default",
@@ -650,7 +650,7 @@ var (
 		Created:         merpTimeCreated,
 		TenantID:        "fcad67a6189847c4aecfa3c81a05783b",
 		Metadata:        map[string]string{},
-		AttachedVolumes: []map[string]string{},
+		AttachedVolumes: []servers.AttachedVolume{},
 		SecurityGroups: []map[string]interface{}{
 			map[string]interface{}{
 				"name": "default",
