@@ -512,6 +512,21 @@ func TestServersTags(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
+	// All the following calls should work with "2.26" microversion.
+	client.Microversion = "2.26"
+
+	// Check server tags in body.
+	type serverWithTagsExt struct {
+		servers.Server
+		tags.ServerTagsExt
+	}
+
+	serverWithTags := serverWithTagsExt{}
+
+	err = servers.Get(client, server.ID).ExtractInto(&serverWithTags)
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, []string{"tag1", "tag2"}, serverWithTags.Tags)
+
 	// Check all tags.
 	allTags, err := tags.List(client, server.ID).Extract()
 	th.AssertNoErr(t, err)
