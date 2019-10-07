@@ -17,6 +17,7 @@ IMPROVEMENTS
 * Added `compute/v2/extensions/tags.Delete` [GH-1699]
 * Added `compute/v2/extensions/tags.DeleteAll` [GH-1700]
 * Added `ImageStatusImporting` as an image status [GH-1725]
+* Added `ByPath` to `baremetalintrospection/v1/introspection.RootDiskType` [GH-1730]
 
 BUG FIXES
 
