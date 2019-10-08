@@ -78,7 +78,11 @@ const ServerListBody = `
 			"created": "2014-09-25T13:10:02Z",
 			"tenant_id": "fcad67a6189847c4aecfa3c81a05783b",
 			"OS-DCF:diskConfig": "MANUAL",
-			"os-extended-volumes:volumes_attached": [],
+			"os-extended-volumes:volumes_attached": [
+				{
+					"id": "2bdbc40f-a277-45d4-94ac-d9881c777d33"
+				}
+			],
 			"accessIPv4": "",
 			"accessIPv6": "",
 			"progress": 0,
@@ -530,6 +534,11 @@ var (
 		Created:  herpTimeCreated,
 		TenantID: "fcad67a6189847c4aecfa3c81a05783b",
 		Metadata: map[string]string{},
+		AttachedVolumes: []servers.AttachedVolume{
+			{
+				ID: "2bdbc40f-a277-45d4-94ac-d9881c777d33",
+			},
+		},
 		SecurityGroups: []map[string]interface{}{
 			map[string]interface{}{
 				"name": "default",
@@ -582,12 +591,13 @@ var (
 				},
 			},
 		},
-		ID:       "9e5476bd-a4ec-4653-93d6-72c93aa682ba",
-		UserID:   "9349aff8be7545ac9d2f1d00999a23cd",
-		Name:     "derp",
-		Created:  derpTimeCreated,
-		TenantID: "fcad67a6189847c4aecfa3c81a05783b",
-		Metadata: map[string]string{},
+		ID:              "9e5476bd-a4ec-4653-93d6-72c93aa682ba",
+		UserID:          "9349aff8be7545ac9d2f1d00999a23cd",
+		Name:            "derp",
+		Created:         derpTimeCreated,
+		TenantID:        "fcad67a6189847c4aecfa3c81a05783b",
+		Metadata:        map[string]string{},
+		AttachedVolumes: []servers.AttachedVolume{},
 		SecurityGroups: []map[string]interface{}{
 			map[string]interface{}{
 				"name": "default",
@@ -634,12 +644,13 @@ var (
 				},
 			},
 		},
-		ID:       "9e5476bd-a4ec-4653-93d6-72c93aa682bb",
-		UserID:   "9349aff8be7545ac9d2f1d00999a23cd",
-		Name:     "merp",
-		Created:  merpTimeCreated,
-		TenantID: "fcad67a6189847c4aecfa3c81a05783b",
-		Metadata: map[string]string{},
+		ID:              "9e5476bd-a4ec-4653-93d6-72c93aa682bb",
+		UserID:          "9349aff8be7545ac9d2f1d00999a23cd",
+		Name:            "merp",
+		Created:         merpTimeCreated,
+		TenantID:        "fcad67a6189847c4aecfa3c81a05783b",
+		Metadata:        map[string]string{},
+		AttachedVolumes: []servers.AttachedVolume{},
 		SecurityGroups: []map[string]interface{}{
 			map[string]interface{}{
 				"name": "default",
