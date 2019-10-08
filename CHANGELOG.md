@@ -19,6 +19,7 @@ IMPROVEMENTS
 * Added `ImageStatusImporting` as an image status [GH-1725](https://github.com/gophercloud/gophercloud/pull/1725)
 * Added `ByPath` to `baremetalintrospection/v1/introspection.RootDiskType` [GH-1730](https://github.com/gophercloud/gophercloud/pull/1730)
 * Added `AttachedVolumes` to `compute/v2/servers.Server` [GH-1732](https://github.com/gophercloud/gophercloud/pull/1732)
+* Enable unmarshaling server tags to a `compute/v2/servers.Server` struct [GH-1734]
 
 BUG FIXES
 
