@@ -2,7 +2,7 @@
 
 IMPROVEMENTS
 
-* Added `VolumeType` to `cmopute/v2/extensions/bootfromvolume.BlockDevice` [GH-1690]
+* Added `VolumeType` to `compute/v2/extensions/bootfromvolume.BlockDevice` [GH-1690]
 * Added `networking/v2/extensions/layer3/portforwarding.List` [GH-1688]
 * Added `networking/v2/extensions/layer3/portforwarding.Get` [GH-1698]
 * Added `compute/v2/extensions/tags.ReplaceAll` [GH-1696]
@@ -18,6 +18,7 @@ IMPROVEMENTS
 * Added `compute/v2/extensions/tags.DeleteAll` [GH-1700]
 * Added `ImageStatusImporting` as an image status [GH-1725]
 * Added `ByPath` to `baremetalintrospection/v1/introspection.RootDiskType` [GH-1730]
+* Added `AttachedVolumes` to `compute/v2/servers.Server` [GH-1732]
 
 BUG FIXES
 
