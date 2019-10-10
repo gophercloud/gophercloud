@@ -438,3 +438,18 @@ func HandleMembersUpdateSuccessfully(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+// HandleEmptyMembersUpdateSuccessfully sets up the test server to respond to an empty batch member Update request.
+func HandleEmptyMembersUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/lbaas/pools/332abe93-f488-41ba-870b-2ac66be7f853/members", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{
+			"members": []
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
