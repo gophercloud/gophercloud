@@ -354,7 +354,7 @@ func (opts BatchUpdateMemberOpts) ToBatchMemberUpdateMap() (map[string]interface
 
 // BatchUpdateMembers updates the pool members in batch
 func BatchUpdateMembers(c *gophercloud.ServiceClient, poolID string, opts []BatchUpdateMemberOpts) (r UpdateMembersResult) {
-	var members []map[string]interface{}
+	members := []map[string]interface{}{}
 	for _, opt := range opts {
 		b, err := opt.ToBatchMemberUpdateMap()
 		if err != nil {
