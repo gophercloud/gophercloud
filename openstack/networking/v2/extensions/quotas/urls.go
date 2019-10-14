@@ -1,0 +1,9 @@
+package quotas
+
+import "github.com/gophercloud/gophercloud"
+
+const resourcePath = "quotas"
+
+func getURL(c *gophercloud.ServiceClient, projectID string) string {
+	return c.ServiceURL(resourcePath, projectID)
+}
