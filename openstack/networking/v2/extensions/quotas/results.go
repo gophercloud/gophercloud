@@ -21,6 +21,12 @@ type GetResult struct {
 	commonResult
 }
 
+// UpdateResult represents the result of an update operation. Call its Extract
+// method to interpret it as a Quota.
+type UpdateResult struct {
+	commonResult
+}
+
 // Quota contains Networking quotas for a project.
 type Quota struct {
 	// FloatingIP represents a number of floating IPs. A "-1" value means no limit.
