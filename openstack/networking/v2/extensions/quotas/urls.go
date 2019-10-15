@@ -4,6 +4,14 @@ import "github.com/gophercloud/gophercloud"
 
 const resourcePath = "quotas"
 
-func getURL(c *gophercloud.ServiceClient, projectID string) string {
+func resourceURL(c *gophercloud.ServiceClient, projectID string) string {
 	return c.ServiceURL(resourcePath, projectID)
+}
+
+func getURL(c *gophercloud.ServiceClient, projectID string) string {
+	return resourceURL(c, projectID)
+}
+
+func updateURL(c *gophercloud.ServiceClient, projectID string) string {
+	return resourceURL(c, projectID)
 }

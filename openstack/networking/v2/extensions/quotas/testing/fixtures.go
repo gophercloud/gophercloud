@@ -29,3 +29,31 @@ var GetResponse = quotas.Quota{
 	Subnet:            45,
 	SubnetPool:        -1,
 }
+
+const UpdateRequestResponseRaw = `
+{
+    "quota": {
+        "floatingip": 0,
+        "network": -1,
+        "port": 5,
+        "rbac_policy": 10,
+        "router": 15,
+        "security_group": 20,
+        "security_group_rule": -1,
+        "subnet": 25,
+        "subnetpool": 0
+    }
+}
+`
+
+var UpdateResponse = quotas.Quota{
+	FloatingIP:        0,
+	Network:           -1,
+	Port:              5,
+	RBACPolicy:        10,
+	Router:            15,
+	SecurityGroup:     20,
+	SecurityGroupRule: -1,
+	Subnet:            25,
+	SubnetPool:        0,
+}
