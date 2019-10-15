@@ -1,5 +1,8 @@
 ## 0.6.0 (Unreleased)
 
+* Added `networking/v2/extensions/quotas.Get` [GH-1742]
+* Added `networking/v2/extensions/quotas.Update` [GH-1747]
+
 ## 0.5.0 (October 13, 2019)
 
 IMPROVEMENTS
