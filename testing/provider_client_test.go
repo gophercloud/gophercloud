@@ -314,6 +314,56 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 	th.AssertEquals(t, 1, info.failedAuths)
 }
 
+func TestRequestReauthsAtMostOnce(t *testing.T) {
+	//There was an issue where Gophercloud would go into an infinite
+	//reauthentication loop with buggy services that send 401 even for fresh
+	//tokens. This test simulates such a service and checks that a call to
+	//ProviderClient.Request() will not try to reauthenticate more than once.
+
+	reauthCounter := 0
+	var reauthCounterMutex sync.Mutex
+
+	p := new(gophercloud.ProviderClient)
+	p.UseTokenLock()
+	p.SetToken(client.TokenID)
+	p.ReauthFunc = func() error {
+		reauthCounterMutex.Lock()
+		reauthCounter++
+		reauthCounterMutex.Unlock()
+		//The actual token value does not matter, the endpoint does not check it.
+		return nil
+	}
+
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	requestCounter := 0
+	var requestCounterMutex sync.Mutex
+
+	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+		requestCounterMutex.Lock()
+		requestCounter++
+		//avoid infinite loop
+		if requestCounter == 10 {
+			http.Error(w, "too many requests", http.StatusTooManyRequests)
+			return
+		}
+		requestCounterMutex.Unlock()
+
+		//always reply 401, even immediately after reauthenticate
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+	})
+
+	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	expectedErrorMessage := "Successfully re-authenticated, but got error executing request: Authentication failed"
+	th.AssertEquals(t, expectedErrorMessage, err.Error())
+
+	//^ The expected error message indicates that we reauthenticated once (that's
+	//the part before the colon), but when encountering another 401 response, we
+	//did not attempt reauthentication again and just passed that 401 response to
+	//the caller as ErrDefault401.
+}
+
 func TestRequestWithContext(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "OK")
