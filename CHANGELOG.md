@@ -1,7 +1,14 @@
 ## 0.6.0 (Unreleased)
 
-* Added `networking/v2/extensions/quotas.Get` [GH-1742]
-* Added `networking/v2/extensions/quotas.Update` [GH-1747]
+IMPROVEMENTS
+
+* Added `networking/v2/extensions/quotas.Get` [GH-1742](https://github.com/gophercloud/gophercloud/pull/1742)
+* Added `networking/v2/extensions/quotas.Update` [GH-1747](https://github.com/gophercloud/gophercloud/pull/1747)
+
+BUG FIXES
+
+* Changed `Flavor` to `FlavorID` in `loadbalancer/v2/loadbalancers` [GH-1744](https://github.com/gophercloud/gophercloud/pull/1744)
+* Changed `Flavor` to `FlavorID` in `networking/v2/extensions/lbaas_v2/loadbalancers` [GH-1744](https://github.com/gophercloud/gophercloud/pull/1744)
 
 ## 0.5.0 (October 13, 2019)
 
