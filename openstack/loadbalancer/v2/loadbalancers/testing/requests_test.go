@@ -64,7 +64,7 @@ func TestCreateLoadbalancer(t *testing.T) {
 		VipPortID:    "2bf413c8-41a9-4477-b505-333d5cbe8b55",
 		VipSubnetID:  "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
 		VipAddress:   "10.30.176.48",
-		Flavor:       "medium",
+		FlavorID:     "bba40eb2-ee8c-11e9-81b4-2a2ae2dbcce4",
 		Provider:     "haproxy",
 		Tags:         []string{"test", "stage"},
 	}).Extract()
