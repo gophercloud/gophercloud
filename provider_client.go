@@ -94,9 +94,9 @@ type ProviderClient struct {
 // reauthlock represents a set of attributes used to help in the reauthentication process.
 type reauthlock struct {
 	sync.RWMutex
-	//This channel is non-nil during reauthentication. It can be used to ask the
-	//goroutine doing Reauthenticate() for its result. Look at the implementation
-	//of Reauthenticate() for details.
+	// This channel is non-nil during reauthentication. It can be used to ask the
+	// goroutine doing Reauthenticate() for its result. Look at the implementation
+	// of Reauthenticate() for details.
 	ongoing chan<- (chan<- error)
 }
 
@@ -107,7 +107,7 @@ func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
 		return
 	}
 	if client.reauthmut != nil {
-		//if a Reauthenticate is in progress, wait for it to complete
+		// If a Reauthenticate is in progress, wait for it to complete.
 		client.reauthmut.Lock()
 		ongoing := client.reauthmut.ongoing
 		client.reauthmut.Unlock()
@@ -239,7 +239,7 @@ func (client *ProviderClient) Reauthenticate(previousToken string) error {
 
 	messages := make(chan (chan<- error))
 
-	//check if a Reauthenticate is in progress, or start one if not
+	// Check if a Reauthenticate is in progress, or start one if not.
 	client.reauthmut.Lock()
 	ongoing := client.reauthmut.ongoing
 	if ongoing == nil {
@@ -247,14 +247,14 @@ func (client *ProviderClient) Reauthenticate(previousToken string) error {
 	}
 	client.reauthmut.Unlock()
 
-	//if Reauthenticate is running elsewhere, wait for its result
+	// If Reauthenticate is running elsewhere, wait for its result.
 	if ongoing != nil {
 		responseChannel := make(chan error)
 		ongoing <- responseChannel
 		return <-responseChannel
 	}
 
-	//perform the actual reauthentication
+	// Perform the actual reauthentication.
 	var err error
 	if previousToken == "" || client.TokenID == previousToken {
 		err = client.ReauthFunc()
@@ -262,19 +262,19 @@ func (client *ProviderClient) Reauthenticate(previousToken string) error {
 		err = nil
 	}
 
-	//mark Reauthenticate as finished
+	// Mark Reauthenticate as finished.
 	client.reauthmut.Lock()
 	client.reauthmut.ongoing = nil
 	client.reauthmut.Unlock()
 
-	//report result to all other interested goroutines
+	// Report result to all other interested goroutines.
 	//
-	//This happens in a separate goroutine because another goroutine might have
-	//acquired a copy of `client.reauthmut.ongoing` before we cleared it, but not
-	//have come around to sending its request. By answering in a goroutine, we
-	//can have that goroutine linger until all responseChannels have been sent.
-	//When GC has collected all sendings ends of the channel, our receiving end
-	//will be closed and the goroutine will end.
+	// This happens in a separate goroutine because another goroutine might have
+	// acquired a copy of `client.reauthmut.ongoing` before we cleared it, but not
+	// have come around to sending its request. By answering in a goroutine, we
+	// can have that goroutine linger until all responseChannels have been sent.
+	// When GC has collected all sendings ends of the channel, our receiving end
+	// will be closed and the goroutine will end.
 	go func() {
 		for responseChannel := range messages {
 			responseChannel <- err
@@ -307,7 +307,7 @@ type RequestOpts struct {
 	ErrorContext error
 }
 
-//requestState contains temporary state for a single ProviderClient.Request() call.
+// requestState contains temporary state for a single ProviderClient.Request() call.
 type requestState struct {
 	// This flag indicates if we have reauthenticated during this request because of a 401 response.
 	// It ensures that we don't reauthenticate multiple times for a single request. If we
