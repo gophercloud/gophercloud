@@ -1,6 +1,6 @@
 ## 0.6.0 (Unreleased)
 
-UPGRADE NODES
+UPGRADE NOTES
 
 * The way reauthentication works has been refactored. This should not cause a problem, but please report bugs if it does. See [GH-1746](https://github.com/gophercloud/gophercloud/pull/1746) for more information.
 
