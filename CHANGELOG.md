@@ -1,12 +1,10 @@
-## 0.6.0 (Unreleased)
+## 0.7.0 (Unreleased)
+
+## 0.6.0 (October 17, 2019)
 
 UPGRADE NOTES
 
 * The way reauthentication works has been refactored. This should not cause a problem, but please report bugs if it does. See [GH-1746](https://github.com/gophercloud/gophercloud/pull/1746) for more information.
-
-DEPENDENCIES
-
-
 
 IMPROVEMENTS
 
