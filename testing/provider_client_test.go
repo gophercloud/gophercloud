@@ -315,10 +315,10 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 }
 
 func TestRequestReauthsAtMostOnce(t *testing.T) {
-	//There was an issue where Gophercloud would go into an infinite
-	//reauthentication loop with buggy services that send 401 even for fresh
-	//tokens. This test simulates such a service and checks that a call to
-	//ProviderClient.Request() will not try to reauthenticate more than once.
+	// There was an issue where Gophercloud would go into an infinite
+	// reauthentication loop with buggy services that send 401 even for fresh
+	// tokens. This test simulates such a service and checks that a call to
+	// ProviderClient.Request() will not try to reauthenticate more than once.
 
 	reauthCounter := 0
 	var reauthCounterMutex sync.Mutex
@@ -354,14 +354,13 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 	})
 
+	// The expected error message indicates that we reauthenticated once (that's
+	// the part before the colon), but when encountering another 401 response, we
+	// did not attempt reauthentication again and just passed that 401 response to
+	// the caller as ErrDefault401.
 	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
 	expectedErrorMessage := "Successfully re-authenticated, but got error executing request: Authentication failed"
 	th.AssertEquals(t, expectedErrorMessage, err.Error())
-
-	//^ The expected error message indicates that we reauthenticated once (that's
-	//the part before the colon), but when encountering another 401 response, we
-	//did not attempt reauthentication again and just passed that 401 response to
-	//the caller as ErrDefault401.
 }
 
 func TestRequestWithContext(t *testing.T) {
