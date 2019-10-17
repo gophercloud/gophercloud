@@ -13,6 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack"
 	baremetalNoAuth "github.com/gophercloud/gophercloud/openstack/baremetal/noauth"
 	blockstorageNoAuth "github.com/gophercloud/gophercloud/openstack/blockstorage/noauth"
+	"github.com/gophercloud/utils/client"
 )
 
 // AcceptanceTestChoices contains image and flavor selections for use by the acceptance tests.
@@ -644,8 +645,9 @@ func NewKeyManagerV1Client() (*gophercloud.ServiceClient, error) {
 func configureDebug(client *gophercloud.ProviderClient) *gophercloud.ProviderClient {
 	if os.Getenv("OS_DEBUG") != "" {
 		client.HTTPClient = http.Client{
-			Transport: &LogRoundTripper{
-				Rt: &http.Transport{},
+			Transport: &client.RoundTripper{
+				Rt:     &http.Transport{},
+				Logger: &client.DefaultLogger{},
 			},
 		}
 	}
