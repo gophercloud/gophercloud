@@ -1,5 +1,9 @@
 ## 0.7.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Allow a token to be used directly for authentication instead of generating a new token based on a given token [GH-1752](https://github.com/gophercloud/gophercloud/pull/1752)
+
 ## 0.6.0 (October 17, 2019)
 
 UPGRADE NOTES
