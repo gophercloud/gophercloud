@@ -2,12 +2,6 @@ package tags
 
 import "github.com/gophercloud/gophercloud"
 
-// ServerTagsExt is an extension to the base Server object.
-type ServerTagsExt struct {
-	// Tags contains a list of server tags.
-	Tags []string `json:"tags"`
-}
-
 type commonResult struct {
 	gophercloud.Result
 }
