@@ -66,30 +66,5 @@ Example to Delete all Tags on a server
     if err != nil {
         log.Fatal(err)
     }
-
-Example of Extend server result with Tags:
-
-    client.Microversion = "2.26"
-
-    type ServerWithTags struct {
-        servers.Server
-        tags.ServerTagsExt
-    }
-
-    var allServers []ServerWithTags
-
-    allPages, err := servers.List(client, nil).AllPages()
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    err = servers.ExtractServersInto(allPages, &allServers)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    for _, server := range allServers {
-        fmt.Println(server.Tags)
-    }
 */
 package tags

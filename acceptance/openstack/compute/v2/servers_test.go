@@ -518,7 +518,7 @@ func TestServersTags(t *testing.T) {
 	// Check server tags in body.
 	type serverWithTagsExt struct {
 		servers.Server
-		tags.ServerTagsExt
+		servers.TagsExt
 	}
 
 	serverWithTags := serverWithTagsExt{}
