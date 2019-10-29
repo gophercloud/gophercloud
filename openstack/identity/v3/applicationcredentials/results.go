@@ -29,8 +29,6 @@ type AccessRule struct {
 	// The service type identifier for the service that the application credential
 	// is permitted to access
 	Service string `json:"service,omitempty"`
-	// Links contains referencing links to the access rule.
-	Links map[string]interface{} `json:"links,omitempty"`
 }
 
 // ApplicationCredential represents the application credential object

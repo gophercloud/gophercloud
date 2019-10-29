@@ -397,9 +397,6 @@ var AccessRule = applicationcredentials.AccessRule{
 	ID:      "07d719df00f349ef8de77d542edf010c",
 	Service: "monitoring",
 	Method:  "GET",
-	Links: map[string]interface{}{
-		"self": "https://example.com/identity/v3/access_rules/07d719df00f349ef8de77d542edf010c",
-	},
 }
 
 var ExpectedAccessRulesSlice = []applicationcredentials.AccessRule{
