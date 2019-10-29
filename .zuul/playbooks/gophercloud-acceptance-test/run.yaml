@@ -10,6 +10,7 @@
         - 'zun'
         - 'octavia'
         - 'neutron-ext'
+        - 'neutron-api/q-svc'
     - install-devstack
   tasks:
     - name: Run acceptance tests with gophercloud
