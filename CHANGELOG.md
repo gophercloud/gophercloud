@@ -5,6 +5,7 @@ IMPROVEMENTS
 * Allow a token to be used directly for authentication instead of generating a new token based on a given token [GH-1752](https://github.com/gophercloud/gophercloud/pull/1752)
 * Moved `tags.ServerTagsExt` to servers.TagsExt` [GH-1760](https://github.com/gophercloud/gophercloud/pull/1760)
 * Added `tags`, `tags-any`, `not-tags`, and `not-tags-any` to `compute/v2/servers.ListOpts` [GH-1759](https://github.com/gophercloud/gophercloud/pull/1759)
+* Added `AccessRule` to `identity/v3/applicationcredentials` [GH-1758]
 
 ## 0.6.0 (October 17, 2019)
 
