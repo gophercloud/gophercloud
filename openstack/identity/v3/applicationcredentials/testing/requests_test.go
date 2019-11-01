@@ -64,6 +64,13 @@ func TestCreateApplicationCredential(t *testing.T) {
 		Roles: []applicationcredentials.Role{
 			applicationcredentials.Role{ID: "31f87923ae4a4d119aa0b85dcdbeed13"},
 		},
+		AccessRules: []applicationcredentials.AccessRule{
+			{
+				Path:    "/v2.0/metrics",
+				Method:  "GET",
+				Service: "monitoring",
+			},
+		},
 	}
 
 	ApplicationCredentialResponse := ApplicationCredential
@@ -120,5 +127,44 @@ func TestDeleteApplicationCredential(t *testing.T) {
 	HandleDeleteApplicationCredentialSuccessfully(t)
 
 	res := applicationcredentials.Delete(client.ServiceClient(), userID, applicationCredentialID)
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestListAccessRules(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListAccessRulesSuccessfully(t)
+
+	count := 0
+	err := applicationcredentials.ListAccessRules(client.ServiceClient(), userID).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := applicationcredentials.ExtractAccessRules(page)
+		th.AssertNoErr(t, err)
+
+		th.CheckDeepEquals(t, ExpectedAccessRulesSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+}
+
+func TestGetAccessRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetAccessRuleSuccessfully(t)
+
+	actual, err := applicationcredentials.GetAccessRule(client.ServiceClient(), userID, accessRuleID).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, AccessRule, *actual)
+}
+
+func TestDeleteAccessRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteAccessRuleSuccessfully(t)
+
+	res := applicationcredentials.DeleteAccessRule(client.ServiceClient(), userID, accessRuleID)
 	th.AssertNoErr(t, res.Err)
 }

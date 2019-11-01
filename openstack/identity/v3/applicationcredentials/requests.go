@@ -66,6 +66,8 @@ type CreateOpts struct {
 	// A list of one or more roles that this application credential has associated with its project.
 	// A token using this application credential will have these same roles.
 	Roles []Role `json:"roles,omitempty"`
+	// A list of access rules objects.
+	AccessRules []AccessRule `json:"access_rules,omitempty"`
 	// The expiration time of the application credential, if one was specified.
 	ExpiresAt string `json:"expires_at,omitempty"`
 }
@@ -91,5 +93,25 @@ func Create(client *gophercloud.ServiceClient, userID string, opts CreateOptsBui
 // Delete deletes an application credential.
 func Delete(client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
 	_, r.Err = client.Delete(deleteURL(client, userID, id), nil)
+	return
+}
+
+// ListAccessRules enumerates the AccessRules to which the current user has access.
+func ListAccessRules(client *gophercloud.ServiceClient, userID string) pagination.Pager {
+	url := listAccessRulesURL(client, userID)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return AccessRulePage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+// GetAccessRule retrieves details on a single access rule by ID.
+func GetAccessRule(client *gophercloud.ServiceClient, userID string, id string) (r GetAccessRuleResult) {
+	_, r.Err = client.Get(getAccessRuleURL(client, userID, id), &r.Body, nil)
+	return
+}
+
+// DeleteAccessRule deletes an access rule.
+func DeleteAccessRule(client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
+	_, r.Err = client.Delete(deleteAccessRuleURL(client, userID, id), nil)
 	return
 }

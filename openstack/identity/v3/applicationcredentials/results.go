@@ -17,6 +17,20 @@ type Role struct {
 	Name string `json:"name,omitempty"`
 }
 
+// ApplicationCredential represents the access rule object
+type AccessRule struct {
+	// The ID of the access rule
+	ID string `json:"id,omitempty"`
+	// The API path that the application credential is permitted to access
+	Path string `json:"path,omitempty"`
+	// The request method that the application credential is permitted to use for a
+	// given API endpoint
+	Method string `json:"method,omitempty"`
+	// The service type identifier for the service that the application credential
+	// is permitted to access
+	Service string `json:"service,omitempty"`
+}
+
 // ApplicationCredential represents the application credential object
 type ApplicationCredential struct {
 	// The ID of the application credential.
@@ -39,6 +53,8 @@ type ApplicationCredential struct {
 	Roles []Role `json:"roles"`
 	// The expiration time of the application credential, if one was specified.
 	ExpiresAt time.Time `json:"-"`
+	// A list of access rules objects.
+	AccessRules []AccessRule `json:"access_rules,omitempty"`
 	// Links contains referencing links to the application credential.
 	Links map[string]interface{} `json:"links"`
 }
@@ -124,4 +140,54 @@ func (r applicationCredentialResult) Extract() (*ApplicationCredential, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.ApplicationCredential, err
+}
+
+// GetAccessRuleResult is the response from a Get operation. Call its Extract method
+// to interpret it as an AccessRule.
+type GetAccessRuleResult struct {
+	gophercloud.Result
+}
+
+// an AccessRulePage is a single page of an AccessRule results.
+type AccessRulePage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines whether or not a an AccessRulePage contains any results.
+func (r AccessRulePage) IsEmpty() (bool, error) {
+	accessRules, err := ExtractAccessRules(r)
+	return len(accessRules) == 0, err
+}
+
+// NextPageURL extracts the "next" link from the links section of the result.
+func (r AccessRulePage) NextPageURL() (string, error) {
+	var s struct {
+		Links struct {
+			Next     string `json:"next"`
+			Previous string `json:"previous"`
+		} `json:"links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return s.Links.Next, err
+}
+
+// ExtractAccessRules returns a slice of AccessRules contained in a single page of results.
+func ExtractAccessRules(r pagination.Page) ([]AccessRule, error) {
+	var s struct {
+		AccessRules []AccessRule `json:"access_rules"`
+	}
+	err := (r.(AccessRulePage)).ExtractInto(&s)
+	return s.AccessRules, err
+}
+
+// Extract interprets any access_rule results as an AccessRule.
+func (r GetAccessRuleResult) Extract() (*AccessRule, error) {
+	var s struct {
+		AccessRule *AccessRule `json:"access_rule"`
+	}
+	err := r.ExtractInto(&s)
+	return s.AccessRule, err
 }

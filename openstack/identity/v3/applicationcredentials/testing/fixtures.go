@@ -14,6 +14,7 @@ import (
 
 const userID = "2844b2a08be147a08ef58317d6471f1f"
 const applicationCredentialID = "f741662395b249c9b8acdebf1722c5ae"
+const accessRuleID = "07d719df00f349ef8de77d542edf010c"
 
 // ListOutput provides a single page of ApplicationCredential results.
 const ListOutput = `
@@ -84,6 +85,14 @@ const GetOutput = `
         "name": "compute_viewer"
       }
     ],
+    "access_rules": [
+      {
+        "path": "/v2.0/metrics",
+        "id": "07d719df00f349ef8de77d542edf010c",
+        "service": "monitoring",
+        "method": "GET"
+      }
+    ],
     "expires_at": null,
     "unrestricted": false,
     "project_id": "53c2b94f63fb4f43a21b92d119ce549f",
@@ -104,6 +113,13 @@ const CreateRequest = `
         "id": "31f87923ae4a4d119aa0b85dcdbeed13"
       }
     ],
+    "access_rules": [
+      {
+        "path": "/v2.0/metrics",
+        "method": "GET",
+        "service": "monitoring"
+      }
+    ],
     "name": "test"
   }
 }
@@ -121,6 +137,14 @@ const CreateResponse = `
         "id": "31f87923ae4a4d119aa0b85dcdbeed13",
         "domain_id": null,
         "name": "compute_viewer"
+      }
+    ],
+    "access_rules": [
+      {
+        "path": "/v2.0/metrics",
+        "id": "07d719df00f349ef8de77d542edf010c",
+        "service": "monitoring",
+        "method": "GET"
       }
     ],
     "expires_at": null,
@@ -219,6 +243,42 @@ const CreateUnrestrictedResponse = `
 }
 `
 
+// ListAccessRulesOutput provides a single page of AccessRules results.
+const ListAccessRulesOutput = `
+{
+  "links": {
+    "self": "https://example.com/identity/v3/users/2844b2a08be147a08ef58317d6471f1f/access_rules",
+    "previous": null,
+    "next": null
+  },
+  "access_rules": [
+    {
+      "path": "/v2.0/metrics",
+      "links": {
+        "self": "https://example.com/identity/v3/access_rules/07d719df00f349ef8de77d542edf010c"
+      },
+      "id": "07d719df00f349ef8de77d542edf010c",
+      "service": "monitoring",
+      "method": "GET"
+    }
+  ]
+}`
+
+// GetAccessRuleOutput provides a Get result.
+const GetAccessRuleOutput = `
+{
+  "access_rule": {
+    "path": "/v2.0/metrics",
+    "links": {
+      "self": "https://example.com/identity/v3/access_rules/07d719df00f349ef8de77d542edf010c"
+    },
+    "id": "07d719df00f349ef8de77d542edf010c",
+    "service": "monitoring",
+    "method": "GET"
+  }
+}
+`
+
 var nilTime time.Time
 var ApplicationCredential = applicationcredentials.ApplicationCredential{
 	ID:           "f741662395b249c9b8acdebf1722c5ae",
@@ -231,6 +291,14 @@ var ApplicationCredential = applicationcredentials.ApplicationCredential{
 		applicationcredentials.Role{
 			ID:   "31f87923ae4a4d119aa0b85dcdbeed13",
 			Name: "compute_viewer",
+		},
+	},
+	AccessRules: []applicationcredentials.AccessRule{
+		{
+			ID:      "07d719df00f349ef8de77d542edf010c",
+			Path:    "/v2.0/metrics",
+			Method:  "GET",
+			Service: "monitoring",
 		},
 	},
 	ExpiresAt: nilTime,
@@ -324,6 +392,17 @@ var SecondApplicationCredential = applicationcredentials.ApplicationCredential{
 	},
 }
 
+var AccessRule = applicationcredentials.AccessRule{
+	Path:    "/v2.0/metrics",
+	ID:      "07d719df00f349ef8de77d542edf010c",
+	Service: "monitoring",
+	Method:  "GET",
+}
+
+var ExpectedAccessRulesSlice = []applicationcredentials.AccessRule{
+	AccessRule,
+}
+
 // ExpectedApplicationCredentialsSlice is the slice of application credentials expected to be returned from ListOutput.
 var ExpectedApplicationCredentialsSlice = []applicationcredentials.ApplicationCredential{FirstApplicationCredential, SecondApplicationCredential}
 
@@ -396,6 +475,45 @@ func HandleCreateUnrestrictedApplicationCredentialSuccessfully(t *testing.T) {
 // test handler mux that tests application credential deletion.
 func HandleDeleteApplicationCredentialSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/application_credentials/f741662395b249c9b8acdebf1722c5ae", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleListAccessRulesSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that responds with a list of two applicationcredentials.
+func HandleListAccessRulesSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/access_rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListAccessRulesOutput)
+	})
+}
+
+// HandleGetAccessRuleSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that responds with a single application credential.
+func HandleGetAccessRuleSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/access_rules/07d719df00f349ef8de77d542edf010c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetAccessRuleOutput)
+	})
+}
+
+// HandleDeleteAccessRuleSuccessfully creates an HTTP handler at `/users` on the
+// test handler mux that tests application credential deletion.
+func HandleDeleteAccessRuleSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/users/2844b2a08be147a08ef58317d6471f1f/access_rules/07d719df00f349ef8de77d542edf010c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 
