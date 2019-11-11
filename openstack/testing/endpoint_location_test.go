@@ -1,7 +1,6 @@
 package testing
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
@@ -90,14 +89,14 @@ func TestV2EndpointNone(t *testing.T) {
 }
 
 func TestV2EndpointMultiple(t *testing.T) {
-	_, err := openstack.V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
+	actual, err := openstack.V2EndpointURL(&catalog2, gophercloud.EndpointOpts{
 		Type:         "same",
 		Region:       "same",
 		Availability: gophercloud.AvailabilityPublic,
 	})
-	if !strings.HasPrefix(err.Error(), "Discovered 2 matching endpoints:") {
-		t.Errorf("Received unexpected error: %v", err)
-	}
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "https://public.correct.com/", actual)
 }
 
 func TestV2EndpointBadAvailability(t *testing.T) {
@@ -234,14 +233,14 @@ func TestV3EndpointNone(t *testing.T) {
 }
 
 func TestV3EndpointMultiple(t *testing.T) {
-	_, err := openstack.V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
+	actual, err := openstack.V3EndpointURL(&catalog3, gophercloud.EndpointOpts{
 		Type:         "same",
 		Region:       "same",
 		Availability: gophercloud.AvailabilityPublic,
 	})
-	if !strings.HasPrefix(err.Error(), "Discovered 2 matching endpoints:") {
-		t.Errorf("Received unexpected error: %v", err)
-	}
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "https://public.correct.com/", actual)
 }
 
 func TestV3EndpointBadAvailability(t *testing.T) {
