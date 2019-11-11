@@ -6,6 +6,7 @@ IMPROVEMENTS
 * Moved `tags.ServerTagsExt` to servers.TagsExt` [GH-1760](https://github.com/gophercloud/gophercloud/pull/1760)
 * Added `tags`, `tags-any`, `not-tags`, and `not-tags-any` to `compute/v2/servers.ListOpts` [GH-1759](https://github.com/gophercloud/gophercloud/pull/1759)
 * Added `AccessRule` to `identity/v3/applicationcredentials` [GH-1758](https://github.com/gophercloud/gophercloud/pull/1758)
+* Gophercloud no longer returns an error when multiple endpoints are found. Instead, it will choose the first endpoint and discard the others [GH-1766](https://github.com/gophercloud/gophercloud/pull/1766).
 
 ## 0.6.0 (October 17, 2019)
 
