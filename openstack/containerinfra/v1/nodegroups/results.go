@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 type commonResult struct {
@@ -46,4 +47,34 @@ type NodeGroup struct {
 	Version          string             `json:"version"`
 	CreatedAt        time.Time          `json:"created_at"`
 	UpdatedAt        time.Time          `json:"updated_at"`
+}
+
+type NodeGroupPage struct {
+	pagination.LinkedPageBase
+}
+
+func (r NodeGroupPage) NextPageURL() (string, error) {
+	var s struct {
+		Next string `json:"next"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return s.Next, nil
+}
+
+func (r NodeGroupPage) IsEmpty() (bool, error) {
+	s, err := ExtractNodeGroups(r)
+	return len(s) == 0, err
+}
+
+// ExtractNodeGroups takes a Page of node groups as returned from List
+// or from AllPages and extracts it as a slice of NodeGroups.
+func ExtractNodeGroups(r pagination.Page) ([]NodeGroup, error) {
+	var s struct {
+		NodeGroups []NodeGroup `json:"nodegroups"`
+	}
+	err := (r.(NodeGroupPage)).ExtractInto(&s)
+	return s.NodeGroups, err
 }
