@@ -23,6 +23,12 @@ type GetResult struct {
 	commonResult
 }
 
+// CreateResult is the response from a Create request.
+// Use the Extract method to retrieve the created node group.
+type CreateResult struct {
+	commonResult
+}
+
 // NodeGroup is the API representation of a Magnum node group.
 type NodeGroup struct {
 	ID               int                `json:"id"`

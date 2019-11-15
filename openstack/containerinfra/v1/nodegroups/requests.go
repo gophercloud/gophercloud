@@ -70,3 +70,52 @@ func List(client *gophercloud.ServiceClient, clusterID string, opts ListOptsBuil
 		return NodeGroupPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+type CreateOptsBuilder interface {
+	ToNodeGroupCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts is used to set available fields upon node group creation.
+//
+// If unset, some fields have defaults or will inherit from the cluster value.
+type CreateOpts struct {
+	Name             string `json:"name" required:"true"`
+	DockerVolumeSize *int   `json:"docker_volume_size,omitempty"`
+	// Labels will default to the cluster labels if unset.
+	Labels       map[string]string `json:"labels,omitempty"`
+	NodeCount    *int              `json:"node_count,omitempty"`
+	MinNodeCount int               `json:"min_node_count,omitempty"`
+	// MaxNodeCount can be left unset for no maximum node count.
+	MaxNodeCount *int `json:"max_node_count,omitempty"`
+	// Role defaults to "worker" if unset.
+	Role string `json:"role,omitempty"`
+	// Node image ID. Defaults to cluster template image if unset.
+	ImageID string `json:"image_id,omitempty"`
+	// Node machine flavor ID. Defaults to cluster minion flavor if unset.
+	FlavorID string `json:"flavor_id,omitempty"`
+}
+
+func (opts CreateOpts) ToNodeGroupCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// Create makes a request to the Magnum API to create a node group
+// for the the given cluster.
+// Use the Extract method of the returned CreateResult to extract the
+// returned node group.
+func Create(client *gophercloud.ServiceClient, clusterID string, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToNodeGroupCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	var result *http.Response
+	result, r.Err = client.Post(createURL(client, clusterID), b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
+
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
+	return
+}
