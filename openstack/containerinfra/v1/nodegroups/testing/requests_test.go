@@ -120,3 +120,89 @@ func TestListNodeGroupsClusterNotFound(t *testing.T) {
 	_, isNotFound := err.(gophercloud.ErrDefault404)
 	th.AssertEquals(t, true, isNotFound)
 }
+
+// TestCreateNodeGroupSuccess creates a node group successfully.
+func TestCreateNodeGroupSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleCreateNodeGroupSuccess(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	createOpts := nodegroups.CreateOpts{
+		Name: "test-ng",
+	}
+
+	ng, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expectedCreatedNodeGroup, *ng)
+}
+
+// TestCreateNodeGroupDuplicate creates a node group with
+// the same name as an existing one.
+func TestCreateNodeGroupDuplicate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleCreateNodeGroupDuplicate(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	createOpts := nodegroups.CreateOpts{
+		Name: "default-worker",
+	}
+
+	_, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isNotAccepted := err.(gophercloud.ErrDefault409)
+	th.AssertEquals(t, true, isNotAccepted)
+}
+
+// TestCreateNodeGroupMaster creates a node group with
+// role=master which is not allowed.
+func TestCreateNodeGroupMaster(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleCreateNodeGroupMaster(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	createOpts := nodegroups.CreateOpts{
+		Name: "new-ng",
+		Role: "master",
+	}
+
+	_, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isBadRequest := err.(gophercloud.ErrDefault400)
+	th.AssertEquals(t, true, isBadRequest)
+}
+
+// TestCreateNodeGroupBadSizes creates a node group with
+// min_nodes greater than max_nodes.
+func TestCreateNodeGroupBadSizes(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleCreateNodeGroupBadSizes(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	maxNodes := 3
+	createOpts := nodegroups.CreateOpts{
+		Name:         "default-worker",
+		MinNodeCount: 5,
+		MaxNodeCount: &maxNodes,
+	}
+
+	_, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isNotAccepted := err.(gophercloud.ErrDefault409)
+	th.AssertEquals(t, true, isNotAccepted)
+}

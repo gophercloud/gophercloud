@@ -62,6 +62,31 @@ var expectedNodeGroup1 = nodegroups.NodeGroup{
 	UpdatedAt:     nodeGroup1Updated,
 }
 
+var expectedCreatedNodeGroup = nodegroups.NodeGroup{
+	UUID:      "12542dd8-9588-42a7-a2ff-06f49049920c",
+	Name:      "test-ng",
+	ClusterID: clusterUUID,
+	ProjectID: "e91d02d561374de6b49960a27b3f08d0",
+	Labels: map[string]string{
+		"kube_tag": "v1.14.7",
+	},
+	Links: []gophercloud.Link{
+		{
+			Href: "http://123.456.789.0:9511/v1/clusters/bda75056-3a57-4ada-b943-658ac27beea0/nodegroups/12542dd8-9588-42a7-a2ff-06f49049920c",
+			Rel:  "self",
+		},
+		{
+			Href: "http://123.456.789.0:9511/clusters/bda75056-3a57-4ada-b943-658ac27beea0/nodegroups/12542dd8-9588-42a7-a2ff-06f49049920c",
+			Rel:  "bookmark",
+		},
+	},
+	FlavorID:     "m1.small",
+	ImageID:      "Fedora-AtomicHost-29-20190820.0.x86_64",
+	NodeCount:    1,
+	MinNodeCount: 1,
+	Role:         "worker",
+}
+
 func handleGetNodeGroupSuccess(t *testing.T) {
 	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup1UUID, func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, http.MethodGet)
@@ -145,6 +170,54 @@ func handleListNodeGroupsClusterNotFound(t *testing.T) {
 		w.WriteHeader(http.StatusNotFound)
 
 		fmt.Fprint(w, nodeGroupListClusterNotFoundResponse)
+	})
+}
+
+func handleCreateNodeGroupSuccess(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodPost)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, nodeGroupCreateResponse)
+	})
+}
+
+func handleCreateNodeGroupDuplicate(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodPost)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+
+		fmt.Fprintf(w, nodeGroupCreateDuplicateResponse)
+	})
+}
+
+func handleCreateNodeGroupMaster(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodPost)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintf(w, nodeGroupCreateMasterResponse)
+	})
+}
+
+func handleCreateNodeGroupBadSizes(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodPost)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+
+		fmt.Fprintf(w, nodeGroupCreateBadSizesResponse)
 	})
 }
 
@@ -314,3 +387,78 @@ var nodeGroupListClusterNotFoundResponse = fmt.Sprintf(`
     }
   ]
 }`, badClusterUUID)
+
+var nodeGroupCreateResponse = fmt.Sprintf(`
+{
+  "uuid":"12542dd8-9588-42a7-a2ff-06f49049920c",
+  "links":[
+    {
+      "href":"http://123.456.789.0:9511/v1/clusters/bda75056-3a57-4ada-b943-658ac27beea0/nodegroups/12542dd8-9588-42a7-a2ff-06f49049920c",
+      "rel":"self"
+    },
+    {
+      "href":"http://123.456.789.0:9511/clusters/bda75056-3a57-4ada-b943-658ac27beea0/nodegroups/12542dd8-9588-42a7-a2ff-06f49049920c",
+      "rel":"bookmark"
+    }
+  ],
+  "max_node_count":null,
+  "labels":{
+    "kube_tag":"v1.14.7"
+  },
+  "min_node_count":1,
+  "image_id":"Fedora-AtomicHost-29-20190820.0.x86_64",
+  "cluster_id":"%s",
+  "flavor_id":"m1.small",
+  "role":"worker",
+  "node_count":1,
+  "project_id":"e91d02d561374de6b49960a27b3f08d0",
+  "name":"test-ng"
+}`, clusterUUID)
+
+var nodeGroupCreateDuplicateResponse = `
+{
+  "errors":[
+    {
+      "status":409,
+      "code":"client",
+      "links":[
+
+      ],
+      "title":"A node group with name default-worker already exists in the cluster kube",
+      "detail":"A node group with name default-worker already exists in the cluster kube.",
+      "request_id":""
+    }
+  ]
+}`
+
+var nodeGroupCreateMasterResponse = `
+{
+  "errors":[
+    {
+      "status":400,
+      "code":"client",
+      "links":[
+
+      ],
+      "title":"Creating master nodegroups is currently not supported",
+      "detail":"Creating master nodegroups is currently not supported.",
+      "request_id":""
+    }
+  ]
+}`
+
+var nodeGroupCreateBadSizesResponse = `
+{
+  "errors":[
+    {
+      "status":409,
+      "code":"client",
+      "links":[
+
+      ],
+      "title":"max_node_count for new-ng is invalid (min_node_count (5) should be less or equal to max_node_count (3))",
+      "detail":"max_node_count for new-ng is invalid (min_node_count (5) should be less or equal to max_node_count (3)).",
+      "request_id":""
+    }
+  ]
+}`
