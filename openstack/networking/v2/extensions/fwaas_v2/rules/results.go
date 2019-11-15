@@ -19,7 +19,6 @@ type Rule struct {
 	Shared               bool   `json:"shared,omitempty"`
 	Enabled              bool   `json:"enabled,omitempty"`
 	FirewallPolicyID     string `json:"firewall_policy_id"`
-	Position             int    `json:"position"`
 	TenantID             string `json:"tenant_id"`
 }
 
