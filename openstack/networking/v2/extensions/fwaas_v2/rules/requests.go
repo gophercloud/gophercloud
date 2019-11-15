@@ -23,6 +23,22 @@ const (
 	ProtocolUDP Protocol = "udp"
 )
 
+type (
+	// Action represents a valid rule protocol
+	Action string
+)
+
+const (
+	// ActionAllow is to allow traffic
+	ActionAllow Action = "allow"
+
+	// ActionDeny is to deny traffic
+	ActionDeny Action = "deny"
+
+	// ActionTCP is to reject traffic
+	ActionReject Action = "reject"
+)
+
 type CreateOptsBuilder interface {
 	ToRuleCreateMap() (map[string]interface{}, error)
 }
@@ -30,7 +46,7 @@ type CreateOptsBuilder interface {
 // CreateOpts contains all the values needed to create a new firewall rule.
 type CreateOpts struct {
 	Protocol             Protocol              `json:"protocol" required:"true"`
-	Action               string                `json:"action" required:"true"`
+	Action               Action                `json:"action" required:"true"`
 	TenantID             string                `json:"tenant_id,omitempty"`
 	Name                 string                `json:"name,omitempty"`
 	Description          string                `json:"description,omitempty"`
