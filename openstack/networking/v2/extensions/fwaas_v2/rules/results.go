@@ -20,6 +20,7 @@ type Rule struct {
 	Enabled              bool   `json:"enabled,omitempty"`
 	FirewallPolicyID     string `json:"firewall_policy_id"`
 	TenantID             string `json:"tenant_id"`
+	ProjectID            string `json:"project_id"`
 }
 
 type commonResult struct {
