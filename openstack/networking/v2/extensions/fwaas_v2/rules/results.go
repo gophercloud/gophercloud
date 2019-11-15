@@ -18,7 +18,7 @@ type Rule struct {
 	DestinationPort      string `json:"destination_port,omitempty"`
 	Shared               bool   `json:"shared,omitempty"`
 	Enabled              bool   `json:"enabled,omitempty"`
-	PolicyID             string `json:"firewall_policy_id"`
+	FirewallPolicyID     string `json:"firewall_policy_id"`
 	Position             int    `json:"position"`
 	TenantID             string `json:"tenant_id"`
 }
