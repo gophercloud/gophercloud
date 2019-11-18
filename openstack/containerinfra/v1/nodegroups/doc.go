@@ -53,5 +53,36 @@ Example of Listing node groups:
     for _, ng := range ngs {
         fmt.Printf("%#v\n", ng)
     }
+
+
+Example of Creating a node group:
+
+    // Labels, node image and node flavor will be inherited from the cluster value if not set.
+    // Role will default to "worker" if not set.
+
+    // To add a label to the new node group, need to know the cluster labels
+    cluster, err := clusters.Get(client, clusterUUID).Extract()
+    if err != nil {
+        panic(err)
+    }
+
+    // Add the new label
+    labels := cluster.Labels
+    labels["availability_zone"] = "A"
+
+    maxNodes := 5
+    createOpts := nodegroups.CreateOpts{
+        Name:         "new-nodegroup",
+        MinNodeCount: 2,
+        MaxNodeCount: &maxNodes,
+        Labels: labels,
+    }
+
+    ng, err := nodegroups.Create(client, clusterUUID, createOpts).Extract()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("%#v\n", ng)
 */
 package nodegroups
