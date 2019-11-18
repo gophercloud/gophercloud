@@ -84,5 +84,27 @@ Example of Creating a node group:
     }
 
     fmt.Printf("%#v\n", ng)
+
+
+Example of Updating a node group:
+
+    // Valid paths are "/min_node_count" and "/max_node_count".
+    // Max node count can be unset with the "remove" op to have
+    // no enforced maximum node count.
+
+    updateOpts := []nodegroups.UpdateOptsBuilder{
+        nodegroups.UpdateOpts{
+            Op:    nodegroups.ReplaceOp,
+            Path:  "/max_node_count",
+            Value: 10,
+        },
+    }
+
+    ng, err = nodegroups.Update(client, clusterUUID, nodeGroupUUID, updateOpts).Extract()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("%#v\n", ng)
 */
 package nodegroups
