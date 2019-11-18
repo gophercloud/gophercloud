@@ -206,3 +206,101 @@ func TestCreateNodeGroupBadSizes(t *testing.T) {
 	_, isNotAccepted := err.(gophercloud.ErrDefault409)
 	th.AssertEquals(t, true, isNotAccepted)
 }
+
+// TestUpdateNodeGroupSuccess updates a node group successfully.
+func TestUpdateNodeGroupSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleUpdateNodeGroupSuccess(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	updateOpts := []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/max_node_count",
+			Value: 3,
+		},
+	}
+
+	ng, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expectedUpdatedNodeGroup, *ng)
+}
+
+// TestUpdateNodeGroupInternal tries to update an internal
+// property of the node group.
+func TestUpdateNodeGroupInternal(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleUpdateNodeGroupInternal(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	updateOpts := []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/name",
+			Value: "newname",
+		},
+	}
+
+	_, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isBadRequest := err.(gophercloud.ErrDefault400)
+	th.AssertEquals(t, true, isBadRequest)
+}
+
+// TestUpdateNodeGroupBadField tries to update a
+// field of the node group that does not exist.
+func TestUpdateNodeGroupBadField(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleUpdateNodeGroupBadField(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	updateOpts := []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/bad_field",
+			Value: "abc123",
+		},
+	}
+
+	_, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isBadRequest := err.(gophercloud.ErrDefault400)
+	th.AssertEquals(t, true, isBadRequest)
+}
+
+// TestUpdateNodeGroupBadMin tries to set a minimum node count
+// greater than the current node count
+func TestUpdateNodeGroupBadMin(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleUpdateNodeGroupBadMin(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	updateOpts := []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/min_node_count",
+			Value: 5,
+		},
+	}
+
+	_, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isNotAccepted := err.(gophercloud.ErrDefault409)
+	th.AssertEquals(t, true, isNotAccepted)
+}
