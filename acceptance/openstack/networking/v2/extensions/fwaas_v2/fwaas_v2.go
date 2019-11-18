@@ -42,8 +42,8 @@ func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, e
 	t.Logf("Rule %s successfully created", ruleName)
 
 	th.AssertEquals(t, rule.Name, ruleName)
-	th.AssertEquals(t, rule.Protocol, rules.ProtocolTCP)
-	th.AssertEquals(t, rule.Action, rules.ActionAllow)
+	th.AssertEquals(t, rule.Protocol, string(rules.ProtocolTCP))
+	th.AssertEquals(t, rule.Action, string(rules.ActionAllow))
 	th.AssertEquals(t, rule.SourceIPAddress, sourceAddress)
 	th.AssertEquals(t, rule.SourcePort, sourcePort)
 	th.AssertEquals(t, rule.DestinationIPAddress, destinationAddress)
