@@ -14,9 +14,9 @@ func TestRuleCD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
-	rule, err := CreateRule(t, client).Extract()
+	rule, err := CreateRule(t, client)
 	th.AssertNoErr(t, err)
-	tools.PrintResource(t, rule)
+	defer DeleteRule(t, client, rule.ID)
 
-	DeleteRule(t, client, rule.ID)
+	tools.PrintResource(t, rule)
 }
