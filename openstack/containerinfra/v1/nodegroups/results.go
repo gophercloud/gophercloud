@@ -29,6 +29,12 @@ type CreateResult struct {
 	commonResult
 }
 
+// UpdateResult is the response from an Update request.
+// Use the Extract method to retrieve the updated node group.
+type UpdateResult struct {
+	commonResult
+}
+
 // NodeGroup is the API representation of a Magnum node group.
 type NodeGroup struct {
 	ID               int                `json:"id"`

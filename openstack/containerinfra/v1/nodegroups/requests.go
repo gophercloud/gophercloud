@@ -119,3 +119,55 @@ func Create(client *gophercloud.ServiceClient, clusterID string, opts CreateOpts
 
 	return
 }
+
+type UpdateOptsBuilder interface {
+	ToResourceUpdateMap() (map[string]interface{}, error)
+}
+
+type UpdateOp string
+
+const (
+	AddOp     UpdateOp = "add"
+	RemoveOp  UpdateOp = "remove"
+	ReplaceOp UpdateOp = "replace"
+)
+
+// UpdateOpts is used to define the action taken when updating a node group.
+//
+// Valid Ops are "add", "remove", "replace"
+// Valid Paths are "/min_node_count" and "/max_node_count"
+type UpdateOpts struct {
+	Op    UpdateOp    `json:"op" required:"true"`
+	Path  string      `json:"path" required:"true"`
+	Value interface{} `json:"value,omitempty"`
+}
+
+func (opts UpdateOpts) ToResourceUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// Update makes a request to the Magnum API to update a field of
+// the given node group belonging to the given cluster. More than
+// one UpdateOpts can be passed at a time.
+// Use the Extract method of the returned UpdateResult to extract the
+// updated node group from the result.
+func Update(client *gophercloud.ServiceClient, clusterID string, nodeGroupID string, opts []UpdateOptsBuilder) (r UpdateResult) {
+	var o []map[string]interface{}
+	for _, opt := range opts {
+		b, err := opt.ToResourceUpdateMap()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		o = append(o, b)
+	}
+
+	var result *http.Response
+	result, r.Err = client.Patch(updateURL(client, clusterID, nodeGroupID), o, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
+
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
+	return
+}
