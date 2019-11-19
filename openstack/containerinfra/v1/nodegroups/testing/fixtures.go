@@ -307,6 +307,51 @@ func handleUpdateNodeGroupBadMin(t *testing.T) {
 	})
 }
 
+func handleDeleteNodeGroupSuccess(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodDelete)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func handleDeleteNodeGroupNotFound(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodDelete)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+
+		fmt.Fprintf(w, nodeGroupDeleteNotFoundResponse)
+	})
+}
+
+func handleDeleteNodeGroupClusterNotFound(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/"+badClusterUUID+"/nodegroups/"+badNodeGroupUUID, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodDelete)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+
+		fmt.Fprintf(w, nodeGroupDeleteClusterNotFoundResponse)
+	})
+}
+
+func handleDeleteNodeGroupDefault(t *testing.T) {
+	th.Mux.HandleFunc("/v1/clusters/"+clusterUUID+"/nodegroups/"+nodeGroup2UUID, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, http.MethodDelete)
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+
+		fmt.Fprintf(w, nodeGroupDeleteDefaultResponse)
+	})
+}
+
 var nodeGroupGetResponse = fmt.Sprintf(`
 {
   "links":[
@@ -631,6 +676,54 @@ var nodeGroupUpdateBadMinResponse = `
       ],
       "title":"max_node_count for test-ng is invalid (min_node_count (5) should be less or equal to max_node_count (3))",
       "detail":"max_node_count for test-ng is invalid (min_node_count (5) should be less or equal to max_node_count (3)).",
+      "request_id":""
+    }
+  ]
+}`
+
+var nodeGroupDeleteNotFoundResponse = fmt.Sprintf(`
+{
+  "errors":[
+    {
+      "status":404,
+      "code":"client",
+      "links":[
+
+      ],
+      "title":"Nodegroup %s could not be found",
+      "detail":"Nodegroup %s could not be found.\nTraceback (most recent call last):\n\n  File \"/opt/stack/magnum/magnum/conductor/handlers/indirection_api.py\", line 33, in _object_dispatch\n    return getattr(target, method)(context, *args, **kwargs)\n\n  File \"/usr/local/lib/python2.7/dist-packages/oslo_versionedobjects/base.py\", line 184, in wrapper\n    result = fn(cls, context, *args, **kwargs)\n\n  File \"/opt/stack/magnum/magnum/objects/nodegroup.py\", line 83, in get\n    return cls.get_by_uuid(context, cluster_id, nodegroup_id)\n\n  File \"/usr/local/lib/python2.7/dist-packages/oslo_versionedobjects/base.py\", line 184, in wrapper\n    result = fn(cls, context, *args, **kwargs)\n\n  File \"/opt/stack/magnum/magnum/objects/nodegroup.py\", line 109, in get_by_uuid\n    db_nodegroup = cls.dbapi.get_nodegroup_by_uuid(context, cluster, uuid)\n\n  File \"/opt/stack/magnum/magnum/db/sqlalchemy/api.py\", line 866, in get_nodegroup_by_uuid\n    raise exception.NodeGroupNotFound(nodegroup=nodegroup_uuid)\n\nNodeGroupNotFound: Nodegroup %s could not be found.\n",
+      "request_id":""
+    }
+  ]
+}`, badNodeGroupUUID, badNodeGroupUUID, badNodeGroupUUID)
+
+var nodeGroupDeleteClusterNotFoundResponse = fmt.Sprintf(`
+{
+  "errors":[
+    {
+      "status":404,
+      "code":"client",
+      "links":[
+
+      ],
+      "title":"Cluster %s could not be found",
+      "detail":"Cluster %s could not be found.\nTraceback (most recent call last):\n\n  File \"/opt/stack/magnum/magnum/conductor/handlers/indirection_api.py\", line 33, in _object_dispatch\n    return getattr(target, method)(context, *args, **kwargs)\n\n  File \"/usr/local/lib/python2.7/dist-packages/oslo_versionedobjects/base.py\", line 184, in wrapper\n    result = fn(cls, context, *args, **kwargs)\n\n  File \"/opt/stack/magnum/magnum/objects/cluster.py\", line 198, in get_by_uuid\n    db_cluster = cls.dbapi.get_cluster_by_uuid(context, uuid)\n\n  File \"/opt/stack/magnum/magnum/db/sqlalchemy/api.py\", line 238, in get_cluster_by_uuid\n    raise exception.ClusterNotFound(cluster=cluster_uuid)\n\nClusterNotFound: Cluster %s could not be found.\n",
+      "request_id":""
+    }
+  ]
+}`, badClusterUUID, badClusterUUID, badClusterUUID)
+
+var nodeGroupDeleteDefaultResponse = `
+{
+  "errors":[
+    {
+      "status":400,
+      "code":"client",
+      "links":[
+
+      ],
+      "title":"Deleting a default nodegroup is not supported",
+      "detail":"Deleting a default nodegroup is not supported.",
       "request_id":""
     }
   ]

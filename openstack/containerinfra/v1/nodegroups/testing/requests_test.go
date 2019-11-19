@@ -304,3 +304,62 @@ func TestUpdateNodeGroupBadMin(t *testing.T) {
 	_, isNotAccepted := err.(gophercloud.ErrDefault409)
 	th.AssertEquals(t, true, isNotAccepted)
 }
+
+// TestDeleteNodeGroupSuccess deletes a node group successfully.
+func TestDeleteNodeGroupSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleDeleteNodeGroupSuccess(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	err := nodegroups.Delete(sc, clusterUUID, nodeGroup2UUID).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+// TestDeleteNodeGroupNotFound tries to delete a node group that does not exist.
+func TestDeleteNodeGroupNotFound(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleDeleteNodeGroupNotFound(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	err := nodegroups.Delete(sc, clusterUUID, badNodeGroupUUID).ExtractErr()
+	_, isNotFound := err.(gophercloud.ErrDefault404)
+	th.AssertEquals(t, true, isNotFound)
+}
+
+// TestDeleteNodeGroupClusterNotFound tries to delete a node group in a cluster that does not exist.
+func TestDeleteNodeGroupClusterNotFound(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleDeleteNodeGroupClusterNotFound(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	err := nodegroups.Delete(sc, badClusterUUID, badNodeGroupUUID).ExtractErr()
+	_, isNotFound := err.(gophercloud.ErrDefault404)
+	th.AssertEquals(t, true, isNotFound)
+}
+
+// TestDeleteNodeGroupDefault tries to delete a protected default node group.
+func TestDeleteNodeGroupDefault(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleDeleteNodeGroupDefault(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	err := nodegroups.Delete(sc, clusterUUID, nodeGroup2UUID).ExtractErr()
+	_, isBadRequest := err.(gophercloud.ErrDefault400)
+	th.AssertEquals(t, true, isBadRequest)
+}
