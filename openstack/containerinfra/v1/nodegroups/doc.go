@@ -106,5 +106,13 @@ Example of Updating a node group:
     }
 
     fmt.Printf("%#v\n", ng)
+
+
+Example of Deleting a node group:
+
+     err = nodegroups.Delete(client, clusterUUID, nodeGroupUUID).ExtractErr()
+     if err != nil {
+         panic(err)
+     }
 */
 package nodegroups
