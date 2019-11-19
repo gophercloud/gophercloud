@@ -19,3 +19,7 @@ func createURL(c *gophercloud.ServiceClient, clusterID string) string {
 func updateURL(c *gophercloud.ServiceClient, clusterID, nodeGroupID string) string {
 	return c.ServiceURL("clusters", clusterID, "nodegroups", nodeGroupID)
 }
+
+func deleteURL(c *gophercloud.ServiceClient, clusterID, nodeGroupID string) string {
+	return c.ServiceURL("clusters", clusterID, "nodegroups", nodeGroupID)
+}

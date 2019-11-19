@@ -171,3 +171,11 @@ func Update(client *gophercloud.ServiceClient, clusterID string, nodeGroupID str
 
 	return
 }
+
+// Delete makes a request to the Magnum API to delete a node group.
+func Delete(client *gophercloud.ServiceClient, clusterID, nodeGroupID string) (r DeleteResult) {
+	var result *http.Response
+	result, r.Err = client.Delete(deleteURL(client, clusterID, nodeGroupID), nil)
+	r.Header = result.Header
+	return
+}

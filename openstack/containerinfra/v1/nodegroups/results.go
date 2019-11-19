@@ -35,6 +35,12 @@ type UpdateResult struct {
 	commonResult
 }
 
+// DeleteResult is the response from a Delete request.
+// Use the ExtractErr method to extract the error from the result.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // NodeGroup is the API representation of a Magnum node group.
 type NodeGroup struct {
 	ID               int                `json:"id"`
