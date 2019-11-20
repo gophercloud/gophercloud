@@ -17,20 +17,20 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-// CreateClusterTemplate will create a random cluster tempalte. An error will be returned if the
-// cluster-template could not be created.
-func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*clustertemplates.ClusterTemplate, error) {
+// CreateClusterTemplateCOE will create a random cluster template for the specified orchestration engine.
+// An error will be returned if the cluster template could not be created.
+func CreateClusterTemplateCOE(t *testing.T, client *gophercloud.ServiceClient, coe string) (*clustertemplates.ClusterTemplate, error) {
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
 	if err != nil {
 		return nil, err
 	}
 
 	name := tools.RandomString("TESTACC-", 8)
-	t.Logf("Attempting to create cluster template: %s", name)
+	t.Logf("Attempting to create %s cluster template: %s", coe, name)
 
 	boolFalse := false
 	createOpts := clustertemplates.CreateOpts{
-		COE:                 "swarm",
+		COE:                 coe,
 		DNSNameServer:       "8.8.8.8",
 		DockerStorageDriver: "overlay2",
 		ExternalNetworkID:   choices.ExternalNetworkID,
@@ -70,6 +70,18 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 	th.AssertEquals(t, choices.MagnumImageID, clusterTemplate.ImageID)
 
 	return clusterTemplate, nil
+}
+
+// CreateClusterTemplate will create a random swarm cluster template.
+// An error will be returned if the cluster template could not be created.
+func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*clustertemplates.ClusterTemplate, error) {
+	return CreateClusterTemplateCOE(t, client, "swarm")
+}
+
+// CreateKubernetesClusterTemplate will create a random kubernetes cluster template.
+// An error will be returned if the cluster template could not be created.
+func CreateKubernetesClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*clustertemplates.ClusterTemplate, error) {
+	return CreateClusterTemplateCOE(t, client, "kubernetes")
 }
 
 // DeleteClusterTemplate will delete a given cluster-template. A fatal error will occur if the
@@ -140,6 +152,11 @@ func CreateClusterTimeout(t *testing.T, client *gophercloud.ServiceClient, clust
 // cluster could not be created. Has a timeout of 300 seconds.
 func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, clusterTemplateID string) (string, error) {
 	return CreateClusterTimeout(t, client, clusterTemplateID, 300*time.Second)
+}
+
+// CreateKubernetesCluster is the same as CreateCluster with a longer timeout necessary for creating a kubernetes cluster
+func CreateKubernetesCluster(t *testing.T, client *gophercloud.ServiceClient, clusterTemplateID string) (string, error) {
+	return CreateClusterTimeout(t, client, clusterTemplateID, 900*time.Second)
 }
 
 func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
