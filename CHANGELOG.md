@@ -7,6 +7,9 @@ IMPROVEMENTS
 * Added `tags`, `tags-any`, `not-tags`, and `not-tags-any` to `compute/v2/servers.ListOpts` [GH-1759](https://github.com/gophercloud/gophercloud/pull/1759)
 * Added `AccessRule` to `identity/v3/applicationcredentials` [GH-1758](https://github.com/gophercloud/gophercloud/pull/1758)
 * Gophercloud no longer returns an error when multiple endpoints are found. Instead, it will choose the first endpoint and discard the others [GH-1766](https://github.com/gophercloud/gophercloud/pull/1766).
+* Added `networking/v2/extensions/fwaas_v2/rules.Create` [GH-1768](https://github.com/gophercloud/gophercloud/pull/1768).
+* Added `networking/v2/extensions/fwaas_v2/rules.Delete` [GH-1771](https://github.com/gophercloud/gophercloud/pull/1771).
+* Added `loadbalancer/v2/providers.List` [GH-1765](https://github.com/gophercloud/gophercloud/pull/1765).
 
 ## 0.6.0 (October 17, 2019)
 

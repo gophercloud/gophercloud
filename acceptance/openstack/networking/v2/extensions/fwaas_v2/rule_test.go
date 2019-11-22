@@ -12,6 +12,7 @@ import (
 )
 
 func TestRuleCRD(t *testing.T) {
+
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
