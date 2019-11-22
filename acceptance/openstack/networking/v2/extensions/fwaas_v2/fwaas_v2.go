@@ -51,3 +51,17 @@ func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, e
 
 	return rule, nil
 }
+
+// DeleteRule will delete a rule with a specified ID. A fatal error will occur
+// if the delete was not successful. This works best when used as a deferred
+// function.
+func DeleteRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) {
+	t.Logf("Attempting to delete rule: %s", ruleID)
+
+	err := rules.Delete(client, ruleID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete rule %s: %v", ruleID, err)
+	}
+
+	t.Logf("Deleted rule: %s", ruleID)
+}

@@ -10,11 +10,13 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestRuleC(t *testing.T) {
+func TestRuleCD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
 	rule, err := CreateRule(t, client)
 	th.AssertNoErr(t, err)
+	defer DeleteRule(t, client, rule.ID)
+
 	tools.PrintResource(t, rule)
 }
