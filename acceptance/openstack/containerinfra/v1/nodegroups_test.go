@@ -56,6 +56,7 @@ func TestNodeGroupsCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	t.Run("update", func(t *testing.T) { testNodeGroupUpdate(t, client, clusterID, nodeGroupID) })
+	t.Run("delete", func(t *testing.T) { testNodeGroupDelete(t, client, clusterID, nodeGroupID) })
 }
 
 func testNodeGroupsList(t *testing.T, client *gophercloud.ServiceClient, clusterID string) {
@@ -153,4 +154,19 @@ func testNodeGroupUpdate(t *testing.T, client *gophercloud.ServiceClient, cluste
 	th.AssertEquals(t, false, ng.MaxNodeCount == nil)
 	th.AssertEquals(t, 1, ng.MinNodeCount)
 	th.AssertEquals(t, 3, *ng.MaxNodeCount)
+}
+
+func testNodeGroupDelete(t *testing.T, client *gophercloud.ServiceClient, clusterID, nodeGroupID string) {
+	err := nodegroups.Delete(client, clusterID, nodeGroupID).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	// Wait for the node group to be deleted
+	err = tools.WaitFor(func() (bool, error) {
+		_, err := nodegroups.Get(client, clusterID, nodeGroupID).Extract()
+		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			return true, nil
+		}
+		return false, nil
+	})
+	th.AssertNoErr(t, err)
 }
