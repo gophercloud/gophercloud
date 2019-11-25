@@ -11,7 +11,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestRuleCRD(t *testing.T) {
+func TestRuleCRUD(t *testing.T) {
 
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
@@ -22,6 +22,13 @@ func TestRuleCRD(t *testing.T) {
 
 	tools.PrintResource(t, rule)
 
+	ruleDescription := "Some rule description"
+	updateOpts := rules.UpdateOpts{
+		Description: &ruleDescription,
+	}
+
+	_, err = rules.Update(client, rule.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
 	newRule, err := rules.Get(client, rule.ID).Extract()
 	th.AssertNoErr(t, err)
 

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas_v2/rules"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -183,6 +184,74 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "allow", rule.Action)
 	th.AssertEquals(t, 4, rule.IPVersion)
 	th.AssertEquals(t, false, rule.Shared)
+}
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_rules/f03bd950-6c56-4f5e-a307-45967078f507", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+	"firewall_rule":{
+		"protocol": "tcp",
+		"description": "ssh rule",
+		"destination_ip_address": "192.168.1.0/24",
+		"destination_port": "22",
+		"name": "ssh_form_any",
+		"action": "allow",
+		"enabled": false
+	}
+}
+	`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+	"firewall_rule":{
+		"protocol": "tcp",
+		"description": "ssh rule",
+		"destination_ip_address": "192.168.1.0/24",
+		"firewall_policy_id": "e2a5fb51-698c-4898-87e8-f1eee6b50919",
+		"position": 2,
+		"destination_port": "22",
+		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
+		"name": "ssh_form_any",
+		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+		"enabled": false,
+		"action": "allow",
+		"ip_version": 4,
+		"shared": false
+	}
+}
+		`)
+	})
+
+	newProtocol := "tcp"
+	newDescription := "ssh rule"
+	newDestinationIP := "192.168.1.0/24"
+	newDestintionPort := "22"
+	newName := "ssh_form_any"
+	newAction := "allow"
+
+	options := rules.UpdateOpts{
+		Protocol:             &newProtocol,
+		Description:          &newDescription,
+		DestinationIPAddress: &newDestinationIP,
+		DestinationPort:      &newDestintionPort,
+		Name:                 &newName,
+		Action:               &newAction,
+		Enabled:              gophercloud.Disabled,
+	}
+
+	_, err := rules.Update(fake.ServiceClient(), "f03bd950-6c56-4f5e-a307-45967078f507", options).Extract()
+	th.AssertNoErr(t, err)
 }
 
 func TestDelete(t *testing.T) {
