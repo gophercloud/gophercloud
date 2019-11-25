@@ -54,6 +54,8 @@ func TestNodeGroupsCRUD(t *testing.T) {
 		return (ng.Status == "CREATE_COMPLETE"), nil
 	}, 900*time.Second)
 	th.AssertNoErr(t, err)
+
+	t.Run("update", func(t *testing.T) { testNodeGroupUpdate(t, client, clusterID, nodeGroupID) })
 }
 
 func testNodeGroupsList(t *testing.T, client *gophercloud.ServiceClient, clusterID string) {
@@ -92,8 +94,12 @@ func testNodeGroupGet(t *testing.T, client *gophercloud.ServiceClient, clusterID
 
 func testNodeGroupCreate(t *testing.T, client *gophercloud.ServiceClient, clusterID string) string {
 	name := tools.RandomString("test-ng-", 8)
+
+	// have to create two nodes for the Update test (can't set minimum above actual node count)
+	two := 2
 	createOpts := nodegroups.CreateOpts{
-		Name: name,
+		Name:      name,
+		NodeCount: &two,
 	}
 
 	ng, err := nodegroups.Create(client, clusterID, createOpts).Extract()
@@ -101,4 +107,50 @@ func testNodeGroupCreate(t *testing.T, client *gophercloud.ServiceClient, cluste
 	th.AssertEquals(t, name, ng.Name)
 
 	return ng.UUID
+}
+
+func testNodeGroupUpdate(t *testing.T, client *gophercloud.ServiceClient, clusterID, nodeGroupID string) {
+	// Node group starts with min=1, max=unset
+	// Set min, then set max, then set both
+
+	updateOpts := []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/min_node_count",
+			Value: 2,
+		},
+	}
+	ng, err := nodegroups.Update(client, clusterID, nodeGroupID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, 2, ng.MinNodeCount)
+
+	updateOpts = []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/max_node_count",
+			Value: 5,
+		},
+	}
+	ng, err = nodegroups.Update(client, clusterID, nodeGroupID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, false, ng.MaxNodeCount == nil)
+	th.AssertEquals(t, 5, *ng.MaxNodeCount)
+
+	updateOpts = []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/min_node_count",
+			Value: 1,
+		},
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/max_node_count",
+			Value: 3,
+		},
+	}
+	ng, err = nodegroups.Update(client, clusterID, nodeGroupID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, false, ng.MaxNodeCount == nil)
+	th.AssertEquals(t, 1, ng.MinNodeCount)
+	th.AssertEquals(t, 3, *ng.MaxNodeCount)
 }
