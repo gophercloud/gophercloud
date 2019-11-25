@@ -100,8 +100,8 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts contains the values used when updating a firewall rule.
 type UpdateOpts struct {
-	Protocol             *string                `json:"protocol,omitempty"`
-	Action               *string                `json:"action,omitempty"`
+	Protocol             *Protocol              `json:"protocol,omitempty"`
+	Action               *Action                `json:"action,omitempty"`
 	Name                 *string                `json:"name,omitempty"`
 	Description          *string                `json:"description,omitempty"`
 	IPVersion            *gophercloud.IPVersion `json:"ip_version,omitempty"`
