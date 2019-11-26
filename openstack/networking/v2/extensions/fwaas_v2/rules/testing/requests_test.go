@@ -134,6 +134,57 @@ func TestCreateAnyProtocol(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_rules/f03bd950-6c56-4f5e-a307-45967078f507", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+	"firewall_rule":{
+		"protocol": "tcp",
+		"description": "ssh rule",
+		"source_port": null,
+		"source_ip_address": null,
+		"destination_ip_address": "192.168.1.0/24",
+		"firewall_policy_id": "e2a5fb51-698c-4898-87e8-f1eee6b50919",
+		"position": 2,
+		"destination_port": "22",
+		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
+		"name": "ssh_form_any",
+		"tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+		"enabled": true,
+		"action": "allow",
+		"ip_version": 4,
+		"shared": false
+	}
+}
+        `)
+	})
+
+	rule, err := rules.Get(fake.ServiceClient(), "f03bd950-6c56-4f5e-a307-45967078f507").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "tcp", rule.Protocol)
+	th.AssertEquals(t, "ssh rule", rule.Description)
+	th.AssertEquals(t, "192.168.1.0/24", rule.DestinationIPAddress)
+	th.AssertEquals(t, "e2a5fb51-698c-4898-87e8-f1eee6b50919", rule.FirewallPolicyID)
+	th.AssertEquals(t, "22", rule.DestinationPort)
+	th.AssertEquals(t, "f03bd950-6c56-4f5e-a307-45967078f507", rule.ID)
+	th.AssertEquals(t, "ssh_form_any", rule.Name)
+	th.AssertEquals(t, "80cf934d6ffb4ef5b244f1c512ad1e61", rule.TenantID)
+	th.AssertEquals(t, true, rule.Enabled)
+	th.AssertEquals(t, "allow", rule.Action)
+	th.AssertEquals(t, 4, rule.IPVersion)
+	th.AssertEquals(t, false, rule.Shared)
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
