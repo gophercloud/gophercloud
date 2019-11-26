@@ -28,7 +28,7 @@ acceptance/openstack/blockstorage/v3
 acceptance/openstack/compute/v2
 
 # No suitable endpoint could be found in the service catalog.
-# acceptance/openstack/containerinfra/v1
+acceptance/openstack/containerinfra/v1
 
 acceptance/openstack/container/v1
 

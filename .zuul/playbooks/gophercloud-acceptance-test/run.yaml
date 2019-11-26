@@ -10,6 +10,7 @@
         - 'zun'
         - 'octavia'
         - 'neutron-ext'
+        - 'magnum'
     - install-devstack
   tasks:
     - name: Run acceptance tests with gophercloud
