@@ -23,12 +23,16 @@ func TestRuleCRUD(t *testing.T) {
 	tools.PrintResource(t, rule)
 
 	ruleDescription := "Some rule description"
+	ruleProtocol := rules.ProtocolICMP
 	updateOpts := rules.UpdateOpts{
 		Description: &ruleDescription,
+		Protocol:    &ruleProtocol,
 	}
 
-	_, err = rules.Update(client, rule.ID, updateOpts).Extract()
+	ruleUpdated, err := rules.Update(client, rule.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
+	th.AssertEquals(t, ruleUpdated.Description, ruleDescription)
+	th.AssertEquals(t, ruleUpdated.Protocol, string(ruleProtocol))
 
 	newRule, err := rules.Get(client, rule.ID).Extract()
 	th.AssertNoErr(t, err)
