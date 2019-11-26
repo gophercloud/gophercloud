@@ -233,12 +233,12 @@ func TestUpdate(t *testing.T) {
 		`)
 	})
 
-	newProtocol := "tcp"
+	newProtocol := rules.ProtocolTCP
 	newDescription := "ssh rule"
 	newDestinationIP := "192.168.1.0/24"
 	newDestintionPort := "22"
 	newName := "ssh_form_any"
-	newAction := "allow"
+	newAction := rules.ActionAllow
 
 	options := rules.UpdateOpts{
 		Protocol:             &newProtocol,
