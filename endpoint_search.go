@@ -74,3 +74,15 @@ func (eo *EndpointOpts) ApplyDefaults(t string) {
 		eo.Availability = AvailabilityPublic
 	}
 }
+
+// GetEndpointType is a helper func to convert the string endpoint type
+// requested by the user to an Availability type.
+func GetEndpointType(endpointType string) Availability {
+	if endpointType == "internal" || endpointType == "internalURL" {
+		return AvailabilityInternal
+	}
+	if endpointType == "admin" || endpointType == "adminURL" {
+		return AvailabilityAdmin
+	}
+	return AvailabilityPublic
+}
