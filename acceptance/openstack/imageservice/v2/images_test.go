@@ -3,6 +3,7 @@
 package v2
 
 import (
+	"sort"
 	"testing"
 	"time"
 
@@ -171,6 +172,9 @@ func TestImagesUpdate(t *testing.T) {
 	tools.PrintResource(t, newImage.Properties)
 
 	th.AssertEquals(t, newImage.Name, image.Name+"foo")
+
+	sort.Strings(newTags)
+	sort.Strings(newImage.Tags)
 	th.AssertDeepEquals(t, newImage.Tags, newTags)
 
 	// Because OpenStack is now adding additional properties automatically,
