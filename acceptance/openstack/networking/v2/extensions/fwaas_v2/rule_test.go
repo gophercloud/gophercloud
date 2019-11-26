@@ -29,6 +29,7 @@ func TestRuleCRUD(t *testing.T) {
 
 	_, err = rules.Update(client, rule.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
+
 	newRule, err := rules.Get(client, rule.ID).Extract()
 	th.AssertNoErr(t, err)
 
