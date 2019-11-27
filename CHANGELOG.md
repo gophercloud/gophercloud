@@ -11,6 +11,7 @@ IMPROVEMENTS
 * Added `networking/v2/extensions/fwaas_v2/rules.Delete` [GH-1771](https://github.com/gophercloud/gophercloud/pull/1771).
 * Added `loadbalancer/v2/providers.List` [GH-1765](https://github.com/gophercloud/gophercloud/pull/1765).
 * Added `networking/v2/extensions/fwaas_v2/rules.Get` [GH-1772](https://github.com/gophercloud/gophercloud/pull/1772).
+* Added `networking/v2/extensions/fwaas_v2/rules.Update` [GH-1776](https://github.com/gophercloud/gophercloud/pull/1776).
 
 ## 0.6.0 (October 17, 2019)
 
