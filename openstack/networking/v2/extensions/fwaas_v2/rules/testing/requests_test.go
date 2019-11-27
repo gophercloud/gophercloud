@@ -8,9 +8,115 @@ import (
 	"github.com/gophercloud/gophercloud"
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas_v2/rules"
+	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_rules", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "firewall_rules": [
+        {
+            "protocol": "tcp",
+            "description": "ssh rule",
+            "source_port": null,
+            "source_ip_address": null,
+            "destination_ip_address": "192.168.1.0/24",
+            "firewall_policy_id": "e2a5fb51-698c-4898-87e8-f1eee6b50919",
+            "destination_port": "22",
+            "id": "f03bd950-6c56-4f5e-a307-45967078f507",
+            "name": "ssh_form_any",
+            "tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+            "enabled": true,
+            "action": "allow",
+            "ip_version": 4,
+            "shared": false
+        },
+        {
+            "protocol": "udp",
+            "description": "udp rule",
+            "source_port": null,
+            "source_ip_address": null,
+            "destination_ip_address": null,
+            "firewall_policy_id": "98d7fb51-698c-4123-87e8-f1eee6b5ab7e",
+            "destination_port": null,
+            "id": "ab7bd950-6c56-4f5e-a307-45967078f890",
+            "name": "deny_all_udp",
+            "tenant_id": "80cf934d6ffb4ef5b244f1c512ad1e61",
+            "enabled": true,
+            "action": "deny",
+            "ip_version": 4,
+            "shared": false
+        }
+    ]
+}
+        `)
+	})
+
+	count := 0
+
+	rules.List(fake.ServiceClient(), rules.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := rules.ExtractRules(page)
+		if err != nil {
+			t.Errorf("Failed to extract members: %v", err)
+			return false, err
+		}
+
+		expected := []rules.Rule{
+			{
+				Protocol:             string(rules.ProtocolTCP),
+				Description:          "ssh rule",
+				SourcePort:           "",
+				SourceIPAddress:      "",
+				DestinationIPAddress: "192.168.1.0/24",
+				FirewallPolicyID:     "e2a5fb51-698c-4898-87e8-f1eee6b50919",
+				DestinationPort:      "22",
+				ID:                   "f03bd950-6c56-4f5e-a307-45967078f507",
+				Name:                 "ssh_form_any",
+				TenantID:             "80cf934d6ffb4ef5b244f1c512ad1e61",
+				Enabled:              true,
+				Action:               string(rules.ActionAllow),
+				IPVersion:            4,
+				Shared:               false,
+			},
+			{
+				Protocol:             "udp",
+				Description:          "udp rule",
+				SourcePort:           "",
+				SourceIPAddress:      "",
+				DestinationIPAddress: "",
+				FirewallPolicyID:     "98d7fb51-698c-4123-87e8-f1eee6b5ab7e",
+				DestinationPort:      "",
+				ID:                   "ab7bd950-6c56-4f5e-a307-45967078f890",
+				Name:                 "deny_all_udp",
+				TenantID:             "80cf934d6ffb4ef5b244f1c512ad1e61",
+				Enabled:              true,
+				Action:               "deny",
+				IPVersion:            4,
+				Shared:               false,
+			},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
+}
 func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

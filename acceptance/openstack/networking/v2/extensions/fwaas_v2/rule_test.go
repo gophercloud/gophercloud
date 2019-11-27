@@ -38,4 +38,21 @@ func TestRuleCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newRule)
+
+	allPages, err := rules.List(client, nil).AllPages()
+	th.AssertNoErr(t, err)
+
+	allRules, err := rules.ExtractRules(allPages)
+	th.AssertNoErr(t, err)
+
+	t.Logf("Attempting to find rule %s\n", newRule.ID)
+	var found bool
+	for _, rule := range allRules {
+		if rule.ID == newRule.ID {
+			found = true
+			t.Logf("Found rule %s\n", newRule.ID)
+		}
+	}
+
+	th.AssertEquals(t, found, true)
 }
