@@ -2,8 +2,10 @@ package v1
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -85,9 +87,9 @@ func DeleteClusterTemplate(t *testing.T, client *gophercloud.ServiceClient, id s
 	return
 }
 
-// CreateCluster will create a random cluster. An error will be returned if the
-// cluster could not be created.
-func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, clusterTemplateID string) (string, error) {
+// CreateClusterTimeout will create a random cluster and wait for it to reach CREATE_COMPLETE status
+// within the given timeout duration. An error will be returned if the cluster could not be created.
+func CreateClusterTimeout(t *testing.T, client *gophercloud.ServiceClient, clusterTemplateID string, timeout time.Duration) (string, error) {
 	clusterName := tools.RandomString("TESTACC-", 8)
 	t.Logf("Attempting to create cluster: %s using template %s", clusterName, clusterTemplateID)
 
@@ -98,7 +100,8 @@ func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, clusterTempl
 
 	masterCount := 1
 	nodeCount := 1
-	createTimeout := 100
+	// createTimeout is the creation timeout on the magnum side in minutes
+	createTimeout := int(math.Ceil(timeout.Minutes()))
 	createOpts := clusters.CreateOpts{
 		ClusterTemplateID: clusterTemplateID,
 		CreateTimeout:     &createTimeout,
@@ -124,13 +127,19 @@ func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, clusterTempl
 
 	t.Logf("Cluster created: %+v", clusterID)
 
-	err = WaitForCluster(client, clusterID, "CREATE_COMPLETE")
+	err = WaitForCluster(client, clusterID, "CREATE_COMPLETE", timeout)
 	if err != nil {
 		return clusterID, err
 	}
 
 	t.Logf("Successfully created cluster: %s id: %s", clusterName, clusterID)
 	return clusterID, nil
+}
+
+// CreateCluster will create a random cluster. An error will be returned if the
+// cluster could not be created. Has a timeout of 300 seconds.
+func CreateCluster(t *testing.T, client *gophercloud.ServiceClient, clusterTemplateID string) (string, error) {
+	return CreateClusterTimeout(t, client, clusterTemplateID, 300*time.Second)
 }
 
 func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
@@ -147,7 +156,7 @@ func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
 		t.Fatalf("Error deleting cluster. requestID=%s clusterID=%s: err%s:", deleteRequestID, id, err)
 	}
 
-	err = WaitForCluster(client, id, "DELETE_COMPLETE")
+	err = WaitForCluster(client, id, "DELETE_COMPLETE", 300*time.Second)
 	if err != nil {
 		t.Fatalf("Error deleting cluster %s: %s:", id, err)
 	}
@@ -157,8 +166,8 @@ func DeleteCluster(t *testing.T, client *gophercloud.ServiceClient, id string) {
 	return
 }
 
-func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status string) error {
-	return tools.WaitFor(func() (bool, error) {
+func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status string, timeout time.Duration) error {
+	return tools.WaitForTimeout(func() (bool, error) {
 		cluster, err := clusters.Get(client, clusterID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok && status == "DELETE_COMPLETE" {
@@ -177,7 +186,7 @@ func WaitForCluster(client *gophercloud.ServiceClient, clusterID string, status 
 		}
 
 		return false, nil
-	})
+	}, timeout)
 }
 
 // CreateQuota will create a random quota. An error will be returned if the

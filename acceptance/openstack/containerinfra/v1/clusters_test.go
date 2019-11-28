@@ -4,6 +4,7 @@ package v1
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
@@ -53,7 +54,7 @@ func TestClustersCRUD(t *testing.T) {
 	clusterID, err = updateResult.Extract()
 	th.AssertNoErr(t, err)
 
-	err = WaitForCluster(client, clusterID, "UPDATE_COMPLETE")
+	err = WaitForCluster(client, clusterID, "UPDATE_COMPLETE", time.Second*300)
 	th.AssertNoErr(t, err)
 
 	newCluster, err := clusters.Get(client, clusterID).Extract()
