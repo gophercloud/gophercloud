@@ -62,9 +62,9 @@ type ListOpts struct {
 	DestinationIPAddress string   `q:"destination_ip_address"`
 	SourcePort           string   `q:"source_port"`
 	DestinationPort      string   `q:"destination_port"`
-	Enabled              bool     `q:"enabled"`
+	Enabled              *bool    `q:"enabled"`
 	ID                   string   `q:"id"`
-	Shared               bool     `q:"shared"`
+	Shared               *bool    `q:"shared"`
 	ProjectID            string   `q:"project_id"`
 	FirewallPolicyID     string   `q:"firewall_policy_id"`
 	Limit                int      `q:"limit"`
