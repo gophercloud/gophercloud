@@ -21,6 +21,7 @@ func TestClustersCRUD(t *testing.T) {
 	defer DeleteClusterTemplate(t, client, clusterTemplate.UUID)
 
 	clusterID, err := CreateCluster(t, client, clusterTemplate.UUID)
+	th.AssertNoErr(t, err)
 	tools.PrintResource(t, clusterID)
 	defer DeleteCluster(t, client, clusterID)
 
