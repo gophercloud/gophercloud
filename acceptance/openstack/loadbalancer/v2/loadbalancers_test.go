@@ -386,9 +386,11 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	monName := ""
 	newDelay := tools.RandomInt(20, 30)
+	newMaxRetriesDown := tools.RandomInt(4, 10)
 	updateMonitorOpts := monitors.UpdateOpts{
-		Name:  &monName,
-		Delay: newDelay,
+		Name:           &monName,
+		Delay:          newDelay,
+		MaxRetriesDown: newMaxRetriesDown,
 	}
 	_, err = monitors.Update(lbClient, monitor.ID, updateMonitorOpts).Extract()
 	th.AssertNoErr(t, err)

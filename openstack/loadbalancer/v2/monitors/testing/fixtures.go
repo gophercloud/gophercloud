@@ -206,6 +206,7 @@ func HandleHealthmonitorUpdateSuccessfully(t *testing.T) {
 				"delay": 3,
 				"timeout": 20,
 				"max_retries": 10,
+				"max_retries_down": 8,
 				"url_path": "/another_check",
 				"expected_codes": "301"
 			}

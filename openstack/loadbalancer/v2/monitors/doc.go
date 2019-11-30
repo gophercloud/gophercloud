@@ -46,12 +46,13 @@ Example to Update a Monitor
 	monitorID := "d67d56a6-4a86-4688-a282-f46444705c64"
 
 	updateOpts := monitors.UpdateOpts{
-		Name:          "NewHealthmonitorName",
-		Delay:         3,
-		Timeout:       20,
-		MaxRetries:    10,
-		URLPath:       "/another_check",
-		ExpectedCodes: "301",
+		Name:           "NewHealthmonitorName",
+		Delay:          3,
+		Timeout:        20,
+		MaxRetries:     10,
+		MaxRetriesDown: 8,
+		URLPath:        "/another_check",
+		ExpectedCodes:  "301",
 	}
 
 	monitor, err := monitors.Update(networkClient, monitorID, updateOpts).Extract()
