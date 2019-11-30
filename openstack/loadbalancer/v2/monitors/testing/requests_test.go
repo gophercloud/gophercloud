@@ -58,15 +58,16 @@ func TestCreateHealthmonitor(t *testing.T) {
 	HandleHealthmonitorCreationSuccessfully(t, SingleHealthmonitorBody)
 
 	actual, err := monitors.Create(fake.ServiceClient(), monitors.CreateOpts{
-		Type:          "HTTP",
-		Name:          "db",
-		PoolID:        "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d",
-		ProjectID:     "453105b9-1754-413f-aab1-55f1af620750",
-		Delay:         20,
-		Timeout:       10,
-		MaxRetries:    5,
-		URLPath:       "/check",
-		ExpectedCodes: "200-299",
+		Type:           "HTTP",
+		Name:           "db",
+		PoolID:         "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d",
+		ProjectID:      "453105b9-1754-413f-aab1-55f1af620750",
+		Delay:          20,
+		Timeout:        10,
+		MaxRetries:     5,
+		MaxRetriesDown: 4,
+		URLPath:        "/check",
+		ExpectedCodes:  "200-299",
 	}).Extract()
 	th.AssertNoErr(t, err)
 

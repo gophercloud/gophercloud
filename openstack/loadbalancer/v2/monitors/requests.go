@@ -107,6 +107,10 @@ type CreateOpts struct {
 	// status to INACTIVE. Must be a number between 1 and 10.
 	MaxRetries int `json:"max_retries" required:"true"`
 
+	// Number of permissible ping failures befor changing the member's
+	// status to ERROR. Must be a number between 1 and 10.
+	MaxRetriesDown int `json:"max_retries_down,omitempty"`
+
 	// URI path that will be accessed if Monitor type is HTTP or HTTPS.
 	URLPath string `json:"url_path,omitempty"`
 

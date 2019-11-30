@@ -160,6 +160,7 @@ func HandleHealthmonitorCreationSuccessfully(t *testing.T, response string) {
 				"name":"db",
 				"timeout":10,
 				"max_retries":5,
+				"max_retries_down":4,
 				"url_path":"/check",
 				"expected_codes":"200-299"
 			}
