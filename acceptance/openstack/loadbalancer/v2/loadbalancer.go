@@ -147,12 +147,13 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 	t.Logf("Attempting to create monitor %s", monitorName)
 
 	createOpts := monitors.CreateOpts{
-		PoolID:     pool.ID,
-		Name:       monitorName,
-		Delay:      10,
-		Timeout:    5,
-		MaxRetries: 5,
-		Type:       monitors.TypePING,
+		PoolID:         pool.ID,
+		Name:           monitorName,
+		Delay:          10,
+		Timeout:        5,
+		MaxRetries:     5,
+		MaxRetriesDown: 4,
+		Type:           monitors.TypePING,
 	}
 
 	monitor, err := monitors.Create(client, createOpts).Extract()
@@ -168,6 +169,10 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 
 	th.AssertEquals(t, monitor.Name, monitorName)
 	th.AssertEquals(t, monitor.Type, monitors.TypePING)
+	th.AssertEquals(t, monitor.Delay, 10)
+	th.AssertEquals(t, monitor.Timeout, 5)
+	th.AssertEquals(t, monitor.MaxRetries, 5)
+	th.AssertEquals(t, monitor.MaxRetriesDown, 4)
 
 	return monitor, nil
 }
