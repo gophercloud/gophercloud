@@ -406,6 +406,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	th.AssertEquals(t, newMonitor.Name, monName)
 	th.AssertEquals(t, newMonitor.Delay, newDelay)
+	th.AssertEquals(t, newMonitor.MaxRetriesDown, newMaxRetriesDown)
 }
 
 func TestLoadbalancersCascadeCRUD(t *testing.T) {
@@ -508,8 +509,10 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	newDelay := tools.RandomInt(20, 30)
+	newMaxRetriesDown := tools.RandomInt(4, 10)
 	updateMonitorOpts := monitors.UpdateOpts{
-		Delay: newDelay,
+		Delay:          newDelay,
+		MaxRetriesDown: newMaxRetriesDown,
 	}
 	_, err = monitors.Update(lbClient, monitor.ID, updateMonitorOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -523,4 +526,6 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 
 	tools.PrintResource(t, newMonitor)
 
+	th.AssertEquals(t, newMonitor.Delay, newDelay)
+	th.AssertEquals(t, newMonitor.MaxRetriesDown, newMaxRetriesDown)
 }

@@ -169,6 +169,10 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 
 	th.AssertEquals(t, monitor.Name, monitorName)
 	th.AssertEquals(t, monitor.Type, monitors.TypePING)
+	th.AssertEquals(t, monitor.Delay, 10)
+	th.AssertEquals(t, monitor.Timeout, 5)
+	th.AssertEquals(t, monitor.MaxRetries, 5)
+	th.AssertEquals(t, monitor.MaxRetriesDown, 4)
 
 	return monitor, nil
 }
