@@ -71,3 +71,9 @@ func ListDHCPNetworks(c *gophercloud.ServiceClient, id string) (r ListDHCPNetwor
 	_, r.Err = c.Get(listDHCPNetworksURL(c, id), &r.Body, nil)
 	return
 }
+
+// ListNetworkDHCPAgents returns a list of dhcp-agents for a specific network ID
+func ListNetworkDHCPAgents(c *gophercloud.ServiceClient, id string) (r ListNetworkDHCPAgentsResult) {
+	_, r.Err = c.Get(listNetworkDHCPAgentsURL(c, id), &r.Body, nil)
+	return
+}

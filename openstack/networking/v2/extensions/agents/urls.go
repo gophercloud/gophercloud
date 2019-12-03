@@ -28,3 +28,7 @@ func dhcpNetworksURL(c *gophercloud.ServiceClient, id string) string {
 func listDHCPNetworksURL(c *gophercloud.ServiceClient, id string) string {
 	return dhcpNetworksURL(c, id)
 }
+
+func listNetworkDHCPAgentsURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("networks", id, "dhcp-agents")
+}
