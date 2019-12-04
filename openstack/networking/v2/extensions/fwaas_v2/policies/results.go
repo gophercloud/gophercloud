@@ -55,8 +55,8 @@ func (r PolicyPage) IsEmpty() (bool, error) {
 	return len(is) == 0, err
 }
 
-// ExtractPolicies accepts a Page struct, specifically a RouterPage struct,
-// and extracts the elements into a slice of Router structs. In other words,
+// ExtractPolicies accepts a Page struct, specifically a PolicyPage struct,
+// and extracts the elements into a slice of Policy structs. In other words,
 // a generic collection is mapped into a relevant slice.
 func ExtractPolicies(r pagination.Page) ([]Policy, error) {
 	var s struct {
