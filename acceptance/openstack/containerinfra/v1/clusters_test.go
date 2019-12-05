@@ -42,7 +42,7 @@ func TestClustersCRUD(t *testing.T) {
 		clusters.UpdateOpts{
 			Op:    clusters.ReplaceOp,
 			Path:  "/node_count",
-			Value: "2",
+			Value: 2,
 		},
 	}
 	updateResult := clusters.Update(client, clusterID, updateOpts)
