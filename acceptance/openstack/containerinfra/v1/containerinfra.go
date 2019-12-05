@@ -32,7 +32,7 @@ func CreateClusterTemplate(t *testing.T, client *gophercloud.ServiceClient) (*cl
 	createOpts := clustertemplates.CreateOpts{
 		COE:                 "swarm",
 		DNSNameServer:       "8.8.8.8",
-		DockerStorageDriver: "devicemapper",
+		DockerStorageDriver: "overlay2",
 		ExternalNetworkID:   choices.ExternalNetworkID,
 		FlavorID:            choices.FlavorID,
 		FloatingIPEnabled:   &boolFalse,
