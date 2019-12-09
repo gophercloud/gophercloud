@@ -93,6 +93,7 @@ func TestListWithExtensions(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	err = ports.ExtractPortsInto(allPages, &allPorts)
+	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, allPorts[0].Status, "ACTIVE")
 	th.AssertEquals(t, allPorts[0].PortSecurityEnabled, false)
