@@ -289,8 +289,7 @@ func HandleDeleteClusterSuccessfully(t *testing.T) {
 
 var ResizeResponse = fmt.Sprintf(`
 {
-	"uuid": "%s",
-	"node_count": 2
+	"uuid": "%s"
 }`, clusterUUID)
 
 func HandleResizeClusterSuccessfully(t *testing.T) {
