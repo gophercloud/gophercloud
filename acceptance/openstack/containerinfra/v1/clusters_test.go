@@ -4,6 +4,7 @@ package v1
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
@@ -20,6 +21,7 @@ func TestClustersCRUD(t *testing.T) {
 	defer DeleteClusterTemplate(t, client, clusterTemplate.UUID)
 
 	clusterID, err := CreateCluster(t, client, clusterTemplate.UUID)
+	th.AssertNoErr(t, err)
 	tools.PrintResource(t, clusterID)
 	defer DeleteCluster(t, client, clusterID)
 
@@ -40,7 +42,7 @@ func TestClustersCRUD(t *testing.T) {
 		clusters.UpdateOpts{
 			Op:    clusters.ReplaceOp,
 			Path:  "/node_count",
-			Value: "2",
+			Value: 2,
 		},
 	}
 	updateResult := clusters.Update(client, clusterID, updateOpts)
@@ -53,7 +55,7 @@ func TestClustersCRUD(t *testing.T) {
 	clusterID, err = updateResult.Extract()
 	th.AssertNoErr(t, err)
 
-	err = WaitForCluster(client, clusterID, "UPDATE_COMPLETE")
+	err = WaitForCluster(client, clusterID, "UPDATE_COMPLETE", time.Second*300)
 	th.AssertNoErr(t, err)
 
 	newCluster, err := clusters.Get(client, clusterID).Extract()
