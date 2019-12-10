@@ -2,6 +2,7 @@ package evacuate
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions"
 )
 
 // EvacuateOptsBuilder allows extensions to add additional parameters to the
@@ -34,7 +35,7 @@ func Evacuate(client *gophercloud.ServiceClient, id string, opts EvacuateOptsBui
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Post(extensions.ActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	return
