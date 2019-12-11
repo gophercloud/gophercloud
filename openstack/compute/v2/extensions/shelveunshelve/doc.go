@@ -16,7 +16,7 @@ Example to Shelve, Shelve-offload and Unshelve a Server
 		panic(err)
 	}
 
-	err := shelveunshelve.Unshelve(computeClient, serverID).ExtractErr()
+	err := shelveunshelve.Unshelve(computeClient, serverID, nil).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
