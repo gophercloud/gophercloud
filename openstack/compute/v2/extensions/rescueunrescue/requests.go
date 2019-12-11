@@ -1,6 +1,9 @@
 package rescueunrescue
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions"
+)
 
 // RescueOptsBuilder is an interface that allows extensions to override the
 // default structure of a Rescue request.
@@ -35,7 +38,7 @@ func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	_, r.Err = client.Post(extensions.ActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	return
@@ -43,6 +46,6 @@ func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder
 
 // Unrescue instructs the provider to return the server from RESCUE mode.
 func Unrescue(client *gophercloud.ServiceClient, id string) (r UnrescueResult) {
-	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"unrescue": nil}, nil, nil)
+	_, r.Err = client.Post(extensions.ActionURL(client, id), map[string]interface{}{"unrescue": nil}, nil, nil)
 	return
 }
