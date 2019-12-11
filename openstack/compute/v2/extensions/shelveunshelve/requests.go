@@ -17,8 +17,41 @@ func ShelveOffload(client *gophercloud.ServiceClient, id string) (r ShelveOffloa
 	return
 }
 
+// UnshelveOptsBuilder allows extensions to add additional parameters to the
+// Unshelve request.
+type UnshelveOptsBuilder interface {
+	ToUnshelveMap() (map[string]interface{}, error)
+}
+
+// ShelveOffloadOpts specifies parameters of shelve-offload action.
+type UnshelvedOpts struct {
+	// Sets the availability zone to unshelve a server
+	// Available only after nova 2.77
+	AvailabilityZone string `json:"availability_zone,omitempty"`
+}
+
+func (opts UnshelvedOpts) ToUnshelveMap() (map[string]interface{}, error) {
+	// Key 'availabilty_zone' is required if the unshelve action is an object
+	// i.e {"unshelve": {}} will be rejected
+	b, err := gophercloud.BuildRequestBody(opts, "unshelve")
+	if err != nil {
+		return nil, err
+	}
+
+	if _, ok := b["unshelve"].(map[string]interface{})["availability_zone"]; !ok {
+		b["unshelve"] = nil
+	}
+
+	return b, err
+}
+
 // Unshelve is the operation responsible for unshelve a Compute server.
-func Unshelve(client *gophercloud.ServiceClient, id string) (r UnshelveResult) {
-	_, r.Err = client.Post(extensions.ActionURL(client, id), map[string]interface{}{"unshelve": nil}, nil, nil)
+func Unshelve(client *gophercloud.ServiceClient, id string, opts UnshelveOptsBuilder) (r UnshelveResult) {
+	b, err := opts.ToUnshelveMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(extensions.ActionURL(client, id), b, nil, nil)
 	return
 }

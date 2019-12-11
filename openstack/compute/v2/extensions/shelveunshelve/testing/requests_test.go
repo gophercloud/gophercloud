@@ -9,6 +9,7 @@ import (
 )
 
 const serverID = "{serverId}"
+const availabilityZone = "test-zone"
 
 func TestShelve(t *testing.T) {
 	th.SetupHTTP()
@@ -30,12 +31,28 @@ func TestShelveOffload(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestUnshelve(t *testing.T) {
+func TestUnshelveNoAvailabilityZone(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	mockUnshelveServerResponse(t, serverID)
+	unshelveOpts := shelveunshelve.UnshelvedOpts{}
 
-	err := shelveunshelve.Unshelve(client.ServiceClient(), serverID).ExtractErr()
+	mockUnshelveServerResponseNoAvailabilityZone(t, serverID)
+
+	err := shelveunshelve.Unshelve(client.ServiceClient(), serverID, unshelveOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestUnshelveWithAvailabilityZone(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	unshelveOpts := shelveunshelve.UnshelvedOpts{
+		AvailabilityZone: availabilityZone,
+	}
+
+	mockUnshelveServerResponseWithAvailabilityZone(t, serverID, availabilityZone)
+
+	err := shelveunshelve.Unshelve(client.ServiceClient(), serverID, unshelveOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
