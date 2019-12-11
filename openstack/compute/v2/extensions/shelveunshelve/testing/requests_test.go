@@ -35,7 +35,7 @@ func TestUnshelveNoAvailabilityZone(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	unshelveOpts := shelveunshelve.UnshelvedOpts{}
+	unshelveOpts := shelveunshelve.UnshelveOpts{}
 
 	mockUnshelveServerResponseNoAvailabilityZone(t, serverID)
 
@@ -47,7 +47,7 @@ func TestUnshelveWithAvailabilityZone(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	unshelveOpts := shelveunshelve.UnshelvedOpts{
+	unshelveOpts := shelveunshelve.UnshelveOpts{
 		AvailabilityZone: availabilityZone,
 	}
 

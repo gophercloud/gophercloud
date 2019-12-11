@@ -23,14 +23,14 @@ type UnshelveOptsBuilder interface {
 	ToUnshelveMap() (map[string]interface{}, error)
 }
 
-// ShelveOffloadOpts specifies parameters of shelve-offload action.
-type UnshelvedOpts struct {
+// UnshelveOpts specifies parameters of shelve-offload action.
+type UnshelveOpts struct {
 	// Sets the availability zone to unshelve a server
 	// Available only after nova 2.77
 	AvailabilityZone string `json:"availability_zone,omitempty"`
 }
 
-func (opts UnshelvedOpts) ToUnshelveMap() (map[string]interface{}, error) {
+func (opts UnshelveOpts) ToUnshelveMap() (map[string]interface{}, error) {
 	// Key 'availabilty_zone' is required if the unshelve action is an object
 	// i.e {"unshelve": {}} will be rejected
 	b, err := gophercloud.BuildRequestBody(opts, "unshelve")
