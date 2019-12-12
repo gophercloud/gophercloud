@@ -29,7 +29,7 @@ Example of Getting a node group:
 
     ng, err := nodegroups.Get(client, clusterUUID, nodeGroupUUID).Extract()
     if err != nil {
-    	panic(err)
+        panic(err)
     }
     fmt.Printf("%#v\n", ng)
 
@@ -37,21 +37,21 @@ Example of Getting a node group:
 Example of Listing node groups:
 
     listOpts := nodegroup.ListOpts{
-    	Role: "worker",
+        Role: "worker",
     }
 
     allPages, err := nodegroups.List(client, clusterUUID, listOpts).AllPages()
     if err != nil {
-    	panic(err)
+        panic(err)
     }
 
     ngs, err := nodegroups.ExtractNodeGroups(allPages)
     if err != nil {
-    	panic(err)
+        panic(err)
     }
 
     for _, ng := range ngs {
-    	fmt.Printf("%#v\n", ng)
+        fmt.Printf("%#v\n", ng)
     }
 */
 package nodegroups
