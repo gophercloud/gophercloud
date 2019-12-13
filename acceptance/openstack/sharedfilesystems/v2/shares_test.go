@@ -118,7 +118,7 @@ func TestGrantAndRevokeAccess(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
 	}
-	client.Microversion = "2.51"
+	client.Microversion = "2.49"
 
 	share, err := CreateShare(t, client)
 	if err != nil {
