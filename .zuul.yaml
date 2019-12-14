@@ -12,6 +12,7 @@
     description: |
       Run gophercloud acceptance test on master branch
     run: .zuul/playbooks/gophercloud-acceptance-test/run.yaml
+    nodeset: ubuntu-bionic
 
 - job:
     name: gophercloud-acceptance-test-ironic
@@ -19,6 +20,7 @@
     description: |
       Run gophercloud ironic acceptance test on master branch
     run: .zuul/playbooks/gophercloud-acceptance-test-ironic/run.yaml
+    nodeset: ubuntu-bionic
 
 - job:
     name: gophercloud-acceptance-test-stein
