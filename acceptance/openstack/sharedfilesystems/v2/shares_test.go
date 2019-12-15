@@ -150,7 +150,6 @@ func TestShareListDetail(t *testing.T) {
 }
 
 func TestGrantAndRevokeAccess(t *testing.T) {
-	t.Skip("Currently failing in OpenLab")
 	clients.SkipRelease(t, "stable/mitaka")
 	clients.SkipRelease(t, "stable/newton")
 
@@ -180,7 +179,6 @@ func TestGrantAndRevokeAccess(t *testing.T) {
 }
 
 func TestListAccessRights(t *testing.T) {
-	t.Skip("Currently failing in OpenLab")
 	clients.SkipRelease(t, "stable/mitaka")
 	clients.SkipRelease(t, "stable/newton")
 
