@@ -120,3 +120,246 @@ func TestListNodeGroupsClusterNotFound(t *testing.T) {
 	_, isNotFound := err.(gophercloud.ErrDefault404)
 	th.AssertEquals(t, true, isNotFound)
 }
+
+// TestCreateNodeGroupSuccess creates a node group successfully.
+func TestCreateNodeGroupSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleCreateNodeGroupSuccess(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	createOpts := nodegroups.CreateOpts{
+		Name: "test-ng",
+	}
+
+	ng, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expectedCreatedNodeGroup, *ng)
+}
+
+// TestCreateNodeGroupDuplicate creates a node group with
+// the same name as an existing one.
+func TestCreateNodeGroupDuplicate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleCreateNodeGroupDuplicate(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	createOpts := nodegroups.CreateOpts{
+		Name: "default-worker",
+	}
+
+	_, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isNotAccepted := err.(gophercloud.ErrDefault409)
+	th.AssertEquals(t, true, isNotAccepted)
+}
+
+// TestCreateNodeGroupMaster creates a node group with
+// role=master which is not allowed.
+func TestCreateNodeGroupMaster(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleCreateNodeGroupMaster(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	createOpts := nodegroups.CreateOpts{
+		Name: "new-ng",
+		Role: "master",
+	}
+
+	_, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isBadRequest := err.(gophercloud.ErrDefault400)
+	th.AssertEquals(t, true, isBadRequest)
+}
+
+// TestCreateNodeGroupBadSizes creates a node group with
+// min_nodes greater than max_nodes.
+func TestCreateNodeGroupBadSizes(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleCreateNodeGroupBadSizes(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	maxNodes := 3
+	createOpts := nodegroups.CreateOpts{
+		Name:         "default-worker",
+		MinNodeCount: 5,
+		MaxNodeCount: &maxNodes,
+	}
+
+	_, err := nodegroups.Create(sc, clusterUUID, createOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isNotAccepted := err.(gophercloud.ErrDefault409)
+	th.AssertEquals(t, true, isNotAccepted)
+}
+
+// TestUpdateNodeGroupSuccess updates a node group successfully.
+func TestUpdateNodeGroupSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleUpdateNodeGroupSuccess(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	updateOpts := []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/max_node_count",
+			Value: 3,
+		},
+	}
+
+	ng, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expectedUpdatedNodeGroup, *ng)
+}
+
+// TestUpdateNodeGroupInternal tries to update an internal
+// property of the node group.
+func TestUpdateNodeGroupInternal(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleUpdateNodeGroupInternal(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	updateOpts := []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/name",
+			Value: "newname",
+		},
+	}
+
+	_, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isBadRequest := err.(gophercloud.ErrDefault400)
+	th.AssertEquals(t, true, isBadRequest)
+}
+
+// TestUpdateNodeGroupBadField tries to update a
+// field of the node group that does not exist.
+func TestUpdateNodeGroupBadField(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleUpdateNodeGroupBadField(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	updateOpts := []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/bad_field",
+			Value: "abc123",
+		},
+	}
+
+	_, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isBadRequest := err.(gophercloud.ErrDefault400)
+	th.AssertEquals(t, true, isBadRequest)
+}
+
+// TestUpdateNodeGroupBadMin tries to set a minimum node count
+// greater than the current node count
+func TestUpdateNodeGroupBadMin(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleUpdateNodeGroupBadMin(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	updateOpts := []nodegroups.UpdateOptsBuilder{
+		nodegroups.UpdateOpts{
+			Op:    nodegroups.ReplaceOp,
+			Path:  "/min_node_count",
+			Value: 5,
+		},
+	}
+
+	_, err := nodegroups.Update(sc, clusterUUID, nodeGroup2UUID, updateOpts).Extract()
+	th.AssertEquals(t, true, err != nil)
+	_, isNotAccepted := err.(gophercloud.ErrDefault409)
+	th.AssertEquals(t, true, isNotAccepted)
+}
+
+// TestDeleteNodeGroupSuccess deletes a node group successfully.
+func TestDeleteNodeGroupSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleDeleteNodeGroupSuccess(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	err := nodegroups.Delete(sc, clusterUUID, nodeGroup2UUID).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+// TestDeleteNodeGroupNotFound tries to delete a node group that does not exist.
+func TestDeleteNodeGroupNotFound(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleDeleteNodeGroupNotFound(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	err := nodegroups.Delete(sc, clusterUUID, badNodeGroupUUID).ExtractErr()
+	_, isNotFound := err.(gophercloud.ErrDefault404)
+	th.AssertEquals(t, true, isNotFound)
+}
+
+// TestDeleteNodeGroupClusterNotFound tries to delete a node group in a cluster that does not exist.
+func TestDeleteNodeGroupClusterNotFound(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleDeleteNodeGroupClusterNotFound(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	err := nodegroups.Delete(sc, badClusterUUID, badNodeGroupUUID).ExtractErr()
+	_, isNotFound := err.(gophercloud.ErrDefault404)
+	th.AssertEquals(t, true, isNotFound)
+}
+
+// TestDeleteNodeGroupDefault tries to delete a protected default node group.
+func TestDeleteNodeGroupDefault(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	handleDeleteNodeGroupDefault(t)
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+
+	err := nodegroups.Delete(sc, clusterUUID, nodeGroup2UUID).ExtractErr()
+	_, isBadRequest := err.(gophercloud.ErrDefault400)
+	th.AssertEquals(t, true, isBadRequest)
+}

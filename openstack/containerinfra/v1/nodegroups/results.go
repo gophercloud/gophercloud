@@ -23,6 +23,24 @@ type GetResult struct {
 	commonResult
 }
 
+// CreateResult is the response from a Create request.
+// Use the Extract method to retrieve the created node group.
+type CreateResult struct {
+	commonResult
+}
+
+// UpdateResult is the response from an Update request.
+// Use the Extract method to retrieve the updated node group.
+type UpdateResult struct {
+	commonResult
+}
+
+// DeleteResult is the response from a Delete request.
+// Use the ExtractErr method to extract the error from the result.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
 // NodeGroup is the API representation of a Magnum node group.
 type NodeGroup struct {
 	ID               int                `json:"id"`
