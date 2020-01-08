@@ -124,7 +124,7 @@ type ListOpts struct {
 	// It can be "asc" or "desc" (default).
 	SortDirs string `q:"sort_dirs"`
 	// SortKeys allows to sort by one of the cron trigger attributes.
-	SortKeys string `q:"sort_key"`
+	SortKeys string `q:"sort_keys"`
 	// Marker and Limit control paging.
 	// Marker instructs List where to start listing from.
 	Marker string `q:"marker"`
