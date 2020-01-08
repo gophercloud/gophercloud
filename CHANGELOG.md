@@ -9,6 +9,10 @@ IMPROVEMENTS
 * Added `containerinfra/v1/nodegroups.Get` [GH-1774](https://github.com/gophercloud/gophercloud/pull/1774)
 * Added `containerinfra/v1/nodegroups.List` [GH-1774](https://github.com/gophercloud/gophercloud/pull/1774)
 
+BUG FIXES
+
+* Changed `sort_key` to `sort_keys` in ` workflow/v2/crontriggers.ListOpts` [GH-1809](https://github.com/gophercloud/gophercloud/pull/1809)
+
 ## 0.7.0 (December 3, 2019)
 
 IMPROVEMENTS
