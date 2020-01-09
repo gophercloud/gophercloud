@@ -18,7 +18,7 @@ func CreateNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Node, e
 	node, err := nodes.Create(client, nodes.CreateOpts{
 		Name:          name,
 		Driver:        "ipmi",
-		BootInterface: "pxe",
+		BootInterface: "ipxe",
 		RAIDInterface: "agent",
 		DriverInfo: map[string]interface{}{
 			"ipmi_port":      "6230",
@@ -74,7 +74,7 @@ func CreateFakeNode(t *testing.T, client *gophercloud.ServiceClient) (*nodes.Nod
 	node, err := nodes.Create(client, nodes.CreateOpts{
 		Name:          name,
 		Driver:        "fake-hardware",
-		BootInterface: "pxe",
+		BootInterface: "fake",
 		DriverInfo: map[string]interface{}{
 			"ipmi_port":      "6230",
 			"ipmi_username":  "admin",

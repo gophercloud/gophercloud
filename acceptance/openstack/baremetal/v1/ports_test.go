@@ -20,9 +20,10 @@ func TestPortsCreateDestroy(t *testing.T) {
 	client.Microversion = "1.53"
 
 	node, err := CreateFakeNode(t, client)
-	port, err := CreatePort(t, client, node)
 	th.AssertNoErr(t, err)
 	defer DeleteNode(t, client, node)
+	port, err := CreatePort(t, client, node)
+	th.AssertNoErr(t, err)
 	defer DeletePort(t, client, port)
 
 	found := false
@@ -54,9 +55,10 @@ func TestPortsUpdate(t *testing.T) {
 	client.Microversion = "1.53"
 
 	node, err := CreateFakeNode(t, client)
-	port, err := CreatePort(t, client, node)
 	th.AssertNoErr(t, err)
 	defer DeleteNode(t, client, node)
+	port, err := CreatePort(t, client, node)
+	th.AssertNoErr(t, err)
 	defer DeletePort(t, client, port)
 
 	updated, err := ports.Update(client, port.UUID, ports.UpdateOpts{
