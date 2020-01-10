@@ -30,9 +30,11 @@ func TestACLCRUD(t *testing.T) {
 	users := []string{user}
 	iFalse := false
 	setOpts := acls.SetOpts{
-		Type:          "read",
-		Users:         &users,
-		ProjectAccess: &iFalse,
+		acls.SetOpt{
+			Type:          "read",
+			Users:         &users,
+			ProjectAccess: &iFalse,
+		},
 	}
 
 	aclRef, err := acls.SetSecretACL(client, secretID, setOpts).Extract()
@@ -55,8 +57,10 @@ func TestACLCRUD(t *testing.T) {
 
 	newUsers := []string{}
 	updateOpts := acls.SetOpts{
-		Type:  "read",
-		Users: &newUsers,
+		acls.SetOpt{
+			Type:  "read",
+			Users: &newUsers,
+		},
 	}
 
 	aclRef, err = acls.UpdateSecretACL(client, secretID, updateOpts).Extract()

@@ -22,8 +22,8 @@ type SetOptsBuilder interface {
 	ToACLSetMap() (map[string]interface{}, error)
 }
 
-// SetOpts represents options to set an ACL on a resource.
-type SetOpts struct {
+// SetOpt represents options to set a particular ACL type on a resource.
+type SetOpt struct {
 	// Type is the type of ACL to set. ie: read.
 	Type string `json:"-" required:"true"`
 
@@ -34,9 +34,20 @@ type SetOpts struct {
 	ProjectAccess *bool `json:"project-access,omitempty"`
 }
 
+// SetOpts represents options to set an ACL on a resource.
+type SetOpts []SetOpt
+
 // ToACLSetMap formats a SetOpts into a set request.
 func (opts SetOpts) ToACLSetMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, opts.Type)
+	b := make(map[string]interface{})
+	for _, v := range opts {
+		m, err := gophercloud.BuildRequestBody(v, v.Type)
+		if err != nil {
+			return nil, err
+		}
+		b[v.Type] = m[v.Type]
+	}
+	return b, nil
 }
 
 // SetContainerACL will set an ACL on a container.
