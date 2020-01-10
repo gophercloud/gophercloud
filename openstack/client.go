@@ -473,3 +473,8 @@ func NewContainerInfraV1(client *gophercloud.ProviderClient, eo gophercloud.Endp
 func NewWorkflowV2(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
 	return initClientOpts(client, eo, "workflowv2")
 }
+
+// NewPlacement creates a ServiceClient that may be used with the placement package.
+func NewPlacement(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
+	return initClientOpts(client, eo, "placement")
+}
