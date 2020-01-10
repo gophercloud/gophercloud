@@ -13,8 +13,8 @@ type ResourceProvider struct {
 	UUID               string                  `json:"uuid"`
 	Links              []ResourceProviderLinks `json:"links"`
 	Name               string                  `json:"name"`
-	ParentProviderUuid string                  `json:"parent_provider_uuid"`
-	RootProviderUuid   string                  `json:"root_provider_uuid"`
+	ParentProviderUUID string                  `json:"parent_provider_uuid"`
+	RootProviderUUID   string                  `json:"root_provider_uuid"`
 }
 
 // ResourceProvidersPage contains a single page of all resource providers from a List call.

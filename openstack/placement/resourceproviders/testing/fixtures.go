@@ -53,8 +53,8 @@ var ExpectedResourceProvider1 = resourceproviders.ResourceProvider{
 		},
 	},
 	Name:               "vgr.localdomain",
-	ParentProviderUuid: "542df8ed-9be2-49b9-b4db-6d3183ff8ec8",
-	RootProviderUuid:   "542df8ed-9be2-49b9-b4db-6d3183ff8ec8",
+	ParentProviderUUID: "542df8ed-9be2-49b9-b4db-6d3183ff8ec8",
+	RootProviderUUID:   "542df8ed-9be2-49b9-b4db-6d3183ff8ec8",
 }
 
 var ExpectedResourceProvider2 = resourceproviders.ResourceProvider{
@@ -67,8 +67,8 @@ var ExpectedResourceProvider2 = resourceproviders.ResourceProvider{
 		},
 	},
 	Name:               "pony1",
-	ParentProviderUuid: "",
-	RootProviderUuid:   "d0b381e9-8761-42de-8e6c-bba99a96d5f5",
+	ParentProviderUUID: "",
+	RootProviderUUID:   "d0b381e9-8761-42de-8e6c-bba99a96d5f5",
 }
 
 var ExpectedResourceProviders = []resourceproviders.ResourceProvider{
