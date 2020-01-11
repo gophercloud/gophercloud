@@ -36,9 +36,11 @@ func TestSetSecretACL(t *testing.T) {
 	users := []string{"GG27dVwR9gBMnsOaRoJ1DFJmZfdVjIdW"}
 	iFalse := false
 	setOpts := acls.SetOpts{
-		Type:          "read",
-		Users:         &users,
-		ProjectAccess: &iFalse,
+		acls.SetOpt{
+			Type:          "read",
+			Users:         &users,
+			ProjectAccess: &iFalse,
+		},
 	}
 
 	actual, err := acls.SetSecretACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", setOpts).Extract()
@@ -54,9 +56,11 @@ func TestSetContainerACL(t *testing.T) {
 	users := []string{"GG27dVwR9gBMnsOaRoJ1DFJmZfdVjIdW"}
 	iFalse := false
 	setOpts := acls.SetOpts{
-		Type:          "read",
-		Users:         &users,
-		ProjectAccess: &iFalse,
+		acls.SetOpt{
+			Type:          "read",
+			Users:         &users,
+			ProjectAccess: &iFalse,
+		},
 	}
 
 	actual, err := acls.SetContainerACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", setOpts).Extract()
@@ -89,8 +93,10 @@ func TestUpdateSecretACL(t *testing.T) {
 
 	newUsers := []string{}
 	updateOpts := acls.SetOpts{
-		Type:  "read",
-		Users: &newUsers,
+		acls.SetOpt{
+			Type:  "read",
+			Users: &newUsers,
+		},
 	}
 
 	actual, err := acls.UpdateSecretACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
@@ -105,8 +111,10 @@ func TestUpdateContainerACL(t *testing.T) {
 
 	newUsers := []string{}
 	updateOpts := acls.SetOpts{
-		Type:  "read",
-		Users: &newUsers,
+		acls.SetOpt{
+			Type:  "read",
+			Users: &newUsers,
+		},
 	}
 
 	actual, err := acls.UpdateContainerACL(client.ServiceClient(), "1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", updateOpts).Extract()
