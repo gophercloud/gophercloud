@@ -18,7 +18,7 @@ func TestGetResponseCode(t *testing.T) {
 
 	var err404 error = gophercloud.ErrDefault404{ErrUnexpectedResponseCode: respErr}
 
-	errHTTP, ok := err404.(gophercloud.GenericError)
+	err, ok := err404.(gophercloud.StatusCodeError)
 	th.AssertEquals(t, true, ok)
-	th.AssertEquals(t, errHTTP.GetStatusCode(), 404)
+	th.AssertEquals(t, err.GetStatusCode(), 404)
 }
