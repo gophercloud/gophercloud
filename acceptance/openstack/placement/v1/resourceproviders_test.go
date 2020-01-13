@@ -1,16 +1,16 @@
-package placement
+package v1
 
 import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
-	"github.com/gophercloud/gophercloud/openstack/placement/resourceproviders"
+	"github.com/gophercloud/gophercloud/openstack/placement/v1/resourceproviders"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestResourceProviderList(t *testing.T) {
-	client, err := clients.NewPlacementClient()
+	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
 
 	allPages, err := resourceproviders.List(client, resourceproviders.ListOpts{}).AllPages()

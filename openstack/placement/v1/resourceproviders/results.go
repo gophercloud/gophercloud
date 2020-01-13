@@ -9,12 +9,25 @@ type ResourceProviderLinks struct {
 
 // ResourceProvider are entities which provider consumable inventory of one or more classes of resource
 type ResourceProvider struct {
-	Generation         int                     `json:"generation"`
-	UUID               string                  `json:"uuid"`
-	Links              []ResourceProviderLinks `json:"links"`
-	Name               string                  `json:"name"`
-	ParentProviderUUID string                  `json:"parent_provider_uuid"`
-	RootProviderUUID   string                  `json:"root_provider_uuid"`
+	// Generation is a consistent view marker that assists with the management of concurrent resource provider updates.
+	Generation int `json:"generation"`
+
+	// UUID of a resource provider.
+	UUID string `json:"uuid"`
+
+	// Links is a list of links associated with one resource provider.
+	Links []ResourceProviderLinks `json:"links"`
+
+	// Name of one resource provider.
+	Name string `json:"name"`
+
+	// The ParentProviderUUID contains the UUID of the immediate parent of the resource provider.
+	// Requires microversion 1.14 or above
+	ParentProviderUUID string `json:"parent_provider_uuid"`
+
+	// The RootProviderUUID contains the read-only UUID of the top-most provider in this provider tree.
+	// Requires microversion 1.14 or above
+	RootProviderUUID string `json:"root_provider_uuid"`
 }
 
 // ResourceProvidersPage contains a single page of all resource providers from a List call.

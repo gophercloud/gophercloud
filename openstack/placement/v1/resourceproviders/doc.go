@@ -4,17 +4,17 @@ Package resourceproviders lists all resource providers from the OpenStack Placem
 Example to list resource providers
 
 	allPages, err := resourceproviders.List(placementClient, resourceproviders.ListOpts{}).AllPages()
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 
 	allResourceProviders, err := resourceproviders.ExtractResourceProviders(allPages)
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 
 	for _, r := range allResourceProviders {
-        fmt.Printf("%+v\n", r)
+		fmt.Printf("%+v\n", r)
 	}
 
 */

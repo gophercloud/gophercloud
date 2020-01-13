@@ -3,7 +3,8 @@ package testing
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud/openstack/placement/resourceproviders"
+	"github.com/gophercloud/gophercloud/openstack/placement/v1/resourceproviders"
+
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"

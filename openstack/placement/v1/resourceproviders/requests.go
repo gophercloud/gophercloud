@@ -21,16 +21,16 @@ type ListOpts struct {
 	// UUID is the uuid of the resource provider to filter the list
 	UUID string `q:"uuid"`
 
-	// Member_of is a string representing aggregate uuids to filter or exclude from the list
-	Member_of string `q:"member_of"`
+	// MemberOf is a string representing aggregate uuids to filter or exclude from the list
+	MemberOf string `q:"member_of"`
 
 	// Resources is a comma-separated list of string indicating an amount of resource
 	// of a specified class that a provider must have the capacity and availability to serve
 	Resources string `q:"resources"`
 
-	// In_tree is a string that represents a resource provider UUID.  The returned resource
+	// InTree is a string that represents a resource provider UUID.  The returned resource
 	// providers will be in the same provider tree as the specified provider.
-	In_tree string `q:"in_tree"`
+	InTree string `q:"in_tree"`
 
 	// Required is comma-delimited list of string trait names.
 	Required string `q:"required"`
