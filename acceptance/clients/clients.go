@@ -715,3 +715,24 @@ func NewOrchestrationV1Client() (*gophercloud.ServiceClient, error) {
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 }
+
+// NewPlacementV1Client returns a *ServiceClient for making calls
+// to the OpenStack Placement API. An error will be returned
+// if authentication or client creation was not possible.
+func NewPlacementV1Client() (*gophercloud.ServiceClient, error) {
+	ao, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := openstack.AuthenticatedClient(ao)
+	if err != nil {
+		return nil, err
+	}
+
+	client = configureDebug(client)
+
+	return openstack.NewPlacementV1(client, gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	})
+}
