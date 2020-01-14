@@ -283,7 +283,7 @@ func (opts CreateMemberOpts) ToMemberCreateMap() (map[string]interface{}, error)
 }
 
 // CreateMember will create and associate a Member with a particular Pool.
-func CreateMember(c *gophercloud.ServiceClient, poolID string, opts CreateMemberOpts) (r CreateMemberResult) {
+func CreateMember(c *gophercloud.ServiceClient, poolID string, opts CreateMemberOptsBuilder) (r CreateMemberResult) {
 	b, err := opts.ToMemberCreateMap()
 	if err != nil {
 		r.Err = err
