@@ -15,6 +15,14 @@ type SingleTenantOpts struct {
 
 	// The beginning time to calculate usage statistics on compute and storage resources.
 	Start *time.Time `q:"start"`
+
+	// Limit limits the amount of results returned by the API.
+	// This requires the client to be set to microversion 2.40 or later.
+	Limit int `q:"limit"`
+
+	// Marker instructs the API call where to start listing from.
+	// This requires the client to be set to microversion 2.40 or later.
+	Marker string `q:"marker"`
 }
 
 // SingleTenantOptsBuilder allows extensions to add additional parameters to the
@@ -25,7 +33,13 @@ type SingleTenantOptsBuilder interface {
 
 // ToUsageSingleTenantQuery formats a SingleTenantOpts into a query string.
 func (opts SingleTenantOpts) ToUsageSingleTenantQuery() (string, error) {
-	params := make(url.Values)
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+
+	params := q.Query()
+
 	if opts.Start != nil {
 		params.Add("start", opts.Start.Format(gophercloud.RFC3339MilliNoZ))
 	}
@@ -34,7 +48,7 @@ func (opts SingleTenantOpts) ToUsageSingleTenantQuery() (string, error) {
 		params.Add("end", opts.End.Format(gophercloud.RFC3339MilliNoZ))
 	}
 
-	q := &url.URL{RawQuery: params.Encode()}
+	q = &url.URL{RawQuery: params.Encode()}
 	return q.String(), nil
 }
 
@@ -63,6 +77,14 @@ type AllTenantsOpts struct {
 
 	// The beginning time to calculate usage statistics on compute and storage resources.
 	Start *time.Time `q:"start"`
+
+	// Limit limits the amount of results returned by the API.
+	// This requires the client to be set to microversion 2.40 or later.
+	Limit int `q:"limit"`
+
+	// Marker instructs the API call where to start listing from.
+	// This requires the client to be set to microversion 2.40 or later.
+	Marker string `q:"marker"`
 }
 
 // AllTenantsOptsBuilder allows extensions to add additional parameters to the
@@ -73,7 +95,13 @@ type AllTenantsOptsBuilder interface {
 
 // ToUsageAllTenantsQuery formats a AllTenantsOpts into a query string.
 func (opts AllTenantsOpts) ToUsageAllTenantsQuery() (string, error) {
-	params := make(url.Values)
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+
+	params := q.Query()
+
 	if opts.Start != nil {
 		params.Add("start", opts.Start.Format(gophercloud.RFC3339MilliNoZ))
 	}
@@ -86,7 +114,7 @@ func (opts AllTenantsOpts) ToUsageAllTenantsQuery() (string, error) {
 		params.Add("detailed", "1")
 	}
 
-	q := &url.URL{RawQuery: params.Encode()}
+	q = &url.URL{RawQuery: params.Encode()}
 	return q.String(), nil
 }
 
