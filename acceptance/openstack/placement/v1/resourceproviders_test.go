@@ -10,6 +10,8 @@ import (
 )
 
 func TestResourceProviderList(t *testing.T) {
+	clients.RequireAdmin(t)
+	
 	client, err := clients.NewPlacementV1Client()
 	th.AssertNoErr(t, err)
 
