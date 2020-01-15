@@ -6,6 +6,7 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/domains"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/trusts"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/groups"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/regions"
@@ -341,4 +342,29 @@ func FindRole(t *testing.T, client *gophercloud.ServiceClient) (*roles.Role, err
 	t.Logf("Successfully found a role %s with ID %s", role.Name, role.ID)
 
 	return role, nil
+}
+
+// CreateTrust will create a trust with the provided options.
+// An error will be returned if the trust was unable to be created.
+func CreateTrust(t *testing.T, client *gophercloud.ServiceClient, createOpts trusts.CreateOpts) (*trusts.Trust, error) {
+	trust, err := trusts.Create(client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	t.Logf("Successfully created trust %s", trust.ID)
+
+	return trust, nil
+}
+
+// DeleteTrust will delete a trust by ID. A fatal error will occur if
+// the trust failed to be deleted. This works best when using it as
+// a deferred function.
+func DeleteTrust(t *testing.T, client *gophercloud.ServiceClient, trustID string) {
+	err := trusts.Delete(client, trustID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete trust %s: %v", trustID, err)
+	}
+
+	t.Logf("Deleted trust: %s", trustID)
 }

@@ -14,7 +14,7 @@ const CreateRequest = `
 {
     "trust": {
         "expires_at": "2019-12-01T14:00:00.999999Z",
-        "impersonation": true,
+        "impersonation": false,
         "allow_redelegation": true,
         "project_id": "9b71012f5a4a4aef9193f1995fe159b2",
         "roles": [
@@ -33,7 +33,7 @@ const CreateResponse = `
     "trust": {
         "expires_at": "2019-12-01T14:00:00.999999Z",
         "id": "3422b7c113894f5d90665e1a79655e23",
-        "impersonation": true,
+        "impersonation": false,
         "redelegation_count": 10,
         "project_id": "9b71012f5a4a4aef9193f1995fe159b2",
         "remaining_uses": null,
