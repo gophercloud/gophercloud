@@ -366,7 +366,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 		Weight:       &newWeight,
 	}
 	batchMembers := []pools.BatchUpdateMemberOpts{memberOpts}
-	if err := pools.BatchUpdateMembers(lbClient, pool.ID, batchMembers).ExtractErr(); err != nil {
+	if err = pools.BatchUpdateMembers(lbClient, pool.ID, batchMembers).ExtractErr(); err != nil {
 		t.Fatalf("Unable to batch update members")
 	}
 
@@ -378,6 +378,20 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, newMember)
+
+	// delete members from the pool
+	if err = pools.BatchUpdateMembers(lbClient, pool.ID, []pools.BatchUpdateMemberOpts{}).ExtractErr(); err != nil {
+		t.Fatalf("Unable to delete members")
+	}
+
+	if err = WaitForLoadBalancerState(lbClient, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		t.Fatalf("Timed out waiting for loadbalancer to become active")
+	}
+
+	pool, err = pools.Get(lbClient, pool.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, pool)
 
 	// Monitor
 	monitor, err := CreateMonitor(t, lbClient, lb, newPool)
