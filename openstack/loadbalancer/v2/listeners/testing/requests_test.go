@@ -138,6 +138,10 @@ func TestUpdateListener(t *testing.T) {
 		TimeoutClientData:    &i181000,
 		TimeoutMemberConnect: &i181000,
 		TimeoutTCPInspect:    &i181000,
+		InsertHeaders: map[string]string{
+			"X-Forwarded-For":  "true",
+			"X-Forwarded-Port": "false",
+		},
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
