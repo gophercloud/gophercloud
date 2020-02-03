@@ -27,6 +27,7 @@ IMPROVEMENTS
 * Added `MonitorAddress` to `loadbalancer/v2/pools.CreateMemberOpts` [GH-1824](https://github.com/gophercloud/gophercloud/pull/1824)
 * Added `MonitorPort` to `loadbalancer/v2/pools.CreateMemberOpts` [GH-1824](https://github.com/gophercloud/gophercloud/pull/1824)
 * Changed `Impersonation` to a non-required field in `identity/v3/extensions/trusts.CreateOpts` [GH-1818](https://github.com/gophercloud/gophercloud/pull/1818)
+* Added `InsertHeaders` to `loadbalancer/v2/listeners.UpdateOpts` [GH-1835]
 
 BUG FIXES
 
