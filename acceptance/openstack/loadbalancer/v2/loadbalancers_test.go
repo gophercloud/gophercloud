@@ -168,9 +168,13 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	listenerName := ""
 	listenerDescription := ""
+	listenerHeaders := map[string]string{
+		"X-Forwarded-For": "true",
+	}
 	updateListenerOpts := listeners.UpdateOpts{
-		Name:        &listenerName,
-		Description: &listenerDescription,
+		Name:          &listenerName,
+		Description:   &listenerDescription,
+		InsertHeaders: listenerHeaders,
 	}
 	_, err = listeners.Update(lbClient, listener.ID, updateListenerOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -186,6 +190,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 
 	th.AssertEquals(t, newListener.Name, listenerName)
 	th.AssertEquals(t, newListener.Description, listenerDescription)
+	th.AssertDeepEquals(t, newListener.InsertHeaders, listenerHeaders)
 
 	listenerStats, err := listeners.GetStats(lbClient, listener.ID).Extract()
 	th.AssertNoErr(t, err)

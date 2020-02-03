@@ -110,7 +110,11 @@ const PostUpdateListenerBody = `
 		"timeout_client_data": 181000,
 		"timeout_member_data": 181000,
 		"timeout_member_connect": 181000,
-		"timeout_tcp_inspect": 181000
+		"timeout_tcp_inspect": 181000,
+		"insert_headers": {
+			"X-Forwarded-For": "true",
+			"X-Forwarded-Port": "false"
+		}
 	}
 }
 `
@@ -180,6 +184,10 @@ var (
 		TimeoutMemberData:      181000,
 		TimeoutMemberConnect:   181000,
 		TimeoutTCPInspect:      181000,
+		InsertHeaders: map[string]string{
+			"X-Forwarded-For":  "true",
+			"X-Forwarded-Port": "false",
+		},
 	}
 	ListenerStatsTree = listeners.Stats{
 		ActiveConnections: 0,
@@ -277,7 +285,11 @@ func HandleListenerUpdateSuccessfully(t *testing.T) {
 				"timeout_client_data": 181000,
 				"timeout_member_data": 181000,
 				"timeout_member_connect": 181000,
-				"timeout_tcp_inspect": 181000
+				"timeout_tcp_inspect": 181000,
+				"insert_headers": {
+					"X-Forwarded-For": "true",
+					"X-Forwarded-Port": "false"
+				}
 			}
 		}`)
 
