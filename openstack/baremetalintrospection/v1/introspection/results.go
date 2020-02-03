@@ -266,9 +266,9 @@ type ExtraHardwareDataType struct {
 }
 
 type NumaTopology struct {
-	NumaNics NumaNICS `json:"nics"`
-	NumaRAM  NumaRAM  `json:"ram"`
-	NumaCPU  NumaCPU  `json:"cpus"`
+	NumaNics []NumaNICS `json:"nics"`
+	NumaRAM  []NumaRAM  `json:"ram"`
+	NumaCPU  []NumaCPU  `json:"cpus"`
 }
 type NumaNICS struct {
 	NumaNodeID int    `json:"numa_node"`
@@ -279,9 +279,9 @@ type NumaRAM struct {
 	SizeKb     int `json:"size_kb"`
 }
 type NumaCPU struct {
-	NumaNodeID     int `json:"numa_node"`
-	CPUID          int `json:"cpu"`
-	ThreadSiblings int `json:"thread_siblings"`
+	NumaNodeID     int   `json:"numa_node"`
+	CPUID          int   `json:"cpu"`
+	ThreadSiblings []int `json:"thread_siblings"`
 }
 
 // UnmarshalJSON interprets an LLDP TLV [key, value] pair as an LLDPTLVType structure
