@@ -130,6 +130,10 @@ func TestUpdateListener(t *testing.T) {
 	i181000 := 181000
 	name := "NewListenerName"
 	defaultPoolID := ""
+	insertHeaders := map[string]string{
+		"X-Forwarded-For":  "true",
+		"X-Forwarded-Port": "false",
+	}
 	actual, err := listeners.Update(client, "4ec89087-d057-4e2c-911f-60a3b47ee304", listeners.UpdateOpts{
 		Name:                 &name,
 		ConnLimit:            &i1001,
@@ -138,10 +142,7 @@ func TestUpdateListener(t *testing.T) {
 		TimeoutClientData:    &i181000,
 		TimeoutMemberConnect: &i181000,
 		TimeoutTCPInspect:    &i181000,
-		InsertHeaders: map[string]string{
-			"X-Forwarded-For":  "true",
-			"X-Forwarded-Port": "false",
-		},
+		InsertHeaders:        &insertHeaders,
 	}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
