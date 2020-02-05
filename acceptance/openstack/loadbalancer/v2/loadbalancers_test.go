@@ -174,7 +174,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	updateListenerOpts := listeners.UpdateOpts{
 		Name:          &listenerName,
 		Description:   &listenerDescription,
-		InsertHeaders: listenerHeaders,
+		InsertHeaders: &listenerHeaders,
 	}
 	_, err = listeners.Update(lbClient, listener.ID, updateListenerOpts).Extract()
 	th.AssertNoErr(t, err)
@@ -303,9 +303,11 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	defer DeleteL7Policy(t, lbClient, lb.ID, policy.ID)
 	defer DeleteL7Rule(t, lbClient, lb.ID, policy.ID, rule.ID)
 
-	// Update listener's default pool ID
+	// Update listener's default pool ID and remove headers
+	listenerHeaders = map[string]string{}
 	updateListenerOpts = listeners.UpdateOpts{
 		DefaultPoolID: &pool.ID,
+		InsertHeaders: &listenerHeaders,
 	}
 	_, err = listeners.Update(lbClient, listener.ID, updateListenerOpts).Extract()
 	th.AssertNoErr(t, err)

@@ -207,7 +207,7 @@ type UpdateOpts struct {
 	TimeoutTCPInspect *int `json:"timeout_tcp_inspect,omitempty"`
 
 	// A dictionary of optional headers to insert into the request before it is sent to the backend member.
-	InsertHeaders map[string]string `json:"insert_headers,omitempty"`
+	InsertHeaders *map[string]string `json:"insert_headers,omitempty"`
 
 	// A list of IPv4, IPv6 or mix of both CIDRs
 	AllowedCIDRs *[]string `json:"allowed_cidrs,omitempty"`
