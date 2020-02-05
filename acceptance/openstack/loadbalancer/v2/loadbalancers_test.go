@@ -322,6 +322,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	tools.PrintResource(t, newListener)
 
 	th.AssertEquals(t, newListener.DefaultPoolID, pool.ID)
+	th.AssertDeepEquals(t, newListener.InsertHeaders, listenerHeaders)
 
 	// Remove listener's default pool ID
 	emptyPoolID := ""
