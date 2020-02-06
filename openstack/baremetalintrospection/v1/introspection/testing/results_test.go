@@ -88,19 +88,11 @@ func TestExtraHardware(t *testing.T) {
 	}
 }
 
-func TestNumaTopology(t *testing.T) {
-	numatopology := `{
-		"NumaTopology": {
-			"NumaNics": [{"NumaNodeID": 0, "Name": "p2p1"},{"NumaNodeID": 1, "Name": "p1p1"}],
-			"NumaRAM": [{"NumaNodeID": 0, "SizeKb": 13244},{"NumaNodeID": 1, "SizeKb": 1329944}],
-			"NumaCPU": [{"NumaNodeID": 0, "CPUID": 10, "ThreadSiblings": [6,7]}, 
-						{"NumaNodeID": 1, "CPUID": 14, "ThreadSiblings": [9,2]}]
-		}
-	}`
-	var output introspection.NumaTopology
-	err := json.Unmarshal([]byte(numatopology), &output)
+func TestIntrospectionData(t *testing.T) {
+	var output introspection.Data
+	err := json.Unmarshal([]byte(IntrospectionDataJSONSample), &output)
 	if err != nil {
-		t.Errorf("Failed to unmarshal NumaTopology data: %s", err)
+		t.Errorf("Failed to unmarshal Introspection data: %s", err)
 	}
 }
 

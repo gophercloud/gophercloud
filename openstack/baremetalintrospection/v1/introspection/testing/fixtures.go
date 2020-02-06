@@ -73,6 +73,31 @@ const IntrospectionDataJSONSample = `
    "macs":[
       "52:54:00:4e:3d:30"
    ],
+   "numa_topology": {
+				"nics": [{
+				"numa_node": 0,
+				"name": "p2p1"
+				}, {
+				"numa_node": 1,
+				"name": "p2p2"
+				}],
+				"ram": [{
+				"numa_node": 0,
+				"size_kb": 99289532
+				}, {
+				"numa_node": 1,
+				"size_kb": 100663296
+				}],
+				"cpus": [{
+				"numa_node": 1,
+				"thread_siblings": [3, 27],
+				"cpu": 6
+				}, {
+				"numa_node": 0,
+				"thread_siblings": [20, 44],
+				"cpu": 10
+				}]
+				},
    "root_disk":{
       "rotational":true,
       "vendor":"0x1af4",
