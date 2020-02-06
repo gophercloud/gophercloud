@@ -1,6 +1,9 @@
 package resourceproviders
 
-import "github.com/gophercloud/gophercloud/pagination"
+import (
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
 
 type ResourceProviderLinks struct {
 	Href string `json:"href"`
@@ -28,6 +31,25 @@ type ResourceProvider struct {
 	// The RootProviderUUID contains the read-only UUID of the top-most provider in this provider tree.
 	// Requires microversion 1.14 or above
 	RootProviderUUID string `json:"root_provider_uuid"`
+}
+
+// resourceProviderResult is the resposne of a base ResourceProvider result.
+type resourceProviderResult struct {
+	gophercloud.Result
+}
+
+// Extract interpets any resourceProviderResult-base result as a ResourceProvider.
+func (r resourceProviderResult) Extract() (*ResourceProvider, error) {
+	var s ResourceProvider
+	err := r.ExtractInto(&s)
+
+	return &s, err
+}
+
+// CreateResult is the result of a Create operation. Call its Extract
+// method to interpret it as a ResourceProvider.
+type CreateResult struct {
+	resourceProviderResult
 }
 
 // ResourceProvidersPage contains a single page of all resource providers from a List call.

@@ -25,3 +25,23 @@ func TestResourceProviderList(t *testing.T) {
 		tools.PrintResource(t, v)
 	}
 }
+
+func TestResourceProviderCreate(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	name := tools.RandomString("TESTACC-", 8)
+	t.Logf("Attempting to create resource provider: %s", name)
+
+	createOpts := resourceproviders.CreateOpts{
+		Name: name,
+	}
+
+	client.Microversion = "1.20"
+	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, resourceProvider)
+}

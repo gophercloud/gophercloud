@@ -1,6 +1,8 @@
 package resourceproviders
 
 import (
+	"net/http"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -57,4 +59,46 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return ResourceProvidersPage{pagination.SinglePageBase(r)}
 	})
+}
+
+// CreateOptsBuilder allows extensions to add additional parameters to the
+// Create request.
+type CreateOptsBuilder interface {
+	ToResourceProviderCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts represents options used to create a resource provider.
+type CreateOpts struct {
+	Name string `json:"name"`
+	UUID string `json:"uuid,omitempty"`
+}
+
+// ToResourceProviderCreateMap constructs a request body from CreateOpts.
+func (opts CreateOpts) ToResourceProviderCreateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+// Create makes a request against the API to create a resource provider
+func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToResourceProviderCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	var result *http.Response
+
+	result, r.Err = client.Post(resourceProvidersListURL(client), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	if r.Err == nil {
+		r.Header = result.Header
+	}
+
+	return
 }

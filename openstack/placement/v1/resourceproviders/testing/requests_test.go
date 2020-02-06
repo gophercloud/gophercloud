@@ -36,3 +36,22 @@ func TestListResourceProviders(t *testing.T) {
 		t.Errorf("Expected 1 page, got %d", count)
 	}
 }
+
+func TestCreateResourceProvider(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleResourceProviderCreate(t)
+
+	expected := ExpectedResourceProvider1
+
+	opts := resourceproviders.CreateOpts{
+		Name: ExpectedResourceProvider1.Name,
+		UUID: ExpectedResourceProvider1.UUID,
+	}
+
+	actual, err := resourceproviders.Create(fake.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, &expected, actual)
+}
