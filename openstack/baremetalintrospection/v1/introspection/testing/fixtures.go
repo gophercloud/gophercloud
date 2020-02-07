@@ -265,6 +265,13 @@ var (
 				PXE: true,
 			},
 		},
+		NumaTopology: introspection.NumaTopology{
+			NumaNics: []introspection.NumaNICS{introspection.NumaNICS{NumaNodeID: 0, Name: "p2p1"},
+				introspection.NumaNICS{NumaNodeID: 1, Name: "p2p2"}},
+			NumaRAM: []introspection.NumaRAM{introspection.NumaRAM{NumaNodeID: 0, SizeKb: 99289532},
+				introspection.NumaRAM{NumaNodeID: 1, SizeKb: 100663296}},
+			NumaCPU: []introspection.NumaCPU{introspection.NumaCPU{NumaNodeID: 1, ThreadSiblings: []int{3, 27},
+				CPUID: 6}, {NumaNodeID: 0, ThreadSiblings: []int{20, 44}, CPUID: 10}}},
 		CPUs:          2,
 		BootInterface: "52:54:00:4e:3d:30",
 		MemoryMB:      2048,
