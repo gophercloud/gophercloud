@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/baremetalintrospection/v1/introspection"
+	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestLLDPTLVErrors(t *testing.T) {
@@ -88,12 +89,14 @@ func TestExtraHardware(t *testing.T) {
 	}
 }
 
-func TestIntrospectionData(t *testing.T) {
+func TestIntrospectionNUMA(t *testing.T) {
 	var output introspection.Data
-	err := json.Unmarshal([]byte(IntrospectionDataJSONSample), &output)
+	err := json.Unmarshal([]byte(IntrospectionNUMADataJSONSample), &output)
 	if err != nil {
-		t.Errorf("Failed to unmarshal Introspection data: %s", err)
+		t.Fatalf("Failed to unmarshal NUMA Data: %s", err)
 	}
+
+	th.CheckDeepEquals(t, IntrospectionNUMA, output.NUMATopology)
 }
 
 func TestHostnameInInventory(t *testing.T) {

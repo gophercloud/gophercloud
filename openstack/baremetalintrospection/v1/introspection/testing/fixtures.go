@@ -69,147 +69,175 @@ const IntrospectionStatus = `
 // IntrospectionDataJSONSample contains sample data reported by the introspection process.
 const IntrospectionDataJSONSample = `
 {
-   "cpu_arch":"x86_64",
-   "macs":[
-      "52:54:00:4e:3d:30"
-   ],
-   "numa_topology": {
-				"nics": [{
-				"numa_node": 0,
-				"name": "p2p1"
-				}, {
-				"numa_node": 1,
-				"name": "p2p2"
-				}],
-				"ram": [{
-				"numa_node": 0,
-				"size_kb": 99289532
-				}, {
-				"numa_node": 1,
-				"size_kb": 100663296
-				}],
-				"cpus": [{
-				"numa_node": 1,
-				"thread_siblings": [3, 27],
-				"cpu": 6
-				}, {
-				"numa_node": 0,
-				"thread_siblings": [20, 44],
-				"cpu": 10
-				}]
-				},
-   "root_disk":{
-      "rotational":true,
-      "vendor":"0x1af4",
-      "name":"/dev/vda",
-      "hctl":null,
-      "wwn_vendor_extension":null,
-      "wwn_with_extension":null,
-      "model":"",
-      "wwn":null,
-      "serial":null,
-      "size":13958643712
-   },
-   "interfaces": {
-      "eth0": {
-         "ip":"172.24.42.100",
-         "mac":"52:54:00:4e:3d:30",
-         "pxe":true,
-         "client_id":null
-     }
-   },
-   "cpus":2,
-   "boot_interface":"52:54:00:4e:3d:30",
-   "memory_mb":2048,
-   "ipmi_address":"192.167.2.134",
-   "inventory":{
-      "bmc_address":"192.167.2.134",
-      "interfaces":[
-         {
-            "lldp":[],
-            "product":"0x0001",
-            "vendor":"0x1af4",
-            "name":"eth1",
-            "has_carrier":true,
-            "ipv4_address":"172.24.42.101",
-            "client_id":null,
-            "mac_address":"52:54:00:47:20:4d"
-         },
-         {
-            "lldp": [
-              [1, "04112233aabbcc"],
-              [5, "737730312d646973742d31622d623132"]
+    "all_interfaces": {
+        "eth0": {
+            "client_id": null,
+            "ip": "172.24.42.100",
+            "lldp_processed": {
+                "switch_chassis_id": "11:22:33:aa:bb:cc",
+                "switch_system_name": "sw01-dist-1b-b12"
+            },
+            "mac": "52:54:00:4e:3d:30",
+            "pxe": true
+        },
+        "eth1": {
+            "client_id": null,
+            "ip": "172.24.42.101",
+            "mac": "52:54:00:47:20:4d",
+            "pxe": false
+        }
+    },
+    "boot_interface": "52:54:00:4e:3d:30",
+    "cpu_arch": "x86_64",
+    "cpus": 2,
+    "error": null,
+    "interfaces": {
+        "eth0": {
+            "client_id": null,
+            "ip": "172.24.42.100",
+            "mac": "52:54:00:4e:3d:30",
+            "pxe": true
+        }
+    },
+    "inventory": {
+        "bmc_address": "192.167.2.134",
+        "boot": {
+            "current_boot_mode": "bios",
+            "pxe_interface": "52:54:00:4e:3d:30"
+        },
+        "cpu": {
+            "architecture": "x86_64",
+            "count": 2,
+            "flags": [
+                "fpu",
+                "mmx",
+                "fxsr",
+                "sse",
+                "sse2"
             ],
-            "product":"0x0001",
-            "vendor":"0x1af4",
-            "name":"eth0",
-            "has_carrier":true,
-            "ipv4_address":"172.24.42.100",
-            "client_id":null,
-            "mac_address":"52:54:00:4e:3d:30"
-         }
-      ],
-      "disks":[
-         {
-            "rotational":true,
-            "vendor":"0x1af4",
-            "name":"/dev/vda",
-            "hctl":null,
-            "wwn_vendor_extension":null,
-            "wwn_with_extension":null,
-            "model":"",
-            "wwn":null,
-            "serial":null,
-            "size":13958643712
-         }
-      ],
-      "boot":{
-         "current_boot_mode":"bios",
-         "pxe_interface":"52:54:00:4e:3d:30"
-      },
-      "system_vendor":{
-         "serial_number":"Not Specified",
-         "product_name":"Bochs",
-         "manufacturer":"Bochs"
-      },
-      "memory":{
-         "physical_mb":2048,
-         "total":2105864192
-      },
-      "cpu":{
-         "count":2,
-         "frequency":"2100.084",
-      "flags": [
-        "fpu",
-        "mmx",
-        "fxsr",
-        "sse",
-        "sse2"
+            "frequency": "2100.084"
+        },
+        "disks": [
+            {
+                "hctl": null,
+                "model": "",
+                "name": "/dev/vda",
+                "rotational": true,
+                "serial": null,
+                "size": 13958643712,
+                "vendor": "0x1af4",
+                "wwn": null,
+                "wwn_vendor_extension": null,
+                "wwn_with_extension": null
+            }
         ],
-         "architecture":"x86_64"
-	  },
-	  "hostname": "myawesomehost"
-   },
-   "error":null,
-   "local_gb":12,
-   "all_interfaces":{
-      "eth1":{
-         "ip":"172.24.42.101",
-         "mac":"52:54:00:47:20:4d",
-         "pxe":false,
-         "client_id":null
+        "hostname": "myawesomehost",
+        "interfaces": [
+            {
+                "client_id": null,
+                "has_carrier": true,
+                "ipv4_address": "172.24.42.101",
+                "lldp": [],
+                "mac_address": "52:54:00:47:20:4d",
+                "name": "eth1",
+                "product": "0x0001",
+                "vendor": "0x1af4"
+            },
+            {
+                "client_id": null,
+                "has_carrier": true,
+                "ipv4_address": "172.24.42.100",
+                "lldp": [
+                    [
+                        1,
+                        "04112233aabbcc"
+                    ],
+                    [
+                        5,
+                        "737730312d646973742d31622d623132"
+                    ]
+                ],
+                "mac_address": "52:54:00:4e:3d:30",
+                "name": "eth0",
+                "product": "0x0001",
+                "vendor": "0x1af4"
+            }
+        ],
+        "memory": {
+            "physical_mb": 2048,
+            "total": 2105864192
+        },
+        "system_vendor": {
+            "manufacturer": "Bochs",
+            "product_name": "Bochs",
+            "serial_number": "Not Specified"
+        }
+    },
+    "ipmi_address": "192.167.2.134",
+    "local_gb": 12,
+    "macs": [
+        "52:54:00:4e:3d:30"
+    ],
+    "memory_mb": 2048,
+    "root_disk": {
+        "hctl": null,
+        "model": "",
+        "name": "/dev/vda",
+        "rotational": true,
+        "serial": null,
+        "size": 13958643712,
+        "vendor": "0x1af4",
+        "wwn": null,
+        "wwn_vendor_extension": null,
+        "wwn_with_extension": null
+    }
+}
+`
+
+// IntrospectionNUMADataJSONSample contains NUMA sample data
+// reported by the introspection process.
+const IntrospectionNUMADataJSONSample = `
+{
+  "numa_topology": {
+    "cpus": [
+      {
+        "cpu": 6,
+        "numa_node": 1,
+        "thread_siblings": [
+          3,
+          27
+        ]
       },
-      "eth0":{
-         "ip":"172.24.42.100",
-         "mac":"52:54:00:4e:3d:30",
-         "pxe":true,
-         "client_id":null,
-         "lldp_processed":{
-           "switch_chassis_id":"11:22:33:aa:bb:cc",
-           "switch_system_name":"sw01-dist-1b-b12"
-         }
+      {
+        "cpu": 10,
+        "numa_node": 0,
+        "thread_siblings": [
+          20,
+          44
+        ]
       }
-   }
+    ],
+    "nics": [
+      {
+        "name": "p2p1",
+        "numa_node": 0
+      },
+      {
+        "name": "p2p2",
+        "numa_node": 1
+      }
+    ],
+    "ram": [
+      {
+        "numa_node": 0,
+        "size_kb": 99289532
+      },
+      {
+        "numa_node": 1,
+        "size_kb": 100663296
+      }
+    ]
+  }
 }
 `
 
@@ -346,6 +374,41 @@ var (
 					"switch_chassis_id":  "11:22:33:aa:bb:cc",
 					"switch_system_name": "sw01-dist-1b-b12",
 				},
+			},
+		},
+	}
+
+	IntrospectionNUMA = introspection.NUMATopology{
+		CPUs: []introspection.NUMACPU{
+			{
+				CPU:            6,
+				NUMANode:       1,
+				ThreadSiblings: []int{3, 27},
+			},
+			{
+				CPU:            10,
+				NUMANode:       0,
+				ThreadSiblings: []int{20, 44},
+			},
+		},
+		NICs: []introspection.NUMANIC{
+			{
+				Name:     "p2p1",
+				NUMANode: 0,
+			},
+			{
+				Name:     "p2p2",
+				NUMANode: 1,
+			},
+		},
+		RAM: []introspection.NUMARAM{
+			{
+				NUMANode: 0,
+				SizeKB:   99289532,
+			},
+			{
+				NUMANode: 1,
+				SizeKB:   100663296,
 			},
 		},
 	}
