@@ -44,6 +44,22 @@ const ResourceProvidersBody = `
 }
 `
 
+const ResourceProviderCreateBody = `
+{
+  "generation": 1,
+  "uuid": "99c09379-6e52-4ef8-9a95-b9ce6f68452e",
+  "links": [
+	{
+	  "href": "/resource_providers/99c09379-6e52-4ef8-9a95-b9ce6f68452e",
+	  "rel": "self"
+	}
+  ],
+  "name": "vgr.localdomain",
+  "parent_provider_uuid": "542df8ed-9be2-49b9-b4db-6d3183ff8ec8",
+  "root_provider_uuid": "542df8ed-9be2-49b9-b4db-6d3183ff8ec8"
+}
+`
+
 var ExpectedResourceProvider1 = resourceproviders.ResourceProvider{
 	Generation: 1,
 	UUID:       "99c09379-6e52-4ef8-9a95-b9ce6f68452e",
@@ -88,4 +104,16 @@ func HandleResourceProviderList(t *testing.T) {
 
 			fmt.Fprintf(w, ResourceProvidersBody)
 		})
+}
+
+func HandleResourceProviderCreate(t *testing.T) {
+	th.Mux.HandleFunc("/resource_providers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ResourceProviderCreateBody)
+	})
 }
