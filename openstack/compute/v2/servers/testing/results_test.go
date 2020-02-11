@@ -108,3 +108,14 @@ func TestListAddressesAllPages(t *testing.T) {
 	_, err = servers.ExtractAddresses(allPages)
 	th.AssertNoErr(t, err)
 }
+
+func TestListInstanceActionsAllPages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleInstanceActionListSuccessfully(t)
+
+	allPages, err := servers.ListInstanceActions(client.ServiceClient(), "asdfasdfasdf").AllPages()
+	th.AssertNoErr(t, err)
+	_, err = servers.ExtractInstanceActions(allPages)
+	th.AssertNoErr(t, err)
+}

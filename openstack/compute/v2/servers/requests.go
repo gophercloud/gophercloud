@@ -714,6 +714,13 @@ func ListAddressesByNetwork(client *gophercloud.ServiceClient, id, network strin
 	})
 }
 
+// ListInstanceActions makes a request against the API to list the servers actions.
+func ListInstanceActions(client *gophercloud.ServiceClient, id string) pagination.Pager {
+	return pagination.NewPager(client, listInstanceActionsURL(client, id), func(r pagination.PageResult) pagination.Page {
+		return InstanceActionPage{pagination.SinglePageBase(r)}
+	})
+}
+
 // CreateImageOptsBuilder allows extensions to add additional parameters to the
 // CreateImage request.
 type CreateImageOptsBuilder interface {

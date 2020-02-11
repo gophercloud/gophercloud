@@ -524,6 +524,30 @@ func TestListAddressesByNetwork(t *testing.T) {
 	th.CheckEquals(t, 1, pages)
 }
 
+func TestListInstanceActions(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleInstanceActionListSuccessfully(t)
+
+	expected := ListInstanceActionsExpected
+	pages := 0
+	err := servers.ListInstanceActions(client.ServiceClient(), "asdfasdfasdf").EachPage(func(page pagination.Page) (bool, error) {
+		pages++
+
+		actual, err := servers.ExtractInstanceActions(page)
+		th.AssertNoErr(t, err)
+
+		if len(actual) != 2 {
+			t.Fatalf("Expected 2 networks, got %d", len(actual))
+		}
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 1, pages)
+}
+
 func TestCreateServerImage(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

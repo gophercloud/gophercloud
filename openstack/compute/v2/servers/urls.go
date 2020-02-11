@@ -42,6 +42,10 @@ func listAddressesURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("servers", id, "ips")
 }
 
+func listInstanceActionsURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("servers", id, "os-instance-actions")
+}
+
 func listAddressesByNetworkURL(client *gophercloud.ServiceClient, id, network string) string {
 	return client.ServiceURL("servers", id, "ips", network)
 }

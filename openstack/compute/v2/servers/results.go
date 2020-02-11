@@ -419,3 +419,56 @@ func ExtractNetworkAddresses(r pagination.Page) ([]Address, error) {
 
 	return s[key], err
 }
+
+// InstanceAction represents an instance action.
+type InstanceAction struct {
+	Action       string    `json:"action"`
+	InstanceUUID string    `json:"instance_uuid"`
+	Message      *string   `json:"message"`
+	ProjectID    string    `json:"project_id"`
+	RequestID    string    `json:"request_id"`
+	StartTime    time.Time `json:"start_time"`
+	UserID       string    `json:"user_id"`
+}
+
+// UnmarshalJSON converts our JSON API response into our instance action struct
+func (i *InstanceAction) UnmarshalJSON(b []byte) error {
+	type tmp InstanceAction
+	var s struct {
+		tmp
+		StartTime gophercloud.JSONRFC3339MilliNoZ `json:"start_time"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*i = InstanceAction(s.tmp)
+
+	i.StartTime = time.Time(s.StartTime)
+
+	return err
+}
+
+// InstanceActionPage abstracts the raw results of making a ListInstanceActiones() request
+// against the API. As OpenStack extensions may freely alter the response bodies
+// of structures returned to the client, you may only safely access the data
+// provided through the ExtractInstanceActions call.
+type InstanceActionPage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty returns true if an InstanceActionPage contains no networks.
+func (r InstanceActionPage) IsEmpty() (bool, error) {
+	instanceactions, err := ExtractInstanceActions(r)
+	return len(instanceactions) == 0, err
+}
+
+// ExtractInstanceActions interprets the results of a single page from a
+// ListInstanceActiones() call, producing a map of instanceactions.
+func ExtractInstanceActions(r pagination.Page) ([]InstanceAction, error) {
+	var s struct {
+		InstanceActions []InstanceAction `json:"instanceActions"`
+	}
+	err := (r.(InstanceActionPage)).ExtractInto(&s)
+	return s.InstanceActions, err
+}
