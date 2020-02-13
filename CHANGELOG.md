@@ -1,5 +1,10 @@
 ## 0.9.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Added `compute/v2/extensions/instanceactions.List` [GH-1848](https://github.com/gophercloud/gophercloud/pull/1848)
+* Added `compute/v2/extensions/instanceactions.Get` [GH-1848](https://github.com/gophercloud/gophercloud/pull/1848)
+
 ## 0.8.0 (February 8, 2020)
 
 UPGRADE NOTES
