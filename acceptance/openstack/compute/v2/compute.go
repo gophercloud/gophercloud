@@ -337,7 +337,9 @@ func CreateMultiEphemeralServer(t *testing.T, client *gophercloud.ServiceClient,
 	}
 
 	newServer, err := servers.Get(client, server.ID).Extract()
-
+	if err != nil {
+		return server, err
+	}
 	th.AssertEquals(t, newServer.Name, name)
 	th.AssertEquals(t, newServer.Flavor["id"], choices.FlavorID)
 	th.AssertEquals(t, newServer.Image["id"], choices.ImageID)
