@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"github.com/gophercloud/gophercloud/pagination"
 	"testing"
 	"time"
 
@@ -56,14 +57,8 @@ func TestCreateUserIDPasswordTrustID(t *testing.T) {
 		},
 		trusts.TokenExt{
 			Trust: trusts.Trust{
-				ID:            "fe0aef",
-				Impersonation: false,
-				TrusteeUser: trusts.TrusteeUser{
-					ID: "0ca8f6",
-				},
-				TrustorUser: trusts.TrustorUser{
-					ID: "bd263c",
-				},
+				ID:                 "fe0aef",
+				Impersonation:      false,
 				RedelegatedTrustID: "3ba234",
 				RedelegationCount:  2,
 			},
@@ -105,4 +100,45 @@ func TestDeleteTrust(t *testing.T) {
 
 	res := trusts.Delete(client.ServiceClient(), "3422b7c113894f5d90665e1a79655e23")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestGetTrust(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetTrustSuccessfully(t)
+
+	res := trusts.Get(client.ServiceClient(), "987fe8")
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestListTrusts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListTrustsSuccessfully(t)
+
+	count := 0
+	err := trusts.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := trusts.ExtractTrusts(page)
+		th.AssertNoErr(t, err)
+
+		th.CheckDeepEquals(t, ExpectedTrustsSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+}
+
+func TestListTrustsAllPages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListTrustsSuccessfully(t)
+
+	allPages, err := trusts.List(client.ServiceClient(), nil).AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := trusts.ExtractTrusts(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedTrustsSlice, actual)
 }
