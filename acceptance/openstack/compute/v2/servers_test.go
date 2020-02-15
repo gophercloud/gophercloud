@@ -578,41 +578,22 @@ func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
-	result := servers.Get(client, server.ID)
-	th.AssertNoErr(t, result.Err)
+	type serverAttributesExt struct {
+		servers.Server
+		extendedserverattributes.ServerAttributesExt
+	}
+	var serverWithAttributesExt serverAttributesExt
 
-	reservationID, err := extendedserverattributes.ExtractReservationID(result.Result)
+	err = servers.Get(client, server.ID).ExtractInto(&serverWithAttributesExt)
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, reservationID != "", true)
-	t.Logf("reservationID: %s", reservationID)
 
-	launchIndex, err := extendedserverattributes.ExtractLaunchIndex(result.Result)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, launchIndex, 0)
-	t.Logf("launchIndex: %d", launchIndex)
+	t.Logf("Server With Extended Attributes: %#v", serverWithAttributesExt)
 
-	ramdiskID, err := extendedserverattributes.ExtractRamdiskID(result.Result)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, ramdiskID == "", true)
-	t.Logf("ramdiskID: %s", ramdiskID)
-
-	kernelID, err := extendedserverattributes.ExtractKernelID(result.Result)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, kernelID == "", true)
-	t.Logf("kernelID: %s", kernelID)
-
-	hostname, err := extendedserverattributes.ExtractHostname(result.Result)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, hostname != "", true)
-	t.Logf("hostname: %s", hostname)
-
-	rootDeviceName, err := extendedserverattributes.ExtractRootDeviceName(result.Result)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, rootDeviceName != "", true)
-	t.Logf("rootDeviceName: %s", rootDeviceName)
-
-	userData, err := extendedserverattributes.ExtractUserData(result.Result)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, userData == "", true)
-	t.Logf("userData: %s", userData)
+	th.AssertEquals(t, *serverWithAttributesExt.ReservationID != "", true)
+	th.AssertEquals(t, *serverWithAttributesExt.LaunchIndex, 0)
+	th.AssertEquals(t, *serverWithAttributesExt.RAMDiskID == "", true)
+	th.AssertEquals(t, *serverWithAttributesExt.KernelID == "", true)
+	th.AssertEquals(t, *serverWithAttributesExt.Hostname != "", true)
+	th.AssertEquals(t, *serverWithAttributesExt.RootDeviceName != "", true)
+	th.AssertEquals(t, serverWithAttributesExt.Userdata == nil, true)
 }
