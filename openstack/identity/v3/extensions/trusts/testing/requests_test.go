@@ -1,9 +1,10 @@
 package testing
 
 import (
-	"github.com/gophercloud/gophercloud/pagination"
 	"testing"
 	"time"
+
+	"github.com/gophercloud/gophercloud/pagination"
 
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/trusts"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"

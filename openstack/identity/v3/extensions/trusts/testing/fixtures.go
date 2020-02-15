@@ -2,9 +2,10 @@ package testing
 
 import (
 	"fmt"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/trusts"
 	"net/http"
 	"testing"
+
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/trusts"
 
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/testhelper"
