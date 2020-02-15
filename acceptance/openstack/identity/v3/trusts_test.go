@@ -93,15 +93,8 @@ func TestTrustCRUD(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	defer DeleteTrust(t, client, trust.ID)
-}
 
-func TestTrustGet(t *testing.T) {
-	clients.RequireAdmin(t)
-
-	client, err := clients.NewIdentityV3Client()
-	th.AssertNoErr(t, err)
-
-	trust, err := FindTrust(t, client)
+	trust, err = FindTrust(t, client)
 	th.AssertNoErr(t, err)
 
 	p, err := trusts.Get(client, trust.ID).Extract()
