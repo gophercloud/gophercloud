@@ -93,4 +93,12 @@ func TestTrustCRUD(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	defer DeleteTrust(t, client, trust.ID)
+
+	trust, err = FindTrust(t, client)
+	th.AssertNoErr(t, err)
+
+	p, err := trusts.Get(client, trust.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, p)
 }
