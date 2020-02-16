@@ -1,6 +1,8 @@
 package trusts
 
 import (
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -75,16 +77,18 @@ func (t trustResult) Extract() (*Trust, error) {
 // Trust represents a delegated authorization request between two
 // identities.
 type Trust struct {
-	ID                 string `json:"id"`
-	Impersonation      bool   `json:"impersonation"`
-	TrusteeUserID      string `json:"trustee_user_id"`
-	TrustorUserID      string `json:"trustor_user_id"`
-	RedelegatedTrustID string `json:"redelegated_trust_id"`
-	RedelegationCount  int    `json:"redelegation_count,omitempty"`
-	AllowRedelegation  bool   `json:"allow_redelegation,omitempty"`
-	ProjectID          string `json:"project_id,omitempty"`
-	RemainingUses      bool   `json:"remaining_uses,omitempty"`
-	Roles              []Role `json:"roles,omitempty"`
+	ID                 string    `json:"id"`
+	Impersonation      bool      `json:"impersonation"`
+	TrusteeUserID      string    `json:"trustee_user_id"`
+	TrustorUserID      string    `json:"trustor_user_id"`
+	RedelegatedTrustID string    `json:"redelegated_trust_id"`
+	RedelegationCount  int       `json:"redelegation_count,omitempty"`
+	AllowRedelegation  bool      `json:"allow_redelegation,omitempty"`
+	ProjectID          string    `json:"project_id,omitempty"`
+	RemainingUses      bool      `json:"remaining_uses,omitempty"`
+	Roles              []Role    `json:"roles,omitempty"`
+	DeletedAt          time.Time `json:"deleted_at"`
+	ExpiresAt          time.Time `json:"expires_at"`
 }
 
 // Role specifies a single role that is granted to a trustee.
