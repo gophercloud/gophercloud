@@ -45,28 +45,23 @@ func TestCreateMicroversion(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateMicroversionSuccessfully(t)
 
+	policy := "anti-affinity"
+	rules := servergroups.Rules{
+		MaxServerPerHost: 3,
+	}
+	CreatedServerGroup.Policy = &policy
+	CreatedServerGroup.Rules = &rules
+
 	result := servergroups.Create(client.ServiceClient(), servergroups.CreateOpts{
 		Name:     "test",
 		Policies: []string{"anti-affinity"},
-		Policy:   "anti-affinity",
-		Rules: &servergroups.Rules{
-			MaxServerPerHost: 3,
-		},
+		Policy:   policy,
+		Rules:    &rules,
 	})
 
-	// Extract basic fields.
 	actual, err := result.Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedServerGroup, actual)
-
-	// Extract additional fields.
-	policy, err := servergroups.ExtractPolicy(result.Result)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, "anti-affinity", policy)
-
-	rules, err := servergroups.ExtractRules(result.Result)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, 3, rules.MaxServerPerHost)
 }
 
 func TestGet(t *testing.T) {
@@ -84,21 +79,19 @@ func TestGetMicroversion(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetMicroversionSuccessfully(t)
 
+	policy := "anti-affinity"
+	rules := servergroups.Rules{
+		MaxServerPerHost: 3,
+	}
+	FirstServerGroup.Policy = &policy
+	FirstServerGroup.Rules = &rules
+
 	result := servergroups.Get(client.ServiceClient(), "4d8c3732-a248-40ed-bebc-539a6ffd25c0")
 
 	// Extract basic fields.
 	actual, err := result.Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstServerGroup, actual)
-
-	// Extract additional fields.
-	policy, err := servergroups.ExtractPolicy(result.Result)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, "anti-affinity", policy)
-
-	rules, err := servergroups.ExtractRules(result.Result)
-	th.AssertNoErr(t, err)
-	th.AssertEquals(t, 3, rules.MaxServerPerHost)
 }
 
 func TestDelete(t *testing.T) {

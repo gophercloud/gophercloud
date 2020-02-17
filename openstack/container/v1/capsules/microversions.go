@@ -15,7 +15,7 @@ func (r commonResult) ExtractV132() (*CapsuleV132, error) {
 	return s, err
 }
 
-// Represents a Capsule at microversion vXY or greater.
+// Represents a Capsule at microversion v1.32 or greater.
 type CapsuleV132 struct {
 	// UUID for the capsule
 	UUID string `json:"uuid"`
