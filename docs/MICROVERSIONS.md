@@ -70,6 +70,8 @@ from a microversioned result.
 When adding a new field, please make sure to include a GoDoc comment about
 what microversions the field is valid for.
 
+Please see [here](https://github.com/gophercloud/gophercloud/blob/ed4deec00ff1d4d4c8a762af0c6360d4184a4bf4/openstack/compute/v2/servers/results.go#L221-L223) for an example.
+
 ### Modified Response Fields
 
 This is when the new type of the returned field is incompatible with the
