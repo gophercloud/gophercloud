@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/trusts"
-
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/tokens"
 	"github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -216,6 +216,8 @@ var FirstTrust = trusts.Trust{
 	TrusteeUserID: "86c0d5",
 	TrustorUserID: "a0fdfd",
 	ProjectID:     "0f1233",
+	ExpiresAt:     time.Date(2013, 02, 27, 18, 30, 59, 999999000, time.UTC),
+	DeletedAt:     time.Time{},
 }
 
 var SecondTrust = trusts.Trust{
@@ -224,6 +226,8 @@ var SecondTrust = trusts.Trust{
 	TrusteeUserID: "86c0d5",
 	TrustorUserID: "3cd2ce",
 	ProjectID:     "0f1233",
+	ExpiresAt:     time.Time{},
+	DeletedAt:     time.Time{},
 }
 
 // ExpectedRolesSlice is the slice of roles expected to be returned from ListOutput.
