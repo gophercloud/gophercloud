@@ -16,7 +16,7 @@ func TestList(t *testing.T) {
 
 	expected := ListExpected
 	pages := 0
-	err := instanceactions.List(client.ServiceClient(), "asdfasdfasdf").EachPage(func(page pagination.Page) (bool, error) {
+	err := instanceactions.List(client.ServiceClient(), "asdfasdfasdf", nil).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := instanceactions.ExtractInstanceActions(page)

@@ -2,7 +2,7 @@ package instanceactions
 
 import "github.com/gophercloud/gophercloud"
 
-func ListURL(client *gophercloud.ServiceClient, id string) string {
+func listURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("servers", id, "os-instance-actions")
 }
 
