@@ -17,6 +17,10 @@ IMPROVEMENTS
 * Added `compute/v2/extensions/instanceactions.Event` [GH-1851](https://github.com/gophercloud/gophercloud/pull/1851)
 * Added `compute/v2/extensions/instanceactions.ListOpts` [GH-1858](https://github.com/gophercloud/gophercloud/pull/1858)
 
+BUG FIXES
+
+* Added support for `int64` headers, which were previously being silently dropped [GH-1860](https://github.com/gophercloud/gophercloud/pull/1860)
+
 ## 0.8.0 (February 8, 2020)
 
 UPGRADE NOTES
