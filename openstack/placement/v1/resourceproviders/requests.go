@@ -102,3 +102,8 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 
 	return
 }
+
+func GetUsages(client *gophercloud.ServiceClient, resourceProviderID string) (r GetUsagesResult) {
+	_, r.Err = client.Get(getResourceProviderUsagesURL(client, resourceProviderID), &r.Body, nil)
+	return
+}

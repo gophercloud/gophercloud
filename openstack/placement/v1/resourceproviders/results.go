@@ -33,6 +33,17 @@ type ResourceProvider struct {
 	RootProviderUUID string `json:"root_provider_uuid"`
 }
 
+type Usage struct {
+	DiskGB   int `json:"DISK_GB"`
+	MemoryMB int `json:"MEMORY_MB"`
+	VCPU     int `json:"VCPU"`
+}
+
+type ResourceProviderUsage struct {
+	ResourceProviderGeneration int   `json:"resource_provider_generation"`
+	Usages                     Usage `json:"usages"`
+}
+
 // resourceProviderResult is the resposne of a base ResourceProvider result.
 type resourceProviderResult struct {
 	gophercloud.Result
@@ -70,4 +81,17 @@ func ExtractResourceProviders(r pagination.Page) ([]ResourceProvider, error) {
 	}
 	err := (r.(ResourceProvidersPage)).ExtractInto(&s)
 	return s.ResourceProviders, err
+}
+
+// GetUsagesResult is the response of a Get usage operations. Call its Extract method
+// to interpret it as a ResourceProviderUsage.
+type GetUsagesResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a GetUsagesResult as a ResourceProviderUsage.
+func (r GetUsagesResult) Extract() (*ResourceProviderUsage, error) {
+	var s ResourceProviderUsage
+	err := r.ExtractInto(&s)
+	return &s, err
 }

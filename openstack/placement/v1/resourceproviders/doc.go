@@ -29,5 +29,12 @@ Example to create resource providers
 		panic(err)
 	}
 
+Example to get resource providers usages
+
+	rp, err := resourceproviders.GetUsages(placementClient, resourceProviderID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package resourceproviders
