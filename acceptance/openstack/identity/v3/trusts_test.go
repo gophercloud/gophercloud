@@ -4,6 +4,7 @@ package v3
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
@@ -80,11 +81,13 @@ func TestTrustCRUD(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteUser(t, client, trusteeUser.ID)
 
+	expiresAt := time.Now().Add(time.Minute)
 	// Create a trust.
 	trust, err := CreateTrust(t, client, trusts.CreateOpts{
 		TrusteeUserID: trusteeUser.ID,
 		TrustorUserID: adminUser.ID,
 		ProjectID:     trusteeProject.ID,
+		ExpiresAt:     &expiresAt,
 		Roles: []trusts.Role{
 			{
 				ID: memberRoleID,
@@ -93,4 +96,14 @@ func TestTrustCRUD(t *testing.T) {
 	})
 	th.AssertNoErr(t, err)
 	defer DeleteTrust(t, client, trust.ID)
+
+	trust, err = FindTrust(t, client)
+	th.AssertNoErr(t, err)
+
+	p, err := trusts.Get(client, trust.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, p.ExpiresAt.IsZero(), false)
+	th.AssertEquals(t, p.DeletedAt.IsZero(), true)
+
+	tools.PrintResource(t, p)
 }

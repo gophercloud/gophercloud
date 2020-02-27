@@ -43,9 +43,6 @@ type Backup struct {
 	// Container is the container where the backup is stored.
 	Container string `json:"container"`
 
-	// AvailabilityZone is the availability zone of the backup.
-	AvailabilityZone string `json:"availability_zone"`
-
 	// HasDependentBackups is whether there are other backups
 	// depending on this backup.
 	HasDependentBackups bool `json:"has_dependent_backups"`
@@ -62,6 +59,14 @@ type Backup struct {
 	// ProjectID is the ID of the project that owns the backup. This is
 	// an admin-only field.
 	ProjectID string `json:"os-backup-project-attr:project_id"`
+
+	// Metadata is metadata about the backup.
+	// This requires microversion 3.43 or later.
+	Metadata *map[string]string `json:"metadata"`
+
+	// AvailabilityZone is the Availability Zone of the backup.
+	// This requires microversion 3.51 or later.
+	AvailabilityZone *string `json:"availability_zone"`
 }
 
 // CreateResult contains the response body and error from a Create request.

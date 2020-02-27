@@ -90,15 +90,17 @@ func TestBuildQueryString(t *testing.T) {
 
 func TestBuildHeaders(t *testing.T) {
 	testStruct := struct {
-		Accept string `h:"Accept"`
-		Num    int    `h:"Number" required:"true"`
-		Style  bool   `h:"Style"`
+		Accept        string `h:"Accept"`
+		ContentLength int64  `h:"Content-Length"`
+		Num           int    `h:"Number" required:"true"`
+		Style         bool   `h:"Style"`
 	}{
-		Accept: "application/json",
-		Num:    4,
-		Style:  true,
+		Accept:        "application/json",
+		ContentLength: 256,
+		Num:           4,
+		Style:         true,
 	}
-	expected := map[string]string{"Accept": "application/json", "Number": "4", "Style": "true"}
+	expected := map[string]string{"Accept": "application/json", "Number": "4", "Style": "true", "Content-Length": "256"}
 	actual, err := gophercloud.BuildHeaders(&testStruct)
 	th.CheckNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)

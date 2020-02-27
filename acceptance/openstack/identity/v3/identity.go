@@ -368,3 +368,30 @@ func DeleteTrust(t *testing.T, client *gophercloud.ServiceClient, trustID string
 
 	t.Logf("Deleted trust: %s", trustID)
 }
+
+// FindTrust finds all trusts that the current authenticated client has access
+// to and returns the first one found. An error will be returned if the lookup
+// was unsuccessful.
+func FindTrust(t *testing.T, client *gophercloud.ServiceClient) (*trusts.Trust, error) {
+	t.Log("Attempting to find a trust")
+	var trust *trusts.Trust
+
+	allPages, err := trusts.List(client, nil).AllPages()
+	if err != nil {
+		return nil, err
+	}
+
+	allTrusts, err := trusts.ExtractTrusts(allPages)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, t := range allTrusts {
+		trust = &t
+		break
+	}
+
+	t.Logf("Successfully found a trust %s ", trust.ID)
+
+	return trust, nil
+}

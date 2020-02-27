@@ -1,4 +1,27 @@
-## 0.8.0 (Unreleased)
+## 0.9.0 (Unreleased)
+
+UPGRADE NOTES
+
+* The way we implement new API result fields added by microversions has changed. Previously, we would declare a dedicated `ExtractFoo` function in a file called `microversions.go`. Now, we are declaring those fields inline of the original result struct as a pointer. [GH-1854](https://github.com/gophercloud/gophercloud/pull/1854)
+
+IMPROVEMENTS
+
+* Added `compute/v2/extensions/instanceactions.List` [GH-1848](https://github.com/gophercloud/gophercloud/pull/1848)
+* Added `compute/v2/extensions/instanceactions.Get` [GH-1848](https://github.com/gophercloud/gophercloud/pull/1848)
+* Added `networking/v2/ports.List.FixedIPs` [GH-1849](https://github.com/gophercloud/gophercloud/pull/1849)
+* Added `identity/v3/extensions/trusts.List` [GH-1855](https://github.com/gophercloud/gophercloud/pull/1855)
+* Added `identity/v3/extensions/trusts.Get` [GH-1855](https://github.com/gophercloud/gophercloud/pull/1855)
+* Added `identity/v3/extensions/trusts.Trust.ExpiresAt` [GH-1857](https://github.com/gophercloud/gophercloud/pull/1857)
+* Added `identity/v3/extensions/trusts.Trust.DeletedAt` [GH-1857](https://github.com/gophercloud/gophercloud/pull/1857)
+* Added `compute/v2/extensions/instanceactions.InstanceActionDetail` [GH-1851](https://github.com/gophercloud/gophercloud/pull/1851)
+* Added `compute/v2/extensions/instanceactions.Event` [GH-1851](https://github.com/gophercloud/gophercloud/pull/1851)
+* Added `compute/v2/extensions/instanceactions.ListOpts` [GH-1858](https://github.com/gophercloud/gophercloud/pull/1858)
+
+BUG FIXES
+
+* Added support for `int64` headers, which were previously being silently dropped [GH-1860](https://github.com/gophercloud/gophercloud/pull/1860)
+
+## 0.8.0 (February 8, 2020)
 
 UPGRADE NOTES
 
@@ -28,12 +51,16 @@ IMPROVEMENTS
 * Added `MonitorPort` to `loadbalancer/v2/pools.CreateMemberOpts` [GH-1824](https://github.com/gophercloud/gophercloud/pull/1824)
 * Changed `Impersonation` to a non-required field in `identity/v3/extensions/trusts.CreateOpts` [GH-1818](https://github.com/gophercloud/gophercloud/pull/1818)
 * Added `InsertHeaders` to `loadbalancer/v2/listeners.UpdateOpts` [GH-1835]
+* Added `NUMATopology` to `baremetalintrospection/v1/introspection.Data` [GH-1842](https://github.com/gophercloud/gophercloud/pull/1842)
+* Added `placement/v1/resourceproviders.Create` [GH-1841](https://github.com/gophercloud/gophercloud/pull/1841)
 
 BUG FIXES
 
 * Changed `sort_key` to `sort_keys` in ` workflow/v2/crontriggers.ListOpts` [GH-1809](https://github.com/gophercloud/gophercloud/pull/1809)
 * Allow `blockstorage/extensions/schedulerstats.Capabilities.MaxOverSubscriptionRatio` to accept both string and int/float responses [GH-1817](https://github.com/gophercloud/gophercloud/pull/1817)
 * Fixed bug in `NewLoadBalancerV2` for situations when the LBaaS service was advertised without a `/v2.0` endpoint [GH-1829](https://github.com/gophercloud/gophercloud/pull/1829)
+* Fixed JSON tags in `baremetal/v1/ports.UpdateOperation` [GH-1840](https://github.com/gophercloud/gophercloud/pull/1840)
+* Fixed JSON tags in `networking/v2/extensions/lbaas/vips.commonResult.Extract()` [GH-1840](https://github.com/gophercloud/gophercloud/pull/1840)
 
 ## 0.7.0 (December 3, 2019)
 
