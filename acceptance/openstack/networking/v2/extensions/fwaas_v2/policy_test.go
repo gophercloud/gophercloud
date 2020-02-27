@@ -15,17 +15,29 @@ func TestPolicyCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
+	// Create First Rule. This will be used as part of the Policy creation
 	rule, err := CreateRule(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteRule(t, client, rule.ID)
 
 	tools.PrintResource(t, rule)
 
+	// Create Second rule. This will be injected in to the policy after its creation
+	ruleToInsert, err := CreateRule(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteRule(t, client, ruleToInsert.ID)
+
+	tools.PrintResource(t, ruleToInsert)
+
+	// Create the Policy using the first rule
 	policy, err := CreatePolicy(t, client, rule.ID)
 	th.AssertNoErr(t, err)
 	defer DeletePolicy(t, client, policy.ID)
 
 	tools.PrintResource(t, policy)
+
+	// Inject the second rule
+	AddRule(t, client, policy.ID, ruleToInsert.ID, rule.ID)
 
 	name := ""
 	description := ""

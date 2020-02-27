@@ -12,6 +12,21 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
+// AddRule will add a rule to to a policy.
+func AddRule(t *testing.T, client *gophercloud.ServiceClient, policyID string, ruleID string, beforeRuleID string) {
+	t.Logf("Attempting to insert rule %s in to policy %s", ruleID, policyID)
+
+	addOpts := policies.InsertRuleOpts{
+		ID:           ruleID,
+		BeforeRuleID: beforeRuleID,
+	}
+
+	_, err := policies.AddRule(client, policyID, addOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to insert rule %s before rule %s in policy %s: %v", ruleID, beforeRuleID, policyID, err)
+	}
+}
+
 // CreatePolicy will create a Firewall Policy with a random name and given
 // rule. An error will be returned if the rule could not be created.
 func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string) (*policies.Policy, error) {
