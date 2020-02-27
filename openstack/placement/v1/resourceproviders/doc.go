@@ -36,5 +36,12 @@ Example to get resource providers usages
 		panic(err)
 	}
 
+Example to get resource providers inventories
+
+	rp, err := resourceproviders.GetInventories(placementClient, resourceProviderID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package resourceproviders

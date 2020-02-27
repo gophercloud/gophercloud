@@ -66,3 +66,14 @@ func TestGetResourceProvidersUsages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, ExpectedUsages, *actual)
 }
+
+func TestGetResourceProvidersInventories(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleResourceProviderGetInventories(t)
+
+	actual, err := resourceproviders.GetInventories(fake.ServiceClient(), ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedInventories, *actual)
+}

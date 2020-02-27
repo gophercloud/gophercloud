@@ -107,3 +107,8 @@ func GetUsages(client *gophercloud.ServiceClient, resourceProviderID string) (r 
 	_, r.Err = client.Get(getResourceProviderUsagesURL(client, resourceProviderID), &r.Body, nil)
 	return
 }
+
+func GetInventories(client *gophercloud.ServiceClient, resourceProviderID string) (r GetInventoriesResult) {
+	_, r.Err = client.Get(getResourceProviderInventoriesURL(client, resourceProviderID), &r.Body, nil)
+	return
+}

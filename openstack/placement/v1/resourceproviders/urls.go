@@ -13,3 +13,7 @@ func resourceProvidersListURL(client *gophercloud.ServiceClient) string {
 func getResourceProviderUsagesURL(client *gophercloud.ServiceClient, resourceProviderID string) string {
 	return client.ServiceURL(apiName, resourceProviderID, "usages")
 }
+
+func getResourceProviderInventoriesURL(client *gophercloud.ServiceClient, resourceProviderID string) string {
+	return client.ServiceURL(apiName, resourceProviderID, "inventories")
+}

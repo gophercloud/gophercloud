@@ -44,6 +44,26 @@ type ResourceProviderUsage struct {
 	Usages                     Usage `json:"usages"`
 }
 
+type Inventory struct {
+	AllocationRatio float32 `json:"allocation_ratio"`
+	MaxUnit         int     `json:"max_unit"`
+	MinUnit         int     `json:"min_unit"`
+	Reserved        int     `json:"reserved"`
+	StepSize        int     `json:"step_size"`
+	Total           int     `json:"total"`
+}
+
+type Inventories struct {
+	DiskGB   Inventory `json:"DISK_GB"`
+	MemoryMB Inventory `json:"MEMORY_MB"`
+	VCPU     Inventory `json:"VCPU"`
+}
+
+type ResourceProviderInventories struct {
+	ResourceProviderGeneration int         `json:"resource_provider_generation"`
+	Inventories                Inventories `json:"inventories"`
+}
+
 // resourceProviderResult is the resposne of a base ResourceProvider result.
 type resourceProviderResult struct {
 	gophercloud.Result
@@ -92,6 +112,19 @@ type GetUsagesResult struct {
 // Extract interprets a GetUsagesResult as a ResourceProviderUsage.
 func (r GetUsagesResult) Extract() (*ResourceProviderUsage, error) {
 	var s ResourceProviderUsage
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+// GetInventoriesResult is the response of a Get usage operations. Call its Extract method
+// to interpret it as a ResourceProviderInventories.
+type GetInventoriesResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a GetInventoriesResult as a ResourceProviderInventories.
+func (r GetInventoriesResult) Extract() (*ResourceProviderInventories, error) {
+	var s ResourceProviderInventories
 	err := r.ExtractInto(&s)
 	return &s, err
 }
