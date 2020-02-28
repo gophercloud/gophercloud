@@ -12,6 +12,16 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
+// RemoveRule will remove a rule from the  policy.
+func RemoveRule(t *testing.T, client *gophercloud.ServiceClient, policyID string, ruleID string) {
+	t.Logf("Attempting to remove rule %s from policy %s", ruleID, policyID)
+
+	_, err := policies.RemoveRule(client, policyID, ruleID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to remove rule %s from policy %s: %v", ruleID, policyID, err)
+	}
+}
+
 // AddRule will add a rule to to a policy.
 func AddRule(t *testing.T, client *gophercloud.ServiceClient, policyID string, ruleID string, beforeRuleID string) {
 	t.Logf("Attempting to insert rule %s in to policy %s", ruleID, policyID)
