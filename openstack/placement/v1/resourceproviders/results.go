@@ -47,15 +47,9 @@ type Inventory struct {
 	Total           int     `json:"total"`
 }
 
-type Inventories struct {
-	DiskGB   Inventory `json:"DISK_GB"`
-	MemoryMB Inventory `json:"MEMORY_MB"`
-	VCPU     Inventory `json:"VCPU"`
-}
-
 type ResourceProviderInventories struct {
-	ResourceProviderGeneration int         `json:"resource_provider_generation"`
-	Inventories                Inventories `json:"inventories"`
+	ResourceProviderGeneration int                  `json:"resource_provider_generation"`
+	Inventories                map[string]Inventory `json:"inventories"`
 }
 
 // resourceProviderResult is the resposne of a base ResourceProvider result.
