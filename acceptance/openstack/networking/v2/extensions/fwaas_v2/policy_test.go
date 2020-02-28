@@ -39,6 +39,9 @@ func TestPolicyCRUD(t *testing.T) {
 	// Inject the second rule
 	AddRule(t, client, policy.ID, ruleToInsert.ID, rule.ID)
 
+	// Remove the first rule
+	RemoveRule(t, client, policy.ID, rule.ID)
+
 	name := ""
 	description := ""
 	updateOpts := policies.UpdateOpts{
