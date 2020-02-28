@@ -33,15 +33,9 @@ type ResourceProvider struct {
 	RootProviderUUID string `json:"root_provider_uuid"`
 }
 
-type Usage struct {
-	DiskGB   int `json:"DISK_GB"`
-	MemoryMB int `json:"MEMORY_MB"`
-	VCPU     int `json:"VCPU"`
-}
-
 type ResourceProviderUsage struct {
-	ResourceProviderGeneration int   `json:"resource_provider_generation"`
-	Usages                     Usage `json:"usages"`
+	ResourceProviderGeneration int            `json:"resource_provider_generation"`
+	Usages                     map[string]int `json:"usages"`
 }
 
 type Inventory struct {

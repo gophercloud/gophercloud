@@ -140,10 +140,10 @@ var ExpectedResourceProviders = []resourceproviders.ResourceProvider{
 
 var ExpectedUsages = resourceproviders.ResourceProviderUsage{
 	ResourceProviderGeneration: 1,
-	Usages: resourceproviders.Usage{
-		DiskGB:   1,
-		MemoryMB: 512,
-		VCPU:     1,
+	Usages: map[string]int{
+		"DISK_GB":   1,
+		"MEMORY_MB": 512,
+		"VCPU":      1,
 	},
 }
 
