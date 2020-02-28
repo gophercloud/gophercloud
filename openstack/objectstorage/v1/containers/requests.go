@@ -141,6 +141,8 @@ type UpdateOpts struct {
 	VersionsLocation       string `h:"X-Versions-Location"`
 	RemoveHistoryLocation  string `h:"X-Remove-History-Location"`
 	HistoryLocation        string `h:"X-History-Location"`
+	TempURLKey             string `h:"X-Container-Meta-Temp-URL-Key"`
+	TempURLKey2            string `h:"X-Container-Meta-Temp-URL-Key-2"`
 }
 
 // ToContainerUpdateMap formats a UpdateOpts into a map of headers.
