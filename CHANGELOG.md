@@ -18,6 +18,8 @@ IMPROVEMENTS
 * Added `compute/v2/extensions/instanceactions.ListOpts` [GH-1858](https://github.com/gophercloud/gophercloud/pull/1858)
 * Added `objectstorage/v1/containers.UpdateOpts.X-Container-Meta-Temp-URL-Key` [GH-1864](https://github.com/gophercloud/gophercloud/pull/1864)
 * Added `objectstorage/v1/containers.UpdateOpts.X-Container-Meta-Temp-URL-Key2` [GH-1864](https://github.com/gophercloud/gophercloud/pull/1864)
+* Added `placement/v1/resourceproviders.GetUsages` [GH-1862](https://github.com/gophercloud/gophercloud/pull/1862)
+* Added `placement/v1/resourceproviders.GetInventories` [GH-1862](https://github.com/gophercloud/gophercloud/pull/1862)
 
 
 BUG FIXES
