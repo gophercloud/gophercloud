@@ -20,7 +20,7 @@ IMPROVEMENTS
 * Added `objectstorage/v1/containers.UpdateOpts.X-Container-Meta-Temp-URL-Key2` [GH-1864](https://github.com/gophercloud/gophercloud/pull/1864)
 * Added `placement/v1/resourceproviders.GetUsages` [GH-1862](https://github.com/gophercloud/gophercloud/pull/1862)
 * Added `placement/v1/resourceproviders.GetInventories` [GH-1862](https://github.com/gophercloud/gophercloud/pull/1862)
-
+* Added `imageservice/v2/images.ReplaceImageMinRam` [GH-1867](https://github.com/gophercloud/gophercloud/pull/1867)
 
 BUG FIXES
 
