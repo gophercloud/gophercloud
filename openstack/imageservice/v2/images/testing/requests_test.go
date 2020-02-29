@@ -255,6 +255,7 @@ func TestUpdateImage(t *testing.T) {
 		images.ReplaceImageName{NewName: "Fedora 17"},
 		images.ReplaceImageTags{NewTags: []string{"fedora", "beefy"}},
 		images.ReplaceImageMinDisk{NewMinDisk: 21},
+		images.ReplaceImageMinRam{NewMinRam: 1024},
 	}).Extract()
 
 	th.AssertNoErr(t, err)
@@ -281,7 +282,7 @@ func TestUpdateImage(t *testing.T) {
 		},
 
 		Owner:            "",
-		MinRAMMegabytes:  0,
+		MinRAMMegabytes:  1024,
 		MinDiskGigabytes: 21,
 
 		DiskFormat:      "",

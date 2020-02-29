@@ -317,6 +317,11 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 				"op": "replace",
 				"path": "/min_disk",
 				"value": 21
+			},
+			{
+				"op": "replace",
+				"path": "/min_ram",
+				"value": 1024
 			}
 		]`)
 
@@ -341,7 +346,7 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 			"file": "/v2/images/da3b75d9-3f4a-40e7-8a2c-bfab23927dea/file",
 			"schema": "/v2/schemas/image",
 			"owner": "",
-			"min_ram": 0,
+			"min_ram": 1024,
 			"min_disk": 21,
 			"disk_format": "",
 			"virtual_size": 0,
