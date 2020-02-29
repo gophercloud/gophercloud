@@ -75,6 +75,8 @@ type CreateOpts struct {
 	IfNoneMatch       string `h:"If-None-Match"`
 	VersionsLocation  string `h:"X-Versions-Location"`
 	HistoryLocation   string `h:"X-History-Location"`
+	TempURLKey        string `h:"X-Container-Meta-Temp-URL-Key"`
+	TempURLKey2       string `h:"X-Container-Meta-Temp-URL-Key-2"`
 }
 
 // ToContainerCreateMap formats a CreateOpts into a map of headers.
