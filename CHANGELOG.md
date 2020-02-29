@@ -16,11 +16,14 @@ IMPROVEMENTS
 * Added `compute/v2/extensions/instanceactions.InstanceActionDetail` [GH-1851](https://github.com/gophercloud/gophercloud/pull/1851)
 * Added `compute/v2/extensions/instanceactions.Event` [GH-1851](https://github.com/gophercloud/gophercloud/pull/1851)
 * Added `compute/v2/extensions/instanceactions.ListOpts` [GH-1858](https://github.com/gophercloud/gophercloud/pull/1858)
-* Added `objectstorage/v1/containers.UpdateOpts.X-Container-Meta-Temp-URL-Key` [GH-1864](https://github.com/gophercloud/gophercloud/pull/1864)
-* Added `objectstorage/v1/containers.UpdateOpts.X-Container-Meta-Temp-URL-Key2` [GH-1864](https://github.com/gophercloud/gophercloud/pull/1864)
+* Added `objectstorage/v1/containers.UpdateOpts.TempURLKey` [GH-1864](https://github.com/gophercloud/gophercloud/pull/1864)
+* Added `objectstorage/v1/containers.UpdateOpts.TempURLKey2` [GH-1864](https://github.com/gophercloud/gophercloud/pull/1864)
 * Added `placement/v1/resourceproviders.GetUsages` [GH-1862](https://github.com/gophercloud/gophercloud/pull/1862)
 * Added `placement/v1/resourceproviders.GetInventories` [GH-1862](https://github.com/gophercloud/gophercloud/pull/1862)
 * Added `imageservice/v2/images.ReplaceImageMinRam` [GH-1867](https://github.com/gophercloud/gophercloud/pull/1867)
+* Added `objectstorage/v1/containers.UpdateOpts.TempURLKey` [GH-1865](https://github.com/gophercloud/gophercloud/pull/1865)
+* Added `objectstorage/v1/containers.CreateOpts.TempURLKey2` [GH-1865](https://github.com/gophercloud/gophercloud/pull/1865)
+
 
 BUG FIXES
 
