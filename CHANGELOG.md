@@ -16,6 +16,9 @@ IMPROVEMENTS
 * Added `compute/v2/extensions/instanceactions.InstanceActionDetail` [GH-1851](https://github.com/gophercloud/gophercloud/pull/1851)
 * Added `compute/v2/extensions/instanceactions.Event` [GH-1851](https://github.com/gophercloud/gophercloud/pull/1851)
 * Added `compute/v2/extensions/instanceactions.ListOpts` [GH-1858](https://github.com/gophercloud/gophercloud/pull/1858)
+* Added `objectstorage/v1/containers.UpdateOpts.X-Container-Meta-Temp-URL-Key` [GH-1864](https://github.com/gophercloud/gophercloud/pull/1864)
+* Added `objectstorage/v1/containers.UpdateOpts.X-Container-Meta-Temp-URL-Key2` [GH-1864](https://github.com/gophercloud/gophercloud/pull/1864)
+
 
 BUG FIXES
 
