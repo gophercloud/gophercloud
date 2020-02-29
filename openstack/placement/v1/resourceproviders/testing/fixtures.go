@@ -11,6 +11,8 @@ import (
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+const ResourceProviderTestID = "99c09379-6e52-4ef8-9a95-b9ce6f68452e"
+
 const ResourceProvidersBody = `
 {
   "resource_providers": [
@@ -60,6 +62,49 @@ const ResourceProviderCreateBody = `
 }
 `
 
+const UsagesBody = `
+{
+    "resource_provider_generation": 1,
+    "usages": {
+        "DISK_GB": 1,
+        "MEMORY_MB": 512,
+        "VCPU": 1
+    }
+}
+`
+
+const InventoriesBody = `
+{
+    "inventories": {
+        "DISK_GB": {
+            "allocation_ratio": 1.0,
+            "max_unit": 35,
+            "min_unit": 1,
+            "reserved": 0,
+            "step_size": 1,
+            "total": 35
+        },
+        "MEMORY_MB": {
+            "allocation_ratio": 1.5,
+            "max_unit": 5825,
+            "min_unit": 1,
+            "reserved": 512,
+            "step_size": 1,
+            "total": 5825
+        },
+        "VCPU": {
+            "allocation_ratio": 16.0,
+            "max_unit": 4,
+            "min_unit": 1,
+            "reserved": 0,
+            "step_size": 1,
+            "total": 4
+        }
+    },
+    "resource_provider_generation": 7
+}
+`
+
 var ExpectedResourceProvider1 = resourceproviders.ResourceProvider{
 	Generation: 1,
 	UUID:       "99c09379-6e52-4ef8-9a95-b9ce6f68452e",
@@ -93,6 +138,45 @@ var ExpectedResourceProviders = []resourceproviders.ResourceProvider{
 	ExpectedResourceProvider2,
 }
 
+var ExpectedUsages = resourceproviders.ResourceProviderUsage{
+	ResourceProviderGeneration: 1,
+	Usages: map[string]int{
+		"DISK_GB":   1,
+		"MEMORY_MB": 512,
+		"VCPU":      1,
+	},
+}
+
+var ExpectedInventories = resourceproviders.ResourceProviderInventories{
+	ResourceProviderGeneration: 7,
+	Inventories: map[string]resourceproviders.Inventory{
+		"DISK_GB": resourceproviders.Inventory{
+			AllocationRatio: 1.0,
+			MaxUnit:         35,
+			MinUnit:         1,
+			Reserved:        0,
+			StepSize:        1,
+			Total:           35,
+		},
+		"MEMORY_MB": resourceproviders.Inventory{
+			AllocationRatio: 1.5,
+			MaxUnit:         5825,
+			MinUnit:         1,
+			Reserved:        512,
+			StepSize:        1,
+			Total:           5825,
+		},
+		"VCPU": resourceproviders.Inventory{
+			AllocationRatio: 16.0,
+			MaxUnit:         4,
+			MinUnit:         1,
+			Reserved:        0,
+			StepSize:        1,
+			Total:           4,
+		},
+	},
+}
+
 func HandleResourceProviderList(t *testing.T) {
 	th.Mux.HandleFunc("/resource_providers",
 		func(w http.ResponseWriter, r *http.Request) {
@@ -116,4 +200,34 @@ func HandleResourceProviderCreate(t *testing.T) {
 
 		fmt.Fprintf(w, ResourceProviderCreateBody)
 	})
+}
+
+func HandleResourceProviderGetUsages(t *testing.T) {
+	usageTestUrl := fmt.Sprintf("/resource_providers/%s/usages", ResourceProviderTestID)
+
+	th.Mux.HandleFunc(usageTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprintf(w, UsagesBody)
+		})
+}
+
+func HandleResourceProviderGetInventories(t *testing.T) {
+	inventoriesTestUrl := fmt.Sprintf("/resource_providers/%s/inventories", ResourceProviderTestID)
+
+	th.Mux.HandleFunc(inventoriesTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprintf(w, InventoriesBody)
+		})
 }

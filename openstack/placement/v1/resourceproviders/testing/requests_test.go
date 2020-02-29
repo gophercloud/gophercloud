@@ -55,3 +55,25 @@ func TestCreateResourceProvider(t *testing.T) {
 
 	th.AssertDeepEquals(t, &expected, actual)
 }
+
+func TestGetResourceProvidersUsages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleResourceProviderGetUsages(t)
+
+	actual, err := resourceproviders.GetUsages(fake.ServiceClient(), ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedUsages, *actual)
+}
+
+func TestGetResourceProvidersInventories(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleResourceProviderGetInventories(t)
+
+	actual, err := resourceproviders.GetInventories(fake.ServiceClient(), ResourceProviderTestID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, ExpectedInventories, *actual)
+}
