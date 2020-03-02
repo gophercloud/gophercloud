@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
 )
 
 // AttachResult contains the response body and error from an Attach request.
@@ -156,6 +157,14 @@ type VolumeImage struct {
 
 	// Current status of the volume.
 	Status string `json:"status"`
+
+	// Visibility defines who can see/use the image.
+	// supported since 3.1 microversion
+	Visibility images.ImageVisibility `json:"visibility"`
+
+	// whether the image is not deletable.
+	// supported since 3.1 microversion
+	Protected bool `json:"protected"`
 
 	// The date when this volume was last updated.
 	UpdatedAt time.Time `json:"-"`
