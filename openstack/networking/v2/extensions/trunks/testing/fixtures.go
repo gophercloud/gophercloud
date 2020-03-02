@@ -372,6 +372,9 @@ func ExpectedSubportsAddedTrunk() (exp trunks.Trunk, err error) {
 
 func ExpectedSubportsRemovedTrunk() (exp trunks.Trunk, err error) {
 	trunkUpdatedAt, err := time.Parse(time.RFC3339, "2018-10-03T13:57:27Z")
+	if err != nil {
+		return
+	}
 	expectedTrunks, err := ExpectedTrunkSlice()
 	if err != nil {
 		return
