@@ -77,6 +77,25 @@ const CreateResponse = `
 }
 `
 
+const RestoreRequest = `
+{
+  "restore": {
+    "name": "vol-001",
+    "volume_id": "1234"
+  }
+}
+`
+
+const RestoreResponse = `
+{
+  "restore": {
+    "backup_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+    "volume_id": "1234",
+    "volume_name": "vol-001"
+  }
+}
+`
+
 func MockListResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -121,6 +140,21 @@ func MockCreateResponse(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 
 		fmt.Fprintf(w, CreateResponse)
+	})
+}
+
+func MockRestoreResponse(t *testing.T) {
+	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/restore", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, RestoreRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, RestoreResponse)
 	})
 }
 

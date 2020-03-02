@@ -51,6 +51,20 @@ Example to Update a Backup
 
 	fmt.Println(backup)
 
+Example to Restore a Backup to a Volume
+
+	options := backups.RestoreOpts{
+		VolumeID: "1234",
+		Name:     "vol-001",
+	}
+
+	restore, err := backups.BackupRestore(client, "uuid", options).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(restore)
+
 Example to Delete a Backup
 
 	err := backups.Delete(client, "uuid").ExtractErr()

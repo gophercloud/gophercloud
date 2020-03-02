@@ -85,6 +85,21 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }
 
+func TestRestore(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockRestoreResponse(t)
+
+	options := backups.RestoreOpts{VolumeID: "1234", Name: "vol-001"}
+	n, err := backups.BackupRestore(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.VolumeID, "1234")
+	th.AssertEquals(t, n.VolumeName, "vol-001")
+	th.AssertEquals(t, n.BackupID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+}
+
 func TestDelete(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

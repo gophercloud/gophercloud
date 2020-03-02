@@ -158,3 +158,32 @@ func (r commonResult) ExtractInto(v interface{}) error {
 func ExtractBackupsInto(r pagination.Page, v interface{}) error {
 	return r.(BackupPage).Result.ExtractIntoSlicePtr(v, "backups")
 }
+
+// RestoreResult contains the response body and error from a restore request.
+type RestoreResult struct {
+	commonResult
+}
+
+// Restore contains all the information associated with a Cinder Backup restore
+// response.
+type Restore struct {
+	// BackupID is the Unique identifier of the backup.
+	BackupID string `json:"backup_id"`
+
+	// VolumeID is the Unique identifier of the volume.
+	VolumeID string `json:"volume_id"`
+
+	// Name is the name of the volume, where the backup was restored to.
+	VolumeName string `json:"volume_name"`
+}
+
+// Extract will get the Backup restore object out of the RestoreResult object.
+func (r RestoreResult) Extract() (*Restore, error) {
+	var s Restore
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+func (r RestoreResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, "restore")
+}

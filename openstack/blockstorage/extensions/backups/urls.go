@@ -21,3 +21,7 @@ func listURL(c *gophercloud.ServiceClient) string {
 func updateURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("backups", id)
 }
+
+func restoreURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("backups", id, "restore")
+}
