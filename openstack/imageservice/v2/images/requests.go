@@ -372,7 +372,7 @@ func (r UpdateImageProperty) ToImagePatchMap() map[string]interface{} {
 		"path": fmt.Sprintf("/%s", r.Name),
 	}
 
-	if r.Value != "" {
+	if r.Op != RemoveOp {
 		updateMap["value"] = r.Value
 	}
 

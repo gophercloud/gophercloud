@@ -322,6 +322,11 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 				"op": "replace",
 				"path": "/min_ram",
 				"value": 1024
+			},
+			{
+				"op": "add",
+				"path": "/empty_value",
+				"value": ""
 			}
 		]`)
 
@@ -351,6 +356,7 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 			"disk_format": "",
 			"virtual_size": 0,
 			"container_format": "",
+			"empty_value": "",
 			"hw_disk_bus": "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model": "virtio-scsi"
