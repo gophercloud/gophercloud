@@ -43,7 +43,7 @@ func TestNetworksGet(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	networkID, err := GetNetworkIDFromNetworks(t, client, choices.NetworkName)
+	networkID, err := GetNetworkIDFromOSNetworks(t, client, choices.NetworkName)
 	th.AssertNoErr(t, err)
 
 	network, err := networks.Get(client, networkID).Extract()
