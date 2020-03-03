@@ -1,5 +1,10 @@
 package extendedserverattributes
 
+import (
+	"encoding/base64"
+	"encoding/json"
+)
+
 // ServerAttributesExt represents basic OS-EXT-SRV-ATTR server response fields.
 // You should use extract methods from microversions.go to retrieve additional
 // fields.
@@ -40,5 +45,31 @@ type ServerAttributesExt struct {
 
 	// Userdata is the userdata of the instance.
 	// This requires microversion 2.3 or later.
-	Userdata *string `json:"OS-EXT-SRV-ATTR:userdata"`
+	Userdata *string `json:"-"`
+}
+
+func (r *ServerAttributesExt) UnmarshalJSON(b []byte) error {
+	type tmp ServerAttributesExt
+	var s struct {
+		tmp
+		Userdata *string `json:"OS-EXT-SRV-ATTR:user_data"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+
+	*r = ServerAttributesExt(s.tmp)
+
+	if s.Userdata != nil {
+		r.Userdata = new(string)
+		if v, err := base64.StdEncoding.DecodeString(*s.Userdata); err != nil {
+			r.Userdata = s.Userdata
+		} else {
+			v := string(v)
+			r.Userdata = &v
+		}
+	}
+
+	return err
 }

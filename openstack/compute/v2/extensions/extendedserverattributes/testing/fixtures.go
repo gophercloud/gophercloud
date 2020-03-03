@@ -6,7 +6,7 @@ package testing
 const ServerWithAttributesExtResult = `
 {
     "server": {
-        "OS-EXT-SRV-ATTR:user_data": "",
+        "OS-EXT-SRV-ATTR:user_data": "Zm9v",
         "OS-EXT-SRV-ATTR:instance_name": "instance-00000001",
         "OS-EXT-SRV-ATTR:root_device_name": "/dev/sda",
         "OS-EXT-SRV-ATTR:hostname": "test00",
