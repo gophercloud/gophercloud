@@ -21,7 +21,8 @@ const ListOutput = `
       "enabled": true,
       "id": "1234",
       "name": "Red Team",
-      "parent_id": null
+      "parent_id": null,
+	  "tags": ["Red", "Team"]
     },
     {
       "is_domain": false,
@@ -30,7 +31,7 @@ const ListOutput = `
       "enabled": true,
       "id": "9876",
       "name": "Blue Team",
-      "parent_id": null
+	  "parent_id": null
     }
   ],
   "links": {
@@ -50,8 +51,9 @@ const GetOutput = `
 		"enabled": true,
 		"id": "1234",
 		"name": "Red Team",
-		"parent_id": null
-  }
+		"parent_id": null,
+		"tags": ["Red", "Team"]
+	}
 }
 `
 
@@ -60,7 +62,8 @@ const CreateRequest = `
 {
   "project": {
 		"description": "The team that is red",
-		"name": "Red Team"
+		"name": "Red Team",
+		"tags": ["Red", "Team"]
   }
 }
 `
@@ -70,7 +73,8 @@ const UpdateRequest = `
 {
   "project": {
 		"description": "The team that is bright red",
-		"name": "Bright Red Team"
+		"name": "Bright Red Team",
+		"tags": ["Red"]
   }
 }
 `
@@ -85,8 +89,9 @@ const UpdateOutput = `
 		"enabled": true,
 		"id": "1234",
 		"name": "Bright Red Team",
-		"parent_id": null
-  }
+		"parent_id": null,
+		"tags": ["Red"]
+	}
 }
 `
 
@@ -99,6 +104,7 @@ var RedTeam = projects.Project{
 	ID:          "1234",
 	Name:        "Red Team",
 	ParentID:    "",
+	Tags:        []string{"Red", "Team"},
 }
 
 // BlueTeam is a Project fixture.
@@ -121,6 +127,7 @@ var UpdatedRedTeam = projects.Project{
 	ID:          "1234",
 	Name:        "Bright Red Team",
 	ParentID:    "",
+	Tags:        []string{"Red"},
 }
 
 // ExpectedProjectSlice is the slice of projects expected to be returned from ListOutput.
