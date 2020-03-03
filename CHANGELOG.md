@@ -33,6 +33,7 @@ IMPROVEMENTS
 BUG FIXES
 
 * Added support for `int64` headers, which were previously being silently dropped [GH-1860](https://github.com/gophercloud/gophercloud/pull/1860)
+* Allow image properties with empty values [GH-1875](https://github.com/gophercloud/gophercloud/pull/1875)
 
 ## 0.8.0 (February 8, 2020)
 
