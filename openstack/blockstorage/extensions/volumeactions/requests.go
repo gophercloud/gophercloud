@@ -2,7 +2,6 @@ package volumeactions
 
 import (
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
 )
 
 // AttachOptsBuilder allows extensions to add additional parameters to the
@@ -245,7 +244,7 @@ type UploadImageOpts struct {
 
 	// Visibility defines who can see/use the image.
 	// supported since 3.1 microversion
-	Visibility images.ImageVisibility `json:"visibility,omitempty"`
+	Visibility string `json:"visibility,omitempty"`
 
 	// whether the image is not deletable.
 	// supported since 3.1 microversion

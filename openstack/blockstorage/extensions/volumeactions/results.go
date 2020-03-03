@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
 )
 
 // AttachResult contains the response body and error from an Attach request.
@@ -160,7 +159,7 @@ type VolumeImage struct {
 
 	// Visibility defines who can see/use the image.
 	// supported since 3.1 microversion
-	Visibility images.ImageVisibility `json:"visibility"`
+	Visibility string `json:"visibility"`
 
 	// whether the image is not deletable.
 	// supported since 3.1 microversion
