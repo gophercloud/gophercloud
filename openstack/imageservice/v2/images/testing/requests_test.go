@@ -256,6 +256,11 @@ func TestUpdateImage(t *testing.T) {
 		images.ReplaceImageTags{NewTags: []string{"fedora", "beefy"}},
 		images.ReplaceImageMinDisk{NewMinDisk: 21},
 		images.ReplaceImageMinRam{NewMinRam: 1024},
+		images.UpdateImageProperty{
+			Op:    images.AddOp,
+			Name:  "empty_value",
+			Value: "",
+		},
 	}).Extract()
 
 	th.AssertNoErr(t, err)
@@ -296,6 +301,7 @@ func TestUpdateImage(t *testing.T) {
 			"hw_disk_bus":       "scsi",
 			"hw_disk_bus_model": "virtio-scsi",
 			"hw_scsi_model":     "virtio-scsi",
+			"empty_value":       "",
 		},
 	}
 
