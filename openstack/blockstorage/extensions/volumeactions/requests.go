@@ -241,6 +241,14 @@ type UploadImageOpts struct {
 
 	// Force image creation, usable if volume attached to instance.
 	Force bool `json:"force,omitempty"`
+
+	// Visibility defines who can see/use the image.
+	// supported since 3.1 microversion
+	Visibility string `json:"visibility,omitempty"`
+
+	// whether the image is not deletable.
+	// supported since 3.1 microversion
+	Protected bool `json:"protected,omitempty"`
 }
 
 // ToVolumeUploadImageMap assembles a request body based on the contents of a
