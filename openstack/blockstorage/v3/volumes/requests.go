@@ -16,7 +16,7 @@ type CreateOptsBuilder interface {
 // see the Volume object.
 type CreateOpts struct {
 	// The size of the volume, in GB
-	Size int `json:"size"`
+	Size int `json:"size,omitempty"`
 	// The availability zone
 	AvailabilityZone string `json:"availability_zone,omitempty"`
 	// ConsistencyGroupID is the ID of a consistency group
@@ -48,22 +48,7 @@ type CreateOpts struct {
 // ToVolumeCreateMap assembles a request body based on the contents of a
 // CreateOpts.
 func (opts CreateOpts) ToVolumeCreateMap() (map[string]interface{}, error) {
-	b, err := gophercloud.BuildRequestBody(opts, "volume")
-	if err != nil {
-		return nil, err
-	}
-
-	if opts.BackupID != nil && *opts.BackupID == "" {
-		return b, nil
-	}
-
-	volumeMap := b["volume"].(map[string]interface{})
-	// delete size, when restoring from a backup
-	if v, ok := volumeMap["size"].(float64); ok && v == 0 {
-		delete(volumeMap, "size")
-	}
-
-	return b, nil
+	return gophercloud.BuildRequestBody(opts, "volume")
 }
 
 // Create will create a new Volume based on the values in CreateOpts. To extract
