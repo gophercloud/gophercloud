@@ -193,17 +193,17 @@ type RestoreOpts struct {
 	Name string `json:"name,omitempty"`
 }
 
-// ToBackupRestoreMap assembles a request body based on the contents of a
+// ToRestoreMap assembles a request body based on the contents of a
 // RestoreOpts.
-func (opts RestoreOpts) ToBackupRestoreMap() (map[string]interface{}, error) {
+func (opts RestoreOpts) ToRestoreMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "restore")
 }
 
-// Restore will restore a Backup to a volume based on the values in RestoreOpts. To
-// extract the Restore object from the response, call the Extract method on the
-// RestoreResult.
-func BackupRestore(client *gophercloud.ServiceClient, id string, opts RestoreOpts) (r RestoreResult) {
-	b, err := opts.ToBackupRestoreMap()
+// RestoreFromBackup will restore a Backup to a volume based on the values in
+// RestoreOpts. To extract the Restore object from the response, call the
+// Extract method on the RestoreResult.
+func RestoreFromBackup(client *gophercloud.ServiceClient, id string, opts RestoreOpts) (r RestoreResult) {
+	b, err := opts.ToRestoreMap()
 	if err != nil {
 		r.Err = err
 		return

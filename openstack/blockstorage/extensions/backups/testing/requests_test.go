@@ -92,7 +92,7 @@ func TestRestore(t *testing.T) {
 	MockRestoreResponse(t)
 
 	options := backups.RestoreOpts{VolumeID: "1234", Name: "vol-001"}
-	n, err := backups.BackupRestore(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
+	n, err := backups.RestoreFromBackup(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", options).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.VolumeID, "1234")

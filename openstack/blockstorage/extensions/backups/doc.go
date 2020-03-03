@@ -58,7 +58,7 @@ Example to Restore a Backup to a Volume
 		Name:     "vol-001",
 	}
 
-	restore, err := backups.BackupRestore(client, "uuid", options).Extract()
+	restore, err := backups.RestoreFromBackup(client, "uuid", options).Extract()
 	if err != nil {
 		panic(err)
 	}
