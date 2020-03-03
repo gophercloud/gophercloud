@@ -38,7 +38,7 @@ type CreateOpts struct {
 	ImageID string `json:"imageRef,omitempty"`
 	// Specifies the backup ID, from which you want to create the volume.
 	// Create a volume from a backup is supported since 3.47 microversion
-	BackupID *string `json:"backup_id"`
+	BackupID string `json:"backup_id,omitempty"`
 	// The associated volume type
 	VolumeType string `json:"volume_type,omitempty"`
 	// Multiattach denotes if the volume is multi-attach capable.

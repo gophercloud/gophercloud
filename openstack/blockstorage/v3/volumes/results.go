@@ -65,7 +65,7 @@ type Volume struct {
 	SourceVolID string `json:"source_volid"`
 	// The backup ID, from which the volume was restored
 	// This field is supported since 3.47 microversion
-	BackupID *string `json:"backup_id"`
+	BackupID string `json:"backup_id"`
 	// Arbitrary key-value pairs defined by the user.
 	Metadata map[string]string `json:"metadata"`
 	// UserID is the id of the user who created the volume.

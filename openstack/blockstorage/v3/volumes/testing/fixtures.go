@@ -162,8 +162,7 @@ func MockCreateResponse(t *testing.T) {
 {
     "volume": {
     	"name": "vol-001",
-        "size": 75,
-        "backup_id": null
+        "size": 75
     }
 }
       `)
