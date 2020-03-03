@@ -677,6 +677,27 @@ func (opts CreateOptsWithCustomField) ToServerCreateMap() (map[string]interface{
 	return gophercloud.BuildRequestBody(opts, "server")
 }
 
+// HandleServerNoNetworkCreationSuccessfully sets up the test server with no
+// network to respond to a server creation request with a given response.
+func HandleServerNoNetworkCreationSuccessfully(t *testing.T, response string) {
+	th.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"server": {
+				"name": "derp",
+				"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
+				"flavorRef": "1",
+				"networks": "none"
+			}
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, response)
+	})
+}
+
 // HandleServerCreationSuccessfully sets up the test server to respond to a server creation request
 // with a given response.
 func HandleServerCreationSuccessfully(t *testing.T, response string) {
