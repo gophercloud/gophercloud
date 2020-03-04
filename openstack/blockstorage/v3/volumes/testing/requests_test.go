@@ -274,5 +274,5 @@ func TestCreateFromBackup(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, v.Size, 30)
 	th.AssertEquals(t, v.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
-	th.AssertEquals(t, v.BackupID, "20c792f0-bb03-434f-b653-06ef238e337e")
+	th.AssertEquals(t, *v.BackupID, "20c792f0-bb03-434f-b653-06ef238e337e")
 }

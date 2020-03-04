@@ -184,7 +184,7 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 }
 
 // RestoreOpts contains options for restoring a Backup. This object is passed to
-// the backups.Restore function.
+// the backups.RestoreFromBackup function.
 type RestoreOpts struct {
 	// VolumeID is the ID of the existing volume to restore the backup to.
 	VolumeID string `json:"volume_id,omitempty"`
