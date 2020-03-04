@@ -22,7 +22,7 @@ const ListOutput = `
       "id": "1234",
       "name": "Red Team",
       "parent_id": null,
-	  "tags": ["Red", "Team"]
+      "tags": ["Red", "Team"]
     },
     {
       "is_domain": false,
@@ -31,7 +31,7 @@ const ListOutput = `
       "enabled": true,
       "id": "9876",
       "name": "Blue Team",
-	  "parent_id": null
+      "parent_id": null
     }
   ],
   "links": {

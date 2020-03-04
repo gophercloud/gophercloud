@@ -105,7 +105,7 @@ func TestUpdateProject(t *testing.T) {
 	updateOpts := projects.UpdateOpts{
 		Name:        "Bright Red Team",
 		Description: &description,
-		Tags:        []string{"Red"},
+		Tags:        &[]string{"Red"},
 	}
 
 	actual, err := projects.Update(client.ServiceClient(), "1234", updateOpts).Extract()
