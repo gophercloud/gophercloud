@@ -36,6 +36,7 @@ func TestServerWithUsageExt(t *testing.T) {
 	th.AssertEquals(t, serverWithAttributesExt.Host, "compute01")
 	th.AssertEquals(t, serverWithAttributesExt.InstanceName, "instance-00000001")
 	th.AssertEquals(t, serverWithAttributesExt.HypervisorHostname, "compute01")
+	th.AssertEquals(t, *serverWithAttributesExt.Userdata, "Zm9v")
 	th.AssertEquals(t, *serverWithAttributesExt.ReservationID, "r-ky9gim1l")
 	th.AssertEquals(t, *serverWithAttributesExt.LaunchIndex, 0)
 	th.AssertEquals(t, *serverWithAttributesExt.Hostname, "test00")

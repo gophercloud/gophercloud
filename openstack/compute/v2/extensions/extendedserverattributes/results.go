@@ -40,5 +40,5 @@ type ServerAttributesExt struct {
 
 	// Userdata is the userdata of the instance.
 	// This requires microversion 2.3 or later.
-	Userdata *string `json:"OS-EXT-SRV-ATTR:userdata"`
+	Userdata *string `json:"OS-EXT-SRV-ATTR:user_data"`
 }
