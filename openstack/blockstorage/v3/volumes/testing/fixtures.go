@@ -219,3 +219,48 @@ func MockUpdateResponse(t *testing.T) {
         `)
 	})
 }
+
+func MockCreateVolumeFromBackupResponse(t *testing.T) {
+	th.Mux.HandleFunc("/volumes", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "volume": {
+        "name": "vol-001",
+        "backup_id": "20c792f0-bb03-434f-b653-06ef238e337e"
+    }
+}
+`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, `
+{
+  "volume": {
+    "size": 30,
+    "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+    "metadata": {},
+    "created_at": "2015-09-17T03:32:29.044216",
+    "encrypted": false,
+    "bootable": "false",
+    "availability_zone": "nova",
+    "attachments": [],
+    "user_id": "ff1ce52c03ab433aaba9108c2e3ef541",
+    "status": "creating",
+    "description": null,
+    "volume_type": "lvmdriver-1",
+    "name": "vol-001",
+    "replication_status": "disabled",
+    "consistencygroup_id": null,
+    "source_volid": null,
+    "snapshot_id": null,
+    "backup_id": "20c792f0-bb03-434f-b653-06ef238e337e",
+    "multiattach": false
+  }
+}`)
+	})
+}

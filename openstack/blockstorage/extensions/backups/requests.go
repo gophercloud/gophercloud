@@ -182,3 +182,34 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	})
 	return
 }
+
+// RestoreOpts contains options for restoring a Backup. This object is passed to
+// the backups.RestoreFromBackup function.
+type RestoreOpts struct {
+	// VolumeID is the ID of the existing volume to restore the backup to.
+	VolumeID string `json:"volume_id,omitempty"`
+
+	// Name is the name of the new volume to restore the backup to.
+	Name string `json:"name,omitempty"`
+}
+
+// ToRestoreMap assembles a request body based on the contents of a
+// RestoreOpts.
+func (opts RestoreOpts) ToRestoreMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "restore")
+}
+
+// RestoreFromBackup will restore a Backup to a volume based on the values in
+// RestoreOpts. To extract the Restore object from the response, call the
+// Extract method on the RestoreResult.
+func RestoreFromBackup(client *gophercloud.ServiceClient, id string, opts RestoreOpts) (r RestoreResult) {
+	b, err := opts.ToRestoreMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(restoreURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	return
+}

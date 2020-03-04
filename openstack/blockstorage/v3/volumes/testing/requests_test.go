@@ -257,3 +257,22 @@ func TestGetWithExtensions(t *testing.T) {
 		t.Errorf("Expected error when providing non-pointer struct")
 	}
 }
+
+func TestCreateFromBackup(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockCreateVolumeFromBackupResponse(t)
+
+	options := volumes.CreateOpts{
+		Name:     "vol-001",
+		BackupID: "20c792f0-bb03-434f-b653-06ef238e337e",
+	}
+
+	v, err := volumes.Create(client.ServiceClient(), options).Extract()
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, v.Size, 30)
+	th.AssertEquals(t, v.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertEquals(t, *v.BackupID, "20c792f0-bb03-434f-b653-06ef238e337e")
+}
