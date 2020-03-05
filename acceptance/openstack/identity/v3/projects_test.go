@@ -224,7 +224,7 @@ func TestProjectsTags(t *testing.T) {
 	for _, project := range allProjects {
 		tools.PrintResource(t, project)
 
-		if project.Name == "admin" {
+		if project.Name == projectMain.Name {
 			found = true
 		}
 	}
@@ -259,7 +259,7 @@ func TestProjectsTags(t *testing.T) {
 	for _, project := range allProjects {
 		tools.PrintResource(t, project)
 
-		if project.Name == "admin" {
+		if project.Name == projectMain.Name {
 			found = true
 		}
 	}
@@ -277,7 +277,16 @@ func TestProjectsTags(t *testing.T) {
 	allProjects, err = projects.ExtractProjects(allPages)
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, len(allProjects), 0)
+	found = false
+	for _, project := range allProjects {
+		tools.PrintResource(t, project)
+
+		if project.Name == projectMain.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, false)
 
 	// Search matching not all tags
 	listOpts = projects.ListOpts{
@@ -325,4 +334,15 @@ func TestProjectsTags(t *testing.T) {
 	tools.PrintResource(t, updatedProject)
 	th.AssertEquals(t, len(updatedProject.Tags), 1)
 	th.AssertEquals(t, updatedProject.Tags[0], "Tag1")
+
+	// Remove all Tags
+	updateOpts = projects.UpdateOpts{
+		Tags: &[]string{},
+	}
+
+	updatedProject, err = projects.Update(client, projectMain.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatedProject)
+	th.AssertEquals(t, len(updatedProject.Tags), 0)
 }
