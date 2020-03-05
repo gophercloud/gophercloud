@@ -33,16 +33,16 @@ type ListOpts struct {
 	ParentID string `q:"parent_id"`
 
 	// Tags filters on specific project tags. All tags must be present for the project.
-	Tags *[]string `q:"tags"`
+	Tags string `q:"tags"`
 
 	// TagsAny filters on specific project tags. At least one of the tags must be present for the project.
-	TagsAny *[]string `q:"tags-any"`
+	TagsAny string `q:"tags-any"`
 
 	// NotTags filters on specific project tags. All tags must be absent for the project.
-	NotTags *[]string `q:"not-tags"`
+	NotTags string `q:"not-tags"`
 
 	// NotTagsAny filters on specific project tags. At least one of the tags must be absent for the project.
-	NotTagsAny *[]string `q:"not-tags-any"`
+	NotTagsAny string `q:"not-tags-any"`
 
 	// Filters filters the response by custom filters such as
 	// 'name__contains=foo'

@@ -211,7 +211,7 @@ func TestProjectsTags(t *testing.T) {
 
 	// Search using all tags
 	listOpts := projects.ListOpts{
-		Tags: &[]string{"Tag1", "Tag2"},
+		Tags: "Tag1,Tag2",
 	}
 
 	allPages, err := projects.List(client, listOpts).AllPages()
@@ -233,7 +233,7 @@ func TestProjectsTags(t *testing.T) {
 
 	// Search using all tags, including a not existing one
 	listOpts = projects.ListOpts{
-		Tags: &[]string{"Tag1", "Tag2", "Tag3"},
+		Tags: "Tag1,Tag2,Tag3",
 	}
 
 	allPages, err = projects.List(client, listOpts).AllPages()
@@ -246,7 +246,7 @@ func TestProjectsTags(t *testing.T) {
 
 	// Search matching at least one tag
 	listOpts = projects.ListOpts{
-		TagsAny: &[]string{"Tag1", "Tag2", "Tag3"},
+		TagsAny: "Tag1,Tag2,Tag3",
 	}
 
 	allPages, err = projects.List(client, listOpts).AllPages()
@@ -268,7 +268,7 @@ func TestProjectsTags(t *testing.T) {
 
 	// Search not matching any single tag
 	listOpts = projects.ListOpts{
-		NotTagsAny: &[]string{"Tag1"},
+		NotTagsAny: "Tag1",
 	}
 
 	allPages, err = projects.List(client, listOpts).AllPages()
@@ -281,7 +281,7 @@ func TestProjectsTags(t *testing.T) {
 
 	// Search matching not all tags
 	listOpts = projects.ListOpts{
-		NotTags: &[]string{"Tag1", "Tag2", "Tag3"},
+		NotTags: "Tag1,Tag2,Tag3",
 	}
 
 	allPages, err = projects.List(client, listOpts).AllPages()
