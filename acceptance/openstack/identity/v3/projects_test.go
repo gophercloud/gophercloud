@@ -194,3 +194,155 @@ func TestProjectsNested(t *testing.T) {
 
 	th.AssertEquals(t, project.ParentID, projectMain.ID)
 }
+
+func TestProjectsTags(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	createOpts := projects.CreateOpts{
+		Tags: []string{"Tag1", "Tag2"},
+	}
+
+	projectMain, err := CreateProject(t, client, &createOpts)
+	th.AssertNoErr(t, err)
+	defer DeleteProject(t, client, projectMain.ID)
+
+	// Search using all tags
+	listOpts := projects.ListOpts{
+		Tags: "Tag1,Tag2",
+	}
+
+	allPages, err := projects.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allProjects, err := projects.ExtractProjects(allPages)
+	th.AssertNoErr(t, err)
+
+	found := false
+	for _, project := range allProjects {
+		tools.PrintResource(t, project)
+
+		if project.Name == projectMain.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	// Search using all tags, including a not existing one
+	listOpts = projects.ListOpts{
+		Tags: "Tag1,Tag2,Tag3",
+	}
+
+	allPages, err = projects.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allProjects, err = projects.ExtractProjects(allPages)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, len(allProjects), 0)
+
+	// Search matching at least one tag
+	listOpts = projects.ListOpts{
+		TagsAny: "Tag1,Tag2,Tag3",
+	}
+
+	allPages, err = projects.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allProjects, err = projects.ExtractProjects(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, project := range allProjects {
+		tools.PrintResource(t, project)
+
+		if project.Name == projectMain.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	// Search not matching any single tag
+	listOpts = projects.ListOpts{
+		NotTagsAny: "Tag1",
+	}
+
+	allPages, err = projects.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allProjects, err = projects.ExtractProjects(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, project := range allProjects {
+		tools.PrintResource(t, project)
+
+		if project.Name == projectMain.Name {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, false)
+
+	// Search matching not all tags
+	listOpts = projects.ListOpts{
+		NotTags: "Tag1,Tag2,Tag3",
+	}
+
+	allPages, err = projects.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allProjects, err = projects.ExtractProjects(allPages)
+	th.AssertNoErr(t, err)
+
+	found = false
+	for _, project := range allProjects {
+		tools.PrintResource(t, project)
+
+		if project.Name == "admin" {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	// Update the tags
+	updateOpts := projects.UpdateOpts{
+		Tags: &[]string{"Tag1"},
+	}
+
+	updatedProject, err := projects.Update(client, projectMain.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatedProject)
+	th.AssertEquals(t, len(updatedProject.Tags), 1)
+	th.AssertEquals(t, updatedProject.Tags[0], "Tag1")
+
+	// Update the project, but not its tags
+	description := "Test description"
+	updateOpts = projects.UpdateOpts{
+		Description: &description,
+	}
+
+	updatedProject, err = projects.Update(client, projectMain.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatedProject)
+	th.AssertEquals(t, len(updatedProject.Tags), 1)
+	th.AssertEquals(t, updatedProject.Tags[0], "Tag1")
+
+	// Remove all Tags
+	updateOpts = projects.UpdateOpts{
+		Tags: &[]string{},
+	}
+
+	updatedProject, err = projects.Update(client, projectMain.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatedProject)
+	th.AssertEquals(t, len(updatedProject.Tags), 0)
+}
