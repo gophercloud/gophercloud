@@ -597,3 +597,61 @@ func TestServersWithExtendedAttributesCreateDestroy(t *testing.T) {
 	th.AssertEquals(t, *serverWithAttributesExt.RootDeviceName != "", true)
 	th.AssertEquals(t, serverWithAttributesExt.Userdata == nil, true)
 }
+
+func TestServerNoNetworkCreateDestroy(t *testing.T) {
+	clients.RequireLong(t)
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "2.37"
+
+	server, err := CreateServerNoNetwork(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteServer(t, client, server)
+
+	allPages, err := servers.List(client, servers.ListOpts{}).AllPages()
+	th.AssertNoErr(t, err)
+
+	allServers, err := servers.ExtractServers(allPages)
+	th.AssertNoErr(t, err)
+
+	var found bool
+	for _, s := range allServers {
+		tools.PrintResource(t, server)
+
+		if s.ID == server.ID {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
+
+	allAddressPages, err := servers.ListAddresses(client, server.ID).AllPages()
+	th.AssertNoErr(t, err)
+
+	allAddresses, err := servers.ExtractAddresses(allAddressPages)
+	th.AssertNoErr(t, err)
+
+	for network, address := range allAddresses {
+		t.Logf("Addresses on %s: %+v", network, address)
+	}
+
+	allInterfacePages, err := attachinterfaces.List(client, server.ID).AllPages()
+	th.AssertNoErr(t, err)
+
+	allInterfaces, err := attachinterfaces.ExtractInterfaces(allInterfacePages)
+	th.AssertNoErr(t, err)
+
+	for _, iface := range allInterfaces {
+		t.Logf("Interfaces: %+v", iface)
+	}
+
+	_, err = servers.ListAddressesByNetwork(client, server.ID, choices.NetworkName).AllPages()
+	if err == nil {
+		t.Fatalf("Instance must not be a member of specified network")
+	}
+}
