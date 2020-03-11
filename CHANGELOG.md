@@ -1,4 +1,6 @@
-## 0.9.0 (Unreleased)
+## 0.10.0 (Unreleased)
+
+## 0.9.0 (March 10, 2020)
 
 UPGRADE NOTES
 
