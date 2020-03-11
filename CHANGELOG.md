@@ -4,6 +4,8 @@ UPGRADE NOTES
 
 * The way we implement new API result fields added by microversions has changed. Previously, we would declare a dedicated `ExtractFoo` function in a file called `microversions.go`. Now, we are declaring those fields inline of the original result struct as a pointer. [GH-1854](https://github.com/gophercloud/gophercloud/pull/1854)
 
+* `compute/v2/servers.CreateOpts.Networks` has changed from `[]Network` to `interface{}` in order to support creating servers that have no networks. [GH-1884](https://github.com/gophercloud/gophercloud/pull/1884)
+
 IMPROVEMENTS
 
 * Added `compute/v2/extensions/instanceactions.List` [GH-1848](https://github.com/gophercloud/gophercloud/pull/1848)
@@ -38,6 +40,7 @@ IMPROVEMENTS
 * Added `identity/v3/projects.CreateOpts.Tags` [GH-1882](https://github.com/gophercloud/gophercloud/pull/1882)
 * Added `identity/v3/projects.UpdateOpts.Tags` [GH-1882](https://github.com/gophercloud/gophercloud/pull/1882)
 * Added `identity/v3/projects.Project.Tags` [GH-1882](https://github.com/gophercloud/gophercloud/pull/1882)
+* Changed `compute/v2/servers.CreateOpts.Networks` from `[]Network` to `interface{}` to support creating servers with no networks. [GH-1884](https://github.com/gophercloud/gophercloud/pull/1884)
 
 
 BUG FIXES
