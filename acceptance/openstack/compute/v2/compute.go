@@ -1198,3 +1198,55 @@ func CreateRemoteConsole(t *testing.T, client *gophercloud.ServiceClient, server
 	t.Logf("Successfully created console: %s", remoteConsole.URL)
 	return remoteConsole, nil
 }
+
+// CreateNoNetworkServer creates a basic instance with a randomly generated name.
+// The flavor of the instance will be the value of the OS_FLAVOR_ID environment variable.
+// The image will be the value of the OS_IMAGE_ID environment variable.
+// The instance will be launched without network interfaces attached.
+// An error will be returned if the instance was unable to be created.
+func CreateServerNoNetwork(t *testing.T, client *gophercloud.ServiceClient) (*servers.Server, error) {
+	choices, err := clients.AcceptanceTestChoicesFromEnv()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	name := tools.RandomString("ACPTTEST", 16)
+	t.Logf("Attempting to create server: %s", name)
+
+	pwd := tools.MakeNewPassword("")
+
+	server, err := servers.Create(client, servers.CreateOpts{
+		Name:      name,
+		FlavorRef: choices.FlavorID,
+		ImageRef:  choices.ImageID,
+		AdminPass: pwd,
+		Networks:  "none",
+		Metadata: map[string]string{
+			"abc": "def",
+		},
+		Personality: servers.Personality{
+			&servers.File{
+				Path:     "/etc/test",
+				Contents: []byte("hello world"),
+			},
+		},
+	}).Extract()
+	if err != nil {
+		return server, err
+	}
+
+	if err := WaitForComputeStatus(client, server, "ACTIVE"); err != nil {
+		return nil, err
+	}
+
+	newServer, err := servers.Get(client, server.ID).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	th.AssertEquals(t, newServer.Name, name)
+	th.AssertEquals(t, newServer.Flavor["id"], choices.FlavorID)
+	th.AssertEquals(t, newServer.Image["id"], choices.ImageID)
+
+	return newServer, nil
+}

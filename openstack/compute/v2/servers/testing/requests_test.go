@@ -100,6 +100,22 @@ func TestCreateServer(t *testing.T) {
 	th.CheckDeepEquals(t, ServerDerp, *actual)
 }
 
+func TestCreateServerNoNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerNoNetworkCreationSuccessfully(t, SingleServerBody)
+
+	actual, err := servers.Create(client.ServiceClient(), servers.CreateOpts{
+		Name:      "derp",
+		ImageRef:  "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef: "1",
+		Networks:  "none",
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, ServerDerp, *actual)
+}
+
 func TestCreateServers(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
