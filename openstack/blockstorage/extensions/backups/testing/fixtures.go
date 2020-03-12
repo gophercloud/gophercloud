@@ -96,6 +96,36 @@ const RestoreResponse = `
 }
 `
 
+const ExportResponse = `
+{
+  "backup-record": {
+    "backup_service": "cinder.backup.drivers.swift.SwiftBackupDriver",
+    "backup_url": "eyJmb28iOiJiYXIifQ=="
+  }
+}
+`
+
+const ImportRequest = ExportResponse
+
+const ImportResponse = `
+{
+  "backup": {
+    "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+    "links": [
+      {
+        "href": "https://volume/v2/14f1c1f5d12b4755b94edef78ff8b325/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22",
+        "rel": "self"
+      },
+      {
+        "href": "https://volume/14f1c1f5d12b4755b94edef78ff8b325/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22",
+        "rel": "bookmark"
+      }
+    ],
+    "name": null
+  }
+}
+`
+
 func MockListResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -163,5 +193,33 @@ func MockDeleteResponse(t *testing.T) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func MockExportResponse(t *testing.T) {
+	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/export_record", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ExportResponse)
+	})
+}
+
+func MockImportResponse(t *testing.T) {
+	th.Mux.HandleFunc("/backups/import_record", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, ImportRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, ImportResponse)
 	})
 }

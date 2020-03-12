@@ -187,3 +187,33 @@ func (r RestoreResult) Extract() (*Restore, error) {
 func (r RestoreResult) ExtractInto(v interface{}) error {
 	return r.Result.ExtractIntoStructPtr(v, "restore")
 }
+
+// ExportResult contains the response body and error from an export request.
+type ExportResult struct {
+	commonResult
+}
+
+// BackupRecord contains an information about a backup backend storage.
+type BackupRecord struct {
+	// The service used to perform the backup.
+	BackupService string `json:"backup_service"`
+
+	// An identifier string to locate the backup.
+	BackupURL []byte `json:"backup_url"`
+}
+
+// Extract will get the Backup record object out of the ExportResult object.
+func (r ExportResult) Extract() (*BackupRecord, error) {
+	var s BackupRecord
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+func (r ExportResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, "backup-record")
+}
+
+// ImportResult contains the response body and error from an import request.
+type ImportResult struct {
+	commonResult
+}

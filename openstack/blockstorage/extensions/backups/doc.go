@@ -71,5 +71,32 @@ Example to Delete a Backup
 	if err != nil {
 		panic(err)
 	}
+
+Example to Export a Backup
+
+	export, err := backups.Export(client, "uuid").Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(export)
+
+Example to Import a Backup
+
+	backupURL, _ := json.Marshal(map[string]string{
+		"foo": "bar",
+	})
+
+	options := backups.ImportOpts{
+		BackupService: "cinder.backup.drivers.swift.SwiftBackupDriver",
+		BackupURL:     backupURL,
+	}
+
+	backup, err := backups.Import(client, options).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(backup)
 */
 package backups

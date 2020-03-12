@@ -25,3 +25,11 @@ func updateURL(c *gophercloud.ServiceClient, id string) string {
 func restoreURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("backups", id, "restore")
 }
+
+func exportURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("backups", id, "export_record")
+}
+
+func importURL(c *gophercloud.ServiceClient) string {
+	return c.ServiceURL("backups", "import_record")
+}

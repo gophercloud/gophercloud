@@ -213,3 +213,35 @@ func RestoreFromBackup(client *gophercloud.ServiceClient, id string, opts Restor
 	})
 	return
 }
+
+// Export will export a Backup information. To extract the Backup export record
+// object from the response, call the Extract method on the ExportResult.
+func Export(client *gophercloud.ServiceClient, id string) (r ExportResult) {
+	_, r.Err = client.Get(exportURL(client, id), &r.Body, nil)
+	return
+}
+
+// ImportOpts contains options for importing a Backup. This object is passed to
+// the backups.ImportBackup function.
+type ImportOpts BackupRecord
+
+// ToImportMap assembles a request body based on the contents of a
+// ImportOpts.
+func (opts ImportOpts) ToImportMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "backup-record")
+}
+
+// Import will import a Backup data to a backup based on the values in
+// ImportOpts. To extract the Backup object from the response, call the
+// Extract method on the ImportResult.
+func Import(client *gophercloud.ServiceClient, opts ImportOpts) (r ImportResult) {
+	b, err := opts.ToImportMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = client.Post(importURL(client), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	return
+}
