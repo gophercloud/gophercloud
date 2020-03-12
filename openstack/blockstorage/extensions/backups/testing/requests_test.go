@@ -121,7 +121,12 @@ func TestExport(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, n.BackupService, "cinder.backup.drivers.swift.SwiftBackupDriver")
-	th.AssertDeepEquals(t, n.BackupURL, []byte(`{"foo":"bar"}`))
+	th.AssertDeepEquals(t, n.BackupURL, backupURL)
+
+	tmp := backups.ImportBackup{}
+	err = json.Unmarshal(backupURL, &tmp)
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, tmp, backupImport)
 }
 
 func TestImport(t *testing.T) {
@@ -129,10 +134,6 @@ func TestImport(t *testing.T) {
 	defer th.TeardownHTTP()
 
 	MockImportResponse(t)
-
-	backupURL, _ := json.Marshal(map[string]string{
-		"foo": "bar",
-	})
 
 	options := backups.ImportOpts{
 		BackupService: "cinder.backup.drivers.swift.SwiftBackupDriver",
