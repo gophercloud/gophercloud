@@ -225,9 +225,9 @@ func Export(client *gophercloud.ServiceClient, id string) (r ExportResult) {
 // the backups.ImportBackup function.
 type ImportOpts BackupRecord
 
-// ToImportMap assembles a request body based on the contents of a
+// ToBackupImportMap assembles a request body based on the contents of a
 // ImportOpts.
-func (opts ImportOpts) ToImportMap() (map[string]interface{}, error) {
+func (opts ImportOpts) ToBackupImportMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "backup-record")
 }
 
@@ -235,7 +235,7 @@ func (opts ImportOpts) ToImportMap() (map[string]interface{}, error) {
 // ImportOpts. To extract the Backup object from the response, call the
 // Extract method on the ImportResult.
 func Import(client *gophercloud.ServiceClient, opts ImportOpts) (r ImportResult) {
-	b, err := opts.ToImportMap()
+	b, err := opts.ToBackupImportMap()
 	if err != nil {
 		r.Err = err
 		return
