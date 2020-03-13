@@ -1,5 +1,9 @@
 ## 0.10.0 (Unreleased)
 
+IMPROVEMENTS 
+
+* Added `blockstorage/extensions/volumeactions.SetBootable` [GH-1891](https://github.com/gophercloud/gophercloud/pull/1891)
+
 ## 0.9.0 (March 10, 2020)
 
 UPGRADE NOTES
