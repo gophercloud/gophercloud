@@ -213,9 +213,26 @@ func (r ExportResult) ExtractInto(v interface{}) error {
 	return r.Result.ExtractIntoStructPtr(v, "backup-record")
 }
 
+// ImportResponse struct contains the response of the Backup Import action.
+type ImportResponse struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 // ImportResult contains the response body and error from an import request.
 type ImportResult struct {
-	commonResult
+	gophercloud.Result
+}
+
+// Extract will get the Backup object out of the commonResult object.
+func (r ImportResult) Extract() (*ImportResponse, error) {
+	var s ImportResponse
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+func (r ImportResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, "backup")
 }
 
 // ImportBackup contains all the information to import a Cinder Backup.
