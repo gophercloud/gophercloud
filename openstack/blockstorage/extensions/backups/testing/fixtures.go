@@ -103,7 +103,7 @@ const ExportResponse = `
 {
   "backup-record": {
     "backup_service": "cinder.backup.drivers.swift.SwiftBackupDriver",
-    "backup_url": "eyJpZCI6ImQzMjAxOWQzLWJjNmUtNDMxOS05YzFkLTY3MjJmYzEzNmEyMiIsInZvbHVtZV9pZCI6ImNmOWJjNmZhLWM1YmMtNDFmNi1iYzRlLTZlNzZjMGJlYTk1OSIsInNuYXBzaG90X2lkIjoiIiwic3RhdHVzIjoiYXZhaWxhYmxlIiwic2l6ZSI6MSwib2JqZWN0X2NvdW50IjoyLCJjb250YWluZXIiOiJteS10ZXN0LWJhY2t1cCIsInNlcnZpY2VfbWV0YWRhdGEiOiJ2b2x1bWVfY2Y5YmM2ZmEtYzViYy00MWY2LWJjNGUtNmU3NmMwYmVhOTU5LzIwMjAwMzExMTkyODU1L2F6X3JlZ2lvbmJfYmFja3VwX2I4N2JiMWU1LTBkNGUtNDQ1ZS1hNTQ4LTVhZTc0MjU2MmJhYyIsInNlcnZpY2UiOiJjaW5kZXIuYmFja3VwLmRyaXZlcnMuc3dpZnQuU3dpZnRCYWNrdXBEcml2ZXIiLCJob3N0IjoiY2luZGVyLWJhY2t1cC1ob3N0MSIsInVzZXJfaWQiOiI5MzUxNGUwNC1hMDI2LTRmNjAtODE3Ni0zOTVjODU5NTAxZGQiLCJ0ZW1wX3NuYXBzaG90X2lkIjoiIiwidGVtcF92b2x1bWVfaWQiOiIiLCJyZXN0b3JlX3ZvbHVtZV9pZCI6IiIsIm51bV9kZXBlbmRlbnRfYmFja3VwcyI6MCwiZW5jcnlwdGlvbl9rZXlfaWQiOiIiLCJwYXJlbnRfaWQiOiIiLCJkZWxldGVkIjpmYWxzZSwiZGlzcGxheV9uYW1lIjoiIiwiZGlzcGxheV9kZXNjcmlwdGlvbiI6IiIsImRyaXZlcl9pbmZvIjpudWxsLCJmYWlsX3JlYXNvbiI6IiIsInByb2plY3RfaWQiOiIxNGYxYzFmNWQxMmI0NzU1Yjk0ZWRlZjc4ZmY4YjMyNSIsIm1ldGFkYXRhIjpudWxsLCJhdmFpbGFiaWxpdHlfem9uZSI6InJlZ2lvbjFiIiwiY3JlYXRlZF9hdCI6IjIwMjAtMDMtMTFUMTk6MjU6MjRaIiwidXBkYXRlZF9hdCI6IjIwMjAtMDMtMTFUMTk6Mjk6MDhaIiwiZGVsZXRlZF9hdCI6bnVsbCwiZGF0YV90aW1lc3RhbXAiOiIyMDIwLTAzLTExVDE5OjI1OjI0WiJ9"
+    "backup_url": "eyJpZCI6ImQzMjAxOWQzLWJjNmUtNDMxOS05YzFkLTY3MjJmYzEzNmEyMiIsInZvbHVtZV9pZCI6ImNmOWJjNmZhLWM1YmMtNDFmNi1iYzRlLTZlNzZjMGJlYTk1OSIsInNuYXBzaG90X2lkIjpudWxsLCJzdGF0dXMiOiJhdmFpbGFibGUiLCJzaXplIjoxLCJvYmplY3RfY291bnQiOjIsImNvbnRhaW5lciI6Im15LXRlc3QtYmFja3VwIiwic2VydmljZV9tZXRhZGF0YSI6InZvbHVtZV9jZjliYzZmYS1jNWJjLTQxZjYtYmM0ZS02ZTc2YzBiZWE5NTkvMjAyMDAzMTExOTI4NTUvYXpfcmVnaW9uYl9iYWNrdXBfYjg3YmIxZTUtMGQ0ZS00NDVlLWE1NDgtNWFlNzQyNTYyYmFjIiwic2VydmljZSI6ImNpbmRlci5iYWNrdXAuZHJpdmVycy5zd2lmdC5Td2lmdEJhY2t1cERyaXZlciIsImhvc3QiOiJjaW5kZXItYmFja3VwLWhvc3QxIiwidXNlcl9pZCI6IjkzNTE0ZTA0LWEwMjYtNGY2MC04MTc2LTM5NWM4NTk1MDFkZCIsInRlbXBfc25hcHNob3RfaWQiOm51bGwsInRlbXBfdm9sdW1lX2lkIjpudWxsLCJyZXN0b3JlX3ZvbHVtZV9pZCI6bnVsbCwibnVtX2RlcGVuZGVudF9iYWNrdXBzIjpudWxsLCJlbmNyeXB0aW9uX2tleV9pZCI6bnVsbCwicGFyZW50X2lkIjpudWxsLCJkZWxldGVkIjpmYWxzZSwiZGlzcGxheV9uYW1lIjpudWxsLCJkaXNwbGF5X2Rlc2NyaXB0aW9uIjpudWxsLCJkcml2ZXJfaW5mbyI6bnVsbCwiZmFpbF9yZWFzb24iOm51bGwsInByb2plY3RfaWQiOiIxNGYxYzFmNWQxMmI0NzU1Yjk0ZWRlZjc4ZmY4YjMyNSIsIm1ldGFkYXRhIjpudWxsLCJhdmFpbGFiaWxpdHlfem9uZSI6InJlZ2lvbjFiIiwiY3JlYXRlZF9hdCI6IjIwMjAtMDMtMTFUMTk6MjU6MjRaIiwidXBkYXRlZF9hdCI6IjIwMjAtMDMtMTFUMTk6Mjk6MDhaIiwiZGVsZXRlZF9hdCI6bnVsbCwiZGF0YV90aW1lc3RhbXAiOiIyMDIwLTAzLTExVDE5OjI1OjI0WiJ9"
   }
 }
 `
@@ -129,25 +129,34 @@ const ImportResponse = `
 }
 `
 
-var backupImport = backups.ImportBackup{
-	ID:               "d32019d3-bc6e-4319-9c1d-6722fc136a22",
-	Status:           "available",
-	AvailabilityZone: &availabilityZone,
-	VolumeID:         "cf9bc6fa-c5bc-41f6-bc4e-6e76c0bea959",
-	UpdatedAt:        time.Date(2020, 3, 11, 19, 29, 8, 0, time.UTC),
-	Host:             "cinder-backup-host1",
-	UserID:           "93514e04-a026-4f60-8176-395c859501dd",
-	ServiceMetadata:  "volume_cf9bc6fa-c5bc-41f6-bc4e-6e76c0bea959/20200311192855/az_regionb_backup_b87bb1e5-0d4e-445e-a548-5ae742562bac",
-	Size:             1,
-	ObjectCount:      2,
-	Container:        "my-test-backup",
-	Service:          "cinder.backup.drivers.swift.SwiftBackupDriver",
-	CreatedAt:        time.Date(2020, 3, 11, 19, 25, 24, 0, time.UTC),
-	DataTimestamp:    time.Date(2020, 3, 11, 19, 25, 24, 0, time.UTC),
-	ProjectID:        "14f1c1f5d12b4755b94edef78ff8b325",
-}
-var availabilityZone = "region1b"
-var backupURL, _ = json.Marshal(backupImport)
+var (
+	status           = "available"
+	availabilityZone = "region1b"
+	host             = "cinder-backup-host1"
+	serviceMetadata  = "volume_cf9bc6fa-c5bc-41f6-bc4e-6e76c0bea959/20200311192855/az_regionb_backup_b87bb1e5-0d4e-445e-a548-5ae742562bac"
+	size             = 1
+	objectCount      = 2
+	container        = "my-test-backup"
+	service          = "cinder.backup.drivers.swift.SwiftBackupDriver"
+	backupImport     = backups.ImportBackup{
+		ID:               "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+		Status:           &status,
+		AvailabilityZone: &availabilityZone,
+		VolumeID:         "cf9bc6fa-c5bc-41f6-bc4e-6e76c0bea959",
+		UpdatedAt:        time.Date(2020, 3, 11, 19, 29, 8, 0, time.UTC),
+		Host:             &host,
+		UserID:           "93514e04-a026-4f60-8176-395c859501dd",
+		ServiceMetadata:  &serviceMetadata,
+		Size:             &size,
+		ObjectCount:      &objectCount,
+		Container:        &container,
+		Service:          &service,
+		CreatedAt:        time.Date(2020, 3, 11, 19, 25, 24, 0, time.UTC),
+		DataTimestamp:    time.Date(2020, 3, 11, 19, 25, 24, 0, time.UTC),
+		ProjectID:        "14f1c1f5d12b4755b94edef78ff8b325",
+	}
+	backupURL, _ = json.Marshal(backupImport)
+)
 
 func MockListResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
