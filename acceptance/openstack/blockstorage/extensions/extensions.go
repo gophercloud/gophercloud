@@ -4,6 +4,8 @@
 package extensions
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
@@ -11,6 +13,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/backups"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumeactions"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
+	v3 "github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -251,4 +254,47 @@ func WaitForBackupStatus(client *gophercloud.ServiceClient, id, status string, s
 
 		return false, nil
 	})
+}
+
+// SetBootable will set a bootable status to a volume.
+func SetBootable(t *testing.T, client *gophercloud.ServiceClient, volume *volumes.Volume) error {
+	t.Logf("Attempting to apply bootable status to volume %s", volume.ID)
+
+	bootableOpts := volumeactions.BootableOpts{
+		Bootable: true,
+	}
+
+	err := volumeactions.SetBootable(client, volume.ID, bootableOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	vol, err := v3.Get(client, volume.ID).Extract()
+	if err != nil {
+		return err
+	}
+
+	if strings.ToLower(vol.Bootable) != "true" {
+		return fmt.Errorf("Volume bootable status is %q, expected 'true'", vol.Bootable)
+	}
+
+	bootableOpts = volumeactions.BootableOpts{
+		Bootable: false,
+	}
+
+	err = volumeactions.SetBootable(client, volume.ID, bootableOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	vol, err = v3.Get(client, volume.ID).Extract()
+	if err != nil {
+		return err
+	}
+
+	if strings.ToLower(vol.Bootable) == "true" {
+		return fmt.Errorf("Volume bootable status is %q, expected 'false'", vol.Bootable)
+	}
+
+	return nil
 }

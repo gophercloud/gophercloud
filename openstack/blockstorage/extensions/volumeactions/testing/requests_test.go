@@ -180,3 +180,17 @@ func TestSetImageMetadata(t *testing.T) {
 	err := volumeactions.SetImageMetadata(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestSetBootable(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockSetBootableResponse(t)
+
+	options := volumeactions.BootableOpts{
+		Bootable: true,
+	}
+
+	err := volumeactions.SetBootable(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	th.AssertNoErr(t, err)
+}

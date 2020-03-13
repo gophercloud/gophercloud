@@ -101,6 +101,18 @@ func TestVolumeActionsImageMetadata(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestVolumeActionsSetBootable(t *testing.T) {
+	blockClient, err := clients.NewBlockStorageV2Client()
+	th.AssertNoErr(t, err)
+
+	volume, err := blockstorage.CreateVolume(t, blockClient)
+	th.AssertNoErr(t, err)
+	defer blockstorage.DeleteVolume(t, blockClient, volume)
+
+	err = SetBootable(t, blockClient, volume)
+	th.AssertNoErr(t, err)
+}
+
 // Note(jtopjian): I plan to work on this at some point, but it requires
 // setting up a server with iscsi utils.
 /*
