@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -108,4 +109,38 @@ func TestDelete(t *testing.T) {
 
 	res := backups.Delete(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestExport(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockExportResponse(t)
+
+	n, err := backups.Export(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.BackupService, "cinder.backup.drivers.swift.SwiftBackupDriver")
+	th.AssertDeepEquals(t, n.BackupURL, backupURL)
+
+	tmp := backups.ImportBackup{}
+	err = json.Unmarshal(backupURL, &tmp)
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, tmp, backupImport)
+}
+
+func TestImport(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockImportResponse(t)
+
+	options := backups.ImportOpts{
+		BackupService: "cinder.backup.drivers.swift.SwiftBackupDriver",
+		BackupURL:     backupURL,
+	}
+	n, err := backups.Import(client.ServiceClient(), options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.ID, "d32019d3-bc6e-4319-9c1d-6722fc136a22")
 }

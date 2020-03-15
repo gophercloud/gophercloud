@@ -1,10 +1,13 @@
 package testing
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/backups"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	fake "github.com/gophercloud/gophercloud/testhelper/client"
 )
@@ -96,6 +99,65 @@ const RestoreResponse = `
 }
 `
 
+const ExportResponse = `
+{
+  "backup-record": {
+    "backup_service": "cinder.backup.drivers.swift.SwiftBackupDriver",
+    "backup_url": "eyJpZCI6ImQzMjAxOWQzLWJjNmUtNDMxOS05YzFkLTY3MjJmYzEzNmEyMiIsInZvbHVtZV9pZCI6ImNmOWJjNmZhLWM1YmMtNDFmNi1iYzRlLTZlNzZjMGJlYTk1OSIsInNuYXBzaG90X2lkIjpudWxsLCJzdGF0dXMiOiJhdmFpbGFibGUiLCJzaXplIjoxLCJvYmplY3RfY291bnQiOjIsImNvbnRhaW5lciI6Im15LXRlc3QtYmFja3VwIiwic2VydmljZV9tZXRhZGF0YSI6InZvbHVtZV9jZjliYzZmYS1jNWJjLTQxZjYtYmM0ZS02ZTc2YzBiZWE5NTkvMjAyMDAzMTExOTI4NTUvYXpfcmVnaW9uYl9iYWNrdXBfYjg3YmIxZTUtMGQ0ZS00NDVlLWE1NDgtNWFlNzQyNTYyYmFjIiwic2VydmljZSI6ImNpbmRlci5iYWNrdXAuZHJpdmVycy5zd2lmdC5Td2lmdEJhY2t1cERyaXZlciIsImhvc3QiOiJjaW5kZXItYmFja3VwLWhvc3QxIiwidXNlcl9pZCI6IjkzNTE0ZTA0LWEwMjYtNGY2MC04MTc2LTM5NWM4NTk1MDFkZCIsInRlbXBfc25hcHNob3RfaWQiOm51bGwsInRlbXBfdm9sdW1lX2lkIjpudWxsLCJyZXN0b3JlX3ZvbHVtZV9pZCI6bnVsbCwibnVtX2RlcGVuZGVudF9iYWNrdXBzIjpudWxsLCJlbmNyeXB0aW9uX2tleV9pZCI6bnVsbCwicGFyZW50X2lkIjpudWxsLCJkZWxldGVkIjpmYWxzZSwiZGlzcGxheV9uYW1lIjpudWxsLCJkaXNwbGF5X2Rlc2NyaXB0aW9uIjpudWxsLCJkcml2ZXJfaW5mbyI6bnVsbCwiZmFpbF9yZWFzb24iOm51bGwsInByb2plY3RfaWQiOiIxNGYxYzFmNWQxMmI0NzU1Yjk0ZWRlZjc4ZmY4YjMyNSIsIm1ldGFkYXRhIjpudWxsLCJhdmFpbGFiaWxpdHlfem9uZSI6InJlZ2lvbjFiIiwiY3JlYXRlZF9hdCI6IjIwMjAtMDMtMTFUMTk6MjU6MjRaIiwidXBkYXRlZF9hdCI6IjIwMjAtMDMtMTFUMTk6Mjk6MDhaIiwiZGVsZXRlZF9hdCI6bnVsbCwiZGF0YV90aW1lc3RhbXAiOiIyMDIwLTAzLTExVDE5OjI1OjI0WiJ9"
+  }
+}
+`
+
+const ImportRequest = ExportResponse
+
+const ImportResponse = `
+{
+  "backup": {
+    "id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+    "links": [
+      {
+        "href": "https://volume/v2/14f1c1f5d12b4755b94edef78ff8b325/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22",
+        "rel": "self"
+      },
+      {
+        "href": "https://volume/14f1c1f5d12b4755b94edef78ff8b325/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22",
+        "rel": "bookmark"
+      }
+    ],
+    "name": null
+  }
+}
+`
+
+var (
+	status           = "available"
+	availabilityZone = "region1b"
+	host             = "cinder-backup-host1"
+	serviceMetadata  = "volume_cf9bc6fa-c5bc-41f6-bc4e-6e76c0bea959/20200311192855/az_regionb_backup_b87bb1e5-0d4e-445e-a548-5ae742562bac"
+	size             = 1
+	objectCount      = 2
+	container        = "my-test-backup"
+	service          = "cinder.backup.drivers.swift.SwiftBackupDriver"
+	backupImport     = backups.ImportBackup{
+		ID:               "d32019d3-bc6e-4319-9c1d-6722fc136a22",
+		Status:           &status,
+		AvailabilityZone: &availabilityZone,
+		VolumeID:         "cf9bc6fa-c5bc-41f6-bc4e-6e76c0bea959",
+		UpdatedAt:        time.Date(2020, 3, 11, 19, 29, 8, 0, time.UTC),
+		Host:             &host,
+		UserID:           "93514e04-a026-4f60-8176-395c859501dd",
+		ServiceMetadata:  &serviceMetadata,
+		Size:             &size,
+		ObjectCount:      &objectCount,
+		Container:        &container,
+		Service:          &service,
+		CreatedAt:        time.Date(2020, 3, 11, 19, 25, 24, 0, time.UTC),
+		DataTimestamp:    time.Date(2020, 3, 11, 19, 25, 24, 0, time.UTC),
+		ProjectID:        "14f1c1f5d12b4755b94edef78ff8b325",
+	}
+	backupURL, _ = json.Marshal(backupImport)
+)
+
 func MockListResponse(t *testing.T) {
 	th.Mux.HandleFunc("/backups", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
@@ -163,5 +225,33 @@ func MockDeleteResponse(t *testing.T) {
 		th.TestMethod(t, r, "DELETE")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func MockExportResponse(t *testing.T) {
+	th.Mux.HandleFunc("/backups/d32019d3-bc6e-4319-9c1d-6722fc136a22/export_record", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, ExportResponse)
+	})
+}
+
+func MockImportResponse(t *testing.T) {
+	th.Mux.HandleFunc("/backups/import_record", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, ImportRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, ImportResponse)
 	})
 }
