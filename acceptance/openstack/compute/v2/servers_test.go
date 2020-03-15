@@ -8,6 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	networks "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/attachinterfaces"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/availabilityzones"
@@ -19,7 +20,6 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/suspendresume"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/tags"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -315,7 +315,7 @@ func TestServersActionRebuild(t *testing.T) {
 	rebuildOpts := servers.RebuildOpts{
 		Name:      tools.RandomString("ACPTTEST", 16),
 		AdminPass: tools.MakeNewPassword(server.AdminPass),
-		ImageID:   choices.ImageID,
+		ImageRef:  choices.ImageID,
 	}
 
 	rebuilt, err := servers.Rebuild(client, server.ID, rebuildOpts).Extract()

@@ -29,7 +29,7 @@ func TestVolumeActionsUploadImageDestroy(t *testing.T) {
 
 	tools.PrintResource(t, volumeImage)
 
-	err = DeleteUploadedImage(t, computeClient, volumeImage.ImageName)
+	err = DeleteUploadedImage(t, computeClient, volumeImage.ImageID)
 	th.AssertNoErr(t, err)
 }
 
