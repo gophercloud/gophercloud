@@ -51,21 +51,14 @@ func CreateUploadImage(t *testing.T, client *gophercloud.ServiceClient, volume *
 
 // DeleteUploadedImage deletes uploaded image. An error will be returned
 // if the deletion request failed.
-func DeleteUploadedImage(t *testing.T, client *gophercloud.ServiceClient, imageName string) error {
+func DeleteUploadedImage(t *testing.T, client *gophercloud.ServiceClient, imageID string) error {
 	if testing.Short() {
 		t.Skip("Skipping test that requires volume-backed image removing in short mode.")
 	}
 
-	t.Logf("Getting image id for image name %s", imageName)
-
-	imageID, err := images.IDFromName(client, imageName)
-	if err != nil {
-		return err
-	}
-
 	t.Logf("Removing image %s", imageID)
 
-	err = images.Delete(client, imageID).ExtractErr()
+	err := images.Delete(client, imageID).ExtractErr()
 	if err != nil {
 		return err
 	}

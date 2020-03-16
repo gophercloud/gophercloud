@@ -1017,7 +1017,7 @@ func HandleRebuildSuccessfully(t *testing.T, response string) {
 				"rebuild": {
 					"name": "new-name",
 					"adminPass": "swordfish",
-					"imageRef": "http://104.130.131.164:8774/fcad67a6189847c4aecfa3c81a05783b/images/f90f6034-2570-4974-8351-6b49732ef2eb",
+					"imageRef": "f90f6034-2570-4974-8351-6b49732ef2eb",
 					"accessIPv4": "1.2.3.4"
 				}
 			}

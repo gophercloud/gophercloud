@@ -39,7 +39,7 @@ func TestRebuildOpts(t *testing.T) {
 	base := servers.RebuildOpts{
 		Name:      "rebuiltserver",
 		AdminPass: "swordfish",
-		ImageID:   "asdfasdfasdf",
+		ImageRef:  "asdfasdfasdf",
 	}
 
 	ext := diskconfig.RebuildOptsExt{
