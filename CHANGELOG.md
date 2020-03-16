@@ -1,5 +1,9 @@
 ## 0.10.0 (Unreleased)
 
+UPGRADE NOTES
+
+* The various `IDFromName` convenience functions have been moved to https://github.com/gophercloud/utils [GH-1897](https://github.com/gophercloud/gophercloud/pull/1897)
+
 IMPROVEMENTS 
 
 * Added `blockstorage/extensions/volumeactions.SetBootable` [GH-1891](https://github.com/gophercloud/gophercloud/pull/1891)
