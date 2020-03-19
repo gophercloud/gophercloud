@@ -105,6 +105,16 @@ const InventoriesBody = `
 }
 `
 
+const TraitsBody = `
+{
+    "resource_provider_generation": 1,
+    "traits": [
+        "CUSTOM_HW_FPGA_CLASS1",
+        "CUSTOM_HW_FPGA_CLASS3"
+    ]
+}
+`
+
 var ExpectedResourceProvider1 = resourceproviders.ResourceProvider{
 	Generation: 1,
 	UUID:       "99c09379-6e52-4ef8-9a95-b9ce6f68452e",
@@ -177,6 +187,14 @@ var ExpectedInventories = resourceproviders.ResourceProviderInventories{
 	},
 }
 
+var ExpectedTraits = resourceproviders.ResourceProviderTraits{
+	ResourceProviderGeneration: 1,
+	Traits: []string{
+		"CUSTOM_HW_FPGA_CLASS1",
+		"CUSTOM_HW_FPGA_CLASS3",
+	},
+}
+
 func HandleResourceProviderList(t *testing.T) {
 	th.Mux.HandleFunc("/resource_providers",
 		func(w http.ResponseWriter, r *http.Request) {
@@ -229,5 +247,20 @@ func HandleResourceProviderGetInventories(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 
 			fmt.Fprintf(w, InventoriesBody)
+		})
+}
+
+func HandleResourceProviderGetTraits(t *testing.T) {
+	traitsTestUrl := fmt.Sprintf("/resource_providers/%s/traits", ResourceProviderTestID)
+
+	th.Mux.HandleFunc(traitsTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprintf(w, TraitsBody)
 		})
 }
