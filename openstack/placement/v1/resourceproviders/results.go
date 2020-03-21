@@ -52,7 +52,12 @@ type ResourceProviderInventories struct {
 	Inventories                map[string]Inventory `json:"inventories"`
 }
 
-// resourceProviderResult is the resposne of a base ResourceProvider result.
+type ResourceProviderTraits struct {
+	ResourceProviderGeneration int      `json:"resource_provider_generation"`
+	Traits                     []string `json:"traits"`
+}
+
+// resourceProviderResult is the response of a base ResourceProvider result.
 type resourceProviderResult struct {
 	gophercloud.Result
 }
@@ -104,7 +109,7 @@ func (r GetUsagesResult) Extract() (*ResourceProviderUsage, error) {
 	return &s, err
 }
 
-// GetInventoriesResult is the response of a Get usage operations. Call its Extract method
+// GetInventoriesResult is the response of a Get inventories operations. Call its Extract method
 // to interpret it as a ResourceProviderInventories.
 type GetInventoriesResult struct {
 	gophercloud.Result
@@ -113,6 +118,19 @@ type GetInventoriesResult struct {
 // Extract interprets a GetInventoriesResult as a ResourceProviderInventories.
 func (r GetInventoriesResult) Extract() (*ResourceProviderInventories, error) {
 	var s ResourceProviderInventories
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+// GetTraitsResult is the response of a Get traits operations. Call its Extract method
+// to interpret it as a ResourceProviderTraits.
+type GetTraitsResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a GetTraitsResult as a ResourceProviderTraits.
+func (r GetTraitsResult) Extract() (*ResourceProviderTraits, error) {
+	var s ResourceProviderTraits
 	err := r.ExtractInto(&s)
 	return &s, err
 }

@@ -95,3 +95,28 @@ func TestResourceProviderInventories(t *testing.T) {
 
 	tools.PrintResource(t, usage)
 }
+
+func TestResourceProviderTraits(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewPlacementV1Client()
+	th.AssertNoErr(t, err)
+
+	// first create new resource provider
+	name := tools.RandomString("TESTACC-", 8)
+	t.Logf("Attempting to create resource provider: %s", name)
+
+	createOpts := resourceproviders.CreateOpts{
+		Name: name,
+	}
+
+	client.Microversion = "1.20"
+	resourceProvider, err := resourceproviders.Create(client, createOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	// now get the traits for the newly created resource provider
+	usage, err := resourceproviders.GetTraits(client, resourceProvider.UUID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, usage)
+}
