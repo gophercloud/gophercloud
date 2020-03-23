@@ -18,6 +18,9 @@ type Service struct {
 	// The reason for disabling a service.
 	DisabledReason string `json:"disabled_reason"`
 
+	// Whether or not service was forced down manually.
+	ForcedDown bool `json:"forced_down"`
+
 	// The name of the host.
 	Host string `json:"host"`
 
@@ -67,6 +70,25 @@ func (r *Service) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
+}
+
+type serviceResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any UpdateResult as a service, if possible.
+func (r serviceResult) Extract() (*Service, error) {
+	var s struct {
+		Service Service `json:"service"`
+	}
+	err := r.ExtractInto(&s)
+	return &s.Service, err
+}
+
+// UpdateResult is the response from an Update operation. Call its Extract
+// method to interpret it as a Server.
+type UpdateResult struct {
+	serviceResult
 }
 
 // ServicePage represents a single page of all Services from a List request.
