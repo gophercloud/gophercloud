@@ -17,22 +17,24 @@ import (
 )
 
 const (
-	// aws4Request is a constant, used to generate AWS Credential V4.
-	aws4Request = "aws4_request"
-	// v2AlgoSha1 is a HMAC SHA1 signature method. Used to generate AWS
-	// Credential V2.
-	v2AlgoSha1 = "HmacSHA1"
-	// v2AlgoSha1 is a HMAC SHA256 signature method. Used to generate AWS
-	// Credential V2.
-	v2AlgoSha256 = "HmacSHA256"
-	// v4Algo is an AWS signature V4 signing method.
+	// EC2CredentialsAwsRequestV4 is a constant, used to generate AWS
+	// Credential V4.
+	EC2CredentialsAwsRequestV4 = "aws4_request"
+	// EC2CredentialsHmacSha1V2 is a HMAC SHA1 signature method. Used to
+	// generate AWS Credential V2.
+	EC2CredentialsHmacSha1V2 = "HmacSHA1"
+	// EC2CredentialsHmacSha256V2 is a HMAC SHA256 signature method. Used
+	// to generate AWS Credential V2.
+	EC2CredentialsHmacSha256V2 = "HmacSHA256"
+	// EC2CredentialsAwsHmacV4 is an AWS signature V4 signing method.
 	// More details:
 	// https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
-	v4Algo = "AWS4-HMAC-SHA256"
-	// iso8601utc is an AWS signature V4 timestamp format.
-	iso8601utc = "20060102T150405Z"
-	// iso8601utc is an AWS signature V4 date format.
-	yyyymmdd = "20060102"
+	EC2CredentialsAwsHmacV4 = "AWS4-HMAC-SHA256"
+	// EC2CredentialsTimestampFormatV4 is an AWS signature V4 timestamp
+	// format.
+	EC2CredentialsTimestampFormatV4 = "20060102T150405Z"
+	// EC2CredentialsDateFormatV4 is an AWS signature V4 date format.
+	EC2CredentialsDateFormatV4 = "20060102"
 )
 
 // AuthOptions represents options for authenticating a user using EC2 credentials.
@@ -144,7 +146,7 @@ func EC2CredentialsBuildSignatureKeyV4(secret, date, region, service string) []b
 	kDate := sumHMAC256([]byte("AWS4"+secret), []byte(date))
 	kRegion := sumHMAC256(kDate, []byte(region))
 	kService := sumHMAC256(kRegion, []byte(service))
-	return sumHMAC256(kService, []byte(aws4Request))
+	return sumHMAC256(kService, []byte(EC2CredentialsAwsRequestV4))
 }
 
 // EC2CredentialsBuildSignatureV4 builds an AWS v4 signature based on input
@@ -152,10 +154,10 @@ func EC2CredentialsBuildSignatureKeyV4(secret, date, region, service string) []b
 // https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L251
 func EC2CredentialsBuildSignatureV4(opts AuthOptions, params map[string]string, date time.Time, bodyHash string) string {
 	scope := strings.Join([]string{
-		date.Format(yyyymmdd),
+		date.Format(EC2CredentialsDateFormatV4),
 		opts.Region,
 		opts.Service,
-		aws4Request,
+		EC2CredentialsAwsRequestV4,
 	}, "/")
 
 	canonicalRequest := strings.Join([]string{
@@ -169,13 +171,13 @@ func EC2CredentialsBuildSignatureV4(opts AuthOptions, params map[string]string, 
 	hash := sha256.Sum256([]byte(canonicalRequest))
 
 	strToSign := strings.Join([]string{
-		v4Algo,
-		date.Format(iso8601utc),
+		EC2CredentialsAwsHmacV4,
+		date.Format(EC2CredentialsTimestampFormatV4),
 		scope,
 		hex.EncodeToString(hash[:]),
 	}, "\n")
 
-	key := EC2CredentialsBuildSignatureKeyV4(opts.Secret, date.Format(yyyymmdd), opts.Region, opts.Service)
+	key := EC2CredentialsBuildSignatureKeyV4(opts.Secret, date.Format(EC2CredentialsDateFormatV4), opts.Region, opts.Service)
 
 	return hex.EncodeToString(sumHMAC256(key, []byte(strToSign)))
 }
@@ -217,12 +219,12 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 			// params is a map of strings
 			strToSign := EC2CredentialsBuildStringToSignV2(*opts, p)
 			switch v {
-			case v2AlgoSha1:
+			case EC2CredentialsHmacSha1V2:
 				// keystone uses this method only when HmacSHA256 is not available on the server side
 				// https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L151..L156
 				c["signature"] = sumHMAC1([]byte(opts.Secret), []byte(strToSign))
 				return b, nil
-			case v2AlgoSha256:
+			case EC2CredentialsHmacSha256V2:
 				c["signature"] = sumHMAC256([]byte(opts.Secret), []byte(strToSign))
 				return b, nil
 			}
@@ -250,14 +252,14 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 		// when X-Amz-SignedHeaders is not set, make an empty string
 		p["X-Amz-SignedHeaders"] = ""
 	}
-	p["X-Amz-Date"] = date.Format(iso8601utc)
-	p["X-Amz-Algorithm"] = v4Algo
+	p["X-Amz-Date"] = date.Format(EC2CredentialsTimestampFormatV4)
+	p["X-Amz-Algorithm"] = EC2CredentialsAwsHmacV4
 	p["X-Amz-Credential"] = strings.Join([]string{
 		opts.Access,
-		date.Format(yyyymmdd),
+		date.Format(EC2CredentialsDateFormatV4),
 		opts.Region,
 		opts.Service,
-		aws4Request,
+		EC2CredentialsAwsRequestV4,
 	}, "/")
 	c["signature"] = EC2CredentialsBuildSignatureV4(*opts, p, date, c["body_hash"].(string))
 
