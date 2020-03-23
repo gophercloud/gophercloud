@@ -17,6 +17,17 @@ Example of Retrieving list of all services
 	for _, service := range allServices {
 		fmt.Printf("%+v\n", service)
 	}
+
+Example of updating a service
+
+	opts := services.UpdateOpts{
+		Status: "disabled",
+	}
+
+	updated, err := services.Update(client, serviceID, opts).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 
 package services
