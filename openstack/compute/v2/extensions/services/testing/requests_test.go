@@ -15,7 +15,7 @@ func TestListServicesPre253(t *testing.T) {
 	HandleListPre253Successfully(t)
 
 	pages := 0
-	err := services.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := services.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := services.ExtractServices(page)
@@ -47,7 +47,11 @@ func TestListServices(t *testing.T) {
 	HandleListSuccessfully(t)
 
 	pages := 0
-	err := services.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	opts := services.ListOpts{
+		Binary: "fake-binary",
+		Host:   "host123",
+	}
+	err := services.List(client.ServiceClient(), opts).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := services.ExtractServices(page)
