@@ -58,9 +58,7 @@ type AuthOptions struct {
 	Region string `json:"-"`
 	// Service is a service name to calculate an AWS signature V4. Optional.
 	Service string `json:"-"`
-	// Params is a map of parameters, used to configure an AWS signature
-	// calculation method. Defaults to AWS signature V4 parameters.
-	// Optional.
+	// Params is a map of GET method parameters. Optional.
 	Params map[string]string `json:"params"`
 	// AllowReauth allows Gophercloud to re-authenticate automatically
 	// if/when your token expires.
@@ -97,7 +95,7 @@ func EC2CredentialsBuildCanonicalQueryStringV2(params map[string]string) string 
 // EC2CredentialsBuildStringToSignV2 builds a string to sign an AWS signature
 // V2.
 // https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L148
-func EC2CredentialsBuildStringToSignV2(opts AuthOptions, params map[string]string) string {
+func EC2CredentialsBuildStringToSignV2(opts AuthOptions) string {
 	stringToSign := strings.Join([]string{
 		opts.Verb,
 		opts.Host,
@@ -106,7 +104,7 @@ func EC2CredentialsBuildStringToSignV2(opts AuthOptions, params map[string]strin
 
 	return strings.Join([]string{
 		stringToSign,
-		EC2CredentialsBuildCanonicalQueryStringV2(params),
+		EC2CredentialsBuildCanonicalQueryStringV2(opts.Params),
 	}, "\n")
 }
 
@@ -152,7 +150,7 @@ func EC2CredentialsBuildSignatureKeyV4(secret, date, region, service string) []b
 // EC2CredentialsBuildSignatureV4 builds an AWS v4 signature based on input
 // parameters.
 // https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L251
-func EC2CredentialsBuildSignatureV4(opts AuthOptions, params map[string]string, date time.Time, bodyHash string) string {
+func EC2CredentialsBuildSignatureV4(opts AuthOptions, signedHeaders string, date time.Time, bodyHash string) string {
 	scope := strings.Join([]string{
 		date.Format(EC2CredentialsDateFormatV4),
 		opts.Region,
@@ -163,9 +161,9 @@ func EC2CredentialsBuildSignatureV4(opts AuthOptions, params map[string]string, 
 	canonicalRequest := strings.Join([]string{
 		opts.Verb,
 		opts.Path,
-		EC2CredentialsBuildCanonicalQueryStringV4(opts.Verb, params),
-		EC2CredentialsBuildCanonicalHeadersV4(opts.Headers, params["X-Amz-SignedHeaders"]),
-		params["X-Amz-SignedHeaders"],
+		EC2CredentialsBuildCanonicalQueryStringV4(opts.Verb, opts.Params),
+		EC2CredentialsBuildCanonicalHeadersV4(opts.Headers, signedHeaders),
+		signedHeaders,
 		bodyHash,
 	}, "\n")
 	hash := sha256.Sum256([]byte(canonicalRequest))
@@ -205,7 +203,8 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 
 	// calculate signature, when it is not set
 	c, _ := b["credentials"].(map[string]interface{})
-	p := paramsToMap(c)
+	h := interfaceToMap(c, "headers")
+	p := interfaceToMap(c, "params")
 
 	// detect and process a signature v2
 	if v, ok := p["SignatureVersion"]; ok && v == "2" {
@@ -217,7 +216,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 		}
 		if v, ok := p["SignatureMethod"]; ok {
 			// params is a map of strings
-			strToSign := EC2CredentialsBuildStringToSignV2(*opts, p)
+			strToSign := EC2CredentialsBuildStringToSignV2(*opts)
 			switch v {
 			case EC2CredentialsHmacSha1V2:
 				// keystone uses this method only when HmacSHA256 is not available on the server side
@@ -244,24 +243,20 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 		// when body_hash is not set, generate a random one
 		c["body_hash"] = randomBodyHash()
 	}
-	if v, _ := c["headers"]; v == nil {
-		// when headers is not set, make an empty map
-		c["headers"] = make(map[string]string)
-	}
-	if _, ok := p["X-Amz-SignedHeaders"]; !ok {
-		// when X-Amz-SignedHeaders is not set, make an empty string
-		p["X-Amz-SignedHeaders"] = ""
-	}
-	p["X-Amz-Date"] = date.Format(EC2CredentialsTimestampFormatV4)
-	p["X-Amz-Algorithm"] = EC2CredentialsAwsHmacV4
-	p["X-Amz-Credential"] = strings.Join([]string{
+
+	signedHeaders, _ := h["X-Amz-SignedHeaders"]
+	c["signature"] = EC2CredentialsBuildSignatureV4(*opts, signedHeaders, date, c["body_hash"].(string))
+
+	h["X-Amz-Date"] = date.Format(EC2CredentialsTimestampFormatV4)
+	h["Authorization"] = fmt.Sprintf("%s Credential=%s/%s/%s/%s/%s, SignedHeaders=%s, Signature=%s",
+		EC2CredentialsAwsHmacV4,
 		opts.Access,
 		date.Format(EC2CredentialsDateFormatV4),
 		opts.Region,
 		opts.Service,
 		EC2CredentialsAwsRequestV4,
-	}, "/")
-	c["signature"] = EC2CredentialsBuildSignatureV4(*opts, p, date, c["body_hash"].(string))
+		signedHeaders,
+		c["signature"])
 
 	return b, nil
 }
@@ -308,18 +303,18 @@ func randomBodyHash() string {
 	return hex.EncodeToString(h)
 }
 
-// paramsToMap is a func used to represent a "credentials" map "params" value
-// as a "map[string]string"
-func paramsToMap(c map[string]interface{}) map[string]string {
+// interfaceToMap is a func used to represent a "credentials" map element as a
+// "map[string]string"
+func interfaceToMap(c map[string]interface{}, key string) map[string]string {
 	// convert map[string]interface{} to map[string]string
-	p := make(map[string]string)
-	if v, _ := c["params"].(map[string]interface{}); v != nil {
+	m := make(map[string]string)
+	if v, _ := c[key].(map[string]interface{}); v != nil {
 		for k, v := range v {
-			p[k] = v.(string)
+			m[k] = v.(string)
 		}
 	}
 
-	c["params"] = p
+	c[key] = m
 
-	return p
+	return m
 }

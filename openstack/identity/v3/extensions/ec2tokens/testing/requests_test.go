@@ -102,17 +102,15 @@ func TestCreateV4(t *testing.T) {
         "body_hash": "foo",
         "host": "",
         "headers": {
-            "Host": "localhost"
+            "Host": "localhost",
+            "Authorization": "AWS4-HMAC-SHA256 Credential=a7f1e798b7c2417cba4a02de97dc3cdc/00010101/region1/ec2/aws4_request, SignedHeaders=, Signature=f36f79118f75d7d6ec86ead9a61679cbdcf94c0cbfe5e9cf2407e8406aa82028",
+            "X-Amz-Date": "00010101T000000Z"
          },
         "params": {
-            "Action": "Test",
-            "X-Amz-Algorithm": "AWS4-HMAC-SHA256",
-            "X-Amz-Credential": "a7f1e798b7c2417cba4a02de97dc3cdc/00010101/region1/ec2/aws4_request",
-            "X-Amz-Date": "00010101T000000Z",
-            "X-Amz-SignedHeaders": ""
+            "Action": "Test"
         },
         "path": "/",
-        "signature": "f8b67f8bc0c8c7a6b84fcb37dd9007f1c728625fe783fe8616b6ba150e1d0655",
+        "signature": "f36f79118f75d7d6ec86ead9a61679cbdcf94c0cbfe5e9cf2407e8406aa82028",
         "verb": "GET"
     }
 }`)
@@ -130,15 +128,13 @@ func TestCreateV4Empty(t *testing.T) {
         "access": "a7f1e798b7c2417cba4a02de97dc3cdc",
         "body_hash": "",
         "host": "",
-        "headers": {},
-        "params": {
-            "X-Amz-Algorithm": "AWS4-HMAC-SHA256",
-            "X-Amz-Credential": "a7f1e798b7c2417cba4a02de97dc3cdc/00010101///aws4_request",
-            "X-Amz-Date": "00010101T000000Z",
-            "X-Amz-SignedHeaders": ""
+        "headers": {
+            "Authorization": "AWS4-HMAC-SHA256 Credential=a7f1e798b7c2417cba4a02de97dc3cdc/00010101///aws4_request, SignedHeaders=, Signature=140a31abf1efe93a607dcac6cd8f66887b86d2bc8f712c290d9aa06edf428608",
+            "X-Amz-Date": "00010101T000000Z"
         },
+        "params": {},
         "path": "",
-        "signature": "a7f7a34f93ccd460e67079743d05d1b4488c6e9d708869b6b687d51244c68857",
+        "signature": "140a31abf1efe93a607dcac6cd8f66887b86d2bc8f712c290d9aa06edf428608",
         "verb": ""
     }
 }`)
@@ -169,17 +165,15 @@ func TestCreateV4Headers(t *testing.T) {
         "host": "",
         "headers": {
             "Foo": "Bar",
-            "Host": "localhost"
+            "Host": "localhost",
+            "Authorization": "AWS4-HMAC-SHA256 Credential=a7f1e798b7c2417cba4a02de97dc3cdc/00010101/region1/ec2/aws4_request, SignedHeaders=, Signature=f5cd6995be98e5576a130b30cca277375f10439217ea82169aa8386e83965611",
+            "X-Amz-Date": "00010101T000000Z"
         },
         "params": {
-            "Action": "Test",
-            "X-Amz-Algorithm": "AWS4-HMAC-SHA256",
-            "X-Amz-Credential": "a7f1e798b7c2417cba4a02de97dc3cdc/00010101/region1/ec2/aws4_request",
-            "X-Amz-Date": "00010101T000000Z",
-            "X-Amz-SignedHeaders": ""
+            "Action": "Test"
         },
         "path": "/",
-        "signature": "becc7d835c1d96835b772158198aed5583cb3fee4e7c7459a15fe710e3f533c6",
+        "signature": "f5cd6995be98e5576a130b30cca277375f10439217ea82169aa8386e83965611",
         "verb": "GET"
     }
 }`)
@@ -190,18 +184,16 @@ func TestCreateV4WithSignature(t *testing.T) {
 		Access:    "a7f1e798b7c2417cba4a02de97dc3cdc",
 		BodyHash:  new(string),
 		Path:      "/",
-		Signature: "becc7d835c1d96835b772158198aed5583cb3fee4e7c7459a15fe710e3f533c6",
+		Signature: "f5cd6995be98e5576a130b30cca277375f10439217ea82169aa8386e83965611",
 		Verb:      "GET",
 		Headers: map[string]string{
-			"Foo":  "Bar",
-			"Host": "localhost",
+			"Foo":           "Bar",
+			"Host":          "localhost",
+			"Authorization": "AWS4-HMAC-SHA256 Credential=a7f1e798b7c2417cba4a02de97dc3cdc/00010101/region1/ec2/aws4_request, SignedHeaders=, Signature=f5cd6995be98e5576a130b30cca277375f10439217ea82169aa8386e83965611",
+			"X-Amz-Date":    "00010101T000000Z",
 		},
 		Params: map[string]string{
-			"Action":              "Test",
-			"X-Amz-Algorithm":     "AWS4-HMAC-SHA256",
-			"X-Amz-Credential":    "a7f1e798b7c2417cba4a02de97dc3cdc/00010101/region1/ec2/aws4_request",
-			"X-Amz-Date":          "00010101T000000Z",
-			"X-Amz-SignedHeaders": "",
+			"Action": "Test",
 		},
 	}
 	authTokenPost(t, credentials, `{
@@ -211,17 +203,15 @@ func TestCreateV4WithSignature(t *testing.T) {
         "host": "",
         "headers": {
             "Foo": "Bar",
-            "Host": "localhost"
+            "Host": "localhost",
+            "Authorization": "AWS4-HMAC-SHA256 Credential=a7f1e798b7c2417cba4a02de97dc3cdc/00010101/region1/ec2/aws4_request, SignedHeaders=, Signature=f5cd6995be98e5576a130b30cca277375f10439217ea82169aa8386e83965611",
+            "X-Amz-Date": "00010101T000000Z"
         },
         "params": {
-            "Action": "Test",
-            "X-Amz-Algorithm": "AWS4-HMAC-SHA256",
-            "X-Amz-Credential": "a7f1e798b7c2417cba4a02de97dc3cdc/00010101/region1/ec2/aws4_request",
-            "X-Amz-Date": "00010101T000000Z",
-            "X-Amz-SignedHeaders": ""
+            "Action": "Test"
         },
         "path": "/",
-        "signature": "becc7d835c1d96835b772158198aed5583cb3fee4e7c7459a15fe710e3f533c6",
+        "signature": "f5cd6995be98e5576a130b30cca277375f10439217ea82169aa8386e83965611",
         "verb": "GET"
     }
 }`)
@@ -241,13 +231,13 @@ func TestEC2CredentialsBuildStringToSignV2(t *testing.T) {
 		Verb: "GET",
 		Host: "localhost",
 		Path: "/",
-	}
-	params := map[string]string{
-		"Action": "foo",
-		"Value":  "bar",
+		Params: map[string]string{
+			"Action": "foo",
+			"Value":  "bar",
+		},
 	}
 	expected := "GET\nlocalhost\n/\nAction=foo&Value=bar"
-	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildStringToSignV2(opts, params))
+	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildStringToSignV2(opts))
 }
 
 func TestEC2CredentialsBuildCanonicalQueryStringV4(t *testing.T) {
@@ -282,12 +272,11 @@ func TestEC2CredentialsBuildSignatureV4(t *testing.T) {
 		Headers: map[string]string{
 			"Host": "localhost",
 		},
+		Params: map[string]string{
+			"Action": "foo",
+			"Value":  "bar",
+		},
 	}
-	params := map[string]string{
-		"Action":              "foo",
-		"Value":               "bar",
-		"X-Amz-SignedHeaders": "host",
-	}
-	expected := "76ecaab5616b005227ad98bcdf7e802120a16a4e840faf5193e49db7fe7db178"
-	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildSignatureV4(opts, params, time.Time{}, "foo"))
+	expected := "6a5febe41427bf601f0ae7c34dbb0fd67094776138b03fb8e65783d733d302a5"
+	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildSignatureV4(opts, "host", time.Time{}, "foo"))
 }
