@@ -4,7 +4,11 @@ cloud.
 
 Example of Retrieving list of all services
 
-	allPages, err := services.List(computeClient).AllPages()
+	opts := services.ListOpts{
+		Binary: "nova-scheduler",
+	}
+
+	allPages, err := services.List(computeClient, opts).AllPages()
 	if err != nil {
 		panic(err)
 	}
