@@ -57,7 +57,7 @@ func TestServicesUpdate(t *testing.T) {
 		}
 
 		opts := services.UpdateOpts{
-			Status: "disabled",
+			Status: services.ServiceDisabled,
 		}
 		updated, err := services.Update(client, service.ID, opts).Extract()
 		th.AssertNoErr(t, err)
@@ -95,7 +95,7 @@ func TestServicesUpdate(t *testing.T) {
 		}
 
 		opts := services.UpdateOpts{
-			Status: "enabled",
+			Status: services.ServiceEnabled,
 		}
 		updated, err := services.Update(client, service.ID, opts).Extract()
 		th.AssertNoErr(t, err)

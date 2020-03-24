@@ -21,7 +21,7 @@ Example of Retrieving list of all services
 Example of updating a service
 
 	opts := services.UpdateOpts{
-		Status: "disabled",
+		Status: services.ServiceDisabled,
 	}
 
 	updated, err := services.Update(client, serviceID, opts).Extract()

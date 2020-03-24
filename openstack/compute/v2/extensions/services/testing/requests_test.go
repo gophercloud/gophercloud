@@ -79,7 +79,7 @@ func TestUpdateService(t *testing.T) {
 	HandleUpdateSuccessfully(t)
 
 	client := client.ServiceClient()
-	actual, err := services.Update(client, "fake-service-id", services.UpdateOpts{Status: "disabled"}).Extract()
+	actual, err := services.Update(client, "fake-service-id", services.UpdateOpts{Status: services.ServiceDisabled}).Extract()
 	if err != nil {
 		t.Fatalf("Unexpected Update error: %v", err)
 	}
