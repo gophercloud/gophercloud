@@ -3,7 +3,6 @@
 package v2
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
@@ -71,8 +70,12 @@ func TestServicesUpdate(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
+	listOpts := services.ListOpts{
+		Binary: "nova-compute",
+	}
+
 	client.Microversion = "2.53"
-	allPages, err := services.List(client).AllPages()
+	allPages, err := services.List(client, listOpts).AllPages()
 	th.AssertNoErr(t, err)
 
 	allServices, err := services.ExtractServices(allPages)
@@ -80,11 +83,6 @@ func TestServicesUpdate(t *testing.T) {
 
 	// disable all services
 	for _, service := range allServices {
-		// only update nova-compute service
-		if !strings.EqualFold(service.Binary, "nova-compute") {
-			continue
-		}
-
 		opts := services.UpdateOpts{
 			Status: services.ServiceDisabled,
 		}
@@ -95,34 +93,24 @@ func TestServicesUpdate(t *testing.T) {
 	}
 
 	// verify all services are disabled
-	allPages, err = services.List(client).AllPages()
+	allPages, err = services.List(client, listOpts).AllPages()
 	th.AssertNoErr(t, err)
 
 	allServices, err = services.ExtractServices(allPages)
 	th.AssertNoErr(t, err)
 
 	for _, service := range allServices {
-		// only check nova-compute service
-		if !strings.EqualFold(service.Binary, "nova-compute") {
-			continue
-		}
-
 		th.AssertEquals(t, service.Status, "disabled")
 	}
 
 	// reenable all services
-	allPages, err = services.List(client).AllPages()
+	allPages, err = services.List(client, listOpts).AllPages()
 	th.AssertNoErr(t, err)
 
 	allServices, err = services.ExtractServices(allPages)
 	th.AssertNoErr(t, err)
 
 	for _, service := range allServices {
-		// only update nova-compute service
-		if !strings.EqualFold(service.Binary, "nova-compute") {
-			continue
-		}
-
 		opts := services.UpdateOpts{
 			Status: services.ServiceEnabled,
 		}
