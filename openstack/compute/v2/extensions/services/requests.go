@@ -39,10 +39,20 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
+type ServiceStatus string
+
+const (
+	// ServiceEnabled is used to mark a service as being enabled.
+	ServiceEnabled ServiceStatus = "enabled"
+
+	// ServiceDisabled is used to mark a service as being disabled.
+	ServiceDisabled ServiceStatus = "disabled"
+)
+
 // UpdateOpts specifies the base attributes that may be updated on a service.
 type UpdateOpts struct {
 	// Status represents the new service status. One of enabled or disabled.
-	Status string `json:"status,omitempty"`
+	Status ServiceStatus `json:"status,omitempty"`
 
 	// DisabledReason represents the reason for disabling a service.
 	DisabledReason string `json:"disabled_reason,omitempty"`
