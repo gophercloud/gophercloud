@@ -220,6 +220,37 @@ var (
 	}
 )
 
+// ServiceUpdate represents a raw service from the Compute service update API
+const ServiceUpdate = `
+{
+	"service":
+	{
+		"id": 1,
+		"binary": "nova-scheduler",
+		"disabled_reason": "test1",
+		"host": "host1",
+		"state": "up",
+		"status": "disabled",
+		"updated_at": "2012-10-29T13:42:02.000000",
+		"forced_down": false,
+		"zone": "internal"
+	}
+}
+`
+
+//FakeServiceUpdateBody represents the updated service
+var FakeServiceUpdateBody = services.Service{
+	Binary:         "nova-scheduler",
+	DisabledReason: "test1",
+	ForcedDown:     false,
+	Host:           "host1",
+	ID:             "1",
+	State:          "up",
+	Status:         "disabled",
+	UpdatedAt:      time.Date(2012, 10, 29, 13, 42, 2, 0, time.UTC),
+	Zone:           "internal",
+}
+
 // HandleListPre253Successfully configures the test server to respond to a List
 // request to a Compute server API pre 2.53 microversion release.
 func HandleListPre253Successfully(t *testing.T) {
@@ -241,5 +272,19 @@ func HandleListSuccessfully(t *testing.T) {
 
 		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, ServiceListBody)
+	})
+}
+
+// HandleUpdateSuccessfully configures the test server to respond to a Update
+// request to a Compute server with Pike+ release.
+func HandleUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/os-services/fake-service-id", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestJSONRequest(t, r, `{"status": "disabled"}`)
+
+		fmt.Fprintf(w, ServiceUpdate)
 	})
 }
