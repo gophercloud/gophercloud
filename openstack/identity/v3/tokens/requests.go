@@ -8,6 +8,7 @@ type Scope struct {
 	ProjectName string
 	DomainID    string
 	DomainName  string
+	System      bool
 }
 
 // AuthOptionsBuilder provides the ability for extensions to add additional

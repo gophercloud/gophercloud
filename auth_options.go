@@ -98,6 +98,7 @@ type AuthScope struct {
 	ProjectName string
 	DomainID    string
 	DomainName  string
+	System      bool
 }
 
 // ToTokenV2CreateMap allows AuthOptions to satisfy the AuthOptionsBuilder
@@ -362,6 +363,14 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 				opts.Scope.DomainName = opts.DomainName
 			}
 		}
+	}
+
+	if opts.Scope.System {
+		return map[string]interface{}{
+			"system": map[string]interface{}{
+				"all": true,
+			},
+		}, nil
 	}
 
 	if opts.Scope.ProjectName != "" {
