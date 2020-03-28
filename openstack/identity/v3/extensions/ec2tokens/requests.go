@@ -72,8 +72,10 @@ type AuthOptions struct {
 	BodyHash *string `json:"body_hash"`
 	// Timestamp is a timestamp to calculate a V4 signature. Optional.
 	Timestamp *time.Time `json:"-"`
-	// Token is a []byte string (encoded to base64 automatically) which was signed
-	// by an EC2 secret key. Used by S3 tokens for validation only.
+	// Token is a []byte string (encoded to base64 automatically) which was
+	// signed by an EC2 secret key. Used by S3 tokens for validation only.
+	// Token must be set with a Signature. If a Signature is not provided,
+	// a Token will be generated automatically along with a Signature.
 	Token []byte `json:"token,omitempty"`
 }
 
@@ -272,6 +274,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 	h["X-Amz-Date"] = date.Format(EC2CredentialsTimestampFormatV4)
 	h["Authorization"] = EC2CredentialsBuildAuthorizationHeaderV4(*opts, signedHeaders, c["signature"].(string), date)
 
+	// token is only used for S3 tokens validation and will be removed when using EC2 validation
 	c["token"] = stringToSign
 
 	return b, nil
