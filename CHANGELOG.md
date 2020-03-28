@@ -14,6 +14,7 @@ IMPROVEMENTS
 * Added ability to list Nova services by binary and host [GH-1904](https://github.com/gophercloud/gophercloud/pull/1904)
 * Added `compute/v2/extensions/services.Update` [GH-1902](https://github.com/gophercloud/gophercloud/pull/1902)
 * Added system scope to v3 authentication [GH-1908](https://github.com/gophercloud/gophercloud/pull/1908)
+* Added `identity/v3/extensions/ec2tokens.ValidateS3Token` [GH-1906](https://github.com/gophercloud/gophercloud/pull/1906)
 
 ## 0.9.0 (March 10, 2020)
 
