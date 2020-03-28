@@ -275,6 +275,31 @@ func TestCreateProjectNameAndDomainNameScope(t *testing.T) {
 	`)
 }
 
+func TestCreateSystemScope(t *testing.T) {
+	options := tokens.AuthOptions{UserID: "fenris", Password: "g0t0h311"}
+	scope := &tokens.Scope{System: true}
+	authTokenPost(t, options, scope, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["password"],
+					"password": {
+						"user": {
+							"id": "fenris",
+							"password": "g0t0h311"
+						}
+					}
+				},
+				"scope": {
+					"system": {
+						"all": true
+					}
+				}
+			}
+		}
+	`)
+}
+
 func TestCreateApplicationCredentialIDAndSecret(t *testing.T) {
 	authTokenPost(t, tokens.AuthOptions{ApplicationCredentialID: "12345abcdef", ApplicationCredentialSecret: "mysecret"}, nil, `
 		{
