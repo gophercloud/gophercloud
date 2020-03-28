@@ -236,8 +236,8 @@ func TestEC2CredentialsBuildStringToSignV2(t *testing.T) {
 			"Value":  "bar",
 		},
 	}
-	expected := "GET\nlocalhost\n/\nAction=foo&Value=bar"
-	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildStringToSignV2(opts))
+	expected := []byte("GET\nlocalhost\n/\nAction=foo&Value=bar")
+	testhelper.CheckDeepEquals(t, expected, ec2tokens.EC2CredentialsBuildStringToSignV2(opts))
 }
 
 func TestEC2CredentialsBuildCanonicalQueryStringV4(t *testing.T) {
@@ -261,8 +261,8 @@ func TestEC2CredentialsBuildCanonicalHeadersV4(t *testing.T) {
 }
 
 func TestEC2CredentialsBuildSignatureKeyV4(t *testing.T) {
-	expected := "5f06633a42b1324477cb006b24b1266722703b5dcf9186481be6592b9554c38f"
-	testhelper.CheckEquals(t, expected, hex.EncodeToString((ec2tokens.EC2CredentialsBuildSignatureKeyV4("foo", "bar", "baz", "qux"))))
+	expected := "246626bd815b0a0cae4bedc3f4e124ca25e208cd75fd812d836aeae184de038a"
+	testhelper.CheckEquals(t, expected, hex.EncodeToString((ec2tokens.EC2CredentialsBuildSignatureKeyV4("foo", "bar", "baz", time.Time{}))))
 }
 
 func TestEC2CredentialsBuildSignatureV4(t *testing.T) {
@@ -278,5 +278,10 @@ func TestEC2CredentialsBuildSignatureV4(t *testing.T) {
 		},
 	}
 	expected := "6a5febe41427bf601f0ae7c34dbb0fd67094776138b03fb8e65783d733d302a5"
-	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildSignatureV4(opts, "host", time.Time{}, "foo"))
+
+	date := time.Time{}
+	stringToSign := ec2tokens.EC2CredentialsBuildStringToSignV4(opts, "host", "foo", date)
+	key := ec2tokens.EC2CredentialsBuildSignatureKeyV4("", "", "", date)
+
+	testhelper.CheckEquals(t, expected, ec2tokens.EC2CredentialsBuildSignatureV4(key, stringToSign))
 }

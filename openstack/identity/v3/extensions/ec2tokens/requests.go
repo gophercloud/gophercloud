@@ -72,6 +72,11 @@ type AuthOptions struct {
 	BodyHash *string `json:"body_hash"`
 	// Timestamp is a timestamp to calculate a V4 signature. Optional.
 	Timestamp *time.Time `json:"-"`
+	// Token is a []byte string (encoded to base64 automatically) which was
+	// signed by an EC2 secret key. Used by S3 tokens for validation only.
+	// Token must be set with a Signature. If a Signature is not provided,
+	// a Token will be generated automatically along with a Signature.
+	Token []byte `json:"token,omitempty"`
 }
 
 // EC2CredentialsBuildCanonicalQueryStringV2 builds a canonical query string
@@ -95,17 +100,17 @@ func EC2CredentialsBuildCanonicalQueryStringV2(params map[string]string) string 
 // EC2CredentialsBuildStringToSignV2 builds a string to sign an AWS signature
 // V2.
 // https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L148
-func EC2CredentialsBuildStringToSignV2(opts AuthOptions) string {
+func EC2CredentialsBuildStringToSignV2(opts AuthOptions) []byte {
 	stringToSign := strings.Join([]string{
 		opts.Verb,
 		opts.Host,
 		opts.Path,
 	}, "\n")
 
-	return strings.Join([]string{
+	return []byte(strings.Join([]string{
 		stringToSign,
 		EC2CredentialsBuildCanonicalQueryStringV2(opts.Params),
-	}, "\n")
+	}, "\n"))
 }
 
 // EC2CredentialsBuildCanonicalQueryStringV2 builds a canonical query string
@@ -140,17 +145,17 @@ func EC2CredentialsBuildCanonicalHeadersV4(headers map[string]string, signedHead
 // EC2CredentialsBuildSignatureKeyV4 builds a HMAC 256 signature key based on
 // input parameters.
 // https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L169
-func EC2CredentialsBuildSignatureKeyV4(secret, date, region, service string) []byte {
-	kDate := sumHMAC256([]byte("AWS4"+secret), []byte(date))
+func EC2CredentialsBuildSignatureKeyV4(secret, region, service string, date time.Time) []byte {
+	kDate := sumHMAC256([]byte("AWS4"+secret), []byte(date.Format(EC2CredentialsDateFormatV4)))
 	kRegion := sumHMAC256(kDate, []byte(region))
 	kService := sumHMAC256(kRegion, []byte(service))
 	return sumHMAC256(kService, []byte(EC2CredentialsAwsRequestV4))
 }
 
-// EC2CredentialsBuildSignatureV4 builds an AWS v4 signature based on input
-// parameters.
+// EC2CredentialsBuildStringToSignV4 builds an AWS v4 signature string to sign
+// based on input parameters.
 // https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L251
-func EC2CredentialsBuildSignatureV4(opts AuthOptions, signedHeaders string, date time.Time, bodyHash string) string {
+func EC2CredentialsBuildStringToSignV4(opts AuthOptions, signedHeaders string, bodyHash string, date time.Time) []byte {
 	scope := strings.Join([]string{
 		date.Format(EC2CredentialsDateFormatV4),
 		opts.Region,
@@ -168,16 +173,33 @@ func EC2CredentialsBuildSignatureV4(opts AuthOptions, signedHeaders string, date
 	}, "\n")
 	hash := sha256.Sum256([]byte(canonicalRequest))
 
-	strToSign := strings.Join([]string{
+	return []byte(strings.Join([]string{
 		EC2CredentialsAwsHmacV4,
 		date.Format(EC2CredentialsTimestampFormatV4),
 		scope,
 		hex.EncodeToString(hash[:]),
-	}, "\n")
+	}, "\n"))
+}
 
-	key := EC2CredentialsBuildSignatureKeyV4(opts.Secret, date.Format(EC2CredentialsDateFormatV4), opts.Region, opts.Service)
+// EC2CredentialsBuildSignatureV4 builds an AWS v4 signature based on input
+// parameters.
+// https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L285..L286
+func EC2CredentialsBuildSignatureV4(key []byte, stringToSign []byte) string {
+	return hex.EncodeToString(sumHMAC256(key, stringToSign))
+}
 
-	return hex.EncodeToString(sumHMAC256(key, []byte(strToSign)))
+// EC2CredentialsBuildAuthorizationHeaderV4 builds an AWS v4 Authorization
+// header based on auth parameters, date and signature
+func EC2CredentialsBuildAuthorizationHeaderV4(opts AuthOptions, signedHeaders string, signature string, date time.Time) string {
+	return fmt.Sprintf("%s Credential=%s/%s/%s/%s/%s, SignedHeaders=%s, Signature=%s",
+		EC2CredentialsAwsHmacV4,
+		opts.Access,
+		date.Format(EC2CredentialsDateFormatV4),
+		opts.Region,
+		opts.Service,
+		EC2CredentialsAwsRequestV4,
+		signedHeaders,
+		signature)
 }
 
 // ToTokenV3ScopeMap is a dummy method to satisfy tokens.AuthOptionsBuilder interface
@@ -221,10 +243,10 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 			case EC2CredentialsHmacSha1V2:
 				// keystone uses this method only when HmacSHA256 is not available on the server side
 				// https://github.com/openstack/python-keystoneclient/blob/stable/train/keystoneclient/contrib/ec2/utils.py#L151..L156
-				c["signature"] = sumHMAC1([]byte(opts.Secret), []byte(strToSign))
+				c["signature"] = sumHMAC1([]byte(opts.Secret), strToSign)
 				return b, nil
 			case EC2CredentialsHmacSha256V2:
-				c["signature"] = sumHMAC256([]byte(opts.Secret), []byte(strToSign))
+				c["signature"] = sumHMAC256([]byte(opts.Secret), strToSign)
 				return b, nil
 			}
 			return nil, fmt.Errorf("unsupported signature method: %s", v)
@@ -245,18 +267,15 @@ func (opts *AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]
 	}
 
 	signedHeaders, _ := h["X-Amz-SignedHeaders"]
-	c["signature"] = EC2CredentialsBuildSignatureV4(*opts, signedHeaders, date, c["body_hash"].(string))
 
+	stringToSign := EC2CredentialsBuildStringToSignV4(*opts, signedHeaders, c["body_hash"].(string), date)
+	key := EC2CredentialsBuildSignatureKeyV4(opts.Secret, opts.Region, opts.Service, date)
+	c["signature"] = EC2CredentialsBuildSignatureV4(key, stringToSign)
 	h["X-Amz-Date"] = date.Format(EC2CredentialsTimestampFormatV4)
-	h["Authorization"] = fmt.Sprintf("%s Credential=%s/%s/%s/%s/%s, SignedHeaders=%s, Signature=%s",
-		EC2CredentialsAwsHmacV4,
-		opts.Access,
-		date.Format(EC2CredentialsDateFormatV4),
-		opts.Region,
-		opts.Service,
-		EC2CredentialsAwsRequestV4,
-		signedHeaders,
-		c["signature"])
+	h["Authorization"] = EC2CredentialsBuildAuthorizationHeaderV4(*opts, signedHeaders, c["signature"].(string), date)
+
+	// token is only used for S3 tokens validation and will be removed when using EC2 validation
+	c["token"] = stringToSign
 
 	return b, nil
 }
@@ -269,7 +288,33 @@ func Create(c *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tok
 		return
 	}
 
+	// delete "token" element, since it is used in s3tokens
+	deleteBodyElements(b, "token")
+
 	resp, err := c.Post(ec2tokensURL(c), b, &r.Body, &gophercloud.RequestOpts{
+		MoreHeaders: map[string]string{"X-Auth-Token": ""},
+		OkCodes:     []int{200},
+	})
+	r.Err = err
+	if resp != nil {
+		r.Header = resp.Header
+	}
+	return
+}
+
+// ValidateS3Token authenticates an S3 request using EC2 credentials. Doesn't
+// generate a new token ID, but returns a tokens.CreateResult.
+func ValidateS3Token(c *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
+	b, err := opts.ToTokenV3CreateMap(nil)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	// delete unused element, since it is used in ec2tokens only
+	deleteBodyElements(b, "body_hash", "headers", "host", "params", "path", "verb")
+
+	resp, err := c.Post(s3tokensURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: map[string]string{"X-Auth-Token": ""},
 		OkCodes:     []int{200},
 	})
@@ -317,4 +362,15 @@ func interfaceToMap(c map[string]interface{}, key string) map[string]string {
 	c[key] = m
 
 	return m
+}
+
+// deleteBodyElements deletes map body elements
+func deleteBodyElements(b map[string]interface{}, elements ...string) {
+	if c, ok := b["credentials"].(map[string]interface{}); ok {
+		for _, k := range elements {
+			if _, ok := c[k]; ok {
+				delete(c, k)
+			}
+		}
+	}
 }
