@@ -63,3 +63,12 @@ func TestGetAmphora(t *testing.T) {
 
 	th.CheckDeepEquals(t, FirstAmphora, *actual)
 }
+
+func TestFailoverAmphora(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleAmphoraFailoverSuccessfully(t)
+
+	res := amphorae.Failover(fake.ServiceClient(), "36e08a3e-a78f-4b40-a229-1e7e23eee1ab")
+	th.AssertNoErr(t, res.Err)
+}
