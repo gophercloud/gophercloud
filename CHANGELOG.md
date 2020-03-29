@@ -17,6 +17,7 @@ IMPROVEMENTS
 * Added `identity/v3/extensions/ec2tokens.ValidateS3Token` [GH-1906](https://github.com/gophercloud/gophercloud/pull/1906)
 * Added `containerinfra/v1/clusters.Cluster.HealthStatus` [GH-1910](https://github.com/gophercloud/gophercloud/pull/1910)
 * Added `containerinfra/v1/clusters.Cluster.HealthStatusReason` [GH-1910](https://github.com/gophercloud/gophercloud/pull/1910)
+* Added `loadbalancer/v2/amphorae.Failover` [GH-1912](https://github.com/gophercloud/gophercloud/pull/1912)
 
 ## 0.9.0 (March 10, 2020)
 
