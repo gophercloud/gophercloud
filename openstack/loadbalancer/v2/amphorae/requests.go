@@ -57,3 +57,11 @@ func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
 	return
 }
+
+// Failover performs a failover of an amphora.
+func Failover(c *gophercloud.ServiceClient, id string) (r FailoverResult) {
+	_, r.Err = c.Put(failoverRootURL(c, id), nil, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	return
+}

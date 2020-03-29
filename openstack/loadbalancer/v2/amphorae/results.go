@@ -146,3 +146,9 @@ func (r commonResult) Extract() (*Amphora, error) {
 type GetResult struct {
 	commonResult
 }
+
+// FailoverResult represents the result of a failover operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type FailoverResult struct {
+	gophercloud.ErrResult
+}

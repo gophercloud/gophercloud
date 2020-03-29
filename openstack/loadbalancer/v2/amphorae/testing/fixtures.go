@@ -167,3 +167,13 @@ func HandleAmphoraGetSuccessfully(t *testing.T) {
 		fmt.Fprintf(w, SingleAmphoraBody)
 	})
 }
+
+// HandleAmphoraFailoverSuccessfully sets up the test server to respond to an amphora failover request.
+func HandleAmphoraFailoverSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/v2.0/octavia/amphorae/36e08a3e-a78f-4b40-a229-1e7e23eee1ab/failover", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}

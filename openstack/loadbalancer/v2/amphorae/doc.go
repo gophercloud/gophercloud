@@ -21,5 +21,14 @@ Example to List Amphorae
 	for _, amphora := range allAmphorae {
 		fmt.Printf("%+v\n", amphora)
 	}
+
+Example to Failover an amphora
+
+	ampID := "d67d56a6-4a86-4688-a282-f46444705c64"
+
+	err := amphorae.Failover(octaviaClient, ampID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package amphorae
