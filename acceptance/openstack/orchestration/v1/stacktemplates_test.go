@@ -40,3 +40,17 @@ func TestStackTemplatesValidate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, validatedTemplate)
 }
+
+func TestStackTemplateWithFile(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	client, err := clients.NewOrchestrationV1Client()
+	th.AssertNoErr(t, err)
+
+	stack, err := CreateStackWithFile(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteStack(t, client, stack.Name, stack.ID)
+
+	tmpl, err := stacktemplates.Get(client, stack.Name, stack.ID).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, tmpl)
+}

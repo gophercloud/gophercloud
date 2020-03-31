@@ -113,3 +113,35 @@ func WaitForStackStatus(client *gophercloud.ServiceClient, stackName, stackID, s
 		return false, nil
 	})
 }
+
+// CreateStackWithFile will create a heat stack with a randomly generated name that uses get_file.
+// An error will be returned if the stack failed to be created.
+func CreateStackWithFile(t *testing.T, client *gophercloud.ServiceClient) (*stacks.RetrievedStack, error) {
+	stackName := tools.RandomString("ACCPTEST", 8)
+	t.Logf("Attempting to create stack %s", stackName)
+
+	template := new(stacks.Template)
+	template.Bin = []byte(`heat_template_version: 2015-04-30
+resources:
+  test_resource:
+    type: OS::Heat::TestResource
+    properties:
+      value:
+        get_file: testdata/samplefile`)
+	createOpts := stacks.CreateOpts{
+		Name:            stackName,
+		Timeout:         1,
+		TemplateOpts:    template,
+		DisableRollback: gophercloud.Disabled,
+	}
+
+	stack, err := stacks.Create(client, createOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	if err := WaitForStackStatus(client, stackName, stack.ID, "CREATE_COMPLETE"); err != nil {
+		return nil, err
+	}
+
+	newStack, err := stacks.Get(client, stackName, stack.ID).Extract()
+	return newStack, err
+}
