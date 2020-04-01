@@ -37,6 +37,9 @@ type AuthOptions struct {
 
 	Password string `json:"password,omitempty"`
 
+	// Passcode is used in TOTP authentication method
+	Passcode string `json:"passcode,omitempty"`
+
 	// At most one of DomainID and DomainName must be provided if using Username
 	// with Identity V3. Otherwise, either are optional.
 	DomainID   string `json:"-"`
@@ -68,6 +71,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 		Username:                    opts.Username,
 		UserID:                      opts.UserID,
 		Password:                    opts.Password,
+		Passcode:                    opts.Passcode,
 		DomainID:                    opts.DomainID,
 		DomainName:                  opts.DomainName,
 		AllowReauth:                 opts.AllowReauth,
@@ -94,6 +98,11 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 }
 
 func (opts *AuthOptions) CanReauth() bool {
+	if opts.Passcode != "" {
+		// cannot reauth using TOTP passcode
+		return false
+	}
+
 	return opts.AllowReauth
 }
 
