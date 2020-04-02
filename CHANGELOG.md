@@ -18,6 +18,10 @@ IMPROVEMENTS
 * Added `containerinfra/v1/clusters.Cluster.HealthStatus` [GH-1910](https://github.com/gophercloud/gophercloud/pull/1910)
 * Added `containerinfra/v1/clusters.Cluster.HealthStatusReason` [GH-1910](https://github.com/gophercloud/gophercloud/pull/1910)
 * Added `loadbalancer/v2/amphorae.Failover` [GH-1912](https://github.com/gophercloud/gophercloud/pull/1912)
+* Added `identity/v3/extensions/ec2credentials.List` [GH-1916](https://github.com/gophercloud/gophercloud/pull/1916)
+* Added `identity/v3/extensions/ec2credentials.Get` [GH-1916](https://github.com/gophercloud/gophercloud/pull/1916)
+* Added `identity/v3/extensions/ec2credentials.Create` [GH-1916](https://github.com/gophercloud/gophercloud/pull/1916)
+* Added `identity/v3/extensions/ec2credentials.Delete` [GH-1916](https://github.com/gophercloud/gophercloud/pull/1916)
 
 ## 0.9.0 (March 10, 2020)
 
