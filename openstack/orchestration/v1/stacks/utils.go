@@ -119,7 +119,7 @@ func (t *TE) Parse() error {
 			return ErrInvalidDataFormat{}
 		}
 	}
-	return t.Validate() // FIXME This always calls TE.Validate, not Template.Validate/Environment.Validate
+	return nil
 }
 
 // Validate validates the contents of TE

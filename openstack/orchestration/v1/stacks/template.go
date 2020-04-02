@@ -94,8 +94,10 @@ func (t *Template) getFileContents(te interface{}, ignoreIf igFunc, recurse bool
 				// other templates
 				if recurse {
 					if err := childTemplate.Parse(); err == nil {
-						if err := childTemplate.getFileContents(childTemplate.Parsed, ignoreIf, recurse); err != nil {
-							return err
+						if err := childTemplate.Validate(); err == nil {
+							if err := childTemplate.getFileContents(childTemplate.Parsed, ignoreIf, recurse); err != nil {
+								return err
+							}
 						}
 					}
 				}
