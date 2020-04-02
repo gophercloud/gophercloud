@@ -122,11 +122,6 @@ func (t *TE) Parse() error {
 	return nil
 }
 
-// Validate validates the contents of TE
-func (t *TE) Validate() error {
-	return nil
-}
-
 // igfunc is a parameter used by GetFileContents and GetRRFileContents to check
 // for valid URL's.
 type igFunc func(string, interface{}) bool
