@@ -9,11 +9,12 @@ import (
 
 func TestGetResponseCode(t *testing.T) {
 	respErr := gophercloud.ErrUnexpectedResponseCode{
-		URL:      "http://example.com",
-		Method:   "GET",
-		Expected: []int{200},
-		Actual:   404,
-		Body:     nil,
+		URL:            "http://example.com",
+		Method:         "GET",
+		Expected:       []int{200},
+		Actual:         404,
+		Body:           nil,
+		ResponseHeader: nil,
 	}
 
 	var err404 error = gophercloud.ErrDefault404{ErrUnexpectedResponseCode: respErr}
