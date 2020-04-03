@@ -73,7 +73,7 @@ func TestIgnoreIfTemplate(t *testing.T) {
 	}
 }
 
-func TestGetFileContents(t *testing.T) {
+func TestGetFileContentsWithType(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	baseurl, err := getBasePath()
@@ -140,6 +140,58 @@ resources:
 		"resources": map[string]interface{}{
 			"my_server": map[string]interface{}{
 				"type": fakeURL,
+			},
+		},
+	}
+	te.Parse()
+	th.AssertDeepEquals(t, expectedParsed, te.Parsed)
+}
+
+func TestGetFileContentsWithFile(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	baseurl, err := getBasePath()
+	th.AssertNoErr(t, err)
+	fakeURL := strings.Join([]string{baseurl, "somefile"}, "/")
+	urlparsed, err := url.Parse(fakeURL)
+	th.AssertNoErr(t, err)
+	somefile := `Welcome!`
+	th.Mux.HandleFunc(urlparsed.Path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, somefile)
+	})
+
+	client := fakeClient{BaseClient: getHTTPClient()}
+	te := new(Template)
+	te.Bin = []byte(`heat_template_version: 2015-04-30
+resources:
+  test_resource:
+    type: OS::Heat::TestResource
+    properties:
+      value: {get_file: somefile }`)
+	te.client = client
+
+	err = te.Parse()
+	th.AssertNoErr(t, err)
+	err = te.getFileContents(te.Parsed, ignoreIfTemplate, true)
+	th.AssertNoErr(t, err)
+	expectedFiles := map[string]string{
+		"somefile": "Welcome!",
+	}
+	th.AssertEquals(t, expectedFiles["somefile"], te.Files[fakeURL])
+	te.fixFileRefs()
+	expectedParsed := map[string]interface{}{
+		"heat_template_version": "2015-04-30",
+		"resources": map[string]interface{}{
+			"test_resource": map[string]interface{}{
+				"type": "OS::Heat::TestResource",
+				"properties": map[string]interface{}{
+					"value": map[string]interface{}{
+						"get_file": fakeURL,
+					},
+				},
 			},
 		},
 	}
