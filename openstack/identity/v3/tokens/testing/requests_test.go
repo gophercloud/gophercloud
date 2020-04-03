@@ -342,8 +342,8 @@ func TestCreateApplicationCredentialNameAndSecret(t *testing.T) {
 	`)
 }
 
-func TestCreateTotpProjectNameAndDomainNameScope(t *testing.T) {
-	options := tokens.AuthOptions{UserID: "fenris", Passcode: "12345678"}
+func TestCreateTOTPProjectNameAndDomainNameScope(t *testing.T) {
+	options := tokens.AuthOptions{UserID: "someuser", Passcode: "12345678"}
 	scope := &tokens.Scope{ProjectName: "world-domination", DomainName: "evil-plans"}
 	authTokenPost(t, options, scope, `
 		{
@@ -352,7 +352,7 @@ func TestCreateTotpProjectNameAndDomainNameScope(t *testing.T) {
 					"methods": ["totp"],
 					"totp": {
 						"user": {
-							"id": "fenris",
+							"id": "someuser",
 							"passcode": "12345678"
 						}
 					}
@@ -370,8 +370,8 @@ func TestCreateTotpProjectNameAndDomainNameScope(t *testing.T) {
 	`)
 }
 
-func TestCreatePasswordTotpProjectNameAndDomainNameScope(t *testing.T) {
-	options := tokens.AuthOptions{UserID: "fenris", Password: "g0t0h311", Passcode: "12345678"}
+func TestCreatePasswordTOTPProjectNameAndDomainNameScope(t *testing.T) {
+	options := tokens.AuthOptions{UserID: "someuser", Password: "somepassword", Passcode: "12345678"}
 	scope := &tokens.Scope{ProjectName: "world-domination", DomainName: "evil-plans"}
 	authTokenPost(t, options, scope, `
 		{
@@ -380,13 +380,13 @@ func TestCreatePasswordTotpProjectNameAndDomainNameScope(t *testing.T) {
 					"methods": ["password","totp"],
 					"password": {
 						"user": {
-							"id": "fenris",
-							"password": "g0t0h311"
+							"id": "someuser",
+							"password": "somepassword"
 						}
 					},
 					"totp": {
 						"user": {
-							"id": "fenris",
+							"id": "someuser",
 							"passcode": "12345678"
 						}
 					}

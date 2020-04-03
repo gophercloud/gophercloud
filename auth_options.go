@@ -181,7 +181,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 		Password              *passwordReq              `json:"password,omitempty"`
 		Token                 *tokenReq                 `json:"token,omitempty"`
 		ApplicationCredential *applicationCredentialReq `json:"application_credential,omitempty"`
-		Totp                  *totpReq                  `json:"totp,omitempty"`
+		TOTP                  *totpReq                  `json:"totp,omitempty"`
 	}
 
 	type authReq struct {
@@ -325,7 +325,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 					}
 				}
 				if opts.Passcode != "" {
-					req.Auth.Identity.Totp = &totpReq{
+					req.Auth.Identity.TOTP = &totpReq{
 						User: &userReq{
 							Name:     &opts.Username,
 							Passcode: &opts.Passcode,
@@ -348,7 +348,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 				}
 
 				if opts.Passcode != "" {
-					req.Auth.Identity.Totp = &totpReq{
+					req.Auth.Identity.TOTP = &totpReq{
 						User: &userReq{
 							Name:     &opts.Username,
 							Passcode: &opts.Passcode,
@@ -379,7 +379,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 			}
 
 			if opts.Passcode != "" {
-				req.Auth.Identity.Totp = &totpReq{
+				req.Auth.Identity.TOTP = &totpReq{
 					User: &userReq{
 						ID:       &opts.UserID,
 						Passcode: &opts.Passcode,
