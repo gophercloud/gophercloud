@@ -23,6 +23,10 @@ IMPROVEMENTS
 * Added `identity/v3/extensions/ec2credentials.Create` [GH-1916](https://github.com/gophercloud/gophercloud/pull/1916)
 * Added `identity/v3/extensions/ec2credentials.Delete` [GH-1916](https://github.com/gophercloud/gophercloud/pull/1916)
 
+BUG FIXES
+
+* Fixed issue with Orchestration `get_file` only being able to read JSON and YAML files [GH-1915](https://github.com/gophercloud/gophercloud/pull/1915)
+
 ## 0.9.0 (March 10, 2020)
 
 UPGRADE NOTES
