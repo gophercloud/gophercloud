@@ -22,6 +22,7 @@ IMPROVEMENTS
 * Added `identity/v3/extensions/ec2credentials.Get` [GH-1916](https://github.com/gophercloud/gophercloud/pull/1916)
 * Added `identity/v3/extensions/ec2credentials.Create` [GH-1916](https://github.com/gophercloud/gophercloud/pull/1916)
 * Added `identity/v3/extensions/ec2credentials.Delete` [GH-1916](https://github.com/gophercloud/gophercloud/pull/1916)
+* Added `ErrUnexpectedResponseCode.ResponseHeader` [GH-1919](https://github.com/gophercloud/gophercloud/pull/1919)
 
 BUG FIXES
 
