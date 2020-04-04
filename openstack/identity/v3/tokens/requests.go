@@ -97,7 +97,7 @@ func (opts *AuthOptions) CanReauth() bool {
 	return opts.AllowReauth
 }
 
-func subjectTokenHeaders(c *gophercloud.ServiceClient, subjectToken string) map[string]string {
+func subjectTokenHeaders(subjectToken string) map[string]string {
 	return map[string]string{
 		"X-Subject-Token": subjectToken,
 	}
@@ -131,7 +131,7 @@ func Create(c *gophercloud.ServiceClient, opts AuthOptionsBuilder) (r CreateResu
 // Get validates and retrieves information about another token.
 func Get(c *gophercloud.ServiceClient, token string) (r GetResult) {
 	resp, err := c.Get(tokenURL(c), &r.Body, &gophercloud.RequestOpts{
-		MoreHeaders: subjectTokenHeaders(c, token),
+		MoreHeaders: subjectTokenHeaders(token),
 		OkCodes:     []int{200, 203},
 	})
 	if resp != nil {
@@ -144,7 +144,7 @@ func Get(c *gophercloud.ServiceClient, token string) (r GetResult) {
 // Validate determines if a specified token is valid or not.
 func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
 	resp, err := c.Head(tokenURL(c), &gophercloud.RequestOpts{
-		MoreHeaders: subjectTokenHeaders(c, token),
+		MoreHeaders: subjectTokenHeaders(token),
 		OkCodes:     []int{200, 204, 404},
 	})
 	if err != nil {
@@ -157,7 +157,7 @@ func Validate(c *gophercloud.ServiceClient, token string) (bool, error) {
 // Revoke immediately makes specified token invalid.
 func Revoke(c *gophercloud.ServiceClient, token string) (r RevokeResult) {
 	_, r.Err = c.Delete(tokenURL(c), &gophercloud.RequestOpts{
-		MoreHeaders: subjectTokenHeaders(c, token),
+		MoreHeaders: subjectTokenHeaders(token),
 	})
 	return
 }
