@@ -342,6 +342,68 @@ func TestCreateApplicationCredentialNameAndSecret(t *testing.T) {
 	`)
 }
 
+func TestCreateTOTPProjectNameAndDomainNameScope(t *testing.T) {
+	options := tokens.AuthOptions{UserID: "someuser", Passcode: "12345678"}
+	scope := &tokens.Scope{ProjectName: "world-domination", DomainName: "evil-plans"}
+	authTokenPost(t, options, scope, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["totp"],
+					"totp": {
+						"user": {
+							"id": "someuser",
+							"passcode": "12345678"
+						}
+					}
+				},
+				"scope": {
+					"project": {
+						"domain": {
+							"name": "evil-plans"
+						},
+						"name": "world-domination"
+					}
+				}
+			}
+		}
+	`)
+}
+
+func TestCreatePasswordTOTPProjectNameAndDomainNameScope(t *testing.T) {
+	options := tokens.AuthOptions{UserID: "someuser", Password: "somepassword", Passcode: "12345678"}
+	scope := &tokens.Scope{ProjectName: "world-domination", DomainName: "evil-plans"}
+	authTokenPost(t, options, scope, `
+		{
+			"auth": {
+				"identity": {
+					"methods": ["password","totp"],
+					"password": {
+						"user": {
+							"id": "someuser",
+							"password": "somepassword"
+						}
+					},
+					"totp": {
+						"user": {
+							"id": "someuser",
+							"passcode": "12345678"
+						}
+					}
+				},
+				"scope": {
+					"project": {
+						"domain": {
+							"name": "evil-plans"
+						},
+						"name": "world-domination"
+					}
+				}
+			}
+		}
+	`)
+}
+
 func TestCreateExtractsTokenFromResponse(t *testing.T) {
 	testhelper.SetupHTTP()
 	defer testhelper.TeardownHTTP()
