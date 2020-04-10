@@ -565,3 +565,18 @@ func ForceDelete(client *gophercloud.ServiceClient, id string) (r ForceDeleteRes
 
 	return
 }
+
+// Unmanage will remove a share from the management of the Shared File System
+// service without deleting the share. UnmanageResult contains only the error.
+// To extract it, call the ExtractErr method on the UnmanageResult.
+// Client must have Microversion set; minimum supported microversion for Unmanage is 2.7.
+func Unmanage(client *gophercloud.ServiceClient, id string) (r UnmanageResult) {
+	b := map[string]interface{}{
+		"unmanage": nil,
+	}
+	_, r.Err = client.Post(unmanageURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}

@@ -389,3 +389,17 @@ func TestForceDeleteSuccess(t *testing.T) {
 	err := shares.ForceDelete(c, shareID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestUnmanageSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockUnmanageResponse(t)
+
+	c := client.ServiceClient()
+	// Client c must have Microversion set; minimum supported microversion for Unmanage is 2.7
+	c.Microversion = "2.7"
+
+	err := shares.Unmanage(c, shareID).ExtractErr()
+	th.AssertNoErr(t, err)
+}

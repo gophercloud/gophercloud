@@ -350,3 +350,8 @@ type ResetStatusResult struct {
 type ForceDeleteResult struct {
 	gophercloud.ErrResult
 }
+
+// UnmanageResult contains the response error from an Unmanage request.
+type UnmanageResult struct {
+	gophercloud.ErrResult
+}
