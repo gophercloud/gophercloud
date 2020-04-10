@@ -95,7 +95,7 @@ func TestCreateContainer(t *testing.T) {
 		TransID:       "tx554ed59667a64c61866f1-0058b4ba37",
 	}
 	actual, err := res.Extract()
-	th.CheckNoErr(t, err)
+	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
 }
 
@@ -105,7 +105,24 @@ func TestDeleteContainer(t *testing.T) {
 	HandleDeleteContainerSuccessfully(t)
 
 	res := containers.Delete(fake.ServiceClient(), "testContainer")
-	th.CheckNoErr(t, res.Err)
+	th.AssertNoErr(t, res.Err)
+}
+
+func TestBulkDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBulkDeleteSuccessfully(t)
+
+	expected := containers.BulkDeleteResponse{
+		ResponseStatus: "foo",
+		ResponseBody:   "bar",
+		NumberDeleted:  2,
+		Errors:         [][]string{},
+	}
+
+	resp, err := containers.BulkDelete(fake.ServiceClient(), []string{"testContainer1", "testContainer2"}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expected, *resp)
 }
 
 func TestUpdateContainer(t *testing.T) {
@@ -115,7 +132,7 @@ func TestUpdateContainer(t *testing.T) {
 
 	options := &containers.UpdateOpts{Metadata: map[string]string{"foo": "bar"}}
 	res := containers.Update(fake.ServiceClient(), "testContainer", options)
-	th.CheckNoErr(t, res.Err)
+	th.AssertNoErr(t, res.Err)
 }
 
 func TestGetContainer(t *testing.T) {
@@ -128,7 +145,7 @@ func TestGetContainer(t *testing.T) {
 	}
 	res := containers.Get(fake.ServiceClient(), "testContainer", getOpts)
 	_, err := res.ExtractMetadata()
-	th.CheckNoErr(t, err)
+	th.AssertNoErr(t, err)
 
 	expected := &containers.GetHeader{
 		AcceptRanges:  "bytes",
@@ -142,6 +159,6 @@ func TestGetContainer(t *testing.T) {
 		StoragePolicy: "test_policy",
 	}
 	actual, err := res.Extract()
-	th.CheckNoErr(t, err)
+	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
 }

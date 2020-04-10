@@ -197,9 +197,9 @@ type DownloadResult struct {
 
 // Extract will return a struct of headers returned from a call to Download.
 func (r DownloadResult) Extract() (*DownloadHeader, error) {
-	var s *DownloadHeader
+	var s DownloadHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
 }
 
 // ExtractContent is a function that takes a DownloadResult's io.Reader body
@@ -286,9 +286,9 @@ type GetResult struct {
 
 // Extract will return a struct of headers returned from a call to Get.
 func (r GetResult) Extract() (*GetHeader, error) {
-	var s *GetHeader
+	var s GetHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -360,9 +360,9 @@ func (r CreateResult) Extract() (*CreateHeader, error) {
 	//if r.Header.Get("ETag") != fmt.Sprintf("%x", localChecksum) {
 	//	return nil, ErrWrongChecksum{}
 	//}
-	var s *CreateHeader
+	var s CreateHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
 }
 
 // UpdateHeader represents the headers returned in the response from a
@@ -410,9 +410,9 @@ type UpdateResult struct {
 
 // Extract will return a struct of headers returned from a call to Update.
 func (r UpdateResult) Extract() (*UpdateHeader, error) {
-	var s *UpdateHeader
+	var s UpdateHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
 }
 
 // DeleteHeader represents the headers returned in the response from a
@@ -460,9 +460,9 @@ type DeleteResult struct {
 
 // Extract will return a struct of headers returned from a call to Delete.
 func (r DeleteResult) Extract() (*DeleteHeader, error) {
-	var s *DeleteHeader
+	var s DeleteHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
 }
 
 // CopyHeader represents the headers returned in the response from a
@@ -518,9 +518,31 @@ type CopyResult struct {
 
 // Extract will return a struct of headers returned from a call to Copy.
 func (r CopyResult) Extract() (*CopyHeader, error) {
-	var s *CopyHeader
+	var s CopyHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
+}
+
+type BulkDeleteResponse struct {
+	ResponseStatus string     `json:"Response Status"`
+	ResponseBody   string     `json:"Response Body"`
+	Errors         [][]string `json:"Errors"`
+	NumberDeleted  int        `json:"Number Deleted"`
+	NumberNotFound int        `json:"Number Not Found"`
+}
+
+// BulkDeleteResult represents the result of a bulk delete operation. To extract
+// the response object from the HTTP response, call its Extract method.
+type BulkDeleteResult struct {
+	gophercloud.Result
+}
+
+// Extract will return a BulkDeleteResponse struct returned from a BulkDelete
+// call.
+func (r BulkDeleteResult) Extract() (*BulkDeleteResponse, error) {
+	var s BulkDeleteResponse
+	err := r.ExtractInto(&s)
+	return &s, err
 }
 
 // extractLastMarker is a function that takes a page of objects and returns the

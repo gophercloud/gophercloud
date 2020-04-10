@@ -170,9 +170,9 @@ type GetResult struct {
 
 // Extract will return a struct of headers returned from a call to Get.
 func (r GetResult) Extract() (*GetHeader, error) {
-	var s *GetHeader
+	var s GetHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)
@@ -238,9 +238,9 @@ type CreateResult struct {
 // Extract will return a struct of headers returned from a call to Create.
 // To extract the headers from the HTTP response, call its Extract method.
 func (r CreateResult) Extract() (*CreateHeader, error) {
-	var s *CreateHeader
+	var s CreateHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
 }
 
 // UpdateHeader represents the headers returned in the response from a Update
@@ -289,9 +289,9 @@ type UpdateResult struct {
 
 // Extract will return a struct of headers returned from a call to Update.
 func (r UpdateResult) Extract() (*UpdateHeader, error) {
-	var s *UpdateHeader
+	var s UpdateHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
 }
 
 // DeleteHeader represents the headers returned in the response from a Delete
@@ -333,14 +333,36 @@ func (r *DeleteHeader) UnmarshalJSON(b []byte) error {
 }
 
 // DeleteResult represents the result of a delete operation. To extract the
-// the headers from the HTTP response, call its Extract method.
+// headers from the HTTP response, call its Extract method.
 type DeleteResult struct {
 	gophercloud.HeaderResult
 }
 
 // Extract will return a struct of headers returned from a call to Delete.
 func (r DeleteResult) Extract() (*DeleteHeader, error) {
-	var s *DeleteHeader
+	var s DeleteHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
+}
+
+type BulkDeleteResponse struct {
+	ResponseStatus string     `json:"Response Status"`
+	ResponseBody   string     `json:"Response Body"`
+	Errors         [][]string `json:"Errors"`
+	NumberDeleted  int        `json:"Number Deleted"`
+	NumberNotFound int        `json:"Number Not Found"`
+}
+
+// BulkDeleteResult represents the result of a bulk delete operation. To extract
+// the response object from the HTTP response, call its Extract method.
+type BulkDeleteResult struct {
+	gophercloud.Result
+}
+
+// Extract will return a BulkDeleteResponse struct returned from a BulkDelete
+// call.
+func (r BulkDeleteResult) Extract() (*BulkDeleteResponse, error) {
+	var s BulkDeleteResponse
+	err := r.ExtractInto(&s)
+	return &s, err
 }
