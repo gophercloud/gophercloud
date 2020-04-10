@@ -174,10 +174,17 @@ func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	return
 }
 
-// GetExportLocations will get shareID's export locations.
-// Client must have Microversion set; minimum supported microversion for GetExportLocations is 2.14.
-func GetExportLocations(client *gophercloud.ServiceClient, id string) (r GetExportLocationsResult) {
-	_, r.Err = client.Get(getExportLocationsURL(client, id), &r.Body, nil)
+// ListExportLocations will list shareID's export locations.
+// Client must have Microversion set; minimum supported microversion for ListExportLocations is 2.9.
+func ListExportLocations(client *gophercloud.ServiceClient, id string) (r ListExportLocationsResult) {
+	_, r.Err = client.Get(listExportLocationsURL(client, id), &r.Body, nil)
+	return
+}
+
+// GetExportLocation will get shareID's export location by an ID.
+// Client must have Microversion set; minimum supported microversion for GetExportLocation is 2.9.
+func GetExportLocation(client *gophercloud.ServiceClient, shareID string, id string) (r GetExportLocationResult) {
+	_, r.Err = client.Get(getExportLocationURL(client, shareID, id), &r.Body, nil)
 	return
 }
 

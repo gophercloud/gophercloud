@@ -32,6 +32,43 @@ func TestShareCreate(t *testing.T) {
 	tools.PrintResource(t, created)
 }
 
+func TestShareExportLocations(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a shared file system client: %v", err)
+	}
+
+	share, err := CreateShare(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create a share: %v", err)
+	}
+
+	defer DeleteShare(t, client, share)
+
+	err = waitForStatus(t, client, share.ID, "available", 120)
+	if err != nil {
+		t.Fatalf("Share status error: %v", err)
+	}
+
+	client.Microversion = "2.9"
+
+	exportLocations, err := shares.ListExportLocations(client, share.ID).Extract()
+	if err != nil {
+		t.Errorf("Unable to list share export locations: %v", err)
+	}
+	tools.PrintResource(t, exportLocations)
+
+	exportLocation, err := shares.GetExportLocation(client, share.ID, exportLocations[0].ID).Extract()
+	if err != nil {
+		t.Errorf("Unable to get share export location: %v", err)
+	}
+	tools.PrintResource(t, exportLocation)
+	th.AssertEquals(t, exportLocations[0], *exportLocation)
+}
+
 func TestShareUpdate(t *testing.T) {
 	clients.SkipRelease(t, "stable/mitaka")
 	clients.SkipRelease(t, "stable/newton")
