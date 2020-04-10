@@ -514,3 +514,40 @@ func Revert(client *gophercloud.ServiceClient, id string, opts RevertOptsBuilder
 
 	return
 }
+
+// ResetStatusOptsBuilder allows extensions to add additional parameters to the
+// ResetStatus request.
+type ResetStatusOptsBuilder interface {
+	ToShareResetStatusMap() (map[string]interface{}, error)
+}
+
+// ResetStatusOpts contains options for resetting a Share status.
+// For more information about these parameters, please, refer to the shared file systems API v2,
+// Share Actions, ResetStatus share documentation.
+type ResetStatusOpts struct {
+	// Status is a share status to reset to. Must be "new", "error" or "active".
+	Status string `json:"status"`
+}
+
+// ToShareResetStatusMap assembles a request body based on the contents of a
+// ResetStatusOpts.
+func (opts ResetStatusOpts) ToShareResetStatusMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "reset_status")
+}
+
+// ResetStatus will reset the existing share status. ResetStatusResult contains only the error.
+// To extract it, call the ExtractErr method on the ResetStatusResult.
+// Client must have Microversion set; minimum supported microversion for ResetStatus is 2.7.
+func ResetStatus(client *gophercloud.ServiceClient, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
+	b, err := opts.ToShareResetStatusMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(resetStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}

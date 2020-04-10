@@ -361,3 +361,17 @@ func TestRevertSuccess(t *testing.T) {
 	err := shares.Revert(c, shareID, &shares.RevertOpts{SnapshotID: "ddeac769-9742-497f-b985-5bcfa94a3fd6"}).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestResetStatusSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockResetStatusResponse(t)
+
+	c := client.ServiceClient()
+	// Client c must have Microversion set; minimum supported microversion for ResetStatus is 2.7
+	c.Microversion = "2.7"
+
+	err := shares.ResetStatus(c, shareID, &shares.ResetStatusOpts{Status: "error"}).ExtractErr()
+	th.AssertNoErr(t, err)
+}

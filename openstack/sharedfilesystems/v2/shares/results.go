@@ -340,3 +340,8 @@ type DeleteMetadatumResult struct {
 type RevertResult struct {
 	gophercloud.ErrResult
 }
+
+// ResetStatusResult contains the response error from an ResetStatus request.
+type ResetStatusResult struct {
+	gophercloud.ErrResult
+}

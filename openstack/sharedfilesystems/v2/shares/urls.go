@@ -50,6 +50,10 @@ func revertURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
+func resetStatusURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("shares", id, "action")
+}
+
 func getMetadataURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("shares", id, "metadata")
 }

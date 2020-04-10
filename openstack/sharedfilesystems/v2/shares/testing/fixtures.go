@@ -540,3 +540,22 @@ func MockRevertResponse(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+var resetStatusRequest = `{
+		"reset_status": {
+			"status": "error"
+		}
+	}`
+
+// MockResetStatusResponse creates a mock reset status share response
+func MockResetStatusResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, resetStatusRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
