@@ -335,3 +335,8 @@ func (r MetadataResult) Extract() (map[string]string, error) {
 type DeleteMetadatumResult struct {
 	gophercloud.ErrResult
 }
+
+// RevertResult contains the response error from an Revert request.
+type RevertResult struct {
+	gophercloud.ErrResult
+}

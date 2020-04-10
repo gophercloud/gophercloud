@@ -347,3 +347,17 @@ func TestUnsetMetadataSuccess(t *testing.T) {
 	err := shares.DeleteMetadatum(c, shareID, "foo").ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestRevertSuccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockRevertResponse(t)
+
+	c := client.ServiceClient()
+	// Client c must have Microversion set; minimum supported microversion for Revert is 2.27
+	c.Microversion = "2.27"
+
+	err := shares.Revert(c, shareID, &shares.RevertOpts{SnapshotID: "ddeac769-9742-497f-b985-5bcfa94a3fd6"}).ExtractErr()
+	th.AssertNoErr(t, err)
+}

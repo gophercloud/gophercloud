@@ -286,3 +286,54 @@ func TestShareMetadata(t *testing.T) {
 		t.Fatalf("Unexpected metadata contents %v, expected an empty map", metadata)
 	}
 }
+
+func TestRevert(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a shared file system client: %v", err)
+	}
+	client.Microversion = "2.27"
+
+	share, err := CreateShare(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create a share: %v", err)
+	}
+
+	defer DeleteShare(t, client, share)
+
+	err = waitForStatus(t, client, share.ID, "available", 120)
+	if err != nil {
+		t.Fatalf("Share status error: %v", err)
+	}
+
+	snapshot, err := CreateSnapshot(t, client, share.ID)
+	if err != nil {
+		t.Fatalf("Unable to create a snapshot: %v", err)
+	}
+
+	defer DeleteSnapshot(t, client, snapshot)
+
+	err = waitForSnapshotStatus(t, client, snapshot.ID, "available", 120)
+	if err != nil {
+		t.Fatalf("Snapshot status error: %v", err)
+	}
+
+	revertOpts := &shares.RevertOpts{
+		SnapshotID: snapshot.ID,
+	}
+	err = shares.Revert(client, share.ID, revertOpts).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to revert a snapshot: %v", err)
+	}
+
+	// We need to wait till the Extend operation is done
+	err = waitForStatus(t, client, share.ID, "available", 120)
+	if err != nil {
+		t.Fatalf("Share status error: %v", err)
+	}
+
+	t.Logf("Share %s successfuly reverted", share.ID)
+}

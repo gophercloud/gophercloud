@@ -476,3 +476,41 @@ func DeleteMetadatum(client *gophercloud.ServiceClient, id, key string) (r Delet
 
 	return
 }
+
+// RevertOptsBuilder allows extensions to add additional parameters to the
+// Revert request.
+type RevertOptsBuilder interface {
+	ToShareRevertMap() (map[string]interface{}, error)
+}
+
+// RevertOpts contains options for reverting a Share to a snapshot.
+// For more information about these parameters, please, refer to the shared file systems API v2,
+// Share Actions, Revert share documentation.
+// Available only since Manila Microversion 2.27
+type RevertOpts struct {
+	// SnapshotID is a Snapshot ID to revert a Share to
+	SnapshotID string `json:"snapshot_id"`
+}
+
+// ToShareRevertMap assembles a request body based on the contents of a
+// RevertOpts.
+func (opts RevertOpts) ToShareRevertMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "revert")
+}
+
+// Revert will revert the existing share to a Snapshot. RevertResult contains only the error.
+// To extract it, call the ExtractErr method on the RevertResult.
+// Client must have Microversion set; minimum supported microversion for Revert is 2.27.
+func Revert(client *gophercloud.ServiceClient, id string, opts RevertOptsBuilder) (r RevertResult) {
+	b, err := opts.ToShareRevertMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(revertURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}
