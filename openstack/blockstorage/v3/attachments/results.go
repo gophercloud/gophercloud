@@ -1,6 +1,5 @@
-// Package attachments provides access to OpenStack Block Storage Attachment API's
-// Use of this package requires Cinder version 3.45 at a minimum, and recommends
-// 3.50 in order to utilize multi attach capability
+// Package attachments provides access to OpenStack Block Storage Attachment
+// API's. Use of this package requires Cinder version 3.27 at a minimum.
 package attachments
 
 import (
@@ -11,29 +10,26 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
-// Attachment contains all the information associated with an OpenStack Attachment.
+// Attachment contains all the information associated with an OpenStack
+// Attachment.
 type Attachment struct {
 	// ID is the Unique identifier for the attachment.
 	ID string `json:"id"`
-	// VolumeID is the UUID of the Volume associated with this attachment
+	// VolumeID is the UUID of the Volume associated with this attachment.
 	VolumeID string `json:"volume_id"`
-	// InstanceID is the Instance/Server UUID associated with this attachment
-	ServerID string `json:"instance_uuid"`
-	// Mountpoint is the requested Mountpoint of the volume on the Instance
-	Mountpoint string `json:"mountpoint"`
-	// AttachTime is the time the attachment was created
-	AttachTime time.Time `json:"-"`
-	// DetachTime is the time the attachment was created
-	DetachTime time.Time `json:"-"`
-	// AttachStatus is the current attach status
-	AttachStatus string `json:"attach_status"`
-	// AttachMode includes things like Read Only etc
+	// Instance is the Instance/Server UUID associated with this attachment.
+	Instance string `json:"instance"`
+	// AttachedAt is the time the attachment was created.
+	AttachedAt time.Time `json:"-"`
+	// DetachedAt is the time the attachment was detached.
+	DetachedAt time.Time `json:"-"`
+	// Status is the current attach status.
+	Status string `json:"status"`
+	// AttachMode includes things like Read Only etc.
 	AttachMode string `json:"attach_mode"`
-	// Add a volume sub-type here?
-	// ConnectionInfo is the required info for a node to make a connection provided by the driver
-	ConnectionInfo map[string]string `json:"connection_info"`
-	// Connector is the initiator side of the connection info from the Node
-	Connector map[string]string `json:"connector"`
+	// ConnectionInfo is the required info for a node to make a connection
+	// provided by the driver.
+	ConnectionInfo map[string]interface{} `json:"connection_info"`
 }
 
 // UnmarshalJSON is our unmarshalling helper
@@ -42,6 +38,7 @@ func (r *Attachment) UnmarshalJSON(b []byte) error {
 	var s struct {
 		tmp
 		AttachedAt gophercloud.JSONRFC3339MilliNoZ `json:"attached_at"`
+		DetachedAt gophercloud.JSONRFC3339MilliNoZ `json:"detached_at"`
 	}
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -49,12 +46,14 @@ func (r *Attachment) UnmarshalJSON(b []byte) error {
 	}
 	*r = Attachment(s.tmp)
 
-	r.AttachTime = time.Time(s.AttachedAt)
+	r.AttachedAt = time.Time(s.AttachedAt)
+	r.DetachedAt = time.Time(s.DetachedAt)
 
 	return err
 }
 
-// AttachmentPage is a pagination.pager that is returned from a call to the List function.
+// AttachmentPage is a pagination.pager that is returned from a call to the List
+// function.
 type AttachmentPage struct {
 	pagination.LinkedPageBase
 }
@@ -65,7 +64,8 @@ func (r AttachmentPage) IsEmpty() (bool, error) {
 	return len(attachments) == 0, err
 }
 
-// ExtractAttachments extracts and returns Attachments. It is used while iterating over a attachment.List call.
+// ExtractAttachments extracts and returns Attachments. It is used while
+// iterating over a attachment.List call.
 func ExtractAttachments(r pagination.Page) ([]Attachment, error) {
 	var s []Attachment
 	err := ExtractAttachmentsInto(r, &s)
@@ -83,12 +83,13 @@ func (r commonResult) Extract() (*Attachment, error) {
 	return &s, err
 }
 
-// ExtractInto converts our response data into a attachment struct
+// ExtractInto converts our response data into a attachment struct.
 func (r commonResult) ExtractInto(a interface{}) error {
 	return r.Result.ExtractIntoStructPtr(a, "attachment")
 }
 
-// ExtractAttachmentsInto similar to ExtractInto but operates on a `list` of attachments
+// ExtractAttachmentsInto similar to ExtractInto but operates on a List of
+// attachments.
 func ExtractAttachmentsInto(r pagination.Page, a interface{}) error {
 	return r.(AttachmentPage).Result.ExtractIntoSlicePtr(a, "attachments")
 }
@@ -110,5 +111,10 @@ type UpdateResult struct {
 
 // DeleteResult contains the response body and error from a Delete request.
 type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// CompleteResult contains the response body and error from a Complete request.
+type CompleteResult struct {
 	gophercloud.ErrResult
 }

@@ -11,18 +11,24 @@ type CreateOptsBuilder interface {
 	ToAttachmentCreateMap() (map[string]interface{}, error)
 }
 
-// CreateOpts contains options for creating a Volume. This object is passed to
-// the volumes.Create function. For more information about these parameters,
-// see the Volume object.
+// CreateOpts contains options for creating a Volume attachment. This object is
+//passed to the Create function. For more information about these parameters,
+// see the Attachment object.
 type CreateOpts struct {
-	// VolumeID is the UUID of the Cinder volume to create the attachment record for
-	VolumeID string `json:"volume_uuid"`
-	// ServerID is the ID of the Server to create the attachment for.  When attaching to a
-	// Nova Server this is the Nova Server (Instance) UUID
-	ServerID string `json:"instance_uuid"`
-	// Connector is optional and is a map containing all of the needed atachment information
-	// for exmaple initiator iqn etc
-	Connector map[string]string `json:"connector,omitempty"`
+	// VolumeUUID is the UUID of the Cinder volume to create the attachment
+	// record for.
+	VolumeUUID string `json:"volume_uuid"`
+	// InstanceUUID is the ID of the Server to create the attachment for.
+	// When attaching to a Nova Server this is the Nova Server (Instance)
+	// UUID.
+	InstanceUUID string `json:"instance_uuid"`
+	// Connector is an optional map containing all of the needed atachment
+	// information for exmaple initiator IQN, etc.
+	Connector map[string]interface{} `json:"connector,omitempty"`
+	// Mode is an attachment mode. Acceptable values are read-only ('ro')
+	// and read-and-write ('rw'). Available only since 3.54 microversion.
+	// For APIs from 3.27 till 3.53 use Connector["mode"] = "rw|ro".
+	Mode string `json:"mode,omitempty"`
 }
 
 // ToAttachmentCreateMap assembles a request body based on the contents of a
@@ -31,9 +37,9 @@ func (opts CreateOpts) ToAttachmentCreateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "attachment")
 }
 
-// Create will create a new Attachment based on the values in CreateOpts. To extract
-// the Attachment object from the response, call the Extract method on the
-// CreateResult.
+// Create will create a new Attachment based on the values in CreateOpts. To
+// extract the Attachment object from the response, call the Extract method on
+// the CreateResult.
 func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
 	b, err := opts.ToAttachmentCreateMap()
 	if err != nil {
@@ -41,19 +47,21 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		return
 	}
 	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{202},
+		OkCodes: []int{200},
 	})
 	return
 }
 
 // Delete will delete the existing Attachment with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	_, r.Err = client.Delete(deleteURL(client, id), &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
 	return
 }
 
-// Get retrieves the Volume with the provided ID. To extract the Volume object
-// from the response, call the Extract method on the GetResult.
+// Get retrieves the Attachment with the provided ID. To extract the Attachment
+// object from the response, call the Extract method on the GetResult.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
 	return
@@ -74,9 +82,14 @@ type ListOpts struct {
 	// Status will filter by the specified status.
 	Status string `q:"status"`
 
-	// TenantID will filter by a specific tenant/project ID.
-	// Setting AllTenants is required for this.
-	TenantID string `q:"project_id"`
+	// ProjectID will filter by a specific tenant/project ID.
+	ProjectID string `q:"project_id"`
+
+	// VolumeID will filter by a specific volume ID.
+	VolumeID string `q:"volume_id"`
+
+	// InstanceID will filter by a specific instance ID.
+	InstanceID string `q:"instance_id"`
 
 	// Comma-separated list of sort keys and optional sort directions in the
 	// form of <key>[:<direction>].
@@ -98,7 +111,8 @@ func (opts ListOpts) ToAttachmentListQuery() (string, error) {
 	return q.String(), err
 }
 
-// List returns Attachemnts optionally limited by the conditions provided in ListOpts.
+// List returns Attachments optionally limited by the conditions provided in
+// ListOpts.
 func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 	url := listURL(client)
 	if opts != nil {
@@ -122,9 +136,9 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts contain options for updating an existing Attachment.
 // This is used to finalize an attachment that was created without a
-// connector (reserve)
+// connector (reserve).
 type UpdateOpts struct {
-	Connector map[string]string `json:"connector,omitempty"`
+	Connector map[string]interface{} `json:"connector"`
 }
 
 // ToAttachmentUpdateMap assembles a request body based on the contents of an
@@ -133,8 +147,9 @@ func (opts UpdateOpts) ToAttachmentUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "attachment")
 }
 
-// Update will update the Volume with provided information. To extract the updated
-// Attachment from the response, call the Extract method on the UpdateResult.
+// Update will update the Attachment with provided information. To extract the
+// updated Attachment from the response, call the Extract method on the
+// UpdateResult.
 func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
 	b, err := opts.ToAttachmentUpdateMap()
 	if err != nil {
@@ -143,6 +158,18 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	}
 	_, r.Err = client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
+	})
+	return
+}
+
+// Complete will complete an attachment for a cinder volume.
+// Available starting in the 3.44 microversion.
+func Complete(client *gophercloud.ServiceClient, id string) (r CompleteResult) {
+	b := map[string]interface{}{
+		"os-complete": nil,
+	}
+	_, r.Err = client.Post(completeURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{204},
 	})
 	return
 }
