@@ -207,9 +207,15 @@ type UpdateResult struct {
 	commonResult
 }
 
-// GetExportLocationsResult contains the result body and error from an
-// GetExportLocations request.
-type GetExportLocationsResult struct {
+// ListExportLocationsResult contains the result body and error from a
+// ListExportLocations request.
+type ListExportLocationsResult struct {
+	gophercloud.Result
+}
+
+// GetExportLocationResult contains the result body and error from a
+// GetExportLocation request.
+type GetExportLocationResult struct {
 	gophercloud.Result
 }
 
@@ -232,13 +238,22 @@ type ExportLocation struct {
 	Preferred bool `json:"preferred"`
 }
 
-// Extract will get the Export Locations from the commonResult
-func (r GetExportLocationsResult) Extract() ([]ExportLocation, error) {
+// Extract will get the Export Locations from the ListExportLocationsResult
+func (r ListExportLocationsResult) Extract() ([]ExportLocation, error) {
 	var s struct {
 		ExportLocations []ExportLocation `json:"export_locations"`
 	}
 	err := r.ExtractInto(&s)
 	return s.ExportLocations, err
+}
+
+// Extract will get the Export Location from the GetExportLocationResult
+func (r GetExportLocationResult) Extract() (*ExportLocation, error) {
+	var s struct {
+		ExportLocation *ExportLocation `json:"export_location"`
+	}
+	err := r.ExtractInto(&s)
+	return s.ExportLocation, err
 }
 
 // AccessRight contains all information associated with an OpenStack share

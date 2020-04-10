@@ -273,7 +273,7 @@ func MockListDetailResponse(t *testing.T) {
 	})
 }
 
-var getExportLocationsResponse = `{
+var listExportLocationsResponse = `{
     "export_locations": [
         {
 		"path": "127.0.0.1:/var/lib/manila/mnt/share-9a922036-ad26-4d27-b955-7a1e285fa74d",
@@ -285,14 +285,35 @@ var getExportLocationsResponse = `{
     ]
 }`
 
-// MockGetExportLocationsResponse creates a mock get export locations response
-func MockGetExportLocationsResponse(t *testing.T) {
+// MockListExportLocationsResponse creates a mock get export locations response
+func MockListExportLocationsResponse(t *testing.T) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/export_locations", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, getExportLocationsResponse)
+		fmt.Fprintf(w, listExportLocationsResponse)
+	})
+}
+
+var getExportLocationResponse = `{
+    "export_location": {
+	"path": "127.0.0.1:/var/lib/manila/mnt/share-9a922036-ad26-4d27-b955-7a1e285fa74d",
+	"share_instance_id": "011d21e2-fbc3-4e4a-9993-9ea223f73264",
+	"is_admin_only": false,
+	"id": "80ed63fc-83bc-4afc-b881-da4a345ac83d",
+	"preferred": false
+    }
+}`
+
+// MockGetExportLocationResponse creates a mock get export location response
+func MockGetExportLocationResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/export_locations/80ed63fc-83bc-4afc-b881-da4a345ac83d", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, getExportLocationResponse)
 	})
 }
 
