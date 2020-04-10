@@ -376,3 +376,38 @@ func TestResetStatus(t *testing.T) {
 
 	t.Logf("Share %s status successfuly reset", share.ID)
 }
+
+func TestForceDelete(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+
+	client, err := clients.NewSharedFileSystemV2Client()
+	if err != nil {
+		t.Fatalf("Unable to create a shared file system client: %v", err)
+	}
+	client.Microversion = "2.7"
+
+	share, err := CreateShare(t, client)
+	if err != nil {
+		t.Fatalf("Unable to create a share: %v", err)
+	}
+
+	defer DeleteShare(t, client, share)
+
+	err = waitForStatus(t, client, share.ID, "available", 120)
+	if err != nil {
+		t.Fatalf("Share status error: %v", err)
+	}
+
+	err = shares.ForceDelete(client, share.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to force delete a share: %v", err)
+	}
+
+	err = waitForStatus(t, client, share.ID, "deleted", 120)
+	if err != nil {
+		t.Fatalf("Share status error: %v", err)
+	}
+
+	t.Logf("Share %s was successfuly deleted", share.ID)
+}

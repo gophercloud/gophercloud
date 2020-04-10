@@ -551,3 +551,17 @@ func ResetStatus(client *gophercloud.ServiceClient, id string, opts ResetStatusO
 
 	return
 }
+
+// ForceDelete will delete the existing share in any state. ForceDeleteResult contains only the error.
+// To extract it, call the ExtractErr method on the ForceDeleteResult.
+// Client must have Microversion set; minimum supported microversion for ForceDelete is 2.7.
+func ForceDelete(client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
+	b := map[string]interface{}{
+		"force_delete": nil,
+	}
+	_, r.Err = client.Post(forceDeleteURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}

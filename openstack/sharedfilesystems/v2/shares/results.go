@@ -345,3 +345,8 @@ type RevertResult struct {
 type ResetStatusResult struct {
 	gophercloud.ErrResult
 }
+
+// ForceDeleteResult contains the response error from an ForceDelete request.
+type ForceDeleteResult struct {
+	gophercloud.ErrResult
+}
