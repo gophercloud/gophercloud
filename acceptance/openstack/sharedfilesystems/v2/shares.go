@@ -85,6 +85,9 @@ func GetAccessRightsSlice(t *testing.T, client *gophercloud.ServiceClient, share
 func DeleteShare(t *testing.T, client *gophercloud.ServiceClient, share *shares.Share) {
 	err := shares.Delete(client, share.ID).ExtractErr()
 	if err != nil {
+		if _, ok := err.(gophercloud.ErrDefault404); ok {
+			return
+		}
 		t.Errorf("Unable to delete share %s: %v", share.ID, err)
 	}
 

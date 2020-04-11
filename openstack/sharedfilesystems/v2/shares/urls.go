@@ -50,6 +50,22 @@ func shrinkURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("shares", id, "action")
 }
 
+func revertURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("shares", id, "action")
+}
+
+func resetStatusURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("shares", id, "action")
+}
+
+func forceDeleteURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("shares", id, "action")
+}
+
+func unmanageURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL("shares", id, "action")
+}
+
 func getMetadataURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL("shares", id, "metadata")
 }

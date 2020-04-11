@@ -483,3 +483,107 @@ func DeleteMetadatum(client *gophercloud.ServiceClient, id, key string) (r Delet
 
 	return
 }
+
+// RevertOptsBuilder allows extensions to add additional parameters to the
+// Revert request.
+type RevertOptsBuilder interface {
+	ToShareRevertMap() (map[string]interface{}, error)
+}
+
+// RevertOpts contains options for reverting a Share to a snapshot.
+// For more information about these parameters, please, refer to the shared file systems API v2,
+// Share Actions, Revert share documentation.
+// Available only since Manila Microversion 2.27
+type RevertOpts struct {
+	// SnapshotID is a Snapshot ID to revert a Share to
+	SnapshotID string `json:"snapshot_id"`
+}
+
+// ToShareRevertMap assembles a request body based on the contents of a
+// RevertOpts.
+func (opts RevertOpts) ToShareRevertMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "revert")
+}
+
+// Revert will revert the existing share to a Snapshot. RevertResult contains only the error.
+// To extract it, call the ExtractErr method on the RevertResult.
+// Client must have Microversion set; minimum supported microversion for Revert is 2.27.
+func Revert(client *gophercloud.ServiceClient, id string, opts RevertOptsBuilder) (r RevertResult) {
+	b, err := opts.ToShareRevertMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(revertURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}
+
+// ResetStatusOptsBuilder allows extensions to add additional parameters to the
+// ResetStatus request.
+type ResetStatusOptsBuilder interface {
+	ToShareResetStatusMap() (map[string]interface{}, error)
+}
+
+// ResetStatusOpts contains options for resetting a Share status.
+// For more information about these parameters, please, refer to the shared file systems API v2,
+// Share Actions, ResetStatus share documentation.
+type ResetStatusOpts struct {
+	// Status is a share status to reset to. Must be "new", "error" or "active".
+	Status string `json:"status"`
+}
+
+// ToShareResetStatusMap assembles a request body based on the contents of a
+// ResetStatusOpts.
+func (opts ResetStatusOpts) ToShareResetStatusMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "reset_status")
+}
+
+// ResetStatus will reset the existing share status. ResetStatusResult contains only the error.
+// To extract it, call the ExtractErr method on the ResetStatusResult.
+// Client must have Microversion set; minimum supported microversion for ResetStatus is 2.7.
+func ResetStatus(client *gophercloud.ServiceClient, id string, opts ResetStatusOptsBuilder) (r ResetStatusResult) {
+	b, err := opts.ToShareResetStatusMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	_, r.Err = client.Post(resetStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}
+
+// ForceDelete will delete the existing share in any state. ForceDeleteResult contains only the error.
+// To extract it, call the ExtractErr method on the ForceDeleteResult.
+// Client must have Microversion set; minimum supported microversion for ForceDelete is 2.7.
+func ForceDelete(client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
+	b := map[string]interface{}{
+		"force_delete": nil,
+	}
+	_, r.Err = client.Post(forceDeleteURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}
+
+// Unmanage will remove a share from the management of the Shared File System
+// service without deleting the share. UnmanageResult contains only the error.
+// To extract it, call the ExtractErr method on the UnmanageResult.
+// Client must have Microversion set; minimum supported microversion for Unmanage is 2.7.
+func Unmanage(client *gophercloud.ServiceClient, id string) (r UnmanageResult) {
+	b := map[string]interface{}{
+		"unmanage": nil,
+	}
+	_, r.Err = client.Post(unmanageURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+
+	return
+}

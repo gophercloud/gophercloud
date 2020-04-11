@@ -542,3 +542,75 @@ func MockDeleteMetadatumResponse(t *testing.T, key string) {
 		w.WriteHeader(http.StatusOK)
 	})
 }
+
+var revertRequest = `{
+		"revert": {
+			"snapshot_id": "ddeac769-9742-497f-b985-5bcfa94a3fd6"
+		}
+	}`
+
+// MockRevertResponse creates a mock revert share response
+func MockRevertResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, revertRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+var resetStatusRequest = `{
+		"reset_status": {
+			"status": "error"
+		}
+	}`
+
+// MockResetStatusResponse creates a mock reset status share response
+func MockResetStatusResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, resetStatusRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+var forceDeleteRequest = `{
+                "force_delete": null
+        }`
+
+// MockForceDeleteResponse creates a mock force delete share response
+func MockForceDeleteResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, forceDeleteRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+var unmanageRequest = `{
+                "unmanage": null
+        }`
+
+// MockUnmanageResponse creates a mock unmanage share response
+func MockUnmanageResponse(t *testing.T) {
+	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, unmanageRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
