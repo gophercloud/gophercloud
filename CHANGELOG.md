@@ -27,6 +27,10 @@ IMPROVEMENTS
 * Added support for TOTP authentication [GH-1922](https://github.com/gophercloud/gophercloud/pull/1922)
 * `sharedfilesystems/v2/shares.GetExportLocations` was renamed to `sharedfilesystems/v2/shares.ListExportLocations` [GH-1932](https://github.com/gophercloud/gophercloud/pull/1932)
 * Added `sharedfilesystems/v2/shares.GetExportLocation` [GH-1932](https://github.com/gophercloud/gophercloud/pull/1932)
+* Added `sharedfilesystems/v2/shares.Revert` [GH-1931](https://github.com/gophercloud/gophercloud/pull/1931)
+* Added `sharedfilesystems/v2/shares.ResetStatus` [GH-1931](https://github.com/gophercloud/gophercloud/pull/1931)
+* Added `sharedfilesystems/v2/shares.ForceDelete` [GH-1931](https://github.com/gophercloud/gophercloud/pull/1931)
+* Added `sharedfilesystems/v2/shares.Unmanage` [GH-1931](https://github.com/gophercloud/gophercloud/pull/1931)
 
 BUG FIXES
 
