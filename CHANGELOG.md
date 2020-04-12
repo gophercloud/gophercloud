@@ -31,6 +31,12 @@ IMPROVEMENTS
 * Added `sharedfilesystems/v2/shares.ResetStatus` [GH-1931](https://github.com/gophercloud/gophercloud/pull/1931)
 * Added `sharedfilesystems/v2/shares.ForceDelete` [GH-1931](https://github.com/gophercloud/gophercloud/pull/1931)
 * Added `sharedfilesystems/v2/shares.Unmanage` [GH-1931](https://github.com/gophercloud/gophercloud/pull/1931)
+* Added `blockstorage/v3/attachments.Create` [GH-1934](https://github.com/gophercloud/gophercloud/pull/1934)
+* Added `blockstorage/v3/attachments.List` [GH-1934](https://github.com/gophercloud/gophercloud/pull/1934)
+* Added `blockstorage/v3/attachments.Get` [GH-1934](https://github.com/gophercloud/gophercloud/pull/1934)
+* Added `blockstorage/v3/attachments.Update` [GH-1934](https://github.com/gophercloud/gophercloud/pull/1934)
+* Added `blockstorage/v3/attachments.Delete` [GH-1934](https://github.com/gophercloud/gophercloud/pull/1934)
+* Added `blockstorage/v3/attachments.Complete` [GH-1934](https://github.com/gophercloud/gophercloud/pull/1934)
 
 BUG FIXES
 
