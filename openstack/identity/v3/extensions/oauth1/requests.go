@@ -119,6 +119,12 @@ func Create(client *gophercloud.ServiceClient, o tokens.AuthOptionsBuilder) (r t
 	return
 }
 
+// CreateConsumerOptsBuilder allows extensions to add additional parameters to
+// the CreateConsumer request.
+type CreateConsumerOptsBuilder interface {
+	ToCreateConsumerMap() (map[string]interface{}, error)
+}
+
 // CreateConsumerOpts provides options used to create a new Consumer.
 type CreateConsumerOpts struct {
 	// Description is the consumer description.
@@ -131,7 +137,7 @@ func (opts CreateConsumerOpts) ToCreateConsumerMap() (map[string]interface{}, er
 }
 
 // Create creates a new Consumer.
-func CreateConsumer(client *gophercloud.ServiceClient, opts CreateConsumerOpts) (r CreateConsumerResult) {
+func CreateConsumer(client *gophercloud.ServiceClient, opts CreateConsumerOptsBuilder) (r CreateConsumerResult) {
 	b, err := opts.ToCreateConsumerMap()
 	if err != nil {
 		r.Err = err
@@ -187,6 +193,12 @@ func UpdateConsumer(client *gophercloud.ServiceClient, id string, opts UpdateCon
 	return
 }
 
+// RequestTokenOptsBuilder allows extensions to add additional parameters to the
+// RequestToken request.
+type RequestTokenOptsBuilder interface {
+	ToRequestTokenHeaders(string, string) (map[string]string, error)
+}
+
 // RequestTokenOpts provides options used to get a consumer unauthorized
 // request token.
 type RequestTokenOpts struct {
@@ -213,39 +225,37 @@ type RequestTokenOpts struct {
 
 // ToRequestTokenHeaders formats a RequestTokenOpts into a map of request
 // headers.
-func (opts RequestTokenOpts) ToRequestTokenHeaders() (map[string]string, error) {
-	return gophercloud.BuildHeaders(opts)
-}
-
-// ToRequestTokenQuery formats a RequestTokenOpts into a URL encoded string.
-func (opts RequestTokenOpts) ToRequestTokenQuery() (string, error) {
+func (opts RequestTokenOpts) ToRequestTokenHeaders(method, url string) (map[string]string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	return tokenParams(q.Query(), opts.OAuthTimestamp, "oob"), err
-}
-
-// RequestToken requests an unauthorized OAuth1 Token.
-func RequestToken(client *gophercloud.ServiceClient, opts RequestTokenOpts) (r TokenResult) {
-	b, err := opts.ToRequestTokenQuery()
 	if err != nil {
-		r.Err = err
-		return
+		return nil, err
 	}
 
-	h, err := opts.ToRequestTokenHeaders()
+	h, err := gophercloud.BuildHeaders(opts)
 	if err != nil {
-		r.Err = err
-		return
+		return nil, err
 	}
 
-	method := "POST"
-	url := requestTokenURL(client)
 	h["Authorization"] = genAuthHeader(
 		opts.OAuthSignatureMethod,
 		method,
 		url,
-		b,
+		tokenParams(q.Query(), opts.OAuthTimestamp, "oob"),
 		[]string{opts.OAuthConsumerSecret},
 	)
+
+	return h, nil
+}
+
+// RequestToken requests an unauthorized OAuth1 Token.
+func RequestToken(client *gophercloud.ServiceClient, opts RequestTokenOptsBuilder) (r TokenResult) {
+	method := "POST"
+	url := requestTokenURL(client)
+	h, err := opts.ToRequestTokenHeaders(method, url)
+	if err != nil {
+		r.Err = err
+		return
+	}
 
 	resp, err := client.Request(method, url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
@@ -257,6 +267,12 @@ func RequestToken(client *gophercloud.ServiceClient, opts RequestTokenOpts) (r T
 	}
 	r.Err = err
 	return
+}
+
+// AuthorizeTokenOptsBuilder allows extensions to add additional parameters to
+// the AuthorizeToken request.
+type AuthorizeTokenOptsBuilder interface {
+	ToAuthorizeTokenMap() (map[string]interface{}, error)
 }
 
 // AuthorizeTokenOpts provides options used to authorize a request token.
@@ -282,7 +298,7 @@ func (opts AuthorizeTokenOpts) ToAuthorizeTokenMap() (map[string]interface{}, er
 }
 
 // AuthorizeToken authorizes an unauthorized consumer token.
-func AuthorizeToken(client *gophercloud.ServiceClient, id string, opts AuthorizeTokenOpts) (r AuthorizeTokenResult) {
+func AuthorizeToken(client *gophercloud.ServiceClient, id string, opts AuthorizeTokenOptsBuilder) (r AuthorizeTokenResult) {
 	b, err := opts.ToAuthorizeTokenMap()
 	if err != nil {
 		r.Err = err
@@ -292,6 +308,12 @@ func AuthorizeToken(client *gophercloud.ServiceClient, id string, opts Authorize
 		OkCodes: []int{200},
 	})
 	return
+}
+
+// CreateAccessTokenOptsBuilder allows extensions to add additional parameters
+// to the CreateAccessToken request.
+type CreateAccessTokenOptsBuilder interface {
+	ToCreateAccessTokenHeaders(string, string) (map[string]string, error)
 }
 
 // CreateAccessTokenOpts provides options used to create an OAuth1 token.
@@ -321,31 +343,39 @@ type CreateAccessTokenOpts struct {
 	OAuthNonce string `q:"oauth_nonce"`
 }
 
-// ToCreateAccessTokenQuery formats a CreateAccessTokenOpts into a URL encoded
-// string.
-func (opts CreateAccessTokenOpts) ToCreateAccessTokenQuery() (string, error) {
+// ToCreateAccessTokenHeaders formats a CreateAccessTokenOpts into a map of
+// request headers.
+func (opts CreateAccessTokenOpts) ToCreateAccessTokenHeaders(method, url string) (map[string]string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	return tokenParams(q.Query(), opts.OAuthTimestamp, ""), err
-}
-
-// CreateAccessToken creates a new OAuth1 Access Token
-func CreateAccessToken(client *gophercloud.ServiceClient, opts CreateAccessTokenOpts) (r TokenResult) {
-	b, err := opts.ToCreateAccessTokenQuery()
 	if err != nil {
-		r.Err = err
-		return
+		return nil, err
 	}
 
-	h := make(map[string]string)
-	method := "POST"
-	url := createAccessTokenURL(client)
+	h, err := gophercloud.BuildHeaders(opts)
+	if err != nil {
+		return nil, err
+	}
+
 	h["Authorization"] = genAuthHeader(
 		opts.OAuthSignatureMethod,
 		method,
 		url,
-		b,
+		tokenParams(q.Query(), opts.OAuthTimestamp, ""),
 		[]string{opts.OAuthConsumerSecret, opts.OAuthTokenSecret},
 	)
+
+	return h, nil
+}
+
+// CreateAccessToken creates a new OAuth1 Access Token
+func CreateAccessToken(client *gophercloud.ServiceClient, opts CreateAccessTokenOptsBuilder) (r TokenResult) {
+	method := "POST"
+	url := createAccessTokenURL(client)
+	h, err := opts.ToCreateAccessTokenHeaders(method, url)
+	if err != nil {
+		r.Err = err
+		return
+	}
 
 	resp, err := client.Request(method, url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
