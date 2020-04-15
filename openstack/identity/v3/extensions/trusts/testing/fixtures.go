@@ -15,7 +15,24 @@ import (
 const CreateRequest = `
 {
     "trust": {
-        "expires_at": "2019-12-01T14:00:00.999999Z",
+        "expires_at": "2019-12-01T14:00:00Z",
+        "impersonation": false,
+        "allow_redelegation": true,
+        "project_id": "9b71012f5a4a4aef9193f1995fe159b2",
+        "roles": [
+            {
+                "name": "member"
+            }
+        ],
+        "trustee_user_id": "ecb37e88cc86431c99d0332208cb6fbf",
+        "trustor_user_id": "959ed913a32c4ec88c041c98e61cbbc3"
+    }
+}
+`
+
+const CreateRequestNoExpire = `
+{
+    "trust": {
         "impersonation": false,
         "allow_redelegation": true,
         "project_id": "9b71012f5a4a4aef9193f1995fe159b2",
@@ -33,7 +50,30 @@ const CreateRequest = `
 const CreateResponse = `
 {
     "trust": {
-        "expires_at": "2019-12-01T14:00:00.999999Z",
+        "expires_at": "2019-12-01T14:00:00.000000Z",
+        "id": "3422b7c113894f5d90665e1a79655e23",
+        "impersonation": false,
+        "redelegation_count": 10,
+        "project_id": "9b71012f5a4a4aef9193f1995fe159b2",
+        "remaining_uses": null,
+        "roles": [
+            {
+                "id": "b627fca5-beb0-471a-9857-0e852b719e76",
+                "links": {
+                    "self": "http://example.com/identity/v3/roles/b627fca5-beb0-471a-9857-0e852b719e76"
+                },
+                "name": "member"
+            }
+        ],
+        "trustee_user_id": "ecb37e88cc86431c99d0332208cb6fbf",
+        "trustor_user_id": "959ed913a32c4ec88c041c98e61cbbc3"
+    }
+}
+`
+
+const CreateResponseNoExpire = `
+{
+    "trust": {
         "id": "3422b7c113894f5d90665e1a79655e23",
         "impersonation": false,
         "redelegation_count": 10,
@@ -59,7 +99,7 @@ const GetResponse = `
 {
     "trust": {
         "id": "987fe8",
-        "expires_at": "2013-02-27T18:30:59.999999Z",
+        "expires_at": "2013-02-27T18:30:59.000000Z",
         "impersonation": true,
         "links": {
             "self": "http://example.com/identity/v3/OS-TRUST/trusts/987fe8"
@@ -91,7 +131,7 @@ const ListResponse = `
     "trusts": [
         {
             "id": "1ff900",
-            "expires_at": "2013-02-27T18:30:59.999999Z",
+            "expires_at": "2019-12-01T14:00:00.000000Z",
             "impersonation": true,
             "links": {
                 "self": "http://example.com/identity/v3/OS-TRUST/trusts/1ff900"
@@ -230,6 +270,20 @@ func HandleCreateTrust(t *testing.T) {
 	})
 }
 
+// HandleCreateTrustNoExpire creates an HTTP handler at `/OS-TRUST/trusts` on the
+// test handler mux that tests trust creation.
+func HandleCreateTrustNoExpire(t *testing.T) {
+	testhelper.Mux.HandleFunc("/OS-TRUST/trusts", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "POST")
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		testhelper.TestJSONRequest(t, r, CreateRequestNoExpire)
+
+		w.WriteHeader(http.StatusCreated)
+		_, err := fmt.Fprintf(w, CreateResponseNoExpire)
+		testhelper.AssertNoErr(t, err)
+	})
+}
+
 // HandleDeleteUserSuccessfully creates an HTTP handler at `/users` on the
 // test handler mux that tests user deletion.
 func HandleDeleteTrust(t *testing.T) {
@@ -261,7 +315,7 @@ var FirstTrust = trusts.Trust{
 	TrusteeUserID: "86c0d5",
 	TrustorUserID: "a0fdfd",
 	ProjectID:     "0f1233",
-	ExpiresAt:     time.Date(2013, 02, 27, 18, 30, 59, 999999000, time.UTC),
+	ExpiresAt:     time.Date(2019, 12, 01, 14, 00, 00, 0, time.UTC),
 	DeletedAt:     time.Time{},
 }
 
@@ -273,6 +327,39 @@ var SecondTrust = trusts.Trust{
 	ProjectID:     "0f1233",
 	ExpiresAt:     time.Time{},
 	DeletedAt:     time.Time{},
+}
+
+var CreatedTrust = trusts.Trust{
+	ID:                "3422b7c113894f5d90665e1a79655e23",
+	Impersonation:     false,
+	TrusteeUserID:     "ecb37e88cc86431c99d0332208cb6fbf",
+	TrustorUserID:     "959ed913a32c4ec88c041c98e61cbbc3",
+	ProjectID:         "9b71012f5a4a4aef9193f1995fe159b2",
+	ExpiresAt:         time.Date(2019, 12, 01, 14, 00, 00, 0, time.UTC),
+	DeletedAt:         time.Time{},
+	RedelegationCount: 10,
+	Roles: []trusts.Role{
+		{
+			ID:   "b627fca5-beb0-471a-9857-0e852b719e76",
+			Name: "member",
+		},
+	},
+}
+
+var CreatedTrustNoExpire = trusts.Trust{
+	ID:                "3422b7c113894f5d90665e1a79655e23",
+	Impersonation:     false,
+	TrusteeUserID:     "ecb37e88cc86431c99d0332208cb6fbf",
+	TrustorUserID:     "959ed913a32c4ec88c041c98e61cbbc3",
+	ProjectID:         "9b71012f5a4a4aef9193f1995fe159b2",
+	DeletedAt:         time.Time{},
+	RedelegationCount: 10,
+	Roles: []trusts.Role{
+		{
+			ID:   "b627fca5-beb0-471a-9857-0e852b719e76",
+			Name: "member",
+		},
+	},
 }
 
 // ExpectedRolesSlice is the slice of roles expected to be returned from ListOutput.

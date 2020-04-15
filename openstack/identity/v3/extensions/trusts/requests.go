@@ -83,7 +83,6 @@ type CreateOpts struct {
 // ToTrustCreateMap formats a CreateOpts into a create request.
 func (opts CreateOpts) ToTrustCreateMap() (map[string]interface{}, error) {
 	parent := "trust"
-
 	b, err := gophercloud.BuildRequestBody(opts, parent)
 	if err != nil {
 		return nil, err

@@ -1,6 +1,8 @@
 package applicationcredentials
 
 import (
+	"time"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -70,12 +72,24 @@ type CreateOpts struct {
 	// A list of access rules objects.
 	AccessRules []AccessRule `json:"access_rules,omitempty"`
 	// The expiration time of the application credential, if one was specified.
-	ExpiresAt string `json:"expires_at,omitempty"`
+	ExpiresAt *time.Time `json:"-"`
 }
 
 // ToApplicationCredentialCreateMap formats a CreateOpts into a create request.
 func (opts CreateOpts) ToApplicationCredentialCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "application_credential")
+	parent := "application_credential"
+	b, err := gophercloud.BuildRequestBody(opts, parent)
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.ExpiresAt != nil {
+		if v, ok := b[parent].(map[string]interface{}); ok {
+			v["expires_at"] = opts.ExpiresAt.Format(gophercloud.RFC3339MilliNoZ)
+		}
+	}
+
+	return b, nil
 }
 
 // Create creates a new ApplicationCredential.
