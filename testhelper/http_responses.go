@@ -2,7 +2,9 @@ package testhelper
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -17,6 +19,18 @@ var (
 	// Server is an in-memory HTTP server for testing.
 	Server *httptest.Server
 )
+
+// SetupHTTP prepares the Mux and Server listening specific port.
+func SetupPersistentPortHTTP(t *testing.T, port int) {
+	l, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	if err != nil {
+		t.Errorf("Failed to listen to 127.0.0.1:%d: %s", port, err)
+	}
+	Mux = http.NewServeMux()
+	Server = httptest.NewUnstartedServer(Mux)
+	Server.Listener = l
+	Server.Start()
+}
 
 // SetupHTTP prepares the Mux and Server.
 func SetupHTTP() {

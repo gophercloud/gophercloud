@@ -62,10 +62,8 @@ func (opts AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]i
 	q, err := gophercloud.BuildQueryString(opts)
 	// This is a workaround to align with tokens.AuthOptions interface
 	return map[string]interface{}{
-		"OS-OAUTH1": tokenParams(q.Query(),
-			opts.OAuthTimestamp,
-			opts.OAuthNonce,
-			"")}, err
+		"OS-OAUTH1": tokenParams(q.Query(), opts.OAuthTimestamp, ""),
+	}, err
 }
 
 // ToTokenV3ScopeMap builds a scope from AuthOpts.
@@ -222,10 +220,7 @@ func (opts RequestTokenOpts) ToRequestTokenHeaders() (map[string]string, error) 
 // ToRequestTokenQuery formats a RequestTokenOpts into a URL encoded string.
 func (opts RequestTokenOpts) ToRequestTokenQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	return tokenParams(q.Query(),
-		opts.OAuthTimestamp,
-		opts.OAuthNonce,
-		"oob"), err
+	return tokenParams(q.Query(), opts.OAuthTimestamp, "oob"), err
 }
 
 // RequestToken requests an unauthorized OAuth1 Token.
@@ -301,24 +296,36 @@ func AuthorizeToken(client *gophercloud.ServiceClient, id string, opts Authorize
 
 // CreateAccessTokenOpts provides options used to create an OAuth1 token.
 type CreateAccessTokenOpts struct {
-	OAuthConsumerKey     string          `q:"oauth_consumer_key" required:"true"`
-	OAuthConsumerSecret  string          `required:"true"`
-	OAuthToken           string          `q:"oauth_token" required:"true"`
-	OAuthTokenSecret     string          `required:"true"`
-	OAuthVerifier        string          `q:"oauth_verifier" required:"true"`
+	// OAuthConsumerKey is the OAuth1 Consumer Key.
+	OAuthConsumerKey string `q:"oauth_consumer_key" required:"true"`
+	// OAuthConsumerSecret is the OAuth1 Consumer Secret. Used to generate
+	// an OAuth1 request signature.
+	OAuthConsumerSecret string `required:"true"`
+	// OAuthToken is the OAuth1 Request Token.
+	OAuthToken string `q:"oauth_token" required:"true"`
+	// OAuthTokenSecret is the OAuth1 Request Token Secret. Used to generate
+	// an OAuth1 request signature.
+	OAuthTokenSecret string `required:"true"`
+	// OAuthVerifier is the OAuth1 verification code.
+	OAuthVerifier string `q:"oauth_verifier" required:"true"`
+	// OAuthSignatureMethod is the OAuth1 signature method the Consumer used
+	// to sign the request. Supported values are "HMAC-SHA1" or "PLAINTEXT".
+	// "PLAINTEXT" is not recommended for production usage.
 	OAuthSignatureMethod SignatureMethod `q:"oauth_signature_method" required:"true"`
-	OAuthTimestamp       *time.Time
-	OAuthNonce           string `q:"oauth_nonce"`
+	// OAuthTimestamp is an OAuth1 request timestamp. If nil, current Unix
+	// timestamp will be used.
+	OAuthTimestamp *time.Time
+	// OAuthNonce is an OAuth1 request nonce. Nonce must be a random string,
+	// uniquely generated for each request. Will be generated automatically
+	// when it is not set.
+	OAuthNonce string `q:"oauth_nonce"`
 }
 
 // ToCreateAccessTokenQuery formats a CreateAccessTokenOpts into a URL encoded
 // string.
 func (opts CreateAccessTokenOpts) ToCreateAccessTokenQuery() (string, error) {
 	q, err := gophercloud.BuildQueryString(opts)
-	return tokenParams(q.Query(),
-		opts.OAuthTimestamp,
-		opts.OAuthNonce,
-		""), err
+	return tokenParams(q.Query(), opts.OAuthTimestamp, ""), err
 }
 
 // CreateAccessToken creates a new OAuth1 Access Token
@@ -407,7 +414,7 @@ func buildAuthJSON() map[string]interface{} {
 }
 
 // tokenParams builds a URLEncoded parameters string.
-func tokenParams(query url.Values, timestamp *time.Time, nonce string, callback string) string {
+func tokenParams(query url.Values, timestamp *time.Time, callback string) string {
 	if timestamp != nil {
 		// use provided timestamp
 		query.Set("oauth_timestamp", strconv.FormatInt(timestamp.Unix(), 10))
@@ -416,7 +423,7 @@ func tokenParams(query url.Values, timestamp *time.Time, nonce string, callback 
 		query.Set("oauth_timestamp", strconv.FormatInt(time.Now().UTC().Unix(), 10))
 	}
 
-	if nonce == "" {
+	if query.Get("oauth_nonce") == "" {
 		// when nonce is not set, generate a random one
 		query.Set("oauth_nonce", strconv.FormatInt(rand.Int63(), 10)+query.Get("oauth_timestamp"))
 	}
@@ -433,13 +440,14 @@ func tokenParams(query url.Values, timestamp *time.Time, nonce string, callback 
 // stringToSign builds a string to be signed.
 func stringToSign(method string, u string, params string) []byte {
 	parsedURL, _ := url.Parse(u)
-	if strings.HasPrefix(parsedURL.Host, "127.0.0.1") {
-		// Workaround for unit tests with dynamic ports
-		host := strings.SplitN(parsedURL.Host, ":", 2)
-		if len(host) == 2 && strings.HasPrefix(parsedURL.Path, "/unit_test/") {
-			parsedURL.Host = host[0]
-		}
+	p := parsedURL.Port()
+	s := parsedURL.Scheme
+	// Default scheme port must be stripped
+	if s == "http" && p == "80" || s == "https" && p == "443" {
+		parsedURL.Host = strings.TrimSuffix(parsedURL.Host, ":"+p)
 	}
+	// Ensure that URL doesn't contain queries
+	parsedURL.RawQuery = ""
 	return []byte(strings.Join([]string{
 		method,
 		url.QueryEscape(parsedURL.String()),

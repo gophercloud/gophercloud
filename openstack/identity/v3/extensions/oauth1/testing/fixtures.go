@@ -319,11 +319,11 @@ var Token = oauth1.Token{
 // HandleRequestToken creates an HTTP handler at `/OS-OAUTH1/request_token` on the
 // test handler mux that responds with a OAuth1 unauthorized token.
 func HandleRequestToken(t *testing.T) {
-	testhelper.Mux.HandleFunc("/unit_test/OS-OAUTH1/request_token", func(w http.ResponseWriter, r *http.Request) {
+	testhelper.Mux.HandleFunc("/OS-OAUTH1/request_token", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "POST")
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		testhelper.TestHeader(t, r, "Authorization", `OAuth oauth_callback="oob", oauth_consumer_key="7fea2d", oauth_nonce="71416001758914252991586795052", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_version="1.0", oauth_signature="PGbUCw8qdK0bAi4VmHqWqGhbma8%3D"`)
+		testhelper.TestHeader(t, r, "Authorization", `OAuth oauth_callback="oob", oauth_consumer_key="7fea2d", oauth_nonce="71416001758914252991586795052", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_version="1.0", oauth_signature="jCSPVryCYF52Ks0VNNmBmeKSGuw%3D"`)
 		testhelper.TestHeader(t, r, "Requested-Project-Id", "1df927e8a466498f98788ed73d3c8ab4")
 		testhelper.TestBody(t, r, "")
 
@@ -357,11 +357,11 @@ var AccessToken = oauth1.Token{
 // HandleCreateAccessToken creates an HTTP handler at `/OS-OAUTH1/access_token` on the
 // test handler mux that responds with a OAuth1 access token.
 func HandleCreateAccessToken(t *testing.T) {
-	testhelper.Mux.HandleFunc("/unit_test/OS-OAUTH1/access_token", func(w http.ResponseWriter, r *http.Request) {
+	testhelper.Mux.HandleFunc("/OS-OAUTH1/access_token", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "POST")
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
-		testhelper.TestHeader(t, r, "Authorization", `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1586804894", oauth_token="29971f", oauth_verifier="8171", oauth_version="1.0", oauth_signature="rvmK2yOhNL9NjjZMlwTn3dPK1u0%3D"`)
+		testhelper.TestHeader(t, r, "Authorization", `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1586804894", oauth_token="29971f", oauth_verifier="8171", oauth_version="1.0", oauth_signature="usQ89Y3IYG0IBE7%2Ft8aVsc8XgEk%3D"`)
 		testhelper.TestBody(t, r, "")
 
 		w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
@@ -440,11 +440,11 @@ func HandleGetAccessTokenRole(t *testing.T) {
 // HandleAuthenticate creates an HTTP handler at `/auth/tokens` on the
 // test handler mux that responds with an OpenStack token.
 func HandleAuthenticate(t *testing.T) {
-	testhelper.Mux.HandleFunc("/unit_test/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
+	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "POST")
 		testhelper.TestHeader(t, r, "Content-Type", "application/json")
 		testhelper.TestHeader(t, r, "Accept", "application/json")
-		testhelper.TestHeader(t, r, "Authorization", `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_token="accd36", oauth_version="1.0", oauth_signature="vxka5cHQee01I3AiDZFE3S53ZA4%3D"`)
+		testhelper.TestHeader(t, r, "Authorization", `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="0", oauth_token="accd36", oauth_version="1.0", oauth_signature="JgMHu4e7rXGlqz3A%2FLhHDMvtjp8%3D"`)
 		testhelper.TestJSONRequest(t, r, `{"auth": {"identity": {"oauth1": {}, "methods": ["oauth1"]}}}`)
 
 		w.Header().Set("Content-Type", "application/json")
