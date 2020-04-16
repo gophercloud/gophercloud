@@ -57,13 +57,28 @@ type AuthOptions struct {
 	AllowReauth bool
 }
 
+// ToTokenV3CreateHeaders builds a create request headers from the AuthOptions.
+func (opts AuthOptions) ToTokenV3CreateHeaders(method string, url string) (map[string]string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]string{
+		"Authorization": genAuthHeader(
+			opts.OAuthSignatureMethod,
+			method,
+			url,
+			tokenParams(q.Query(), opts.OAuthTimestamp, ""),
+			[]string{opts.OAuthConsumerSecret, opts.OAuthTokenSecret},
+		),
+		"X-Auth-Token": "",
+	}, nil
+}
+
 // ToTokenV3CreateMap builds a create request body from the AuthOptions.
 func (opts AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]interface{}, error) {
-	q, err := gophercloud.BuildQueryString(opts)
-	// This is a workaround to align with tokens.AuthOptions interface
-	return map[string]interface{}{
-		"OS-OAUTH1": tokenParams(q.Query(), opts.OAuthTimestamp, ""),
-	}, err
+	return nil, nil
 }
 
 // ToTokenV3ScopeMap builds a scope from AuthOpts.
@@ -77,36 +92,14 @@ func (opts AuthOptions) CanReauth() bool {
 
 // Create authenticates and either generates a new OpenStack token from an
 // OAuth1 token.
-func Create(client *gophercloud.ServiceClient, o tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
-	var opts *AuthOptions
-	var ok bool
-	if opts, ok = o.(*AuthOptions); !ok {
-		r.Err = fmt.Errorf("opts assertion failed")
-		return
-	}
-	b, err := opts.ToTokenV3CreateMap(nil)
+func Create(client *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
+	method := "POST"
+	url := authURL(client)
+	h, err := opts.ToTokenV3CreateHeaders(method, url)
 	if err != nil {
 		r.Err = err
 		return
 	}
-	var body string
-	if v, ok := b["OS-OAUTH1"].(string); ok {
-		if v == "" {
-			r.Err = fmt.Errorf("cannot parse oauth1 body")
-			return
-		}
-		body = v
-	}
-
-	h := make(map[string]string)
-	url := authURL(client)
-	h["Authorization"] = genAuthHeader(opts.OAuthSignatureMethod,
-		"POST",
-		url,
-		body,
-		[]string{opts.OAuthConsumerSecret, opts.OAuthTokenSecret},
-	)
-	h["X-Auth-Token"] = ""
 
 	resp, err := client.Post(url, buildAuthJSON(), &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: h,
@@ -351,20 +344,15 @@ func (opts CreateAccessTokenOpts) ToCreateAccessTokenHeaders(method, url string)
 		return nil, err
 	}
 
-	h, err := gophercloud.BuildHeaders(opts)
-	if err != nil {
-		return nil, err
-	}
-
-	h["Authorization"] = genAuthHeader(
-		opts.OAuthSignatureMethod,
-		method,
-		url,
-		tokenParams(q.Query(), opts.OAuthTimestamp, ""),
-		[]string{opts.OAuthConsumerSecret, opts.OAuthTokenSecret},
-	)
-
-	return h, nil
+	return map[string]string{
+		"Authorization": genAuthHeader(
+			opts.OAuthSignatureMethod,
+			method,
+			url,
+			tokenParams(q.Query(), opts.OAuthTimestamp, ""),
+			[]string{opts.OAuthConsumerSecret, opts.OAuthTokenSecret},
+		),
+	}, nil
 }
 
 // CreateAccessToken creates a new OAuth1 Access Token

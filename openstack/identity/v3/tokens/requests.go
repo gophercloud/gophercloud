@@ -17,6 +17,7 @@ type AuthOptionsBuilder interface {
 	// ToTokenV3CreateMap assembles the Create request body, returning an error
 	// if parameters are missing or inconsistent.
 	ToTokenV3CreateMap(map[string]interface{}) (map[string]interface{}, error)
+	ToTokenV3CreateHeaders(string, string) (map[string]string, error)
 	ToTokenV3ScopeMap() (map[string]interface{}, error)
 	CanReauth() bool
 }
@@ -63,6 +64,12 @@ type AuthOptions struct {
 	ApplicationCredentialSecret string `json:"-"`
 
 	Scope Scope `json:"-"`
+}
+
+// ToTokenV3CreateHeaders is a dummy method to satisfy AuthOptionsBuilder
+// interface.
+func (opts *AuthOptions) ToTokenV3CreateHeaders(string, string) (map[string]string, error) {
+	return nil, nil
 }
 
 // ToTokenV3CreateMap builds a request body from AuthOptions.
