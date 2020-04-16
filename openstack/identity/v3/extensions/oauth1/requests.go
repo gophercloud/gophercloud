@@ -430,7 +430,7 @@ func GetAccessTokenRole(client *gophercloud.ServiceClient, userID string, id str
 // The following are small helper functions used to help build the signature.
 
 // tokenParams builds a URLEncoded parameters string.
-func tokenParams(query url.Values, timestamp *time.Time, callback string) string {
+func tokenParams(query url.Values, timestamp *time.Time, callback string) url.Values {
 	if timestamp != nil {
 		// use provided timestamp
 		query.Set("oauth_timestamp", strconv.FormatInt(timestamp.Unix(), 10))
@@ -449,12 +449,11 @@ func tokenParams(query url.Values, timestamp *time.Time, callback string) string
 	}
 	query.Set("oauth_version", "1.0")
 
-	// sorted by key
-	return query.Encode()
+	return query
 }
 
 // stringToSign builds a string to be signed.
-func stringToSign(method string, u string, params string) []byte {
+func stringToSign(method string, u string, query url.Values) []byte {
 	parsedURL, _ := url.Parse(u)
 	p := parsedURL.Port()
 	s := parsedURL.Scheme
@@ -467,7 +466,7 @@ func stringToSign(method string, u string, params string) []byte {
 	return []byte(strings.Join([]string{
 		method,
 		url.QueryEscape(parsedURL.String()),
-		url.QueryEscape(params),
+		url.QueryEscape(query.Encode()), // sorted by key
 	}, "&"))
 }
 
@@ -490,23 +489,21 @@ func signString(signatureMethod SignatureMethod, strToSign []byte, secrets []str
 
 // genAuthHeader generates an OAuth1 Authorization header with a signature
 // calculated using an OAuth1 signature method.
-func genAuthHeader(signatureMethod SignatureMethod, method, u, b string, secrets []string) string {
+func genAuthHeader(signatureMethod SignatureMethod, method, u string, query url.Values, secrets []string) string {
 	var authHeader []string
-	params, _ := url.ParseQuery(b)
-
 	var keys []string
-	for k := range params {
+	for k := range query {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 
 	for _, k := range keys {
-		for _, v := range params[k] {
+		for _, v := range query[k] {
 			authHeader = append(authHeader, fmt.Sprintf("%s=%q", k, url.QueryEscape(v)))
 		}
 	}
 
-	strToSign := stringToSign(method, u, b)
+	strToSign := stringToSign(method, u, query)
 	signature := url.QueryEscape(signString(signatureMethod, strToSign, secrets))
 	authHeader = append(authHeader, fmt.Sprintf("oauth_signature=%q", signature))
 
