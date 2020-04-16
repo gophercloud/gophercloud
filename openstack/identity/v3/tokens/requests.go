@@ -91,7 +91,7 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 	return gophercloudAuthOpts.ToTokenV3CreateMap(scope)
 }
 
-// ToTokenV3CreateMap builds a scope request body from AuthOptions.
+// ToTokenV3ScopeMapp builds a scope request body from AuthOptions.
 func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 	scope := gophercloud.AuthScope(opts.Scope)
 
