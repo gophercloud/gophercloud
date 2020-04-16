@@ -85,7 +85,7 @@ type Trust struct {
 	RedelegationCount  int       `json:"redelegation_count,omitempty"`
 	AllowRedelegation  bool      `json:"allow_redelegation,omitempty"`
 	ProjectID          string    `json:"project_id,omitempty"`
-	RemainingUses      bool      `json:"remaining_uses,omitempty"`
+	RemainingUses      int       `json:"remaining_uses,omitempty"`
 	Roles              []Role    `json:"roles,omitempty"`
 	DeletedAt          time.Time `json:"deleted_at"`
 	ExpiresAt          time.Time `json:"expires_at"`
@@ -100,4 +100,56 @@ type Role struct {
 // TokenExt represents an extension of the base token result.
 type TokenExt struct {
 	Trust Trust `json:"OS-TRUST:trust"`
+}
+
+// RolesPage is a single page of Trust roles results.
+type RolesPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines whether or not a a Page contains any results.
+func (r RolesPage) IsEmpty() (bool, error) {
+	accessTokenRoles, err := ExtractRoles(r)
+	return len(accessTokenRoles) == 0, err
+}
+
+// NextPageURL extracts the "next" link from the links section of the result.
+func (r RolesPage) NextPageURL() (string, error) {
+	var s struct {
+		Links struct {
+			Next     string `json:"next"`
+			Previous string `json:"previous"`
+		} `json:"links"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return s.Links.Next, err
+}
+
+// ExtractRoles returns a slice of Role contained in a single page of results.
+func ExtractRoles(r pagination.Page) ([]Role, error) {
+	var s struct {
+		Roles []Role `json:"roles"`
+	}
+	err := (r.(RolesPage)).ExtractInto(&s)
+	return s.Roles, err
+}
+
+type GetRoleResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any GetRoleResult result as an Role.
+func (r GetRoleResult) Extract() (*Role, error) {
+	var s struct {
+		Role *Role `json:"role"`
+	}
+	err := r.ExtractInto(&s)
+	return s.Role, err
+}
+
+type CheckRoleResult struct {
+	gophercloud.ErrResult
 }

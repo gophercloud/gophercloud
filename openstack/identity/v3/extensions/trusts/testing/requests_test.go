@@ -156,3 +156,55 @@ func TestListTrustsFiltered(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedTrustsSlice, actual)
 }
+
+func TestListTrustRoles(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListTrustRolesSuccessfully(t)
+
+	count := 0
+	err := trusts.ListRoles(client.ServiceClient(), "987fe8").EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := trusts.ExtractRoles(page)
+		th.AssertNoErr(t, err)
+
+		th.CheckDeepEquals(t, ExpectedTrustRolesSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+}
+
+func TestListTrustRolesAllPages(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListTrustRolesSuccessfully(t)
+
+	allPages, err := trusts.ListRoles(client.ServiceClient(), "987fe8").AllPages()
+	th.AssertNoErr(t, err)
+	actual, err := trusts.ExtractRoles(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ExpectedTrustRolesSlice, actual)
+}
+
+func TestGetTrustRole(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetTrustRoleSuccessfully(t)
+
+	role, err := trusts.GetRole(client.ServiceClient(), "987fe8", "c1648e").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, FirstRole, *role)
+}
+
+func TestCheckTrustRole(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCheckTrustRoleSuccessfully(t)
+
+	err := trusts.CheckRole(client.ServiceClient(), "987fe8", "c1648e").ExtractErr()
+	th.AssertNoErr(t, err)
+}

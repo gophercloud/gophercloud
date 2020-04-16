@@ -23,3 +23,11 @@ func deleteURL(c *gophercloud.ServiceClient, id string) string {
 func listURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL(resourcePath)
 }
+
+func listRolesURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL(resourcePath, id, "roles")
+}
+
+func getRoleURL(c *gophercloud.ServiceClient, id, roleID string) string {
+	return c.ServiceURL(resourcePath, id, "roles", roleID)
+}

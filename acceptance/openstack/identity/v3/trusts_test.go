@@ -100,10 +100,28 @@ func TestTrustCRUD(t *testing.T) {
 	trust, err = FindTrust(t, client)
 	th.AssertNoErr(t, err)
 
+	// Get trust
 	p, err := trusts.Get(client, trust.ID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, p.ExpiresAt.IsZero(), false)
 	th.AssertEquals(t, p.DeletedAt.IsZero(), true)
 
 	tools.PrintResource(t, p)
+
+	// List trust roles
+	rolesPages, err := trusts.ListRoles(client, p.ID).AllPages()
+	th.AssertNoErr(t, err)
+	allTrustRoles, err := trusts.ExtractRoles(rolesPages)
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(allTrustRoles), 1)
+	th.AssertEquals(t, allTrustRoles[0].ID, memberRoleID)
+
+	// Get trust role
+	role, err := trusts.GetRole(client, p.ID, memberRoleID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, role.ID, memberRoleID)
+
+	// Check trust role
+	err = trusts.CheckRole(client, p.ID, memberRoleID).ExtractErr()
+	th.AssertNoErr(t, err)
 }
