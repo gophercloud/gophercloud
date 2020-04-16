@@ -403,6 +403,8 @@ func (opts *AuthOptions) ToTokenV3CreateMap(scope map[string]interface{}) (map[s
 	return b, nil
 }
 
+// ToTokenV3ScopeMap builds a scope from AuthOptions and satisfies interface in
+// the v3 tokens package.
 func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 	// For backwards compatibility.
 	// If AuthOptions.Scope was not set, try to determine it.
