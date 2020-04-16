@@ -76,9 +76,18 @@ func (opts AuthOptions) ToTokenV3CreateHeaders(method string, url string) (map[s
 	}, nil
 }
 
-// ToTokenV3CreateMap builds a create request body from the AuthOptions.
+// ToTokenV3CreateMap builds a create request body.
 func (opts AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]interface{}, error) {
-	return nil, nil
+	var req struct {
+		Auth struct {
+			Identity struct {
+				Methods []string `json:"methods"`
+				OAuth1  struct{} `json:"oauth1"`
+			} `json:"identity"`
+		} `json:"auth"`
+	}
+	req.Auth.Identity.Methods = []string{"oauth1"}
+	return gophercloud.BuildRequestBody(req, "")
 }
 
 // ToTokenV3ScopeMap builds a scope from AuthOpts.
@@ -93,6 +102,12 @@ func (opts AuthOptions) CanReauth() bool {
 // Create authenticates and either generates a new OpenStack token from an
 // OAuth1 token.
 func Create(client *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tokens.CreateResult) {
+	b, err := opts.ToTokenV3CreateMap(nil)
+	if err != nil {
+		r.Err = err
+		return
+	}
+
 	method := "POST"
 	url := authURL(client)
 	h, err := opts.ToTokenV3CreateHeaders(method, url)
@@ -101,7 +116,7 @@ func Create(client *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (
 		return
 	}
 
-	resp, err := client.Post(url, buildAuthJSON(), &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(url, b, &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
@@ -413,23 +428,6 @@ func GetAccessTokenRole(client *gophercloud.ServiceClient, userID string, id str
 }
 
 // The following are small helper functions used to help build the signature.
-
-// buildAuthJSON builds a map, used to be passed to a Keystone V3 "/auth/token"
-// location.
-func buildAuthJSON() map[string]interface{} {
-	var req struct {
-		Auth struct {
-			Identity struct {
-				Methods []string `json:"methods"`
-				OAuth1  struct{} `json:"oauth1"`
-			} `json:"identity"`
-		} `json:"auth"`
-	}
-	req.Auth.Identity.Methods = []string{"oauth1"}
-	b, _ := gophercloud.BuildRequestBody(req, "")
-
-	return b
-}
 
 // tokenParams builds a URLEncoded parameters string.
 func tokenParams(query url.Values, timestamp *time.Time, callback string) string {
