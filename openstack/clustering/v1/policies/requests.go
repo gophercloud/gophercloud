@@ -1,8 +1,6 @@
 package policies
 
 import (
-	"net/http"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -90,25 +88,19 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		r.Err = err
 		return
 	}
-	var result *http.Response
-	result, r.Err = client.Post(policyCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(policyCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete makes a request against the API to delete a policy.
 func Delete(client *gophercloud.ServiceClient, policyID string) (r DeleteResult) {
-	var result *http.Response
-	result, r.Err = client.Delete(policyDeleteURL(client, policyID), &gophercloud.RequestOpts{
+	resp, err := client.Delete(policyDeleteURL(client, policyID), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -135,15 +127,10 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 		r.Err = err
 		return
 	}
-
-	var result *http.Response
-	result, r.Err = client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -170,24 +157,19 @@ func Validate(client *gophercloud.ServiceClient, opts ValidateOptsBuilder) (r Va
 		r.Err = err
 		return
 	}
-
-	var result *http.Response
-	result, r.Err = client.Post(validateURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(validateURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get makes a request against the API to get details for a policy.
 func Get(client *gophercloud.ServiceClient, policyTypeName string) (r GetResult) {
 	url := policyGetURL(client, policyTypeName)
-
-	_, r.Err = client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

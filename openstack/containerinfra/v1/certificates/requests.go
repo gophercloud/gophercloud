@@ -1,8 +1,6 @@
 package certificates
 
 import (
-	"net/http"
-
 	"github.com/gophercloud/gophercloud"
 )
 
@@ -27,11 +25,10 @@ func (opts CreateOpts) ToCertificateCreateMap() (map[string]interface{}, error) 
 // Get makes a request against the API to get details for a certificate.
 func Get(client *gophercloud.ServiceClient, clusterID string) (r GetResult) {
 	url := getURL(client, clusterID)
-
-	_, r.Err = client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -42,24 +39,18 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		r.Err = err
 		return
 	}
-
-	var result *http.Response
-	result, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
-
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Update will rotate the CA certificate for a cluster
 func Update(client *gophercloud.ServiceClient, clusterID string) (r UpdateResult) {
-	_, r.Err = client.Patch(updateURL(client, clusterID), nil, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(updateURL(client, clusterID), nil, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

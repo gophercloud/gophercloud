@@ -72,8 +72,9 @@ func List(client *gophercloud.ServiceClient, id string, opts ListOptsBuilder) pa
 
 // Get makes a request against the API to get a server action.
 func Get(client *gophercloud.ServiceClient, serverID, requestID string) (r InstanceActionResult) {
-	_, r.Err = client.Get(instanceActionsURL(client, serverID, requestID), &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(instanceActionsURL(client, serverID, requestID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

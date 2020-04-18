@@ -295,10 +295,7 @@ func Create(c *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (r tok
 		MoreHeaders: map[string]string{"X-Auth-Token": ""},
 		OkCodes:     []int{200},
 	})
-	r.Err = err
-	if resp != nil {
-		r.Header = resp.Header
-	}
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -318,10 +315,7 @@ func ValidateS3Token(c *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilde
 		MoreHeaders: map[string]string{"X-Auth-Token": ""},
 		OkCodes:     []int{200},
 	})
-	r.Err = err
-	if resp != nil {
-		r.Header = resp.Header
-	}
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 

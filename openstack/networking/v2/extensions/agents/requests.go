@@ -61,13 +61,15 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 
 // Get retrieves a specific agent based on its ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	_, r.Err = c.Get(getURL(c, id), &r.Body, nil)
+	resp, err := c.Get(getURL(c, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ListDHCPNetworks returns a list of networks scheduled to a specific
 // dhcp agent
 func ListDHCPNetworks(c *gophercloud.ServiceClient, id string) (r ListDHCPNetworksResult) {
-	_, r.Err = c.Get(listDHCPNetworksURL(c, id), &r.Body, nil)
+	resp, err := c.Get(listDHCPNetworksURL(c, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

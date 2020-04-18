@@ -6,12 +6,14 @@ import (
 
 // List lists all the API versions available to end users.
 func List(client *gophercloud.ServiceClient) (r ListResult) {
-	_, r.Err = client.Get(listURL(client), &r.Body, nil)
+	resp, err := client.Get(listURL(client), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get will get a specific API version, specified by major ID.
 func Get(client *gophercloud.ServiceClient, v string) (r GetResult) {
-	_, r.Err = client.Get(getURL(client, v), &r.Body, nil)
+	resp, err := client.Get(getURL(client, v), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

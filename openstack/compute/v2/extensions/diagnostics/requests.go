@@ -6,6 +6,7 @@ import (
 
 // Diagnostics
 func Get(client *gophercloud.ServiceClient, serverId string) (r serverDiagnosticsResult) {
-	_, r.Err = client.Get(serverDiagnosticsURL(client, serverId), &r.Body, nil)
+	resp, err := client.Get(serverDiagnosticsURL(client, serverId), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

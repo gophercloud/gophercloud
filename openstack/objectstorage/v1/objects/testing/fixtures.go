@@ -151,6 +151,7 @@ func HandleCreateTextObjectSuccessfully(t *testing.T, content string) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Content-Type", "text/plain")
 		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestBody(t, r, `Did gyre and gimble in the wabe`)
 
 		hash := md5.New()
 		io.WriteString(hash, content)
@@ -169,6 +170,7 @@ func HandleCreateTextWithCacheControlSuccessfully(t *testing.T, content string) 
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Cache-Control", `max-age="3600", public`)
 		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestBody(t, r, `All mimsy were the borogoves`)
 
 		hash := md5.New()
 		io.WriteString(hash, content)
@@ -187,6 +189,7 @@ func HandleCreateTypelessObjectSuccessfully(t *testing.T, content string) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestBody(t, r, `The sky was the color of television, tuned to a dead channel.`)
 
 		if contentType, present := r.Header["Content-Type"]; present {
 			t.Errorf("Expected Content-Type header to be omitted, but was %#v", contentType)

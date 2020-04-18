@@ -1,8 +1,6 @@
 package nodegroups
 
 import (
-	"net/http"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -12,11 +10,8 @@ import (
 // Use the Extract method of the returned GetResult to extract the
 // node group from the result.
 func Get(client *gophercloud.ServiceClient, clusterID, nodeGroupID string) (r GetResult) {
-	var response *http.Response
-	response, r.Err = client.Get(getURL(client, clusterID, nodeGroupID), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
-	if r.Err == nil {
-		r.Header = response.Header
-	}
+	resp, err := client.Get(getURL(client, clusterID, nodeGroupID), &r.Body, &gophercloud.RequestOpts{OkCodes: []int{200}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -109,14 +104,8 @@ func Create(client *gophercloud.ServiceClient, clusterID string, opts CreateOpts
 		r.Err = err
 		return
 	}
-
-	var result *http.Response
-	result, r.Err = client.Post(createURL(client, clusterID), b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
-
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	resp, err := client.Post(createURL(client, clusterID), b, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -161,21 +150,14 @@ func Update(client *gophercloud.ServiceClient, clusterID string, nodeGroupID str
 		}
 		o = append(o, b)
 	}
-
-	var result *http.Response
-	result, r.Err = client.Patch(updateURL(client, clusterID, nodeGroupID), o, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
-
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	resp, err := client.Patch(updateURL(client, clusterID, nodeGroupID), o, &r.Body, &gophercloud.RequestOpts{OkCodes: []int{202}})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete makes a request to the Magnum API to delete a node group.
 func Delete(client *gophercloud.ServiceClient, clusterID, nodeGroupID string) (r DeleteResult) {
-	var result *http.Response
-	result, r.Err = client.Delete(deleteURL(client, clusterID, nodeGroupID), nil)
-	r.Header = result.Header
+	resp, err := client.Delete(deleteURL(client, clusterID, nodeGroupID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

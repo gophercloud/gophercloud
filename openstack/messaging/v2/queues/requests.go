@@ -116,9 +116,10 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	queueName := b["queue_name"].(string)
 	delete(b, "queue_name")
 
-	_, r.Err = client.Put(createURL(client, queueName), b, r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Put(createURL(client, queueName), b, r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201, 204},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -166,34 +167,39 @@ func (opts UpdateOpts) ToMap() (map[string]interface{}, error) {
 
 // Update Updates the specified queue.
 func Update(client *gophercloud.ServiceClient, queueName string, opts UpdateOptsBuilder) (r UpdateResult) {
-	_, r.Err = client.Patch(updateURL(client, queueName), opts, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(updateURL(client, queueName), opts, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 204},
 		MoreHeaders: map[string]string{
 			"Content-Type": "application/openstack-messaging-v2.0-json-patch"},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get requests details on a single queue, by name.
 func Get(client *gophercloud.ServiceClient, queueName string) (r GetResult) {
-	_, r.Err = client.Get(getURL(client, queueName), &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(getURL(client, queueName), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes the specified queue.
 func Delete(client *gophercloud.ServiceClient, queueName string) (r DeleteResult) {
-	_, r.Err = client.Delete(deleteURL(client, queueName), &gophercloud.RequestOpts{
+	resp, err := client.Delete(deleteURL(client, queueName), &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetStats returns statistics for the specified queue.
 func GetStats(client *gophercloud.ServiceClient, queueName string) (r StatResult) {
-	_, r.Err = client.Get(statURL(client, queueName), &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200}})
+	resp, err := client.Get(statURL(client, queueName), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -243,9 +249,10 @@ func Share(client *gophercloud.ServiceClient, queueName string, opts ShareOptsBu
 		r.Err = err
 		return r
 	}
-	_, r.Err = client.Post(shareURL(client, queueName), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(shareURL(client, queueName), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -285,8 +292,9 @@ func Purge(client *gophercloud.ServiceClient, queueName string, opts PurgeOptsBu
 		return r
 	}
 
-	_, r.Err = client.Post(purgeURL(client, queueName), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(purgeURL(client, queueName), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

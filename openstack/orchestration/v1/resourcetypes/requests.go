@@ -64,13 +64,15 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) (r ListResult
 	}
 	url += query
 
-	_, r.Err = client.Get(url, &r.Body, nil)
+	resp, err := client.Get(url, &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetSchema retreives the schema for a given resource type.
 func GetSchema(client *gophercloud.ServiceClient, resourceType string) (r GetSchemaResult) {
-	_, r.Err = client.Get(getSchemaURL(client, resourceType), &r.Body, nil)
+	resp, err := client.Get(getSchemaURL(client, resourceType), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -113,6 +115,7 @@ func GenerateTemplate(client *gophercloud.ServiceClient, resourceType string, op
 		return
 	}
 	url += query
-	_, r.Err = client.Get(url, &r.Body, nil)
+	resp, err := client.Get(url, &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

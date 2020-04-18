@@ -38,14 +38,16 @@ func Rescue(client *gophercloud.ServiceClient, id string, opts RescueOptsBuilder
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(extensions.ActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(extensions.ActionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Unrescue instructs the provider to return the server from RESCUE mode.
 func Unrescue(client *gophercloud.ServiceClient, id string) (r UnrescueResult) {
-	_, r.Err = client.Post(extensions.ActionURL(client, id), map[string]interface{}{"unrescue": nil}, nil, nil)
+	resp, err := client.Post(extensions.ActionURL(client, id), map[string]interface{}{"unrescue": nil}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

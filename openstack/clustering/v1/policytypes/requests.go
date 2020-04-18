@@ -18,9 +18,9 @@ func List(client *gophercloud.ServiceClient) pagination.Pager {
 func Get(client *gophercloud.ServiceClient, policyTypeName string) (r GetResult) {
 	url := policyTypeGetURL(client, policyTypeName)
 
-	_, r.Err = client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

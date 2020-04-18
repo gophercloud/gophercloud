@@ -76,8 +76,9 @@ func Create(client *gophercloud.ServiceClient, serverID string, opts CreateOptsB
 		return
 	}
 
-	_, r.Err = client.Post(createURL(client, serverID), reqBody, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(createURL(client, serverID), reqBody, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

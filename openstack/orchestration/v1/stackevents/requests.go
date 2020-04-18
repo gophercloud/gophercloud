@@ -7,7 +7,8 @@ import (
 
 // Find retrieves stack events for the given stack name.
 func Find(c *gophercloud.ServiceClient, stackName string) (r FindResult) {
-	_, r.Err = c.Get(findURL(c, stackName), &r.Body, nil)
+	resp, err := c.Get(findURL(c, stackName), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -177,6 +178,7 @@ func ListResourceEvents(client *gophercloud.ServiceClient, stackName, stackID, r
 
 // Get retreives data for the given stack resource.
 func Get(c *gophercloud.ServiceClient, stackName, stackID, resourceName, eventID string) (r GetResult) {
-	_, r.Err = c.Get(getURL(c, stackName, stackID, resourceName, eventID), &r.Body, nil)
+	resp, err := c.Get(getURL(c, stackName, stackID, resourceName, eventID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

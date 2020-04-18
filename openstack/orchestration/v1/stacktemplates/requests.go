@@ -4,7 +4,8 @@ import "github.com/gophercloud/gophercloud"
 
 // Get retreives data for the given stack template.
 func Get(c *gophercloud.ServiceClient, stackName, stackID string) (r GetResult) {
-	_, r.Err = c.Get(getURL(c, stackName, stackID), &r.Body, nil)
+	resp, err := c.Get(getURL(c, stackName, stackID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -32,8 +33,9 @@ func Validate(c *gophercloud.ServiceClient, opts ValidateOptsBuilder) (r Validat
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Post(validateURL(c), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Post(validateURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

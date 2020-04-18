@@ -36,27 +36,30 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult)
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(aggregatesCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(aggregatesCreateURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete makes a request against the API to delete an aggregate.
 func Delete(client *gophercloud.ServiceClient, aggregateID int) (r DeleteResult) {
 	v := strconv.Itoa(aggregateID)
-	_, r.Err = client.Delete(aggregatesDeleteURL(client, v), &gophercloud.RequestOpts{
+	resp, err := client.Delete(aggregatesDeleteURL(client, v), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get makes a request against the API to get details for a specific aggregate.
 func Get(client *gophercloud.ServiceClient, aggregateID int) (r GetResult) {
 	v := strconv.Itoa(aggregateID)
-	_, r.Err = client.Get(aggregatesGetURL(client, v), &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(aggregatesGetURL(client, v), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -84,9 +87,10 @@ func Update(client *gophercloud.ServiceClient, aggregateID int, opts UpdateOpts)
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Put(aggregatesUpdateURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Put(aggregatesUpdateURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -108,9 +112,10 @@ func AddHost(client *gophercloud.ServiceClient, aggregateID int, opts AddHostOpt
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(aggregatesAddHostURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(aggregatesAddHostURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -132,9 +137,10 @@ func RemoveHost(client *gophercloud.ServiceClient, aggregateID int, opts RemoveH
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(aggregatesRemoveHostURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(aggregatesRemoveHostURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -155,8 +161,9 @@ func SetMetadata(client *gophercloud.ServiceClient, aggregateID int, opts SetMet
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(aggregatesSetMetadataURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(aggregatesSetMetadataURL(client, v), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

@@ -15,7 +15,8 @@ func List(client *gophercloud.ServiceClient, userID string) pagination.Pager {
 
 // Get retrieves details on a single EC2 credential by ID.
 func Get(client *gophercloud.ServiceClient, userID string, id string) (r GetResult) {
-	_, r.Err = client.Get(getURL(client, userID, id), &r.Body, nil)
+	resp, err := client.Get(getURL(client, userID, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -37,14 +38,16 @@ func Create(client *gophercloud.ServiceClient, userID string, opts CreateOpts) (
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(createURL(client, userID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(createURL(client, userID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes an EC2 credential.
 func Delete(client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
-	_, r.Err = client.Delete(deleteURL(client, userID, id), nil)
+	resp, err := client.Delete(deleteURL(client, userID, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

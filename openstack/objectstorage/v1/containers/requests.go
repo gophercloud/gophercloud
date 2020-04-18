@@ -111,11 +111,7 @@ func Create(c *gophercloud.ServiceClient, containerName string, opts CreateOptsB
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-		resp.Body.Close()
-	}
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -128,25 +124,22 @@ func BulkDelete(c *gophercloud.ServiceClient, containers []string) (r BulkDelete
 	for i, v := range containers {
 		encodedContainers[i] = url.QueryEscape(v)
 	}
-	resp, err := c.Request("POST", bulkDeleteURL(c), &gophercloud.RequestOpts{
-		RawBody: strings.NewReader(strings.Join(encodedContainers, "\n") + "\n"),
+	b := strings.NewReader(strings.Join(encodedContainers, "\n") + "\n")
+	resp, err := c.Post(bulkDeleteURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: map[string]string{
 			"Accept":       "application/json",
 			"Content-Type": "text/plain",
 		},
 		OkCodes: []int{200},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-		r.Body = resp.Body
-	}
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete is a function that deletes a container.
 func Delete(c *gophercloud.ServiceClient, containerName string) (r DeleteResult) {
-	_, r.Err = c.Delete(deleteURL(c, url.QueryEscape(containerName)), nil)
+	resp, err := c.Delete(deleteURL(c, url.QueryEscape(containerName)), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -212,10 +205,7 @@ func Update(c *gophercloud.ServiceClient, containerName string, opts UpdateOptsB
 		MoreHeaders: h,
 		OkCodes:     []int{201, 202, 204},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-	}
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -255,9 +245,6 @@ func Get(c *gophercloud.ServiceClient, containerName string, opts GetOptsBuilder
 		MoreHeaders: h,
 		OkCodes:     []int{200, 204},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-	}
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

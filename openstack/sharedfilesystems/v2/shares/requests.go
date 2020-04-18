@@ -63,9 +63,10 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -164,27 +165,31 @@ func ListDetail(client *gophercloud.ServiceClient, opts ListOptsBuilder) paginat
 
 // Delete will delete an existing Share with the given UUID.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	resp, err := client.Delete(deleteURL(client, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get will get a single share with given UUID
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ListExportLocations will list shareID's export locations.
 // Client must have Microversion set; minimum supported microversion for ListExportLocations is 2.9.
 func ListExportLocations(client *gophercloud.ServiceClient, id string) (r ListExportLocationsResult) {
-	_, r.Err = client.Get(listExportLocationsURL(client, id), &r.Body, nil)
+	resp, err := client.Get(listExportLocationsURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetExportLocation will get shareID's export location by an ID.
 // Client must have Microversion set; minimum supported microversion for GetExportLocation is 2.9.
 func GetExportLocation(client *gophercloud.ServiceClient, shareID string, id string) (r GetExportLocationResult) {
-	_, r.Err = client.Get(getExportLocationURL(client, shareID, id), &r.Body, nil)
+	resp, err := client.Get(getExportLocationURL(client, shareID, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -221,9 +226,10 @@ func GrantAccess(client *gophercloud.ServiceClient, id string, opts GrantAccessO
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(grantAccessURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(grantAccessURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -257,10 +263,10 @@ func RevokeAccess(client *gophercloud.ServiceClient, id string, opts RevokeAcces
 		return
 	}
 
-	_, r.Err = client.Post(revokeAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(revokeAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -269,9 +275,10 @@ func RevokeAccess(client *gophercloud.ServiceClient, id string, opts RevokeAcces
 // Client must have Microversion set; minimum supported microversion for ListAccessRights is 2.7.
 func ListAccessRights(client *gophercloud.ServiceClient, id string) (r ListAccessRightsResult) {
 	requestBody := map[string]interface{}{"access_list": nil}
-	_, r.Err = client.Post(listAccessRightsURL(client, id), requestBody, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(listAccessRightsURL(client, id), requestBody, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -305,10 +312,10 @@ func Extend(client *gophercloud.ServiceClient, id string, opts ExtendOptsBuilder
 		return
 	}
 
-	_, r.Err = client.Post(extendURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(extendURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -342,10 +349,10 @@ func Shrink(client *gophercloud.ServiceClient, id string, opts ShrinkOptsBuilder
 		return
 	}
 
-	_, r.Err = client.Post(shrinkURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(shrinkURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -381,23 +388,26 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetMetadata retrieves metadata of the specified share. To extract the retrieved
 // metadata from the response, call the Extract method on the MetadataResult.
 func GetMetadata(client *gophercloud.ServiceClient, id string) (r MetadataResult) {
-	_, r.Err = client.Get(getMetadataURL(client, id), &r.Body, nil)
+	resp, err := client.Get(getMetadataURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetMetadatum retrieves a single metadata item of the specified share. To extract the retrieved
 // metadata from the response, call the Extract method on the GetMetadatumResult.
 func GetMetadatum(client *gophercloud.ServiceClient, id, key string) (r GetMetadatumResult) {
-	_, r.Err = client.Get(getMetadatumURL(client, id, key), &r.Body, nil)
+	resp, err := client.Get(getMetadatumURL(client, id, key), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -431,10 +441,10 @@ func SetMetadata(client *gophercloud.ServiceClient, id string, opts SetMetadataO
 		return
 	}
 
-	_, r.Err = client.Post(setMetadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(setMetadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -468,19 +478,19 @@ func UpdateMetadata(client *gophercloud.ServiceClient, id string, opts UpdateMet
 		return
 	}
 
-	_, r.Err = client.Post(updateMetadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(updateMetadataURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // DeleteMetadatum deletes a single key-value pair from the metadata of the specified share.
 func DeleteMetadatum(client *gophercloud.ServiceClient, id, key string) (r DeleteMetadatumResult) {
-	_, r.Err = client.Delete(deleteMetadatumURL(client, id, key), &gophercloud.RequestOpts{
+	resp, err := client.Delete(deleteMetadatumURL(client, id, key), &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -515,10 +525,10 @@ func Revert(client *gophercloud.ServiceClient, id string, opts RevertOptsBuilder
 		return
 	}
 
-	_, r.Err = client.Post(revertURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(revertURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -552,10 +562,10 @@ func ResetStatus(client *gophercloud.ServiceClient, id string, opts ResetStatusO
 		return
 	}
 
-	_, r.Err = client.Post(resetStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(resetStatusURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -566,10 +576,10 @@ func ForceDelete(client *gophercloud.ServiceClient, id string) (r ForceDeleteRes
 	b := map[string]interface{}{
 		"force_delete": nil,
 	}
-	_, r.Err = client.Post(forceDeleteURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(forceDeleteURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -581,9 +591,9 @@ func Unmanage(client *gophercloud.ServiceClient, id string) (r UnmanageResult) {
 	b := map[string]interface{}{
 		"unmanage": nil,
 	}
-	_, r.Err = client.Post(unmanageURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(unmanageURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

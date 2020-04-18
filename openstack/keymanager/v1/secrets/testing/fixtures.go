@@ -259,6 +259,7 @@ func HandleUpdateSecretSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/secrets/1b8068c4-3bb6-4be6-8f1e-da0d1ea0b67c", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestBody(t, r, `foobar`)
 
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusNoContent)
