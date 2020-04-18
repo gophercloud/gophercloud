@@ -507,8 +507,8 @@ func (opts AuthOptions) CanReauth() bool {
 	return opts.AllowReauth
 }
 
-// ToTokenV3CreateHeaders allows AuthOptions to satisfy the AuthOptionsBuilder
-// interface in the v3 tokens package
-func (opts *AuthOptions) ToTokenV3CreateHeaders(string, string) (map[string]string, error) {
+// ToTokenV3HeadersMap allows AuthOptions to satisfy the AuthOptionsBuilder
+// interface in the v3 tokens package.
+func (opts *AuthOptions) ToTokenV3HeadersMap(map[string]interface{}) (map[string]string, error) {
 	return nil, nil
 }

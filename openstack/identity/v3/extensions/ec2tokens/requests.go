@@ -208,9 +208,9 @@ func (opts *AuthOptions) ToTokenV3ScopeMap() (map[string]interface{}, error) {
 	return nil, nil
 }
 
-// ToTokenV3CreateHeaders is a dummy method to satisfy tokens.AuthOptionsBuilder
-// interface.
-func (opts *AuthOptions) ToTokenV3CreateHeaders(string, string) (map[string]string, error) {
+// ToTokenV3HeadersMap allows AuthOptions to satisfy the AuthOptionsBuilder
+// interface in the v3 tokens package.
+func (opts *AuthOptions) ToTokenV3HeadersMap(map[string]interface{}) (map[string]string, error) {
 	return nil, nil
 }
 
