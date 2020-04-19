@@ -213,6 +213,23 @@ func TestDeleteObject(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
+func TestBulkDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleBulkDeleteSuccessfully(t)
+
+	expected := objects.BulkDeleteResponse{
+		ResponseStatus: "foo",
+		ResponseBody:   "bar",
+		NumberDeleted:  2,
+		Errors:         [][]string{},
+	}
+
+	resp, err := objects.BulkDelete(fake.ServiceClient(), "testContainer", []string{"testObject1", "testObject2"}).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, expected, *resp)
+}
+
 func TestUpateObjectMetadata(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

@@ -340,6 +340,14 @@ func AssertNoErr(t *testing.T, e error) {
 	}
 }
 
+// AssertErr is a convenience function for checking whether an error value is
+// nil
+func AssertErr(t *testing.T, e error) {
+	if e == nil {
+		logFatal(t, fmt.Sprintf("expected error, got nil"))
+	}
+}
+
 // CheckNoErr is similar to AssertNoErr, except with a non-fatal error
 func CheckNoErr(t *testing.T, e error) {
 	if e != nil {

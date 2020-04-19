@@ -55,9 +55,9 @@ func (r *UpdateHeader) UnmarshalJSON(b []byte) error {
 // Extract will return a struct of headers returned from a call to Get. To
 // obtain a map of headers, call the Extract method on the GetResult.
 func (r UpdateResult) Extract() (*UpdateHeader, error) {
-	var s *UpdateHeader
+	var s UpdateHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
 }
 
 // GetHeader represents the headers returned in the response from a Get request.
@@ -157,9 +157,9 @@ type GetResult struct {
 
 // Extract will return a struct of headers returned from a call to Get.
 func (r GetResult) Extract() (*GetHeader, error) {
-	var s *GetHeader
+	var s GetHeader
 	err := r.ExtractInto(&s)
-	return s, err
+	return &s, err
 }
 
 // ExtractMetadata is a function that takes a GetResult (of type *http.Response)

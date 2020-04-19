@@ -224,6 +224,35 @@ func HandleDeleteObjectSuccessfully(t *testing.T) {
 	})
 }
 
+const bulkDeleteResponse = `
+{
+    "Response Status": "foo",
+    "Response Body": "bar",
+    "Errors": [],
+    "Number Deleted": 2,
+    "Number Not Found": 0
+}
+`
+
+// HandleBulkDeleteSuccessfully creates an HTTP handler at `/` on the test
+// handler mux that responds with a `BulkDelete` response.
+func HandleBulkDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "Content-Type", "text/plain")
+		th.TestFormValues(t, r, map[string]string{
+			"bulk-delete": "true",
+		})
+		th.TestBody(t, r, "testContainer/testObject1\ntestContainer/testObject2\n")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, bulkDeleteResponse)
+	})
+}
+
 // HandleUpdateObjectSuccessfully creates an HTTP handler at `/testContainer/testObject` on the test handler mux that
 // responds with a `Update` response.
 func HandleUpdateObjectSuccessfully(t *testing.T) {

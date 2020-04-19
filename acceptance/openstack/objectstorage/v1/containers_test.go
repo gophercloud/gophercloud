@@ -161,3 +161,40 @@ func TestListAllContainers(t *testing.T) {
 	}
 	th.AssertEquals(t, numContainers, len(containerNamesList))
 }
+
+func TestBulkDeleteContainers(t *testing.T) {
+	client, err := clients.NewObjectStorageV1Client()
+	if err != nil {
+		t.Fatalf("Unable to create client: %v", err)
+	}
+
+	numContainers := 20
+
+	// Create a slice of random container names.
+	cNames := make([]string, numContainers)
+	for i := 0; i < numContainers; i++ {
+		cNames[i] = tools.RandomString("test&happy?-", 8)
+	}
+
+	// Create numContainers containers.
+	for i := 0; i < len(cNames); i++ {
+		res := containers.Create(client, cNames[i], nil)
+		th.AssertNoErr(t, res.Err)
+	}
+
+	expectedResp := containers.BulkDeleteResponse{
+		ResponseStatus: "200 OK",
+		Errors:         [][]string{},
+		NumberDeleted:  numContainers,
+	}
+
+	resp, err := containers.BulkDelete(client, cNames).Extract()
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, *resp)
+	th.AssertDeepEquals(t, *resp, expectedResp)
+
+	for _, c := range cNames {
+		_, err = containers.Get(client, c, nil).Extract()
+		th.AssertErr(t, err)
+	}
+}
