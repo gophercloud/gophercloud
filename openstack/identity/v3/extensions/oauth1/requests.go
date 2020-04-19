@@ -299,7 +299,7 @@ func RequestToken(client *gophercloud.ServiceClient, opts RequestTokenOptsBuilde
 		return
 	}
 
-	resp, err := client.Request("POST", requestTokenURL(client), &gophercloud.RequestOpts{
+	resp, err := client.Post(requestTokenURL(client), nil, nil, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
@@ -420,7 +420,7 @@ func CreateAccessToken(client *gophercloud.ServiceClient, opts CreateAccessToken
 		return
 	}
 
-	resp, err := client.Request("POST", createAccessTokenURL(client), &gophercloud.RequestOpts{
+	resp, err := client.Post(createAccessTokenURL(client), nil, nil, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
