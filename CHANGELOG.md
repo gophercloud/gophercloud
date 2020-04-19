@@ -1,5 +1,10 @@
 ## 0.11.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Added `objectstorage/v1/containers.BulkDelete` [GH-1930](https://github.com/gophercloud/gophercloud/pull/1930)
+* Added `objectstorage/v1/objects.BulkDelete` [GH-1930](https://github.com/gophercloud/gophercloud/pull/1930)
+
 ## 0.10.0 (April 12, 2020)
 
 UPGRADE NOTES
