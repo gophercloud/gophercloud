@@ -101,27 +101,27 @@ func (opts AuthOptions) CanReauth() bool {
 	return opts.AllowReauth
 }
 
-// IdentityReq defines the "identity" portion of an OAuth1-based authentication
-// create request body.
-type identityReq struct {
-	Methods []string `json:"methods"`
-	OAuth1  struct{} `json:"oauth1"`
-}
-
-// AuthReq defines the "auth" portion of an OAuth1-based authentication
-// create request body.
-type authReq struct {
-	Identity identityReq `json:"identity"`
-}
-
-// OAuth1Request defines how  an OAuth1-based authentication create
-// request body looks.
-type oauth1Request struct {
-	Auth authReq `json:"auth"`
-}
-
 // ToTokenV3CreateMap builds a create request body.
 func (opts AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]interface{}, error) {
+	// identityReq defines the "identity" portion of an OAuth1-based authentication
+	// create request body.
+	type identityReq struct {
+		Methods []string `json:"methods"`
+		OAuth1  struct{} `json:"oauth1"`
+	}
+
+	// authReq defines the "auth" portion of an OAuth1-based authentication
+	// create request body.
+	type authReq struct {
+		Identity identityReq `json:"identity"`
+	}
+
+	// oauth1Request defines how  an OAuth1-based authentication create
+	// request body looks.
+	type oauth1Request struct {
+		Auth authReq `json:"auth"`
+	}
+
 	var req oauth1Request
 
 	req.Auth.Identity.Methods = []string{"oauth1"}
