@@ -3,12 +3,15 @@
 UPGRADE NOTES
 
 * Object storage container and object names are now URL encoded [GH-1930](https://github.com/gophercloud/gophercloud/pull/1930)
+* All responses now have access to the returned headers. Please report any issues this has caused [GH-1942](https://github.com/gophercloud/gophercloud/pull/1942)
 
 IMPROVEMENTS
 
 * Added `objectstorage/v1/containers.BulkDelete` [GH-1930](https://github.com/gophercloud/gophercloud/pull/1930)
 * Added `objectstorage/v1/objects.BulkDelete` [GH-1930](https://github.com/gophercloud/gophercloud/pull/1930)
-* Object storage container and object names are now URL encoded [GH-1930](https://github.com/gophercloud/gophercloud/pull/1930)
+* Object storage container and object names are now URL encoded [GH-1930]
+(https://github.com/gophercloud/gophercloud/pull/1930)
+* All responses now have access to the returned headers [GH-1942](https://github.com/gophercloud/gophercloud/pull/1942)
 
 ## 0.10.0 (April 12, 2020)
 
