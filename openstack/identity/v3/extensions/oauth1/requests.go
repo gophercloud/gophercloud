@@ -104,27 +104,27 @@ func (opts AuthOptions) CanReauth() bool {
 // IdentityReq defines the "identity" portion of an OAuth1-based authentication
 // create request body.
 type identityReq struct {
-	methods []string `json:"methods"`
-	oAuth1  struct{} `json:"oauth1"`
+	Methods []string `json:"methods"`
+	OAuth1  struct{} `json:"oauth1"`
 }
 
 // AuthReq defines the "auth" portion of an OAuth1-based authentication
 // create request body.
 type authReq struct {
-	identity identityReq `json:"identity"`
+	Identity identityReq `json:"identity"`
 }
 
 // OAuth1Request defines how  an OAuth1-based authentication create
 // request body looks.
 type oauth1Request struct {
-	auth authReq `json:"auth"`
+	Auth authReq `json:"auth"`
 }
 
 // ToTokenV3CreateMap builds a create request body.
 func (opts AuthOptions) ToTokenV3CreateMap(map[string]interface{}) (map[string]interface{}, error) {
 	var req oauth1Request
 
-	req.auth.identity.methods = []string{"oauth1"}
+	req.Auth.Identity.Methods = []string{"oauth1"}
 	return gophercloud.BuildRequestBody(req, "")
 }
 
