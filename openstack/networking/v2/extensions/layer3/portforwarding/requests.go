@@ -53,7 +53,8 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder, id string) paginat
 
 // Get retrieves a particular port forwarding resource based on its unique ID.
 func Get(c *gophercloud.ServiceClient, floatingIpId string, pfId string) (r GetResult) {
-	_, r.Err = c.Get(singlePortForwardingUrl(c, floatingIpId, pfId), &r.Body, nil)
+	resp, err := c.Get(singlePortForwardingUrl(c, floatingIpId, pfId), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -87,7 +88,8 @@ func Create(c *gophercloud.ServiceClient, floatingIpId string, opts CreateOptsBu
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Post(portForwardingUrl(c, floatingIpId), b, &r.Body, nil)
+	resp, err := c.Post(portForwardingUrl(c, floatingIpId), b, &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -124,14 +126,16 @@ func Update(c *gophercloud.ServiceClient, fipID string, pfID string, opts Update
 		r.Err = err
 		return
 	}
-	_, r.Err = c.Put(singlePortForwardingUrl(c, fipID, pfID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(singlePortForwardingUrl(c, fipID, pfID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete will permanently delete a particular port forwarding for a given floating ID.
 func Delete(c *gophercloud.ServiceClient, floatingIpId string, pfId string) (r DeleteResult) {
-	_, r.Err = c.Delete(singlePortForwardingUrl(c, floatingIpId, pfId), nil)
+	resp, err := c.Delete(singlePortForwardingUrl(c, floatingIpId, pfId), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

@@ -2,7 +2,6 @@ package clusters
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -56,29 +55,19 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		r.Err = err
 		return
 	}
-	var result *http.Response
-	result, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
-
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get retrieves details of a single cluster.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	var result *http.Response
-	result, r.Err = client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -153,25 +142,17 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 		r.Err = err
 		return r
 	}
-
-	var result *http.Response
-	result, r.Err = client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
-
-	if r.Err == nil {
-		r.Header = result.Header
-	}
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes the specified cluster ID.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	var result *http.Response
-	result, r.Err = client.Delete(deleteURL(client, id), nil)
-	if r.Err == nil {
-		r.Header = result.Header
-	}
+	resp, err := client.Delete(deleteURL(client, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -217,15 +198,10 @@ func Resize(client *gophercloud.ServiceClient, id string, opts ResizeOptsBuilder
 		r.Err = err
 		return
 	}
-
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -252,14 +228,10 @@ func ScaleIn(client *gophercloud.ServiceClient, id string, opts ScaleInOptsBuild
 		r.Err = err
 		return
 	}
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -286,14 +258,10 @@ func ScaleOut(client *gophercloud.ServiceClient, id string, opts ScaleOutOptsBui
 		r.Err = err
 		return
 	}
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -321,14 +289,10 @@ func AttachPolicy(client *gophercloud.ServiceClient, id string, opts AttachPolic
 		r.Err = err
 		return
 	}
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -356,14 +320,10 @@ func UpdatePolicy(client *gophercloud.ServiceClient, id string, opts UpdatePolic
 		r.Err = err
 		return
 	}
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -390,15 +350,10 @@ func DetachPolicy(client *gophercloud.ServiceClient, id string, opts DetachPolic
 		r.Err = err
 		return
 	}
-
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -440,7 +395,8 @@ func ListPolicies(client *gophercloud.ServiceClient, clusterID string, opts List
 
 // GetPolicy retrieves details of a cluster policy.
 func GetPolicy(client *gophercloud.ServiceClient, clusterID string, policyID string) (r GetPolicyResult) {
-	_, r.Err = client.Get(getPolicyURL(client, clusterID, policyID), &r.Body, nil)
+	resp, err := client.Get(getPolicyURL(client, clusterID, policyID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -469,14 +425,10 @@ func Recover(client *gophercloud.ServiceClient, id string, opts RecoverOptsBuild
 		r.Err = err
 		return
 	}
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -486,14 +438,10 @@ func Check(client *gophercloud.ServiceClient, id string) (r ActionResult) {
 		"check": map[string]interface{}{},
 	}
 
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -513,14 +461,10 @@ func CompleteLifecycle(client *gophercloud.ServiceClient, id string, opts Comple
 		return
 	}
 
-	var result *http.Response
-	result, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -538,11 +482,10 @@ func AddNodes(client *gophercloud.ServiceClient, id string, opts AddNodesOpts) (
 		r.Err = err
 		return
 	}
-	var result *http.Response
-	result, r.Err = client.Post(nodeURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(nodeURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-	r.Header = result.Header
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -560,11 +503,10 @@ func RemoveNodes(client *gophercloud.ServiceClient, clusterID string, opts Remov
 		r.Err = err
 		return
 	}
-	var result *http.Response
-	result, r.Err = client.Post(nodeURL(client, clusterID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(nodeURL(client, clusterID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-	r.Header = result.Header
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -582,11 +524,10 @@ func ReplaceNodes(client *gophercloud.ServiceClient, id string, opts ReplaceNode
 		r.Err = err
 		return
 	}
-	var result *http.Response
-	result, r.Err = client.Post(nodeURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(nodeURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-	r.Header = result.Header
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -610,16 +551,10 @@ func Collect(client *gophercloud.ServiceClient, id string, opts CollectOptsBuild
 		r.Err = err
 		return
 	}
-
-	var result *http.Response
-	result, r.Err = client.Get(collectURL(client, id, query), &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(collectURL(client, id, query), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
-
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -681,14 +616,9 @@ func Ops(client *gophercloud.ServiceClient, id string, opts OperationOptsBuilder
 		r.Err = err
 		return
 	}
-
-	var result *http.Response
-	result, r.Err = client.Post(opsURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(opsURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
-	if r.Err == nil {
-		r.Header = result.Header
-	}
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

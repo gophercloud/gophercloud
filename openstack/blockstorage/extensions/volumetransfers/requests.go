@@ -27,9 +27,10 @@ func Create(client *gophercloud.ServiceClient, opts CreateOpts) (r CreateResult)
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(transferURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(transferURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -52,15 +53,17 @@ func Accept(client *gophercloud.ServiceClient, id string, opts AcceptOpts) (r Cr
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(acceptURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(acceptURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes a volume transfer.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	resp, err := client.Delete(deleteURL(client, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -115,6 +118,7 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 // Get retrieves the Transfer with the provided ID. To extract the Transfer object
 // from the response, call the Extract method on the GetResult.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

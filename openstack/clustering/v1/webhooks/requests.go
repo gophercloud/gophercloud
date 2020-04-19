@@ -46,8 +46,9 @@ func Trigger(client *gophercloud.ServiceClient, id string, opts TriggerOptsBuild
 		return
 	}
 
-	_, r.Err = client.Post(url, nil, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(url, nil, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

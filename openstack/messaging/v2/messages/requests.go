@@ -98,9 +98,10 @@ func Create(client *gophercloud.ServiceClient, queueName string, opts CreateOpts
 		return
 	}
 
-	_, r.Err = client.Post(createURL(client, queueName), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(createURL(client, queueName), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -132,9 +133,10 @@ func DeleteMessages(client *gophercloud.ServiceClient, queueName string, opts De
 		}
 		url += query
 	}
-	_, r.Err = client.Delete(url, &gophercloud.RequestOpts{
+	resp, err := client.Delete(url, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 204},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -203,17 +205,19 @@ func GetMessages(client *gophercloud.ServiceClient, queueName string, opts GetMe
 		}
 		url += query
 	}
-	_, r.Err = client.Get(url, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get requests details on a single message, by ID.
 func Get(client *gophercloud.ServiceClient, queueName string, messageID string) (r GetResult) {
-	_, r.Err = client.Get(messageURL(client, queueName, messageID), &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Get(messageURL(client, queueName, messageID), &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -246,8 +250,9 @@ func Delete(client *gophercloud.ServiceClient, queueName string, messageID strin
 		}
 		url += query
 	}
-	_, r.Err = client.Delete(url, &gophercloud.RequestOpts{
+	resp, err := client.Delete(url, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

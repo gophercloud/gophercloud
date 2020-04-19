@@ -46,6 +46,7 @@ func Delete(c *gophercloud.ServiceClient, idOrURL string, opts DeleteOptsBuilder
 		}
 		url += q
 	}
-	_, r.Err = c.Delete(url, nil)
+	resp, err := c.Delete(url, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

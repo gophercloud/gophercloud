@@ -46,15 +46,17 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(createURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete will delete the existing ShareType with the provided ID.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	resp, err := client.Delete(deleteURL(client, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -95,13 +97,15 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 
 // GetDefault will retrieve the default ShareType.
 func GetDefault(client *gophercloud.ServiceClient) (r GetDefaultResult) {
-	_, r.Err = client.Get(getDefaultURL(client), &r.Body, nil)
+	resp, err := client.Get(getDefaultURL(client), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetExtraSpecs will retrieve the extra specifications for a given ShareType.
 func GetExtraSpecs(client *gophercloud.ServiceClient, id string) (r GetExtraSpecsResult) {
-	_, r.Err = client.Get(getExtraSpecsURL(client, id), &r.Body, nil)
+	resp, err := client.Get(getExtraSpecsURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -132,21 +136,24 @@ func SetExtraSpecs(client *gophercloud.ServiceClient, id string, opts SetExtraSp
 		return
 	}
 
-	_, r.Err = client.Post(setExtraSpecsURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(setExtraSpecsURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // UnsetExtraSpecs will unset an extra specification for an existing ShareType.
 func UnsetExtraSpecs(client *gophercloud.ServiceClient, id string, key string) (r UnsetExtraSpecsResult) {
-	_, r.Err = client.Delete(unsetExtraSpecsURL(client, id, key), nil)
+	resp, err := client.Delete(unsetExtraSpecsURL(client, id, key), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ShowAccess will show access details for an existing ShareType.
 func ShowAccess(client *gophercloud.ServiceClient, id string) (r ShowAccessResult) {
-	_, r.Err = client.Get(showAccessURL(client, id), &r.Body, nil)
+	resp, err := client.Get(showAccessURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -176,9 +183,10 @@ func AddAccess(client *gophercloud.ServiceClient, id string, opts AddAccessOptsB
 		return
 	}
 
-	_, r.Err = client.Post(addAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(addAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -203,8 +211,9 @@ func RemoveAccess(client *gophercloud.ServiceClient, id string, opts RemoveAcces
 		return
 	}
 
-	_, r.Err = client.Post(removeAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(removeAccessURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

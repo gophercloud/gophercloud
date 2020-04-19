@@ -50,27 +50,28 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 		b = tmpB
 	}
 
-	_, r.Err = client.Post(url, nil, &r.Body, &gophercloud.RequestOpts{
-		RawBody: b,
+	resp, err := client.Post(url, b, &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: map[string]string{
 			"Content-Type": "text/plain",
 			"Accept":       "", // Drop default JSON Accept header
 		},
 	})
-
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes the specified execution.
 func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	_, r.Err = client.Delete(deleteURL(client, id), nil)
+	resp, err := client.Delete(deleteURL(client, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Get retrieves details of a single execution.
 // Use Extract to convert its result into an Workflow.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
-	_, r.Err = client.Get(getURL(client, id), &r.Body, nil)
+	resp, err := client.Get(getURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 

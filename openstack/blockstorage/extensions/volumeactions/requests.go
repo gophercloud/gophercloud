@@ -47,18 +47,20 @@ func Attach(client *gophercloud.ServiceClient, id string, opts AttachOptsBuilder
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // BeginDetach will mark the volume as detaching.
 func BeginDetaching(client *gophercloud.ServiceClient, id string) (r BeginDetachingResult) {
 	b := map[string]interface{}{"os-begin_detaching": make(map[string]interface{})}
-	_, r.Err = client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -87,27 +89,30 @@ func Detach(client *gophercloud.ServiceClient, id string, opts DetachOptsBuilder
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Reserve will reserve a volume based on volume ID.
 func Reserve(client *gophercloud.ServiceClient, id string) (r ReserveResult) {
 	b := map[string]interface{}{"os-reserve": make(map[string]interface{})}
-	_, r.Err = client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Unreserve will unreserve a volume based on volume ID.
 func Unreserve(client *gophercloud.ServiceClient, id string) (r UnreserveResult) {
 	b := map[string]interface{}{"os-unreserve": make(map[string]interface{})}
-	_, r.Err = client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -145,9 +150,10 @@ func InitializeConnection(client *gophercloud.ServiceClient, id string, opts Ini
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200, 201, 202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -183,9 +189,10 @@ func TerminateConnection(client *gophercloud.ServiceClient, id string, opts Term
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -216,9 +223,10 @@ func ExtendSize(client *gophercloud.ServiceClient, id string, opts ExtendSizeOpt
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -264,15 +272,17 @@ func UploadImage(client *gophercloud.ServiceClient, id string, opts UploadImageO
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // ForceDelete will delete the volume regardless of state.
 func ForceDelete(client *gophercloud.ServiceClient, id string) (r ForceDeleteResult) {
-	_, r.Err = client.Post(actionURL(client, id), map[string]interface{}{"os-force_delete": ""}, nil, nil)
+	resp, err := client.Post(actionURL(client, id), map[string]interface{}{"os-force_delete": ""}, nil, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -301,9 +311,10 @@ func SetImageMetadata(client *gophercloud.ServiceClient, id string, opts ImageMe
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -326,8 +337,9 @@ func SetBootable(client *gophercloud.ServiceClient, id string, opts BootableOpts
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := client.Post(actionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

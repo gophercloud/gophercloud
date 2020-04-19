@@ -89,8 +89,7 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		return r
 	}
 	resp, err := c.Post(createURL(c), &b, nil, nil)
-	r.Header = resp.Header
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -105,7 +104,8 @@ func Get(c *gophercloud.ServiceClient, idOrURL string) (r GetResult) {
 	} else {
 		url = getURL(c, idOrURL)
 	}
-	_, r.Err = c.Get(url, &r.Body, nil)
+	resp, err := c.Get(url, &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -264,8 +264,7 @@ func Update(c *gophercloud.ServiceClient, idOrURL string, opts UpdateOpts) (r Up
 		JSONBody: &b,
 		OkCodes:  []int{202},
 	})
-	r.Header = resp.Header
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -280,6 +279,7 @@ func Delete(c *gophercloud.ServiceClient, idOrURL string) (r DeleteResult) {
 	} else {
 		url = deleteURL(c, idOrURL)
 	}
-	_, r.Err = c.Delete(url, nil)
+	resp, err := c.Delete(url, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

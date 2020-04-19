@@ -131,11 +131,7 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 		MoreHeaders: h,
 		OkCodes:     []int{200, 206, 304},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-		r.Body = resp.Body
-	}
-	r.Err = err
+	r.Body, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -238,14 +234,10 @@ func Create(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		b = tmpB
 	}
 
-	resp, err := c.Put(url, nil, nil, &gophercloud.RequestOpts{
-		RawBody:     b,
+	resp, err := c.Put(url, b, nil, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 	})
-	r.Err = err
-	if resp != nil {
-		r.Header = resp.Header
-	}
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -295,10 +287,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-	}
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -331,10 +320,7 @@ func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts
 		url += query
 	}
 	resp, err := c.Delete(url, nil)
-	if resp != nil {
-		r.Header = resp.Header
-	}
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -387,10 +373,7 @@ func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts Ge
 		MoreHeaders: h,
 		OkCodes:     []int{200, 204},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-	}
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -442,10 +425,7 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 	resp, err := c.Post(url, nil, nil, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 	})
-	if resp != nil {
-		r.Header = resp.Header
-	}
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -521,18 +501,14 @@ func BulkDelete(c *gophercloud.ServiceClient, container string, objects []string
 			url.QueryEscape(v)},
 			"/")
 	}
-	resp, err := c.Request("POST", bulkDeleteURL(c), &gophercloud.RequestOpts{
-		RawBody: strings.NewReader(strings.Join(encodedObjects, "\n") + "\n"),
+	b := strings.NewReader(strings.Join(encodedObjects, "\n") + "\n")
+	resp, err := c.Post(bulkDeleteURL(c), b, &r.Body, &gophercloud.RequestOpts{
 		MoreHeaders: map[string]string{
 			"Accept":       "application/json",
 			"Content-Type": "text/plain",
 		},
 		OkCodes: []int{200},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-		r.Body = resp.Body
-	}
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

@@ -54,14 +54,16 @@ func List(c *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
 
 // Get retrieves a particular amphora based on its unique ID.
 func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
-	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
+	resp, err := c.Get(resourceURL(c, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Failover performs a failover of an amphora.
 func Failover(c *gophercloud.ServiceClient, id string) (r FailoverResult) {
-	_, r.Err = c.Put(failoverRootURL(c, id), nil, nil, &gophercloud.RequestOpts{
+	resp, err := c.Put(failoverRootURL(c, id), nil, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

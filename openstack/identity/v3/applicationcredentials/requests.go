@@ -40,7 +40,8 @@ func List(client *gophercloud.ServiceClient, userID string, opts ListOptsBuilder
 
 // Get retrieves details on a single user, by ID.
 func Get(client *gophercloud.ServiceClient, userID string, id string) (r GetResult) {
-	_, r.Err = client.Get(getURL(client, userID, id), &r.Body, nil)
+	resp, err := client.Get(getURL(client, userID, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -84,15 +85,17 @@ func Create(client *gophercloud.ServiceClient, userID string, opts CreateOptsBui
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(createURL(client, userID), &b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(createURL(client, userID), &b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes an application credential.
 func Delete(client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
-	_, r.Err = client.Delete(deleteURL(client, userID, id), nil)
+	resp, err := client.Delete(deleteURL(client, userID, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -106,12 +109,14 @@ func ListAccessRules(client *gophercloud.ServiceClient, userID string) paginatio
 
 // GetAccessRule retrieves details on a single access rule by ID.
 func GetAccessRule(client *gophercloud.ServiceClient, userID string, id string) (r GetAccessRuleResult) {
-	_, r.Err = client.Get(getAccessRuleURL(client, userID, id), &r.Body, nil)
+	resp, err := client.Get(getAccessRuleURL(client, userID, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // DeleteAccessRule deletes an access rule.
 func DeleteAccessRule(client *gophercloud.ServiceClient, userID string, id string) (r DeleteResult) {
-	_, r.Err = client.Delete(deleteAccessRuleURL(client, userID, id), nil)
+	resp, err := client.Delete(deleteAccessRuleURL(client, userID, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
