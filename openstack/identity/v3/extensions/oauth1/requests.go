@@ -152,10 +152,7 @@ func Create(client *gophercloud.ServiceClient, opts tokens.AuthOptionsBuilder) (
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-	}
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -183,15 +180,17 @@ func CreateConsumer(client *gophercloud.ServiceClient, opts CreateConsumerOptsBu
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Post(consumersURL(client), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Post(consumersURL(client), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete deletes a Consumer.
 func DeleteConsumer(client *gophercloud.ServiceClient, id string) (r DeleteConsumerResult) {
-	_, r.Err = client.Delete(consumerURL(client, id), nil)
+	resp, err := client.Delete(consumerURL(client, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -204,7 +203,8 @@ func ListConsumers(client *gophercloud.ServiceClient) pagination.Pager {
 
 // GetConsumer retrieves details on a single Consumer by ID.
 func GetConsumer(client *gophercloud.ServiceClient, id string) (r GetConsumerResult) {
-	_, r.Err = client.Get(consumerURL(client, id), &r.Body, nil)
+	resp, err := client.Get(consumerURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -227,9 +227,10 @@ func UpdateConsumer(client *gophercloud.ServiceClient, id string, opts UpdateCon
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Patch(consumerURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Patch(consumerURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -303,11 +304,7 @@ func RequestToken(client *gophercloud.ServiceClient, opts RequestTokenOptsBuilde
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-		r.Body = resp.Body
-	}
-	r.Err = err
+	r.Body, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -346,9 +343,10 @@ func AuthorizeToken(client *gophercloud.ServiceClient, id string, opts Authorize
 		r.Err = err
 		return
 	}
-	_, r.Err = client.Put(authorizeTokenURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := client.Put(authorizeTokenURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -424,23 +422,21 @@ func CreateAccessToken(client *gophercloud.ServiceClient, opts CreateAccessToken
 		MoreHeaders: h,
 		OkCodes:     []int{201},
 	})
-	if resp != nil {
-		r.Header = resp.Header
-		r.Body = resp.Body
-	}
-	r.Err = err
+	r.Body, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // GetAccessToken retrieves details on a single OAuth1 access token by an ID.
 func GetAccessToken(client *gophercloud.ServiceClient, userID string, id string) (r GetAccessTokenResult) {
-	_, r.Err = client.Get(userAccessTokenURL(client, userID, id), &r.Body, nil)
+	resp, err := client.Get(userAccessTokenURL(client, userID, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // RevokeAccessToken revokes an OAuth1 access token.
 func RevokeAccessToken(client *gophercloud.ServiceClient, userID string, id string) (r RevokeAccessTokenResult) {
-	_, r.Err = client.Delete(userAccessTokenURL(client, userID, id), nil)
+	resp, err := client.Delete(userAccessTokenURL(client, userID, id), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
@@ -463,7 +459,8 @@ func ListAccessTokenRoles(client *gophercloud.ServiceClient, userID string, id s
 // GetAccessTokenRole retrieves details on a single OAuth1 access token role by
 // an ID.
 func GetAccessTokenRole(client *gophercloud.ServiceClient, userID string, id string, roleID string) (r GetAccessTokenRoleResult) {
-	_, r.Err = client.Get(userAccessTokenRoleURL(client, userID, id, roleID), &r.Body, nil)
+	resp, err := client.Get(userAccessTokenRoleURL(client, userID, id, roleID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
