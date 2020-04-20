@@ -1,11 +1,7 @@
 package oauth1
 
 import (
-	"bytes"
 	"encoding/json"
-	"io"
-	"io/ioutil"
-	"net/http"
 	"net/url"
 	"time"
 
@@ -107,9 +103,8 @@ type Token struct {
 // TokenResult is a struct to handle
 // "Content-Type: application/x-www-form-urlencoded" response.
 type TokenResult struct {
-	Body   io.ReadCloser
-	Header http.Header
-	Err    error
+	gophercloud.Result
+	Body []byte
 }
 
 // Extract interprets any OAuth1 token result as a Token.
@@ -118,13 +113,7 @@ func (r TokenResult) Extract() (*Token, error) {
 		return nil, r.Err
 	}
 
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
-	}
-	r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
-
-	values, err := url.ParseQuery(string(body))
+	values, err := url.ParseQuery(string(r.Body))
 	if err != nil {
 		return nil, err
 	}

@@ -327,7 +327,7 @@ func HandleRequestToken(t *testing.T) {
 		testhelper.TestHeader(t, r, "Requested-Project-Id", "1df927e8a466498f98788ed73d3c8ab4")
 		testhelper.TestBody(t, r, "")
 
-		w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+		w.Header().Set("Content-Type", oauth1.OAuth1TokenContentType)
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, `oauth_token=29971f&oauth_token_secret=238eb8&oauth_expires_at=2013-09-11T06:07:51.501805Z`)
 	})
@@ -364,7 +364,7 @@ func HandleCreateAccessToken(t *testing.T) {
 		testhelper.TestHeader(t, r, "Authorization", `OAuth oauth_consumer_key="7fea2d", oauth_nonce="66148873158553341551586804894", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1586804894", oauth_token="29971f", oauth_verifier="8171", oauth_version="1.0", oauth_signature="usQ89Y3IYG0IBE7%2Ft8aVsc8XgEk%3D"`)
 		testhelper.TestBody(t, r, "")
 
-		w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+		w.Header().Set("Content-Type", oauth1.OAuth1TokenContentType)
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, `oauth_token=accd36&oauth_token_secret=aa47da&oauth_expires_at=2013-09-11T06:07:51.501805Z`)
 	})

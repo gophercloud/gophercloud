@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"net/url"
 	"sort"
@@ -27,6 +28,10 @@ const (
 	// PLAINTEXT signature method is not recommended to be used in
 	// production environment.
 	PLAINTEXT SignatureMethod = "PLAINTEXT"
+
+	// OAuth1TokenContentType is a supported content type for an OAuth1
+	// token.
+	OAuth1TokenContentType = "application/x-www-form-urlencoded"
 )
 
 // AuthOptions represents options for authenticating a user using OAuth1 tokens.
@@ -301,10 +306,20 @@ func RequestToken(client *gophercloud.ServiceClient, opts RequestTokenOptsBuilde
 	}
 
 	resp, err := client.Post(requestTokenURL(client), nil, nil, &gophercloud.RequestOpts{
-		MoreHeaders: h,
-		OkCodes:     []int{201},
+		MoreHeaders:      h,
+		OkCodes:          []int{201},
+		KeepResponseBody: true,
 	})
-	r.Body, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	if r.Err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	if v := r.Header.Get("Content-Type"); v != OAuth1TokenContentType {
+		r.Err = fmt.Errorf("unsupported Content-Type: %q", v)
+		return
+	}
+	r.Body, r.Err = ioutil.ReadAll(resp.Body)
 	return
 }
 
@@ -419,10 +434,20 @@ func CreateAccessToken(client *gophercloud.ServiceClient, opts CreateAccessToken
 	}
 
 	resp, err := client.Post(createAccessTokenURL(client), nil, nil, &gophercloud.RequestOpts{
-		MoreHeaders: h,
-		OkCodes:     []int{201},
+		MoreHeaders:      h,
+		OkCodes:          []int{201},
+		KeepResponseBody: true,
 	})
-	r.Body, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	if r.Err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	if v := r.Header.Get("Content-Type"); v != OAuth1TokenContentType {
+		r.Err = fmt.Errorf("unsupported Content-Type: %q", v)
+		return
+	}
+	r.Body, r.Err = ioutil.ReadAll(resp.Body)
 	return
 }
 
