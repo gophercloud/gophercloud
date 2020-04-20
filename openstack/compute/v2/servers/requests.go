@@ -398,7 +398,7 @@ func (opts RebootOpts) ToServerRebootMap() (map[string]interface{}, error) {
 	HardReboot (aka PowerCycle) starts the server instance by physically cutting
 	power to the machine, or if a VM, terminating it at the hypervisor level.
 	It's done. Caput. Full stop.
-	Then, after a brief while, power is rtored or the VM instance restarted.
+	Then, after a brief while, power is restored or the VM instance restarted.
 
 	SoftReboot (aka OSReboot) simply tells the OS to restart under its own
 	procedure.
