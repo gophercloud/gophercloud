@@ -13,6 +13,13 @@ IMPROVEMENTS
 * All responses now have access to the returned headers [GH-1942](https://github.com/gophercloud/gophercloud/pull/1942)
 * Added `compute/v2/extensions/injectnetworkinfo.InjectNetworkInfo` [GH-1941](https://github.com/gophercloud/gophercloud/pull/1941)
 * Added `compute/v2/extensions/resetnetwork.ResetNetwork` [GH-1941](https://github.com/gophercloud/gophercloud/pull/1941)
+* Added `identity/v3/extensions/trusts.ListRoles` [GH-1939](https://github.com/gophercloud/gophercloud/pull/1939)
+* Added `identity/v3/extensions/trusts.GetRole` [GH-1939](https://github.com/gophercloud/gophercloud/pull/1939)
+* Added `identity/v3/extensions/trusts.CheckRole` [GH-1939](https://github.com/gophercloud/gophercloud/pull/1939)
+
+BUG FIXES
+
+* Changed`identity/v3/extensions/trusts.Trust.RemainingUses` from `bool` to `int` [GH-1939](https://github.com/gophercloud/gophercloud/pull/1939)
 
 ## 0.10.0 (April 12, 2020)
 
