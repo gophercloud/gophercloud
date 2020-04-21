@@ -120,6 +120,12 @@ type CreateOpts struct {
 
 	// Tags is a list of tags to associate with the project.
 	Tags []string `json:"tags,omitempty"`
+
+	// Extra is free-form extra key/value pairs to describe the project.
+	Extra map[string]interface{} `json:"-"`
+
+	// Options are defined options in the API to enable certain features.
+	Options map[Option]interface{} `json:"options,omitempty"`
 }
 
 // ToProjectCreateMap formats a CreateOpts into a create request.
@@ -174,6 +180,12 @@ type UpdateOpts struct {
 
 	// Tags is a list of tags to associate with the project.
 	Tags *[]string `json:"tags,omitempty"`
+
+	// Extra is free-form extra key/value pairs to describe the project.
+	Extra map[string]interface{} `json:"-"`
+
+	// Options are defined options in the API to enable certain features.
+	Options map[Option]interface{} `json:"options,omitempty"`
 }
 
 // ToUpdateCreateMap formats a UpdateOpts into an update request.
