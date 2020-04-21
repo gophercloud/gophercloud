@@ -11,6 +11,8 @@ IMPROVEMENTS
 * Added `objectstorage/v1/objects.BulkDelete` [GH-1930](https://github.com/gophercloud/gophercloud/pull/1930)
 * Object storage container and object names are now URL encoded [GH-1930](https://github.com/gophercloud/gophercloud/pull/1930)
 * All responses now have access to the returned headers [GH-1942](https://github.com/gophercloud/gophercloud/pull/1942)
+* Added `compute/v2/extensions/injectnetworkinfo.InjectNetworkInfo` [GH-1941](https://github.com/gophercloud/gophercloud/pull/1941)
+* Added `compute/v2/extensions/resetnetworkResetNetwork` [GH-1941](https://github.com/gophercloud/gophercloud/pull/1941)
 
 ## 0.10.0 (April 12, 2020)
 
