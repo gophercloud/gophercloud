@@ -80,6 +80,7 @@ func TestCreateProject(t *testing.T) {
 		Name:        "Red Team",
 		Description: "The team that is red",
 		Tags:        []string{"Red", "Team"},
+		Extra:       map[string]interface{}{"test": "old"},
 	}
 
 	actual, err := projects.Create(client.ServiceClient(), createOpts).Extract()
@@ -106,6 +107,7 @@ func TestUpdateProject(t *testing.T) {
 		Name:        "Bright Red Team",
 		Description: &description,
 		Tags:        &[]string{"Red"},
+		Extra:       map[string]interface{}{"test": "new"},
 	}
 
 	actual, err := projects.Update(client.ServiceClient(), "1234", updateOpts).Extract()

@@ -130,7 +130,21 @@ type CreateOpts struct {
 
 // ToProjectCreateMap formats a CreateOpts into a create request.
 func (opts CreateOpts) ToProjectCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "project")
+	b, err := gophercloud.BuildRequestBody(opts, "project")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		if v, ok := b["project"].(map[string]interface{}); ok {
+			for key, value := range opts.Extra {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
 }
 
 // Create creates a new Project.
@@ -190,7 +204,21 @@ type UpdateOpts struct {
 
 // ToUpdateCreateMap formats a UpdateOpts into an update request.
 func (opts UpdateOpts) ToProjectUpdateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "project")
+	b, err := gophercloud.BuildRequestBody(opts, "project")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Extra != nil {
+		if v, ok := b["project"].(map[string]interface{}); ok {
+			for key, value := range opts.Extra {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
 }
 
 // Update modifies the attributes of a project.
