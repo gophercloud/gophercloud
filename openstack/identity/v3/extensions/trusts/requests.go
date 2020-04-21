@@ -131,7 +131,7 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
-// Delete deletes a trust.
+// Delete deletes a Trust.
 func Delete(client *gophercloud.ServiceClient, trustID string) (r DeleteResult) {
 	resp, err := client.Delete(deleteURL(client, trustID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -153,9 +153,31 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// Get retrieves details on a single trust, by ID.
+// Get retrieves details on a single Trust, by ID.
 func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
 	resp, err := client.Get(resourceURL(client, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ListRoles lists roles delegated by a Trust.
+func ListRoles(client *gophercloud.ServiceClient, id string) pagination.Pager {
+	url := listRolesURL(client, id)
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return RolesPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
+// GetRole retrieves details on a single role delegated by a Trust.
+func GetRole(client *gophercloud.ServiceClient, id string, roleID string) (r GetRoleResult) {
+	resp, err := client.Get(getRoleURL(client, id, roleID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// CheckRole checks whether a role ID is delegated by a Trust.
+func CheckRole(client *gophercloud.ServiceClient, id string, roleID string) (r CheckRoleResult) {
+	resp, err := client.Head(getRoleURL(client, id, roleID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

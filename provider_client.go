@@ -523,16 +523,16 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 }
 
 func defaultOkCodes(method string) []int {
-	switch {
-	case method == "GET":
+	switch method {
+	case "GET", "HEAD":
 		return []int{200}
-	case method == "POST":
+	case "POST":
 		return []int{201, 202}
-	case method == "PUT":
+	case "PUT":
 		return []int{201, 202}
-	case method == "PATCH":
+	case "PATCH":
 		return []int{200, 202, 204}
-	case method == "DELETE":
+	case "DELETE":
 		return []int{202, 204}
 	}
 

@@ -114,6 +114,51 @@ const ListResponse = `
 }
 `
 
+const ListTrustRolesResponse = `
+{
+    "roles": [
+        {
+            "id": "c1648e",
+            "links": {
+                "self": "http://example.com/identity/v3/roles/c1648e"
+            },
+            "name": "manager"
+        },
+        {
+            "id": "ed7b78",
+            "links": {
+                "self": "http://example.com/identity/v3/roles/ed7b78"
+            },
+            "name": "member"
+        }
+    ]
+}
+`
+
+const GetTrustRoleResponse = `
+{
+    "role": {
+        "id": "c1648e",
+        "links": {
+            "self": "http://example.com/identity/v3/roles/c1648e"
+        },
+        "name": "manager"
+    }
+}
+`
+
+var FirstRole = trusts.Role{
+	ID:   "c1648e",
+	Name: "manager",
+}
+
+var SecondRole = trusts.Role{
+	ID:   "ed7b78",
+	Name: "member",
+}
+
+var ExpectedTrustRolesSlice = []trusts.Role{FirstRole, SecondRole}
+
 // HandleCreateTokenWithTrustID verifies that providing certain AuthOptions and Scope results in an expected JSON structure.
 func HandleCreateTokenWithTrustID(t *testing.T, options tokens.AuthOptionsBuilder, requestJSON string) {
 	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
@@ -133,8 +178,8 @@ func HandleCreateTokenWithTrustID(t *testing.T, options tokens.AuthOptionsBuilde
         "OS-TRUST:trust": {
             "id": "fe0aef",
             "impersonation": false,
-						"redelegated_trust_id": "3ba234",
-						"redelegation_count": 2,
+            "redelegated_trust_id": "3ba234",
+            "redelegation_count": 2,
             "links": {
                 "self": "http://example.com/identity/v3/trusts/fe0aef"
             },
@@ -244,5 +289,45 @@ func HandleListTrustsSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, ListResponse)
+	})
+}
+
+// HandleListTrustRolesSuccessfully creates an HTTP handler at `/OS-TRUST/trusts/987fe8/roles` on the
+// test handler mux that responds with a list trust roles.
+func HandleListTrustRolesSuccessfully(t *testing.T) {
+	testhelper.Mux.HandleFunc("/OS-TRUST/trusts/987fe8/roles", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "Accept", "application/json")
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListTrustRolesResponse)
+	})
+}
+
+// HandleGetTrustRoleSuccessfully creates an HTTP handler at `/OS-TRUST/trusts/987fe8/roles/c1648e` on the
+// test handler mux that responds with a trust role details.
+func HandleGetTrustRoleSuccessfully(t *testing.T) {
+	testhelper.Mux.HandleFunc("/OS-TRUST/trusts/987fe8/roles/c1648e", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "GET")
+		testhelper.TestHeader(t, r, "Accept", "application/json")
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetTrustRoleResponse)
+	})
+}
+
+// HandleCheckTrustRoleSuccessfully creates an HTTP handler at `/OS-TRUST/trusts/987fe8/roles/c1648e` on the
+// test handler mux that responds with a list trust roles.
+func HandleCheckTrustRoleSuccessfully(t *testing.T) {
+	testhelper.Mux.HandleFunc("/OS-TRUST/trusts/987fe8/roles/c1648e", func(w http.ResponseWriter, r *http.Request) {
+		testhelper.TestMethod(t, r, "HEAD")
+		testhelper.TestHeader(t, r, "Accept", "application/json")
+		testhelper.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+
+		w.WriteHeader(http.StatusOK)
 	})
 }
