@@ -353,6 +353,9 @@ var FirstProject = projects.Project{
 	ID:          "abcde",
 	Name:        "project 1",
 	ParentID:    "11111",
+	Extra: map[string]interface{}{
+		"links": map[string]interface{}{"self": "http://localhost:5000/identity/v3/projects/abcde"},
+	},
 }
 
 var SecondProject = projects.Project{
@@ -362,6 +365,9 @@ var SecondProject = projects.Project{
 	ID:          "bcdef",
 	Name:        "project 2",
 	ParentID:    "22222",
+	Extra: map[string]interface{}{
+		"links": map[string]interface{}{"self": "http://localhost:5000/identity/v3/projects/bcdef"},
+	},
 }
 
 var ExpectedProjectsSlice = []projects.Project{FirstProject, SecondProject}
