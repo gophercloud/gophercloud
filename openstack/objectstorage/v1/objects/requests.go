@@ -128,8 +128,9 @@ func Download(c *gophercloud.ServiceClient, containerName, objectName string, op
 	}
 
 	resp, err := c.Get(url, nil, &gophercloud.RequestOpts{
-		MoreHeaders: h,
-		OkCodes:     []int{200, 206, 304},
+		MoreHeaders:      h,
+		OkCodes:          []int{200, 206, 304},
+		KeepResponseBody: true,
 	})
 	r.Body, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
