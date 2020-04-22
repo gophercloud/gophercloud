@@ -28,6 +28,32 @@ type GetResult struct {
 	commonResult
 }
 
+// UpdateResult represents the result of a get operation. Call its Extract
+// method to interpret it as an Agent.
+type UpdateResult struct {
+	commonResult
+}
+
+// DeleteResult represents the result of a delete operation. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}
+
+// ScheduleDHCPNetworkResult represents the result of a schedule a network to
+// a DHCP agent operation. ExtractErr method to determine if the request
+// succeeded or failed.
+type ScheduleDHCPNetworkResult struct {
+	gophercloud.ErrResult
+}
+
+// RemoveDHCPNetworkResult represents the result of a remove a network from a
+// DHCP agent operation. ExtractErr method to determine if the request succeeded
+// or failed.
+type RemoveDHCPNetworkResult struct {
+	gophercloud.ErrResult
+}
+
 // Agent represents a Neutron agent.
 type Agent struct {
 	// ID is the id of the agent.
@@ -41,6 +67,10 @@ type Agent struct {
 
 	// Alive indicates whether agent is alive or not.
 	Alive bool `json:"alive"`
+
+	// ResourcesSynced indicates whether agent is synced or not.
+	// Not all agent types track resources via Placement.
+	ResourcesSynced bool `json:"resources_synced"`
 
 	// AvailabilityZone is a zone of the agent.
 	AvailabilityZone string `json:"availability_zone"`

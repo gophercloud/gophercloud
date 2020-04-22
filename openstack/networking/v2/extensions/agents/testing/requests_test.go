@@ -89,6 +89,52 @@ func TestGet(t *testing.T) {
 	})
 }
 
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, AgentUpdateRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, AgentsUpdateResult)
+	})
+
+	iTrue := true
+	description := "My OVS agent for OpenStack"
+	updateOpts := &agents.UpdateOpts{
+		Description:  &description,
+		AdminStateUp: &iTrue,
+	}
+	s, err := agents.Update(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, *s, Agent)
+}
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	err := agents.Delete(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
 func TestListDHCPNetworks(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -119,4 +165,43 @@ func TestListDHCPNetworks(t *testing.T) {
 	th.AssertDeepEquals(t, s[0].AvailabilityZoneHints, []string{})
 	th.AssertDeepEquals(t, s[0].Subnets, []string{"54d6f61d-db07-451c-9ab3-b9609b6b6f0b"})
 
+}
+
+func TestScheduleDHCPNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/dhcp-networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, ScheduleDHCPNetworkRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+	})
+
+	opts := &agents.ScheduleDHCPNetworkOpts{
+		NetworkID: "1ae075ca-708b-4e66-b4a7-b7698632f05f",
+	}
+	err := agents.ScheduleDHCPNetwork(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", opts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestRemoveDHCPNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/agents/43583cf5-472e-4dc8-af5b-6aed4c94ee3a/dhcp-networks/1ae075ca-708b-4e66-b4a7-b7698632f05f", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	err := agents.RemoveDHCPNetwork(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "1ae075ca-708b-4e66-b4a7-b7698632f05f").ExtractErr()
+	th.AssertNoErr(t, err)
 }
