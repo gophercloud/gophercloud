@@ -143,3 +143,19 @@ func (r ListDHCPNetworksResult) Extract() ([]networks.Network, error) {
 	err := r.ExtractInto(&s)
 	return s.Networks, err
 }
+
+// ListNetworkDHCPAgentsResult is the response from a List operation.
+// Call its Extract method to interpret it as networks.
+type ListNetworkDHCPAgentsResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets any ListNetworkDHCPAgentsResult as an array of agents.
+func (r ListNetworkDHCPAgentsResult) Extract() ([]Agent, error) {
+	var s struct {
+		Agents []Agent `json:"agents"`
+	}
+
+	err := r.ExtractInto(&s)
+	return s.Agents, err
+}
