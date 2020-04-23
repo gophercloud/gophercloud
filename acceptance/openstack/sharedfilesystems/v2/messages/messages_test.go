@@ -87,6 +87,10 @@ func TestMessageDelete(t *testing.T) {
 		t.Fatalf("Unable to extract messages: %v", err)
 	}
 
+	if len(allMessages) == 0 {
+		t.Skipf("No messages were found")
+	}
+
 	var messageID string
 	for _, listedMessage := range allMessages {
 		if listedMessage.RequestID != options.RequestID {
