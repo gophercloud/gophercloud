@@ -97,6 +97,18 @@ func HandleCreateSuccessfully(t *testing.T) {
 		})
 }
 
+// HandleCreateNoContent configures the test server to respond to a Create request with no content.
+func HandleCreateNoContent(t *testing.T) {
+	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/claims", QueueName),
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "POST")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestJSONRequest(t, r, CreateClaimRequest)
+
+			w.WriteHeader(http.StatusNoContent)
+		})
+}
+
 // HandleGetSuccessfully configures the test server to respond to a Get request.
 func HandleGetSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc(fmt.Sprintf("/v2/queues/%s/claims/%s", QueueName, ClaimID),

@@ -204,7 +204,6 @@ func (r *DownloadResult) ExtractContent() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	r.Body.Close()
 	return body, nil
 }
 

@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -100,6 +102,7 @@ func TestConcurrentReauth(t *testing.T) {
 
 	wg := new(sync.WaitGroup)
 	reqopts := new(gophercloud.RequestOpts)
+	reqopts.KeepResponseBody = true
 	reqopts.MoreHeaders = map[string]string{
 		"X-Auth-Token": prereauthTok,
 	}
@@ -277,6 +280,7 @@ func TestRequestThatCameDuringReauthWaitsUntilItIsCompleted(t *testing.T) {
 
 	wg := new(sync.WaitGroup)
 	reqopts := new(gophercloud.RequestOpts)
+	reqopts.KeepResponseBody = true
 	reqopts.MoreHeaders = map[string]string{
 		"X-Auth-Token": prereauthTok,
 	}
@@ -372,10 +376,11 @@ func TestRequestWithContext(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	p := &gophercloud.ProviderClient{Context: ctx}
 
-	res, err := p.Request("GET", ts.URL, &gophercloud.RequestOpts{})
+	res, err := p.Request("GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: true})
 	th.AssertNoErr(t, err)
 	_, err = ioutil.ReadAll(res.Body)
-	res.Body.Close()
+	th.AssertNoErr(t, err)
+	err = res.Body.Close()
 	th.AssertNoErr(t, err)
 
 	cancel()
@@ -386,4 +391,60 @@ func TestRequestWithContext(t *testing.T) {
 	if !strings.Contains(err.Error(), ctx.Err().Error()) {
 		t.Fatalf("expecting error to contain: %q, got %q", ctx.Err().Error(), err.Error())
 	}
+}
+
+func TestRequestConnectionReuse(t *testing.T) {
+	ts := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "OK")
+	}))
+
+	// an amount of iterations
+	var iter = 10000
+	// connections tracks an amount of connections made
+	var connections int64
+
+	ts.Config.ConnState = func(_ net.Conn, s http.ConnState) {
+		// track an amount of connections
+		if s == http.StateNew {
+			atomic.AddInt64(&connections, 1)
+		}
+	}
+	ts.Start()
+	defer ts.Close()
+
+	p := &gophercloud.ProviderClient{}
+	for i := 0; i < iter; i++ {
+		_, err := p.Request("GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: false})
+		th.AssertNoErr(t, err)
+	}
+
+	th.AssertEquals(t, int64(1), connections)
+}
+
+func TestRequestConnectionClose(t *testing.T) {
+	ts := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "OK")
+	}))
+
+	// an amount of iterations
+	var iter = 10
+	// connections tracks an amount of connections made
+	var connections int64
+
+	ts.Config.ConnState = func(_ net.Conn, s http.ConnState) {
+		// track an amount of connections
+		if s == http.StateNew {
+			atomic.AddInt64(&connections, 1)
+		}
+	}
+	ts.Start()
+	defer ts.Close()
+
+	p := &gophercloud.ProviderClient{}
+	for i := 0; i < iter; i++ {
+		_, err := p.Request("GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: true})
+		th.AssertNoErr(t, err)
+	}
+
+	th.AssertEquals(t, int64(iter), connections)
 }

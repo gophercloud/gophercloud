@@ -24,6 +24,23 @@ func TestCreate(t *testing.T) {
 	th.CheckDeepEquals(t, CreatedClaim, actual)
 }
 
+func TestCreateNoContent(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateNoContent(t)
+
+	createOpts := claims.CreateOpts{
+		TTL:   3600,
+		Grace: 3600,
+		Limit: 10,
+	}
+
+	actual, err := claims.Create(fake.ServiceClient(), QueueName, createOpts).Extract()
+	th.AssertNoErr(t, err)
+	var expected []claims.Messages
+	th.CheckDeepEquals(t, expected, actual)
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

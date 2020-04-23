@@ -181,8 +181,9 @@ func GetPayload(client *gophercloud.ServiceClient, id string, opts GetPayloadOpt
 
 	url := payloadURL(client, id)
 	resp, err := client.Get(url, nil, &gophercloud.RequestOpts{
-		MoreHeaders: h,
-		OkCodes:     []int{200},
+		MoreHeaders:      h,
+		OkCodes:          []int{200},
+		KeepResponseBody: true,
 	})
 	r.Body, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

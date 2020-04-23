@@ -30,7 +30,9 @@ func Stage(client *gophercloud.ServiceClient, id string, data io.Reader) (r Stag
 
 // Download retrieves an image.
 func Download(client *gophercloud.ServiceClient, id string) (r DownloadResult) {
-	resp, err := client.Get(downloadURL(client, id), nil, nil)
+	resp, err := client.Get(downloadURL(client, id), nil, &gophercloud.RequestOpts{
+		KeepResponseBody: true,
+	})
 	r.Body, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

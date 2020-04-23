@@ -168,12 +168,11 @@ func PopMessages(client *gophercloud.ServiceClient, queueName string, opts PopMe
 		}
 		url += query
 	}
-	result, err := client.Delete(url, &gophercloud.RequestOpts{
-		OkCodes: []int{200, 204},
+	resp, err := client.Delete(url, &gophercloud.RequestOpts{
+		JSONResponse: &r.Body,
+		OkCodes:      []int{200, 204},
 	})
-	r.Body = result.Body
-	r.Header = result.Header
-	r.Err = err
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
