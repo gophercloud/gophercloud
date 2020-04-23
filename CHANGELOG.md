@@ -4,6 +4,7 @@ UPGRADE NOTES
 
 * Object storage container and object names are now URL encoded [GH-1930](https://github.com/gophercloud/gophercloud/pull/1930)
 * All responses now have access to the returned headers. Please report any issues this has caused [GH-1942](https://github.com/gophercloud/gophercloud/pull/1942)
+* Changes have been made to the internal HTTP client to ensure response bodies are handled in a way that enables connections to be re-used more efficiently [GH-1952](https://github.com/gophercloud/gophercloud/pull/1952)
 
 IMPROVEMENTS
 
