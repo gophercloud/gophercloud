@@ -21,6 +21,7 @@ IMPROVEMENTS
 BUG FIXES
 
 * Changed`identity/v3/extensions/trusts.Trust.RemainingUses` from `bool` to `int` [GH-1939](https://github.com/gophercloud/gophercloud/pull/1939)
+* Change `identity/v3/applicationcredentials.CreateOpts.ExpiresAt` from string to time [GH-1937](https://github.com/gophercloud/gophercloud/pull/1937)
 
 ## 0.10.0 (April 12, 2020)
 
