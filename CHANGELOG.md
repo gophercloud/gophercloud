@@ -17,6 +17,21 @@ IMPROVEMENTS
 * Added `identity/v3/extensions/trusts.ListRoles` [GH-1939](https://github.com/gophercloud/gophercloud/pull/1939)
 * Added `identity/v3/extensions/trusts.GetRole` [GH-1939](https://github.com/gophercloud/gophercloud/pull/1939)
 * Added `identity/v3/extensions/trusts.CheckRole` [GH-1939](https://github.com/gophercloud/gophercloud/pull/1939)
+* Added `identity/v3/extensions/oauth1.Create` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.CreateConsumer` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.DeleteConsumer` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.ListConsumers` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.GetConsumer` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.UpdateConsumer` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.RequestToken` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.AuthorizeToken` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.CreateAccessToken` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.GetAccessToken` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.RevokeAccessToken` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.ListAccessTokens` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.ListAccessTokenRoles` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `identity/v3/extensions/oauth1.GetAccessTokenRole` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+
 
 BUG FIXES
 
