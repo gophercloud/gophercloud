@@ -73,7 +73,7 @@ func TestCreateTrust(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleCreateTrust(t)
 
-	expiresAt := time.Date(2019, 12, 1, 14, 0, 0, 999999999, time.UTC)
+	expiresAt := time.Date(2019, 12, 1, 14, 0, 0, 0, time.UTC)
 	result, err := trusts.Create(client.ServiceClient(), trusts.CreateOpts{
 		ExpiresAt:         &expiresAt,
 		AllowRedelegation: true,
@@ -88,9 +88,28 @@ func TestCreateTrust(t *testing.T) {
 	}).Extract()
 	th.AssertNoErr(t, err)
 
-	th.AssertEquals(t, "3422b7c113894f5d90665e1a79655e23", result.ID)
-	th.AssertEquals(t, false, result.Impersonation)
-	th.AssertEquals(t, 10, result.RedelegationCount)
+	th.AssertDeepEquals(t, CreatedTrust, *result)
+}
+
+func TestCreateTrustNoExpire(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateTrustNoExpire(t)
+
+	result, err := trusts.Create(client.ServiceClient(), trusts.CreateOpts{
+		AllowRedelegation: true,
+		ProjectID:         "9b71012f5a4a4aef9193f1995fe159b2",
+		Roles: []trusts.Role{
+			{
+				Name: "member",
+			},
+		},
+		TrusteeUserID: "ecb37e88cc86431c99d0332208cb6fbf",
+		TrustorUserID: "959ed913a32c4ec88c041c98e61cbbc3",
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, CreatedTrustNoExpire, *result)
 }
 
 func TestDeleteTrust(t *testing.T) {

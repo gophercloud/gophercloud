@@ -110,7 +110,7 @@ func TestCreateUnrestrictedApplicationCredential(t *testing.T) {
 			applicationcredentials.Role{ID: "31f87923ae4a4d119aa0b85dcdbeed13"},
 			applicationcredentials.Role{ID: "4494bc5bea1a4105ad7fbba6a7eb9ef4"},
 		},
-		ExpiresAt: "2019-03-12T12:12:12.000000",
+		ExpiresAt: &ApplationCredentialExpiresAt,
 	}
 
 	UnrestrictedApplicationCredentialResponse := UnrestrictedApplicationCredential

@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/applicationcredentials"
 	th "github.com/gophercloud/gophercloud/testhelper"
 	"github.com/gophercloud/gophercloud/testhelper/client"
@@ -60,7 +59,7 @@ const ListOutput = `
           "name": "network_viewer"
         }
       ],
-      "expires_at": "2019-03-12T12:12:12.000000",
+      "expires_at": "2019-03-12T12:12:12.123456",
       "unrestricted": true,
       "project_id": "53c2b94f63fb4f43a21b92d119ce549f",
       "id": "6b8cc7647da64166a4a3cc0c88ebbabb",
@@ -208,7 +207,7 @@ const CreateUnrestrictedRequest = `
         "id": "4494bc5bea1a4105ad7fbba6a7eb9ef4"
       }
     ],
-    "expires_at": "2019-03-12T12:12:12.000000",
+    "expires_at": "2019-03-12T12:12:12.123456",
     "name": "test2"
   }
 }
@@ -233,7 +232,7 @@ const CreateUnrestrictedResponse = `
         "name": "network_viewer"
       }
     ],
-    "expires_at": "2019-03-12T12:12:12.000000",
+    "expires_at": "2019-03-12T12:12:12.123456",
     "secret": "generated_secret",
     "unrestricted": true,
     "project_id": "53c2b94f63fb4f43a21b92d119ce549f",
@@ -326,7 +325,7 @@ var ApplicationCredentialNoSecretResponse = applicationcredentials.ApplicationCr
 	},
 }
 
-var ApplationCredentialExpiresAt, _ = time.Parse(gophercloud.RFC3339MilliNoZ, "2019-03-12T12:12:12.000000")
+var ApplationCredentialExpiresAt = time.Date(2019, 3, 12, 12, 12, 12, 123456000, time.UTC)
 var UnrestrictedApplicationCredential = applicationcredentials.ApplicationCredential{
 	ID:           "6b8cc7647da64166a4a3cc0c88ebbabb",
 	Name:         "test2",
