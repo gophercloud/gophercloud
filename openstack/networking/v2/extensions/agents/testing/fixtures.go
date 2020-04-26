@@ -54,6 +54,40 @@ const AgentsListResult = `
 }
 `
 
+// AgentUpdateRequest represents raw request to update an Agent.
+const AgentUpdateRequest = `
+{
+    "agent": {
+        "description": "My OVS agent for OpenStack",
+        "admin_state_up": true
+    }
+}
+`
+
+// Agent represents a sample Agent struct.
+var Agent = agents.Agent{
+	ID:              "43583cf5-472e-4dc8-af5b-6aed4c94ee3a",
+	AdminStateUp:    true,
+	AgentType:       "Open vSwitch agent",
+	Description:     "My OVS agent for OpenStack",
+	Alive:           true,
+	ResourcesSynced: true,
+	Binary:          "neutron-openvswitch-agent",
+	Configurations: map[string]interface{}{
+		"ovs_hybrid_plug":            false,
+		"datapath_type":              "system",
+		"vhostuser_socket_dir":       "/var/run/openvswitch",
+		"log_agent_heartbeats":       false,
+		"l2_population":              true,
+		"enable_distributed_routing": false,
+	},
+	CreatedAt:          time.Date(2017, 7, 26, 23, 2, 5, 0, time.UTC),
+	StartedAt:          time.Date(2018, 6, 26, 21, 46, 20, 0, time.UTC),
+	HeartbeatTimestamp: time.Date(2019, 1, 9, 11, 43, 01, 0, time.UTC),
+	Host:               "compute3",
+	Topic:              "N/A",
+}
+
 // Agent1 represents first unmarshalled address scope from the
 // AgentsListResult.
 var Agent1 = agents.Agent{
@@ -124,6 +158,35 @@ const AgentsGetResult = `
 }
 `
 
+// AgentsUpdateResult represents raw response for the Update request.
+const AgentsUpdateResult = `
+{
+    "agent": {
+        "binary": "neutron-openvswitch-agent",
+        "description": "My OVS agent for OpenStack",
+        "availability_zone": null,
+        "heartbeat_timestamp": "2019-01-09 11:43:01",
+        "admin_state_up": true,
+        "alive": true,
+        "id": "43583cf5-472e-4dc8-af5b-6aed4c94ee3a",
+        "topic": "N/A",
+        "host": "compute3",
+        "agent_type": "Open vSwitch agent",
+        "started_at": "2018-06-26 21:46:20",
+        "created_at": "2017-07-26 23:02:05",
+	"resources_synced": true,
+        "configurations": {
+            "ovs_hybrid_plug": false,
+            "datapath_type": "system",
+            "vhostuser_socket_dir": "/var/run/openvswitch",
+            "log_agent_heartbeats": false,
+            "l2_population": true,
+            "enable_distributed_routing": false
+        }
+    }
+}
+`
+
 // AgentDHCPNetworksListResult represents raw response for the ListDHCPNetworks request.
 const AgentDHCPNetworksListResult = `
 {
@@ -159,5 +222,12 @@ const AgentDHCPNetworksListResult = `
             "is_default": false
         }
     ]
+}
+`
+
+// ScheduleDHCPNetworkRequest represents raw request for the ScheduleDHCPNetwork request.
+const ScheduleDHCPNetworkRequest = `
+{
+    "network_id": "1ae075ca-708b-4e66-b4a7-b7698632f05f"
 }
 `
