@@ -31,6 +31,10 @@ IMPROVEMENTS
 * Added `identity/v3/extensions/oauth1.ListAccessTokens` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
 * Added `identity/v3/extensions/oauth1.ListAccessTokenRoles` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
 * Added `identity/v3/extensions/oauth1.GetAccessTokenRole` [GH-1935](https://github.com/gophercloud/gophercloud/pull/1935)
+* Added `networking/v2/extensions/agents.Update` [GH-1954](https://github.com/gophercloud/gophercloud/pull/1954)
+* Added `networking/v2/extensions/agents.Delete` [GH-1954](https://github.com/gophercloud/gophercloud/pull/1954)
+* Added `networking/v2/extensions/agents.ScheduleDHCPNetwork` [GH-1954](https://github.com/gophercloud/gophercloud/pull/1954)
+* Added `networking/v2/extensions/agents.RemoveDHCPNetwork` [GH-1954](https://github.com/gophercloud/gophercloud/pull/1954)
 
 
 BUG FIXES
