@@ -46,7 +46,7 @@ Create an execution
 		Description: "this is a description",
 	}
 
-	execution, err := executions.Create(mistralClient, opts).Extract()
+	execution, err := executions.Create(mistralClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
