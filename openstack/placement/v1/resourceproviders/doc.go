@@ -19,12 +19,12 @@ Example to list resource providers
 
 Example to create resource providers
 
-	opts := resourceproviders.CreateOpts{
+	createOpts := resourceproviders.CreateOpts{
 		Name: "new-rp",
 		UUID: "b99b3ab4-3aa6-4fba-b827-69b88b9c544a",
 	}
 
-	rp, err := resourceproviders.Create(placementClient, opts).Extract()
+	rp, err := resourceproviders.Create(placementClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

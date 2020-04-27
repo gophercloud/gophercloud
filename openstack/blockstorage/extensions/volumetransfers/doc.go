@@ -27,9 +27,9 @@ Example to List all Volume Transfer requests being an OpenStack admin
 Example to Create a Volume Transfer request
 
 	createOpts := volumetransfers.CreateOpts{
-                VolumeID: "uuid",
-		Name: "my-volume-transfer",
-        }
+		VolumeID: "uuid",
+		Name:	  "my-volume-transfer",
+	}
 
 	transfer, err := volumetransfers.Create(client, createOpts).Extract()
 	if err != nil {
