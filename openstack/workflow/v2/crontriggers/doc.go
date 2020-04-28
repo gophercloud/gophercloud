@@ -48,7 +48,7 @@ Create a cron trigger. This example will start the workflow "echo" each day at 8
 			"msg": "world",
 		},
 	}
-	crontrigger, err := crontriggers.Create(mistralClient, opts).Extract()
+	crontrigger, err := crontriggers.Create(mistralClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

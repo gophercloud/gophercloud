@@ -4,7 +4,7 @@ the OpenStack Clustering service.
 
 Example to Create a Node
 
-	opts := nodes.CreateOpts{
+	createOpts := nodes.CreateOpts{
 		ClusterID: "e395be1e-8d8e-43bb-bd6c-943eccf76a6d",
 		Metadata:  map[string]interface{}{},
 		Name:      "node-e395be1e-002",
@@ -12,7 +12,7 @@ Example to Create a Node
 		Role:      "",
 	}
 
-	node, err := nodes.Create(serviceClient, opts).Extract()
+	node, err := nodes.Create(serviceClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

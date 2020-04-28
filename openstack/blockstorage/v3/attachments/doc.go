@@ -28,13 +28,13 @@ Example to List Attachments
 
 Example to Create Attachment
 
-	opts := &attachments.CreateOpts{
+	createOpts := &attachments.CreateOpts{
 		InstanceiUUID: "uuid",
 		VolumeUUID: "uuid"
 	}
 
 	client.Microversion = "3.27"
-	attachment, err := attachments.Create(client, opts).Extract()
+	attachment, err := attachments.Create(client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

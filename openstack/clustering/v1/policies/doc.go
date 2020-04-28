@@ -25,7 +25,7 @@ Example to List Policies
 
 Example to Create a Policy
 
-	opts := policies.CreateOpts{
+	createOpts := policies.CreateOpts{
 		Name: "new_policy",
 		Spec: policies.Spec{
 			Description: "new policy description",
@@ -43,7 +43,7 @@ Example to Create a Policy
 		},
 	}
 
-	createdPolicy, err := policies.Create(client, opts).Extract()
+	createdPolicy, err := policies.Create(client, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

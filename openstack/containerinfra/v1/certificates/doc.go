@@ -13,12 +13,12 @@ Example to get certificates
 
 Example to create certificates
 
-	opts := certificates.CreateOpts{
+	createOpts := certificates.CreateOpts{
 		BayUUID:	"d564b18a-2890-4152-be3d-e05d784ff727",
 		CSR:		"-----BEGIN CERTIFICATE REQUEST-----\nMIIEfzCCAmcCAQAwFDESMBAGA1UEAxMJWW91ciBOYW1lMIICIjANBgkqhkiG9w0B\n-----END CERTIFICATE REQUEST-----\n",
 	}
 
-	response, err := certificates.Create(sc, opts).Extract()
+	response, err := certificates.Create(sc, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

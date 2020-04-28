@@ -4,12 +4,12 @@ OpenStack cloud.
 
 Example of Create Aggregate
 
-	opts := aggregates.CreateOpts{
+	createOpts := aggregates.CreateOpts{
 		Name:             "name",
 		AvailabilityZone: "london",
 	}
 
-	aggregate, err := aggregates.Create(computeClient, opts).Extract()
+	aggregate, err := aggregates.Create(computeClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}

@@ -56,7 +56,7 @@ Create a workflow
 		Namespace: "some-namespace",
 	}
 
-	workflow, err := workflows.Create(mistralClient, opts).Extract()
+	workflow, err := workflows.Create(mistralClient, createOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
