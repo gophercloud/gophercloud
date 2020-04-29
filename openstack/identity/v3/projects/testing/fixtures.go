@@ -22,7 +22,8 @@ const ListOutput = `
       "id": "1234",
       "name": "Red Team",
       "parent_id": null,
-      "tags": ["Red", "Team"]
+      "tags": ["Red", "Team"],
+      "test": "old"
     },
     {
       "is_domain": false,
@@ -31,7 +32,10 @@ const ListOutput = `
       "enabled": true,
       "id": "9876",
       "name": "Blue Team",
-      "parent_id": null
+      "parent_id": null,
+      "options": {
+            "immutable": true
+      }
     }
   ],
   "links": {
@@ -52,7 +56,8 @@ const GetOutput = `
 		"id": "1234",
 		"name": "Red Team",
 		"parent_id": null,
-		"tags": ["Red", "Team"]
+		"tags": ["Red", "Team"],
+		"test": "old"
 	}
 }
 `
@@ -63,7 +68,8 @@ const CreateRequest = `
   "project": {
 		"description": "The team that is red",
 		"name": "Red Team",
-		"tags": ["Red", "Team"]
+		"tags": ["Red", "Team"],
+		"test": "old"
   }
 }
 `
@@ -74,7 +80,8 @@ const UpdateRequest = `
   "project": {
 		"description": "The team that is bright red",
 		"name": "Bright Red Team",
-		"tags": ["Red"]
+		"tags": ["Red"],
+		"test": "new"
   }
 }
 `
@@ -90,7 +97,8 @@ const UpdateOutput = `
 		"id": "1234",
 		"name": "Bright Red Team",
 		"parent_id": null,
-		"tags": ["Red"]
+		"tags": ["Red"],
+		"test": "new"
 	}
 }
 `
@@ -105,6 +113,7 @@ var RedTeam = projects.Project{
 	Name:        "Red Team",
 	ParentID:    "",
 	Tags:        []string{"Red", "Team"},
+	Extra:       map[string]interface{}{"test": "old"},
 }
 
 // BlueTeam is a Project fixture.
@@ -116,6 +125,10 @@ var BlueTeam = projects.Project{
 	ID:          "9876",
 	Name:        "Blue Team",
 	ParentID:    "",
+	Extra:       make(map[string]interface{}),
+	Options: map[projects.Option]interface{}{
+		projects.Immutable: true,
+	},
 }
 
 // UpdatedRedTeam is a Project Fixture.
@@ -128,6 +141,7 @@ var UpdatedRedTeam = projects.Project{
 	Name:        "Bright Red Team",
 	ParentID:    "",
 	Tags:        []string{"Red"},
+	Extra:       map[string]interface{}{"test": "new"},
 }
 
 // ExpectedProjectSlice is the slice of projects expected to be returned from ListOutput.
