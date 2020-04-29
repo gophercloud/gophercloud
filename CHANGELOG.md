@@ -35,6 +35,13 @@ IMPROVEMENTS
 * Added `networking/v2/extensions/agents.Delete` [GH-1954](https://github.com/gophercloud/gophercloud/pull/1954)
 * Added `networking/v2/extensions/agents.ScheduleDHCPNetwork` [GH-1954](https://github.com/gophercloud/gophercloud/pull/1954)
 * Added `networking/v2/extensions/agents.RemoveDHCPNetwork` [GH-1954](https://github.com/gophercloud/gophercloud/pull/1954)
+* Added `identity/v3/projects.CreateOpts.Extra` [GH-1951](https://github.com/gophercloud/gophercloud/pull/1951)
+* Added `identity/v3/projects.CreateOpts.Options` [GH-1951](https://github.com/gophercloud/gophercloud/pull/1951)
+* Added `identity/v3/projects.UpdateOpts.Extra` [GH-1951](https://github.com/gophercloud/gophercloud/pull/1951)
+* Added `identity/v3/projects.UpdateOpts.Options` [GH-1951](https://github.com/gophercloud/gophercloud/pull/1951)
+* Added `identity/v3/projects.Project.Extra` [GH-1951](https://github.com/gophercloud/gophercloud/pull/1951)
+* Added `identity/v3/projects.Options.Options` [GH-1951](https://github.com/gophercloud/gophercloud/pull/1951)
+
 
 
 BUG FIXES
