@@ -27,8 +27,7 @@ func TestGetEndpointGroup(t *testing.T) {
 			    "filters": {
 				    "interface": "public",
 					"service_id": "1234",
-					"region_id": "5678",
-					"enabled": true
+					"region_id": "5678"
 			    },
 			    "name": "endpointgroup1",
 			    "description": "public endpoint group 1",
@@ -40,12 +39,10 @@ func TestGetEndpointGroup(t *testing.T) {
 		`)
 	})
 
-	enabled := true
 	filters := endpointgroups.EndpointFilter{
 		Availability: gophercloud.AvailabilityPublic,
 		ServiceID:    "1234",
 		RegionID:     "5678",
-		Enabled:      &enabled,
 	}
 
 	actual, err := endpointgroups.Get(client.ServiceClient(), "24").Extract()
@@ -80,7 +77,6 @@ func TestListEndpointGroups(t *testing.T) {
 						"interface": "public",
 						"service_id": "1234",
 						"region_id": "5678",
-						"enabled": true
 				    },
 				    "name": "endpointgroup1",
 				    "description": "public endpoint group 1",
@@ -114,12 +110,10 @@ func TestListEndpointGroups(t *testing.T) {
 		}
 
 		// Filters for endpointgroup1
-		enabled := true
 		filters1 := endpointgroups.EndpointFilter{
 			Availability: gophercloud.AvailabilityPublic,
 			ServiceID:    "1234",
 			RegionID:     "5678",
-			Enabled:      &enabled,
 		}
 
 		// Filters for endpointgroup1

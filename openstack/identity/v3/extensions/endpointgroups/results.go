@@ -37,9 +37,6 @@ type EndpointFilter struct {
 
 	// RegionID is the ID of the region to filter
 	RegionID string `json:"region_id,omitempty"`
-
-	// Enabled filters on enabled or disabled endpoints
-	Enabled *bool `json:"enabled,omitempty"`
 }
 
 // EndpointGroup represents a group of endpoints matching one or several filter
