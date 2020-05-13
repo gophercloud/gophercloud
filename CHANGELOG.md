@@ -42,12 +42,11 @@ IMPROVEMENTS
 * Added `identity/v3/projects.Project.Extra` [GH-1951](https://github.com/gophercloud/gophercloud/pull/1951)
 * Added `identity/v3/projects.Options.Options` [GH-1951](https://github.com/gophercloud/gophercloud/pull/1951)
 
-
-
 BUG FIXES
 
 * Changed`identity/v3/extensions/trusts.Trust.RemainingUses` from `bool` to `int` [GH-1939](https://github.com/gophercloud/gophercloud/pull/1939)
 * Changed `identity/v3/applicationcredentials.CreateOpts.ExpiresAt` from `string` to `*time.Time` [GH-1937](https://github.com/gophercloud/gophercloud/pull/1937)
+* Fixed issue with unmarshalling/decoding slices of composed structs [GH-1964](https://github.com/gophercloud/gophercloud/pull/1964)
 
 ## 0.10.0 (April 12, 2020)
 
