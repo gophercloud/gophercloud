@@ -173,6 +173,14 @@ func TestCreateImageNulls(t *testing.T) {
 		Schema:     schema,
 		Properties: properties,
 		SizeBytes:  sizeBytes,
+		OpenStackImageImportMethods: []string{
+			"glance-direct",
+			"web-download",
+		},
+		OpenStackImageStoreIDs: []string{
+			"123",
+			"456",
+		},
 	}
 
 	th.AssertDeepEquals(t, &expectedImage, actualImage)

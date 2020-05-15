@@ -174,8 +174,8 @@ func HandleImageCreationSuccessfully(t *testing.T) {
 			]
 		}`)
 
-		w.WriteHeader(http.StatusCreated)
 		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
 		fmt.Fprintf(w, `{
 			"status": "queued",
 			"name": "Ubuntu 12.10",
@@ -220,8 +220,10 @@ func HandleImageCreationSuccessfullyNulls(t *testing.T) {
 			]
 		}`)
 
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("OpenStack-image-import-methods", "glance-direct,web-download")
+		w.Header().Set("OpenStack-image-store-ids", "123,456")
 		w.WriteHeader(http.StatusCreated)
-		w.Header().Add("Content-Type", "application/json")
 		fmt.Fprintf(w, `{
 			"architecture": "x86_64",
 			"status": "queued",
@@ -254,8 +256,8 @@ func HandleImageGetSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fakeclient.TokenID)
 
-		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `{
 			"status": "active",
 			"name": "cirros-0.3.2-x86_64-disk",
@@ -332,8 +334,8 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 
 		th.AssertEquals(t, "application/openstack-images-v2.1-json-patch", r.Header.Get("Content-Type"))
 
-		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `{
 			"id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 			"name": "Fedora 17",
@@ -431,8 +433,8 @@ func HandleImageUpdatePropertiesSuccessfully(t *testing.T) {
 
 		th.AssertEquals(t, "application/openstack-images-v2.1-json-patch", r.Header.Get("Content-Type"))
 
-		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `{
 			"id": "da3b75d9-3f4a-40e7-8a2c-bfab23927dea",
 			"name": "Fedora 17",
