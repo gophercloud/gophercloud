@@ -313,7 +313,7 @@ func HandleListConsumers(t *testing.T) {
 var Token = oauth1.Token{
 	OAuthToken:       "29971f",
 	OAuthTokenSecret: "238eb8",
-	OAUthExpiresAt:   &tokenExpiresAt,
+	OAuthExpiresAt:   &tokenExpiresAt,
 }
 
 // HandleRequestToken creates an HTTP handler at `/OS-OAUTH1/request_token` on the
@@ -351,7 +351,7 @@ func HandleAuthorizeToken(t *testing.T) {
 var AccessToken = oauth1.Token{
 	OAuthToken:       "accd36",
 	OAuthTokenSecret: "aa47da",
-	OAUthExpiresAt:   &tokenExpiresAt,
+	OAuthExpiresAt:   &tokenExpiresAt,
 }
 
 // HandleCreateAccessToken creates an HTTP handler at `/OS-OAUTH1/access_token` on the
