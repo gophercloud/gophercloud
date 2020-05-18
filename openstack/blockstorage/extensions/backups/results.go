@@ -237,35 +237,35 @@ func (r ImportResult) ExtractInto(v interface{}) error {
 
 // ImportBackup contains all the information to import a Cinder Backup.
 type ImportBackup struct {
-	ID                  string             `json:"id"`
-	CreatedAt           time.Time          `json:"-"`
-	UpdatedAt           time.Time          `json:"-"`
-	VolumeID            string             `json:"volume_id"`
-	SnapshotID          *string            `json:"snapshot_id"`
-	Status              *string            `json:"status"`
-	Size                *int               `json:"size"`
-	ObjectCount         *int               `json:"object_count"`
-	Container           *string            `json:"container"`
-	ServiceMetadata     *string            `json:"service_metadata"`
-	Service             *string            `json:"service"`
-	Host                *string            `json:"host"`
-	UserID              string             `json:"user_id"`
-	DeletedAt           time.Time          `json:"-"`
-	DataTimestamp       time.Time          `json:"-"`
-	TempSnapshotID      *string            `json:"temp_snapshot_id"`
-	TempVolumeID        *string            `json:"temp_volume_id"`
-	RestoreVolumeID     *string            `json:"restore_volume_id"`
-	NumDependentBackups *int               `json:"num_dependent_backups"`
-	EncryptionKeyID     *string            `json:"encryption_key_id"`
-	ParentID            *string            `json:"parent_id"`
-	Deleted             bool               `json:"deleted"`
-	DisplayName         *string            `json:"display_name"`
-	DisplayDescription  *string            `json:"display_description"`
-	DriverInfo          interface{}        `json:"driver_info"`
-	FailReason          *string            `json:"fail_reason"`
-	ProjectID           string             `json:"project_id"`
-	Metadata            *map[string]string `json:"metadata"`
-	AvailabilityZone    *string            `json:"availability_zone"`
+	ID                  string            `json:"id"`
+	CreatedAt           time.Time         `json:"-"`
+	UpdatedAt           time.Time         `json:"-"`
+	VolumeID            string            `json:"volume_id"`
+	SnapshotID          *string           `json:"snapshot_id"`
+	Status              *string           `json:"status"`
+	Size                *int              `json:"size"`
+	ObjectCount         *int              `json:"object_count"`
+	Container           *string           `json:"container"`
+	ServiceMetadata     *string           `json:"service_metadata"`
+	Service             *string           `json:"service"`
+	Host                *string           `json:"host"`
+	UserID              string            `json:"user_id"`
+	DeletedAt           time.Time         `json:"-"`
+	DataTimestamp       time.Time         `json:"-"`
+	TempSnapshotID      *string           `json:"temp_snapshot_id"`
+	TempVolumeID        *string           `json:"temp_volume_id"`
+	RestoreVolumeID     *string           `json:"restore_volume_id"`
+	NumDependentBackups *int              `json:"num_dependent_backups"`
+	EncryptionKeyID     *string           `json:"encryption_key_id"`
+	ParentID            *string           `json:"parent_id"`
+	Deleted             bool              `json:"deleted"`
+	DisplayName         *string           `json:"display_name"`
+	DisplayDescription  *string           `json:"display_description"`
+	DriverInfo          interface{}       `json:"driver_info"`
+	FailReason          *string           `json:"fail_reason"`
+	ProjectID           string            `json:"project_id"`
+	Metadata            map[string]string `json:"metadata"`
+	AvailabilityZone    *string           `json:"availability_zone"`
 }
 
 // UnmarshalJSON converts our JSON API response into our backup struct
@@ -322,6 +322,10 @@ func (r ImportBackup) MarshalJSON() ([]byte, error) {
 	if r.DataTimestamp != (time.Time{}) {
 		v := r.DataTimestamp.Format(time.RFC3339)
 		t.DataTimestamp = &v
+	}
+
+	if r.Metadata == nil {
+		r.Metadata = make(map[string]string)
 	}
 
 	s := tmp{
