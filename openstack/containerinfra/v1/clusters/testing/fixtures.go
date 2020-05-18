@@ -53,7 +53,7 @@ var ExpectedCluster = clusters.Cluster{
 	FixedNetwork:       "private_network",
 	FixedSubnet:        "private_subnet",
 	HealthStatus:       "HEALTHY",
-	HealthStatusReason: "",
+	HealthStatusReason: map[string]interface{}{"api": "ok"},
 }
 
 var ExpectedCluster2 = clusters.Cluster{
@@ -88,7 +88,7 @@ var ExpectedCluster2 = clusters.Cluster{
 	FixedNetwork:       "private_network",
 	FixedSubnet:        "private_subnet",
 	HealthStatus:       "HEALTHY",
-	HealthStatusReason: "",
+	HealthStatusReason: map[string]interface{}{"api": "ok"},
 }
 
 var ExpectedClusterUUID = clusterUUID
@@ -155,7 +155,7 @@ var ClusterGetResponse = fmt.Sprintf(`
 		"fixed_network": "private_network",
 		"fixed_subnet": "private_subnet",
 		"health_status": "HEALTHY",
-		"health_status_reason": ""
+		"health_status_reason": {"api": "ok"}
 }`, clusterUUID)
 
 var ClusterListResponse = fmt.Sprintf(`
@@ -196,7 +196,8 @@ var ClusterListResponse = fmt.Sprintf(`
 			"floating_ip_enabled": true,
 			"fixed_network": "private_network",
 			"fixed_subnet": "private_subnet",
-			"health_status": "HEALTHY"
+			"health_status": "HEALTHY",
+			"health_status_reason": {"api": "ok"}
 		},
 		{
 			"api_address":"https://172.24.4.6:6443",
@@ -233,7 +234,8 @@ var ClusterListResponse = fmt.Sprintf(`
 			"floating_ip_enabled": true,
 			"fixed_network": "private_network",
 			"fixed_subnet": "private_subnet",
-			"health_status": "HEALTHY"
+			"health_status": "HEALTHY",
+			"health_status_reason": {"api": "ok"}
 		}
 	]
 }`, clusterUUID, clusterUUID2)
