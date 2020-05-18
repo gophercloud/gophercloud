@@ -1,5 +1,9 @@
 ## 0.12.0 (Unreleased)
 
+BUG FIXES
+
+* Changed `containerinfra/v1/clusters.Cluster.HealthStatusReason` from `string` to `map[string]interface{}` [GH-1968](https://github.com/gophercloud/gophercloud/pull/1968)
+
 ## 0.11.0 (May 14, 2020)
 
 UPGRADE NOTES
