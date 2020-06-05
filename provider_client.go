@@ -117,17 +117,9 @@ func (f *reauthFuture) Set(err error) {
 	close(f.done)
 }
 
-func (f *reauthFuture) Get(ctx context.Context) error {
-	if ctx == nil {
-		ctx = context.Background()
-	}
-
-	select {
-	case <-f.done:
-		return f.err
-	case <-ctx.Done():
-		return ctx.Err()
-	}
+func (f *reauthFuture) Get() error {
+	<-f.done
+	return f.err
 }
 
 // AuthenticatedHeaders returns a map of HTTP headers that are common for all
@@ -142,7 +134,7 @@ func (client *ProviderClient) AuthenticatedHeaders() (m map[string]string) {
 		ongoing := client.reauthmut.ongoing
 		client.reauthmut.Unlock()
 		if ongoing != nil {
-			_ = ongoing.Get(client.Context)
+			_ = ongoing.Get()
 		}
 	}
 	t := client.Token()
@@ -277,7 +269,7 @@ func (client *ProviderClient) Reauthenticate(previousToken string) error {
 
 	// If Reauthenticate is running elsewhere, wait for its result.
 	if ongoing != nil {
-		return ongoing.Get(client.Context)
+		return ongoing.Get()
 	}
 
 	// Perform the actual reauthentication.
