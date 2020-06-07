@@ -2,7 +2,7 @@
 
 UPGRADE NOTES
 
-The URL used in the `compute/v2/bootfromvolume` package has been changed from `os-volumes_boot` to `servers`.
+* The URL used in the `compute/v2/bootfromvolume` package has been changed from `os-volumes_boot` to `servers`.
 
 IMPROVEMENTS
 
