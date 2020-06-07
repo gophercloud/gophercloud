@@ -2,11 +2,11 @@
 
 UPGRADE NOTES
 
-* The URL used in the `compute/v2/bootfromvolume` package has been changed from `os-volumes_boot` to `servers`.
+* The URL used in the `compute/v2/extensions/bootfromvolume` package has been changed from `os-volumes_boot` to `servers`.
 
 IMPROVEMENTS
 
-* The URL used in the `compute/v2/bootfromvolume` package has been changed from `os-volumes_boot` to `servers` [GH-1973](https://github.com/gophercloud/gophercloud/pull/1973)
+* The URL used in the `compute/v2/extensions/bootfromvolume` package has been changed from `os-volumes_boot` to `servers` [GH-1973](https://github.com/gophercloud/gophercloud/pull/1973)
 
 BUG FIXES
 
