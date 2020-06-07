@@ -1,5 +1,13 @@
 ## 0.12.0 (Unreleased)
 
+UPGRADE NOTES
+
+The URL used in the `compute/v2/bootfromvolume` package has been changed from `os-volumes_boot` to `servers`.
+
+IMPROVEMENTS
+
+* The URL used in the `compute/v2/bootfromvolume` package has been changed from `os-volumes_boot` to `servers` [GH-1973](https://github.com/gophercloud/gophercloud/pull/1973)
+
 BUG FIXES
 
 * Changed `containerinfra/v1/clusters.Cluster.HealthStatusReason` from `string` to `map[string]interface{}` [GH-1968](https://github.com/gophercloud/gophercloud/pull/1968)
