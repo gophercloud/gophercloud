@@ -275,11 +275,17 @@ func (client *ProviderClient) Reauthenticate(previousToken string) error {
 	// can have that goroutine linger until all responseChannels have been sent.
 	// When GC has collected all sendings ends of the channel, our receiving end
 	// will be closed and the goroutine will end.
-	go func() {
-		for responseChannel := range messages {
+	//
+	// We give `messages` into the function as an argument instead of by closure
+	// to explicitly downcast it from a chan into a <-chan. This ensures that the
+	// sending side is correctly GCd. (This is defense in depth. The Go compiler
+	// seems to be smart enough to figure out on its own that the goroutine only
+	// receives from the channel.)
+	go func(messageSender <-chan chan<- error) {
+		for responseChannel := range messageSender {
 			responseChannel <- err
 		}
-	}()
+	}(messages)
 	return err
 }
 
