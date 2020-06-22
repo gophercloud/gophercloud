@@ -11,6 +11,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack"
+	baremetalHTTPBasic "github.com/gophercloud/gophercloud/openstack/baremetal/httpbasic"
 	baremetalNoAuth "github.com/gophercloud/gophercloud/openstack/baremetal/noauth"
 	blockstorageNoAuth "github.com/gophercloud/gophercloud/openstack/blockstorage/noauth"
 )
@@ -282,6 +283,17 @@ func NewBareMetalV1Client() (*gophercloud.ServiceClient, error) {
 func NewBareMetalV1NoAuthClient() (*gophercloud.ServiceClient, error) {
 	return baremetalNoAuth.NewBareMetalNoAuth(baremetalNoAuth.EndpointOpts{
 		IronicEndpoint: os.Getenv("IRONIC_ENDPOINT"),
+	})
+}
+
+// NewBareMetalV1HTTPBasic returns a *ServiceClient for making calls
+// to the OpenStack Bare Metal v1 API. An error will be returned
+// if authentication or client creation was not possible.
+func NewBareMetalV1HTTPBasic() (*gophercloud.ServiceClient, error) {
+	return baremetalHTTPBasic.NewBareMetalHTTPBasic(baremetalHTTPBasic.EndpointOpts{
+		IronicEndpoint:     os.Getenv("IRONIC_ENDPOINT"),
+		IronicUser:         os.Getenv("OS_USERNAME"),
+		IronicUserPassword: os.Getenv("OS_PASSWORD"),
 	})
 }
 
