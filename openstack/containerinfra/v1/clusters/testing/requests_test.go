@@ -33,6 +33,7 @@ func TestCreateCluster(t *testing.T) {
 		FloatingIPEnabled: gophercloud.Enabled,
 		FixedNetwork:      "private_network",
 		FixedSubnet:       "private_subnet",
+		MergeLabels:       gophercloud.Enabled,
 	}
 
 	sc := fake.ServiceClient()
