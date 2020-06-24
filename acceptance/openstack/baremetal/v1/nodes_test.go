@@ -84,6 +84,26 @@ func TestNodesRAIDConfig(t *testing.T) {
 	err = nodes.SetRAIDConfig(client, node.UUID, nodes.RAIDConfigOpts{
 		LogicalDisks: []nodes.LogicalDisk{
 			{
+				SizeGB:       &sizeGB,
+				IsRootVolume: &isTrue,
+				RAIDLevel:    nodes.RAID5,
+				Controller:   "software",
+				PhysicalDisks: []interface{}{
+					map[string]string{
+						"size": "> 100",
+					},
+					map[string]string{
+						"size": "> 100",
+					},
+				},
+			},
+		},
+	}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = nodes.SetRAIDConfig(client, node.UUID, nodes.RAIDConfigOpts{
+		LogicalDisks: []nodes.LogicalDisk{
+			{
 				SizeGB:                &sizeGB,
 				IsRootVolume:          &isTrue,
 				RAIDLevel:             nodes.RAID5,

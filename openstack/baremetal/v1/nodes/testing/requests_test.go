@@ -430,3 +430,95 @@ func TestSetRAIDConfigMaxSize(t *testing.T) {
 	err := nodes.SetRAIDConfig(c, "1234asdf", config).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestToRAIDConfigMap(t *testing.T) {
+	cases := []struct {
+		name     string
+		opts     nodes.RAIDConfigOpts
+		expected map[string]interface{}
+	}{
+		{
+			name: "LogicalDisks is empty",
+			opts: nodes.RAIDConfigOpts{},
+			expected: map[string]interface{}{
+				"logical_disks": nil,
+			},
+		},
+		{
+			name: "LogicalDisks is nil",
+			opts: nodes.RAIDConfigOpts{
+				LogicalDisks: nil,
+			},
+			expected: map[string]interface{}{
+				"logical_disks": nil,
+			},
+		},
+		{
+			name: "PhysicalDisks is []string",
+			opts: nodes.RAIDConfigOpts{
+				LogicalDisks: []nodes.LogicalDisk{
+					{
+						RAIDLevel:     "0",
+						VolumeName:    "root",
+						PhysicalDisks: []interface{}{"6I:1:5", "6I:1:6", "6I:1:7"},
+					},
+				},
+			},
+			expected: map[string]interface{}{
+				"logical_disks": []map[string]interface{}{
+					{
+						"raid_level":     "0",
+						"size_gb":        "MAX",
+						"volume_name":    "root",
+						"physical_disks": []interface{}{"6I:1:5", "6I:1:6", "6I:1:7"},
+					},
+				},
+			},
+		},
+		{
+			name: "PhysicalDisks is []map[string]string",
+			opts: nodes.RAIDConfigOpts{
+				LogicalDisks: []nodes.LogicalDisk{
+					{
+						RAIDLevel:  "0",
+						VolumeName: "root",
+						Controller: "software",
+						PhysicalDisks: []interface{}{
+							map[string]string{
+								"size": "> 100",
+							},
+							map[string]string{
+								"size": "> 100",
+							},
+						},
+					},
+				},
+			},
+			expected: map[string]interface{}{
+				"logical_disks": []map[string]interface{}{
+					{
+						"raid_level":  "0",
+						"size_gb":     "MAX",
+						"volume_name": "root",
+						"controller":  "software",
+						"physical_disks": []interface{}{
+							map[string]interface{}{
+								"size": "> 100",
+							},
+							map[string]interface{}{
+								"size": "> 100",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			got, _ := c.opts.ToRAIDConfigMap()
+			th.CheckDeepEquals(t, c.expected, got)
+		})
+	}
+}
