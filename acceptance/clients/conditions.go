@@ -74,6 +74,14 @@ func RequireNovaNetwork(t *testing.T) {
 	}
 }
 
+// RequireIronicHTTPBasic will restric a test to be only run in
+// environments that have Ironic using http_basic.
+func RequireIronicHTTPBasic(t *testing.T) {
+	if os.Getenv("IRONIC_ENDPOINT") == "" || os.Getenv("OS_USERNAME") == "" || os.Getenv("OS_PASSWORD") == "" {
+		t.Skip("this test requires Ironic using http_basic, set OS_USERNAME, OS_PASSWORD and IRONIC_ENDPOINT")
+	}
+}
+
 // SkipRelease will have the test be skipped on a certain
 // release. Releases are named such as 'stable/mitaka', master, etc.
 func SkipRelease(t *testing.T, release string) {
