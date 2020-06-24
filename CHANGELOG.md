@@ -8,6 +8,7 @@ IMPROVEMENTS
 
 * The URL used in the `compute/v2/extensions/bootfromvolume` package has been changed from `os-volumes_boot` to `servers` [GH-1973](https://github.com/gophercloud/gophercloud/pull/1973)
 * Modify `baremetal/v1/nodes.LogicalDisk.PhysicalDisks` type to support physical disks hints [GH-1982](https://github.com/gophercloud/gophercloud/pull/1982)
+* Added `baremetalintrospection/httpbasic` which provides an HTTP Basic Auth client [GH-1986](https://github.com/gophercloud/gophercloud/pull/1986)
 
 BUG FIXES
 
