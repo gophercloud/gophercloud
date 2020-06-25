@@ -1,4 +1,6 @@
-## 0.12.0 (Unreleased)
+## 0.13.0 (Unlreleased)
+
+## 0.12.0 (June 25, 2020)
 
 UPGRADE NOTES
 
