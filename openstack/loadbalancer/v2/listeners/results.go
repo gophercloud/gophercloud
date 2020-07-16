@@ -1,6 +1,9 @@
 package listeners
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/pools"
@@ -76,10 +79,33 @@ type Listener struct {
 	TimeoutTCPInspect int `json:"timeout_tcp_inspect"`
 
 	// A dictionary of optional headers to insert into the request before it is sent to the backend member.
-	InsertHeaders map[string]string `json:"insert_headers"`
+	InsertHeaders map[string]string `json:"-"`
 
 	// A list of IPv4, IPv6 or mix of both CIDRs
 	AllowedCIDRs []string `json:"allowed_cidrs"`
+}
+
+func (r *Listener) UnmarshalJSON(b []byte) error {
+	type tmp Listener
+	var s struct {
+		tmp
+		InsertHeaders map[string]interface{} `json:"insert_headers"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+
+	*r = Listener(s.tmp)
+
+	if s.InsertHeaders != nil {
+		r.InsertHeaders = make(map[string]string)
+		for k, v := range s.InsertHeaders {
+			r.InsertHeaders[k] = fmt.Sprintf("%v", v)
+		}
+	}
+
+	return nil
 }
 
 type Stats struct {

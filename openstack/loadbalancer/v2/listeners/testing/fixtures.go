@@ -49,7 +49,9 @@ const ListenersListBody = `
 			"timeout_member_connect": 5000,
 			"timeout_tcp_inspect": 0,
 			"insert_headers": {
-				"X-Forwarded-For": "true"
+				"X-Forwarded-For": "true",
+				"X-Forwarded-Port": false,
+				"X-Forwarded-To": true
 			},
 			"allowed_cidrs": [
 				"192.0.2.0/24",
@@ -81,7 +83,9 @@ const SingleListenerBody = `
 		"timeout_member_connect": 5000,
 		"timeout_tcp_inspect": 0,
 		"insert_headers": {
-			"X-Forwarded-For": "true"
+			"X-Forwarded-For": "true",
+			"X-Forwarded-Port": false,
+			"X-Forwarded-To": true
 		},
 		"allowed_cidrs": [
 			"192.0.2.0/24",
@@ -164,8 +168,12 @@ var (
 		TimeoutMemberData:      50000,
 		TimeoutMemberConnect:   5000,
 		TimeoutTCPInspect:      0,
-		InsertHeaders:          map[string]string{"X-Forwarded-For": "true"},
-		AllowedCIDRs:           []string{"192.0.2.0/24", "198.51.100.0/24"},
+		InsertHeaders: map[string]string{
+			"X-Forwarded-For":  "true",
+			"X-Forwarded-Port": "false",
+			"X-Forwarded-To":   "true",
+		},
+		AllowedCIDRs: []string{"192.0.2.0/24", "198.51.100.0/24"},
 	}
 	ListenerUpdated = listeners.Listener{
 		ID:                     "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
