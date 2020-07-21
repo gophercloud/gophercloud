@@ -1,4 +1,8 @@
-## 0.13.0 (Unlreleased)
+## 0.13.0 (Unreleased)
+
+IMPROVEMENTS
+
+* Added `ProtocolTerminatedHTTPS` as a valid listener protocol to `loadbalancer/v2/listeners` [GH-1992](https://github.com/gophercloud/gophercloud/pull/1992)
 
 ## 0.12.0 (June 25, 2020)
 
