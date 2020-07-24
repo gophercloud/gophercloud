@@ -328,17 +328,15 @@ func TestObjectCreateParamsWithSeek(t *testing.T) {
 }
 
 func TestCreateTempURL(t *testing.T) {
+	port := 33199
 	th.SetupHTTP()
+	th.SetupPersistentPortHTTP(t, port)
 	defer th.TeardownHTTP()
 
 	// Handle fetching of secret key inside of CreateTempURL
 	containerTesting.HandleGetContainerSuccessfully(t)
 	accountTesting.HandleGetAccountSuccessfully(t)
 	client := fake.ServiceClient()
-
-	// Get dynamically generated port number so that it can be used to compare final URL
-	port := strings.Split(client.Endpoint, ":")[2]
-	port = strings.TrimRight(port, "/")
 
 	// Append v1/ to client endpoint URL to be compliant with tempURL generator
 	client.Endpoint = client.Endpoint + "v1/"
@@ -347,6 +345,10 @@ func TestCreateTempURL(t *testing.T) {
 		TTL:    60,
 	})
 
+	sig := "71cec7484e318c4e7fae99369dd709014180165e"
+	expiry := "1595600453"
+	expectedURL := fmt.Sprintf("http://127.0.0.1:%v/v1/testContainer/testObject?temp_url_sig=%v&temp_url_expires=%v", port, sig, expiry)
+
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, "http://127.0.0.1:"+port+"/v1/testContainer/testObject?temp_url_sig=71cec7484e318c4e7fae99369dd709014180165e&temp_url_expires=1595600453", tempURL)
+	th.AssertEquals(t, expectedURL, tempURL)
 }
