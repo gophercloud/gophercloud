@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
 
+	accountTesting "github.com/gophercloud/gophercloud/openstack/objectstorage/v1/accounts/testing"
+	containerTesting "github.com/gophercloud/gophercloud/openstack/objectstorage/v1/containers/testing"
 	"github.com/gophercloud/gophercloud/openstack/objectstorage/v1/objects"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -322,4 +325,28 @@ func TestObjectCreateParamsWithSeek(t *testing.T) {
 
 	_, ok = headers["ETag"]
 	th.AssertEquals(t, true, ok)
+}
+
+func TestCreateTempURL(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	// Handle fetching of secret key inside of CreateTempURL
+	containerTesting.HandleGetContainerSuccessfully(t)
+	accountTesting.HandleGetAccountSuccessfully(t)
+	client := fake.ServiceClient()
+
+	// Get dynamically generated port number so that it can be used to compare final URL
+	port := strings.Split(client.Endpoint, ":")[2]
+	port = strings.TrimRight(port, "/")
+
+	// Append v1/ to client endpoint URL to be compliant with tempURL generator
+	client.Endpoint = client.Endpoint + "v1/"
+	tempURL, err := objects.CreateTempURL(client, "testContainer", "testObject", objects.CreateTempURLOpts{
+		Method: http.MethodGet,
+		TTL:    60,
+	})
+
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "http://127.0.0.1:"+port+"/v1/testContainer/testObject?temp_url_sig=71cec7484e318c4e7fae99369dd709014180165e&temp_url_expires=1595600453", tempURL)
 }

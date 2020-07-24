@@ -21,6 +21,7 @@ func HandleGetAccountSuccessfully(t *testing.T) {
 		w.Header().Set("X-Account-Bytes-Used", "14")
 		w.Header().Set("X-Account-Meta-Subject", "books")
 		w.Header().Set("Date", "Fri, 17 Jan 2014 16:09:56 UTC")
+		w.Header().Set("X-Account-Meta-Temp-URL-Key", "testsecret")
 
 		w.WriteHeader(http.StatusNoContent)
 	})
