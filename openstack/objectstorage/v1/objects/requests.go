@@ -456,6 +456,16 @@ type CreateTempURLOpts struct {
 	Split string
 }
 
+type nowFuncT func() time.Time
+
+// NowFunc allows to modify function for getting current time.
+// This offers developers flexibility to stub time in tests.
+var NowFunc nowFuncT
+
+func timeNow() time.Time {
+	return NowFunc().UTC()
+}
+
 // CreateTempURL is a function for creating a temporary URL for an object. It
 // allows users to have "GET" or "POST" access to a particular tenant's object
 // for a limited amount of time.
@@ -464,7 +474,7 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 		opts.Split = "/v1/"
 	}
 	duration := time.Duration(opts.TTL) * time.Second
-	expiry := time.Now().Add(duration).Unix()
+	expiry := timeNow().Add(duration).Unix()
 	getHeader, err := containers.Get(c, url.QueryEscape(containerName), nil).Extract()
 	if err != nil {
 		return "", err
