@@ -338,6 +338,10 @@ func TestCreateTempURL(t *testing.T) {
 	accountTesting.HandleGetAccountSuccessfully(t)
 	client := fake.ServiceClient()
 
+	objects.NowFunc = func() time.Time {
+		return time.Date(2020, 07, 01, 01, 12, 00, 00, time.UTC)
+	}
+
 	// Append v1/ to client endpoint URL to be compliant with tempURL generator
 	client.Endpoint = client.Endpoint + "v1/"
 	tempURL, err := objects.CreateTempURL(client, "testContainer", "testObject", objects.CreateTempURLOpts{
