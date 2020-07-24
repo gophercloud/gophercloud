@@ -344,14 +344,14 @@ func TestCreateTempURL(t *testing.T) {
 
 	// Append v1/ to client endpoint URL to be compliant with tempURL generator
 	client.Endpoint = client.Endpoint + "v1/"
-	tempURL, err := objects.CreateTempURL(client, "testContainer", "testObject", objects.CreateTempURLOpts{
+	tempURL, err := objects.CreateTempURL(client, "testContainer", "testObject/testFile.txt", objects.CreateTempURLOpts{
 		Method: http.MethodGet,
 		TTL:    60,
 	})
 
-	sig := "71cec7484e318c4e7fae99369dd709014180165e"
-	expiry := "1595600453"
-	expectedURL := fmt.Sprintf("http://127.0.0.1:%v/v1/testContainer/testObject?temp_url_sig=%v&temp_url_expires=%v", port, sig, expiry)
+	sig := "89be454a9c7e2e9f3f50a8441815e0b5801cba5b"
+	expiry := "1593565980"
+	expectedURL := fmt.Sprintf("http://127.0.0.1:%v/v1/testContainer/testObject/testFile.txt?temp_url_sig=%v&temp_url_expires=%v", port, sig, expiry)
 
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, expectedURL, tempURL)
