@@ -479,7 +479,7 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 		tempURLKey = getHeader.TempURLKey
 	}
 	secretKey := []byte(tempURLKey)
-	url := getURL(c, url.QueryEscape(containerName), url.QueryEscape(objectName))
+	url := getURL(c, containerName, objectName)
 	splitPath := strings.Split(url, opts.Split)
 	baseURL, objectPath := splitPath[0], splitPath[1]
 	objectPath = opts.Split + objectPath
