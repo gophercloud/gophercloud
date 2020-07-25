@@ -328,7 +328,7 @@ func TestObjectCreateParamsWithSeek(t *testing.T) {
 }
 
 func TestCreateTempURL(t *testing.T) {
-	port := 33199
+	port := 33200
 	th.SetupHTTP()
 	th.SetupPersistentPortHTTP(t, port)
 	defer th.TeardownHTTP()
