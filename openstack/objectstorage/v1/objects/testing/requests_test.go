@@ -332,6 +332,7 @@ func TestCreateTempURL(t *testing.T) {
 	th.SetupHTTP()
 	th.SetupPersistentPortHTTP(t, port)
 	defer th.TeardownHTTP()
+	defer objects.ResetClockImplementation()
 
 	// Handle fetching of secret key inside of CreateTempURL
 	containerTesting.HandleGetContainerSuccessfully(t)

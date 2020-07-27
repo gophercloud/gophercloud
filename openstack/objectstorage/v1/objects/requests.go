@@ -40,6 +40,10 @@ type ListOpts struct {
 	Path      string `q:"path"`
 }
 
+func init() {
+	ResetClockImplementation()
+}
+
 // ToObjectListParams formats a ListOpts into a query string and boolean
 // representing whether to list complete information for each object.
 func (opts ListOpts) ToObjectListParams() (bool, string, error) {
@@ -464,6 +468,14 @@ var NowFunc nowFuncT
 
 func timeNow() time.Time {
 	return NowFunc().UTC()
+}
+
+// ResetClockImplementation resets implementation of Time.
+// Used only for testing.
+func ResetClockImplementation() {
+	NowFunc = func() time.Time {
+		return time.Now()
+	}
 }
 
 // CreateTempURL is a function for creating a temporary URL for an object. It
