@@ -4,6 +4,8 @@ package v1
 
 import (
 	"bytes"
+	"io/ioutil"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -81,6 +83,25 @@ func TestObjects(t *testing.T) {
 		t.Fatalf("Unable to extract object info: %v", err)
 	}
 	th.AssertEquals(t, len(ois), len(oNames))
+
+	// Create temporary URL, download its contents and compare with what was originally created.
+	// Downloading the URL validates it (this cannot be done in unit tests).
+	objURLs := make([]string, numObjects)
+	for i := 0; i < numObjects; i++ {
+		objURLs[i], err = objects.CreateTempURL(client, cName, oNames[i], objects.CreateTempURLOpts{
+			Method: http.MethodGet,
+			TTL:    180,
+		})
+		th.AssertNoErr(t, err)
+
+		resp, err := http.Get(objURLs[i])
+		th.AssertNoErr(t, err)
+		defer resp.Body.Close()
+
+		body, err := ioutil.ReadAll(resp.Body)
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, oContents[i], body)
+	}
 
 	// Copy the contents of one object to another.
 	copyOpts := objects.CopyOpts{
