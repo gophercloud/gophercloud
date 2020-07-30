@@ -96,11 +96,11 @@ func TestObjects(t *testing.T) {
 
 		resp, err := http.Get(objURLs[i])
 		th.AssertNoErr(t, err)
-		defer resp.Body.Close()
 
 		body, err := ioutil.ReadAll(resp.Body)
 		th.AssertNoErr(t, err)
 		th.AssertEquals(t, oContents[i], body)
+		resp.Body.Close()
 	}
 
 	// Copy the contents of one object to another.
