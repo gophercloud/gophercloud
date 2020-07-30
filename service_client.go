@@ -48,6 +48,9 @@ func (client *ServiceClient) ServiceURL(parts ...string) string {
 }
 
 func (client *ServiceClient) initReqOpts(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) {
+	if opts == nil {
+		opts = new(RequestOpts)
+	}
 	if v, ok := (JSONBody).(io.Reader); ok {
 		opts.RawBody = v
 	} else if JSONBody != nil {
@@ -69,54 +72,36 @@ func (client *ServiceClient) initReqOpts(url string, JSONBody interface{}, JSONR
 
 // Get calls `Request` with the "GET" HTTP verb.
 func (client *ServiceClient) Get(url string, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = new(RequestOpts)
-	}
 	client.initReqOpts(url, nil, JSONResponse, opts)
 	return client.Request("GET", url, opts)
 }
 
 // Post calls `Request` with the "POST" HTTP verb.
 func (client *ServiceClient) Post(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = new(RequestOpts)
-	}
 	client.initReqOpts(url, JSONBody, JSONResponse, opts)
 	return client.Request("POST", url, opts)
 }
 
 // Put calls `Request` with the "PUT" HTTP verb.
 func (client *ServiceClient) Put(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = new(RequestOpts)
-	}
 	client.initReqOpts(url, JSONBody, JSONResponse, opts)
 	return client.Request("PUT", url, opts)
 }
 
 // Patch calls `Request` with the "PATCH" HTTP verb.
 func (client *ServiceClient) Patch(url string, JSONBody interface{}, JSONResponse interface{}, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = new(RequestOpts)
-	}
 	client.initReqOpts(url, JSONBody, JSONResponse, opts)
 	return client.Request("PATCH", url, opts)
 }
 
 // Delete calls `Request` with the "DELETE" HTTP verb.
 func (client *ServiceClient) Delete(url string, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = new(RequestOpts)
-	}
 	client.initReqOpts(url, nil, nil, opts)
 	return client.Request("DELETE", url, opts)
 }
 
 // Head calls `Request` with the "HEAD" HTTP verb.
 func (client *ServiceClient) Head(url string, opts *RequestOpts) (*http.Response, error) {
-	if opts == nil {
-		opts = new(RequestOpts)
-	}
 	client.initReqOpts(url, nil, nil, opts)
 	return client.Request("HEAD", url, opts)
 }
