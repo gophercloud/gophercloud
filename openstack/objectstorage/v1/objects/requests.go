@@ -40,10 +40,6 @@ type ListOpts struct {
 	Path      string `q:"path"`
 }
 
-func init() {
-	ResetClockImplementation()
-}
-
 // ToObjectListParams formats a ListOpts into a query string and boolean
 // representing whether to list complete information for each object.
 func (opts ListOpts) ToObjectListParams() (bool, string, error) {
@@ -458,24 +454,9 @@ type CreateTempURLOpts struct {
 	// the object path is used in the hash, the object URL needs to be parsed. If
 	// empty, the default OpenStack URL split point will be used ("/v1/").
 	Split string
-}
 
-type nowFuncT func() time.Time
-
-// NowFunc allows to modify function for getting current time.
-// This offers developers flexibility to stub time in tests.
-var NowFunc nowFuncT
-
-func timeNow() time.Time {
-	return NowFunc().UTC()
-}
-
-// ResetClockImplementation resets implementation of Time.
-// Used only for testing.
-func ResetClockImplementation() {
-	NowFunc = func() time.Time {
-		return time.Now()
-	}
+	// Timestamp is a timestamp to calculate Temp URL signature. Optional.
+	Timestamp time.Time
 }
 
 // CreateTempURL is a function for creating a temporary URL for an object. It
@@ -485,8 +466,17 @@ func CreateTempURL(c *gophercloud.ServiceClient, containerName, objectName strin
 	if opts.Split == "" {
 		opts.Split = "/v1/"
 	}
+
+	// Initialize time if it was not passed as opts
+	var date time.Time
+	if opts.Timestamp.IsZero() {
+		date = time.Now().UTC()
+	} else {
+		date = opts.Timestamp
+	}
+
 	duration := time.Duration(opts.TTL) * time.Second
-	expiry := timeNow().Add(duration).Unix()
+	expiry := date.Add(duration).Unix()
 	getHeader, err := containers.Get(c, url.QueryEscape(containerName), nil).Extract()
 	if err != nil {
 		return "", err

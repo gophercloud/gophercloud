@@ -332,22 +332,18 @@ func TestCreateTempURL(t *testing.T) {
 	th.SetupHTTP()
 	th.SetupPersistentPortHTTP(t, port)
 	defer th.TeardownHTTP()
-	defer objects.ResetClockImplementation()
 
 	// Handle fetching of secret key inside of CreateTempURL
 	containerTesting.HandleGetContainerSuccessfully(t)
 	accountTesting.HandleGetAccountSuccessfully(t)
 	client := fake.ServiceClient()
 
-	objects.NowFunc = func() time.Time {
-		return time.Date(2020, 07, 01, 01, 12, 00, 00, time.UTC)
-	}
-
 	// Append v1/ to client endpoint URL to be compliant with tempURL generator
 	client.Endpoint = client.Endpoint + "v1/"
 	tempURL, err := objects.CreateTempURL(client, "testContainer", "testObject/testFile.txt", objects.CreateTempURLOpts{
-		Method: http.MethodGet,
-		TTL:    60,
+		Method:    http.MethodGet,
+		TTL:       60,
+		Timestamp: time.Date(2020, 07, 01, 01, 12, 00, 00, time.UTC),
 	})
 
 	sig := "89be454a9c7e2e9f3f50a8441815e0b5801cba5b"
