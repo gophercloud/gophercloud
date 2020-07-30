@@ -99,7 +99,7 @@ func TestObjects(t *testing.T) {
 
 		body, err := ioutil.ReadAll(resp.Body)
 		th.AssertNoErr(t, err)
-		th.AssertEquals(t, oContents[i].Bytes(), body)
+		th.AssertDeepEquals(t, oContents[i].Bytes(), body)
 		resp.Body.Close()
 	}
 
