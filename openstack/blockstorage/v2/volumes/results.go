@@ -95,8 +95,8 @@ func (r *Volume) UnmarshalJSON(b []byte) error {
 
 	var s1 struct{
 		tmp
-		CreatedAt time.Time `json: "created_at"`
-		UpdatedAt time.Time `json: "updated_at"`
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
 	}
 	err = json.Unmarshal(b, &s1)
 	if err != nil {
