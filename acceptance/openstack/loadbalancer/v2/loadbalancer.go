@@ -56,6 +56,50 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 	return listener, nil
 }
 
+// CreateListenerHTTP will create an HTTP-based listener for a given load
+// balancer on a random port with a random name. An error will be returned
+// if the listener could not be created.
+func CreateListenerHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalancers.LoadBalancer) (*listeners.Listener, error) {
+	listenerName := tools.RandomString("TESTACCT-", 8)
+	listenerDescription := tools.RandomString("TESTACCT-DESC-", 8)
+	listenerPort := tools.RandomInt(1, 100)
+
+	t.Logf("Attempting to create listener %s on port %d", listenerName, listenerPort)
+
+	headers := map[string]string{
+		"X-Forwarded-For": "true",
+	}
+
+	createOpts := listeners.CreateOpts{
+		Name:           listenerName,
+		Description:    listenerDescription,
+		LoadbalancerID: lb.ID,
+		InsertHeaders:  headers,
+		Protocol:       listeners.ProtocolHTTP,
+		ProtocolPort:   listenerPort,
+	}
+
+	listener, err := listeners.Create(client, createOpts).Extract()
+	if err != nil {
+		return listener, err
+	}
+
+	t.Logf("Successfully created listener %s", listenerName)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		return listener, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
+	}
+
+	th.AssertEquals(t, listener.Name, listenerName)
+	th.AssertEquals(t, listener.Description, listenerDescription)
+	th.AssertEquals(t, listener.Loadbalancers[0].ID, lb.ID)
+	th.AssertEquals(t, listener.Protocol, string(listeners.ProtocolHTTP))
+	th.AssertEquals(t, listener.ProtocolPort, listenerPort)
+	th.AssertDeepEquals(t, listener.InsertHeaders, headers)
+
+	return listener, nil
+}
+
 // CreateLoadBalancer will create a load balancer with a random name on a given
 // subnet. An error will be returned if the loadbalancer could not be created.
 func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetID string, tags []string) (*loadbalancers.LoadBalancer, error) {
@@ -208,6 +252,43 @@ func CreatePool(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalance
 	th.AssertEquals(t, pool.Name, poolName)
 	th.AssertEquals(t, pool.Description, poolDescription)
 	th.AssertEquals(t, pool.Protocol, string(pools.ProtocolTCP))
+	th.AssertEquals(t, pool.Loadbalancers[0].ID, lb.ID)
+	th.AssertEquals(t, pool.LBMethod, string(pools.LBMethodLeastConnections))
+
+	return pool, nil
+}
+
+// CreatePoolHTTP will create an HTTP-based pool with a random name with a
+// specified listener and loadbalancer. An error will be returned if the pool
+// could not be created.
+func CreatePoolHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalancers.LoadBalancer) (*pools.Pool, error) {
+	poolName := tools.RandomString("TESTACCT-", 8)
+	poolDescription := tools.RandomString("TESTACCT-DESC-", 8)
+
+	t.Logf("Attempting to create pool %s", poolName)
+
+	createOpts := pools.CreateOpts{
+		Name:           poolName,
+		Description:    poolDescription,
+		Protocol:       pools.ProtocolHTTP,
+		LoadbalancerID: lb.ID,
+		LBMethod:       pools.LBMethodLeastConnections,
+	}
+
+	pool, err := pools.Create(client, createOpts).Extract()
+	if err != nil {
+		return pool, err
+	}
+
+	t.Logf("Successfully created pool %s", poolName)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+		return pool, fmt.Errorf("Timed out waiting for loadbalancer to become active: %s", err)
+	}
+
+	th.AssertEquals(t, pool.Name, poolName)
+	th.AssertEquals(t, pool.Description, poolDescription)
+	th.AssertEquals(t, pool.Protocol, string(pools.ProtocolHTTP))
 	th.AssertEquals(t, pool.Loadbalancers[0].ID, lb.ID)
 	th.AssertEquals(t, pool.LBMethod, string(pools.LBMethodLeastConnections))
 
