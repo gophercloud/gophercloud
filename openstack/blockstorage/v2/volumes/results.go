@@ -85,15 +85,28 @@ func (r *Volume) UnmarshalJSON(b []byte) error {
 		UpdatedAt gophercloud.JSONRFC3339MilliNoZ `json:"updated_at"`
 	}
 	err := json.Unmarshal(b, &s)
+	if err == nil {
+		*r = Volume(s.tmp)
+		r.CreatedAt = time.Time(s.CreatedAt)
+		r.UpdatedAt = time.Time(s.UpdatedAt)
+
+		return nil
+	}
+
+	var s1 struct{
+		tmp
+		CreatedAt time.Time `json: "created_at"`
+		UpdatedAt time.Time `json: "updated_at"`
+	}
+	err = json.Unmarshal(b, &s1)
 	if err != nil {
 		return err
 	}
-	*r = Volume(s.tmp)
+	*r = Volume(s1.tmp)
+	r.CreatedAt = time.Time(s1.CreatedAt)
+	r.UpdatedAt = time.Time(s1.UpdatedAt)
 
-	r.CreatedAt = time.Time(s.CreatedAt)
-	r.UpdatedAt = time.Time(s.UpdatedAt)
-
-	return err
+	return nil
 }
 
 // VolumePage is a pagination.pager that is returned from a call to the List function.
