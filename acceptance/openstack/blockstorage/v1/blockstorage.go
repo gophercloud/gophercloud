@@ -104,8 +104,8 @@ func DeleteSnapshotshot(t *testing.T, client *gophercloud.ServiceClient, snapsho
 	}
 
 	// Volumes can't be deleted until their snapshots have been,
-	// so block up to 120 seconds for the snapshot to delete.
-	err = gophercloud.WaitFor(120, func() (bool, error) {
+	// so block until the snapshot has been deleted.
+	err = tools.WaitFor(func() (bool, error) {
 		_, err := snapshots.Get(client, snapshot.ID).Extract()
 		if err != nil {
 			return true, nil

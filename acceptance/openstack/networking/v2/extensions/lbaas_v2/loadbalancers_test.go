@@ -54,7 +54,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	_, err = loadbalancers.Update(client, lb.ID, updateLoadBalancerOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
@@ -87,7 +87,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	_, err = listeners.Update(client, listener.ID, updateListenerOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
@@ -111,7 +111,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	_, err = l7policies.Update(client, policy.ID, updateL7policyOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
@@ -144,7 +144,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	_, err = l7policies.UpdateRule(client, policy.ID, rule.ID, updateL7ruleOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
@@ -167,7 +167,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	_, err = pools.Update(client, pool.ID, updatePoolOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
@@ -188,7 +188,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	_, err = l7policies.Update(client, policy.ID, updateL7policyOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
@@ -213,7 +213,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	_, err = listeners.Update(client, listener.ID, updateListenerOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
@@ -232,7 +232,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	_, err = listeners.Update(client, listener.ID, updateListenerOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
@@ -257,7 +257,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	_, err = pools.UpdateMember(client, pool.ID, member.ID, updateMemberOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 
@@ -282,7 +282,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	_, err = monitors.Update(client, monitor.ID, updateMonitorOpts).Extract()
 	th.AssertNoErr(t, err)
 
-	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE", loadbalancerActiveTimeoutSeconds); err != nil {
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
 		t.Fatalf("Timed out waiting for loadbalancer to become active")
 	}
 

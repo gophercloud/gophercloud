@@ -36,7 +36,7 @@ func CreateFirewall(t *testing.T, client *gophercloud.ServiceClient, policyID st
 	}
 
 	t.Logf("Waiting for firewall to become active.")
-	if err := WaitForFirewallState(client, firewall.ID, "ACTIVE", 60); err != nil {
+	if err := WaitForFirewallState(client, firewall.ID, "ACTIVE"); err != nil {
 		return firewall, err
 	}
 
@@ -74,7 +74,7 @@ func CreateFirewallOnRouter(t *testing.T, client *gophercloud.ServiceClient, pol
 	}
 
 	t.Logf("Waiting for firewall to become active.")
-	if err := WaitForFirewallState(client, firewall.ID, "ACTIVE", 60); err != nil {
+	if err := WaitForFirewallState(client, firewall.ID, "ACTIVE"); err != nil {
 		return firewall, err
 	}
 
@@ -168,7 +168,7 @@ func DeleteFirewall(t *testing.T, client *gophercloud.ServiceClient, firewallID 
 	}
 
 	t.Logf("Waiting for firewall to delete.")
-	if err := WaitForFirewallState(client, firewallID, "DELETED", 60); err != nil {
+	if err := WaitForFirewallState(client, firewallID, "DELETED"); err != nil {
 		t.Logf("Unable to delete firewall: %s", firewallID)
 	}
 
@@ -204,8 +204,8 @@ func DeleteRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) 
 }
 
 // WaitForFirewallState will wait until a firewall reaches a given state.
-func WaitForFirewallState(client *gophercloud.ServiceClient, firewallID, status string, secs int) error {
-	return gophercloud.WaitFor(secs, func() (bool, error) {
+func WaitForFirewallState(client *gophercloud.ServiceClient, firewallID, status string) error {
+	return tools.WaitFor(func() (bool, error) {
 		current, err := firewalls.Get(client, firewallID).Extract()
 		if err != nil {
 			if httpStatus, ok := err.(gophercloud.ErrDefault404); ok {

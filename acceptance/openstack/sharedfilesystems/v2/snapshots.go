@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/sharedfilesystems/v2/snapshots"
 )
 
@@ -28,7 +29,7 @@ func CreateSnapshot(t *testing.T, client *gophercloud.ServiceClient, shareID str
 		return nil, err
 	}
 
-	err = waitForSnapshotStatus(t, client, snapshot.ID, "available", 600)
+	err = waitForSnapshotStatus(t, client, snapshot.ID, "available")
 	if err != nil {
 		t.Logf("Failed to get %s snapshot status", snapshot.ID)
 		return snapshot, err
@@ -56,7 +57,7 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 		t.Errorf("Unable to delete snapshot %s: %v", snapshot.ID, err)
 	}
 
-	err = waitForSnapshotStatus(t, client, snapshot.ID, "deleted", 600)
+	err = waitForSnapshotStatus(t, client, snapshot.ID, "deleted")
 	if err != nil {
 		t.Errorf("Failed to wait for 'deleted' status for %s snapshot: %v", snapshot.ID, err)
 	} else {
@@ -64,8 +65,8 @@ func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *s
 	}
 }
 
-func waitForSnapshotStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string, secs int) error {
-	err := gophercloud.WaitFor(secs, func() (bool, error) {
+func waitForSnapshotStatus(t *testing.T, c *gophercloud.ServiceClient, id, status string) error {
+	err := tools.WaitFor(func() (bool, error) {
 		current, err := snapshots.Get(c, id).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
