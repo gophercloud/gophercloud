@@ -138,7 +138,7 @@ func CreateExternalRouter(t *testing.T, client *gophercloud.ServiceClient) (*rou
 		return router, err
 	}
 
-	if err := WaitForRouterToCreate(client, router.ID, 60); err != nil {
+	if err := WaitForRouterToCreate(client, router.ID); err != nil {
 		return router, err
 	}
 
@@ -170,7 +170,7 @@ func CreateRouter(t *testing.T, client *gophercloud.ServiceClient, networkID str
 		return router, err
 	}
 
-	if err := WaitForRouterToCreate(client, router.ID, 60); err != nil {
+	if err := WaitForRouterToCreate(client, router.ID); err != nil {
 		return router, err
 	}
 
@@ -196,7 +196,7 @@ func CreateRouterInterface(t *testing.T, client *gophercloud.ServiceClient, port
 		return iface, err
 	}
 
-	if err := WaitForRouterInterfaceToAttach(client, portID, 60); err != nil {
+	if err := WaitForRouterInterfaceToAttach(client, portID); err != nil {
 		return iface, err
 	}
 
@@ -218,7 +218,7 @@ func CreateRouterInterfaceOnSubnet(t *testing.T, client *gophercloud.ServiceClie
 		return iface, err
 	}
 
-	if err := WaitForRouterInterfaceToAttach(client, iface.PortID, 60); err != nil {
+	if err := WaitForRouterInterfaceToAttach(client, iface.PortID); err != nil {
 		return iface, err
 	}
 
@@ -236,7 +236,7 @@ func DeleteRouter(t *testing.T, client *gophercloud.ServiceClient, routerID stri
 		t.Fatalf("Error deleting router: %v", err)
 	}
 
-	if err := WaitForRouterToDelete(client, routerID, 60); err != nil {
+	if err := WaitForRouterToDelete(client, routerID); err != nil {
 		t.Fatalf("Error waiting for router to delete: %v", err)
 	}
 
@@ -258,7 +258,7 @@ func DeleteRouterInterface(t *testing.T, client *gophercloud.ServiceClient, port
 		t.Fatalf("Failed to detach port %s from router %s", portID, routerID)
 	}
 
-	if err := WaitForRouterInterfaceToDetach(client, portID, 60); err != nil {
+	if err := WaitForRouterInterfaceToDetach(client, portID); err != nil {
 		t.Fatalf("Failed to wait for port %s to detach from router %s", portID, routerID)
 	}
 
@@ -279,8 +279,8 @@ func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingI
 	t.Logf("Deleted floating IP: %s", floatingIPID)
 }
 
-func WaitForRouterToCreate(client *gophercloud.ServiceClient, routerID string, secs int) error {
-	return gophercloud.WaitFor(secs, func() (bool, error) {
+func WaitForRouterToCreate(client *gophercloud.ServiceClient, routerID string) error {
+	return tools.WaitFor(func() (bool, error) {
 		r, err := routers.Get(client, routerID).Extract()
 		if err != nil {
 			return false, err
@@ -294,8 +294,8 @@ func WaitForRouterToCreate(client *gophercloud.ServiceClient, routerID string, s
 	})
 }
 
-func WaitForRouterToDelete(client *gophercloud.ServiceClient, routerID string, secs int) error {
-	return gophercloud.WaitFor(secs, func() (bool, error) {
+func WaitForRouterToDelete(client *gophercloud.ServiceClient, routerID string) error {
+	return tools.WaitFor(func() (bool, error) {
 		_, err := routers.Get(client, routerID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {
@@ -309,8 +309,8 @@ func WaitForRouterToDelete(client *gophercloud.ServiceClient, routerID string, s
 	})
 }
 
-func WaitForRouterInterfaceToAttach(client *gophercloud.ServiceClient, routerInterfaceID string, secs int) error {
-	return gophercloud.WaitFor(secs, func() (bool, error) {
+func WaitForRouterInterfaceToAttach(client *gophercloud.ServiceClient, routerInterfaceID string) error {
+	return tools.WaitFor(func() (bool, error) {
 		r, err := ports.Get(client, routerInterfaceID).Extract()
 		if err != nil {
 			return false, err
@@ -324,8 +324,8 @@ func WaitForRouterInterfaceToAttach(client *gophercloud.ServiceClient, routerInt
 	})
 }
 
-func WaitForRouterInterfaceToDetach(client *gophercloud.ServiceClient, routerInterfaceID string, secs int) error {
-	return gophercloud.WaitFor(secs, func() (bool, error) {
+func WaitForRouterInterfaceToDetach(client *gophercloud.ServiceClient, routerInterfaceID string) error {
+	return tools.WaitFor(func() (bool, error) {
 		r, err := ports.Get(client, routerInterfaceID).Extract()
 		if err != nil {
 			if _, ok := err.(gophercloud.ErrDefault404); ok {

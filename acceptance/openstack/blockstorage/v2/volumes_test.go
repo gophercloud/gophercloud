@@ -5,7 +5,6 @@ package v2
 import (
 	"testing"
 
-	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumeactions"
@@ -103,7 +102,7 @@ func TestVolumesCascadeDelete(t *testing.T) {
 	}
 
 	for _, sid := range []string{snapshot1.ID, snapshot2.ID} {
-		err := gophercloud.WaitFor(120, func() (bool, error) {
+		err := tools.WaitFor(func() (bool, error) {
 			_, err := snapshots.Get(client, sid).Extract()
 			if err != nil {
 				return true, nil
@@ -114,7 +113,7 @@ func TestVolumesCascadeDelete(t *testing.T) {
 		t.Logf("Successfully deleted snapshot: %s", sid)
 	}
 
-	err = gophercloud.WaitFor(120, func() (bool, error) {
+	err = tools.WaitFor(func() (bool, error) {
 		_, err := volumes.Get(client, vol.ID).Extract()
 		if err != nil {
 			return true, nil

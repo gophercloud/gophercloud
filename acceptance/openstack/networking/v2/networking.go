@@ -96,7 +96,7 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subn
 		return port, err
 	}
 
-	if err := WaitForPortToCreate(client, port.ID, 60); err != nil {
+	if err := WaitForPortToCreate(client, port.ID); err != nil {
 		return port, err
 	}
 
@@ -134,7 +134,7 @@ func CreatePortWithNoSecurityGroup(t *testing.T, client *gophercloud.ServiceClie
 		return port, err
 	}
 
-	if err := WaitForPortToCreate(client, port.ID, 60); err != nil {
+	if err := WaitForPortToCreate(client, port.ID); err != nil {
 		return port, err
 	}
 
@@ -175,7 +175,7 @@ func CreatePortWithoutPortSecurity(t *testing.T, client *gophercloud.ServiceClie
 		return port, err
 	}
 
-	if err := WaitForPortToCreate(client, port.ID, 60); err != nil {
+	if err := WaitForPortToCreate(client, port.ID); err != nil {
 		return port, err
 	}
 
@@ -221,7 +221,7 @@ func CreatePortWithExtraDHCPOpts(t *testing.T, client *gophercloud.ServiceClient
 		return nil, err
 	}
 
-	if err := WaitForPortToCreate(client, port.ID, 60); err != nil {
+	if err := WaitForPortToCreate(client, port.ID); err != nil {
 		return nil, err
 	}
 
@@ -256,7 +256,7 @@ func CreatePortWithMultipleFixedIPs(t *testing.T, client *gophercloud.ServiceCli
 		return port, err
 	}
 
-	if err := WaitForPortToCreate(client, port.ID, 60); err != nil {
+	if err := WaitForPortToCreate(client, port.ID); err != nil {
 		return port, err
 	}
 
@@ -514,8 +514,8 @@ func DeleteSubnet(t *testing.T, client *gophercloud.ServiceClient, subnetID stri
 	t.Logf("Deleted subnet: %s", subnetID)
 }
 
-func WaitForPortToCreate(client *gophercloud.ServiceClient, portID string, secs int) error {
-	return gophercloud.WaitFor(secs, func() (bool, error) {
+func WaitForPortToCreate(client *gophercloud.ServiceClient, portID string) error {
+	return tools.WaitFor(func() (bool, error) {
 		p, err := ports.Get(client, portID).Extract()
 		if err != nil {
 			return false, err

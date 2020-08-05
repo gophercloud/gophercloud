@@ -204,7 +204,7 @@ func CreateBackup(t *testing.T, client *gophercloud.ServiceClient, volumeID stri
 		return nil, err
 	}
 
-	err = WaitForBackupStatus(client, backup.ID, "available", 120)
+	err = WaitForBackupStatus(client, backup.ID, "available")
 	if err != nil {
 		return nil, err
 	}
@@ -234,8 +234,8 @@ func DeleteBackup(t *testing.T, client *gophercloud.ServiceClient, backupID stri
 
 // WaitForBackupStatus will continually poll a backup, checking for a particular
 // status. It will do this for the amount of seconds defined.
-func WaitForBackupStatus(client *gophercloud.ServiceClient, id, status string, secs int) error {
-	return gophercloud.WaitFor(secs, func() (bool, error) {
+func WaitForBackupStatus(client *gophercloud.ServiceClient, id, status string) error {
+	return tools.WaitFor(func() (bool, error) {
 		current, err := backups.Get(client, id).Extract()
 		if err != nil {
 			return false, err

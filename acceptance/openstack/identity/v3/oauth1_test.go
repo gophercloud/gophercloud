@@ -132,15 +132,19 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 		OAuthVerifier:        authToken.OAuthVerifier,
 		OAuthSignatureMethod: method,
 	}
+
 	accessToken, err := oauth1.CreateAccessToken(client, accessTokenOpts).Extract()
 	th.AssertNoErr(t, err)
 	defer oauth1.RevokeAccessToken(client, user.ID, accessToken.OAuthToken)
+
 	tools.PrintResource(t, accessToken)
 
 	// Get access token
 	getAccessToken, err := oauth1.GetAccessToken(client, user.ID, accessToken.OAuthToken).Extract()
 	th.AssertNoErr(t, err)
+
 	tools.PrintResource(t, getAccessToken)
+
 	th.AssertEquals(t, getAccessToken.ID, accessToken.OAuthToken)
 	th.AssertEquals(t, getAccessToken.ConsumerID, consumer.ID)
 	th.AssertEquals(t, getAccessToken.AuthorizingUserID, user.ID)
@@ -149,20 +153,38 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 	// List access tokens
 	accessTokensPages, err := oauth1.ListAccessTokens(client, user.ID).AllPages()
 	th.AssertNoErr(t, err)
+
 	accessTokens, err := oauth1.ExtractAccessTokens(accessTokensPages)
 	th.AssertNoErr(t, err)
+
 	tools.PrintResource(t, accessTokens)
 	th.AssertDeepEquals(t, accessTokens[0], *getAccessToken)
 
 	// List access token roles
 	accessTokenRolesPages, err := oauth1.ListAccessTokenRoles(client, user.ID, accessToken.OAuthToken).AllPages()
 	th.AssertNoErr(t, err)
+
 	accessTokenRoles, err := oauth1.ExtractAccessTokenRoles(accessTokenRolesPages)
 	th.AssertNoErr(t, err)
+
 	tools.PrintResource(t, accessTokenRoles)
-	th.AssertEquals(t, accessTokenRoles[0].ID, roles[0].ID)
+
+	var found bool
+	for _, atr := range accessTokenRoles {
+		if atr.ID == roles[0].ID {
+			found = true
+		}
+	}
+	th.AssertEquals(t, found, true)
+
 	if len(accessTokenRoles) > 1 {
-		th.AssertEquals(t, accessTokenRoles[1].Name, roles[1].Name)
+		found = false
+		for _, atr := range accessTokenRoles {
+			if atr.ID == roles[1].ID {
+				found = true
+			}
+		}
+		th.AssertEquals(t, found, true)
 	}
 
 	// Get access token role

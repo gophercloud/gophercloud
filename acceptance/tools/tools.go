@@ -15,7 +15,7 @@ var ErrTimeout = errors.New("Timed out")
 // WaitFor uses WaitForTimeout to poll a predicate function once per second to
 // wait for a certain state to arrive, with a default timeout of 300 seconds.
 func WaitFor(predicate func() (bool, error)) error {
-	return WaitForTimeout(predicate, 300*time.Second)
+	return WaitForTimeout(predicate, 600*time.Second)
 }
 
 // WaitForTimeout polls a predicate function once per second to wait for a
@@ -23,7 +23,7 @@ func WaitFor(predicate func() (bool, error)) error {
 func WaitForTimeout(predicate func() (bool, error), timeout time.Duration) error {
 	startTime := time.Now()
 	for time.Since(startTime) < timeout {
-		time.Sleep(1 * time.Second)
+		time.Sleep(2 * time.Second)
 
 		satisfied, err := predicate()
 		if err != nil {

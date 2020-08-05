@@ -1,4 +1,4 @@
-// +build acceptance dns recordsets
+// +build acceptance
 
 package v2
 
