@@ -112,7 +112,6 @@ func TestRolesFilterList(t *testing.T) {
 	clients.RequireAdmin(t)
 
 	// For some reason this is not longer working.
-	// It might be a temporary issue.
 	clients.SkipRelease(t, "master")
 	clients.SkipRelease(t, "stable/mitaka")
 	clients.SkipRelease(t, "stable/newton")
@@ -121,6 +120,8 @@ func TestRolesFilterList(t *testing.T) {
 	clients.SkipRelease(t, "stable/queens")
 	clients.SkipRelease(t, "stable/rocky")
 	clients.SkipRelease(t, "stable/stein")
+	clients.SkipRelease(t, "stable/train")
+	clients.SkipRelease(t, "stable/ussuri")
 
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
