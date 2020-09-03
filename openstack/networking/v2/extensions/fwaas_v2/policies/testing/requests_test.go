@@ -252,7 +252,7 @@ func TestUpdate(t *testing.T) {
 	options := policies.UpdateOpts{
 		Name:        &name,
 		Description: &description,
-		Rules: []string{
+		Rules: &[]string{
 			"98a58c87-76be-ae7c-a74e-b77fffb88d95",
 			"11a58c87-76be-ae7c-a74e-b77fffb88a32",
 		},
