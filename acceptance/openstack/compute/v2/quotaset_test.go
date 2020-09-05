@@ -24,6 +24,8 @@ func TestQuotasetGet(t *testing.T) {
 	clients.SkipRelease(t, "stable/queens")
 	clients.SkipRelease(t, "stable/rocky")
 	clients.SkipRelease(t, "stable/stein")
+	clients.SkipRelease(t, "stable/train")
+	clients.SkipRelease(t, "stable/ussuri")
 
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
@@ -117,6 +119,8 @@ func TestQuotasetUpdateDelete(t *testing.T) {
 	clients.SkipRelease(t, "stable/queens")
 	clients.SkipRelease(t, "stable/rocky")
 	clients.SkipRelease(t, "stable/stein")
+	clients.SkipRelease(t, "stable/train")
+	clients.SkipRelease(t, "stable/ussuri")
 
 	clients.RequireAdmin(t)
 

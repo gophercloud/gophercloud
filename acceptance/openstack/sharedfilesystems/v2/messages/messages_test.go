@@ -12,6 +12,10 @@ const requestID = "req-6f52cd8b-25a1-42cf-b497-7babf70f55f4"
 const minimumManilaMessagesMicroVersion = "2.37"
 
 func TestMessageList(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
+
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -36,6 +40,10 @@ func TestMessageList(t *testing.T) {
 // The test creates 2 messages and verifies that only the one(s) with
 // a particular name are being listed
 func TestMessageListFiltering(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
+
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a shared file system client: %v", err)
@@ -67,6 +75,10 @@ func TestMessageListFiltering(t *testing.T) {
 // Create a message and update the name and description. Get the ity
 // service and verify that the name and description have been updated
 func TestMessageDelete(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
+
 	client, err := clients.NewSharedFileSystemV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create shared file system client: %v", err)

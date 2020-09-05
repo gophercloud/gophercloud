@@ -65,6 +65,7 @@ func TestServicesListWithOpts(t *testing.T) {
 }
 
 func TestServicesUpdate(t *testing.T) {
+	clients.SkipRelease(t, "stable/ocata")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
