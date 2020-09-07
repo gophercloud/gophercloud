@@ -5,11 +5,11 @@ import "github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/quotas"
 const GetResponseRaw = `
 {
     "quota": {
-        "load_balancer": 15,
+        "loadbalancer": 15,
         "listener": 30,
         "member": -1,
         "pool": 15,
-        "health_monitor": 30,
+        "healthmonitor": 30,
         "l7policy": 100,
         "l7rule": -1
     }

@@ -24,7 +24,7 @@ type GetResult struct {
 // Quota contains load balancer quotas for a project.
 type Quota struct {
 	// Loadbalancer represents the number of load balancers. A "-1" value means no limit.
-	Loadbalancer int `json:"load_balancer"`
+	Loadbalancer int `json:"loadbalancer"`
 
 	// Listener represents the number of listeners. A "-1" value means no limit.
 	Listener int `json:"listener"`
@@ -36,7 +36,7 @@ type Quota struct {
 	Pool int `json:"pool"`
 
 	// HealthMonitor represents the number of healthmonitors. A "-1" value means no limit.
-	Healthmonitor int `json:"health_monitor"`
+	Healthmonitor int `json:"healthmonitor"`
 
 	// L7Policy represents the number of l7policies. A "-1" value means no limit.
 	L7Policy int `json:"l7policy"`
