@@ -2,7 +2,7 @@ package testing
 
 import "github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/quotas"
 
-const GetResponseRaw = `
+const GetResponseRaw_1 = `
 {
     "quota": {
         "loadbalancer": 15,
@@ -10,6 +10,20 @@ const GetResponseRaw = `
         "member": -1,
         "pool": 15,
         "healthmonitor": 30,
+        "l7policy": 100,
+        "l7rule": -1
+    }
+}
+`
+
+const GetResponseRaw_2 = `
+{
+    "quota": {
+        "load_balancer": 15,
+        "listener": 30,
+        "member": -1,
+        "pool": 15,
+        "health_monitor": 30,
         "l7policy": 100,
         "l7rule": -1
     }

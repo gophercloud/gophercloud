@@ -10,7 +10,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestGet(t *testing.T) {
+func TestGet_1(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -21,7 +21,26 @@ func TestGet(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		fmt.Fprintf(w, GetResponseRaw)
+		fmt.Fprintf(w, GetResponseRaw_1)
+	})
+
+	q, err := quotas.Get(fake.ServiceClient(), "0a73845280574ad389c292f6a74afa76").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, q, &GetResponse)
+}
+
+func TestGet_2(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/quotas/0a73845280574ad389c292f6a74afa76", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, GetResponseRaw_2)
 	})
 
 	q, err := quotas.Get(fake.ServiceClient(), "0a73845280574ad389c292f6a74afa76").Extract()
