@@ -5,6 +5,7 @@ IMPROVEMENTS
 * Added `ProtocolTerminatedHTTPS` as a valid listener protocol to `loadbalancer/v2/listeners` [GH-1992](https://github.com/gophercloud/gophercloud/pull/1992)
 * Added `objectstorage/v1/objects.CreateTempURLOpts.Timestamp` [GH-1994](https://github.com/gophercloud/gophercloud/pull/1994)
 * Added `compute/v2/extensions/schedulerhints.SchedulerHints.DifferentCell` [GH-2012](https://github.com/gophercloud/gophercloud/pull/2012)
+* Added `loadbalancer/v2/quotas.Get` [GH-2010](https://github.com/gophercloud/gophercloud/pull/2010)
 
 BUG FIXES
 
