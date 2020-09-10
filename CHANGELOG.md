@@ -10,6 +10,11 @@ BUG FIXES
 
 * Fixed URL escaping in `objectstorage/v1/objects.CreateTempURL` [GH-1994](https://github.com/gophercloud/gophercloud/pull/1994)
 * Remove unused `ServiceClient` from `compute/v2/servers.CreateOpts` [GH-2004](https://github.com/gophercloud/gophercloud/pull/2004)
+* Changed `objectstorage/v1/objects.CreateOpts.DeleteAfter` from `int` to `int64` [GH-2014](https://github.com/gophercloud/gophercloud/pull/2014)
+* Changed `objectstorage/v1/objects.CreateOpts.DeleteAt` from `int` to `int64` [GH-2014](https://github.com/gophercloud/gophercloud/pull/2014)
+* Changed `objectstorage/v1/objects.UpdateOpts.DeleteAfter` from `int` to `int64` [GH-2014](https://github.com/gophercloud/gophercloud/pull/2014)
+* Changed `objectstorage/v1/objects.UpdateOpts.DeleteAt` from `int` to `int64` [GH-2014](https://github.com/gophercloud/gophercloud/pull/2014)
+
 
 ## 0.12.0 (June 25, 2020)
 
