@@ -153,8 +153,8 @@ type CreateOpts struct {
 	ContentLength      int64  `h:"Content-Length"`
 	ContentType        string `h:"Content-Type"`
 	CopyFrom           string `h:"X-Copy-From"`
-	DeleteAfter        int    `h:"X-Delete-After"`
-	DeleteAt           int    `h:"X-Delete-At"`
+	DeleteAfter        int64  `h:"X-Delete-After"`
+	DeleteAt           int64  `h:"X-Delete-At"`
 	DetectContentType  string `h:"X-Detect-Content-Type"`
 	ETag               string `h:"ETag"`
 	IfNoneMatch        string `h:"If-None-Match"`
@@ -391,8 +391,8 @@ type UpdateOpts struct {
 	ContentDisposition string `h:"Content-Disposition"`
 	ContentEncoding    string `h:"Content-Encoding"`
 	ContentType        string `h:"Content-Type"`
-	DeleteAfter        int    `h:"X-Delete-After"`
-	DeleteAt           int    `h:"X-Delete-At"`
+	DeleteAfter        int64  `h:"X-Delete-After"`
+	DeleteAt           int64  `h:"X-Delete-At"`
 	DetectContentType  bool   `h:"X-Detect-Content-Type"`
 }
 
