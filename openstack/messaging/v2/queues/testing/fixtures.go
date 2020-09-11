@@ -22,6 +22,7 @@ const CreateQueueRequest = `
     "_dead_letter_queue": "dead_letter",
     "_dead_letter_queue_messages_ttl": 3600,
     "_max_claim_count": 10,
+    "_enable_encrypt_messages": false,
     "description": "Queue for unit testing."
 }`
 
@@ -53,6 +54,7 @@ const ListQueuesResponse1 = `
                 "_default_message_ttl":3700,
                 "_max_claim_count":10,
                 "_max_messages_post_size":262143,
+                "_enable_encrypt_messages":true,
                 "description":"Test queue."
             }
         }
@@ -155,6 +157,7 @@ var FirstQueue = queues.Queue{
 		DefaultMessageTTL:         3700,
 		MaxClaimCount:             10,
 		MaxMessagesPostSize:       262143,
+		EnableEncryptMessages:     true,
 		Extra:                     map[string]interface{}{"description": "Test queue."},
 	},
 }

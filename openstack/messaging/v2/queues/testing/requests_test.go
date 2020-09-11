@@ -37,6 +37,7 @@ func TestCreate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 	HandleCreateSuccessfully(t)
+	var enableEncrypted *bool = new(bool)
 
 	createOpts := queues.CreateOpts{
 		QueueName:                  QueueName,
@@ -46,6 +47,7 @@ func TestCreate(t *testing.T) {
 		DeadLetterQueue:            "dead_letter",
 		DeadLetterQueueMessagesTTL: 3600,
 		MaxClaimCount:              10,
+		EnableEncryptMessages:      enableEncrypted,
 		Extra:                      map[string]interface{}{"description": "Queue for unit testing."},
 	}
 

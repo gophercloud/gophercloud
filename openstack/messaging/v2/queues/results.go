@@ -88,6 +88,9 @@ type QueueDetails struct {
 	// The max post size of messages defined for the queue.
 	MaxMessagesPostSize int `json:"_max_messages_post_size"`
 
+	// Is message encryption enabled
+	EnableEncryptMessages bool `json:"_enable_encrypt_messages"`
+
 	// The flavor defined for the queue.
 	Flavor string `json:"flavor"`
 }
