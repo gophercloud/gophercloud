@@ -64,7 +64,8 @@ const ListQueuesResponse1 = `
             "href":"/v2/queues?marker=london",
             "rel":"next"
         }
-    ]
+	],
+	"count": 2
 }`
 
 // ListQueuesResponse2 is a sample response to a List queues.
@@ -90,7 +91,8 @@ const ListQueuesResponse2 = `
             "href":"/v2/queues?marker=beijing",
             "rel":"next"
         }
-    ]
+	],
+	"count": 2
 }`
 
 // UpdateQueueRequest is a sample request to update a queue.
@@ -223,7 +225,7 @@ func HandleListSuccessfully(t *testing.T) {
 			next := r.RequestURI
 
 			switch next {
-			case "/v2/queues?limit=1":
+			case "/v2/queues?limit=1&with_count=true":
 				fmt.Fprintf(w, ListQueuesResponse1)
 			case "/v2/queues?marker=london":
 				fmt.Fprint(w, ListQueuesResponse2)
