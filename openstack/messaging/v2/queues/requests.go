@@ -21,6 +21,12 @@ type ListOpts struct {
 
 	// Specifies if showing the detailed information when querying queues
 	Detailed bool `q:"detailed,omitempty"`
+
+	// Specifies if filter the queues by queue’s name when querying queues.
+	Name bool `q:"name,omitempty"`
+
+	// Specifies if showing the amount of queues when querying them.
+	WithCount bool `q:"with_count,omitempty"`
 }
 
 // ToQueueListQuery formats a ListOpts into a query string.

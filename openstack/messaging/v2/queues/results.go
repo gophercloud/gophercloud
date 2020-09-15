@@ -173,6 +173,18 @@ func (r QueuePage) NextPageURL() (string, error) {
 	return nextPageURL(r.URL.String(), next)
 }
 
+// GetCount value if it request was supplied `WithCount` param
+func (r QueuePage) GetCount() (int, error) {
+	var s struct {
+		Count int `json:"count"`
+	}
+	err := r.ExtractInto(&s)
+	if err != nil {
+		return 0, err
+	}
+	return s.Count, nil
+}
+
 func (r *QueueDetails) UnmarshalJSON(b []byte) error {
 	type tmp QueueDetails
 	var s struct {

@@ -15,17 +15,21 @@ func TestList(t *testing.T) {
 	HandleListSuccessfully(t)
 
 	listOpts := queues.ListOpts{
-		Limit: 1,
+		Limit:     1,
+		WithCount: true,
 	}
 
 	count := 0
 	err := queues.List(fake.ServiceClient(), listOpts).EachPage(func(page pagination.Page) (bool, error) {
 		actual, err := queues.ExtractQueues(page)
 		th.AssertNoErr(t, err)
+		countField, err := page.(queues.QueuePage).GetCount()
+
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, countField, 2)
 
 		th.CheckDeepEquals(t, ExpectedQueueSlice[count], actual)
 		count++
-
 		return true, nil
 	})
 	th.AssertNoErr(t, err)
