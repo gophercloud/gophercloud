@@ -173,18 +173,10 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 
 	tools.PrintResource(t, accessTokenRoles)
 
-	var found bool
 	for _, atr := range accessTokenRoles {
-		if atr.ID == roles[0].ID {
-			found = true
-		}
-	}
-	th.AssertEquals(t, found, true)
-
-	if len(accessTokenRoles) > 1 {
-		found = false
-		for _, atr := range accessTokenRoles {
-			if atr.ID == roles[1].ID {
+		var found bool
+		for _, role := range roles {
+			if atr.ID == role.ID {
 				found = true
 			}
 		}
@@ -195,7 +187,14 @@ func oauth1MethodTest(t *testing.T, client *gophercloud.ServiceClient, consumer 
 	getAccessTokenRole, err := oauth1.GetAccessTokenRole(client, user.ID, accessToken.OAuthToken, roles[0].ID).Extract()
 	th.AssertNoErr(t, err)
 	tools.PrintResource(t, getAccessTokenRole)
-	th.AssertDeepEquals(t, *getAccessTokenRole, accessTokenRoles[0])
+
+	var found bool
+	for _, atr := range accessTokenRoles {
+		if atr.ID == getAccessTokenRole.ID {
+			found = true
+		}
+	}
+	th.AssertEquals(t, found, true)
 
 	// Test auth using OAuth1
 	newClient, err := clients.NewIdentityV3UnauthenticatedClient()
