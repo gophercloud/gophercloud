@@ -11,3 +11,7 @@ func resourceURL(c *gophercloud.ServiceClient, projectID string) string {
 func getURL(c *gophercloud.ServiceClient, projectID string) string {
 	return resourceURL(c, projectID)
 }
+
+func updateURL(c *gophercloud.ServiceClient, projectID string) string {
+	return resourceURL(c, projectID)
+}
