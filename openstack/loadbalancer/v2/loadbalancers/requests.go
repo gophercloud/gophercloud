@@ -29,6 +29,7 @@ type ListOpts struct {
 	OperatingStatus    string   `q:"operating_status"`
 	Name               string   `q:"name"`
 	FlavorID           string   `q:"flavor_id"`
+	AvailabilityZone   string   `q:"availability_zone"`
 	Provider           string   `q:"provider"`
 	Limit              int      `q:"limit"`
 	Marker             string   `q:"marker"`
@@ -110,6 +111,10 @@ type CreateOpts struct {
 
 	// The UUID of a flavor.
 	FlavorID string `json:"flavor_id,omitempty"`
+
+	// The name of an Octavia availability zone.
+	// Requires Octavia API version 2.14 or later.
+	AvailabilityZone string `json:"availability_zone,omitempty"`
 
 	// The name of the provider.
 	Provider string `json:"provider,omitempty"`
