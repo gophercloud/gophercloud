@@ -582,6 +582,7 @@ func ListL3Agents(t *testing.T) {
 			Host:               "os-ctrl-02",
 			Topic:              "l3_agent",
 			HAState:            "standby",
+			ResourceVersions:   map[string]interface{}{},
 		},
 		{
 			ID:               "4541cc6c-87bc-4cee-bad2-36ca78836c91",
@@ -608,6 +609,7 @@ func ListL3Agents(t *testing.T) {
 			Host:               "os-ctrl-03",
 			Topic:              "l3_agent",
 			HAState:            "active",
+			ResourceVersions:   map[string]interface{}{},
 		},
 	}
 

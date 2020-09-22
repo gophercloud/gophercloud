@@ -131,8 +131,10 @@ type L3Agent struct {
 	Topic string `json:"topic"`
 
 	// HAState is a ha state of agent(active/standby) for router
-	//
 	HAState string `json:"ha_state"`
+
+	// ResourceVersions is a list agent known objects and version numbers
+	ResourceVersions map[string]interface{} `json:"resource_versions"`
 }
 
 // UnmarshalJSON helps to convert the timestamps into the time.Time type.

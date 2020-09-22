@@ -104,5 +104,14 @@ Example to Remove an Interface from a Router
 	if err != nil {
 		panic(err)
 	}
+
+Example to List an L3 agnets for a Router
+
+	routerID := "4e8e5957-649f-477b-9e5b-f1f75b21c03c"
+
+	interface, err := routers.ListL3Agents(networkClient, routerID).Extract()
+	if err != nil {
+		panic(err)
+	}
 */
 package routers
