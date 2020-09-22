@@ -25,6 +25,12 @@ type GetResult struct {
 	commonResult
 }
 
+// UpdateResult represents the result of an update operation. Call its Extract
+// method to interpret it as a Quota.
+type UpdateResult struct {
+	commonResult
+}
+
 // Quota contains load balancer quotas for a project.
 type Quota struct {
 	// Loadbalancer represents the number of load balancers. A "-1" value means no limit.
