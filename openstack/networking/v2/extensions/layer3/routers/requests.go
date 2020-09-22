@@ -237,3 +237,10 @@ func RemoveInterface(c *gophercloud.ServiceClient, id string, opts RemoveInterfa
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// ListL3Agents returns a list of l3-agents scheduled for a specific router
+func ListL3Agents(c *gophercloud.ServiceClient, id string) (r ListL3AgentsResult) {
+	resp, err := c.Get(listl3AgentsURL(c, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

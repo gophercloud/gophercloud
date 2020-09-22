@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/layer3/routers"
@@ -477,4 +478,138 @@ func TestRemoveInterface(t *testing.T) {
 	th.AssertEquals(t, "017d8de156df4177889f31a9bd6edc00", res.TenantID)
 	th.AssertEquals(t, "3f990102-4485-4df1-97a0-2c35bdb85b31", res.PortID)
 	th.AssertEquals(t, "9a83fa11-8da5-436e-9afe-3d3ac5ce7770", res.ID)
+}
+
+func ListL3Agents(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/routers/fa3a4aaa-c73f-48aa-a603-8c8bf642b7c0/l3-agents", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "agents": [
+        {
+            "id": "ddbf087c-e38f-4a73-bcb3-c38f2a719a03",
+            "agent_type": "L3 agent",
+            "binary": "neutron-l3-agent",
+            "topic": "l3_agent",
+            "host": "os-ctrl-02",
+            "admin_state_up": true,
+            "created_at": "2020-08-28 15:43:15",
+            "started_at": "2020-09-21 12:11:25",
+            "heartbeat_timestamp": "2020-09-21 12:35:55",
+            "description": "My L3 agent for OpenStack",
+            "resources_synced": true,
+            "availability_zone": "nova",
+            "alive": true,
+            "configurations": {
+                "agent_mode": "legacy",
+                "ex_gw_ports": 2,
+                "floating_ips": 2,
+                "handle_internal_only_routers": true,
+                "interface_driver": "linuxbridge",
+                "interfaces": 1,
+                "log_agent_heartbeats": false,
+                "routers": 2
+            },
+            "resource_versions": {},
+            "ha_state": "standby"
+        },
+        {
+            "id": "4541cc6c-87bc-4cee-bad2-36ca78836c91",
+            "agent_type": "L3 agent",
+            "binary": "neutron-l3-agent",
+            "topic": "l3_agent",
+            "host": "os-ctrl-03",
+            "admin_state_up": true,
+            "created_at": "2020-08-28 15:43:11.066068",
+            "started_at": "2020-09-21 12:11:25.307587",
+            "heartbeat_timestamp": "2020-09-21 12:35:55.373391",
+            "description": "My L3 agent for OpenStack",
+            "resources_synced": true,
+            "availability_zone": "nova",
+            "alive": true,
+            "configurations": {
+                "agent_mode": "legacy",
+                "ex_gw_ports": 2,
+                "floating_ips": 2,
+                "handle_internal_only_routers": true,
+                "interface_driver": "linuxbridge",
+                "interfaces": 1,
+                "log_agent_heartbeats": false,
+                "routers": 2
+            },
+            "resource_versions": {},
+            "ha_state": "active"
+        }
+    ]
+}
+			`)
+	})
+
+	actual, err := routers.ListL3Agents(fake.ServiceClient(), "fa3a4aaa-c73f-48aa-a603-8c8bf642b7c0").Extract()
+	th.AssertNoErr(t, err)
+
+	expected := []routers.L3Agent{
+		{
+			ID:               "ddbf087c-e38f-4a73-bcb3-c38f2a719a03",
+			AdminStateUp:     true,
+			AgentType:        "L3 agent",
+			Description:      "My L3 agent for OpenStack",
+			Alive:            true,
+			ResourcesSynced:  true,
+			Binary:           "neutron-l3-agent",
+			AvailabilityZone: "nova",
+			Configurations: map[string]interface{}{
+				"agent_mode":                   "legacy",
+				"ex_gw_ports":                  2,
+				"floating_ips":                 2,
+				"handle_internal_only_routers": true,
+				"interface_driver":             "linuxbridge",
+				"interfaces":                   1,
+				"log_agent_heartbeats":         false,
+				"routers":                      2,
+			},
+			CreatedAt:          time.Date(2020, 8, 28, 15, 43, 15, 0, time.UTC),
+			StartedAt:          time.Date(2020, 9, 21, 12, 11, 25, 0, time.UTC),
+			HeartbeatTimestamp: time.Date(2020, 9, 21, 12, 35, 55, 0, time.UTC),
+			Host:               "os-ctrl-02",
+			Topic:              "l3_agent",
+			HAState:            "standby",
+		},
+		{
+			ID:               "4541cc6c-87bc-4cee-bad2-36ca78836c91",
+			AdminStateUp:     true,
+			AgentType:        "L3 agent",
+			Description:      "My L3 agent for OpenStack",
+			Alive:            true,
+			ResourcesSynced:  true,
+			Binary:           "neutron-l3-agent",
+			AvailabilityZone: "nova",
+			Configurations: map[string]interface{}{
+				"agent_mode":                   "legacy",
+				"ex_gw_ports":                  2,
+				"floating_ips":                 2,
+				"handle_internal_only_routers": true,
+				"interface_driver":             "linuxbridge",
+				"interfaces":                   1,
+				"log_agent_heartbeats":         false,
+				"routers":                      2,
+			},
+			CreatedAt:          time.Date(2020, 8, 28, 15, 43, 15, 0, time.UTC),
+			StartedAt:          time.Date(2020, 9, 21, 12, 11, 25, 0, time.UTC),
+			HeartbeatTimestamp: time.Date(2020, 9, 21, 12, 35, 55, 0, time.UTC),
+			Host:               "os-ctrl-03",
+			Topic:              "l3_agent",
+			HAState:            "active",
+		},
+	}
+
+	th.CheckDeepEquals(t, expected, actual)
 }
