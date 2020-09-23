@@ -480,7 +480,7 @@ func TestRemoveInterface(t *testing.T) {
 	th.AssertEquals(t, "9a83fa11-8da5-436e-9afe-3d3ac5ce7770", res.ID)
 }
 
-func ListL3Agents(t *testing.T) {
+func TestListL3Agents(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -501,9 +501,9 @@ func ListL3Agents(t *testing.T) {
             "topic": "l3_agent",
             "host": "os-ctrl-02",
             "admin_state_up": true,
-            "created_at": "2020-08-28 15:43:15",
-            "started_at": "2020-09-21 12:11:25",
-            "heartbeat_timestamp": "2020-09-21 12:35:55",
+            "created_at": "2017-07-26 23:15:44",
+            "started_at": "2018-06-26 21:46:19",
+            "heartbeat_timestamp": "2019-01-09 10:28:53",
             "description": "My L3 agent for OpenStack",
             "resources_synced": true,
             "availability_zone": "nova",
@@ -528,9 +528,9 @@ func ListL3Agents(t *testing.T) {
             "topic": "l3_agent",
             "host": "os-ctrl-03",
             "admin_state_up": true,
-            "created_at": "2020-08-28 15:43:11.066068",
-            "started_at": "2020-09-21 12:11:25.307587",
-            "heartbeat_timestamp": "2020-09-21 12:35:55.373391",
+            "created_at": "2017-01-22 14:00:50",
+            "started_at": "2018-11-06 12:09:17",
+            "heartbeat_timestamp": "2019-01-09 10:28:50",
             "description": "My L3 agent for OpenStack",
             "resources_synced": true,
             "availability_zone": "nova",
@@ -568,17 +568,17 @@ func ListL3Agents(t *testing.T) {
 			AvailabilityZone: "nova",
 			Configurations: map[string]interface{}{
 				"agent_mode":                   "legacy",
-				"ex_gw_ports":                  2,
-				"floating_ips":                 2,
+				"ex_gw_ports":                  float64(2),
+				"floating_ips":                 float64(2),
 				"handle_internal_only_routers": true,
 				"interface_driver":             "linuxbridge",
-				"interfaces":                   1,
+				"interfaces":                   float64(1),
 				"log_agent_heartbeats":         false,
-				"routers":                      2,
+				"routers":                      float64(2),
 			},
-			CreatedAt:          time.Date(2020, 8, 28, 15, 43, 15, 0, time.UTC),
-			StartedAt:          time.Date(2020, 9, 21, 12, 11, 25, 0, time.UTC),
-			HeartbeatTimestamp: time.Date(2020, 9, 21, 12, 35, 55, 0, time.UTC),
+			CreatedAt:          time.Date(2017, 7, 26, 23, 15, 44, 0, time.UTC),
+			StartedAt:          time.Date(2018, 6, 26, 21, 46, 19, 0, time.UTC),
+			HeartbeatTimestamp: time.Date(2019, 1, 9, 10, 28, 53, 0, time.UTC),
 			Host:               "os-ctrl-02",
 			Topic:              "l3_agent",
 			HAState:            "standby",
@@ -595,23 +595,22 @@ func ListL3Agents(t *testing.T) {
 			AvailabilityZone: "nova",
 			Configurations: map[string]interface{}{
 				"agent_mode":                   "legacy",
-				"ex_gw_ports":                  2,
-				"floating_ips":                 2,
+				"ex_gw_ports":                  float64(2),
+				"floating_ips":                 float64(2),
 				"handle_internal_only_routers": true,
 				"interface_driver":             "linuxbridge",
-				"interfaces":                   1,
+				"interfaces":                   float64(1),
 				"log_agent_heartbeats":         false,
-				"routers":                      2,
+				"routers":                      float64(2),
 			},
-			CreatedAt:          time.Date(2020, 8, 28, 15, 43, 15, 0, time.UTC),
-			StartedAt:          time.Date(2020, 9, 21, 12, 11, 25, 0, time.UTC),
-			HeartbeatTimestamp: time.Date(2020, 9, 21, 12, 35, 55, 0, time.UTC),
+			CreatedAt:          time.Date(2017, 1, 22, 14, 00, 50, 0, time.UTC),
+			StartedAt:          time.Date(2018, 11, 6, 12, 9, 17, 0, time.UTC),
+			HeartbeatTimestamp: time.Date(2019, 1, 9, 10, 28, 50, 0, time.UTC),
 			Host:               "os-ctrl-03",
 			Topic:              "l3_agent",
 			HAState:            "active",
 			ResourceVersions:   map[string]interface{}{},
 		},
 	}
-
 	th.CheckDeepEquals(t, expected, actual)
 }
