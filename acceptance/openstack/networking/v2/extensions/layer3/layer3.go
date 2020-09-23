@@ -182,38 +182,6 @@ func CreateRouter(t *testing.T, client *gophercloud.ServiceClient, networkID str
 	return router, nil
 }
 
-// CreateHARouter creates a ha router on a specified Network ID. An error will be
-// returned if the creation failed.
-func CreateHARouter(t *testing.T, client *gophercloud.ServiceClient, networkID string) (*routers.Router, error) {
-	routerName := tools.RandomString("TESTACC-", 8)
-	routerDescription := tools.RandomString("TESTACC-DESC-", 8)
-
-	t.Logf("Attempting to create router: %s", routerName)
-
-	adminStateUp := true
-	createOpts := routers.CreateOpts{
-		Name:         routerName,
-		Description:  routerDescription,
-		AdminStateUp: &adminStateUp,
-	}
-
-	router, err := routers.Create(client, createOpts).Extract()
-	if err != nil {
-		return router, err
-	}
-
-	if err := WaitForRouterToCreate(client, router.ID); err != nil {
-		return router, err
-	}
-
-	t.Logf("Created router: %s", routerName)
-
-	th.AssertEquals(t, router.Name, routerName)
-	th.AssertEquals(t, router.Description, routerDescription)
-
-	return router, nil
-}
-
 // CreateRouterInterface will attach a subnet to a router. An error will be
 // returned if the operation fails.
 func CreateRouterInterface(t *testing.T, client *gophercloud.ServiceClient, portID, routerID string) (*routers.InterfaceInfo, error) {
