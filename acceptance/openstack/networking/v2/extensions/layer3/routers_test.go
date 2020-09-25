@@ -47,6 +47,7 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 	allPages, err := routers.List(client, listOpts).AllPages()
 	th.AssertNoErr(t, err)
 
+	// Test ListL3Agents for HA or not HA router
 	_, err := routers.ListL3Agents(client, router.ID)
 	th.AssertNoErr(t, err)
 
