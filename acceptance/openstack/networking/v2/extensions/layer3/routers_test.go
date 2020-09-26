@@ -47,10 +47,6 @@ func TestLayer3RouterCreateDelete(t *testing.T) {
 	allPages, err := routers.List(client, listOpts).AllPages()
 	th.AssertNoErr(t, err)
 
-	// Test ListL3Agents for HA or not HA router
-	_, err := routers.ListL3Agents(client, router.ID)
-	th.AssertNoErr(t, err)
-
 	allRouters, err := routers.ExtractRouters(allPages)
 	th.AssertNoErr(t, err)
 
@@ -127,6 +123,7 @@ func TestLayer3ExternalRouterCreateDelete(t *testing.T) {
 	newRouter, err = routers.Update(client, router.ID, updateOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, newRouter.GatewayInfo, routers.GatewayInfo{})
+
 }
 
 func TestLayer3RouterInterface(t *testing.T) {
@@ -166,4 +163,51 @@ func TestLayer3RouterInterface(t *testing.T) {
 
 	_, err = routers.RemoveInterface(client, router.ID, riOpts).Extract()
 	th.AssertNoErr(t, err)
+}
+
+func TestLayer3RouterAgents(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	network, err := networking.CreateNetwork(t, client)
+	th.AssertNoErr(t, err)
+	defer networking.DeleteNetwork(t, client, network.ID)
+
+	router, err := CreateRouter(t, client, network.ID)
+	th.AssertNoErr(t, err)
+	defer DeleteRouter(t, client, router.ID)
+
+	tools.PrintResource(t, router)
+
+	newName := tools.RandomString("TESTACC-", 8)
+	newDescription := ""
+	updateOpts := routers.UpdateOpts{
+		Name:        newName,
+		Description: &newDescription,
+	}
+
+	_, err = routers.Update(client, router.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	_, err = routers.Get(client, router.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	// Test ListL3Agents for HA or not HA router
+	l3AgentsPages, err := routers.ListL3Agents(client, router.ID).AllPages()
+	th.AssertNoErr(t, err)
+	l3Agents, err := routers.ExtractL3Agents(l3AgentsPages)
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, l3Agents)
+
+	var found bool
+	for _, agent := range l3Agents {
+		if agent.Binary == "neutron-l3-agent" {
+			found = true
+		}
+	}
+
+	th.AssertEquals(t, found, true)
 }
