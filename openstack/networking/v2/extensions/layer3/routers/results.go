@@ -84,81 +84,6 @@ type RouterPage struct {
 	pagination.LinkedPageBase
 }
 
-// L3Agent represents a Neutron agent for router in HA.
-type L3Agent struct {
-	// ID is the id of the agent.
-	ID string `json:"id"`
-
-	// AdminStateUp is an administrative state of the agent.
-	AdminStateUp bool `json:"admin_state_up"`
-
-	// AgentType is a type of the agent.
-	AgentType string `json:"agent_type"`
-
-	// Alive indicates whether agent is alive or not.
-	Alive bool `json:"alive"`
-
-	// ResourcesSynced indicates whether agent is synced or not.
-	// Not all agent types track resources via Placement.
-	ResourcesSynced bool `json:"resources_synced"`
-
-	// AvailabilityZone is a zone of the agent.
-	AvailabilityZone string `json:"availability_zone"`
-
-	// Binary is an executable binary of the agent.
-	Binary string `json:"binary"`
-
-	// Configurations is a configuration specific key/value pairs that are
-	// determined by the agent binary and type.
-	Configurations map[string]interface{} `json:"configurations"`
-
-	// CreatedAt is a creation timestamp.
-	CreatedAt time.Time `json:"-"`
-
-	// StartedAt is a starting timestamp.
-	StartedAt time.Time `json:"-"`
-
-	// HeartbeatTimestamp is a last heartbeat timestamp.
-	HeartbeatTimestamp time.Time `json:"-"`
-
-	// Description contains agent description.
-	Description string `json:"description"`
-
-	// Host is a hostname of the agent system.
-	Host string `json:"host"`
-
-	// Topic contains name of AMQP topic.
-	Topic string `json:"topic"`
-
-	// HAState is a ha state of agent(active/standby) for router
-	HAState string `json:"ha_state"`
-
-	// ResourceVersions is a list agent known objects and version numbers
-	ResourceVersions map[string]interface{} `json:"resource_versions"`
-}
-
-// UnmarshalJSON helps to convert the timestamps into the time.Time type.
-func (r *L3Agent) UnmarshalJSON(b []byte) error {
-	type tmp L3Agent
-	var s struct {
-		tmp
-		CreatedAt          gophercloud.JSONRFC3339ZNoTNoZ `json:"created_at"`
-		StartedAt          gophercloud.JSONRFC3339ZNoTNoZ `json:"started_at"`
-		HeartbeatTimestamp gophercloud.JSONRFC3339ZNoTNoZ `json:"heartbeat_timestamp"`
-	}
-	err := json.Unmarshal(b, &s)
-	if err != nil {
-		return err
-	}
-	*r = L3Agent(s.tmp)
-
-	r.CreatedAt = time.Time(s.CreatedAt)
-	r.StartedAt = time.Time(s.StartedAt)
-	r.HeartbeatTimestamp = time.Time(s.HeartbeatTimestamp)
-
-	return nil
-}
-
 // NextPageURL is invoked when a paginated collection of routers has reached
 // the end of a page and the pager seeks to traverse over a new one. In order
 // to do this, it needs to construct the next page's URL.
@@ -258,18 +183,95 @@ func (r InterfaceResult) Extract() (*InterfaceInfo, error) {
 	return &s, err
 }
 
-// ListL3AgentsResult is the response from a List operation.
-// Call its Extract method to interpret it as l3-agents.
-type ListL3AgentsResult struct {
-	gophercloud.Result
+// L3Agent represents a Neutron agent for routers.
+type L3Agent struct {
+	// ID is the id of the agent.
+	ID string `json:"id"`
+
+	// AdminStateUp is an administrative state of the agent.
+	AdminStateUp bool `json:"admin_state_up"`
+
+	// AgentType is a type of the agent.
+	AgentType string `json:"agent_type"`
+
+	// Alive indicates whether agent is alive or not.
+	Alive bool `json:"alive"`
+
+	// ResourcesSynced indicates whether agent is synced or not.
+	// Not all agent types track resources via Placement.
+	ResourcesSynced bool `json:"resources_synced"`
+
+	// AvailabilityZone is a zone of the agent.
+	AvailabilityZone string `json:"availability_zone"`
+
+	// Binary is an executable binary of the agent.
+	Binary string `json:"binary"`
+
+	// Configurations is a configuration specific key/value pairs that are
+	// determined by the agent binary and type.
+	Configurations map[string]interface{} `json:"configurations"`
+
+	// CreatedAt is a creation timestamp.
+	CreatedAt time.Time `json:"-"`
+
+	// StartedAt is a starting timestamp.
+	StartedAt time.Time `json:"-"`
+
+	// HeartbeatTimestamp is a last heartbeat timestamp.
+	HeartbeatTimestamp time.Time `json:"-"`
+
+	// Description contains agent description.
+	Description string `json:"description"`
+
+	// Host is a hostname of the agent system.
+	Host string `json:"host"`
+
+	// Topic contains name of AMQP topic.
+	Topic string `json:"topic"`
+
+	// HAState is a ha state of agent(active/standby) for router
+	HAState string `json:"ha_state"`
+
+	// ResourceVersions is a list agent known objects and version numbers
+	ResourceVersions map[string]interface{} `json:"resource_versions"`
 }
 
-// Extract interprets any ListL3AgentsResult as an array of networks.
-func (r ListL3AgentsResult) Extract() ([]L3Agent, error) {
+// UnmarshalJSON helps to convert the timestamps into the time.Time type.
+func (r *L3Agent) UnmarshalJSON(b []byte) error {
+	type tmp L3Agent
+	var s struct {
+		tmp
+		CreatedAt          gophercloud.JSONRFC3339ZNoTNoZ `json:"created_at"`
+		StartedAt          gophercloud.JSONRFC3339ZNoTNoZ `json:"started_at"`
+		HeartbeatTimestamp gophercloud.JSONRFC3339ZNoTNoZ `json:"heartbeat_timestamp"`
+	}
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+	*r = L3Agent(s.tmp)
+
+	r.CreatedAt = time.Time(s.CreatedAt)
+	r.StartedAt = time.Time(s.StartedAt)
+	r.HeartbeatTimestamp = time.Time(s.HeartbeatTimestamp)
+
+	return nil
+}
+
+type ListL3AgentsPage struct {
+	pagination.SinglePageBase
+}
+
+func (r ListL3AgentsPage) IsEmpty() (bool, error) {
+	v, err := ExtractL3Agents(r)
+	return len(v) == 0, err
+}
+
+func ExtractL3Agents(r pagination.Page) ([]L3Agent, error) {
 	var s struct {
 		L3Agents []L3Agent `json:"agents"`
 	}
 
-	err := r.ExtractInto(&s)
+	err := (r.(ListL3AgentsPage)).ExtractInto(&s)
 	return s.L3Agents, err
 }
