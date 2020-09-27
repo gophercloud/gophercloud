@@ -553,8 +553,9 @@ func TestListL3Agents(t *testing.T) {
 			`)
 	})
 
-	actual, err := routers.ListL3Agents(fake.ServiceClient(), "fa3a4aaa-c73f-48aa-a603-8c8bf642b7c0").Extract()
+	l3AgentsPages, err := routers.ListL3Agents(fake.ServiceClient(), "fa3a4aaa-c73f-48aa-a603-8c8bf642b7c0").AllPages()
 	th.AssertNoErr(t, err)
+	actual, err := routers.ExtractL3Agents(l3AgentsPages)
 
 	expected := []routers.L3Agent{
 		{
