@@ -13,6 +13,7 @@ IMPROVEMENTS
 * Added `loadbalancer/v2/loadbalancers.ListOpts.AvailabilityZone` [GH-2026](https://github.com/gophercloud/gophercloud/pull/2026)
 * Added `loadbalancer/v2/loadbalancers.CreateOpts.AvailabilityZone` [GH-2026](https://github.com/gophercloud/gophercloud/pull/2026)
 * Added `loadbalancer/v2/loadbalancers.LoadBalancer.AvailabilityZone` [GH-2026](https://github.com/gophercloud/gophercloud/pull/2026)
+* Added `networking/v2/extensions/layer3/routers.ListL3Agents` [GH-2025](https://github.com/gophercloud/gophercloud/pull/2025)
 
 BUG FIXES
 
