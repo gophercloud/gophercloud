@@ -89,6 +89,17 @@ Example to Update a Cluster
 	}
 	fmt.Printf("%s\n", clusterUUID)
 
+Example to Upgrade a Cluster
+
+	upgradeOpts := clusters.UpgradeOpts{
+		ClusterTemplate: "0562d357-8641-4759-8fed-8173f02c9633",
+	}
+	clusterUUID, err := clusters.Upgrade(serviceClient, clusterUUID, upgradeOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s\n", clusterUUID)
+
 Example to Delete a Cluster
 
 	clusterUUID := "dc6d336e3fc4c0a951b5698cd1236ee"
