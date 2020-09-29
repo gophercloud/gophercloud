@@ -3,6 +3,7 @@
 IMPROVEMENTS
 
 * Added `identity/v3/endpoints.Endpoint.Enabled` [GH-2030](https://github.com/gophercloud/gophercloud/pull/2030)
+* Added `containerinfra/v1/clusters.Upgrade` [GH-2032](https://github.com/gophercloud/gophercloud/pull/2032)
 
 ## 0.13.0 (September 27, 2020)
 
