@@ -1,5 +1,9 @@
 ## 0.14.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Added `identity/v3/endpoints.Endpoint.Enabled` [GH-2030](https://github.com/gophercloud/gophercloud/pull/2030)
+
 ## 0.13.0 (September 27, 2020)
 
 IMPROVEMENTS
