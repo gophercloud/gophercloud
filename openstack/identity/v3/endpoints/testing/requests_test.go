@@ -37,7 +37,8 @@ func TestCreateSuccessful(t *testing.T) {
         "endpoint": {
           "id": "12",
           "interface": "public",
-          "links": {
+		  "enabled": true,
+		  "links": {
             "self": "https://localhost:5000/v3/endpoints/12"
           },
           "name": "the-endiest-of-points",
@@ -61,6 +62,7 @@ func TestCreateSuccessful(t *testing.T) {
 	expected := &endpoints.Endpoint{
 		ID:           "12",
 		Availability: gophercloud.AvailabilityPublic,
+		Enabled:      true,
 		Name:         "the-endiest-of-points",
 		Region:       "underground",
 		ServiceID:    "asdfasdfasdfasdf",
@@ -85,6 +87,7 @@ func TestListEndpoints(t *testing.T) {
 					{
 						"id": "12",
 						"interface": "public",
+						"enabled": true,
 						"links": {
 							"self": "https://localhost:5000/v3/endpoints/12"
 						},
@@ -96,6 +99,7 @@ func TestListEndpoints(t *testing.T) {
 					{
 						"id": "13",
 						"interface": "internal",
+						"enabled": false,
 						"links": {
 							"self": "https://localhost:5000/v3/endpoints/13"
 						},
@@ -126,6 +130,7 @@ func TestListEndpoints(t *testing.T) {
 			{
 				ID:           "12",
 				Availability: gophercloud.AvailabilityPublic,
+				Enabled:      true,
 				Name:         "the-endiest-of-points",
 				Region:       "underground",
 				ServiceID:    "asdfasdfasdfasdf",
@@ -134,6 +139,7 @@ func TestListEndpoints(t *testing.T) {
 			{
 				ID:           "13",
 				Availability: gophercloud.AvailabilityInternal,
+				Enabled:      false,
 				Name:         "shhhh",
 				Region:       "underground",
 				ServiceID:    "asdfasdfasdfasdf",
@@ -167,6 +173,7 @@ func TestUpdateEndpoint(t *testing.T) {
 			"endpoint": {
 				"id": "12",
 				"interface": "public",
+				"enabled": true,
 				"links": {
 					"self": "https://localhost:5000/v3/endpoints/12"
 				},
@@ -190,6 +197,7 @@ func TestUpdateEndpoint(t *testing.T) {
 	expected := &endpoints.Endpoint{
 		ID:           "12",
 		Availability: gophercloud.AvailabilityPublic,
+		Enabled:      true,
 		Name:         "renamed",
 		Region:       "somewhere-else",
 		ServiceID:    "asdfasdfasdfasdf",
