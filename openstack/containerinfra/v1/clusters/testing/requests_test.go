@@ -152,6 +152,31 @@ func TestUpdateCluster(t *testing.T) {
 	th.AssertDeepEquals(t, clusterUUID, actual)
 }
 
+func TestUpgradeCluster(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	HandleUpgradeClusterSuccessfully(t)
+
+	var opts clusters.UpgradeOptsBuilder
+	opts = clusters.UpgradeOpts{
+		ClusterTemplate: "0562d357-8641-4759-8fed-8173f02c9633",
+	}
+
+	sc := fake.ServiceClient()
+	sc.Endpoint = sc.Endpoint + "v1/"
+	res := clusters.Upgrade(sc, clusterUUID, opts)
+	th.AssertNoErr(t, res.Err)
+
+	requestID := res.Header.Get("X-OpenStack-Request-Id")
+	th.AssertEquals(t, requestUUID, requestID)
+
+	actual, err := res.Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertDeepEquals(t, clusterUUID, actual)
+}
+
 func TestDeleteCluster(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

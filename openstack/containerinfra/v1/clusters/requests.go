@@ -164,6 +164,42 @@ func Update(client *gophercloud.ServiceClient, id string, opts []UpdateOptsBuild
 	return
 }
 
+type UpgradeOpts struct {
+	ClusterTemplate string `json:"cluster_template" required:"true"`
+	MaxBatchSize    *int   `json:"max_batch_size,omitempty"`
+	NodeGroup       string `json:"nodegroup,omitempty"`
+}
+
+// UpgradeOptsBuilder allows extensions to add additional parameters to the
+// Upgrade request.
+type UpgradeOptsBuilder interface {
+	ToClustersUpgradeMap() (map[string]interface{}, error)
+}
+
+// ToClustersUpgradeMap constructs a request body from UpgradeOpts.
+func (opts UpgradeOpts) ToClustersUpgradeMap() (map[string]interface{}, error) {
+	if opts.MaxBatchSize == nil {
+		defaultMaxBatchSize := 1
+		opts.MaxBatchSize = &defaultMaxBatchSize
+	}
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// Upgrade implements cluster upgrade request.
+func Upgrade(client *gophercloud.ServiceClient, id string, opts UpgradeOptsBuilder) (r UpgradeResult) {
+	b, err := opts.ToClustersUpgradeMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+
+	resp, err := client.Post(upgradeURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 // ResizeOptsBuilder allows extensions to add additional parameters to the
 // Resize request.
 type ResizeOptsBuilder interface {
