@@ -7,21 +7,21 @@ import (
 
 // Rule represents a firewall rule
 type Rule struct {
-	ID                   string `json:"id"`
-	Name                 string `json:"name,omitempty"`
-	Description          string `json:"description,omitempty"`
-	Protocol             string `json:"protocol"`
-	Action               string `json:"action"`
-	IPVersion            int    `json:"ip_version,omitempty"`
-	SourceIPAddress      string `json:"source_ip_address,omitempty"`
-	DestinationIPAddress string `json:"destination_ip_address,omitempty"`
-	SourcePort           string `json:"source_port,omitempty"`
-	DestinationPort      string `json:"destination_port,omitempty"`
-	Shared               bool   `json:"shared,omitempty"`
-	Enabled              bool   `json:"enabled,omitempty"`
-	FirewallPolicyID     string `json:"firewall_policy_id"`
-	TenantID             string `json:"tenant_id"`
-	ProjectID            string `json:"project_id"`
+	ID                   string   `json:"id"`
+	Name                 string   `json:"name,omitempty"`
+	Description          string   `json:"description,omitempty"`
+	Protocol             string   `json:"protocol"`
+	Action               string   `json:"action"`
+	IPVersion            int      `json:"ip_version,omitempty"`
+	SourceIPAddress      string   `json:"source_ip_address,omitempty"`
+	DestinationIPAddress string   `json:"destination_ip_address,omitempty"`
+	SourcePort           string   `json:"source_port,omitempty"`
+	DestinationPort      string   `json:"destination_port,omitempty"`
+	Shared               bool     `json:"shared,omitempty"`
+	Enabled              bool     `json:"enabled,omitempty"`
+	FirewallPolicyID     []string `json:"firewall_policy_id"`
+	TenantID             string   `json:"tenant_id"`
+	ProjectID            string   `json:"project_id"`
 }
 
 // RulePage is the page returned by a pager when traversing over a

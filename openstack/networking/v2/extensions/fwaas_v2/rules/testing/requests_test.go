@@ -32,7 +32,7 @@ func TestList(t *testing.T) {
             "source_port": null,
             "source_ip_address": null,
             "destination_ip_address": "192.168.1.0/24",
-            "firewall_policy_id": "e2a5fb51-698c-4898-87e8-f1eee6b50919",
+            "firewall_policy_id": ["e2a5fb51-698c-4898-87e8-f1eee6b50919"],
             "destination_port": "22",
             "id": "f03bd950-6c56-4f5e-a307-45967078f507",
             "name": "ssh_form_any",
@@ -48,7 +48,7 @@ func TestList(t *testing.T) {
             "source_port": null,
             "source_ip_address": null,
             "destination_ip_address": null,
-            "firewall_policy_id": "98d7fb51-698c-4123-87e8-f1eee6b5ab7e",
+            "firewall_policy_id": ["98d7fb51-698c-4123-87e8-f1eee6b5ab7e"],
             "destination_port": null,
             "id": "ab7bd950-6c56-4f5e-a307-45967078f890",
             "name": "deny_all_udp",
@@ -80,7 +80,7 @@ func TestList(t *testing.T) {
 				SourcePort:           "",
 				SourceIPAddress:      "",
 				DestinationIPAddress: "192.168.1.0/24",
-				FirewallPolicyID:     "e2a5fb51-698c-4898-87e8-f1eee6b50919",
+				FirewallPolicyID:     []string{"e2a5fb51-698c-4898-87e8-f1eee6b50919"},
 				DestinationPort:      "22",
 				ID:                   "f03bd950-6c56-4f5e-a307-45967078f507",
 				Name:                 "ssh_form_any",
@@ -96,7 +96,7 @@ func TestList(t *testing.T) {
 				SourcePort:           "",
 				SourceIPAddress:      "",
 				DestinationIPAddress: "",
-				FirewallPolicyID:     "98d7fb51-698c-4123-87e8-f1eee6b5ab7e",
+				FirewallPolicyID:     []string{"98d7fb51-698c-4123-87e8-f1eee6b5ab7e"},
 				DestinationPort:      "",
 				ID:                   "ab7bd950-6c56-4f5e-a307-45967078f890",
 				Name:                 "deny_all_udp",
@@ -151,7 +151,7 @@ func TestCreate(t *testing.T) {
 		"source_port": null,
 		"source_ip_address": null,
 		"destination_ip_address": "192.168.1.0/24",
-		"firewall_policy_id": "e2a5fb51-698c-4898-87e8-f1eee6b50919",
+		"firewall_policy_id": ["e2a5fb51-698c-4898-87e8-f1eee6b50919"],
 		"position": 2,
 		"destination_port": "22",
 		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
@@ -213,7 +213,7 @@ func TestCreateAnyProtocol(t *testing.T) {
 		"source_port": null,
 		"source_ip_address": null,
 		"destination_ip_address": "192.168.1.0/24",
-		"firewall_policy_id": "e2a5fb51-698c-4898-87e8-f1eee6b50919",
+		"firewall_policy_id": ["e2a5fb51-698c-4898-87e8-f1eee6b50919"],
 		"position": 2,
 		"destination_port": null,
 		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
@@ -260,7 +260,7 @@ func TestGet(t *testing.T) {
 		"source_port": null,
 		"source_ip_address": null,
 		"destination_ip_address": "192.168.1.0/24",
-		"firewall_policy_id": "e2a5fb51-698c-4898-87e8-f1eee6b50919",
+		"firewall_policy_id": ["e2a5fb51-698c-4898-87e8-f1eee6b50919"],
 		"position": 2,
 		"destination_port": "22",
 		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
@@ -281,7 +281,8 @@ func TestGet(t *testing.T) {
 	th.AssertEquals(t, "tcp", rule.Protocol)
 	th.AssertEquals(t, "ssh rule", rule.Description)
 	th.AssertEquals(t, "192.168.1.0/24", rule.DestinationIPAddress)
-	th.AssertEquals(t, "e2a5fb51-698c-4898-87e8-f1eee6b50919", rule.FirewallPolicyID)
+	th.AssertEquals(t, 1, len(rule.FirewallPolicyID))
+	th.AssertEquals(t, "e2a5fb51-698c-4898-87e8-f1eee6b50919", rule.FirewallPolicyID[0])
 	th.AssertEquals(t, "22", rule.DestinationPort)
 	th.AssertEquals(t, "f03bd950-6c56-4f5e-a307-45967078f507", rule.ID)
 	th.AssertEquals(t, "ssh_form_any", rule.Name)
@@ -324,7 +325,7 @@ func TestUpdate(t *testing.T) {
 		"protocol": "tcp",
 		"description": "ssh rule",
 		"destination_ip_address": "192.168.1.0/24",
-		"firewall_policy_id": "e2a5fb51-698c-4898-87e8-f1eee6b50919",
+		"firewall_policy_id": ["e2a5fb51-698c-4898-87e8-f1eee6b50919"],
 		"position": 2,
 		"destination_port": "22",
 		"id": "f03bd950-6c56-4f5e-a307-45967078f507",
