@@ -1,0 +1,173 @@
+package testing
+
+import (
+	"fmt"
+	"net/http"
+	"testing"
+
+	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas_v2/groups"
+	"github.com/gophercloud/gophercloud/pagination"
+	th "github.com/gophercloud/gophercloud/testhelper"
+)
+
+func TestList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_groups", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "firewall_groups": [
+    {
+      "id": "3af94f0e-b52d-491a-87d2-704497305948",
+      "tenant_id": "9f98fc0e5f944cd1b51798b668dc8778",
+      "name": "test",
+      "description": "fancy group",
+      "ingress_firewall_policy_id": "e3f11142-3792-454b-8d3e-91ac1bf127b4",
+      "egress_firewall_policy_id": null,
+      "admin_state_up": true,
+      "ports": [
+        "a6af1e56-b12b-4733-8f77-49166afd5719"
+      ],
+      "status": "ACTIVE",
+      "shared": false,
+      "project_id": "9f98fc0e5f944cd1b51798b668dc8778"
+    },
+    {
+      "id": "f9fbb80c-eeb4-4f3f-aa50-1032960c08ea",
+      "tenant_id": "9f98fc0e5f944cd1b51798b668dc8778",
+      "name": "default",
+      "description": "Default firewall group",
+      "ingress_firewall_policy_id": "90e3fcac-3bfb-48f9-8e91-2a78fb352b92",
+      "egress_firewall_policy_id": "122fb344-3c28-49f0-af00-f7fcbc88330b",
+      "admin_state_up": true,
+      "ports": [
+        "20da216c-bab3-4cf6-bd6b-8904b133a816",
+        "4f4c714c-185f-487e-998c-c1a35da3c4f4",
+        "681b1db4-40ca-4314-b098-d2f43225e7f7",
+        "82f9d868-6f56-44fb-9684-654dc473bed0",
+        "a5858b5d-20dc-4bb1-9f95-1d322c8bb81b",
+        "d25a04a2-447b-4ee1-80d7-b32967dbb643"
+      ],
+      "status": "ACTIVE",
+      "shared": false,
+      "project_id": "9f98fc0e5f944cd1b51798b668dc8778"
+    }
+  ]
+}
+        `)
+	})
+
+	count := 0
+
+	groups.List(fake.ServiceClient(), groups.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := groups.ExtractGroups(page)
+		if err != nil {
+			t.Errorf("Failed to extract members: %v", err)
+			return false, err
+		}
+
+		expected := []groups.Group{
+			{
+				ID:                      "3af94f0e-b52d-491a-87d2-704497305948",
+				TenantID:                "9f98fc0e5f944cd1b51798b668dc8778",
+				Name:                    "test",
+				Description:             "fancy group",
+				IngressFirewallPolicyID: "e3f11142-3792-454b-8d3e-91ac1bf127b4",
+				EgressFirewallPolicyID:  "",
+				AdminStateUp:            true,
+				Ports: []string{
+					"a6af1e56-b12b-4733-8f77-49166afd5719",
+				},
+				Status:    "ACTIVE",
+				Shared:    false,
+				ProjectID: "9f98fc0e5f944cd1b51798b668dc8778",
+			},
+			{
+				ID:                      "f9fbb80c-eeb4-4f3f-aa50-1032960c08ea",
+				TenantID:                "9f98fc0e5f944cd1b51798b668dc8778",
+				Name:                    "default",
+				Description:             "Default firewall group",
+				IngressFirewallPolicyID: "90e3fcac-3bfb-48f9-8e91-2a78fb352b92",
+				EgressFirewallPolicyID:  "122fb344-3c28-49f0-af00-f7fcbc88330b",
+				AdminStateUp:            true,
+				Ports: []string{
+					"20da216c-bab3-4cf6-bd6b-8904b133a816",
+					"4f4c714c-185f-487e-998c-c1a35da3c4f4",
+					"681b1db4-40ca-4314-b098-d2f43225e7f7",
+					"82f9d868-6f56-44fb-9684-654dc473bed0",
+					"a5858b5d-20dc-4bb1-9f95-1d322c8bb81b",
+					"d25a04a2-447b-4ee1-80d7-b32967dbb643",
+				},
+				Status:    "ACTIVE",
+				Shared:    false,
+				ProjectID: "9f98fc0e5f944cd1b51798b668dc8778",
+			},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
+}
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_groups/6bfb0f10-07f7-4a40-b534-bad4b4ca3428", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "firewall_group": {
+    "id": "6bfb0f10-07f7-4a40-b534-bad4b4ca3428",
+    "tenant_id": "9f98fc0e5f944cd1b51798b668dc8778",
+    "name": "test",
+    "description": "some information",
+    "ingress_firewall_policy_id": "e3f11142-3792-454b-8d3e-91ac1bf127b4",
+    "egress_firewall_policy_id": null,
+    "admin_state_up": true,
+    "ports": [
+      "a6af1e56-b12b-4733-8f77-49166afd5719"
+    ],
+    "status": "ACTIVE",
+    "shared": false,
+    "project_id": "9f98fc0e5f944cd1b51798b668dc8778"
+  }
+}
+        `)
+	})
+
+	group, err := groups.Get(fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428").Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "6bfb0f10-07f7-4a40-b534-bad4b4ca3428", group.ID)
+	th.AssertEquals(t, "9f98fc0e5f944cd1b51798b668dc8778", group.TenantID)
+	th.AssertEquals(t, "test", group.Name)
+	th.AssertEquals(t, "some information", group.Description)
+	th.AssertEquals(t, "e3f11142-3792-454b-8d3e-91ac1bf127b4", group.IngressFirewallPolicyID)
+	th.AssertEquals(t, "", group.EgressFirewallPolicyID)
+	th.AssertEquals(t, true, group.AdminStateUp)
+	th.AssertEquals(t, 1, len(group.Ports))
+	th.AssertEquals(t, "a6af1e56-b12b-4733-8f77-49166afd5719", group.Ports[0])
+	th.AssertEquals(t, "ACTIVE", group.Status)
+	th.AssertEquals(t, false, group.Shared)
+	th.AssertEquals(t, "9f98fc0e5f944cd1b51798b668dc8778", group.TenantID)
+}
