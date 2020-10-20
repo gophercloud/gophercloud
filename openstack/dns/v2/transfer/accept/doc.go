@@ -22,10 +22,10 @@ Example to List Zone Transfer Accepts
 Example to Create a Zone Transfer Accept
 
 	zoneTransferRequestID := "99d10f68-5623-4491-91a0-6daafa32b60e"
-        keyID := "JKHGD2F7"
+        key := "JKHGD2F7"
 	createOpts := transferAccepts.CreateOpts{
                 ZoneTransferRequestID: zoneTransferRequestID,
-		KeyID: keyID,
+		Key: key,
 	}
 	transferAccept, err := transferAccepts.Create(dnsClient, createOpts).Extract()
 	if err != nil {
