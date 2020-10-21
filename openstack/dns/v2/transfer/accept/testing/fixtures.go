@@ -48,6 +48,28 @@ const ListOutput = `
 }
 `
 
+// FilteredListOutput is a sample response to a List call with Opts.
+const FilteredListOutput = `
+{
+    "transfer_accepts": [
+        {
+            "id": "f785ef12-7ee0-4c30-bd67-a2b9edba0dff",
+            "status": "ACTIVE",
+            "project_id": "9f3cfb08bf52469abe598e127676cd57",
+            "zone_id": "30d67a9a-d6df-4ba7-9b55-fb49e7987f84",
+            "key": "SDF32HJ1",
+            "zone_transfer_request_id": "c5d11193-72ea-4d9f-ba04-7f80e99627fa",
+            "created_at": "2020-10-12T09:38:58.000000",
+            "updated_at": "2020-10-12T09:38:58.000000",
+            "links": {
+                "self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_accepts/f785ef12-7ee0-4c30-bd67-a2b9edba0dff",
+                "zone": "https://127.0.0.1:9001/v2/zones/30d67a9a-d6df-4ba7-9b55-fb49e7987f84"
+            }
+        }
+    ]
+}
+`
+
 // GetOutput is a sample response to a Get call.
 const GetOutput = `
 {
@@ -112,6 +134,18 @@ func HandleListSuccessfully(t *testing.T) {
 			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 			w.Header().Add("Content-Type", "application/json")
 			fmt.Fprintf(w, ListOutput)
+		})
+}
+
+// HandleFilteredListSuccessfully configures the test server to respond to a List request with Opts.
+func HandleFilteredListSuccessfully(t *testing.T) {
+	baseURL := "/zones/tasks/transfer_accepts"
+	th.Mux.HandleFunc(baseURL,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+			w.Header().Add("Content-Type", "application/json")
+			fmt.Fprintf(w, FilteredListOutput)
 		})
 }
 

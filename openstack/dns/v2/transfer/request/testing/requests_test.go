@@ -27,6 +27,22 @@ func TestList(t *testing.T) {
 	th.CheckEquals(t, 1, count)
 }
 
+func TestListWithOpts(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListSuccessfully(t)
+
+	listOpts := transferRequests.ListOpts{
+		Status: "ACTIVE",
+	}
+
+	allPages, err := transferRequests.List(client.ServiceClient(), listOpts).AllPages()
+	th.AssertNoErr(t, err)
+	allTransferRequests, err := transferRequests.ExtractTransferRequests(allPages)
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, 2, len(allTransferRequests))
+}
+
 func TestListAllPages(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
