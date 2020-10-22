@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
-	identity "github.com/gophercloud/gophercloud/acceptance/openstack/identity/v2"
+	identity "github.com/gophercloud/gophercloud/acceptance/openstack/identity/v3"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	transferAccepts "github.com/gophercloud/gophercloud/openstack/dns/v2/transfer/accept"
 	transferRequests "github.com/gophercloud/gophercloud/openstack/dns/v2/transfer/request"
@@ -38,13 +38,13 @@ func TestTransferRequestCRUD(t *testing.T) {
 	var foundRequest bool
 	for _, tr := range allTransferRequests {
 		tools.PrintResource(t, &tr)
-		if transferRequest.ID == tr.ZoneID {
+		if transferRequest.ZoneID == tr.ZoneID {
 			foundRequest = true
 		}
 	}
 	th.AssertEquals(t, foundRequest, true)
 
-	description := ""
+	description := "new description"
 	updateOpts := transferRequests.UpdateOpts{
 		Description: description,
 	}
@@ -57,16 +57,15 @@ func TestTransferRequestCRUD(t *testing.T) {
 }
 
 func TestTransferRequestAccept(t *testing.T) {
-	// Create new tenant
-	clients.RequireIdentityV2(t)
+	// Create new project
 	clients.RequireAdmin(t)
 
-	identityClient, err := clients.NewIdentityV2AdminClient()
+	identityClient, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	newTenant, err := identity.CreateTenant(t, identityClient, nil)
+	project, err := identity.CreateProject(t, identityClient, nil)
 	th.AssertNoErr(t, err)
-	defer identity.DeleteTenant(t, identityClient, newTenant.ID)
+	defer identity.DeleteProject(t, identityClient, project.ID)
 
 	// Create new Zone
 	clients.RequireDNS(t)
@@ -79,7 +78,7 @@ func TestTransferRequestAccept(t *testing.T) {
 	defer DeleteZone(t, client, zone)
 
 	// Create transfers request to new tenant
-	transferRequest, err := CreateTransferRequest(t, client, zone, newTenant.ID)
+	transferRequest, err := CreateTransferRequest(t, client, zone, project.ID)
 
 	// Accept Zone Transfer Request
 	transferAccept, err := CreateTransferAccept(t, client, transferRequest.ID, transferRequest.Key)
@@ -93,7 +92,7 @@ func TestTransferRequestAccept(t *testing.T) {
 	var foundAccept bool
 	for _, ta := range allTransferAccepts {
 		tools.PrintResource(t, &ta)
-		if transferAccept.ID == ta.ZoneID {
+		if transferAccept.ZoneID == ta.ZoneID {
 			foundAccept = true
 		}
 	}
