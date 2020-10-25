@@ -70,3 +70,41 @@ func Get(c *gophercloud.ServiceClient, id string) (r GetResult) {
 	_, r.Err = c.Get(resourceURL(c, id), &r.Body, nil)
 	return
 }
+
+// CreateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Create operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
+type CreateOptsBuilder interface {
+	ToFirewallGroupCreateMap() (map[string]interface{}, error)
+}
+
+// CreateOpts contains all the values needed to create a new firewall group.
+type CreateOpts struct {
+	ID                      string   `json:"id,omitempty"`
+	TenantID                string   `json:"tenant_id,omitempty"`
+	Name                    string   `json:"name,omitempty"`
+	Description             string   `json:"description,omitempty"`
+	IngressFirewallPolicyID string   `json:"ingress_firewall_policy_id,omitempty"`
+	EgressFirewallPolicyID  string   `json:"egress_firewall_policy_id,omitempty"`
+	AdminStateUp            *bool    `json:"admin_state_up,omitempty"`
+	Ports                   []string `json:"ports,omitempty"`
+	Shared                  *bool    `json:"shared,omitempty"`
+	ProjectID               string   `json:"project_id,omitempty"`
+}
+
+// ToFirewallGroupCreateMap casts a CreateOpts struct to a map.
+func (opts CreateOpts) ToFirewallGroupCreateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "firewall_group")
+}
+
+// Create accepts a CreateOpts struct and uses the values to create a new firewall group
+func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
+	b, err := opts.ToFirewallGroupCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
+	return
+}

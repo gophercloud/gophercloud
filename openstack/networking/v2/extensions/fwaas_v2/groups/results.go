@@ -74,3 +74,8 @@ func ExtractGroups(r pagination.Page) ([]Group, error) {
 type GetResult struct {
 	commonResult
 }
+
+// CreateResult represents the result of a create operation.
+type CreateResult struct {
+	commonResult
+}
