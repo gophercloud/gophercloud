@@ -79,3 +79,13 @@ type GetResult struct {
 type CreateResult struct {
 	commonResult
 }
+
+// UpdateResult represents the result of an update operation.
+type UpdateResult struct {
+	commonResult
+}
+
+// DeleteResult represents the result of a delete operation.
+type DeleteResult struct {
+	gophercloud.ErrResult
+}

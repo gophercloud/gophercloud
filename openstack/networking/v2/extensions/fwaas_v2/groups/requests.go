@@ -108,3 +108,46 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 	_, r.Err = c.Post(rootURL(c), b, &r.Body, nil)
 	return
 }
+
+// UpdateOptsBuilder is the interface options structs have to satisfy in order
+// to be used in the main Update operation in this package. Since many
+// extensions decorate or modify the common logic, it is useful for them to
+// satisfy a basic interface in order for them to be used.
+type UpdateOptsBuilder interface {
+	ToFirewallGroupUpdateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contains the values used when updating a firewall group.
+type UpdateOpts struct {
+	Name                    *string  `json:"name,omitempty"`
+	Description             *string  `json:"description,omitempty"`
+	IngressFirewallPolicyID *string  `json:"ingress_firewall_policy_id,omitempty"`
+	EgressFirewallPolicyID  *string  `json:"egress_firewall_policy_id,omitempty"`
+	AdminStateUp            *bool    `json:"admin_state_up,omitempty"`
+	Ports                   []string `json:"ports,omitempty"`
+	Shared                  *bool    `json:"shared,omitempty"`
+}
+
+// ToFirewallGroupUpdateMap casts a CreateOpts struct to a map.
+func (opts UpdateOpts) ToFirewallGroupUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "firewall_group")
+}
+
+// Update allows firewall groups to be updated.
+func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r UpdateResult) {
+	b, err := opts.ToFirewallGroupUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	return
+}
+
+// Delete will permanently delete a particular firewall group based on its unique ID.
+func Delete(c *gophercloud.ServiceClient, id string) (r DeleteResult) {
+	_, r.Err = c.Delete(resourceURL(c, id), nil)
+	return
+}

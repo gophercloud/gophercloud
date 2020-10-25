@@ -229,3 +229,82 @@ func TestCreate(t *testing.T) {
 	_, err := groups.Create(fake.ServiceClient(), options).Extract()
 	th.AssertNoErr(t, err)
 }
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_groups/6bfb0f10-07f7-4a40-b534-bad4b4ca3428", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "firewall_group":{
+        "name": "the group",
+        "ports": [
+					"a6af1e56-b12b-4733-8f77-49166afd5719",
+					"11a58c87-76be-ae7c-a74e-b77fffb88a32"
+        ],
+				"description": "Firewall group",
+				"admin_state_up": false
+    }
+}
+      `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+  "firewall_group": {
+    "id": "6bfb0f10-07f7-4a40-b534-bad4b4ca3428",
+    "tenant_id": "9f98fc0e5f944cd1b51798b668dc8778",
+    "name": "test",
+    "description": "some information",
+    "ingress_firewall_policy_id": "e3f11142-3792-454b-8d3e-91ac1bf127b4",
+    "egress_firewall_policy_id": null,
+    "admin_state_up": true,
+    "ports": [
+      "a6af1e56-b12b-4733-8f77-49166afd5719",
+			"11a58c87-76be-ae7c-a74e-b77fffb88a32"
+    ],
+    "status": "ACTIVE",
+    "shared": false,
+    "project_id": "9f98fc0e5f944cd1b51798b668dc8778"
+  }
+}
+    `)
+	})
+
+	name := "the group"
+	description := "Firewall group"
+	adminStateUp := false
+	options := groups.UpdateOpts{
+		Name:        &name,
+		Description: &description,
+		Ports: []string{
+			"a6af1e56-b12b-4733-8f77-49166afd5719",
+			"11a58c87-76be-ae7c-a74e-b77fffb88a32",
+		},
+		AdminStateUp: &adminStateUp,
+	}
+
+	_, err := groups.Update(fake.ServiceClient(), "6bfb0f10-07f7-4a40-b534-bad4b4ca3428", options).Extract()
+	th.AssertNoErr(t, err)
+}
+
+func TestDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_groups/4ec89077-d057-4a2b-911f-60a3b47ee304", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	res := groups.Delete(fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
+	th.AssertNoErr(t, res.Err)
+}
