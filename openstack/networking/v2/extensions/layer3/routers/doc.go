@@ -48,7 +48,20 @@ Example to Update a Router
 
 	updateOpts := routers.UpdateOpts{
 		Name:   "new_name",
-		Routes: routes,
+		Routes: &routes,
+	}
+
+	router, err := routers.Update(networkClient, routerID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Update just the Router name, keeping everything else as-is
+
+	routerID := "4e8e5957-649f-477b-9e5b-f1f75b21c03c"
+
+	updateOpts := routers.UpdateOpts{
+		Name:   "new_name",
 	}
 
 	router, err := routers.Update(networkClient, routerID, updateOpts).Extract()
@@ -63,7 +76,7 @@ Example to Remove all Routes from a Router
 	routes := []routers.Route{}
 
 	updateOpts := routers.UpdateOpts{
-		Routes: routes,
+		Routes: &routes,
 	}
 
 	router, err := routers.Update(networkClient, routerID, updateOpts).Extract()
