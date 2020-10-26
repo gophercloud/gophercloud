@@ -344,13 +344,10 @@ func TestUpdateWithoutRoutes(t *testing.T) {
 		th.TestJSONRequest(t, r, `
 {
     "router": {
-			"name": "new_name",
-        "external_gateway_info": {
-            "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b"
-		}
+        "name": "new_name"
     }
 }
-			`)
+		`)
 
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -381,18 +378,12 @@ func TestUpdateWithoutRoutes(t *testing.T) {
 		`)
 	})
 
-	gwi := routers.GatewayInfo{NetworkID: "8ca37218-28ff-41cb-9b10-039601ea7e6b"}
-	options := routers.UpdateOpts{Name: "new_name", GatewayInfo: &gwi}
+	options := routers.UpdateOpts{Name: "new_name"}
 
 	n, err := routers.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
 
-	gwi.ExternalFixedIPs = []routers.ExternalFixedIP{
-		{IPAddress: "192.0.2.17", SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"},
-	}
-
 	th.AssertEquals(t, n.Name, "new_name")
-	th.AssertDeepEquals(t, n.GatewayInfo, gwi)
 	th.AssertDeepEquals(t, n.Routes, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}})
 }
 
