@@ -318,7 +318,7 @@ func TestUpdate(t *testing.T) {
 
 	gwi := routers.GatewayInfo{NetworkID: "8ca37218-28ff-41cb-9b10-039601ea7e6b"}
 	r := []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}}
-	options := routers.UpdateOpts{Name: "new_name", GatewayInfo: &gwi, Routes: r}
+	options := routers.UpdateOpts{Name: "new_name", GatewayInfo: &gwi, Routes: &r}
 
 	n, err := routers.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)
@@ -329,6 +329,61 @@ func TestUpdate(t *testing.T) {
 
 	th.AssertEquals(t, n.Name, "new_name")
 	th.AssertDeepEquals(t, n.GatewayInfo, gwi)
+	th.AssertDeepEquals(t, n.Routes, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}})
+}
+
+func TestUpdateWithoutRoutes(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/routers/4e8e5957-649f-477b-9e5b-f1f75b21c03c", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "router": {
+        "name": "new_name"
+    }
+}
+		`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "router": {
+        "status": "ACTIVE",
+        "external_gateway_info": {
+            "network_id": "8ca37218-28ff-41cb-9b10-039601ea7e6b",
+            "external_fixed_ips": [
+                {"ip_address": "192.0.2.17", "subnet_id": "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def"}
+            ]
+        },
+        "name": "new_name",
+        "admin_state_up": true,
+        "tenant_id": "6b96ff0cb17a4b859e1e575d221683d3",
+        "distributed": false,
+        "id": "8604a0de-7f6b-409a-a47c-a1cc7bc77b2e",
+        "routes": [
+            {
+                "nexthop": "10.1.0.10",
+                "destination": "40.0.1.0/24"
+            }
+        ]
+    }
+}
+		`)
+	})
+
+	options := routers.UpdateOpts{Name: "new_name"}
+
+	n, err := routers.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, n.Name, "new_name")
 	th.AssertDeepEquals(t, n.Routes, []routers.Route{{DestinationCIDR: "40.0.1.0/24", NextHop: "10.1.0.10"}})
 }
 
@@ -371,7 +426,7 @@ func TestAllRoutesRemoved(t *testing.T) {
 	})
 
 	r := []routers.Route{}
-	options := routers.UpdateOpts{Routes: r}
+	options := routers.UpdateOpts{Routes: &r}
 
 	n, err := routers.Update(fake.ServiceClient(), "4e8e5957-649f-477b-9e5b-f1f75b21c03c", options).Extract()
 	th.AssertNoErr(t, err)

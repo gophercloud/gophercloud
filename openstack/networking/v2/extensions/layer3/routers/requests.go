@@ -109,7 +109,7 @@ type UpdateOpts struct {
 	AdminStateUp *bool        `json:"admin_state_up,omitempty"`
 	Distributed  *bool        `json:"distributed,omitempty"`
 	GatewayInfo  *GatewayInfo `json:"external_gateway_info,omitempty"`
-	Routes       []Route      `json:"routes"`
+	Routes       *[]Route     `json:"routes,omitempty"`
 }
 
 // ToRouterUpdateMap builds an update body based on UpdateOpts.
