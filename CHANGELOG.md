@@ -10,6 +10,10 @@ IMPROVEMENTS
 * Added `compute/v2/servers.ListOpts.IP6` [GH-2038](https://github.com/gophercloud/gophercloud/pull/2038)
 * Added `compute/v2/servers.ListOpts.UserID` [GH-2038](https://github.com/gophercloud/gophercloud/pull/2038)
 
+BUG FIXES
+
+* Changed `networking/v2/extensions/layer3/routers.Routes` from `[]Route` to `*[]Route` [GH-2043](https://github.com/gophercloud/gophercloud/pull/2043)
+
 ## 0.13.0 (September 27, 2020)
 
 IMPROVEMENTS
