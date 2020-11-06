@@ -26,7 +26,6 @@ const ListOutput = `
             "key": "KJSDH23Z",
             "status": "ACTIVE",
             "zone_name": "example1.org.",
-            "version": 1,
             "created_at": "2020-10-12T08:38:58.000000",
             "links": {
                 "self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_requests/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3"
@@ -41,7 +40,6 @@ const ListOutput = `
             "key": "KSDFJ22H",
             "status": "ACTIVE",
             "zone_name": "example2.org.",
-            "version": 1,
             "created_at": "2020-10-12T09:38:58.000000",
             "updated_at": "2020-10-12T10:38:58.000000",
             "links": {
@@ -66,7 +64,6 @@ const GetOutput = `
     "key": "KJSDH23Z",
     "status": "ACTIVE",
     "zone_name": "example1.org.",
-    "version": 1,
     "created_at": "2020-10-12T08:38:58.000000",
     "links": {
         "self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_requests/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3"
@@ -85,7 +82,6 @@ var FirstTransferRequest = transferRequests.TransferRequest{
 	Key:             "KJSDH23Z",
 	Description:     "This is a first example zone transfer request.",
 	Status:          "ACTIVE",
-	Version:         1,
 	CreatedAt:       FirstTransferRequestCreatedAt,
 	Links: map[string]interface{}{
 		"self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_requests/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3",
@@ -104,7 +100,6 @@ var SecondTransferRequest = transferRequests.TransferRequest{
 	Key:             "KSDFJ22H",
 	Description:     "This is second example zone transfer request.",
 	Status:          "ACTIVE",
-	Version:         1,
 	CreatedAt:       SecondTransferRequestCreatedAt,
 	UpdatedAt:       SecondTransferRequestUpdatedAt,
 	Links: map[string]interface{}{
@@ -159,7 +154,6 @@ const CreateTransferRequestResponse = `
     "key": "KJSDH23Z",
     "status": "ACTIVE",
     "zone_name": "example1.org.",
-    "version": 1,
     "created_at": "2020-10-12T08:38:58.000000",
     "links": {
         "self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_requests/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3"
@@ -203,7 +197,6 @@ const UpdatedTransferRequestResponse = `
     "key": "KJSDH23Z",
     "status": "ACTIVE",
     "zone_name": "example1.org.",
-    "version": 1,
     "created_at": "2020-10-12T08:38:58.000000",
     "links": {
         "self": "https://127.0.0.1:9001/v2/zones/tasks/transfer_requests/a86dba58-0043-4cc6-a1bb-69d5e86f3ca3"

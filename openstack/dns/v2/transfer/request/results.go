@@ -92,9 +92,6 @@ type TransferRequest struct {
 	// Status is the status of the resource.
 	Status string `json:"status"`
 
-	// Version of the resource.
-	Version int `json:"version"`
-
 	// CreatedAt is the date when the zone transfer request was created.
 	CreatedAt time.Time `json:"-"`
 
