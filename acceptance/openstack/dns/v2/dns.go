@@ -6,6 +6,8 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/dns/v2/recordsets"
+	transferAccepts "github.com/gophercloud/gophercloud/openstack/dns/v2/transfer/accept"
+	transferRequests "github.com/gophercloud/gophercloud/openstack/dns/v2/transfer/request"
 	"github.com/gophercloud/gophercloud/openstack/dns/v2/zones"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -116,6 +118,73 @@ func CreateSecondaryZone(t *testing.T, client *gophercloud.ServiceClient) (*zone
 	return newZone, nil
 }
 
+// CreateTransferRequest will create a Transfer Request to a spectified Zone. An error will
+// be returned if the zone transfer request was unable to be created.
+func CreateTransferRequest(t *testing.T, client *gophercloud.ServiceClient, zone *zones.Zone, targetProjectID string) (*transferRequests.TransferRequest, error) {
+	t.Logf("Attempting to create Transfer Request to Zone: %s", zone.Name)
+
+	createOpts := transferRequests.CreateOpts{
+		TargetProjectID: targetProjectID,
+		Description:     "Test transfer request",
+	}
+
+	transferRequest, err := transferRequests.Create(client, zone.ID, createOpts).Extract()
+	if err != nil {
+		return transferRequest, err
+	}
+
+	if err := WaitForTransferRequestStatus(client, transferRequest, "ACTIVE"); err != nil {
+		return transferRequest, err
+	}
+
+	newTransferRequest, err := transferRequests.Get(client, transferRequest.ID).Extract()
+	if err != nil {
+		return transferRequest, err
+	}
+
+	t.Logf("Created Transfer Request for Zone: %s", zone.Name)
+
+	th.AssertEquals(t, newTransferRequest.ZoneID, zone.ID)
+	th.AssertEquals(t, newTransferRequest.ZoneName, zone.Name)
+
+	return newTransferRequest, nil
+}
+
+// CreateTransferAccept will accept a spectified Transfer Request. An error will
+// be returned if the zone transfer accept was unable to be created.
+func CreateTransferAccept(t *testing.T, client *gophercloud.ServiceClient, zoneTransferRequestID string, key string) (*transferAccepts.TransferAccept, error) {
+	t.Logf("Attempting to accept specified transfer reqeust: %s", zoneTransferRequestID)
+	createOpts := transferAccepts.CreateOpts{
+		ZoneTransferRequestID: zoneTransferRequestID,
+		Key:                   key,
+	}
+	transferAccept, err := transferAccepts.Create(client, createOpts).Extract()
+	if err != nil {
+		return transferAccept, err
+	}
+	if err := WaitForTransferAcceptStatus(client, transferAccept, "COMPLETE"); err != nil {
+		return transferAccept, err
+	}
+	newTransferAccept, err := transferAccepts.Get(client, transferAccept.ID).Extract()
+	if err != nil {
+		return transferAccept, err
+	}
+	t.Logf("Accepted Transfer Request: %s", zoneTransferRequestID)
+	th.AssertEquals(t, newTransferAccept.ZoneTransferRequestID, zoneTransferRequestID)
+	return newTransferAccept, nil
+}
+
+// DeleteTransferRequest will delete a specified zone transfer request. A fatal error will occur if
+// the transfer request failed to be deleted. This works best when used as a deferred
+// function.
+func DeleteTransferRequest(t *testing.T, client *gophercloud.ServiceClient, tr *transferRequests.TransferRequest) {
+	err := transferRequests.Delete(client, tr.ID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete zone transfer request %s: %v", tr.ID, err)
+	}
+	t.Logf("Deleted zone transfer request: %s", tr.ID)
+}
+
 // DeleteRecordSet will delete a specified record set. A fatal error will occur if
 // the record set failed to be deleted. This works best when used as a deferred
 // function.
@@ -153,6 +222,36 @@ func WaitForRecordSetStatus(client *gophercloud.ServiceClient, rs *recordsets.Re
 			return true, nil
 		}
 
+		return false, nil
+	})
+}
+
+// WaitForTransferRequestStatus will poll a transfer reqeust's status until it either matches
+// the specified status or the status becomes ERROR.
+func WaitForTransferRequestStatus(client *gophercloud.ServiceClient, tr *transferRequests.TransferRequest, status string) error {
+	return tools.WaitFor(func() (bool, error) {
+		current, err := transferRequests.Get(client, tr.ID).Extract()
+		if err != nil {
+			return false, err
+		}
+		if current.Status == status {
+			return true, nil
+		}
+		return false, nil
+	})
+}
+
+// WaitForTransferAcceptStatus will poll a transfer accept's status until it either matches
+// the specified status or the status becomes ERROR.
+func WaitForTransferAcceptStatus(client *gophercloud.ServiceClient, ta *transferAccepts.TransferAccept, status string) error {
+	return tools.WaitFor(func() (bool, error) {
+		current, err := transferAccepts.Get(client, ta.ID).Extract()
+		if err != nil {
+			return false, err
+		}
+		if current.Status == status {
+			return true, nil
+		}
 		return false, nil
 	})
 }
