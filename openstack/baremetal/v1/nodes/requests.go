@@ -43,6 +43,8 @@ const (
 	RescueFail   ProvisionState = "rescue failed"
 	Rescuing     ProvisionState = "rescuing"
 	UnrescueFail ProvisionState = "unrescue failed"
+	RescueWait   ProvisionState = "rescue wait"
+	Unrescuing   ProvisionState = "unrescuing"
 )
 
 // TargetProvisionState is used when setting the provision state for a node.
