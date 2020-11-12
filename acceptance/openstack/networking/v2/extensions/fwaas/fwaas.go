@@ -14,7 +14,7 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-// CreateFirewall will create a Firewaill with a random name and a specified
+// CreateFirewall will create a Firewall with a random name and a specified
 // policy ID. An error will be returned if the firewall could not be created.
 func CreateFirewall(t *testing.T, client *gophercloud.ServiceClient, policyID string) (*firewalls.Firewall, error) {
 	firewallName := tools.RandomString("TESTACC-", 8)

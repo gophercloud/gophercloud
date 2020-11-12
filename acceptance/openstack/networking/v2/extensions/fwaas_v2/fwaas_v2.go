@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas_v2/groups"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas_v2/rules"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -64,4 +65,48 @@ func DeleteRule(t *testing.T, client *gophercloud.ServiceClient, ruleID string) 
 	}
 
 	t.Logf("Deleted rule: %s", ruleID)
+}
+
+// CreateGroup will create a Firewall Group. An error will be returned if the
+// firewall group could not be created.
+func CreateGroup(t *testing.T, client *gophercloud.ServiceClient) (*groups.Group, error) {
+
+	groupName := tools.RandomString("TESTACC-", 8)
+	description := tools.RandomString("TESTACC-", 8)
+	adminStateUp := true
+	shared := false
+
+	createOpts := groups.CreateOpts{
+		Name:         groupName,
+		Description:  description,
+		AdminStateUp: &adminStateUp,
+		Shared:       &shared,
+	}
+
+	t.Logf("Attempting to create firewall group %s",
+		groupName)
+
+	group, err := groups.Create(client, createOpts).Extract()
+	if err != nil {
+		return group, err
+	}
+
+	t.Logf("firewall group %s successfully created", groupName)
+
+	th.AssertEquals(t, group.Name, groupName)
+	return group, nil
+}
+
+// DeleteGroup will delete a group with a specified ID. A fatal error will occur
+// if the delete was not successful. This works best when used as a deferred
+// function.
+func DeleteGroup(t *testing.T, client *gophercloud.ServiceClient, groupId string) {
+	t.Logf("Attempting to delete firewall group %s", groupId)
+
+	err := groups.Delete(client, groupId).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete firewall group %s: %v", groupId, err)
+	}
+
+	t.Logf("Deleted firewall group %s", groupId)
 }
