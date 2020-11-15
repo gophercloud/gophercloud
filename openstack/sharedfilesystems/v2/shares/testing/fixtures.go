@@ -528,12 +528,6 @@ func MockUpdateMetadataResponse(t *testing.T) {
 	})
 }
 
-var deleteMetadatumRequest = `{
-		"metadata": {
-			"foo": "bar"
-		}
-	}`
-
 // MockDeleteMetadatumResponse creates a mock unset metadata response
 func MockDeleteMetadatumResponse(t *testing.T, key string) {
 	th.Mux.HandleFunc(shareEndpoint+"/"+shareID+"/metadata/"+key, func(w http.ResponseWriter, r *http.Request) {
