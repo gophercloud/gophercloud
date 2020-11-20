@@ -20,6 +20,10 @@ type commonResult struct {
 	gophercloud.Result
 }
 
+type insertRuleResult struct {
+	gophercloud.Result
+}
+
 // Extract is a function that accepts a result and extracts a firewall policy.
 func (r commonResult) Extract() (*Policy, error) {
 	var s struct {
@@ -27,6 +31,13 @@ func (r commonResult) Extract() (*Policy, error) {
 	}
 	err := r.ExtractInto(&s)
 	return s.Policy, err
+}
+
+// Extract is a function that accepts a insertRuleResult and extracts a firewall policy.
+func (r insertRuleResult) Extract() (*Policy, error) {
+	var policy *Policy
+	err := r.ExtractInto(&policy)
+	return policy, err
 }
 
 // PolicyPage is the page returned by a pager when traversing over a
@@ -88,7 +99,7 @@ type CreateResult struct {
 
 // InsertRuleResult represents the result of an InsertRule operation.
 type InsertRuleResult struct {
-	commonResult
+	insertRuleResult
 }
 
 // RemoveRuleResult represents the result of a RemoveRule operation.

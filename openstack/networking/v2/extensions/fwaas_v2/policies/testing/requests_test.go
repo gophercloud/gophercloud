@@ -161,6 +161,59 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestAddRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/e3c78ab6-e827-4297-8d68-739063865a8b/insert_rule", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "firewall_rule_id": "7d305689-6cb1-4e75-9f4d-517b9ba792b5",
+    "insert_before": "3062ed90-1fb0-4c25-af3d-318dff2143ae"
+}
+        `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "audited": false,
+    "description": "TESTACC-DESC-8P12aLfW",
+    "firewall_rules": [
+        "7d305689-6cb1-4e75-9f4d-517b9ba792b5",
+        "3062ed90-1fb0-4c25-af3d-318dff2143ae"
+    ],
+    "id": "e3c78ab6-e827-4297-8d68-739063865a8b",
+    "name": "TESTACC-2LnMayeG",
+    "project_id": "9f98fc0e5f944cd1b51798b668dc8778",
+    "shared": false,
+    "tenant_id": "9f98fc0e5f944cd1b51798b668dc8778"
+}
+    `)
+	})
+
+	options := policies.InsertRuleOpts{
+		ID:           "7d305689-6cb1-4e75-9f4d-517b9ba792b5",
+		BeforeRuleID: "3062ed90-1fb0-4c25-af3d-318dff2143ae",
+	}
+
+	policy, err := policies.AddRule(fake.ServiceClient(), "e3c78ab6-e827-4297-8d68-739063865a8b", options).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "TESTACC-2LnMayeG", policy.Name)
+	th.AssertEquals(t, 2, len(policy.Rules))
+	th.AssertEquals(t, "7d305689-6cb1-4e75-9f4d-517b9ba792b5", policy.Rules[0])
+	th.AssertEquals(t, "3062ed90-1fb0-4c25-af3d-318dff2143ae", policy.Rules[1])
+	th.AssertEquals(t, "e3c78ab6-e827-4297-8d68-739063865a8b", policy.ID)
+	th.AssertEquals(t, "TESTACC-DESC-8P12aLfW", policy.Description)
+	th.AssertEquals(t, "9f98fc0e5f944cd1b51798b668dc8778", policy.TenantID)
+
+}
+
 func TestGet(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
