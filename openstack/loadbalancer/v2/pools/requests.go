@@ -280,14 +280,20 @@ type CreateMemberOpts struct {
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 
-	// Is the member a backup? Backup members only receive traffic when all non-backup members are down.
+	// Is the member a backup? Backup members only receive traffic when all
+	// non-backup members are down.
+	// Requires microversion 2.1 or later.
 	Backup *bool `json:"backup,omitempty"`
 
 	// An alternate IP address used for health monitoring a backend member.
-	MonitorAddress string `json:"monitor_address,omitempty"`
+	MonitorAddress *string `json:"monitor_address,omitempty"`
 
 	// An alternate protocol port used for health monitoring a backend member.
 	MonitorPort *int `json:"monitor_port,omitempty"`
+
+	// A list of simple strings assigned to the resource.
+	// Requires microversion 2.5 or later.
+	Tags []string `json:"tags,omitempty"`
 }
 
 // ToMemberCreateMap builds a request body from CreateMemberOpts.
@@ -335,6 +341,21 @@ type UpdateMemberOpts struct {
 	// The administrative state of the Pool. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// Is the member a backup? Backup members only receive traffic when all
+	// non-backup members are down.
+	// Requires microversion 2.1 or later.
+	Backup *bool `json:"backup,omitempty"`
+
+	// An alternate IP address used for health monitoring a backend member.
+	MonitorAddress *string `json:"monitor_address,omitempty"`
+
+	// An alternate protocol port used for health monitoring a backend member.
+	MonitorPort *int `json:"monitor_port,omitempty"`
+
+	// A list of simple strings assigned to the resource.
+	// Requires microversion 2.5 or later.
+	Tags []string `json:"tags,omitempty"`
 }
 
 // ToMemberUpdateMap builds a request body from UpdateMemberOpts.
@@ -390,6 +411,21 @@ type BatchUpdateMemberOpts struct {
 	// The administrative state of the Pool. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// Is the member a backup? Backup members only receive traffic when all
+	// non-backup members are down.
+	// Requires microversion 2.1 or later.
+	Backup *bool `json:"backup,omitempty"`
+
+	// An alternate IP address used for health monitoring a backend member.
+	MonitorAddress *string `json:"monitor_address,omitempty"`
+
+	// An alternate protocol port used for health monitoring a backend member.
+	MonitorPort *int `json:"monitor_port,omitempty"`
+
+	// A list of simple strings assigned to the resource.
+	// Requires microversion 2.5 or later.
+	Tags []string `json:"tags,omitempty"`
 }
 
 // ToBatchMemberUpdateMap builds a request body from BatchUpdateMemberOpts.
