@@ -286,7 +286,7 @@ type CreateMemberOpts struct {
 	Backup *bool `json:"backup,omitempty"`
 
 	// An alternate IP address used for health monitoring a backend member.
-	MonitorAddress *string `json:"monitor_address,omitempty"`
+	MonitorAddress string `json:"monitor_address,omitempty"`
 
 	// An alternate protocol port used for health monitoring a backend member.
 	MonitorPort *int `json:"monitor_port,omitempty"`
