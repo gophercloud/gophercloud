@@ -1,6 +1,8 @@
 package testing
 
-import "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/quotas"
+import (
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/quotas"
+)
 
 const GetResponseRaw = `
 {
@@ -18,6 +20,59 @@ const GetResponseRaw = `
 }
 `
 
+// GetDetailedResponseRaw is a sample response to a Get call with the detailed option.
+const GetDetailedResponseRaw = `
+{
+   "quota" : {
+      "floatingip" : {
+          "used": 0,
+          "limit": 15,
+          "reserved": 0
+      },
+      "network" : {
+          "used": 0,
+          "limit": 20,
+          "reserved": 0
+      },
+      "port" : {
+          "used": 0,
+          "limit": 25,
+          "reserved": 0
+      },
+      "rbac_policy" : {
+          "used": 0,
+          "limit": -1,
+          "reserved": 0
+      },
+      "router" : {
+          "used": 0,
+          "limit": 30,
+          "reserved": 0
+      },
+      "security_group" : {
+          "used": 0,
+          "limit": 35,
+          "reserved": 0
+      },
+      "security_group_rule" : {
+          "used": 0,
+          "limit": 40,
+          "reserved": 0
+      },
+      "subnet" : {
+          "used": 0,
+          "limit": 45,
+          "reserved": 0
+      },
+      "subnetpool" : {
+          "used": 0,
+          "limit": -1,
+          "reserved": 0
+      }
+   }
+}
+`
+
 var GetResponse = quotas.Quota{
 	FloatingIP:        15,
 	Network:           20,
@@ -28,6 +83,19 @@ var GetResponse = quotas.Quota{
 	SecurityGroupRule: 40,
 	Subnet:            45,
 	SubnetPool:        -1,
+}
+
+// GetDetailResponse is the first result in ListOutput.
+var GetDetailResponse = quotas.QuotaDetailSet{
+	FloatingIP:        quotas.QuotaDetail{InUse: 0, Reserved: 0, Limit: 15},
+	Network:           quotas.QuotaDetail{InUse: 0, Reserved: 0, Limit: 20},
+	Port:              quotas.QuotaDetail{InUse: 0, Reserved: 0, Limit: 25},
+	RBACPolicy:        quotas.QuotaDetail{InUse: 0, Reserved: 0, Limit: -1},
+	Router:            quotas.QuotaDetail{InUse: 0, Reserved: 0, Limit: 30},
+	SecurityGroup:     quotas.QuotaDetail{InUse: 0, Reserved: 0, Limit: 35},
+	SecurityGroupRule: quotas.QuotaDetail{InUse: 0, Reserved: 0, Limit: 40},
+	Subnet:            quotas.QuotaDetail{InUse: 0, Reserved: 0, Limit: 45},
+	SubnetPool:        quotas.QuotaDetail{InUse: 0, Reserved: 0, Limit: -1},
 }
 
 const UpdateRequestResponseRaw = `

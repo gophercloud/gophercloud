@@ -30,6 +30,25 @@ func TestGet(t *testing.T) {
 	th.AssertDeepEquals(t, q, &GetResponse)
 }
 
+func TestGetDetail(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/quotas/0a73845280574ad389c292f6a74afa76/details.json", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, GetDetailedResponseRaw)
+	})
+
+	q, err := quotas.GetDetail(fake.ServiceClient(), "0a73845280574ad389c292f6a74afa76").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, q, &GetDetailResponse)
+}
+
 func TestUpdate(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
