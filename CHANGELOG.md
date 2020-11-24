@@ -9,6 +9,8 @@
 * Added `loadbalancer/v2/pools.BatchUpdateMemberOpts.MonitorAddress` [GH-2056](https://github.com/gophercloud/gophercloud/pull/2056)
 * Added `loadbalancer/v2/pools.BatchUpdateMemberOpts.MonitorPort` [GH-2056](https://github.com/gophercloud/gophercloud/pull/2056)
 * Added `loadbalancer/v2/pools.BatchUpdateMemberOpts.Tags` [GH-2056](https://github.com/gophercloud/gophercloud/pull/2056)
+* Added `networking/v2/extensions/quotas.GetDetail` [GH-2061](https://github.com/gophercloud/gophercloud/pull/2061)
+* Added `networking/v2/extensions/quotas.UpdateOpts.Trunk` [GH-2061](https://github.com/gophercloud/gophercloud/pull/2061)
 
 
 ## 0.14.0 (November 11, 2020)
