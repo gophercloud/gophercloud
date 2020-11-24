@@ -74,6 +74,9 @@ type Quota struct {
 
 	// SubnetPool represents a number of subnet pools. A "-1" value means no limit.
 	SubnetPool int `json:"subnetpool"`
+
+	// Trunk represents a number of trunks. A "-1" value means no limit.
+	Trunk int `json:"trunk"`
 }
 
 // QuotaDetailSet represents details of both operational limits of Networking resources for a project
@@ -105,14 +108,17 @@ type QuotaDetailSet struct {
 
 	// SubnetPool represents a number of subnet pools. A "-1" value means no limit.
 	SubnetPool QuotaDetail `json:"subnetpool"`
+
+	// Trunk represents a number of trunks. A "-1" value means no limit.
+	Trunk QuotaDetail `json:"trunk"`
 }
 
 // QuotaDetail is a set of details about a single operational limit that allows
 // for control of networking usage.
 type QuotaDetail struct {
-	// InUse is the current number of provisioned/allocated resources of the
+	// Used is the current number of provisioned/allocated resources of the
 	// given type.
-	InUse int `json:"used"`
+	Used int `json:"used"`
 
 	// Reserved is a transitional state when a claim against quota has been made
 	// but the resource is not yet fully online.

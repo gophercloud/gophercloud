@@ -35,6 +35,7 @@ Example to Update project quotas
         SecurityGroupRule: gophercloud.IntToPointer(-1),
         Subnet:            gophercloud.IntToPointer(25),
         SubnetPool:        gophercloud.IntToPointer(0),
+        Trunk:             gophercloud.IntToPointer(0),
     }
     quotasInfo, err := quotas.Update(networkClient, projectID)
     if err != nil {

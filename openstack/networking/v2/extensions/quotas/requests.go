@@ -50,6 +50,9 @@ type UpdateOpts struct {
 
 	// SubnetPool represents a number of subnet pools. A "-1" value means no limit.
 	SubnetPool *int `json:"subnetpool,omitempty"`
+
+	// Trunk represents a number of trunks. A "-1" value means no limit.
+	Trunk *int `json:"trunk,omitempty"`
 }
 
 // ToQuotaUpdateMap builds a request body from UpdateOpts.

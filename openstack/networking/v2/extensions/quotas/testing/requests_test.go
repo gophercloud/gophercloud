@@ -73,6 +73,7 @@ func TestUpdate(t *testing.T) {
 		SecurityGroupRule: gophercloud.IntToPointer(-1),
 		Subnet:            gophercloud.IntToPointer(25),
 		SubnetPool:        gophercloud.IntToPointer(0),
+		Trunk:             gophercloud.IntToPointer(5),
 	}).Extract()
 
 	th.AssertNoErr(t, err)
