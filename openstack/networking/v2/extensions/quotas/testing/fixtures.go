@@ -1,6 +1,8 @@
 package testing
 
-import "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/quotas"
+import (
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/quotas"
+)
 
 const GetResponseRaw = `
 {
@@ -13,8 +15,67 @@ const GetResponseRaw = `
         "security_group": 35,
         "security_group_rule": 40,
         "subnet": 45,
-        "subnetpool": -1
+        "subnetpool": -1,
+        "trunk": 50
     }
+}
+`
+
+// GetDetailedResponseRaw is a sample response to a Get call with the detailed option.
+const GetDetailedResponseRaw = `
+{
+   "quota" : {
+      "floatingip" : {
+          "used": 0,
+          "limit": 15,
+          "reserved": 0
+      },
+      "network" : {
+          "used": 0,
+          "limit": 20,
+          "reserved": 0
+      },
+      "port" : {
+          "used": 0,
+          "limit": 25,
+          "reserved": 0
+      },
+      "rbac_policy" : {
+          "used": 0,
+          "limit": -1,
+          "reserved": 0
+      },
+      "router" : {
+          "used": 0,
+          "limit": 30,
+          "reserved": 0
+      },
+      "security_group" : {
+          "used": 0,
+          "limit": 35,
+          "reserved": 0
+      },
+      "security_group_rule" : {
+          "used": 0,
+          "limit": 40,
+          "reserved": 0
+      },
+      "subnet" : {
+          "used": 0,
+          "limit": 45,
+          "reserved": 0
+      },
+      "subnetpool" : {
+          "used": 0,
+          "limit": -1,
+          "reserved": 0
+      },
+      "trunk" : {
+          "used": 0,
+          "limit": 50,
+          "reserved": 0
+      }
+   }
 }
 `
 
@@ -28,6 +89,21 @@ var GetResponse = quotas.Quota{
 	SecurityGroupRule: 40,
 	Subnet:            45,
 	SubnetPool:        -1,
+	Trunk:             50,
+}
+
+// GetDetailResponse is the first result in ListOutput.
+var GetDetailResponse = quotas.QuotaDetailSet{
+	FloatingIP:        quotas.QuotaDetail{Used: 0, Reserved: 0, Limit: 15},
+	Network:           quotas.QuotaDetail{Used: 0, Reserved: 0, Limit: 20},
+	Port:              quotas.QuotaDetail{Used: 0, Reserved: 0, Limit: 25},
+	RBACPolicy:        quotas.QuotaDetail{Used: 0, Reserved: 0, Limit: -1},
+	Router:            quotas.QuotaDetail{Used: 0, Reserved: 0, Limit: 30},
+	SecurityGroup:     quotas.QuotaDetail{Used: 0, Reserved: 0, Limit: 35},
+	SecurityGroupRule: quotas.QuotaDetail{Used: 0, Reserved: 0, Limit: 40},
+	Subnet:            quotas.QuotaDetail{Used: 0, Reserved: 0, Limit: 45},
+	SubnetPool:        quotas.QuotaDetail{Used: 0, Reserved: 0, Limit: -1},
+	Trunk:             quotas.QuotaDetail{Used: 0, Reserved: 0, Limit: 50},
 }
 
 const UpdateRequestResponseRaw = `
@@ -41,7 +117,8 @@ const UpdateRequestResponseRaw = `
         "security_group": 20,
         "security_group_rule": -1,
         "subnet": 25,
-        "subnetpool": 0
+        "subnetpool": 0,
+        "trunk": 5
     }
 }
 `
@@ -56,4 +133,5 @@ var UpdateResponse = quotas.Quota{
 	SecurityGroupRule: -1,
 	Subnet:            25,
 	SubnetPool:        0,
+	Trunk:             5,
 }
