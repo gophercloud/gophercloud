@@ -14,7 +14,10 @@ func TestUpdateAccount(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateAccountSuccessfully(t)
 
-	options := &accounts.UpdateOpts{Metadata: map[string]string{"gophercloud-test": "accounts"}}
+	options := &accounts.UpdateOpts{
+		Metadata:       map[string]string{"gophercloud-test": "accounts"},
+		RemoveMetadata: []string{"gophercloud-test-remove"},
+	}
 	res := accounts.Update(fake.ServiceClient(), options)
 	th.AssertNoErr(t, res.Err)
 
