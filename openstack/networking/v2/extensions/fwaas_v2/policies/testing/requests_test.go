@@ -328,3 +328,43 @@ func TestDelete(t *testing.T) {
 	res := policies.Delete(fake.ServiceClient(), "4ec89077-d057-4a2b-911f-60a3b47ee304")
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestRemoveRule(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/fwaas/firewall_policies/9fed8075-06ee-463f-83a6-d4118791b02f/remove_rule", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "firewall_rule_id": "9fed8075-06ee-463f-83a6-d4118791b02f"
+}
+        `)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, `
+{
+    "audited": false,
+    "description": "TESTACC-DESC-skno2e52",
+    "firewall_rules": [
+      "3ccc0f2b-4a04-4e7c-bb47-dd1701127a47"
+    ],
+    "id": "9fed8075-06ee-463f-83a6-d4118791b02f",
+    "name": "TESTACC-Qf7pMSkq",
+    "project_id": "TESTID-era34jkaslk",
+    "shared": false,
+    "tenant_id": "TESTID-334sdfassdf"
+}
+    `)
+	})
+
+	policy, err := policies.RemoveRule(fake.ServiceClient(), "9fed8075-06ee-463f-83a6-d4118791b02f", "9fed8075-06ee-463f-83a6-d4118791b02f").Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "9fed8075-06ee-463f-83a6-d4118791b02f", policy.ID)
+
+}

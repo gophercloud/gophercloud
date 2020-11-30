@@ -20,7 +20,7 @@ type commonResult struct {
 	gophercloud.Result
 }
 
-type insertRuleResult struct {
+type shortResult struct {
 	gophercloud.Result
 }
 
@@ -33,8 +33,8 @@ func (r commonResult) Extract() (*Policy, error) {
 	return s.Policy, err
 }
 
-// Extract is a function that accepts a insertRuleResult and extracts a firewall policy.
-func (r insertRuleResult) Extract() (*Policy, error) {
+// Extract is a function that accepts a shortResult and extracts a firewall policy.
+func (r shortResult) Extract() (*Policy, error) {
 	var policy *Policy
 	err := r.ExtractInto(&policy)
 	return policy, err
@@ -99,10 +99,10 @@ type CreateResult struct {
 
 // InsertRuleResult represents the result of an InsertRule operation.
 type InsertRuleResult struct {
-	insertRuleResult
+	shortResult
 }
 
 // RemoveRuleResult represents the result of a RemoveRule operation.
 type RemoveRuleResult struct {
-	commonResult
+	shortResult
 }
