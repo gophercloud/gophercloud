@@ -238,7 +238,10 @@ func TestUpateObjectMetadata(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateObjectSuccessfully(t)
 
-	options := &objects.UpdateOpts{Metadata: map[string]string{"Gophercloud-Test": "objects"}}
+	options := &objects.UpdateOpts{
+		Metadata:       map[string]string{"Gophercloud-Test": "objects"},
+		RemoveMetadata: []string{"Gophercloud-Test-Remove"},
+	}
 	res := objects.Update(fake.ServiceClient(), "testContainer", "testObject", options)
 	th.AssertNoErr(t, res.Err)
 }

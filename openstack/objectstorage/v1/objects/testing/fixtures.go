@@ -264,6 +264,7 @@ func HandleUpdateObjectSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Object-Meta-Gophercloud-Test", "objects")
+		th.TestHeader(t, r, "X-Remove-Object-Meta-Gophercloud-Test-Remove", "remove")
 		w.WriteHeader(http.StatusAccepted)
 	})
 }

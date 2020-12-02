@@ -388,6 +388,7 @@ type UpdateOptsBuilder interface {
 // deleting an object's metadata.
 type UpdateOpts struct {
 	Metadata           map[string]string
+	RemoveMetadata     []string
 	ContentDisposition string `h:"Content-Disposition"`
 	ContentEncoding    string `h:"Content-Encoding"`
 	ContentType        string `h:"Content-Type"`
@@ -402,8 +403,13 @@ func (opts UpdateOpts) ToObjectUpdateMap() (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	for k, v := range opts.Metadata {
 		h["X-Object-Meta-"+k] = v
+	}
+
+	for _, k := range opts.RemoveMetadata {
+		h["X-Remove-Object-Meta-"+k] = "remove"
 	}
 	return h, nil
 }
