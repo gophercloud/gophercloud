@@ -13,45 +13,45 @@ import (
 // Service catalog fixtures take too much vertical space!
 var catalog2 = tokens2.ServiceCatalog{
 	Entries: []tokens2.CatalogEntry{
-		tokens2.CatalogEntry{
+		{
 			Type: "same",
 			Name: "same",
 			Endpoints: []tokens2.Endpoint{
-				tokens2.Endpoint{
+				{
 					Region:      "same",
 					PublicURL:   "https://public.correct.com/",
 					InternalURL: "https://internal.correct.com/",
 					AdminURL:    "https://admin.correct.com/",
 				},
-				tokens2.Endpoint{
+				{
 					Region:    "different",
 					PublicURL: "https://badregion.com/",
 				},
 			},
 		},
-		tokens2.CatalogEntry{
+		{
 			Type: "same",
 			Name: "different",
 			Endpoints: []tokens2.Endpoint{
-				tokens2.Endpoint{
+				{
 					Region:    "same",
 					PublicURL: "https://badname.com/",
 				},
-				tokens2.Endpoint{
+				{
 					Region:    "different",
 					PublicURL: "https://badname.com/+badregion",
 				},
 			},
 		},
-		tokens2.CatalogEntry{
+		{
 			Type: "different",
 			Name: "different",
 			Endpoints: []tokens2.Endpoint{
-				tokens2.Endpoint{
+				{
 					Region:    "same",
 					PublicURL: "https://badtype.com/+badname",
 				},
-				tokens2.Endpoint{
+				{
 					Region:    "different",
 					PublicURL: "https://badtype.com/+badregion+badname",
 				},
@@ -111,29 +111,29 @@ func TestV2EndpointBadAvailability(t *testing.T) {
 
 var catalog3 = tokens3.ServiceCatalog{
 	Entries: []tokens3.CatalogEntry{
-		tokens3.CatalogEntry{
+		{
 			Type: "same",
 			Name: "same",
 			Endpoints: []tokens3.Endpoint{
-				tokens3.Endpoint{
+				{
 					ID:        "1",
 					Region:    "same",
 					Interface: "public",
 					URL:       "https://public.correct.com/",
 				},
-				tokens3.Endpoint{
+				{
 					ID:        "2",
 					Region:    "same",
 					Interface: "admin",
 					URL:       "https://admin.correct.com/",
 				},
-				tokens3.Endpoint{
+				{
 					ID:        "3",
 					Region:    "same",
 					Interface: "internal",
 					URL:       "https://internal.correct.com/",
 				},
-				tokens3.Endpoint{
+				{
 					ID:        "4",
 					Region:    "different",
 					Interface: "public",
@@ -141,17 +141,17 @@ var catalog3 = tokens3.ServiceCatalog{
 				},
 			},
 		},
-		tokens3.CatalogEntry{
+		{
 			Type: "same",
 			Name: "different",
 			Endpoints: []tokens3.Endpoint{
-				tokens3.Endpoint{
+				{
 					ID:        "5",
 					Region:    "same",
 					Interface: "public",
 					URL:       "https://badname.com/",
 				},
-				tokens3.Endpoint{
+				{
 					ID:        "6",
 					Region:    "different",
 					Interface: "public",
@@ -159,17 +159,17 @@ var catalog3 = tokens3.ServiceCatalog{
 				},
 			},
 		},
-		tokens3.CatalogEntry{
+		{
 			Type: "different",
 			Name: "different",
 			Endpoints: []tokens3.Endpoint{
-				tokens3.Endpoint{
+				{
 					ID:        "7",
 					Region:    "same",
 					Interface: "public",
 					URL:       "https://badtype.com/+badname",
 				},
-				tokens3.Endpoint{
+				{
 					ID:        "8",
 					Region:    "different",
 					Interface: "public",
@@ -177,23 +177,23 @@ var catalog3 = tokens3.ServiceCatalog{
 				},
 			},
 		},
-		tokens3.CatalogEntry{
+		{
 			Type: "someother",
 			Name: "someother",
 			Endpoints: []tokens3.Endpoint{
-				tokens3.Endpoint{
+				{
 					ID:        "1",
 					Region:    "someother",
 					Interface: "public",
 					URL:       "https://public.correct.com/",
 				},
-				tokens3.Endpoint{
+				{
 					ID:        "2",
 					RegionID:  "someother",
 					Interface: "admin",
 					URL:       "https://admin.correct.com/",
 				},
-				tokens3.Endpoint{
+				{
 					ID:        "3",
 					RegionID:  "someother",
 					Interface: "internal",

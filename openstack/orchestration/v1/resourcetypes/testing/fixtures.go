@@ -20,10 +20,10 @@ const BasicListOutput = `
 `
 
 var BasicListExpected = []resourcetypes.ResourceTypeSummary{
-	resourcetypes.ResourceTypeSummary{
+	{
 		ResourceType: "OS::Nova::Server",
 	},
-	resourcetypes.ResourceTypeSummary{
+	{
 		ResourceType: "OS::Heat::Stack",
 	},
 }
@@ -44,11 +44,11 @@ const FullListOutput = `
 `
 
 var FullListExpected = []resourcetypes.ResourceTypeSummary{
-	resourcetypes.ResourceTypeSummary{
+	{
 		ResourceType: "OS::Nova::Server",
 		Description:  "A Nova Server",
 	},
-	resourcetypes.ResourceTypeSummary{
+	{
 		ResourceType: "OS::Heat::Stack",
 		Description:  "A Heat Stack",
 	},
@@ -67,7 +67,7 @@ const FilteredListOutput = `
 `
 
 var FilteredListExpected = []resourcetypes.ResourceTypeSummary{
-	resourcetypes.ResourceTypeSummary{
+	{
 		ResourceType: "OS::Heat::Stack",
 		Description:  "A Heat Stack",
 	},
@@ -112,65 +112,65 @@ var GetSchemaExpected = resourcetypes.ResourceSchema{
 		},
 	},
 	Attributes: map[string]resourcetypes.AttributeSchema{
-		"show": resourcetypes.AttributeSchema{
+		"show": {
 			Description: "Detailed information about resource.",
 			Type:        resourcetypes.MapProperty,
 		},
-		"tags": resourcetypes.AttributeSchema{
+		"tags": {
 			Description: "Tags from the server.",
 			Type:        resourcetypes.ListProperty,
 		},
-		"name": resourcetypes.AttributeSchema{
+		"name": {
 			Description: "Name of the server.",
 			Type:        resourcetypes.StringProperty,
 		},
 	},
 	Properties: map[string]resourcetypes.PropertySchema{
-		"name": resourcetypes.PropertySchema{
+		"name": {
 			Type:          resourcetypes.StringProperty,
 			Description:   "Server name.",
 			UpdateAllowed: true,
 		},
-		"image": resourcetypes.PropertySchema{
+		"image": {
 			Type:        resourcetypes.StringProperty,
 			Description: "The ID or name of the image to boot with.",
 			Required:    true,
 			Constraints: []resourcetypes.ConstraintSchema{
-				resourcetypes.ConstraintSchema{
+				{
 					CustomConstraint: &glanceImageConstraint,
 				},
 			},
 		},
-		"block_device_mapping": resourcetypes.PropertySchema{
+		"block_device_mapping": {
 			Type:        resourcetypes.ListProperty,
 			Description: "Block device mappings for this server.",
 			Schema: map[string]resourcetypes.PropertySchema{
-				"*": resourcetypes.PropertySchema{
+				"*": {
 					Type: resourcetypes.MapProperty,
 					Schema: map[string]resourcetypes.PropertySchema{
-						"ephemeral_format": resourcetypes.PropertySchema{
+						"ephemeral_format": {
 							Type:        resourcetypes.StringProperty,
 							Description: "The format of the local ephemeral block device.",
 							Constraints: []resourcetypes.ConstraintSchema{
-								resourcetypes.ConstraintSchema{
+								{
 									AllowedValues: &[]interface{}{
 										"ext3", "ext4", "xfs",
 									},
 								},
 							},
 						},
-						"ephemeral_size": resourcetypes.PropertySchema{
+						"ephemeral_size": {
 							Type:        resourcetypes.IntegerProperty,
 							Description: "The size of the local ephemeral block device, in GB.",
 							Constraints: []resourcetypes.ConstraintSchema{
-								resourcetypes.ConstraintSchema{
+								{
 									Range: &resourcetypes.MinMaxConstraint{
 										Min: 1,
 									},
 								},
 							},
 						},
-						"delete_on_termination": resourcetypes.PropertySchema{
+						"delete_on_termination": {
 							Type:        resourcetypes.BooleanProperty,
 							Description: "Delete volume on server termination.",
 							Default:     true,
@@ -180,12 +180,12 @@ var GetSchemaExpected = resourcetypes.ResourceSchema{
 				},
 			},
 		},
-		"image_update_policy": resourcetypes.PropertySchema{
+		"image_update_policy": {
 			Type:        resourcetypes.StringProperty,
 			Description: "Policy on how to apply an image-id update.",
 			Default:     "REBUILD",
 			Constraints: []resourcetypes.ConstraintSchema{
-				resourcetypes.ConstraintSchema{
+				{
 					AllowedValues: &[]interface{}{
 						"REBUILD", "REPLACE",
 					},

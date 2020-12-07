@@ -215,7 +215,7 @@ func TestPortsRemoveAddressPair(t *testing.T) {
 	// Add an address pair to the port
 	updateOpts := ports.UpdateOpts{
 		AllowedAddressPairs: &[]ports.AddressPair{
-			ports.AddressPair{IPAddress: "192.168.255.10", MACAddress: "aa:bb:cc:dd:ee:ff"},
+			{IPAddress: "192.168.255.10", MACAddress: "aa:bb:cc:dd:ee:ff"},
 		},
 	}
 	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()
@@ -259,7 +259,7 @@ func TestPortsDontUpdateAllowedAddressPairs(t *testing.T) {
 	// Add an address pair to the port
 	updateOpts := ports.UpdateOpts{
 		AllowedAddressPairs: &[]ports.AddressPair{
-			ports.AddressPair{IPAddress: "192.168.255.10", MACAddress: "aa:bb:cc:dd:ee:ff"},
+			{IPAddress: "192.168.255.10", MACAddress: "aa:bb:cc:dd:ee:ff"},
 		},
 	}
 	newPort, err := ports.Update(client, port.ID, updateOpts).Extract()

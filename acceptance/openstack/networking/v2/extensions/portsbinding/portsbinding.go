@@ -30,7 +30,7 @@ func CreatePortsbinding(t *testing.T, client *gophercloud.ServiceClient, network
 		Name:         portName,
 		Description:  portDescription,
 		AdminStateUp: &iFalse,
-		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
+		FixedIPs:     []ports.IP{{SubnetID: subnetID}},
 	}
 
 	createOpts := portsbinding.CreateOptsExt{

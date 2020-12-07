@@ -62,19 +62,19 @@ const OctaviaAllAPIVersionsResponse = `
 `
 
 var OctaviaAllAPIVersionResults = []apiversions.APIVersion{
-	apiversions.APIVersion{
+	{
 		ID:     "v1",
 		Status: "DEPRECATED",
 	},
-	apiversions.APIVersion{
+	{
 		ID:     "v2.0",
 		Status: "SUPPORTED",
 	},
-	apiversions.APIVersion{
+	{
 		ID:     "v2.1",
 		Status: "SUPPORTED",
 	},
-	apiversions.APIVersion{
+	{
 		ID:     "v2.2",
 		Status: "CURRENT",
 	},

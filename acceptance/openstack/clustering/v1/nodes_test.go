@@ -145,18 +145,18 @@ func TestNodesRecover(t *testing.T) {
 	// TODO: nodes.RebuildRecovery is commented out as of 12/14/2018 the API backend can't perform the action without returning error
 	ops := []nodes.RecoverOpts{
 		// Microversion < 1.6 legacy support where argument DOES NOT support Check
-		nodes.RecoverOpts{},
-		nodes.RecoverOpts{Operation: nodes.RebootRecovery},
+		{},
+		{Operation: nodes.RebootRecovery},
 		// nodes.RecoverOpts{Operation: nodes.RebuildRecovery},
 
 		// MicroVersion >= 1.6 that supports Check where Check is true
-		nodes.RecoverOpts{Check: &checkTrue},
-		nodes.RecoverOpts{Operation: nodes.RebootRecovery, Check: &checkTrue},
+		{Check: &checkTrue},
+		{Operation: nodes.RebootRecovery, Check: &checkTrue},
 		//nodes.RecoverOpts{Operation: nodes.RebuildRecovery, Check: &checkTrue},
 
 		// MicroVersion >= 1.6 that supports Check where Check is false
-		nodes.RecoverOpts{Check: &checkFalse},
-		nodes.RecoverOpts{Operation: nodes.RebootRecovery, Check: &checkFalse},
+		{Check: &checkFalse},
+		{Operation: nodes.RebootRecovery, Check: &checkFalse},
 		//nodes.RecoverOpts{Operation: nodes.RebuildRecovery, Check: &checkFalse},
 	}
 

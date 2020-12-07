@@ -45,7 +45,7 @@ func TestUserList(t *testing.T) {
 	expectedUsers := []users.User{
 		{
 			Databases: []db.Database{
-				db.Database{Name: "databaseA"},
+				{Name: "databaseA"},
 			},
 			Name: "dbuser3",
 		},

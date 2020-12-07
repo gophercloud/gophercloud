@@ -300,8 +300,8 @@ var ExpectedPolicy2 = policies.Policy{
 }
 
 var ExpectedPolicies = [][]policies.Policy{
-	[]policies.Policy{ExpectedPolicy1},
-	[]policies.Policy{ExpectedPolicy2},
+	{ExpectedPolicy1},
+	{ExpectedPolicy2},
 }
 
 var ExpectedCreatePolicy = policies.Policy{

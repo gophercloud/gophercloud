@@ -78,7 +78,7 @@ func TestContainers(t *testing.T) {
 	// After the tests are done, delete the metadata that was set.
 	defer func() {
 		temp := []string{}
-		for k, _ := range metadata {
+		for k := range metadata {
 			temp = append(temp, k)
 		}
 		res := containers.Update(client, cNames[0], &containers.UpdateOpts{RemoveMetadata: temp})
@@ -91,7 +91,7 @@ func TestContainers(t *testing.T) {
 
 		cm, err := containers.Get(client, cNames[0], getOpts).ExtractMetadata()
 		th.AssertNoErr(t, err)
-		for k, _ := range metadata {
+		for k := range metadata {
 			if _, ok := cm[k]; ok {
 				t.Errorf("Unexpected custom metadata with key: %s", k)
 			}

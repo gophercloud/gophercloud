@@ -33,7 +33,7 @@ func TestList(t *testing.T) {
 					{
 						Provider: "Fastly",
 						Links: []gophercloud.Link{
-							gophercloud.Link{
+							{
 								Href: "http://www.fastly.com",
 								Rel:  "provider_url",
 							},
@@ -41,7 +41,7 @@ func TestList(t *testing.T) {
 					},
 				},
 				Links: []gophercloud.Link{
-					gophercloud.Link{
+					{
 						Href: "https://www.poppycdn.io/v1.0/flavors/europe",
 						Rel:  "self",
 					},
@@ -69,7 +69,7 @@ func TestGet(t *testing.T) {
 			{
 				Provider: "ChinaCache",
 				Links: []gophercloud.Link{
-					gophercloud.Link{
+					{
 						Href: "http://www.chinacache.com",
 						Rel:  "provider_url",
 					},
@@ -77,7 +77,7 @@ func TestGet(t *testing.T) {
 			},
 		},
 		Links: []gophercloud.Link{
-			gophercloud.Link{
+			{
 				Href: "https://www.poppycdn.io/v1.0/flavors/asia",
 				Rel:  "self",
 			},

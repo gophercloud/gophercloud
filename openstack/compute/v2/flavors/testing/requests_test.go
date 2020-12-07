@@ -237,7 +237,7 @@ func TestFlavorAccessesList(t *testing.T) {
 	})
 
 	expected := []flavors.FlavorAccess{
-		flavors.FlavorAccess{
+		{
 			FlavorID: "12345678",
 			TenantID: "2f954bcf047c4ee9b09a37d49ae6db54",
 		},
@@ -285,7 +285,7 @@ func TestFlavorAccessAdd(t *testing.T) {
 	})
 
 	expected := []flavors.FlavorAccess{
-		flavors.FlavorAccess{
+		{
 			FlavorID: "12345678",
 			TenantID: "2f954bcf047c4ee9b09a37d49ae6db54",
 		},

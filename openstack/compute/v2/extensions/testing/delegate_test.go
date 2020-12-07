@@ -23,7 +23,7 @@ func TestList(t *testing.T) {
 		th.AssertNoErr(t, err)
 
 		expected := []common.Extension{
-			common.Extension{
+			{
 				Updated:     "2013-01-20T00:00:00-00:00",
 				Name:        "Neutron Service Type Management",
 				Links:       []interface{}{},

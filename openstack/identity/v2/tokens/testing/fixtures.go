@@ -58,7 +58,7 @@ var ExpectedServiceCatalog = &tokens.ServiceCatalog{
 var ExpectedUser = &tokens.User{
 	ID:       "a530fefc3d594c4ba2693a4ecd6be74e",
 	Name:     "apiserver",
-	Roles:    []tokens.Role{tokens.Role{Name: "member"}, tokens.Role{Name: "service"}},
+	Roles:    []tokens.Role{{Name: "member"}, {Name: "service"}},
 	UserName: "apiserver",
 }
 

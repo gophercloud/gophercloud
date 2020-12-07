@@ -199,7 +199,7 @@ var ExpectedPolicyTypeDetail = &policytypes.PolicyTypeDetail{
 		},
 	},
 	SupportStatus: map[string][]policytypes.SupportStatusType{
-		"1.0": []policytypes.SupportStatusType{
+		"1.0": {
 			{
 				Status: "EXPERIMENTAL",
 				Since:  "2017.02",

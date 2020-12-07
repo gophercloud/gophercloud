@@ -176,7 +176,7 @@ func TestCreate(t *testing.T) {
 	asu := false
 	enableSNAT := false
 	efi := []routers.ExternalFixedIP{
-		routers.ExternalFixedIP{
+		{
 			SubnetID: "ab561bc4-1a8e-48f2-9fbd-376fcb1a1def",
 		},
 	}

@@ -201,7 +201,7 @@ func TestListExecutions(t *testing.T) {
 		}
 
 		expected := []executions.Execution{
-			executions.Execution{
+			{
 				ID:          "50bb59f1-eb77-4017-a77f-6d575b002667",
 				Description: "description",
 				Input: map[string]interface{}{
@@ -235,18 +235,18 @@ func TestListExecutions(t *testing.T) {
 
 func TestToExecutionListQuery(t *testing.T) {
 	for expected, opts := range map[string]*executions.ListOpts{
-		newValue("input", `{"msg":"Hello"}`): &executions.ListOpts{
+		newValue("input", `{"msg":"Hello"}`): {
 			Input: map[string]interface{}{
 				"msg": "Hello",
 			},
 		},
-		newValue("description", `neq:not_description`): &executions.ListOpts{
+		newValue("description", `neq:not_description`): {
 			Description: &executions.ListFilter{
 				Filter: executions.FilterNEQ,
 				Value:  "not_description",
 			},
 		},
-		newValue("created_at", `gt:2018-01-01 00:00:00`): &executions.ListOpts{
+		newValue("created_at", `gt:2018-01-01 00:00:00`): {
 			CreatedAt: &executions.ListDateFilter{
 				Filter: executions.FilterGT,
 				Value:  time.Date(2018, time.January, 1, 0, 0, 0, 0, time.UTC),

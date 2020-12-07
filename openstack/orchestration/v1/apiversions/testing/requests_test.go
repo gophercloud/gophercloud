@@ -55,7 +55,7 @@ func TestListVersions(t *testing.T) {
 				Status: "CURRENT",
 				ID:     "v1.0",
 				Links: []gophercloud.Link{
-					gophercloud.Link{
+					{
 						Href: "http://23.253.228.211:8000/v1",
 						Rel:  "self",
 					},

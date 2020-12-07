@@ -390,7 +390,7 @@ var (
 				Architecture: "x86_64",
 			},
 			Disks: []introspection.RootDiskType{
-				introspection.RootDiskType{
+				{
 					Rotational: true,
 					Model:      "",
 					Name:       "/dev/vda",
@@ -399,7 +399,7 @@ var (
 				},
 			},
 			Interfaces: []introspection.InterfaceType{
-				introspection.InterfaceType{
+				{
 					Vendor:      "0x1af4",
 					HasCarrier:  true,
 					MACAddress:  "52:54:00:47:20:4d",
@@ -408,7 +408,7 @@ var (
 					IPV4Address: "172.24.42.101",
 					LLDP:        []introspection.LLDPTLVType{},
 				},
-				introspection.InterfaceType{
+				{
 					IPV4Address: "172.24.42.100",
 					MACAddress:  "52:54:00:4e:3d:30",
 					Name:        "eth0",
@@ -416,11 +416,11 @@ var (
 					HasCarrier:  true,
 					Vendor:      "0x1af4",
 					LLDP: []introspection.LLDPTLVType{
-						introspection.LLDPTLVType{
+						{
 							Type:  1,
 							Value: "04112233aabbcc",
 						},
-						introspection.LLDPTLVType{
+						{
 							Type:  5,
 							Value: "737730312d646973742d31622d623132",
 						},
