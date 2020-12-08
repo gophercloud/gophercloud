@@ -151,7 +151,7 @@ func TestCreate(t *testing.T) {
 		Description: "Firewall policy",
 		Shared:      gophercloud.Disabled,
 		Audited:     gophercloud.Enabled,
-		Rules: []string{
+		FirewallRules: []string{
 			"98a58c87-76be-ae7c-a74e-b77fffb88d95",
 			"11a58c87-76be-ae7c-a74e-b77fffb88a32",
 		},
@@ -161,7 +161,7 @@ func TestCreate(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-func TestAddRule(t *testing.T) {
+func TestInsertRule(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
@@ -199,10 +199,10 @@ func TestAddRule(t *testing.T) {
 
 	options := policies.InsertRuleOpts{
 		ID:           "7d305689-6cb1-4e75-9f4d-517b9ba792b5",
-		BeforeRuleID: "3062ed90-1fb0-4c25-af3d-318dff2143ae",
+		InsertBefore: "3062ed90-1fb0-4c25-af3d-318dff2143ae",
 	}
 
-	policy, err := policies.AddRule(fake.ServiceClient(), "e3c78ab6-e827-4297-8d68-739063865a8b", options).Extract()
+	policy, err := policies.InsertRule(fake.ServiceClient(), "e3c78ab6-e827-4297-8d68-739063865a8b", options).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, "TESTACC-2LnMayeG", policy.Name)
 	th.AssertEquals(t, 2, len(policy.Rules))
@@ -212,6 +212,24 @@ func TestAddRule(t *testing.T) {
 	th.AssertEquals(t, "TESTACC-DESC-8P12aLfW", policy.Description)
 	th.AssertEquals(t, "9f98fc0e5f944cd1b51798b668dc8778", policy.TenantID)
 
+}
+
+func TestInsertRuleWithInvalidParameters(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	//invalid opts, its not allowed to specify InsertBefore and InsertAfter together
+	options := policies.InsertRuleOpts{
+		ID:           "unknown",
+		InsertBefore: "1",
+		InsertAfter:  "2",
+	}
+
+	_, err := policies.InsertRule(fake.ServiceClient(), "0", options).Extract()
+
+	// expect to fail with an gophercloud error
+	th.AssertErr(t, err)
+	th.AssertEquals(t, "Exactly one of InsertBefore and InsertAfter must be provided", err.Error())
 }
 
 func TestGet(t *testing.T) {
@@ -305,7 +323,7 @@ func TestUpdate(t *testing.T) {
 	options := policies.UpdateOpts{
 		Name:        &name,
 		Description: &description,
-		Rules: &[]string{
+		FirewallRules: &[]string{
 			"98a58c87-76be-ae7c-a74e-b77fffb88d95",
 			"11a58c87-76be-ae7c-a74e-b77fffb88a32",
 		},

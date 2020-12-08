@@ -67,12 +67,12 @@ type CreateOptsBuilder interface {
 type CreateOpts struct {
 	// Only required if the caller has an admin role and wants to create a firewall policy
 	// for another tenant.
-	TenantID    string   `json:"tenant_id,omitempty"`
-	Name        string   `json:"name,omitempty"`
-	Description string   `json:"description,omitempty"`
-	Shared      *bool    `json:"shared,omitempty"`
-	Audited     *bool    `json:"audited,omitempty"`
-	Rules       []string `json:"firewall_rules,omitempty"`
+	TenantID      string   `json:"tenant_id,omitempty"`
+	Name          string   `json:"name,omitempty"`
+	Description   string   `json:"description,omitempty"`
+	Shared        *bool    `json:"shared,omitempty"`
+	Audited       *bool    `json:"audited,omitempty"`
+	FirewallRules []string `json:"firewall_rules,omitempty"`
 }
 
 // ToFirewallPolicyCreateMap casts a CreateOpts struct to a map.
@@ -107,11 +107,11 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts contains the values used when updating a firewall policy.
 type UpdateOpts struct {
-	Name        *string   `json:"name,omitempty"`
-	Description *string   `json:"description,omitempty"`
-	Shared      *bool     `json:"shared,omitempty"`
-	Audited     *bool     `json:"audited,omitempty"`
-	Rules       *[]string `json:"firewall_rules,omitempty"`
+	Name          *string   `json:"name,omitempty"`
+	Description   *string   `json:"description,omitempty"`
+	Shared        *bool     `json:"shared,omitempty"`
+	Audited       *bool     `json:"audited,omitempty"`
+	FirewallRules *[]string `json:"firewall_rules,omitempty"`
 }
 
 // ToFirewallPolicyUpdateMap casts a CreateOpts struct to a map.
@@ -144,15 +144,15 @@ type InsertRuleOptsBuilder interface {
 
 type InsertRuleOpts struct {
 	ID           string `json:"firewall_rule_id" required:"true"`
-	BeforeRuleID string `json:"insert_before,omitempty"`
-	AfterRuleID  string `json:"insert_after,omitempty"`
+	InsertBefore string `json:"insert_before,omitempty" xor:"InsertAfter"`
+	InsertAfter  string `json:"insert_after,omitempty" xor:"InsertBefore"`
 }
 
 func (opts InsertRuleOpts) ToFirewallPolicyInsertRuleMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-func AddRule(c *gophercloud.ServiceClient, id string, opts InsertRuleOptsBuilder) (r InsertRuleResult) {
+func InsertRule(c *gophercloud.ServiceClient, id string, opts InsertRuleOptsBuilder) (r InsertRuleResult) {
 	b, err := opts.ToFirewallPolicyInsertRuleMap()
 	if err != nil {
 		r.Err = err

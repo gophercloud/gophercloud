@@ -45,9 +45,9 @@ func TestPolicyCRUD(t *testing.T) {
 	name := ""
 	description := ""
 	updateOpts := policies.UpdateOpts{
-		Name:        &name,
-		Description: &description,
-		Rules:       &[]string{},
+		Name:          &name,
+		Description:   &description,
+		FirewallRules: &[]string{},
 	}
 
 	_, err = policies.Update(client, policy.ID, updateOpts).Extract()

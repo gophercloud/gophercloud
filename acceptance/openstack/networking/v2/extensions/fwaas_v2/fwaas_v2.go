@@ -29,10 +29,10 @@ func AddRule(t *testing.T, client *gophercloud.ServiceClient, policyID string, r
 
 	addOpts := policies.InsertRuleOpts{
 		ID:           ruleID,
-		BeforeRuleID: beforeRuleID,
+		InsertBefore: beforeRuleID,
 	}
 
-	_, err := policies.AddRule(client, policyID, addOpts).Extract()
+	_, err := policies.InsertRule(client, policyID, addOpts).Extract()
 	if err != nil {
 		t.Fatalf("Unable to insert rule %s before rule %s in policy %s: %v", ruleID, beforeRuleID, policyID, err)
 	}
@@ -49,7 +49,7 @@ func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string
 	createOpts := policies.CreateOpts{
 		Name:        policyName,
 		Description: policyDescription,
-		Rules: []string{
+		FirewallRules: []string{
 			ruleID,
 		},
 	}
