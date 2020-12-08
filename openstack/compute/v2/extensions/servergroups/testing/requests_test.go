@@ -15,7 +15,7 @@ func TestList(t *testing.T) {
 	HandleListSuccessfully(t)
 
 	count := 0
-	err := servergroups.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := servergroups.List(client.ServiceClient(), &servergroups.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := servergroups.ExtractServerGroups(page)
 		th.AssertNoErr(t, err)
