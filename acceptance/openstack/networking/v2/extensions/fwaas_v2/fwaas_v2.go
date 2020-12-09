@@ -8,9 +8,65 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas_v2/groups"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas_v2/policies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/fwaas_v2/rules"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
+
+// RemoveRule will remove a rule from the  policy.
+func RemoveRule(t *testing.T, client *gophercloud.ServiceClient, policyID string, ruleID string) {
+	t.Logf("Attempting to remove rule %s from policy %s", ruleID, policyID)
+
+	_, err := policies.RemoveRule(client, policyID, ruleID).Extract()
+	if err != nil {
+		t.Fatalf("Unable to remove rule %s from policy %s: %v", ruleID, policyID, err)
+	}
+}
+
+// AddRule will add a rule to to a policy.
+func AddRule(t *testing.T, client *gophercloud.ServiceClient, policyID string, ruleID string, beforeRuleID string) {
+	t.Logf("Attempting to insert rule %s in to policy %s", ruleID, policyID)
+
+	addOpts := policies.InsertRuleOpts{
+		ID:           ruleID,
+		InsertBefore: beforeRuleID,
+	}
+
+	_, err := policies.InsertRule(client, policyID, addOpts).Extract()
+	if err != nil {
+		t.Fatalf("Unable to insert rule %s before rule %s in policy %s: %v", ruleID, beforeRuleID, policyID, err)
+	}
+}
+
+// CreatePolicy will create a Firewall Policy with a random name and given
+// rule. An error will be returned if the rule could not be created.
+func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string) (*policies.Policy, error) {
+	policyName := tools.RandomString("TESTACC-", 8)
+	policyDescription := tools.RandomString("TESTACC-DESC-", 8)
+
+	t.Logf("Attempting to create policy %s", policyName)
+
+	createOpts := policies.CreateOpts{
+		Name:        policyName,
+		Description: policyDescription,
+		FirewallRules: []string{
+			ruleID,
+		},
+	}
+
+	policy, err := policies.Create(client, createOpts).Extract()
+	if err != nil {
+		return policy, err
+	}
+
+	t.Logf("Successfully created policy %s", policyName)
+
+	th.AssertEquals(t, policy.Name, policyName)
+	th.AssertEquals(t, policy.Description, policyDescription)
+	th.AssertEquals(t, len(policy.Rules), 1)
+
+	return policy, nil
+}
 
 // CreateRule will create a Firewall Rule with a random source address and
 //source port, destination address and port. An error will be returned if
@@ -51,6 +107,20 @@ func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, e
 	th.AssertEquals(t, rule.DestinationPort, destinationPort)
 
 	return rule, nil
+}
+
+// DeletePolicy will delete a policy with a specified ID. A fatal error will
+// occur if the delete was not successful. This works best when used as a
+// deferred function.
+func DeletePolicy(t *testing.T, client *gophercloud.ServiceClient, policyID string) {
+	t.Logf("Attempting to delete policy: %s", policyID)
+
+	err := policies.Delete(client, policyID).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete policy %s: %v", policyID, err)
+	}
+
+	t.Logf("Deleted policy: %s", policyID)
 }
 
 // DeleteRule will delete a rule with a specified ID. A fatal error will occur
