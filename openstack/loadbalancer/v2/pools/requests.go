@@ -2,6 +2,7 @@ package pools
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/monitors"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -92,11 +93,11 @@ type CreateOpts struct {
 
 	// The Loadbalancer on which the members of the pool will be associated with.
 	// Note: one of LoadbalancerID or ListenerID must be provided.
-	LoadbalancerID string `json:"loadbalancer_id,omitempty" xor:"ListenerID"`
+	LoadbalancerID string `json:"loadbalancer_id,omitempty"`
 
 	// The Listener on which the members of the pool will be associated with.
 	// Note: one of LoadbalancerID or ListenerID must be provided.
-	ListenerID string `json:"listener_id,omitempty" xor:"LoadbalancerID"`
+	ListenerID string `json:"listener_id,omitempty"`
 
 	// ProjectID is the UUID of the project who owns the Pool.
 	// Only administrative users can specify a project UUID other than their own.
@@ -115,6 +116,12 @@ type CreateOpts struct {
 	// The administrative state of the Pool. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// The updates for pool members
+	Members []BatchUpdateMemberOpts `json:"members,omitempty"`
+
+	// The Monitor associated with this Pool.
+	Monitor *monitors.CreateOpts `json:"healthmonitor,omitempty"`
 }
 
 // ToPoolCreateMap builds a request body from CreateOpts.
@@ -165,6 +172,16 @@ type UpdateOpts struct {
 	// The administrative state of the Pool. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// Persistence is the session persistence of the pool.
+	// Omit this field to prevent session persistence.
+	Persistence *SessionPersistence `json:"session_persistence,omitempty"`
+
+	// The updates for pool members
+	Members *[]BatchUpdateMemberOpts `json:"members,omitempty"`
+
+	// The Monitor associated with this Pool.
+	Monitor *monitors.UpdateOpts `json:"healthmonitor,omitempty"`
 }
 
 // ToPoolUpdateMap builds a request body from UpdateOpts.

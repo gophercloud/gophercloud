@@ -2,6 +2,8 @@ package listeners
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/pools"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -84,7 +86,7 @@ type CreateOptsBuilder interface {
 // CreateOpts represents options for creating a listener.
 type CreateOpts struct {
 	// The load balancer on which to provision this listener.
-	LoadbalancerID string `json:"loadbalancer_id" required:"true"`
+	LoadbalancerID string `json:"loadbalancer_id,omitempty"`
 
 	// The protocol - can either be TCP, HTTP, HTTPS or TERMINATED_HTTPS.
 	Protocol Protocol `json:"protocol" required:"true"`
@@ -102,6 +104,9 @@ type CreateOpts struct {
 	// The ID of the default pool with which the Listener is associated.
 	DefaultPoolID string `json:"default_pool_id,omitempty"`
 
+	// The default pool with which the Listener is associated.
+	DefaultPool *pools.CreateOpts `json:"default_pool,omitempty"`
+
 	// Human-readable description for the Listener.
 	Description string `json:"description,omitempty"`
 
@@ -117,6 +122,9 @@ type CreateOpts struct {
 	// The administrative state of the Listener. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// L7policies are the L7 policies which are part of this listener.
+	L7Policies []l7policies.CreateOpts `json:"l7policies,omitempty"`
 
 	// Frontend client inactivity timeout in milliseconds
 	TimeoutClientData *int `json:"timeout_client_data,omitempty"`
@@ -181,6 +189,9 @@ type UpdateOpts struct {
 	// The ID of the default pool with which the Listener is associated.
 	DefaultPoolID *string `json:"default_pool_id,omitempty"`
 
+	// The default pool with which the Listener is associated.
+	DefaultPool *pools.UpdateOpts `json:"default_pool,omitempty"`
+
 	// Human-readable description for the Listener.
 	Description *string `json:"description,omitempty"`
 
@@ -196,6 +207,9 @@ type UpdateOpts struct {
 	// The administrative state of the Listener. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// L7policies are the L7 policies which are part of this listener.
+	L7Policies *[]l7policies.UpdateOpts `json:"l7policies,omitempty"`
 
 	// Frontend client inactivity timeout in milliseconds
 	TimeoutClientData *int `json:"timeout_client_data,omitempty"`

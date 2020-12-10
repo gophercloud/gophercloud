@@ -2,6 +2,8 @@ package loadbalancers
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/pools"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -119,6 +121,12 @@ type CreateOpts struct {
 	// The name of the provider.
 	Provider string `json:"provider,omitempty"`
 
+	// Listeners are the listeners related to this Loadbalancer.
+	Listeners []listeners.CreateOpts `json:"listeners,omitempty"`
+
+	// Pools are the pools related to this Loadbalancer.
+	Pools []pools.CreateOpts `json:"pools,omitempty"`
+
 	// Tags is a set of resource tags.
 	Tags []string `json:"tags,omitempty"`
 }
@@ -168,6 +176,12 @@ type UpdateOpts struct {
 	// The administrative state of the Loadbalancer. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// Listeners are the listeners related to this Loadbalancer.
+	Listeners *[]listeners.UpdateOpts `json:"listeners,omitempty"`
+
+	// Pools are the pools related to this Loadbalancer.
+	Pools *[]pools.UpdateOpts `json:"pools,omitempty"`
 
 	// Tags is a set of resource tags.
 	Tags *[]string `json:"tags,omitempty"`

@@ -40,7 +40,7 @@ type CreateOpts struct {
 	Name string `json:"name,omitempty"`
 
 	// The ID of the listener.
-	ListenerID string `json:"listener_id" required:"true"`
+	ListenerID string `json:"listener_id,omitempty"`
 
 	// The L7 policy action. One of REDIRECT_TO_POOL, REDIRECT_TO_URL, or REJECT.
 	Action Action `json:"action" required:"true"`
@@ -66,6 +66,9 @@ type CreateOpts struct {
 	// The administrative state of the Loadbalancer. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// Create rules opts
+	Rules []CreateRuleOpts `json:"rules,omitempty"`
 }
 
 // ToL7PolicyCreateMap builds a request body from CreateOpts.
@@ -182,6 +185,9 @@ type UpdateOpts struct {
 	// The administrative state of the Loadbalancer. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// Update rules opts
+	Rules *[]UpdateRuleOpts `json:"rules,omitempty"`
 }
 
 // ToL7PolicyUpdateMap builds a request body from UpdateOpts.
