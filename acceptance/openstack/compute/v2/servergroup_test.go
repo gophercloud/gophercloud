@@ -25,7 +25,7 @@ func TestServergroupsCreateDelete(t *testing.T) {
 
 	tools.PrintResource(t, serverGroup)
 
-	allPages, err := servergroups.List(client).AllPages()
+	allPages, err := servergroups.List(client, &servergroups.ListOpts{}).AllPages()
 	th.AssertNoErr(t, err)
 
 	allServerGroups, err := servergroups.ExtractServerGroups(allPages)
