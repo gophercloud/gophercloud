@@ -101,7 +101,7 @@ func TestListDetail(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, actual, []snapshots.Snapshot{
-		snapshots.Snapshot{
+		{
 			ID:          snapshotID,
 			Name:        "new_app_snapshot",
 			Description: "",

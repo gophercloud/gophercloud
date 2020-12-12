@@ -160,7 +160,7 @@ var ExpectedUsages = resourceproviders.ResourceProviderUsage{
 var ExpectedInventories = resourceproviders.ResourceProviderInventories{
 	ResourceProviderGeneration: 7,
 	Inventories: map[string]resourceproviders.Inventory{
-		"DISK_GB": resourceproviders.Inventory{
+		"DISK_GB": {
 			AllocationRatio: 1.0,
 			MaxUnit:         35,
 			MinUnit:         1,
@@ -168,7 +168,7 @@ var ExpectedInventories = resourceproviders.ResourceProviderInventories{
 			StepSize:        1,
 			Total:           35,
 		},
-		"MEMORY_MB": resourceproviders.Inventory{
+		"MEMORY_MB": {
 			AllocationRatio: 1.5,
 			MaxUnit:         5825,
 			MinUnit:         1,
@@ -176,7 +176,7 @@ var ExpectedInventories = resourceproviders.ResourceProviderInventories{
 			StepSize:        1,
 			Total:           5825,
 		},
-		"VCPU": resourceproviders.Inventory{
+		"VCPU": {
 			AllocationRatio: 16.0,
 			MaxUnit:         4,
 			MinUnit:         1,

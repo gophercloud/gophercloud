@@ -287,7 +287,7 @@ var ApplicationCredential = applicationcredentials.ApplicationCredential{
 	Secret:       "",
 	ProjectID:    "53c2b94f63fb4f43a21b92d119ce549f",
 	Roles: []applicationcredentials.Role{
-		applicationcredentials.Role{
+		{
 			ID:   "31f87923ae4a4d119aa0b85dcdbeed13",
 			Name: "compute_viewer",
 		},
@@ -314,7 +314,7 @@ var ApplicationCredentialNoSecretResponse = applicationcredentials.ApplicationCr
 	Secret:       "generated_secret",
 	ProjectID:    "53c2b94f63fb4f43a21b92d119ce549f",
 	Roles: []applicationcredentials.Role{
-		applicationcredentials.Role{
+		{
 			ID:   "31f87923ae4a4d119aa0b85dcdbeed13",
 			Name: "compute_viewer",
 		},
@@ -334,11 +334,11 @@ var UnrestrictedApplicationCredential = applicationcredentials.ApplicationCreden
 	Secret:       "",
 	ProjectID:    "53c2b94f63fb4f43a21b92d119ce549f",
 	Roles: []applicationcredentials.Role{
-		applicationcredentials.Role{
+		{
 			ID:   "31f87923ae4a4d119aa0b85dcdbeed13",
 			Name: "compute_viewer",
 		},
-		applicationcredentials.Role{
+		{
 			ID:   "4494bc5bea1a4105ad7fbba6a7eb9ef4",
 			Name: "network_viewer",
 		},
@@ -357,7 +357,7 @@ var FirstApplicationCredential = applicationcredentials.ApplicationCredential{
 	Secret:       "",
 	ProjectID:    "53c2b94f63fb4f43a21b92d119ce549f",
 	Roles: []applicationcredentials.Role{
-		applicationcredentials.Role{
+		{
 			ID:   "31f87923ae4a4d119aa0b85dcdbeed13",
 			Name: "compute_viewer",
 		},
@@ -376,11 +376,11 @@ var SecondApplicationCredential = applicationcredentials.ApplicationCredential{
 	Secret:       "",
 	ProjectID:    "53c2b94f63fb4f43a21b92d119ce549f",
 	Roles: []applicationcredentials.Role{
-		applicationcredentials.Role{
+		{
 			ID:   "31f87923ae4a4d119aa0b85dcdbeed13",
 			Name: "compute_viewer",
 		},
-		applicationcredentials.Role{
+		{
 			ID:   "4494bc5bea1a4105ad7fbba6a7eb9ef4",
 			Name: "network_viewer",
 		},

@@ -133,15 +133,15 @@ func TestList(t *testing.T) {
 				FlavorID:     "europe",
 				Status:       "deployed",
 				Links: []gophercloud.Link{
-					gophercloud.Link{
+					{
 						Href: "https://www.poppycdn.io/v1.0/services/96737ae3-cfc1-4c72-be88-5d0e7cc9a3f1",
 						Rel:  "self",
 					},
-					gophercloud.Link{
+					{
 						Href: "myothersite.com.poppycdn.net",
 						Rel:  "access_url",
 					},
-					gophercloud.Link{
+					{
 						Href: "https://www.poppycdn.io/v1.0/flavors/europe",
 						Rel:  "flavor",
 					},

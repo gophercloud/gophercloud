@@ -168,8 +168,8 @@ func TestCreateWithMultipleProvider(t *testing.T) {
 
 	iTrue := true
 	segments := []provider.Segment{
-		provider.Segment{NetworkType: "vxlan", PhysicalNetwork: "br-ex", SegmentationID: 666},
-		provider.Segment{NetworkType: "vxlan", PhysicalNetwork: "br-ex", SegmentationID: 615},
+		{NetworkType: "vxlan", PhysicalNetwork: "br-ex", SegmentationID: 666},
+		{NetworkType: "vxlan", PhysicalNetwork: "br-ex", SegmentationID: 615},
 	}
 
 	networkCreateOpts := networks.CreateOpts{

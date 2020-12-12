@@ -62,7 +62,7 @@ func CreatePortWithSecurityGroup(t *testing.T, client *gophercloud.ServiceClient
 		Name:           portName,
 		Description:    portDescription,
 		AdminStateUp:   &iFalse,
-		FixedIPs:       []ports.IP{ports.IP{SubnetID: subnetID}},
+		FixedIPs:       []ports.IP{{SubnetID: subnetID}},
 		SecurityGroups: &[]string{secGroupID},
 	}
 

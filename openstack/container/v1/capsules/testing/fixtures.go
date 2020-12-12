@@ -101,7 +101,7 @@ var ValidJSONTemplateParsed = map[string]interface{}{
 	"spec": map[string]interface{}{
 		"restartPolicy": "Always",
 		"containers": []map[string]interface{}{
-			map[string]interface{}{
+			{
 				"image": "ubuntu",
 				"command": []interface{}{
 					"/bin/bash",
@@ -145,7 +145,7 @@ var ValidYAMLTemplateParsed = map[string]interface{}{
 	"spec": map[interface{}]interface{}{
 		"restartPolicy": "Always",
 		"containers": []map[interface{}]interface{}{
-			map[interface{}]interface{}{
+			{
 				"image": "ubuntu",
 				"command": []interface{}{
 					"/bin/bash",
@@ -497,7 +497,7 @@ var ExpectedContainer1 = capsules.Container{
 		"Name":              "always",
 	},
 	Addresses: map[string][]capsules.Address{
-		"b1295212-64e1-471d-aa01-25ff46f9818d": []capsules.Address{
+		"b1295212-64e1-471d-aa01-25ff46f9818d": {
 			{
 				PreserveOnDelete: false,
 				Addr:             "172.24.4.11",
@@ -536,7 +536,7 @@ var ExpectedCapsule = capsules.Capsule{
 		"1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
 	},
 	Addresses: map[string][]capsules.Address{
-		"b1295212-64e1-471d-aa01-25ff46f9818d": []capsules.Address{
+		"b1295212-64e1-471d-aa01-25ff46f9818d": {
 			{
 				PreserveOnDelete: false,
 				Addr:             "172.24.4.11",
@@ -547,7 +547,7 @@ var ExpectedCapsule = capsules.Capsule{
 		},
 	},
 	VolumesInfo: map[string][]string{
-		"67618d54-dd55-4f7e-91b3-39ffb3ba7f5f": []string{
+		"67618d54-dd55-4f7e-91b3-39ffb3ba7f5f": {
 			"1739e28a-d391-4fd9-93a5-3ba3f29a4c9b",
 		},
 	},
@@ -584,7 +584,7 @@ var ExpectedCapsuleV132 = capsules.CapsuleV132{
 		"web": "app",
 	},
 	Addresses: map[string][]capsules.Address{
-		"b1295212-64e1-471d-aa01-25ff46f9818d": []capsules.Address{
+		"b1295212-64e1-471d-aa01-25ff46f9818d": {
 			{
 				PreserveOnDelete: false,
 				Addr:             "172.24.4.11",

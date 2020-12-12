@@ -23,7 +23,7 @@ func TestBootFromImage(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	blockDevices := []bootfromvolume.BlockDevice{
-		bootfromvolume.BlockDevice{
+		{
 			BootIndex:           0,
 			DeleteOnTermination: true,
 			DestinationType:     bootfromvolume.DestinationLocal,
@@ -51,7 +51,7 @@ func TestBootFromNewVolume(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	blockDevices := []bootfromvolume.BlockDevice{
-		bootfromvolume.BlockDevice{
+		{
 			DeleteOnTermination: true,
 			DestinationType:     bootfromvolume.DestinationVolume,
 			SourceType:          bootfromvolume.SourceImage,
@@ -97,7 +97,7 @@ func TestBootFromExistingVolume(t *testing.T) {
 	tools.PrintResource(t, volume)
 
 	blockDevices := []bootfromvolume.BlockDevice{
-		bootfromvolume.BlockDevice{
+		{
 			DeleteOnTermination: true,
 			DestinationType:     bootfromvolume.DestinationVolume,
 			SourceType:          bootfromvolume.SourceVolume,
@@ -137,7 +137,7 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	blockDevices := []bootfromvolume.BlockDevice{
-		bootfromvolume.BlockDevice{
+		{
 			BootIndex:           0,
 			DestinationType:     bootfromvolume.DestinationLocal,
 			DeleteOnTermination: true,
@@ -145,7 +145,7 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 			UUID:                choices.ImageID,
 			VolumeSize:          5,
 		},
-		bootfromvolume.BlockDevice{
+		{
 			BootIndex:           -1,
 			DestinationType:     bootfromvolume.DestinationLocal,
 			DeleteOnTermination: true,
@@ -153,7 +153,7 @@ func TestBootFromMultiEphemeralServer(t *testing.T) {
 			SourceType:          bootfromvolume.SourceBlank,
 			VolumeSize:          1,
 		},
-		bootfromvolume.BlockDevice{
+		{
 			BootIndex:           -1,
 			DestinationType:     bootfromvolume.DestinationLocal,
 			DeleteOnTermination: true,
@@ -180,14 +180,14 @@ func TestAttachNewVolume(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	blockDevices := []bootfromvolume.BlockDevice{
-		bootfromvolume.BlockDevice{
+		{
 			BootIndex:           0,
 			DeleteOnTermination: true,
 			DestinationType:     bootfromvolume.DestinationLocal,
 			SourceType:          bootfromvolume.SourceImage,
 			UUID:                choices.ImageID,
 		},
-		bootfromvolume.BlockDevice{
+		{
 			BootIndex:           1,
 			DeleteOnTermination: true,
 			DestinationType:     bootfromvolume.DestinationVolume,
@@ -231,14 +231,14 @@ func TestAttachExistingVolume(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	blockDevices := []bootfromvolume.BlockDevice{
-		bootfromvolume.BlockDevice{
+		{
 			BootIndex:           0,
 			DeleteOnTermination: true,
 			DestinationType:     bootfromvolume.DestinationLocal,
 			SourceType:          bootfromvolume.SourceImage,
 			UUID:                choices.ImageID,
 		},
-		bootfromvolume.BlockDevice{
+		{
 			BootIndex:           1,
 			DeleteOnTermination: true,
 			DestinationType:     bootfromvolume.DestinationVolume,
@@ -283,7 +283,7 @@ func TestBootFromNewCustomizedVolume(t *testing.T) {
 	}
 
 	blockDevices := []bootfromvolume.BlockDevice{
-		bootfromvolume.BlockDevice{
+		{
 			DeleteOnTermination: true,
 			DestinationType:     bootfromvolume.DestinationVolume,
 			SourceType:          bootfromvolume.SourceImage,

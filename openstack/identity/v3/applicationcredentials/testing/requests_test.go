@@ -40,7 +40,7 @@ func TestListApplicationCredentialsAllPages(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ExpectedApplicationCredentialsSlice, actual)
 	th.AssertDeepEquals(t, ExpectedApplicationCredentialsSlice[0].Roles, []applicationcredentials.Role{{ID: "31f87923ae4a4d119aa0b85dcdbeed13", Name: "compute_viewer"}})
-	th.AssertDeepEquals(t, ExpectedApplicationCredentialsSlice[1].Roles, []applicationcredentials.Role{applicationcredentials.Role{ID: "31f87923ae4a4d119aa0b85dcdbeed13", Name: "compute_viewer"}, applicationcredentials.Role{ID: "4494bc5bea1a4105ad7fbba6a7eb9ef4", Name: "network_viewer"}})
+	th.AssertDeepEquals(t, ExpectedApplicationCredentialsSlice[1].Roles, []applicationcredentials.Role{{ID: "31f87923ae4a4d119aa0b85dcdbeed13", Name: "compute_viewer"}, {ID: "4494bc5bea1a4105ad7fbba6a7eb9ef4", Name: "network_viewer"}})
 }
 
 func TestGetApplicationCredential(t *testing.T) {
@@ -62,7 +62,7 @@ func TestCreateApplicationCredential(t *testing.T) {
 		Name:   "test",
 		Secret: "mysecret",
 		Roles: []applicationcredentials.Role{
-			applicationcredentials.Role{ID: "31f87923ae4a4d119aa0b85dcdbeed13"},
+			{ID: "31f87923ae4a4d119aa0b85dcdbeed13"},
 		},
 		AccessRules: []applicationcredentials.AccessRule{
 			{
@@ -89,7 +89,7 @@ func TestCreateNoSecretApplicationCredential(t *testing.T) {
 	createOpts := applicationcredentials.CreateOpts{
 		Name: "test1",
 		Roles: []applicationcredentials.Role{
-			applicationcredentials.Role{ID: "31f87923ae4a4d119aa0b85dcdbeed13"},
+			{ID: "31f87923ae4a4d119aa0b85dcdbeed13"},
 		},
 	}
 
@@ -107,8 +107,8 @@ func TestCreateUnrestrictedApplicationCredential(t *testing.T) {
 		Name:         "test2",
 		Unrestricted: true,
 		Roles: []applicationcredentials.Role{
-			applicationcredentials.Role{ID: "31f87923ae4a4d119aa0b85dcdbeed13"},
-			applicationcredentials.Role{ID: "4494bc5bea1a4105ad7fbba6a7eb9ef4"},
+			{ID: "31f87923ae4a4d119aa0b85dcdbeed13"},
+			{ID: "4494bc5bea1a4105ad7fbba6a7eb9ef4"},
 		},
 		ExpiresAt: &ApplationCredentialExpiresAt,
 	}

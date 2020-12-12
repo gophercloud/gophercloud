@@ -87,7 +87,7 @@ func TestListClusterTemplates(t *testing.T) {
 		count++
 		actual, err := clustertemplates.ExtractClusterTemplates(page)
 		th.AssertNoErr(t, err)
-		for idx, _ := range actual {
+		for idx := range actual {
 			actual[idx].CreatedAt = actual[idx].CreatedAt.UTC()
 		}
 		th.AssertDeepEquals(t, ExpectedClusterTemplates, actual)

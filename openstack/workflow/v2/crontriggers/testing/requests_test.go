@@ -209,7 +209,7 @@ func TestListCronTriggers(t *testing.T) {
 		firstExecution := time.Date(2018, time.September, 12, 17, 48, 0, 0, time.UTC)
 
 		expected := []crontriggers.CronTrigger{
-			crontriggers.CronTrigger{
+			{
 				ID:                  "0520ffd8-f7f1-4f2e-845b-55d953a1cf46",
 				Name:                "crontrigger",
 				Pattern:             "0 0 1 1 *",
@@ -245,24 +245,24 @@ func TestListCronTriggers(t *testing.T) {
 
 func TestToExecutionListQuery(t *testing.T) {
 	for expected, opts := range map[string]*crontriggers.ListOpts{
-		newValue("workflow_input", `{"msg":"Hello"}`): &crontriggers.ListOpts{
+		newValue("workflow_input", `{"msg":"Hello"}`): {
 			WorkflowInput: map[string]interface{}{
 				"msg": "Hello",
 			},
 		},
-		newValue("name", `neq:not_name`): &crontriggers.ListOpts{
+		newValue("name", `neq:not_name`): {
 			Name: &crontriggers.ListFilter{
 				Filter: crontriggers.FilterNEQ,
 				Value:  "not_name",
 			},
 		},
-		newValue("workflow_name", `eq:workflow`): &crontriggers.ListOpts{
+		newValue("workflow_name", `eq:workflow`): {
 			WorkflowName: &crontriggers.ListFilter{
 				Filter: crontriggers.FilterEQ,
 				Value:  "workflow",
 			},
 		},
-		newValue("created_at", `gt:2018-01-01 00:00:00`): &crontriggers.ListOpts{
+		newValue("created_at", `gt:2018-01-01 00:00:00`): {
 			CreatedAt: &crontriggers.ListDateFilter{
 				Filter: crontriggers.FilterGT,
 				Value:  time.Date(2018, time.January, 1, 0, 0, 0, 0, time.UTC),

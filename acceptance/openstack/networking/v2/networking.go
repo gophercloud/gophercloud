@@ -88,7 +88,7 @@ func CreatePort(t *testing.T, client *gophercloud.ServiceClient, networkID, subn
 		Name:         portName,
 		Description:  portDescription,
 		AdminStateUp: gophercloud.Enabled,
-		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
+		FixedIPs:     []ports.IP{{SubnetID: subnetID}},
 	}
 
 	port, err := ports.Create(client, createOpts).Extract()
@@ -125,7 +125,7 @@ func CreatePortWithNoSecurityGroup(t *testing.T, client *gophercloud.ServiceClie
 		NetworkID:      networkID,
 		Name:           portName,
 		AdminStateUp:   &iFalse,
-		FixedIPs:       []ports.IP{ports.IP{SubnetID: subnetID}},
+		FixedIPs:       []ports.IP{{SubnetID: subnetID}},
 		SecurityGroups: &[]string{},
 	}
 
@@ -161,7 +161,7 @@ func CreatePortWithoutPortSecurity(t *testing.T, client *gophercloud.ServiceClie
 		NetworkID:    networkID,
 		Name:         portName,
 		AdminStateUp: gophercloud.Enabled,
-		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
+		FixedIPs:     []ports.IP{{SubnetID: subnetID}},
 	}
 
 	iFalse := false
@@ -202,7 +202,7 @@ func CreatePortWithExtraDHCPOpts(t *testing.T, client *gophercloud.ServiceClient
 		NetworkID:    networkID,
 		Name:         portName,
 		AdminStateUp: gophercloud.Enabled,
-		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}},
+		FixedIPs:     []ports.IP{{SubnetID: subnetID}},
 	}
 
 	createOpts := extradhcpopts.CreateOptsExt{
@@ -248,7 +248,7 @@ func CreatePortWithMultipleFixedIPs(t *testing.T, client *gophercloud.ServiceCli
 		Name:         portName,
 		Description:  portDescription,
 		AdminStateUp: gophercloud.Enabled,
-		FixedIPs:     []ports.IP{ports.IP{SubnetID: subnetID}, ports.IP{SubnetID: subnetID}},
+		FixedIPs:     []ports.IP{{SubnetID: subnetID}, {SubnetID: subnetID}},
 	}
 
 	port, err := ports.Create(client, createOpts).Extract()

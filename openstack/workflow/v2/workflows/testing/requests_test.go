@@ -76,7 +76,7 @@ workflow_echo:
 
 	updated := time.Date(2018, time.September, 12, 15, 48, 17, 0, time.UTC)
 	expected := []workflows.Workflow{
-		workflows.Workflow{
+		{
 			ID:         "604a3a1e-94e3-4066-a34a-aa56873ef236",
 			Definition: "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<% $.msg %>\"",
 			Name:       "workflow_echo",
@@ -200,7 +200,7 @@ func TestListWorkflows(t *testing.T) {
 
 		updated := time.Date(2018, time.September, 12, 15, 48, 17, 0, time.UTC)
 		expected := []workflows.Workflow{
-			workflows.Workflow{
+			{
 				ID:         "604a3a1e-94e3-4066-a34a-aa56873ef236",
 				Definition: "---\nversion: '2.0'\n\nworkflow_echo:\n  description: Simple workflow example\n  type: direct\n\n  input:\n    - msg\n\n  tasks:\n    test:\n      action: std.echo output=\"<% $.msg %>\"",
 				Name:       "workflow_echo",
@@ -229,16 +229,16 @@ func TestListWorkflows(t *testing.T) {
 
 func TestToWorkflowListQuery(t *testing.T) {
 	for expected, opts := range map[string]*workflows.ListOpts{
-		newValue("tags", `tag1,tag2`): &workflows.ListOpts{
+		newValue("tags", `tag1,tag2`): {
 			Tags: []string{"tag1", "tag2"},
 		},
-		newValue("name", `neq:invalid_name`): &workflows.ListOpts{
+		newValue("name", `neq:invalid_name`): {
 			Name: &workflows.ListFilter{
 				Filter: workflows.FilterNEQ,
 				Value:  "invalid_name",
 			},
 		},
-		newValue("created_at", `gt:2018-01-01 00:00:00`): &workflows.ListOpts{
+		newValue("created_at", `gt:2018-01-01 00:00:00`): {
 			CreatedAt: &workflows.ListDateFilter{
 				Filter: workflows.FilterGT,
 				Value:  time.Date(2018, time.January, 1, 0, 0, 0, 0, time.UTC),

@@ -788,7 +788,7 @@ func TestUpdateWithExtraDHCPOpts(t *testing.T) {
 
 func TestPortsListOpts(t *testing.T) {
 	for expected, opts := range map[string]ports.ListOpts{
-		newValue("fixed_ips", `ip_address=1.2.3.4,subnet_id=42`): ports.ListOpts{
+		newValue("fixed_ips", `ip_address=1.2.3.4,subnet_id=42`): {
 			FixedIPs: []ports.FixedIPOpts{{IPAddress: "1.2.3.4", SubnetID: "42"}},
 		},
 	} {
