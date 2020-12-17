@@ -1,0 +1,43 @@
+on: [push, pull_request]
+name: Unit Testing
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version:
+          - "1.15"
+
+    env:
+      GO111MODULE: "on"
+
+    steps:
+      - name: Setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - uses: actions/checkout@v2
+
+      - name: Setup environment
+        run: |
+          GO111MODULE=off go get golang.org/x/crypto/ssh
+          GO111MODULE=off go get -v -tags 'fixtures acceptance' ./...
+          GO111MODULE=off go get github.com/wadey/gocovmerge
+          GO111MODULE=off go get github.com/mattn/goveralls
+          GO111MODULE=off go get golang.org/x/tools/cmd/goimports
+
+      - name: Run go vet
+        run: |
+          go vet ./...
+
+      - name: Run unit tests
+        run: |
+          ./script/coverage
+          ./script/unittest
+          ./script/format
+
+      - name: Run Goveralls for Coveralls
+        run: |
+          $HOME/gopath/bin/goveralls -service=github -coverprofile=cover.out
