@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/internal"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -208,7 +207,7 @@ func (r *QueueDetails) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		if resultMap, ok := result.(map[string]interface{}); ok {
-			r.Extra = internal.RemainingKeys(QueueDetails{}, resultMap)
+			r.Extra = gophercloud.RemainingKeys(QueueDetails{}, resultMap)
 		}
 	}
 
