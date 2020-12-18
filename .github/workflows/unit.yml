@@ -38,6 +38,6 @@ jobs:
           ./script/unittest
           ./script/format
 
-      - name: Run Goveralls for Coveralls
-        run: |
-          $HOME/gopath/bin/goveralls -service=github -coverprofile=cover.out
+      - uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: cover.out
