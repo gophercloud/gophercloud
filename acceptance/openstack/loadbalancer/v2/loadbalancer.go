@@ -141,6 +141,119 @@ func CreateLoadBalancer(t *testing.T, client *gophercloud.ServiceClient, subnetI
 	return lb, nil
 }
 
+// CreateLoadBalancerFullyPopulated will create a  fully populated load balancer with a random name on a given
+// subnet. It will contain a listener, l7policy, l7rule, pool, member and health monitor.
+// An error will be returned if the loadbalancer could not be created.
+func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceClient, subnetID string, tags []string) (*loadbalancers.LoadBalancer, error) {
+	lbName := tools.RandomString("TESTACCT-", 8)
+	lbDescription := tools.RandomString("TESTACCT-DESC-", 8)
+	listenerName := tools.RandomString("TESTACCT-", 8)
+	listenerDescription := tools.RandomString("TESTACCT-DESC-", 8)
+	listenerPort := tools.RandomInt(1, 100)
+	policyName := tools.RandomString("TESTACCT-", 8)
+	policyDescription := tools.RandomString("TESTACCT-DESC-", 8)
+	poolName := tools.RandomString("TESTACCT-", 8)
+	poolDescription := tools.RandomString("TESTACCT-DESC-", 8)
+	memberName := tools.RandomString("TESTACCT-", 8)
+	memberPort := tools.RandomInt(100, 1000)
+	memberWeight := tools.RandomInt(1, 10)
+
+	t.Logf("Attempting to create fully populated loadbalancer %s on subnet %s which contains listener: %s, l7Policy: %s, pool %s, member %s",
+		lbName, subnetID, listenerName, policyName, poolName, memberName)
+
+	createOpts := loadbalancers.CreateOpts{
+		Name:         lbName,
+		Description:  lbDescription,
+		VipSubnetID:  subnetID,
+		AdminStateUp: gophercloud.Enabled,
+		Listeners: []listeners.CreateOpts{{
+			Name:         listenerName,
+			Description:  listenerDescription,
+			Protocol:     listeners.ProtocolHTTP,
+			ProtocolPort: listenerPort,
+			DefaultPool: &pools.CreateOpts{
+				Name:        poolName,
+				Description: poolDescription,
+				Protocol:    pools.ProtocolHTTP,
+				LBMethod:    pools.LBMethodLeastConnections,
+				Members: []pools.BatchUpdateMemberOpts{{
+					Name:         &memberName,
+					ProtocolPort: memberPort,
+					Weight:       &memberWeight,
+					Address:      "1.2.3.4",
+					SubnetID:     &subnetID,
+				}},
+				Monitor: &monitors.CreateOpts{
+					Delay:          10,
+					Timeout:        5,
+					MaxRetries:     5,
+					MaxRetriesDown: 4,
+					Type:           monitors.TypeHTTP,
+				},
+			},
+			L7Policies: []l7policies.CreateOpts{{
+				Name:        policyName,
+				Description: policyDescription,
+				Action:      l7policies.ActionRedirectToURL,
+				RedirectURL: "http://www.example.com",
+				Rules: []l7policies.CreateRuleOpts{{
+					RuleType:    l7policies.TypePath,
+					CompareType: l7policies.CompareTypeStartWith,
+					Value:       "/api",
+				}},
+			}},
+		}},
+	}
+	if len(tags) > 0 {
+		createOpts.Tags = tags
+	}
+
+	lb, err := loadbalancers.Create(client, createOpts).Extract()
+	if err != nil {
+		return lb, err
+	}
+
+	t.Logf("Successfully created loadbalancer %s on subnet %s", lbName, subnetID)
+	t.Logf("Waiting for loadbalancer %s to become active", lbName)
+
+	if err := WaitForLoadBalancerState(client, lb.ID, "ACTIVE"); err != nil {
+		return lb, err
+	}
+
+	t.Logf("LoadBalancer %s is active", lbName)
+
+	th.AssertEquals(t, lb.Name, lbName)
+	th.AssertEquals(t, lb.Description, lbDescription)
+	th.AssertEquals(t, lb.VipSubnetID, subnetID)
+	th.AssertEquals(t, lb.AdminStateUp, true)
+
+	th.AssertEquals(t, len(lb.Listeners), 1)
+	th.AssertEquals(t, lb.Listeners[0].Name, listenerName)
+	th.AssertEquals(t, lb.Listeners[0].Description, listenerDescription)
+	th.AssertEquals(t, lb.Listeners[0].ProtocolPort, listenerPort)
+
+	th.AssertEquals(t, len(lb.Listeners[0].L7Policies), 1)
+	th.AssertEquals(t, lb.Listeners[0].L7Policies[0].Name, policyName)
+	th.AssertEquals(t, lb.Listeners[0].L7Policies[0].Description, policyDescription)
+	th.AssertEquals(t, lb.Listeners[0].L7Policies[0].Description, policyDescription)
+	th.AssertEquals(t, len(lb.Listeners[0].L7Policies[0].Rules), 1)
+
+	th.AssertEquals(t, len(lb.Pools), 1)
+	th.AssertEquals(t, lb.Pools[0].Name, poolName)
+	th.AssertEquals(t, lb.Pools[0].Description, poolDescription)
+
+	th.AssertEquals(t, len(lb.Pools[0].Members), 1)
+	th.AssertEquals(t, lb.Pools[0].Members[0].Name, memberName)
+	th.AssertEquals(t, lb.Pools[0].Members[0].ProtocolPort, memberPort)
+	th.AssertEquals(t, lb.Pools[0].Members[0].Weight, memberWeight)
+
+	if len(tags) > 0 {
+		th.AssertDeepEquals(t, lb.Tags, tags)
+	}
+
+	return lb, nil
+}
+
 // CreateMember will create a member with a random name, port, address, and
 // weight. An error will be returned if the member could not be created.
 func CreateMember(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalancers.LoadBalancer, pool *pools.Pool, subnetID, subnetCIDR string) (*pools.Member, error) {

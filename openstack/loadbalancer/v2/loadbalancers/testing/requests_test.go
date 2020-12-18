@@ -3,6 +3,11 @@ package testing
 import (
 	"testing"
 
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/monitors"
+	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/pools"
+
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/loadbalancers"
 	fake "github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/testhelper"
@@ -71,6 +76,64 @@ func TestCreateLoadbalancer(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.CheckDeepEquals(t, LoadbalancerDb, *actual)
+}
+
+func TestCreateFullyPopulatedLoadbalancer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleFullyPopulatedLoadbalancerCreationSuccessfully(t, PostFullyPopulatedLoadbalancerBody)
+
+	actual, err := loadbalancers.Create(fake.ServiceClient(), loadbalancers.CreateOpts{
+		Name:         "db_lb",
+		AdminStateUp: gophercloud.Enabled,
+		VipPortID:    "2bf413c8-41a9-4477-b505-333d5cbe8b55",
+		VipSubnetID:  "9cedb85d-0759-4898-8a4b-fa5a5ea10086",
+		VipAddress:   "10.30.176.48",
+		FlavorID:     "bba40eb2-ee8c-11e9-81b4-2a2ae2dbcce4",
+		Provider:     "octavia",
+		Tags:         []string{"test", "stage"},
+		Listeners: []listeners.CreateOpts{{
+			Protocol:     "HTTP",
+			ProtocolPort: 8080,
+			Name:         "redirect_listener",
+			L7Policies: []l7policies.CreateOpts{{
+				Name:        "redirect-example.com",
+				Action:      l7policies.ActionRedirectToURL,
+				RedirectURL: "http://www.example.com",
+				Rules: []l7policies.CreateRuleOpts{{
+					RuleType:    l7policies.TypePath,
+					CompareType: l7policies.CompareTypeRegex,
+					Value:       "/images*",
+				}},
+			}},
+			DefaultPool: &pools.CreateOpts{
+				LBMethod: pools.LBMethodRoundRobin,
+				Protocol: "HTTP",
+				Name:     "Example pool",
+				Members: []pools.BatchUpdateMemberOpts{{
+					Address:      "192.0.2.51",
+					ProtocolPort: 80,
+				}, {
+					Address:      "192.0.2.52",
+					ProtocolPort: 80,
+				}},
+				Monitor: &monitors.CreateOpts{
+					Name:           "db",
+					Type:           "HTTP",
+					Delay:          3,
+					Timeout:        1,
+					MaxRetries:     2,
+					MaxRetriesDown: 3,
+					URLPath:        "/index.html",
+					HTTPMethod:     "GET",
+					ExpectedCodes:  "200",
+				},
+			},
+		}},
+	}).Extract()
+	th.AssertNoErr(t, err)
+
+	th.CheckDeepEquals(t, FullyPopulatedLoadBalancerDb, *actual)
 }
 
 func TestGetLoadbalancer(t *testing.T) {
