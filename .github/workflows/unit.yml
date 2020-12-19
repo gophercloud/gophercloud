@@ -22,11 +22,10 @@ jobs:
 
       - name: Setup environment
         run: |
-          GO111MODULE=off go get golang.org/x/crypto/ssh
-          GO111MODULE=off go get -v -tags 'fixtures acceptance' ./...
-          GO111MODULE=off go get github.com/wadey/gocovmerge
-          GO111MODULE=off go get github.com/mattn/goveralls
-          GO111MODULE=off go get golang.org/x/tools/cmd/goimports
+          go get golang.org/x/crypto/ssh
+          go get github.com/wadey/gocovmerge
+          go get github.com/mattn/goveralls
+          go get golang.org/x/tools/cmd/goimports
 
       - name: Run go vet
         run: |
