@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/snapshots"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -25,6 +26,20 @@ func TestSnapshots(t *testing.T) {
 	snapshot1, err := CreateSnapshot(t, client, volume1)
 	th.AssertNoErr(t, err)
 	defer DeleteSnapshot(t, client, snapshot1)
+
+	// Update snapshot
+	updatedSnapshotName := "ACPTTEST-002"
+	updatedSnapshotDescription := "ACPTTEST-002"
+	updateOpts := snapshots.UpdateOpts{
+		Name:        &updatedSnapshotName,
+		Description: &updatedSnapshotDescription,
+	}
+	updatedSnapshot, err := snapshots.Update(client, snapshot1.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatedSnapshot)
+	th.AssertEquals(t, updatedSnapshot.Name, updatedSnapshotName)
+	th.AssertEquals(t, updatedSnapshot.Description, updatedSnapshotDescription)
 
 	volume2, err := CreateVolume(t, client)
 	th.AssertNoErr(t, err)
