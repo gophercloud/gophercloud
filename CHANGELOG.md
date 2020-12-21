@@ -27,6 +27,7 @@ IMPROVEMENTS
 * Added `networking/v2/extensions/fwaas_v2/policies.Delete` [GH-2057](https://github.com/gophercloud/gophercloud/pull/2057)
 * Added `compute/v2/extensions/servergroups.ListOpts.AllProjects` [GH-2070](https://github.com/gophercloud/gophercloud/pull/2070)
 * Added `objectstorage/v1/containers.CreateOpts.StoragePolicy` [GH-2075](https://github.com/gophercloud/gophercloud/pull/2075)
+* Added `blockstorage/v3/snapshots.Update` [GH-2081](https://github.com/gophercloud/gophercloud/pull/2081)
 
 
 ## 0.14.0 (November 11, 2020)
