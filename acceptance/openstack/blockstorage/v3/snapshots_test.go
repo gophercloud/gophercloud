@@ -28,8 +28,8 @@ func TestSnapshots(t *testing.T) {
 	defer DeleteSnapshot(t, client, snapshot1)
 
 	// Update snapshot
-	updatedSnapshotName := "ACPTTEST-002"
-	updatedSnapshotDescription := "ACPTTEST-002"
+	updatedSnapshotName := tools.RandomString("ACPTTEST", 16)
+	updatedSnapshotDescription := tools.RandomString("ACPTTEST", 16)
 	updateOpts := snapshots.UpdateOpts{
 		Name:        &updatedSnapshotName,
 		Description: &updatedSnapshotDescription,
