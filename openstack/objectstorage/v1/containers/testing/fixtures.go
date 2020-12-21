@@ -107,6 +107,7 @@ func HandleCreateContainerSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 		w.Header().Set("Date", "Wed, 17 Aug 2016 19:25:43 UTC")
 		w.Header().Set("X-Trans-Id", "tx554ed59667a64c61866f1-0058b4ba37")
+		w.Header().Set("X-Storage-Policy", "multi-region-three-replicas")
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
