@@ -122,14 +122,14 @@ type CreateOpts struct {
 	//
 	// This is only possible to use when creating a fully populated
 	// Loadbalancer.
-	Members []BatchUpdateMemberOpts `json:"members,omitempty" xor:"ListenerID"`
+	Members []BatchUpdateMemberOpts `json:"members,omitempty"`
 
 	// Monitor is an instance of monitors.CreateOpts which allows a monitor
 	// to be created at the same time the pool is created.
 	//
 	// This is only possible to use when creating a fully populated
 	// Loadbalancer.
-	Monitor *monitors.CreateOpts `json:"healthmonitor,omitempty" xor:"ListenerID"`
+	Monitor *monitors.CreateOpts `json:"healthmonitor,omitempty"`
 }
 
 // ToPoolCreateMap builds a request body from CreateOpts.
