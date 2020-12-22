@@ -108,103 +108,94 @@ const PostUpdateLoadbalancerBody = `
 // PostFullyPopulatedLoadbalancerBody is the canned response body of a Create request of an fully populated loadbalancer.
 const PostFullyPopulatedLoadbalancerBody = `
 {
-    "loadbalancer": {
-        "description": "My favorite load balancer",
-        "admin_state_up": true,
-        "project_id": "e3cd678b11784734bc366148aa37580e",
-        "provisioning_status": "ACTIVE",
-        "flavor_id": "",
+	"loadbalancer": {
+		"description": "My favorite load balancer",
+		"admin_state_up": true,
+		"project_id": "e3cd678b11784734bc366148aa37580e",
+		"provisioning_status": "ACTIVE",
+		"flavor_id": "",
 		"created_at": "2019-06-30T04:15:37",
 		"updated_at": "2019-06-30T05:18:49",
-        "listeners": [
-            {
-                "l7policies": [
-                    {
-                        "description": "",
-                        "admin_state_up": true,
-                        "rules": [],
-                        "project_id": "e3cd678b11784734bc366148aa37580e",
-                        "listener_id": "95de30ec-67f4-437b-b3f3-22c5d9ef9828",
-                        "redirect_url": "https://www.example.com/",
-                        "action": "REDIRECT_TO_URL",
-                        "position": 1,
-                        "id": "d0553837-f890-4981-b99a-f7cbd6a76577",
-                        "name": "redirect_policy"
-                    }
-                ],
-                "protocol": "HTTP",
-                "description": "",
-                "default_tls_container_ref": null,
-                "admin_state_up": true,
-                "default_pool_id": "c8cec227-410a-4a5b-af13-ecf38c2b0abb",
-                "project_id": "e3cd678b11784734bc366148aa37580e",
-                "default_tls_container_id": null,
-                "connection_limit": -1,
-                "sni_container_refs": [],
-                "protocol_port": 8080,
-                "id": "95de30ec-67f4-437b-b3f3-22c5d9ef9828",
-                "name": "redirect_listener"
-            }
-        ],
-        "vip_address": "203.0.113.50",
-        "vip_network_id": "d0d217df-3958-4fbf-a3c2-8dad2908c709",
-        "vip_subnet_id": "d4af86e1-0051-488c-b7a0-527f97490c9a",
-        "vip_port_id": "b4ca07d1-a31e-43e2-891a-7d14f419f342",
-        "provider": "octavia",
-        "pools": [
-            {
-                "lb_algorithm": "ROUND_ROBIN",
-                "protocol": "HTTP",
-                "description": "",
-                "admin_state_up": true,
-                "project_id": "e3cd678b11784734bc366148aa37580e",
-                "session_persistence": null,
-                "healthmonitor": {
-                    "name": "",
-                    "admin_state_up": true,
-                    "project_id": "e3cd678b11784734bc366148aa37580e",
-                    "delay": 3,
-                    "expected_codes": "200,201,202",
-                    "max_retries": 2,
-                    "http_method": "GET",
-                    "timeout": 1,
-                    "max_retries_down": 3,
-                    "url_path": "/index.html",
-                    "type": "HTTP",
-                    "id": "a8a2aa3f-d099-4752-8265-e6472f8147f9"
-                },
-                "members": [
-                    {
-                        "name": "",
-                        "weight": 1,
-                        "admin_state_up": true,
-                        "subnet_id": "bbb35f84-35cc-4b2f-84c2-a6a29bba68aa",
-                        "project_id": "e3cd678b11784734bc366148aa37580e",
-                        "address": "192.0.2.16",
-                        "protocol_port": 80,
-                        "id": "7d19ad6c-d549-453e-a5cd-05382c6be96a"
-                    },
-                    {
-                        "name": "",
-                        "weight": 1,
-                        "admin_state_up": true,
-                        "subnet_id": "bbb35f84-35cc-4b2f-84c2-a6a29bba68aa",
-                        "project_id": "e3cd678b11784734bc366148aa37580e",
-                        "address": "192.0.2.19",
-                        "protocol_port": 80,
-                        "id": "a167402b-caa6-41d5-b4d4-bde7f2cbfa5e"
-                    }
-                ],
-                "id": "c8cec227-410a-4a5b-af13-ecf38c2b0abb",
-                "name": "rr_pool"
-            }
-        ],
-        "id": "607226db-27ef-4d41-ae89-f2a800e9c2db",
-        "operating_status": "ONLINE",
-        "name": "best_load_balancer",
-        "availability_zone": "my_az",
-        "tags": ["test_tag"]
-    }
+		"listeners": [{
+			"l7policies": [{
+				"description": "",
+				"admin_state_up": true,
+				"rules": [],
+				"project_id": "e3cd678b11784734bc366148aa37580e",
+				"listener_id": "95de30ec-67f4-437b-b3f3-22c5d9ef9828",
+				"redirect_url": "https://www.example.com/",
+				"action": "REDIRECT_TO_URL",
+				"position": 1,
+				"id": "d0553837-f890-4981-b99a-f7cbd6a76577",
+				"name": "redirect_policy"
+			}],
+			"protocol": "HTTP",
+			"description": "",
+			"default_tls_container_ref": null,
+			"admin_state_up": true,
+			"default_pool_id": "c8cec227-410a-4a5b-af13-ecf38c2b0abb",
+			"project_id": "e3cd678b11784734bc366148aa37580e",
+			"default_tls_container_id": null,
+			"connection_limit": -1,
+			"sni_container_refs": [],
+			"protocol_port": 8080,
+			"id": "95de30ec-67f4-437b-b3f3-22c5d9ef9828",
+			"name": "redirect_listener"
+		}],
+		"vip_address": "203.0.113.50",
+		"vip_network_id": "d0d217df-3958-4fbf-a3c2-8dad2908c709",
+		"vip_subnet_id": "d4af86e1-0051-488c-b7a0-527f97490c9a",
+		"vip_port_id": "b4ca07d1-a31e-43e2-891a-7d14f419f342",
+		"provider": "octavia",
+		"pools": [{
+			"lb_algorithm": "ROUND_ROBIN",
+			"protocol": "HTTP",
+			"description": "",
+			"admin_state_up": true,
+			"project_id": "e3cd678b11784734bc366148aa37580e",
+			"session_persistence": null,
+			"healthmonitor": {
+				"name": "",
+				"admin_state_up": true,
+				"project_id": "e3cd678b11784734bc366148aa37580e",
+				"delay": 3,
+				"expected_codes": "200,201,202",
+				"max_retries": 2,
+				"http_method": "GET",
+				"timeout": 1,
+				"max_retries_down": 3,
+				"url_path": "/index.html",
+				"type": "HTTP",
+				"id": "a8a2aa3f-d099-4752-8265-e6472f8147f9"
+			},
+			"members": [{
+				"name": "",
+				"weight": 1,
+				"admin_state_up": true,
+				"subnet_id": "bbb35f84-35cc-4b2f-84c2-a6a29bba68aa",
+				"project_id": "e3cd678b11784734bc366148aa37580e",
+				"address": "192.0.2.16",
+				"protocol_port": 80,
+				"id": "7d19ad6c-d549-453e-a5cd-05382c6be96a"
+			},{
+				"name": "",
+				"weight": 1,
+				"admin_state_up": true,
+				"subnet_id": "bbb35f84-35cc-4b2f-84c2-a6a29bba68aa",
+				"project_id": "e3cd678b11784734bc366148aa37580e",
+				"address": "192.0.2.19",
+				"protocol_port": 80,
+				"id": "a167402b-caa6-41d5-b4d4-bde7f2cbfa5e"
+			}],
+			"id": "c8cec227-410a-4a5b-af13-ecf38c2b0abb",
+			"name": "rr_pool"
+		}],
+		"id": "607226db-27ef-4d41-ae89-f2a800e9c2db",
+		"operating_status": "ONLINE",
+		"name": "best_load_balancer",
+		"availability_zone": "my_az",
+		"tags": ["test_tag"]
+	}
 }
 `
 
