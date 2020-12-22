@@ -104,8 +104,12 @@ type CreateOpts struct {
 	// The ID of the default pool with which the Listener is associated.
 	DefaultPoolID string `json:"default_pool_id,omitempty"`
 
-	// The default pool with which the Listener is associated.
-	DefaultPool *pools.CreateOpts `json:"default_pool,omitempty"`
+	// DefaultPool an instance of pools.CreateOpts which allows a
+	// (default) pool to be created at the same time the listener is created.
+	//
+	// This is only possible to use when creating a fully populated
+	// load balancer.
+	DefaultPool *pools.CreateOpts `json:"default_pool,omitempty" xor:"LoadbalancerID"`
 
 	// Human-readable description for the Listener.
 	Description string `json:"description,omitempty"`
@@ -123,8 +127,12 @@ type CreateOpts struct {
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 
-	// L7policies are the L7 policies which are part of this listener.
-	L7Policies []l7policies.CreateOpts `json:"l7policies,omitempty"`
+	// L7Policies is a slice of l7policies.CreateOpts which allows a set
+	// of policies to be created at the same time the listener is created.
+	//
+	// This is only possible to use when creating a fully populated
+	// Loadbalancer.
+	L7Policies []l7policies.CreateOpts `json:"l7policies,omitempty" xor:"LoadbalancerID"`
 
 	// Frontend client inactivity timeout in milliseconds
 	TimeoutClientData *int `json:"timeout_client_data,omitempty"`
@@ -189,9 +197,6 @@ type UpdateOpts struct {
 	// The ID of the default pool with which the Listener is associated.
 	DefaultPoolID *string `json:"default_pool_id,omitempty"`
 
-	// The default pool with which the Listener is associated.
-	DefaultPool *pools.UpdateOpts `json:"default_pool,omitempty"`
-
 	// Human-readable description for the Listener.
 	Description *string `json:"description,omitempty"`
 
@@ -207,9 +212,6 @@ type UpdateOpts struct {
 	// The administrative state of the Listener. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
-
-	// L7policies are the L7 policies which are part of this listener.
-	L7Policies *[]l7policies.UpdateOpts `json:"l7policies,omitempty"`
 
 	// Frontend client inactivity timeout in milliseconds
 	TimeoutClientData *int `json:"timeout_client_data,omitempty"`

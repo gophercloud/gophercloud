@@ -117,11 +117,19 @@ type CreateOpts struct {
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 
-	// The updates for pool members
-	Members []BatchUpdateMemberOpts `json:"members,omitempty"`
+	// Members is a slice of BatchUpdateMemberOpts which allows a set of
+	// members to be created at the same time the pool is created.
+	//
+	// This is only possible to use when creating a fully populated
+	// Loadbalancer.
+	Members []BatchUpdateMemberOpts `json:"members,omitempty" xor:"ListenerID"`
 
-	// The Monitor associated with this Pool.
-	Monitor *monitors.CreateOpts `json:"healthmonitor,omitempty"`
+	// Monitor is an instance of monitors.CreateOpts which allows a monitor
+	// to be created at the same time the pool is created.
+	//
+	// This is only possible to use when creating a fully populated
+	// Loadbalancer.
+	Monitor *monitors.CreateOpts `json:"healthmonitor,omitempty" xor:"ListenerID"`
 }
 
 // ToPoolCreateMap builds a request body from CreateOpts.
@@ -172,16 +180,6 @@ type UpdateOpts struct {
 	// The administrative state of the Pool. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
-
-	// Persistence is the session persistence of the pool.
-	// Omit this field to prevent session persistence.
-	Persistence *SessionPersistence `json:"session_persistence,omitempty"`
-
-	// The updates for pool members
-	Members *[]BatchUpdateMemberOpts `json:"members,omitempty"`
-
-	// The Monitor associated with this Pool.
-	Monitor *monitors.UpdateOpts `json:"healthmonitor,omitempty"`
 }
 
 // ToPoolUpdateMap builds a request body from UpdateOpts.

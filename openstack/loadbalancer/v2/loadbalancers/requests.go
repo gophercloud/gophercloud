@@ -121,10 +121,18 @@ type CreateOpts struct {
 	// The name of the provider.
 	Provider string `json:"provider,omitempty"`
 
-	// Listeners are the listeners related to this Loadbalancer.
+	// Listeners is a slice of listeners.CreateOpts which allows a set
+	// of listeners to be created at the same time the Loadbalancer is created.
+	//
+	// This is only possible to use when creating a fully populated
+	// load balancer.
 	Listeners []listeners.CreateOpts `json:"listeners,omitempty"`
 
-	// Pools are the pools related to this Loadbalancer.
+	// Pools is a slice of pools.CreateOpts which allows a set of pools
+	// to be created at the same time the Loadbalancer is created.
+	//
+	// This is only possible to use when creating a fully populated
+	// load balancer.
 	Pools []pools.CreateOpts `json:"pools,omitempty"`
 
 	// Tags is a set of resource tags.
@@ -176,12 +184,6 @@ type UpdateOpts struct {
 	// The administrative state of the Loadbalancer. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
-
-	// Listeners are the listeners related to this Loadbalancer.
-	Listeners *[]listeners.UpdateOpts `json:"listeners,omitempty"`
-
-	// Pools are the pools related to this Loadbalancer.
-	Pools *[]pools.UpdateOpts `json:"pools,omitempty"`
 
 	// Tags is a set of resource tags.
 	Tags *[]string `json:"tags,omitempty"`

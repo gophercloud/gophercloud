@@ -67,8 +67,12 @@ type CreateOpts struct {
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
 
-	// Create rules opts
-	Rules []CreateRuleOpts `json:"rules,omitempty"`
+	// Rules is a slice of CreateRuleOpts which allows a set of rules
+	// to be created at the same time the policy is created.
+	//
+	// This is only possible to use when creating a fully populated
+	// Loadbalancer.
+	Rules []CreateRuleOpts `json:"rules,omitempty" xor:"ListenerID"`
 }
 
 // ToL7PolicyCreateMap builds a request body from CreateOpts.
@@ -185,9 +189,6 @@ type UpdateOpts struct {
 	// The administrative state of the Loadbalancer. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
-
-	// Update rules opts
-	Rules *[]UpdateRuleOpts `json:"rules,omitempty"`
 }
 
 // ToL7PolicyUpdateMap builds a request body from UpdateOpts.
