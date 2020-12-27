@@ -1,4 +1,6 @@
-## 0.15.0 (Unreleased)
+## 0.16.0 (Unreleased)
+
+## 0.15.0 (December 27, 2020)
 
 BREAKING CHANGES
 
