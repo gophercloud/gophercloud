@@ -590,3 +590,36 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	th.AssertEquals(t, newMonitor.Delay, newDelay)
 	th.AssertEquals(t, newMonitor.MaxRetriesDown, newMaxRetriesDown)
 }
+
+func TestLoadbalancersFullyPopulatedCRUD(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.SkipRelease(t, "stable/newton")
+	clients.SkipRelease(t, "stable/ocata")
+	clients.SkipRelease(t, "stable/pike")
+	clients.SkipRelease(t, "stable/queens")
+	clients.SkipRelease(t, "stable/rocky")
+
+	netClient, err := clients.NewNetworkV2Client()
+	th.AssertNoErr(t, err)
+
+	lbClient, err := clients.NewLoadBalancerV2Client()
+	th.AssertNoErr(t, err)
+
+	network, err := networking.CreateNetwork(t, netClient)
+	th.AssertNoErr(t, err)
+	defer networking.DeleteNetwork(t, netClient, network.ID)
+
+	subnet, err := networking.CreateSubnet(t, netClient, network.ID)
+	th.AssertNoErr(t, err)
+	defer networking.DeleteSubnet(t, netClient, subnet.ID)
+
+	tags := []string{"test"}
+	lb, err := CreateLoadBalancerFullyPopulated(t, lbClient, subnet.ID, tags)
+	th.AssertNoErr(t, err)
+	defer CascadeDeleteLoadBalancer(t, lbClient, lb.ID)
+
+	newLB, err := loadbalancers.Get(lbClient, lb.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, newLB)
+}
