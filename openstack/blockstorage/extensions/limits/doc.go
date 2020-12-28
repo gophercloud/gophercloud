@@ -1,13 +1,9 @@
 /*
-Package limits shows rate and limit information for a tenant/project.
+Package limits shows rate and limit information for a project you authorized for.
 
-Example to Retrieve Limits for a Tenant
+Example to Retrieve Limits
 
-	getOpts := limits.GetOpts{
-		ProjectID: "project-id",
-	}
-
-	limits, err := limits.Get(blockstorageClient, getOpts).Extract()
+    limits, err := limits.Get(blockStorageClient).Extract()
 	if err != nil {
 		panic(err)
 	}
