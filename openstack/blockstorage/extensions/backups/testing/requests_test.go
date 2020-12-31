@@ -19,7 +19,7 @@ func TestList(t *testing.T) {
 
 	count := 0
 
-	backups.List(client.ServiceClient(), &backups.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := backups.List(client.ServiceClient(), &backups.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := backups.ExtractBackups(page)
 		if err != nil {
@@ -42,6 +42,9 @@ func TestList(t *testing.T) {
 
 		return true, nil
 	})
+	if err != nil {
+		t.Errorf("EachPage returned error: %s", err)
+	}
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)
@@ -52,11 +55,11 @@ func TestListDetail(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
 
-	MockListResponse(t)
+	MockListDetailResponse(t)
 
 	count := 0
 
-	backups.List(client.ServiceClient(), &backups.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+	err := backups.ListDetail(client.ServiceClient(), &backups.ListDetailOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := backups.ExtractBackups(page)
 		if err != nil {
@@ -89,6 +92,9 @@ func TestListDetail(t *testing.T) {
 
 		return true, nil
 	})
+	if err != nil {
+		t.Errorf("EachPage returned error: %s", err)
+	}
 
 	if count != 1 {
 		t.Errorf("Expected 1 page, got %d", count)

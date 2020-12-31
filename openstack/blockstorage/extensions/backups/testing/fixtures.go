@@ -17,11 +17,11 @@ const ListResponse = `
   "backups": [
     {
       "id": "289da7f8-6440-407c-9fb4-7db01ec49164",
-      "name": "backup-001",
+      "name": "backup-001"
     },
     {
       "id": "96c3bda7-c82a-4f50-be73-ca7621794835",
-      "name": "backup-002",
+      "name": "backup-002"
     }
   ],
   "backups_links": [
@@ -57,7 +57,7 @@ const ListDetailResponse = `
   ],
   "backups_links": [
     {
-      "href": "%s/backups?marker=1",
+      "href": "%s/backups/detail?marker=1",
       "rel": "next"
     }
   ]
