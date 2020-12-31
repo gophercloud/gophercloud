@@ -18,6 +18,27 @@ const ListResponse = `
     {
       "id": "289da7f8-6440-407c-9fb4-7db01ec49164",
       "name": "backup-001",
+    },
+    {
+      "id": "96c3bda7-c82a-4f50-be73-ca7621794835",
+      "name": "backup-002",
+    }
+  ],
+  "backups_links": [
+    {
+      "href": "%s/backups?marker=1",
+      "rel": "next"
+    }
+  ]
+}
+`
+
+const ListDetailResponse = `
+{
+  "backups": [
+    {
+      "id": "289da7f8-6440-407c-9fb4-7db01ec49164",
+      "name": "backup-001",
       "volume_id": "521752a6-acf6-4b2d-bc7a-119f9148cd8c",
       "description": "Daily Backup",
       "status": "available",
@@ -172,6 +193,27 @@ func MockListResponse(t *testing.T) {
 		switch marker {
 		case "":
 			fmt.Fprintf(w, ListResponse, th.Server.URL)
+		case "1":
+			fmt.Fprintf(w, `{"backups": []}`)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
+	})
+}
+
+func MockListDetailResponse(t *testing.T) {
+	th.Mux.HandleFunc("/backups/detail", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, ListDetailResponse, th.Server.URL)
 		case "1":
 			fmt.Fprintf(w, `{"backups": []}`)
 		default:

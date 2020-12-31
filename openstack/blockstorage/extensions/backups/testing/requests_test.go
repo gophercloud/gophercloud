@@ -29,6 +29,43 @@ func TestList(t *testing.T) {
 
 		expected := []backups.Backup{
 			{
+				ID:   "289da7f8-6440-407c-9fb4-7db01ec49164",
+				Name: "backup-001",
+			},
+			{
+				ID:   "96c3bda7-c82a-4f50-be73-ca7621794835",
+				Name: "backup-002",
+			},
+		}
+
+		th.CheckDeepEquals(t, expected, actual)
+
+		return true, nil
+	})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
+}
+
+func TestListDetail(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockListResponse(t)
+
+	count := 0
+
+	backups.List(client.ServiceClient(), &backups.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+		actual, err := backups.ExtractBackups(page)
+		if err != nil {
+			t.Errorf("Failed to extract backups: %v", err)
+			return false, err
+		}
+
+		expected := []backups.Backup{
+			{
 				ID:          "289da7f8-6440-407c-9fb4-7db01ec49164",
 				Name:        "backup-001",
 				VolumeID:    "521752a6-acf6-4b2d-bc7a-119f9148cd8c",

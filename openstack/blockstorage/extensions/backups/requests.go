@@ -145,6 +145,55 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
+// ListDetailOptsBuilder allows extensions to add additional parameters to the ListDetail
+// request.
+type ListDetailOptsBuilder interface {
+	ToBackupListDetailQuery() (string, error)
+}
+
+type ListDetailOpts struct {
+	// AllTenants will retrieve backups of all tenants/projects.
+	AllTenants bool `q:"all_tenants"`
+
+	// Comma-separated list of sort keys and optional sort directions in the
+	// form of <key>[:<direction>].
+	Sort string `q:"sort"`
+
+	// Requests a page size of items.
+	Limit int `q:"limit"`
+
+	// Used in conjunction with limit to return a slice of items.
+	Offset int `q:"offset"`
+
+	// The ID of the last-seen item.
+	Marker string `q:"marker"`
+
+	// True to include `count` in the API response, supported from version 3.45
+	WithCount bool `q:"with_count"`
+}
+
+// ToBackupListDetailQuery formats a ListDetailOpts into a query string.
+func (opts ListDetailOpts) ToBackupListDetailQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// ListDetail returns more detailed information about Backups optionally
+// limited by the conditions provided in ListDetailOpts.
+func ListDetail(client *gophercloud.ServiceClient, opts ListDetailOptsBuilder) pagination.Pager {
+	url := listDetailURL(client)
+	if opts != nil {
+		query, err := opts.ToBackupListDetailQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return BackupPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}
+
 // UpdateOptsBuilder allows extensions to add additional parameters to
 // the Update request.
 type UpdateOptsBuilder interface {
