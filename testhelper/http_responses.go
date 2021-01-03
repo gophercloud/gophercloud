@@ -20,7 +20,7 @@ var (
 	Server *httptest.Server
 )
 
-// SetupHTTP prepares the Mux and Server listening specific port.
+// SetupPersistentPortHTTP prepares the Mux and Server listening specific port.
 func SetupPersistentPortHTTP(t *testing.T, port int) {
 	l, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {

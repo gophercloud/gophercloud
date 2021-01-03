@@ -10,7 +10,7 @@ type Limits struct {
 	// An absolute limit value of -1 indicates that the absolute limit for the item is infinite.
 	Absolute Absolute `json:"absolute"`
 	// Rate contains rate-limit volume copy bandwidth, used to mitigate slow down of data access from the instances.
-	Rate []interface{} `json:"rate"`
+	Rate []Rate `json:"rate"`
 }
 
 // Absolute is a struct that contains the current resource usage and limits
@@ -45,6 +45,23 @@ type Absolute struct {
 
 	// TotalBackupGigabytesUsed is the total number of backups gibibytes (GiB) used.
 	TotalBackupGigabytesUsed int `json:"totalBackupGigabytesUsed"`
+}
+
+// Rate is a struct that contains the
+// rate-limit volume copy bandwidth, used to mitigate slow down of data access from the instances.
+type Rate struct {
+	Regex string  `json:"regex"`
+	URI   string  `json:"uri"`
+	Limit []Limit `json:"limit"`
+}
+
+// Limit struct contains Limit values for the Rate struct
+type Limit struct {
+	Verb          string `json:"verb"`
+	NextAvailable string `json:"next-available"`
+	Unit          string `json:"unit"`
+	Value         int    `json:"value"`
+	Remaining     int    `json:"remaining"`
 }
 
 // Extract interprets a limits result as a Limits.
