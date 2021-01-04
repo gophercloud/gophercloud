@@ -497,7 +497,7 @@ type RemoveNodesOpts struct {
 	Nodes []string `json:"nodes" required:"true"`
 }
 
-func RemoveNodes(client *gophercloud.ServiceClient, clusterID string, opts RemoveNodesOpts) (r DeleteResult) {
+func RemoveNodes(client *gophercloud.ServiceClient, clusterID string, opts RemoveNodesOpts) (r ActionResult) {
 	b, err := opts.ToClusterRemoveNodeMap()
 	if err != nil {
 		r.Err = err

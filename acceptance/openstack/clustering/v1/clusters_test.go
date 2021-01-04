@@ -340,16 +340,14 @@ func TestClustersRemoveNodeFromCluster(t *testing.T) {
 	tools.PrintResource(t, cluster)
 
 	opt := clusters.RemoveNodesOpts{Nodes: cluster.Nodes}
-	res := clusters.RemoveNodes(client, cluster.ID, opt)
-	err = res.ExtractErr()
-	th.AssertNoErr(t, err)
+	actionID, err := clusters.RemoveNodes(client, cluster.ID, opt).Extract()
+	if err != nil {
+		t.Fatalf("Unable to remove nodes to cluster: %v", err)
+	}
 
 	for _, n := range cluster.Nodes {
 		defer DeleteNode(t, client, n)
 	}
-
-	actionID, err := GetActionID(res.Header)
-	th.AssertNoErr(t, err)
 
 	err = WaitForAction(client, actionID)
 	th.AssertNoErr(t, err)
