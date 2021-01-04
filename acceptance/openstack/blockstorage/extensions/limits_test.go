@@ -18,11 +18,11 @@ func TestLimits(t *testing.T) {
 
 	tools.PrintResource(t, limits)
 
-	th.AssertEquals(t, limits.Absolute.MaxTotalVolumes, 40)
-	th.AssertEquals(t, limits.Absolute.MaxTotalSnapshots, 40)
-	th.AssertEquals(t, limits.Absolute.MaxTotalVolumeGigabytes, 1000)
-	th.AssertEquals(t, limits.Absolute.MaxTotalBackups, 10)
-	th.AssertEquals(t, limits.Absolute.MaxTotalBackupGigabytes, 1000)
+	th.AssertIntGreaterOrEqualThan(t, limits.Absolute.MaxTotalVolumes, 0)
+	th.AssertIntGreaterOrEqualThan(t, limits.Absolute.MaxTotalSnapshots, 0)
+	th.AssertIntGreaterOrEqualThan(t, limits.Absolute.MaxTotalVolumeGigabytes, 0)
+	th.AssertIntGreaterOrEqualThan(t, limits.Absolute.MaxTotalBackups, 0)
+	th.AssertIntGreaterOrEqualThan(t, limits.Absolute.MaxTotalBackupGigabytes, 0)
 	th.AssertIntGreaterOrEqualThan(t, limits.Absolute.TotalVolumesUsed, 0)
 	th.AssertIntLesserOrEqual(t, limits.Absolute.TotalVolumesUsed, limits.Absolute.MaxTotalVolumes)
 	th.AssertIntGreaterOrEqualThan(t, limits.Absolute.TotalGigabytesUsed, 0)
