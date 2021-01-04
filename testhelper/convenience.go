@@ -362,8 +362,8 @@ func AssertIntLesserOrEqual(t *testing.T, v1 int, v2 int) {
 	}
 }
 
-// AssertIntGreaterOrEqualThan verifies that first value is greater or equal than second values
-func AssertIntGreaterOrEqualThan(t *testing.T, v1 int, v2 int) {
+// AssertIntGreaterOrEqual verifies that first value is greater or equal than second values
+func AssertIntGreaterOrEqual(t *testing.T, v1 int, v2 int) {
 	if !(v1 >= v2) {
 		logFatal(t, fmt.Sprintf("The first value \"%v\" is lesser than the second value \"%v\"", v1, v2))
 	}
