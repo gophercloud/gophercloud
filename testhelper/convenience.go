@@ -354,3 +354,17 @@ func CheckNoErr(t *testing.T, e error) {
 		logError(t, fmt.Sprintf("unexpected error %s", yellow(e.Error())))
 	}
 }
+
+// AssertIntLesserOrEqual verifies that first value is lesser or equal than second values
+func AssertIntLesserOrEqual(t *testing.T, v1 int, v2 int) {
+	if !(v1 <= v2) {
+		logFatal(t, fmt.Sprintf("The first value \"%v\" is greater than the second value \"%v\"", v1, v2))
+	}
+}
+
+// AssertIntGreaterOrEqual verifies that first value is greater or equal than second values
+func AssertIntGreaterOrEqual(t *testing.T, v1 int, v2 int) {
+	if !(v1 >= v2) {
+		logFatal(t, fmt.Sprintf("The first value \"%v\" is lesser than the second value \"%v\"", v1, v2))
+	}
+}
