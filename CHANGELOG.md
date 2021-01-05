@@ -8,6 +8,7 @@ BUG FIXES
 IMPROVEMENTS
 
 * Added `blockstorage/extensions/limits.Get` [GH-2084](https://github.com/gophercloud/gophercloud/pull/2084)
+* `clustering/v1/clusters.RemoveNodes` now returns an `ActionResult` [GH-2089](https://github.com/gophercloud/gophercloud/pull/2089)
 
 ## 0.15.0 (December 27, 2020)
 
