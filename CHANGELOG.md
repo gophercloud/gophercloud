@@ -1,5 +1,9 @@
 ## 0.16.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Added `blockstorage/extensions/limits.Get` [GH-2084](https://github.com/gophercloud/gophercloud/pull/2084)
+
 ## 0.15.0 (December 27, 2020)
 
 BREAKING CHANGES
