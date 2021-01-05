@@ -9,6 +9,26 @@ import (
 	"github.com/gophercloud/gophercloud/testhelper/client"
 )
 
+func TestListAvailableProjects(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListAvailableProjectsSuccessfully(t)
+
+	count := 0
+	err := projects.ListAvailable(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+		count++
+
+		actual, err := projects.ExtractProjects(page)
+		th.AssertNoErr(t, err)
+
+		th.CheckDeepEquals(t, ExpectedAvailableProjectsSlice, actual)
+
+		return true, nil
+	})
+	th.AssertNoErr(t, err)
+	th.CheckEquals(t, count, 1)
+}
+
 func TestListProjects(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
