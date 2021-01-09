@@ -155,6 +155,9 @@ type CreateOpts struct {
 	// Visibility defines who can see/use the image.
 	Visibility *ImageVisibility `json:"visibility,omitempty"`
 
+	// Hidden is whether the image is listed in default image list or not.
+	Hidden *bool `json:"os_hidden,omitempty"`
+
 	// Tags is a set of image tags.
 	Tags []string `json:"tags,omitempty"`
 
@@ -280,6 +283,20 @@ func (r UpdateVisibility) ToImagePatchMap() map[string]interface{} {
 		"op":    "replace",
 		"path":  "/visibility",
 		"value": r.Visibility,
+	}
+}
+
+// ReplaceImageHidden represents an updated os_hidden property request.
+type ReplaceImageHidden struct {
+	NewHidden bool
+}
+
+// ToImagePatchMap assembles a request body based on ReplaceImageHidden.
+func (r ReplaceImageHidden) ToImagePatchMap() map[string]interface{} {
+	return map[string]interface{}{
+		"op":    "replace",
+		"path":  "/os_hidden",
+		"value": r.NewHidden,
 	}
 }
 
