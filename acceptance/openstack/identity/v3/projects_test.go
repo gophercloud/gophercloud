@@ -11,6 +11,23 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
+func TestProjectsListAvailable(t *testing.T) {
+	clients.RequireNonAdmin(t)
+
+	client, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	allPages, err := projects.ListAvailable(client).AllPages()
+	th.AssertNoErr(t, err)
+
+	allProjects, err := projects.ExtractProjects(allPages)
+	th.AssertNoErr(t, err)
+
+	for _, project := range allProjects {
+		tools.PrintResource(t, project)
+	}
+}
+
 func TestProjectsList(t *testing.T) {
 	clients.RequireAdmin(t)
 
