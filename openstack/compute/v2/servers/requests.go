@@ -83,6 +83,9 @@ type ListOpts struct {
 	// This requires the client to be set to microversion 2.26 or later.
 	// NotTagsAny filters on specific server tags. At least one of the tags must be absent for the server.
 	NotTagsAny string `q:"not-tags-any"`
+
+        // Display servers based on their availability zone (Admin only until microversion 2.82).
+        AvailabilityZone string `q:"availability_zone"`
 }
 
 // ToServerListQuery formats a ListOpts into a query string.
