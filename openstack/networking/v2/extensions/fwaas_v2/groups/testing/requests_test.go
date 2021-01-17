@@ -284,7 +284,7 @@ func TestUpdate(t *testing.T) {
 	options := groups.UpdateOpts{
 		Name:        &name,
 		Description: &description,
-		Ports: []string{
+		Ports: &[]string{
 			"a6af1e56-b12b-4733-8f77-49166afd5719",
 			"11a58c87-76be-ae7c-a74e-b77fffb88a32",
 		},
