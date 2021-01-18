@@ -41,6 +41,9 @@ type ListOpts struct {
 	// Visibility filters on the visibility of the image.
 	Visibility ImageVisibility `q:"visibility"`
 
+	// Hidden filters on the hidden status of the image.
+	Hidden bool `q:"os_hidden"`
+
 	// MemberStatus filters on the member status of the image.
 	MemberStatus ImageMemberStatus `q:"member_status"`
 
