@@ -19,6 +19,7 @@ func TestCreateCluster(t *testing.T) {
 	masterCount := 1
 	nodeCount := 1
 	createTimeout := 30
+	masterLBEnabled := true
 	opts := clusters.CreateOpts{
 		ClusterTemplateID: "0562d357-8641-4759-8fed-8173f02c9633",
 		CreateTimeout:     &createTimeout,
@@ -28,6 +29,7 @@ func TestCreateCluster(t *testing.T) {
 		Labels:            map[string]string{},
 		MasterCount:       &masterCount,
 		MasterFlavorID:    "m1.small",
+		MasterLBEnabled:   &masterLBEnabled,
 		Name:              "k8s",
 		NodeCount:         &nodeCount,
 		FloatingIPEnabled: gophercloud.Enabled,
