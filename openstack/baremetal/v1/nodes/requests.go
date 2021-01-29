@@ -521,6 +521,7 @@ const (
 	RAID10 RAIDLevel = "1+0"
 	RAID50 RAIDLevel = "5+0"
 	RAID60 RAIDLevel = "6+0"
+	JBOD   RAIDLevel = "JBOD"
 )
 
 // DiskType is used to specify the disk type for a logical disk, e.g. hdd or ssd.
