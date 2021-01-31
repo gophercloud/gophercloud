@@ -25,6 +25,8 @@ type UserAgent struct {
 	prepend []string
 }
 
+type RetryFunc func(context.Context, *ErrUnexpectedResponseCode, error, uint) error
+
 // Prepend prepends a user-defined string to the default User-Agent string. Users
 // may pass in one or more strings to prepend.
 func (ua *UserAgent) Prepend(s ...string) {
@@ -84,7 +86,7 @@ type ProviderClient struct {
 	Context context.Context
 
 	// Retry backoff func
-	RetryBackoffFunc func(context.Context, *ErrUnexpectedResponseCode, error, uint) error
+	RetryBackoffFunc RetryFunc
 
 	// MaxBackoffRetries set the maximum number of backoffs. When not set, defaults to DefaultMaxBackoffRetries
 	MaxBackoffRetries uint
@@ -509,7 +511,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 			if error409er, ok := errType.(Err409er); ok {
 				err = error409er.Error409(respErr)
 			}
-		case 429:
+		case http.StatusTooManyRequests, 498:
 			err = ErrDefault429{respErr}
 			if error429er, ok := errType.(Err429er); ok {
 				err = error429er.Error429(respErr)

@@ -129,7 +129,7 @@ An example retry backoff function, which respects the 429 HTTP response code and
 		} else if v, err := time.Parse(http.TimeFormat, retryAfter); err != nil {
 			return e
 		} else {
-			sleep = v.UTC().Sub(time.Now().UTC())
+			sleep = time.Until(v)
 		}
 
 		if ctx != nil {
