@@ -462,10 +462,10 @@ func retryTest(retryCounter *uint, t *testing.T) gophercloud.RetryFunc {
 		// Parse delay seconds or HTTP date
 		if v, err := strconv.ParseUint(retryAfter, 10, 32); err == nil {
 			sleep = time.Duration(v) * time.Second
-		} else if v, err := time.Parse(http.TimeFormat, retryAfter); err != nil {
-			return e
-		} else {
+		} else if v, err := time.Parse(http.TimeFormat, retryAfter); err == nil {
 			sleep = time.Until(v)
+		} else {
+			return e
 		}
 
 		if ctx != nil {

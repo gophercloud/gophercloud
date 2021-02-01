@@ -126,16 +126,17 @@ An example retry backoff function, which respects the 429 HTTP response code and
 		// Parse delay seconds or HTTP date
 		if v, err := strconv.ParseUint(retryAfter, 10, 32); err == nil {
 			sleep = time.Duration(v) * time.Second
-		} else if v, err := time.Parse(http.TimeFormat, retryAfter); err != nil {
-			return e
-		} else {
+		} else if v, err := time.Parse(http.TimeFormat, retryAfter); err == nil {
 			sleep = time.Until(v)
+		} else {
+			return e
 		}
 
 		if ctx != nil {
 			select {
 			case <-time.After(sleep):
 			case <-ctx.Done():
+				return e
 			}
 		} else {
 			time.Sleep(sleep)
