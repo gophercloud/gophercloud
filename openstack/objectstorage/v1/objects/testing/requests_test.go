@@ -50,10 +50,32 @@ func TestDownloadExtraction(t *testing.T) {
 		ContentType:       "text/plain; charset=utf-8",
 		Date:              time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
 		StaticLargeObject: true,
+		LastModified:      time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
 	}
 	actual, err := response.Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestDownloadWithLastModified(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDownloadObjectSuccessfully(t)
+
+	options1 := &objects.DownloadOpts{
+		IfUnmodifiedSince: time.Date(2009, time.November, 10, 22, 59, 59, 0, time.UTC),
+	}
+	response1 := objects.Download(fake.ServiceClient(), "testContainer", "testObject", options1)
+	_, err1 := response1.Extract()
+	th.AssertErr(t, err1)
+
+	options2 := &objects.DownloadOpts{
+		IfModifiedSince: time.Date(2009, time.November, 10, 23, 0, 1, 0, time.UTC),
+	}
+	response2 := objects.Download(fake.ServiceClient(), "testContainer", "testObject", options2)
+	content, err2 := response2.ExtractContent()
+	th.AssertNoErr(t, err2)
+	th.AssertEquals(t, len(content), 0)
 }
 
 func TestListObjectInfo(t *testing.T) {
