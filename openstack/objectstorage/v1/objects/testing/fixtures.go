@@ -17,11 +17,30 @@ import (
 // responds with a `Download` response.
 func HandleDownloadObjectSuccessfully(t *testing.T) {
 	th.Mux.HandleFunc("/testContainer/testObject", func(w http.ResponseWriter, r *http.Request) {
+		date := time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
-		w.Header().Set("Date", "Wed, 10 Nov 2009 23:00:00 UTC")
+		w.Header().Set("Date", date.Format(time.RFC1123))
 		w.Header().Set("X-Static-Large-Object", "True")
+
+		unModifiedSince := r.Header.Get("If-Unmodified-Since")
+		modifiedSince := r.Header.Get("If-Modified-Since")
+		if unModifiedSince != "" {
+			ums, _ := time.Parse(time.RFC1123, unModifiedSince)
+			if ums.Before(date) || ums.Equal(date) {
+				w.WriteHeader(http.StatusPreconditionFailed)
+				return
+			}
+		}
+		if modifiedSince != "" {
+			ms, _ := time.Parse(time.RFC1123, modifiedSince)
+			if ms.After(date) {
+				w.WriteHeader(http.StatusNotModified)
+				return
+			}
+		}
+		w.Header().Set("Last-Modified", date.Format(time.RFC1123))
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "Successful download with Gophercloud")
 	})
