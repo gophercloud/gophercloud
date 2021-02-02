@@ -450,9 +450,7 @@ func TestRequestConnectionClose(t *testing.T) {
 	th.AssertEquals(t, int64(iter), connections)
 }
 
-type testRetryFunc func(context.Context, *gophercloud.ErrUnexpectedResponseCode, error, uint) error
-
-func retryTest(retryCounter *uint, t *testing.T) testRetryFunc {
+func retryTest(retryCounter *uint, t *testing.T) gophercloud.RetryFunc {
 	return func(ctx context.Context, respErr *gophercloud.ErrUnexpectedResponseCode, e error, retries uint) error {
 		retryAfter := respErr.ResponseHeader.Get("Retry-After")
 		if retryAfter == "" {
@@ -464,10 +462,10 @@ func retryTest(retryCounter *uint, t *testing.T) testRetryFunc {
 		// Parse delay seconds or HTTP date
 		if v, err := strconv.ParseUint(retryAfter, 10, 32); err == nil {
 			sleep = time.Duration(v) * time.Second
-		} else if v, err := time.Parse(http.TimeFormat, retryAfter); err != nil {
-			return e
+		} else if v, err := time.Parse(http.TimeFormat, retryAfter); err == nil {
+			sleep = time.Until(v)
 		} else {
-			sleep = v.UTC().Sub(time.Now().UTC())
+			return e
 		}
 
 		if ctx != nil {
@@ -476,7 +474,7 @@ func retryTest(retryCounter *uint, t *testing.T) testRetryFunc {
 			case <-time.After(sleep):
 				t.Log("sleep is over")
 			case <-ctx.Done():
-				t.Log("context exceeded")
+				t.Log(ctx.Err())
 				return e
 			}
 		} else {
