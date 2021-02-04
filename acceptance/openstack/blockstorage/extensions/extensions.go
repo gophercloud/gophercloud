@@ -14,6 +14,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumeactions"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
 	v3 "github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumetypes"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/images"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -287,6 +288,27 @@ func SetBootable(t *testing.T, client *gophercloud.ServiceClient, volume *volume
 
 	if strings.ToLower(vol.Bootable) == "true" {
 		return fmt.Errorf("Volume bootable status is %q, expected 'false'", vol.Bootable)
+	}
+
+	return nil
+}
+
+// ChangeVolumeType will extend the size of a volume.
+func ChangeVolumeType(t *testing.T, client *gophercloud.ServiceClient, volume *v3.Volume, vt *volumetypes.VolumeType) error {
+	t.Logf("Attempting to change the type of volume %s from %s to %s", volume.ID, volume.VolumeType, vt.Name)
+
+	changeOpts := volumeactions.ChangeTypeOpts{
+		NewType:         vt.Name,
+		MigrationPolicy: volumeactions.MigrationPolicyOnDemand,
+	}
+
+	err := volumeactions.ChangeType(client, volume.ID, changeOpts).ExtractErr()
+	if err != nil {
+		return err
+	}
+
+	if err := volumes.WaitForStatus(client, volume.ID, "available", 60); err != nil {
+		return err
 	}
 
 	return nil
