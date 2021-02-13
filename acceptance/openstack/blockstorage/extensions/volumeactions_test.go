@@ -7,6 +7,7 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	blockstorage "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v2"
+	blockstorageV3 "github.com/gophercloud/gophercloud/acceptance/openstack/blockstorage/v3"
 	compute "github.com/gophercloud/gophercloud/acceptance/openstack/compute/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
@@ -111,6 +112,36 @@ func TestVolumeActionsSetBootable(t *testing.T) {
 
 	err = SetBootable(t, blockClient, volume)
 	th.AssertNoErr(t, err)
+}
+
+func TestVolumeActionsChangeType(t *testing.T) {
+	//	clients.RequireAdmin(t)
+
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	volumeType1, err := blockstorageV3.CreateVolumeTypeNoExtraSpecs(t, client)
+	th.AssertNoErr(t, err)
+	defer blockstorageV3.DeleteVolumeType(t, client, volumeType1)
+
+	volumeType2, err := blockstorageV3.CreateVolumeTypeNoExtraSpecs(t, client)
+	th.AssertNoErr(t, err)
+	defer blockstorageV3.DeleteVolumeType(t, client, volumeType2)
+
+	volume, err := blockstorageV3.CreateVolumeWithType(t, client, volumeType1)
+	th.AssertNoErr(t, err)
+	defer blockstorageV3.DeleteVolume(t, client, volume)
+
+	tools.PrintResource(t, volume)
+
+	err = ChangeVolumeType(t, client, volume, volumeType2)
+	th.AssertNoErr(t, err)
+
+	newVolume, err := volumes.Get(client, volume.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, newVolume.VolumeType, volumeType2.Name)
+
+	tools.PrintResource(t, newVolume)
 }
 
 // Note(jtopjian): I plan to work on this at some point, but it requires
