@@ -1,5 +1,9 @@
 ## 0.16.0 (Unreleased)
 
+UPGRADE NOTES
+
+* `baremetal/v1/nodes.CleanStep.Interface` has changed from `string` to `StepInterface` [GH-2120](https://github.com/gophercloud/gophercloud/pull/2120)
+
 BUG FIXES
 
 * Fixed `xor` logic issues in `loadbalancers/v2/l7policies.CreateOpts` [GH-2087](https://github.com/gophercloud/gophercloud/pull/2087)
@@ -23,6 +27,8 @@ IMPROVEMENTS
 * Added `baremetal/v1/nodes.JBOD` constant for the `RAIDLevel` type [GH-2103](https://github.com/gophercloud/gophercloud/pull/2103)
 * Added support for Block Storage quotas of volume typed resources [GH-2109](https://github.com/gophercloud/gophercloud/pull/2109)
 * Added `blockstorage/extensions/volumeactions.ChangeType` [GH-2113](https://github.com/gophercloud/gophercloud/pull/2113)
+* Added `baremetal/v1/nodes.DeployStep` [GH-2120](https://github.com/gophercloud/gophercloud/pull/2120)
+* Added `baremetal/v1/nodes.ProvisionStateOpts.DeploySteps` [GH-2120](https://github.com/gophercloud/gophercloud/pull/2120)
 
 ## 0.15.0 (December 27, 2020)
 
