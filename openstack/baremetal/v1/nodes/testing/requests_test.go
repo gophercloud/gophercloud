@@ -254,6 +254,29 @@ func TestNodeChangeProvisionStateActive(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
+func TestNodeChangeProvisionStateActiveWithSteps(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleNodeChangeProvisionStateActiveWithSteps(t)
+
+	c := client.ServiceClient()
+	err := nodes.ChangeProvisionState(c, "1234asdf", nodes.ProvisionStateOpts{
+		Target: nodes.TargetActive,
+		DeploySteps: []nodes.DeployStep{
+			{
+				Interface: nodes.InterfaceDeploy,
+				Step:      "inject_files",
+				Priority:  50,
+				Args: map[string]interface{}{
+					"files": []interface{}{},
+				},
+			},
+		},
+	}).ExtractErr()
+
+	th.AssertNoErr(t, err)
+}
+
 func TestHandleNodeChangeProvisionStateConfigDrive(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -280,7 +303,7 @@ func TestNodeChangeProvisionStateClean(t *testing.T) {
 		Target: nodes.TargetClean,
 		CleanSteps: []nodes.CleanStep{
 			{
-				Interface: "deploy",
+				Interface: nodes.InterfaceDeploy,
 				Step:      "upgrade_firmware",
 				Args: map[string]interface{}{
 					"force": "True",
@@ -302,7 +325,7 @@ func TestNodeChangeProvisionStateCleanWithConflict(t *testing.T) {
 		Target: nodes.TargetClean,
 		CleanSteps: []nodes.CleanStep{
 			{
-				Interface: "deploy",
+				Interface: nodes.InterfaceDeploy,
 				Step:      "upgrade_firmware",
 				Args: map[string]interface{}{
 					"force": "True",
@@ -341,7 +364,7 @@ func TestCleanStepRequiresStep(t *testing.T) {
 		Target: nodes.TargetClean,
 		CleanSteps: []nodes.CleanStep{
 			{
-				Interface: "deploy",
+				Interface: nodes.InterfaceDeploy,
 				Args: map[string]interface{}{
 					"force": "True",
 				},

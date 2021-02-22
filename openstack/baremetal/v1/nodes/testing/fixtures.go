@@ -547,6 +547,23 @@ const NodeProvisionStateActiveBody = `
     "configdrive": "http://127.0.0.1/images/test-node-config-drive.iso.gz"
 }
 `
+
+const NodeProvisionStateActiveBodyWithSteps = `
+{
+    "target": "active",
+    "deploy_steps": [
+	{
+	    "interface": "deploy",
+	    "step": "inject_files",
+	    "priority": 50,
+	    "args": {
+		"files": []
+	    }
+	}
+    ]
+}
+`
+
 const NodeProvisionStateCleanBody = `
 {
     "target": "clean",
@@ -933,6 +950,15 @@ func HandleNodeChangeProvisionStateActive(t *testing.T) {
 		th.TestMethod(t, r, "PUT")
 		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
 		th.TestJSONRequest(t, r, NodeProvisionStateActiveBody)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
+
+func HandleNodeChangeProvisionStateActiveWithSteps(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/states/provision", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestJSONRequest(t, r, NodeProvisionStateActiveBodyWithSteps)
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
