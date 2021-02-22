@@ -74,6 +74,7 @@ const NodeListDetailBody = `
  {
   "nodes": [
     {
+      "automated_clean": null,
       "bios_interface": "no-bios",
       "boot_interface": "pxe",
       "chassis_uuid": null,
@@ -178,6 +179,7 @@ const NodeListDetailBody = `
       ]
     },
     {
+      "automated_clean": null,
       "bios_interface": "no-bios",
       "boot_interface": "pxe",
       "chassis_uuid": null,
@@ -274,6 +276,7 @@ const NodeListDetailBody = `
       ]
     },
     {
+      "automated_clean": null,
       "bios_interface": "no-bios",
       "boot_interface": "pxe",
       "chassis_uuid": null,
@@ -376,6 +379,7 @@ const NodeListDetailBody = `
 // SingleNodeBody is the canned body of a Get request on an existing node.
 const SingleNodeBody = `
 {
+  "automated_clean": null,
   "bios_interface": "no-bios",
   "boot_interface": "pxe",
   "chassis_uuid": null,
