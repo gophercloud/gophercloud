@@ -29,6 +29,7 @@ IMPROVEMENTS
 * Added `blockstorage/extensions/volumeactions.ChangeType` [GH-2113](https://github.com/gophercloud/gophercloud/pull/2113)
 * Added `baremetal/v1/nodes.DeployStep` [GH-2120](https://github.com/gophercloud/gophercloud/pull/2120)
 * Added `baremetal/v1/nodes.ProvisionStateOpts.DeploySteps` [GH-2120](https://github.com/gophercloud/gophercloud/pull/2120)
+* Added `baremetal/v1/nodes.CreateOpts.AutomatedClean` [GH-2122](https://github.com/gophercloud/gophercloud/pull/2122)
 
 ## 0.15.0 (December 27, 2020)
 
