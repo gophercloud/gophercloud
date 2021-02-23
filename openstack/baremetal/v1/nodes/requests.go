@@ -181,6 +181,10 @@ type CreateOptsBuilder interface {
 
 // CreateOpts specifies node creation parameters.
 type CreateOpts struct {
+	// The interface to configure automated cleaning for a Node.
+	// Requires microversion 1.47 or later.
+	AutomatedClean *bool `json:"automated_clean,omitempty"`
+
 	// The boot interface for a Node, e.g. “pxe”.
 	BootInterface string `json:"boot_interface,omitempty"`
 
