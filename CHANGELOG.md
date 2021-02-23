@@ -1,4 +1,6 @@
-## 0.16.0 (Unreleased)
+## 0.17.0 (Unreleased)
+
+## 0.16.0 (February 23, 2021)
 
 UPGRADE NOTES
 
