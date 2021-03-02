@@ -58,6 +58,63 @@ Example to update a Volume Type
 		panic(err)
 	}
 	fmt.Println(volumetype)
-*/
 
+Example to Create Extra Specs for a Volume Type
+
+	typeID := "7ffaca22-f646-41d4-b79d-d7e4452ef8cc"
+
+	createOpts := volumetypes.ExtraSpecsOpts{
+		"capabilities": "gpu",
+	}
+	createdExtraSpecs, err := volumetypes.CreateExtraSpecs(client, typeID, createOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v", createdExtraSpecs)
+
+Example to Get Extra Specs for a Volume Type
+
+	typeID := "7ffaca22-f646-41d4-b79d-d7e4452ef8cc"
+
+	extraSpecs, err := volumetypes.ListExtraSpecs(client, typeID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v", extraSpecs)
+
+Example to Get specific Extra Spec for a Volume Type
+
+	typeID := "7ffaca22-f646-41d4-b79d-d7e4452ef8cc"
+
+	extraSpec, err := volumetypes.GetExtraSpec(client, typeID, "capabilities").Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v", extraSpec)
+
+Example to Update Extra Specs for a Volume Type
+
+	typeID := "7ffaca22-f646-41d4-b79d-d7e4452ef8cc"
+
+	updateOpts := volumetypes.ExtraSpecsOpts{
+		"capabilities": "capabilities-updated",
+	}
+	updatedExtraSpec, err := volumetypes.UpdateExtraSpec(client, typeID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v", updatedExtraSpec)
+
+Example to Delete an Extra Spec for a Volume Type
+
+	typeID := "7ffaca22-f646-41d4-b79d-d7e4452ef8cc"
+	err := volumetypes.DeleteExtraSpec(client, typeID, "capabilities").ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+*/
 package volumetypes

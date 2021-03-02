@@ -117,3 +117,63 @@ func TestUpdate(t *testing.T) {
 	th.CheckEquals(t, "vol-type-002", v.Name)
 	th.CheckEquals(t, true, v.IsPublic)
 }
+
+func TestVolumeTypeExtraSpecsList(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleExtraSpecsListSuccessfully(t)
+
+	expected := ExtraSpecs
+	actual, err := volumetypes.ListExtraSpecs(client.ServiceClient(), "1").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestVolumeTypeExtraSpecGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleExtraSpecGetSuccessfully(t)
+
+	expected := ExtraSpec
+	actual, err := volumetypes.GetExtraSpec(client.ServiceClient(), "1", "capabilities").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestVolumeTypeExtraSpecsCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleExtraSpecsCreateSuccessfully(t)
+
+	createOpts := volumetypes.ExtraSpecsOpts{
+		"capabilities":        "gpu",
+		"volume_backend_name": "ssd",
+	}
+	expected := ExtraSpecs
+	actual, err := volumetypes.CreateExtraSpecs(client.ServiceClient(), "1", createOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestVolumeTypeExtraSpecUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleExtraSpecUpdateSuccessfully(t)
+
+	updateOpts := volumetypes.ExtraSpecsOpts{
+		"capabilities": "gpu-2",
+	}
+	expected := UpdatedExtraSpec
+	actual, err := volumetypes.UpdateExtraSpec(client.ServiceClient(), "1", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestVolumeTypeExtraSpecDelete(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleExtraSpecDeleteSuccessfully(t)
+
+	res := volumetypes.DeleteExtraSpec(client.ServiceClient(), "1", "capabilities")
+	th.AssertNoErr(t, res.Err)
+}
