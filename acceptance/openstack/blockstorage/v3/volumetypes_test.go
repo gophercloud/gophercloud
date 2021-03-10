@@ -55,3 +55,57 @@ func TestVolumeTypes(t *testing.T) {
 	th.AssertEquals(t, description, newVT.Description)
 	th.AssertEquals(t, isPublic, newVT.IsPublic)
 }
+
+func TestVolumeTypesExtraSpecs(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	vt, err := CreateVolumeTypeNoExtraSpecs(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolumeType(t, client, vt)
+
+	createOpts := volumetypes.ExtraSpecsOpts{
+		"capabilities":        "gpu",
+		"volume_backend_name": "ssd",
+	}
+
+	createdExtraSpecs, err := volumetypes.CreateExtraSpecs(client, vt.ID, createOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, createdExtraSpecs)
+
+	th.AssertEquals(t, len(createdExtraSpecs), 2)
+	th.AssertEquals(t, createdExtraSpecs["capabilities"], "gpu")
+	th.AssertEquals(t, createdExtraSpecs["volume_backend_name"], "ssd")
+
+	err = volumetypes.DeleteExtraSpec(client, vt.ID, "volume_backend_name").ExtractErr()
+	th.AssertNoErr(t, err)
+
+	updateOpts := volumetypes.ExtraSpecsOpts{
+		"capabilities": "gpu-2",
+	}
+	updatedExtraSpec, err := volumetypes.UpdateExtraSpec(client, vt.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatedExtraSpec)
+
+	th.AssertEquals(t, updatedExtraSpec["capabilities"], "gpu-2")
+
+	allExtraSpecs, err := volumetypes.ListExtraSpecs(client, vt.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, allExtraSpecs)
+
+	th.AssertEquals(t, len(allExtraSpecs), 1)
+	th.AssertEquals(t, allExtraSpecs["capabilities"], "gpu-2")
+
+	singleSpec, err := volumetypes.GetExtraSpec(client, vt.ID, "capabilities").Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, singleSpec)
+
+	th.AssertEquals(t, singleSpec["capabilities"], "gpu-2")
+}

@@ -152,3 +152,109 @@ func MockUpdateResponse(t *testing.T) {
 }`)
 	})
 }
+
+// ExtraSpecsGetBody provides a GET result of the extra_specs for a volume type
+const ExtraSpecsGetBody = `
+{
+    "extra_specs" : {
+        "capabilities": "gpu",
+        "volume_backend_name": "ssd"
+    }
+}
+`
+
+// GetExtraSpecBody provides a GET result of a particular extra_spec for a volume type
+const GetExtraSpecBody = `
+{
+    "capabilities": "gpu"
+}
+`
+
+// UpdatedExtraSpecBody provides an PUT result of a particular updated extra_spec for a volume type
+const UpdatedExtraSpecBody = `
+{
+    "capabilities": "gpu-2"
+}
+`
+
+// ExtraSpecs is the expected extra_specs returned from GET on a volume type's extra_specs
+var ExtraSpecs = map[string]string{
+	"capabilities":        "gpu",
+	"volume_backend_name": "ssd",
+}
+
+// ExtraSpec is the expected extra_spec returned from GET on a volume type's extra_specs
+var ExtraSpec = map[string]string{
+	"capabilities": "gpu",
+}
+
+// UpdatedExtraSpec is the expected extra_spec returned from PUT on a volume type's extra_specs
+var UpdatedExtraSpec = map[string]string{
+	"capabilities": "gpu-2",
+}
+
+func HandleExtraSpecsListSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/types/1/extra_specs", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ExtraSpecsGetBody)
+	})
+}
+
+func HandleExtraSpecGetSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/types/1/extra_specs/capabilities", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetExtraSpecBody)
+	})
+}
+
+func HandleExtraSpecsCreateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/types/1/extra_specs", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `{
+				"extra_specs": {
+					"capabilities":        "gpu",
+                    "volume_backend_name": "ssd"
+				}
+			}`)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ExtraSpecsGetBody)
+	})
+}
+
+func HandleExtraSpecUpdateSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/types/1/extra_specs/capabilities", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `{
+				"capabilities":        "gpu-2"
+			}`)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, UpdatedExtraSpecBody)
+	})
+}
+
+func HandleExtraSpecDeleteSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/types/1/extra_specs/capabilities", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}

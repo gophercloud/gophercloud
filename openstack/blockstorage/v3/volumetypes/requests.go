@@ -140,3 +140,96 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// ListExtraSpecs requests all the extra-specs for the given volume type ID.
+func ListExtraSpecs(client *gophercloud.ServiceClient, volumeTypeID string) (r ListExtraSpecsResult) {
+	resp, err := client.Get(extraSpecsListURL(client, volumeTypeID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// GetExtraSpec requests an extra-spec specified by key for the given volume type ID
+func GetExtraSpec(client *gophercloud.ServiceClient, volumeTypeID string, key string) (r GetExtraSpecResult) {
+	resp, err := client.Get(extraSpecsGetURL(client, volumeTypeID, key), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// CreateExtraSpecsOptsBuilder allows extensions to add additional parameters to the
+// CreateExtraSpecs requests.
+type CreateExtraSpecsOptsBuilder interface {
+	ToVolumeTypeExtraSpecsCreateMap() (map[string]interface{}, error)
+}
+
+// ExtraSpecsOpts is a map that contains key-value pairs.
+type ExtraSpecsOpts map[string]string
+
+// ToVolumeTypeExtraSpecsCreateMap assembles a body for a Create request based on
+// the contents of ExtraSpecsOpts.
+func (opts ExtraSpecsOpts) ToVolumeTypeExtraSpecsCreateMap() (map[string]interface{}, error) {
+	return map[string]interface{}{"extra_specs": opts}, nil
+}
+
+// CreateExtraSpecs will create or update the extra-specs key-value pairs for
+// the specified volume type.
+func CreateExtraSpecs(client *gophercloud.ServiceClient, volumeTypeID string, opts CreateExtraSpecsOptsBuilder) (r CreateExtraSpecsResult) {
+	b, err := opts.ToVolumeTypeExtraSpecsCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(extraSpecsCreateURL(client, volumeTypeID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateExtraSpecOptsBuilder allows extensions to add additional parameters to
+// the Update request.
+type UpdateExtraSpecOptsBuilder interface {
+	ToVolumeTypeExtraSpecUpdateMap() (map[string]string, string, error)
+}
+
+// ToVolumeTypeExtraSpecUpdateMap assembles a body for an Update request based on
+// the contents of a ExtraSpecOpts.
+func (opts ExtraSpecsOpts) ToVolumeTypeExtraSpecUpdateMap() (map[string]string, string, error) {
+	if len(opts) != 1 {
+		err := gophercloud.ErrInvalidInput{}
+		err.Argument = "volumetypes.ExtraSpecOpts"
+		err.Info = "Must have one and only one key-value pair"
+		return nil, "", err
+	}
+
+	var key string
+	for k := range opts {
+		key = k
+	}
+
+	return opts, key, nil
+}
+
+// UpdateExtraSpec will updates the value of the specified volume type's extra spec
+// for the key in opts.
+func UpdateExtraSpec(client *gophercloud.ServiceClient, volumeTypeID string, opts UpdateExtraSpecOptsBuilder) (r UpdateExtraSpecResult) {
+	b, key, err := opts.ToVolumeTypeExtraSpecUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(extraSpecUpdateURL(client, volumeTypeID, key), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeleteExtraSpec will delete the key-value pair with the given key for the given
+// volume type ID.
+func DeleteExtraSpec(client *gophercloud.ServiceClient, volumeTypeID, key string) (r DeleteExtraSpecResult) {
+	resp, err := client.Delete(extraSpecDeleteURL(client, volumeTypeID, key), &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
