@@ -22,7 +22,7 @@ type CreateOpts struct {
 	// the ID of the existing volume snapshot
 	IsPublic *bool `json:"os-volume-type-access:is_public,omitempty"`
 	// Extra spec key-value pairs defined by the user.
-	ExtraSpecs map[string]string `json:"extra_specs"`
+	ExtraSpecs map[string]string `json:"extra_specs,omitempty"`
 }
 
 // ToVolumeTypeCreateMap assembles a request body based on the contents of a
