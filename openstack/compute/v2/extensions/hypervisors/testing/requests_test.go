@@ -15,7 +15,8 @@ func TestListHypervisorsPre253(t *testing.T) {
 	HandleHypervisorListPre253Successfully(t)
 
 	pages := 0
-	err := hypervisors.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := hypervisors.List(client.ServiceClient(),
+		hypervisors.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := hypervisors.ExtractHypervisors(page)
@@ -44,7 +45,7 @@ func TestListAllHypervisorsPre253(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	HandleHypervisorListPre253Successfully(t)
 
-	allPages, err := hypervisors.List(client.ServiceClient()).AllPages()
+	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{}).AllPages()
 	testhelper.AssertNoErr(t, err)
 	actual, err := hypervisors.ExtractHypervisors(allPages)
 	testhelper.AssertNoErr(t, err)
@@ -58,7 +59,8 @@ func TestListHypervisors(t *testing.T) {
 	HandleHypervisorListSuccessfully(t)
 
 	pages := 0
-	err := hypervisors.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := hypervisors.List(client.ServiceClient(),
+		hypervisors.ListOpts{}).EachPage(func(page pagination.Page) (bool, error) {
 		pages++
 
 		actual, err := hypervisors.ExtractHypervisors(page)
@@ -87,12 +89,26 @@ func TestListAllHypervisors(t *testing.T) {
 	defer testhelper.TeardownHTTP()
 	HandleHypervisorListSuccessfully(t)
 
-	allPages, err := hypervisors.List(client.ServiceClient()).AllPages()
+	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{}).AllPages()
 	testhelper.AssertNoErr(t, err)
 	actual, err := hypervisors.ExtractHypervisors(allPages)
 	testhelper.AssertNoErr(t, err)
 	testhelper.CheckDeepEquals(t, HypervisorFake, actual[0])
 	testhelper.CheckDeepEquals(t, HypervisorFake, actual[1])
+}
+
+func TestListAllHypervisorsWithParameters(t *testing.T) {
+	testhelper.SetupHTTP()
+	defer testhelper.TeardownHTTP()
+	HandleHypervisorListWithParametersSuccessfully(t)
+
+	with_servers := true
+	allPages, err := hypervisors.List(client.ServiceClient(), hypervisors.ListOpts{WithServers: &with_servers}).AllPages()
+	testhelper.AssertNoErr(t, err)
+	actual, err := hypervisors.ExtractHypervisors(allPages)
+	testhelper.AssertNoErr(t, err)
+	testhelper.CheckDeepEquals(t, HypervisorFakeWithParameters, actual[0])
+	testhelper.CheckDeepEquals(t, HypervisorFakeWithParameters, actual[1])
 }
 
 func TestHypervisorsStatistics(t *testing.T) {
