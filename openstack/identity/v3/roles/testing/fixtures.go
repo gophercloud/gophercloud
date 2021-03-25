@@ -96,6 +96,7 @@ const UpdateOutput = `
 }
 `
 
+// ListAssignmentOutput provides a result of ListAssignment request.
 const ListAssignmentOutput = `
 {
     "role_assignments": [
@@ -135,6 +136,38 @@ const ListAssignmentOutput = `
     ],
     "links": {
         "self": "http://identity:35357/v3/role_assignments?effective",
+        "previous": null,
+        "next": null
+    }
+}
+`
+
+// ListAssignmentWithNamesOutput provides a result of ListAssignment request with IncludeNames option.
+const ListAssignmentWithNamesOutput = `
+{
+    "role_assignments": [
+        {
+            "links": {
+                "assignment": "http://identity:35357/v3/domains/161718/users/313233/roles/123456"
+            },
+            "role": {
+                "id": "123456",
+				"name": "include_names_role"
+            },
+            "scope": {
+                "domain": {
+                    "id": "161718",
+					"name": "52833"
+                }
+            },
+            "user": {
+                "id": "313233",
+				"name": "example-user-name"
+            }
+        }
+    ],
+    "links": {
+        "self": "http://identity:35357/v3/role_assignments?include_names=True",
         "previous": null,
         "next": null
     }
@@ -337,9 +370,21 @@ var SecondRoleAssignment = roles.RoleAssignment{
 	Group: roles.Group{},
 }
 
+// ThirdRoleAssignment is the third role assignment that has entity names in the List request.
+var ThirdRoleAssignment = roles.RoleAssignment{
+	Role:  roles.AssignedRole{ID: "123456", Name: "include_names_role"},
+	Scope: roles.Scope{Domain: roles.Domain{ID: "161718", Name: "52833"}},
+	User:  roles.User{ID: "313233", Name: "example-user-name"},
+	Group: roles.Group{},
+}
+
 // ExpectedRoleAssignmentsSlice is the slice of role assignments expected to be
 // returned from ListAssignmentOutput.
 var ExpectedRoleAssignmentsSlice = []roles.RoleAssignment{FirstRoleAssignment, SecondRoleAssignment}
+
+// ExpectedRoleAssignmentsWithNamesSlice is the slice of role assignments expected to be
+// returned from ListAssignmentWithNamesOutput.
+var ExpectedRoleAssignmentsWithNamesSlice = []roles.RoleAssignment{ThirdRoleAssignment}
 
 // HandleListRoleAssignmentsSuccessfully creates an HTTP handler at `/role_assignments` on the
 // test handler mux that responds with a list of two role assignments.
@@ -352,6 +397,21 @@ func HandleListRoleAssignmentsSuccessfully(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, ListAssignmentOutput)
+	})
+}
+
+// HandleListRoleAssignmentsSuccessfully creates an HTTP handler at `/role_assignments` on the
+// test handler mux that responds with a list of two role assignments.
+func HandleListRoleAssignmentsWithNamesSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/role_assignments", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.AssertEquals(t, "include_names=true", r.URL.RawQuery)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, ListAssignmentWithNamesOutput)
 	})
 }
 
