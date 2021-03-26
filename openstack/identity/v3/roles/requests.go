@@ -206,6 +206,7 @@ type ListAssignmentsOpts struct {
 	Effective *bool `q:"effective"`
 
 	// IncludeNames indicates whether to include names of any returned entities.
+	// Requires microversion 3.6 or later.
 	IncludeNames *bool `q:"include_names"`
 }
 
