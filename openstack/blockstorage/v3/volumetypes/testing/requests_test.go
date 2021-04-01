@@ -1,6 +1,9 @@
 package testing
 
 import (
+	"fmt"
+	"net/http"
+	"reflect"
 	"testing"
 
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumetypes"
@@ -176,4 +179,100 @@ func TestVolumeTypeExtraSpecDelete(t *testing.T) {
 
 	res := volumetypes.DeleteExtraSpec(client.ServiceClient(), "1", "capabilities")
 	th.AssertNoErr(t, res.Err)
+}
+
+func TestVolumeTypeListAccesses(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/os-volume-type-access", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprintf(w, `
+			{
+			  "volume_type_access": [
+			    {
+            	  "project_id": "6f70656e737461636b20342065766572",
+            	  "volume_type_id": "a5082c24-2a27-43a4-b48e-fcec1240e36b"
+			    }
+			  ]
+			}
+		`)
+	})
+
+	expected := []volumetypes.VolumeTypeAccess{
+		{
+			VolumeTypeID: "a5082c24-2a27-43a4-b48e-fcec1240e36b",
+			ProjectID:    "6f70656e737461636b20342065766572",
+		},
+	}
+
+	allPages, err := volumetypes.ListAccesses(client.ServiceClient(), "a5082c24-2a27-43a4-b48e-fcec1240e36b").AllPages()
+	th.AssertNoErr(t, err)
+
+	actual, err := volumetypes.ExtractAccesses(allPages)
+	th.AssertNoErr(t, err)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %#v, but was %#v", expected, actual)
+	}
+}
+
+func TestVolumeTypeAddAccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "accept", "application/json")
+		th.TestJSONRequest(t, r, `
+			{
+			  "addProjectAccess": {
+			    "project": "6f70656e737461636b20342065766572"
+			  }
+			}
+		`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	addAccessOpts := volumetypes.AddAccessOpts{
+		Project: "6f70656e737461636b20342065766572",
+	}
+
+	err := volumetypes.AddAccess(client.ServiceClient(), "a5082c24-2a27-43a4-b48e-fcec1240e36b", addAccessOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+}
+
+func TestVolumeTypeRemoveAccess(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/types/a5082c24-2a27-43a4-b48e-fcec1240e36b/action", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "accept", "application/json")
+		th.TestJSONRequest(t, r, `
+			{
+			  "removeProjectAccess": {
+			    "project": "6f70656e737461636b20342065766572"
+			  }
+			}
+		`)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusAccepted)
+	})
+
+	removeAccessOpts := volumetypes.RemoveAccessOpts{
+		Project: "6f70656e737461636b20342065766572",
+	}
+
+	err := volumetypes.RemoveAccess(client.ServiceClient(), "a5082c24-2a27-43a4-b48e-fcec1240e36b", removeAccessOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
 }

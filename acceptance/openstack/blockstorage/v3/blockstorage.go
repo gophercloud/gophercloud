@@ -176,6 +176,37 @@ func CreateVolumeTypeNoExtraSpecs(t *testing.T, client *gophercloud.ServiceClien
 	return vt, nil
 }
 
+// CreatePrivateVolumeType will create a private volume type with a random
+// name and no extra specs. An error will be returned if the volume type was
+// unable to be created.
+func CreatePrivateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*volumetypes.VolumeType, error) {
+	name := tools.RandomString("ACPTTEST", 16)
+	description := "create_from_gophercloud"
+	isPublic := false
+	t.Logf("Attempting to create volume type: %s", name)
+
+	createOpts := volumetypes.CreateOpts{
+		Name:        name,
+		ExtraSpecs:  map[string]string{},
+		Description: description,
+		IsPublic:    &isPublic,
+	}
+
+	vt, err := volumetypes.Create(client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	tools.PrintResource(t, vt)
+	th.AssertEquals(t, vt.IsPublic, false)
+	th.AssertEquals(t, vt.Name, name)
+	th.AssertEquals(t, vt.Description, description)
+
+	t.Logf("Successfully created volume type: %s", vt.ID)
+
+	return vt, nil
+}
+
 // DeleteSnapshot will delete a snapshot. A fatal error will occur if the
 // snapshot failed to be deleted.
 func DeleteSnapshot(t *testing.T, client *gophercloud.ServiceClient, snapshot *snapshots.Snapshot) {

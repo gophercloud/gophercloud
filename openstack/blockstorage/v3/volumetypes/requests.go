@@ -120,7 +120,7 @@ type UpdateOpts struct {
 	IsPublic    *bool   `json:"is_public,omitempty"`
 }
 
-// ToVolumeUpdateMap assembles a request body based on the contents of an
+// ToVolumeTypeUpdateMap assembles a request body based on the contents of an
 // UpdateOpts.
 func (opts UpdateOpts) ToVolumeTypeUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, "volume_type")
@@ -228,6 +228,77 @@ func UpdateExtraSpec(client *gophercloud.ServiceClient, volumeTypeID string, opt
 // volume type ID.
 func DeleteExtraSpec(client *gophercloud.ServiceClient, volumeTypeID, key string) (r DeleteExtraSpecResult) {
 	resp, err := client.Delete(extraSpecDeleteURL(client, volumeTypeID, key), &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ListAccesses retrieves the tenants which have access to a volume type.
+func ListAccesses(client *gophercloud.ServiceClient, id string) pagination.Pager {
+	url := accessURL(client, id)
+
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return AccessPage{pagination.SinglePageBase(r)}
+	})
+}
+
+// AddAccessOptsBuilder allows extensions to add additional parameters to the
+// AddAccess requests.
+type AddAccessOptsBuilder interface {
+	ToVolumeTypeAddAccessMap() (map[string]interface{}, error)
+}
+
+// AddAccessOpts represents options for adding access to a volume type.
+type AddAccessOpts struct {
+	// Project is the project/tenant ID to grant access.
+	Project string `json:"project"`
+}
+
+// ToVolumeTypeAddAccessMap constructs a request body from AddAccessOpts.
+func (opts AddAccessOpts) ToVolumeTypeAddAccessMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "addProjectAccess")
+}
+
+// AddAccess grants a tenant/project access to a volume type.
+func AddAccess(client *gophercloud.ServiceClient, id string, opts AddAccessOptsBuilder) (r AddAccessResult) {
+	b, err := opts.ToVolumeTypeAddAccessMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(accessActionURL(client, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// RemoveAccessOptsBuilder allows extensions to add additional parameters to the
+// RemoveAccess requests.
+type RemoveAccessOptsBuilder interface {
+	ToVolumeTypeRemoveAccessMap() (map[string]interface{}, error)
+}
+
+// RemoveAccessOpts represents options for removing access to a volume type.
+type RemoveAccessOpts struct {
+	// Project is the project/tenant ID to remove access.
+	Project string `json:"project"`
+}
+
+// ToVolumeTypeRemoveAccessMap constructs a request body from RemoveAccessOpts.
+func (opts RemoveAccessOpts) ToVolumeTypeRemoveAccessMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "removeProjectAccess")
+}
+
+// RemoveAccess removes/revokes a tenant/project access to a volume type.
+func RemoveAccess(client *gophercloud.ServiceClient, id string, opts RemoveAccessOptsBuilder) (r RemoveAccessResult) {
+	b, err := opts.ToVolumeTypeRemoveAccessMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Post(accessActionURL(client, id), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

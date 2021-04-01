@@ -41,3 +41,11 @@ func extraSpecUpdateURL(client *gophercloud.ServiceClient, id, key string) strin
 func extraSpecDeleteURL(client *gophercloud.ServiceClient, id, key string) string {
 	return client.ServiceURL("types", id, "extra_specs", key)
 }
+
+func accessURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("types", id, "os-volume-type-access")
+}
+
+func accessActionURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("types", id, "action")
+}
