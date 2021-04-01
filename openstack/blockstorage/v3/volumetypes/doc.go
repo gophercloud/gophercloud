@@ -116,5 +116,50 @@ Example to Delete an Extra Spec for a Volume Type
 	if err != nil {
 		panic(err)
 	}
+
+Example to List Volume Type Access
+
+	typeID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
+
+	allPages, err := volumetypes.ListAccesses(client, typeID).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allAccesses, err := volumetypes.ExtractAccesses(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, access := range allAccesses {
+		fmt.Printf("%+v", access)
+	}
+
+Example to Grant Access to a Volume Type
+
+	typeID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
+
+	accessOpts := volumetypes.AddAccessOpts{
+		Project: "15153a0979884b59b0592248ef947921",
+	}
+
+	err := volumetypes.AddAccess(client, typeID, accessOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Remove/Revoke Access to a Volume Type
+
+	typeID := "e91758d6-a54a-4778-ad72-0c73a1cb695b"
+
+	accessOpts := volumetypes.RemoveAccessOpts{
+		Project: "15153a0979884b59b0592248ef947921",
+	}
+
+	err := volumetypes.RemoveAccess(client, typeID, accessOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package volumetypes

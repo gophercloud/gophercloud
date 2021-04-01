@@ -151,3 +151,44 @@ func (r extraSpecResult) Extract() (map[string]string, error) {
 	err := r.ExtractInto(&s)
 	return s, err
 }
+
+// VolumeTypeAccess represents an ACL of project access to a specific Volume Type.
+type VolumeTypeAccess struct {
+	// VolumeTypeID is the unique ID of the volume type.
+	VolumeTypeID string `json:"volume_type_id"`
+
+	// ProjectID is the unique ID of the project.
+	ProjectID string `json:"project_id"`
+}
+
+// AccessPage contains a single page of all VolumeTypeAccess entries for a volume type.
+type AccessPage struct {
+	pagination.SinglePageBase
+}
+
+// IsEmpty indicates whether an AccessPage is empty.
+func (page AccessPage) IsEmpty() (bool, error) {
+	v, err := ExtractAccesses(page)
+	return len(v) == 0, err
+}
+
+// ExtractAccesses interprets a page of results as a slice of VolumeTypeAccess.
+func ExtractAccesses(r pagination.Page) ([]VolumeTypeAccess, error) {
+	var s struct {
+		VolumeTypeAccesses []VolumeTypeAccess `json:"volume_type_access"`
+	}
+	err := (r.(AccessPage)).ExtractInto(&s)
+	return s.VolumeTypeAccesses, err
+}
+
+// AddAccessResult is the response from a AddAccess request. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type AddAccessResult struct {
+	gophercloud.ErrResult
+}
+
+// RemoveAccessResult is the response from a RemoveAccess request. Call its
+// ExtractErr method to determine if the request succeeded or failed.
+type RemoveAccessResult struct {
+	gophercloud.ErrResult
+}

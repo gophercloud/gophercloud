@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	identity "github.com/gophercloud/gophercloud/acceptance/openstack/identity/v3"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumetypes"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -108,4 +109,58 @@ func TestVolumeTypesExtraSpecs(t *testing.T) {
 	tools.PrintResource(t, singleSpec)
 
 	th.AssertEquals(t, singleSpec["capabilities"], "gpu-2")
+}
+
+func TestVolumeTypesAccess(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	identityClient, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	vt, err := CreatePrivateVolumeType(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolumeType(t, client, vt)
+
+	project, err := identity.CreateProject(t, identityClient, nil)
+	th.AssertNoErr(t, err)
+	defer identity.DeleteProject(t, identityClient, project.ID)
+
+	addAccessOpts := volumetypes.AddAccessOpts{
+		Project: project.ID,
+	}
+
+	err = volumetypes.AddAccess(client, vt.ID, addAccessOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	allPages, err := volumetypes.ListAccesses(client, vt.ID).AllPages()
+	th.AssertNoErr(t, err)
+
+	accessList, err := volumetypes.ExtractAccesses(allPages)
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, accessList)
+
+	th.AssertEquals(t, len(accessList), 1)
+	th.AssertEquals(t, accessList[0].ProjectID, project.ID)
+	th.AssertEquals(t, accessList[0].VolumeTypeID, vt.ID)
+
+	removeAccessOpts := volumetypes.RemoveAccessOpts{
+		Project: project.ID,
+	}
+
+	err = volumetypes.RemoveAccess(client, vt.ID, removeAccessOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	allPages, err = volumetypes.ListAccesses(client, vt.ID).AllPages()
+	th.AssertNoErr(t, err)
+
+	accessList, err = volumetypes.ExtractAccesses(allPages)
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, accessList)
+
+	th.AssertEquals(t, len(accessList), 0)
 }
