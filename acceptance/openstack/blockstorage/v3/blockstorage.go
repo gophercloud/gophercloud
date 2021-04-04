@@ -8,6 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/qos"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/snapshots"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumetypes"
@@ -271,4 +272,50 @@ func DeleteVolumeType(t *testing.T, client *gophercloud.ServiceClient, vt *volum
 	}
 
 	t.Logf("Successfully deleted volume type: %s", vt.ID)
+}
+
+// CreateQoS will create a QoS with one spec and a random name. An
+// error will be returned if the volume was unable to be created.
+func CreateQoS(t *testing.T, client *gophercloud.ServiceClient) (*qos.QoS, error) {
+	name := tools.RandomString("ACPTTEST", 16)
+	t.Logf("Attempting to create QoS: %s", name)
+
+	createOpts := qos.CreateOpts{
+		Name:     name,
+		Consumer: qos.ConsumerFront,
+		Specs: map[string]string{
+			"read_iops_sec": "20000",
+		},
+	}
+
+	qs, err := qos.Create(client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	tools.PrintResource(t, qs)
+	th.AssertEquals(t, qs.Consumer, "front-end")
+	th.AssertEquals(t, qs.Name, name)
+	th.AssertDeepEquals(t, qs.Specs, createOpts.Specs)
+
+	t.Logf("Successfully created QoS: %s", qs.ID)
+
+	return qs, nil
+}
+
+// DeleteQoS will delete a QoS. A fatal error will occur if the QoS
+// failed to be deleted. This works best when used as a deferred function.
+func DeleteQoS(t *testing.T, client *gophercloud.ServiceClient, qs *qos.QoS) {
+	t.Logf("Attempting to delete QoS: %s", qs.ID)
+
+	deleteOpts := qos.DeleteOpts{
+		Force: true,
+	}
+
+	err := qos.Delete(client, qs.ID, deleteOpts).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete QoS %s: %v", qs.ID, err)
+	}
+
+	t.Logf("Successfully deleted QoS: %s", qs.ID)
 }
