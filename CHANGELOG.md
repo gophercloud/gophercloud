@@ -1,4 +1,6 @@
-## 0.17.0 (Unreleased)
+## 0.18.0 (Unreleased)
+
+## 0.17.0 (April 9, 2021)
 
 IMPROVEMENTS
 
