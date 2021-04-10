@@ -1,0 +1,36 @@
+/*
+Package qos provides information and interaction with the QoS specifications
+for the Openstack Blockstorage service.
+
+Example to create a QoS specification
+
+	createOpts := qos.CreateOpts{
+		Name:     "test",
+		Consumer: qos.ConsumerFront,
+		Specs: map[string]string{
+			"read_iops_sec": "20000",
+		},
+	}
+
+	test, err := qos.Create(client, createOpts).Extract()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("QoS: %+v\n", test)
+
+Example to delete a QoS specification
+
+	qosID := "d6ae28ce-fcb5-4180-aa62-d260a27e09ae"
+
+	deleteOpts := qos.DeleteOpts{
+		Force: false,
+	}
+
+	err = qos.Delete(client, qosID, deleteOpts).ExtractErr()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+*/
+package qos
