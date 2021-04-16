@@ -1,5 +1,9 @@
 ## 0.18.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Added `orchestration/v1/stacks.ListOpts.ShowHidden` [GH-2104](https://github.com/gophercloud/gophercloud/pull/2104)
+
 ## 0.17.0 (April 9, 2021)
 
 IMPROVEMENTS
