@@ -16,10 +16,14 @@ func createURL(c *gophercloud.ServiceClient) string {
 	return resourceURL(c)
 }
 
-func getURL(c *gophercloud.ServiceClient, name string) string {
-	return c.ServiceURL(resourcePath, name)
+func getURL(c *gophercloud.ServiceClient, name string, userID string) string {
+	url := c.ServiceURL(resourcePath, name)
+	if userID != "" {
+		url = url + "?user_id=" + userID
+	}
+	return url
 }
 
-func deleteURL(c *gophercloud.ServiceClient, name string) string {
-	return getURL(c, name)
+func deleteURL(c *gophercloud.ServiceClient, name string, userID string) string {
+	return getURL(c, name, userID)
 }

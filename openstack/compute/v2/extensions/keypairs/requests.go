@@ -49,6 +49,10 @@ type CreateOpts struct {
 	// Name is a friendly name to refer to this KeyPair in other services.
 	Name string `json:"name" required:"true"`
 
+	// UserID [optional] is the user_id for a keypair.
+	// This allows administrative users to upload keys for other users than themselves.
+	UserID string `json:"user_id,omitempty"`
+
 	// PublicKey [optional] is a pregenerated OpenSSH-formatted public key.
 	// If provided, this key will be imported and no new key will be created.
 	PublicKey string `json:"public_key,omitempty"`
@@ -75,15 +79,15 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // Get returns public data about a previously uploaded KeyPair.
-func Get(client *gophercloud.ServiceClient, name string) (r GetResult) {
-	resp, err := client.Get(getURL(client, name), &r.Body, nil)
+func Get(client *gophercloud.ServiceClient, name string, userID string) (r GetResult) {
+	resp, err := client.Get(getURL(client, name, userID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete requests the deletion of a previous stored KeyPair from the server.
-func Delete(client *gophercloud.ServiceClient, name string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, name), nil)
+func Delete(client *gophercloud.ServiceClient, name string, userID string) (r DeleteResult) {
+	resp, err := client.Delete(deleteURL(client, name, userID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

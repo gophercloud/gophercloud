@@ -39,6 +39,19 @@ func TestCreate(t *testing.T) {
 	th.CheckDeepEquals(t, &CreatedKeyPair, actual)
 }
 
+func TestCreateOtherUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSuccessfullyOtherUser(t)
+
+	actual, err := keypairs.Create(client.ServiceClient(), keypairs.CreateOpts{
+		Name:   "createdkey",
+		UserID: "fake2",
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &CreatedKeyPairOtherUser, actual)
+}
+
 func TestImport(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -57,9 +70,19 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := keypairs.Get(client.ServiceClient(), "firstkey").Extract()
+	actual, err := keypairs.Get(client.ServiceClient(), "firstkey", "").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstKeyPair, actual)
+}
+
+func TestGetOtherUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetSuccessfully(t)
+
+	actual, err := keypairs.Get(client.ServiceClient(), "firstkey", "fake2").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &FirstKeyPairOtherUser, actual)
 }
 
 func TestDelete(t *testing.T) {
@@ -67,6 +90,15 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
-	err := keypairs.Delete(client.ServiceClient(), "deletedkey").ExtractErr()
+	err := keypairs.Delete(client.ServiceClient(), "deletedkey", "").ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDeleteOtherUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfullyOtherUser(t)
+
+	err := keypairs.Delete(client.ServiceClient(), "deletedkey", "fake2").ExtractErr()
 	th.AssertNoErr(t, err)
 }
