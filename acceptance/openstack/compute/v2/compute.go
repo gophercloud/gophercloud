@@ -870,7 +870,7 @@ func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingI
 // the keypair failed to be deleted. This works best when used as a deferred
 // function.
 func DeleteKeyPair(t *testing.T, client *gophercloud.ServiceClient, keyPair *keypairs.KeyPair) {
-	err := keypairs.Delete(client, keyPair.Name, "").ExtractErr()
+	err := keypairs.Delete(client, keyPair.Name).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete keypair %s: %v", keyPair.Name, err)
 	}

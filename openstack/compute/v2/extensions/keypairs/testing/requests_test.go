@@ -70,7 +70,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := keypairs.Get(client.ServiceClient(), "firstkey", "").Extract()
+	actual, err := keypairs.Get(client.ServiceClient(), "firstkey").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstKeyPair, actual)
 }
@@ -80,7 +80,7 @@ func TestGetOtherUser(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := keypairs.Get(client.ServiceClient(), "firstkey", "fake2").Extract()
+	actual, err := keypairs.GetWithUserID(client.ServiceClient(), "firstkey", "fake2").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstKeyPairOtherUser, actual)
 }
@@ -90,7 +90,7 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
-	err := keypairs.Delete(client.ServiceClient(), "deletedkey", "").ExtractErr()
+	err := keypairs.Delete(client.ServiceClient(), "deletedkey").ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -99,6 +99,6 @@ func TestDeleteOtherUser(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfullyOtherUser(t)
 
-	err := keypairs.Delete(client.ServiceClient(), "deletedkey", "fake2").ExtractErr()
+	err := keypairs.DeleteWithUserID(client.ServiceClient(), "deletedkey", "fake2").ExtractErr()
 	th.AssertNoErr(t, err)
 }

@@ -79,14 +79,28 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 }
 
 // Get returns public data about a previously uploaded KeyPair.
-func Get(client *gophercloud.ServiceClient, name string, userID string) (r GetResult) {
+func Get(client *gophercloud.ServiceClient, name string) (r GetResult) {
+	r = GetWithUserID(client, name, "")
+	return
+}
+
+// GetWithUserID returns public data about a previously uploaded KeyPair, owned by a specific userID.
+// If the userID is an empty string, it searches the KeyPairs of the current user.
+func GetWithUserID(client *gophercloud.ServiceClient, name string, userID string) (r GetResult) {
 	resp, err := client.Get(getURL(client, name, userID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete requests the deletion of a previous stored KeyPair from the server.
-func Delete(client *gophercloud.ServiceClient, name string, userID string) (r DeleteResult) {
+func Delete(client *gophercloud.ServiceClient, name string) (r DeleteResult) {
+	r = DeleteWithUserID(client, name, "")
+	return
+}
+
+// DeleteWithUserID requests the deletion of a previous stored KeyPair from the server, owned by a specific userID.
+// If the userID is an empty string, it deletes the KeyPair of the calling user.
+func DeleteWithUserID(client *gophercloud.ServiceClient, name string, userID string) (r DeleteResult) {
 	resp, err := client.Delete(deleteURL(client, name, userID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
