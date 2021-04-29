@@ -12,11 +12,13 @@ type Protocol string
 
 // Supported attributes for create/update operations.
 const (
-	ProtocolTCP             Protocol = "TCP"
-	ProtocolUDP             Protocol = "UDP"
-	ProtocolPROXY           Protocol = "PROXY"
-	ProtocolHTTP            Protocol = "HTTP"
-	ProtocolHTTPS           Protocol = "HTTPS"
+	ProtocolTCP   Protocol = "TCP"
+	ProtocolUDP   Protocol = "UDP"
+	ProtocolPROXY Protocol = "PROXY"
+	ProtocolHTTP  Protocol = "HTTP"
+	ProtocolHTTPS Protocol = "HTTPS"
+	// Protocol SCTP requires octavia microversion 2.23
+	ProtocolSCTP            Protocol = "SCTP"
 	ProtocolTerminatedHTTPS Protocol = "TERMINATED_HTTPS"
 )
 
@@ -88,7 +90,7 @@ type CreateOpts struct {
 	// The load balancer on which to provision this listener.
 	LoadbalancerID string `json:"loadbalancer_id,omitempty"`
 
-	// The protocol - can either be TCP, HTTP, HTTPS or TERMINATED_HTTPS.
+	// The protocol - can either be TCP, SCTP, HTTP, HTTPS or TERMINATED_HTTPS.
 	Protocol Protocol `json:"protocol" required:"true"`
 
 	// The port on which to listen for client traffic.

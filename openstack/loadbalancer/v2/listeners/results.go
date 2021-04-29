@@ -27,7 +27,7 @@ type Listener struct {
 	// Human-readable description for the Listener.
 	Description string `json:"description"`
 
-	// The protocol to loadbalance. A valid value is TCP, HTTP, or HTTPS.
+	// The protocol to loadbalance. A valid value is TCP, SCTP, HTTP, HTTPS or TERMINATED_HTTPS.
 	Protocol string `json:"protocol"`
 
 	// The port on which to listen to client traffic that is associated with the
