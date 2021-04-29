@@ -83,6 +83,9 @@ type Listener struct {
 
 	// A list of IPv4, IPv6 or mix of both CIDRs
 	AllowedCIDRs []string `json:"allowed_cidrs"`
+
+	// A list of TLS protocol versions. Available from microversion 2.17
+	TLSVersions []string `json:"tls_versions"`
 }
 
 type Stats struct {

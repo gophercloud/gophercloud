@@ -22,6 +22,17 @@ const (
 	ProtocolTerminatedHTTPS Protocol = "TERMINATED_HTTPS"
 )
 
+// Type TLSVersion represents a tls version
+type TLSVersion string
+
+const (
+	TLSVersionSSLv3   TLSVersion = "SSLv3"
+	TLSVersionTLSv1   TLSVersion = "TLSv1"
+	TLSVersionTLSv1_1 TLSVersion = "TLSv1.1"
+	TLSVersionTLSv1_2 TLSVersion = "TLSv1.2"
+	TLSVersionTLSv1_3 TLSVersion = "TLSv1.3"
+)
+
 // ListOptsBuilder allows extensions to add additional parameters to the
 // List request.
 type ListOptsBuilder interface {
@@ -153,6 +164,9 @@ type CreateOpts struct {
 
 	// A list of IPv4, IPv6 or mix of both CIDRs
 	AllowedCIDRs []string `json:"allowed_cidrs,omitempty"`
+
+	// A list of TLS protocol versions. Available from microversion 2.17
+	TLSVersions []TLSVersion `json:"tls_versions,omitempty"`
 }
 
 // ToListenerCreateMap builds a request body from CreateOpts.
@@ -232,6 +246,9 @@ type UpdateOpts struct {
 
 	// A list of IPv4, IPv6 or mix of both CIDRs
 	AllowedCIDRs *[]string `json:"allowed_cidrs,omitempty"`
+
+	// A list of TLS protocol versions. Available from microversion 2.17
+	TLSVersions *[]TLSVersion `json:"tls_versions,omitempty"`
 }
 
 // ToListenerUpdateMap builds a request body from UpdateOpts.

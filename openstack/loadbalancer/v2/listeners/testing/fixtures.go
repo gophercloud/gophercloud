@@ -29,7 +29,8 @@ const ListenersListBody = `
 			"allowed_cidrs": [
 				"192.0.2.0/24",
 				"198.51.100.0/24"
-			]
+			],
+			"tls_versions": ["TLSv1.2", "TLSv1.3"]
 		},
 		{
 			"id": "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -54,7 +55,8 @@ const ListenersListBody = `
 			"allowed_cidrs": [
 				"192.0.2.0/24",
 				"198.51.100.0/24"
-			]
+			],
+			"tls_versions": ["TLSv1.2"]
 		}
 	]
 }
@@ -86,7 +88,8 @@ const SingleListenerBody = `
 		"allowed_cidrs": [
 			"192.0.2.0/24",
 			"198.51.100.0/24"
-		]
+		],
+		"tls_versions": ["TLSv1.2"]
 	}
 }
 `
@@ -114,7 +117,8 @@ const PostUpdateListenerBody = `
 		"insert_headers": {
 			"X-Forwarded-For": "true",
 			"X-Forwarded-Port": "false"
-		}
+		},
+		"tls_versions": ["TLSv1.2", "TLSv1.3"]
 	}
 }
 `
@@ -146,6 +150,7 @@ var (
 		DefaultTlsContainerRef: "2c433435-20de-4411-84ae-9cc8917def76",
 		SniContainerRefs:       []string{"3d328d82-2547-4921-ac2f-61c3b452b5ff", "b3cfd7e3-8c19-455c-8ebb-d78dfd8f7e7d"},
 		AllowedCIDRs:           []string{"192.0.2.0/24", "198.51.100.0/24"},
+		TLSVersions:            []string{"TLSv1.2", "TLSv1.3"},
 	}
 	ListenerDb = listeners.Listener{
 		ID:                     "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -166,6 +171,7 @@ var (
 		TimeoutTCPInspect:      0,
 		InsertHeaders:          map[string]string{"X-Forwarded-For": "true"},
 		AllowedCIDRs:           []string{"192.0.2.0/24", "198.51.100.0/24"},
+		TLSVersions:            []string{"TLSv1.2"},
 	}
 	ListenerUpdated = listeners.Listener{
 		ID:                     "36e08a3e-a78f-4b40-a229-1e7e23eee1ab",
@@ -188,6 +194,7 @@ var (
 			"X-Forwarded-For":  "true",
 			"X-Forwarded-Port": "false",
 		},
+		TLSVersions: []string{"TLSv1.2", "TLSv1.3"},
 	}
 	ListenerStatsTree = listeners.Stats{
 		ActiveConnections: 0,
@@ -239,7 +246,8 @@ func HandleListenerCreationSuccessfully(t *testing.T, response string) {
 				"allowed_cidrs": [
 					"192.0.2.0/24",
 					"198.51.100.0/24"
-				]
+				],
+				"tls_versions": ["TLSv1.2"]
 			}
 		}`)
 
@@ -289,7 +297,8 @@ func HandleListenerUpdateSuccessfully(t *testing.T) {
 				"insert_headers": {
 					"X-Forwarded-For": "true",
 					"X-Forwarded-Port": "false"
-				}
+				},
+				"tls_versions": ["TLSv1.2", "TLSv1.3"]
 			}
 		}`)
 
