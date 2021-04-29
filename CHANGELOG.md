@@ -3,6 +3,7 @@
 IMPROVEMENTS
 
 * Added `orchestration/v1/stacks.ListOpts.ShowHidden` [GH-2104](https://github.com/gophercloud/gophercloud/pull/2104)
+* Added `loadbalancer/v2/listeners.ProtocolSCTP` [GH-2149](https://github.com/gophercloud/gophercloud/pull/2149)
 
 ## 0.17.0 (April 9, 2021)
 
