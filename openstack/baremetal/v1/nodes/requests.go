@@ -247,6 +247,9 @@ type CreateOpts struct {
 
 	// A string or UUID of the tenant who owns the baremetal node.
 	Owner string `json:"owner,omitempty"`
+
+	// Static network configuration to use during deployment and cleaning.
+	NetworkData map[string]interface{} `json:"network_data,omitempty"`
 }
 
 // ToNodeCreateMap assembles a request body based on the contents of a CreateOpts.

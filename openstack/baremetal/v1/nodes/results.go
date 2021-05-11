@@ -192,6 +192,9 @@ type Node struct {
 
 	// A string or UUID of the tenant who owns the baremetal node.
 	Owner string `json:"owner"`
+
+	// Static network configuration to use during deployment and cleaning.
+	NetworkData map[string]interface{} `json:"network_data"`
 }
 
 // NodePage abstracts the raw results of making a List() request against
