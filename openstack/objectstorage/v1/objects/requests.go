@@ -119,7 +119,7 @@ func (opts DownloadOpts) ToObjectDownloadParams() (map[string]string, string, er
 // To extract just the content, pass the DownloadResult response to the
 // ExtractContent function.
 func Download(c *gophercloud.ServiceClient, containerName, objectName string, opts DownloadOptsBuilder) (r DownloadResult) {
-	url := downloadURL(c, url.QueryEscape(containerName), url.QueryEscape(objectName))
+	url := downloadURL(c, url.QueryEscape(containerName), objectName)
 	h := make(map[string]string)
 	if opts != nil {
 		headers, query, err := opts.ToObjectDownloadParams()
@@ -225,7 +225,7 @@ func (opts CreateOpts) ToObjectCreateParams() (io.Reader, map[string]string, str
 // checksum, the failed request will automatically be retried up to a maximum
 // of 3 times.
 func Create(c *gophercloud.ServiceClient, containerName, objectName string, opts CreateOptsBuilder) (r CreateResult) {
-	url := createURL(c, url.QueryEscape(containerName), url.QueryEscape(objectName))
+	url := createURL(c, url.QueryEscape(containerName), objectName)
 	h := make(map[string]string)
 	var b io.Reader
 	if opts != nil {
@@ -289,7 +289,7 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 		h[k] = v
 	}
 
-	url := copyURL(c, url.QueryEscape(containerName), url.QueryEscape(objectName))
+	url := copyURL(c, url.QueryEscape(containerName), objectName)
 	resp, err := c.Request("COPY", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
@@ -317,7 +317,7 @@ func (opts DeleteOpts) ToObjectDeleteQuery() (string, error) {
 
 // Delete is a function that deletes an object.
 func Delete(c *gophercloud.ServiceClient, containerName, objectName string, opts DeleteOptsBuilder) (r DeleteResult) {
-	url := deleteURL(c, url.QueryEscape(containerName), url.QueryEscape(objectName))
+	url := deleteURL(c, url.QueryEscape(containerName), objectName)
 	if opts != nil {
 		query, err := opts.ToObjectDeleteQuery()
 		if err != nil {
@@ -362,7 +362,7 @@ func (opts GetOpts) ToObjectGetParams() (map[string]string, string, error) {
 // the custom metadata, pass the GetResult response to the ExtractMetadata
 // function.
 func Get(c *gophercloud.ServiceClient, containerName, objectName string, opts GetOptsBuilder) (r GetResult) {
-	url := getURL(c, url.QueryEscape(containerName), url.QueryEscape(objectName))
+	url := getURL(c, url.QueryEscape(containerName), objectName)
 	h := make(map[string]string)
 	if opts != nil {
 		headers, query, err := opts.ToObjectGetParams()
@@ -434,7 +434,7 @@ func Update(c *gophercloud.ServiceClient, containerName, objectName string, opts
 			h[k] = v
 		}
 	}
-	url := updateURL(c, url.QueryEscape(containerName), url.QueryEscape(objectName))
+	url := updateURL(c, url.QueryEscape(containerName), objectName)
 	resp, err := c.Post(url, nil, nil, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 	})
