@@ -18,6 +18,10 @@ func getResourceProviderInventoriesURL(client *gophercloud.ServiceClient, resour
 	return client.ServiceURL(apiName, resourceProviderID, "inventories")
 }
 
+func getResourceProviderAllocationsURL(client *gophercloud.ServiceClient, resourceProviderID string) string {
+	return client.ServiceURL(apiName, resourceProviderID, "allocations")
+}
+
 func getResourceProviderTraitsURL(client *gophercloud.ServiceClient, resourceProviderID string) string {
 	return client.ServiceURL(apiName, resourceProviderID, "traits")
 }

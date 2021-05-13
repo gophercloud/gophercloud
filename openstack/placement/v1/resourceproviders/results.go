@@ -47,9 +47,18 @@ type Inventory struct {
 	Total           int     `json:"total"`
 }
 
+type Allocation struct {
+	Resources map[string]int `json:"resources"`
+}
+
 type ResourceProviderInventories struct {
 	ResourceProviderGeneration int                  `json:"resource_provider_generation"`
 	Inventories                map[string]Inventory `json:"inventories"`
+}
+
+type ResourceProviderAllocations struct {
+	ResourceProviderGeneration int                   `json:"resource_provider_generation"`
+	Allocations                map[string]Allocation `json:"allocations"`
 }
 
 type ResourceProviderTraits struct {
@@ -118,6 +127,19 @@ type GetInventoriesResult struct {
 // Extract interprets a GetInventoriesResult as a ResourceProviderInventories.
 func (r GetInventoriesResult) Extract() (*ResourceProviderInventories, error) {
 	var s ResourceProviderInventories
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+// GetAllocationsResult is the response of a Get allocations operations. Call its Extract method
+// to interpret it as a ResourceProviderAllocations.
+type GetAllocationsResult struct {
+	gophercloud.Result
+}
+
+// Extract interprets a GetAllocationsResult as a ResourceProviderAllocations.
+func (r GetAllocationsResult) Extract() (*ResourceProviderAllocations, error) {
+	var s ResourceProviderAllocations
 	err := r.ExtractInto(&s)
 	return &s, err
 }

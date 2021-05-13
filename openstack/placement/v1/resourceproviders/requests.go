@@ -108,6 +108,12 @@ func GetInventories(client *gophercloud.ServiceClient, resourceProviderID string
 	return
 }
 
+func GetAllocations(client *gophercloud.ServiceClient, resourceProviderID string) (r GetAllocationsResult) {
+	resp, err := client.Get(getResourceProviderAllocationsURL(client, resourceProviderID), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
 func GetTraits(client *gophercloud.ServiceClient, resourceProviderID string) (r GetTraitsResult) {
 	resp, err := client.Get(getResourceProviderTraitsURL(client, resourceProviderID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
