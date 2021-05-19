@@ -185,6 +185,9 @@ type CreateOpts struct {
 	// Requires microversion 1.47 or later.
 	AutomatedClean *bool `json:"automated_clean,omitempty"`
 
+	// The BIOS interface for a Node, e.g. “redfish”.
+	BIOSInterface string `json:"bios_interface,omitempty"`
+
 	// The boot interface for a Node, e.g. “pxe”.
 	BootInterface string `json:"boot_interface,omitempty"`
 
