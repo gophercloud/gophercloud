@@ -60,3 +60,48 @@ func MockDeleteResponse(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+func MockListResponse(t *testing.T) {
+	th.Mux.HandleFunc("/qos-specs", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+		w.Header().Add("Content-Type", "application/json")
+		r.ParseForm()
+		marker := r.Form.Get("marker")
+		switch marker {
+		case "":
+			fmt.Fprintf(w, `
+					{
+						"qos_specs": [
+							{
+								"consumer": "back-end",
+								"id": "1",
+								"name": "foo",
+								"specs": {}
+							},
+							{
+								"consumer": "front-end",
+								"id": "2",
+								"name": "bar",
+								"specs" : {
+									"read_iops_sec" : "20000"
+								 }
+							}
+
+						],
+						"qos_specs_links": [
+							{
+								"href": "%s/qos-specs?marker=2",
+								"rel": "next"
+							}
+						]
+					}
+				`, th.Server.URL)
+		case "2":
+			fmt.Fprintf(w, `{ "qos_specs": [] }`)
+		default:
+			t.Fatalf("Unexpected marker: [%s]", marker)
+		}
+	})
+}

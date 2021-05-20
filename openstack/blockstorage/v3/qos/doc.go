@@ -32,5 +32,23 @@ Example to delete a QoS specification
 		log.Fatal(err)
 	}
 
+Example to list QoS specifications
+
+	listOpts := qos.ListOpts{}
+
+	allPages, err := qos.List(client, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allQoS, err := qos.ExtractQoS(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, qos := range allQoS {
+		fmt.Printf("List: %+v\n", qos)
+	}
+
 */
 package qos
