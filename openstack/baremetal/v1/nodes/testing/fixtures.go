@@ -604,6 +604,33 @@ const NodeProvisionStateConfigDriveBody = `
 }
 `
 
+const NodeBIOSSettingsBody = `
+{
+  "bios": [
+   {
+      "name": "Proc1L2Cache",
+      "value": "10x256 KB"
+   },
+   {
+      "name": "Proc1NumCores",
+      "value": "10"
+   },
+   {
+      "name": "ProcVirtualization",
+      "value": "Enabled"
+   }
+   ]
+}
+`
+const NodeSingleBIOSSettingBody = `
+{
+  "Setting": {
+      "name": "ProcVirtualization",
+      "value": "Enabled"
+   }
+}
+`
+
 var (
 	NodeFoo = nodes.Node{
 		UUID:                 "d2630783-6ec8-4836-b556-ab427c4b581e",
@@ -803,6 +830,26 @@ var (
 				},
 			},
 		},
+	}
+
+	NodeBIOSSettings = []nodes.BIOSSetting{
+		{
+			Name:  "Proc1L2Cache",
+			Value: "10x256 KB",
+		},
+		{
+			Name:  "Proc1NumCores",
+			Value: "10",
+		},
+		{
+			Name:  "ProcVirtualization",
+			Value: "Enabled",
+		},
+	}
+
+	NodeSingleBIOSSetting = nodes.BIOSSetting{
+		Name:  "ProcVirtualization",
+		Value: "Enabled",
 	}
 )
 
@@ -1059,5 +1106,25 @@ func HandleSetRAIDConfigMaxSize(t *testing.T) {
 		`)
 
 		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+func HandleListBIOSSettingsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/bios", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, NodeBIOSSettingsBody)
+	})
+}
+
+func HandleGetBIOSSettingSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/bios/ProcVirtualization", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, NodeSingleBIOSSettingBody)
 	})
 }
