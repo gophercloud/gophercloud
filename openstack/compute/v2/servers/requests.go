@@ -227,6 +227,7 @@ type CreateOpts struct {
 	Tags []string `json:"tags,omitempty"`
 
 	// Description allows add description to a server
+	// Requires microversion 2.19 or later.
 	Description string `json:"description,omitempty"`
 }
 
