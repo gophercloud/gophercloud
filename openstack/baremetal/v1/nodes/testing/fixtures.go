@@ -638,6 +638,7 @@ var (
 		CleanStep:           map[string]interface{}{},
 		DeployStep:          map[string]interface{}{},
 		ResourceClass:       "",
+		BIOSInterface:       "no-bios",
 		BootInterface:       "pxe",
 		ConsoleInterface:    "no-console",
 		DeployInterface:     "iscsi",
@@ -656,6 +657,10 @@ var (
 	}
 
 	NodeFooValidation = nodes.NodeValidation{
+		BIOS: nodes.DriverValidation{
+			Result: false,
+			Reason: "Driver ipmi does not support bios (disabled or not implemented).",
+		},
 		Boot: nodes.DriverValidation{
 			Result: false,
 			Reason: "Cannot validate image information for node a62b8495-52e2-407b-b3cb-62775d04c2b8 because one or more parameters are missing from its instance_info and insufficent information is present to boot from a remote volume. Missing are: ['ramdisk', 'kernel', 'image_source']",
@@ -730,6 +735,7 @@ var (
 		CleanStep:            map[string]interface{}{},
 		DeployStep:           map[string]interface{}{},
 		ResourceClass:        "",
+		BIOSInterface:        "no-bios",
 		BootInterface:        "pxe",
 		ConsoleInterface:     "no-console",
 		DeployInterface:      "iscsi",
@@ -773,6 +779,7 @@ var (
 		CleanStep:            map[string]interface{}{},
 		DeployStep:           map[string]interface{}{},
 		ResourceClass:        "",
+		BIOSInterface:        "no-bios",
 		BootInterface:        "pxe",
 		ConsoleInterface:     "no-console",
 		DeployInterface:      "iscsi",

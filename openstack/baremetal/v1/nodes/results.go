@@ -145,6 +145,9 @@ type Node struct {
 	// For more details, see: https://docs.openstack.org/ironic/latest/install/configure-nova-flavors.html
 	ResourceClass string `json:"resource_class"`
 
+	// BIOS interface for a Node, e.g. “redfish”.
+	BIOSInterface string `json:"bios_interface"`
+
 	// Boot interface for a Node, e.g. “pxe”.
 	BootInterface string `json:"boot_interface"`
 
@@ -301,6 +304,7 @@ type DriverValidation struct {
 //  Ironic validates whether the Node’s driver has enough information to manage the Node. This polls each interface on
 //  the driver, and returns the status of that interface as an DriverValidation struct.
 type NodeValidation struct {
+	BIOS       DriverValidation `json:"bios"`
 	Boot       DriverValidation `json:"boot"`
 	Console    DriverValidation `json:"console"`
 	Deploy     DriverValidation `json:"deploy"`
