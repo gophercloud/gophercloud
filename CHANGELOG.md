@@ -14,6 +14,8 @@ IMPROVEMENTS
 * Added `baremetal/v1/nodes.CreateOpts.BIOSInterface` [GH-2164](https://github.com/gophercloud/gophercloud/pull/2164)
 * Added `baremetal/v1/nodes.Node.BIOSInterface` [GH-2164](https://github.com/gophercloud/gophercloud/pull/2164)
 * Added `baremetal/v1/nodes.NodeValidation.BIOS` [GH-2164](https://github.com/gophercloud/gophercloud/pull/2164)
+* Added `baremetal/v1/nodes.ListBIOSSettings` [GH-2171](https://github.com/gophercloud/gophercloud/pull/2171)
+* Added `baremetal/v1/nodes.GetBIOSSetting` [GH-2171](https://github.com/gophercloud/gophercloud/pull/2171)
 
 ## 0.17.0 (April 9, 2021)
 
