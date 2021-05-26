@@ -48,6 +48,23 @@ func ExtractNodesInto(r pagination.Page, v interface{}) error {
 	return r.(NodePage).Result.ExtractIntoSlicePtr(v, "nodes")
 }
 
+// Extract interprets a BIOSSettingsResult as an array of BIOSSetting structs, if possible.
+func (r ListBIOSSettingsResult) Extract() ([]BIOSSetting, error) {
+	var s struct {
+		Settings []BIOSSetting `json:"bios"`
+	}
+
+	err := r.ExtractInto(&s)
+	return s.Settings, err
+}
+
+// Extract interprets a SingleBIOSSettingResult as a BIOSSetting struct, if possible.
+func (r GetBIOSSettingResult) Extract() (*BIOSSetting, error) {
+	var s SingleBIOSSetting
+	err := r.ExtractInto(&s)
+	return &s.Setting, err
+}
+
 // Node represents a node in the OpenStack Bare Metal API.
 type Node struct {
 	// Whether automated cleaning is enabled or disabled on this node.
@@ -276,7 +293,7 @@ type BootDeviceResult struct {
 	gophercloud.Result
 }
 
-// BootDeviceResult is the response from a GetBootDevice operation. Call its Extract
+// SetBootDeviceResult is the response from a SetBootDevice operation. Call its Extract
 // method to interpret it as a BootDeviceOpts struct.
 type SetBootDeviceResult struct {
 	gophercloud.ErrResult
@@ -292,6 +309,18 @@ type SupportedBootDeviceResult struct {
 // method to determine if the call succeeded or failed.
 type ChangePowerStateResult struct {
 	gophercloud.ErrResult
+}
+
+// ListBIOSSettingsResult is the response from a ListBIOSSettings operation. Call its Extract
+// method to interpret it as an array of BIOSSetting structs.
+type ListBIOSSettingsResult struct {
+	gophercloud.Result
+}
+
+// GetBIOSSettingResult is the response from a GetBIOSSetting operation. Call its Extract
+// method to interpret it as a BIOSSetting struct.
+type GetBIOSSettingResult struct {
+	gophercloud.Result
 }
 
 // Each element in the response will contain a “result” variable, which will have a value of “true” or “false”, and
@@ -315,6 +344,20 @@ type NodeValidation struct {
 	RAID       DriverValidation `json:"raid"`
 	Rescue     DriverValidation `json:"rescue"`
 	Storage    DriverValidation `json:"storage"`
+}
+
+// A particular BIOS setting for a node in the OpenStack Bare Metal API.
+type BIOSSetting struct {
+
+	// Identifier for the BIOS setting.
+	Name string `json:"name"`
+
+	// Value of the BIOS setting.
+	Value string `json:"value"`
+}
+
+type SingleBIOSSetting struct {
+	Setting BIOSSetting
 }
 
 // ChangeStateResult is the response from any state change operation. Call its ExtractErr

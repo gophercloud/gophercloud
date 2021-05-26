@@ -545,3 +545,25 @@ func TestToRAIDConfigMap(t *testing.T) {
 		})
 	}
 }
+
+func TestListBIOSSettings(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListBIOSSettingsSuccessfully(t)
+
+	c := client.ServiceClient()
+	actual, err := nodes.ListBIOSSettings(c, "1234asdf").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeBIOSSettings, actual)
+}
+
+func TestGetBIOSSetting(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetBIOSSettingSuccessfully(t)
+
+	c := client.ServiceClient()
+	actual, err := nodes.GetBIOSSetting(c, "1234asdf", "ProcVirtualization").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeSingleBIOSSetting, *actual)
+}

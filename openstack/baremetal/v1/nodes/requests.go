@@ -639,3 +639,21 @@ func SetRAIDConfig(client *gophercloud.ServiceClient, id string, raidConfigOptsB
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// Get the current BIOS Settings for the given Node.
+func ListBIOSSettings(client *gophercloud.ServiceClient, id string) (r ListBIOSSettingsResult) {
+	resp, err := client.Get(biosListSettingsURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Get one BIOS Setting for the given Node.
+func GetBIOSSetting(client *gophercloud.ServiceClient, id string, setting string) (r GetBIOSSettingResult) {
+	resp, err := client.Get(biosGetSettingURL(client, id, setting), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
