@@ -631,3 +631,23 @@ func TestRequestRetryContext(t *testing.T) {
 	t.Logf("retryCounter: %d, p.MaxBackoffRetries: %d", retryCounter, p.MaxBackoffRetries-1)
 	th.AssertEquals(t, retryCounter, p.MaxBackoffRetries-1)
 }
+
+func TestRequestWrongOkCode(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "OK")
+		// Returns 200 OK
+	}))
+	defer ts.Close()
+
+	p := &gophercloud.ProviderClient{}
+
+	_, err := p.Request("DELETE", ts.URL, &gophercloud.RequestOpts{})
+	th.AssertErr(t, err)
+	if urErr, ok := err.(gophercloud.ErrUnexpectedResponseCode); ok {
+		// DELETE expects a 202 or 204 by default
+		// Make sure returned error contains the expected OK codes
+		th.AssertDeepEquals(t, []int{202, 204}, urErr.Expected)
+	} else {
+		t.Fatalf("expected error type gophercloud.ErrUnexpectedResponseCode but got %T", err)
+	}
+}
