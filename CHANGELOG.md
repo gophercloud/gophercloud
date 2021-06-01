@@ -1,5 +1,9 @@
 ## 0.18.0 (Unreleased)
 
+BUG FIXES
+
+* Fixed expected OK codes to use default codes [GH-2173](https://github.com/gophercloud/gophercloud/pull/2173)
+
 IMPROVEMENTS
 
 * Added `orchestration/v1/stacks.ListOpts.ShowHidden` [GH-2104](https://github.com/gophercloud/gophercloud/pull/2104)
