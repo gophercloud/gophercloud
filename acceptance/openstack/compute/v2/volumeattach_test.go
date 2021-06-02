@@ -17,7 +17,7 @@ func TestVolumeAttachAttachment(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	blockClient, err := clients.NewBlockStorageV2Client()
+	blockClient, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
 
 	server, err := CreateServer(t, client)
