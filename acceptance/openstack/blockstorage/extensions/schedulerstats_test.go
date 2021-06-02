@@ -18,7 +18,7 @@ func TestSchedulerStatsList(t *testing.T) {
 	clients.SkipRelease(t, "stable/ocata")
 	clients.SkipRelease(t, "stable/pike")
 
-	blockClient, err := clients.NewBlockStorageV2Client()
+	blockClient, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
 
 	listOpts := schedulerstats.ListOpts{

@@ -28,8 +28,8 @@ acceptance/openstack/blockstorage/extensions
 
 # snapshots_test.go:21: Unable to retrieve snapshots: Resource not found
 # acceptance/openstack/blockstorage/v1
+# acceptance/openstack/blockstorage/v2
 
-acceptance/openstack/blockstorage/v2
 acceptance/openstack/blockstorage/v3
 
 # No suitable endpoint could be found in the service catalog.
