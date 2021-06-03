@@ -9,7 +9,7 @@
         - 'ironic'
     - role: install-devstack
       environment:
-        OVERRIDE_ENABLED_SERVICES: 'g-api,g-reg,q-agt,q-dhcp,q-l3,q-svc,key,mysql,rabbit,ir-api,ir-cond,s-account,s-container,s-object,s-proxy,tempest'
+        OVERRIDE_ENABLED_SERVICES: 'g-api,g-reg,q-agt,q-dhcp,q-l3,q-svc,key,mysql,rabbit,ir-api,ir-cond,s-account,s-container,s-object,s-proxy'
         PROJECTS: 'openstack/ironic-python-agent-builder openstack/ironic'
   tasks:
     - name: Run ironic acceptance tests with gophercloud
