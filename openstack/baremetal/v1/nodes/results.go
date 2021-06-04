@@ -354,6 +354,37 @@ type BIOSSetting struct {
 
 	// Value of the BIOS setting.
 	Value string `json:"value"`
+
+	// The following fields are returned in microversion 1.74 or later
+	// when using the `details` option
+
+	// The type of setting - Enumeration, String, Integer, or Boolean.
+	AttributeType string `json:"attribute_type"`
+
+	// The allowable value for an Enumeration type setting.
+	AllowableValues []string `json:"allowable_values"`
+
+	// The lowest value for an Integer type setting.
+	LowerBound *int `json:"lower_bound"`
+
+	// The highest value for an Integer type setting.
+	UpperBound *int `json:"upper_bound"`
+
+	// Minimum length for a String type setting.
+	MinLength *int `json:"min_length"`
+
+	// Maximum length for a String type setting.
+	MaxLength *int `json:"max_length"`
+
+	// Whether or not this setting is read only.
+	ReadOnly *bool `json:"read_only"`
+
+	// Whether or not a reset is required after changing this setting.
+	ResetRequired *bool `json:"reset_required"`
+
+	// Whether or not this setting's value is unique to this node, e.g.
+	// a serial number.
+	Unique *bool `json:"unique"`
 }
 
 type SingleBIOSSetting struct {

@@ -552,9 +552,24 @@ func TestListBIOSSettings(t *testing.T) {
 	HandleListBIOSSettingsSuccessfully(t)
 
 	c := client.ServiceClient()
-	actual, err := nodes.ListBIOSSettings(c, "1234asdf").Extract()
+	actual, err := nodes.ListBIOSSettings(c, "1234asdf", nil).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeBIOSSettings, actual)
+}
+
+func TestListDetailBIOSSettings(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleListDetailBIOSSettingsSuccessfully(t)
+
+	opts := nodes.ListBIOSSettingsOpts{
+		Detail: true,
+	}
+
+	c := client.ServiceClient()
+	actual, err := nodes.ListBIOSSettings(c, "1234asdf", opts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeDetailBIOSSettings, actual)
 }
 
 func TestGetBIOSSetting(t *testing.T) {
@@ -566,4 +581,15 @@ func TestGetBIOSSetting(t *testing.T) {
 	actual, err := nodes.GetBIOSSetting(c, "1234asdf", "ProcVirtualization").Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, NodeSingleBIOSSetting, *actual)
+}
+
+func TestListBIOSSettingsOpts(t *testing.T) {
+	// Detail cannot take Fields
+	opts := nodes.ListBIOSSettingsOpts{
+		Detail: true,
+		Fields: []string{"name", "value"},
+	}
+
+	_, err := opts.ToListBIOSSettingsOptsQuery()
+	th.AssertEquals(t, err.Error(), "cannot have both fields and detail options for BIOS settings")
 }
