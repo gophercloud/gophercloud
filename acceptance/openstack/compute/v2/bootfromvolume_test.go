@@ -88,7 +88,7 @@ func TestBootFromExistingVolume(t *testing.T) {
 	computeClient, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	blockStorageClient, err := clients.NewBlockStorageV2Client()
+	blockStorageClient, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
 
 	volume, err := blockstorage.CreateVolumeFromImage(t, blockStorageClient)
@@ -221,7 +221,7 @@ func TestAttachExistingVolume(t *testing.T) {
 	computeClient, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	blockStorageClient, err := clients.NewBlockStorageV2Client()
+	blockStorageClient, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
 
 	choices, err := clients.AcceptanceTestChoicesFromEnv()
