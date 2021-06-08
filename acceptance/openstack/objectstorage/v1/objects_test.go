@@ -290,22 +290,22 @@ func TestObjectsBulkDelete(t *testing.T) {
 	}
 
 	// Create a random subdirectory name.
-	cSubdir1 := tools.RandomString("don't worry & be happy?-", 8)
-	cSubdir2 := tools.RandomString("don't worry & be happy?-", 8)
+	cSubdir1 := tools.RandomString("test-subdir-", 8)
+	cSubdir2 := tools.RandomString("test-subdir-", 8)
 
 	// Make a slice of length numObjects to hold the random object names.
 	oNames1 := make([]string, numObjects)
 	for i := 0; i < len(oNames1); i++ {
-		oNames1[i] = cSubdir1 + "/" + tools.RandomString("stranger?things-", 8)
+		oNames1[i] = cSubdir1 + "/" + tools.RandomString("test-object-", 8)
 	}
 
 	oNames2 := make([]string, numObjects)
 	for i := 0; i < len(oNames2); i++ {
-		oNames2[i] = cSubdir2 + "/" + tools.RandomString("freddy's coming for you?-", 8)
+		oNames2[i] = cSubdir2 + "/" + tools.RandomString("test-object-", 8)
 	}
 
 	// Create a container to hold the test objects.
-	cName := tools.RandomString("test&happy?-", 8)
+	cName := tools.RandomString("test-container-", 8)
 	_, err = containers.Create(client, cName, nil).Extract()
 	th.AssertNoErr(t, err)
 
@@ -327,12 +327,6 @@ func TestObjectsBulkDelete(t *testing.T) {
 		th.AssertNoErr(t, res.Err)
 	}
 
-	expectedResp := objects.BulkDeleteResponse{
-		ResponseStatus: "200 OK",
-		Errors:         [][]string{},
-		NumberDeleted:  numObjects * 2,
-	}
-
 	oContents2 := make([]*bytes.Buffer, numObjects)
 	for i := 0; i < numObjects; i++ {
 		oContents2[i] = bytes.NewBuffer([]byte(tools.RandomString("", 10)))
@@ -344,6 +338,12 @@ func TestObjectsBulkDelete(t *testing.T) {
 	}
 
 	// Delete the objects after testing.
+	expectedResp := objects.BulkDeleteResponse{
+		ResponseStatus: "200 OK",
+		Errors:         [][]string{},
+		NumberDeleted:  numObjects * 2,
+	}
+
 	resp, err := objects.BulkDelete(client, cName, append(oNames1, oNames2...)).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, *resp, expectedResp)

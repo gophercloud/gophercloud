@@ -173,7 +173,7 @@ func TestBulkDeleteContainers(t *testing.T) {
 	// Create a slice of random container names.
 	cNames := make([]string, numContainers)
 	for i := 0; i < numContainers; i++ {
-		cNames[i] = tools.RandomString("test&happy?-", 8)
+		cNames[i] = tools.RandomString("gophercloud-test-container-", 8)
 	}
 
 	// Create numContainers containers.
