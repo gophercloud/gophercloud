@@ -1,8 +1,13 @@
 ## 0.18.0 (Unreleased)
 
+NOTES / BREAKING CHANGES
+
+* As of [GH-2160](https://github.com/gophercloud/gophercloud/pull/2160), Gophercloud no longer URL encodes Object Storage containers and object names. You can still encode them yourself before passing the names to the Object Storage functions.
+
 BUG FIXES
 
 * Fixed expected OK codes to use default codes [GH-2173](https://github.com/gophercloud/gophercloud/pull/2173)
+* Fixed inablity to create sub-containers (objects with `/` in their name) [GH-2160](https://github.com/gophercloud/gophercloud/pull/2160)
 
 IMPROVEMENTS
 
