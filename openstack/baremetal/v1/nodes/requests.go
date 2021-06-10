@@ -640,9 +640,46 @@ func SetRAIDConfig(client *gophercloud.ServiceClient, id string, raidConfigOptsB
 	return
 }
 
+// ListBIOSSettingsOptsBuilder allows extensions to add additional parameters to the
+// ListBIOSSettings request.
+type ListBIOSSettingsOptsBuilder interface {
+	ToListBIOSSettingsOptsQuery() (string, error)
+}
+
+// ListBIOSSettingsOpts defines query options that can be passed to ListBIOSettings
+type ListBIOSSettingsOpts struct {
+	// Provide additional information for the BIOS Settings
+	Detail bool `q:"detail"`
+
+	// One or more fields to be returned in the response.
+	Fields []string `q:"fields"`
+}
+
+// ToListBIOSSettingsOptsQuery formats a ListBIOSSettingsOpts into a query string
+func (opts ListBIOSSettingsOpts) ToListBIOSSettingsOptsQuery() (string, error) {
+	if opts.Detail == true && len(opts.Fields) > 0 {
+		return "", fmt.Errorf("cannot have both fields and detail options for BIOS settings")
+	}
+
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
 // Get the current BIOS Settings for the given Node.
-func ListBIOSSettings(client *gophercloud.ServiceClient, id string) (r ListBIOSSettingsResult) {
-	resp, err := client.Get(biosListSettingsURL(client, id), &r.Body, &gophercloud.RequestOpts{
+// To use the opts requires microversion 1.74.
+func ListBIOSSettings(client *gophercloud.ServiceClient, id string, opts ListBIOSSettingsOptsBuilder) (r ListBIOSSettingsResult) {
+	url := biosListSettingsURL(client, id)
+	if opts != nil {
+
+		query, err := opts.ToListBIOSSettingsOptsQuery()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += query
+	}
+
+	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)

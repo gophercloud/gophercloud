@@ -622,6 +622,92 @@ const NodeBIOSSettingsBody = `
    ]
 }
 `
+
+const NodeDetailBIOSSettingsBody = `
+{
+  "bios": [
+   {
+      "created_at": "2021-05-11T21:33:44+00:00",
+      "updated_at": null,
+      "name": "Proc1L2Cache",
+      "value": "10x256 KB",
+      "attribute_type": "String",
+      "allowable_values": [],
+      "lower_bound": null,
+      "max_length": 16,
+      "min_length": 0,
+      "read_only": true,
+      "reset_required": null,
+      "unique": null,
+      "upper_bound": null,
+      "links": [
+        {
+          "href": "http://ironic.example.com:6385/v1/nodes/d26115bf-1296-4ca8-8c86-6f310d8ec375/bios/Proc1L2Cache",
+          "rel": "self"
+        },
+        {
+          "href": "http://ironic.example.com:6385/nodes/d26115bf-1296-4ca8-8c86-6f310d8ec375/bios/Proc1L2Cache",
+          "rel": "bookmark"
+        }
+      ]
+   },
+   {
+      "created_at": "2021-05-11T21:33:44+00:00",
+      "updated_at": null,
+      "name": "Proc1NumCores",
+      "value": "10",
+      "attribute_type": "Integer",
+      "allowable_values": [],
+      "lower_bound": 0,
+      "max_length": null,
+      "min_length": null,
+      "read_only": true,
+      "reset_required": null,
+      "unique": null,
+      "upper_bound": 20,
+      "links": [
+        {
+          "href": "http://ironic.example.com:6385/v1/nodes/d26115bf-1296-4ca8-8c86-6f310d8ec375/bios/Proc1NumCores",
+          "rel": "self"
+        },
+        {
+          "href": "http://ironic.example.com:6385/nodes/d26115bf-1296-4ca8-8c86-6f310d8ec375/bios/Proc1NumCores",
+          "rel": "bookmark"
+        }
+      ]
+   },
+   {
+      "created_at": "2021-05-11T21:33:44+00:00",
+      "updated_at": null,
+      "name": "ProcVirtualization",
+      "value": "Enabled",
+      "attribute_type": "Enumeration",
+      "allowable_values": [
+        "Enabled",
+        "Disabled"
+      ],
+      "lower_bound": null,
+      "max_length": null,
+      "min_length": null,
+      "read_only": false,
+      "reset_required": null,
+      "unique": null,
+      "upper_bound": null,
+      "links": [
+        {
+          "href": "http://ironic.example.com:6385/v1/nodes/d26115bf-1296-4ca8-8c86-6f310d8ec375/bios/ProcVirtualization",
+          "rel": "self"
+        },
+        {
+          "href": "http://ironic.example.com:6385/nodes/d26115bf-1296-4ca8-8c86-6f310d8ec375/bios/ProcVirtualization",
+          "rel": "bookmark"
+        }
+      ]
+   }
+   ]
+}
+`
+
 const NodeSingleBIOSSettingBody = `
 {
   "Setting": {
@@ -851,6 +937,55 @@ var (
 		{
 			Name:  "ProcVirtualization",
 			Value: "Enabled",
+		},
+	}
+
+	iTrue      = true
+	iFalse     = false
+	minLength  = 0
+	maxLength  = 16
+	lowerBound = 0
+	upperBound = 20
+
+	NodeDetailBIOSSettings = []nodes.BIOSSetting{
+		{
+			Name:            "Proc1L2Cache",
+			Value:           "10x256 KB",
+			AttributeType:   "String",
+			AllowableValues: []string{},
+			LowerBound:      nil,
+			UpperBound:      nil,
+			MinLength:       &minLength,
+			MaxLength:       &maxLength,
+			ReadOnly:        &iTrue,
+			ResetRequired:   nil,
+			Unique:          nil,
+		},
+		{
+			Name:            "Proc1NumCores",
+			Value:           "10",
+			AttributeType:   "Integer",
+			AllowableValues: []string{},
+			LowerBound:      &lowerBound,
+			UpperBound:      &upperBound,
+			MinLength:       nil,
+			MaxLength:       nil,
+			ReadOnly:        &iTrue,
+			ResetRequired:   nil,
+			Unique:          nil,
+		},
+		{
+			Name:            "ProcVirtualization",
+			Value:           "Enabled",
+			AttributeType:   "Enumeration",
+			AllowableValues: []string{"Enabled", "Disabled"},
+			LowerBound:      nil,
+			UpperBound:      nil,
+			MinLength:       nil,
+			MaxLength:       nil,
+			ReadOnly:        &iFalse,
+			ResetRequired:   nil,
+			Unique:          nil,
 		},
 	}
 
@@ -1123,6 +1258,16 @@ func HandleListBIOSSettingsSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		fmt.Fprintf(w, NodeBIOSSettingsBody)
+	})
+}
+
+func HandleListDetailBIOSSettingsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/bios", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, NodeDetailBIOSSettingsBody)
 	})
 }
 
