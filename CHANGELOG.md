@@ -1,4 +1,6 @@
-## 0.18.0 (Unreleased)
+## 0.19.0 (Unreleased)
+
+## 0.18.0 (June 11, 2021)
 
 NOTES / BREAKING CHANGES
 
