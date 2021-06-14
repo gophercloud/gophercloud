@@ -48,7 +48,9 @@ const CreateOutput = `
     "device": "/dev/vdc",
     "id": "a26887c6-c47b-4654-abb5-dfadf7d3f804",
     "serverId": "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
-    "volumeId": "a26887c6-c47b-4654-abb5-dfadf7d3f804"
+    "volumeId": "a26887c6-c47b-4654-abb5-dfadf7d3f804",
+    "tag": "foo",
+    "delete_on_termination": true
   }
 }
 `
@@ -86,7 +88,9 @@ func HandleCreateSuccessfully(t *testing.T) {
 {
   "volumeAttachment": {
     "volumeId": "a26887c6-c47b-4654-abb5-dfadf7d3f804",
-    "device": "/dev/vdc"
+    "device": "/dev/vdc",
+    "tag": "foo",
+    "delete_on_termination": true
   }
 }
 `)

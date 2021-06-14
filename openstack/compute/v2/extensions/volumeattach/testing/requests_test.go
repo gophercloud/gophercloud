@@ -29,12 +29,17 @@ var SecondVolumeAttachment = volumeattach.VolumeAttachment{
 // from ListOutput, in the expected order.
 var ExpectedVolumeAttachmentSlice = []volumeattach.VolumeAttachment{FirstVolumeAttachment, SecondVolumeAttachment}
 
+var iTag = "foo"
+var iTrue = true
+
 //CreatedVolumeAttachment is the parsed result from CreatedOutput.
 var CreatedVolumeAttachment = volumeattach.VolumeAttachment{
-	Device:   "/dev/vdc",
-	ID:       "a26887c6-c47b-4654-abb5-dfadf7d3f804",
-	ServerID: "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
-	VolumeID: "a26887c6-c47b-4654-abb5-dfadf7d3f804",
+	Device:              "/dev/vdc",
+	ID:                  "a26887c6-c47b-4654-abb5-dfadf7d3f804",
+	ServerID:            "4d8c3732-a248-40ed-bebc-539a6ffd25c0",
+	VolumeID:            "a26887c6-c47b-4654-abb5-dfadf7d3f804",
+	Tag:                 &iTag,
+	DeleteOnTermination: &iTrue,
 }
 
 func TestList(t *testing.T) {
@@ -67,8 +72,10 @@ func TestCreate(t *testing.T) {
 	serverID := "4d8c3732-a248-40ed-bebc-539a6ffd25c0"
 
 	actual, err := volumeattach.Create(client.ServiceClient(), serverID, volumeattach.CreateOpts{
-		Device:   "/dev/vdc",
-		VolumeID: "a26887c6-c47b-4654-abb5-dfadf7d3f804",
+		Device:              "/dev/vdc",
+		VolumeID:            "a26887c6-c47b-4654-abb5-dfadf7d3f804",
+		Tag:                 iTag,
+		DeleteOnTermination: iTrue,
 	}).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &CreatedVolumeAttachment, actual)
