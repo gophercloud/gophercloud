@@ -1,6 +1,9 @@
 package qos
 
-import "github.com/gophercloud/gophercloud"
+import (
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
+)
 
 // QoS contains all the information associated with an OpenStack QoS specification.
 type QoS struct {
@@ -38,4 +41,37 @@ type CreateResult struct {
 // DeleteResult contains the response body and error from a Delete request.
 type DeleteResult struct {
 	gophercloud.ErrResult
+}
+
+type QoSPage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines if a QoSPage contains any results.
+func (page QoSPage) IsEmpty() (bool, error) {
+	qos, err := ExtractQoS(page)
+	return len(qos) == 0, err
+}
+
+// NextPageURL uses the response's embedded link reference to navigate to the
+// next page of results.
+func (page QoSPage) NextPageURL() (string, error) {
+	var s struct {
+		Links []gophercloud.Link `json:"qos_specs_links"`
+	}
+	err := page.ExtractInto(&s)
+	if err != nil {
+		return "", err
+	}
+	return gophercloud.ExtractNextURL(s.Links)
+}
+
+// ExtractQoS provides access to the list of qos in a page acquired
+// from the List operation.
+func ExtractQoS(r pagination.Page) ([]QoS, error) {
+	var s struct {
+		QoSs []QoS `json:"qos_specs"`
+	}
+	err := (r.(QoSPage)).ExtractInto(&s)
+	return s.QoSs, err
 }

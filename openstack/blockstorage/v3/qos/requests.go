@@ -2,10 +2,17 @@ package qos
 
 import (
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 type CreateOptsBuilder interface {
 	ToQoSCreateMap() (map[string]interface{}, error)
+}
+
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToQoSListQuery() (string, error)
 }
 
 type QoSConsumer string
@@ -97,4 +104,42 @@ func Delete(client *gophercloud.ServiceClient, id string, opts DeleteOptsBuilder
 	resp, err := client.Delete(url, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
+}
+
+type ListOpts struct {
+	// Sort is Comma-separated list of sort keys and optional sort
+	// directions in the form of < key > [: < direction > ]. A valid
+	//direction is asc (ascending) or desc (descending).
+	Sort string `q:"sort"`
+
+	// Marker and Limit control paging.
+	// Marker instructs List where to start listing from.
+	Marker string `q:"marker"`
+
+	// Limit instructs List to refrain from sending excessively large lists of
+	// QoS.
+	Limit int `q:"limit"`
+}
+
+// ToQoSListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToQoSListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// List instructs OpenStack to provide a list of QoS.
+// You may provide criteria by which List curtails its results for easier
+// processing.
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listURL(client)
+	if opts != nil {
+		query, err := opts.ToQoSListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return QoSPage{pagination.LinkedPageBase{PageResult: r}}
+	})
 }
