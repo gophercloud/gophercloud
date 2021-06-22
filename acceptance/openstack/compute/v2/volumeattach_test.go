@@ -28,6 +28,7 @@ func TestVolumeAttachAttachment(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer bs.DeleteVolume(t, blockClient, volume)
 
+	client.Microversion = "2.79"
 	volumeAttachment, err := CreateVolumeAttachment(t, client, blockClient, server, volume)
 	th.AssertNoErr(t, err)
 	defer DeleteVolumeAttachment(t, client, blockClient, server, volumeAttachment)

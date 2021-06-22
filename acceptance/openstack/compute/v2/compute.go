@@ -802,8 +802,13 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 // CreateVolumeAttachment will attach a volume to a server. An error will be
 // returned if the volume failed to attach.
 func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, server *servers.Server, volume *volumes.Volume) (*volumeattach.VolumeAttachment, error) {
+	tag := tools.RandomString("ACPTTEST", 16)
+	dot := false
+
 	volumeAttachOptions := volumeattach.CreateOpts{
-		VolumeID: volume.ID,
+		VolumeID:            volume.ID,
+		Tag:                 tag,
+		DeleteOnTermination: dot,
 	}
 
 	t.Logf("Attempting to attach volume %s to server %s", volume.ID, server.ID)
