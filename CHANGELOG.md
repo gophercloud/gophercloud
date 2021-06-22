@@ -3,6 +3,10 @@
 IMPROVEMENTS
 
 * Added `blockstorage/v3/qos.List` [GH-2167](https://github.com/gophercloud/gophercloud/pull/2167)
+* Added `compute/v2/extensions/volumeattach.CreateOpts.Tag` [GH-2177](https://github.com/gophercloud/gophercloud/pull/2177)
+* Added `compute/v2/extensions/volumeattach.CreateOpts.DeleteOnTermination` [GH-2177](https://github.com/gophercloud/gophercloud/pull/2177)
+* Added `compute/v2/extensions/volumeattach.VolumeAttachment.Tag` [GH-2177](https://github.com/gophercloud/gophercloud/pull/2177)
+* Added `compute/v2/extensions/volumeattach.VolumeAttachment.DeleteOnTermination` [GH-2177](https://github.com/gophercloud/gophercloud/pull/2177)
 
 ## 0.18.0 (June 11, 2021)
 
