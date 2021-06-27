@@ -101,7 +101,7 @@ func TestGetInstance(t *testing.T) {
 	instance, err := instances.Get(fake.ServiceClient(), instanceID).Extract()
 
 	th.AssertNoErr(t, err)
-	th.AssertDeepEquals(t, &expectedInstance, instance)
+	th.AssertDeepEquals(t, &expectedGetInstance, instance)
 }
 
 func TestDeleteInstance(t *testing.T) {
