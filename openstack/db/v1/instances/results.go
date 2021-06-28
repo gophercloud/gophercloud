@@ -39,6 +39,15 @@ type Fault struct {
 	Details string
 }
 
+// Address represents the IP address and its type to connect with the instance.
+type Address struct {
+	// The address type, e.g public
+	Type string
+
+	// The actual IP address
+	Address string
+}
+
 func (r *Fault) UnmarshalJSON(b []byte) error {
 	type tmp Fault
 	var s struct {
@@ -76,7 +85,8 @@ type Instance struct {
 	Hostname string
 
 	// The IP addresses associated with the database instance
-	// Is empty if the instance has a hostname
+	// Is empty if the instance has a hostname.
+	// Deprecated in favor of Addresses.
 	IP []string
 
 	// Indicates the unique identifier for the instance resource.
@@ -99,6 +109,9 @@ type Instance struct {
 
 	// Indicates how the instance stores data.
 	Datastore datastores.DatastorePartial
+
+	// The instance addresses
+	Addresses []Address
 }
 
 func (r *Instance) UnmarshalJSON(b []byte) error {
