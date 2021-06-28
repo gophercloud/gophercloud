@@ -7,6 +7,7 @@ IMPROVEMENTS
 * Added `compute/v2/extensions/volumeattach.CreateOpts.DeleteOnTermination` [GH-2177](https://github.com/gophercloud/gophercloud/pull/2177)
 * Added `compute/v2/extensions/volumeattach.VolumeAttachment.Tag` [GH-2177](https://github.com/gophercloud/gophercloud/pull/2177)
 * Added `compute/v2/extensions/volumeattach.VolumeAttachment.DeleteOnTermination` [GH-2177](https://github.com/gophercloud/gophercloud/pull/2177)
+* Added `db/v1/instances.Instance.Address` [GH-2179](https://github.com/gophercloud/gophercloud/pull/2179)
 
 ## 0.18.0 (June 11, 2021)
 
