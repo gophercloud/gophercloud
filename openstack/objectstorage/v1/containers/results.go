@@ -3,6 +3,7 @@ package containers
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -28,7 +29,7 @@ type ContainerPage struct {
 	pagination.MarkerPageBase
 }
 
-//IsEmpty returns true if a ListResult contains no container names.
+// IsEmpty returns true if a ListResult contains no container names.
 func (r ContainerPage) IsEmpty() (bool, error) {
 	names, err := ExtractNames(r)
 	return len(names) == 0, err
@@ -104,16 +105,19 @@ type GetHeader struct {
 	StoragePolicy    string    `json:"X-Storage-Policy"`
 	TempURLKey       string    `json:"X-Container-Meta-Temp-URL-Key"`
 	TempURLKey2      string    `json:"X-Container-Meta-Temp-URL-Key-2"`
+	Timestamp        float64   `json:"-"`
 }
 
 func (r *GetHeader) UnmarshalJSON(b []byte) error {
 	type tmp GetHeader
 	var s struct {
 		tmp
-		Write string                  `json:"X-Container-Write"`
-		Read  string                  `json:"X-Container-Read"`
-		Date  gophercloud.JSONRFC1123 `json:"Date"`
+		Write     string                  `json:"X-Container-Write"`
+		Read      string                  `json:"X-Container-Read"`
+		Date      gophercloud.JSONRFC1123 `json:"Date"`
+		Timestamp string                  `json:"X-Timestamp"`
 	}
+
 	err := json.Unmarshal(b, &s)
 	if err != nil {
 		return err
@@ -125,6 +129,11 @@ func (r *GetHeader) UnmarshalJSON(b []byte) error {
 	r.Write = strings.Split(s.Write, ",")
 
 	r.Date = time.Time(s.Date)
+
+	r.Timestamp, err = strconv.ParseFloat(s.Timestamp, 64)
+	if err != nil {
+		return err
+	}
 
 	return err
 }

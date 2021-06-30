@@ -110,6 +110,11 @@ func TestContainers(t *testing.T) {
 			t.Errorf("Expected custom metadata with key: %s", k)
 		}
 	}
+
+	// Retrieve a container's timestamp
+	cHeaders, err := containers.Get(client, cNames[0], getOpts).Extract()
+	th.AssertNoErr(t, err)
+	t.Logf("Container: Name [%s] Timestamp: [%f]\n", cNames[0], cHeaders.Timestamp)
 }
 
 func TestListAllContainers(t *testing.T) {
