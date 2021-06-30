@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	identity "github.com/gophercloud/gophercloud/acceptance/openstack/identity/v3"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/keypairs"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/servers"
@@ -98,4 +99,43 @@ func TestKeypairsServerCreateWithKey(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	th.AssertEquals(t, server.KeyName, keyPair.Name)
+}
+
+func TestKeypairsCreateDeleteByID(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	identityClient, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	computeClient, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+
+	computeClient.Microversion = "2.10"
+
+	user, err := identity.CreateUser(t, identityClient, nil)
+	th.AssertNoErr(t, err)
+
+	keyPairName := tools.RandomString("keypair_", 5)
+	createOpts := keypairs.CreateOpts{
+		Name:   keyPairName,
+		UserID: user.ID,
+	}
+
+	keyPair, err := keypairs.Create(computeClient, createOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	getOpts := keypairs.GetOpts{
+		UserID: user.ID,
+	}
+
+	newKeyPair, err := keypairs.GetWithOpts(computeClient, keyPair.Name, getOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, keyPair.Name, newKeyPair.Name)
+
+	deleteOpts := keypairs.DeleteOpts{
+		UserID: user.ID,
+	}
+
+	err = keypairs.DeleteWithOpts(computeClient, keyPair.Name, deleteOpts).ExtractErr()
+	th.AssertNoErr(t, err)
 }

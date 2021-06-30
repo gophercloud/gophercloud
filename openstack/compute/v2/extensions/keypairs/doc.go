@@ -67,5 +67,27 @@ Example to Create a Server With a Key Pair
 	if err != nil {
 		panic(err)
 	}
+
+Example to Get a Key Pair owned by a certain user
+
+	getOpts := keypairs.GetOpts{
+		UserID: "user-id",
+	}
+
+	keypair, err := keypairs.GetWithOpts(computeClient, "keypair-name", getOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+Example to Delete a Key Pair owned by a certain user
+
+	deleteOpts := keypairs.DeleteOpts{
+		UserID: "user-id",
+	}
+
+	err := keypairs.DeleteWithOpts(client, "keypair-name", deleteOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 */
 package keypairs

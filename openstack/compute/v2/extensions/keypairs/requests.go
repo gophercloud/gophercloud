@@ -80,28 +80,90 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 
 // Get returns public data about a previously uploaded KeyPair.
 func Get(client *gophercloud.ServiceClient, name string) (r GetResult) {
-	r = GetWithUserID(client, name, "")
+	resp, err := client.Get(getURL(client, name), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
-// GetWithUserID returns public data about a previously uploaded KeyPair, owned by a specific userID.
-// If the userID is an empty string, it searches the KeyPairs of the current user.
-func GetWithUserID(client *gophercloud.ServiceClient, name string, userID string) (r GetResult) {
-	resp, err := client.Get(getURL(client, name, userID), &r.Body, nil)
+// GetOptsBuilder allows extensions to add additional parameters to the
+// Get request.
+type GetOptsBuilder interface {
+	ToKeyPairGetQuery() (string, error)
+}
+
+// GetOpts enables retrieving KeyPairs based on specific attributes.
+type GetOpts struct {
+	// UserID is the user ID that owns the key pair.
+	// This requires microversion 2.10 or higher.
+	UserID string `q:"user_id"`
+}
+
+// ToKeyPairGetQuery formats a GetOpts into a query string.
+func (opts GetOpts) ToKeyPairGetQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// GetWithOpts is similar to Get, but can take a GetOpts struct.
+// The options within GetOpts require the client to have a microversion set.
+// The original Get function is retained for non-microverisoned requests.
+func GetWithOpts(client *gophercloud.ServiceClient, name string, opts GetOptsBuilder) (r GetResult) {
+	url := getURL(client, name)
+	if opts != nil {
+		query, err := opts.ToKeyPairGetQuery()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += query
+	}
+
+	resp, err := client.Get(url, &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
 // Delete requests the deletion of a previous stored KeyPair from the server.
 func Delete(client *gophercloud.ServiceClient, name string) (r DeleteResult) {
-	r = DeleteWithUserID(client, name, "")
+	resp, err := client.Delete(deleteURL(client, name), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
-// DeleteWithUserID requests the deletion of a previous stored KeyPair from the server, owned by a specific userID.
-// If the userID is an empty string, it deletes the KeyPair of the calling user.
-func DeleteWithUserID(client *gophercloud.ServiceClient, name string, userID string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, name, userID), nil)
+// DeleteOptsBuilder allows extensions to add additional parameters to the
+// Delete request.
+type DeleteOptsBuilder interface {
+	ToKeyPairDeleteQuery() (string, error)
+}
+
+// DeleteOpts enables deleting KeyPairs based on specific attributes.
+type DeleteOpts struct {
+	// UserID is the user ID of the user that owns the key pair.
+	// This requires microversion 2.10 or higher.
+	UserID string `q:"user_id"`
+}
+
+// ToKeyPairDeleteQuery formats a DeleteOpts into a query string.
+func (opts DeleteOpts) ToKeyPairDeleteQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// DeleteWithOpts is similar to Delete, but can take a DeleteOpts struct.
+// The options within DeleteOpts require the client to have a microversion set.
+// The original Delete function is retained for non-microversioned requests.
+func DeleteWithOpts(client *gophercloud.ServiceClient, name string, opts DeleteOptsBuilder) (r DeleteResult) {
+	url := deleteURL(client, name)
+	if opts != nil {
+		query, err := opts.ToKeyPairDeleteQuery()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += query
+	}
+
+	resp, err := client.Delete(url, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
