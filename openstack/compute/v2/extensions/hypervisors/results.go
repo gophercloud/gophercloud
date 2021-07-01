@@ -131,7 +131,7 @@ type Hypervisor struct {
 
 	// Servers is a list of Server object.
 	// The requires microversion 2.53 or later.
-	Servers []*Server `json:"servers"`
+	Servers *[]Server `json:"servers"`
 
 	// VCPUs is the total number of vcpus on the hypervisor.
 	VCPUs int `json:"vcpus"`

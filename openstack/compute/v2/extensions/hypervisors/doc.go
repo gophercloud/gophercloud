@@ -24,7 +24,28 @@ Example of Show Hypervisor Details with Compute API microversion greater than 2.
 
 Example of Retrieving Details of All Hypervisors
 
-	allPages, err := hypervisors.List(computeClient).AllPages()
+	allPages, err := hypervisors.List(computeClient, nil).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, hypervisor := range allHypervisors {
+		fmt.Printf("%+v\n", hypervisor)
+	}
+
+Example of Retrieving Details of All Hypervisors with Compute API microversion greater than 2.33
+
+	iTrue := true
+	listOpts := hypervisors.ListOpts{
+		WithServers: &true,
+	}
+
+	allPages, err := hypervisors.List(computeClient, listOpts).AllPages()
 	if err != nil {
 		panic(err)
 	}

@@ -477,7 +477,7 @@ var (
 			ID:             "9c2566e7-7a54-4777-a1ae-c2662f0c407c",
 			DisabledReason: "",
 		},
-		Servers: []*hypervisors.Server{
+		Servers: &[]hypervisors.Server{
 			{
 				Name: "instance-00000001",
 				UUID: "c42acc8d-eab3-4e4d-9d90-01b0791328f4",

@@ -88,7 +88,7 @@ func TestHypervisorListQuery(t *testing.T) {
 
 	client.Microversion = "2.53"
 
-	server, err := CreateServer(t, client)
+	server, err := CreateMicroversionServer(t, client)
 	th.AssertNoErr(t, err)
 	defer DeleteServer(t, client, server)
 
@@ -103,8 +103,9 @@ func TestHypervisorListQuery(t *testing.T) {
 	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)
 	th.AssertNoErr(t, err)
 
-	for _, h := range allHypervisors {
-		tools.PrintResource(t, h)
+	hypervisor := allHypervisors[0]
+	if len(*hypervisor.Servers) < 1 {
+		t.Fatalf("hypervisor.Servers length should be >= 1")
 	}
 }
 
