@@ -15,7 +15,7 @@ func TestList(t *testing.T) {
 	HandleListSuccessfully(t)
 
 	count := 0
-	err := keypairs.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := keypairs.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := keypairs.ExtractKeyPairs(page)
 		th.AssertNoErr(t, err)

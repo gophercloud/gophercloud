@@ -31,9 +31,36 @@ func (opts CreateOptsExt) ToServerCreateMap() (map[string]interface{}, error) {
 	return base, nil
 }
 
+// ListOptsBuilder allows extensions to add additional parameters to the
+// List request.
+type ListOptsBuilder interface {
+	ToKeyPairListQuery() (string, error)
+}
+
+// ListOpts enables listing KeyPairs based on specific attributes.
+type ListOpts struct {
+	// UserID is the user ID that owns the key pair.
+	// This requires microversion 2.10 or higher.
+	UserID string `q:"user_id"`
+}
+
+// ToKeyPairListQuery formats a ListOpts into a query string.
+func (opts ListOpts) ToKeyPairListQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
 // List returns a Pager that allows you to iterate over a collection of KeyPairs.
-func List(client *gophercloud.ServiceClient) pagination.Pager {
-	return pagination.NewPager(client, listURL(client), func(r pagination.PageResult) pagination.Page {
+func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
+	url := listURL(client)
+	if opts != nil {
+		query, err := opts.ToKeyPairListQuery()
+		if err != nil {
+			return pagination.Pager{Err: err}
+		}
+		url += query
+	}
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return KeyPairPage{pagination.SinglePageBase(r)}
 	})
 }

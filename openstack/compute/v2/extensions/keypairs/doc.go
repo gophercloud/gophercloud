@@ -4,7 +4,29 @@ servers with a specified key pair.
 
 Example to List Key Pairs
 
-	allPages, err := keypairs.List(computeClient).AllPages()
+	allPages, err := keypairs.List(computeClient, nil).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allKeyPairs, err := keypairs.ExtractKeyPairs(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, kp := range allKeyPairs {
+		fmt.Printf("%+v\n", kp)
+	}
+
+Example to List Key Pairs using microversion 2.10 or greater
+
+	client.Microversion = "2.10"
+
+	listOpts := keypairs.ListOpts{
+		UserID: "user-id",
+	}
+
+	allPages, err := keypairs.List(computeClient, listOpts).AllPages()
 	if err != nil {
 		panic(err)
 	}
@@ -50,6 +72,19 @@ Example to Delete a Key Pair
 		panic(err)
 	}
 
+Example to Delete a Key Pair owned by a certain user using microversion 2.10 or greater
+
+	client.Microversion = "2.10"
+
+	deleteOpts := keypairs.DeleteOpts{
+		UserID: "user-id",
+	}
+
+	err := keypairs.Delete(client, "keypair-name", deleteOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 Example to Create a Server With a Key Pair
 
 	serverCreateOpts := servers.CreateOpts{
@@ -68,7 +103,9 @@ Example to Create a Server With a Key Pair
 		panic(err)
 	}
 
-Example to Get a Key Pair owned by a certain user
+Example to Get a Key Pair owned by a certain user using microversion 2.10 or greater
+
+	client.Microversion = "2.10"
 
 	getOpts := keypairs.GetOpts{
 		UserID: "user-id",
@@ -79,15 +116,5 @@ Example to Get a Key Pair owned by a certain user
 		panic(err)
 	}
 
-Example to Delete a Key Pair owned by a certain user
-
-	deleteOpts := keypairs.DeleteOpts{
-		UserID: "user-id",
-	}
-
-	err := keypairs.Delete(client, "keypair-name", deleteOpts).ExtractErr()
-	if err != nil {
-		panic(err)
-	}
 */
 package keypairs
