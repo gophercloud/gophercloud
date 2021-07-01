@@ -78,6 +78,7 @@ type CreateOpts struct {
 
 	// UserID [optional] is the user_id for a keypair.
 	// This allows administrative users to upload keys for other users than themselves.
+	// This requires microversion 2.10 or higher.
 	UserID string `json:"user_id,omitempty"`
 
 	// PublicKey [optional] is a pregenerated OpenSSH-formatted public key.
