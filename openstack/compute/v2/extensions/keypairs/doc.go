@@ -45,7 +45,7 @@ Example to Import a Key Pair
 
 Example to Delete a Key Pair
 
-	err := keypairs.Delete(computeClient, "keypair-name").ExtractErr()
+	err := keypairs.Delete(computeClient, "keypair-name", nil).ExtractErr()
 	if err != nil {
 		panic(err)
 	}
@@ -74,7 +74,7 @@ Example to Get a Key Pair owned by a certain user
 		UserID: "user-id",
 	}
 
-	keypair, err := keypairs.GetWithOpts(computeClient, "keypair-name", getOpts).Extract()
+	keypair, err := keypairs.Get(computeClient, "keypair-name", getOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
@@ -85,7 +85,7 @@ Example to Delete a Key Pair owned by a certain user
 		UserID: "user-id",
 	}
 
-	err := keypairs.DeleteWithOpts(client, "keypair-name", deleteOpts).ExtractErr()
+	err := keypairs.Delete(client, "keypair-name", deleteOpts).ExtractErr()
 	if err != nil {
 		panic(err)
 	}

@@ -78,13 +78,6 @@ func Create(client *gophercloud.ServiceClient, opts CreateOptsBuilder) (r Create
 	return
 }
 
-// Get returns public data about a previously uploaded KeyPair.
-func Get(client *gophercloud.ServiceClient, name string) (r GetResult) {
-	resp, err := client.Get(getURL(client, name), &r.Body, nil)
-	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
-	return
-}
-
 // GetOptsBuilder allows extensions to add additional parameters to the
 // Get request.
 type GetOptsBuilder interface {
@@ -104,10 +97,8 @@ func (opts GetOpts) ToKeyPairGetQuery() (string, error) {
 	return q.String(), err
 }
 
-// GetWithOpts is similar to Get, but can take a GetOpts struct.
-// The options within GetOpts require the client to have a microversion set.
-// The original Get function is retained for non-microverisoned requests.
-func GetWithOpts(client *gophercloud.ServiceClient, name string, opts GetOptsBuilder) (r GetResult) {
+// Get returns public data about a previously uploaded KeyPair.
+func Get(client *gophercloud.ServiceClient, name string, opts GetOptsBuilder) (r GetResult) {
 	url := getURL(client, name)
 	if opts != nil {
 		query, err := opts.ToKeyPairGetQuery()
@@ -119,13 +110,6 @@ func GetWithOpts(client *gophercloud.ServiceClient, name string, opts GetOptsBui
 	}
 
 	resp, err := client.Get(url, &r.Body, nil)
-	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
-	return
-}
-
-// Delete requests the deletion of a previous stored KeyPair from the server.
-func Delete(client *gophercloud.ServiceClient, name string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, name), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -149,10 +133,8 @@ func (opts DeleteOpts) ToKeyPairDeleteQuery() (string, error) {
 	return q.String(), err
 }
 
-// DeleteWithOpts is similar to Delete, but can take a DeleteOpts struct.
-// The options within DeleteOpts require the client to have a microversion set.
-// The original Delete function is retained for non-microversioned requests.
-func DeleteWithOpts(client *gophercloud.ServiceClient, name string, opts DeleteOptsBuilder) (r DeleteResult) {
+// Delete requests the deletion of a previous stored KeyPair from the server.
+func Delete(client *gophercloud.ServiceClient, name string, opts DeleteOptsBuilder) (r DeleteResult) {
 	url := deleteURL(client, name)
 	if opts != nil {
 		query, err := opts.ToKeyPairDeleteQuery()

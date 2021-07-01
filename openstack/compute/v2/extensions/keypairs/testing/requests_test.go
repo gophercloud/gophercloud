@@ -70,7 +70,7 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := keypairs.Get(client.ServiceClient(), "firstkey").Extract()
+	actual, err := keypairs.Get(client.ServiceClient(), "firstkey", nil).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstKeyPair, actual)
 }
@@ -84,7 +84,7 @@ func TestGetOtherUser(t *testing.T) {
 		UserID: "fake2",
 	}
 
-	actual, err := keypairs.GetWithOpts(client.ServiceClient(), "firstkey", getOpts).Extract()
+	actual, err := keypairs.Get(client.ServiceClient(), "firstkey", getOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstKeyPairOtherUser, actual)
 }
@@ -94,7 +94,7 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
-	err := keypairs.Delete(client.ServiceClient(), "deletedkey").ExtractErr()
+	err := keypairs.Delete(client.ServiceClient(), "deletedkey", nil).ExtractErr()
 	th.AssertNoErr(t, err)
 }
 
@@ -107,6 +107,6 @@ func TestDeleteOtherUser(t *testing.T) {
 		UserID: "fake2",
 	}
 
-	err := keypairs.DeleteWithOpts(client.ServiceClient(), "deletedkey", deleteOpts).ExtractErr()
+	err := keypairs.Delete(client.ServiceClient(), "deletedkey", deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }

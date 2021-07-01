@@ -128,7 +128,7 @@ func TestKeypairsCreateDeleteByID(t *testing.T) {
 		UserID: user.ID,
 	}
 
-	newKeyPair, err := keypairs.GetWithOpts(computeClient, keyPair.Name, getOpts).Extract()
+	newKeyPair, err := keypairs.Get(computeClient, keyPair.Name, getOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, keyPair.Name, newKeyPair.Name)
 
@@ -136,6 +136,6 @@ func TestKeypairsCreateDeleteByID(t *testing.T) {
 		UserID: user.ID,
 	}
 
-	err = keypairs.DeleteWithOpts(computeClient, keyPair.Name, deleteOpts).ExtractErr()
+	err = keypairs.Delete(computeClient, keyPair.Name, deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
