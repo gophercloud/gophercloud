@@ -15,7 +15,7 @@ func TestList(t *testing.T) {
 	HandleListSuccessfully(t)
 
 	count := 0
-	err := keypairs.List(client.ServiceClient()).EachPage(func(page pagination.Page) (bool, error) {
+	err := keypairs.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 		actual, err := keypairs.ExtractKeyPairs(page)
 		th.AssertNoErr(t, err)
@@ -39,6 +39,19 @@ func TestCreate(t *testing.T) {
 	th.CheckDeepEquals(t, &CreatedKeyPair, actual)
 }
 
+func TestCreateOtherUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSuccessfullyOtherUser(t)
+
+	actual, err := keypairs.Create(client.ServiceClient(), keypairs.CreateOpts{
+		Name:   "createdkey",
+		UserID: "fake2",
+	}).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &CreatedKeyPairOtherUser, actual)
+}
+
 func TestImport(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -57,9 +70,23 @@ func TestGet(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleGetSuccessfully(t)
 
-	actual, err := keypairs.Get(client.ServiceClient(), "firstkey").Extract()
+	actual, err := keypairs.Get(client.ServiceClient(), "firstkey", nil).Extract()
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, &FirstKeyPair, actual)
+}
+
+func TestGetOtherUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetSuccessfully(t)
+
+	getOpts := keypairs.GetOpts{
+		UserID: "fake2",
+	}
+
+	actual, err := keypairs.Get(client.ServiceClient(), "firstkey", getOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &FirstKeyPairOtherUser, actual)
 }
 
 func TestDelete(t *testing.T) {
@@ -67,6 +94,19 @@ func TestDelete(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleDeleteSuccessfully(t)
 
-	err := keypairs.Delete(client.ServiceClient(), "deletedkey").ExtractErr()
+	err := keypairs.Delete(client.ServiceClient(), "deletedkey", nil).ExtractErr()
+	th.AssertNoErr(t, err)
+}
+
+func TestDeleteOtherUser(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSuccessfullyOtherUser(t)
+
+	deleteOpts := keypairs.DeleteOpts{
+		UserID: "fake2",
+	}
+
+	err := keypairs.Delete(client.ServiceClient(), "deletedkey", deleteOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
