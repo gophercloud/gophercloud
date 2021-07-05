@@ -18,6 +18,7 @@ IMPROVEMENTS
 * Added `compute/v2/extensions/keypairs.ListOpts` [GH-2186](https://github.com/gophercloud/gophercloud/pull/2186)
 * Added `compute/v2/extensions/keypairs.GetOpts` [GH-2186](https://github.com/gophercloud/gophercloud/pull/2186)
 * Added `compute/v2/extensions/keypairs.DeleteOpts` [GH-2186](https://github.com/gophercloud/gophercloud/pull/2186)
+* Added `objectstorage/v2/containers.GetHeader.Timestamp` [GH-2185](https://github.com/gophercloud/gophercloud/pull/2185)
 
 ## 0.18.0 (June 11, 2021)
 
