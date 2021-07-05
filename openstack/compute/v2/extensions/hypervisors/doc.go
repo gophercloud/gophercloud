@@ -12,13 +12,15 @@ Example of Show Hypervisor Details
 
 	fmt.Printf("%+v\n", hypervisor)
 
-Example of Show Hypervisor Details with Compute API microversion greater than 2.53
+Example of Show Hypervisor Details when using Compute API microversion greater than 2.53
 
-    hypervisorID := "c48f6247-abe4-4a24-824e-ea39e108874f"
-    hypervisor, err := hypervisors.Get(computeClient, hypervisorID).Extract()
-    if err != nil {
-        panic(err)
-    }
+	computeClient.Microversion = "2.53"
+
+	hypervisorID := "c48f6247-abe4-4a24-824e-ea39e108874f"
+	hypervisor, err := hypervisors.Get(computeClient, hypervisorID).Extract()
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Printf("%+v\n", hypervisor)
 
@@ -38,7 +40,9 @@ Example of Retrieving Details of All Hypervisors
 		fmt.Printf("%+v\n", hypervisor)
 	}
 
-Example of Retrieving Details of All Hypervisors with Compute API microversion greater than 2.33
+Example of Retrieving Details of All Hypervisors when using Compute API microversion 2.33 or greater.
+
+	computeClient.Microversion = "2.53"
 
 	iTrue := true
 	listOpts := hypervisors.ListOpts{
@@ -80,11 +84,13 @@ Example of Show Hypervisor Uptime
 
 Example of Show Hypervisor Uptime with Compute API microversion greater than 2.53
 
-    hypervisorID := "c48f6247-abe4-4a24-824e-ea39e108874f"
-    hypervisorUptime, err := hypervisors.GetUptime(computeClient, hypervisorID).Extract()
-    if err != nil {
-        panic(err)
-    }
+	computeClient.Microversion = "2.53"
+
+	hypervisorID := "c48f6247-abe4-4a24-824e-ea39e108874f"
+	hypervisorUptime, err := hypervisors.GetUptime(computeClient, hypervisorID).Extract()
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Printf("%+v\n", hypervisorUptime)
 */
