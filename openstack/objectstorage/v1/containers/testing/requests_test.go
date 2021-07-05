@@ -157,6 +157,7 @@ func TestGetContainer(t *testing.T) {
 		TransID:       "tx554ed59667a64c61866f1-0057b4ba37",
 		Write:         []string{"test2", "user4"},
 		StoragePolicy: "test_policy",
+		Timestamp:     1471298837.95721,
 	}
 	actual, err := res.Extract()
 	th.AssertNoErr(t, err)
