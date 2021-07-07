@@ -351,6 +351,17 @@ func TestCopyObject(t *testing.T) {
 	th.AssertNoErr(t, res.Err)
 }
 
+func TestCopyObjectVersion(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCopyObjectVersionSuccessfully(t)
+
+	options := &objects.CopyOpts{Destination: "/newTestContainer/newTestObject", ObjectVersionID: "123456788"}
+	res, err := objects.Copy(fake.ServiceClient(), "testContainer", "testObject", options).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, "123456789", res.ObjectVersionID)
+}
+
 func TestDeleteObject(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

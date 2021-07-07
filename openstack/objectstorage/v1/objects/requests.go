@@ -37,6 +37,7 @@ type ListOpts struct {
 	Prefix    string `q:"prefix"`
 	Delimiter string `q:"delimiter"`
 	Path      string `q:"path"`
+	Versions  bool   `q:"versions"`
 }
 
 // ToObjectListParams formats a ListOpts into a query string and boolean
@@ -95,6 +96,7 @@ type DownloadOpts struct {
 	Expires           string    `q:"expires"`
 	MultipartManifest string    `q:"multipart-manifest"`
 	Signature         string    `q:"signature"`
+	ObjectVersionID   string    `q:"version-id"`
 }
 
 // ToObjectDownloadParams formats a DownloadOpts into a query string and map of
@@ -265,6 +267,12 @@ type CopyOptsBuilder interface {
 	ToObjectCopyMap() (map[string]string, error)
 }
 
+// CopyOptsQueryBuilder allows extensions to add additional query parameters to
+// the Copy request.
+type CopyOptsQueryBuilder interface {
+	ToObjectCopyQuery() (string, error)
+}
+
 // CopyOpts is a structure that holds parameters for copying one object to
 // another.
 type CopyOpts struct {
@@ -273,6 +281,7 @@ type CopyOpts struct {
 	ContentEncoding    string `h:"Content-Encoding"`
 	ContentType        string `h:"Content-Type"`
 	Destination        string `h:"Destination" required:"true"`
+	ObjectVersionID    string `q:"version-id"`
 }
 
 // ToObjectCopyMap formats a CopyOpts into a map of headers.
@@ -285,6 +294,15 @@ func (opts CopyOpts) ToObjectCopyMap() (map[string]string, error) {
 		h["X-Object-Meta-"+k] = v
 	}
 	return h, nil
+}
+
+// ToObjectCopyQuery formats a CopyOpts into a query.
+func (opts CopyOpts) ToObjectCopyQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	if err != nil {
+		return "", err
+	}
+	return q.String(), nil
 }
 
 // Copy is a function that copies one object to another.
@@ -305,6 +323,15 @@ func Copy(c *gophercloud.ServiceClient, containerName, objectName string, opts C
 		h[k] = v
 	}
 
+	if opts, ok := opts.(CopyOptsQueryBuilder); ok {
+		query, err := opts.ToObjectCopyQuery()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += query
+	}
+
 	resp, err := c.Request("COPY", url, &gophercloud.RequestOpts{
 		MoreHeaders: h,
 		OkCodes:     []int{201},
@@ -322,6 +349,7 @@ type DeleteOptsBuilder interface {
 // DeleteOpts is a structure that holds parameters for deleting an object.
 type DeleteOpts struct {
 	MultipartManifest string `q:"multipart-manifest"`
+	ObjectVersionID   string `q:"version-id"`
 }
 
 // ToObjectDeleteQuery formats a DeleteOpts into a query string.
@@ -359,9 +387,10 @@ type GetOptsBuilder interface {
 // GetOpts is a structure that holds parameters for getting an object's
 // metadata.
 type GetOpts struct {
-	Newest    bool   `h:"X-Newest"`
-	Expires   string `q:"expires"`
-	Signature string `q:"signature"`
+	Newest          bool   `h:"X-Newest"`
+	Expires         string `q:"expires"`
+	Signature       string `q:"signature"`
+	ObjectVersionID string `q:"version-id"`
 }
 
 // ToObjectGetParams formats a GetOpts into a query string and a map of headers.

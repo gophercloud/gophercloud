@@ -236,18 +236,58 @@ func TestGetContainer(t *testing.T) {
 	th.AssertNoErr(t, err)
 
 	expected := &containers.GetHeader{
-		AcceptRanges:  "bytes",
-		BytesUsed:     100,
-		ContentType:   "application/json; charset=utf-8",
-		Date:          time.Date(2016, time.August, 17, 19, 25, 43, 0, time.UTC),
-		ObjectCount:   4,
-		Read:          []string{"test"},
-		TransID:       "tx554ed59667a64c61866f1-0057b4ba37",
-		Write:         []string{"test2", "user4"},
-		StoragePolicy: "test_policy",
-		Timestamp:     1471298837.95721,
+		AcceptRanges:    "bytes",
+		BytesUsed:       100,
+		ContentType:     "application/json; charset=utf-8",
+		Date:            time.Date(2016, time.August, 17, 19, 25, 43, 0, time.UTC),
+		ObjectCount:     4,
+		Read:            []string{"test"},
+		TransID:         "tx554ed59667a64c61866f1-0057b4ba37",
+		Write:           []string{"test2", "user4"},
+		StoragePolicy:   "test_policy",
+		Timestamp:       1471298837.95721,
+		VersionsEnabled: true,
 	}
 	actual, err := res.Extract()
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, expected, actual)
+}
+
+func TestUpdateContainerVersioningOff(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateContainerVersioningOff(t)
+
+	contentType := "text/plain"
+	options := &containers.UpdateOpts{
+		Metadata:         map[string]string{"foo": "bar"},
+		ContainerWrite:   new(string),
+		ContainerRead:    new(string),
+		ContainerSyncTo:  new(string),
+		ContainerSyncKey: new(string),
+		ContentType:      &contentType,
+		VersionsEnabled:  new(bool),
+	}
+	_, err := containers.Update(fake.ServiceClient(), "testVersioning", options).Extract()
+	th.AssertNoErr(t, err)
+}
+
+func TestUpdateContainerVersioningOn(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleUpdateContainerVersioningOn(t)
+
+	iTrue := true
+	contentType := "text/plain"
+	options := &containers.UpdateOpts{
+		Metadata:         map[string]string{"foo": "bar"},
+		ContainerWrite:   new(string),
+		ContainerRead:    new(string),
+		ContainerSyncTo:  new(string),
+		ContainerSyncKey: new(string),
+		ContentType:      &contentType,
+		VersionsEnabled:  &iTrue,
+	}
+	_, err := containers.Update(fake.ServiceClient(), "testVersioning", options).Extract()
+	th.AssertNoErr(t, err)
 }

@@ -207,6 +207,54 @@ func HandleUpdateContainerSuccessfully(t *testing.T, options ...option) {
 	})
 }
 
+// HandleUpdateContainerVersioningOn creates an HTTP handler at `/testVersioning` on the test handler mux that
+// responds with a `Update` response.
+func HandleUpdateContainerVersioningOn(t *testing.T, options ...option) {
+	ho := handlerOptions{
+		path: "/testVersioning",
+	}
+	for _, apply := range options {
+		apply(&ho)
+	}
+
+	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Container-Write", "")
+		th.TestHeader(t, r, "X-Container-Read", "")
+		th.TestHeader(t, r, "X-Container-Sync-To", "")
+		th.TestHeader(t, r, "X-Container-Sync-Key", "")
+		th.TestHeader(t, r, "Content-Type", "text/plain")
+		th.TestHeader(t, r, "X-Versions-Enabled", "true")
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
+// HandleUpdateContainerVersioningOff creates an HTTP handler at `/testVersioning` on the test handler mux that
+// responds with a `Update` response.
+func HandleUpdateContainerVersioningOff(t *testing.T, options ...option) {
+	ho := handlerOptions{
+		path: "/testVersioning",
+	}
+	for _, apply := range options {
+		apply(&ho)
+	}
+
+	th.Mux.HandleFunc(ho.path, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Container-Write", "")
+		th.TestHeader(t, r, "X-Container-Read", "")
+		th.TestHeader(t, r, "X-Container-Sync-To", "")
+		th.TestHeader(t, r, "X-Container-Sync-Key", "")
+		th.TestHeader(t, r, "Content-Type", "text/plain")
+		th.TestHeader(t, r, "X-Versions-Enabled", "false")
+		w.WriteHeader(http.StatusNoContent)
+	})
+}
+
 // HandleGetContainerSuccessfully creates an HTTP handler at `/testContainer` on the test handler mux that
 // responds with a `Get` response.
 func HandleGetContainerSuccessfully(t *testing.T, options ...option) {
@@ -231,6 +279,7 @@ func HandleGetContainerSuccessfully(t *testing.T, options ...option) {
 		w.Header().Set("X-Timestamp", "1471298837.95721")
 		w.Header().Set("X-Trans-Id", "tx554ed59667a64c61866f1-0057b4ba37")
 		w.Header().Set("X-Storage-Policy", "test_policy")
+		w.Header().Set("X-Versions-Enabled", "True")
 		w.WriteHeader(http.StatusNoContent)
 	})
 }
