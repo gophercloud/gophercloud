@@ -221,6 +221,9 @@ type Server struct {
 	// Tags is a slice/list of string tags in a server.
 	// The requires microversion 2.26 or later.
 	Tags *[]string `json:"tags"`
+
+	// Description allows add description to a server
+	Description string `json:"description"`
 }
 
 type AttachedVolume struct {

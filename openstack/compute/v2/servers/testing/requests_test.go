@@ -592,3 +592,30 @@ func TestCreateServerWithTags(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, ServerDerpTags, *actualServer)
 }
+
+func TestCreateServerWithDescription(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleServerWithDescriptionCreationSuccessfully(t)
+
+	c := client.ServiceClient()
+	c.Microversion = "2.19"
+	description := "server1"
+	createOpts := servers.CreateOpts{
+		Name:        "derp",
+		ImageRef:    "f90f6034-2570-4974-8351-6b49732ef2eb",
+		FlavorRef:   "1",
+		Description: description,
+	}
+	ServerDerpDescription := ServerDerp
+	ServerDerpDescription.Description = "server1"
+	res := servers.Create(c, createOpts)
+	th.AssertNoErr(t, res.Err)
+	actualServer, err := res.Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, ServerDerpDescription, *actualServer)
+
+	actualDescription, err := res.ExtractDescription()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, "server1", actualDescription)
+}
