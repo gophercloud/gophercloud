@@ -12,6 +12,7 @@ import (
 )
 
 func TestPolicyTypeList(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -27,6 +28,7 @@ func TestPolicyTypeList(t *testing.T) {
 }
 
 func TestPolicyTypeList_v_1_5(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -43,6 +45,7 @@ func TestPolicyTypeList_v_1_5(t *testing.T) {
 }
 
 func TestPolicyTypeGet(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -53,6 +56,7 @@ func TestPolicyTypeGet(t *testing.T) {
 }
 
 func TestPolicyTypeGet_v_1_5(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
