@@ -22,6 +22,7 @@ IMPROVEMENTS
 * Added `objectstorage/v2/containers.GetHeader.Timestamp` [GH-2185](https://github.com/gophercloud/gophercloud/pull/2185)
 * Added `compute/v2/extensions.ListOpts` [GH-2187](https://github.com/gophercloud/gophercloud/pull/2187)
 * Added `sharedfilesystems/v2/shares.Share.CreateShareFromSnapshotSupport` [GH-2191](https://github.com/gophercloud/gophercloud/pull/2191)
+* Added `compute/v2/servers.Network.Tag` for use in `CreateOpts` [GH-2193](https://github.com/gophercloud/gophercloud/pull/2193)
 
 ## 0.18.0 (June 11, 2021)
 
