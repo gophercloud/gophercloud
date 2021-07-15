@@ -6,15 +6,15 @@ Example of Retrieving all API Versions
 
 	allPages, err := apiversions.List(client).AllPages()
 	if err != nil {
-		panic("Unable to get API versions: %s", err)
+		panic("unable to get API versions: " + err.Error())
 	}
 
 	allVersions, err := apiversions.ExtractAPIVersions(allPages)
 	if err != nil {
-		panic("Unable to extract API versions: %s", err)
+		panic("unable to extract API versions: " + err.Error())
 	}
 
-	for _, version := range versions {
+	for _, version := range allVersions {
 		fmt.Printf("%+v\n", version)
 	}
 
@@ -23,7 +23,7 @@ Example of Retrieving an API Version
 
 	version, err := apiversions.Get(client, "v3").Extract()
 	if err != nil {
-		panic("Unable to get API version: %s", err)
+		panic("unable to get API version: " + err.Error())
 	}
 
 	fmt.Printf("%+v\n", version)

@@ -19,7 +19,7 @@ func TestHypervisorsList(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	allPages, err := hypervisors.List(client).AllPages()
+	allPages, err := hypervisors.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
 
 	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)
@@ -80,8 +80,37 @@ func TestHypervisorsGetUptime(t *testing.T) {
 	th.AssertEquals(t, hypervisorID, hypervisor.ID)
 }
 
+func TestHypervisorListQuery(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewComputeV2Client()
+	th.AssertNoErr(t, err)
+
+	client.Microversion = "2.53"
+
+	server, err := CreateMicroversionServer(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteServer(t, client, server)
+
+	iTrue := true
+	listOpts := hypervisors.ListOpts{
+		WithServers: &iTrue,
+	}
+
+	allPages, err := hypervisors.List(client, listOpts).AllPages()
+	th.AssertNoErr(t, err)
+
+	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)
+	th.AssertNoErr(t, err)
+
+	hypervisor := allHypervisors[0]
+	if len(*hypervisor.Servers) < 1 {
+		t.Fatalf("hypervisor.Servers length should be >= 1")
+	}
+}
+
 func getHypervisorID(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
-	allPages, err := hypervisors.List(client).AllPages()
+	allPages, err := hypervisors.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
 
 	allHypervisors, err := hypervisors.ExtractHypervisors(allPages)

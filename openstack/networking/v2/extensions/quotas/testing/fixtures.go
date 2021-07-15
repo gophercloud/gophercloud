@@ -22,6 +22,11 @@ const GetResponseRaw = `
 `
 
 // GetDetailedResponseRaw is a sample response to a Get call with the detailed option.
+//
+// One "reserved" property is returned as a string to reflect a buggy behaviour
+// of Neutron.
+//
+// cf. https://bugs.launchpad.net/neutron/+bug/1918565
 const GetDetailedResponseRaw = `
 {
    "quota" : {
@@ -38,7 +43,7 @@ const GetDetailedResponseRaw = `
       "port" : {
           "used": 0,
           "limit": 25,
-          "reserved": 0
+          "reserved": "0"
       },
       "rbac_policy" : {
           "used": 0,

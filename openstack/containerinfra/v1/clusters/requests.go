@@ -24,6 +24,7 @@ type CreateOpts struct {
 	Name              string            `json:"name"`
 	NodeCount         *int              `json:"node_count,omitempty"`
 	FloatingIPEnabled *bool             `json:"floating_ip_enabled,omitempty"`
+	MasterLBEnabled   *bool             `json:"master_lb_enabled,omitempty"`
 	FixedNetwork      string            `json:"fixed_network,omitempty"`
 	FixedSubnet       string            `json:"fixed_subnet,omitempty"`
 	MergeLabels       *bool             `json:"merge_labels,omitempty"`

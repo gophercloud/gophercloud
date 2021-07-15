@@ -50,5 +50,12 @@ Example to get resource providers traits
 		panic(err)
 	}
 
+Example to get resource providers allocations
+
+	rp, err := resourceproviders.GetAllocations(placementClient, resourceProviderID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package resourceproviders

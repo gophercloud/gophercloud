@@ -802,8 +802,13 @@ func CreateServerWithPublicKey(t *testing.T, client *gophercloud.ServiceClient, 
 // CreateVolumeAttachment will attach a volume to a server. An error will be
 // returned if the volume failed to attach.
 func CreateVolumeAttachment(t *testing.T, client *gophercloud.ServiceClient, blockClient *gophercloud.ServiceClient, server *servers.Server, volume *volumes.Volume) (*volumeattach.VolumeAttachment, error) {
+	tag := tools.RandomString("ACPTTEST", 16)
+	dot := false
+
 	volumeAttachOptions := volumeattach.CreateOpts{
-		VolumeID: volume.ID,
+		VolumeID:            volume.ID,
+		Tag:                 tag,
+		DeleteOnTermination: dot,
 	}
 
 	t.Logf("Attempting to attach volume %s to server %s", volume.ID, server.ID)
@@ -870,7 +875,7 @@ func DeleteFloatingIP(t *testing.T, client *gophercloud.ServiceClient, floatingI
 // the keypair failed to be deleted. This works best when used as a deferred
 // function.
 func DeleteKeyPair(t *testing.T, client *gophercloud.ServiceClient, keyPair *keypairs.KeyPair) {
-	err := keypairs.Delete(client, keyPair.Name).ExtractErr()
+	err := keypairs.Delete(client, keyPair.Name, nil).ExtractErr()
 	if err != nil {
 		t.Fatalf("Unable to delete keypair %s: %v", keyPair.Name, err)
 	}

@@ -119,13 +119,13 @@ type UpdateOptsBuilder interface {
 
 // UpdateOpts contains the values used when updating a firewall group.
 type UpdateOpts struct {
-	Name                    *string  `json:"name,omitempty"`
-	Description             *string  `json:"description,omitempty"`
-	IngressFirewallPolicyID *string  `json:"ingress_firewall_policy_id,omitempty"`
-	EgressFirewallPolicyID  *string  `json:"egress_firewall_policy_id,omitempty"`
-	AdminStateUp            *bool    `json:"admin_state_up,omitempty"`
-	Ports                   []string `json:"ports,omitempty"`
-	Shared                  *bool    `json:"shared,omitempty"`
+	Name                    *string   `json:"name,omitempty"`
+	Description             *string   `json:"description,omitempty"`
+	IngressFirewallPolicyID *string   `json:"ingress_firewall_policy_id,omitempty"`
+	EgressFirewallPolicyID  *string   `json:"egress_firewall_policy_id,omitempty"`
+	AdminStateUp            *bool     `json:"admin_state_up,omitempty"`
+	Ports                   *[]string `json:"ports,omitempty"`
+	Shared                  *bool     `json:"shared,omitempty"`
 }
 
 // ToFirewallGroupUpdateMap casts a CreateOpts struct to a map.

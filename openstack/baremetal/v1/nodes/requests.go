@@ -181,6 +181,13 @@ type CreateOptsBuilder interface {
 
 // CreateOpts specifies node creation parameters.
 type CreateOpts struct {
+	// The interface to configure automated cleaning for a Node.
+	// Requires microversion 1.47 or later.
+	AutomatedClean *bool `json:"automated_clean,omitempty"`
+
+	// The BIOS interface for a Node, e.g. “redfish”.
+	BIOSInterface string `json:"bios_interface,omitempty"`
+
 	// The boot interface for a Node, e.g. “pxe”.
 	BootInterface string `json:"boot_interface,omitempty"`
 
@@ -243,6 +250,9 @@ type CreateOpts struct {
 
 	// A string or UUID of the tenant who owns the baremetal node.
 	Owner string `json:"owner,omitempty"`
+
+	// Static network configuration to use during deployment and cleaning.
+	NetworkData map[string]interface{} `json:"network_data,omitempty"`
 }
 
 // ToNodeCreateMap assembles a request body based on the contents of a CreateOpts.
@@ -394,13 +404,34 @@ func GetSupportedBootDevices(client *gophercloud.ServiceClient, id string) (r Su
 	return
 }
 
+// An interface type for a deploy (or clean) step.
+type StepInterface string
+
+const (
+	InterfaceBIOS       StepInterface = "bios"
+	InterfaceDeploy     StepInterface = "deploy"
+	InterfaceManagement StepInterface = "management"
+	InterfacePower      StepInterface = "power"
+	InterfaceRAID       StepInterface = "raid"
+)
+
 // A cleaning step has required keys ‘interface’ and ‘step’, and optional key ‘args’. If specified,
 // the value for ‘args’ is a keyword variable argument dictionary that is passed to the cleaning step
 // method.
 type CleanStep struct {
-	Interface string                 `json:"interface" required:"true"`
+	Interface StepInterface          `json:"interface" required:"true"`
 	Step      string                 `json:"step" required:"true"`
 	Args      map[string]interface{} `json:"args,omitempty"`
+}
+
+// A deploy step has required keys ‘interface’, ‘step’, ’args’ and ’priority’.
+// The value for ‘args’ is a keyword variable argument dictionary that is passed to the deploy step
+// method. Priority is a numeric priority at which the step is running.
+type DeployStep struct {
+	Interface StepInterface          `json:"interface" required:"true"`
+	Step      string                 `json:"step" required:"true"`
+	Args      map[string]interface{} `json:"args" required:"true"`
+	Priority  int                    `json:"priority" required:"true"`
 }
 
 // ProvisionStateOptsBuilder allows extensions to add additional parameters to the
@@ -418,11 +449,12 @@ type ConfigDrive struct {
 }
 
 // ProvisionStateOpts for a request to change a node's provision state. A config drive should be base64-encoded
-// gzipped ISO9660 image.
+// gzipped ISO9660 image. Deploy steps are supported starting with API 1.69.
 type ProvisionStateOpts struct {
 	Target         TargetProvisionState `json:"target" required:"true"`
 	ConfigDrive    interface{}          `json:"configdrive,omitempty"`
 	CleanSteps     []CleanStep          `json:"clean_steps,omitempty"`
+	DeploySteps    []DeployStep         `json:"deploy_steps,omitempty"`
 	RescuePassword string               `json:"rescue_password,omitempty"`
 }
 
@@ -521,6 +553,7 @@ const (
 	RAID10 RAIDLevel = "1+0"
 	RAID50 RAIDLevel = "5+0"
 	RAID60 RAIDLevel = "6+0"
+	JBOD   RAIDLevel = "JBOD"
 )
 
 // DiskType is used to specify the disk type for a logical disk, e.g. hdd or ssd.
@@ -602,6 +635,61 @@ func SetRAIDConfig(client *gophercloud.ServiceClient, id string, raidConfigOptsB
 
 	resp, err := client.Put(raidConfigURL(client, id), reqBody, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{204},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ListBIOSSettingsOptsBuilder allows extensions to add additional parameters to the
+// ListBIOSSettings request.
+type ListBIOSSettingsOptsBuilder interface {
+	ToListBIOSSettingsOptsQuery() (string, error)
+}
+
+// ListBIOSSettingsOpts defines query options that can be passed to ListBIOSettings
+type ListBIOSSettingsOpts struct {
+	// Provide additional information for the BIOS Settings
+	Detail bool `q:"detail"`
+
+	// One or more fields to be returned in the response.
+	Fields []string `q:"fields"`
+}
+
+// ToListBIOSSettingsOptsQuery formats a ListBIOSSettingsOpts into a query string
+func (opts ListBIOSSettingsOpts) ToListBIOSSettingsOptsQuery() (string, error) {
+	if opts.Detail == true && len(opts.Fields) > 0 {
+		return "", fmt.Errorf("cannot have both fields and detail options for BIOS settings")
+	}
+
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// Get the current BIOS Settings for the given Node.
+// To use the opts requires microversion 1.74.
+func ListBIOSSettings(client *gophercloud.ServiceClient, id string, opts ListBIOSSettingsOptsBuilder) (r ListBIOSSettingsResult) {
+	url := biosListSettingsURL(client, id)
+	if opts != nil {
+
+		query, err := opts.ToListBIOSSettingsOptsQuery()
+		if err != nil {
+			r.Err = err
+			return
+		}
+		url += query
+	}
+
+	resp, err := client.Get(url, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Get one BIOS Setting for the given Node.
+func GetBIOSSetting(client *gophercloud.ServiceClient, id string, setting string) (r GetBIOSSettingResult) {
+	resp, err := client.Get(biosGetSettingURL(client, id, setting), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return

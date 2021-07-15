@@ -10,6 +10,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/quotasets"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumetypes"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
@@ -57,6 +58,9 @@ var UpdateQuotaOpts = quotasets.UpdateOpts{
 	Backups:            gophercloud.IntToPointer(2),
 	BackupGigabytes:    gophercloud.IntToPointer(300),
 	Groups:             gophercloud.IntToPointer(350),
+	Extra: map[string]interface{}{
+		"volumes_foo": gophercloud.IntToPointer(100),
+	},
 }
 
 var UpdatedQuotas = quotasets.QuotaSet{
@@ -67,6 +71,14 @@ var UpdatedQuotas = quotasets.QuotaSet{
 	Backups:            2,
 	BackupGigabytes:    300,
 	Groups:             350,
+}
+
+var VolumeTypeIsPublic = true
+var VolumeTypeCreateOpts = volumetypes.CreateOpts{
+	Name:        "foo",
+	IsPublic:    &VolumeTypeIsPublic,
+	Description: "foo",
+	ExtraSpecs:  map[string]string{},
 }
 
 func TestQuotasetUpdate(t *testing.T) {
@@ -81,24 +93,53 @@ func TestQuotasetUpdate(t *testing.T) {
 	orig, err := quotasets.Get(client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
+	// create volumeType to test volume type quota
+	volumeType, err := volumetypes.Create(client, VolumeTypeCreateOpts).Extract()
+	th.AssertNoErr(t, err)
+
 	defer func() {
 		restore := quotasets.UpdateOpts{}
 		FillUpdateOptsFromQuotaSet(*orig, &restore)
 
+		err := volumetypes.Delete(client, volumeType.ID).ExtractErr()
+		th.AssertNoErr(t, err)
+
 		_, err = quotasets.Update(client, projectID, restore).Extract()
 		th.AssertNoErr(t, err)
+
 	}()
 
 	// test Update
 	resultQuotas, err := quotasets.Update(client, projectID, UpdateQuotaOpts).Extract()
 	th.AssertNoErr(t, err)
-	th.AssertEquals(t, UpdatedQuotas, *resultQuotas)
 
 	// We dont know the default quotas, so just check if the quotas are not the
 	// same as before
 	newQuotas, err := quotasets.Get(client, projectID).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, resultQuotas.Volumes, newQuotas.Volumes)
+	th.AssertEquals(t, resultQuotas.Extra["volumes_foo"], newQuotas.Extra["volumes_foo"])
+
+	// test that resultQuotas.Extra is populated with the 3 new quota types
+	// for the new volumeType foo, don't take into account other volume types
+	count := 0
+	for k, _ := range resultQuotas.Extra {
+		tools.PrintResource(t, k)
+		switch k {
+		case
+			"volumes_foo",
+			"snapshots_foo",
+			"gigabytes_foo":
+			count += 1
+		}
+	}
+
+	th.AssertEquals(t, count, 3)
+
+	// unpopulate resultQuotas.Extra as it is different per cloud and test
+	// rest of the quotaSet
+	resultQuotas.Extra = map[string]interface{}(nil)
+	th.AssertDeepEquals(t, UpdatedQuotas, *resultQuotas)
 }
 
 func TestQuotasetDelete(t *testing.T) {

@@ -267,6 +267,7 @@ func HandleImageGetSuccessfully(t *testing.T) {
 			"disk_format": "qcow2",
 			"updated_at": "2014-05-05T17:15:11Z",
 			"visibility": "public",
+			"os_hidden": false,
 			"self": "/v2/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27",
 			"min_disk": 0,
 			"protected": false,
@@ -326,6 +327,11 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 				"value": 1024
 			},
 			{
+				"op": "replace",
+				"path": "/os_hidden",
+				"value": false
+			},
+			{
 				"op": "add",
 				"path": "/empty_value",
 				"value": ""
@@ -341,6 +347,7 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 			"name": "Fedora 17",
 			"status": "active",
 			"visibility": "public",
+			"os_hidden": false,
 			"size": 2254249,
 			"checksum": "2cec138d7dae2aa59038ef8c9aec2390",
 			"tags": [
@@ -387,6 +394,7 @@ func HandleImageListByTagsSuccessfully(t *testing.T) {
           "disk_format": "qcow2",
           "updated_at": "2014-05-05T17:15:11Z",
           "visibility": "public",
+          "os_hidden": false,
           "self": "/v2/images/1bea47ed-f6a9-463b-b423-14b9cca9ad27",
           "min_disk": 0,
           "protected": false,

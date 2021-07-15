@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	identity "github.com/gophercloud/gophercloud/acceptance/openstack/identity/v3"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumetypes"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -54,4 +55,112 @@ func TestVolumeTypes(t *testing.T) {
 	th.AssertEquals(t, name, newVT.Name)
 	th.AssertEquals(t, description, newVT.Description)
 	th.AssertEquals(t, isPublic, newVT.IsPublic)
+}
+
+func TestVolumeTypesExtraSpecs(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	vt, err := CreateVolumeTypeNoExtraSpecs(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolumeType(t, client, vt)
+
+	createOpts := volumetypes.ExtraSpecsOpts{
+		"capabilities":        "gpu",
+		"volume_backend_name": "ssd",
+	}
+
+	createdExtraSpecs, err := volumetypes.CreateExtraSpecs(client, vt.ID, createOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, createdExtraSpecs)
+
+	th.AssertEquals(t, len(createdExtraSpecs), 2)
+	th.AssertEquals(t, createdExtraSpecs["capabilities"], "gpu")
+	th.AssertEquals(t, createdExtraSpecs["volume_backend_name"], "ssd")
+
+	err = volumetypes.DeleteExtraSpec(client, vt.ID, "volume_backend_name").ExtractErr()
+	th.AssertNoErr(t, err)
+
+	updateOpts := volumetypes.ExtraSpecsOpts{
+		"capabilities": "gpu-2",
+	}
+	updatedExtraSpec, err := volumetypes.UpdateExtraSpec(client, vt.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, updatedExtraSpec)
+
+	th.AssertEquals(t, updatedExtraSpec["capabilities"], "gpu-2")
+
+	allExtraSpecs, err := volumetypes.ListExtraSpecs(client, vt.ID).Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, allExtraSpecs)
+
+	th.AssertEquals(t, len(allExtraSpecs), 1)
+	th.AssertEquals(t, allExtraSpecs["capabilities"], "gpu-2")
+
+	singleSpec, err := volumetypes.GetExtraSpec(client, vt.ID, "capabilities").Extract()
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, singleSpec)
+
+	th.AssertEquals(t, singleSpec["capabilities"], "gpu-2")
+}
+
+func TestVolumeTypesAccess(t *testing.T) {
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	identityClient, err := clients.NewIdentityV3Client()
+	th.AssertNoErr(t, err)
+
+	vt, err := CreatePrivateVolumeType(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolumeType(t, client, vt)
+
+	project, err := identity.CreateProject(t, identityClient, nil)
+	th.AssertNoErr(t, err)
+	defer identity.DeleteProject(t, identityClient, project.ID)
+
+	addAccessOpts := volumetypes.AddAccessOpts{
+		Project: project.ID,
+	}
+
+	err = volumetypes.AddAccess(client, vt.ID, addAccessOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	allPages, err := volumetypes.ListAccesses(client, vt.ID).AllPages()
+	th.AssertNoErr(t, err)
+
+	accessList, err := volumetypes.ExtractAccesses(allPages)
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, accessList)
+
+	th.AssertEquals(t, len(accessList), 1)
+	th.AssertEquals(t, accessList[0].ProjectID, project.ID)
+	th.AssertEquals(t, accessList[0].VolumeTypeID, vt.ID)
+
+	removeAccessOpts := volumetypes.RemoveAccessOpts{
+		Project: project.ID,
+	}
+
+	err = volumetypes.RemoveAccess(client, vt.ID, removeAccessOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	allPages, err = volumetypes.ListAccesses(client, vt.ID).AllPages()
+	th.AssertNoErr(t, err)
+
+	accessList, err = volumetypes.ExtractAccesses(allPages)
+	th.AssertNoErr(t, err)
+
+	tools.PrintResource(t, accessList)
+
+	th.AssertEquals(t, len(accessList), 0)
 }

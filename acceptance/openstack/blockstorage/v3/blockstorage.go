@@ -8,6 +8,7 @@ import (
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/qos"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/snapshots"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumetypes"
@@ -79,6 +80,42 @@ func CreateVolume(t *testing.T, client *gophercloud.ServiceClient) (*volumes.Vol
 	return volume, nil
 }
 
+// CreateVolumeWithType will create a volume of the given volume type
+// with a random name and size of 1GB. An error will be returned if
+// the volume was unable to be created.
+func CreateVolumeWithType(t *testing.T, client *gophercloud.ServiceClient, vt *volumetypes.VolumeType) (*volumes.Volume, error) {
+	volumeName := tools.RandomString("ACPTTEST", 16)
+	volumeDescription := tools.RandomString("ACPTTEST-DESC", 16)
+	t.Logf("Attempting to create volume: %s", volumeName)
+
+	createOpts := volumes.CreateOpts{
+		Size:        1,
+		Name:        volumeName,
+		Description: volumeDescription,
+		VolumeType:  vt.Name,
+	}
+
+	volume, err := volumes.Create(client, createOpts).Extract()
+	if err != nil {
+		return volume, err
+	}
+
+	err = volumes.WaitForStatus(client, volume.ID, "available", 60)
+	if err != nil {
+		return volume, err
+	}
+
+	tools.PrintResource(t, volume)
+	th.AssertEquals(t, volume.Name, volumeName)
+	th.AssertEquals(t, volume.Description, volumeDescription)
+	th.AssertEquals(t, volume.Size, 1)
+	th.AssertEquals(t, volume.VolumeType, vt.Name)
+
+	t.Logf("Successfully created volume: %s", volume.ID)
+
+	return volume, nil
+}
+
 // CreateVolumeType will create a volume type with a random name. An
 // error will be returned if the volume was unable to be created.
 func CreateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*volumetypes.VolumeType, error) {
@@ -104,6 +141,67 @@ func CreateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*volumet
 	// TODO: For some reason returned extra_specs are empty even in API reference: https://developer.openstack.org/api-ref/block-storage/v3/?expanded=create-a-volume-type-detail#volume-types-types
 	// "extra_specs": {}
 	// th.AssertEquals(t, vt.ExtraSpecs, createOpts.ExtraSpecs)
+
+	t.Logf("Successfully created volume type: %s", vt.ID)
+
+	return vt, nil
+}
+
+// CreateVolumeTypeNoExtraSpecs will create a volume type with a random name and
+// no extra specs. This is required to bypass cinder-scheduler filters and be able
+// to create a volume with this volumeType. An error will be returned if the volume
+// type was unable to be created.
+func CreateVolumeTypeNoExtraSpecs(t *testing.T, client *gophercloud.ServiceClient) (*volumetypes.VolumeType, error) {
+	name := tools.RandomString("ACPTTEST", 16)
+	description := "create_from_gophercloud"
+	t.Logf("Attempting to create volume type: %s", name)
+
+	createOpts := volumetypes.CreateOpts{
+		Name:        name,
+		ExtraSpecs:  map[string]string{},
+		Description: description,
+	}
+
+	vt, err := volumetypes.Create(client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	tools.PrintResource(t, vt)
+	th.AssertEquals(t, vt.IsPublic, true)
+	th.AssertEquals(t, vt.Name, name)
+	th.AssertEquals(t, vt.Description, description)
+
+	t.Logf("Successfully created volume type: %s", vt.ID)
+
+	return vt, nil
+}
+
+// CreatePrivateVolumeType will create a private volume type with a random
+// name and no extra specs. An error will be returned if the volume type was
+// unable to be created.
+func CreatePrivateVolumeType(t *testing.T, client *gophercloud.ServiceClient) (*volumetypes.VolumeType, error) {
+	name := tools.RandomString("ACPTTEST", 16)
+	description := "create_from_gophercloud"
+	isPublic := false
+	t.Logf("Attempting to create volume type: %s", name)
+
+	createOpts := volumetypes.CreateOpts{
+		Name:        name,
+		ExtraSpecs:  map[string]string{},
+		Description: description,
+		IsPublic:    &isPublic,
+	}
+
+	vt, err := volumetypes.Create(client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	tools.PrintResource(t, vt)
+	th.AssertEquals(t, vt.IsPublic, false)
+	th.AssertEquals(t, vt.Name, name)
+	th.AssertEquals(t, vt.Description, description)
 
 	t.Logf("Successfully created volume type: %s", vt.ID)
 
@@ -145,6 +243,20 @@ func DeleteVolume(t *testing.T, client *gophercloud.ServiceClient, volume *volum
 		t.Fatalf("Unable to delete volume %s: %v", volume.ID, err)
 	}
 
+	// VolumeTypes can't be deleted until their volumes have been,
+	// so block until the volume is deleted.
+	err = tools.WaitFor(func() (bool, error) {
+		_, err := volumes.Get(client, volume.ID).Extract()
+		if err != nil {
+			return true, nil
+		}
+
+		return false, nil
+	})
+	if err != nil {
+		t.Fatalf("Error waiting for volume to delete: %v", err)
+	}
+
 	t.Logf("Successfully deleted volume: %s", volume.ID)
 }
 
@@ -160,4 +272,50 @@ func DeleteVolumeType(t *testing.T, client *gophercloud.ServiceClient, vt *volum
 	}
 
 	t.Logf("Successfully deleted volume type: %s", vt.ID)
+}
+
+// CreateQoS will create a QoS with one spec and a random name. An
+// error will be returned if the volume was unable to be created.
+func CreateQoS(t *testing.T, client *gophercloud.ServiceClient) (*qos.QoS, error) {
+	name := tools.RandomString("ACPTTEST", 16)
+	t.Logf("Attempting to create QoS: %s", name)
+
+	createOpts := qos.CreateOpts{
+		Name:     name,
+		Consumer: qos.ConsumerFront,
+		Specs: map[string]string{
+			"read_iops_sec": "20000",
+		},
+	}
+
+	qs, err := qos.Create(client, createOpts).Extract()
+	if err != nil {
+		return nil, err
+	}
+
+	tools.PrintResource(t, qs)
+	th.AssertEquals(t, qs.Consumer, "front-end")
+	th.AssertEquals(t, qs.Name, name)
+	th.AssertDeepEquals(t, qs.Specs, createOpts.Specs)
+
+	t.Logf("Successfully created QoS: %s", qs.ID)
+
+	return qs, nil
+}
+
+// DeleteQoS will delete a QoS. A fatal error will occur if the QoS
+// failed to be deleted. This works best when used as a deferred function.
+func DeleteQoS(t *testing.T, client *gophercloud.ServiceClient, qs *qos.QoS) {
+	t.Logf("Attempting to delete QoS: %s", qs.ID)
+
+	deleteOpts := qos.DeleteOpts{
+		Force: true,
+	}
+
+	err := qos.Delete(client, qs.ID, deleteOpts).ExtractErr()
+	if err != nil {
+		t.Fatalf("Unable to delete QoS %s: %v", qs.ID, err)
+	}
+
+	t.Logf("Successfully deleted QoS: %s", qs.ID)
 }

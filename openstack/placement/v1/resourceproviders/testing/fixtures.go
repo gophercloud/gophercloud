@@ -105,6 +105,32 @@ const InventoriesBody = `
 }
 `
 
+const AllocationsBody = `
+{
+    "allocations": {
+        "56785a3f-6f1c-4fec-af0b-0faf075b1fcb": {
+            "resources": {
+                "MEMORY_MB": 256,
+                "VCPU": 1
+            }
+        },
+        "9afd5aeb-d6b9-4dea-a588-1e6327a91834": {
+            "resources": {
+                "MEMORY_MB": 512,
+                "VCPU": 2
+            }
+        },
+        "9d16a611-e7f9-4ef3-be26-c61ed01ecefb": {
+            "resources": {
+                "MEMORY_MB": 1024,
+                "VCPU": 1
+            }
+        }
+    },
+    "resource_provider_generation": 12
+}
+`
+
 const TraitsBody = `
 {
     "resource_provider_generation": 1,
@@ -187,6 +213,30 @@ var ExpectedInventories = resourceproviders.ResourceProviderInventories{
 	},
 }
 
+var ExpectedAllocations = resourceproviders.ResourceProviderAllocations{
+	ResourceProviderGeneration: 12,
+	Allocations: map[string]resourceproviders.Allocation{
+		"56785a3f-6f1c-4fec-af0b-0faf075b1fcb": {
+			Resources: map[string]int{
+				"MEMORY_MB": 256,
+				"VCPU":      1,
+			},
+		},
+		"9afd5aeb-d6b9-4dea-a588-1e6327a91834": {
+			Resources: map[string]int{
+				"MEMORY_MB": 512,
+				"VCPU":      2,
+			},
+		},
+		"9d16a611-e7f9-4ef3-be26-c61ed01ecefb": {
+			Resources: map[string]int{
+				"MEMORY_MB": 1024,
+				"VCPU":      1,
+			},
+		},
+	},
+}
+
 var ExpectedTraits = resourceproviders.ResourceProviderTraits{
 	ResourceProviderGeneration: 1,
 	Traits: []string{
@@ -247,6 +297,21 @@ func HandleResourceProviderGetInventories(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 
 			fmt.Fprintf(w, InventoriesBody)
+		})
+}
+
+func HandleResourceProviderGetAllocations(t *testing.T) {
+	allocationsTestUrl := fmt.Sprintf("/resource_providers/%s/allocations", ResourceProviderTestID)
+
+	th.Mux.HandleFunc(allocationsTestUrl,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprintf(w, AllocationsBody)
 		})
 }
 

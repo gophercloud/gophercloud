@@ -17,7 +17,7 @@ func TestVolumeAttachAttachment(t *testing.T) {
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	blockClient, err := clients.NewBlockStorageV2Client()
+	blockClient, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
 
 	server, err := CreateServer(t, client)
@@ -28,6 +28,7 @@ func TestVolumeAttachAttachment(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer bs.DeleteVolume(t, blockClient, volume)
 
+	client.Microversion = "2.79"
 	volumeAttachment, err := CreateVolumeAttachment(t, client, blockClient, server, volume)
 	th.AssertNoErr(t, err)
 	defer DeleteVolumeAttachment(t, client, blockClient, server, volumeAttachment)

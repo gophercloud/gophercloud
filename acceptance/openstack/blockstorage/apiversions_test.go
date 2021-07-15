@@ -11,7 +11,7 @@ import (
 )
 
 func TestAPIVersionsList(t *testing.T) {
-	client, err := clients.NewBlockStorageV2Client()
+	client, err := clients.NewBlockStorageV3Client()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}
@@ -32,7 +32,7 @@ func TestAPIVersionsList(t *testing.T) {
 }
 
 func TestAPIVersionsGet(t *testing.T) {
-	client, err := clients.NewBlockStorageV2Client()
+	client, err := clients.NewBlockStorageV3Client()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
 	}

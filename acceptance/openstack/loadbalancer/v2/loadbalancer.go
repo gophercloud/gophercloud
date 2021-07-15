@@ -67,6 +67,9 @@ func CreateListenerHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loa
 		"X-Forwarded-For": "true",
 	}
 
+	tlsVersions := []listeners.TLSVersion{"TLSv1.2", "TLSv1.3"}
+	tlsVersionsExp := []string{"TLSv1.2", "TLSv1.3"}
+
 	createOpts := listeners.CreateOpts{
 		Name:           listenerName,
 		Description:    listenerDescription,
@@ -74,6 +77,7 @@ func CreateListenerHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loa
 		InsertHeaders:  headers,
 		Protocol:       listeners.ProtocolHTTP,
 		ProtocolPort:   listenerPort,
+		TLSVersions:    tlsVersions,
 	}
 
 	listener, err := listeners.Create(client, createOpts).Extract()
@@ -93,6 +97,7 @@ func CreateListenerHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loa
 	th.AssertEquals(t, listener.Protocol, string(listeners.ProtocolHTTP))
 	th.AssertEquals(t, listener.ProtocolPort, listenerPort)
 	th.AssertDeepEquals(t, listener.InsertHeaders, headers)
+	th.AssertDeepEquals(t, listener.TLSVersions, tlsVersionsExp)
 
 	return listener, nil
 }

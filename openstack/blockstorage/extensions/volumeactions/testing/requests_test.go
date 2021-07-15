@@ -194,3 +194,18 @@ func TestSetBootable(t *testing.T) {
 	err := volumeactions.SetBootable(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestChangeType(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockChangeTypeResponse(t)
+
+	options := &volumeactions.ChangeTypeOpts{
+		NewType:         "ssd",
+		MigrationPolicy: "on-demand",
+	}
+
+	err := volumeactions.ChangeType(client.ServiceClient(), "cd281d77-8217-4830-be95-9528227c105c", options).ExtractErr()
+	th.AssertNoErr(t, err)
+}

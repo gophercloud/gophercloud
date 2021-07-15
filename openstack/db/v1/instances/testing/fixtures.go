@@ -53,6 +53,54 @@ var instance = `
 }
 `
 
+var instanceGet = `
+{
+  "created": "` + timestamp + `",
+  "datastore": {
+    "type": "mysql",
+    "version": "5.6"
+  },
+  "flavor": {
+    "id": "1",
+    "links": [
+      {
+        "href": "https://openstack.example.com/v1.0/1234/flavors/1",
+        "rel": "self"
+      },
+      {
+        "href": "https://openstack.example.com/v1.0/1234/flavors/1",
+        "rel": "bookmark"
+      }
+    ]
+  },
+  "links": [
+    {
+      "href": "https://openstack.example.com/v1.0/1234/instances/1",
+      "rel": "self"
+    }
+  ],
+  "id": "{instanceID}",
+  "name": "test",
+  "status": "ACTIVE",
+  "operating_status": "HEALTHY",
+  "updated": "` + timestamp + `",
+  "volume": {
+    "size": 1,
+    "used": 0.12
+  },
+  "addresses": [
+    {
+      "address": "10.1.0.62",
+      "type": "private"
+    },
+    {
+      "address": "172.24.5.114",
+      "type": "public"
+    }
+  ]
+}
+`
+
 var createReq = `
 {
 	"instance": {
@@ -149,7 +197,7 @@ var (
 	createResp          = fmt.Sprintf(`{"instance": %s}`, instance)
 	createWithFaultResp = fmt.Sprintf(`{"instance": %s}`, instanceWithFault)
 	listInstancesResp   = fmt.Sprintf(`{"instances":[%s]}`, instance)
-	getInstanceResp     = createResp
+	getInstanceResp     = fmt.Sprintf(`{"instance": %s}`, instanceGet)
 	enableUserResp      = `{"user":{"name":"root","password":"secretsecret"}}`
 	isUserEnabledResp   = `{"rootEnabled":true}`
 )
@@ -175,6 +223,33 @@ var expectedInstance = instances.Instance{
 	Datastore: datastores.DatastorePartial{
 		Type:    "mysql",
 		Version: "5.6",
+	},
+}
+
+var expectedGetInstance = instances.Instance{
+	Created: timeVal,
+	Updated: timeVal,
+	Flavor: instances.Flavor{
+		ID: "1",
+		Links: []gophercloud.Link{
+			{Href: "https://openstack.example.com/v1.0/1234/flavors/1", Rel: "self"},
+			{Href: "https://openstack.example.com/v1.0/1234/flavors/1", Rel: "bookmark"},
+		},
+	},
+	ID: instanceID,
+	Links: []gophercloud.Link{
+		{Href: "https://openstack.example.com/v1.0/1234/instances/1", Rel: "self"},
+	},
+	Name:   "test",
+	Status: "ACTIVE",
+	Volume: instances.Volume{Size: 1, Used: 0.12},
+	Datastore: datastores.DatastorePartial{
+		Type:    "mysql",
+		Version: "5.6",
+	},
+	Addresses: []instances.Address{
+		{Type: "private", Address: "10.1.0.62"},
+		{Type: "public", Address: "172.24.5.114"},
 	},
 }
 

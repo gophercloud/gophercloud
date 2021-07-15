@@ -9,7 +9,7 @@ Example of Listing NetworkIPAvailabilities
     panic(err)
   }
 
-  allAvailabilities, err := subnetpools.ExtractSubnetPools(allPages)
+  allAvailabilities, err := networkipavailabilities.ExtractNetworkIPAvailabilities(allPages)
   if err != nil {
     panic(err)
   }
