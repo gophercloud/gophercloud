@@ -128,6 +128,13 @@ type Network struct {
 
 	// FixedIP specifies a fixed IPv4 address to be used on this network.
 	FixedIP string
+
+	// Tag may contain an optional device role tag for the server's virtual
+	// network interface. This can be used to identify network interfaces when
+	// multiple networks are connected to one server.
+	//
+	// Requires microversion 2.32 through 2.36 or 2.42 or later.
+	Tag string
 }
 
 // Personality is an array of files that are injected into the server at launch.
@@ -260,6 +267,9 @@ func (opts CreateOpts) ToServerCreateMap() (map[string]interface{}, error) {
 				}
 				if net.FixedIP != "" {
 					networks[i]["fixed_ip"] = net.FixedIP
+				}
+				if net.Tag != "" {
+					networks[i]["tag"] = net.Tag
 				}
 			}
 			b["networks"] = networks
