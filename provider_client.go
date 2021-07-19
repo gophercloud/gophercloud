@@ -27,6 +27,12 @@ type UserAgent struct {
 
 type RetryFunc func(context.Context, *ErrUnexpectedResponseCode, error, uint) error
 
+// GeneralRetryFunc is a catch-all function for retrying failed API requests.
+// If it returns nil, the request will be retried.  If it returns an error,
+// the request method will exit with that error.  failCount is the number of
+// times the request has failed (starting at 1).
+type GeneralRetryFunc func(context context.Context, method, url string, options *RequestOpts, err error, failCount uint) error
+
 // Prepend prepends a user-defined string to the default User-Agent string. Users
 // may pass in one or more strings to prepend.
 func (ua *UserAgent) Prepend(s ...string) {
@@ -85,11 +91,15 @@ type ProviderClient struct {
 	// Context is the context passed to the HTTP request.
 	Context context.Context
 
-	// Retry backoff func
+	// Retry backoff func is called when rate limited.
 	RetryBackoffFunc RetryFunc
 
 	// MaxBackoffRetries set the maximum number of backoffs. When not set, defaults to DefaultMaxBackoffRetries
 	MaxBackoffRetries uint
+
+	// A general failed request handler method - this is always called in the end if a request failed. Leave as nil
+	// to abort when an error is encountered.
+	GeneralRetryFunc GeneralRetryFunc
 
 	// mut is a mutex for the client. It protects read and write access to client attributes such as getting
 	// and setting the TokenID.
@@ -348,7 +358,7 @@ func (client *ProviderClient) Request(method, url string, options *RequestOpts) 
 	})
 }
 
-func (client *ProviderClient) doRequest(method, url string, options *RequestOpts, state *requestState) (*http.Response, error) {
+func (client *ProviderClient) doRequestInner(method, url string, options *RequestOpts, state *requestState) (*http.Response, error) {
 	var body io.Reader
 	var contentType *string
 
@@ -553,30 +563,51 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 		return resp, err
 	}
 
-	// Parse the response body as JSON, if requested to do so.
-	if options.JSONResponse != nil {
-		defer resp.Body.Close()
-		// Don't decode JSON when there is no content
-		if resp.StatusCode == http.StatusNoContent {
-			// read till EOF, otherwise the connection will be closed and cannot be reused
-			_, err = io.Copy(ioutil.Discard, resp.Body)
+	return resp, nil
+}
+
+func (client *ProviderClient) doRequest(method, url string, options *RequestOpts, state *requestState) (*http.Response, error) {
+	for {
+		resp, err := client.doRequestInner(method, url, options, state)
+		if err == nil {
+			// Parse the response body as JSON, if requested to do so.
+			if options.JSONResponse != nil {
+				defer resp.Body.Close()
+				// Don't decode JSON when there is no content
+				if resp.StatusCode == http.StatusNoContent {
+					// read till EOF, otherwise the connection will be closed and cannot be reused
+					_, err = io.Copy(ioutil.Discard, resp.Body)
+					return resp, err
+				}
+				if err := json.NewDecoder(resp.Body).Decode(options.JSONResponse); err != nil {
+					return nil, err
+				}
+			}
+
+			// Close unused body to allow the HTTP connection to be reused
+			if !options.KeepResponseBody && options.JSONResponse == nil {
+				defer resp.Body.Close()
+				// read till EOF, otherwise the connection will be closed and cannot be reused
+				if _, err := io.Copy(ioutil.Discard, resp.Body); err != nil {
+					return nil, err
+				}
+			}
+
+			return resp, nil
+		}
+
+		if client.GeneralRetryFunc == nil {
 			return resp, err
 		}
-		if err := json.NewDecoder(resp.Body).Decode(options.JSONResponse); err != nil {
-			return nil, err
+		var e error
+
+		state.retries = state.retries + 1
+		e = client.GeneralRetryFunc(client.Context, method, url, options, err, state.retries)
+
+		if e != nil {
+			return resp, e
 		}
 	}
-
-	// Close unused body to allow the HTTP connection to be reused
-	if !options.KeepResponseBody && options.JSONResponse == nil {
-		defer resp.Body.Close()
-		// read till EOF, otherwise the connection will be closed and cannot be reused
-		if _, err := io.Copy(ioutil.Discard, resp.Body); err != nil {
-			return nil, err
-		}
-	}
-
-	return resp, nil
 }
 
 func defaultOkCodes(method string) []int {

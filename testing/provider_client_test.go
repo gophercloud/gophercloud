@@ -632,6 +632,65 @@ func TestRequestRetryContext(t *testing.T) {
 	th.AssertEquals(t, retryCounter, p.MaxBackoffRetries-1)
 }
 
+func TestRequestGeneralRetry(t *testing.T) {
+	p := &gophercloud.ProviderClient{}
+	p.UseTokenLock()
+	p.SetToken(client.TokenID)
+	p.GeneralRetryFunc = func(context context.Context, method, url string, options *gophercloud.RequestOpts, err error, failCount uint) error {
+		if failCount >= 5 {
+			return err
+		}
+		return nil
+	}
+
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	count := 0
+	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+		if count < 3 {
+			http.Error(w, "bad gateway", http.StatusBadGateway)
+			count += 1
+		} else {
+			fmt.Fprintln(w, "OK")
+		}
+	})
+
+	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	if err != nil {
+		t.Fatal("expecting nil, got err")
+	}
+	th.AssertEquals(t, 3, count)
+}
+
+func TestRequestGeneralRetryAbort(t *testing.T) {
+	p := &gophercloud.ProviderClient{}
+	p.UseTokenLock()
+	p.SetToken(client.TokenID)
+	p.GeneralRetryFunc = func(context context.Context, method, url string, options *gophercloud.RequestOpts, err error, failCount uint) error {
+		return err
+	}
+
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	count := 0
+	th.Mux.HandleFunc("/route", func(w http.ResponseWriter, r *http.Request) {
+		if count < 3 {
+			http.Error(w, "bad gateway", http.StatusBadGateway)
+			count += 1
+		} else {
+			fmt.Fprintln(w, "OK")
+		}
+	})
+
+	_, err := p.Request("GET", th.Endpoint()+"/route", &gophercloud.RequestOpts{})
+	if err == nil {
+		t.Fatal("expecting err, got nil")
+	}
+	th.AssertEquals(t, 1, count)
+}
+
 func TestRequestWrongOkCode(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "OK")
