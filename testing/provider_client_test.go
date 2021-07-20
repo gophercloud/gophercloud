@@ -450,7 +450,7 @@ func TestRequestConnectionClose(t *testing.T) {
 	th.AssertEquals(t, int64(iter), connections)
 }
 
-func retryTest(retryCounter *uint, t *testing.T) gophercloud.RetryFunc {
+func retryTest(retryCounter *uint, t *testing.T) gophercloud.RetryBackoffFunc {
 	return func(ctx context.Context, respErr *gophercloud.ErrUnexpectedResponseCode, e error, retries uint) error {
 		retryAfter := respErr.ResponseHeader.Get("Retry-After")
 		if retryAfter == "" {
@@ -636,7 +636,7 @@ func TestRequestGeneralRetry(t *testing.T) {
 	p := &gophercloud.ProviderClient{}
 	p.UseTokenLock()
 	p.SetToken(client.TokenID)
-	p.GeneralRetryFunc = func(context context.Context, method, url string, options *gophercloud.RequestOpts, err error, failCount uint) error {
+	p.RetryFunc = func(context context.Context, method, url string, options *gophercloud.RequestOpts, err error, failCount uint) error {
 		if failCount >= 5 {
 			return err
 		}
@@ -667,7 +667,7 @@ func TestRequestGeneralRetryAbort(t *testing.T) {
 	p := &gophercloud.ProviderClient{}
 	p.UseTokenLock()
 	p.SetToken(client.TokenID)
-	p.GeneralRetryFunc = func(context context.Context, method, url string, options *gophercloud.RequestOpts, err error, failCount uint) error {
+	p.RetryFunc = func(context context.Context, method, url string, options *gophercloud.RequestOpts, err error, failCount uint) error {
 		return err
 	}
 
