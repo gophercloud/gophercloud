@@ -426,6 +426,16 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	// Issue the request.
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
+		if client.RetryFunc != nil {
+			var e error
+			state.retries = state.retries + 1
+			e = client.RetryFunc(client.Context, method, url, options, err, state.retries)
+			if e != nil {
+				return resp, e
+			}
+
+			return client.doRequest(method, url, options, state)
+		}
 		return nil, err
 	}
 
