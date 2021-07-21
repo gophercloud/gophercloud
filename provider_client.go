@@ -591,16 +591,6 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 		if resp.StatusCode == http.StatusNoContent {
 			// read till EOF, otherwise the connection will be closed and cannot be reused
 			_, err = io.Copy(ioutil.Discard, resp.Body)
-			if err != nil && client.RetryFunc != nil {
-				var e error
-				state.retries = state.retries + 1
-				e = client.RetryFunc(client.Context, method, url, options, err, state.retries)
-				if e != nil {
-					return resp, e
-				}
-
-				return client.doRequest(method, url, options, state)
-			}
 			return resp, err
 		}
 		if err := json.NewDecoder(resp.Body).Decode(options.JSONResponse); err != nil {
