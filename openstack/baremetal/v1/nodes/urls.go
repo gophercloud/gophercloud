@@ -65,3 +65,11 @@ func biosListSettingsURL(client *gophercloud.ServiceClient, id string) string {
 func biosGetSettingURL(client *gophercloud.ServiceClient, id string, setting string) string {
 	return client.ServiceURL("nodes", id, "bios", setting)
 }
+
+func vendorPassthruMethodsURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("nodes", id, "vendor_passthru", "methods")
+}
+
+func vendorPassthruCallURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("nodes", id, "vendor_passthru")
+}
