@@ -39,3 +39,22 @@ func TestLiveMigrate(t *testing.T) {
 	err := migrate.LiveMigrate(client.ServiceClient(), serverID, migrationOpts).ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestLiveMigrate225(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	mockLiveMigrate225Response(t, serverID)
+
+	host := "01c0cadef72d47e28a672a76060d492c"
+	diskOverCommit := true
+
+	migrationOpts := migrate.LiveMigrate225Opts{
+		Host:           &host,
+		BlockMigration: "auto",
+		DiskOverCommit: &diskOverCommit,
+	}
+
+	err := migrate.LiveMigrate(client.ServiceClient(), serverID, migrationOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+}
