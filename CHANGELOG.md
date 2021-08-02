@@ -1,5 +1,9 @@
 ## 0.20.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Added `RetryFunc` to enable custom retry functions.
+
 ## 0.19.0 (July 22, 2021)
 
 NOTES / BREAKING CHANGES
