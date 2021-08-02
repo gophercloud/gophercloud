@@ -2,7 +2,7 @@
 
 IMPROVEMENTS
 
-* Added `RetryFunc` to enable custom retry functions.
+* Added `RetryFunc` to enable custom retry functions. [GH-2194](https://github.com/gophercloud/gophercloud/pull/2194)
 
 ## 0.19.0 (July 22, 2021)
 
