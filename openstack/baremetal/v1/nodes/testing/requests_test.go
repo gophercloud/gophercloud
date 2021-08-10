@@ -593,3 +593,98 @@ func TestListBIOSSettingsOpts(t *testing.T) {
 	_, err := opts.ToListBIOSSettingsOptsQuery()
 	th.AssertEquals(t, err.Error(), "cannot have both fields and detail options for BIOS settings")
 }
+
+func TestGetVendorPassthruMethods(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetVendorPassthruMethodsSuccessfully(t)
+
+	c := client.ServiceClient()
+	actual, err := nodes.GetVendorPassthruMethods(c, "1234asdf").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeVendorPassthruMethods, *actual)
+}
+
+func TestGetAllSubscriptions(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetAllSubscriptionsVendorPassthruSuccessfully(t)
+
+	c := client.ServiceClient()
+	method := nodes.CallVendorPassthruOpts{
+		Method: "get_all_subscriptions",
+	}
+	actual, err := nodes.GetAllSubscriptions(c, "1234asdf", method).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeGetAllSubscriptions, *actual)
+}
+
+func TestGetSubscription(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleGetSubscriptionVendorPassthruSuccessfully(t)
+
+	c := client.ServiceClient()
+	method := nodes.CallVendorPassthruOpts{
+		Method: "get_subscription",
+	}
+	subscriptionOpt := nodes.GetSubscriptionOpts{
+		Id: "62dbd1b6-f637-11eb-b551-4cd98f20754c",
+	}
+	actual, err := nodes.GetSubscription(c, "1234asdf", method, subscriptionOpt).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeGetSubscription, *actual)
+}
+
+func TestCreateSubscriptionAllParameters(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSubscriptionVendorPassthruAllParametersSuccessfully(t)
+
+	c := client.ServiceClient()
+	method := nodes.CallVendorPassthruOpts{
+		Method: "create_subscription",
+	}
+	createOpt := nodes.CreateSubscriptionOpts{
+		Destination: "https://someurl",
+		Context:     "gophercloud",
+		Protocol:    "Redfish",
+		EventTypes:  []string{"Alert"},
+	}
+	actual, err := nodes.CreateSubscription(c, "1234asdf", method, createOpt).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeCreateSubscriptionAllParameters, *actual)
+}
+
+func TestCreateSubscriptionWithRequiredParameters(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleCreateSubscriptionVendorPassthruRequiredParametersSuccessfully(t)
+
+	c := client.ServiceClient()
+	method := nodes.CallVendorPassthruOpts{
+		Method: "create_subscription",
+	}
+	createOpt := nodes.CreateSubscriptionOpts{
+		Destination: "https://somedestinationurl",
+	}
+	actual, err := nodes.CreateSubscription(c, "1234asdf", method, createOpt).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, NodeCreateSubscriptionRequiredParameters, *actual)
+}
+
+func TestDeleteSubscription(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	HandleDeleteSubscriptionVendorPassthruSuccessfully(t)
+
+	c := client.ServiceClient()
+	method := nodes.CallVendorPassthruOpts{
+		Method: "delete_subscription",
+	}
+	deleteOpt := nodes.DeleteSubscriptionOpts{
+		Id: "344a3e2-978a-444e-990a-cbf47c62ef88",
+	}
+	err := nodes.DeleteSubscription(c, "1234asdf", method, deleteOpt).ExtractErr()
+	th.AssertNoErr(t, err)
+}

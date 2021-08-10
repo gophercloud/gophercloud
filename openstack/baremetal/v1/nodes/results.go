@@ -65,6 +65,25 @@ func (r GetBIOSSettingResult) Extract() (*BIOSSetting, error) {
 	return &s.Setting, err
 }
 
+// Extract interprets a VendorPassthruMethod as
+func (r VendorPassthruMethodsResult) Extract() (*VendorPassthruMethods, error) {
+	var s VendorPassthruMethods
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+func (r GetAllSubscriptionsVendorPassthruResult) Extract() (*GetAllSubscriptionsVendorPassthru, error) {
+	var s GetAllSubscriptionsVendorPassthru
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+func (r SubscriptionVendorPassthruResult) Extract() (*SubscriptionVendorPassthru, error) {
+	var s SubscriptionVendorPassthru
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
 // Node represents a node in the OpenStack Bare Metal API.
 type Node struct {
 	// Whether automated cleaning is enabled or disabled on this node.
@@ -323,6 +342,30 @@ type GetBIOSSettingResult struct {
 	gophercloud.Result
 }
 
+// VendorPassthruMethodsResult is the response from a GetVendorPassthruMethods operation. Call its Extract
+// method to interpret it as an array of allowed vendor methods.
+type VendorPassthruMethodsResult struct {
+	gophercloud.Result
+}
+
+// GetAllSubscriptionsVendorPassthruResult is the response from GetAllSubscriptions operation. Call its
+// Extract method to interpret it as a GetAllSubscriptionsVendorPassthru struct.
+type GetAllSubscriptionsVendorPassthruResult struct {
+	gophercloud.Result
+}
+
+// SubscriptionVendorPassthruResult is the response from GetSubscription and CreateSubscription operation. Call its Extract
+// method to interpret it as a SubscriptionVendorPassthru struct.
+type SubscriptionVendorPassthruResult struct {
+	gophercloud.Result
+}
+
+// DeleteSubscriptionVendorPassthruResult is the response from DeleteSubscription operation. Call its
+// ExtractErr method to determine if the call succeeded of failed.
+type DeleteSubscriptionVendorPassthruResult struct {
+	gophercloud.ErrResult
+}
+
 // Each element in the response will contain a “result” variable, which will have a value of “true” or “false”, and
 // also potentially a reason. A value of nil indicates that the Node’s driver does not support that interface.
 type DriverValidation struct {
@@ -395,4 +438,66 @@ type SingleBIOSSetting struct {
 // method to determine if the call succeeded or failed.
 type ChangeStateResult struct {
 	gophercloud.ErrResult
+}
+
+type VendorPassthruMethods struct {
+	CreateSubscription  CreateSubscriptionMethod  `json:"create_subscription,omitempty"`
+	DeleteSubscription  DeleteSubscriptionMethod  `json:"delete_subscription,omitempty"`
+	GetSubscription     GetSubscriptionMethod     `json:"get_subscription,omitempty"`
+	GetAllSubscriptions GetAllSubscriptionsMethod `json:"get_all_subscriptions,omitempty"`
+}
+
+// Below you can find all vendor passthru methods structs
+
+type CreateSubscriptionMethod struct {
+	HTTPMethods          []string `json:"http_methods"`
+	Async                bool     `json:"async"`
+	Description          string   `json:"description"`
+	Attach               bool     `json:"attach"`
+	RequireExclusiveLock bool     `json:"require_exclusive_lock"`
+}
+
+type DeleteSubscriptionMethod struct {
+	HTTPMethods          []string `json:"http_methods"`
+	Async                bool     `json:"async"`
+	Description          string   `json:"description"`
+	Attach               bool     `json:"attach"`
+	RequireExclusiveLock bool     `json:"require_exclusive_lock"`
+}
+
+type GetSubscriptionMethod struct {
+	HTTPMethods          []string `json:"http_methods"`
+	Async                bool     `json:"async"`
+	Description          string   `json:"description"`
+	Attach               bool     `json:"attach"`
+	RequireExclusiveLock bool     `json:"require_exclusive_lock"`
+}
+
+type GetAllSubscriptionsMethod struct {
+	HTTPMethods          []string `json:"http_methods"`
+	Async                bool     `json:"async"`
+	Description          string   `json:"description"`
+	Attach               bool     `json:"attach"`
+	RequireExclusiveLock bool     `json:"require_exclusive_lock"`
+}
+
+// A List of subscriptions from a node in the OpenStack Bare Metal API.
+type GetAllSubscriptionsVendorPassthru struct {
+	Context      string              `json:"@odata.context"`
+	Etag         string              `json:"@odata.etag"`
+	Id           string              `json:"@odata.id"`
+	Type         string              `json:"@odata.type"`
+	Description  string              `json:"Description"`
+	Name         string              `json:"Name"`
+	Members      []map[string]string `json:"Members"`
+	MembersCount int                 `json:"Members@odata.count"`
+}
+
+// A Subscription from a node in the OpenStack Bare Metal API.
+type SubscriptionVendorPassthru struct {
+	Id          string   `json:"Id"`
+	Context     string   `json:"Context"`
+	Destination string   `json:"Destination"`
+	EventTypes  []string `json:"EventTypes"`
+	Protocol    string   `json:"Protocol"`
 }
