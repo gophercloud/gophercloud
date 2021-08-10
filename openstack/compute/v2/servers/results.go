@@ -221,6 +221,68 @@ type Server struct {
 	// Tags is a slice/list of string tags in a server.
 	// The requires microversion 2.26 or later.
 	Tags *[]string `json:"tags"`
+
+	// Locked contains server locked status,if server is locked,the Locked is true
+	Locked bool `json:"locked"`
+	// TrustedImageCertificates contain image trusted certificates
+	TrustedImageCertificates string `json:"trusted_image_certificates"`
+
+	Description string `json:"description"`
+
+	// HostStatus contains server host status
+	HostStatus string `json:"host_status"`
+
+	// LockedReason contains locked reason
+	LockedReason string `json:"locked_reason"`
+
+	// DiskConfig contains the elastic server for the image takes effect
+	// AUTO|MANUAL
+	DiskConfig string `json:"OS-DCF:diskConfig"`
+
+	// InstanceName contains server libvirtd name
+	InstanceName string `json:"OS-EXT-SRV-ATTR:instance_name"`
+
+	// ServerHost contains server host
+	ServerHost string `json:"OS-EXT-SRV-ATTR:host"`
+
+	// HypervisorHostname contains server  hypervisor hostname
+	HypervisorHostname string `json:"OS-EXT-SRV-ATTR:hypervisor_hostname"`
+
+	// UserData contains create server appoint user_data
+	UserData string `json:"OS-EXT-SRV-ATTR:user_data"`
+
+	// RootDeviceName contains server system disk
+	RootDeviceName string `json:"OS-EXT-SRV-ATTR:root_device_name"`
+
+	// RamdiskId contains server ramdisk image UUID
+	// IF the image format is AMI,this field is empty
+	RamdiskId string `json:"OS-EXT-SRV-ATTR:ramdisk_id"`
+
+	// KernelId contains server ramdisk image UUID
+	// IF the image format is AMI,this field is empty
+	KernelId string `json:"OS-EXT-SRV-ATTR:kernel_id"`
+
+	// TaskState contains server task state
+	// scheduling|block_device_mapping|networking|spawning|rebooting|reboot_pending|reboot_started|rebooting_hard|reboot_pending_hard|reboot_started_hard
+	// rebuilding|rebuild_block_device_mapping|rebuild_spawning|migrating|resize_prep|resize_migrating|resize_migrated|resize_finish|resize_reverting
+	// powering-off|powering-on|deleting
+	TaskState string `json:"OS-EXT-STS:task_state"`
+
+	// LaunchedAt contains server launched time
+	LaunchedAt string `json:"OS-SRV-USG:launched_at"`
+
+	// PowerState contains server power state
+	// 0:pending|1:running|2:paused|3:shutdown|4:crashed
+	PowerState int64 `json:"OS-EXT-STS:power_state"`
+
+	// AvailabilityZone contains server availability_zone
+	AvailabilityZone string `json:"OS-EXT-AZ:availability_zone"`
+
+	// ReservationId contains batch create server to reserve server ID
+	ReservationId string `json:"OS-EXT-SRV-ATTR:reservation_id"`
+
+	// LaunchIndex contains server launch index,If it is not created in batches, the value is 0
+	LaunchIndex int64 `OS-EXT-SRV-ATTR:launch_index`
 }
 
 type AttachedVolume struct {
