@@ -4,6 +4,7 @@ import "github.com/gophercloud/gophercloud"
 
 const resourcePath = "agents"
 const dhcpNetworksResourcePath = "dhcp-networks"
+const bgpSpeakersResourcePath = "bgp-drinstances"
 
 func resourceURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(resourcePath, id)
@@ -43,4 +44,8 @@ func scheduleDHCPNetworkURL(c *gophercloud.ServiceClient, id string) string {
 
 func removeDHCPNetworkURL(c *gophercloud.ServiceClient, id string, networkID string) string {
 	return c.ServiceURL(resourcePath, id, dhcpNetworksResourcePath, networkID)
+}
+
+func listBGPSpeakersURL(c *gophercloud.ServiceClient, id string) string {
+        return c.ServiceURL(resourcePath, id, bgpSpeakersResourcePath)
 }

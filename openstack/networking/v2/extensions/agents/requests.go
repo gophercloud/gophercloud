@@ -112,6 +112,14 @@ func ListDHCPNetworks(c *gophercloud.ServiceClient, id string) (r ListDHCPNetwor
 	return
 }
 
+// ListBGPSpeakers return the uuid of a list of the BGP Speakers hosted by the
+// BGP agent.
+func ListBGPSpeakers(c *gophercloud.ServiceClient, id string) (r ListBGPSpeakersResult) {
+        resp, err := c.Get(listBGPSpeakersURL(c, id), &r.Body, nil)
+        _, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+        return
+}
+
 // ScheduleDHCPNetworkOptsBuilder allows extensions to add additional parameters
 // to the ScheduleDHCPNetwork request.
 type ScheduleDHCPNetworkOptsBuilder interface {
