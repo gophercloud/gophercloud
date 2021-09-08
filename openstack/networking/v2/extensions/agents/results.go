@@ -55,6 +55,14 @@ type RemoveDHCPNetworkResult struct {
 	gophercloud.ErrResult
 }
 
+type ScheduleBGPSpeakerResult struct {
+	gophercloud.ErrResult
+}
+
+type RemoveBGPSpeakerResult struct {
+	gophercloud.ErrResult
+}
+
 // Agent represents a Neutron agent.
 type Agent struct {
 	// ID is the id of the agent.

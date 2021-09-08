@@ -112,14 +112,6 @@ func ListDHCPNetworks(c *gophercloud.ServiceClient, id string) (r ListDHCPNetwor
 	return
 }
 
-// ListBGPSpeakers return the uuid of a list of the BGP Speakers hosted by the
-// BGP agent.
-func ListBGPSpeakers(c *gophercloud.ServiceClient, id string) (r ListBGPSpeakersResult) {
-        resp, err := c.Get(listBGPSpeakersURL(c, id), &r.Body, nil)
-        _, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
-        return
-}
-
 // ScheduleDHCPNetworkOptsBuilder allows extensions to add additional parameters
 // to the ScheduleDHCPNetwork request.
 type ScheduleDHCPNetworkOptsBuilder interface {
@@ -154,6 +146,48 @@ func ScheduleDHCPNetwork(c *gophercloud.ServiceClient, id string, opts ScheduleD
 // RemoveDHCPNetwork removes a network from a DHCP agent.
 func RemoveDHCPNetwork(c *gophercloud.ServiceClient, id string, networkID string) (r RemoveDHCPNetworkResult) {
 	resp, err := c.Delete(removeDHCPNetworkURL(c, id, networkID), nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// ListBGPSpeakers return the uuid of a list of the BGP Speakers hosted by the
+// BGP agent.
+func ListBGPSpeakers(c *gophercloud.ServiceClient, id string) (r ListBGPSpeakersResult) {
+	resp, err := c.Get(listBGPSpeakersURL(c, id), &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+type ScheduleBGPSpeakerOptBuilder interface {
+	ToAgentScheduleBGPSpeakerMap() (map[string]interface{}, error)
+}
+
+type ScheduleBGPSpeakerOpts struct {
+	SpeakerID string `json:"bgp_speaker_id" required:"true"`
+}
+
+// ToAgentScheduleBGPSpeakerMap builds a request body from ScheduleBGPSpeakerOpts
+func (opts ScheduleBGPSpeakerOpts) ToAgentScheduleBGPSpeakerMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+// ScheduleBGPSpeaker schedule a BGP speaker to a BGP agent
+func ScheduleBGPSpeaker(c *gophercloud.ServiceClient, id string, opts ScheduleBGPSpeakerOptBuilder) (r ScheduleBGPSpeakerResult) {
+	b, err := opts.ToAgentScheduleBGPSpeakerMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Post(scheduleBGPSpeakersURL(c, id), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{201},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// RemoveBGPSpeaker removoes a BGP speaker from a BGP agent
+func RemoveBGPSpeaker(c *gophercloud.ServiceClient, id string, speakerID string) (r RemoveBGPSpeakerResult) {
+	resp, err := c.Delete(removeBGPSpeakersURL(c, id, speakerID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
