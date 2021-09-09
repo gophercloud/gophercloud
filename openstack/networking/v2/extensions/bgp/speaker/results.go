@@ -6,6 +6,8 @@ import (
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+const jroot = "bgp_speaker"
+
 type commonResult struct {
 	gophercloud.Result
 }
@@ -18,7 +20,7 @@ func (r commonResult) Extract() (*BGPSpeaker, error) {
 }
 
 func (r commonResult) ExtractInto(v interface{}) error {
-	return r.Result.ExtractIntoStructPtr(v, "bgp_speaker")
+	return r.Result.ExtractIntoStructPtr(v, jroot)
 }
 
 // CreateResult represents the result of a create operation. Call its Extract
