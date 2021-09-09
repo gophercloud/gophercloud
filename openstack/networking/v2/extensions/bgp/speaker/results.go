@@ -18,7 +18,7 @@ func (r commonResult) Extract() (*BGPSpeaker, error) {
 }
 
 func (r commonResult) ExtractInto(v interface{}) error {
-	return r.Result.ExtractIntoStructPtr(v, "network")
+	return r.Result.ExtractIntoStructPtr(v, "bgp_speaker")
 }
 
 // CreateResult represents the result of a create operation. Call its Extract
