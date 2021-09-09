@@ -2,14 +2,14 @@ package speaker
 
 import "github.com/gophercloud/gophercloud"
 
-const baseurl = "bgp-speakers"
+const urlBase = "bgp-speakers"
 
 func resourceURL(c *gophercloud.ServiceClient, id string) string {
-	return c.ServiceURL(baseurl, id)
+	return c.ServiceURL(urlBase, id)
 }
 
 func rootURL(c *gophercloud.ServiceClient) string {
-	return c.ServiceURL(baseurl)
+	return c.ServiceURL(urlBase)
 }
 
 func getURL(c *gophercloud.ServiceClient, id string) string {
@@ -18,4 +18,12 @@ func getURL(c *gophercloud.ServiceClient, id string) string {
 
 func listURL(c *gophercloud.ServiceClient) string {
 	return rootURL(c)
+}
+
+func createURL(c *gophercloud.ServiceClient) string {
+	return rootURL(c)
+}
+
+func deleteURL(c *gophercloud.ServiceClient, id string) string {
+	return c.ServiceURL(urlBase, id)
 }
