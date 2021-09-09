@@ -31,12 +31,13 @@ type CreateOpts struct {
 	AuthType string `json:"auth_type"`
 	RemoteAS int    `json:"remote_as"`
 	Name     string `json:"name"`
+	Password string `json:"password,omitempty"`
 	PeerIP   string `json:"peer_ip"`
 }
 
 // ToPeerCreateMap builds a request body from CreateOpts.
 func (opts CreateOpts) ToPeerCreateMap() (map[string]interface{}, error) {
-	return gophercloud.BuildRequestBody(opts, "bgp_peer")
+	return gophercloud.BuildRequestBody(opts, jroot)
 }
 
 func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResult) {
@@ -46,6 +47,34 @@ func Create(c *gophercloud.ServiceClient, opts CreateOptsBuilder) (r CreateResul
 		return
 	}
 	resp, err := c.Post(createURL(c), b, &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// UpdateOptsBuilder allows extensions to add additional parameters to the
+// Update request.
+type UpdateOptsBuilder interface {
+	ToPeerUpdateMap() (map[string]interface{}, error)
+}
+
+type UpdateOpts struct {
+	Name     string `json:"name,omitempty"`
+	Password string `json:"password,omitempty"`
+}
+
+func (opts UpdateOpts) ToPeerUpdateMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, jroot)
+}
+
+func Update(c *gophercloud.ServiceClient, peerID string, opts UpdateOpts) (r UpdateResult) {
+	b, err := opts.ToPeerUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(updateURL(c, peerID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
