@@ -38,7 +38,7 @@ func MockListResponse(t *testing.T) {
       "replication_status": "disabled",
       "os-volume-replication:extended_status": null,
       "encrypted": false,
-      "os-vol-host-attr:host": null,
+      "os-vol-host-attr:host": "host-001",
       "availability_zone": "nova",
       "attachments": [{
         "server_id": "83ec2e3b-4321-422b-8706-a84185f52a0a",
@@ -123,7 +123,6 @@ func MockGetResponse(t *testing.T) {
     "replication_status": "disabled",
     "os-volume-replication:extended_status": null,
     "encrypted": false,
-    "os-vol-host-attr:host": null,
     "availability_zone": "nova",
     "attachments": [{
       "server_id": "83ec2e3b-4321-422b-8706-a84185f52a0a",
