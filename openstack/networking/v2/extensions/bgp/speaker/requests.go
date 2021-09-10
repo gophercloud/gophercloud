@@ -4,6 +4,8 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 	"log"
+	"strconv"
+	"strings"
 )
 
 // For the sake of consistency, this function will return a pagination.Pager
@@ -37,19 +39,42 @@ type CreateOpts struct {
 	Networks                      []string `json:"networks,omitempty"`
 }
 
-func BuildCreateOpts(name string, ipver int, advrts bool, advnets bool, localas string, nets []string) CreateOpts {
-	var r CreateOpts
+func BuildCreateOpts(name string, localas string, nets []string, opts map[string]string) (r CreateOpts) {
 	r.Name = name
-	if ipver == 4 || ipver == 6 {
-		r.IPVersion = ipver
-	} else {
-		log.Panicf("Invalid IP version %d", ipver)
-	}
-	r.AdvertiseFloatingIPHostRoutes = advrts
-	r.AdvertiseTenantNetworks = advnets
 	r.LocalAS = localas
 	r.Networks = nets
-	return r
+
+	ipver, ok := opts["IPVersion"]
+	if !ok {
+		r.IPVersion = 4
+	} else if ipver == "4" || ipver == "6" {
+		r.IPVersion, _ = strconv.Atoi(ipver)
+	} else {
+		log.Panic("IPVersion should be either 4 or 6")
+	}
+
+	advrts, ok := opts["AdvertiseFloatingIPHostRoutes"]
+	if !ok {
+		r.AdvertiseFloatingIPHostRoutes = true
+	} else if strings.ToLower(advrts) == "true" {
+		r.AdvertiseFloatingIPHostRoutes = true
+	} else if strings.ToLower(advrts) == "false" {
+		r.AdvertiseFloatingIPHostRoutes = false
+	} else {
+		log.Panic("AdvertiseFloatingIPHostRoutes should be either true or false")
+	}
+
+	advnets, ok := opts["AdvertiseTenantNetworks"]
+	if !ok {
+		r.AdvertiseTenantNetworks = true
+	} else if strings.ToLower(advnets) == "true" {
+		r.AdvertiseTenantNetworks = true
+	} else if strings.ToLower(advnets) == "false" {
+		r.AdvertiseTenantNetworks = false
+	} else {
+		log.Panic("AdvertiseTenantNetworks sho uld be either true or false")
+	}
+	return
 }
 
 // ToSpeakerCreateMap builds a request body from CreateOpts.
@@ -85,9 +110,45 @@ func (opts UpdateOpts) ToSpeakerUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, jroot)
 }
 
-func BuildUpdateOpts(name string, advrts bool, advnets bool) (r UpdateOpts) {
-	r.AdvertiseFloatingIPHostRoutes = advrts
-	r.AdvertiseTenantNetworks = advnets
+func BuildUpdateOpts(c *gophercloud.ServiceClient, speakerID string, m map[string]string) (r UpdateOpts) {
+	name, ok := m["Name"]
+	if ok {
+		r.Name = name
+	}
+
+	speaker := func() *BGPSpeaker {
+		s, err := Get(c, speakerID).Extract()
+		if err != nil {
+			log.Panic(err)
+		}
+		return s
+	}()
+
+	advrts, ok := m["AdvertiseFloatingIPHostRoutes"]
+	if ok {
+		if strings.ToLower(advrts) == "true" {
+			r.AdvertiseFloatingIPHostRoutes = true
+		} else if strings.ToLower(advrts) == "false" {
+			r.AdvertiseFloatingIPHostRoutes = false
+		} else {
+			log.Panic("AdvertiseFloatingIPHostRoutes should be either true or false")
+		}
+	} else {
+		r.AdvertiseFloatingIPHostRoutes = (*speaker).AdvertiseFloatingIPHostRoutes
+	}
+
+	advnets, ok := m["AdvertiseTenantNetworks"]
+	if ok {
+		if strings.ToLower(advnets) == "true" {
+			r.AdvertiseTenantNetworks = true
+		} else if strings.ToLower(advnets) == "false" {
+			r.AdvertiseTenantNetworks = false
+		} else {
+			log.Panic("AdvertiseTenantNetworks should be either true or false")
+		}
+	} else {
+		r.AdvertiseTenantNetworks = (*speaker).AdvertiseTenantNetworks
+	}
 	return r
 }
 
