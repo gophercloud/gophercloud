@@ -221,3 +221,12 @@ func RemoveBGPPeer(c *gophercloud.ServiceClient, bgpSpeakerID string, opts Remov
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// List Dynamic Routing Agents hosting a specific BGP Speaker
+// /v2.0/bgp-speakers/{bgp-speaker-id}/bgp-dragents
+func GetAdvertisedRoutes(c *gophercloud.ServiceClient, bgpSpeakerID string) pagination.Pager {
+	url := getAdvertisedRoutesURL(c, bgpSpeakerID)
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return AdvertisedRoutePage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}

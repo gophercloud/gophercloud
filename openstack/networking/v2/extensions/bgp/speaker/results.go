@@ -98,7 +98,7 @@ type BGPSpeakerPage struct {
 	pagination.LinkedPageBase
 }
 
-// This is feature is not provided by openstack API
+// OpenStack API always return one page
 func (r BGPSpeakerPage) NextPageURL() (string, error) {
 	return "", nil
 }
@@ -130,4 +130,54 @@ type AddBGPPeerResult struct {
 // RemoveBGPPeerResult represent the response of the PUT /v2.0/bgp-speakers/{bgp-speaker-id}/remove-bgp-peer
 type RemoveBGPPeerResult struct {
 	commonResult
+}
+
+type AdvertisedRoute struct {
+	// NextHop IP address
+	NextHop string `json:"next_hop"`
+
+	// Destination Network
+	Destination string `json:"destination"`
+}
+
+// AdvertisedRoutePage is the page returned by a pager when you call
+// GetAdvertisedRoutes
+// v2.0/bgp-speakers/{bgp-speaker-id}/get_advertised_routes
+type AdvertisedRoutePage struct {
+	pagination.LinkedPageBase
+}
+
+// OpenStack API always return one page
+func (r AdvertisedRoutePage) NextPageURL() (string, error) {
+	return "", nil
+}
+
+// IsEmpty checks whether a AdvertisedRoutePage struct is empty.
+func (r AdvertisedRoutePage) IsEmpty() (bool, error) {
+	is, err := ExtractAdvertisedRoutes(r)
+	return len(is) == 0, err
+}
+
+// ExtractAdvertisedRoutes accepts a Page struct, a.k.a. AdvertisedRoutePage struct,
+// and extracts the elements into a slice of AdvertisedRoute structs.
+func ExtractAdvertisedRoutes(r pagination.Page) ([]AdvertisedRoute, error) {
+	var s []AdvertisedRoute
+	err := ExtractAdvertisedRoutesInto(r, &s)
+	return s, err
+}
+
+func ExtractAdvertisedRoutesInto(r pagination.Page, v interface{}) error {
+	return r.(AdvertisedRoutePage).Result.ExtractIntoSlicePtr(v, "advertised_routes")
+}
+
+func (n *AdvertisedRoute) UnmarshalJSON(b []byte) error {
+	type tmp AdvertisedRoute
+	var advrt struct {
+		tmp
+	}
+	if err := json.Unmarshal(b, &advrt); err != nil {
+		return err
+	}
+	*n = AdvertisedRoute(advrt.tmp)
+	return nil
 }

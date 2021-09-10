@@ -48,3 +48,8 @@ func addBGPPeerURL(c *gophercloud.ServiceClient, speakerID string) string {
 func removeBGPPeerURL(c *gophercloud.ServiceClient, speakerID string) string {
 	return c.ServiceURL(urlBase, speakerID, "remove_bgp_peer")
 }
+
+// return /v2.0/bgp-speakers/{bgp-speaker-id}/get_advertised_routes
+func getAdvertisedRoutesURL(c *gophercloud.ServiceClient, speakerID string) string {
+	return c.ServiceURL(urlBase, speakerID, "get_advertised_routes")
+}
