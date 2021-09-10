@@ -66,13 +66,13 @@ func (opts UpdateOpts) ToPeerUpdateMap() (map[string]interface{}, error) {
 	return gophercloud.BuildRequestBody(opts, jroot)
 }
 
-func Update(c *gophercloud.ServiceClient, peerID string, opts UpdateOpts) (r UpdateResult) {
+func Update(c *gophercloud.ServiceClient, bgpPeerID string, opts UpdateOpts) (r UpdateResult) {
 	b, err := opts.ToPeerUpdateMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Put(updateURL(c, peerID), b, &r.Body, &gophercloud.RequestOpts{
+	resp, err := c.Put(updateURL(c, bgpPeerID), b, &r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{200},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -80,8 +80,8 @@ func Update(c *gophercloud.ServiceClient, peerID string, opts UpdateOpts) (r Upd
 }
 
 // Delete accepts a unique ID and deletes the bgp Peer associated with it.
-func Delete(c *gophercloud.ServiceClient, PeerID string) (r DeleteResult) {
-	resp, err := c.Delete(deleteURL(c, PeerID), nil)
+func Delete(c *gophercloud.ServiceClient, bgpPeerID string) (r DeleteResult) {
+	resp, err := c.Delete(deleteURL(c, bgpPeerID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

@@ -119,5 +119,15 @@ func ExtractBGPSpeakers(r pagination.Page) ([]BGPSpeaker, error) {
 }
 
 func ExtractBGPSpeakersInto(r pagination.Page, v interface{}) error {
-	return r.(BGPSpeakerPage).Result.ExtractIntoSlicePtr(v, "bgp_speakers")
+	return r.(BGPSpeakerPage).Result.ExtractIntoSlicePtr(v, "")
+}
+
+// AddBGPPeerResult represent the response of the PUT /v2.0/bgp-speakers/{bgp-speaker-id}/add-bgp-peer
+type AddBGPPeerResult struct {
+	commonResult
+}
+
+// RemoveBGPPeerResult represent the response of the PUT /v2.0/bgp-speakers/{bgp-speaker-id}/remove-bgp-peer
+type RemoveBGPPeerResult struct {
+	commonResult
 }

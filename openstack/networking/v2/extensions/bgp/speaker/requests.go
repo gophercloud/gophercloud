@@ -171,3 +171,53 @@ func Delete(c *gophercloud.ServiceClient, speakerID string) (r DeleteResult) {
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+type AddBGPPeerOptBuilder interface {
+	ToBGPSpeakerAddBGPPeerMap() (map[string]interface{}, error)
+}
+
+type AddBGPPeerOpts struct {
+	BGPPeerID string `json:"bgp_peer_id"`
+}
+
+func (opts AddBGPPeerOpts) ToBGPSpeakerAddBGPPeerMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+func AddBGPPeer(c *gophercloud.ServiceClient, bgpSpeakerID string, opts AddBGPPeerOpts) (r AddBGPPeerResult) {
+	b, err := opts.ToBGPSpeakerAddBGPPeerMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(addBGPPeerURL(c, bgpSpeakerID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+type RemoveBGPPeerOptBuilder interface {
+	ToBGPSpeakerRemoveBGPPeerMap() (map[string]interface{}, error)
+}
+
+type RemoveBGPPeerOpts struct {
+	BGPPeerID string `json:"bgp_peer_id"`
+}
+
+func (opts RemoveBGPPeerOpts) ToBGPSpeakerRemoveBGPPeerMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+func RemoveBGPPeer(c *gophercloud.ServiceClient, bgpSpeakerID string, opts RemoveBGPPeerOpts) (r RemoveBGPPeerResult) {
+	b, err := opts.ToBGPSpeakerRemoveBGPPeerMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(removeBGPPeerURL(c, bgpSpeakerID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
