@@ -191,3 +191,12 @@ func RemoveBGPSpeaker(c *gophercloud.ServiceClient, id string, speakerID string)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// GET /v2.0/bgp-speakers/{bgp-speaker-id}/bgp-dragents
+// return a list of agents
+func ListDRAgentHostingBGPSpeaker(c *gophercloud.ServiceClient, bgpSpeakerID string) pagination.Pager {
+	url := listDRAgentHostingBGPSpeakerURL(c, bgpSpeakerID)
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return AgentPage{pagination.LinkedPageBase{PageResult: r}}
+	})
+}

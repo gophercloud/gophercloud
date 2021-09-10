@@ -46,14 +46,22 @@ func removeDHCPNetworkURL(c *gophercloud.ServiceClient, id string, networkID str
 	return c.ServiceURL(resourcePath, id, dhcpNetworksResourcePath, networkID)
 }
 
+// return /v2.0/agents/{agent-id}/bgp-drinstances
 func listBGPSpeakersURL(c *gophercloud.ServiceClient, id string) string {
 	return c.ServiceURL(resourcePath, id, bgpSpeakersResourcePath)
 }
 
+// return /v2.0/agents/{agent-id}/bgp-drinstances
 func scheduleBGPSpeakersURL(c *gophercloud.ServiceClient, id string) string {
 	return listBGPSpeakersURL(c, id)
 }
 
+// return /v2.0/agents/{agent-id}/bgp-drinstances/{bgp-speaker-id}
 func removeBGPSpeakersURL(c *gophercloud.ServiceClient, id string, speakerID string) string {
 	return c.ServiceURL(resourcePath, id, bgpSpeakersResourcePath, speakerID)
+}
+
+// return /v2.0/bgp-speakers/{bgp-speaker-id}/bgp-dragents
+func listDRAgentHostingBGPSpeakerURL(c *gophercloud.ServiceClient, speakerID string) string {
+	return c.ServiceURL("bgp-speakers", speakerID, "bgp-dragents")
 }
