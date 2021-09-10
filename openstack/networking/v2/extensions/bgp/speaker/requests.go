@@ -230,3 +230,59 @@ func GetAdvertisedRoutes(c *gophercloud.ServiceClient, bgpSpeakerID string) pagi
 		return AdvertisedRoutePage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// Add a network to the specified BGP speaker.
+// PUT /v2.0/bgp-speakers/{bgp-speaker-id}/add_gateway_network
+type AddGatewayNetworkOptBuilder interface {
+	ToBGPSpeakerAddGatewayNetworkMap() (map[string]interface{}, error)
+}
+
+type AddGatewayNetworkOpts struct {
+	// The uuid of the network
+	NetworkID string `json:"network_id"`
+}
+
+func (opts AddGatewayNetworkOpts) ToBGPSpeakerAddGatewayNetworkMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+func AddGatewayNetwork(c *gophercloud.ServiceClient, bgpSpeakerID string, opts AddGatewayNetworkOpts) (r AddGatewayNetworkResult) {
+	b, err := opts.ToBGPSpeakerAddGatewayNetworkMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(addGatewayNetworkURL(c, bgpSpeakerID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// Remove a network to the specified BGP speaker.
+// PUT /v2.0/bgp-speakers/{bgp-speaker-id}/remove_gateway_network
+type RemoveGatewayNetworkOptBuilder interface {
+	ToBGPSpeakerRemoveGatewayNetworkMap() (map[string]interface{}, error)
+}
+
+type RemoveGatewayNetworkOpts struct {
+	// The uuid of the network
+	NetworkID string `json:"network_id"`
+}
+
+func (opts RemoveGatewayNetworkOpts) ToBGPSpeakerRemoveGatewayNetworkMap() (map[string]interface{}, error) {
+	return gophercloud.BuildRequestBody(opts, "")
+}
+
+func RemoveGatewayNetwork(c *gophercloud.ServiceClient, bgpSpeakerID string, opts RemoveGatewayNetworkOpts) (r RemoveGatewayNetworkResult) {
+	b, err := opts.ToBGPSpeakerRemoveGatewayNetworkMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := c.Put(removeGatewayNetworkURL(c, bgpSpeakerID), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

@@ -132,6 +132,14 @@ type RemoveBGPPeerResult struct {
 	commonResult
 }
 
+type AddGatewayNetworkResult struct {
+	commonResult
+}
+
+type RemoveGatewayNetworkResult struct {
+	commonResult
+}
+
 type AdvertisedRoute struct {
 	// NextHop IP address
 	NextHop string `json:"next_hop"`
