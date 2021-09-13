@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/agents"
+	// "github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/speaker"
 )
 
 // AgentsListResult represents raw response for the List request.
@@ -229,5 +230,29 @@ const AgentDHCPNetworksListResult = `
 const ScheduleDHCPNetworkRequest = `
 {
     "network_id": "1ae075ca-708b-4e66-b4a7-b7698632f05f"
+}
+`
+
+const ListBGPSpeakersResult = `
+{
+  "bgp_speakers": [
+    {
+      "peers": [
+        "cc4e1b15-e8b1-415e-b39a-3b087ed567b4",
+        "4022d79f-835e-4271-b5d1-d90dce5662df"
+      ],
+      "project_id": "89f56d77-fee7-4b2f-8b1e-583717a93690",
+      "name": "gophercloud-testing-speaker",
+      "tenant_id": "5c372f0b-051e-485c-a82c-9dd732e7df83",
+      "local_as": 12345,
+      "advertise_tenant_networks": true,
+      "networks": [
+        "932d70b1-db21-4542-b520-d5e73ddee407"
+      ],
+      "ip_version": 4,
+      "advertise_floating_ip_host_routes": true,
+      "id": "cab00464-284d-4251-9798-2b27db7b1668"
+    }
+  ]
 }
 `

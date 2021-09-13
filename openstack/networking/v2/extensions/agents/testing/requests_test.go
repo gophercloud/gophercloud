@@ -205,3 +205,39 @@ func TestRemoveDHCPNetwork(t *testing.T) {
 	err := agents.RemoveDHCPNetwork(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "1ae075ca-708b-4e66-b4a7-b7698632f05f").ExtractErr()
 	th.AssertNoErr(t, err)
 }
+
+func TestListBGPSpeakers(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	agentID := "30d76012-46de-4215-aaa1-a1630d01d891"
+
+	th.Mux.HandleFunc(
+		"/v2.0/agents/"+agentID+"/bgp-drinstances",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprintf(w, ListBGPSpeakersResult)
+		})
+
+	s, err := agents.ListBGPSpeakers(fake.ServiceClient(), agentID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, len(s), 1)
+	th.AssertEquals(t, s[0].ID, "cab00464-284d-4251-9798-2b27db7b1668")
+	th.AssertEquals(t, s[0].Name, "gophercloud-testing-speaker")
+	th.AssertEquals(t, s[0].LocalAS, 12345)
+	th.AssertEquals(t, s[0].IPVersion, 4)
+}
+
+// func TestListDRAgentHostingBGPSpeaker(t *testing.T) {
+// }
+//
+// func TestScheduleBGPSpeaker(t *testing.T) {
+// }
+//
+// func TestRemoveBGPSpeaker(t *tesing.T) {
+// }
