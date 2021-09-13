@@ -109,7 +109,7 @@ Example to Remove bgp speaker from dragent
 
 Example to list dragents hosting specific bgp speaker
 
-	pages, err := agents.ListDRAgentHostingBGPSpeaker(client, os.Args[1]).AllPages()
+	pages, err := agents.ListDRAgentHostingBGPSpeakers(client, os.Args[1]).AllPages()
         if err != nil {
                 log.Panic(err)
         }

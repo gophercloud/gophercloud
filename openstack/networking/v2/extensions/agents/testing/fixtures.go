@@ -256,3 +256,88 @@ const ListBGPSpeakersResult = `
   ]
 }
 `
+
+const ListDRAgentHostingBGPSpeakersResult = `
+{
+  "agents": [
+    {
+      "binary": "neutron-bgp-dragent",
+      "description": null,
+      "availability_zone": null,
+      "heartbeat_timestamp": "2021-09-13 19:55:01",
+      "admin_state_up": true,
+      "resources_synced": null,
+      "alive": true,
+      "topic": "bgp_dragent",
+      "host": "agent1.example.com",
+      "agent_type": "BGP dynamic routing agent",
+      "resource_versions": {},
+      "created_at": "2020-09-17 20:08:58",
+      "started_at": "2021-05-04 11:13:12",
+      "id": "60d78b78-b56b-4d91-a174-2c03159f6bb6",
+      "configurations": {
+        "advertise_routes": 2,
+        "bgp_peers": 2,
+        "bgp_speakers": 1
+      }
+    },
+    {
+      "binary": "neutron-bgp-dragent",
+      "description": null,
+      "availability_zone": null,
+      "heartbeat_timestamp": "2021-09-13 19:54:47",
+      "admin_state_up": true,
+      "resources_synced": null,
+      "alive": true,
+      "topic": "bgp_dragent",
+      "host": "agent2.example.com",
+      "agent_type": "BGP dynamic routing agent",
+      "resource_versions": {},
+      "created_at": "2020-09-17 20:08:15",
+      "started_at": "2021-05-04 11:13:13",
+      "id": "d0bdcea2-1d02-4c1d-9e79-b827e77acc22",
+      "configurations": {
+        "advertise_routes": 2,
+        "bgp_peers": 2,
+        "bgp_speakers": 1
+      }
+    }
+  ]
+}
+`
+
+var BGPAgent1 = agents.Agent{
+	ID:           "60d78b78-b56b-4d91-a174-2c03159f6bb6",
+	AdminStateUp: true,
+	AgentType:    "BGP dynamic routing agent",
+	Alive:        true,
+	Binary:       "neutron-bgp-dragent",
+	Configurations: map[string]interface{}{
+		"advertise_routes": float64(2),
+		"bgp_peers":        float64(2),
+		"bgp_speakers":     float64(1),
+	},
+	CreatedAt:          time.Date(2020, 9, 17, 20, 8, 58, 0, time.UTC),
+	StartedAt:          time.Date(2021, 5, 4, 11, 13, 12, 0, time.UTC),
+	HeartbeatTimestamp: time.Date(2021, 9, 13, 19, 55, 1, 0, time.UTC),
+	Host:               "agent1.example.com",
+	Topic:              "bgp_dragent",
+}
+
+var BGPAgent2 = agents.Agent{
+	ID:           "d0bdcea2-1d02-4c1d-9e79-b827e77acc22",
+	AdminStateUp: true,
+	AgentType:    "BGP dynamic routing agent",
+	Alive:        true,
+	Binary:       "neutron-bgp-dragent",
+	Configurations: map[string]interface{}{
+		"advertise_routes": float64(2),
+		"bgp_peers":        float64(2),
+		"bgp_speakers":     float64(1),
+	},
+	CreatedAt:          time.Date(2020, 9, 17, 20, 8, 15, 0, time.UTC),
+	StartedAt:          time.Date(2021, 5, 4, 11, 13, 13, 0, time.UTC),
+	HeartbeatTimestamp: time.Date(2021, 9, 13, 19, 54, 47, 0, time.UTC),
+	Host:               "agent2.example.com",
+	Topic:              "bgp_dragent",
+}

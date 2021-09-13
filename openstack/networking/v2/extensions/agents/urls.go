@@ -62,6 +62,6 @@ func removeBGPSpeakersURL(c *gophercloud.ServiceClient, id string, speakerID str
 }
 
 // return /v2.0/bgp-speakers/{bgp-speaker-id}/bgp-dragents
-func listDRAgentHostingBGPSpeakerURL(c *gophercloud.ServiceClient, speakerID string) string {
+func listDRAgentHostingBGPSpeakersURL(c *gophercloud.ServiceClient, speakerID string) string {
 	return c.ServiceURL("bgp-speakers", speakerID, "bgp-dragents")
 }
