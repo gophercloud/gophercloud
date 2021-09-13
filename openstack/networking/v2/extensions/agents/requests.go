@@ -150,10 +150,10 @@ func RemoveDHCPNetwork(c *gophercloud.ServiceClient, id string, networkID string
 	return
 }
 
-// ListBGPSpeakers return the uuid of a list of the BGP Speakers hosted by the
-// BGP agent.
-func ListBGPSpeakers(c *gophercloud.ServiceClient, id string) (r ListBGPSpeakersResult) {
-	resp, err := c.Get(listBGPSpeakersURL(c, id), &r.Body, nil)
+// List the uuid of the BGP Speakers hosted by a specific dragent
+// GET /v2.0/agents/{agent-id}/bgp-drinstances
+func ListBGPSpeakers(c *gophercloud.ServiceClient, agentID string) (r ListBGPSpeakersResult) {
+	resp, err := c.Get(listBGPSpeakersURL(c, agentID), &r.Body, nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
@@ -172,13 +172,17 @@ func (opts ScheduleBGPSpeakerOpts) ToAgentScheduleBGPSpeakerMap() (map[string]in
 }
 
 // ScheduleBGPSpeaker schedule a BGP speaker to a BGP agent
-func ScheduleBGPSpeaker(c *gophercloud.ServiceClient, id string, opts ScheduleBGPSpeakerOptBuilder) (r ScheduleBGPSpeakerResult) {
+// POST /v2.0/agents/{agent-id}/bgp-drinstances
+func ScheduleBGPSpeaker(c *gophercloud.ServiceClient, agentID string, speakerID string) (r ScheduleBGPSpeakerResult) {
+	var opts ScheduleBGPSpeakerOpts
+	opts.SpeakerID = speakerID
+
 	b, err := opts.ToAgentScheduleBGPSpeakerMap()
 	if err != nil {
 		r.Err = err
 		return
 	}
-	resp, err := c.Post(scheduleBGPSpeakersURL(c, id), b, nil, &gophercloud.RequestOpts{
+	resp, err := c.Post(scheduleBGPSpeakersURL(c, agentID), b, nil, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -186,14 +190,15 @@ func ScheduleBGPSpeaker(c *gophercloud.ServiceClient, id string, opts ScheduleBG
 }
 
 // RemoveBGPSpeaker removoes a BGP speaker from a BGP agent
+// DELETE /v2.0/agents/{agent-id}/bgp-drinstances
 func RemoveBGPSpeaker(c *gophercloud.ServiceClient, id string, speakerID string) (r RemoveBGPSpeakerResult) {
 	resp, err := c.Delete(removeBGPSpeakersURL(c, id, speakerID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
 
+// List the dragents that are hosting a specific bgp speaker
 // GET /v2.0/bgp-speakers/{bgp-speaker-id}/bgp-dragents
-// return a list of agents
 func ListDRAgentHostingBGPSpeaker(c *gophercloud.ServiceClient, bgpSpeakerID string) pagination.Pager {
 	url := listDRAgentHostingBGPSpeakerURL(c, bgpSpeakerID)
 	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
