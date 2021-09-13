@@ -341,3 +341,9 @@ var BGPAgent2 = agents.Agent{
 	Host:               "agent2.example.com",
 	Topic:              "bgp_dragent",
 }
+
+const ScheduleBGPSpeakerRequest = `
+{
+    "bgp_speaker_id": "8edb2c68-0654-49a9-b3fe-030f92e3ddf6"
+}
+`
