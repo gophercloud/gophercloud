@@ -72,7 +72,7 @@ func BuildCreateOpts(name string, localas string, nets []string, opts map[string
 	} else if strings.ToLower(advnets) == "false" {
 		r.AdvertiseTenantNetworks = false
 	} else {
-		log.Panic("AdvertiseTenantNetworks sho uld be either true or false")
+		log.Panic("AdvertiseTenantNetworks should be either true or false")
 	}
 	return
 }
@@ -184,7 +184,10 @@ func (opts AddBGPPeerOpts) ToBGPSpeakerAddBGPPeerMap() (map[string]interface{}, 
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-func AddBGPPeer(c *gophercloud.ServiceClient, bgpSpeakerID string, opts AddBGPPeerOpts) (r AddBGPPeerResult) {
+func AddBGPPeer(c *gophercloud.ServiceClient, bgpSpeakerID string, bgpPeerID string) (r AddBGPPeerResult) {
+	var opts AddBGPPeerOpts
+	opts.BGPPeerID = bgpPeerID
+
 	b, err := opts.ToBGPSpeakerAddBGPPeerMap()
 	if err != nil {
 		r.Err = err
@@ -209,7 +212,10 @@ func (opts RemoveBGPPeerOpts) ToBGPSpeakerRemoveBGPPeerMap() (map[string]interfa
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-func RemoveBGPPeer(c *gophercloud.ServiceClient, bgpSpeakerID string, opts RemoveBGPPeerOpts) (r RemoveBGPPeerResult) {
+func RemoveBGPPeer(c *gophercloud.ServiceClient, bgpSpeakerID string, bgpPeerID string) (r RemoveBGPPeerResult) {
+	var opts RemoveBGPPeerOpts
+	opts.BGPPeerID = bgpPeerID
+
 	b, err := opts.ToBGPSpeakerRemoveBGPPeerMap()
 	if err != nil {
 		r.Err = err
@@ -246,7 +252,10 @@ func (opts AddGatewayNetworkOpts) ToBGPSpeakerAddGatewayNetworkMap() (map[string
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-func AddGatewayNetwork(c *gophercloud.ServiceClient, bgpSpeakerID string, opts AddGatewayNetworkOpts) (r AddGatewayNetworkResult) {
+func AddGatewayNetwork(c *gophercloud.ServiceClient, bgpSpeakerID string, networkID string) (r AddGatewayNetworkResult) {
+	var opts AddGatewayNetworkOpts
+	opts.NetworkID = networkID
+
 	b, err := opts.ToBGPSpeakerAddGatewayNetworkMap()
 	if err != nil {
 		r.Err = err
@@ -274,7 +283,10 @@ func (opts RemoveGatewayNetworkOpts) ToBGPSpeakerRemoveGatewayNetworkMap() (map[
 	return gophercloud.BuildRequestBody(opts, "")
 }
 
-func RemoveGatewayNetwork(c *gophercloud.ServiceClient, bgpSpeakerID string, opts RemoveGatewayNetworkOpts) (r RemoveGatewayNetworkResult) {
+func RemoveGatewayNetwork(c *gophercloud.ServiceClient, bgpSpeakerID string, networkID string) (r RemoveGatewayNetworkResult) {
+	var opts RemoveGatewayNetworkOpts
+	opts.NetworkID = networkID
+
 	b, err := opts.ToBGPSpeakerRemoveGatewayNetworkMap()
 	if err != nil {
 		r.Err = err
