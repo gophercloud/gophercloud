@@ -191,8 +191,8 @@ func ScheduleBGPSpeaker(c *gophercloud.ServiceClient, agentID string, speakerID 
 
 // RemoveBGPSpeaker removoes a BGP speaker from a BGP agent
 // DELETE /v2.0/agents/{agent-id}/bgp-drinstances
-func RemoveBGPSpeaker(c *gophercloud.ServiceClient, id string, speakerID string) (r RemoveBGPSpeakerResult) {
-	resp, err := c.Delete(removeBGPSpeakersURL(c, id, speakerID), nil)
+func RemoveBGPSpeaker(c *gophercloud.ServiceClient, agentID string, speakerID string) (r RemoveBGPSpeakerResult) {
+	resp, err := c.Delete(removeBGPSpeakersURL(c, agentID, speakerID), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

@@ -57,8 +57,8 @@ func scheduleBGPSpeakersURL(c *gophercloud.ServiceClient, id string) string {
 }
 
 // return /v2.0/agents/{agent-id}/bgp-drinstances/{bgp-speaker-id}
-func removeBGPSpeakersURL(c *gophercloud.ServiceClient, id string, speakerID string) string {
-	return c.ServiceURL(resourcePath, id, bgpSpeakersResourcePath, speakerID)
+func removeBGPSpeakersURL(c *gophercloud.ServiceClient, agentID string, speakerID string) string {
+	return c.ServiceURL(resourcePath, agentID, bgpSpeakersResourcePath, speakerID)
 }
 
 // return /v2.0/bgp-speakers/{bgp-speaker-id}/bgp-dragents

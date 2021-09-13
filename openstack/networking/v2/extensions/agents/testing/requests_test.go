@@ -292,5 +292,23 @@ func TestScheduleBGPSpeaker(t *testing.T) {
 	th.AssertNoErr(t, err)
 }
 
-// func TestRemoveBGPSpeaker(t *tesing.T) {
-// }
+func TestRemoveBGPSpeaker(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	agentID := "30d76012-46de-4215-aaa1-a1630d01d891"
+	speakerID := "8edb2c68-0654-49a9-b3fe-030f92e3ddf6"
+
+	th.Mux.HandleFunc("/v2.0/agents/"+agentID+"/bgp-drinstances/"+speakerID,
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "DELETE")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+			th.TestHeader(t, r, "Accept", "application/json")
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNoContent)
+		})
+
+	err := agents.RemoveBGPSpeaker(fake.ServiceClient(), agentID, speakerID).ExtractErr()
+	th.AssertNoErr(t, err)
+}
