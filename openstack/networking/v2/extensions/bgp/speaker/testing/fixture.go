@@ -117,3 +117,22 @@ const UpdateBGPSpeakerResponse = `
   }
 }
 `
+
+const GetAdvertisedRoutesResult = `
+{
+  "advertised_routes": [
+    {
+      "next_hop": "172.17.128.212",
+      "destination": "172.17.129.192/27"
+    },
+    {
+      "next_hop": "172.17.128.218",
+      "destination": "172.17.129.0/27"
+    },
+    {
+      "next_hop": "172.17.128.231",
+      "destination": "172.17.129.160/27"
+    }
+  ]
+}
+`

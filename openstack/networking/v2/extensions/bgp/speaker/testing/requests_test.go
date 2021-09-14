@@ -155,6 +155,38 @@ func TestRemoveBGPPeer(t *testing.T) {
 }
 
 func TestGetAdvertisedRoutes(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
+	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/get_advertised_routes", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, GetAdvertisedRoutesResult)
+	})
+
+	count := 0
+	speaker.GetAdvertisedRoutes(fake.ServiceClient(), bgpSpeakerID).EachPage(
+		func(page pagination.Page) (bool, error) {
+			count++
+			actual, err := speaker.ExtractAdvertisedRoutes(page)
+
+			if err != nil {
+				t.Errorf("Failed to extract Advertised route: %v", err)
+				return false, nil
+			}
+
+			expected := []speaker.AdvertisedRoute{
+				speaker.AdvertisedRoute{NextHop: "172.17.128.212", Destination: "172.17.129.192/27"},
+				speaker.AdvertisedRoute{NextHop: "172.17.128.218", Destination: "172.17.129.0/27"},
+				speaker.AdvertisedRoute{NextHop: "172.17.128.231", Destination: "172.17.129.160/27"},
+			}
+			th.CheckDeepEquals(t, count, 1)
+			th.CheckDeepEquals(t, expected, actual)
+			return true, nil
+		})
 }
 
 func TestAddGatewayNetwork(t *testing.T) {
