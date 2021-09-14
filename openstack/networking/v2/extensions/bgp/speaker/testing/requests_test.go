@@ -6,6 +6,7 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/speaker"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
+	"io"
 	"net/http"
 	"testing"
 )
@@ -149,9 +150,49 @@ func TestDelete(t *testing.T) {
 }
 
 func TestAddBGPPeer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
+	bgpPeerID := "f5884c7c-71d5-43a3-88b4-1742e97674aa"
+	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/add_bgp_peer", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, AddRemoveBGPPeerJSON)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, AddRemoveBGPPeerJSON)
+	})
+
+	_, err := speaker.AddBGPPeer(fake.ServiceClient(), bgpSpeakerID, bgpPeerID).Extract()
+	th.AssertNoErr(t, err)
 }
 
 func TestRemoveBGPPeer(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
+	bgpPeerID := "f5884c7c-71d5-43a3-88b4-1742e97674aa"
+	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/remove_bgp_peer", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, AddRemoveBGPPeerJSON)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "")
+	})
+
+	_, err := speaker.RemoveBGPPeer(fake.ServiceClient(), bgpSpeakerID, bgpPeerID).Extract()
+	if err != io.EOF {
+		th.AssertNoErr(t, err)
+	}
 }
 
 func TestGetAdvertisedRoutes(t *testing.T) {

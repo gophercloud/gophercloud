@@ -136,3 +136,15 @@ const GetAdvertisedRoutesResult = `
   ]
 }
 `
+
+const AddBGPPeerRequest = `
+{
+  "bgp_peer_id": "f5884c7c-71d5-43a3-88b4-1742e97674aa"
+}
+`
+
+const AddRemoveBGPPeerJSON = `
+{
+  "bgp_peer_id": "f5884c7c-71d5-43a3-88b4-1742e97674aa"
+}
+`
