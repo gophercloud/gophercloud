@@ -28,8 +28,8 @@ const ListBGPPeersResult = `
 `
 
 var BGPPeer1 = peer.BGPPeer{
-	AuthType:  "none",
 	ID:        "afacc0e8-6b66-44e4-be53-a1ef16033ceb",
+	AuthType:  "none",
 	Name:      "testing-peer-1",
 	TenantID:  "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
 	PeerIP:    "1.2.3.4",
@@ -46,3 +46,17 @@ var BGPPeer2 = peer.BGPPeer{
 	ProjectID: "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
 	RemoteAS:  4321,
 }
+
+const GetBGPPeerResult = `
+{
+  "bgp_peer": {
+    "auth_type": "none",
+    "remote_as": 4321,
+    "name": "testing-peer-1",
+    "tenant_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
+    "peer_ip": "1.2.3.4",
+    "project_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
+    "id": "afacc0e8-6b66-44e4-be53-a1ef16033ceb"
+  }
+}
+`
