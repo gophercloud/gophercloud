@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumehost"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumetenants"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/volumes"
 	"github.com/gophercloud/gophercloud/pagination"
@@ -103,6 +104,7 @@ func TestListAllWithExtensions(t *testing.T) {
 	type VolumeWithExt struct {
 		volumes.Volume
 		volumetenants.VolumeTenantExt
+		volumehost.VolumeHostExt
 	}
 
 	allPages, err := volumes.List(client.ServiceClient(), &volumes.ListOpts{}).AllPages()
@@ -112,6 +114,8 @@ func TestListAllWithExtensions(t *testing.T) {
 	err = volumes.ExtractVolumesInto(allPages, &actual)
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, 2, len(actual))
+	th.AssertEquals(t, "host-001", actual[0].Host)
+	th.AssertEquals(t, "", actual[1].Host)
 	th.AssertEquals(t, "304dc00909ac4d0da6c62d816bcb3459", actual[0].TenantID)
 }
 
