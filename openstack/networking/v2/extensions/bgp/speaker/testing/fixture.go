@@ -65,9 +65,9 @@ const GetBGPSpeakerResult = `
 const CreateRequest = `
 {
   "bgp_speaker": {
-    "advertise_floating_ip_host_routes": true,
+    "advertise_floating_ip_host_routes": false,
     "advertise_tenant_networks": true,
-    "ip_version": 4,
+    "ip_version": 6,
     "local_as": "2000",
     "name": "gophercloud-testing-bgp-speaker"
   }
@@ -78,15 +78,42 @@ const CreateResponse = `
 {
   "bgp_speaker": {
     "peers": [],
-    "project_id": "bb18eab692114b45aed901f880508a5a",
+    "project_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
     "name": "gophercloud-testing-bgp-speaker",
-    "tenant_id": "bb18eab692114b45aed901f880508a5a",
+    "tenant_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
     "local_as": 2000,
-    "advertise_tenant_networks": false,
+    "advertise_tenant_networks": true,
     "networks": [],
     "ip_version": 6,
     "advertise_floating_ip_host_routes": false,
     "id": "26e98af2-4dc7-452a-91b0-65ee45f3e7c1"
+  }
+}
+`
+
+const UpdateBGPSpeakerRequest = `
+{
+  "bgp_speaker": {
+    "advertise_floating_ip_host_routes": true,
+    "advertise_tenant_networks": false,
+    "name": "testing-bgp-speaker"
+  }
+}
+`
+
+const UpdateBGPSpeakerResponse = `
+{
+  "bgp_speaker": {
+    "peers": [],
+    "project_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
+    "name": "testing-bgp-speaker",
+    "tenant_id": "7fa3f96b-17ee-4d1b-8fbf-fe889bb1f1d0",
+    "local_as": 2000,
+    "advertise_tenant_networks": false,
+    "networks": [],
+    "ip_version": 4,
+    "advertise_floating_ip_host_routes": true,
+    "id": "d25d0036-7f17-49d7-8d02-4bf9dd49d5a9"
   }
 }
 `
