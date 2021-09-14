@@ -1,5 +1,9 @@
 ## 0.21.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Added `blockstorage/extensions/volumehost` [GH-2212](https://github.com/gophercloud/gophercloud/pull/2212)
+
 ## 0.20.0 (August 10, 2021)
 
 IMPROVEMENTS
