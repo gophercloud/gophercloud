@@ -59,6 +59,36 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/bgp-speakers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, CreateRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, CreateResponse)
+	})
+
+	name := "gophercloud-testing-bgp-speaker"
+	localas := "2000"
+	networks := []string{}
+	m := make(map[string]string)
+	m["IPVersion"] = "6"
+	m["AdvertiseFloatingIPHostRoutes"] = "false"
+	opts := speaker.BuildCreateOpts(name, localas, networks, m)
+
+	r, err := speaker.Create(fake.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, r.Name, opts.Name)
+	th.AssertEquals(t, r.LocalAS, opts.LocalAS)
+	th.AssertEquals(t, r.Networks, opts.Networks)
+	th.AssertEquals(t, r.IPVersion, opts.IPVersion)
+	th.AssertEquals(t, r.AdvertiseFloatingIPHostRoutes, opts.AdvertiseFloatingIPHostRoutes)
+	th.AssertEquals(t, r.AdvertiseTenantNetworks, opts.AdvertiseTenantNetworks)
 }
 
 func TestUpdate(t *testing.T) {
