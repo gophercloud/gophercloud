@@ -88,6 +88,30 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
+	bgpPeerID := "afacc0e8-6b66-44e4-be53-a1ef16033ceb"
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/bgp-peers/"+bgpPeerID, func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, UpdateBGPPeerRequest)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprintf(w, UpdateBGPPeerResponse)
+	})
+
+	var opts peer.UpdateOpts
+	opts.Name = "test-rename-bgp-peer"
+	opts.Password = "superStrong"
+
+	r, err := peer.Update(fake.ServiceClient(), bgpPeerID, opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, r.Name, opts.Name)
 }
 
 func TestDelete(t *testing.T) {
@@ -103,6 +127,7 @@ func TestDelete(t *testing.T) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNoContent)
 	})
+
 	err := peer.Delete(fake.ServiceClient(), bgpPeerID).ExtractErr()
 	th.AssertNoErr(t, err)
 }
