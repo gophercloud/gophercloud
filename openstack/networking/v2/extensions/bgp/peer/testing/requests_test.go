@@ -57,3 +57,32 @@ func TestGet(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, *s, BGPPeer1)
 }
+
+func TestCreate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/bgp-peers", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, CreateRequest)
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, CreateResponse)
+	})
+
+	var opts peer.CreateOpts
+	opts.AuthType = "md5"
+	opts.Password = "notSoStrong"
+	opts.RemoteAS = 20000
+	opts.Name = "gophercloud-testing-bgp-peer"
+	opts.PeerIP = "192.168.0.1"
+
+	r, err := peer.Create(fake.ServiceClient(), opts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, r.AuthType, opts.AuthType)
+	th.AssertEquals(t, r.RemoteAS, opts.RemoteAS)
+	th.AssertEquals(t, r.PeerIP, opts.PeerIP)
+}
