@@ -3,6 +3,9 @@
 IMPROVEMENTS
 
 * Added `blockstorage/extensions/volumehost` [GH-2212](https://github.com/gophercloud/gophercloud/pull/2212)
+* Added `loadbalancer/v2/listeners.CreateOpts.Tags` [GH-2214](https://github.com/gophercloud/gophercloud/pull/2214)
+* Added `loadbalancer/v2/listeners.UpdateOpts.Tags` [GH-2214](https://github.com/gophercloud/gophercloud/pull/2214)
+* Added `loadbalancer/v2/listeners.Listener.Tags` [GH-2214](https://github.com/gophercloud/gophercloud/pull/2214)
 
 ## 0.20.0 (August 10, 2021)
 
