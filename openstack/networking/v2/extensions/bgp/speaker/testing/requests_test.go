@@ -190,7 +190,9 @@ func TestRemoveBGPPeer(t *testing.T) {
 	})
 
 	_, err := speaker.RemoveBGPPeer(fake.ServiceClient(), bgpSpeakerID, bgpPeerID).Extract()
-	if err != io.EOF {
+	if err != nil {
+		th.AssertEquals(t, err, io.EOF)
+	} else {
 		th.AssertNoErr(t, err)
 	}
 }
@@ -231,7 +233,49 @@ func TestGetAdvertisedRoutes(t *testing.T) {
 }
 
 func TestAddGatewayNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
+	networkID := "ac13bb26-6219-49c3-a880-08847f6830b7"
+	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/add_gateway_network", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, AddRemoveGatewayNetworkJSON)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, AddRemoveGatewayNetworkJSON)
+	})
+
+	_, err := speaker.AddGatewayNetwork(fake.ServiceClient(), bgpSpeakerID, networkID).Extract()
+	th.AssertNoErr(t, err)
 }
 
 func TestRemoveGatewayNetwork(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	bgpSpeakerID := "ab01ade1-ae62-43c9-8a1f-3c24225b96d8"
+	networkID := "ac13bb26-6219-49c3-a880-08847f6830b7"
+	th.Mux.HandleFunc("/v2.0/bgp-speakers/"+bgpSpeakerID+"/remove_gateway_network", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, AddRemoveGatewayNetworkJSON)
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "")
+	})
+
+	_, err := speaker.RemoveGatewayNetwork(fake.ServiceClient(), bgpSpeakerID, networkID).Extract()
+	if err != nil {
+		th.AssertEquals(t, err, io.EOF)
+	} else {
+		th.AssertNoErr(t, err)
+	}
 }
