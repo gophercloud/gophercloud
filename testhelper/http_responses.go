@@ -70,8 +70,21 @@ func TestMethod(t *testing.T, r *http.Request, expected string) {
 
 // TestHeader checks that the header on the http.Request matches the expected value.
 func TestHeader(t *testing.T, r *http.Request, header string, expected string) {
-	if actual := r.Header.Get(header); expected != actual {
-		t.Errorf("Header %s = %s, expected %s", header, actual, expected)
+	if len(r.Header.Values(header)) == 0 {
+		t.Errorf("Header %s not found, expected %q", header, expected)
+		return
+	}
+	for _, actual := range r.Header.Values(header) {
+		if expected != actual {
+			t.Errorf("Header %s = %q, expected %q", header, actual, expected)
+		}
+	}
+}
+
+// TestHeaderUnset checks that the header on the http.Request doesn't exist.
+func TestHeaderUnset(t *testing.T, r *http.Request, header string) {
+	if len(r.Header.Values(header)) > 0 {
+		t.Errorf("Header %s is not expected", header)
 	}
 }
 

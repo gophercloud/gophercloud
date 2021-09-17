@@ -556,7 +556,7 @@ func TestGetRequest(t *testing.T) {
 
 	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, "GET")
-		testhelper.TestHeader(t, r, "Content-Type", "")
+		testhelper.TestHeaderUnset(t, r, "Content-Type")
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		testhelper.TestHeader(t, r, "X-Auth-Token", "12345abcdef")
 		testhelper.TestHeader(t, r, "X-Subject-Token", "abcdef12345")
@@ -588,7 +588,7 @@ func prepareAuthTokenHandler(t *testing.T, expectedMethod string, status int) go
 
 	testhelper.Mux.HandleFunc("/auth/tokens", func(w http.ResponseWriter, r *http.Request) {
 		testhelper.TestMethod(t, r, expectedMethod)
-		testhelper.TestHeader(t, r, "Content-Type", "")
+		testhelper.TestHeaderUnset(t, r, "Content-Type")
 		testhelper.TestHeader(t, r, "Accept", "application/json")
 		testhelper.TestHeader(t, r, "X-Auth-Token", "12345abcdef")
 		testhelper.TestHeader(t, r, "X-Subject-Token", "abcdef12345")

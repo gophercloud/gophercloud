@@ -284,6 +284,12 @@ func HandleUpdateObjectSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Object-Meta-Gophercloud-Test", "objects")
 		th.TestHeader(t, r, "X-Remove-Object-Meta-Gophercloud-Test-Remove", "remove")
+		th.TestHeader(t, r, "Content-Disposition", "")
+		th.TestHeader(t, r, "Content-Encoding", "")
+		th.TestHeader(t, r, "Content-Type", "")
+		th.TestHeaderUnset(t, r, "X-Delete-After")
+		th.TestHeader(t, r, "X-Delete-At", "0")
+		th.TestHeader(t, r, "X-Detect-Content-Type", "false")
 		w.WriteHeader(http.StatusAccepted)
 	})
 }

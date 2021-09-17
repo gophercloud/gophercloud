@@ -134,27 +134,58 @@ func TestObjects(t *testing.T) {
 		"Gophercloud-Test": "objects",
 	}
 
-	updateOpts := objects.UpdateOpts{
-		Metadata: metadata,
+	disposition := "inline"
+	cType := "text/plain"
+	updateOpts := &objects.UpdateOpts{
+		Metadata:           metadata,
+		ContentDisposition: &disposition,
+		ContentType:        &cType,
 	}
 	updateres := objects.Update(client, cName, oNames[0], updateOpts)
 	th.AssertNoErr(t, updateres.Err)
 
 	// Delete the object's metadata after testing.
 	defer func() {
-		tempMap := make(map[string]string)
+		temp := make([]string, len(metadata))
+		i := 0
 		for k := range metadata {
-			tempMap[k] = ""
+			temp[i] = k
+			i++
 		}
-		res := objects.Update(client, cName, oNames[0], &objects.UpdateOpts{Metadata: tempMap})
+		empty := ""
+		cType := "application/octet-stream"
+		iTrue := true
+		updateOpts = &objects.UpdateOpts{
+			RemoveMetadata:     temp,
+			ContentDisposition: &empty,
+			ContentType:        &cType,
+			DetectContentType:  &iTrue,
+		}
+		res := objects.Update(client, cName, oNames[0], updateOpts)
 		th.AssertNoErr(t, res.Err)
+
+		// Retrieve an object's metadata.
+		getOpts := objects.GetOpts{
+			Newest: true,
+		}
+		resp := objects.Get(client, cName, oNames[0], getOpts)
+		om, err := resp.ExtractMetadata()
+		th.AssertNoErr(t, err)
+		if len(om) > 0 {
+			t.Errorf("Expected custom metadata to be empty, found: %v", metadata)
+		}
+		object, err := resp.Extract()
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, empty, object.ContentDisposition)
+		th.AssertEquals(t, cType, object.ContentType)
 	}()
 
 	// Retrieve an object's metadata.
 	getOpts := objects.GetOpts{
 		Newest: true,
 	}
-	om, err := objects.Get(client, cName, oNames[0], getOpts).ExtractMetadata()
+	resp := objects.Get(client, cName, oNames[0], getOpts)
+	om, err := resp.ExtractMetadata()
 	th.AssertNoErr(t, err)
 	for k := range metadata {
 		if om[k] != metadata[strings.Title(k)] {
@@ -162,6 +193,11 @@ func TestObjects(t *testing.T) {
 			return
 		}
 	}
+
+	object, err := resp.Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, disposition, object.ContentDisposition)
+	th.AssertEquals(t, cType, object.ContentType)
 }
 
 func TestObjectsListSubdir(t *testing.T) {
