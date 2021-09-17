@@ -1,5 +1,7 @@
 ## 0.22.0 (Unreleased)
 
+* Added `compute/v2/servers.Server.ServerGroups` [GH-2217](https://github.com/gophercloud/gophercloud/pull/2217)
+
 ## 0.21.0 (September 14, 2021)
 
 IMPROVEMENTS
