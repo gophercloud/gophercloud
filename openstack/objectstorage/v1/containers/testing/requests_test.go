@@ -130,7 +130,15 @@ func TestUpdateContainer(t *testing.T) {
 	defer th.TeardownHTTP()
 	HandleUpdateContainerSuccessfully(t)
 
-	options := &containers.UpdateOpts{Metadata: map[string]string{"foo": "bar"}}
+	contentType := "text/plain"
+	options := &containers.UpdateOpts{
+		Metadata:         map[string]string{"foo": "bar"},
+		ContainerWrite:   new(string),
+		ContainerRead:    new(string),
+		ContainerSyncTo:  new(string),
+		ContainerSyncKey: new(string),
+		ContentType:      &contentType,
+	}
 	res := containers.Update(fake.ServiceClient(), "testContainer", options)
 	th.AssertNoErr(t, res.Err)
 }

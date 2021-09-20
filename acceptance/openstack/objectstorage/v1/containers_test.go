@@ -72,8 +72,20 @@ func TestContainers(t *testing.T) {
 	metadata := map[string]string{
 		"Gophercloud-Test": "containers",
 	}
+	read := ".r:*,.rlistings"
+	write := "*:*"
+	iTrue := true
+	empty := ""
+	opts := &containers.UpdateOpts{
+		Metadata:          metadata,
+		ContainerRead:     &read,
+		ContainerWrite:    &write,
+		DetectContentType: new(bool),
+		ContainerSyncTo:   &empty,
+		ContainerSyncKey:  &empty,
+	}
 
-	updateres := containers.Update(client, cNames[0], &containers.UpdateOpts{Metadata: metadata})
+	updateres := containers.Update(client, cNames[0], opts)
 	th.AssertNoErr(t, updateres.Err)
 	// After the tests are done, delete the metadata that was set.
 	defer func() {
@@ -81,7 +93,14 @@ func TestContainers(t *testing.T) {
 		for k := range metadata {
 			temp = append(temp, k)
 		}
-		res := containers.Update(client, cNames[0], &containers.UpdateOpts{RemoveMetadata: temp})
+		empty := ""
+		opts = &containers.UpdateOpts{
+			RemoveMetadata:    temp,
+			ContainerRead:     &empty,
+			ContainerWrite:    &empty,
+			DetectContentType: &iTrue,
+		}
+		res := containers.Update(client, cNames[0], opts)
 		th.AssertNoErr(t, res.Err)
 
 		// confirm the metadata was removed
@@ -89,13 +108,18 @@ func TestContainers(t *testing.T) {
 			Newest: true,
 		}
 
-		cm, err := containers.Get(client, cNames[0], getOpts).ExtractMetadata()
+		resp := containers.Get(client, cNames[0], getOpts)
+		cm, err := resp.ExtractMetadata()
 		th.AssertNoErr(t, err)
 		for k := range metadata {
 			if _, ok := cm[k]; ok {
 				t.Errorf("Unexpected custom metadata with key: %s", k)
 			}
 		}
+		container, err := resp.Extract()
+		th.AssertNoErr(t, err)
+		th.AssertEquals(t, empty, strings.Join(container.Read, ","))
+		th.AssertEquals(t, empty, strings.Join(container.Write, ","))
 	}()
 
 	// Retrieve a container's metadata.
@@ -103,13 +127,18 @@ func TestContainers(t *testing.T) {
 		Newest: true,
 	}
 
-	cm, err := containers.Get(client, cNames[0], getOpts).ExtractMetadata()
+	resp := containers.Get(client, cNames[0], getOpts)
+	cm, err := resp.ExtractMetadata()
 	th.AssertNoErr(t, err)
 	for k := range metadata {
 		if cm[k] != metadata[strings.Title(k)] {
 			t.Errorf("Expected custom metadata with key: %s", k)
 		}
 	}
+	container, err := resp.Extract()
+	th.AssertNoErr(t, err)
+	th.AssertEquals(t, read, strings.Join(container.Read, ","))
+	th.AssertEquals(t, write, strings.Join(container.Write, ","))
 
 	// Retrieve a container's timestamp
 	cHeaders, err := containers.Get(client, cNames[0], getOpts).Extract()

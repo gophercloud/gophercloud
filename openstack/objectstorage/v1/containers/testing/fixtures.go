@@ -159,6 +159,11 @@ func HandleUpdateContainerSuccessfully(t *testing.T) {
 		th.TestMethod(t, r, "POST")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestHeader(t, r, "X-Container-Write", "")
+		th.TestHeader(t, r, "X-Container-Read", "")
+		th.TestHeader(t, r, "X-Container-Sync-To", "")
+		th.TestHeader(t, r, "X-Container-Sync-Key", "")
+		th.TestHeader(t, r, "Content-Type", "text/plain")
 		w.WriteHeader(http.StatusNoContent)
 	})
 }

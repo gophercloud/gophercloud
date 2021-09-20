@@ -52,6 +52,9 @@ func HandleUpdateAccountSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
 		th.TestHeader(t, r, "X-Account-Meta-Gophercloud-Test", "accounts")
 		th.TestHeader(t, r, "X-Remove-Account-Meta-Gophercloud-Test-Remove", "remove")
+		th.TestHeader(t, r, "Content-Type", "")
+		th.TestHeader(t, r, "X-Detect-Content-Type", "false")
+		th.TestHeaderUnset(t, r, "X-Account-Meta-Temp-URL-Key")
 
 		w.Header().Set("Date", "Fri, 17 Jan 2014 16:09:56 UTC")
 		w.WriteHeader(http.StatusNoContent)
