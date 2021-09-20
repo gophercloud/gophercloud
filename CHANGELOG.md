@@ -1,5 +1,29 @@
 ## 0.22.0 (Unreleased)
 
+BREAKING CHANGES
+
+* The types of several Object Storage Update fields have been changed to pointers in order to allow the value to be unset via the HTTP headers:
+  * `objectstorage/v1/accounts.UpdateOpts.ContentType`
+  * `objectstorage/v1/accounts.UpdateOpts.DetectContentType`
+  * `objectstorage/v1/containers.UpdateOpts.ContainerRead`
+  * `objectstorage/v1/containers.UpdateOpts.ContainerSyncTo`
+  * `objectstorage/v1/containers.UpdateOpts.ContainerSyncKey`
+  * `objectstorage/v1/containers.UpdateOpts.ContainerWrite`
+  * `objectstorage/v1/containers.UpdateOpts.ContentType`
+  * `objectstorage/v1/containers.UpdateOpts.DetectContentType`
+  * `objectstorage/v1/objects.UpdateOpts.ContentDisposition`
+  * `objectstorage/v1/objects.UpdateOpts.ContentEncoding`
+  * `objectstorage/v1/objects.UpdateOpts.ContentType`
+  * `objectstorage/v1/objects.UpdateOpts.DeleteAfter`
+  * `objectstorage/v1/objects.UpdateOpts.DeleteAt`
+  * `objectstorage/v1/objects.UpdateOpts.DetectContentType`
+
+BUG FIXES
+
+* Fixed issue with not being able to unset Object Storage values via HTTP headers [GH-2218](https://github.com/gophercloud/gophercloud/pull/2218)
+
+IMPROVEMENTS
+
 * Added `compute/v2/servers.Server.ServerGroups` [GH-2217](https://github.com/gophercloud/gophercloud/pull/2217)
 
 ## 0.21.0 (September 14, 2021)
