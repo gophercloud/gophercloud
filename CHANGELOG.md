@@ -18,10 +18,6 @@ BREAKING CHANGES
   * `objectstorage/v1/objects.UpdateOpts.DeleteAt`
   * `objectstorage/v1/objects.UpdateOpts.DetectContentType`
 
-IMPROVEMENTS
-
-* Added `imageservice/v2/images.ReplaceImageProtected` to allow the `protected` field to be updated [GH-2221](https://github.com/gophercloud/gophercloud/pull/2221)
-
 BUG FIXES
 
 * Fixed issue with not being able to unset Object Storage values via HTTP headers [GH-2218](https://github.com/gophercloud/gophercloud/pull/2218)
@@ -29,6 +25,7 @@ BUG FIXES
 IMPROVEMENTS
 
 * Added `compute/v2/servers.Server.ServerGroups` [GH-2217](https://github.com/gophercloud/gophercloud/pull/2217)
+* Added `imageservice/v2/images.ReplaceImageProtected` to allow the `protected` field to be updated [GH-2221](https://github.com/gophercloud/gophercloud/pull/2221)
 
 ## 0.21.0 (September 14, 2021)
 
