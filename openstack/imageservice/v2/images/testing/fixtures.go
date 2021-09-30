@@ -332,6 +332,11 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 				"value": false
 			},
 			{
+				"op": "replace",
+				"path": "/protected",
+				"value": true
+			},
+			{
 				"op": "add",
 				"path": "/empty_value",
 				"value": ""
@@ -348,6 +353,7 @@ func HandleImageUpdateSuccessfully(t *testing.T) {
 			"status": "active",
 			"visibility": "public",
 			"os_hidden": false,
+			"protected": true,
 			"size": 2254249,
 			"checksum": "2cec138d7dae2aa59038ef8c9aec2390",
 			"tags": [

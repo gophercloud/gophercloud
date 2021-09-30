@@ -154,6 +154,7 @@ func TestImagesUpdate(t *testing.T) {
 		images.ReplaceImageName{NewName: image.Name + "foo"},
 		images.ReplaceImageTags{NewTags: newTags},
 		images.ReplaceImageMinDisk{NewMinDisk: 21},
+		images.ReplaceImageProtected{NewProtected: true},
 		images.UpdateImageProperty{
 			Op:    images.AddOp,
 			Name:  "hw_disk_bus",
@@ -172,6 +173,7 @@ func TestImagesUpdate(t *testing.T) {
 	tools.PrintResource(t, newImage.Properties)
 
 	th.AssertEquals(t, newImage.Name, image.Name+"foo")
+	th.AssertEquals(t, newImage.Protected, true)
 
 	sort.Strings(newTags)
 	sort.Strings(newImage.Tags)
@@ -184,4 +186,11 @@ func TestImagesUpdate(t *testing.T) {
 	if _, ok := newImage.Properties["architecture"]; ok {
 		t.Fatal("architecture property still exists")
 	}
+
+	// Now change image protection back to false or delete will fail
+	updateOpts = images.UpdateOpts{
+		images.ReplaceImageProtected{NewProtected: false},
+	}
+	_, err = images.Update(client, image.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
 }
