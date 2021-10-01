@@ -26,6 +26,7 @@ IMPROVEMENTS
 
 * Added `compute/v2/servers.Server.ServerGroups` [GH-2217](https://github.com/gophercloud/gophercloud/pull/2217)
 * Added `imageservice/v2/images.ReplaceImageProtected` to allow the `protected` field to be updated [GH-2221](https://github.com/gophercloud/gophercloud/pull/2221)
+* More details added to the 404/Not Found error message [GH-2223](https://github.com/gophercloud/gophercloud/pull/2223)
 
 ## 0.21.0 (September 14, 2021)
 
