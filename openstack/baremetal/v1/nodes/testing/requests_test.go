@@ -650,6 +650,7 @@ func TestCreateSubscriptionAllParameters(t *testing.T) {
 		Context:     "gophercloud",
 		Protocol:    "Redfish",
 		EventTypes:  []string{"Alert"},
+		HttpHeaders: []map[string]string{{"Content-Type": "application/json"}},
 	}
 	actual, err := nodes.CreateSubscription(c, "1234asdf", method, createOpt).Extract()
 	th.AssertNoErr(t, err)

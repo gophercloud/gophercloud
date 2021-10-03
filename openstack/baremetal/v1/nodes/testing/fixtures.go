@@ -790,6 +790,7 @@ const NodeCreateSubscriptionVendorPassthruAllParametersBody = `
   "Context": "gophercloud",
   "Destination": "https://someurl",
   "EventTypes": ["Alert"],
+  "HttpHeaders": [{"Context-Type":"application/json"}],
   "Id": "eaa43e2-018a-424e-990a-cbf47c62ef80",
   "Protocol": "Redfish"
 }
@@ -1481,7 +1482,8 @@ func HandleCreateSubscriptionVendorPassthruAllParametersSuccessfully(t *testing.
 		th.TestJSONRequest(t, r, `
 			{
          "Context":      "gophercloud",
-         "EventTypes":    ["Alert"],
+         "EventTypes":   ["Alert"],
+         "HttpHeaders":  [{"Content-Type":"application/json"}],
          "Protocol":     "Redfish",
 			   "Destination" : "https://someurl"
 			}

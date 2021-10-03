@@ -801,10 +801,11 @@ func DeleteSubscription(client *gophercloud.ServiceClient, id string, method Cal
 
 // The desired subscription to be created from the baremetal node.
 type CreateSubscriptionOpts struct {
-	Destination string   `json:"Destination"`
-	EventTypes  []string `json:"EventTypes,omitempty"`
-	Context     string   `json:"Context,omitempty"`
-	Protocol    string   `json:"Protocol,omitempty"`
+	Destination string              `json:"Destination"`
+	EventTypes  []string            `json:"EventTypes,omitempty"`
+	HttpHeaders []map[string]string `json:"HttpHeaders,omitempty"`
+	Context     string              `json:"Context,omitempty"`
+	Protocol    string              `json:"Protocol,omitempty"`
 }
 
 // ToCreateSubscriptionMap assembles a query based on the contents of CallVendorPassthruOpts and a request body based on the contents of a CreateSubscriptionOpts
