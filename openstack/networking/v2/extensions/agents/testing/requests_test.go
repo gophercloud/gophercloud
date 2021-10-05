@@ -8,6 +8,7 @@ import (
 
 	fake "github.com/gophercloud/gophercloud/openstack/networking/v2/common"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/agents"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/speaker"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
@@ -204,4 +205,46 @@ func TestRemoveDHCPNetwork(t *testing.T) {
 
 	err := agents.RemoveDHCPNetwork(fake.ServiceClient(), "43583cf5-472e-4dc8-af5b-6aed4c94ee3a", "1ae075ca-708b-4e66-b4a7-b7698632f05f").ExtractErr()
 	th.AssertNoErr(t, err)
+}
+
+func TestListBGPSpeakers(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	agentID := "30d76012-46de-4215-aaa1-a1630d01d891"
+
+	th.Mux.HandleFunc("/v2.0/agents/"+agentID+"/bgp-drinstances",
+		func(w http.ResponseWriter, r *http.Request) {
+			th.TestMethod(t, r, "GET")
+			th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+
+			fmt.Fprintf(w, ListBGPSpeakersResult)
+		})
+
+	count := 0
+	agents.ListBGPSpeakers(fake.ServiceClient(), agentID).EachPage(
+		func(page pagination.Page) (bool, error) {
+			count++
+			actual, err := speaker.ExtractBGPSpeakers(page)
+
+			if err != nil {
+				t.Errorf("Failed to extract agents: %v", err)
+				return false, nil
+			}
+
+			th.AssertEquals(t, len(actual), 1)
+			th.AssertEquals(t, len(actual), 1)
+			th.AssertEquals(t, actual[0].ID, "cab00464-284d-4251-9798-2b27db7b1668")
+			th.AssertEquals(t, actual[0].Name, "gophercloud-testing-speaker")
+			th.AssertEquals(t, actual[0].LocalAS, 12345)
+			th.AssertEquals(t, actual[0].IPVersion, 4)
+			return true, nil
+		})
+
+	if count != 1 {
+		t.Errorf("Expected 1 page, got %d", count)
+	}
 }
