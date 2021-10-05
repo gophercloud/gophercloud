@@ -182,6 +182,7 @@ Example to create a subscription
 		Context:     "MyContext",
 		Protocol:    "Redfish",
 		EventTypes:  ["Alert"],
+		HttpHeaders: [{"Key1":"Value1"}, {"Key2":"Value2"}],
 	}
 
 	newSubscription, err := nodes.CreateSubscription(client, "a62b8495-52e2-407b-b3cb-62775d04c2b8", method, subscriptionCreateOpt).Extract()
