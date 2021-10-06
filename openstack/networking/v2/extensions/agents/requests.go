@@ -2,7 +2,6 @@ package agents
 
 import (
 	"github.com/gophercloud/gophercloud"
-	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/speaker"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
@@ -151,11 +150,11 @@ func RemoveDHCPNetwork(c *gophercloud.ServiceClient, id string, networkID string
 	return
 }
 
-// List the uuid of the BGP Speakers hosted by a specific dragent
+// ListBGPSpeakers list the BGP Speakers hosted by a specific dragent
 // GET /v2.0/agents/{agent-id}/bgp-drinstances
-func ListBGPSpeakers(c *gophercloud.ServiceClient, agentID string) pagination.Pager {
+func ListBGPSpeakers(c *gophercloud.ServiceClient, agentID string) (r ListBGPSpeakersResult) {
 	url := listBGPSpeakersURL(c, agentID)
-	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
-		return speaker.BGPSpeakerPage{pagination.LinkedPageBase{PageResult: r}}
-	})
+	resp, err := c.Get(url, &r.Body, nil)
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
 }

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/bgp/speaker"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/networks"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -172,4 +173,19 @@ func (r ListDHCPNetworksResult) Extract() ([]networks.Network, error) {
 
 	err := r.ExtractInto(&s)
 	return s.Networks, err
+}
+
+// ListBGPSpeakersResult is the respone of agents/{id}/bgp-speakers
+type ListBGPSpeakersResult struct {
+	gophercloud.Result
+}
+
+// Extract inteprets the ListBGPSpeakersResult into an array of BGP speakers
+func (r ListBGPSpeakersResult) Extract() ([]speaker.BGPSpeaker, error) {
+	var s struct {
+		Speakers []speaker.BGPSpeaker `json:"bgp_speakers"`
+	}
+
+	err := r.ExtractInto(&s)
+	return s.Speakers, err
 }

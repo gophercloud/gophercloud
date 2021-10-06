@@ -1,18 +1,16 @@
 package speaker
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
-
-const jroot = "bgp_speaker"
 
 type commonResult struct {
 	gophercloud.Result
 }
 
-// BGP Speaker
+// BGPSpeaker BGP Speaker
 type BGPSpeaker struct {
 	// UUID for the bgp speaker
 	ID string `json:"id"`
@@ -45,27 +43,10 @@ type BGPSpeaker struct {
 	Peers []string `json:"peers"`
 }
 
-func (n *BGPSpeaker) UnmarshalJSON(b []byte) error {
-	type tmp BGPSpeaker
-	var bgpspeaker struct {
-		tmp
-	}
-	if err := json.Unmarshal(b, &bgpspeaker); err != nil {
-		return err
-	}
-	*n = BGPSpeaker(bgpspeaker.tmp)
-	return nil
-}
-
 // BGPSpeakerPage is the page returned by a pager when traversing over a
 // collection of bgp speakers.
 type BGPSpeakerPage struct {
-	pagination.LinkedPageBase
-}
-
-// OpenStack API always return one page
-func (r BGPSpeakerPage) NextPageURL() (string, error) {
-	return "", nil
+	pagination.SinglePageBase
 }
 
 // IsEmpty checks whether a BGPSpeakerPage struct is empty.
