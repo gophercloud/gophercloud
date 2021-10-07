@@ -1,4 +1,6 @@
-## 0.22.0 (Unreleased)
+## 0.23.0 (Unreleased)
+
+## 0.22.0 (October 7, 2021)
 
 BREAKING CHANGES
 
