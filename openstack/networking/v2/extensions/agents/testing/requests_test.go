@@ -223,7 +223,7 @@ func TestListBGPSpeakers(t *testing.T) {
 			fmt.Fprintf(w, ListBGPSpeakersResult)
 		})
 
-	speakers, err := agents.ListBGPSpeakers(fake.ServiceClient(), agentID).Extract()
+	speakers, err := agents.ListBGPSpeakers(fake.ServiceClient(), agentID).ExtractBGPSpeakers()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, len(speakers), 1)
 	th.AssertEquals(t, speakers[0].ID, "cab00464-284d-4251-9798-2b27db7b1668")

@@ -181,7 +181,7 @@ type ListBGPSpeakersResult struct {
 }
 
 // Extract inteprets the ListBGPSpeakersResult into an array of BGP speakers
-func (r ListBGPSpeakersResult) Extract() ([]speakers.BGPSpeaker, error) {
+func (r ListBGPSpeakersResult) ExtractBGPSpeakers() ([]speakers.BGPSpeaker, error) {
 	var s struct {
 		Speakers []speakers.BGPSpeaker `json:"bgp_speakers"`
 	}
