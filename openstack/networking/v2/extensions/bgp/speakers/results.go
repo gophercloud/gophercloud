@@ -1,4 +1,4 @@
-package speaker
+package speakers
 
 import (
 	// "encoding/json"
