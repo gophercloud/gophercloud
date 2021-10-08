@@ -177,15 +177,20 @@ func (r ListDHCPNetworksResult) Extract() ([]networks.Network, error) {
 
 // ListBGPSpeakersResult is the respone of agents/{id}/bgp-speakers
 type ListBGPSpeakersResult struct {
-	gophercloud.Result
+	pagination.SinglePageBase
 }
 
-// Extract inteprets the ListBGPSpeakersResult into an array of BGP speakers
-func (r ListBGPSpeakersResult) ExtractBGPSpeakers() ([]speakers.BGPSpeaker, error) {
+func (r ListBGPSpeakersResult) IsEmpty() (bool, error) {
+	speakers, err := ExtractBGPSpeakers(r)
+	return 0 == len(speakers), err
+}
+
+// ExtractBGPSpeakers inteprets the ListBGPSpeakersResult into an array of BGP speakers
+func ExtractBGPSpeakers(r pagination.Page) ([]speakers.BGPSpeaker, error) {
 	var s struct {
 		Speakers []speakers.BGPSpeaker `json:"bgp_speakers"`
 	}
 
-	err := r.ExtractInto(&s)
+	err := (r.(ListBGPSpeakersResult)).ExtractInto(&s)
 	return s.Speakers, err
 }

@@ -152,9 +152,9 @@ func RemoveDHCPNetwork(c *gophercloud.ServiceClient, id string, networkID string
 
 // ListBGPSpeakers list the BGP Speakers hosted by a specific dragent
 // GET /v2.0/agents/{agent-id}/bgp-drinstances
-func ListBGPSpeakers(c *gophercloud.ServiceClient, agentID string) (r ListBGPSpeakersResult) {
+func ListBGPSpeakers(c *gophercloud.ServiceClient, agentID string) pagination.Pager {
 	url := listBGPSpeakersURL(c, agentID)
-	resp, err := c.Get(url, &r.Body, nil)
-	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
-	return
+	return pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return ListBGPSpeakersResult{pagination.SinglePageBase(r)}
+	})
 }
