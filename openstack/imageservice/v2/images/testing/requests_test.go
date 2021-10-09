@@ -266,6 +266,7 @@ func TestUpdateImage(t *testing.T) {
 		images.ReplaceImageMinDisk{NewMinDisk: 21},
 		images.ReplaceImageMinRam{NewMinRam: 1024},
 		images.ReplaceImageHidden{NewHidden: false},
+		images.ReplaceImageProtected{NewProtected: true},
 		images.UpdateImageProperty{
 			Op:    images.AddOp,
 			Name:  "empty_value",
@@ -288,6 +289,7 @@ func TestUpdateImage(t *testing.T) {
 		Status:     images.ImageStatusActive,
 		Visibility: images.ImageVisibilityPublic,
 		Hidden:     false,
+		Protected:  true,
 
 		SizeBytes: sizebytes,
 		Checksum:  checksum,

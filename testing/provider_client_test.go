@@ -450,7 +450,7 @@ func TestRequestConnectionClose(t *testing.T) {
 	th.AssertEquals(t, int64(iter), connections)
 }
 
-func retryTest(retryCounter *uint, t *testing.T) gophercloud.RetryBackoffFunc {
+func retryBackoffTest(retryCounter *uint, t *testing.T) gophercloud.RetryBackoffFunc {
 	return func(ctx context.Context, respErr *gophercloud.ErrUnexpectedResponseCode, e error, retries uint) error {
 		retryAfter := respErr.ResponseHeader.Get("Retry-After")
 		if retryAfter == "" {
@@ -497,7 +497,7 @@ func TestRequestRetry(t *testing.T) {
 	p.SetToken(client.TokenID)
 	p.MaxBackoffRetries = 3
 
-	p.RetryBackoffFunc = retryTest(&retryCounter, t)
+	p.RetryBackoffFunc = retryBackoffTest(&retryCounter, t)
 
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -524,7 +524,7 @@ func TestRequestRetryHTTPDate(t *testing.T) {
 	p.SetToken(client.TokenID)
 	p.MaxBackoffRetries = 3
 
-	p.RetryBackoffFunc = retryTest(&retryCounter, t)
+	p.RetryBackoffFunc = retryBackoffTest(&retryCounter, t)
 
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -551,7 +551,7 @@ func TestRequestRetryError(t *testing.T) {
 	p.SetToken(client.TokenID)
 	p.MaxBackoffRetries = 3
 
-	p.RetryBackoffFunc = retryTest(&retryCounter, t)
+	p.RetryBackoffFunc = retryBackoffTest(&retryCounter, t)
 
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -578,7 +578,7 @@ func TestRequestRetrySuccess(t *testing.T) {
 	p.SetToken(client.TokenID)
 	p.MaxBackoffRetries = 3
 
-	p.RetryBackoffFunc = retryTest(&retryCounter, t)
+	p.RetryBackoffFunc = retryBackoffTest(&retryCounter, t)
 
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
@@ -612,7 +612,7 @@ func TestRequestRetryContext(t *testing.T) {
 	p.SetToken(client.TokenID)
 	p.MaxBackoffRetries = 3
 
-	p.RetryBackoffFunc = retryTest(&retryCounter, t)
+	p.RetryBackoffFunc = retryBackoffTest(&retryCounter, t)
 
 	th.SetupHTTP()
 	defer th.TeardownHTTP()

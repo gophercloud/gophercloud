@@ -717,6 +717,95 @@ const NodeSingleBIOSSettingBody = `
 }
 `
 
+const NodeVendorPassthruMethodsBody = `
+{
+  "create_subscription": {
+    "http_methods": [
+      "POST"
+    ],
+    "async": false,
+    "description": "",
+    "attach": false,
+    "require_exclusive_lock": true
+  },
+  "delete_subscription": {
+    "http_methods": [
+      "DELETE"
+    ],
+    "async": false,
+    "description": "",
+    "attach": false,
+    "require_exclusive_lock": true
+  },
+  "get_subscription": {
+    "http_methods": [
+      "GET"
+    ],
+    "async": false,
+    "description": "",
+    "attach": false,
+    "require_exclusive_lock": true
+  },
+  "get_all_subscriptions": {
+    "http_methods": [
+      "GET"
+    ],
+    "async": false,
+    "description": "",
+    "attach": false,
+    "require_exclusive_lock": true
+  }
+}
+`
+
+const NodeGetAllSubscriptionsVnedorPassthruBody = `
+{
+  "@odata.context": "/redfish/v1/$metadata#EventDestinationCollection.EventDestinationCollection",
+  "@odata.id": "/redfish/v1/EventService/Subscriptions",
+  "@odata.type": "#EventDestinationCollection.EventDestinationCollection",
+  "Description": "List of Event subscriptions",
+  "Members": [
+    {
+      "@odata.id": "/redfish/v1/EventService/Subscriptions/62dbd1b6-f637-11eb-b551-4cd98f20754c"
+    }
+  ],
+  "Members@odata.count": 1,
+  "Name": "Event Subscriptions Collection"
+}
+
+`
+
+const NodeGetSubscriptionVendorPassthruBody = `
+{
+  "Context": "Ironic",
+  "Destination": "https://192.168.0.1/EventReceiver.php",
+  "EventTypes": ["Alert"],
+  "Id": "62dbd1b6-f637-11eb-b551-4cd98f20754c",
+  "Protocol": "Redfish"
+}
+`
+
+const NodeCreateSubscriptionVendorPassthruAllParametersBody = `
+{
+  "Context": "gophercloud",
+  "Destination": "https://someurl",
+  "EventTypes": ["Alert"],
+  "HttpHeaders": [{"Context-Type":"application/json"}],
+  "Id": "eaa43e2-018a-424e-990a-cbf47c62ef80",
+  "Protocol": "Redfish"
+}
+`
+
+const NodeCreateSubscriptionVendorPassthruRequiredParametersBody = `
+{
+  "Context": "",
+  "Destination": "https://somedestinationurl",
+  "EventTypes": ["Alert"],
+  "Id": "344a3e2-978a-444e-990a-cbf47c62ef88",
+  "Protocol": "Redfish"
+}
+`
+
 var (
 	NodeFoo = nodes.Node{
 		UUID:                 "d2630783-6ec8-4836-b556-ab427c4b581e",
@@ -992,6 +1081,72 @@ var (
 	NodeSingleBIOSSetting = nodes.BIOSSetting{
 		Name:  "ProcVirtualization",
 		Value: "Enabled",
+	}
+
+	NodeVendorPassthruMethods = nodes.VendorPassthruMethods{
+		CreateSubscription: nodes.CreateSubscriptionMethod{
+			HTTPMethods:          []string{"POST"},
+			Async:                false,
+			Description:          "",
+			Attach:               false,
+			RequireExclusiveLock: true,
+		},
+		DeleteSubscription: nodes.DeleteSubscriptionMethod{
+			HTTPMethods:          []string{"DELETE"},
+			Async:                false,
+			Description:          "",
+			Attach:               false,
+			RequireExclusiveLock: true,
+		},
+		GetSubscription: nodes.GetSubscriptionMethod{
+			HTTPMethods:          []string{"GET"},
+			Async:                false,
+			Description:          "",
+			Attach:               false,
+			RequireExclusiveLock: true,
+		},
+		GetAllSubscriptions: nodes.GetAllSubscriptionsMethod{
+			HTTPMethods:          []string{"GET"},
+			Async:                false,
+			Description:          "",
+			Attach:               false,
+			RequireExclusiveLock: true,
+		},
+	}
+
+	NodeGetAllSubscriptions = nodes.GetAllSubscriptionsVendorPassthru{
+		Context:      "/redfish/v1/$metadata#EventDestinationCollection.EventDestinationCollection",
+		Etag:         "",
+		Id:           "/redfish/v1/EventService/Subscriptions",
+		Type:         "#EventDestinationCollection.EventDestinationCollection",
+		Description:  "List of Event subscriptions",
+		Name:         "Event Subscriptions Collection",
+		Members:      []map[string]string{{"@odata.id": "/redfish/v1/EventService/Subscriptions/62dbd1b6-f637-11eb-b551-4cd98f20754c"}},
+		MembersCount: 1,
+	}
+
+	NodeGetSubscription = nodes.SubscriptionVendorPassthru{
+		Id:          "62dbd1b6-f637-11eb-b551-4cd98f20754c",
+		Context:     "Ironic",
+		Destination: "https://192.168.0.1/EventReceiver.php",
+		EventTypes:  []string{"Alert"},
+		Protocol:    "Redfish",
+	}
+
+	NodeCreateSubscriptionRequiredParameters = nodes.SubscriptionVendorPassthru{
+		Id:          "344a3e2-978a-444e-990a-cbf47c62ef88",
+		Context:     "",
+		Destination: "https://somedestinationurl",
+		EventTypes:  []string{"Alert"},
+		Protocol:    "Redfish",
+	}
+
+	NodeCreateSubscriptionAllParameters = nodes.SubscriptionVendorPassthru{
+		Id:          "eaa43e2-018a-424e-990a-cbf47c62ef80",
+		Context:     "gophercloud",
+		Destination: "https://someurl",
+		EventTypes:  []string{"Alert"},
+		Protocol:    "Redfish",
 	}
 )
 
@@ -1278,5 +1433,94 @@ func HandleGetBIOSSettingSuccessfully(t *testing.T) {
 		th.TestHeader(t, r, "Accept", "application/json")
 
 		fmt.Fprintf(w, NodeSingleBIOSSettingBody)
+	})
+}
+
+func HandleGetVendorPassthruMethodsSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru/methods", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+
+		fmt.Fprintf(w, NodeVendorPassthruMethodsBody)
+	})
+}
+
+func HandleGetAllSubscriptionsVendorPassthruSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestFormValues(t, r, map[string]string{"method": "get_all_subscriptions"})
+
+		fmt.Fprintf(w, NodeGetAllSubscriptionsVnedorPassthruBody)
+	})
+}
+
+func HandleGetSubscriptionVendorPassthruSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestFormValues(t, r, map[string]string{"method": "get_subscription"})
+		th.TestJSONRequest(t, r, `
+			{
+			   "id" : "62dbd1b6-f637-11eb-b551-4cd98f20754c"
+			}
+		`)
+
+		fmt.Fprintf(w, NodeGetSubscriptionVendorPassthruBody)
+	})
+}
+
+func HandleCreateSubscriptionVendorPassthruAllParametersSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestFormValues(t, r, map[string]string{"method": "create_subscription"})
+		th.TestJSONRequest(t, r, `
+			{
+         "Context":      "gophercloud",
+         "EventTypes":   ["Alert"],
+         "HttpHeaders":  [{"Content-Type":"application/json"}],
+         "Protocol":     "Redfish",
+			   "Destination" : "https://someurl"
+			}
+		`)
+
+		fmt.Fprintf(w, NodeCreateSubscriptionVendorPassthruAllParametersBody)
+	})
+}
+
+func HandleCreateSubscriptionVendorPassthruRequiredParametersSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestFormValues(t, r, map[string]string{"method": "create_subscription"})
+		th.TestJSONRequest(t, r, `
+			{
+			   "Destination" : "https://somedestinationurl"
+			}
+		`)
+
+		fmt.Fprintf(w, NodeCreateSubscriptionVendorPassthruRequiredParametersBody)
+	})
+}
+
+func HandleDeleteSubscriptionVendorPassthruSuccessfully(t *testing.T) {
+	th.Mux.HandleFunc("/nodes/1234asdf/vendor_passthru", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "DELETE")
+		th.TestHeader(t, r, "X-Auth-Token", client.TokenID)
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestFormValues(t, r, map[string]string{"method": "delete_subscription"})
+		th.TestJSONRequest(t, r, `
+			{
+			   "id" : "344a3e2-978a-444e-990a-cbf47c62ef88"
+			}
+		`)
+
+		w.WriteHeader(http.StatusNoContent)
 	})
 }

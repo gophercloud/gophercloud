@@ -408,11 +408,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 
 	if options.MoreHeaders != nil {
 		for k, v := range options.MoreHeaders {
-			if v != "" {
-				req.Header.Set(k, v)
-			} else {
-				req.Header.Del(k)
-			}
+			req.Header.Set(k, v)
 		}
 	}
 
