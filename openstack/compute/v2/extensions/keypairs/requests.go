@@ -81,6 +81,10 @@ type CreateOpts struct {
 	// This requires microversion 2.10 or higher.
 	UserID string `json:"user_id,omitempty"`
 
+	// The type of the keypair. Allowed values are ssh or x509
+	// This requires microversion 2.2 or higher.
+	Type string `json:"type,omitempty"`
+
 	// PublicKey [optional] is a pregenerated OpenSSH-formatted public key.
 	// If provided, this key will be imported and no new key will be created.
 	PublicKey string `json:"public_key,omitempty"`
