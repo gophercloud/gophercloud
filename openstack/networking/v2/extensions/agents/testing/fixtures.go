@@ -255,4 +255,3 @@ const ListBGPSpeakersResult = `
   ]
 }
 `
-
