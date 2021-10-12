@@ -156,20 +156,23 @@ type Domain struct {
 
 // Project represents a project in a role assignment scope.
 type Project struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+	Domain Domain `json:"domain,omitempty"`
+	ID     string `json:"id,omitempty"`
+	Name   string `json:"name,omitempty"`
 }
 
 // User represents a user in a role assignment scope.
 type User struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+	Domain Domain `json:"domain,omitempty"`
+	ID     string `json:"id,omitempty"`
+	Name   string `json:"name,omitempty"`
 }
 
 // Group represents a group in a role assignment scope.
 type Group struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+	Domain Domain `json:"domain,omitempty"`
+	ID     string `json:"id,omitempty"`
+	Name   string `json:"name,omitempty"`
 }
 
 // RoleAssignmentPage is a single page of RoleAssignments results.

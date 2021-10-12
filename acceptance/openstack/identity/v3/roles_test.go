@@ -504,6 +504,10 @@ func TestRolesAssignToUserOnProject(t *testing.T) {
 		if roleAssignment.Role.ID == role.ID {
 			found = true
 		}
+
+		if roleAssignment.User.Domain.ID == "" || roleAssignment.Scope.Project.Domain.ID == "" {
+			found = false
+		}
 	}
 
 	th.AssertEquals(t, found, true)
@@ -570,6 +574,10 @@ func TestRolesAssignToUserOnDomain(t *testing.T) {
 
 		if roleAssignment.Role.ID == role.ID {
 			found = true
+		}
+
+		if roleAssignment.User.Domain.ID == "" {
+			found = false
 		}
 	}
 
@@ -641,6 +649,10 @@ func TestRolesAssignToGroupOnDomain(t *testing.T) {
 		if roleAssignment.Role.ID == role.ID {
 			found = true
 		}
+
+		if roleAssignment.Group.Domain.ID == "" {
+			found = false
+		}
 	}
 
 	th.AssertEquals(t, found, true)
@@ -707,6 +719,10 @@ func TestRolesAssignToGroupOnProject(t *testing.T) {
 
 		if roleAssignment.Role.ID == role.ID {
 			found = true
+		}
+
+		if roleAssignment.Scope.Project.Domain.ID == "" || roleAssignment.Group.Domain.ID == "" {
+			found = false
 		}
 	}
 

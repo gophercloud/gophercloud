@@ -113,6 +113,9 @@ const ListAssignmentOutput = `
                 }
             },
             "user": {
+                "domain": {
+                  "id": "161718"
+                },
                 "id": "313233"
             }
         },
@@ -126,10 +129,16 @@ const ListAssignmentOutput = `
             },
             "scope": {
                 "project": {
+                    "domain": {
+                      "id": "161718"
+                    },
                     "id": "456789"
                 }
             },
             "user": {
+                "domain": {
+                  "id": "161718"
+                },
                 "id": "313233"
             }
         }
@@ -152,17 +161,21 @@ const ListAssignmentWithNamesOutput = `
             },
             "role": {
                 "id": "123456",
-				"name": "include_names_role"
+                "name": "include_names_role"
             },
             "scope": {
                 "domain": {
                     "id": "161718",
-					"name": "52833"
+                    "name": "52833"
                 }
             },
             "user": {
+                "domain": {
+                    "id": "161718",
+                    "name": "52833"
+                },
                 "id": "313233",
-				"name": "example-user-name"
+                "name": "example-user-name"
             }
         }
     ],
@@ -358,15 +371,15 @@ func HandleUnassignSuccessfully(t *testing.T) {
 var FirstRoleAssignment = roles.RoleAssignment{
 	Role:  roles.AssignedRole{ID: "123456"},
 	Scope: roles.Scope{Domain: roles.Domain{ID: "161718"}},
-	User:  roles.User{ID: "313233"},
+	User:  roles.User{Domain: roles.Domain{ID: "161718"}, ID: "313233"},
 	Group: roles.Group{},
 }
 
 // SecondRoleAssignemnt is the second role assignemnt in the List request.
 var SecondRoleAssignment = roles.RoleAssignment{
 	Role:  roles.AssignedRole{ID: "123456"},
-	Scope: roles.Scope{Project: roles.Project{ID: "456789"}},
-	User:  roles.User{ID: "313233"},
+	Scope: roles.Scope{Project: roles.Project{Domain: roles.Domain{ID: "161718"}, ID: "456789"}},
+	User:  roles.User{Domain: roles.Domain{ID: "161718"}, ID: "313233"},
 	Group: roles.Group{},
 }
 
@@ -374,7 +387,7 @@ var SecondRoleAssignment = roles.RoleAssignment{
 var ThirdRoleAssignment = roles.RoleAssignment{
 	Role:  roles.AssignedRole{ID: "123456", Name: "include_names_role"},
 	Scope: roles.Scope{Domain: roles.Domain{ID: "161718", Name: "52833"}},
-	User:  roles.User{ID: "313233", Name: "example-user-name"},
+	User:  roles.User{Domain: roles.Domain{ID: "161718", Name: "52833"}, ID: "313233", Name: "example-user-name"},
 	Group: roles.Group{},
 }
 
