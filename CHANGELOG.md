@@ -1,5 +1,10 @@
 ## 0.23.0 (Unreleased)
 
+IMPROVEMENTS
+
+* Added `networking/v2/extensions/agents.ListBGPSpeakers` [GH-2229](https://github.com/gophercloud/gophercloud/pull/2229)
+* Added `networking/v2/extensions/bgp/speakers.BGPSpeaker` [GH-2229](https://github.com/gophercloud/gophercloud/pull/2229)
+
 ## 0.22.0 (October 7, 2021)
 
 BREAKING CHANGES
