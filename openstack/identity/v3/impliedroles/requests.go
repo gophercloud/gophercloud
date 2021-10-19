@@ -64,25 +64,10 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	})
 }
 
-// CreateOpts has been defined as client.Put() requires body
-type CreateOptsBuilder interface {
-	ToImpliedRoleCreateMap() (map[string]interface{}, error)
-}
-
-// CreateOpts has been defined as client.Put() requires body
-type CreateOpts struct {
-	// Extra is free-form extra key/value pairs to describe the role.
-	Extra map[string]interface{} `json:"-"`
-}
-
 // Create Implied roles.
-func Create(client *gophercloud.ServiceClient, pirorRoleId string, impliedRoleID string, opts CreateOptsBuilder) (r CreateResult) {
-	b, err := opts.ToImpliedRoleCreateMap()
-	if err != nil {
-		r.Err = err
-		return
-	}
-	resp, err := client.Put(createURL(client, pirorRoleId, impliedRoleID), &b, &r.Body, &gophercloud.RequestOpts{
+func Create(client *gophercloud.ServiceClient, pirorRoleId string, impliedRoleID string) (r createImpliedRoleResult) {
+
+	resp, err := client.Put(createURL(client, pirorRoleId, impliedRoleID), nil, r.Body, &gophercloud.RequestOpts{
 		OkCodes: []int{201},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
@@ -90,8 +75,8 @@ func Create(client *gophercloud.ServiceClient, pirorRoleId string, impliedRoleID
 }
 
 // Delete deletes a implied roles.
-func Delete(client *gophercloud.ServiceClient, id string) (r DeleteResult) {
-	resp, err := client.Delete(deleteURL(client, id), nil)
+func Delete(client *gophercloud.ServiceClient, pirorRoleId string, impliesRoleId string) (r DeleteResult) {
+	resp, err := client.Delete(deleteURL(client, pirorRoleId, impliesRoleId), nil)
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }

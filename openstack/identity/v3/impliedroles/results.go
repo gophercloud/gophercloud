@@ -1,8 +1,6 @@
 package impliedroles
 
 import (
-	"encoding/json"
-
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
@@ -13,67 +11,48 @@ type ImpliedRole struct {
 
 		Name string `json:"name"`
 
-		// // Extra is a collection of miscellaneous key/values.
-		// Extra map[string]interface{} `json:"-"`
-	}
+		Links map[string]interface{} `json:"links"`
+	} `json:"prior_role"`
+
+	Implies []struct {
+		ID string `json:"id"`
+
+		Name string `json:"name"`
+
+		Links map[string]interface{} `json:"links"`
+	} `json:"implies"`
+}
+
+type CreateImpliedRole struct {
+	PriorRole struct {
+		ID string `json:"id"`
+
+		Name string `json:"name"`
+
+		Links map[string]interface{} `json:"links"`
+	} `json:"prior_role"`
 
 	Implies struct {
 		ID string `json:"id"`
 
 		Name string `json:"name"`
 
-		// Extra is a collection of miscellaneous key/values.
-		// Extra map[string]interface{} `json:"-"`
-	}
-
-	// Extra is a collection of miscellaneous key/values.
-	Extra map[string]interface{} `json:"-"`
+		Links map[string]interface{} `json:"links"`
+	} `json:"implies"`
 }
 
-func (r *ImpliedRole) UnmarshalJSON(b []byte) error {
-	type tmp ImpliedRole
-	var s struct {
-		tmp
-		Extra map[string]interface{} `json:"extra"`
-	}
-	err := json.Unmarshal(b, &s)
-	if err != nil {
-		return err
-	}
-	*r = ImpliedRole(s.tmp)
-
-	// Collect other fields and bundle them into Extra
-	// but only if a field titled "extra" wasn't sent.
-	if s.Extra != nil {
-		r.Extra = s.Extra
-	} else {
-		var result interface{}
-		err := json.Unmarshal(b, &result)
-		if err != nil {
-			return err
-		}
-		if resultMap, ok := result.(map[string]interface{}); ok {
-			r.Extra = gophercloud.RemainingKeys(ImpliedRole{}, resultMap)
-		}
-	}
-
-	return err
+type createImpliedRoleResult struct {
+	gophercloud.Result
 }
 
 type impliedRoleResult struct {
 	gophercloud.Result
 }
 
-// GetResult is the response from a Get operation. Call its Extract method
-// to interpret it as a Role.
-type GetResult struct {
-	impliedRoleResult
-}
-
-// CreateResult is the response from a Create operation. Call its Extract method
-// to interpret it as a Role
+// CreateResult is the response from a Create operation. Call its ExtractErr to
+// determine if the request succeded or failed.
 type CreateResult struct {
-	impliedRoleResult
+	gophercloud.Result
 }
 
 // DeleteResult is the response from a Delete operation. Call its ExtractErr to
@@ -82,15 +61,20 @@ type DeleteResult struct {
 	gophercloud.ErrResult
 }
 
-// RolePage is a single page of Role results.
+// ImpliedRolePage is a single page of Role results.
 type ImpliedRolePage struct {
 	pagination.LinkedPageBase
 }
 
-// IsEmpty determines whether or not a page of Roles contains any results.
+// CreateImpliedRolePage
+type CreateImpliedRolePage struct {
+	pagination.LinkedPageBase
+}
+
+// IsEmpty determines whether or not a page of ImpliedRoles contains any results.
 func (r ImpliedRolePage) IsEmpty() (bool, error) {
-	roles, err := ExtractImpliedRoles(r)
-	return len(roles) == 0, err
+	Impliedroles, err := ExtractImpliedRoles(r)
+	return len(Impliedroles) == 0, err
 }
 
 // NextPageURL extracts the "next" link from the links section of the result.
@@ -108,21 +92,30 @@ func (r ImpliedRolePage) NextPageURL() (string, error) {
 	return s.Links.Next, err
 }
 
-// ExtractProjects returns a slice of Roles contained in a single page of
+// ExtractProjects returns a slice of ImpliedRoles contained in a single page of
 // results.
 func ExtractImpliedRoles(r pagination.Page) ([]ImpliedRole, error) {
 	var s struct {
-		ImpliedRoles []ImpliedRole `json:"role_inference"`
+		ImpliedRoles []ImpliedRole `json:"role_inferences"`
 	}
 	err := (r.(ImpliedRolePage)).ExtractInto(&s)
 	return s.ImpliedRoles, err
 }
 
-// Extract interprets any roleResults as a Role.
+// Extract interprets any impliedRoleResults as a Role.
 func (r impliedRoleResult) Extract() (*ImpliedRole, error) {
 	var s struct {
-		Role *ImpliedRole `json:"role"`
+		ImpliedRole *ImpliedRole `json:"role_inferences"`
 	}
 	err := r.ExtractInto(&s)
-	return s.Role, err
+	return s.ImpliedRole, err
+}
+
+// Extract interprets any createImpliedRoleResult as a role
+func (r createImpliedRoleResult) Extract() (*CreateImpliedRole, error) {
+	var s struct {
+		CreateImpliedRole *CreateImpliedRole `json:"role_inference"`
+	}
+	err := r.ExtractInto(&s)
+	return s.CreateImpliedRole, err
 }
