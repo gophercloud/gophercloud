@@ -16,7 +16,7 @@ func TestListImpliedRoles(t *testing.T) {
 
 	count := 0
 
-	err := impliedroles.List(client.ServiceClient(), nil).EachPage(func(page pagination.Page) (bool, error) {
+	err := impliedroles.List(client.ServiceClient(), "b385b97c988f4a649eecbb5cdd52b7e1", nil).EachPage(func(page pagination.Page) (bool, error) {
 		count++
 
 		actual, err := impliedroles.ExtractImpliedRoles(page)

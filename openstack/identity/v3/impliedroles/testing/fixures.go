@@ -152,7 +152,7 @@ var CreateImpliedRole = impliedroles.CreateImpliedRole{
 // HandleCreateImpliedRolesSuccessfully creates an HTTP handler at `/role_inferences` on the
 // test handler mux that responds with a list of two roles.
 func HandleListImpliedRolesSuccessfully(t *testing.T) {
-	th.Mux.HandleFunc("/role_inferences", func(w http.ResponseWriter, r *http.Request) {
+	th.Mux.HandleFunc("/roles/b385b97c988f4a649eecbb5cdd52b7e1/implies", func(w http.ResponseWriter, r *http.Request) {
 		th.TestMethod(t, r, "GET")
 		th.TestHeader(t, r, "Accept", "application/json")
 		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)

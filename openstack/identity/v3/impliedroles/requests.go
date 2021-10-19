@@ -49,8 +49,8 @@ func (opts ListOpts) ToImpliedRoleListQuery() (string, error) {
 }
 
 // List enumerates the ApplicationCredentials to which the current token has access.
-func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pager {
-	url := listURL(client)
+func List(client *gophercloud.ServiceClient, priorRoleId string, opts ListOptsBuilder) pagination.Pager {
+	url := listURL(client, priorRoleId)
 	if opts != nil {
 		query, err := opts.ToImpliedRoleListQuery()
 		if err != nil {
