@@ -1,13 +1,25 @@
 package speakers
 
 import (
-	// "encoding/json"
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/pagination"
 )
 
+const jroot = "bgp_speaker"
+
 type commonResult struct {
 	gophercloud.Result
+}
+
+// Extract is a function that accepts a result and extracts a bgp speaker resource.
+func (r commonResult) Extract() (*BGPSpeaker, error) {
+	var s BGPSpeaker
+	err := r.ExtractInto(&s)
+	return &s, err
+}
+
+func (r commonResult) ExtractInto(v interface{}) error {
+	return r.Result.ExtractIntoStructPtr(v, jroot)
 }
 
 // BGPSpeaker BGP Speaker
@@ -66,4 +78,10 @@ func ExtractBGPSpeakers(r pagination.Page) ([]BGPSpeaker, error) {
 
 func ExtractBGPSpeakersInto(r pagination.Page, v interface{}) error {
 	return r.(BGPSpeakerPage).Result.ExtractIntoSlicePtr(v, "bgp_speakers")
+}
+
+// GetResult represents the result of a get operation. Call its Extract
+// method to interpret it as a BGPSpeaker.
+type GetResult struct {
+	commonResult
 }
