@@ -30,7 +30,7 @@ Example of Retrieving Compute Extensions
 	allExtensions, err := extensions.ExtractExtensions(allPages)
 
 	for _, extension := range allExtensions{
-		fmt.Println("%+v\n", extension)
+		fmt.Printf("%+v\n", extension)
 	}
 
 
@@ -46,7 +46,7 @@ Example of Retrieving Network Extensions
 	allExtensions, err := extensions.ExtractExtensions(allPages)
 
 	for _, extension := range allExtensions{
-		fmt.Println("%+v\n", extension)
+		fmt.Printf("%+v\n", extension)
 	}
 */
 package extensions

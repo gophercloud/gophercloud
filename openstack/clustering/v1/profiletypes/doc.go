@@ -11,7 +11,7 @@ Example to List ProfileType
 		}
 
 		for _, profileType := range profileTypes {
-			fmt.Println("%+v\n", profileType)
+			fmt.Printf("%+v\n", profileType)
 		}
 		return true, nil
 	})
