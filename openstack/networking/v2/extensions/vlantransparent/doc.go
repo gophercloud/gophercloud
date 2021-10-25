@@ -29,7 +29,7 @@ Example of Listing Networks with the vlan-transparent extension
     }
 
     for _, network := range allNetworks {
-        fmt.Println("%+v\n", network)
+        fmt.Printf("%+v\n", network)
 	}
 
 Example of Getting a Network with the vlan-transparent extension
@@ -44,7 +44,7 @@ Example of Getting a Network with the vlan-transparent extension
 		panic(err)
 	}
 
-	fmt.Println("%+v\n", network)
+	fmt.Printf("%+v\n", network)
 
 Example of Creating Network with the vlan-transparent extension
 
@@ -68,7 +68,7 @@ Example of Creating Network with the vlan-transparent extension
 		panic(err)
 	}
 
-	fmt.Println("%+v\n", network)
+	fmt.Printf("%+v\n", network)
 
 Example of Updating Network with the vlan-transparent extension
 
@@ -92,6 +92,6 @@ Example of Updating Network with the vlan-transparent extension
 		panic(err)
 	}
 
-	fmt.Println("%+v\n", network)
+	fmt.Printf("%+v\n", network)
 */
 package vlantransparent

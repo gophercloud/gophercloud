@@ -15,7 +15,7 @@ Example to List Events
 		}
 
 		for _, eventInfo := range eventInfos {
-			fmt.Println("%+v\n", eventInfo)
+			fmt.Printf("%+v\n", eventInfo)
 		}
 		return true, nil
 	})

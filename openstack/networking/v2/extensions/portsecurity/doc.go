@@ -26,7 +26,7 @@ Example to List Networks with Port Security Information
 	}
 
 	for _, network := range allNetworks {
-		fmt.Println("%+v\n", network)
+		fmt.Printf("%+v\n", network)
 	}
 
 Example to Create a Network without Port Security
@@ -51,7 +51,7 @@ Example to Create a Network without Port Security
 		panic(err)
 	}
 
-	fmt.Println("%+v\n", networkWithPortSecurityExt)
+	fmt.Printf("%+v\n", networkWithPortSecurityExt)
 
 Example to Disable Port Security on an Existing Network
 
@@ -73,7 +73,7 @@ Example to Disable Port Security on an Existing Network
 		panic(err)
 	}
 
-	fmt.Println("%+v\n", networkWithPortSecurityExt)
+	fmt.Printf("%+v\n", networkWithPortSecurityExt)
 
 Example to Get a Port with Port Security Information
 
@@ -89,7 +89,7 @@ Example to Get a Port with Port Security Information
 		panic(err)
 	}
 
-	fmt.Println("%+v\n", portWithPortSecurityExtensions)
+	fmt.Printf("%+v\n", portWithPortSecurityExtensions)
 
 Example to Create a Port Without Port Security
 
@@ -117,7 +117,7 @@ Example to Create a Port Without Port Security
 		panic(err)
 	}
 
-	fmt.Println("%+v\n", portWithPortSecurityExtensions)
+	fmt.Printf("%+v\n", portWithPortSecurityExtensions)
 
 Example to Disable Port Security on an Existing Port
 
@@ -140,6 +140,6 @@ Example to Disable Port Security on an Existing Port
 		panic(err)
 	}
 
-	fmt.Println("%+v\n", portWithPortSecurityExtensions)
+	fmt.Printf("%+v\n", portWithPortSecurityExtensions)
 */
 package portsecurity
