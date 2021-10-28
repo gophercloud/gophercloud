@@ -484,10 +484,12 @@ func TestRolesAssignToUserOnProject(t *testing.T) {
 		ProjectID: project.ID,
 	})
 
+	iTrue := true
 	lao := roles.ListAssignmentsOpts{
 		RoleID:         role.ID,
 		ScopeProjectID: project.ID,
 		UserID:         user.ID,
+		IncludeNames:   &iTrue,
 	}
 
 	allPages, err := roles.ListAssignments(client, lao).AllPages()
@@ -503,6 +505,10 @@ func TestRolesAssignToUserOnProject(t *testing.T) {
 
 		if roleAssignment.Role.ID == role.ID {
 			found = true
+		}
+
+		if roleAssignment.User.Domain.ID == "" || roleAssignment.Scope.Project.Domain.ID == "" {
+			found = false
 		}
 	}
 
@@ -551,10 +557,12 @@ func TestRolesAssignToUserOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	})
 
+	iTrue := true
 	lao := roles.ListAssignmentsOpts{
 		RoleID:        role.ID,
 		ScopeDomainID: domain.ID,
 		UserID:        user.ID,
+		IncludeNames:  &iTrue,
 	}
 
 	allPages, err := roles.ListAssignments(client, lao).AllPages()
@@ -570,6 +578,10 @@ func TestRolesAssignToUserOnDomain(t *testing.T) {
 
 		if roleAssignment.Role.ID == role.ID {
 			found = true
+		}
+
+		if roleAssignment.User.Domain.ID == "" {
+			found = false
 		}
 	}
 
@@ -621,10 +633,12 @@ func TestRolesAssignToGroupOnDomain(t *testing.T) {
 		DomainID: domain.ID,
 	})
 
+	iTrue := true
 	lao := roles.ListAssignmentsOpts{
 		RoleID:        role.ID,
 		ScopeDomainID: domain.ID,
 		GroupID:       group.ID,
+		IncludeNames:  &iTrue,
 	}
 
 	allPages, err := roles.ListAssignments(client, lao).AllPages()
@@ -640,6 +654,10 @@ func TestRolesAssignToGroupOnDomain(t *testing.T) {
 
 		if roleAssignment.Role.ID == role.ID {
 			found = true
+		}
+
+		if roleAssignment.Group.Domain.ID == "" {
+			found = false
 		}
 	}
 
@@ -688,10 +706,12 @@ func TestRolesAssignToGroupOnProject(t *testing.T) {
 		ProjectID: project.ID,
 	})
 
+	iTrue := true
 	lao := roles.ListAssignmentsOpts{
 		RoleID:         role.ID,
 		ScopeProjectID: project.ID,
 		GroupID:        group.ID,
+		IncludeNames:   &iTrue,
 	}
 
 	allPages, err := roles.ListAssignments(client, lao).AllPages()
@@ -707,6 +727,10 @@ func TestRolesAssignToGroupOnProject(t *testing.T) {
 
 		if roleAssignment.Role.ID == role.ID {
 			found = true
+		}
+
+		if roleAssignment.Scope.Project.Domain.ID == "" || roleAssignment.Group.Domain.ID == "" {
+			found = false
 		}
 	}
 

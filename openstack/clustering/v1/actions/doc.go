@@ -15,7 +15,7 @@ Example to List Actions
 		}
 
 		for _, actionInfo := range actionInfos {
-			fmt.Println("%+v\n", actionInfo)
+			fmt.Printf("%+v\n", actionInfo)
 		}
 		return true, nil
 	})

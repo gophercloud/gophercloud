@@ -83,5 +83,20 @@ Example to Remove a network from a DHCP Agent
 		panic(err)
 	}
 
+Example to List BGP speakers by dragent
+
+	pages, err := agents.ListBGPSpeakers(c, agentID).AllPages()
+	if err != nil {
+		log.Panicf("%v", err)
+	}
+	allSpeakers, err := agents.ExtractBGPSpeakers(pages)
+	if err != nil {
+		log.Panicf("%v", err)
+	}
+	for _, s := range allSpeakers {
+		log.Printf("%v", s)
+	}
+
 */
+
 package agents
