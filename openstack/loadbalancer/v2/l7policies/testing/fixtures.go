@@ -261,6 +261,7 @@ func HandleL7PolicyUpdateSuccessfully(t *testing.T) {
 			}
 		}`)
 
+		w.WriteHeader(http.StatusAccepted)
 		fmt.Fprintf(w, PostUpdateL7PolicyBody)
 	})
 }
@@ -279,6 +280,7 @@ func HandleL7PolicyUpdateNullRedirectURLSuccessfully(t *testing.T) {
 			}
 		}`)
 
+		w.WriteHeader(http.StatusAccepted)
 		fmt.Fprintf(w, PostUpdateL7PolicyNullRedirectURLBody)
 	})
 }

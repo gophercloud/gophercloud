@@ -219,7 +219,7 @@ func Update(c *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r 
 		return
 	}
 	resp, err := c.Put(resourceURL(c, id), b, &r.Body, &gophercloud.RequestOpts{
-		OkCodes: []int{200},
+		OkCodes: []int{202},
 	})
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
