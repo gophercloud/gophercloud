@@ -38,6 +38,8 @@
         - acceptance/openstack/orchestration/v1
         - acceptance/openstack/placement/v1
       devstack_services:
+        - barbican
+        - heat
         - zun
 
 - job:
@@ -75,6 +77,8 @@
         - designate
         - neutron-ext
         - octavia
+      zuul_copy_output:
+        '/var/log/dib-build': logs
 
 - job:
     name: gophercloud-acceptance-test-storage
@@ -116,6 +120,7 @@
 - job:
     name: gophercloud-acceptance-test-compute-ussuri
     parent: gophercloud-acceptance-test-compute
+    nodeset: ubuntu-bionic
     description: |
       Run gophercloud compute acceptance test on ussuri branch
     vars:
@@ -125,6 +130,7 @@
 - job:
     name: gophercloud-acceptance-test-networking-ussuri
     parent: gophercloud-acceptance-test-networking
+    nodeset: ubuntu-bionic
     description: |
       Run gophercloud networking acceptance test on ussuri branch
     vars:
@@ -134,6 +140,7 @@
 - job:
     name: gophercloud-acceptance-test-storage-ussuri
     parent: gophercloud-acceptance-test-storage
+    nodeset: ubuntu-bionic
     description: |
       Run gophercloud storage test on ussuri branch
     vars:
@@ -143,6 +150,7 @@
 - job:
     name: gophercloud-acceptance-test-compute-train
     parent: gophercloud-acceptance-test-compute
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud compute acceptance test on train branch
     vars:
@@ -152,6 +160,7 @@
 - job:
     name: gophercloud-acceptance-test-networking-train
     parent: gophercloud-acceptance-test-networking
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud networking acceptance test on train branch
     vars:
@@ -161,6 +170,7 @@
 - job:
     name: gophercloud-acceptance-test-storage-train
     parent: gophercloud-acceptance-test-storage
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud storage acceptance test on train branch
     vars:
@@ -170,6 +180,7 @@
 - job:
     name: gophercloud-acceptance-test-compute-stein
     parent: gophercloud-acceptance-test-compute
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud compute acceptance test on stein branch
     vars:
@@ -179,6 +190,7 @@
 - job:
     name: gophercloud-acceptance-test-networking-stein
     parent: gophercloud-acceptance-test-networking
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud networking acceptance test on stein branch
     vars:
@@ -188,6 +200,7 @@
 - job:
     name: gophercloud-acceptance-test-storage-stein
     parent: gophercloud-acceptance-test-storage
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud storage acceptance test on stein branch
     vars:
@@ -197,6 +210,7 @@
 - job:
     name: gophercloud-acceptance-test-compute-rocky
     parent: gophercloud-acceptance-test-compute
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud compute acceptance test on rocky branch
     vars:
@@ -206,6 +220,7 @@
 - job:
     name: gophercloud-acceptance-test-networking-rocky
     parent: gophercloud-acceptance-test-networking
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud networking acceptance test on rocky branch
     vars:
@@ -215,6 +230,7 @@
 - job:
     name: gophercloud-acceptance-test-storage-rocky
     parent: gophercloud-acceptance-test-storage
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud storage acceptance test on rocky branch
     vars:
@@ -402,6 +418,7 @@
 - job:
     name: gophercloud-acceptance-test-stein
     parent: gophercloud-acceptance-test-legacy
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud acceptance test on stein branch
     vars:
@@ -411,6 +428,7 @@
 - job:
     name: gophercloud-acceptance-test-rocky
     parent: gophercloud-acceptance-test-legacy
+    nodeset: ubuntu-xenial
     description: |
       Run gophercloud acceptance test on rocky branch
     vars:

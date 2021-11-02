@@ -11,7 +11,7 @@
         OVERRIDE_ENABLED_SERVICES: "{{ devstack_override_enabled_services | default('') }}"
         PROJECTS: "{{ devstack_projects | default('') }}"
   tasks:
-    - name: Run ironic acceptance tests with gophercloud
+    - name: Run acceptance tests with gophercloud
       shell:
         cmd: |
           set -e
