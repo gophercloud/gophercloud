@@ -1,0 +1,3 @@
+amphora_url: https://images.rdoproject.org/octavia/master/amphora-x64-haproxy-centos.qcow2
+amphora_dir: /opt/octavia-amphora
+amphora_file_name: amphora-x64-haproxy.qcow2

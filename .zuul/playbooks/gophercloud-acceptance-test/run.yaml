@@ -6,6 +6,8 @@
     - clone-devstack-gate-to-workspace
     - role: create-devstack-local-conf
       enable_services: "{{ devstack_services | default(omit) }}"
+    - role: prefetch-amphora
+      when: prefetch_amphora|default(false)
     - role: install-devstack
       environment:
         OVERRIDE_ENABLED_SERVICES: "{{ devstack_override_enabled_services | default('') }}"
