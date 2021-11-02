@@ -114,26 +114,294 @@
         - acceptance/openstack/baremetal/v1
 
 - job:
-    name: gophercloud-acceptance-test-ussuri
-    parent: gophercloud-acceptance-test
+    name: gophercloud-acceptance-test-compute-ussuri
+    parent: gophercloud-acceptance-test-compute
     description: |
-      Run gophercloud acceptance test on ussuri branch
+      Run gophercloud compute acceptance test on ussuri branch
     vars:
       global_env:
         OS_BRANCH: stable/ussuri
 
 - job:
-    name: gophercloud-acceptance-test-train
-    parent: gophercloud-acceptance-test
+    name: gophercloud-acceptance-test-networking-ussuri
+    parent: gophercloud-acceptance-test-networking
     description: |
-      Run gophercloud acceptance test on train branch
+      Run gophercloud networking acceptance test on ussuri branch
+    vars:
+      global_env:
+        OS_BRANCH: stable/ussuri
+
+- job:
+    name: gophercloud-acceptance-test-storage-ussuri
+    parent: gophercloud-acceptance-test-storage
+    description: |
+      Run gophercloud storage test on ussuri branch
+    vars:
+      global_env:
+        OS_BRANCH: stable/ussuri
+
+- job:
+    name: gophercloud-acceptance-test-compute-train
+    parent: gophercloud-acceptance-test-compute
+    description: |
+      Run gophercloud compute acceptance test on train branch
     vars:
       global_env:
         OS_BRANCH: stable/train
 
 - job:
+    name: gophercloud-acceptance-test-networking-train
+    parent: gophercloud-acceptance-test-networking
+    description: |
+      Run gophercloud networking acceptance test on train branch
+    vars:
+      global_env:
+        OS_BRANCH: stable/train
+
+- job:
+    name: gophercloud-acceptance-test-storage-train
+    parent: gophercloud-acceptance-test-storage
+    description: |
+      Run gophercloud storage acceptance test on train branch
+    vars:
+      global_env:
+        OS_BRANCH: stable/train
+
+- job:
+    name: gophercloud-acceptance-test-compute-stein
+    parent: gophercloud-acceptance-test-compute
+    description: |
+      Run gophercloud compute acceptance test on stein branch
+    vars:
+      global_env:
+        OS_BRANCH: stable/stein
+
+- job:
+    name: gophercloud-acceptance-test-networking-stein
+    parent: gophercloud-acceptance-test-networking
+    description: |
+      Run gophercloud networking acceptance test on stein branch
+    vars:
+      global_env:
+        OS_BRANCH: stable/stein
+
+- job:
+    name: gophercloud-acceptance-test-storage-stein
+    parent: gophercloud-acceptance-test-storage
+    description: |
+      Run gophercloud storage acceptance test on stein branch
+    vars:
+      global_env:
+        OS_BRANCH: stable/stein
+
+- job:
+    name: gophercloud-acceptance-test-compute-rocky
+    parent: gophercloud-acceptance-test-compute
+    description: |
+      Run gophercloud compute acceptance test on rocky branch
+    vars:
+      global_env:
+        OS_BRANCH: stable/rocky
+
+- job:
+    name: gophercloud-acceptance-test-networking-rocky
+    parent: gophercloud-acceptance-test-networking
+    description: |
+      Run gophercloud networking acceptance test on rocky branch
+    vars:
+      global_env:
+        OS_BRANCH: stable/rocky
+
+- job:
+    name: gophercloud-acceptance-test-storage-rocky
+    parent: gophercloud-acceptance-test-storage
+    description: |
+      Run gophercloud storage acceptance test on rocky branch
+    vars:
+      global_env:
+        OS_BRANCH: stable/rocky
+
+- job:
+    name: gophercloud-acceptance-test-compute-queens
+    parent: gophercloud-acceptance-test-compute
+    description: |
+      Run gophercloud compute acceptance test on queens branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/queens
+
+- job:
+    name: gophercloud-acceptance-test-networking-queens
+    parent: gophercloud-acceptance-test-networking
+    description: |
+      Run gophercloud networking acceptance test on queens branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/queens
+
+- job:
+    name: gophercloud-acceptance-test-storage-queens
+    parent: gophercloud-acceptance-test-storage
+    description: |
+      Run gophercloud storage acceptance test on queens branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/queens
+
+# NOTE: A Pike-based devstack environment is currently
+# not building correctly. This might be a temporary issue.
+- job:
+    name: gophercloud-acceptance-test-compute-pike
+    parent: gophercloud-acceptance-test-compute
+    description: |
+      Run gophercloud compute acceptance test on pike branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/pike
+
+- job:
+    name: gophercloud-acceptance-test-networking-pike
+    parent: gophercloud-acceptance-test-networking
+    description: |
+      Run gophercloud networking acceptance test on pike branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/pike
+
+- job:
+    name: gophercloud-acceptance-test-storage-pike
+    parent: gophercloud-acceptance-test-storage
+    description: |
+      Run gophercloud storage acceptance test on pike branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/pike
+
+- job:
+    name: gophercloud-acceptance-test-compute-ocata
+    parent: gophercloud-acceptance-test-compute
+    description: |
+      Run gophercloud compute acceptance test on ocata branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/ocata
+
+- job:
+    name: gophercloud-acceptance-test-networking-ocata
+    parent: gophercloud-acceptance-test-networking
+    description: |
+      Run gophercloud networking acceptance test on ocata branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/ocata
+
+- job:
+    name: gophercloud-acceptance-test-storage-ocata
+    parent: gophercloud-acceptance-test-storage
+    description: |
+      Run gophercloud storage acceptance test on ocata branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/ocata
+
+# NOTE: A Newton-based devstack environment is currently
+# not building correctly. This might be a temporary issue.
+- job:
+    name: gophercloud-acceptance-test-compute-newton
+    parent: gophercloud-acceptance-test-compute
+    description: |
+      Run gophercloud compute acceptance test on newton branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/newton
+
+- job:
+    name: gophercloud-acceptance-test-networking-newton
+    parent: gophercloud-acceptance-test-networking
+    description: |
+      Run gophercloud networking acceptance test on newton branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/newton
+
+- job:
+    name: gophercloud-acceptance-test-storage-newton
+    parent: gophercloud-acceptance-test-storage
+    description: |
+      Run gophercloud storage acceptance test on newton branch
+    nodeset: ubuntu-xenial
+    vars:
+      global_env:
+        OS_BRANCH: stable/newton
+
+# The following jobs are maintained because they are parents
+# for gophercloud v0.4.0 acceptance tests in theopenlab/openlab-zuul-jobs.
+# TODO(emilien) update the childs to use the new variants.
+- job:
+    name: gophercloud-acceptance-test-legacy
+    parent: gophercloud-acceptance-test-base
+    description: |
+      THIS JOB REMAINS FOR LEGACY. Will be removed soon to be replaced by its variants.
+      Run gophercloud acceptance test on the master branch. This runs when any file is patched
+      except if it's doc.
+    vars:
+      # the list of all available tests can generated by:
+      # find acceptance/openstack -name '*_test.go' -exec dirname {} \; | sort -n | uniq -c | awk '{print $2}'
+      acceptance_tests:
+        - acceptance/openstack
+        - acceptance/openstack/blockstorage
+        - acceptance/openstack/blockstorage/extensions
+        - acceptance/openstack/blockstorage/v3
+        - acceptance/openstack/compute/v2
+        - acceptance/openstack/container/v1
+        - acceptance/openstack/dns/v2
+        - acceptance/openstack/identity/v2
+        - acceptance/openstack/identity/v3
+        - acceptance/openstack/imageservice/v2
+        - acceptance/openstack/keymanager/v1
+        - acceptance/openstack/loadbalancer/v2
+        - acceptance/openstack/networking/v2
+        - acceptance/openstack/networking/v2/extensions
+        - acceptance/openstack/networking/v2/extensions/agents
+        - acceptance/openstack/networking/v2/extensions/dns
+        - acceptance/openstack/networking/v2/extensions/layer3
+        - acceptance/openstack/networking/v2/extensions/mtu
+        - acceptance/openstack/networking/v2/extensions/networkipavailabilities
+        - acceptance/openstack/networking/v2/extensions/portsbinding
+        - acceptance/openstack/networking/v2/extensions/qos/policies
+        - acceptance/openstack/networking/v2/extensions/qos/rules
+        - acceptance/openstack/networking/v2/extensions/qos/ruletypes
+        - acceptance/openstack/networking/v2/extensions/quotas
+        - acceptance/openstack/networking/v2/extensions/rbacpolicies
+        - acceptance/openstack/networking/v2/extensions/subnetpools
+        - acceptance/openstack/networking/v2/extensions/trunks
+        - acceptance/openstack/networking/v2/extensions/vlantransparent
+        - acceptance/openstack/objectstorage/v1
+        - acceptance/openstack/orchestration/v1
+        - acceptance/openstack/placement/v1
+        - acceptance/openstack/sharedfilesystems/v2
+        - acceptance/openstack/sharedfilesystems/v2/messages
+      devstack_services:
+        - designate
+        - manila
+        - neutron-ext
+        - octavia
+        - zun
+
+- job:
     name: gophercloud-acceptance-test-stein
-    parent: gophercloud-acceptance-test
+    parent: gophercloud-acceptance-test-legacy
     description: |
       Run gophercloud acceptance test on stein branch
     vars:
@@ -142,7 +410,7 @@
 
 - job:
     name: gophercloud-acceptance-test-rocky
-    parent: gophercloud-acceptance-test
+    parent: gophercloud-acceptance-test-legacy
     description: |
       Run gophercloud acceptance test on rocky branch
     vars:
@@ -151,7 +419,7 @@
 
 - job:
     name: gophercloud-acceptance-test-queens
-    parent: gophercloud-acceptance-test
+    parent: gophercloud-acceptance-test-legacy
     description: |
       Run gophercloud acceptance test on queens branch
     nodeset: ubuntu-xenial
@@ -163,7 +431,7 @@
 # not building correctly. This might be a temporary issue.
 - job:
     name: gophercloud-acceptance-test-pike
-    parent: gophercloud-acceptance-test
+    parent: gophercloud-acceptance-test-legacy
     description: |
       Run gophercloud acceptance test on pike branch
     nodeset: ubuntu-xenial
@@ -173,7 +441,7 @@
 
 - job:
     name: gophercloud-acceptance-test-ocata
-    parent: gophercloud-acceptance-test
+    parent: gophercloud-acceptance-test-legacy
     description: |
       Run gophercloud acceptance test on ocata branch
     nodeset: ubuntu-xenial
@@ -185,7 +453,7 @@
 # not building correctly. This might be a temporary issue.
 - job:
     name: gophercloud-acceptance-test-newton
-    parent: gophercloud-acceptance-test
+    parent: gophercloud-acceptance-test-legacy
     description: |
       Run gophercloud acceptance test on newton branch
     nodeset: ubuntu-xenial
@@ -204,25 +472,41 @@
         - gophercloud-acceptance-test-ironic
     recheck-newton:
       jobs:
-        - gophercloud-acceptance-test-newton
+        - gophercloud-acceptance-test-compute-newton
+        - gophercloud-acceptance-test-networking-newton
+        - gophercloud-acceptance-test-storage-newton
     recheck-ocata:
       jobs:
-        - gophercloud-acceptance-test-ocata
+        - gophercloud-acceptance-test-compute-ocata
+        - gophercloud-acceptance-test-networking-ocata
+        - gophercloud-acceptance-test-storage-ocata
     recheck-pike:
       jobs:
-        - gophercloud-acceptance-test-pike
+        - gophercloud-acceptance-test-compute-pike
+        - gophercloud-acceptance-test-networking-pike
+        - gophercloud-acceptance-test-storage-pike
     recheck-queens:
       jobs:
-        - gophercloud-acceptance-test-queens
+        - gophercloud-acceptance-test-compute-queens
+        - gophercloud-acceptance-test-networking-queens
+        - gophercloud-acceptance-test-storage-queens
     recheck-rocky:
       jobs:
-        - gophercloud-acceptance-test-rocky
+        - gophercloud-acceptance-test-compute-rocky
+        - gophercloud-acceptance-test-networking-rocky
+        - gophercloud-acceptance-test-storage-rocky
     recheck-stein:
       jobs:
-        - gophercloud-acceptance-test-stein
+        - gophercloud-acceptance-test-compute-stein
+        - gophercloud-acceptance-test-networking-stein
+        - gophercloud-acceptance-test-storage-stein
     recheck-train:
       jobs:
-        - gophercloud-acceptance-test-train
+        - gophercloud-acceptance-test-compute-train
+        - gophercloud-acceptance-test-networking-train
+        - gophercloud-acceptance-test-storage-train
     recheck-ussuri:
       jobs:
-        - gophercloud-acceptance-test-ussuri
+        - gophercloud-acceptance-test-compute-ussuri
+        - gophercloud-acceptance-test-networking-ussuri
+        - gophercloud-acceptance-test-storage-ussuri
