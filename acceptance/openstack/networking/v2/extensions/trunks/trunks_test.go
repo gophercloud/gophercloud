@@ -16,6 +16,7 @@ import (
 
 func TestTrunkCRUD(t *testing.T) {
 	clients.SkipRelease(t, "stable/mitaka")
+	t.Skip("Currently failing in OpenLab")
 
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
@@ -102,6 +103,7 @@ func TestTrunkCRUD(t *testing.T) {
 
 func TestTrunkList(t *testing.T) {
 	clients.SkipRelease(t, "stable/mitaka")
+	t.Skip("Currently failing in OpenLab")
 
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
@@ -125,6 +127,7 @@ func TestTrunkList(t *testing.T) {
 
 func TestTrunkSubportOperation(t *testing.T) {
 	clients.SkipRelease(t, "stable/mitaka")
+	t.Skip("Currently failing in OpenLab")
 
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
@@ -211,6 +214,7 @@ func TestTrunkTags(t *testing.T) {
 	clients.SkipRelease(t, "stable/mitaka")
 	clients.SkipRelease(t, "stable/newton")
 	clients.SkipRelease(t, "stable/ocata")
+	t.Skip("Currently failing in OpenLab")
 
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
