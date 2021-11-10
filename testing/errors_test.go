@@ -7,19 +7,37 @@ import (
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
-func TestGetResponseCode(t *testing.T) {
-	respErr := gophercloud.ErrUnexpectedResponseCode{
+func returnsUnexpectedResp(code int) gophercloud.ErrUnexpectedResponseCode {
+	return gophercloud.ErrUnexpectedResponseCode{
 		URL:            "http://example.com",
 		Method:         "GET",
 		Expected:       []int{200},
-		Actual:         404,
+		Actual:         code,
 		Body:           nil,
 		ResponseHeader: nil,
 	}
+}
 
-	var err404 error = gophercloud.ErrDefault404{ErrUnexpectedResponseCode: respErr}
+func TestGetResponseCode404(t *testing.T) {
+	var err404 error = gophercloud.ErrDefault404{ErrUnexpectedResponseCode: returnsUnexpectedResp(404)}
 
 	err, ok := err404.(gophercloud.StatusCodeError)
 	th.AssertEquals(t, true, ok)
 	th.AssertEquals(t, err.GetStatusCode(), 404)
+}
+
+func TestGetResponseCode502(t *testing.T) {
+	var err502 error = gophercloud.ErrDefault502{ErrUnexpectedResponseCode: returnsUnexpectedResp(502)}
+
+	err, ok := err502.(gophercloud.StatusCodeError)
+	th.AssertEquals(t, true, ok)
+	th.AssertEquals(t, err.GetStatusCode(), 502)
+}
+
+func TestGetResponseCode504(t *testing.T) {
+	var err504 error = gophercloud.ErrDefault504{ErrUnexpectedResponseCode: returnsUnexpectedResp(504)}
+
+	err, ok := err504.(gophercloud.StatusCodeError)
+	th.AssertEquals(t, true, ok)
+	th.AssertEquals(t, err.GetStatusCode(), 504)
 }
