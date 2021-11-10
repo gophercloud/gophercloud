@@ -20,7 +20,8 @@
           set -o pipefail
           set -x
           echo $(export |grep OS_BRANCH)
-          export ACCEPTANCE_TESTS="{{ acceptance_tests|default('') }}"
+          TESTS_FILTER="{{ acceptance_tests | default('') | join('|') }}"
+          export ACCEPTANCE_TESTS=$(find acceptance/openstack -name '*_test.go' -exec dirname {} \; | sort -n | uniq -c | awk "/$TESTS_FILTER/ {print \$2}")
           go get ./... || true
           ./script/acceptancetest -v 2>&1 | tee $TEST_RESULTS_TXT
         executable: /bin/bash

@@ -13,9 +13,7 @@ if [[ -z $ACCEPTANCE_TESTS ]]; then
     exit 0
 fi
 
-TESTS=($(python <<< "print(' '.join($ACCEPTANCE_TESTS))"))
-
-for acceptance_test in "${TESTS[@]}"; do
+for acceptance_test in ${ACCEPTANCE_TESTS[@]}; do
   go test -v -timeout $timeout -tags "fixtures acceptance" ./${acceptance_test}
   # Check the error code after each suite, but do not exit early if a suite failed.
   if [[ $? != 0 ]]; then
