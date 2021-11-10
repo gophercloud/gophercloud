@@ -45,6 +45,7 @@ func TestLoadbalancersListByTags(t *testing.T) {
 	clients.SkipRelease(t, "stable/pike")
 	clients.SkipRelease(t, "stable/queens")
 	clients.SkipRelease(t, "stable/rocky")
+	t.Skip("Currently failing in OpenLab")
 
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
@@ -115,6 +116,7 @@ func TestLoadbalancerHTTPCRUD(t *testing.T) {
 	clients.SkipRelease(t, "stable/pike")
 	clients.SkipRelease(t, "stable/queens")
 	clients.SkipRelease(t, "stable/rocky")
+	t.Skip("Currently failing in OpenLab")
 
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
@@ -171,6 +173,7 @@ func TestLoadbalancersCRUD(t *testing.T) {
 	clients.SkipRelease(t, "stable/pike")
 	clients.SkipRelease(t, "stable/queens")
 	clients.SkipRelease(t, "stable/rocky")
+	t.Skip("Currently failing in OpenLab")
 
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
@@ -477,6 +480,7 @@ func TestLoadbalancersCascadeCRUD(t *testing.T) {
 	clients.SkipRelease(t, "stable/pike")
 	clients.SkipRelease(t, "stable/queens")
 	clients.SkipRelease(t, "stable/rocky")
+	t.Skip("Currently failing in OpenLab")
 
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
@@ -598,6 +602,7 @@ func TestLoadbalancersFullyPopulatedCRUD(t *testing.T) {
 	clients.SkipRelease(t, "stable/pike")
 	clients.SkipRelease(t, "stable/queens")
 	clients.SkipRelease(t, "stable/rocky")
+	t.Skip("Currently failing in OpenLab")
 
 	netClient, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
