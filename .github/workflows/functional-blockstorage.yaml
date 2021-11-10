@@ -1,0 +1,58 @@
+name: functional-blockstorage
+on:
+  pull_request:
+    paths-ignore:
+      - '^.*blockstorage.*$'
+      - '.github/workflows/functional-blockstorage.yaml'
+jobs:
+  functional-blockstorage:
+    strategy:
+      fail-fast: false
+      matrix:
+        name: ["master"]
+        openstack_version: ["master"]
+        ubuntu_version: ["20.04"]
+        include:
+          - name: "xena"
+            openstack_version: "stable/xena"
+            ubuntu_version: "20.04"
+          - name: "wallaby"
+            openstack_version: "stable/wallaby"
+            ubuntu_version: "20.04"
+          - name: "victoria"
+            openstack_version: "stable/victoria"
+            ubuntu_version: "20.04"
+          - name: "ussuri"
+            openstack_version: "stable/ussuri"
+            ubuntu_version: "18.04"
+          - name: "train"
+            openstack_version: "stable/train"
+            ubuntu_version: "18.04"
+    runs-on: ubuntu-${{ matrix.ubuntu_version }}
+    name: Deploy OpenStack ${{ matrix.name }} with Cinder and run blockstorage acceptance tests
+    steps:
+      - name: Checkout Gophercloud
+        uses: actions/checkout@v2
+      - name: Deploy devstack
+        uses: EmilienM/devstack-action@v0.4
+        with:
+          branch: ${{ matrix.openstack_version }}
+          enabled_services: 's-account,s-container,s-object,s-proxy,c-bak'
+      - name: Checkout go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.15'
+      - name: Run Gophercloud acceptance tests
+        run: ./script/acceptancetest
+        env:
+          DEVSTACK_PATH: ${{ github.workspace }}/devstack
+          ACCEPTANCE_TESTS_FILTER: '^.*blockstorage.*$'
+      - name: Generate logs on failure
+        run: ./script/collectlogs
+        if: failure()
+      - name: Upload logs artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: functional-blockstorage-${{ matrix.name }}
+          path: /tmp/devstack-logs/*
