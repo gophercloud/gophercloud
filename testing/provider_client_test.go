@@ -2,13 +2,13 @@ package testing
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -369,28 +369,81 @@ func TestRequestReauthsAtMostOnce(t *testing.T) {
 }
 
 func TestRequestWithContext(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "OK")
-	}))
-	defer ts.Close()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	p := &gophercloud.ProviderClient{Context: ctx}
-
-	res, err := p.Request("GET", ts.URL, &gophercloud.RequestOpts{KeepResponseBody: true})
-	th.AssertNoErr(t, err)
-	_, err = ioutil.ReadAll(res.Body)
-	th.AssertNoErr(t, err)
-	err = res.Body.Close()
-	th.AssertNoErr(t, err)
-
-	cancel()
-	res, err = p.Request("GET", ts.URL, &gophercloud.RequestOpts{})
-	if err == nil {
-		t.Fatal("expecting error, got nil")
+	canceledContext := func() context.Context {
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+		return ctx
 	}
-	if !strings.Contains(err.Error(), ctx.Err().Error()) {
-		t.Fatalf("expecting error to contain: %q, got %q", ctx.Err().Error(), err.Error())
+
+	for _, tc := range [...]struct {
+		name            string
+		providerContext context.Context
+		optionContext   context.Context
+		expectedError   error
+	}{
+		{
+			name:            "provider context",
+			providerContext: context.Background(),
+			optionContext:   nil,
+			expectedError:   nil,
+		},
+		{
+			name:            "option context",
+			providerContext: nil,
+			optionContext:   context.Background(),
+			expectedError:   nil,
+		},
+		{
+			name:            "canceled option context",
+			providerContext: nil,
+			optionContext:   canceledContext(),
+			expectedError:   context.Canceled,
+		},
+		{
+			name:            "canceled provider context",
+			providerContext: canceledContext(),
+			optionContext:   nil,
+			expectedError:   context.Canceled,
+		},
+		{
+			name:            "both contexts",
+			providerContext: context.Background(),
+			optionContext:   context.Background(),
+			expectedError:   nil,
+		},
+		{
+			name:            "both contexts, provider canceled",
+			providerContext: canceledContext(),
+			optionContext:   context.Background(),
+			expectedError:   context.Canceled,
+		},
+		{
+			name:            "both contexts, option canceled",
+			providerContext: context.Background(),
+			optionContext:   canceledContext(),
+			expectedError:   context.Canceled,
+		},
+		{
+			name:            "both contexts, both canceled",
+			providerContext: canceledContext(),
+			optionContext:   canceledContext(),
+			expectedError:   context.Canceled,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, "OK")
+			}))
+			defer ts.Close()
+
+			p := &gophercloud.ProviderClient{Context: tc.providerContext}
+
+			_, err := p.Request("GET", ts.URL, &gophercloud.RequestOpts{Context: tc.optionContext})
+
+			if !errors.Is(err, tc.expectedError) {
+				t.Errorf("expecting error %q, got %q", tc.expectedError, err)
+			}
+		})
 	}
 }
 

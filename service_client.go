@@ -1,6 +1,7 @@
 package gophercloud
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"strings"
@@ -32,6 +33,30 @@ type ServiceClient struct {
 	// MoreHeaders allows users (or Gophercloud) to set service-wide headers on requests. Put another way,
 	// values set in this field will be set on all the HTTP requests the service client sends.
 	MoreHeaders map[string]string
+
+	// Context will merge with the ProviderClient's before being used in HTTP requests
+	Context context.Context
+}
+
+func (client *ServiceClient) copy(options ...func(*ServiceClient)) *ServiceClient {
+	newClient := *client
+	newClient.MoreHeaders = make(map[string]string)
+	for k, v := range client.MoreHeaders {
+		newClient.MoreHeaders[k] = v
+	}
+
+	for _, apply := range options {
+		apply(&newClient)
+	}
+
+	return &newClient
+}
+
+// WithContext returns a copy of ServiceClient with the provided Context.
+func (client *ServiceClient) WithContext(ctx context.Context) *ServiceClient {
+	return client.copy(func(c *ServiceClient) {
+		c.Context = ctx
+	})
 }
 
 // ResourceBaseURL returns the base URL of any resources used by this service. It MUST end with a /.
@@ -150,6 +175,11 @@ func (client *ServiceClient) Request(method, url string, options *RequestOpts) (
 			options.MoreHeaders[k] = v
 		}
 	}
+
+	if client.Context != nil {
+		options.Context = client.Context
+	}
+
 	return client.ProviderClient.Request(method, url, options)
 }
 

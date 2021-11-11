@@ -335,6 +335,8 @@ type RequestOpts struct {
 	// KeepResponseBody specifies whether to keep the HTTP response body. Usually used, when the HTTP
 	// response body is considered for further use. Valid when JSONResponse is nil.
 	KeepResponseBody bool
+	// Context will be merged to the ProviderClient's Context to make HTTP request.
+	Context context.Context
 }
 
 // requestState contains temporary state for a single ProviderClient.Request() call.
@@ -362,6 +364,9 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	var body io.Reader
 	var contentType *string
 
+	ctx, cancelFunc := MergeContext(options.Context, client.Context)
+	defer cancelFunc()
+
 	// Derive the content body by either encoding an arbitrary object as JSON, or by taking a provided
 	// io.ReadSeeker as-is. Default the content-type to application/json.
 	if options.JSONBody != nil {
@@ -388,12 +393,9 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 	}
 
 	// Construct the http.Request.
-	req, err := http.NewRequest(method, url, body)
+	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
 		return nil, err
-	}
-	if client.Context != nil {
-		req = req.WithContext(client.Context)
 	}
 
 	// Populate the request headers. Apply options.MoreHeaders last, to give the caller the chance to
@@ -425,7 +427,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 		if client.RetryFunc != nil {
 			var e error
 			state.retries = state.retries + 1
-			e = client.RetryFunc(client.Context, method, url, options, err, state.retries)
+			e = client.RetryFunc(ctx, method, url, options, err, state.retries)
 			if e != nil {
 				return nil, e
 			}
@@ -543,7 +545,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 				var e error
 
 				state.retries = state.retries + 1
-				e = f(client.Context, &respErr, err, state.retries)
+				e = f(ctx, &respErr, err, state.retries)
 
 				if e != nil {
 					return resp, e
@@ -570,7 +572,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 		if err != nil && client.RetryFunc != nil {
 			var e error
 			state.retries = state.retries + 1
-			e = client.RetryFunc(client.Context, method, url, options, err, state.retries)
+			e = client.RetryFunc(ctx, method, url, options, err, state.retries)
 			if e != nil {
 				return resp, e
 			}
@@ -594,7 +596,7 @@ func (client *ProviderClient) doRequest(method, url string, options *RequestOpts
 			if client.RetryFunc != nil {
 				var e error
 				state.retries = state.retries + 1
-				e = client.RetryFunc(client.Context, method, url, options, err, state.retries)
+				e = client.RetryFunc(ctx, method, url, options, err, state.retries)
 				if e != nil {
 					return resp, e
 				}
