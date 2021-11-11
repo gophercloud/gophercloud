@@ -9,6 +9,7 @@ import (
 var nilOptions = gophercloud.AuthOptions{}
 
 /*
+foo
 AuthOptionsFromEnv fills out an identity.AuthOptions structure with the
 settings found on the various OpenStack OS_* environment variables.
 
