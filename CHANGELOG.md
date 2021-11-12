@@ -12,6 +12,9 @@ IMPROVEMENTS
 * Added `loadbalancer/v2/pools.Pool.Tags` [GH-2237](https://github.com/gophercloud/gophercloud/pull/2237)
 * Added `networking/v2/extensions/bgp/speakers.List` [GH-2238](https://github.com/gophercloud/gophercloud/pull/2238)
 * Added `networking/v2/extensions/bgp/speakers.Get` [GH-2238](https://github.com/gophercloud/gophercloud/pull/2238)
+* Added `compute/v2/extensions/keypairs.CreateOpts.Type` [GH-2231](https://github.com/gophercloud/gophercloud/pull/2231)
+* When doing Keystone re-authentification, keep the error if it failed [GH-2259](https://github.com/gophercloud/gophercloud/pull/2259)
+* Added new loadbalancer pool monitor types (TLS-HELLO, UDP-CONNECT and SCTP) [GH-2237](https://github.com/gophercloud/gophercloud/pull/2261)
 
 ## 0.22.0 (October 7, 2021)
 
