@@ -44,6 +44,10 @@ type Monitor struct {
 	// The time, in seconds, between sending probes to members.
 	Delay int `json:"delay"`
 
+	// The domain name, which be injected into the HTTP Host Header to
+	// the backend server for HTTP health check. New in version 2.10.
+	DomainName string `json:"domain_name"`
+
 	// The maximum number of seconds for a monitor to wait for a connection to be
 	// established before it times out. This value must be less than the delay
 	// value.
@@ -59,6 +63,10 @@ type Monitor struct {
 
 	// The HTTP method that the monitor uses for requests.
 	HTTPMethod string `json:"http_method"`
+
+	// The HTTP version. One of 1.0 or 1.1. The default is 1.0.
+	// New in version 2.10
+	HTTPVersion float32 `json:"http_version"`
 
 	// The HTTP path of the request sent by the monitor to test the health of a
 	// member. Must be a string beginning with a forward slash (/).
