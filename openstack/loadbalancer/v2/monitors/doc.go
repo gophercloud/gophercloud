@@ -29,6 +29,7 @@ Example to Create a Monitor
 		Name:           "db",
 		PoolID:         "84f1b61f-58c4-45bf-a8a9-2dafb9e5214d",
 		Delay:          20,
+		DomainName:     "example.com",
 		Timeout:        10,
 		MaxRetries:     5,
 		MaxRetriesDown: 4,
@@ -48,6 +49,7 @@ Example to Update a Monitor
 	updateOpts := monitors.UpdateOpts{
 		Name:           "NewHealthmonitorName",
 		Delay:          3,
+		DomainName:     "www.example.com",
 		Timeout:        20,
 		MaxRetries:     10,
 		MaxRetriesDown: 8,

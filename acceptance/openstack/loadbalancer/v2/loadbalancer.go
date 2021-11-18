@@ -162,6 +162,7 @@ func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceC
 	memberName := tools.RandomString("TESTACCT-", 8)
 	memberPort := tools.RandomInt(100, 1000)
 	memberWeight := tools.RandomInt(1, 10)
+	monitorDomainName := tools.RandomString("example.com", 8)
 
 	t.Logf("Attempting to create fully populated loadbalancer %s on subnet %s which contains listener: %s, l7Policy: %s, pool %s, member %s",
 		lbName, subnetID, listenerName, policyName, poolName, memberName)
@@ -190,9 +191,11 @@ func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceC
 				}},
 				Monitor: &monitors.CreateOpts{
 					Delay:          10,
+					DomainName:     monitorDomainName,
 					Timeout:        5,
 					MaxRetries:     5,
 					MaxRetriesDown: 4,
+					HTTPVersion:    1.1,
 					Type:           monitors.TypeHTTP,
 				},
 			},
@@ -252,6 +255,8 @@ func CreateLoadBalancerFullyPopulated(t *testing.T, client *gophercloud.ServiceC
 	th.AssertEquals(t, lb.Pools[0].Members[0].ProtocolPort, memberPort)
 	th.AssertEquals(t, lb.Pools[0].Members[0].Weight, memberWeight)
 
+	th.AssertEquals(t, lb.Pools[0].Monitor.DomainName, monitorDomainName)
+
 	if len(tags) > 0 {
 		th.AssertDeepEquals(t, lb.Tags, tags)
 	}
@@ -309,9 +314,11 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 		PoolID:         pool.ID,
 		Name:           monitorName,
 		Delay:          10,
+		DomainName:     "example.com",
 		Timeout:        5,
 		MaxRetries:     5,
 		MaxRetriesDown: 4,
+		HTTPVersion:    1.1,
 		Type:           monitors.TypePING,
 	}
 
@@ -329,9 +336,11 @@ func CreateMonitor(t *testing.T, client *gophercloud.ServiceClient, lb *loadbala
 	th.AssertEquals(t, monitor.Name, monitorName)
 	th.AssertEquals(t, monitor.Type, monitors.TypePING)
 	th.AssertEquals(t, monitor.Delay, 10)
+	th.AssertEquals(t, monitor.DomainName, "example.com")
 	th.AssertEquals(t, monitor.Timeout, 5)
 	th.AssertEquals(t, monitor.MaxRetries, 5)
 	th.AssertEquals(t, monitor.MaxRetriesDown, 4)
+	th.AssertEquals(t, monitor.HTTPVersion, 1.1)
 
 	return monitor, nil
 }
