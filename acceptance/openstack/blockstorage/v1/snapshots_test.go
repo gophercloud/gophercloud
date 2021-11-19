@@ -11,6 +11,7 @@ import (
 )
 
 func TestSnapshotsList(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/icehouse")
 	client, err := clients.NewBlockStorageV1Client()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
@@ -32,6 +33,7 @@ func TestSnapshotsList(t *testing.T) {
 }
 
 func TestSnapshotsCreateDelete(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/icehouse")
 	client, err := clients.NewBlockStorageV1Client()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
