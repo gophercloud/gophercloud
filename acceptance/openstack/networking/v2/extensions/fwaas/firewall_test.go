@@ -14,6 +14,7 @@ import (
 )
 
 func TestFirewallCRUD(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/ussuri")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -75,6 +76,7 @@ func TestFirewallCRUD(t *testing.T) {
 }
 
 func TestFirewallCRUDRouter(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/ussuri")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -125,6 +127,7 @@ func TestFirewallCRUDRouter(t *testing.T) {
 }
 
 func TestFirewallCRUDRemoveRouter(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/ussuri")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

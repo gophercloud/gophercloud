@@ -12,7 +12,7 @@ import (
 )
 
 func TestGroupCRUD(t *testing.T) {
-
+	clients.SkipReleasesAbove(t, "stable/ussuri")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
