@@ -12,6 +12,7 @@ import (
 )
 
 func TestSnapshots(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/ocata")
 	clients.RequireLong(t)
 
 	client, err := clients.NewBlockStorageV2Client()
