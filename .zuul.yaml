@@ -55,11 +55,12 @@
       devstack_env:
         OCTAVIA_AMP_IMAGE_FILE: /opt/octavia-amphora/amphora-x64-haproxy.qcow2
       acceptance_tests: *networking-files
-      devstack_projects: 'openstack/neutron-dynamic-routing'
+      devstack_projects: 'openstack/neutron-dynamic-routing openstack/neutron-vpnaas'
       devstack_services:
         - designate
         - neutron-dynamic-routing
         - neutron-ext
+        - vpnaas
         - octavia
 
 - job:
