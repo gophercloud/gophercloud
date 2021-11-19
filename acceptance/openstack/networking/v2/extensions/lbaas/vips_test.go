@@ -12,6 +12,7 @@ import (
 )
 
 func TestVIPsList(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/pike")
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)
@@ -33,6 +34,7 @@ func TestVIPsList(t *testing.T) {
 }
 
 func TestVIPsCRUD(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/pike")
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)

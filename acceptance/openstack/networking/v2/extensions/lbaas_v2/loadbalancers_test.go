@@ -17,6 +17,7 @@ import (
 )
 
 func TestLoadbalancersList(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/pike")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -32,6 +33,7 @@ func TestLoadbalancersList(t *testing.T) {
 }
 
 func TestLoadbalancersCRUD(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/pike")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
