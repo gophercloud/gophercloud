@@ -75,3 +75,9 @@ func ExtractQoS(r pagination.Page) ([]QoS, error) {
 	err := (r.(QoSPage)).ExtractInto(&s)
 	return s.QoSs, err
 }
+
+// GetResult is the response of a Get operations. Call its Extract method to
+// interpret it as a Flavor.
+type GetResult struct {
+	commonResult
+}

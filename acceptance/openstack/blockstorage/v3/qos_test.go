@@ -24,6 +24,10 @@ func TestQoS(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteQoS(t, client, qos2)
 
+	getQoS2, err := qos.Get(client, qos2.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, qos2, getQoS2)
+
 	listOpts := qos.ListOpts{
 		Limit: 1,
 	}

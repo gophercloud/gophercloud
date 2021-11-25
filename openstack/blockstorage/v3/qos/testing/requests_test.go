@@ -73,3 +73,14 @@ func TestList(t *testing.T) {
 		t.Errorf("Expected one page, got %d", pages)
 	}
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetResponse(t)
+
+	actual, err := qos.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &createQoSExpected, actual)
+}

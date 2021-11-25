@@ -2,6 +2,10 @@ package qos
 
 import "github.com/gophercloud/gophercloud"
 
+func getURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("qos-specs", id)
+}
+
 func createURL(c *gophercloud.ServiceClient) string {
 	return c.ServiceURL("qos-specs")
 }

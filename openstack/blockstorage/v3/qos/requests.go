@@ -143,3 +143,13 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 		return QoSPage{pagination.LinkedPageBase{PageResult: r}}
 	})
 }
+
+// Get retrieves details of a single qos. Use Extract to convert its
+// result into a QoS.
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
