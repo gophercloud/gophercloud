@@ -61,5 +61,22 @@ Example to get a single QoS specification
 
 	fmt.Printf("Get: %+v\n", singleQos)
 
+Example of updating QoSSpec
+
+	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+
+	updateOpts := qos.UpdateOpts{
+		Consumer: qos.ConsumerBack,
+		Specs: map[string]string{
+			"read_iops_sec": "40000",
+		},
+	}
+
+	specs, err := qos.Update(client, qosID, qosSpecs).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", specs)
+
 */
 package qos

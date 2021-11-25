@@ -28,6 +28,24 @@ func TestQoS(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, qos2, getQoS2)
 
+	updateOpts := qos.UpdateOpts{
+		Consumer: qos.ConsumerBack,
+		Specs: map[string]string{
+			"read_iops_sec":  "40000",
+			"write_iops_sec": "40000",
+		},
+	}
+
+	expectedQosSpecs := map[string]string{
+		"consumer":       "back-end",
+		"read_iops_sec":  "40000",
+		"write_iops_sec": "40000",
+	}
+
+	updatedQosSpecs, err := qos.Update(client, qos2.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, updatedQosSpecs, expectedQosSpecs)
+
 	listOpts := qos.ListOpts{
 		Limit: 1,
 	}
