@@ -21,3 +21,7 @@ func deleteURL(c *gophercloud.ServiceClient, id string) string {
 func updateURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("qos-specs", id)
 }
+
+func deleteKeysURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("qos-specs", id, "delete_keys")
+}

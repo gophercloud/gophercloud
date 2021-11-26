@@ -72,11 +72,22 @@ Example of updating QoSSpec
 		},
 	}
 
-	specs, err := qos.Update(client, qosID, qosSpecs).Extract()
+	specs, err := qos.Update(client, qosID, updateOpts).Extract()
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("%+v\n", specs)
+
+
+Example of deleting specific keys/specs from a QoS
+
+	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+
+	keysToDelete := qos.DeleteKeysOpts{"read_iops_sec"}
+	err = qos.DeleteKeys(client, qosID, keysToDelete).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 
 */
 package qos

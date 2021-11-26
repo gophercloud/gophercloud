@@ -209,3 +209,32 @@ func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// DeleteKeysOptsBuilder allows extensions to add additional parameters to the
+// CreateExtraSpecs requests.
+type DeleteKeysOptsBuilder interface {
+	ToDeleteKeysCreateMap() (map[string]interface{}, error)
+}
+
+// DeleteKeysOpts is a string slice that contains keys to be deleted.
+type DeleteKeysOpts []string
+
+// ToDeleteKeysCreateMap assembles a body for a Create request based on
+// the contents of ExtraSpecsOpts.
+func (opts DeleteKeysOpts) ToDeleteKeysCreateMap() (map[string]interface{}, error) {
+	return map[string]interface{}{"keys": opts}, nil
+}
+
+// DeleteKeys will delete the keys/specs from the specified QoS
+func DeleteKeys(client *gophercloud.ServiceClient, qosID string, opts DeleteKeysOptsBuilder) (r DeleteResult) {
+	b, err := opts.ToDeleteKeysCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(deleteKeysURL(client, qosID), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

@@ -28,6 +28,9 @@ func TestQoS(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.AssertDeepEquals(t, qos2, getQoS2)
 
+	err = qos.DeleteKeys(client, qos2.ID, qos.DeleteKeysOpts{"read_iops_sec"}).ExtractErr()
+	th.AssertNoErr(t, err)
+
 	updateOpts := qos.UpdateOpts{
 		Consumer: qos.ConsumerBack,
 		Specs: map[string]string{

@@ -103,3 +103,13 @@ func TestUpdate(t *testing.T) {
 	th.AssertNoErr(t, err)
 	th.CheckDeepEquals(t, expected, actual)
 }
+
+func TestDeleteKeys(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteKeysResponse(t)
+
+	res := qos.DeleteKeys(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", qos.DeleteKeysOpts{"read_iops_sec"})
+	th.AssertNoErr(t, res.Err)
+}

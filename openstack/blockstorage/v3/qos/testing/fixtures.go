@@ -173,3 +173,17 @@ func MockUpdateResponse(t *testing.T) {
 		fmt.Fprintf(w, UpdateBody)
 	})
 }
+
+func MockDeleteKeysResponse(t *testing.T) {
+	th.Mux.HandleFunc("/qos-specs/d32019d3-bc6e-4319-9c1d-6722fc136a22/delete_keys", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "PUT")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestJSONRequest(t, r, `{
+			"keys": [
+				"read_iops_sec"
+			]
+		}`)
+
+		w.WriteHeader(http.StatusAccepted)
+	})
+}
