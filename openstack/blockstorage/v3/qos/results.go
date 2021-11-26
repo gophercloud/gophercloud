@@ -75,3 +75,25 @@ func ExtractQoS(r pagination.Page) ([]QoS, error) {
 	err := (r.(QoSPage)).ExtractInto(&s)
 	return s.QoSs, err
 }
+
+// GetResult is the response of a Get operations. Call its Extract method to
+// interpret it as a Flavor.
+type GetResult struct {
+	commonResult
+}
+
+// Extract interprets any updateResult as qosSpecs, if possible.
+func (r updateResult) Extract() (map[string]string, error) {
+	var s struct {
+		QosSpecs map[string]string `json:"qos_specs"`
+	}
+	err := r.ExtractInto(&s)
+	return s.QosSpecs, err
+}
+
+// updateResult contains the result of a call for (potentially) multiple
+// key-value pairs. Call its Extract method to interpret it as a
+// map[string]interface.
+type updateResult struct {
+	gophercloud.Result
+}

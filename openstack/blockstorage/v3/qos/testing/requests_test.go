@@ -73,3 +73,43 @@ func TestList(t *testing.T) {
 		t.Errorf("Expected one page, got %d", pages)
 	}
 }
+
+func TestGet(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockGetResponse(t)
+
+	actual, err := qos.Get(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22").Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, &getQoSExpected, actual)
+}
+
+func TestUpdate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+	MockUpdateResponse(t)
+
+	updateOpts := qos.UpdateOpts{
+		Consumer: qos.ConsumerBack,
+		Specs: map[string]string{
+			"read_iops_sec":  "40000",
+			"write_iops_sec": "40000",
+		},
+	}
+
+	expected := UpdateQos
+	actual, err := qos.Update(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.CheckDeepEquals(t, expected, actual)
+}
+
+func TestDeleteKeys(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDeleteKeysResponse(t)
+
+	res := qos.DeleteKeys(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", qos.DeleteKeysOpts{"read_iops_sec"})
+	th.AssertNoErr(t, res.Err)
+}

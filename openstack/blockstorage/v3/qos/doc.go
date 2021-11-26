@@ -50,5 +50,44 @@ Example to list QoS specifications
 		fmt.Printf("List: %+v\n", qos)
 	}
 
+Example to get a single QoS specification
+
+	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+
+	singleQos, err := qos.Get(client, test.ID).Extract()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Get: %+v\n", singleQos)
+
+Example of updating QoSSpec
+
+	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+
+	updateOpts := qos.UpdateOpts{
+		Consumer: qos.ConsumerBack,
+		Specs: map[string]string{
+			"read_iops_sec": "40000",
+		},
+	}
+
+	specs, err := qos.Update(client, qosID, updateOpts).Extract()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", specs)
+
+
+Example of deleting specific keys/specs from a QoS
+
+	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+
+	keysToDelete := qos.DeleteKeysOpts{"read_iops_sec"}
+	err = qos.DeleteKeys(client, qosID, keysToDelete).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
+
 */
 package qos

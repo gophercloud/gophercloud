@@ -19,7 +19,7 @@ type QoSConsumer string
 
 const (
 	ConsumerFront QoSConsumer = "front-end"
-	ConsumberBack QoSConsumer = "back-end"
+	ConsumerBack  QoSConsumer = "back-end"
 	ConsumerBoth  QoSConsumer = "both"
 )
 
@@ -142,4 +142,99 @@ func List(client *gophercloud.ServiceClient, opts ListOptsBuilder) pagination.Pa
 	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
 		return QoSPage{pagination.LinkedPageBase{PageResult: r}}
 	})
+}
+
+// Get retrieves details of a single qos. Use Extract to convert its
+// result into a QoS.
+func Get(client *gophercloud.ServiceClient, id string) (r GetResult) {
+	resp, err := client.Get(getURL(client, id), &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// CreateQosSpecsOptsBuilder allows extensions to add additional parameters to the
+// CreateQosSpecs requests.
+type CreateQosSpecsOptsBuilder interface {
+	ToQosSpecsCreateMap() (map[string]interface{}, error)
+}
+
+// UpdateOpts contains options for creating a QoS specification.
+// This object is passed to the qos.Update function.
+type UpdateOpts struct {
+	// The consumer of the QoS spec. Possible values are
+	// both, front-end, back-end.
+	Consumer QoSConsumer `json:"consumer,omitempty"`
+	// Specs is a collection of miscellaneous key/values used to set
+	// specifications for the QoS
+	Specs map[string]string `json:"-"`
+}
+
+type UpdateOptsBuilder interface {
+	ToQoSUpdateMap() (map[string]interface{}, error)
+}
+
+// ToQoSUpdateMap assembles a request body based on the contents of a
+// UpdateOpts.
+func (opts UpdateOpts) ToQoSUpdateMap() (map[string]interface{}, error) {
+	b, err := gophercloud.BuildRequestBody(opts, "qos_specs")
+	if err != nil {
+		return nil, err
+	}
+
+	if opts.Specs != nil {
+		if v, ok := b["qos_specs"].(map[string]interface{}); ok {
+			for key, value := range opts.Specs {
+				v[key] = value
+			}
+		}
+	}
+
+	return b, nil
+}
+
+// Update will update an existing QoS based on the values in UpdateOpts.
+// To extract the QoS object from the response, call the Extract method
+// on the UpdateResult.
+func Update(client *gophercloud.ServiceClient, id string, opts UpdateOptsBuilder) (r updateResult) {
+	b, err := opts.ToQoSUpdateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(updateURL(client, id), b, &r.Body, &gophercloud.RequestOpts{
+		OkCodes: []int{200},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}
+
+// DeleteKeysOptsBuilder allows extensions to add additional parameters to the
+// CreateExtraSpecs requests.
+type DeleteKeysOptsBuilder interface {
+	ToDeleteKeysCreateMap() (map[string]interface{}, error)
+}
+
+// DeleteKeysOpts is a string slice that contains keys to be deleted.
+type DeleteKeysOpts []string
+
+// ToDeleteKeysCreateMap assembles a body for a Create request based on
+// the contents of ExtraSpecsOpts.
+func (opts DeleteKeysOpts) ToDeleteKeysCreateMap() (map[string]interface{}, error) {
+	return map[string]interface{}{"keys": opts}, nil
+}
+
+// DeleteKeys will delete the keys/specs from the specified QoS
+func DeleteKeys(client *gophercloud.ServiceClient, qosID string, opts DeleteKeysOptsBuilder) (r DeleteResult) {
+	b, err := opts.ToDeleteKeysCreateMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	resp, err := client.Put(deleteKeysURL(client, qosID), b, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
 }

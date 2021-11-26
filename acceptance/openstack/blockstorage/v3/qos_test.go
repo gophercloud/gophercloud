@@ -24,6 +24,31 @@ func TestQoS(t *testing.T) {
 	th.AssertNoErr(t, err)
 	defer DeleteQoS(t, client, qos2)
 
+	getQoS2, err := qos.Get(client, qos2.ID).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, qos2, getQoS2)
+
+	err = qos.DeleteKeys(client, qos2.ID, qos.DeleteKeysOpts{"read_iops_sec"}).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	updateOpts := qos.UpdateOpts{
+		Consumer: qos.ConsumerBack,
+		Specs: map[string]string{
+			"read_iops_sec":  "40000",
+			"write_iops_sec": "40000",
+		},
+	}
+
+	expectedQosSpecs := map[string]string{
+		"consumer":       "back-end",
+		"read_iops_sec":  "40000",
+		"write_iops_sec": "40000",
+	}
+
+	updatedQosSpecs, err := qos.Update(client, qos2.ID, updateOpts).Extract()
+	th.AssertNoErr(t, err)
+	th.AssertDeepEquals(t, updatedQosSpecs, expectedQosSpecs)
+
 	listOpts := qos.ListOpts{
 		Limit: 1,
 	}
