@@ -308,3 +308,12 @@ func Disassociate(client *gophercloud.ServiceClient, qosID string, opts Disassoc
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// DisassociateAll will disassociate a qos from all volute types
+func DisassociateAll(client *gophercloud.ServiceClient, qosID string) (r DisassociateAllResult) {
+	resp, err := client.Get(disassociateAllURL(client, qosID), nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

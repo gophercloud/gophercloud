@@ -117,6 +117,15 @@ if err != nil {
 	panic(err)
 }
 
+Example of disaassociating a Qos from all volume types
+
+qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+
+err = qos.DisassociateAll(client, qosID).ExtractErr()
+if err != nil {
+	panic(err)
+}
+
 
 */
 package qos

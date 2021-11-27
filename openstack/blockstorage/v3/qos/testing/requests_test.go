@@ -141,3 +141,13 @@ func TestDisssociate(t *testing.T) {
 	res := qos.Disassociate(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", disassociateOpts)
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestDissasociateAll(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDisassociateAllResponse(t)
+
+	res := qos.DisassociateAll(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22")
+	th.AssertNoErr(t, res.Err)
+}

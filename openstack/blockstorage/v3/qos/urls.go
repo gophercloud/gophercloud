@@ -33,3 +33,7 @@ func associateURL(client *gophercloud.ServiceClient, id string) string {
 func disassociateURL(client *gophercloud.ServiceClient, id string) string {
 	return client.ServiceURL("qos-specs", id, "disassociate")
 }
+
+func disassociateAllURL(client *gophercloud.ServiceClient, id string) string {
+	return client.ServiceURL("qos-specs", id, "disassociate_all")
+}
