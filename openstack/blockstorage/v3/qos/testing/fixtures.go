@@ -195,3 +195,11 @@ func MockAssociateResponse(t *testing.T) {
 		w.WriteHeader(http.StatusAccepted)
 	})
 }
+
+func MockDisassociateResponse(t *testing.T) {
+	th.Mux.HandleFunc("/qos-specs/d32019d3-bc6e-4319-9c1d-6722fc136a22/disassociate", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "GET")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		w.WriteHeader(http.StatusAccepted)
+	})
+}

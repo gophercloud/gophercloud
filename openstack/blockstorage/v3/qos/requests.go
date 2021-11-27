@@ -273,3 +273,38 @@ func Associate(client *gophercloud.ServiceClient, qosID string, opts AssociateOp
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// DisassociateOpitsBuilder allows extensions to define volume type id
+// to the disassociate query
+type DisassociateOptsBuilder interface {
+	ToQosDisassociateQuery() (string, error)
+}
+
+// DisassociateOpts contains options for disassociating a QoS from a
+// volume type
+type DisassociateOpts struct {
+	VolumeTypeID string `q:"vol_type_id" required:"true"`
+}
+
+// ToQosDisassociateQuery formats a DisassociateOpts into a query string
+func (opts DisassociateOpts) ToQosDisassociateQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// Disassociate will disassociate a qos from a volute type
+func Disassociate(client *gophercloud.ServiceClient, qosID string, opts DisassociateOptsBuilder) (r DisassociateResult) {
+	url := disassociateURL(client, qosID)
+	query, err := opts.ToQosDisassociateQuery()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	url += query
+
+	resp, err := client.Get(url, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

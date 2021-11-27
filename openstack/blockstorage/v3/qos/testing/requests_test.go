@@ -127,3 +127,17 @@ func TestAssociate(t *testing.T) {
 	res := qos.Associate(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", associateOpts)
 	th.AssertNoErr(t, res.Err)
 }
+
+func TestDisssociate(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	MockDisassociateResponse(t)
+
+	disassociateOpts := qos.DisassociateOpts{
+		VolumeTypeID: "b596be6a-0ce9-43fa-804a-5c5e181ede76",
+	}
+
+	res := qos.Disassociate(client.ServiceClient(), "d32019d3-bc6e-4319-9c1d-6722fc136a22", disassociateOpts)
+	th.AssertNoErr(t, res.Err)
+}

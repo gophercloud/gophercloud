@@ -102,3 +102,8 @@ type updateResult struct {
 type AssociateResult struct {
 	gophercloud.ErrResult
 }
+
+// DisassociateResult contains the response body and error from a Disassociate request.
+type DisassociateResult struct {
+	gophercloud.ErrResult
+}
