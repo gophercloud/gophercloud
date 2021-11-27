@@ -89,5 +89,19 @@ Example of deleting specific keys/specs from a QoS
 		panic(err)
 	}
 
+	Example of associating a QoS with a volume type
+
+qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+volID := "b596be6a-0ce9-43fa-804a-5c5e181ede76"
+
+associateOpts := qos.AssociateOpts{
+	VolumeTypeID: volID,
+}
+
+err = qos.Associate(client, qosID, associateOpts).ExtractErr()
+if err != nil {
+	panic(err)
+}
+
 */
 package qos

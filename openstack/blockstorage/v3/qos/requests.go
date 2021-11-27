@@ -238,3 +238,38 @@ func DeleteKeys(client *gophercloud.ServiceClient, qosID string, opts DeleteKeys
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// AssociateOpitsBuilder allows extensions to define volume type id
+// to the associate query
+type AssociateOptsBuilder interface {
+	ToQosAssociateQuery() (string, error)
+}
+
+// AssociateOpts contains options for associating a QoS with a
+// volume type
+type AssociateOpts struct {
+	VolumeTypeID string `q:"vol_type_id" required:"true"`
+}
+
+// ToQosAssociateQuery formats an AssociateOpts into a query string
+func (opts AssociateOpts) ToQosAssociateQuery() (string, error) {
+	q, err := gophercloud.BuildQueryString(opts)
+	return q.String(), err
+}
+
+// Associate will associate a qos with a volute type
+func Associate(client *gophercloud.ServiceClient, qosID string, opts AssociateOptsBuilder) (r AssociateResult) {
+	url := associateURL(client, qosID)
+	query, err := opts.ToQosAssociateQuery()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	url += query
+
+	resp, err := client.Get(url, nil, &gophercloud.RequestOpts{
+		OkCodes: []int{202},
+	})
+	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
+	return
+}

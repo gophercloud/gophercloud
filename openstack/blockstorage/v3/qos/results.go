@@ -97,3 +97,8 @@ func (r updateResult) Extract() (map[string]string, error) {
 type updateResult struct {
 	gophercloud.Result
 }
+
+// AssociateResult contains the response body and error from a Associate request.
+type AssociateResult struct {
+	gophercloud.ErrResult
+}
