@@ -317,3 +317,12 @@ func DisassociateAll(client *gophercloud.ServiceClient, qosID string) (r Disasso
 	_, r.Header, r.Err = gophercloud.ParseResponse(resp, err)
 	return
 }
+
+// ListAssociations retrieves the associations of a QoS.
+func ListAssociations(client *gophercloud.ServiceClient, qosID string) pagination.Pager {
+	url := listAssociationsURL(client, qosID)
+
+	return pagination.NewPager(client, url, func(r pagination.PageResult) pagination.Page {
+		return AssociationPage{pagination.SinglePageBase(r)}
+	})
+}

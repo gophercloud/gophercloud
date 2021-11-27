@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
+	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v3/qos"
 	"github.com/gophercloud/gophercloud/pagination"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -72,4 +73,57 @@ func TestQoS(t *testing.T) {
 
 	th.AssertNoErr(t, err)
 
+}
+
+func TestQoSAssociations(t *testing.T) {
+	clients.SkipRelease(t, "stable/mitaka")
+	clients.RequireAdmin(t)
+
+	client, err := clients.NewBlockStorageV3Client()
+	th.AssertNoErr(t, err)
+
+	qos1, err := CreateQoS(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteQoS(t, client, qos1)
+
+	vt, err := CreateVolumeType(t, client)
+	th.AssertNoErr(t, err)
+	defer DeleteVolumeType(t, client, vt)
+
+	associateOpts := qos.AssociateOpts{
+		VolumeTypeID: vt.ID,
+	}
+
+	err = qos.Associate(client, qos1.ID, associateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	allQosAssociations, err := qos.ListAssociations(client, qos1.ID).AllPages()
+	th.AssertNoErr(t, err)
+
+	allAssociations, err := qos.ExtractAssociations(allQosAssociations)
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, allAssociations)
+	th.AssertEquals(t, 1, len(allAssociations))
+	th.AssertEquals(t, vt.ID, allAssociations[0].ID)
+
+	disassociateOpts := qos.DisassociateOpts{
+		VolumeTypeID: vt.ID,
+	}
+
+	err = qos.Disassociate(client, qos1.ID, disassociateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	allQosAssociations, err = qos.ListAssociations(client, qos1.ID).AllPages()
+	th.AssertNoErr(t, err)
+
+	allAssociations, err = qos.ExtractAssociations(allQosAssociations)
+	th.AssertNoErr(t, err)
+	tools.PrintResource(t, allAssociations)
+	th.AssertEquals(t, 0, len(allAssociations))
+
+	err = qos.Associate(client, qos1.ID, associateOpts).ExtractErr()
+	th.AssertNoErr(t, err)
+
+	err = qos.DisassociateAll(client, qos1.ID).ExtractErr()
+	th.AssertNoErr(t, err)
 }

@@ -126,6 +126,23 @@ if err != nil {
 	panic(err)
 }
 
+Example of listing all associations of a QoS
+
+qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+
+allQosAssociations, err := qos.ListAssociations(client, qosID).AllPages()
+if err != nil {
+	panic(err)
+}
+
+allAssociations, err := qos.ExtractAssociations(allQosAssociations)
+if err != nil {
+	panic(err)
+}
+
+for _, association := range allAssociations {
+	fmt.Printf("Association: %+v\n", association)
+}
 
 */
 package qos
