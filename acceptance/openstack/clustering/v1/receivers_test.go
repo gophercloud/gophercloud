@@ -1,4 +1,4 @@
-// +build acceptance clustering policies
+// +build acceptance clustering receivers
 
 package v1
 
@@ -12,6 +12,7 @@ import (
 )
 
 func TestReceiversCRUD(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 

@@ -1,4 +1,4 @@
-// +build acceptance clustering policies
+// +build acceptance clustering profiles
 
 package v1
 
@@ -12,6 +12,7 @@ import (
 )
 
 func TestProfilesCRUD(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 
@@ -49,6 +50,7 @@ func TestProfilesCRUD(t *testing.T) {
 }
 
 func TestProfileValidate(t *testing.T) {
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	th.AssertNoErr(t, err)
 	client.Microversion = "1.2"

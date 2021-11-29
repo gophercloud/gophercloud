@@ -12,7 +12,7 @@ import (
 )
 
 func TestClusteringWebhookTrigger(t *testing.T) {
-
+	t.Parallel()
 	client, err := clients.NewClusteringV1Client()
 	if err != nil {
 		t.Fatalf("Unable to create clustering client: %v", err)
