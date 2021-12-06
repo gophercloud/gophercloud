@@ -69,7 +69,7 @@
     description: |
       Run gophercloud storage acceptance test on master branch
     files: &storage-files
-      - ^.*blockstorage.*$
+      - ^.*blockstorage(.(?!noauth).*)?$
       - ^.*imageservice.*$
       - ^.*objectstorage.*$
       - ^.*sharedfilesystems.*$
@@ -84,7 +84,7 @@
     description: |
       Run gophercloud ironic acceptance test on master branch
     files: &baremetal-files
-      - ^.*baremetal.*$
+      - ^.*baremetal(.(?!noauth).*)?$
     vars:
       acceptance_tests: *baremetal-files
       devstack_services:
