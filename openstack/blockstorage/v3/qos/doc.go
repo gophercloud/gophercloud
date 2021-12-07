@@ -89,60 +89,60 @@ Example of deleting specific keys/specs from a QoS
 		panic(err)
 	}
 
-	Example of associating a QoS with a volume type
+Example of associating a QoS with a volume type
 
-qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
-volID := "b596be6a-0ce9-43fa-804a-5c5e181ede76"
+	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+	volID := "b596be6a-0ce9-43fa-804a-5c5e181ede76"
 
-associateOpts := qos.AssociateOpts{
-	VolumeTypeID: volID,
-}
+	associateOpts := qos.AssociateOpts{
+		VolumeTypeID: volID,
+	}
 
-err = qos.Associate(client, qosID, associateOpts).ExtractErr()
-if err != nil {
-	panic(err)
-}
+	err = qos.Associate(client, qosID, associateOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 
 Example of disassociating a QoS from a volume type
 
-qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
-volID := "b596be6a-0ce9-43fa-804a-5c5e181ede76"
+	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+	volID := "b596be6a-0ce9-43fa-804a-5c5e181ede76"
 
-disassociateOpts := qos.DisassociateOpts{
-	VolumeTypeID: volID,
-}
+	disassociateOpts := qos.DisassociateOpts{
+		VolumeTypeID: volID,
+	}
 
-err = qos.Disassociate(client, qosID, disassociateOpts).ExtractErr()
-if err != nil {
-	panic(err)
-}
+	err = qos.Disassociate(client, qosID, disassociateOpts).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 
 Example of disaassociating a Qos from all volume types
 
-qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
 
-err = qos.DisassociateAll(client, qosID).ExtractErr()
-if err != nil {
-	panic(err)
-}
+	err = qos.DisassociateAll(client, qosID).ExtractErr()
+	if err != nil {
+		panic(err)
+	}
 
 Example of listing all associations of a QoS
 
-qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
+	qosID := "de075d5e-8afc-4e23-9388-b84a5183d1c0"
 
-allQosAssociations, err := qos.ListAssociations(client, qosID).AllPages()
-if err != nil {
-	panic(err)
-}
+	allQosAssociations, err := qos.ListAssociations(client, qosID).AllPages()
+	if err != nil {
+		panic(err)
+	}
 
-allAssociations, err := qos.ExtractAssociations(allQosAssociations)
-if err != nil {
-	panic(err)
-}
+	allAssociations, err := qos.ExtractAssociations(allQosAssociations)
+	if err != nil {
+		panic(err)
+	}
 
-for _, association := range allAssociations {
-	fmt.Printf("Association: %+v\n", association)
-}
+	for _, association := range allAssociations {
+		fmt.Printf("Association: %+v\n", association)
+	}
 
 */
 package qos
