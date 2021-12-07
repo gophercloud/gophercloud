@@ -34,7 +34,7 @@
         - ^.*keymanager.*$
         - ^.*orchestration.*$
         - ^.*placement.*$
-      devstack_projects: 'openstack/magnum'
+      devstack_projects: 'openstack/magnum openstack/python-magnumclient'
       devstack_services:
         - barbican
         - heat
