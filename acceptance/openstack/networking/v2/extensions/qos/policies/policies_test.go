@@ -1,3 +1,4 @@
+//go:build acceptance || networking || qos || policies
 // +build acceptance networking qos policies
 
 package policies

@@ -1,3 +1,4 @@
+//go:build acceptance || compute || services
 // +build acceptance compute services
 
 package v2

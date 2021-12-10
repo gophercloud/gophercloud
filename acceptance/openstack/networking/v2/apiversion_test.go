@@ -1,3 +1,4 @@
+//go:build acceptance || networking
 // +build acceptance networking
 
 package v2

@@ -1,3 +1,4 @@
+//go:build acceptance || compute || secgroups
 // +build acceptance compute secgroups
 
 package v2

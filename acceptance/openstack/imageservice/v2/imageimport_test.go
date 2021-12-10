@@ -1,3 +1,4 @@
+//go:build acceptance || imageservice || imageimport
 // +build acceptance imageservice imageimport
 
 package v2

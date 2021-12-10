@@ -1,3 +1,4 @@
+//go:build acceptance || keymanager || acls
 // +build acceptance keymanager acls
 
 package v1

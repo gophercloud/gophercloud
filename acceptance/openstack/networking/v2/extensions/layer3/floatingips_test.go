@@ -1,3 +1,4 @@
+//go:build acceptance || networking || layer3 || floatingips
 // +build acceptance networking layer3 floatingips
 
 package layer3

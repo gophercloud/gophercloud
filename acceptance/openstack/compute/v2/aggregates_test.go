@@ -1,3 +1,4 @@
+//go:build acceptance || compute || aggregates
 // +build acceptance compute aggregates
 
 package v2

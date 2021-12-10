@@ -1,3 +1,4 @@
+//go:build acceptance || networking || networkipavailabilities
 // +build acceptance networking networkipavailabilities
 
 package networkipavailabilities

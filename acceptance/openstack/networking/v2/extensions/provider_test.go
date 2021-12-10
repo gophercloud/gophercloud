@@ -1,3 +1,4 @@
+//go:build acceptance || networking || provider
 // +build acceptance networking provider
 
 package extensions

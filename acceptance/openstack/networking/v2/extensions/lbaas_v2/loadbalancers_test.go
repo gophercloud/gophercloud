@@ -1,3 +1,4 @@
+//go:build acceptance || networking || lbaas_v2 || loadbalancers
 // +build acceptance networking lbaas_v2 loadbalancers
 
 package lbaas_v2

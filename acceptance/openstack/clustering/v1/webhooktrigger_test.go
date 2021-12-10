@@ -1,3 +1,4 @@
+//go:build acceptance || clustering || webhooks
 // +build acceptance clustering webhooks
 
 package v1

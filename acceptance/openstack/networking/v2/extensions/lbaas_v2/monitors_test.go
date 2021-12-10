@@ -1,3 +1,4 @@
+//go:build acceptance || networking || loadbalancer || monitors
 // +build acceptance networking loadbalancer monitors
 
 package lbaas_v2

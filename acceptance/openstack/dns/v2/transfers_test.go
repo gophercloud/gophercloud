@@ -1,3 +1,4 @@
+//go:build acceptance || dns || transfers
 // +build acceptance dns transfers
 
 package v2

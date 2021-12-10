@@ -1,3 +1,4 @@
+//go:build acceptance || identity || trusts
 // +build acceptance identity trusts
 
 package v3

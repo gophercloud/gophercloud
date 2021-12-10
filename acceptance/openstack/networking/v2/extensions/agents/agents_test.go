@@ -1,3 +1,4 @@
+//go:build acceptance || networking || agents
 // +build acceptance networking agents
 
 package agents

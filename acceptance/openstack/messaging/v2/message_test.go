@@ -1,3 +1,4 @@
+//go:build acceptance || messaging || messages
 // +build acceptance messaging messages
 
 package v2
