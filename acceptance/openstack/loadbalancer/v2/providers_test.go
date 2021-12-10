@@ -1,3 +1,4 @@
+//go:build acceptance || networking || loadbalancer || providers
 // +build acceptance networking loadbalancer providers
 
 package v2

@@ -1,3 +1,4 @@
+//go:build acceptance || baremetal || nodes
 // +build acceptance baremetal nodes
 
 package v1

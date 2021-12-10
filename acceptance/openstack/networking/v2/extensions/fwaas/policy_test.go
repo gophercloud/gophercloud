@@ -1,3 +1,4 @@
+//go:build acceptance || networking || fwaas
 // +build acceptance networking fwaas
 
 package fwaas

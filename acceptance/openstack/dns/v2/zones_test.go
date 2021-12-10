@@ -1,3 +1,4 @@
+//go:build acceptance || dns || zones
 // +build acceptance dns zones
 
 package v2

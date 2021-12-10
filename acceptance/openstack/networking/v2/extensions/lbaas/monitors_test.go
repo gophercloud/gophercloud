@@ -1,3 +1,4 @@
+//go:build acceptance || networking || lbaas || monitors
 // +build acceptance networking lbaas monitors
 
 package lbaas

@@ -1,3 +1,4 @@
+//go:build acceptance || compute || defsecrules
 // +build acceptance compute defsecrules
 
 package v2

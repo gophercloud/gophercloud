@@ -1,3 +1,4 @@
+//go:build acceptance || networking || loadbalancer || quotas
 // +build acceptance networking loadbalancer quotas
 
 package v2

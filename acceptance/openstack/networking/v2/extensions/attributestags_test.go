@@ -1,3 +1,4 @@
+//go:build acceptance || networking || tags
 // +build acceptance networking tags
 
 package extensions

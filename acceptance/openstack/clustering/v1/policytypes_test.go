@@ -1,3 +1,4 @@
+//go:build acceptance || clustering || policytypes
 // +build acceptance clustering policytypes
 
 package v1

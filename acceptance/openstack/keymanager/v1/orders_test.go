@@ -1,3 +1,4 @@
+//go:build acceptance || keymanager || orders
 // +build acceptance keymanager orders
 
 package v1

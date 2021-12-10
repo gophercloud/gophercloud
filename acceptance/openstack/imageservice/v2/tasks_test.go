@@ -1,3 +1,4 @@
+//go:build acceptance || imageservice || tasks
 // +build acceptance imageservice tasks
 
 package v2

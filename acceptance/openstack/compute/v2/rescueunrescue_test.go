@@ -1,3 +1,4 @@
+//go:build acceptance || compute || rescueunrescue
 // +build acceptance compute rescueunrescue
 
 package v2

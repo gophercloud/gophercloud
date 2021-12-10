@@ -1,3 +1,4 @@
+//go:build acceptance || networking || vlantransparent
 // +build acceptance networking vlantransparent
 
 package v2
