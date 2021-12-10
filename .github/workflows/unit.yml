@@ -7,7 +7,8 @@ jobs:
       fail-fast: false
       matrix:
         go-version:
-          - "1.15"
+          - "1.13"
+          - "1"
 
     env:
       GO111MODULE: "on"
@@ -24,7 +25,6 @@ jobs:
         run: |
           go get golang.org/x/crypto/ssh
           go get github.com/wadey/gocovmerge
-          go get github.com/mattn/goveralls
           go get golang.org/x/tools/cmd/goimports
 
       - name: Run go vet
@@ -40,3 +40,13 @@ jobs:
       - uses: shogo82148/actions-goveralls@v1
         with:
           path-to-profile: cover.out
+          flag-name: Go-${{ matrix.go-version }}
+          parallel: true
+
+  finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: shogo82148/actions-goveralls@v1
+        with:
+          parallel-finished: true
