@@ -1,0 +1,11 @@
+on: [push, pull_request]
+name: go mod
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1'
+      - run: if [ $(go mod tidy && git diff | wc -l) -gt 0 ]; then git diff && exit 1; fi
