@@ -33,7 +33,6 @@ jobs:
       - name: Run unit tests
         run: |
           ./script/coverage
-          ./script/unittest
           ./script/format
 
       - uses: shogo82148/actions-goveralls@v1
