@@ -134,27 +134,6 @@ func AcceptanceTestChoicesFromEnv() (*AcceptanceTestChoices, error) {
 	}, nil
 }
 
-// NewBlockStorageV1Client returns a *ServiceClient for making calls
-// to the OpenStack Block Storage v1 API. An error will be returned
-// if authentication or client creation was not possible.
-func NewBlockStorageV1Client() (*gophercloud.ServiceClient, error) {
-	ao, err := openstack.AuthOptionsFromEnv()
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := openstack.AuthenticatedClient(ao)
-	if err != nil {
-		return nil, err
-	}
-
-	client = configureDebug(client)
-
-	return openstack.NewBlockStorageV1(client, gophercloud.EndpointOpts{
-		Region: os.Getenv("OS_REGION_NAME"),
-	})
-}
-
 // NewBlockStorageV2Client returns a *ServiceClient for making calls
 // to the OpenStack Block Storage v2 API. An error will be returned
 // if authentication or client creation was not possible.
