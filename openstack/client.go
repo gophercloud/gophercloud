@@ -414,12 +414,6 @@ func NewSharedFileSystemV2(client *gophercloud.ProviderClient, eo gophercloud.En
 	return initClientOpts(client, eo, "sharev2")
 }
 
-// NewCDNV1 creates a ServiceClient that may be used to access the OpenStack v1
-// CDN service.
-func NewCDNV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo, "cdn")
-}
-
 // NewOrchestrationV1 creates a ServiceClient that may be used to access the v1
 // orchestration service.
 func NewOrchestrationV1(client *gophercloud.ProviderClient, eo gophercloud.EndpointOpts) (*gophercloud.ServiceClient, error) {
