@@ -34,6 +34,9 @@
         - ^.*keymanager.*$
         - ^.*orchestration.*$
         - ^.*placement.*$
+      devstack_env:
+        GLANCE_LIMIT_IMAGE_SIZE_TOTAL: 5000
+        SWIFT_MAX_FILE_SIZE: 5368709122
       devstack_projects: 'openstack/magnum openstack/python-magnumclient'
       devstack_services:
         - barbican
