@@ -12,6 +12,7 @@ import (
 )
 
 func TestPoliciesCRUD(t *testing.T) {
+	t.Skip("Broken in devstack - https://bugs.launchpad.net/neutron/+bug/1955765")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

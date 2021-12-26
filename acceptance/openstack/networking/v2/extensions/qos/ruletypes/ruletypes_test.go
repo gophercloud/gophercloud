@@ -9,6 +9,7 @@ import (
 )
 
 func TestRuleTypes(t *testing.T) {
+	t.Skip("Broken in devstack - https://bugs.launchpad.net/neutron/+bug/1955765")
 	clients.SkipRelease(t, "stable/mitaka")
 	clients.SkipRelease(t, "stable/newton")
 	clients.SkipRelease(t, "stable/ocata")
