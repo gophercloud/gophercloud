@@ -49,7 +49,7 @@ func TestLiveMigrate225(t *testing.T) {
 	host := "01c0cadef72d47e28a672a76060d492c"
 	diskOverCommit := true
 
-	migrationOpts := migrate.LiveMigrate225Opts{
+	migrationOpts := migrate.LiveMigrateOpts{
 		Host:           &host,
 		BlockMigration: "auto",
 		DiskOverCommit: &diskOverCommit,
