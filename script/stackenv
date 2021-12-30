@@ -6,12 +6,14 @@ pushd /opt/stack/new/devstack
 source openrc admin admin
 openstack flavor create m1.acctest --id 99 --ram 512 --disk 5 --vcpu 1 --ephemeral 10
 openstack flavor create m1.resize --id 98 --ram 512 --disk 6 --vcpu 1 --ephemeral 10
+openstack keypair create magnum
 _NETWORK_ID=$(openstack network show private -c id -f value)
 _SUBNET_ID=$(openstack subnet show private-subnet -c id -f value)
 _EXTGW_ID=$(openstack network show public -c id -f value)
 _IMAGE=$(openstack image list | grep -i cirros | head -n 1)
 _IMAGE_ID=$(echo $_IMAGE | awk -F\| '{print $2}' | tr -d ' ')
 _IMAGE_NAME=$(echo $_IMAGE | awk -F\| '{print $3}' | tr -d ' ')
+_MAGNUM_IMAGE_ID=$(openstack image list --format value -c Name -c ID | grep coreos | cut -d ' ' -f 1)
 echo export OS_IMAGE_NAME="$_IMAGE_NAME" >> openrc
 echo export OS_IMAGE_ID="$_IMAGE_ID" >> openrc
 echo export OS_NETWORK_ID="$_NETWORK_ID" >> openrc
@@ -21,5 +23,7 @@ echo export OS_POOL_NAME="public" >> openrc
 echo export OS_FLAVOR_ID=99 >> openrc
 echo export OS_FLAVOR_ID_RESIZE=98 >> openrc
 echo export OS_DOMAIN_ID=default >> openrc
+echo export OS_MAGNUM_IMAGE_ID="$_MAGNUM_IMAGE_ID" >> openrc
+echo export OS_MAGNUM_KEYPAIR=magnum >> openrc
 source openrc admin admin
 popd
