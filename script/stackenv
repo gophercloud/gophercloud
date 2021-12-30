@@ -4,8 +4,8 @@
 
 pushd /opt/stack/new/devstack
 source openrc admin admin
-openstack flavor create m1.acctest --id 99 --ram 512 --disk 5 --vcpu 1 --ephemeral 10
-openstack flavor create m1.resize --id 98 --ram 512 --disk 6 --vcpu 1 --ephemeral 10
+openstack flavor create m1.acctest --id 99 --ram 512 --disk 10 --vcpu 1 --ephemeral 10
+openstack flavor create m1.resize --id 98 --ram 512 --disk 11 --vcpu 1 --ephemeral 10
 openstack keypair create magnum
 _NETWORK_ID=$(openstack network show private -c id -f value)
 _SUBNET_ID=$(openstack subnet show private-subnet -c id -f value)
