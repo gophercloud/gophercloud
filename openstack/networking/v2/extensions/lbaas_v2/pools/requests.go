@@ -17,19 +17,24 @@ type ListOptsBuilder interface {
 // sort by a particular Pool attribute. SortDir sets the direction, and is
 // either `asc' or `desc'. Marker and Limit are used for pagination.
 type ListOpts struct {
-	LBMethod       string `q:"lb_algorithm"`
-	Protocol       string `q:"protocol"`
-	TenantID       string `q:"tenant_id"`
-	ProjectID      string `q:"project_id"`
-	AdminStateUp   *bool  `q:"admin_state_up"`
-	Name           string `q:"name"`
-	ID             string `q:"id"`
-	LoadbalancerID string `q:"loadbalancer_id"`
-	ListenerID     string `q:"listener_id"`
-	Limit          int    `q:"limit"`
-	Marker         string `q:"marker"`
-	SortKey        string `q:"sort_key"`
-	SortDir        string `q:"sort_dir"`
+	LBMethod          string `q:"lb_algorithm"`
+	Protocol          string `q:"protocol"`
+	TenantID          string `q:"tenant_id"`
+	ProjectID         string `q:"project_id"`
+	AdminStateUp      *bool  `q:"admin_state_up"`
+	CaTlsContainerRef string `q:"ca_tls_container_ref"`
+	CrlContainerRef   string `q:"crl_container_ref"`
+	TlsEnabled        *bool  `q:"tls_enabled"`
+	TlsCiphers        string `q:"tls_ciphers"`
+	TlsContainerRef   string `q:"tls_container_ref"`
+	Name              string `q:"name"`
+	ID                string `q:"id"`
+	LoadbalancerID    string `q:"loadbalancer_id"`
+	ListenerID        string `q:"listener_id"`
+	Limit             int    `q:"limit"`
+	Marker            string `q:"marker"`
+	SortKey           string `q:"sort_key"`
+	SortDir           string `q:"sort_dir"`
 }
 
 // ToPoolListQuery formats a ListOpts into a query string.
@@ -119,6 +124,27 @@ type CreateOpts struct {
 	// The administrative state of the Pool. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// A list of ALPN protocols. Available protocols: http/1.0, http/1.1, h2.
+	AlpnProtocols []string `json:"alpn_protocols,omitempty"`
+
+	// The reference of the key manager service secret containing a PEM format CA certificate bundle for tls_enabled pools.
+	CaTlsContainerRef string `json:"ca_tls_container_ref,omitempty"`
+
+	// The reference of the key manager service secret containing a PEM format CA revocation list file for tls_enabled pools.
+	CrlContainerRef string `json:"crl_container_ref,omitempty"`
+
+	// When true connections to backend member servers will use TLS encryption
+	TlsEnabled bool `json:"tls_enabled,omitempty"`
+
+	// List of ciphers in OpenSSL format (colon-separated). See https://www.openssl.org/docs/man1.1.1/man1/ciphers.html.
+	TlsCiphers string `json:"tls_ciphers,omitempty"`
+
+	// The reference to the key manager service secret containing a PKCS12 format certificate/key bundle for tls_enabled pools for TLS client authentication to the member servers.
+	TlsContainerRef string `json:"tls_container_ref,omitempty"`
+
+	// A list of TLS protocol versions. Available versions: SSLv3, TLSv1, TLSv1.1, TLSv1.2, TLSv1.3
+	TlsVersions []string `json:"tls_versions,omitempty"`
 }
 
 // ToPoolCreateMap builds a request body from CreateOpts.
@@ -169,6 +195,27 @@ type UpdateOpts struct {
 	// The administrative state of the Pool. A valid value is true (UP)
 	// or false (DOWN).
 	AdminStateUp *bool `json:"admin_state_up,omitempty"`
+
+	// A list of ALPN protocols. Available protocols: http/1.0, http/1.1, h2.
+	AlpnProtocols *[]string `json:"alpn_protocols,omitempty"`
+
+	// The reference of the key manager service secret containing a PEM format CA certificate bundle for tls_enabled pools.
+	CaTlsContainerRef *string `json:"ca_tls_container_ref,omitempty"`
+
+	// The reference of the key manager service secret containing a PEM format CA revocation list file for tls_enabled pools.
+	CrlContainerRef *string `json:"crl_container_ref,omitempty"`
+
+	// When true connections to backend member servers will use TLS encryption
+	TlsEnabled *bool `json:"tls_enabled,omitempty"`
+
+	// List of ciphers in OpenSSL format (colon-separated). See https://www.openssl.org/docs/man1.1.1/man1/ciphers.html.
+	TlsCiphers *string `json:"tls_ciphers,omitempty"`
+
+	// The reference to the key manager service secret containing a PKCS12 format certificate/key bundle for tls_enabled pools for TLS client authentication to the member servers.
+	TlsContainerRef *string `json:"tls_container_ref,omitempty"`
+
+	// A list of TLS protocol versions. Available versions: SSLv3, TLSv1, TLSv1.1, TLSv1.2, TLSv1.3
+	TlsVersions *[]string `json:"tls_versions,omitempty"`
 }
 
 // ToPoolUpdateMap builds a request body from UpdateOpts.

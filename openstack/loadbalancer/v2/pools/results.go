@@ -106,6 +106,27 @@ type Pool struct {
 	// Tags is a list of resource tags. Tags are arbitrarily defined strings
 	// attached to the resource. New in version 2.5
 	Tags []string `json:"tags"`
+
+	// A list of ALPN protocols. Available protocols: http/1.0, http/1.1, h2.
+	AlpnProtocols []string `json:"alpn_protocols"`
+
+	// The reference of the key manager service secret containing a PEM format CA certificate bundle for tls_enabled pools.
+	CaTlsContainerRef string `json:"ca_tls_container_ref"`
+
+	// The reference of the key manager service secret containing a PEM format CA revocation list file for tls_enabled pools.
+	CrlContainerRef string `json:"crl_container_ref"`
+
+	// When true connections to backend member servers will use TLS encryption
+	TlsEnabled bool `json:"tls_enabled"`
+
+	// List of ciphers in OpenSSL format (colon-separated). See https://www.openssl.org/docs/man1.1.1/man1/ciphers.html.
+	TlsCiphers string `json:"tls_ciphers"`
+
+	// The reference to the key manager service secret containing a PKCS12 format certificate/key bundle for tls_enabled pools for TLS client authentication to the member servers.
+	TlsContainerRef string `json:"tls_container_ref"`
+
+	// A list of TLS protocol versions. Available versions: SSLv3, TLSv1, TLSv1.1, TLSv1.2, TLSv1.3
+	TlsVersions []string `json:"tls_versions"`
 }
 
 // PoolPage is the page returned by a pager when traversing over a
