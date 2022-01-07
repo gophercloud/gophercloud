@@ -2,7 +2,8 @@
 # environment variables. This env is for theopenlab CI jobs, you might need
 # to modify this according to your setup
 
-pushd /opt/stack/new/devstack
+DEVSTACK_PATH=${DEVSTACK_PATH:-/opt/stack/new/devstack}
+pushd $DEVSTACK_PATH
 source openrc admin admin
 openstack flavor create m1.acctest --id 99 --ram 512 --disk 5 --vcpu 1 --ephemeral 10
 openstack flavor create m1.resize --id 98 --ram 512 --disk 6 --vcpu 1 --ephemeral 10
