@@ -14,8 +14,6 @@ import (
 )
 
 func TestBackupsCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-
 	blockClient, err := clients.NewBlockStorageV3Client()
 	th.AssertNoErr(t, err)
 

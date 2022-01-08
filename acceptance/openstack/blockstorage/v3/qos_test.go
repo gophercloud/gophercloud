@@ -11,7 +11,6 @@ import (
 )
 
 func TestQoS(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewBlockStorageV3Client()
@@ -76,7 +75,6 @@ func TestQoS(t *testing.T) {
 }
 
 func TestQoSAssociations(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewBlockStorageV3Client()
