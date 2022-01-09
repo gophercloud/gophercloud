@@ -12,32 +12,21 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/compute/v2/extensions/quotasets"
-	"github.com/gophercloud/gophercloud/openstack/identity/v2/tenants"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestQuotasetGet(t *testing.T) {
-	clients.SkipRelease(t, "master")
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-	clients.SkipRelease(t, "stable/stein")
-	clients.SkipRelease(t, "stable/train")
-	clients.SkipRelease(t, "stable/ussuri")
-
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	identityClient, err := clients.NewIdentityV2Client()
+	identityClient, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	tenantID, err := getTenantID(t, identityClient)
+	projectID, err := getProjectID(t, identityClient)
 	th.AssertNoErr(t, err)
 
-	quotaSet, err := quotasets.Get(client, tenantID).Extract()
+	quotaSet, err := quotasets.Get(client, projectID).Extract()
 	th.AssertNoErr(t, err)
 
 	tools.PrintResource(t, quotaSet)
@@ -45,34 +34,34 @@ func TestQuotasetGet(t *testing.T) {
 	th.AssertEquals(t, quotaSet.FixedIPs, -1)
 }
 
-func getTenantID(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
-	allPages, err := tenants.List(client, nil).AllPages()
+func getProjectID(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
+	allPages, err := projects.ListAvailable(client).AllPages()
 	th.AssertNoErr(t, err)
 
-	allTenants, err := tenants.ExtractTenants(allPages)
+	allProjects, err := projects.ExtractProjects(allPages)
 	th.AssertNoErr(t, err)
 
-	for _, tenant := range allTenants {
-		return tenant.ID, nil
+	for _, project := range allProjects {
+		return project.ID, nil
 	}
 
-	return "", fmt.Errorf("Unable to get tenant ID")
+	return "", fmt.Errorf("Unable to get project ID")
 }
 
-func getTenantIDByName(t *testing.T, client *gophercloud.ServiceClient, name string) (string, error) {
-	allPages, err := tenants.List(client, nil).AllPages()
+func getProjectIDByName(t *testing.T, client *gophercloud.ServiceClient, name string) (string, error) {
+	allPages, err := projects.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
 
-	allTenants, err := tenants.ExtractTenants(allPages)
+	allProjects, err := projects.ExtractProjects(allPages)
 	th.AssertNoErr(t, err)
 
-	for _, tenant := range allTenants {
-		if tenant.Name == name {
-			return tenant.ID, nil
+	for _, project := range allProjects {
+		if project.Name == name {
+			return project.ID, nil
 		}
 	}
 
-	return "", fmt.Errorf("Unable to get tenant ID")
+	return "", fmt.Errorf("Unable to get project ID")
 }
 
 // What will be sent as desired Quotas to the Server
@@ -112,43 +101,32 @@ var UpdatedQuotas = quotasets.QuotaSet{
 }
 
 func TestQuotasetUpdateDelete(t *testing.T) {
-	clients.SkipRelease(t, "master")
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-	clients.SkipRelease(t, "stable/stein")
-	clients.SkipRelease(t, "stable/train")
-	clients.SkipRelease(t, "stable/ussuri")
-
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 
-	idclient, err := clients.NewIdentityV2Client()
+	idclient, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
-	tenantid, err := getTenantIDByName(t, idclient, os.Getenv("OS_TENANT_NAME"))
+	projectid, err := getProjectIDByName(t, idclient, os.Getenv("OS_PROJECT_NAME"))
 	th.AssertNoErr(t, err)
 
 	// save original quotas
-	orig, err := quotasets.Get(client, tenantid).Extract()
+	orig, err := quotasets.Get(client, projectid).Extract()
 	th.AssertNoErr(t, err)
 
 	// Test Update
-	res, err := quotasets.Update(client, tenantid, UpdateQuotaOpts).Extract()
+	res, err := quotasets.Update(client, projectid, UpdateQuotaOpts).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, UpdatedQuotas, *res)
 
 	// Test Delete
-	_, err = quotasets.Delete(client, tenantid).Extract()
+	_, err = quotasets.Delete(client, projectid).Extract()
 	th.AssertNoErr(t, err)
 
 	// We dont know the default quotas, so just check if the quotas are not the same as before
-	newres, err := quotasets.Get(client, tenantid).Extract()
+	newres, err := quotasets.Get(client, projectid).Extract()
 	th.AssertNoErr(t, err)
 	if newres.RAM == res.RAM {
 		t.Fatalf("Failed to update quotas")
@@ -158,7 +136,7 @@ func TestQuotasetUpdateDelete(t *testing.T) {
 	FillUpdateOptsFromQuotaSet(*orig, &restore)
 
 	// restore original quotas
-	res, err = quotasets.Update(client, tenantid, restore).Extract()
+	res, err = quotasets.Update(client, projectid, restore).Extract()
 	th.AssertNoErr(t, err)
 
 	orig.ID = ""
