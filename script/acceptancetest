@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 set -x
+set -o pipefail
 
 source `dirname $0`/stackenv
 
