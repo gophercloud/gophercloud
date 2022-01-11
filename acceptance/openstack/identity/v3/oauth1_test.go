@@ -16,10 +16,6 @@ import (
 )
 
 func TestOAuth1CRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-
 	client, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
