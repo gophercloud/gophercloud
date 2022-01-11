@@ -12,6 +12,7 @@ import (
 )
 
 func TestListenersList(t *testing.T) {
+	t.Skip("Neutron LBaaS v2 was replaced by Octavia and the API will be removed in a future release")
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a loadbalancer client: %v", err)

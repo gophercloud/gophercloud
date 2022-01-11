@@ -74,9 +74,11 @@ func CreatePolicy(t *testing.T, client *gophercloud.ServiceClient, ruleID string
 func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, error) {
 	ruleName := tools.RandomString("TESTACC-", 8)
 	sourceAddress := fmt.Sprintf("192.168.1.%d", tools.RandomInt(1, 100))
-	sourcePort := strconv.Itoa(tools.RandomInt(1, 100))
+	sourcePortInt := strconv.Itoa(tools.RandomInt(1, 100))
+	sourcePort := fmt.Sprintf("%s:%s", sourcePortInt, sourcePortInt)
 	destinationAddress := fmt.Sprintf("192.168.2.%d", tools.RandomInt(1, 100))
-	destinationPort := strconv.Itoa(tools.RandomInt(1, 100))
+	destinationPortInt := strconv.Itoa(tools.RandomInt(1, 100))
+	destinationPort := fmt.Sprintf("%s:%s", destinationPortInt, destinationPortInt)
 
 	t.Logf("Attempting to create rule %s with source %s:%s and destination %s:%s",
 		ruleName, sourceAddress, sourcePort, destinationAddress, destinationPort)
@@ -102,9 +104,9 @@ func CreateRule(t *testing.T, client *gophercloud.ServiceClient) (*rules.Rule, e
 	th.AssertEquals(t, rule.Protocol, string(rules.ProtocolTCP))
 	th.AssertEquals(t, rule.Action, string(rules.ActionAllow))
 	th.AssertEquals(t, rule.SourceIPAddress, sourceAddress)
-	th.AssertEquals(t, rule.SourcePort, sourcePort)
+	th.AssertEquals(t, rule.SourcePort, sourcePortInt)
 	th.AssertEquals(t, rule.DestinationIPAddress, destinationAddress)
-	th.AssertEquals(t, rule.DestinationPort, destinationPort)
+	th.AssertEquals(t, rule.DestinationPort, destinationPortInt)
 
 	return rule, nil
 }

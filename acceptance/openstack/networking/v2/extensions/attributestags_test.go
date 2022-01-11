@@ -89,8 +89,6 @@ func listNetworkWithTagOpts(t *testing.T, client *gophercloud.ServiceClient, lis
 }
 
 func TestQueryByTags(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

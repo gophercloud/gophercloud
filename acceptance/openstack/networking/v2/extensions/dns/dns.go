@@ -105,7 +105,7 @@ func CreateFloatingIPDNS(t *testing.T, client *gophercloud.ServiceClient, networ
 
 // CreateNetworkDNS will create a network with a DNS domain set.
 // An error will be returned if the network could not be created.
-func CreateNetworkDNS(t *testing.T, client *gophercloud.ServiceClient, dnsDomanin string) (*NetworkWithDNSExt, error) {
+func CreateNetworkDNS(t *testing.T, client *gophercloud.ServiceClient, dnsDomain string) (*NetworkWithDNSExt, error) {
 	networkName := tools.RandomString("TESTACC-", 8)
 	networkCreateOpts := networks.CreateOpts{
 		Name:         networkName,
@@ -114,7 +114,7 @@ func CreateNetworkDNS(t *testing.T, client *gophercloud.ServiceClient, dnsDomani
 
 	createOpts := dns.NetworkCreateOptsExt{
 		CreateOptsBuilder: networkCreateOpts,
-		DNSDomain:         dnsDomanin,
+		DNSDomain:         dnsDomain,
 	}
 
 	t.Logf("Attempting to create network: %s", networkName)
@@ -129,7 +129,7 @@ func CreateNetworkDNS(t *testing.T, client *gophercloud.ServiceClient, dnsDomani
 	t.Logf("Successfully created network.")
 
 	th.AssertEquals(t, network.Name, networkName)
-	th.AssertEquals(t, network.DNSDomain, dnsDomanin)
+	th.AssertEquals(t, network.DNSDomain, dnsDomain)
 
 	return &network, nil
 }
