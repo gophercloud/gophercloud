@@ -108,6 +108,62 @@ func TestCreate(t *testing.T) {
 	th.AssertEquals(t, "9876543210", s.SegmentationID)
 }
 
+func TestCreateWithProviderExt(t *testing.T) {
+	th.SetupHTTP()
+	defer th.TeardownHTTP()
+
+	th.Mux.HandleFunc("/v2.0/networks", func(w http.ResponseWriter, r *http.Request) {
+		th.TestMethod(t, r, "POST")
+		th.TestHeader(t, r, "X-Auth-Token", fake.TokenID)
+		th.TestHeader(t, r, "Content-Type", "application/json")
+		th.TestHeader(t, r, "Accept", "application/json")
+		th.TestJSONRequest(t, r, `
+{
+    "network": {
+        "name": "private",
+        "admin_state_up": true,
+        "provider:network_type": "flat",
+        "provider:physical_network": "default"
+    }
+}
+		`)
+
+		w.WriteHeader(http.StatusCreated)
+
+		fmt.Fprintf(w, `
+{
+    "network": {
+        "name": "private",
+        "admin_state_up": true,
+        "provider:network_type": "flat",
+        "provider:physical_network": "default",
+        "provider:segmentation_id": null
+    }
+}
+		`)
+	})
+
+	var s struct {
+		networks.Network
+		provider.NetworkProviderExt
+	}
+
+	networkCreateOpts := networks.CreateOpts{Name: "private", AdminStateUp: gophercloud.Enabled}
+
+	providerCreateOpts := provider.CreateOptsExt{
+		CreateOptsBuilder: networkCreateOpts,
+		NetworkType:       "flat",
+		PhysicalNetwork:   "default",
+	}
+
+	err := networks.Create(fake.ServiceClient(), providerCreateOpts).ExtractInto(&s)
+	th.AssertNoErr(t, err)
+
+	th.AssertEquals(t, "flat", s.NetworkType)
+	th.AssertEquals(t, "default", s.PhysicalNetwork)
+	th.AssertEquals(t, "", s.SegmentationID)
+}
+
 func TestCreateWithMultipleProvider(t *testing.T) {
 	th.SetupHTTP()
 	defer th.TeardownHTTP()
