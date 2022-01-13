@@ -1,5 +1,5 @@
-//go:build acceptance || networking || fwaas
-// +build acceptance networking fwaas
+//go:build acceptance || networking || vpnaas
+// +build acceptance networking vpnaas
 
 package vpnaas
 
