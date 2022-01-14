@@ -106,21 +106,6 @@
         - manila
 
 - job:
-    name: gophercloud-acceptance-test-ironic
-    parent: gophercloud-acceptance-test-base
-    description: |
-      Run gophercloud ironic acceptance test on master branch
-    files:
-      - ^.*baremetal.*$
-    vars:
-      devstack_services:
-        - ironic
-      devstack_override_enabled_services: 'g-api,g-reg,q-agt,q-dhcp,q-l3,q-svc,key,mysql,rabbit,ir-api,ir-cond,s-account,s-container,s-object,s-proxy'
-      devstack_projects: 'openstack/ironic-python-agent-builder openstack/ironic'
-      acceptance_tests:
-        - acceptance/openstack/baremetal/v1
-
-- job:
     name: gophercloud-acceptance-test-compute-ussuri
     parent: gophercloud-acceptance-test-compute
     nodeset: ubuntu-bionic
@@ -490,7 +475,6 @@
         - gophercloud-acceptance-test-compute
         - gophercloud-acceptance-test-networking
         - gophercloud-acceptance-test-storage
-        - gophercloud-acceptance-test-ironic
     recheck-newton:
       jobs:
         - gophercloud-acceptance-test-compute-newton

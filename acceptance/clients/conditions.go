@@ -89,3 +89,13 @@ func SkipRelease(t *testing.T, release string) {
 		t.Skipf("this is not supported in %s", release)
 	}
 }
+
+// SkipReleasesBelow will have the test be skipped on releases below a certain
+// one. Releases are named such as 'stable/mitaka', master, etc.
+func SkipReleasesBelow(t *testing.T, release string) {
+	current_branch := os.Getenv("OS_BRANCH")
+
+	if current_branch != "master" && current_branch < release {
+		t.Skipf("this is not supported below %s, testing in %s", release, current_branch)
+	}
+}
