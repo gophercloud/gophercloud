@@ -13,6 +13,7 @@ import (
 )
 
 func TestVolumesList(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/icehouse")
 	client, err := clients.NewBlockStorageV1Client()
 	if err != nil {
 		t.Fatalf("Unable to create a blockstorage client: %v", err)
@@ -34,6 +35,7 @@ func TestVolumesList(t *testing.T) {
 }
 
 func TestVolumesCreateDestroy(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/icehouse")
 	client, err := clients.NewBlockStorageV1Client()
 	if err != nil {
 		t.Fatalf("Unable to create blockstorage client: %v", err)

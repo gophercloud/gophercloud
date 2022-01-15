@@ -16,7 +16,6 @@ import (
 )
 
 func TestQuotasetGet(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireAdmin(t)
 
 	client, projectID := getClientAndProject(t)
@@ -28,7 +27,6 @@ func TestQuotasetGet(t *testing.T) {
 }
 
 func TestQuotasetGetDefaults(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireAdmin(t)
 
 	client, projectID := getClientAndProject(t)
@@ -40,7 +38,6 @@ func TestQuotasetGetDefaults(t *testing.T) {
 }
 
 func TestQuotasetGetUsage(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireAdmin(t)
 
 	client, projectID := getClientAndProject(t)
@@ -83,9 +80,6 @@ var VolumeTypeCreateOpts = volumetypes.CreateOpts{
 }
 
 func TestQuotasetUpdate(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
 	clients.RequireAdmin(t)
 
 	client, projectID := getClientAndProject(t)
@@ -144,9 +138,6 @@ func TestQuotasetUpdate(t *testing.T) {
 }
 
 func TestQuotasetDelete(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
 	clients.RequireAdmin(t)
 
 	client, projectID := getClientAndProject(t)
