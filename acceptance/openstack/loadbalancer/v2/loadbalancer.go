@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/l7policies"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/listeners"
@@ -57,6 +58,8 @@ func CreateListener(t *testing.T, client *gophercloud.ServiceClient, lb *loadbal
 // balancer on a random port with a random name. An error will be returned
 // if the listener could not be created.
 func CreateListenerHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loadbalancers.LoadBalancer) (*listeners.Listener, error) {
+	tlsVersions := []listeners.TLSVersion{}
+	tlsVersionsExp := []string(nil)
 	listenerName := tools.RandomString("TESTACCT-", 8)
 	listenerDescription := tools.RandomString("TESTACCT-DESC-", 8)
 	listenerPort := tools.RandomInt(1, 100)
@@ -67,8 +70,11 @@ func CreateListenerHTTP(t *testing.T, client *gophercloud.ServiceClient, lb *loa
 		"X-Forwarded-For": "true",
 	}
 
-	tlsVersions := []listeners.TLSVersion{"TLSv1.2", "TLSv1.3"}
-	tlsVersionsExp := []string{"TLSv1.2", "TLSv1.3"}
+	// tls_version is only supported in microversion v2.17 introduced in victoria
+	if clients.IsReleasesAbove(t, "stable/ussuri") {
+		tlsVersions = []listeners.TLSVersion{"TLSv1.2", "TLSv1.3"}
+		tlsVersionsExp = []string{"TLSv1.2", "TLSv1.3"}
+	}
 
 	createOpts := listeners.CreateOpts{
 		Name:           listenerName,
