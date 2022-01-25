@@ -2,8 +2,7 @@ name: functional-keymanager
 on:
   pull_request:
     paths:
-      - '^.*keymanager.*$'
-      - '.github/workflows/functional-keymanager.yaml'
+      - '**keymanager**'
   schedule:
     - cron: '0 0 * * *'
 jobs:

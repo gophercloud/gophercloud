@@ -2,8 +2,7 @@ name: functional-identity
 on:
   pull_request:
     paths:
-      - '^.*identity.*$'
-      - '.github/workflows/functional-identity.yaml'
+      - '**identity**'
   schedule:
     - cron: '0 0 * * *'
 jobs:

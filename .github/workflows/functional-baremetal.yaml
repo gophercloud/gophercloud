@@ -2,8 +2,7 @@ name: functional-baremetal
 on:
   pull_request:
     paths:
-      - '^.*baremetal.*$'
-      - '.github/workflows/functional-baremetal.yaml'
+      - '**baremetal**'
   schedule:
     - cron: '0 0 * * *'
 jobs:
