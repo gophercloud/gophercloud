@@ -16,8 +16,6 @@ import (
 
 func TestTransferRequestCRUD(t *testing.T) {
 	// Create new Zone
-	clients.RequireDNS(t)
-
 	client, err := clients.NewDNSV2Client()
 	th.AssertNoErr(t, err)
 
@@ -59,8 +57,6 @@ func TestTransferRequestCRUD(t *testing.T) {
 
 func TestTransferRequestAccept(t *testing.T) {
 	// Create new project
-	clients.RequireAdmin(t)
-
 	identityClient, err := clients.NewIdentityV3Client()
 	th.AssertNoErr(t, err)
 
@@ -69,8 +65,6 @@ func TestTransferRequestAccept(t *testing.T) {
 	defer identity.DeleteProject(t, identityClient, project.ID)
 
 	// Create new Zone
-	clients.RequireDNS(t)
-
 	client, err := clients.NewDNSV2Client()
 	th.AssertNoErr(t, err)
 
