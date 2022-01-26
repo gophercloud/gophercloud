@@ -2,7 +2,10 @@ name: functional-basic
 on:
   pull_request:
     paths-ignore:
-      - '^docs/|\.md$|^(?:.*/)?(?:\.gitignore|LICENSE)$'
+      - 'docs/**'
+      - '**.md'
+      - '**.gitignore'
+      - '**LICENSE'
   schedule:
     - cron: '0 0 * * *'
 jobs:
