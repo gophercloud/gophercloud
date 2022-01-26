@@ -14,6 +14,7 @@ import (
 )
 
 func TestAgentsRUD(t *testing.T) {
+	t.Skip("TestAgentsRUD needs to be re-worked to work with both ML2/OVS and OVN")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()
@@ -69,9 +70,6 @@ func TestAgentsRUD(t *testing.T) {
 	agent, err = agents.Update(client, allAgents[0].ID, &agents.UpdateOpts{Description: &allAgents[0].Description}).Extract()
 	th.AssertNoErr(t, err)
 	th.AssertEquals(t, agent.Description, allAgents[0].Description)
-
-	// skip this part
-	// t.Skip("Skip DHCP agent network scheduling")
 
 	// Assign a new network to a DHCP agent
 	network, err := networking.CreateNetwork(t, client)

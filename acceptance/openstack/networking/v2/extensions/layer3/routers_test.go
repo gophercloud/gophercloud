@@ -167,6 +167,7 @@ func TestLayer3RouterInterface(t *testing.T) {
 }
 
 func TestLayer3RouterAgents(t *testing.T) {
+	t.Skip("TestLayer3RouterAgents needs to be re-worked to work with both ML2/OVS and OVN")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewNetworkV2Client()

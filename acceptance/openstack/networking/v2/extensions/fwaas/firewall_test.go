@@ -15,6 +15,7 @@ import (
 )
 
 func TestFirewallCRUD(t *testing.T) {
+	t.Skip("Skip this test, FWAAS v1 is old and will be removed from Gophercloud")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -76,6 +77,7 @@ func TestFirewallCRUD(t *testing.T) {
 }
 
 func TestFirewallCRUDRouter(t *testing.T) {
+	t.Skip("Skip this test, FWAAS v1 is old and will be removed from Gophercloud")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 
@@ -126,6 +128,7 @@ func TestFirewallCRUDRouter(t *testing.T) {
 }
 
 func TestFirewallCRUDRemoveRouter(t *testing.T) {
+	t.Skip("Skip this test, FWAAS v1 is old and will be removed from Gophercloud")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

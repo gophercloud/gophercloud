@@ -29,6 +29,7 @@ func TestServiceList(t *testing.T) {
 }
 
 func TestServiceCRUD(t *testing.T) {
+	clients.SkipReleasesAbove(t, "stable/wallaby")
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
 

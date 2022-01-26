@@ -10,19 +10,23 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	v2 "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/attributestags"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/trunks"
 	th "github.com/gophercloud/gophercloud/testhelper"
 )
 
 func TestTrunkCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	t.Skip("Currently failing in OpenLab")
-
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
+
+	extension, err := extensions.Get(client, "trunk").Extract()
+	if err != nil {
+		t.Skip("This test requires trunk Neutron extension")
+	}
+	tools.PrintResource(t, extension)
 
 	// Create Network
 	network, err := v2.CreateNetwork(t, client)
@@ -103,13 +107,16 @@ func TestTrunkCRUD(t *testing.T) {
 }
 
 func TestTrunkList(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	t.Skip("Currently failing in OpenLab")
-
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
+
+	extension, err := extensions.Get(client, "trunk").Extract()
+	if err != nil {
+		t.Skip("This test requires trunk Neutron extension")
+	}
+	tools.PrintResource(t, extension)
 
 	allPages, err := trunks.List(client, nil).AllPages()
 	if err != nil {
@@ -127,13 +134,16 @@ func TestTrunkList(t *testing.T) {
 }
 
 func TestTrunkSubportOperation(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	t.Skip("Currently failing in OpenLab")
-
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
+
+	extension, err := extensions.Get(client, "trunk").Extract()
+	if err != nil {
+		t.Skip("This test requires trunk Neutron extension")
+	}
+	tools.PrintResource(t, extension)
 
 	// Create Network
 	network, err := v2.CreateNetwork(t, client)
@@ -212,15 +222,16 @@ func TestTrunkSubportOperation(t *testing.T) {
 }
 
 func TestTrunkTags(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	t.Skip("Currently failing in OpenLab")
-
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)
 	}
+
+	extension, err := extensions.Get(client, "trunk").Extract()
+	if err != nil {
+		t.Skip("This test requires trunk Neutron extension")
+	}
+	tools.PrintResource(t, extension)
 
 	// Create Network
 	network, err := v2.CreateNetwork(t, client)
