@@ -2,8 +2,7 @@ name: functional-compute
 on:
   pull_request:
     paths:
-      - '^.*compute.*$'
-      - '.github/workflows/functional-compute.yaml'
+      - '**compute**'
   schedule:
     - cron: '0 0 * * *'
 jobs:

@@ -2,8 +2,7 @@ name: functional-imageservice
 on:
   pull_request:
     paths:
-      - '^.*imageservice.*$'
-      - '.github/workflows/functional-imageservice.yaml'
+      - '**imageservice**'
   schedule:
     - cron: '0 0 * * *'
 jobs:

@@ -2,8 +2,7 @@ name: functional-blockstorage
 on:
   pull_request:
     paths:
-      - '^.*blockstorage.*$'
-      - '.github/workflows/functional-blockstorage.yaml'
+      - '**blockstorage**'
   schedule:
     - cron: '0 0 * * *'
 jobs:
