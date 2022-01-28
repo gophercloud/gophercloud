@@ -103,3 +103,29 @@ func SkipReleasesAbove(t *testing.T, release string) {
 		t.Skipf("this is not supported above %s, testing in %s", release, current_branch)
 	}
 }
+
+// IsReleasesAbove will return true on releases above a certain
+// one. The result is always true on master release. Releases are named such
+// as 'stable/mitaka', master, etc.
+func IsReleasesAbove(t *testing.T, release string) bool {
+	current_branch := os.Getenv("OS_BRANCH")
+
+	// Assume master is always too new
+	if current_branch == "master" || current_branch > release {
+		return true
+	}
+	t.Logf("Target release %s is below the current branch %s", release, current_branch)
+	return false
+}
+
+// IsReleasesBelow will return true on releases below a certain
+// one. Releases are named such as 'stable/mitaka', master, etc.
+func IsReleasesBelow(t *testing.T, release string) bool {
+	current_branch := os.Getenv("OS_BRANCH")
+
+	if current_branch != "master" && current_branch < release {
+		return true
+	}
+	t.Logf("Target release %s is above the current branch %s", release, current_branch)
+	return false
+}

@@ -13,13 +13,6 @@ import (
 
 func TestAmphoraeList(t *testing.T) {
 	clients.RequireAdmin(t)
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
-	clients.SkipRelease(t, "stable/rocky")
-
 	client, err := clients.NewLoadBalancerV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a loadbalancer client: %v", err)
