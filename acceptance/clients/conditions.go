@@ -87,7 +87,7 @@ func SkipRelease(t *testing.T, release string) {
 func SkipReleasesBelow(t *testing.T, release string) {
 	current_branch := os.Getenv("OS_BRANCH")
 
-	if current_branch != "master" && current_branch < release {
+	if IsReleasesBelow(t, release) {
 		t.Skipf("this is not supported below %s, testing in %s", release, current_branch)
 	}
 }
@@ -99,7 +99,7 @@ func SkipReleasesAbove(t *testing.T, release string) {
 	current_branch := os.Getenv("OS_BRANCH")
 
 	// Assume master is always too new
-	if current_branch == "master" || current_branch > release {
+	if IsReleasesAbove(t, release) {
 		t.Skipf("this is not supported above %s, testing in %s", release, current_branch)
 	}
 }
