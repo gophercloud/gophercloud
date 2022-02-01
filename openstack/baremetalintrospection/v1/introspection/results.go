@@ -236,6 +236,7 @@ type RootDiskType struct {
 	Model              string `json:"model"`
 	Name               string `json:"name"`
 	ByPath             string `json:"by_path"`
+	ById               string `json:"by_id"`
 	Rotational         bool   `json:"rotational"`
 	Serial             string `json:"serial"`
 	Size               int64  `json:"size"`
