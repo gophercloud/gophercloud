@@ -15,9 +15,6 @@ import (
 )
 
 func TestOrdersCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewKeyManagerV1Client()
@@ -56,9 +53,6 @@ func TestOrdersCRUD(t *testing.T) {
 }
 
 func TestOrdersAsymmetric(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewKeyManagerV1Client()

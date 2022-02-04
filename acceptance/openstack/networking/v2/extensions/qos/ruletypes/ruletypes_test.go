@@ -5,19 +5,22 @@ import (
 
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/qos/ruletypes"
 )
 
 func TestRuleTypes(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-
 	client, err := clients.NewNetworkV2Client()
 	if err != nil {
 		t.Fatalf("Unable to create a network client: %v", err)
 		return
 	}
+
+	extension, err := extensions.Get(client, "qos").Extract()
+	if err != nil {
+		t.Skip("This test requires qos Neutron extension")
+	}
+	tools.PrintResource(t, extension)
 
 	page, err := ruletypes.ListRuleTypes(client).AllPages()
 	if err != nil {

@@ -67,6 +67,7 @@ func TestNodesUpdate(t *testing.T) {
 }
 
 func TestNodesRAIDConfig(t *testing.T) {
+	clients.SkipReleasesBelow(t, "stable/ussuri")
 	clients.RequireLong(t)
 
 	client, err := clients.NewBareMetalV1NoAuthClient()

@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
 	"github.com/gophercloud/gophercloud/openstack/loadbalancer/v2/quotas"
@@ -36,6 +37,19 @@ func TestQuotasUpdate(t *testing.T) {
 	originalQuotas, err := quotas.Get(client, os.Getenv("OS_PROJECT_NAME")).Extract()
 	th.AssertNoErr(t, err)
 
+	var quotaUpdateOpts = quotas.UpdateOpts{
+		Loadbalancer:  gophercloud.IntToPointer(25),
+		Listener:      gophercloud.IntToPointer(45),
+		Member:        gophercloud.IntToPointer(205),
+		Pool:          gophercloud.IntToPointer(25),
+		Healthmonitor: gophercloud.IntToPointer(5),
+	}
+	// L7 parameters are only supported in microversion v2.19 introduced in victoria
+	if clients.IsReleasesAbove(t, "stable/ussuri") {
+		quotaUpdateOpts.L7Policy = gophercloud.IntToPointer(55)
+		quotaUpdateOpts.L7Rule = gophercloud.IntToPointer(105)
+	}
+
 	newQuotas, err := quotas.Update(client, os.Getenv("OS_PROJECT_NAME"), quotaUpdateOpts).Extract()
 	th.AssertNoErr(t, err)
 
@@ -45,16 +59,21 @@ func TestQuotasUpdate(t *testing.T) {
 		log.Fatal("Original and New Loadbalancer Quotas are the same")
 	}
 
-	// Restore original quotas.
-	restoredQuotas, err := quotas.Update(client, os.Getenv("OS_PROJECT_NAME"), quotas.UpdateOpts{
+	var restoredQuotaUpdate = quotas.UpdateOpts{
 		Loadbalancer:  &originalQuotas.Loadbalancer,
 		Listener:      &originalQuotas.Listener,
 		Member:        &originalQuotas.Member,
 		Pool:          &originalQuotas.Pool,
 		Healthmonitor: &originalQuotas.Healthmonitor,
-		L7Policy:      &originalQuotas.L7Policy,
-		L7Rule:        &originalQuotas.L7Rule,
-	}).Extract()
+	}
+	// L7 parameters are only supported in microversion v2.19 introduced in victoria
+	if clients.IsReleasesAbove(t, "stable/ussuri") {
+		restoredQuotaUpdate.L7Policy = &originalQuotas.L7Policy
+		restoredQuotaUpdate.L7Rule = &originalQuotas.L7Rule
+	}
+
+	// Restore original quotas.
+	restoredQuotas, err := quotas.Update(client, os.Getenv("OS_PROJECT_NAME"), restoredQuotaUpdate).Extract()
 	th.AssertNoErr(t, err)
 
 	th.AssertDeepEquals(t, originalQuotas, restoredQuotas)

@@ -18,9 +18,6 @@ import (
 const keyName = "gophercloud_test_key_pair"
 
 func TestKeyPairsParse(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-
 	client, err := clients.NewComputeV2Client()
 	th.AssertNoErr(t, err)
 

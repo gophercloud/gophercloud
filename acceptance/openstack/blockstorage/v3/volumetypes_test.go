@@ -14,7 +14,6 @@ import (
 )
 
 func TestVolumeTypes(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewBlockStorageV3Client()
@@ -59,7 +58,6 @@ func TestVolumeTypes(t *testing.T) {
 }
 
 func TestVolumeTypesExtraSpecs(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewBlockStorageV3Client()

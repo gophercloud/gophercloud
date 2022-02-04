@@ -6,6 +6,7 @@ import (
 	"github.com/gophercloud/gophercloud/acceptance/clients"
 	accpolicies "github.com/gophercloud/gophercloud/acceptance/openstack/networking/v2/extensions/qos/policies"
 	"github.com/gophercloud/gophercloud/acceptance/tools"
+	"github.com/gophercloud/gophercloud/openstack/common/extensions"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/qos/policies"
 	"github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/qos/rules"
 	th "github.com/gophercloud/gophercloud/testhelper"
@@ -14,6 +15,12 @@ import (
 func TestBandwidthLimitRulesCRUD(t *testing.T) {
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	extension, err := extensions.Get(client, "qos").Extract()
+	if err != nil {
+		t.Skip("This test requires qos Neutron extension")
+	}
+	tools.PrintResource(t, extension)
 
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)
@@ -55,10 +62,14 @@ func TestBandwidthLimitRulesCRUD(t *testing.T) {
 }
 
 func TestDSCPMarkingRulesCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	extension, err := extensions.Get(client, "qos").Extract()
+	if err != nil {
+		t.Skip("This test requires qos Neutron extension")
+	}
+	tools.PrintResource(t, extension)
 
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)
@@ -100,10 +111,14 @@ func TestDSCPMarkingRulesCRUD(t *testing.T) {
 }
 
 func TestMinimumBandwidthRulesCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-
 	client, err := clients.NewNetworkV2Client()
 	th.AssertNoErr(t, err)
+
+	extension, err := extensions.Get(client, "qos").Extract()
+	if err != nil {
+		t.Skip("This test requires qos Neutron extension")
+	}
+	tools.PrintResource(t, extension)
 
 	// Create a QoS policy
 	policy, err := accpolicies.CreateQoSPolicy(t, client)

@@ -1,22 +1,33 @@
 #!/bin/bash
 #
 set -x
+set -o pipefail
 
 source `dirname $0`/stackenv
 
 timeout="60m"
 failed=
 
+if [[ -z "${LOG_DIR}" ]]; then
+    echo "LOG_DIR not set, will set a temp directory"
+    LOG_DIR=/tmp/devstack-logs
+fi
+mkdir -p ${LOG_DIR}
+
+if [[ -z "${ACCEPTANCE_TESTS_FILTER}" ]]; then
+    ACCEPTANCE_TESTS=($(python <<< "print(' '.join($ACCEPTANCE_TESTS))"))
+else
+    ACCEPTANCE_TESTS=$(find acceptance/openstack -name '*_test.go' -exec dirname {} \; | sort -n | uniq | grep -P "$ACCEPTANCE_TESTS_FILTER")
+    ACCEPTANCE_TESTS=($ACCEPTANCE_TESTS)
+fi
 
 if [[ -z $ACCEPTANCE_TESTS ]]; then
     echo "No acceptance tests to run"
     exit 0
 fi
 
-TESTS=($(python <<< "print(' '.join($ACCEPTANCE_TESTS))"))
-
-for acceptance_test in "${TESTS[@]}"; do
-  go test -v -timeout $timeout -tags "fixtures acceptance" ./${acceptance_test}
+for acceptance_test in "${ACCEPTANCE_TESTS[@]}"; do
+  go test -v -timeout $timeout -tags "fixtures acceptance" ./${acceptance_test} |& tee -a ${LOG_DIR}/acceptance_tests.log
   # Check the error code after each suite, but do not exit early if a suite failed.
   if [[ $? != 0 ]]; then
     failed=1

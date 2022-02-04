@@ -18,11 +18,6 @@ import (
 )
 
 func TestTrustCRUD(t *testing.T) {
-	clients.SkipRelease(t, "stable/mitaka")
-	clients.SkipRelease(t, "stable/newton")
-	clients.SkipRelease(t, "stable/ocata")
-	clients.SkipRelease(t, "stable/pike")
-	clients.SkipRelease(t, "stable/queens")
 	clients.RequireAdmin(t)
 
 	client, err := clients.NewIdentityV3Client()

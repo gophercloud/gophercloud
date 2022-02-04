@@ -5,6 +5,7 @@ package v2
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/gophercloud/gophercloud"
@@ -73,7 +74,7 @@ func TestAggregatesAddRemoveHost(t *testing.T) {
 	defer DeleteAggregate(t, client, aggregate)
 
 	addHostOpts := aggregates.AddHostOpts{
-		Host: hostToAdd.HypervisorHostname,
+		Host: hostToAdd,
 	}
 
 	aggregateWithNewHost, err := aggregates.AddHost(client, aggregate.ID, addHostOpts).Extract()
@@ -81,10 +82,10 @@ func TestAggregatesAddRemoveHost(t *testing.T) {
 
 	tools.PrintResource(t, aggregateWithNewHost)
 
-	th.AssertEquals(t, aggregateWithNewHost.Hosts[0], hostToAdd.HypervisorHostname)
+	th.AssertEquals(t, aggregateWithNewHost.Hosts[0], hostToAdd)
 
 	removeHostOpts := aggregates.RemoveHostOpts{
-		Host: hostToAdd.HypervisorHostname,
+		Host: hostToAdd,
 	}
 
 	aggregateWithRemovedHost, err := aggregates.RemoveHost(client, aggregate.ID, removeHostOpts).Extract()
@@ -132,7 +133,7 @@ func TestAggregatesSetRemoveMetadata(t *testing.T) {
 	}
 }
 
-func getHypervisor(t *testing.T, client *gophercloud.ServiceClient) (*hypervisors.Hypervisor, error) {
+func getHypervisor(t *testing.T, client *gophercloud.ServiceClient) (string, error) {
 	allPages, err := hypervisors.List(client, nil).AllPages()
 	th.AssertNoErr(t, err)
 
@@ -140,8 +141,10 @@ func getHypervisor(t *testing.T, client *gophercloud.ServiceClient) (*hypervisor
 	th.AssertNoErr(t, err)
 
 	for _, h := range allHypervisors {
-		return &h, nil
+		// Nova API takes Hostnames, not FQDNs, so we need to strip the domain.
+		host := strings.Split(h.HypervisorHostname, ".")[0]
+		return host, nil
 	}
 
-	return nil, fmt.Errorf("Unable to get hypervisor")
+	return "", fmt.Errorf("Unable to get hypervisor")
 }
