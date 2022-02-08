@@ -31,7 +31,7 @@ func NewClient(options gophercloud.AuthOptions) (*gophercloud.ProviderClient, er
 	return client, nil
 }
 
-func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
+func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts, clientType string) (*gophercloud.ServiceClient, error) {
 	sc := new(gophercloud.ServiceClient)
 	if eo.CinderEndpoint == "" {
 		return nil, fmt.Errorf("CinderEndpoint is required")
@@ -45,11 +45,16 @@ func initClientOpts(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophe
 	endpoint := fmt.Sprintf("%s%s", gophercloud.NormalizeURL(eo.CinderEndpoint), token[1])
 	sc.Endpoint = gophercloud.NormalizeURL(endpoint)
 	sc.ProviderClient = client
+	sc.Type = clientType
 	return sc, nil
 }
 
-// NewBlockStorageNoAuth creates a ServiceClient that may be used to access a
-// "noauth" block storage service (V2 or V3 Cinder API).
-func NewBlockStorageNoAuth(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
-	return initClientOpts(client, eo)
+// NewBlockStorageNoAuthV2 creates a ServiceClient that may be used to access "noauth" v2 block storage service.
+func NewBlockStorageNoAuthV2(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
+	return initClientOpts(client, eo, "volumev2")
+}
+
+// NewBlockStorageNoAuthV3 creates a ServiceClient that may be used to access "noauth" v3 block storage service.
+func NewBlockStorageNoAuthV3(client *gophercloud.ProviderClient, eo EndpointOpts) (*gophercloud.ServiceClient, error) {
+	return initClientOpts(client, eo, "volumev3")
 }
