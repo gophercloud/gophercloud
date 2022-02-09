@@ -29,7 +29,7 @@ type Capabilities struct {
 	ThickProvisioningSupport bool    `json:"thick_provisioning_support"`
 	TotalVolumes             int64   `json:"total_volumes"`
 	FilterFunction           string  `json:"filter_function"`
-	GoodnessFuction          string  `json:"goodness_function"`
+	GoodnessFunction         string  `json:"goodness_function"`
 	Multiattach              bool    `json:"multiattach"`
 	SparseCopyVolume         bool    `json:"sparse_copy_volume"`
 }
